@@ -1,4 +1,10 @@
-# cribsheet
+<p align="center">
+  <img src="cribsheet-logo@2x.png" alt="cribsheet logo" width="200">
+</p>
+
+<h1 align="center">cribsheet</h1>
+
+<p align="center"><em>persistent memory for your AI — plain markdown on disk, semantically indexed</em></p>
 
 A local MCP server that keeps your long-term memory as plain markdown on disk,
 indexed for semantic retrieval by embeddings. Disk is the source of truth; the
