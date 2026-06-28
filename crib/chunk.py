@@ -1,0 +1,106 @@
+"""Chunking: per-heading sections with a windowed fallback (DESIGN §3)."""
+
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass
+
+from .util import sha1_hex
+
+_HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
+
+# Token estimate is intentionally crude (whitespace words ~= tokens); good
+# enough to decide when a section needs windowing. Tunable later.
+WINDOW_TOKENS = 512
+WINDOW_OVERLAP = 64
+
+
+@dataclass
+class Chunk:
+    project: str
+    relpath: str
+    note_id: str
+    heading_path: list[str]
+    window_idx: int
+    text: str
+
+    @property
+    def chunk_id(self) -> str:
+        return sha1_hex(
+            self.project, self.relpath, "/".join(self.heading_path),
+            str(self.window_idx),
+        )
+
+    @property
+    def content_hash(self) -> str:
+        return sha1_hex(self.text)
+
+    def metadata(self, title: str | None, tags: list[str], source: str,
+                 mtime: float) -> dict:
+        return {
+            "project": self.project,
+            "relpath": self.relpath,
+            "note_id": self.note_id,
+            "title": title or "",
+            "tags": ",".join(tags),
+            "heading_path": "/".join(self.heading_path),
+            "window_idx": self.window_idx,
+            "content_hash": self.content_hash,
+            "source": source,
+            "file_mtime": mtime,
+        }
+
+
+def _split_sections(body: str) -> list[tuple[list[str], str]]:
+    """Split markdown into (heading_path, section_text) by heading lines."""
+    sections: list[tuple[list[str], str]] = []
+    stack: list[tuple[int, str]] = []   # (level, title)
+    cur: list[str] = []
+    heading_path: list[str] = []
+
+    def flush():
+        text = "\n".join(cur).strip()
+        if text:
+            sections.append((list(heading_path), text))
+
+    for line in body.splitlines():
+        m = _HEADING.match(line)
+        if m:
+            flush()
+            cur = []
+            level = len(m.group(1))
+            title = m.group(2).strip()
+            while stack and stack[-1][0] >= level:
+                stack.pop()
+            stack.append((level, title))
+            heading_path = [t for _, t in stack]
+        else:
+            cur.append(line)
+    flush()
+    return sections
+
+
+def _window(text: str) -> list[str]:
+    words = text.split()
+    if len(words) <= WINDOW_TOKENS:
+        return [text]
+    out, start = [], 0
+    step = WINDOW_TOKENS - WINDOW_OVERLAP
+    while start < len(words):
+        out.append(" ".join(words[start:start + WINDOW_TOKENS]))
+        start += step
+    return out
+
+
+def chunk_note(project: str, relpath: str, note_id: str, body: str) -> list[Chunk]:
+    """Per-heading sections, windowed if long; whole-body fallback otherwise."""
+    sections = _split_sections(body)
+    if not sections:
+        stripped = body.strip()
+        sections = [([], stripped)] if stripped else []
+
+    chunks: list[Chunk] = []
+    for heading_path, text in sections:
+        for i, win in enumerate(_window(text)):
+            chunks.append(Chunk(project, relpath, note_id, heading_path, i, win))
+    return chunks

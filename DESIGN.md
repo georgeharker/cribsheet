@@ -1,0 +1,423 @@
+# cribsheet — design
+
+A local MCP server that manages a tree of markdown notes as long-term memory,
+indexed for semantic retrieval by a Chroma embedding store. Markdown on disk is
+the source of truth; Chroma is a derived, rebuildable cache. Inspired by
+basic-memory, but content-addressable via embeddings rather than a knowledge
+graph.
+
+`crib` = binary / command. `cribsheet` = the project.
+
+---
+
+## 1. Core principles
+
+1. **Disk is truth, Chroma is a cache.** Notes are plain markdown (optional YAML
+   frontmatter). The index can always be deleted and rebuilt from disk.
+2. **One path to the index.** Every write — tool, file watcher, or direct LLM
+   edit — funnels through a single `index_file(path)` routine that is
+   **idempotent and content-hash-gated** and wrapped in a **per-path lock**.
+   This is the central design decision; everything else leans on it.
+3. **Correctness never depends on event timing.** Because `index_file` no-ops
+   when the content hash is unchanged, racing writers and noisy/duplicated
+   filesystem events degrade to redundant work, never a wrong index.
+4. **Model-agnostic.** The server holds no API keys for generation. `distill`
+   uses MCP sampling so the *client's* current LLM does the work.
+
+---
+
+## 2. Storage layout (XDG, three lifecycles)
+
+Three categories of state with different lifecycles get three roots:
+
+| What | Default | Env override | Git? | Lifecycle |
+|---|---|---|---|---|
+| **Config** — `config.toml`, default embed model, distill prompt | `$XDG_CONFIG_HOME/crib` → `~/.config/crib` | `CRIB_CONFIG_DIR` | optional | hand-edited |
+| **Data (truth)** — `projects/<name>/notes/**.md`, `.cribproject` | `$XDG_DATA_HOME/crib` → `~/.local/share/crib` | `CRIB_DATA_DIR` | **auto-detect** | precious |
+| **Index (derived)** — Chroma persistent dir | `$XDG_CACHE_HOME/crib` → `~/.cache/crib` | `CRIB_INDEX_DIR` | **never** | disposable |
+
+Per-dir resolution precedence: explicit env var → `XDG_*` → `~/.{config,local/share,cache}/crib`.
+
+Chroma lives under **cache** on purpose:
+- `rm -rf $CRIB_INDEX_DIR && crib reindex --all` is a supported recovery path.
+- It is physically impossible to accidentally git the embeddings — they are not
+  in the data tree.
+
+### On-disk shape
+
+```
+$CRIB_CONFIG_DIR/
+  config.toml                 # global defaults
+
+$CRIB_DATA_DIR/
+  projects/
+    <project>/
+      .cribproject            # project config (see §6)
+      notes/…/*.md            # arbitrary subdir tree for organization
+  .versions/                  # per-write version ring (see §8); git-ignored
+  .git/                       # optional, auto-detected; backs the data tree only
+
+$CRIB_INDEX_DIR/
+  chroma/                     # persistent Chroma client dir
+```
+
+---
+
+## 3. Data model
+
+### Note file
+
+Markdown + optional YAML frontmatter:
+
+```markdown
+---
+id: 01J…              # ULID, stable across renames; assigned on first index
+title: …
+tags: [x, y]
+created: 2026-06-27
+updated: 2026-06-27
+source: manual|appended|distilled
+---
+## Section A
+body…
+```
+
+`id` makes renames non-destructive: identity follows the note, not its path. On
+rename the old `relpath` chunks are deleted and re-inserted under the new path
+without losing the logical identity.
+
+### Chunking — per-heading + windowed fallback
+
+- Split on markdown headings (`#`–`######`); each section is one chunk, carrying
+  `heading_path` (e.g. `["A"]` or nested `["A","A.1"]`).
+- A section over ~512 tokens → sliding-window sub-chunks with overlap.
+- Headingless / frontmatter-only notes → whole body, windowed if long.
+
+### Chunk identity & Chroma metadata
+
+Single collection `crib_chunks`, filtered by `project` metadata.
+
+```
+chunk_id     = sha1(project + relpath + heading_path + window_idx)
+content_hash = sha1(chunk_text)        # the coordination gate
+metadata     = {project, relpath, note_id, title, tags,
+                heading_path, window_idx, file_mtime, source}
+```
+
+Incremental reindex of a file: recompute its chunk set → upsert chunks whose
+`content_hash` changed → delete `chunk_id`s no longer present.
+
+---
+
+## 4. The coordination model (writer ⇄ watcher)
+
+Tools index **synchronously**, and a file watcher also reindexes. The naive
+version races: a tool writes a file, begins embedding (~tens of ms), and the
+watcher fires mid-window and re-embeds the same content.
+
+Resolved by making **content-hash gating the single coordination mechanism**:
+
+- Every chunk stores `content_hash`.
+- The one-and-only `index_file(path)` is idempotent and hash-gated: compute the
+  current file hash; if it matches stored hashes, no-op and return.
+- `index_file` is wrapped in a **per-path async lock**.
+
+Resulting flows, race-free with no echo-tracking state:
+
+1. **Tool write** — write F → `index_file(F)` → lock → embed → upsert new
+   hashes → release.
+2. **Watcher echo** — fires for F → `index_file(F)` → waits on lock → re-reads
+   hash → matches → no-op.
+3. **External / direct-LLM edit** — watcher fires → hash differs → reindex.
+
+The "tag the file so the watcher skips its echo" requirement *is* the stored
+hash. No tagging, no shared mutable set, no feedback loop with `distill`.
+
+---
+
+## 5. Tool surface
+
+`edit` is intentionally split into distinct verbs so the LLM selects correctly.
+Every write tool ends by calling the locked `index_file`.
+
+| Tool | Purpose | Writes? | Indexes? |
+|---|---|---|---|
+| `lookup(query, project?, k?, tags?)` | semantic search; ranked chunks w/ relpath, heading, snippet; optional dedupe-by-file | no | reads |
+| `read(relpath, project?)` | fetch raw note for the LLM to reason over / rewrite | no | no |
+| `locate(relpath, project?) → abs_path` | return the real on-disk path so the LLM edits with its own file tools | no | no |
+| `store(content, title?, project?, tags?)` | create a new note; assign `id`; write; index | yes | sync |
+| `append(relpath, content, heading?)` | add to an existing note / under a heading | yes | sync |
+| `edit(relpath, new_content)` | replace raw file content (LLM-driven rewrite) | yes | sync |
+| `reindex(relpath | project | --all)` | re-run hash-gated `index_file`; safe to call redundantly | no | sync |
+| `distill(project?, relpath?)` | re-digest via MCP sampling: compress, merge dups, normalize frontmatter | yes | sync |
+| `versions(relpath, project?)` | list per-write versions (timestamps) held in the ring | no | no |
+| `restore(relpath, version, project?)` | restore a prior version (itself a write → new ring entry) | yes | sync |
+| `import(project?, cwd?)` | ingest local docs referenced by a code repo's `.crib` into the project | yes | sync |
+| `snapshot(message?)` | explicit git checkpoint of the data tree (no-op if not a git repo) | (git) | no |
+| `history(relpath)` | surface a note's commit log | no | no |
+| `projects()` / `resolve_project(cwd)` | list projects; map a code dir → crib project via `.crib` | no | no |
+
+### Retrieval loop
+
+`lookup` (find) → `read` or `locate` (pull full context) → `edit` or native edit
+→ (`reindex`, optional). `lookup` returns sections, not whole files, so the LLM
+sees precisely the relevant chunk.
+
+### Direct-edit pattern
+
+`locate` returns the absolute path; the LLM edits it with its own file tools.
+`reindex`'s description doubles as the post-edit instruction: *"Call immediately
+after editing a note via its raw path so changes are searchable now. Safe to
+call redundantly — it no-ops if already current."* The watcher would catch the
+edit after debounce regardless; `reindex` just removes the latency.
+
+---
+
+## 6. Project association — `.crib` and `.cribproject`
+
+**`.cribproject`** — lives in a crib project's data dir; project-level config:
+
+```yaml
+name: cribsheet
+embed_model: bge-small-en-v1.5
+distill_prompt: |
+  …
+versions_keep: 20         # ring depth (see §8); 0 disables
+```
+
+Projects always live under `$CRIB_DATA_DIR/projects/<name>/notes`; there is no
+arbitrary project path. Organization happens through arbitrary subdir trees
+*within* a project. Git is not configured here — it is auto-detected from the
+presence of `.git` in the data root (see §8).
+
+**`.crib`** — tiny YAML at a *code repo* root. Two jobs: associate the repo with
+a crib project, and declare local docs to import into it.
+
+```yaml
+project: cribsheet        # which crib project this code maps to
+paths: [docs, notes]      # optional: subtree scope within the crib project for lookup
+import:                   # optional: local docs to ingest via `import` (globs, repo-relative)
+  - docs/**/*.md
+  - README.md
+import_into: imported/    # optional: subdir within the project to land imports (default: imported/<repo>/)
+```
+
+**Project resolution precedence** on any tool call: explicit `project` arg →
+`.crib` found by walking up from `cwd` → default project.
+
+### Import semantics
+
+`import` reads the `.crib` in (or above) `cwd`, expands its `import` globs against
+the repo, and **copies** each matched doc into the project under `import_into`
+(default `imported/<repo>/`, preserving relative structure). It is a one-way
+**pull from source**: the central store is truth once imported, and re-running
+`import` overwrites the imported copies from source (source wins on re-import).
+Provenance is recorded in frontmatter:
+
+```yaml
+source: imported
+source_repo: /abs/path/to/repo
+source_path: docs/architecture.md
+imported: 2026-06-27
+```
+
+Imported notes index and behave like any other note. Editing an imported copy in
+the crib store is allowed, but a later `import` re-pull overwrites it — provenance
+makes that visible so the LLM can warn before clobbering local edits. (Whether to
+ever push edits *back* to the source repo is deliberately out of scope — see §11.)
+
+---
+
+## 7. distill
+
+On-demand only — **never on write** (that is exactly where a watcher feedback
+loop would form). Given a note or whole project, it reads raw markdown, runs it
+through the current LLM via **MCP sampling** with the project's `distill_prompt`,
+and writes back a compressed/normalized version with `source: distilled`. Because
+it only writes files, it flows through the same locked `index_file` — no special
+casing. Writes only when the distilled output's hash differs (thrash guard).
+
+---
+
+## 8. Versioning (two layers, neither indexed)
+
+Recovery is two complementary layers. Neither is surfaced in the Chroma index —
+both are reachable only via tools.
+
+### Layer 1 — per-write version ring (automatic)
+
+Every write (`store` overwriting, `append`, `edit`, `restore`, `distill`,
+`import` re-pull) first stashes the *prior* file content into the ring before
+writing the new content. The ring keeps the last N versions per note
+(`versions_keep`, default 20; 0 disables).
+
+- Stored under `$CRIB_DATA_DIR/.versions/<note_id>/<seq>-<short_hash>.md`, keyed
+  by note `id` so it survives renames. Git-ignored; outside `notes/`, so never
+  indexed and never surfaced in `lookup`.
+- `versions(relpath)` lists entries; `restore(relpath, version)` writes a chosen
+  prior version back (which itself stashes the current content as a new ring
+  entry — restore is non-destructive and itself undoable).
+- This is the fine-grained "I just clobbered a note" safety net that exists
+  *between* snapshots, independent of whether git is set up at all.
+
+### Layer 2 — git checkpoints (manual, auto-detected)
+
+Git is **not configured** in `.cribproject`. It is **auto-detected**: if the data
+root contains `.git`, git features activate; otherwise they are inert. The data
+root is self-contained with **no Chroma inside it**, so git just works.
+
+- **No commit-on-write, and no option for it.** Per-edit commits are never
+  offered — they would be noise. Commits happen only on explicit `snapshot`.
+- `snapshot(message?)` — stage the data tree and commit (no-op if not a git
+  repo). `history(relpath)` — that note's commit log.
+- The watcher and git both ignore `.git/` and `.versions/`.
+
+---
+
+## 9. File watcher (macOS + Linux)
+
+`watchdog` abstracts the backend (FSEvents on macOS, inotify on Linux). The
+cross-platform trap: **editors don't emit `modified`** — vim, VS Code, and most
+"atomic save" editors write a temp file and `rename()` over the target, so you
+see `created` + `moved`, ordered/coalesced differently per backend.
+
+The watcher therefore:
+- Handles `created`, `modified`, **and** `moved` (a move *into* the tree = a change).
+- **Debounces per-path** (~200 ms coalescing) — inotify can fire 3–4 raw events
+  per save; FSEvents batches.
+- **Filters** `.git/`, `.versions/`, dotfiles, and temp patterns (`*~`,
+  `.*.swp`, `*.tmp`, `4913` vim probe, `.#*`).
+- Relies on the hash gate as backstop: noisy/duplicate events no-op in
+  `index_file`. Only latency depends on event fidelity; correctness never does.
+
+### Startup reconciliation
+
+The watcher only sees changes while it runs — anything edited, added, or deleted
+while crib was down is invisible to it. So on server startup crib runs a
+**reconcile sweep** across every project: it walks the *union* of on-disk notes
+and indexed paths through the same `index_file`, which (a) reindexes files
+changed/added offline and (b) drops orphaned chunks for notes deleted off disk.
+The watcher is started *first*, so edits landing during the sweep aren't missed;
+the hash gate makes any overlap a harmless no-op. Same routine is exposed as
+`reconcile` (all projects) and `reindex` (one project) for manual use.
+
+---
+
+## 10. Stack
+
+- **FastMCP** server, async.
+- **Chroma**, one collection `crib_chunks` — embedded or shared (see §10.1).
+- **Embeddings**: local `sentence-transformers`, default `bge-small-en-v1.5`
+  (`nomic-embed-text` option for longer context). Behind an `Embedder` protocol
+  so an API embedder is a one-line swap later.
+- **Watcher**: `watchdog` with debounce + temp-file filtering.
+- **Git**: shell out / `GitPython` against the data dir only.
+
+### 10.1 Chroma process model — embedded vs shared
+
+Two backends behind one `Store` interface, selected by config
+(`chroma.mode: embedded | shared`):
+
+| | **embedded** (default) | **shared** |
+|---|---|---|
+| Client | Chroma `PersistentClient`, in-process | `HttpClient` → `chroma run` server |
+| Store ownership | this crib process opens the SQLite store | one server owns it; clients talk HTTP |
+| Concurrent crib instances | **unsafe** — single writer only | safe — server serializes writes |
+| Cold start | reloads index each process start | server stays warm across restarts |
+| Lifecycle | none | **`sharedserver`** refcount + grace period |
+| Deps | none extra | a running `chroma`, the `sharedserver` binary |
+
+**Why shared exists:** the moment more than one crib MCP server runs against the
+same store — two editors, an agent plus a shell — an embedded `PersistentClient`
+contends on the SQLite store. The shared backend gives one writer and lets every
+crib client attach over HTTP.
+
+**`sharedserver` integration** (your crate — uses Chroma as its canonical
+example). In shared mode, crib does not spawn or kill Chroma itself; it
+refcounts:
+
+- On MCP server startup:
+  `sharedserver use crib-chroma --grace-period <cfg> -- chroma run --path $CRIB_INDEX_DIR/chroma`
+- On shutdown: `sharedserver unuse crib-chroma`.
+
+The grace period keeps Chroma warm between editor sessions (no reload churn), and
+the server shuts down only when the last crib client detaches and grace expires.
+Dead-client detection reaps refcounts if a crib process crashes. crib never owns
+the process lifecycle — it only declares "I'm using it."
+
+**Embedder stays client-side, server stays model-free.** crib computes *all*
+embeddings (both stored chunks and query text) with its local model and talks to
+Chroma purely by vector — the collection is created with **no embedding
+function**, and queries pass explicit `query_embeddings`. So the shared `chroma
+run` never needs the model, stays lightweight, and the embedder remains a crib
+concern. (A shared embedding service is a possible later `sharedserver`-managed
+peer, but out of scope now.)
+
+**Coordination across processes.** The per-path lock in §4 is intra-process only.
+In shared mode two crib processes could both embed a file before either upserts —
+but the **hash gate makes the second upsert a no-op**, so the worst case is
+redundant embed work, never a corrupt or divergent index. The same invariant that
+tames the writer⇄watcher race tames multi-process writers for free.
+
+---
+
+## 11. Resolved decisions & remaining open items
+
+**Resolved:**
+- Git: auto-detected from `.git` in the data root; manual `snapshot` only; no
+  commit-on-write and no option for it.
+- Project location: all projects centralized under one data root; organization
+  via arbitrary subdir trees within a project; no arbitrary project path.
+- Versioning: two layers — automatic per-write ring (recover snafus, not
+  indexed) + manual git snapshots.
+- Local docs reach a project via one-way `import` (pull from source) declared in
+  a code repo's `.crib`.
+- Chroma runs embedded by default; `chroma.mode: shared` runs it as a
+  `sharedserver`-refcounted `chroma run` for multi-client safety + warm reuse.
+  Embedder is always client-side; the index is hash-gated so multi-process
+  writers stay correct (§10.1).
+
+**Open:**
+1. **Import write-back** — currently strictly one-way (source → store). Should
+   there ever be a `push`/`export` that writes store edits back to the source
+   repo's docs? Out of scope for now; flag if you want round-tripping.
+2. **Ring storage durability** — version ring under `.versions/` is git-ignored
+   and lives in the (precious) data dir. Fine for recovery, but it is *not*
+   itself versioned/backed up. Acceptable, or should the ring live under a
+   separate `CRIB_STATE_DIR`?
+
+---
+
+## 12. Future / v2 — automatic conversation summarization
+
+**Goal:** automatically distill a conversation with the assistant into memory, so
+durable knowledge accrues without the user hand-authoring every note.
+
+**Explicitly deferred to v2** — it carries two hazards that the curated v1 surface
+does not, and getting them wrong degrades the whole index:
+
+- **Pollution.** Auto-summarizing every conversation injects low-signal chaff
+  (tangents, dead-ends, restated context) into the embedding store. Memory drifts
+  from a curated crib sheet toward a chat log, and `lookup` starts surfacing
+  conversational noise instead of knowledge. The index has no "importance" axis to
+  defend itself.
+- **Shape.** A conversation is not a clean note — it is interleaved threads,
+  decisions, and abandoned branches. A naive single-blob summary is hard to dedupe
+  against existing notes; the same topic discussed across two sessions yields two
+  overlapping notes rather than an updated one. Conversation structure ≠ note
+  structure.
+
+**Directions to explore when v1 is stable** (not commitments):
+- Capture is **opt-in and explicit** (a "remember this" gesture / boundary
+  marker), never silent on every turn.
+- Summaries route through **`distill` + a merge-aware step** that looks up the
+  nearest existing note(s) first and *updates* rather than appends — reuse the
+  semantic index to fight duplication at write time.
+- Extract **decisions/facts**, not transcript — bias toward the durable residue,
+  drop the deliberation.
+- A **quarantine tier**: auto-captured notes land with `source: conversation` and
+  are weighted down (or filtered out) in `lookup` until promoted, so unreviewed
+  capture can't outrank curated memory.
+- Leans on the layers v1 already builds: per-note `id`, hash-gated `index_file`,
+  the version ring (cheap rollback of bad auto-writes), and MCP sampling for the
+  summarizing model.
