@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from . import notes
-from .chunk import chunk_note
+from .chunk import WINDOW_OVERLAP, WINDOW_WORDS, chunk_note
 from .embed import Embedder
 from .store import Record, Store
 
@@ -30,9 +30,13 @@ class IndexResult:
 
 
 class IndexEngine:
-    def __init__(self, store: Store, embedder: Embedder) -> None:
+    def __init__(self, store: Store, embedder: Embedder,
+                 window_words: int = WINDOW_WORDS,
+                 overlap: int = WINDOW_OVERLAP) -> None:
         self.store = store
         self.embedder = embedder
+        self.window_words = window_words
+        self.overlap = overlap
         self._locks: dict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
 
     def _key(self, project: str, relpath: str) -> str:
@@ -59,7 +63,8 @@ class IndexEngine:
         note_id = note.id or ""
         mtime = path.stat().st_mtime
 
-        new_chunks = chunk_note(project, relpath, note_id, note.body)
+        new_chunks = chunk_note(project, relpath, note_id, note.body,
+                                self.window_words, self.overlap)
         new_by_id = {c.chunk_id: c for c in new_chunks}
 
         existing = self.store.get_meta({"project": project, "relpath": relpath})

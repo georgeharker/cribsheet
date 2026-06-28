@@ -24,10 +24,15 @@ st = ["sentence-transformers>=2.2"]
 mcp = ["fastmcp>=2.0"]
 watch = ["watchdog>=4.0"]
 git = []  # uses the `git` CLI via subprocess; no python dep
+# Pretty human-readable CLI output: renders note markdown through rich. Without
+# it the CLI falls back to raw text. Powers crib/render (vendored from zsh-ai).
+render = ["rich>=13", "markdown-it-py>=3"]
 full = [
     "fastembed>=0.3",
     "fastmcp>=2.0",
     "watchdog>=4.0",
+    "rich>=13",
+    "markdown-it-py>=3",
 ]
 
 [project.scripts]

@@ -19,6 +19,12 @@ class Embedder(Protocol):
     dim: int
 
     def embed(self, texts: list[str]) -> list[list[float]]:
+        """Embed passages/documents (and anything stored)."""
+        ...
+
+    def embed_query(self, texts: list[str]) -> list[list[float]]:
+        """Embed search queries. Same as `embed` unless the backend uses an
+        asymmetric query instruction (see `query_prefix`)."""
         ...
 
 
@@ -31,6 +37,9 @@ class HashEmbedder:
 
     def __init__(self, dim: int = 256) -> None:
         self.dim = dim
+
+    def embed_query(self, texts: list[str]) -> list[list[float]]:
+        return self.embed(texts)  # symmetric — no query instruction
 
     def _vec(self, text: str) -> list[float]:
         v = [0.0] * self.dim
@@ -54,9 +63,10 @@ class FastEmbedEmbedder:
     `BAAI/bge-small-en-v1.5` at a fraction of the install weight of torch.
     """
 
-    def __init__(self, model_name: str) -> None:
+    def __init__(self, model_name: str, query_prefix: str = "") -> None:
         from fastembed import TextEmbedding  # lazy
 
+        self.query_prefix = query_prefix
         # Pin CPU provider: no GPU here, and it silences onnxruntime's noisy
         # device-discovery warnings.
         try:
@@ -74,6 +84,9 @@ class FastEmbedEmbedder:
             n = math.sqrt(sum(x * x for x in vec)) or 1.0
             out.append([x / n for x in vec])   # L2-normalize for cosine
         return out
+
+    def embed_query(self, texts: list[str]) -> list[list[float]]:
+        return self.embed(_with_prefix(texts, self.query_prefix))
 
 
 def _auto_device() -> str:
@@ -100,9 +113,11 @@ class SentenceTransformerEmbedder:
         uv pip install torch --index-url https://download.pytorch.org/whl/cpu
     """
 
-    def __init__(self, model_name: str, device: str | None = None) -> None:
+    def __init__(self, model_name: str, device: str | None = None,
+                 query_prefix: str = "") -> None:
         from sentence_transformers import SentenceTransformer  # lazy
 
+        self.query_prefix = query_prefix
         self.device = device or _auto_device()
         self._model = SentenceTransformer(model_name, device=self.device)
         # method renamed in sentence-transformers 5.x; fall back for older
@@ -115,6 +130,30 @@ class SentenceTransformerEmbedder:
             texts, normalize_embeddings=True, convert_to_numpy=True
         )
         return [v.tolist() for v in vecs]
+
+    def embed_query(self, texts: list[str]) -> list[list[float]]:
+        return self.embed(_with_prefix(texts, self.query_prefix))
+
+
+# Canonical s2p instruction for English BGE retrieval models. Their training
+# prepends this to the QUERY only (passages stay raw); skipping it measurably
+# costs recall. See the BAAI/bge-*-en model cards.
+_BGE_EN_QUERY_INSTRUCTION = "Represent this sentence for searching relevant passages: "
+
+
+def _with_prefix(texts: list[str], prefix: str) -> list[str]:
+    return [prefix + t for t in texts] if prefix else list(texts)
+
+
+def _resolve_query_prefix(cfg: EmbedConfig, model_name: str) -> str:
+    """Explicit `query_prefix` wins (including "" to disable); otherwise default
+    to the BGE instruction for English BGE models, and nothing else."""
+    if cfg.query_prefix is not None:
+        return cfg.query_prefix
+    n = model_name.lower()
+    if "bge" in n and "-en" in n:
+        return _BGE_EN_QUERY_INSTRUCTION
+    return ""
 
 
 def build_embedder(cfg: EmbedConfig) -> Embedder:
@@ -135,10 +174,12 @@ def build_embedder(cfg: EmbedConfig) -> Embedder:
     device = None if cfg.device == "auto" else cfg.device
     try:
         if backend == "st":
-            return SentenceTransformerEmbedder(name, device=device)
+            return SentenceTransformerEmbedder(
+                name, device=device, query_prefix=_resolve_query_prefix(cfg, name))
         if backend in ("fe", "fastembed"):
-            return FastEmbedEmbedder(name)
-        return FastEmbedEmbedder(model)   # bare model name -> fastembed
+            return FastEmbedEmbedder(name, query_prefix=_resolve_query_prefix(cfg, name))
+        # bare model name -> fastembed
+        return FastEmbedEmbedder(model, query_prefix=_resolve_query_prefix(cfg, model))
     except ImportError:
         import sys
         print(f"[crib] embedding backend for {cfg.model!r} not installed; "

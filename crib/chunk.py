@@ -9,9 +9,15 @@ from .util import sha1_hex
 
 _HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
 
-# Token estimate is intentionally crude (whitespace words ~= tokens); good
-# enough to decide when a section needs windowing. Tunable later.
-WINDOW_TOKENS = 512
+# Windowing is measured in whitespace words, but the cap is set so a window
+# stays under the embedding models' 512-*token* limit (bge et al.) — markdown
+# and code run well above one token per word, so a 512-word window would be
+# silently truncated by the model, dropping the tail from the index. ~320 words
+# (~480-510 tokens at typical prose/code density) keeps the whole window
+# embeddable; smaller windows also sharpen per-section relevance.
+# NOTE: changing these re-chunks notes — run `crib reindex` to apply to existing
+# docs (new/edited notes pick it up automatically; the hash gate makes it safe).
+WINDOW_WORDS = 320
 WINDOW_OVERLAP = 64
 
 
@@ -80,19 +86,22 @@ def _split_sections(body: str) -> list[tuple[list[str], str]]:
     return sections
 
 
-def _window(text: str) -> list[str]:
+def _window(text: str, window_words: int = WINDOW_WORDS,
+            overlap: int = WINDOW_OVERLAP) -> list[str]:
     words = text.split()
-    if len(words) <= WINDOW_TOKENS:
+    if len(words) <= window_words:
         return [text]
     out, start = [], 0
-    step = WINDOW_TOKENS - WINDOW_OVERLAP
+    step = max(1, window_words - overlap)   # guard: overlap < window keeps step > 0
     while start < len(words):
-        out.append(" ".join(words[start:start + WINDOW_TOKENS]))
+        out.append(" ".join(words[start:start + window_words]))
         start += step
     return out
 
 
-def chunk_note(project: str, relpath: str, note_id: str, body: str) -> list[Chunk]:
+def chunk_note(project: str, relpath: str, note_id: str, body: str,
+               window_words: int = WINDOW_WORDS,
+               overlap: int = WINDOW_OVERLAP) -> list[Chunk]:
     """Per-heading sections, windowed if long; whole-body fallback otherwise."""
     sections = _split_sections(body)
     if not sections:
@@ -101,7 +110,7 @@ def chunk_note(project: str, relpath: str, note_id: str, body: str) -> list[Chun
 
     chunks: list[Chunk] = []
     for heading_path, text in sections:
-        for i, win in enumerate(_window(text)):
+        for i, win in enumerate(_window(text, window_words, overlap)):
             chunks.append(Chunk(project, relpath, note_id, heading_path, i, win))
     return chunks
 

@@ -21,7 +21,7 @@ from .gitbacking import GitBacking
 from .indexer import IndexEngine, IndexResult
 from .notes import Note
 from .paths import Paths
-from .store import InMemoryStore, Store
+from .store import Hit, InMemoryStore, Store
 from .util import new_ulid
 from .versions import VersionRing
 from .watch import Watcher
@@ -50,7 +50,9 @@ class Crib:
         self.config = config
         self.store = store
         self.embedder = build_embedder(config.embed)
-        self.index = IndexEngine(store, self.embedder)
+        self.index = IndexEngine(store, self.embedder,
+                                 config.chunk.window_words,
+                                 config.chunk.overlap_words)
         self.git = GitBacking(paths.data_dir)
         self.versions = VersionRing(paths.versions_dir, config.versions_keep)
         self._watcher: Watcher | None = None
@@ -228,13 +230,55 @@ class Crib:
                 out.add(p)
         return out
 
+    def _retrieve(self, proj: str, query: str, vec: list[float],
+                  topn: int, hybrid: bool) -> list[Hit]:
+        """Candidate Hits in rank order. Dense-only, or dense⊕BM25 fused by RRF.
+
+        Hits keep the cosine in `.score` (even reordered by fusion, so the effect
+        is visible); a BM25-only finalist's cosine is filled by re-embedding just
+        that handful of chunks."""
+        where = {"project": proj}
+        dense = self.store.query(vec, k=topn, where=where)
+        if not hybrid:
+            return dense
+        from .retrieve import BM25, reciprocal_rank_fusion, tokenize
+
+        docs = self.store.get_docs(where)            # {id: (document, metadata)}
+        if not docs:
+            return dense
+        ids = list(docs)
+        sparse = BM25([tokenize(docs[i][0]) for i in ids]).scores(tokenize(query))
+        sparse_ranked = [ids[j] for j in sorted(
+            range(len(ids)), key=lambda j: sparse[j], reverse=True) if sparse[j] > 0][:topn]
+        dense_ranked = [h.id for h in dense]
+        fused = reciprocal_rank_fusion(
+            [dense_ranked, sparse_ranked], k=self.config.retrieve.rrf_k)[:topn]
+
+        dense_by = {h.id: h for h in dense}
+        missing = [cid for cid in fused if cid not in dense_by]
+        cos: dict[str, float] = {}
+        if missing:
+            for cid, dv in zip(missing, self.embedder.embed([docs[cid][0] for cid in missing])):
+                cos[cid] = sum(a * b for a, b in zip(vec, dv))   # both L2-normalized
+        out: list[Hit] = []
+        for cid in fused:
+            if cid in dense_by:
+                out.append(dense_by[cid])
+            else:
+                doc, meta = docs[cid]
+                out.append(Hit(cid, doc, meta, round(cos.get(cid, 0.0), 4)))
+        return out
+
     def lookup(self, query: str, project: str | None = None, k: int = 8,
                tags: list[str] | None = None, dedupe_by_file: bool = True,
-               min_score: float = 0.0, cwd: Path | None = None) -> list[LookupHit]:
+               min_score: float = 0.0, cwd: Path | None = None,
+               hybrid: bool | None = None) -> list[LookupHit]:
         proj = self.resolve_project(project, cwd)
-        vec = self.embedder.embed([query])[0]
-        where: dict[str, Any] = {"project": proj}
-        raw = self.store.query(vec, k=k * 3 if dedupe_by_file else k, where=where)
+        vec = self.embedder.embed_query([query])[0]
+        use_hybrid = self.config.retrieve.hybrid if hybrid is None else hybrid
+        # Hybrid pulls a wider candidate pool so BM25 can promote terms dense ranked low.
+        topn = max(k * 3, 30) if use_hybrid else (k * 3 if dedupe_by_file else k)
+        raw = self._retrieve(proj, query, vec, topn, use_hybrid)
         hits, seen = [], set()
         line_maps: dict[str, dict[str, tuple[int, int]]] = {}
         for h in raw:
@@ -266,6 +310,39 @@ class Crib:
             if len(hits) >= k:
                 break
         return hits
+
+    def apropos(self, query: str, project: str | None = None, k: int = 8,
+                tags: list[str] | None = None,
+                cwd: Path | None = None) -> list[dict[str, Any]]:
+        """Like `lookup`, but each hit carries the FULL matching section markdown
+        (sliced from the file by its line span) rather than a 280-char snippet —
+        for rendering the sections for a human to read.
+
+        Unlike `lookup`, dedupe is per *section*, not per file: several distinct
+        sections of one note (e.g. a long design doc) can all surface, which is
+        the point when you want to read the matches rather than just locate them.
+        """
+        proj = self.resolve_project(project, cwd)
+        out: list[dict[str, Any]] = []
+        seen: set[tuple[str, str]] = set()
+        # Over-fetch with file-dedupe off, then collapse to distinct sections.
+        for h in self.lookup(query, project, max(k * 3, 12), tags,
+                             dedupe_by_file=False, cwd=cwd):
+            key = (h.relpath, h.heading)
+            if key in seen:
+                continue
+            seen.add(key)
+            section = h.snippet
+            if h.line_start and h.line_end:
+                try:
+                    lines = self.abspath(proj, h.relpath).read_text().splitlines()
+                    section = "\n".join(lines[h.line_start - 1:h.line_end])
+                except OSError:
+                    pass
+            out.append({**vars(h), "section": section})
+            if len(out) >= k:
+                break
+        return out
 
     # --- import ------------------------------------------------------------
     async def import_docs(self, project: str | None = None,

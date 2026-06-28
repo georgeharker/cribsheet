@@ -36,6 +36,11 @@ class Store(Protocol):
     def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:
         """Return {id: metadata} for records matching `where` (exact-match)."""
         ...
+    def get_docs(self, where: dict[str, Any]
+                 ) -> dict[str, tuple[str, dict[str, Any]]]:
+        """Return {id: (document, metadata)} for matches — the corpus a lexical
+        (BM25) index needs alongside the vector index."""
+        ...
     def query(self, embedding: list[float], k: int,
               where: dict[str, Any] | None = None) -> list[Hit]: ...
 
@@ -62,6 +67,11 @@ class InMemoryStore:
 
     def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:
         return {i: r.metadata for i, r in self._recs.items()
+                if _matches(r.metadata, where)}
+
+    def get_docs(self, where: dict[str, Any]
+                 ) -> dict[str, tuple[str, dict[str, Any]]]:
+        return {i: (r.document, r.metadata) for i, r in self._recs.items()
                 if _matches(r.metadata, where)}
 
     def query(self, embedding: list[float], k: int,
@@ -151,6 +161,15 @@ class ChromaStore:
         ids = res.get("ids") or []
         metas = res.get("metadatas") or []
         return {i: m for i, m in zip(ids, metas)}
+
+    def get_docs(self, where: dict[str, Any]
+                 ) -> dict[str, tuple[str, dict[str, Any]]]:
+        res = self._col.get(where=_chroma_where(where),
+                            include=["documents", "metadatas"])
+        ids = res.get("ids") or []
+        docs = res.get("documents") or []
+        metas = res.get("metadatas") or []
+        return {i: (d, m) for i, d, m in zip(ids, docs, metas)}
 
     def query(self, embedding: list[float], k: int,
               where: dict[str, Any] | None = None) -> list[Hit]:

@@ -19,6 +19,38 @@ class EmbedConfig:
     # torch device for the `st:` backend: "auto" (cuda→mps→cpu), or a forced
     # "cuda" / "mps" / "cpu". Ignored by the hash and fastembed backends.
     device: str = "auto"
+    # Asymmetric retrieval: instruction prepended to QUERY text only (passages
+    # stay raw) before embedding. None = auto (the canonical instruction for
+    # English BGE models, "" for everything else); set "" to disable, or a
+    # custom string. Only the query path changes, so no reindex is needed.
+    query_prefix: str | None = None
+
+
+@dataclass
+class ChunkConfig:
+    """How long sections are split for embedding. A section longer than
+    `window_words` is cut into overlapping windows; `overlap_ratio` is the
+    fraction of each window re-shared with its neighbour (so a knob set once
+    holds steady if the window size changes). Changing either re-chunks notes —
+    run `crib reindex` (or bounce the daemon) to apply to existing docs."""
+    window_words: int = 320         # keep windows under the model's 512-token cap
+    overlap_ratio: float = 0.20     # 0.0–<1.0; 0.20 => 64-word overlap at 320
+
+    @property
+    def overlap_words(self) -> int:
+        # Clamp below the window so the windowing step can't stall.
+        ratio = min(max(self.overlap_ratio, 0.0), 0.9)
+        return min(round(self.window_words * ratio), self.window_words - 1)
+
+
+@dataclass
+class RetrieveConfig:
+    """How `lookup`/`apropos` rank. `hybrid` fuses the dense vector ranking with
+    a BM25 lexical ranking (reciprocal-rank fusion), which fixes terse keyword
+    queries where exact-term sections lose to vaguely-on-topic prose. `rrf_k`
+    is the RRF damping constant (60 is the canonical value)."""
+    hybrid: bool = True
+    rrf_k: int = 60
 
 
 @dataclass
@@ -33,10 +65,29 @@ class ChromaConfig:
 
 
 @dataclass
+class DaemonConfig:
+    """The long-lived `crib --mcp --http` process the CLI attaches to.
+
+    It IS the MCP server: one warm process per machine, shared by Claude (over
+    MCP) and the `crib` CLI (as an MCP client). sharedserver owns its lifecycle
+    — refcount + grace keep it warm between CLI calls; `name`/`host`/`port` must
+    match the sharedServer registration so everyone attaches to the same process.
+    """
+    enabled: bool = True
+    name: str = "cribsheet"         # sharedserver name (== the MCP registration)
+    host: str = "127.0.0.1"
+    port: int = 7732                # crib's MCP band (chroma is 7733)
+    grace_period: str = "1h"        # keep warm this long after the last client
+
+
+@dataclass
 class Config:
     default_project: str = "default"
     embed: EmbedConfig = field(default_factory=EmbedConfig)
+    chunk: ChunkConfig = field(default_factory=ChunkConfig)
+    retrieve: RetrieveConfig = field(default_factory=RetrieveConfig)
     chroma: ChromaConfig = field(default_factory=ChromaConfig)
+    daemon: DaemonConfig = field(default_factory=DaemonConfig)
     versions_keep: int = 20
     watch: bool = True
 
@@ -54,8 +105,14 @@ class Config:
             cfg.watch = bool(data["watch"])
         if e := data.get("embed"):
             cfg.embed = EmbedConfig(**{**vars(cfg.embed), **e})
+        if ck := data.get("chunk"):
+            cfg.chunk = ChunkConfig(**{**vars(cfg.chunk), **ck})
+        if r := data.get("retrieve"):
+            cfg.retrieve = RetrieveConfig(**{**vars(cfg.retrieve), **r})
         if c := data.get("chroma"):
             cfg.chroma = ChromaConfig(**{**vars(cfg.chroma), **c})
+        if d := data.get("daemon"):
+            cfg.daemon = DaemonConfig(**{**vars(cfg.daemon), **d})
         return cfg
 
 

@@ -24,6 +24,48 @@ def _read_content(value: str) -> str:
     return sys.stdin.read() if value == "-" else value
 
 
+def _render_markdown(text: str) -> None:
+    """Pretty-print note markdown via the vendored rich renderer (honouring
+    $CRIB_THEME_FILE). Falls back to raw text if the `render` extra
+    (rich/markdown-it) isn't installed."""
+    import os
+    try:
+        from rich.console import Console
+        from rich.markdown import Markdown
+
+        from .render.cli import _load_theme
+    except Exception:  # noqa: BLE001 — render extra optional; degrade to raw
+        sys.stdout.write(text)
+        return
+    theme, code_theme = _load_theme(os.environ.get("CRIB_THEME_FILE"))
+    Console(theme=theme).print(Markdown(text, code_theme=code_theme))
+
+
+def _emit_apropos(hits: Any, as_json: bool) -> None:
+    """Human view of `apropos`: a locator header per hit, then the matched
+    section rendered as markdown. `--json` dumps the raw hits instead."""
+    if as_json:
+        _emit(hits, True)
+        return
+    for h in hits:
+        loc = (f":{h.get('line_start')}-{h.get('line_end')}"
+               if h.get("line_start") else "")
+        head = f" — {h['heading']}" if h.get("heading") else ""
+        print(f"\n[{h.get('score', 0.0):.3f}] {h.get('relpath', '')}{loc}{head}")
+        _render_markdown(h.get("section") or "")
+
+
+def _print_note(text: str, as_json: bool) -> None:
+    """`read` output: JSON string when --json, pretty markdown to a tty, else
+    raw bytes so pipelines get the file verbatim."""
+    if as_json:
+        print(json.dumps(text))
+    elif sys.stdout.isatty():
+        _render_markdown(text)
+    else:
+        sys.stdout.write(text)
+
+
 def _emit(obj: Any, as_json: bool) -> None:
     if as_json:
         def default(o):
@@ -43,6 +85,14 @@ def _emit_human(obj: Any) -> None:
 
 def _emit_human_one(item: Any) -> None:
     from .app import LookupHit
+    # Normalize a daemon's dict-shaped lookup hit to the same fields as the
+    # in-process LookupHit dataclass so both render identically.
+    if isinstance(item, dict) and "score" in item and "snippet" in item:
+        item = LookupHit(
+            project=item.get("project", ""), relpath=item.get("relpath", ""),
+            heading=item.get("heading", ""), title=item.get("title", ""),
+            snippet=item.get("snippet", ""), score=item.get("score", 0.0),
+            line_start=item.get("line_start"), line_end=item.get("line_end"))
     if isinstance(item, LookupHit):
         loc = f":{item.line_start}-{item.line_end}" if item.line_start else ""
         head = f"  {item.heading}" if item.heading else ""
@@ -58,11 +108,17 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="crib", description="markdown memory")
     p.add_argument("--mcp", action="store_true", help="run the MCP server")
     p.add_argument("--json", action="store_true", help="machine-readable output")
-    # transport options (apply to --mcp and `serve`)
+    # transport options (apply to --mcp and `serve`; also pick the daemon the CLI
+    # attaches to). Default to None so config `[daemon]` (host/port) wins unless
+    # the user overrides on the command line.
     p.add_argument("--http", action="store_true",
                    help="serve MCP over HTTP instead of stdio")
-    p.add_argument("--host", default="127.0.0.1", help="HTTP bind host")
-    p.add_argument("--port", type=int, default=8787, help="HTTP port")
+    p.add_argument("--host", default=None, help="HTTP host (bind, or daemon to attach)")
+    p.add_argument("--port", type=int, default=None,
+                   help="HTTP port (bind, or daemon to attach)")
+    # CLI verbs attach to the warm daemon by default; --no-daemon runs in-process.
+    p.add_argument("--no-daemon", action="store_true",
+                   help="run the verb in-process instead of via the daemon")
     sub = p.add_subparsers(dest="cmd")
 
     def proj(sp):  # shared --project option
@@ -70,14 +126,20 @@ def build_parser() -> argparse.ArgumentParser:
 
     sv = sub.add_parser("serve", help="run the MCP server (stdio or --http)")
     sv.add_argument("--http", action="store_true")
-    sv.add_argument("--host", default="127.0.0.1")
-    sv.add_argument("--port", type=int, default=8787)
+    sv.add_argument("--host", default=None)
+    sv.add_argument("--port", type=int, default=None)
     sub.add_parser("projects", help="list projects")
     sub.add_parser("info", help="show resolved paths and available backends")
 
     s = sub.add_parser("lookup", aliases=["search"], help="semantic search")
     s.add_argument("query"); proj(s)
     s.add_argument("-k", type=int, default=8)
+    s.add_argument("--tag", action="append", dest="tags")
+
+    s = sub.add_parser("apropos", aliases=["a"],
+                       help="semantic search, rendering each matched section")
+    s.add_argument("query"); proj(s)
+    s.add_argument("-k", type=int, default=5)
     s.add_argument("--tag", action="append", dest="tags")
 
     s = sub.add_parser("read", help="print a note's raw markdown")
@@ -142,13 +204,26 @@ def cmd_info(as_json: bool) -> None:
         "watchdog": importlib.util.find_spec("watchdog") is not None,
         "sharedserver": shutil.which("sharedserver") is not None,
     }
+    d = config.daemon
     info = {
         "config_dir": str(paths.config_dir),
         "data_dir": str(paths.data_dir),
         "index_dir": str(paths.index_dir),
         "embed_model": config.embed.model,
+        "chunk": {
+            "window_words": config.chunk.window_words,
+            "overlap_ratio": config.chunk.overlap_ratio,
+            "overlap_words": config.chunk.overlap_words,
+        },
+        "retrieve": {"hybrid": config.retrieve.hybrid, "rrf_k": config.retrieve.rrf_k},
         "chroma_mode": config.chroma.mode,
         "default_project": config.default_project,
+        "daemon": {
+            "enabled": d.enabled,
+            "name": d.name,
+            "endpoint": f"http://{d.host}:{d.port}/mcp",
+            "grace_period": d.grace_period,
+        },
         "backends": backends,
     }
     if as_json:
@@ -157,34 +232,108 @@ def cmd_info(as_json: bool) -> None:
     for k in ("config_dir", "data_dir", "index_dir", "embed_model",
               "chroma_mode", "default_project"):
         print(f"{k:18} {info[k]}")
+    ck = config.chunk
+    print(f"{'chunk':18} {ck.window_words}w window, "
+          f"{ck.overlap_words}w overlap ({ck.overlap_ratio:.0%})")
+    rt = config.retrieve
+    print(f"{'retrieve':18} {'hybrid (dense+BM25, RRF)' if rt.hybrid else 'dense only'}")
+    print(f"{'daemon':18} {'on' if d.enabled else 'off'}  "
+          f"http://{d.host}:{d.port}/mcp  ({d.name}, grace {d.grace_period})")
     print("backends:")
     for name, ok in backends.items():
         print(f"  {'✓' if ok else '✗'} {name}")
 
 
-def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+_RAW_PRINT = {"locate", "snapshot"}  # printed verbatim (read handled separately)
 
-    if args.mcp or args.cmd == "serve":
-        from .server import main as serve
-        transport = "http" if args.http else "stdio"
-        serve(transport, args.host, args.port)
-        return 0
-    if args.cmd is None:
-        build_parser().print_help()
-        return 1
-    if args.cmd == "info":
-        cmd_info(args.json)
-        return 0
 
+def _resolve_serve_endpoint(args: Any) -> tuple[str, int]:
+    """Bind address for `serve`/`--mcp`: explicit flags win, else `[daemon]`."""
+    from .config import Config
+    from .paths import Paths
+
+    cfg = Config.load(Paths.resolve().config_file)
+    return (args.host or cfg.daemon.host, args.port or cfg.daemon.port)
+
+
+def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
+    """Map a parsed CLI verb to an (mcp_tool, arguments) pair for the daemon.
+
+    Content args read stdin here (client-side) — the daemon has none; `cwd` is
+    sent so the daemon resolves `.crib`/project relative to the caller."""
+    cwd = str(Path.cwd())
+    v = args.cmd
+    if v in ("lookup", "search"):
+        return "lookup", {"query": args.query, "project": args.project,
+                          "k": args.k, "tags": args.tags, "cwd": cwd}
+    if v in ("apropos", "a"):
+        return "apropos", {"query": args.query, "project": args.project,
+                           "k": args.k, "tags": args.tags, "cwd": cwd}
+    if v == "read":
+        return "read", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
+    if v == "locate":
+        return "locate", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
+    if v == "store":
+        return "store", {"content": _read_content(args.content), "title": args.title,
+                         "project": args.project, "tags": args.tags, "cwd": cwd}
+    if v == "append":
+        return "append", {"relpath": args.relpath,
+                          "content": _read_content(args.content),
+                          "heading": args.heading, "project": args.project, "cwd": cwd}
+    if v == "edit":
+        return "edit", {"relpath": args.relpath,
+                        "new_content": _read_content(args.content),
+                        "project": args.project, "cwd": cwd}
+    if v == "forget":
+        return "forget", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
+    if v == "reindex":
+        return "reindex", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
+    if v == "reconcile":
+        return "reconcile", {}
+    if v == "versions":
+        return "versions", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
+    if v == "restore":
+        return "restore", {"relpath": args.relpath, "version": args.version,
+                           "project": args.project, "cwd": cwd}
+    if v == "import":
+        return "import", {"project": args.project, "cwd": cwd}
+    if v == "snapshot":
+        return "snapshot", {"message": args.message}
+    if v == "history":
+        return "history", {"relpath": args.relpath}
+    if v == "projects":
+        return "projects", {}
+    raise SystemExit(f"crib: unknown verb {v!r}")
+
+
+def _run_daemon(args: Any, cfg: Any) -> None:
+    from .client import DaemonClient
+
+    tool, call_args = _verb_call(args)
+    with DaemonClient(cfg.daemon) as client:
+        data = client.call(tool, call_args)
+    if args.cmd == "read":
+        _print_note(data, args.json)
+    elif args.cmd in ("apropos", "a"):
+        _emit_apropos(data, args.json)
+    elif args.cmd in _RAW_PRINT:
+        print(data)
+    else:
+        _emit(data, args.json)
+
+
+def _run_inprocess(args: Any) -> None:
     crib = Crib.open()
     cwd = Path.cwd()
     j = args.json
     try:
         if args.cmd in ("lookup", "search"):
             _emit(crib.lookup(args.query, args.project, args.k, args.tags, cwd=cwd), j)
+        elif args.cmd in ("apropos", "a"):
+            _emit_apropos(
+                crib.apropos(args.query, args.project, args.k, args.tags, cwd=cwd), j)
         elif args.cmd == "read":
-            print(crib.read_note(args.relpath, args.project, cwd=cwd), end="")
+            _print_note(crib.read_note(args.relpath, args.project, cwd=cwd), j)
         elif args.cmd == "locate":
             print(crib.locate(args.relpath, args.project, cwd=cwd))
         elif args.cmd == "store":
@@ -219,6 +368,38 @@ def main(argv: list[str] | None = None) -> int:
             _emit(crib.projects(), j)
     finally:
         crib.close()
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+
+    if args.mcp or args.cmd == "serve":
+        host, port = _resolve_serve_endpoint(args)
+        from .server import main as serve
+        transport = "http" if args.http else "stdio"
+        serve(transport, host, port)
+        return 0
+    if args.cmd is None:
+        build_parser().print_help()
+        return 1
+    if args.cmd == "info":
+        cmd_info(args.json)
+        return 0
+
+    from .config import Config
+    from .paths import Paths
+
+    cfg = Config.load(Paths.resolve().config_file)
+    if cfg.daemon.enabled and not args.no_daemon:
+        from . import sharedserver
+        if not sharedserver.available():
+            print("crib: daemon mode requires the 'sharedserver' binary on PATH "
+                  "(install it, set [daemon].enabled = false, or pass --no-daemon)",
+                  file=sys.stderr)
+            return 1
+        _run_daemon(args, cfg)
+    else:
+        _run_inprocess(args)
     return 0
 
 

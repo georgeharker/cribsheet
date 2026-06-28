@@ -359,6 +359,77 @@ but the **hash gate makes the second upsert a no-op**, so the worst case is
 redundant embed work, never a corrupt or divergent index. The same invariant that
 tames the writer⇄watcher race tames multi-process writers for free.
 
+### 10.2 CLI process model — the daemon is the MCP server
+
+`Crib.open()` pays a cold start every call: import chromadb, load the embedder
+weights (fastembed ONNX / torch), open the Chroma client. Shared mode (§10.1)
+keeps *Chroma* warm but reloads the *embedder* on every CLI invocation — so a
+bare `crib lookup` still takes seconds. The fix is to not open Crib at all from
+the CLI.
+
+**One warm process per machine, shared by Claude and the CLI.** The long-lived
+`crib --mcp --http` server already exists (it's what Claude talks to). The CLI
+attaches to *that same process* as an MCP client over TCP rather than opening its
+own Crib:
+
+- `[daemon]` config (`name`/`host`/`port`/`grace_period`) must match the
+  `sharedServer` registration so everyone lands on the same process. Default
+  endpoint `http://127.0.0.1:7732/mcp`, name `cribsheet`.
+- Each verb: `sharedserver use <name> --grace-period <g> -- crib --mcp --http …`
+  (reuse-or-start) → MCP `call_tool` → `sharedserver unuse <name>`. Refcount +
+  grace keep it warm between calls; dead-client detection reaps a crashed CLI.
+- This layers cleanly over §10.1: the daemon holds the Chroma refcount for its
+  whole life; the CLI holds a daemon refcount for one command + grace.
+
+**Why this is also more correct.** Centralizing every write in one process makes
+the §4 per-path locks authoritative again (no cross-process write races, only the
+hash-gate safety net), and guarantees exactly one file watcher.
+
+**cwd travels with the call.** Project/`.crib` resolution depends on the caller's
+working directory, which the daemon doesn't share. So cwd-dependent MCP tools
+take an optional `cwd`; the CLI sends `str(Path.cwd())` and the daemon resolves
+`.crib`/project against it — making the daemon path behave identically to
+in-process.
+
+**Escape hatch.** `--no-daemon` (or `[daemon].enabled = false`) runs the verb
+in-process via `Crib.open()` — the path tests and library callers use. Daemon
+mode requires the `sharedserver` binary; absent it, the CLI errors with a hint
+rather than silently forking an unmanaged process.
+
+**Human vs machine output.** Verbs take `--json` for scripting (structured tool
+results, verbatim). Without it, output is formatted for humans; `read` renders
+note markdown through the vendored rich pipeline (`crib/render`, §from zsh-ai)
+when stdout is a tty, and falls back to raw bytes when piped.
+
+### 10.3 Retrieval — hybrid dense ⊕ BM25, fused by RRF
+
+Dense (vector) retrieval nails paraphrase but underweights *exact terms*, so a
+terse keyword query ("restart server") can rank vaguely-on-topic prose above the
+section that literally documents the command. Measured on real imported docs:
+dense-only put an unrelated "Step 6: Verify" section at rank 1 and the actual
+`:MCPRestartServer` command table at rank 3; hybrid promoted the command table to
+rank 1 and dropped the false positive to rank 5.
+
+**Fusion = Reciprocal Rank Fusion** (`crib/retrieve.py`). Dense cosine (~0–1) and
+BM25 (unbounded, corpus-dependent) are not on comparable scales, so we fuse by
+*rank*, not score: `score(d) = Σ 1/(K + rank_d)` across the two ranked lists,
+`K = rrf_k` (canonical 60). Scale-free, parameter-light, and order-only — the
+alternative (normalize each list then weight-sum) needs per-query normalization
+and a tuned α, which RRF sidesteps.
+
+- **Dense list**: the existing vector query, widened to `max(k*3, 30)` candidates
+  so BM25 can promote items dense ranked low.
+- **Sparse list**: an in-process Okapi BM25 over the project's chunk documents
+  (`store.get_docs`), rebuilt per query — fine at personal scale; a cached,
+  write-invalidated index is the obvious scale-up.
+- The fused order drives ranking, but each hit still shows its **cosine** (a
+  BM25-only finalist's cosine is filled by re-embedding just that handful), so the
+  displayed score is intentionally non-monotonic down the list — the visible
+  fingerprint of fusion.
+
+Config `[retrieve]`: `hybrid` (default on) and `rrf_k`. `hybrid = false` restores
+pure dense. No reindex needed — this is read-path only.
+
 ---
 
 ## 11. Resolved decisions & remaining open items
