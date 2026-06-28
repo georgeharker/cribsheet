@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from . import notes
+from .chunk import section_line_map
 from .config import Config, CribLink, ProjectConfig, resolve_project
 from .embed import build_embedder
 from .gitbacking import GitBacking
@@ -39,6 +40,8 @@ class LookupHit:
     title: str
     snippet: str
     score: float
+    line_start: int | None = None   # 1-based span of the section in the file,
+    line_end: int | None = None     # resolved against current disk (None if gone)
 
 
 class Crib:
@@ -233,6 +236,7 @@ class Crib:
         where: dict[str, Any] = {"project": proj}
         raw = self.store.query(vec, k=k * 3 if dedupe_by_file else k, where=where)
         hits, seen = [], set()
+        line_maps: dict[str, dict[str, tuple[int, int]]] = {}
         for h in raw:
             if h.score <= min_score:        # drop orthogonal / irrelevant matches
                 continue
@@ -243,12 +247,21 @@ class Crib:
             if tags and not (set(tags) & set(
                     filter(None, (h.metadata.get("tags") or "").split(",")))):
                 continue
+            heading = h.metadata.get("heading_path", "")
+            if rp not in line_maps:         # read each file once, current on disk
+                try:
+                    line_maps[rp] = section_line_map(self.abspath(proj, rp).read_text())
+                except OSError:
+                    line_maps[rp] = {}
+            span = line_maps[rp].get(heading)
             hits.append(LookupHit(
                 project=proj, relpath=rp,
-                heading=h.metadata.get("heading_path", ""),
+                heading=heading,
                 title=h.metadata.get("title", ""),
                 snippet=h.document[:280],
                 score=round(h.score, 4),
+                line_start=span[0] if span else None,
+                line_end=span[1] if span else None,
             ))
             if len(hits) >= k:
                 break

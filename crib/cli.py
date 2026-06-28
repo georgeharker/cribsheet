@@ -44,9 +44,10 @@ def _emit_human(obj: Any) -> None:
 def _emit_human_one(item: Any) -> None:
     from .app import LookupHit
     if isinstance(item, LookupHit):
+        loc = f":{item.line_start}-{item.line_end}" if item.line_start else ""
         head = f"  {item.heading}" if item.heading else ""
         first = item.snippet.splitlines()[0][:100] if item.snippet else ""
-        print(f"[{item.score:.3f}] {item.relpath}{head}\n    {first}")
+        print(f"[{item.score:.3f}] {item.relpath}{loc}{head}\n    {first}")
     elif isinstance(item, dict):
         print("  ".join(f"{k}={v}" for k, v in item.items()))
     else:

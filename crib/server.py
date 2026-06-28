@@ -16,17 +16,35 @@ def build_server(crib: Crib | None = None):
     from fastmcp import FastMCP  # lazy
 
     crib = crib or Crib.open()
-    mcp = FastMCP("cribsheet")
+    mcp = FastMCP(
+        "cribsheet",
+        instructions=(
+            "Long-term markdown memory that persists across sessions. "
+            "Before answering questions about this project — a past "
+            "decision, convention, gotcha, or prior investigation — call "
+            "`lookup` first; the answer may already be stored. When the "
+            "user shares something worth remembering across sessions (a "
+            "decision, preference, convention, gotcha, or hard-won fact), "
+            "persist it: `store` a new note, or `append`/`edit` an "
+            "existing one found via `lookup`. Prefer updating an existing "
+            "note over creating near-duplicates."
+        ),
+    )
 
     @mcp.tool()
     def lookup(query: str, project: str | None = None, k: int = 8,
                tags: list[str] | None = None) -> list[dict[str, Any]]:
-        """Semantic search over memory. Returns ranked note sections."""
+        """Semantic search over memory. Call this FIRST when the user asks
+        about this project — a prior decision, convention, or investigation
+        may already be stored. Returns ranked note sections, each with its
+        relpath and the line_start/line_end span of the matching section so
+        you can jump straight to it (pair with `locate` for the abspath)."""
         return [vars(h) for h in crib.lookup(query, project, k, tags)]
 
     @mcp.tool()
     def read(relpath: str, project: str | None = None) -> str:
-        """Read a note's full raw markdown (frontmatter + body)."""
+        """Read a note's full raw markdown (frontmatter + body) — e.g. to see a
+        `lookup` hit in full context, or before rewriting the note with `edit`."""
         return crib.read_note(relpath, project)
 
     @mcp.tool()
@@ -40,25 +58,34 @@ def build_server(crib: Crib | None = None):
     async def store(content: str, title: str | None = None,
                     project: str | None = None,
                     tags: list[str] | None = None) -> dict[str, Any]:
-        """Create a new note. Assigns an id, writes markdown, indexes it."""
+        """Persist a durable fact to memory — a decision, preference,
+        convention, gotcha, or hard-won detail worth recalling in a future
+        session. Assigns an id, writes markdown, indexes it. If a related
+        note already exists (check with `lookup`), prefer `append`/`edit`
+        over creating a near-duplicate."""
         return await crib.store_note(content, title, project, tags)
 
     @mcp.tool()
     async def append(relpath: str, content: str, heading: str | None = None,
                      project: str | None = None) -> dict[str, Any]:
-        """Append content to an existing note, optionally under a new heading."""
+        """Add to an existing note (found via `lookup`) — the right call when new
+        information extends or continues something already remembered, rather than
+        `store`-ing a near-duplicate. Optionally files it under a new heading."""
         return await crib.append_note(relpath, content, heading, project)
 
     @mcp.tool()
     async def edit(relpath: str, new_content: str,
                    project: str | None = None) -> dict[str, Any]:
-        """Replace a note's raw content (for LLM-driven rewrites)."""
+        """Rewrite a note's full content — use when remembered information has
+        changed, needs correcting, or several notes should be consolidated (read
+        it first). Frontmatter (and the note's id/history) is preserved."""
         return await crib.edit_note(relpath, new_content, project)
 
     @mcp.tool()
     async def forget(relpath: str, project: str | None = None) -> dict[str, Any]:
-        """Delete a note from disk and the index. Content is stashed to the
-        version ring first, so it stays recoverable by id."""
+        """Delete a note when its information is obsolete or wrong. Removed from
+        disk and the index, but stashed to the version ring first, so it stays
+        recoverable by id."""
         return await crib.forget(relpath, project)
 
     @mcp.tool()
@@ -91,12 +118,15 @@ def build_server(crib: Crib | None = None):
 
     @mcp.tool(name="import")
     async def import_docs(project: str | None = None) -> dict[str, Any]:
-        """Ingest local docs declared in the nearest `.crib` into a project."""
+        """Ingest local docs declared in the nearest `.crib` into a project — a
+        one-way pull (source wins, note ids/history preserved), safe to re-run as
+        the source repo's docs change."""
         return await crib.import_docs(project)
 
     @mcp.tool()
     def projects() -> list[str]:
-        """List crib projects."""
+        """List crib projects (separate memory namespaces). Use to discover
+        what's available before a `lookup`/`store` in a specific project."""
         return crib.projects()
 
     return mcp

@@ -104,3 +104,50 @@ def chunk_note(project: str, relpath: str, note_id: str, body: str) -> list[Chun
         for i, win in enumerate(_window(text)):
             chunks.append(Chunk(project, relpath, note_id, heading_path, i, win))
     return chunks
+
+
+def section_line_map(text: str) -> dict[str, tuple[int, int]]:
+    """Map each section's heading_path key -> (start_line, end_line) as 1-based
+    file lines, computed from the raw file on disk (frontmatter skipped).
+
+    Keys are "/".join(heading_path) — the same value stored in chunk metadata —
+    so a lookup hit resolves to its span in the *current* file. Computed at query
+    time rather than indexed, so the lines never go stale when edits above a
+    section shift it (the hash gate leaves such chunks untouched). The start line
+    is the heading itself (or the first body line for the pre-heading section);
+    the end is the line before the next heading. A long, windowed section reports
+    one span for all its windows — its full extent.
+    """
+    lines = text.splitlines()
+    start = 0
+    if lines and lines[0].strip() == "---":           # skip YAML frontmatter
+        for j in range(1, len(lines)):
+            if lines[j].strip() == "---":
+                start = j + 1
+                break
+
+    out: dict[str, tuple[int, int]] = {}
+    stack: list[tuple[int, str]] = []
+    key = ""                       # the pre-heading section
+    sec_start = start              # 0-based line where the current section opens
+    has_content = False
+
+    def close(end_idx: int) -> None:
+        if has_content and key not in out and end_idx >= sec_start:
+            out[key] = (sec_start + 1, end_idx + 1)
+
+    for idx in range(start, len(lines)):
+        m = _HEADING.match(lines[idx])
+        if m:
+            close(idx - 1)
+            level = len(m.group(1))
+            while stack and stack[-1][0] >= level:
+                stack.pop()
+            stack.append((level, m.group(2).strip()))
+            key = "/".join(t for _, t in stack)
+            sec_start = idx
+            has_content = True     # the heading line itself anchors the section
+        elif lines[idx].strip():
+            has_content = True
+    close(len(lines) - 1)
+    return out
