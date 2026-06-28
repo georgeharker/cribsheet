@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="cribsheet-logo@2x.png" alt="cribsheet logo" width="200">
+  <img src="cribsheet-logo-v2@2x.png" alt="cribsheet logo" width="200">
 </p>
 
 <h1 align="center">cribsheet</h1>
