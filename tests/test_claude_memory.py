@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import sys
 from pathlib import Path
 
 import pytest
@@ -16,38 +15,28 @@ from crib.store import InMemoryStore
 
 
 def test_munge_matches_harness_rule():
-    # the harness encodes its getcwd launch path with every '/' and '.' -> '-'.
-    # Assert against each platform's NATIVE project root (which resolve()s
-    # transparently): /home is a Linux notion; on macOS real projects live under
-    # /Users, and /home would hit an autofs mount instead.
-    root = "/Users/u" if sys.platform == "darwin" else "/home/u"
-    flat = root.replace("/", "-")
-    assert claudemem.munge(Path(f"{root}/Development/cribsheet")) == \
-        f"{flat}-Development-cribsheet"
-    assert claudemem.munge(Path(f"{root}/.cache/x")) == f"{flat}--cache-x"
+    # the harness encodes its launch path with every '/' and '.' -> '-'. Holds on
+    # both OSes: on macOS the firmlink strip turns realpath's /System/Volumes/Data
+    # /home back into /home, so we don't pick up the volume prefix.
+    assert claudemem.munge(Path("/home/u/Development/cribsheet")) == \
+        "-home-u-Development-cribsheet"
+    assert claudemem.munge(Path("/home/u/.cache/x")) == "-home-u--cache-x"
 
 
-def test_munge_refuses_home_on_macos(monkeypatch):
-    # /home is a Linux home root; on macOS it's an autofs mount, never a project
-    # root — munge must refuse it rather than name a dir the harness never made.
-    monkeypatch.setattr(claudemem.sys, "platform", "darwin")
-    with pytest.raises(ValueError, match="/home"):
-        claudemem.munge(Path("/home/u/proj"))
-    assert claudemem.munge(Path("/Users/u/proj")) == "-Users-u-proj"  # /Users is fine
+def test_resolve_follows_symlinks(tmp_path):
+    # symlinks ARE resolved (matching the harness's getcwd)
+    target = tmp_path / "real"; target.mkdir()
+    link = tmp_path / "link"; link.symlink_to(target)
+    assert claudemem.resolve_path(link) == claudemem.resolve_path(target)
 
 
-def test_munge_allows_home_off_macos(monkeypatch):
-    monkeypatch.setattr(claudemem.sys, "platform", "linux")
-    claudemem.munge(Path("/home/u/proj"))            # must not raise off-macOS
-
-
-def test_macos_home_pattern_is_boundary_safe():
-    from crib.claudemem import _MACOS_HOME
-    assert _MACOS_HOME.match("/home/u/x")                        # bare
-    assert _MACOS_HOME.match("/System/Volumes/Data/home/u/x")    # resolved form
-    assert _MACOS_HOME.match("/home")                            # exact
-    assert not _MACOS_HOME.match("/Users/u/x")
-    assert not _MACOS_HOME.match("/homestead/x")                 # word boundary
+def test_firmlink_strip_is_boundary_safe():
+    # …but the macOS Data-volume firmlink prefix is stripped, not followed
+    from crib.claudemem import _FIRMLINK
+    assert _FIRMLINK.sub("", "/System/Volumes/Data/Users/u/x") == "/Users/u/x"
+    assert _FIRMLINK.sub("", "/Users/u/x") == "/Users/u/x"            # no-op when absent
+    assert _FIRMLINK.sub("", "/System/Volumes/Database") == \
+        "/System/Volumes/Database"                                   # word-boundary safe
 
 
 def _write(p: Path, text: str) -> None:

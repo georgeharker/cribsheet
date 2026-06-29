@@ -21,9 +21,11 @@ import sys
 from pathlib import Path
 
 _MUNGE = re.compile(r"[/.]")
-# A /home path on macOS — either bare or via the autofs mount that resolve() turns
-# it into (`/System/Volumes/Data/home/…`). It's a Linux notion; munge refuses it.
-_MACOS_HOME = re.compile(r"^(?:/System/Volumes/Data)?/home(?:/|$)")
+# macOS mounts the writable Data volume at /System/Volumes/Data and firmlinks it
+# into `/`. realpath follows symlinks (good) but can also surface that firmlink
+# prefix for paths that cross it (e.g. autofs /home); the harness never shows it
+# (its roots are firmlink-transparent /Users paths), so we strip it on Darwin.
+_FIRMLINK = re.compile(r"^/System/Volumes/Data(?=/|$)")
 
 
 def hostslug() -> str:
@@ -35,35 +37,22 @@ def hostslug() -> str:
 
 
 def resolve_path(path: Path) -> Path:
-    """Canonicalize a path the way the harness names its dirs — i.e. `getcwd`
-    semantics: absolute, with symlinks resolved. The single place harness paths get
-    normalized, so `munge`, root discovery, and binding keys can't drift apart.
-
-    Deliberately platform-faithful, not platform-rewriting. Project roots differ by
-    OS — Linux uses `/home/<user>/…`; macOS uses `/Users/<user>/…` (and `/Volumes`,
-    `/private/tmp`) — but on every platform the harness uses `getcwd`, and
-    `Path.resolve()` is the same realpath machinery, so reproducing it verbatim is
-    what keeps us in agreement. On macOS the native roots are firmlinks that resolve
-    transparently (no `/System/Volumes/Data` prefix); `/home` there is an autofs
-    mount, not a project root, so we never special-case it."""
-    return Path(path).resolve()
+    """Canonicalize a path the way the harness names its dirs: expand `~` (to the
+    OS-native home — `/Users/…` on macOS, `/home/…` on Linux), then realpath so
+    **symlinks are followed** (matching the harness's `getcwd`). The one macOS
+    adjustment is to NOT follow firmlinks — strip the `/System/Volumes/Data` volume
+    prefix realpath can surface — so we stay on the `/`-rooted view the harness uses.
+    The single seam: `munge`, root discovery, and binding keys all go through here."""
+    real = str(Path(path).expanduser().resolve())
+    if sys.platform == "darwin":
+        real = _FIRMLINK.sub("", real) or "/"
+    return Path(real)
 
 
 def munge(path: Path) -> str:
-    """Encode an absolute path the way Claude Code names its project dirs.
-
-    Refuses a `/home` path on macOS. `/home` on Linux is the real user-home root;
-    on macOS it's a different thing entirely — an autofs trigger that resolve()
-    turns into `/System/Volumes/Data/home/…` — and never a project root (those live
-    under `/Users`). Munging one would only ever name a dir the harness didn't
-    create, so we fail loudly instead of silently mirroring nothing."""
-    real = str(resolve_path(path))
-    if sys.platform == "darwin" and _MACOS_HOME.match(real):
-        raise ValueError(
-            f"refusing to munge a /home path on macOS ({path} -> {real}); "
-            "/home is a Linux home root — on macOS it's an autofs mount, not a "
-            "project root (those live under /Users)")
-    return _MUNGE.sub("-", real)
+    """Encode a path the way Claude Code names its project dirs: canonicalize
+    (`resolve_path`), then collapse every `/` and `.` to `-`."""
+    return _MUNGE.sub("-", str(resolve_path(path)))
 
 
 def claude_config_dir() -> Path:
