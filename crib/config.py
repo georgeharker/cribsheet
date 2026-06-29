@@ -107,6 +107,11 @@ class Config:
     daemon: DaemonConfig = field(default_factory=DaemonConfig)
     versions_keep: int = 20
     watch: bool = True
+    # Named path roots → local absolute dirs, e.g. {"DEV": "~/Development"}.
+    # Provenance paths are stored as portable `$NAME/rest` tokens against these
+    # (HOME is always implied) so an imported note's `source_repo` reads the same
+    # on every machine instead of conflicting on the absolute prefix (DESIGN §14).
+    locations: dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def load(cls, config_file: Path) -> "Config":
@@ -132,6 +137,8 @@ class Config:
             cfg.chroma = ChromaConfig(**{**vars(cfg.chroma), **c})
         if d := data.get("daemon"):
             cfg.daemon = DaemonConfig(**{**vars(cfg.daemon), **d})
+        if loc := data.get("locations"):
+            cfg.locations = {str(k): str(v) for k, v in loc.items()}
         return cfg
 
 
@@ -181,6 +188,43 @@ class CribLink:
                     root=d,
                 )
         return None
+
+
+def _location_roots(locations: dict[str, str]) -> list[tuple[str, Path]]:
+    """Configured roots plus the built-in HOME, longest path first so a nested
+    named root (`$DEV` under `$HOME`) wins the greedy match."""
+    pairs = [(name, Path(p).expanduser()) for name, p in locations.items()]
+    pairs.append(("HOME", Path.home()))
+    return sorted(pairs, key=lambda kp: len(str(kp[1])), reverse=True)
+
+
+def portable_path(p: str | Path, locations: dict[str, str]) -> str:
+    """Rewrite an absolute path to a machine-portable `$NAME/rest` token by
+    substituting the longest matching configured location (HOME built in). Falls
+    back to the plain string when nothing matches — better a stable, if
+    non-portable, value than a crash."""
+    ap = Path(p).expanduser()
+    for name, root in _location_roots(locations):
+        try:
+            rel = ap.relative_to(root)
+        except ValueError:
+            continue
+        return f"${name}" if rel == Path(".") else f"${name}/{rel.as_posix()}"
+    return str(ap)
+
+
+def expand_location(token: str, locations: dict[str, str]) -> Path:
+    """Expand a `$NAME/rest` token back to a local absolute path. The inverse of
+    `portable_path`; an unknown name or a non-token is returned verbatim."""
+    if not token.startswith("$"):
+        return Path(token)
+    head, _, rest = token[1:].partition("/")
+    roots = {"HOME": Path.home(),
+             **{k: Path(v).expanduser() for k, v in locations.items()}}
+    root = roots.get(head)
+    if root is None:
+        return Path(token)
+    return root / rest if rest else root
 
 
 def resolve_project(

@@ -11,7 +11,9 @@ happen on write — only via these verbs.
 
 from __future__ import annotations
 
+import shlex
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -24,6 +26,16 @@ memory-bindings.json
 *.tmp
 .tmp
 """
+
+# Route every note through the frontmatter-aware merge driver (DESIGN §14): the
+# header merges deterministically (provenance never conflicts) while real body
+# conflicts still surface. Committed so it travels with the repo.
+_GITATTRIBUTES = "*.md merge=cribnote\n"
+
+# The driver itself is registered in each machine's *local* `.git/config` (git
+# config doesn't sync), so it must be (re)ensured on every machine — see
+# `_ensure_merge_driver`.
+_MERGE_DRIVER_NAME = "crib frontmatter-aware note merge"
 
 
 @dataclass
@@ -58,11 +70,38 @@ class GitBacking:
         if not gi.exists():
             gi.write_text(_GITIGNORE)
 
+    def _ensure_gitattributes(self) -> None:
+        """Ensure `*.md` routes through the cribnote merge driver (committed)."""
+        ga = self.data_dir / ".gitattributes"
+        if not ga.exists():
+            ga.write_text(_GITATTRIBUTES)
+
+    def _ensure_merge_driver(self) -> None:
+        """Register the cribnote merge driver in this machine's local git config.
+        Git config isn't synced, so every machine must do this — invoking the CLI
+        back through `python -m crib` keeps it PATH-independent."""
+        cmd = (f"{shlex.quote(sys.executable)} -m crib merge-driver "
+               "%O %A %B %P")
+        self._run("config", "merge.cribnote.name", _MERGE_DRIVER_NAME)
+        self._run("config", "merge.cribnote.driver", cmd)
+
+    def _ensure_repo_config(self) -> None:
+        """Idempotently ensure the shareable-repo scaffolding: ignore rules,
+        merge attributes (committed), and the local merge-driver registration."""
+        self._ensure_gitignore()
+        self._ensure_gitattributes()
+        self._ensure_merge_driver()
+
+    def current_remote(self) -> str | None:
+        """The configured `origin` URL, or None."""
+        r = self._run("remote", "get-url", "origin")
+        return r.stdout.strip() if r.returncode == 0 else None
+
     # --- local checkpoints -------------------------------------------------
     def snapshot(self, message: str | None = None) -> str:
         if not self.enabled:
-            return "git not enabled (data dir is not a repo; run `crib sync --remote <url>`)"
-        self._ensure_gitignore()
+            return "git not enabled (data dir is not a repo; run `crib setup --remote <url>`)"
+        self._ensure_repo_config()
         self._run("add", "-A")
         if not self._run("status", "--porcelain").stdout.strip():
             return "nothing to snapshot"
@@ -81,15 +120,18 @@ class GitBacking:
     # --- sharing across machines (DESIGN §14) ------------------------------
     def init(self, remote: str | None = None) -> str:
         """Bootstrap the data dir as a shareable repo: `git init`, write the
-        `.gitignore`, add the remote. Idempotent."""
+        `.gitignore` + `.gitattributes`, register the merge driver, add the
+        remote. Idempotent."""
         out = []
         if not self.enabled:
             self._run("init")
             out.append("initialized repo")
-        gi = self.data_dir / ".gitignore"
-        if not gi.exists():
-            gi.write_text(_GITIGNORE)
-            out.append("wrote .gitignore")
+        for f, body in ((".gitignore", _GITIGNORE), (".gitattributes", _GITATTRIBUTES)):
+            p = self.data_dir / f
+            if not p.exists():
+                p.write_text(body)
+                out.append(f"wrote {f}")
+        self._ensure_merge_driver()
         if remote:
             if self._run("remote", "get-url", "origin").returncode == 0:
                 self._run("remote", "set-url", "origin", remote)
@@ -98,6 +140,13 @@ class GitBacking:
                 self._run("remote", "add", "origin", remote)
                 out.append("added remote origin")
         return "; ".join(out) or "already initialized"
+
+    def setup(self, remote: str) -> SyncResult:
+        """New-machine onboarding: init + register the merge driver + set the
+        remote, then pull to join the shared notes. The caller reconciles the
+        index afterwards (a pull rewrote the working tree)."""
+        self.init(remote)
+        return self.pull()
 
     def _conflicts(self) -> list[str]:
         r = self._run("diff", "--name-only", "--diff-filter=U")
@@ -108,6 +157,7 @@ class GitBacking:
         the caller tells the user to resolve them manually, then re-run."""
         if not self.enabled:
             return SyncResult(False, False, False, False, [], "git not enabled")
+        self._ensure_repo_config()       # driver must be registered before the merge
         before = self._run("rev-parse", "HEAD").stdout.strip()
         # --allow-unrelated-histories lets a machine join an existing remote: the
         # two independently-init'd trees merge as a union (conflicts only on

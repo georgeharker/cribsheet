@@ -211,6 +211,11 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("snapshot", help="git checkpoint of the data tree")
     s.add_argument("-m", "--message")
 
+    s = sub.add_parser("setup",
+                       help="join the shared note repo on this machine "
+                            "(set remote + frontmatter merge driver, then pull)")
+    s.add_argument("--remote", help="git remote URL to join (prompted if omitted)")
+
     s = sub.add_parser("sync",
                        help="share notes via git: commit + pull + push, then reindex")
     s.add_argument("-m", "--message")
@@ -220,6 +225,14 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("history", help="git history for a note or the tree")
     s.add_argument("relpath", nargs="?")
+
+    # internal: invoked by git as the cribnote merge driver (DESIGN §14). No
+    # help= → kept out of the listed commands (still a valid hidden subcommand).
+    s = sub.add_parser("merge-driver")
+    s.add_argument("base")        # %O ancestor
+    s.add_argument("current")     # %A ours / output file
+    s.add_argument("other")       # %B theirs
+    s.add_argument("pathname", nargs="?")  # %P (informational)
 
     return p
 
@@ -378,11 +391,20 @@ def _run_git(args: Any, cfg: Any) -> int:
     from .gitbacking import GitBacking
     from .paths import Paths
 
-    git = GitBacking(Paths.resolve().data_dir)
-    if args.cmd == "sync" and getattr(args, "remote", None):
-        print(git.init(args.remote))
+    # setup runs on a fresh machine where the data dir may not exist yet
+    paths = Paths.resolve().ensure() if args.cmd == "setup" else Paths.resolve()
+    git = GitBacking(paths.data_dir)
 
-    if args.cmd == "sync":
+    if args.cmd == "setup":
+        remote = getattr(args, "remote", None) or git.current_remote() or _prompt_remote()
+        if not remote:
+            print("crib setup: no remote given (pass --remote <url>)", file=sys.stderr)
+            return 1
+        print(f"joining {remote} …")
+        res = git.setup(remote)
+    elif args.cmd == "sync":
+        if getattr(args, "remote", None):
+            print(git.init(args.remote))
         res = git.sync(args.message)
     elif args.cmd == "push":
         res = git.push()
@@ -396,6 +418,16 @@ def _run_git(args: Any, cfg: Any) -> int:
         print("reindexing pulled changes…")
         print(f"  {_reconcile(cfg)}")
     return 0 if res.ok else 1
+
+
+def _prompt_remote() -> str | None:
+    """Ask for the remote URL when `setup` is run interactively without one."""
+    if not sys.stdin.isatty():
+        return None
+    try:
+        return input("Remote URL to join (git): ").strip() or None
+    except EOFError:
+        return None
 
 
 def _reconcile(cfg: Any) -> Any:
@@ -482,12 +514,16 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "info":
         cmd_info(args.json)
         return 0
+    if args.cmd == "merge-driver":
+        # git invokes this per-file during a merge — stay light, no config/daemon
+        from .merge import run_driver
+        return run_driver(args.base, args.current, args.other)
 
     from .config import Config
     from .paths import Paths
 
     cfg = Config.load(Paths.resolve().config_file)
-    if args.cmd in ("sync", "push", "pull"):
+    if args.cmd in ("setup", "sync", "push", "pull"):
         return _run_git(args, cfg)
     if cfg.daemon.enabled and not args.no_daemon:
         from . import sharedserver

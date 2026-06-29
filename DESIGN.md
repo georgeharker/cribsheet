@@ -610,16 +610,53 @@ versioning (§8) and local checkpoints (§13's `snapshot`).
 
 **Verbs (CLI-only — not MCP tools; pushing notes is outward-facing + needs
 interactive auth):**
+- `setup [--remote <url>]` — new-machine onboarding: init + write `.gitignore`/
+  `.gitattributes` + register the merge driver + set origin, then pull to join. With
+  no `--remote` it reuses an existing origin or prompts for a URL.
 - `snapshot` — local commit, no network (the "checkpoint before something risky").
 - `sync` — commit → pull → push, the everyday share op. `--remote <url>` bootstraps
-  (init + remote + `.gitignore`).
+  (init + remote + scaffolding) for the *first* machine.
 - `push` / `pull` — the halves, for asymmetric flows.
 
-**Conflicts — manual, never clever.** `pull` uses `--no-rebase
+**Conflicts — body manual, header always merges.** `pull` uses `--no-rebase
 --allow-unrelated-histories` (so a machine can *join* an existing remote: the two
-independently-init'd trees merge as a union). On a real conflict it stops, lists the
-files, and tells the user to resolve them in the data dir and re-run — no auto-merge.
-Markdown is line-based and notes are small, so genuine conflicts are rare.
+independently-init'd trees merge). The split between what surfaces and what doesn't is
+field-aware, via a custom git merge driver (`merge=cribnote`, see below):
+- a divergence confined to the **frontmatter** is resolved by the driver and **never
+  surfaces** — the pull succeeds silently.
+- a divergence in the **body** keeps git's `<<<<<<<` markers and the file stays
+  unmerged, so `pull` stops and lists it for the user — *but the header is already
+  merged clean in that same file*, so they only settle the prose.
+
+Three layers make that hold:
+- **Don't diverge in the first place.** Derived-note provenance is built to be
+  byte-identical across machines: `id` is *derived* from the target path
+  (`util.derived_ulid`) not a per-machine random ULID; `source_repo` is a portable
+  `$LOCATION/rest` token (below) not an absolute path; `imported` is pinned to
+  first-import. Same source → identical bytes → no merge needed at all.
+- **The merge driver** (`crib merge-driver`, invoked by git per file). It splits each
+  side into (frontmatter, body): the header is unioned with a *symmetric*, base-aware
+  3-way resolve (agree → take it; one side unchanged → take the other; both changed →
+  deterministic pick, which for `id`/dates is the lexical-min = earliest/first-import)
+  so it can never conflict and both machines land on identical bytes; the body is a
+  plain `git merge-file` 3-way. It writes the merged header + body to the working file
+  and exits 0 (clean → git marks resolved) or 1 (body conflict → git leaves it
+  unmerged). Registered in each machine's *local* `.git/config` (config isn't synced)
+  via `python -m crib`, re-ensured on every `setup`/`snapshot`/`sync`/`pull`; the
+  `*.md merge=cribnote` attribute is committed in `.gitattributes`.
+- **`notes.heal_file`** — a safety net for repos merged *without* the driver (cloned
+  by hand, never `crib setup`, or a botched manual resolution that left duplicate
+  keys, which `yaml.safe_load` silently mis-reads). `reindex`/`index_file` runs it
+  before loading: duplicate top-level keys collapse to the same order-independent
+  resolution as the driver, so legacy-corrupted notes heal on the next reconcile.
+
+**Portable paths (`$LOCATION`).** A `[locations]` table in `config.toml` maps names
+to local dirs (`DEV = "~/Development"`); `HOME` is always implied. `config.portable_path`
+rewrites an absolute provenance path to the longest-matching `$NAME/rest` token, and
+`expand_location` resolves it back against the *local* map. So `source_repo` reads the
+same on every machine even when the repo lives at a different absolute path
+(`/Users/geo/...` vs `/home/geo/...`) — the in-band counterpart to gitignoring the
+absolute paths in `memory-bindings.json`.
 
 **The index must follow git.** A pull rewrites note files on disk, so after any pull
 that changed files the CLI triggers `reconcile` (hash-gated) — via the warm daemon if

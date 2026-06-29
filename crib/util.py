@@ -31,6 +31,24 @@ def new_ulid() -> str:
     ts = int(time.time() * 1000) & ((1 << 48) - 1)
     rnd = int.from_bytes(os.urandom(10), "big")  # 80 bits
     value = (ts << 80) | rnd
+    return _b32(value)
+
+
+def derived_ulid(*parts: str) -> str:
+    """A deterministic, ULID-shaped id from a stable key (Crockford base32).
+
+    Same key → same id on every machine, so *derived* notes (imported docs,
+    mirrored memory) don't fork identity across a git sync: both machines stamp
+    the byte-identical id instead of two independent random ULIDs that collide on
+    the same path (DESIGN §14). Not time-ordered — that property is irrelevant for
+    content whose identity is its source, not its creation moment.
+    """
+    digest = hashlib.sha1("\x00".join(parts).encode("utf-8")).digest()
+    return _b32(int.from_bytes(digest[:16], "big"))  # 128 bits
+
+
+def _b32(value: int) -> str:
+    """Low 130 bits of `value` as 26 Crockford base32 chars (ULID encoding)."""
     chars = []
     for _ in range(26):
         chars.append(_CROCKFORD[value & 0x1F])

@@ -27,7 +27,8 @@ external edits), `import` of a repo's local docs via `.crib`, shared Chroma via
 - **`apropos`** — like `lookup` but renders the full matching sections.
 - **Harness-memory mirror** — `import-memory` mirrors Claude Code's own
   `memory/*.md` into a crib project (host-namespaced) and live-syncs it. (§13)
-- **Git sync** — `sync`/`push`/`pull` share notes across machines. (§14)
+- **Git sync** — `setup`/`sync`/`push`/`pull` share notes across machines, with a
+  frontmatter-aware merge driver so provenance never conflicts. (§14)
 
 It runs with **zero heavy dependencies** — only PyYAML — using a dependency-free
 hash embedder and a persistent JSON store. Install the real backends
@@ -65,11 +66,12 @@ crib --json lookup "..." -p notes | jq               # scriptable (--json before
 crib info                                            # paths, backends, daemon/chunk/retrieve
 crib import                                          # ingest a repo's docs via .crib
 crib import-memory                                   # mirror Claude's harness memory (§13)
+crib setup --remote git@host:notes.git               # join the shared repo on a new machine (§14)
 crib sync                                            # share notes across machines via git (§14)
 ```
 Verbs: `lookup`/`search` (`-a` renders), `apropos`/`a`, `read`, `locate`,
 `store`, `append`, `edit`, `reindex`, `reconcile`, `versions`, `restore`,
-`import`, `import-memory`, `snapshot`, `sync`/`push`/`pull`, `history`,
+`import`, `import-memory`, `setup`, `snapshot`, `sync`/`push`/`pull`, `history`,
 `projects`, `info`.
 
 By default a verb attaches to the **warm daemon** (one process shared with the
@@ -130,6 +132,30 @@ are CLI-only — pushing notes is outward-facing and needs interactive auth.)
   `crib/memmirror.py`)
 - **Two-layer versioning + git sync** — automatic per-write ring + git snapshots,
   shareable across machines. (`crib/versions.py`, `crib/gitbacking.py`)
+- **Frontmatter-aware merge** — a `merge=cribnote` git driver resolves note
+  *headers* deterministically (provenance never conflicts) while genuine *body*
+  conflicts still surface, header already merged. (`crib/merge.py`)
+
+## Sharing notes across machines (§14)
+
+The data dir is a git repo with a remote; notes sync via plain git.
+
+```bash
+# first machine — create the shared repo and push
+crib sync --remote git@host:notes.git
+
+# every other machine — join it
+crib setup --remote git@host:notes.git    # init + merge driver + pull
+crib sync                                  # thereafter: commit + pull + push
+```
+
+Derived-note provenance is built to *not* conflict: each note's `id` is derived
+from its path (not a per-machine random id), `source_repo` is stored as a portable
+`$LOCATION/rest` token (see `[locations]`), and `imported` is pinned to
+first-import. Anything that still diverges is settled by the `cribnote` merge
+driver — a header-only difference resolves silently; a body difference stops the
+pull and is listed for you to resolve, with the header already merged clean. (`crib
+setup` registers the driver per machine; git config doesn't travel with the repo.)
 
 ## Config
 
@@ -161,6 +187,9 @@ watch = true              # daemon live-mirrors bound harness memory dirs (§13)
 
 [chroma]
 mode = "embedded"         # "embedded" | "shared" | "json"
+
+[locations]              # named path roots → portable $LOCATION tokens (§14)
+DEV = "~/Development"     # provenance paths stored as $DEV/... so they sync clean
 ```
 
 ## Make Claude actually use it

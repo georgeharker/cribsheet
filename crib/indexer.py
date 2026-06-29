@@ -61,6 +61,7 @@ class IndexEngine:
             return IndexResult(relpath, changed=bool(existing), upserted=0,
                                deleted=len(existing))
 
+        notes.heal_file(path)               # self-heal merge-duplicated frontmatter (§14)
         note = notes.load(path)
         if notes.ensure_id(note):           # assign + persist a stable id
             notes.save_atomic(note)

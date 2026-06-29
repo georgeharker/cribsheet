@@ -46,6 +46,9 @@ def test_init_writes_gitignore_and_remote(tmp_path, remote):
     assert "memory-bindings.json" in (g.data_dir / ".gitignore").read_text()
     assert ".versions" not in (g.data_dir / ".gitignore").read_text()  # ring IS synced
     assert "origin" in git(g.data_dir, "remote")
+    # the frontmatter merge driver is wired up (committed attribute + local config)
+    assert "merge=cribnote" in (g.data_dir / ".gitattributes").read_text()
+    assert "merge-driver" in git(g.data_dir, "config", "merge.cribnote.driver")
 
 
 def test_sync_round_trips_between_two_machines(tmp_path, remote):
@@ -75,6 +78,50 @@ def test_pull_reports_conflicts_without_pushing(tmp_path, remote):
     assert any(c.endswith("x.md") for c in res.conflicts)
     assert not res.pushed                # must not push a conflicted tree
     assert "resolve" in res.message.lower()
+
+
+def _imported_note(g: GitBacking, name: str, repo: str, date: str, body: str) -> None:
+    fm = (f"---\nid: 01ABC\nsource: imported\nsource_repo: {repo}\n"
+          f"source_path: docs/{name}\nimported: '{date}'\n---\n\n")
+    _note(g, name, fm + body)
+
+
+def test_frontmatter_only_conflict_auto_resolves(tmp_path, remote):
+    # two machines import the same doc with machine-local provenance, identical
+    # body → the merge driver resolves the header and the pull NEVER surfaces it
+    a = _machine(tmp_path, "a", remote)
+    _imported_note(a, "x.md", "$HOME/a", "2026-06-27", "Same body.\n")
+    a.sync()
+
+    b = _machine(tmp_path, "b", remote)
+    _imported_note(b, "x.md", "$HOME/b", "2026-06-28", "Same body.\n")
+    res = b.sync("b import")
+
+    assert res.ok and not res.conflicts          # header-only divergence is silent
+    merged = (b.data_dir / "projects/default/notes/x.md").read_text()
+    assert "<<<<<<<" not in merged
+    assert merged.count("imported:") == 1         # one clean header, no duplicates
+    assert "2026-06-27" in merged                 # earliest (first-import) survived
+
+
+def test_body_conflict_surfaces_but_header_is_healed(tmp_path, remote):
+    a = _machine(tmp_path, "a", remote)
+    _imported_note(a, "x.md", "$HOME/a", "2026-06-27", "Base body.\n")
+    a.sync()
+    b = _machine(tmp_path, "b", remote)
+    b.sync()                                      # both share the note
+
+    _imported_note(a, "x.md", "$HOME/a", "2026-06-27", "Machine A's rewrite.\n")
+    a.sync()
+    _imported_note(b, "x.md", "$HOME/b", "2026-06-28", "Machine B's rewrite.\n")
+    res = b.sync("b edit")
+
+    assert not res.ok                             # divergent body IS surfaced
+    assert any(c.endswith("x.md") for c in res.conflicts)
+    conflicted = (b.data_dir / "projects/default/notes/x.md").read_text()
+    assert "<<<<<<<" in conflicted                # body markers for the user
+    head = conflicted.split("---")[1]             # …but the header is already merged
+    assert head.count("imported:") == 1
 
 
 def test_memory_bindings_is_gitignored(tmp_path, remote):

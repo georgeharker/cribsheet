@@ -17,13 +17,15 @@ from typing import Any, Callable
 from . import claudemem, notes
 from .chunk import section_line_map
 from .claudemem import MemoryBindings
-from .config import Config, CribLink, ProjectConfig, resolve_project
+from .config import (Config, CribLink, ProjectConfig, portable_path,
+                     resolve_project)
 from .embed import build_embedder
 from .gitbacking import GitBacking
 from .indexer import IndexEngine, IndexResult
 from .notes import Note
 from .paths import Paths
 from .store import Hit, InMemoryStore, Store
+from .util import derived_ulid
 from .versions import VersionRing
 from .watch import Watcher
 
@@ -489,16 +491,23 @@ class Crib:
                 rel_to_repo = src.relative_to(link.root)
                 relpath = f"{into}{rel_to_repo.as_posix()}"
                 sfm, sbody = notes.parse(src.read_text())
+                tgt = self.abspath(proj, relpath)
+                prev = notes.load(tgt) if tgt.exists() else None
                 fm = dict(sfm)
+                # Provenance built to be byte-identical across machines, so a
+                # git sync never conflicts on it (DESIGN §14): id derived from the
+                # target path (not a per-machine random ULID), source_repo stored
+                # as a portable $LOCATION token (not an absolute path), and the
+                # import date pinned to first-import (preserved across re-pulls).
                 fm.update({
                     "source": "imported",
-                    "source_repo": str(link.root),
+                    "source_repo": portable_path(link.root, self.config.locations),
                     "source_path": rel_to_repo.as_posix(),
-                    "imported": today,
+                    "imported": (prev.frontmatter.get("imported") if prev else None)
+                                or today,
                 })
-                tgt = self.abspath(proj, relpath)
-                if tgt.exists() and (ex := notes.load(tgt)).id:
-                    fm = {"id": ex.id, **fm}   # keep identity across re-imports
+                note_id = (prev.id if prev and prev.id else None) or derived_ulid(relpath)
+                fm = {"id": note_id, **fm}
                 note = Note(path=tgt, frontmatter=fm, body=sbody)
                 await self._write_note(proj, relpath, note)
                 imported.append(relpath)
@@ -547,10 +556,11 @@ class Crib:
                   "source_path": str(src), "memory_name": sfm.get("name"),
                   "synced": today, "tags": tags}
             tgt = self.abspath(proj, relpath)
-            if tgt.exists() and (ex := notes.load(tgt)).id:
-                fm = {"id": ex.id, **fm}        # keep identity across syncs
+            prev_id = notes.load(tgt).id if tgt.exists() else None
+            # Derived id (from the host-namespaced path) is stable across syncs,
+            # so identity/history survive without a per-machine random ULID (§14).
+            fm = {"id": prev_id or derived_ulid(relpath), **fm}
             note = Note(path=tgt, frontmatter=fm, body=sbody)
-            notes.ensure_id(note)
             note.path = tgt
             notes.save_atomic(note)             # derived: bypass the version ring
             await self.index.index_file(proj, self.notes_dir(proj), relpath)
