@@ -17,9 +17,13 @@ import json
 import os
 import re
 import socket
+import sys
 from pathlib import Path
 
 _MUNGE = re.compile(r"[/.]")
+# A /home path on macOS — either bare or via the autofs mount that resolve() turns
+# it into (`/System/Volumes/Data/home/…`). It's a Linux notion; munge refuses it.
+_MACOS_HOME = re.compile(r"^(?:/System/Volumes/Data)?/home(?:/|$)")
 
 
 def hostslug() -> str:
@@ -46,8 +50,20 @@ def resolve_path(path: Path) -> Path:
 
 
 def munge(path: Path) -> str:
-    """Encode an absolute path the way Claude Code names its project dirs."""
-    return _MUNGE.sub("-", str(resolve_path(path)))
+    """Encode an absolute path the way Claude Code names its project dirs.
+
+    Refuses a `/home` path on macOS. `/home` on Linux is the real user-home root;
+    on macOS it's a different thing entirely — an autofs trigger that resolve()
+    turns into `/System/Volumes/Data/home/…` — and never a project root (those live
+    under `/Users`). Munging one would only ever name a dir the harness didn't
+    create, so we fail loudly instead of silently mirroring nothing."""
+    real = str(resolve_path(path))
+    if sys.platform == "darwin" and _MACOS_HOME.match(real):
+        raise ValueError(
+            f"refusing to munge a /home path on macOS ({path} -> {real}); "
+            "/home is a Linux home root — on macOS it's an autofs mount, not a "
+            "project root (those live under /Users)")
+    return _MUNGE.sub("-", real)
 
 
 def claude_config_dir() -> Path:

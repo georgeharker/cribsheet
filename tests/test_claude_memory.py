@@ -27,6 +27,29 @@ def test_munge_matches_harness_rule():
     assert claudemem.munge(Path(f"{root}/.cache/x")) == f"{flat}--cache-x"
 
 
+def test_munge_refuses_home_on_macos(monkeypatch):
+    # /home is a Linux home root; on macOS it's an autofs mount, never a project
+    # root — munge must refuse it rather than name a dir the harness never made.
+    monkeypatch.setattr(claudemem.sys, "platform", "darwin")
+    with pytest.raises(ValueError, match="/home"):
+        claudemem.munge(Path("/home/u/proj"))
+    assert claudemem.munge(Path("/Users/u/proj")) == "-Users-u-proj"  # /Users is fine
+
+
+def test_munge_allows_home_off_macos(monkeypatch):
+    monkeypatch.setattr(claudemem.sys, "platform", "linux")
+    claudemem.munge(Path("/home/u/proj"))            # must not raise off-macOS
+
+
+def test_macos_home_pattern_is_boundary_safe():
+    from crib.claudemem import _MACOS_HOME
+    assert _MACOS_HOME.match("/home/u/x")                        # bare
+    assert _MACOS_HOME.match("/System/Volumes/Data/home/u/x")    # resolved form
+    assert _MACOS_HOME.match("/home")                            # exact
+    assert not _MACOS_HOME.match("/Users/u/x")
+    assert not _MACOS_HOME.match("/homestead/x")                 # word boundary
+
+
 def _write(p: Path, text: str) -> None:
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(text)
