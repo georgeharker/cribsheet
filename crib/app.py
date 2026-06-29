@@ -478,8 +478,9 @@ class Crib:
                      else {}).get("type")
             tags = list(dict.fromkeys(
                 [*(sfm.get("tags") or []), "claude-memory", *( [mtype] if mtype else [])]))
-            fm = {**sfm, "source": "claude_memory", "source_path": str(src),
-                  "memory_name": sfm.get("name"), "synced": today, "tags": tags}
+            fm = {**sfm, "source": "claude_memory", "host": claudemem.hostslug(),
+                  "source_path": str(src), "memory_name": sfm.get("name"),
+                  "synced": today, "tags": tags}
             tgt = self.abspath(proj, relpath)
             if tgt.exists() and (ex := notes.load(tgt)).id:
                 fm = {"id": ex.id, **fm}        # keep identity across syncs

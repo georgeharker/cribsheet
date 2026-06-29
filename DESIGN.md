@@ -638,7 +638,11 @@ the reindex.
   restore` working cross-machine without dropping to git.
 - `notes/claude-memory/<host>/` — mirrored harness memory, **host-namespaced** so two
   machines' memories merge instead of colliding; each machine's delete-reconcile is
-  scoped to its own host subdir (never reaps a peer's).
+  scoped to its own host subdir (never reaps a peer's). So a machine's Claude memory
+  is searchable on every synced machine — the point being that **learnings travel**.
+  Each note carries `host: <name>` provenance, and the MCP instructions tell the LLM
+  to treat the *learning* as portable while verifying machine-specific details
+  (paths, ports, install locations) locally — they may differ across machines.
 - **Gitignored:** `memory-bindings.json` (absolute repo paths — machine-specific) and
   temp files. `.gitignore` is written by `init` and ensured on every `snapshot`/`sync`
   (so a hand-created repo still excludes machine state).

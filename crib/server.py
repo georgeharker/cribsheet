@@ -41,7 +41,13 @@ def build_server(crib: Crib | None = None):
             "gotcha, or hard-won fact), also save it here so it outlives this "
             "session and reaches other agents: `store` a new note, or "
             "`append`/`edit` one found via `lookup`. Prefer updating an existing "
-            "note over creating near-duplicates."
+            "note over creating near-duplicates. "
+            "CROSS-MACHINE: some notes are mirrored from another machine's Claude "
+            "memory (frontmatter `source: claude_memory`, `host: <name>`, under "
+            "`claude-memory/<host>/`). Treat the *learning* as portable — "
+            "decisions, conventions, gotchas usually travel — but verify "
+            "machine-specific details (absolute paths, ports, hostnames, install "
+            "locations) against the local machine before relying on them."
         ),
     )
 
