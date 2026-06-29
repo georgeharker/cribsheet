@@ -48,9 +48,17 @@ class RetrieveConfig:
     """How `lookup`/`apropos` rank. `hybrid` fuses the dense vector ranking with
     a BM25 lexical ranking (reciprocal-rank fusion), which fixes terse keyword
     queries where exact-term sections lose to vaguely-on-topic prose. `rrf_k`
-    is the RRF damping constant (60 is the canonical value)."""
+    is the RRF damping constant (60 is the canonical value).
+
+    `rerank` adds a cross-encoder pass over the top `rerank_top_n` fused
+    candidates — it reads (query, passage) jointly, fixing vocabulary-divergent
+    queries that both dense and BM25 miss. Off by default: it's a model inference
+    per candidate, so it costs latency (warm in the daemon, ONNX/CPU)."""
     hybrid: bool = True
     rrf_k: int = 60
+    rerank: bool = False
+    rerank_model: str = "Xenova/ms-marco-MiniLM-L-6-v2"  # small ONNX cross-encoder
+    rerank_top_n: int = 20                               # candidate pool to rerank
 
 
 @dataclass

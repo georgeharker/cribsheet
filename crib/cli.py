@@ -135,9 +135,13 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("query"); proj(s)
     s.add_argument("-k", type=int, default=8)
     s.add_argument("--tag", action="append", dest="tags")
+    s.add_argument("-a", "--render", action="store_true",
+                   help="render each matched section as markdown (like `apropos`) "
+                        "instead of compact locator lines")
 
     s = sub.add_parser("apropos", aliases=["a"],
-                       help="semantic search, rendering each matched section")
+                       help="semantic search, rendering each full matched section "
+                            "(alias for `search --render`, fewer hits)")
     s.add_argument("query"); proj(s)
     s.add_argument("-k", type=int, default=5)
     s.add_argument("--tag", action="append", dest="tags")
@@ -215,7 +219,10 @@ def cmd_info(as_json: bool) -> None:
             "overlap_ratio": config.chunk.overlap_ratio,
             "overlap_words": config.chunk.overlap_words,
         },
-        "retrieve": {"hybrid": config.retrieve.hybrid, "rrf_k": config.retrieve.rrf_k},
+        "retrieve": {
+            "hybrid": config.retrieve.hybrid, "rrf_k": config.retrieve.rrf_k,
+            "rerank": config.retrieve.rerank, "rerank_model": config.retrieve.rerank_model,
+        },
         "chroma_mode": config.chroma.mode,
         "default_project": config.default_project,
         "daemon": {
@@ -236,7 +243,8 @@ def cmd_info(as_json: bool) -> None:
     print(f"{'chunk':18} {ck.window_words}w window, "
           f"{ck.overlap_words}w overlap ({ck.overlap_ratio:.0%})")
     rt = config.retrieve
-    print(f"{'retrieve':18} {'hybrid (dense+BM25, RRF)' if rt.hybrid else 'dense only'}")
+    rr = f" + rerank ({rt.rerank_model.split('/')[-1]})" if rt.rerank else ""
+    print(f"{'retrieve':18} {'hybrid (dense+BM25, RRF)' if rt.hybrid else 'dense only'}{rr}")
     print(f"{'daemon':18} {'on' if d.enabled else 'off'}  "
           f"http://{d.host}:{d.port}/mcp  ({d.name}, grace {d.grace_period})")
     print("backends:")
@@ -263,12 +271,13 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
     sent so the daemon resolves `.crib`/project relative to the caller."""
     cwd = str(Path.cwd())
     v = args.cmd
-    if v in ("lookup", "search"):
-        return "lookup", {"query": args.query, "project": args.project,
-                          "k": args.k, "tags": args.tags, "cwd": cwd}
-    if v in ("apropos", "a"):
-        return "apropos", {"query": args.query, "project": args.project,
-                           "k": args.k, "tags": args.tags, "cwd": cwd}
+    if v in ("lookup", "search", "apropos", "a"):
+        # `apropos`/`a`, or `search --render`, take the section-rendering path
+        # (the apropos tool returns full sections); plain `search` gets locators.
+        tool = "apropos" if (v in ("apropos", "a") or getattr(args, "render", False)) \
+            else "lookup"
+        return tool, {"query": args.query, "project": args.project,
+                      "k": args.k, "tags": args.tags, "cwd": cwd}
     if v == "read":
         return "read", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
     if v == "locate":
@@ -314,7 +323,7 @@ def _run_daemon(args: Any, cfg: Any) -> None:
         data = client.call(tool, call_args)
     if args.cmd == "read":
         _print_note(data, args.json)
-    elif args.cmd in ("apropos", "a"):
+    elif tool == "apropos":            # apropos verb, or `search --render`
         _emit_apropos(data, args.json)
     elif args.cmd in _RAW_PRINT:
         print(data)
@@ -327,9 +336,9 @@ def _run_inprocess(args: Any) -> None:
     cwd = Path.cwd()
     j = args.json
     try:
-        if args.cmd in ("lookup", "search"):
+        if args.cmd in ("lookup", "search") and not getattr(args, "render", False):
             _emit(crib.lookup(args.query, args.project, args.k, args.tags, cwd=cwd), j)
-        elif args.cmd in ("apropos", "a"):
+        elif args.cmd in ("lookup", "search", "apropos", "a"):
             _emit_apropos(
                 crib.apropos(args.query, args.project, args.k, args.tags, cwd=cwd), j)
         elif args.cmd == "read":

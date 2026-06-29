@@ -73,6 +73,80 @@ def reciprocal_rank_fusion(rankings: list[list[str]], k: int = 60) -> list[str]:
     return sorted(fused, key=lambda d: fused[d], reverse=True)
 
 
+class CrossEncoderReranker:
+    """A cross-encoder that re-scores (query, passage) pairs jointly (DESIGN
+    §10.3). Unlike the bi-encoder (which embeds query and passage independently),
+    it attends across both, so it bridges vocabulary gaps that cosine and BM25
+    both miss — the precision stage over a recall-oriented candidate set.
+
+    Wraps fastembed's ONNX `TextCrossEncoder` (CPU-pinned), lazy so the model
+    loads once and stays warm in the daemon.
+    """
+
+    def __init__(self, model_name: str) -> None:
+        from fastembed.rerank.cross_encoder import TextCrossEncoder  # lazy
+
+        try:
+            self._model = TextCrossEncoder(
+                model_name, providers=["CPUExecutionProvider"])
+        except TypeError:  # older fastembed without a providers kwarg
+            self._model = TextCrossEncoder(model_name)
+
+    def scores(self, query: str, documents: list[str]) -> list[float]:
+        """Relevance score per document (higher = more relevant). Not comparable
+        to cosine — use it to *order*, not to threshold."""
+        return [float(s) for s in self._model.rerank(query, documents)]
+
+
+class QwenReranker:
+    """Qwen3-Reranker (a causal-LM reranker) via transformers/torch.
+
+    Not a sequence-classification cross-encoder: it judges each (query, document)
+    as a yes/no question and we read the probability of "yes". Heavier than the
+    ONNX MiniLM path (a ~0.6B LM forward per pair on CPU), but a stronger judge.
+    """
+
+    _PREFIX = ("<|im_start|>system\nJudge whether the Document meets the "
+               "requirements based on the Query and the Instruct provided. Note "
+               'that the answer can only be "yes" or "no".<|im_end|>\n'
+               "<|im_start|>user\n")
+    _SUFFIX = "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+    _INSTRUCT = "Given a search query, retrieve relevant passages that answer it"
+
+    def __init__(self, model_name: str) -> None:
+        import torch
+        from transformers import AutoModelForCausalLM, AutoTokenizer  # lazy
+
+        self._torch = torch
+        self._tok = AutoTokenizer.from_pretrained(model_name, padding_side="left")
+        self._model = AutoModelForCausalLM.from_pretrained(model_name).eval()
+        self._yes = self._tok.convert_tokens_to_ids("yes")
+        self._no = self._tok.convert_tokens_to_ids("no")
+
+    def scores(self, query: str, documents: list[str]) -> list[float]:
+        torch = self._torch
+        out: list[float] = []
+        with torch.no_grad():
+            for doc in documents:
+                body = (f"<Instruct>: {self._INSTRUCT}\n<Query>: {query}\n"
+                        f"<Document>: {doc}")
+                text = self._PREFIX + body + self._SUFFIX
+                inputs = self._tok(text, return_tensors="pt", truncation=True,
+                                   max_length=2048)
+                last = self._model(**inputs).logits[0, -1]
+                pair = torch.stack([last[self._no], last[self._yes]])
+                out.append(float(torch.softmax(pair, dim=0)[1]))   # P(yes)
+        return out
+
+
+def build_reranker(model_name: str):
+    """Pick a reranker backend by model name: Qwen → transformers LM judge,
+    everything else → fastembed ONNX cross-encoder."""
+    if "qwen" in model_name.lower():
+        return QwenReranker(model_name)
+    return CrossEncoderReranker(model_name)
+
+
 class LexicalCache:
     """Per-project BM25 index, built lazily from the store and kept warm for the
     daemon's life (DESIGN §10.3). Rebuilding tokenizes the whole project corpus,

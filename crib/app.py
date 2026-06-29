@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import datetime
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
@@ -55,6 +56,7 @@ class Crib:
                                  config.chunk.overlap_words)
         self.git = GitBacking(paths.data_dir)
         self.versions = VersionRing(paths.versions_dir, config.versions_keep)
+        self._reranker: Any = None      # lazy cross-encoder, warm for the daemon
         self._watcher: Watcher | None = None
         self._on_close: Callable[[], None] | None = None
 
@@ -230,67 +232,116 @@ class Crib:
                 out.add(p)
         return out
 
-    def _retrieve(self, proj: str, query: str, vec: list[float],
-                  topn: int, hybrid: bool) -> list[Hit]:
-        """Candidate Hits in rank order. Dense-only, or dense⊕BM25 fused by RRF.
+    @property
+    def reranker(self) -> Any:
+        """Lazy reranker, built once and kept warm (daemon-resident)."""
+        if self._reranker is None:
+            from .retrieve import build_reranker
+            self._reranker = build_reranker(self.config.retrieve.rerank_model)
+        return self._reranker
 
-        Hits keep the cosine in `.score` (even reordered by fusion, so the effect
-        is visible); a BM25-only finalist's cosine is filled by re-embedding just
-        that handful of chunks."""
+    def _rerank(self, query: str, hits: list[Hit]) -> list[Hit]:
+        """Blend the cross-encoder into the ranking by RRF-fusing its order with
+        the existing fused order, rather than letting it fully reorder — so the
+        reranker is a third voter that can *promote* a better match but can't
+        single-handedly *break* a strong hybrid result on one bad judgment. Only
+        the top `rerank_top_n` are scored. Degrades to input order if unavailable."""
+        n = self.config.retrieve.rerank_top_n
+        head = hits[:n]
+        if not head:
+            return hits
+        try:
+            scores = self.reranker.scores(query, [h.document for h in head])
+        except Exception as e:  # noqa: BLE001 — reranker optional; degrade to fused order
+            print(f"[crib] reranker disabled: {e}", file=sys.stderr)
+            return hits
+        from .retrieve import reciprocal_rank_fusion
+
+        rerank_order = [head[i].id for i in sorted(
+            range(len(head)), key=lambda i: scores[i], reverse=True)]
+        fused_order = [h.id for h in hits]   # existing dense⊕BM25 RRF order
+        new_order = reciprocal_rank_fusion(
+            [fused_order, rerank_order], k=self.config.retrieve.rrf_k)
+        by_id = {h.id: h for h in hits}
+        return [by_id[i] for i in new_order]
+
+    def _retrieve(self, proj: str, query: str, vec: list[float], topn: int,
+                  hybrid: bool, rerank: bool) -> list[Hit]:
+        """Candidate Hits in rank order: dense-only or dense⊕BM25 fused by RRF,
+        then optionally cross-encoder reranked.
+
+        Hits keep the cosine in `.score` (even when reordered by fusion/rerank, so
+        the effect stays visible); a BM25-only finalist's cosine is filled by
+        re-embedding just that handful of chunks."""
         where = {"project": proj}
         dense = self.store.query(vec, k=topn, where=where)
-        if not hybrid:
-            return dense
-        from .retrieve import reciprocal_rank_fusion, tokenize
+        out = dense
+        if hybrid:
+            from .retrieve import reciprocal_rank_fusion, tokenize
 
-        ids, docs, bm25 = self.index.lexical.get(proj)   # warm per-project BM25 cache
-        if not ids:
-            return dense
-        sparse = bm25.scores(tokenize(query))
-        sparse_ranked = [ids[j] for j in sorted(
-            range(len(ids)), key=lambda j: sparse[j], reverse=True) if sparse[j] > 0][:topn]
-        dense_ranked = [h.id for h in dense]
-        fused = reciprocal_rank_fusion(
-            [dense_ranked, sparse_ranked], k=self.config.retrieve.rrf_k)[:topn]
+            ids, docs, bm25 = self.index.lexical.get(proj)   # warm per-project BM25 cache
+            if ids:
+                sparse = bm25.scores(tokenize(query))
+                sparse_ranked = [ids[j] for j in sorted(
+                    range(len(ids)), key=lambda j: sparse[j], reverse=True)
+                    if sparse[j] > 0][:topn]
+                dense_ranked = [h.id for h in dense]
+                fused = reciprocal_rank_fusion(
+                    [dense_ranked, sparse_ranked], k=self.config.retrieve.rrf_k)[:topn]
 
-        dense_by = {h.id: h for h in dense}
-        missing = [cid for cid in fused if cid not in dense_by]
-        cos: dict[str, float] = {}
-        if missing:
-            for cid, dv in zip(missing, self.embedder.embed([docs[cid][0] for cid in missing])):
-                cos[cid] = sum(a * b for a, b in zip(vec, dv))   # both L2-normalized
-        out: list[Hit] = []
-        for cid in fused:
-            if cid in dense_by:
-                out.append(dense_by[cid])
-            else:
-                doc, meta = docs[cid]
-                out.append(Hit(cid, doc, meta, round(cos.get(cid, 0.0), 4)))
+                dense_by = {h.id: h for h in dense}
+                missing = [cid for cid in fused if cid not in dense_by]
+                cos: dict[str, float] = {}
+                if missing:
+                    for cid, dv in zip(missing, self.embedder.embed(
+                            [docs[cid][0] for cid in missing])):
+                        cos[cid] = sum(a * b for a, b in zip(vec, dv))  # L2-normalized
+                out = []
+                for cid in fused:
+                    if cid in dense_by:
+                        out.append(dense_by[cid])
+                    else:
+                        doc, meta = docs[cid]
+                        out.append(Hit(cid, doc, meta, round(cos.get(cid, 0.0), 4)))
+        if rerank:
+            out = self._rerank(query, out)
         return out
 
     def lookup(self, query: str, project: str | None = None, k: int = 8,
-               tags: list[str] | None = None, dedupe_by_file: bool = True,
+               tags: list[str] | None = None, dedupe: str = "section",
                min_score: float = 0.0, cwd: Path | None = None,
-               hybrid: bool | None = None) -> list[LookupHit]:
+               hybrid: bool | None = None, rerank: bool | None = None
+               ) -> list[LookupHit]:
+        """Ranked sections matching `query`.
+
+        `dedupe` collapses duplicates: "section" (default) keeps one hit per
+        distinct heading — so a note's several relevant sections all surface, and
+        only repeated windows of the *same* section merge; "file" keeps one hit
+        per note (breadth across notes, hides a note's other sections); "none"
+        keeps every chunk. Section is right for retrieval; file suits a
+        what-notes-are-relevant overview.
+        """
         proj = self.resolve_project(project, cwd)
         vec = self.embedder.embed_query([query])[0]
         use_hybrid = self.config.retrieve.hybrid if hybrid is None else hybrid
+        use_rerank = self.config.retrieve.rerank if rerank is None else rerank
         # Hybrid pulls a wider candidate pool so BM25 can promote terms dense ranked low.
-        topn = max(k * 3, 30) if use_hybrid else (k * 3 if dedupe_by_file else k)
-        raw = self._retrieve(proj, query, vec, topn, use_hybrid)
+        topn = max(k * 3, 30) if use_hybrid else (k if dedupe == "none" else k * 3)
+        raw = self._retrieve(proj, query, vec, topn, use_hybrid, use_rerank)
         hits, seen = [], set()
         line_maps: dict[str, dict[str, tuple[int, int]]] = {}
         for h in raw:
             if h.score <= min_score:        # drop orthogonal / irrelevant matches
                 continue
-            rp = h.metadata.get("relpath", "")
-            if dedupe_by_file and rp in seen:
-                continue
-            seen.add(rp)
             if tags and not (set(tags) & set(
                     filter(None, (h.metadata.get("tags") or "").split(",")))):
                 continue
+            rp = h.metadata.get("relpath", "")
             heading = h.metadata.get("heading_path", "")
+            key = rp if dedupe == "file" else (rp, heading)
+            if dedupe != "none" and key in seen:
+                continue
+            seen.add(key)
             if rp not in line_maps:         # read each file once, current on disk
                 try:
                     line_maps[rp] = section_line_map(self.abspath(proj, rp).read_text())
@@ -313,24 +364,12 @@ class Crib:
     def apropos(self, query: str, project: str | None = None, k: int = 8,
                 tags: list[str] | None = None,
                 cwd: Path | None = None) -> list[dict[str, Any]]:
-        """Like `lookup`, but each hit carries the FULL matching section markdown
-        (sliced from the file by its line span) rather than a 280-char snippet —
-        for rendering the sections for a human to read.
-
-        Unlike `lookup`, dedupe is per *section*, not per file: several distinct
-        sections of one note (e.g. a long design doc) can all surface, which is
-        the point when you want to read the matches rather than just locate them.
-        """
+        """`lookup` (same section-level dedupe) but each hit carries the FULL
+        matching section markdown — sliced from the file by its line span — rather
+        than a 280-char snippet, for rendering the matches for a human to read."""
         proj = self.resolve_project(project, cwd)
         out: list[dict[str, Any]] = []
-        seen: set[tuple[str, str]] = set()
-        # Over-fetch with file-dedupe off, then collapse to distinct sections.
-        for h in self.lookup(query, project, max(k * 3, 12), tags,
-                             dedupe_by_file=False, cwd=cwd):
-            key = (h.relpath, h.heading)
-            if key in seen:
-                continue
-            seen.add(key)
+        for h in self.lookup(query, project, k, tags, dedupe="section", cwd=cwd):
             section = h.snippet
             if h.line_start and h.line_end:
                 try:
@@ -339,8 +378,6 @@ class Crib:
                 except OSError:
                     pass
             out.append({**vars(h), "section": section})
-            if len(out) >= k:
-                break
         return out
 
     # --- import ------------------------------------------------------------

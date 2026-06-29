@@ -438,6 +438,60 @@ and a tuned α, which RRF sidesteps.
 Config `[retrieve]`: `hybrid` (default on) and `rrf_k`. `hybrid = false` restores
 pure dense. No reindex needed — this is read-path only.
 
+### 10.4 Reranking — options, evidence, and open design
+
+An optional precision stage after fusion: re-score the top `rerank_top_n`
+candidates and blend that order back in. Off by default (`[retrieve].rerank`).
+
+**Fuse, don't replace.** The reranker's order is RRF-fused with the existing
+dense⊕BM25 order rather than overriding it — so it acts as a *third voter* that
+can promote a better match but can't break a strong hybrid result on one bad
+judgment. Measured: full-replace was a wash (2 wins / 2 regressions on the
+8-query set); fuse was a Pareto improvement (2 wins / 0 regressions). Fuse is the
+only mode shipped.
+
+**Evidence (n=8 hand-labeled queries over the mcp-companion corpus).** The win is
+in *ranking*, not recall — hybrid alone already gets the target into the top 3
+every time:
+
+| pipeline | MRR@10 | recall@3 |
+|---|---|---|
+| hybrid (dense⊕BM25⊕RRF) | 0.750 | 100% |
+| hybrid + MiniLM-L6 (fuse) | 0.875 | 100% |
+
+So the reranker's value is **consumer-dependent**: for an LLM agent reading the
+top-k (our main MCP consumer) it adds little, since recall@3 is already saturated;
+for a human reading the top hit, or any path that feeds only rank-1, the MRR lift
+(rank-2 → rank-1) is a real gain. Two "vocabulary-gap" queries (query terms absent
+from the target, e.g. credentials≠tokens) stay at rank-2 under any *small* model —
+those are what a stronger LLM judge is meant to crack (unproven as of writing).
+
+**Backend options (a tier ladder, picked by host).** `build_reranker` dispatches
+by model name:
+
+| tier | backend | mechanism | viable on | cost |
+|---|---|---|---|---|
+| `off` | — | — | anything | 0 |
+| fast | MiniLM-L6 ONNX cross-encoder (fastembed) | sequence-classification score | any CPU | sub-second, no extra dep |
+| llm-judge (local) | llama.cpp via OpenAI-compatible endpoint | **logprob yes/no**: `max_tokens=1`, read P(yes)/P(no) from `top_logprobs` (one token/passage) | Mac / accelerated host | local, no API cost |
+| llm-judge (remote) | OpenAI / Gemini-compat / Kimi (OpenAI SDK), or Anthropic | logprob (OpenAI-compatible) or **text-score** (Anthropic — no logprobs, so prompt→parse a 0–10/yes-no, costs a generation) | Pi (offload) | network + API; passages leave the box |
+
+Notes that shaped this: (1) **Qwen3-Reranker-0.6B (torch LM) is DOA on the Pi** —
+>11 min to rerank 10 passages, ~60-70s/passage; an LM judge is only viable
+remote or on an accelerated host, never Pi-CPU. (2) The clean integration seam is
+the zsh-ai provider pattern (`~/Development/zsh/zsh-ai`): an OpenAI client built
+from `endpoint`/`api_key_env` (with a `"placeholder"` key for local servers),
+adapter dispatch (`openai-compatible` | `claude_code`), and a TOML provider table
+— reuse the *client/key/config* plumbing, but supply our own one-token+logprobs
+judge call (zsh-ai's own calls are streaming chat, no logprobs). (3) OpenAI-
+compatible covers Mac-local llama.cpp *and* Pi-remote with the fast logprob path,
+so it's the lead; Anthropic-as-judge is a secondary text-score adapter.
+
+**Open: machine-aware selection.** Default rerank `off` on plain CPU, `fast` on an
+accelerated host, `llm-judge@localhost` when a local OpenAI-compatible endpoint is
+reachable — probing via `_auto_device` (embed.py) + endpoint reachability. Not yet
+built.
+
 ---
 
 ## 11. Resolved decisions & remaining open items

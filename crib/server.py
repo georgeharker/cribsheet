@@ -26,14 +26,21 @@ def build_server(crib: Crib | None = None):
     mcp = FastMCP(
         "cribsheet",
         instructions=(
-            "Long-term markdown memory that persists across sessions. "
-            "Before answering questions about this project — a past "
-            "decision, convention, gotcha, or prior investigation — call "
-            "`lookup` first; the answer may already be stored. When the "
-            "user shares something worth remembering across sessions (a "
-            "decision, preference, convention, gotcha, or hard-won fact), "
-            "persist it: `store` a new note, or `append`/`edit` an "
-            "existing one found via `lookup`. Prefer updating an existing "
+            "Shared, durable project memory: markdown notes with semantic + "
+            "keyword search, persisting across sessions and shared across "
+            "agents and tools. Use it IN ADDITION TO any built-in memory you "
+            "have, not instead of — this is the cross-session, cross-agent "
+            "store of record. "
+            "CONSULT IT any time you need information about this project or a "
+            "topic — a past decision, convention, gotcha, API detail, or prior "
+            "investigation may already be stored. Call `lookup` to find it, or "
+            "`apropos` to read the full matching sections. Do this before "
+            "answering from memory alone; the stored answer may be more current. "
+            "PERSIST what's worth keeping — whenever the user shares, or you "
+            "establish, something durable (a decision, preference, convention, "
+            "gotcha, or hard-won fact), also save it here so it outlives this "
+            "session and reaches other agents: `store` a new note, or "
+            "`append`/`edit` one found via `lookup`. Prefer updating an existing "
             "note over creating near-duplicates."
         ),
     )
