@@ -232,10 +232,16 @@ ever push edits *back* to the source repo is deliberately out of scope — see �
 
 On-demand only — **never on write** (that is exactly where a watcher feedback
 loop would form). Given a note or whole project, it reads raw markdown, runs it
-through the current LLM via **MCP sampling** with the project's `distill_prompt`,
-and writes back a compressed/normalized version with `source: distilled`. Because
-it only writes files, it flows through the same locked `index_file` — no special
-casing. Writes only when the distilled output's hash differs (thrash guard).
+through an LLM with the project's `distill_prompt`, and writes back a
+compressed/normalized version with `source: distilled`. Because it only writes
+files, it flows through the same locked `index_file` — no special casing. Writes
+only when the distilled output's hash differs (thrash guard).
+
+> **Realized on llmkit's `bridge`, not MCP sampling.** See
+> [docs/knowledge-capture.md](docs/knowledge-capture.md) — the generation layer
+> (bridge wrapper + `claude_code` no-key adapter) shared with §12's conversation
+> capture. The bridge works from the CLI/daemon/hooks where no MCP sampling client
+> exists.
 
 ---
 
@@ -523,6 +529,12 @@ built.
 ---
 
 ## 12. Future / v2 — automatic conversation summarization
+
+> **Now designed in full: [docs/knowledge-capture.md](docs/knowledge-capture.md).**
+> It resolves the hazards below via a *quarantine tier* (capture broadly as
+> `source: conversation`, down-weighted in `lookup` until promoted) and two trigger
+> paths — explicit slash commands (in-session LLM → curated) and a `SessionEnd`
+> hook (llmkit `bridge` → quarantine). The notes below are the original framing.
 
 **Goal:** automatically distill a conversation with the assistant into memory, so
 durable knowledge accrues without the user hand-authoring every note.
