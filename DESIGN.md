@@ -684,3 +684,24 @@ operations are session-scoped; `import`/`import_memory` stay cwd/repo-driven
 project does not auto-follow — the explicit `project` arg or `use_project` covers
 that intentional switch. A chat is usually one project, so sticky is the right
 default.
+
+### 15.1 Project lifecycle & curation (from dogfooding feedback)
+
+- **Creation switches; referencing doesn't.** A `store`/`import`/`move` that
+  creates a *new* project sets the session current to it (you're working there
+  now); a one-off `project` arg referencing an *existing* project does not. Every
+  write result carries `created: bool`, and the server switches the session on it.
+- **No phantom namespace.** `use_project(name)` eagerly creates the notes dir, so
+  the project is immediately real and listed by `projects()` — you're never "in" a
+  namespace that doesn't exist yet. It returns `created` (was it new).
+- **Predictable relpaths.** New notes are `<title-slug>.md`, with a numeric suffix
+  only on collision (`<slug>-2.md`). No random tail — paths are hand-referenceable.
+  Stable identity remains the frontmatter `id` (ULID), not the filename.
+- **`move`** relocates a note across projects and/or renames it, preserving `id`
+  and history (write destination, drop source, reindex both) — the curation
+  primitive that replaces store-new + forget-old.
+- **Dedup nudge.** `store` returns `similar: [...]` — existing notes whose probe
+  matches the new content above `DEDUPE_WARN_SCORE` (excluding the note itself) —
+  so near-duplicates surface at write time, backing the "prefer append/edit"
+  guidance with detection. The CLI echoes the target (`→ stored in <project>`),
+  the `created` flag, and any `⚠ similar` hits, so the destination is never silent.

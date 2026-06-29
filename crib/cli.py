@@ -98,10 +98,28 @@ def _emit_human_one(item: Any) -> None:
         head = f"  {item.heading}" if item.heading else ""
         first = item.snippet.splitlines()[0][:100] if item.snippet else ""
         print(f"[{item.score:.3f}] {item.relpath}{loc}{head}\n    {first}")
+    elif isinstance(item, dict) and ("relpath" in item or "from" in item):
+        _emit_write_result(item)
     elif isinstance(item, dict):
         print("  ".join(f"{k}={v}" for k, v in item.items()))
     else:
         print(item)
+
+
+def _emit_write_result(item: dict) -> None:
+    """Echo a write/move result so the target namespace is never silent."""
+    if "from" in item:                          # move
+        f, t = item["from"], item["to"]
+        print(f"moved  {f['project']}/{f['relpath']}  →  {t['project']}/{t['relpath']}")
+    else:                                        # store/append/edit/forget
+        proj, rel = item.get("project", "?"), item.get("relpath", "")
+        verb = "removed" if item.get("removed") else "→ stored in"
+        print(f"{verb}  {proj}/{rel}")
+    if item.get("created"):
+        print(f"  (created project '{item.get('project') or item['to']['project']}')")
+    for s in item.get("similar") or []:
+        print(f"  ⚠ similar [{s['score']:.3f}]: {s['relpath']}"
+              + (f" — {s['heading']}" if s.get("heading") else ""))
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -166,6 +184,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("forget", help="delete a note (recoverable via the ring)")
     s.add_argument("relpath"); proj(s)
+
+    s = sub.add_parser("move", help="move/rename a note across projects (keeps id)")
+    s.add_argument("relpath"); proj(s)
+    s.add_argument("--to-project", dest="to_project")
+    s.add_argument("--to-relpath", dest="to_relpath")
 
     s = sub.add_parser("reindex", help="reindex a note or whole project")
     s.add_argument("relpath", nargs="?"); proj(s)
@@ -306,6 +329,10 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
                         "project": args.project, "cwd": cwd}
     if v == "forget":
         return "forget", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
+    if v == "move":
+        return "move", {"relpath": args.relpath, "to_project": args.to_project,
+                        "to_relpath": args.to_relpath, "project": args.project,
+                        "cwd": cwd}
     if v == "reindex":
         return "reindex", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
     if v == "reconcile":
@@ -413,6 +440,10 @@ def _run_inprocess(args: Any) -> None:
                 args.relpath, _read_content(args.content), args.project, cwd=cwd)), j)
         elif args.cmd == "forget":
             _emit(asyncio.run(crib.forget(args.relpath, args.project, cwd=cwd)), j)
+        elif args.cmd == "move":
+            _emit(asyncio.run(crib.move_note(
+                args.relpath, args.to_project, args.to_relpath,
+                args.project, cwd=cwd)), j)
         elif args.cmd == "reindex":
             _emit(asyncio.run(crib.reindex(args.relpath, args.project, cwd=cwd)), j)
         elif args.cmd == "reconcile":

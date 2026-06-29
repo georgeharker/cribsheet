@@ -24,7 +24,6 @@ from .indexer import IndexEngine, IndexResult
 from .notes import Note
 from .paths import Paths
 from .store import Hit, InMemoryStore, Store
-from .util import new_ulid
 from .versions import VersionRing
 from .watch import Watcher
 
@@ -142,18 +141,81 @@ class Crib:
         return await self.index.index_file(project, self.notes_dir(project), relpath)
 
     # --- tool verbs --------------------------------------------------------
+    # near-duplicate nudge: a stored note whose probe matches an existing note
+    # this closely is flagged in the result (the descriptions preach append/edit
+    # over duplicating; this is what detects it).
+    DEDUPE_WARN_SCORE = 0.85
+
+    def project_is_new(self, proj: str) -> bool:
+        """True if `proj` has no notes dir yet (a write would create it)."""
+        return not self.paths.notes_dir(proj).exists()
+
+    def _unique_relpath(self, proj: str, slug: str) -> str:
+        """`<slug>.md`, with a numeric suffix only on collision — predictable and
+        hand-referenceable. Stable identity is the frontmatter `id`, not the path."""
+        base = self.notes_dir(proj)
+        if not (base / f"{slug}.md").exists():
+            return f"{slug}.md"
+        i = 2
+        while (base / f"{slug}-{i}.md").exists():
+            i += 1
+        return f"{slug}-{i}.md"
+
+    def _similar(self, proj: str, content: str, exclude: str) -> list[dict[str, Any]]:
+        """Near-duplicate hints for a just-stored note (excludes the note itself)."""
+        probe = content.strip().splitlines()[0][:200] if content.strip() else ""
+        if not probe:
+            return []
+        try:
+            hits = self.lookup(probe, project=proj, k=4)
+        except Exception:  # noqa: BLE001 — a nudge must never fail the store
+            return []
+        return [{"relpath": h.relpath, "heading": h.heading, "score": h.score}
+                for h in hits
+                if h.relpath != exclude and h.score >= self.DEDUPE_WARN_SCORE]
+
     async def store_note(self, content: str, title: str | None = None,
                          project: str | None = None, tags: list[str] | None = None,
                          cwd: Path | None = None) -> dict[str, Any]:
         proj = self.resolve_project(project, cwd)
+        created = self.project_is_new(proj)
         title = title or content.strip().splitlines()[0][:60] if content.strip() else "note"
-        relpath = f"{_slug(title)}-{new_ulid()[-6:].lower()}.md"
+        relpath = self._unique_relpath(proj, _slug(title))
         fm: dict[str, Any] = {"title": title, "source": "manual"}
         if tags:
             fm["tags"] = tags
         note = Note(path=self.abspath(proj, relpath), frontmatter=fm, body=content)
         res = await self._write_note(proj, relpath, note)
-        return {"project": proj, "relpath": relpath, "indexed": res.upserted}
+        return {"project": proj, "relpath": relpath, "indexed": res.upserted,
+                "created": created, "similar": self._similar(proj, content, relpath)}
+
+    async def move_note(self, relpath: str, to_project: str | None = None,
+                        to_relpath: str | None = None, project: str | None = None,
+                        cwd: Path | None = None) -> dict[str, Any]:
+        """Relocate a note across projects and/or rename it, preserving its `id`
+        (and thus version-ring history). One-way: write destination, drop source."""
+        src_proj = self.resolve_project(project, cwd)
+        dst_proj = to_project or src_proj
+        dst_relpath = to_relpath or relpath
+        src = self.abspath(src_proj, relpath)
+        if not src.exists():
+            raise ValueError(f"no such note: {relpath} in project {src_proj!r}")
+        if src_proj == dst_proj and dst_relpath == relpath:
+            raise ValueError("source and destination are the same")
+        # capture BEFORE any abspath(dst_proj) call — abspath mkdir's the notes dir
+        created = self.project_is_new(dst_proj)
+        if self.abspath(dst_proj, dst_relpath).exists():
+            raise ValueError(f"destination exists: {dst_relpath} in {dst_proj!r}")
+        note = notes.load(src)              # carries the id in frontmatter
+        dst = Note(path=self.abspath(dst_proj, dst_relpath),
+                   frontmatter=note.frontmatter, body=note.body)
+        notes.save_atomic(dst)
+        await self.index.index_file(dst_proj, self.notes_dir(dst_proj), dst_relpath)
+        src.unlink()                        # drop source + its chunks
+        await self.index.index_file(src_proj, self.notes_dir(src_proj), relpath)
+        return {"from": {"project": src_proj, "relpath": relpath},
+                "to": {"project": dst_proj, "relpath": dst_relpath},
+                "id": note.id, "created": created}
 
     async def append_note(self, relpath: str, content: str,
                           heading: str | None = None, project: str | None = None,
@@ -413,6 +475,7 @@ class Crib:
         if link is None or link.root is None:
             raise ValueError("no .crib found from cwd upward")
         proj = project or link.project
+        created = self.project_is_new(proj)
         into = link.import_into or f"imported/{link.root.name}/"
         if not into.endswith("/"):
             into += "/"
@@ -439,7 +502,8 @@ class Crib:
                 note = Note(path=tgt, frontmatter=fm, body=sbody)
                 await self._write_note(proj, relpath, note)
                 imported.append(relpath)
-        return {"project": proj, "imported": len(imported), "files": imported}
+        return {"project": proj, "imported": len(imported), "files": imported,
+                "created": created}
 
     # --- claude harness memory mirror (DESIGN §13) -------------------------
     async def import_claude_memory(self, project: str | None = None,
@@ -462,6 +526,7 @@ class Crib:
                 f"(looked under {claudemem.claude_config_dir() / 'projects'})")
         mem_dir = claudemem.harness_memory_dir(src_root)
         proj = self.resolve_project(project, cwd)
+        created = self.project_is_new(proj)
         prefix = f"claude-memory/{claudemem.hostslug()}/"
         today = datetime.date.today().isoformat()
 
@@ -494,7 +559,8 @@ class Crib:
         removed = await self._reconcile_memory_dir(proj, prefix, seen)
         self.memory_bindings.upsert(src_root, proj)
         return {"project": proj, "source": str(mem_dir),
-                "synced": len(synced), "removed": removed, "files": synced}
+                "synced": len(synced), "removed": removed, "files": synced,
+                "created": created}
 
     async def _reconcile_memory_dir(self, proj: str, prefix: str,
                                     keep: set[str]) -> int:

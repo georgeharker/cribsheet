@@ -29,6 +29,14 @@ def _project(crib: Crib, project: str | None, cwd: str | None) -> str:
         lambda c: crib.resolve_project(None, c))
 
 
+def _switch_if_created(result: dict) -> dict:
+    """Creating a project switches the session into it — referencing an existing
+    one (a one-off `project` arg) does not (DESIGN §15)."""
+    if isinstance(result, dict) and result.get("created"):
+        session_state().current_project = result.get("project")
+    return result
+
+
 def build_server(crib: Crib | None = None):
     from fastmcp import FastMCP  # lazy
 
@@ -107,7 +115,8 @@ def build_server(crib: Crib | None = None):
         session. Assigns an id, writes markdown, indexes it. If a related
         note already exists (check with `lookup`), prefer `append`/`edit`
         over creating a near-duplicate."""
-        return await crib.store_note(content, title, _project(crib, project, cwd), tags)
+        return _switch_if_created(
+            await crib.store_note(content, title, _project(crib, project, cwd), tags))
 
     @mcp.tool()
     async def append(relpath: str, content: str, heading: str | None = None,
@@ -180,7 +189,7 @@ def build_server(crib: Crib | None = None):
         """Ingest local docs declared in the nearest `.crib` into a project — a
         one-way pull (source wins, note ids/history preserved), safe to re-run as
         the source repo's docs change."""
-        return await crib.import_docs(project, cwd=_cwd(cwd))
+        return _switch_if_created(await crib.import_docs(project, cwd=_cwd(cwd)))
 
     @mcp.tool(name="import_memory")
     async def import_memory(project: str | None = None,
@@ -190,7 +199,18 @@ def build_server(crib: Crib | None = None):
         searchable here alongside everything else. One-way + idempotent; opts the
         repo into the daemon's live mirror so future memory edits sync on their
         own."""
-        return await crib.import_claude_memory(project, cwd=_cwd(cwd))
+        return _switch_if_created(
+            await crib.import_claude_memory(project, cwd=_cwd(cwd)))
+
+    @mcp.tool()
+    async def move(relpath: str, to_project: str | None = None,
+                   to_relpath: str | None = None, project: str | None = None,
+                   cwd: str | None = None) -> dict[str, Any]:
+        """Relocate a note to another project and/or rename it, preserving its id
+        and version history (the curation primitive — not store-new + forget-old).
+        `to_project` moves it across namespaces; `to_relpath` renames it."""
+        return _switch_if_created(await crib.move_note(
+            relpath, to_project, to_relpath, _project(crib, project, cwd)))
 
     @mcp.tool()
     def projects() -> list[str]:
@@ -204,9 +224,12 @@ def build_server(crib: Crib | None = None):
         target it without passing `project` each time. Sticky for the connection;
         a per-call `project` arg still overrides for that one call. Seeded
         automatically from your working directory on first use, so call this only
-        to switch."""
+        to switch. The namespace is created immediately (so it's real and listed,
+        not a phantom you're 'in' until the first write)."""
+        created = crib.project_is_new(project)
+        crib.notes_dir(project)          # eager mkdir — no phantom namespace
         session_state().current_project = project
-        return {"current_project": project}
+        return {"current_project": project, "created": created}
 
     @mcp.tool()
     def current_project(cwd: str | None = None) -> dict[str, Any]:
