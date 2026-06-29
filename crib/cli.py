@@ -25,15 +25,15 @@ def _read_content(value: str) -> str:
 
 
 def _render_markdown(text: str) -> None:
-    """Pretty-print note markdown via the vendored rich renderer (honouring
+    """Pretty-print note markdown via llmkit's rich renderer (honouring
     $CRIB_THEME_FILE). Falls back to raw text if the `render` extra
-    (rich/markdown-it) isn't installed."""
+    (llmkit[md]) isn't installed."""
     import os
     try:
         from rich.console import Console
         from rich.markdown import Markdown
 
-        from .render.cli import _load_theme
+        from llmkit.md.render.cli import _load_theme
     except Exception:  # noqa: BLE001 — render extra optional; degrade to raw
         sys.stdout.write(text)
         return

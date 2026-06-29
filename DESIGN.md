@@ -398,8 +398,9 @@ rather than silently forking an unmanaged process.
 
 **Human vs machine output.** Verbs take `--json` for scripting (structured tool
 results, verbatim). Without it, output is formatted for humans; `read` renders
-note markdown through the vendored rich pipeline (`crib/render`, §from zsh-ai)
-when stdout is a tty, and falls back to raw bytes when piped.
+note markdown through llmkit's rich pipeline (`llmkit.md.render`, the extracted
+successor to the old vendored `crib/render`, carried as the `vendor/llmkit` git
+submodule) when stdout is a tty, and falls back to raw bytes when piped.
 
 ### 10.3 Retrieval — hybrid dense ⊕ BM25, fused by RRF
 

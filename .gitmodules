@@ -1,0 +1,3 @@
+[submodule "vendor/llmkit"]
+	path = vendor/llmkit
+	url = git@github.com:georgeharker/llmkit.git

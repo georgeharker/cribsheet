@@ -42,9 +42,11 @@ Section refs (§) point at `DESIGN.md`.
 
 **Dev (editable, local venv):**
 ```bash
+git submodule update --init      # vendor/llmkit — markdown rendering (the `render` extra)
 python -m venv .venv && . .venv/bin/activate
 pip install -e .                 # core only (PyYAML)
-pip install -e '.[full]'         # + chroma, sentence-transformers, fastmcp, watchdog
+pip install -e ./vendor/llmkit   # llmkit isn't on PyPI; uv users can skip (uv.sources handles it)
+pip install -e '.[full]'         # + chroma, sentence-transformers, fastmcp, watchdog, render
 ```
 
 **Daily driver (global `crib` on PATH)** — `pipx` keeps the heavy deps isolated:
