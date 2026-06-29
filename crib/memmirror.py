@@ -86,14 +86,14 @@ class MemoryMirror:
             root = Path(b["root"])
             mem = claudemem.harness_memory_dir(root)
             if mem.is_dir():
-                self._watched[str(mem.resolve())] = (root, b["project"])
+                self._watched[str(claudemem.resolve_path(mem))] = (root, b["project"])
                 dirs.append(mem)
         return dirs
 
     def _match(self, raw_path: str) -> tuple[Path, str] | None:
         if not raw_path.endswith(".md") or Path(raw_path).name == "MEMORY.md":
             return None
-        parent = str(Path(raw_path).resolve().parent)
+        parent = str(claudemem.resolve_path(Path(raw_path)).parent)
         return self._watched.get(parent)
 
     def _schedule(self, binding: tuple[Path, str]) -> None:

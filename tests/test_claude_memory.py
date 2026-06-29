@@ -15,10 +15,27 @@ from crib.store import InMemoryStore
 
 
 def test_munge_matches_harness_rule():
-    # both '/' and '.' collapse to '-' (the observed Claude Code encoding)
+    # both '/' and '.' collapse to '-' (the observed Claude Code encoding). On
+    # macOS resolve_path drops the Data-volume firmlink prefix, so this holds
+    # cross-platform rather than picking up `/System/Volumes/Data`.
     assert claudemem.munge(Path("/home/u/Development/cribsheet")) == \
         "-home-u-Development-cribsheet"
     assert claudemem.munge(Path("/home/u/.cache/x")) == "-home-u--cache-x"
+
+
+def test_data_volume_strip_is_boundary_safe():
+    # the firmlink transform, asserted directly so it holds on any host
+    from crib.claudemem import _DATA_VOLUME
+    assert _DATA_VOLUME.sub("", "/System/Volumes/Data/Users/u/x") == "/Users/u/x"
+    assert _DATA_VOLUME.sub("", "/Users/u/x") == "/Users/u/x"           # no-op when absent
+    assert _DATA_VOLUME.sub("", "/System/Volumes/Database") == \
+        "/System/Volumes/Database"                                      # word-boundary safe
+
+
+def test_resolve_path_is_idempotent(tmp_path):
+    once = claudemem.resolve_path(tmp_path)
+    assert claudemem.resolve_path(once) == once
+    assert claudemem.munge(once) == claudemem.munge(tmp_path)
 
 
 def _write(p: Path, text: str) -> None:
