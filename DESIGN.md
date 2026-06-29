@@ -651,3 +651,36 @@ the reindex.
 use the same name on every machine. Since `.crib` travels in the code repo, resolved
 names line up automatically; `default` is a shared bucket by definition. Keep `.crib`
 project names consistent or a project forks into two dirs.
+
+---
+
+## 15. Per-connection session scope (current project)
+
+One warm daemon serves many connections; rather than re-resolve the project from
+`cwd` on every call, each connection carries a **current project** in a session
+table — the svg-mcp pattern. A chat session lands in its project once and stays
+there; calls omit `project`/`cwd` thereafter.
+
+**The table.** `WeakKeyDictionary[ServerSession, SessionState]` (`crib/session.py`),
+keyed by the MCP `ServerSession` *object* obtained via fastmcp
+`get_context().session`. MCP exposes no session-close hook, so cleanup is by GC:
+when the connection ends and the session object is collected, its entry is
+released — no hooks, no TTL. Non-request contexts (the in-process CLI, tests)
+fall back to a shared default state, so the path degrades to plain cwd seeding.
+
+**Resolution precedence** (per call, in `server.py._project`):
+1. explicit `project` arg — one-off override; does **not** change the session.
+2. the session's current project — sticky once set.
+3. seed lazily from `resolve_project(cwd)` (cwd → `.crib` → `default`) and stick it.
+
+So behavior is unchanged for a stateless caller (the CLI opens a fresh connection
+per verb and seeds from its `cwd` each time), while a long-lived client (Claude's
+chat) seeds once and reuses it across the whole session. `use_project(name)`
+switches the session deliberately; `current_project()` reports it. Only note
+operations are session-scoped; `import`/`import_memory` stay cwd/repo-driven
+(they're about a specific source, not the ambient project).
+
+**Sticky-seed tradeoff.** If a session `cd`s into a different repo mid-chat, the
+project does not auto-follow — the explicit `project` arg or `use_project` covers
+that intentional switch. A chat is usually one project, so sticky is the right
+default.

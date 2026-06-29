@@ -11,12 +11,22 @@ from pathlib import Path
 from typing import Any
 
 from .app import Crib
+from .session import resolve_session_project, session_state
 
 
 def _cwd(cwd: str | None) -> Path | None:
     """The CLI (an MCP client) passes its own working directory so the daemon
     resolves `.crib`/project relative to the caller, not the daemon's cwd."""
     return Path(cwd) if cwd else None
+
+
+def _project(crib: Crib, project: str | None, cwd: str | None) -> str:
+    """Resolve the project for a tool call through the connection's session: an
+    explicit `project` overrides for this call; otherwise the session's current
+    project (seeded once from cwd/.crib) is used (DESIGN §15)."""
+    return resolve_session_project(
+        session_state(), project, _cwd(cwd),
+        lambda c: crib.resolve_project(None, c))
 
 
 def build_server(crib: Crib | None = None):
@@ -60,7 +70,8 @@ def build_server(crib: Crib | None = None):
         may already be stored. Returns ranked note sections, each with its
         relpath and the line_start/line_end span of the matching section so
         you can jump straight to it (pair with `locate` for the abspath)."""
-        return [vars(h) for h in crib.lookup(query, project, k, tags, cwd=_cwd(cwd))]
+        return [vars(h) for h in
+                crib.lookup(query, _project(crib, project, cwd), k, tags)]
 
     @mcp.tool()
     def apropos(query: str, project: str | None = None, k: int = 8,
@@ -69,14 +80,14 @@ def build_server(crib: Crib | None = None):
         """Like `lookup`, but each hit carries the full matching section's
         markdown (`section`) instead of a short snippet — for reading the
         matched sections in full, not just locating them."""
-        return crib.apropos(query, project, k, tags, cwd=_cwd(cwd))
+        return crib.apropos(query, _project(crib, project, cwd), k, tags)
 
     @mcp.tool()
     def read(relpath: str, project: str | None = None,
              cwd: str | None = None) -> str:
         """Read a note's full raw markdown (frontmatter + body) — e.g. to see a
         `lookup` hit in full context, or before rewriting the note with `edit`."""
-        return crib.read_note(relpath, project, cwd=_cwd(cwd))
+        return crib.read_note(relpath, _project(crib, project, cwd))
 
     @mcp.tool()
     def locate(relpath: str, project: str | None = None,
@@ -84,7 +95,7 @@ def build_server(crib: Crib | None = None):
         """Get the real on-disk path of a note so you can edit it with your own
         file tools. After editing, call `reindex(relpath)` to make it searchable
         now (the watcher would catch it shortly regardless)."""
-        return crib.locate(relpath, project, cwd=_cwd(cwd))
+        return crib.locate(relpath, _project(crib, project, cwd))
 
     @mcp.tool()
     async def store(content: str, title: str | None = None,
@@ -96,7 +107,7 @@ def build_server(crib: Crib | None = None):
         session. Assigns an id, writes markdown, indexes it. If a related
         note already exists (check with `lookup`), prefer `append`/`edit`
         over creating a near-duplicate."""
-        return await crib.store_note(content, title, project, tags, cwd=_cwd(cwd))
+        return await crib.store_note(content, title, _project(crib, project, cwd), tags)
 
     @mcp.tool()
     async def append(relpath: str, content: str, heading: str | None = None,
@@ -105,7 +116,8 @@ def build_server(crib: Crib | None = None):
         """Add to an existing note (found via `lookup`) — the right call when new
         information extends or continues something already remembered, rather than
         `store`-ing a near-duplicate. Optionally files it under a new heading."""
-        return await crib.append_note(relpath, content, heading, project, cwd=_cwd(cwd))
+        return await crib.append_note(relpath, content, heading,
+                                      _project(crib, project, cwd))
 
     @mcp.tool()
     async def edit(relpath: str, new_content: str,
@@ -114,7 +126,7 @@ def build_server(crib: Crib | None = None):
         """Rewrite a note's full content — use when remembered information has
         changed, needs correcting, or several notes should be consolidated (read
         it first). Frontmatter (and the note's id/history) is preserved."""
-        return await crib.edit_note(relpath, new_content, project, cwd=_cwd(cwd))
+        return await crib.edit_note(relpath, new_content, _project(crib, project, cwd))
 
     @mcp.tool()
     async def forget(relpath: str, project: str | None = None,
@@ -122,7 +134,7 @@ def build_server(crib: Crib | None = None):
         """Delete a note when its information is obsolete or wrong. Removed from
         disk and the index, but stashed to the version ring first, so it stays
         recoverable by id."""
-        return await crib.forget(relpath, project, cwd=_cwd(cwd))
+        return await crib.forget(relpath, _project(crib, project, cwd))
 
     @mcp.tool()
     async def reindex(relpath: str | None = None,
@@ -130,20 +142,20 @@ def build_server(crib: Crib | None = None):
                       cwd: str | None = None) -> dict[str, Any]:
         """Reindex a note (or the whole project). Call after editing a note via
         its raw path. Safe to call redundantly — it no-ops if already current."""
-        return await crib.reindex(relpath, project, cwd=_cwd(cwd))
+        return await crib.reindex(relpath, _project(crib, project, cwd))
 
     @mcp.tool()
     def versions(relpath: str, project: str | None = None,
                  cwd: str | None = None) -> list[dict[str, Any]]:
         """List recoverable prior versions of a note."""
-        return crib.list_versions(relpath, project, cwd=_cwd(cwd))
+        return crib.list_versions(relpath, _project(crib, project, cwd))
 
     @mcp.tool()
     async def restore(relpath: str, version: str,
                       project: str | None = None,
                       cwd: str | None = None) -> dict[str, Any]:
         """Restore a prior version of a note (itself undoable)."""
-        return await crib.restore(relpath, version, project, cwd=_cwd(cwd))
+        return await crib.restore(relpath, version, _project(crib, project, cwd))
 
     @mcp.tool()
     async def reconcile() -> dict[str, Any]:
@@ -185,6 +197,23 @@ def build_server(crib: Crib | None = None):
         """List crib projects (separate memory namespaces). Use to discover
         what's available before a `lookup`/`store` in a specific project."""
         return crib.projects()
+
+    @mcp.tool()
+    def use_project(project: str) -> dict[str, Any]:
+        """Set THIS session's current project — subsequent `lookup`/`store`/etc.
+        target it without passing `project` each time. Sticky for the connection;
+        a per-call `project` arg still overrides for that one call. Seeded
+        automatically from your working directory on first use, so call this only
+        to switch."""
+        session_state().current_project = project
+        return {"current_project": project}
+
+    @mcp.tool()
+    def current_project(cwd: str | None = None) -> dict[str, Any]:
+        """Show this session's current project (seeding it from cwd/.crib if not
+        yet set), plus the available projects."""
+        return {"current_project": _project(crib, None, cwd),
+                "projects": crib.projects()}
 
     return mcp
 
