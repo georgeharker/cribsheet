@@ -14,8 +14,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-from . import notes
+from . import claudemem, notes
 from .chunk import section_line_map
+from .claudemem import MemoryBindings
 from .config import Config, CribLink, ProjectConfig, resolve_project
 from .embed import build_embedder
 from .gitbacking import GitBacking
@@ -56,8 +57,10 @@ class Crib:
                                  config.chunk.overlap_words)
         self.git = GitBacking(paths.data_dir)
         self.versions = VersionRing(paths.versions_dir, config.versions_keep)
+        self.memory_bindings = MemoryBindings(paths.data_dir / "memory-bindings.json")
         self._reranker: Any = None      # lazy cross-encoder, warm for the daemon
         self._watcher: Watcher | None = None
+        self._mirror: Any = None        # MemoryMirror, started by the daemon
         self._on_close: Callable[[], None] | None = None
 
     # --- construction ------------------------------------------------------
@@ -84,10 +87,27 @@ class Crib:
     async def _on_fs_change(self, project: str, relpath: str) -> None:
         await self.index.index_file(project, self.notes_dir(project), relpath)
 
+    async def start_memory_mirror(self, loop: asyncio.AbstractEventLoop) -> None:
+        """Catch up + live-mirror bound Claude harness memory dirs (DESIGN §13).
+        No-op without bindings (`crib import-memory` opts repos in)."""
+        if self._mirror is not None or not self.config.memory.watch:
+            return
+        from .memmirror import MemoryMirror
+
+        async def sync(root: Path, project: str) -> Any:
+            return await self.import_claude_memory(project=project, root=root)
+
+        self._mirror = MemoryMirror(self.memory_bindings, sync, loop)
+        await self._mirror.catch_up()
+        self._mirror.start()
+
     def stop_watchers(self) -> None:
         if self._watcher is not None:
             self._watcher.stop()
             self._watcher = None
+        if self._mirror is not None:
+            self._mirror.stop()
+            self._mirror = None
 
     def close(self) -> None:
         """Stop watchers and release the shared Chroma refcount, if any."""
@@ -420,6 +440,73 @@ class Crib:
                 await self._write_note(proj, relpath, note)
                 imported.append(relpath)
         return {"project": proj, "imported": len(imported), "files": imported}
+
+    # --- claude harness memory mirror (DESIGN §13) -------------------------
+    MEMORY_PREFIX = "claude-memory/"
+
+    async def import_claude_memory(self, project: str | None = None,
+                                   cwd: Path | None = None,
+                                   root: Path | None = None) -> dict[str, Any]:
+        """Mirror Claude Code's harness memory into `<project>/notes/claude-memory/`.
+
+        One-way: the harness owns those files; we copy+index, never write back.
+        Source files map by name; the crib note id is preserved across syncs, so
+        history/identity survive. Files removed upstream are dropped here too
+        (reconcile). Records a binding so the daemon's live mirror can watch it.
+        """
+        start = root or cwd or Path.cwd()
+        src_root = root or claudemem.find_harness_root(start)
+        if src_root is None or not claudemem.harness_memory_dir(src_root).is_dir():
+            raise ValueError(
+                f"no Claude memory dir found from {start} upward "
+                f"(looked under {claudemem.claude_config_dir() / 'projects'})")
+        mem_dir = claudemem.harness_memory_dir(src_root)
+        proj = self.resolve_project(project, cwd)
+        today = datetime.date.today().isoformat()
+
+        synced: list[str] = []
+        seen: set[str] = set()
+        # MEMORY.md is the harness's index/TOC, not content — skip it.
+        for src in sorted(mem_dir.glob("*.md")):
+            if src.name == "MEMORY.md" or not src.is_file():
+                continue
+            relpath = f"{self.MEMORY_PREFIX}{src.name}"
+            seen.add(relpath)
+            sfm, sbody = notes.parse(src.read_text())
+            mtype = ((sfm.get("metadata") or {}) if isinstance(sfm.get("metadata"), dict)
+                     else {}).get("type")
+            tags = list(dict.fromkeys(
+                [*(sfm.get("tags") or []), "claude-memory", *( [mtype] if mtype else [])]))
+            fm = {**sfm, "source": "claude_memory", "source_path": str(src),
+                  "memory_name": sfm.get("name"), "synced": today, "tags": tags}
+            tgt = self.abspath(proj, relpath)
+            if tgt.exists() and (ex := notes.load(tgt)).id:
+                fm = {"id": ex.id, **fm}        # keep identity across syncs
+            note = Note(path=tgt, frontmatter=fm, body=sbody)
+            notes.ensure_id(note)
+            note.path = tgt
+            notes.save_atomic(note)             # derived: bypass the version ring
+            await self.index.index_file(proj, self.notes_dir(proj), relpath)
+            synced.append(relpath)
+
+        removed = await self._reconcile_memory_dir(proj, seen)
+        self.memory_bindings.upsert(src_root, proj)
+        return {"project": proj, "source": str(mem_dir),
+                "synced": len(synced), "removed": removed, "files": synced}
+
+    async def _reconcile_memory_dir(self, proj: str, keep: set[str]) -> int:
+        """Drop mirrored memory files that no longer exist upstream."""
+        cm_dir = self.notes_dir(proj) / "claude-memory"
+        if not cm_dir.is_dir():
+            return 0
+        removed = 0
+        for f in sorted(cm_dir.glob("*.md")):
+            relpath = f"{self.MEMORY_PREFIX}{f.name}"
+            if relpath not in keep:
+                f.unlink()
+                await self.index.index_file(proj, self.notes_dir(proj), relpath)
+                removed += 1
+        return removed
 
     # --- versioning / git --------------------------------------------------
     def list_versions(self, relpath: str, project: str | None = None,

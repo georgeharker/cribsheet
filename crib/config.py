@@ -44,6 +44,14 @@ class ChunkConfig:
 
 
 @dataclass
+class MemoryConfig:
+    """Mirroring of Claude Code harness memory into crib projects (DESIGN §13).
+    `watch` enables the daemon's live mirror over bound repos (opted in via
+    `crib import-memory`); the one-shot `import-memory` works regardless."""
+    watch: bool = True
+
+
+@dataclass
 class RetrieveConfig:
     """How `lookup`/`apropos` rank. `hybrid` fuses the dense vector ranking with
     a BM25 lexical ranking (reciprocal-rank fusion), which fixes terse keyword
@@ -94,6 +102,7 @@ class Config:
     embed: EmbedConfig = field(default_factory=EmbedConfig)
     chunk: ChunkConfig = field(default_factory=ChunkConfig)
     retrieve: RetrieveConfig = field(default_factory=RetrieveConfig)
+    memory: MemoryConfig = field(default_factory=MemoryConfig)
     chroma: ChromaConfig = field(default_factory=ChromaConfig)
     daemon: DaemonConfig = field(default_factory=DaemonConfig)
     versions_keep: int = 20
@@ -117,6 +126,8 @@ class Config:
             cfg.chunk = ChunkConfig(**{**vars(cfg.chunk), **ck})
         if r := data.get("retrieve"):
             cfg.retrieve = RetrieveConfig(**{**vars(cfg.retrieve), **r})
+        if m := data.get("memory"):
+            cfg.memory = MemoryConfig(**{**vars(cfg.memory), **m})
         if c := data.get("chroma"):
             cfg.chroma = ChromaConfig(**{**vars(cfg.chroma), **c})
         if d := data.get("daemon"):

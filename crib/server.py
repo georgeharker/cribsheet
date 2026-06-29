@@ -164,6 +164,16 @@ def build_server(crib: Crib | None = None):
         the source repo's docs change."""
         return await crib.import_docs(project, cwd=_cwd(cwd))
 
+    @mcp.tool(name="import_memory")
+    async def import_memory(project: str | None = None,
+                            cwd: str | None = None) -> dict[str, Any]:
+        """Mirror Claude Code's own harness memory (the `memory/*.md` files it
+        writes for this project) into a crib project, so those notes become
+        searchable here alongside everything else. One-way + idempotent; opts the
+        repo into the daemon's live mirror so future memory edits sync on their
+        own."""
+        return await crib.import_claude_memory(project, cwd=_cwd(cwd))
+
     @mcp.tool()
     def projects() -> list[str]:
         """List crib projects (separate memory namespaces). Use to discover
@@ -192,6 +202,11 @@ async def _serve_async(transport: str = "stdio", host: str = "127.0.0.1",
         print(f"[crib] startup reconcile: {rec['changed']} updated, "
               f"{rec['removed']} chunk(s) removed across {rec['projects']} project(s)",
               file=sys.stderr)
+    # Catch up + live-mirror any bound Claude harness memory dirs (DESIGN §13).
+    try:
+        await crib.start_memory_mirror(asyncio.get_running_loop())
+    except Exception as e:  # noqa: BLE001 — watchdog optional / stale binding; degrade
+        print(f"[crib] memory mirror disabled: {e}", file=sys.stderr)
     try:
         if transport == "stdio":
             await mcp.run_async(transport="stdio")

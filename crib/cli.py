@@ -181,6 +181,10 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("import", help="ingest local docs via the nearest .crib")
     proj(s)
 
+    s = sub.add_parser("import-memory",
+                       help="mirror Claude Code's harness memory into a crib project")
+    proj(s)
+
     s = sub.add_parser("snapshot", help="git checkpoint of the data tree")
     s.add_argument("-m", "--message")
 
@@ -306,6 +310,8 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
                            "project": args.project, "cwd": cwd}
     if v == "import":
         return "import", {"project": args.project, "cwd": cwd}
+    if v == "import-memory":
+        return "import_memory", {"project": args.project, "cwd": cwd}
     if v == "snapshot":
         return "snapshot", {"message": args.message}
     if v == "history":
@@ -369,6 +375,8 @@ def _run_inprocess(args: Any) -> None:
                 args.relpath, args.version, args.project, cwd=cwd)), j)
         elif args.cmd == "import":
             _emit(asyncio.run(crib.import_docs(args.project, cwd=cwd)), j)
+        elif args.cmd == "import-memory":
+            _emit(asyncio.run(crib.import_claude_memory(args.project, cwd=cwd)), j)
         elif args.cmd == "snapshot":
             print(crib.snapshot(args.message))
         elif args.cmd == "history":

@@ -554,3 +554,47 @@ does not, and getting them wrong degrades the whole index:
 - Leans on the layers v1 already builds: per-note `id`, hash-gated `index_file`,
   the version ring (cheap rollback of bad auto-writes), and MCP sampling for the
   summarizing model.
+
+---
+
+## 13. Mirroring Claude Code's harness memory
+
+Claude Code keeps its own per-project memory — markdown under
+`$CLAUDE_CONFIG_DIR/projects/<munged>/memory/*.md` (default config dir `~/.claude`),
+written with the plain file tools, recalled by injecting `MEMORY.md` into context.
+That memory is private to the Claude Code harness. cribsheet mirrors it in so it's
+**searchable alongside everything else** and reachable by *other* agents/tools — one
+`lookup` over both crib-native notes and harness memory.
+
+**Locating the source.** The harness names each project dir by its absolute launch
+path with `/` and `.` both replaced by `-`. The munge is lossy (real names contain
+`-`), so it's **forward-only**: `crib import-memory` munges a known root to find its
+dir, walking up from cwd like `.crib` discovery; it never reverses a dir name.
+
+**Identity, not a new concept.** The mirror destination is the repo's normally
+**resolved** crib project (`.crib`'s project, else default) — harness memory joins
+the same namespace as that repo's other notes. The munge only finds the *source*.
+
+**Mechanism — reuse `notes/`, not a new index path.** Files mirror to
+`<project>/notes/claude-memory/<name>.md` with provenance frontmatter (`source:
+claude_memory`, `memory_name`, `synced`) and tags (`claude-memory` + the harness
+`metadata.type`). Because they land under `notes/`, the **existing** watcher/indexer
+handle them — the only new code is the sync (copy + provenance + reconcile). One-way
+always: the harness owns the files; crib copies and indexes, never writes back. The
+crib note `id` is preserved across syncs (history survives); files deleted upstream
+are dropped here (reconcile). Mirror writes bypass the version ring — they're
+derived, and the upstream is the source of truth.
+
+**Two entry points, mirroring the watcher/reconcile split (§4, §9):**
+- `crib import-memory` — one-shot sync of the current repo; also records a
+  `{root, project}` binding in `$CRIB_DATA_DIR/memory-bindings.json` (the opt-in).
+- **Live mirror** (`MemoryMirror`, daemon) — reads the bindings, catches up at
+  startup, and watches each bound harness dir, re-running the (idempotent) sync on
+  any change. Writing a memory via the harness makes it searchable in crib within
+  moments. Gated by `[memory].watch` (default on; inert without bindings).
+
+**Known limitation.** A binding registered by `import-memory` against a *running*
+daemon is picked up by the live mirror on the daemon's next start (bindings are read
+at boot). The one-shot sync already ran, so only live updates in that interim wait —
+acceptable given the daemon's grace-bounded lifetime. A live re-bind is a future
+refinement.
