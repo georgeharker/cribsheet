@@ -60,10 +60,11 @@ def test_sync_mirrors_indexes_and_tags(env):
     res = run(crib.import_claude_memory(project="p", root=repo))
     assert res["synced"] == 1 and res["removed"] == 0   # MEMORY.md skipped
 
-    # mirrored under notes/claude-memory/, searchable, provenance + type tag
+    # mirrored under notes/claude-memory/<host>/, searchable, provenance + type tag
+    rel = f"claude-memory/{claudemem.hostslug()}/decisions.md"
     hits = crib.lookup("RRF fusion", project="p")
-    assert hits and hits[0].relpath == "claude-memory/decisions.md"
-    text = crib.read_note("claude-memory/decisions.md", project="p")
+    assert hits and hits[0].relpath == rel
+    text = crib.read_note(rel, project="p")
     assert "source: claude_memory" in text and "claude-memory" in text
 
     # a binding was recorded for the daemon's live mirror
@@ -77,19 +78,20 @@ def test_resync_is_idempotent_and_reconciles_deletes(env):
     _write(mem / "b.md", "# b\nbeta fact")
     run(crib.import_claude_memory(project="p", root=repo))
 
+    host = claudemem.hostslug()
     # id is preserved across re-sync (identity/history survive)
-    id1 = _note_id(crib, "claude-memory/a.md")
+    id1 = _note_id(crib, f"claude-memory/{host}/a.md")
     run(crib.import_claude_memory(project="p", root=repo))
-    assert _note_id(crib, "claude-memory/a.md") == id1
+    assert _note_id(crib, f"claude-memory/{host}/a.md") == id1
 
     # delete b upstream -> reconcile drops it here
     (mem / "b.md").unlink()
     res = run(crib.import_claude_memory(project="p", root=repo))
     assert res["removed"] == 1
-    assert not (crib.notes_dir("p") / "claude-memory" / "b.md").exists()
+    assert not (crib.notes_dir("p") / "claude-memory" / host / "b.md").exists()
     # b's chunks are gone from the index (hash embedder still matches a on
     # shared tokens, so assert b specifically is absent, not "no hits")
-    assert not any(h.relpath == "claude-memory/b.md"
+    assert not any(h.relpath == f"claude-memory/{host}/b.md"
                    for h in crib.lookup("beta fact", project="p", k=10))
 
 

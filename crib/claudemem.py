@@ -16,9 +16,18 @@ from __future__ import annotations
 import json
 import os
 import re
+import socket
 from pathlib import Path
 
 _MUNGE = re.compile(r"[/.]")
+
+
+def hostslug() -> str:
+    """A filesystem-safe short host id, used to namespace mirrored memory per
+    machine so two machines' harness memories merge instead of colliding when the
+    crib data dir is git-synced."""
+    name = socket.gethostname().split(".")[0]
+    return re.sub(r"[^a-z0-9_-]", "-", name.lower()) or "host"
 
 
 def munge(path: Path) -> str:

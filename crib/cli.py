@@ -188,6 +188,13 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("snapshot", help="git checkpoint of the data tree")
     s.add_argument("-m", "--message")
 
+    s = sub.add_parser("sync",
+                       help="share notes via git: commit + pull + push, then reindex")
+    s.add_argument("-m", "--message")
+    s.add_argument("--remote", help="bootstrap: git init + set origin to this URL")
+    sub.add_parser("push", help="push local note commits to the remote")
+    sub.add_parser("pull", help="pull notes from the remote, then reindex")
+
     s = sub.add_parser("history", help="git history for a note or the tree")
     s.add_argument("relpath", nargs="?")
 
@@ -337,6 +344,48 @@ def _run_daemon(args: Any, cfg: Any) -> None:
         _emit(data, args.json)
 
 
+def _run_git(args: Any, cfg: Any) -> int:
+    """Share notes via git. Runs git client-side (the user's terminal owns auth);
+    a pull that changes files then triggers a reindex through the daemon (or
+    in-process). Not an MCP tool — pushing notes is outward-facing + interactive."""
+    from .gitbacking import GitBacking
+    from .paths import Paths
+
+    git = GitBacking(Paths.resolve().data_dir)
+    if args.cmd == "sync" and getattr(args, "remote", None):
+        print(git.init(args.remote))
+
+    if args.cmd == "sync":
+        res = git.sync(args.message)
+    elif args.cmd == "push":
+        res = git.push()
+    else:
+        res = git.pull()
+
+    print(res.message)
+    if res.conflicts:
+        return 1
+    if res.changed:                       # a pull rewrote notes → index must follow
+        print("reindexing pulled changes…")
+        print(f"  {_reconcile(cfg)}")
+    return 0 if res.ok else 1
+
+
+def _reconcile(cfg: Any) -> Any:
+    """Run reconcile via the warm daemon if available, else in-process."""
+    if cfg.daemon.enabled:
+        from . import sharedserver
+        if sharedserver.available():
+            from .client import DaemonClient
+            with DaemonClient(cfg.daemon) as client:
+                return client.call("reconcile", {})
+    crib = Crib.open()
+    try:
+        return asyncio.run(crib.reconcile_all())
+    finally:
+        crib.close()
+
+
 def _run_inprocess(args: Any) -> None:
     crib = Crib.open()
     cwd = Path.cwd()
@@ -407,6 +456,8 @@ def main(argv: list[str] | None = None) -> int:
     from .paths import Paths
 
     cfg = Config.load(Paths.resolve().config_file)
+    if args.cmd in ("sync", "push", "pull"):
+        return _run_git(args, cfg)
     if cfg.daemon.enabled and not args.no_daemon:
         from . import sharedserver
         if not sharedserver.available():

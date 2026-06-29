@@ -598,3 +598,52 @@ daemon is picked up by the live mirror on the daemon's next start (bindings are 
 at boot). The one-shot sync already ran, so only live updates in that interim wait —
 acceptable given the daemon's grace-bounded lifetime. A live re-bind is a future
 refinement.
+
+---
+
+## 14. Sharing notes across machines (git sync)
+
+The data dir (`~/.local/share/crib/`) is a git repo with a remote; each machine
+clones/joins it and notes sync via git. Reuses git's history + conflict handling
+instead of inventing a sync protocol — the coarse counterpart to per-write
+versioning (§8) and local checkpoints (§13's `snapshot`).
+
+**Verbs (CLI-only — not MCP tools; pushing notes is outward-facing + needs
+interactive auth):**
+- `snapshot` — local commit, no network (the "checkpoint before something risky").
+- `sync` — commit → pull → push, the everyday share op. `--remote <url>` bootstraps
+  (init + remote + `.gitignore`).
+- `push` / `pull` — the halves, for asymmetric flows.
+
+**Conflicts — manual, never clever.** `pull` uses `--no-rebase
+--allow-unrelated-histories` (so a machine can *join* an existing remote: the two
+independently-init'd trees merge as a union). On a real conflict it stops, lists the
+files, and tells the user to resolve them in the data dir and re-run — no auto-merge.
+Markdown is line-based and notes are small, so genuine conflicts are rare.
+
+**The index must follow git.** A pull rewrites note files on disk, so after any pull
+that changed files the CLI triggers `reconcile` (hash-gated) — via the warm daemon if
+up, else in-process — to bring Chroma back in line with whatever git produced
+(including a human-resolved merge). Sync that skipped this would leave search lying.
+
+**Git runs client-side; the daemon never shells git.** `push` can prompt (SSH
+passphrase, credential helper); running it in the daemon would hang it. So the CLI
+runs the git ops in the user's terminal (their auth), then calls the daemon only for
+the reindex.
+
+**What syncs — authored truth + conflict-free derivatives, not machine state:**
+- authored `notes/*.md` — the point.
+- `.versions/` — the version ring. Synced: timestamped immutable files merge as a
+  union (never conflict), it's bounded (≤`versions_keep`/note), and it keeps `crib
+  restore` working cross-machine without dropping to git.
+- `notes/claude-memory/<host>/` — mirrored harness memory, **host-namespaced** so two
+  machines' memories merge instead of colliding; each machine's delete-reconcile is
+  scoped to its own host subdir (never reaps a peer's).
+- **Gitignored:** `memory-bindings.json` (absolute repo paths — machine-specific) and
+  temp files. `.gitignore` is written by `init` and ensured on every `snapshot`/`sync`
+  (so a hand-created repo still excludes machine state).
+
+**Project mapping caveat.** Projects are keyed by name; the same logical project must
+use the same name on every machine. Since `.crib` travels in the code repo, resolved
+names line up automatically; `default` is a shared bucket by definition. Keep `.crib`
+project names consistent or a project forks into two dirs.

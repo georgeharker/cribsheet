@@ -442,17 +442,17 @@ class Crib:
         return {"project": proj, "imported": len(imported), "files": imported}
 
     # --- claude harness memory mirror (DESIGN §13) -------------------------
-    MEMORY_PREFIX = "claude-memory/"
-
     async def import_claude_memory(self, project: str | None = None,
                                    cwd: Path | None = None,
                                    root: Path | None = None) -> dict[str, Any]:
-        """Mirror Claude Code's harness memory into `<project>/notes/claude-memory/`.
+        """Mirror Claude Code's harness memory into
+        `<project>/notes/claude-memory/<host>/`.
 
         One-way: the harness owns those files; we copy+index, never write back.
-        Source files map by name; the crib note id is preserved across syncs, so
-        history/identity survive. Files removed upstream are dropped here too
-        (reconcile). Records a binding so the daemon's live mirror can watch it.
+        Host-namespaced so a git-synced data dir merges (not collides) two
+        machines' memories. The crib note id is preserved across syncs, so
+        history/identity survive; files removed upstream are dropped (reconcile,
+        scoped to THIS host). Records a binding for the daemon's live mirror.
         """
         start = root or cwd or Path.cwd()
         src_root = root or claudemem.find_harness_root(start)
@@ -462,6 +462,7 @@ class Crib:
                 f"(looked under {claudemem.claude_config_dir() / 'projects'})")
         mem_dir = claudemem.harness_memory_dir(src_root)
         proj = self.resolve_project(project, cwd)
+        prefix = f"claude-memory/{claudemem.hostslug()}/"
         today = datetime.date.today().isoformat()
 
         synced: list[str] = []
@@ -470,7 +471,7 @@ class Crib:
         for src in sorted(mem_dir.glob("*.md")):
             if src.name == "MEMORY.md" or not src.is_file():
                 continue
-            relpath = f"{self.MEMORY_PREFIX}{src.name}"
+            relpath = f"{prefix}{src.name}"
             seen.add(relpath)
             sfm, sbody = notes.parse(src.read_text())
             mtype = ((sfm.get("metadata") or {}) if isinstance(sfm.get("metadata"), dict)
@@ -489,19 +490,21 @@ class Crib:
             await self.index.index_file(proj, self.notes_dir(proj), relpath)
             synced.append(relpath)
 
-        removed = await self._reconcile_memory_dir(proj, seen)
+        removed = await self._reconcile_memory_dir(proj, prefix, seen)
         self.memory_bindings.upsert(src_root, proj)
         return {"project": proj, "source": str(mem_dir),
                 "synced": len(synced), "removed": removed, "files": synced}
 
-    async def _reconcile_memory_dir(self, proj: str, keep: set[str]) -> int:
-        """Drop mirrored memory files that no longer exist upstream."""
-        cm_dir = self.notes_dir(proj) / "claude-memory"
-        if not cm_dir.is_dir():
+    async def _reconcile_memory_dir(self, proj: str, prefix: str,
+                                    keep: set[str]) -> int:
+        """Drop mirrored memory files gone upstream — scoped to THIS host's
+        subdir, so a synced peer machine's memories are never reaped."""
+        host_dir = self.notes_dir(proj) / prefix
+        if not host_dir.is_dir():
             return 0
         removed = 0
-        for f in sorted(cm_dir.glob("*.md")):
-            relpath = f"{self.MEMORY_PREFIX}{f.name}"
+        for f in sorted(host_dir.glob("*.md")):
+            relpath = f"{prefix}{f.name}"
             if relpath not in keep:
                 f.unlink()
                 await self.index.index_file(proj, self.notes_dir(proj), relpath)
