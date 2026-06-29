@@ -17,6 +17,7 @@ from pathlib import Path
 from . import notes
 from .chunk import WINDOW_OVERLAP, WINDOW_WORDS, chunk_note
 from .embed import Embedder
+from .retrieve import LexicalCache
 from .store import Record, Store
 
 
@@ -37,6 +38,7 @@ class IndexEngine:
         self.embedder = embedder
         self.window_words = window_words
         self.overlap = overlap
+        self.lexical = LexicalCache(store)   # warm per-project BM25 (DESIGN §10.3)
         self._locks: dict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
 
     def _key(self, project: str, relpath: str) -> str:
@@ -54,6 +56,8 @@ class IndexEngine:
         if not path.exists():
             existing = self.store.get_meta({"project": project, "relpath": relpath})
             self.store.delete(list(existing))
+            if existing:
+                self.lexical.invalidate(project)
             return IndexResult(relpath, changed=bool(existing), upserted=0,
                                deleted=len(existing))
 
@@ -90,5 +94,6 @@ class IndexEngine:
                 ))
         self.store.upsert(records)
         self.store.delete(stale_ids)
+        self.lexical.invalidate(project)   # corpus changed -> rebuild BM25 lazily
         return IndexResult(relpath, changed=True, upserted=len(records),
                            deleted=len(stale_ids), note_id=note_id)

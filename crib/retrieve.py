@@ -16,6 +16,10 @@ from __future__ import annotations
 import math
 import re
 from collections import Counter
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .store import Store
 
 _TOKEN = re.compile(r"[A-Za-z0-9_]+")
 
@@ -67,3 +71,38 @@ def reciprocal_rank_fusion(rankings: list[list[str]], k: int = 60) -> list[str]:
         for rank, doc_id in enumerate(ranking):
             fused[doc_id] = fused.get(doc_id, 0.0) + 1.0 / (k + rank + 1)
     return sorted(fused, key=lambda d: fused[d], reverse=True)
+
+
+class LexicalCache:
+    """Per-project BM25 index, built lazily from the store and kept warm for the
+    daemon's life (DESIGN §10.3). Rebuilding tokenizes the whole project corpus,
+    so doing it every query wastes the daemon's warmth — instead we cache and
+    invalidate on write.
+
+    Invalidation is a dirty-flag drop, not an incremental edit: the write path
+    (`IndexEngine.index_file`) calls `invalidate(project)` whenever it mutates a
+    project, and the next query rebuilds. BM25 is a ranking aid over the vector
+    store (the source of truth), so a momentarily stale index only delays a
+    just-written chunk's lexical findability by one query — a far weaker
+    correctness bar than the vector index, which makes the simple flag safe.
+
+    One-shot callers (the `--no-daemon` CLI, tests) build a fresh Crib per run,
+    so the cache is simply cold each time — no benefit, no harm.
+    """
+
+    def __init__(self, store: "Store") -> None:
+        self._store = store
+        # project -> (ids aligned to the BM25 corpus, {id: (doc, meta)}, BM25)
+        self._entries: dict[str, tuple[list[str], dict, BM25]] = {}
+
+    def invalidate(self, project: str) -> None:
+        self._entries.pop(project, None)
+
+    def get(self, project: str) -> tuple[list[str], dict, BM25]:
+        entry = self._entries.get(project)
+        if entry is None:
+            docs = self._store.get_docs({"project": project})
+            ids = list(docs)
+            entry = (ids, docs, BM25([tokenize(docs[i][0]) for i in ids]))
+            self._entries[project] = entry
+        return entry

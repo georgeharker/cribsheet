@@ -241,13 +241,12 @@ class Crib:
         dense = self.store.query(vec, k=topn, where=where)
         if not hybrid:
             return dense
-        from .retrieve import BM25, reciprocal_rank_fusion, tokenize
+        from .retrieve import reciprocal_rank_fusion, tokenize
 
-        docs = self.store.get_docs(where)            # {id: (document, metadata)}
-        if not docs:
+        ids, docs, bm25 = self.index.lexical.get(proj)   # warm per-project BM25 cache
+        if not ids:
             return dense
-        ids = list(docs)
-        sparse = BM25([tokenize(docs[i][0]) for i in ids]).scores(tokenize(query))
+        sparse = bm25.scores(tokenize(query))
         sparse_ranked = [ids[j] for j in sorted(
             range(len(ids)), key=lambda j: sparse[j], reverse=True) if sparse[j] > 0][:topn]
         dense_ranked = [h.id for h in dense]

@@ -420,8 +420,16 @@ and a tuned α, which RRF sidesteps.
 - **Dense list**: the existing vector query, widened to `max(k*3, 30)` candidates
   so BM25 can promote items dense ranked low.
 - **Sparse list**: an in-process Okapi BM25 over the project's chunk documents
-  (`store.get_docs`), rebuilt per query — fine at personal scale; a cached,
-  write-invalidated index is the obvious scale-up.
+  (`store.get_docs`), held in a per-project `LexicalCache` owned by the
+  `IndexEngine` — built lazily, kept warm for the daemon's life, and dropped
+  (dirty-flag) whenever the single write path mutates that project, so the next
+  query rebuilds. BM25 is a ranking aid over the authoritative vector store, so
+  brief staleness only delays a just-written chunk's lexical findability by one
+  query. One-shot callers (`--no-daemon`, tests) build a fresh Crib each run, so
+  the cache is simply cold — no benefit, no harm. Incremental add/remove (vs full
+  rebuild) is the next step once corpora are large enough to feel it; native
+  sparse vectors in Chroma's hybrid `search` (experimental, distributed/hosted
+  only in 1.5.x) are the eventual "BM25 in the store" endgame.
 - The fused order drives ranking, but each hit still shows its **cosine** (a
   BM25-only finalist's cosine is filled by re-embedding just that handful), so the
   displayed score is intentionally non-monotonic down the list — the visible
