@@ -14,29 +14,22 @@ from crib.paths import Paths
 from crib.store import InMemoryStore
 
 
-def test_munge_matches_harness_rule():
-    # the harness encodes its launch path with every '/' and '.' -> '-'. Holds on
-    # both OSes: on macOS the firmlink strip turns realpath's /System/Volumes/Data
-    # /home back into /home, so we don't pick up the volume prefix.
-    assert claudemem.munge(Path("/home/u/Development/cribsheet")) == \
-        "-home-u-Development-cribsheet"
-    assert claudemem.munge(Path("/home/u/.cache/x")) == "-home-u--cache-x"
+def test_munge_encodes_realpath(tmp_path):
+    # the harness rule: realpath the launch dir, then collapse every '/' and '.'
+    # to '-'. Use a real, resolvable path (a synthetic /home would hit macOS autofs).
+    proj = tmp_path / "a.b" / "c"
+    proj.mkdir(parents=True)
+    real = str(proj.resolve())
+    assert claudemem.munge(proj) == real.replace("/", "-").replace(".", "-")
+    assert "/" not in claudemem.munge(proj) and "." not in claudemem.munge(proj)
 
 
 def test_resolve_follows_symlinks(tmp_path):
-    # symlinks ARE resolved (matching the harness's getcwd)
+    # symlinks ARE resolved (matching the harness's getcwd); firmlinks need no
+    # handling — realpath keeps them transparent, so nothing leaks to mop up.
     target = tmp_path / "real"; target.mkdir()
     link = tmp_path / "link"; link.symlink_to(target)
     assert claudemem.resolve_path(link) == claudemem.resolve_path(target)
-
-
-def test_firmlink_strip_is_boundary_safe():
-    # …but the macOS Data-volume firmlink prefix is stripped, not followed
-    from crib.claudemem import _FIRMLINK
-    assert _FIRMLINK.sub("", "/System/Volumes/Data/Users/u/x") == "/Users/u/x"
-    assert _FIRMLINK.sub("", "/Users/u/x") == "/Users/u/x"            # no-op when absent
-    assert _FIRMLINK.sub("", "/System/Volumes/Database") == \
-        "/System/Volumes/Database"                                   # word-boundary safe
 
 
 def _write(p: Path, text: str) -> None:

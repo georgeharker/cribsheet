@@ -17,15 +17,9 @@ import json
 import os
 import re
 import socket
-import sys
 from pathlib import Path
 
 _MUNGE = re.compile(r"[/.]")
-# macOS mounts the writable Data volume at /System/Volumes/Data and firmlinks it
-# into `/`. realpath follows symlinks (good) but can also surface that firmlink
-# prefix for paths that cross it (e.g. autofs /home); the harness never shows it
-# (its roots are firmlink-transparent /Users paths), so we strip it on Darwin.
-_FIRMLINK = re.compile(r"^/System/Volumes/Data(?=/|$)")
 
 
 def hostslug() -> str:
@@ -39,14 +33,14 @@ def hostslug() -> str:
 def resolve_path(path: Path) -> Path:
     """Canonicalize a path the way the harness names its dirs: expand `~` (to the
     OS-native home — `/Users/…` on macOS, `/home/…` on Linux), then realpath so
-    **symlinks are followed** (matching the harness's `getcwd`). The one macOS
-    adjustment is to NOT follow firmlinks — strip the `/System/Volumes/Data` volume
-    prefix realpath can surface — so we stay on the `/`-rooted view the harness uses.
-    The single seam: `munge`, root discovery, and binding keys all go through here."""
-    real = str(Path(path).expanduser().resolve())
-    if sys.platform == "darwin":
-        real = _FIRMLINK.sub("", real) or "/"
-    return Path(real)
+    symlinks are followed (matching the harness's `getcwd`; e.g. `/tmp`→`/private/tmp`).
+
+    No macOS special-casing is needed: firmlinks are transparent under realpath —
+    `/Users`, `/private`, `/Volumes` etc. all resolve to themselves, never to
+    `/System/Volumes/Data/…`. (The lone exception is `/home`, an autofs mount, not a
+    firmlink and not a macOS project root.) The single seam: `munge`, root discovery,
+    and binding keys all go through here."""
+    return Path(path).expanduser().resolve()
 
 
 def munge(path: Path) -> str:
