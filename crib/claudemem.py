@@ -17,16 +17,9 @@ import json
 import os
 import re
 import socket
-import sys
 from pathlib import Path
 
 _MUNGE = re.compile(r"[/.]")
-# macOS firmlinks the writable Data volume to `/`, so `Path.resolve()` can return
-# `/System/Volumes/Data/…` for paths that resolve through it (autofs `/home`, some
-# mounts). The harness names its dirs from getcwd(), which never shows that prefix
-# (`/Users/…` stays `/Users/…`), so strip it on Darwin to match. `/private` (a real
-# symlink the harness *does* resolve, e.g. /tmp → /private/tmp) is intentionally kept.
-_DATA_VOLUME = re.compile(r"^/System/Volumes/Data(?=/|$)")
 
 
 def hostslug() -> str:
@@ -38,14 +31,18 @@ def hostslug() -> str:
 
 
 def resolve_path(path: Path) -> Path:
-    """The canonical absolute path the way the harness sees it (getcwd semantics):
-    resolve symlinks, but drop the macOS Data-volume firmlink prefix it never
-    shows. The single place harness paths get normalized — `munge`, root discovery,
-    and binding keys all go through here so they can't drift apart."""
-    real = str(Path(path).resolve())
-    if sys.platform == "darwin":
-        real = _DATA_VOLUME.sub("", real) or "/"
-    return Path(real)
+    """Canonicalize a path the way the harness names its dirs — i.e. `getcwd`
+    semantics: absolute, with symlinks resolved. The single place harness paths get
+    normalized, so `munge`, root discovery, and binding keys can't drift apart.
+
+    Deliberately platform-faithful, not platform-rewriting. Project roots differ by
+    OS — Linux uses `/home/<user>/…`; macOS uses `/Users/<user>/…` (and `/Volumes`,
+    `/private/tmp`) — but on every platform the harness uses `getcwd`, and
+    `Path.resolve()` is the same realpath machinery, so reproducing it verbatim is
+    what keeps us in agreement. On macOS the native roots are firmlinks that resolve
+    transparently (no `/System/Volumes/Data` prefix); `/home` there is an autofs
+    mount, not a project root, so we never special-case it."""
+    return Path(path).resolve()
 
 
 def munge(path: Path) -> str:
