@@ -114,7 +114,9 @@ low-friction, high-trust path §12 calls for ("opt-in and explicit").
 ### 5b. `SessionEnd` hook — automatic, out-of-session → **quarantine**
 
 `SessionEnd` hook → `crib summarize-session` (Claude passes `transcript_path`,
-`cwd`, `session_id` on stdin). No connected model, so the **bridge** generates:
+`cwd`, `session_id` on stdin). No connected model, so the **bridge** generates.
+The conversation text it works from can come from either of two sources — the
+chat-log file (this hook) or a live proxy (§5c); both feed steps 2–5 unchanged:
 
 1. **Resolve project** from `cwd` (`.crib` → project).
 2. **Significance gate** (cheap first defense): skip trivially short sessions by a
@@ -143,6 +145,48 @@ teardown.
 Explicit intent earns curation; zero-friction automatic capture earns quarantine.
 Both ensure capture; neither pollutes.
 
+### 5c. Capture source — chat logs vs proxy
+
+The automatic path (5b) needs the conversation *text*. There are two ways to get
+it, and they feed the **same** summarize → merge-aware write → quarantine pipeline
+— the engine in §2 is unchanged; this is purely *where the bytes come from*.
+
+| | **Chat logs** (JSONL) | **Proxy** (live interception) |
+|---|---|---|
+| What | read the harness's transcript file after the fact | an LLM proxy between harness and model endpoint observes traffic |
+| Trigger | `SessionEnd` hook hands `transcript_path` | streaming — every request/response |
+| Coverage | Claude Code only (one parser per harness) | any client routed through it (Claude Code, zsh-ai, IDEs) — one path |
+| Fidelity | the harness's *serialization* — undocumented, version-fragile, may elide thinking / tool results | the canonical on-the-wire record: full system prompt, tool calls + results, thinking |
+| Latency | batch, at session end | live — can act mid-session |
+| Routing | none — the file is already on disk | model traffic must be pointed at the proxy (`ANTHROPIC_BASE_URL`) |
+| Keys | none read | **pass-through**: forwards the user's own auth upstream, holds no key (DESIGN §1) |
+| Cost | trivial | a component on every request's critical path — must be transparent, low-latency, **fail-open** |
+
+**Chat logs — the default, ships first.** The JSONL lives under the harness
+projects dir — the same place §13 mirrors, so `munge` already resolves it. Zero new
+infrastructure, no traffic routing, and it honors "server holds no keys" for free.
+Its weaknesses are real: the format is reverse-engineered and breaks with harness
+versions, it's Claude-Code-specific, and it only arrives at session boundaries.
+
+**Proxy — may be more effective, later.** Because each Anthropic request carries the
+*entire prior message list*, the proxy never has to stitch streaming deltas into a
+transcript: the **last (longest) request of a session already *is* the full
+conversation** — keep the latest message array per session key and summarize that;
+only the final assistant turn needs assembling from the response stream. That yields
+a richer, canonical record than any harness serialization, captures *every* client
+routed through it uniformly (not just Claude Code), and lets capture fire on a live
+boundary marker instead of waiting for `SessionEnd`. The costs are operational:
+traffic must be routed to the proxy, the proxy sits on the critical path of every
+call (so it must forward transparently and **fail open** — never block, delay, or
+mutate the user's actual request), and session correlation is fuzzier without an
+explicit end signal (§9).
+
+**They compose.** The daemon (DESIGN §10.2 — the MCP server is already a
+long-running process) can host the proxy as a second listener; whichever source is
+configured produces the same `(project, transcript)` pair that 5b's steps 2–5
+consume. Start on chat logs; add the proxy when its fidelity and cross-harness reach
+earn the routing cost.
+
 ## 6. Config
 
 ```toml
@@ -161,6 +205,14 @@ temperature = 0.2
 adapter = "openai-compatible"
 model = "qwen2.5:7b"
 endpoint = "http://localhost:11434/v1"
+
+# optional: capture conversations live via an LLM proxy (§5c) instead of — or
+# alongside — the SessionEnd chat-log reader. Pass-through: it forwards the user's
+# own auth upstream and holds no key. Must fail open (never block the real call).
+[capture.proxy]
+enabled = false
+listen   = "127.0.0.1:7733"
+upstream = "https://api.anthropic.com"
 ```
 
 Per-project `distill_prompt` / `summarize_prompt` live in `.cribproject`
@@ -171,12 +223,13 @@ Per-project `distill_prompt` / `summarize_prompt` live in `.cribproject`
 - **MCP tools**: `distill(project?, relpath?)`, `capture(title, body, tags?,
   project?)`, `promote(relpath, project?)`.
 - **CLI**: `crib distill [relpath]`, `crib summarize-session` (hook entry),
-  `crib promote <relpath>`.
+  `crib promote <relpath>`, `crib proxy` (optional capture-proxy listener, §5c).
 - **Slash commands** (`.claude/commands/`): `crib-remember`, `crib-distill`.
 - **Hook**: `SessionEnd` → `crib summarize-session` (wired in `settings.json`).
 - **Config**: `GenerateConfig` (`crib/config.py`), `quarantine_weight`
-  (`RetrieveConfig`).
-- **Module**: `crib/generate.py` (bridge wrapper).
+  (`RetrieveConfig`), `CaptureConfig` (the `[capture.proxy]` block).
+- **Module**: `crib/generate.py` (bridge wrapper); `crib/proxy.py` (optional —
+  the pass-through capture proxy, §5c).
 
 ## 8. Build order
 
@@ -186,16 +239,27 @@ Per-project `distill_prompt` / `summarize_prompt` live in `.cribproject`
 3. **Quarantine tier** — `source: conversation`, `quarantine_weight` in `lookup`,
    `capture` + `promote` tools.
 4. **`/crib-remember` slash command** — explicit in-session capture (no bridge).
-5. **`summarize-session` + `SessionEnd` hook** — automatic capture: transcript
-   parse, significance gate, merge-aware write, detached run.
+5. **`summarize-session` + `SessionEnd` hook** — automatic capture from **chat
+   logs**: transcript parse, significance gate, merge-aware write, detached run.
+6. **Capture proxy** (`crib proxy`, §5c) — *optional, additive*: the same pipeline
+   fed by a live, harness-agnostic source. Only worth it once the chat-log path is
+   solid and its fidelity/coverage limits bite.
 
-Each phase is independently useful; capture value arrives at phase 3–4.
+Each phase is independently useful; capture value arrives at phase 3–4. Phase 6 is a
+second *source* for phase 5's pipeline, not a rewrite of it.
 
 ## 9. Open questions
 
+- **Capture source** (§5c): chat logs first; is the proxy worth its routing/critical-path
+  cost, or does cross-harness reach not matter for a single-user tool? Lean
+  chat-logs-first, proxy when fidelity bites.
 - **Transcript shape**: parse Claude Code's JSONL directly, or have the hook hand a
   pre-extracted payload? (JSONL lives under the harness projects dir — same place
-  §13 mirrors; `munge` resolves it.)
+  §13 mirrors; `munge` resolves it.) The proxy sidesteps this entirely — the wire
+  message list *is* the transcript.
+- **Proxy session correlation**: with no `SessionEnd` signal, how is a session keyed
+  and its end detected? Candidates: a client-supplied header, a fingerprint of the
+  message-array prefix, or an idle timeout on the latest request per key.
 - **Significance gate**: pure heuristic (length/turns) vs a cheap LLM yes/no
   pre-check. Start heuristic.
 - **Quarantine in `lookup`**: hard filter (`--include-unreviewed` to see) vs soft

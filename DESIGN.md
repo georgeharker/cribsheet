@@ -534,7 +534,9 @@ built.
 > It resolves the hazards below via a *quarantine tier* (capture broadly as
 > `source: conversation`, down-weighted in `lookup` until promoted) and two trigger
 > paths — explicit slash commands (in-session LLM → curated) and a `SessionEnd`
-> hook (llmkit `bridge` → quarantine). The notes below are the original framing.
+> hook (llmkit `bridge` → quarantine). The automatic path can draw the conversation
+> from either the harness chat logs or a live pass-through proxy (the latter is
+> harness-agnostic and higher-fidelity). The notes below are the original framing.
 
 **Goal:** automatically distill a conversation with the assistant into memory, so
 durable knowledge accrues without the user hand-authoring every note.
