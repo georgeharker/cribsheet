@@ -1,0 +1,5 @@
+project: cribsheet        # this repo's own crib namespace
+import:                   # design docs to ingest (one-way pull; source wins on re-import)
+  - DESIGN.md
+  - docs/**/*.md
+  - README.md

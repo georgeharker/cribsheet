@@ -38,8 +38,21 @@ class Chunk:
         )
 
     @property
+    def index_text(self) -> str:
+        """Text fed to the embedder and BM25 — the heading breadcrumb (a free,
+        authored topic phrase) prepended to the section body, so a section's
+        *subject* (often named only in its heading, absent from its prose) is
+        searchable. The stored `document` stays the clean body; this shapes
+        retrieval only. See docs/retrieval-and-adoption.md §3."""
+        if not self.heading_path:
+            return self.text
+        return " › ".join(self.heading_path) + "\n\n" + self.text
+
+    @property
     def content_hash(self) -> str:
-        return sha1_hex(self.text)
+        # Hash the index text, not the bare body, so changing the enrichment
+        # scheme (or a heading) re-embeds existing chunks on the next reindex.
+        return sha1_hex(self.index_text)
 
     def metadata(self, title: str | None, tags: list[str], source: str,
                  mtime: float) -> dict:

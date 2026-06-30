@@ -87,7 +87,7 @@ class IndexEngine:
         source = note.frontmatter.get("source", "manual")
         records: list[Record] = []
         if to_embed:
-            vectors = self.embedder.embed([c.text for c in to_embed])
+            vectors = self.embedder.embed([c.index_text for c in to_embed])
             for c, vec in zip(to_embed, vectors):
                 records.append(Record(
                     id=c.chunk_id, embedding=vec, document=c.text,

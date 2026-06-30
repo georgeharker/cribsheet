@@ -1,0 +1,113 @@
+{
+  "_doc": "Labeled retrieval cases for scripts/eval_retrieval.py, grouped by information-NEED. Each need has one target (expect relpath fragment, optional expect_heading) and MANY phrasings — to measure embed/paraphrase generality and whether enrichment lifts oblique wordings, not just the one phrasing that happens to share the note's words. Phrasing 1 is usually 'native' wording; later ones are deliberately vocabulary-shifted (the credentials-vs-tokens stressor). Seed with `crib import` first. See docs/retrieval-and-adoption.md §3, §5.2. (Flat {\"cases\":[...]} is still accepted for back-compat.)",
+  "project": "cribsheet",
+  "needs": [
+    {
+      "id": "invocation",
+      "expect": "docs/retrieval-and-adoption.md",
+      "expect_heading": "Invocation",
+      "queries": [
+        "automatically inject memory into the prompt so the agent uses it without choosing to call lookup",
+        "push relevant notes into context instead of waiting for the model to query",
+        "stop the assistant reaching for grep before it checks stored knowledge"
+      ]
+    },
+    {
+      "id": "vocab-gap",
+      "expect": "docs/retrieval-and-adoption.md",
+      "expect_heading": "Part A",
+      "queries": [
+        "vocabulary gap credentials tokens reranking",
+        "a search for one word misses the note that uses a different word for the same thing",
+        "close the mismatch between query wording and document wording on the document side"
+      ]
+    },
+    {
+      "id": "hybrid-fusion",
+      "expect": "DESIGN.md",
+      "expect_heading": "10.3",
+      "queries": [
+        "how does cribsheet fuse dense vector and sparse keyword retrieval",
+        "combine semantic search with exact term matching",
+        "reciprocal rank fusion of two rankings"
+      ]
+    },
+    {
+      "id": "rerank-fuse",
+      "expect": "DESIGN.md",
+      "expect_heading": "10.4",
+      "queries": [
+        "the reranker should fuse its order in rather than replace the result list",
+        "a cross-encoder precision pass that can promote but not overrule the hybrid result",
+        "blend a second-stage scorer in as a third voter"
+      ]
+    },
+    {
+      "id": "capture-source",
+      "expect": "docs/knowledge-capture.md",
+      "expect_heading": "Capture source",
+      "queries": [
+        "capture a conversation into memory automatically via a proxy or the chat logs",
+        "ingest a chat session either from its transcript file or by intercepting traffic",
+        "two ways to feed an automatic session summary: read the log or watch the wire"
+      ]
+    },
+    {
+      "id": "quarantine",
+      "expect": "docs/knowledge-capture.md",
+      "queries": [
+        "quarantine tier for auto-captured notes down-weighted until promoted",
+        "keep machine-written notes from outranking curated ones until a human approves",
+        "a low-trust staging area for unreviewed memory"
+      ]
+    },
+    {
+      "id": "mirror-memory",
+      "expect": "DESIGN.md",
+      "expect_heading": "Mirroring",
+      "queries": [
+        "mirror Claude Code harness memory into a crib project",
+        "make the harness's own MEMORY.md files searchable alongside notes",
+        "import the assistant's per-project memory so other tools can read it"
+      ]
+    },
+    {
+      "id": "version-ring",
+      "expect": "DESIGN.md",
+      "expect_heading": "Versioning",
+      "queries": [
+        "per-write version ring for cheap rollback of a bad write",
+        "undo an automatic note edit by restoring a previous copy",
+        "keep recent revisions of a note so a wrong write is recoverable"
+      ]
+    },
+    {
+      "id": "distill",
+      "expect": "docs/knowledge-capture.md",
+      "expect_heading": "distill",
+      "queries": [
+        "distill a note to compress dedupe and normalize without a watcher feedback loop",
+        "rewrite a note to be tighter and merge duplicates, only on demand",
+        "clean up and condense stored knowledge with an LLM pass"
+      ]
+    },
+    {
+      "id": "id-index-file",
+      "expect": "DESIGN.md",
+      "expect_heading": "coordination",
+      "queries": [
+        "the single index file routine every write funnels through",
+        "one hash gated index path shared by writers"
+      ]
+    },
+    {
+      "id": "id-lexical-cache",
+      "expect": "DESIGN.md",
+      "expect_heading": "10.3",
+      "queries": [
+        "warm lexical cache holding the per project bm25 index",
+        "where the sparse keyword index is kept warm"
+      ]
+    }
+  ]
+}

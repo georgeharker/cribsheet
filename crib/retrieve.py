@@ -64,6 +64,44 @@ class BM25:
         return out
 
 
+def _lexical_text(document: str, meta: dict | None) -> str:
+    """BM25 corpus text: the section's heading breadcrumb (from metadata)
+    prepended to the body, mirroring the dense side's `Chunk.index_text` so a
+    keyword query matching only a section's *subject* still scores. Applies on
+    the next cache rebuild — no re-embed needed (docs/retrieval-and-adoption.md §3)."""
+    head = (meta or {}).get("heading_path", "")
+    return f"{head.replace('/', ' ')}\n{document}" if head else document
+
+
+# Split a token on camelCase / PascalCase / acronym boundaries (the tokenizer
+# keeps these whole because there's no separator). `_TOKEN` already keeps
+# underscores, so snake_case is handled by splitting on "_" first.
+_CAMEL = re.compile(r"[A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z0-9]+|[A-Z]+|[0-9]+")
+
+
+def _subtokens(text: str) -> list[str]:
+    """Component words of compound identifiers the tokenizer keeps whole —
+    snake_case (`_` is a word char) and camel/PascalCase (no separator at all).
+    So a spaced query ("restart server", "index file", "lexical cache") matches a
+    single-token identifier (`:MCPRestartServer`, `index_file`, `LexicalCache`).
+    Only genuine compounds contribute — plain words are already indexed from the
+    body. Tier-1 keyword sidecar (docs/retrieval-and-adoption.md §3): on-the-fly,
+    no storage, always current."""
+    extra: list[str] = []
+    for tok in _TOKEN.findall(text):
+        parts = [p for seg in tok.split("_") for p in _CAMEL.findall(seg)]
+        if len(parts) > 1:
+            extra.extend(p.lower() for p in parts)
+    return extra
+
+
+def _lexical_tokens(document: str, meta: dict | None) -> list[str]:
+    """The BM25 token list for one chunk: heading-enriched body tokens plus the
+    split components of any compound identifiers within it."""
+    text = _lexical_text(document, meta)
+    return tokenize(text) + _subtokens(text)
+
+
 def reciprocal_rank_fusion(rankings: list[list[str]], k: int = 60) -> list[str]:
     """Fuse ranked id-lists (each best-first) into one ranking by RRF score."""
     fused: dict[str, float] = {}
@@ -177,6 +215,6 @@ class LexicalCache:
         if entry is None:
             docs = self._store.get_docs({"project": project})
             ids = list(docs)
-            entry = (ids, docs, BM25([tokenize(docs[i][0]) for i in ids]))
+            entry = (ids, docs, BM25([_lexical_tokens(*docs[i]) for i in ids]))
             self._entries[project] = entry
         return entry

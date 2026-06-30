@@ -1,6 +1,12 @@
 """BM25 lexical scoring and reciprocal-rank fusion."""
 
-from crib.retrieve import BM25, reciprocal_rank_fusion, tokenize
+from crib.retrieve import (
+    BM25,
+    _lexical_tokens,
+    _subtokens,
+    reciprocal_rank_fusion,
+    tokenize,
+)
 
 
 def _corpus():
@@ -19,6 +25,29 @@ def test_bm25_ranks_exact_term_match_first():
 
 def test_bm25_unknown_terms_score_zero():
     assert BM25(_corpus()).scores(tokenize("kubernetes helm")) == [0.0, 0.0, 0.0]
+
+
+def test_subtokens_split_compound_identifiers():
+    assert set(_subtokens("MCPRestartServer")) >= {"mcp", "restart", "server"}
+    assert set(_subtokens("index_file")) >= {"index", "file"}
+    assert set(_subtokens("LexicalCache")) >= {"lexical", "cache"}
+    assert _subtokens("server") == []          # plain word: nothing added
+    assert _subtokens("the combiner log") == []  # all plain words
+
+
+def test_subtokens_let_spaced_query_match_a_solid_identifier():
+    # The tier-1 keyword sidecar's whole point: "index file" must match
+    # `index_file`, which the tokenizer keeps as one token (`_` is a word char),
+    # so plain BM25 scores it zero. With subtokens it matches.
+    plain = [tokenize("call the index_file routine"),
+             tokenize("an unrelated note about cats")]
+    assert BM25(plain).scores(tokenize("index file"))[0] == 0.0   # before: miss
+
+    enriched = [_lexical_tokens("call the index_file routine", None),
+                _lexical_tokens("an unrelated note about cats", None)]
+    scores = BM25(enriched).scores(tokenize("index file"))
+    assert scores[0] > 0.0                       # after: hit
+    assert scores[0] > scores[1]
 
 
 def test_rrf_rewards_agreement_across_rankings():
