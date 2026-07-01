@@ -120,6 +120,16 @@ class GenerateConfig:
     # bound, so N-at-once cuts an elaborate pass wall-clock ~Nx).
     timeout: float = 90.0
     concurrency: int = 6
+    # Whole-doc bulk authoring: one structured call per note (all its sections at
+    # once, so the model can pick section-*distinctive* terms), with a per-section
+    # mop-up for any section the bulk pass skipped. `bulk_max_sections` batches a
+    # large note so the structured output fits `max_tokens` — the binding limit is
+    # the model's output cap, so keep the provider's `max_tokens` generous (the old
+    # implicit 1024 truncated batches; see models.toml). A batch that still overruns
+    # or the model skips is caught by the mop-up, not lost. Set `bulk=false` for the
+    # legacy one-call-per-section path.
+    bulk: bool = True
+    bulk_max_sections: int = 10
 
 
 @dataclass

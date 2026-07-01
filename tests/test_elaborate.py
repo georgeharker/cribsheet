@@ -129,6 +129,7 @@ def test_downweight_scales_elaboration_contribution():
 
 # --- elaborate verb (fake generator) ----------------------------------------
 def test_elaborate_writes_store_and_skips_existing(crib, monkeypatch):
+    crib.config.generate.bulk = False   # exercise the per-section path (mop-up code)
     run(crib.store_note("The deployment restarts on config change.",
                         title="deploy", project="p"))
 
@@ -186,6 +187,7 @@ def test_summary_alias_cache_ranks_section_by_rephrasing():
 
 
 def test_summarize_writes_summary_index(crib, monkeypatch):
+    crib.config.generate.bulk = False   # per-section path
     run(crib.store_note("The deployment restarts on config change.",
                         title="deploy", project="p"))
 
@@ -197,6 +199,64 @@ def test_summarize_writes_summary_index(crib, monkeypatch):
     assert out["written"] >= 1 and out["errors"] == 0
     store = SectionIndex(crib.paths.project_dir("p"), "summary_index")
     assert store.labels() == ["summary"]
+
+
+def test_elaborate_bulk_path_covers_all_sections(crib, monkeypatch):
+    """The default whole-doc bulk path: one structured call authors every section;
+    the fake echoes back the `<<< SECTION: heading >>>` headings so mapping resolves,
+    and no per-section mop-up call is needed."""
+    import re
+
+    run(crib.store_note("# Alpha\nThe alpha ring buffer.\n\n## Beta\nBeta token "
+                        "encryption with fernet.\n", title="doc", project="p"))
+    assert crib.config.generate.bulk is True   # default
+
+    struct_calls = {"n": 0}
+
+    async def fake_struct(cfg, system, user, schema, purpose="elaborate",
+                          schema_name="emit", schema_description="", timeout=None):
+        struct_calls["n"] += 1
+        heads = re.findall(r"<<< SECTION: (.*?) >>>", user)
+        return {"sections": [{"heading": h, "terms": ["kubernetes", "orchestration"]}
+                             for h in heads]}
+
+    async def fake_mop(cfg, system, user, purpose="elaborate", timeout=None):
+        raise AssertionError("mop-up should not run when bulk covers all sections")
+
+    monkeypatch.setattr("crib.generate.agenerate_structured", fake_struct)
+    monkeypatch.setattr("crib.generate.agenerate", fake_mop)
+
+    out = run(crib.elaborate("keywords", project="p"))
+    assert out["written"] >= 2 and out["errors"] == 0
+    assert out["bulk_docs"] == 1 and struct_calls["n"] == 1   # one call for the whole doc
+    store = SectionIndex(crib.paths.project_dir("p"))
+    assert store.read_terms("keywords",
+                            [p.name.split(".")[0]
+                             for p in (store.root / "keywords").glob("*.toml")][0])
+
+
+def test_elaborate_bulk_miss_falls_back_to_mopup(crib, monkeypatch):
+    """A section the bulk call omits (non-conformance) is swept by the per-section
+    mop-up — the content-addressed convergence guarantee."""
+    run(crib.store_note("# Alpha\nAlpha body.\n\n## Beta\nBeta body.\n",
+                        title="doc", project="p"))
+
+    async def fake_struct(cfg, system, user, schema, purpose="elaborate",
+                          schema_name="emit", schema_description="", timeout=None):
+        return {"sections": [{"heading": "Doc/Alpha", "terms": ["alpha-term"]}]}  # drops Beta
+
+    mop = {"headings": []}
+
+    async def fake_mop(cfg, system, user, purpose="elaborate", timeout=None):
+        mop["headings"].append(user.splitlines()[0])
+        return "beta-term"
+
+    monkeypatch.setattr("crib.generate.agenerate_structured", fake_struct)
+    monkeypatch.setattr("crib.generate.agenerate", fake_mop)
+
+    out = run(crib.elaborate("keywords", project="p"))
+    assert out["written"] == 2 and out["errors"] == 0      # both sections written
+    assert any("Beta" in h for h in mop["headings"])       # Beta went through mop-up
 
 
 # --- distill verb (fake generator) ------------------------------------------

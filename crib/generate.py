@@ -13,7 +13,6 @@ a thread so the daemon's async tools never block the event loop.
 from __future__ import annotations
 
 import asyncio
-import tempfile
 from pathlib import Path
 
 from .config import GenerateConfig
@@ -60,33 +59,52 @@ def generate(cfg: GenerateConfig, system: str, user: str,
     """Run one chat turn; return the content stream as a stripped string.
 
     `purpose` selects the provider from the config's profile. Thinking is dropped
-    (``thinking="none"``) — callers want the answer, not the reasoning."""
-    from llmkit.bridge import ChatRequest, chat
+    (``thinking="none"``) — callers want the answer, not the reasoning. Captured
+    in-process via llmkit's string sink (no temp file)."""
+    from llmkit.bridge import ChatRequest, chat_to_str
 
     provider = resolve_provider(cfg, purpose)
     request = ChatRequest(user=user, system=system)
-    with tempfile.NamedTemporaryFile("w+", suffix=".txt", delete=False) as tf:
-        out_path = tf.name
     try:
-        try:
-            code = chat(provider, request, content=out_path, thinking="none")
-        except Exception as e:  # noqa: BLE001 — adapter import / call failures
-            raise GenerationError(
-                f"llmkit generation failed for adapter {provider.adapter!r}: {e}. "
-                f"Is the provider configured and its extra installed "
-                f"(llmkit[bridge]/[anthropic]/[google]/[claude])?"
-            ) from e
-        text = Path(out_path).read_text()
-    finally:
-        try:
-            Path(out_path).unlink()
-        except OSError:
-            pass
+        code, text = chat_to_str(provider, request, thinking="none")
+    except Exception as e:  # noqa: BLE001 — adapter import / call failures
+        raise GenerationError(
+            f"llmkit generation failed for adapter {provider.adapter!r}: {e}. "
+            f"Is the provider configured and its extra installed "
+            f"(llmkit[bridge]/[anthropic]/[google]/[claude])?"
+        ) from e
     if code != 0:
         raise GenerationError(
             f"llmkit generation exited {code} for adapter {provider.adapter!r}; "
             f"check the provider endpoint/key and that its extra is installed.")
     return text.strip()
+
+
+def generate_structured(cfg: GenerateConfig, system: str, user: str,
+                        schema: dict, purpose: str = "elaborate",
+                        schema_name: str = "emit",
+                        schema_description: str = "") -> object:
+    """Run one chat turn constrained to ``schema`` (JSON Schema); return the parsed
+    object (or ``None`` on a non-zero exit / unparseable output — the caller falls
+    back). Adapters enforce the schema natively (anthropic forced tool-use,
+    openai-compatible ``response_format``), so the model can't wander off-format."""
+    from llmkit.bridge import ChatRequest, chat_structured
+
+    provider = resolve_provider(cfg, purpose)
+    request = ChatRequest(user=user, system=system, schema=schema,
+                          schema_name=schema_name,
+                          schema_description=schema_description)
+    try:
+        code, data = chat_structured(provider, request)
+    except Exception as e:  # noqa: BLE001 — adapter import / call failures
+        raise GenerationError(
+            f"llmkit structured generation failed for adapter "
+            f"{provider.adapter!r}: {e}.") from e
+    if code != 0:
+        raise GenerationError(
+            f"llmkit structured generation exited {code} for adapter "
+            f"{provider.adapter!r}.")
+    return data
 
 
 async def agenerate(cfg: GenerateConfig, system: str, user: str,
@@ -96,6 +114,20 @@ async def agenerate(cfg: GenerateConfig, system: str, user: str,
     thread is left to the SDK's own timeout) and TimeoutError propagates, so a
     hung endpoint can't stall a batch."""
     coro = asyncio.to_thread(generate, cfg, system, user, purpose)
+    if timeout:
+        return await asyncio.wait_for(coro, timeout)
+    return await coro
+
+
+async def agenerate_structured(cfg: GenerateConfig, system: str, user: str,
+                               schema: dict, purpose: str = "elaborate",
+                               schema_name: str = "emit",
+                               schema_description: str = "",
+                               timeout: float | None = None) -> object:
+    """Async wrapper for :func:`generate_structured` (worker thread + optional
+    wall-clock cap), mirroring :func:`agenerate`."""
+    coro = asyncio.to_thread(generate_structured, cfg, system, user, schema,
+                             purpose, schema_name, schema_description)
     if timeout:
         return await asyncio.wait_for(coro, timeout)
     return await coro

@@ -598,7 +598,7 @@ class Crib:
                 f"unknown {purpose} label {label!r}: no builtin and no "
                 f"[{purpose}.{label}].prompt in config")
         store = SectionIndex(self.paths.project_dir(proj), root_name)
-        from .generate import agenerate, resolve_provider
+        from .generate import agenerate, agenerate_structured, resolve_provider
         try:                                    # record the resolved provider for provenance
             _p = resolve_provider(self.config.generate, purpose)
             model = _p.model or _p.adapter or ""
@@ -627,7 +627,7 @@ class Crib:
             return fallback
 
         seen_sections: set[str] = set()
-        targets: list[tuple[str, str, str, str]] = []   # (section_hash, relpath, heading, user)
+        targets: list[tuple[str, str, str, str]] = []   # (section_hash, relpath, heading, body)
         skipped = 0
         for _cid, (doc, meta) in self.store.get_docs({"project": proj}).items():
             if relpath and meta.get("relpath") != relpath:
@@ -641,22 +641,30 @@ class Crib:
                 continue
             rp = meta.get("relpath", "")
             heading = meta.get("heading_path", "")
-            body = _section_text(rp, heading, doc)
-            user = f"{heading}\n\n{body}" if heading else body
-            targets.append((sh, rp, heading, user))
+            targets.append((sh, rp, heading, _section_text(rp, heading, doc)))
 
         gen = self.config.generate
         total = len(targets)
         sem = asyncio.Semaphore(max(1, gen.concurrency))
-        counters = {"written": 0, "errors": 0, "done": 0}
+        counters = {"written": 0, "errors": 0, "done": 0, "bulk_docs": 0}
+        done_sh: set[str] = set()   # sections already written (bulk covered them)
         tag = f"{purpose} {label}"
-        print(f"[{tag}] {total} sections to generate "
-              f"(skipped {skipped} cached; concurrency {gen.concurrency}, "
-              f"timeout {gen.timeout:g}s)", file=sys.stderr, flush=True)
+        mode = "bulk+mop-up" if gen.bulk else "per-section"
+        print(f"[{tag}] {total} sections to generate ({mode}; skipped {skipped} "
+              f"cached; concurrency {gen.concurrency}, timeout {gen.timeout:g}s)",
+              file=sys.stderr, flush=True)
 
-        async def _one(sh: str, rp: str, heading: str, user: str) -> None:
+        def _record(sh: str, rp: str, heading: str, terms: list[str]) -> None:
+            if terms and sh not in done_sh:
+                store.write(label, sh, terms, relpath=rp, heading=heading, model=model)
+                counters["written"] += 1
+                done_sh.add(sh)
+
+        async def _one(sh: str, rp: str, heading: str, body: str) -> None:
             # Per-section: bounded-concurrent, timeout-capped, error-isolated —
-            # one hung/failed section is skipped, never sinks the pass.
+            # one hung/failed section is skipped, never sinks the pass. Serves both
+            # the legacy path (bulk off) and the mop-up for bulk-missed sections.
+            user = f"{heading}\n\n{body}" if heading else body
             try:
                 async with sem:
                     text = await agenerate(gen, prompt, user, purpose=purpose,
@@ -669,18 +677,101 @@ class Crib:
                       f"{heading[-44:]} — {type(e).__name__}: {e}",
                       file=sys.stderr, flush=True)
                 return
-            if terms:
-                store.write(label, sh, terms, relpath=rp, heading=heading, model=model)
-                counters["written"] += 1
+            _record(sh, rp, heading, terms)
             counters["done"] += 1
             print(f"[{tag}] {counters['done']}/{total} ok   {rp} :: "
                   f"{heading[-44:]} ({len(terms)} terms)", file=sys.stderr, flush=True)
 
+        # Phase 1 — whole-doc bulk authoring (structured, one call per note/batch):
+        # the model sees a note's sections together, so it can pick section-
+        # *distinctive* terms (blind per-section authoring made them generic — see
+        # docs/retrieval-and-adoption.md §5.5). Content-addressing makes it safe: a
+        # skipped/malformed section simply isn't written and is swept by Phase 2, so
+        # strict model conformance is an efficiency, not a correctness, property.
+        if gen.bulk and targets:
+            from collections import defaultdict
+
+            bulk_schema = {
+                "type": "object",
+                "properties": {"sections": {"type": "array", "items": {
+                    "type": "object",
+                    "properties": {"heading": {"type": "string"},
+                                   "terms": {"type": "array",
+                                             "items": {"type": "string"}}},
+                    "required": ["heading", "terms"]}}},
+                "required": ["sections"],
+            }
+            bulk_system = (
+                f"{prompt}\n\nYou are given a DOCUMENT of several sections, each "
+                "introduced by a line `<<< SECTION: <heading> >>>`. Apply the "
+                "instruction above to EACH section independently and return one "
+                "result per section, using that section's exact <heading> string. "
+                "Cover every section.")
+
+            def _match(h: str, by_head: dict[str, tuple]) -> tuple | None:
+                t = by_head.get(h)
+                if t:
+                    return t
+                hl = h.strip().lower().lstrip("#").strip()
+                for head, tt in by_head.items():
+                    hh = head.lower()
+                    if hl and (hl == hh.split("/")[-1].strip() or hl in hh):
+                        return tt
+                return None
+
+            by_doc: dict[str, list[tuple]] = defaultdict(list)
+            for t in targets:
+                by_doc[t[1]].append(t)
+            step = max(1, gen.bulk_max_sections)
+            batches = [items[i:i + step] for items in by_doc.values()
+                       for i in range(0, len(items), step)]
+
+            async def _bulk(batch: list[tuple]) -> None:
+                rp = batch[0][1]
+                by_head = {t[2]: t for t in batch}
+                user = "\n\n".join(f"<<< SECTION: {t[2]} >>>\n{t[3]}" for t in batch)
+                try:
+                    async with sem:
+                        data = await agenerate_structured(
+                            gen, bulk_system, user, bulk_schema, purpose=purpose,
+                            schema_name="emit_terms",
+                            schema_description="Per-section search terms for the document.",
+                            timeout=gen.timeout)
+                except Exception as e:  # noqa: BLE001 — bulk fails → mop-up covers it
+                    print(f"[{tag}] bulk ERR {rp} ({len(batch)} sec) — "
+                          f"{type(e).__name__}: {e} → mop-up",
+                          file=sys.stderr, flush=True)
+                    return
+                items = (data.get("sections") if isinstance(data, dict) else None) or []
+                for it in items:
+                    if not isinstance(it, dict):
+                        continue
+                    terms = [str(x).strip() for x in (it.get("terms") or [])
+                             if str(x).strip()]
+                    tgt = _match(str(it.get("heading") or ""), by_head)
+                    if tgt and terms:
+                        _record(tgt[0], tgt[1], tgt[2], terms)
+                counters["bulk_docs"] += 1
+                got = sum(1 for t in batch if t[0] in done_sh)
+                print(f"[{tag}] bulk {rp}: {got}/{len(batch)} sections",
+                      file=sys.stderr, flush=True)
+
+            await asyncio.gather(*(_bulk(b) for b in batches))
+
+        # Phase 2 — per-section mop-up for anything Phase 1 didn't cover (or every
+        # section when bulk is off). Idempotent: `done_sh` gates re-writes.
+        mop = [t for t in targets if t[0] not in done_sh]
+        if mop:
+            if gen.bulk and counters["bulk_docs"]:
+                print(f"[{tag}] mop-up: {len(mop)} of {total} sections uncovered",
+                      file=sys.stderr, flush=True)
+            await asyncio.gather(*(_one(*t) for t in mop))
+
         if targets:
-            await asyncio.gather(*(_one(*t) for t in targets))
             self.index.invalidate_caches(proj)   # feeds BM25 (keywords) + aliases (summaries)
         return {"project": proj, "label": label, "written": counters["written"],
-                "skipped": skipped, "errors": counters["errors"], "total": total}
+                "skipped": skipped, "errors": counters["errors"], "total": total,
+                "bulk_docs": counters["bulk_docs"]}
 
     # --- import ------------------------------------------------------------
     async def import_docs(self, project: str | None = None,
