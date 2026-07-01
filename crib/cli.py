@@ -25,8 +25,15 @@ def _read_content(value: str) -> str:
 
 
 def _split_labels(spec: str | None) -> list[str] | None:
-    """Parse a `--elaborations a,b,c` spec into a label list (None if unset)."""
-    if not spec:
+    """Parse a `--keywords a,b,c` spec into a label list.
+
+    ``None`` (flag absent) stays None — "use the config default". An *explicit*
+    empty string maps to ``[]`` — "no labels", which disables a default-on index
+    (e.g. `keyword_labels=["keywords"]`). The two are distinct: conflating them
+    made `--keywords ""` silently fall back to the default, so an eval baseline
+    could never turn keyword_index *off* — the `--lift keywords` baseline ran with
+    keywords already on, hiding the true lift as a Δ0 null."""
+    if spec is None:
         return None
     return [s.strip() for s in spec.split(",") if s.strip()]
 

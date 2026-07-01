@@ -28,7 +28,10 @@
 >   cause: **dense recall is already saturated** on this small clustered corpus —
 >   aliases can only displace, not rescue. Needs a **larger/diverse corpus** to
 >   show value → that's why `.crib` was added to zsh-ai, zdot, dotfiler,
->   sharedserver, svg-mcp, mcp-companion (import for volume).
+>   sharedserver, svg-mcp, mcp-companion (import for volume). **Confirmed
+>   net-positive on the volume corpus (§5.5, 2026-07-01): +0.024 MRR @ w=0.15–0.2,
+>   recall held.** Also there: `keywords@0.3` (the shipped default) *hurts* diverse
+>   corpora — retune to w=0.1; best combo `sum@0.2 + kw@0.1` = +0.034 MRR.
 >
 > **To resume on a new machine:**
 > 1. Clone this repo + `git submodule update --init` (vendor/llmkit at 67e8465).
@@ -42,9 +45,13 @@
 > 5. `crib import` inside each `.crib`-tagged repo to load the volume corpora, then
 >    generate indexes + add eval cases spanning them to retest the summary hypothesis.
 >
-> **Open / next:** measure summary_index on the volume corpora (unsaturated recall);
-> keyword sidecar (tier-1 identifier splits) already in; llmkit `chat`→TextIO sink
-> (still temp-file); promote keyword_index to git-tracked once default is stable.
+> **Open / next:** ✅ summary_index measured on the volume corpora — net-positive
+> (§5.5). Next: **whole-doc-context generation** (author a doc's sections together,
+> validate coverage, mop-up misses) to fix generic per-section keywords — pairs with
+> the llmkit `chat`→TextIO **streaming sink** (still temp-file) and a new
+> **structured-output** path on `ChatRequest` (tool/`response_format`) for conformant
+> bulk output. Per-corpus `keyword_weight` (0.3 hurts diverse corpora, §5.5). Promote
+> keyword_index to git-tracked once the default is stable.
 
 Status: design. The substrate that must work **before** automatic capture
 ([knowledge-capture.md](knowledge-capture.md)) delivers any value: if `lookup`
@@ -355,6 +362,54 @@ phrasing rose rank-3 → rank-1 as the section out-scored competitors), and the 
 stragglers (invocation p3, hybrid-fusion, quarantine "low-trust staging area", the
 distill miss) are **unchanged** — correctly, since BM25 can't bridge a synonym gap.
 Those are tier-2's job (§3.1).
+
+### 5.5 Volume-corpus lift — LLM elaboration + summary_index (2026-07-01)
+
+The unsaturated companion to §5.1–5.4: a **12-need / 36-phrasing** set spanning five
+imported repos (dotfiler, mcp-companion, svg-mcp, zdot, sharedserver;
+`scripts/eval_retrieval.volume.cases.json`), each need one direct + two
+**vocabulary-shifted** phrasings — the query≠note gap the enrichments target. Indexes
+were **GLM-authored** (`opencode-glm`; the qwen zen endpoint was offline that day — a
+provenance variable, since alias/keyword quality tracks the generating model).
+Measured **in-process** (`Crib.lookup`, one warm embedder) against a *true* no-LLM-index
+baseline.
+
+| config | MRR | recall@3 | needs all-rank-1 |
+|---|---|---|---|
+| baseline (none) | 0.841 | 0.917 | 5/12 |
+| kw@0.1 | 0.856 | 0.917 | 6/12 |
+| kw@0.3 *(shipped default)* | 0.848 | **0.889** | 5/12 |
+| sum@0.15 | 0.866 | 0.917 | 7/12 |
+| sum@0.2 | 0.861 | 0.917 | 7/12 |
+| **sum@0.2 + kw@0.1** | **0.875** | 0.917 | **7/12** |
+
+- **summary_index is net-positive here — the §5 "needs a larger/diverse corpus"
+  hypothesis is confirmed.** +0.024 MRR at w=0.15 (recall already 0.917, held),
+  promoting stragglers (`dotfiler-deployment 2→1`, `svg-defs 3→1`,
+  `requires-optional 3→2`). This **overturns the cribsheet-only net-negative**: where
+  dense recall isn't saturated the aliases *rescue* rather than *displace*. Sweet spot
+  **w=0.15–0.2**; w≥0.3 starts costing recall.
+- **keyword_weight is corpus-dependent.** The shipped `keywords@0.3` (measured best on
+  cribsheet, §5.4) **hurts here** — recall −0.028 (demotes `svg-defs` out of top-3) for
+  a trivial MRR gain, because the per-section GLM terms are too generic. Dropping to
+  **w=0.1** flips it net-positive (+0.015 MRR, no recall loss). The 0.3 default should
+  **not** be assumed for imported/diverse projects.
+- **They stack.** `sum@0.2 + kw@0.1` → MRR 0.841→**0.875 (+0.034)**, recall held,
+  all-rank-1 5→7/12 — best config, beating either alone.
+- **Why keywords come out generic → the next lever.** Sections are authored **blind to
+  their siblings** (`_generate_index`, one LLM call per section), so the model can't
+  choose *distinctive* terms. **Whole-doc-context generation** — author a doc's sections
+  together, validate heading→`section_hash` coverage, mop-up the misses (content-
+  addressing makes the mop-up idempotent + convergent, so strict model conformance is an
+  *efficiency* not a *correctness* property) — is the fix, re-measurable on this set.
+
+**Measurement integrity — two bugs fixed to get valid numbers, both masking the lift:**
+`DaemonClient._data` returned empty hits (FastMCP typed `.data` reconstructs a
+list-of-objects return as empty models → `[{}]`/`Root()`; read `structured_content`
+instead) — the eval/gate drive the daemon by default, so every hit scored as a miss;
+`_split_labels("")` couldn't *disable* a default-on index (returned None → config
+default), so `--lift keywords`'s baseline silently ran **with** keywords on → a Δ0 false
+null. Regression tests: `tests/test_client.py`, `tests/test_cli_labels.py`.
 
 ## 6. Recommended build order (each gated by a proof on §5)
 

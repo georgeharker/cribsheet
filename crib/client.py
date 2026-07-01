@@ -26,7 +26,20 @@ class DaemonError(RuntimeError):
 
 
 def _data(res: Any) -> Any:
-    """Unwrap a CallToolResult to plain Python (structured output, else text)."""
+    """Unwrap a CallToolResult to plain Python.
+
+    Prefer ``structured_content`` (the faithful JSON dict the daemon emitted) over
+    ``.data``: FastMCP's client-side typed reconstruction of ``.data`` collapses a
+    list-of-objects return into empty, field-less models — e.g. ``lookup`` came
+    back as ``[Root(), Root()]``, serializing to ``[{}, {}]`` and rendering as
+    ``Root()`` — because it can't rebuild the item type from the output schema.
+    ``.data`` stays correct for scalar/string returns, so it remains the fallback.
+    Every crib tool's structured output is the ``{"result": <value>}`` envelope
+    FastMCP wraps non-object returns in; unwrap it. Dict-returning tools (writes)
+    surface their dict directly (keys != {"result"}), so pass those through as-is."""
+    sc = getattr(res, "structured_content", None)
+    if isinstance(sc, dict):
+        return sc["result"] if set(sc) == {"result"} else sc
     data = getattr(res, "data", None)
     if data is not None:
         return data

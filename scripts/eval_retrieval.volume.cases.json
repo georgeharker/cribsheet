@@ -1,0 +1,138 @@
+{
+  "_doc": "Volume corpus eval cases — the UNSATURATED companion to eval_retrieval.cases.json. Where the cribsheet-only set has saturated recall (which is exactly why summary_index showed net-negative lift there, docs/retrieval-and-adoption.md §5/'Findings'), this set spans the diverse volume corpora imported for that reason (dotfiler, mcp-companion, svg-mcp, zdot, sharedserver). Each need targets a DISTINCTIVE section in one corpus and carries 3 phrasings: phrasing 1 is direct (near the note's own vocabulary), phrasings 2-3 are deliberately vocabulary-shifted (the querier's words, not the author's) — that query!=note gap is precisely what doc2query summary_index aliases (§3 items 2-3) are meant to close, and what tier-2 LLM keywords (§3.1) attack from the BM25 side. Per-need `project` routes each query to its corpus. Run: python scripts/eval_retrieval.py --cases scripts/eval_retrieval.volume.cases.json [--lift keywords | --lift-summaries summary]. NOTE: drives the daemon by default — after generating indexes, restart the daemon (or pass --no-daemon) so it serves the rebuilt collections.",
+  "project": "default",
+  "needs": [
+    {
+      "id": "dotfiler-branch-resolution",
+      "project": "dotfiler",
+      "expect": ["update-internals.md", "how-updates-work.md"],
+      "expect_heading": null,
+      "queries": [
+        "how does dotfiler resolve which upstream branch to pull on self-update",
+        "where does an update decide which git branch to track",
+        "priority chain for picking the remote branch when pulling a component"
+      ]
+    },
+    {
+      "id": "dotfiler-deployment-topology",
+      "project": "dotfiler",
+      "expect": "update-internals.md",
+      "expect_heading": "Deployment Topologies",
+      "queries": [
+        "how does dotfiler detect submodule vs subtree vs standalone repos",
+        "choosing the pull strategy from how a component repo is laid out",
+        "telling apart a vendored git submodule from a squashed subtree"
+      ]
+    },
+    {
+      "id": "dotfiler-update-hooks",
+      "project": "dotfiler",
+      "expect": "update-hooks.md",
+      "expect_heading": null,
+      "queries": [
+        "lifecycle phases of a dotfiler update hook",
+        "which functions do I define in a component update hook file",
+        "ordering of pre and post steps when a module updates itself"
+      ]
+    },
+    {
+      "id": "mcp-token-encryption",
+      "project": "mcp-companion",
+      "expect": "oauth.md",
+      "expect_heading": "Encryption",
+      "queries": [
+        "how are stored OAuth tokens encrypted in the combiner",
+        "what happens to cached credentials when the encryption key changes",
+        "fernet key derivation for saved auth secrets and the fallback machine id"
+      ]
+    },
+    {
+      "id": "mcp-tool-naming",
+      "project": "mcp-companion",
+      "expect": "design.md",
+      "expect_heading": "Tool Naming",
+      "queries": [
+        "how does the combiner namespace tool names from mounted servers",
+        "recovering the origin server name from a prefixed tool identifier",
+        "why do combined tool keys use a double underscore separator"
+      ]
+    },
+    {
+      "id": "mcp-neovim-control",
+      "project": "mcp-companion",
+      "expect": "neovim-control.md",
+      "expect_heading": null,
+      "queries": [
+        "letting an agent drive a running neovim instance",
+        "choosing which editor window a tool opens in with multiple editors",
+        "controlling the text editor from the model over mcp"
+      ]
+    },
+    {
+      "id": "svg-offset-path-rings",
+      "project": "svg-mcp",
+      "expect": "cookbook.md",
+      "expect_heading": "Concentric rings",
+      "queries": [
+        "make concentric rings by offsetting a shape outward and inward",
+        "grow and shrink a squircle into nested outlines",
+        "insets and bezel rings using offset_path with a negative distance"
+      ]
+    },
+    {
+      "id": "svg-defs-registry",
+      "project": "svg-mcp",
+      "expect": "DESIGN.md",
+      "expect_heading": "Defs registry",
+      "queries": [
+        "unified registry for gradients patterns markers and clip paths",
+        "one keyed store of reusable named resources referenced by id",
+        "addressing a reusable paint server by friendly at-name or url hash"
+      ]
+    },
+    {
+      "id": "svg-naming-schemes",
+      "project": "svg-mcp",
+      "expect": "DESIGN.md",
+      "expect_heading": "Naming",
+      "queries": [
+        "machine-legible schemes for addressing nodes in the document",
+        "how do I refer to an element by handle instead of raw svg id",
+        "the three ways to name and locate a node"
+      ]
+    },
+    {
+      "id": "zdot-requires-optional",
+      "project": "zdot",
+      "expect": "dependencies.md",
+      "expect_heading": "requires-optional",
+      "queries": [
+        "soft dependency that only applies when a provider actually exists",
+        "conditional ordering edge that disappears when nothing provides the phase",
+        "difference between requires-optional and after for hook ordering"
+      ]
+    },
+    {
+      "id": "zdot-compdef-queue",
+      "project": "zdot",
+      "expect": "plugin-implementation.md",
+      "expect_heading": "Compdef Queue",
+      "queries": [
+        "queueing compdef calls made before compinit runs",
+        "intercepting bare compdef from omz plugins until completion is initialized",
+        "replaying deferred completion definitions after compinit finishes"
+      ]
+    },
+    {
+      "id": "sharedserver-teardown",
+      "project": "sharedserver",
+      "expect": "sharedserver-crate-architecture",
+      "expect_heading": null,
+      "queries": [
+        "which process reaps the shared server and deletes its lock file",
+        "watcher ownership of the server lifecycle and the grace period",
+        "avoiding a stop-restart race that nukes the new instance's locks"
+      ]
+    }
+  ]
+}
