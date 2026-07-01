@@ -35,6 +35,19 @@ pip install -e './vendor/llmkit[anthropic]'        # zen adapter (native Message
 # optional real embedder (bge via ONNX): pip install -e '.[embed]'
 ```
 
+**Restart the daemon after updating source.** The warm MCP daemon (sharedserver
+name `cribsheet`) keeps running the code it started with, so CLI calls (new code)
+hit a stale tool schema — e.g. `import` fails with `Unexpected keyword argument
+cwd`. Bounce it so it reloads:
+
+```sh
+sharedserver stop cribsheet        # next crib call respawns from the new code
+# (won't stop? sharedserver admin kill cribsheet)
+```
+
+Alternatively, add `--no-daemon` to any verb to run current code in-process and
+skip the daemon entirely — recommended for the one-shot ingest/index batch below.
+
 Update the other source repos too (so imported docs are current):
 
 ```sh
