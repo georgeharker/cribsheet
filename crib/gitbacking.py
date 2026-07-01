@@ -142,9 +142,40 @@ class GitBacking:
         return "; ".join(out) or "already initialized"
 
     def setup(self, remote: str) -> SyncResult:
-        """New-machine onboarding: init + register the merge driver + set the
-        remote, then pull to join the shared notes. The caller reconciles the
-        index afterwards (a pull rewrote the working tree)."""
+        """New-machine onboarding: join an existing shared-notes remote.
+
+        The remote already carries `.gitignore`/`.gitattributes`, so we must NOT
+        write local copies before pulling — untracked files collide with the
+        merge and abort it. Order: init the repo + remote, register the merge
+        driver (a `.git/config`-only change), fetch, and if the remote branch
+        exists, hard-adopt its tree (overwriting any stray untracked files);
+        only then ensure the shared files (now no-ops the remote provided).
+        Falls back to the plain init+pull path for a brand-new/empty remote."""
+        if not self.enabled:
+            self._run("init")
+        if self._run("remote", "get-url", "origin").returncode == 0:
+            self._run("remote", "set-url", "origin", remote)
+        else:
+            self._run("remote", "add", "origin", remote)
+        self._ensure_merge_driver()          # config only — safe before checkout
+
+        branch = self._branch()
+        fetched = self._run("fetch", "origin")
+        remote_has_branch = self._run(
+            "rev-parse", "--verify", f"origin/{branch}").returncode == 0
+        if fetched.returncode == 0 and remote_has_branch:
+            # Adopt the remote tree. Drop the two shared files first if they're
+            # present-but-untracked (e.g. from a prior failed setup) so checkout
+            # can't collide — the remote's tracked versions replace them.
+            for f in (".gitignore", ".gitattributes"):
+                (self.data_dir / f).unlink(missing_ok=True)
+            self._run("checkout", "-B", branch, f"origin/{branch}")
+            self._run("branch", f"--set-upstream-to=origin/{branch}", branch)
+            self._ensure_gitignore()         # no-ops: remote provided them
+            self._ensure_gitattributes()
+            return SyncResult(True, False, True, False, [],
+                              f"joined {remote} at origin/{branch}", changed=True)
+        # Brand-new / empty remote: fall back to bootstrap + (no-op) pull.
         self.init(remote)
         return self.pull()
 
