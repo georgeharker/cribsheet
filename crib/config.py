@@ -67,6 +67,59 @@ class RetrieveConfig:
     rerank: bool = False
     rerank_model: str = "Xenova/ms-marco-MiniLM-L-6-v2"  # small ONNX cross-encoder
     rerank_top_n: int = 20                               # candidate pool to rerank
+    # keyword_index labels folded into the BM25 corpus (§3.1): each names a
+    # section-addressed keyword set under
+    # <project>/keyword_index/<label>/<section_hash>.toml. Empty = none. Generate
+    # with `crib elaborate <label>`; activate a subset here for retrieval.
+    keyword_labels: list[str] = field(default_factory=list)
+    # Weight of keyword_index tokens in BM25 relative to body tokens (1.0 = equal).
+    # <1.0 damps them so generic LLM terms lift recall without reshuffling ranks;
+    # 0.3 measured best on the eval harness.
+    keyword_weight: float = 0.3
+    # summary_index labels whose LLM rephrasings are embedded as alias vectors on
+    # the dense side (§3), so a paraphrased query matches a section even with zero
+    # shared tokens. Section-addressed under
+    # <project>/summary_index/<label>/<section_hash>.toml. Generate with
+    # `crib summarize <label>`.
+    summary_labels: list[str] = field(default_factory=list)
+    # RRF fusion weight of the summary alias ranking vs the dense/BM25 lists
+    # (1.0 = equal vote). Broad summaries swamp retrieval at equal weight, so
+    # they should contribute below the primary signals; tune on the eval harness.
+    summary_weight: float = 0.3
+
+
+@dataclass
+class GenerateConfig:
+    """LLM generation for `distill` and `elaborate` (knowledge-capture §2).
+
+    Preferred: point `config` at an llmkit **providers/profiles** TOML (the same
+    schema as `~/.config/zsh-ai/models.toml` — `[defaults]` / `[providers.<name>]`
+    / `[profiles.<name>]`), then pick a provider per *purpose* (`distill`,
+    `elaborate`) via a `profile`'s widget keys, or force one with `provider`.
+    This is how the generation endpoints ("eps") are driven — many defined,
+    selected by name/profile, switchable per machine.
+
+    Fallback: if `config` is unset, the inline single-provider fields
+    (adapter/model/endpoint/…) build one `Provider` directly. Needs the matching
+    llmkit extra (`llmkit[bridge]` for openai, `[anthropic]`, `[google]`,
+    `[claude]`)."""
+    # providers/profiles file (llmkit format, like models.toml)
+    config: str | None = None
+    profile: str | None = None       # profile whose widget keys map purpose→provider
+    provider: str | None = None      # force a named provider (wins over profile)
+    # inline single-provider fallback (used only when `config` is unset)
+    adapter: str = "claude_code"     # claude_code | openai-compatible | anthropic | google
+    model: str | None = None
+    endpoint: str | None = None
+    api_key_env: str | None = None
+    api_key: str | None = None
+    max_tokens: int = 2048
+    temperature: float = 0.2
+    # per-call wall-clock cap (seconds) — a hung endpoint is abandoned, not left
+    # to stall a batch; concurrency bounds parallel generation calls (network-
+    # bound, so N-at-once cuts an elaborate pass wall-clock ~Nx).
+    timeout: float = 90.0
+    concurrency: int = 6
 
 
 @dataclass
@@ -105,6 +158,13 @@ class Config:
     memory: MemoryConfig = field(default_factory=MemoryConfig)
     chroma: ChromaConfig = field(default_factory=ChromaConfig)
     daemon: DaemonConfig = field(default_factory=DaemonConfig)
+    generate: GenerateConfig = field(default_factory=GenerateConfig)
+    # `[elaborate.<label>]` / `[summarize.<label>]` tables → per-label prompt.
+    # Built-in labels have defaults in crib/section_index.py; a config entry
+    # overrides or defines a new label. `elaborate` → keyword_index (BM25),
+    # `summarize` → summary_index (dense).
+    elaborate: dict[str, dict[str, Any]] = field(default_factory=dict)
+    summarize: dict[str, dict[str, Any]] = field(default_factory=dict)
     versions_keep: int = 20
     watch: bool = True
     # Named path roots → local absolute dirs, e.g. {"DEV": "~/Development"}.
@@ -137,6 +197,14 @@ class Config:
             cfg.chroma = ChromaConfig(**{**vars(cfg.chroma), **c})
         if d := data.get("daemon"):
             cfg.daemon = DaemonConfig(**{**vars(cfg.daemon), **d})
+        if g := data.get("generate"):
+            cfg.generate = GenerateConfig(**{**vars(cfg.generate), **g})
+        if el := data.get("elaborate"):
+            cfg.elaborate = {str(k): dict(v) for k, v in el.items()
+                             if isinstance(v, dict)}
+        if sm := data.get("summarize"):
+            cfg.summarize = {str(k): dict(v) for k, v in sm.items()
+                             if isinstance(v, dict)}
         if loc := data.get("locations"):
             cfg.locations = {str(k): str(v) for k, v in loc.items()}
         return cfg

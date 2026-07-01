@@ -35,6 +35,17 @@ def _slug(title: str) -> str:
     return "-".join(keep.lower().split()) or "note"
 
 
+# Built-in distill instruction (knowledge-capture §4); a project's `.cribproject`
+# `distill_prompt` overrides it.
+DEFAULT_DISTILL_PROMPT = (
+    "Revise this note to be tighter and cleaner while preserving meaning. "
+    "Compress verbose prose, merge duplicated points, normalize structure. "
+    "KEEP every fact, decision, gotcha, and API detail; DROP deliberation, "
+    "hedging, and restated context. Preserve code blocks and commands VERBATIM. "
+    "Return ONLY the revised note body in markdown — no preamble, no fences."
+)
+
+
 @dataclass
 class LookupHit:
     project: str
@@ -55,7 +66,9 @@ class Crib:
         self.embedder = build_embedder(config.embed)
         self.index = IndexEngine(store, self.embedder,
                                  config.chunk.window_words,
-                                 config.chunk.overlap_words)
+                                 config.chunk.overlap_words,
+                                 keyword_terms=self._keyword_terms,
+                                 summary_terms=self._summary_terms)
         self.git = GitBacking(paths.data_dir)
         self.versions = VersionRing(paths.versions_dir, config.versions_keep)
         self.memory_bindings = MemoryBindings(paths.data_dir / "memory-bindings.json")
@@ -125,6 +138,25 @@ class Crib:
         d = self.paths.notes_dir(project)
         d.mkdir(parents=True, exist_ok=True)
         return d
+
+    def _keyword_terms(self, project: str, section_hash: str,
+                       labels: tuple[str, ...]) -> list[str]:
+        """Per-section keyword_index terms for the given labels — the BM25 feed
+        (§3.1). Read from the section-addressed TOML store; empty when a section
+        has no keyword set for a label yet (graceful: BM25 falls back to
+        body+heading)."""
+        from .section_index import SectionIndex
+        return SectionIndex(self.paths.project_dir(project), "keyword_index") \
+            .terms_for(section_hash, list(labels))
+
+    def _summary_terms(self, project: str, section_hash: str,
+                       labels: tuple[str, ...]) -> list[str]:
+        """Per-section summary_index rephrasings for the given labels — the dense
+        alias feed (§3). Read from the section-addressed TOML store; empty when a
+        section has no summary for a label yet."""
+        from .section_index import SectionIndex
+        return SectionIndex(self.paths.project_dir(project), "summary_index") \
+            .terms_for(section_hash, list(labels))
 
     def abspath(self, project: str, relpath: str) -> Path:
         return self.notes_dir(project) / relpath
@@ -350,43 +382,68 @@ class Crib:
         return [by_id[i] for i in new_order]
 
     def _retrieve(self, proj: str, query: str, vec: list[float], topn: int,
-                  hybrid: bool, rerank: bool) -> list[Hit]:
-        """Candidate Hits in rank order: dense-only or dense⊕BM25 fused by RRF,
+                  hybrid: bool, rerank: bool,
+                  keyword_labels: tuple[str, ...] = (),
+                  keyword_weight: float = 1.0,
+                  summary_labels: tuple[str, ...] = (),
+                  summary_weight: float = 0.3) -> list[Hit]:
+        """Candidate Hits in rank order: dense retrieval, optionally RRF-fused with
+        a BM25 (keyword_index) ranking and/or a summary_index alias-vector ranking,
         then optionally cross-encoder reranked.
 
-        Hits keep the cosine in `.score` (even when reordered by fusion/rerank, so
-        the effect stays visible); a BM25-only finalist's cosine is filled by
-        re-embedding just that handful of chunks."""
+        Three independent recall signals, fused by rank: dense cosine (paraphrase),
+        BM25 (exact terms + keyword_index), and summary aliases (dense match on LLM
+        rephrasings — bridges the pure-paraphrase gap the section body misses).
+        Hits keep the cosine in `.score`; an id absent from the dense finalists has
+        its cosine filled by re-embedding just that handful."""
+        from .retrieve import reciprocal_rank_fusion, tokenize
+
         where = {"project": proj}
         dense = self.store.query(vec, k=topn, where=where)
-        out = dense
-        if hybrid:
-            from .retrieve import reciprocal_rank_fusion, tokenize
+        rankings: list[list[str]] = [[h.id for h in dense]]
+        weights: list[float] = [1.0]            # dense list votes at full weight
+        docs: dict = {}
 
-            ids, docs, bm25 = self.index.lexical.get(proj)   # warm per-project BM25 cache
+        if hybrid:
+            ids, docs, bm25 = self.index.lexical.get(
+                proj, keyword_labels, keyword_weight)
             if ids:
                 sparse = bm25.scores(tokenize(query))
-                sparse_ranked = [ids[j] for j in sorted(
+                rankings.append([ids[j] for j in sorted(
                     range(len(ids)), key=lambda j: sparse[j], reverse=True)
-                    if sparse[j] > 0][:topn]
-                dense_ranked = [h.id for h in dense]
-                fused = reciprocal_rank_fusion(
-                    [dense_ranked, sparse_ranked], k=self.config.retrieve.rrf_k)[:topn]
+                    if sparse[j] > 0][:topn])
+                weights.append(1.0)             # BM25 (keyword downweight is in-corpus)
 
-                dense_by = {h.id: h for h in dense}
-                missing = [cid for cid in fused if cid not in dense_by]
-                cos: dict[str, float] = {}
-                if missing:
-                    for cid, dv in zip(missing, self.embedder.embed(
-                            [docs[cid][0] for cid in missing])):
-                        cos[cid] = sum(a * b for a, b in zip(vec, dv))  # L2-normalized
-                out = []
-                for cid in fused:
-                    if cid in dense_by:
-                        out.append(dense_by[cid])
-                    else:
-                        doc, meta = docs[cid]
-                        out.append(Hit(cid, doc, meta, round(cos.get(cid, 0.0), 4)))
+        if summary_labels:
+            summary_ranked = self.index.summaries.ranking(
+                proj, summary_labels, vec, topn)
+            if summary_ranked:
+                rankings.append(summary_ranked)
+                weights.append(summary_weight)  # broad aliases vote below primaries
+
+        if len(rankings) == 1:          # dense only
+            out = dense
+        else:
+            fused = reciprocal_rank_fusion(
+                rankings, k=self.config.retrieve.rrf_k, weights=weights)[:topn]
+            dense_by = {h.id: h for h in dense}
+            if not docs:                # need doc text to fill non-dense cosines
+                docs = {i: (d, m) for i, (d, m)
+                        in self.store.get_docs(where).items()
+                        if not (m or {}).get("alias")}
+            missing = [cid for cid in fused if cid not in dense_by and cid in docs]
+            cos: dict[str, float] = {}
+            if missing:
+                for cid, dv in zip(missing, self.embedder.embed(
+                        [docs[cid][0] for cid in missing])):
+                    cos[cid] = sum(a * b for a, b in zip(vec, dv))  # L2-normalized
+            out = []
+            for cid in fused:
+                if cid in dense_by:
+                    out.append(dense_by[cid])
+                elif cid in docs:
+                    doc, meta = docs[cid]
+                    out.append(Hit(cid, doc, meta, round(cos.get(cid, 0.0), 4)))
         if rerank:
             out = self._rerank(query, out)
         return out
@@ -394,7 +451,11 @@ class Crib:
     def lookup(self, query: str, project: str | None = None, k: int = 8,
                tags: list[str] | None = None, dedupe: str = "section",
                min_score: float = 0.0, cwd: Path | None = None,
-               hybrid: bool | None = None, rerank: bool | None = None
+               hybrid: bool | None = None, rerank: bool | None = None,
+               keyword_labels: list[str] | None = None,
+               keyword_weight: float | None = None,
+               summary_labels: list[str] | None = None,
+               summary_weight: float | None = None
                ) -> list[LookupHit]:
         """Ranked sections matching `query`.
 
@@ -409,9 +470,18 @@ class Crib:
         vec = self.embedder.embed_query([query])[0]
         use_hybrid = self.config.retrieve.hybrid if hybrid is None else hybrid
         use_rerank = self.config.retrieve.rerank if rerank is None else rerank
+        kw_labels = tuple(self.config.retrieve.keyword_labels
+                          if keyword_labels is None else keyword_labels)
+        kw_weight = (self.config.retrieve.keyword_weight
+                     if keyword_weight is None else keyword_weight)
+        sum_labels = tuple(self.config.retrieve.summary_labels
+                           if summary_labels is None else summary_labels)
+        sum_weight = (self.config.retrieve.summary_weight
+                      if summary_weight is None else summary_weight)
         # Hybrid pulls a wider candidate pool so BM25 can promote terms dense ranked low.
         topn = max(k * 3, 30) if use_hybrid else (k if dedupe == "none" else k * 3)
-        raw = self._retrieve(proj, query, vec, topn, use_hybrid, use_rerank)
+        raw = self._retrieve(proj, query, vec, topn, use_hybrid, use_rerank,
+                             kw_labels, kw_weight, sum_labels, sum_weight)
         hits, seen = [], set()
         line_maps: dict[str, dict[str, tuple[int, int]]] = {}
         for h in raw:
@@ -463,6 +533,154 @@ class Crib:
                     pass
             out.append({**vars(h), "section": section})
         return out
+
+    # --- generation: distill + elaborate (knowledge-capture §2/§4, §3.1) ---
+    async def distill(self, relpath: str, project: str | None = None,
+                      cwd: Path | None = None) -> dict[str, Any]:
+        """Revise a note in place via the LLM: compress, dedupe, normalize; keep
+        facts/decisions, drop deliberation, preserve code verbatim. Thrash-guarded
+        (no write if the body is unchanged), marked `source: distilled`, written
+        through the version ring so a bad revision is a cheap rollback."""
+        proj = self.resolve_project(project, cwd)
+        path = self.abspath(proj, relpath)
+        if not path.exists():
+            raise ValueError(f"no such note: {relpath} in project {proj!r}")
+        note = notes.load(path)
+        prompt = self.project_config(proj).distill_prompt or DEFAULT_DISTILL_PROMPT
+        from .generate import agenerate
+        new_body = (await agenerate(
+            self.config.generate, prompt, note.body, purpose="distill",
+            timeout=self.config.generate.timeout)).strip()
+        if not new_body or new_body == note.body.strip():
+            return {"project": proj, "relpath": relpath, "changed": False}
+        note.frontmatter["source"] = "distilled"
+        note.body = new_body
+        res = await self._write_note(proj, relpath, note)
+        return {"project": proj, "relpath": relpath, "changed": True,
+                "indexed": res.upserted}
+
+    async def elaborate(self, label: str, relpath: str | None = None,
+                        project: str | None = None, cwd: Path | None = None,
+                        overwrite: bool = False) -> dict[str, Any]:
+        """keyword_index: generate search terms per section for BM25 (§3.1).
+        `crib elaborate <label>`; activate via `[retrieve].keyword_labels`."""
+        from .section_index import KEYWORD_PROMPTS, resolve_prompt
+        prompt = resolve_prompt(label, self.config.elaborate, KEYWORD_PROMPTS)
+        return await self._generate_index(
+            "keyword_index", "elaborate", label, prompt, relpath, project, cwd,
+            overwrite)
+
+    async def summarize(self, label: str, relpath: str | None = None,
+                        project: str | None = None, cwd: Path | None = None,
+                        overwrite: bool = False) -> dict[str, Any]:
+        """summary_index: generate LLM rephrasings per section, embedded as dense
+        alias vectors (§3). `crib summarize <label>`; activate via
+        `[retrieve].summary_labels`."""
+        from .section_index import SUMMARY_PROMPTS, resolve_prompt
+        prompt = resolve_prompt(label, self.config.summarize, SUMMARY_PROMPTS)
+        return await self._generate_index(
+            "summary_index", "summarize", label, prompt, relpath, project, cwd,
+            overwrite)
+
+    async def _generate_index(self, root_name: str, purpose: str, label: str,
+                              prompt: str | None, relpath: str | None,
+                              project: str | None, cwd: Path | None,
+                              overwrite: bool) -> dict[str, Any]:
+        """Shared section-level generation for keyword_index / summary_index: one
+        LLM call per **section** with the full section as context (windows share
+        one result), persisted section-addressed so it survives re-windowing.
+        Bounded-concurrent, per-call timeout, error-isolated; skips cached sections
+        unless `overwrite`. Off the write path."""
+        proj = self.resolve_project(project, cwd)
+        from .section_index import SectionIndex, parse_terms
+        if prompt is None:
+            raise ValueError(
+                f"unknown {purpose} label {label!r}: no builtin and no "
+                f"[{purpose}.{label}].prompt in config")
+        store = SectionIndex(self.paths.project_dir(proj), root_name)
+        from .generate import agenerate, resolve_provider
+        try:                                    # record the resolved provider for provenance
+            _p = resolve_provider(self.config.generate, purpose)
+            model = _p.model or _p.adapter or ""
+        except Exception:  # noqa: BLE001 — provenance only; generation reports real errors
+            model = self.config.generate.model or self.config.generate.adapter
+
+        # Group chunks into their sections (section_hash), reconstructing the full
+        # section text once per note from the file (windows would double-count
+        # overlap). One generation per section.
+        section_line_maps: dict[str, dict[str, tuple[int, int]]] = {}
+
+        def _section_text(rp: str, heading: str, fallback: str) -> str:
+            if rp not in section_line_maps:
+                try:
+                    section_line_maps[rp] = section_line_map(
+                        self.abspath(proj, rp).read_text())
+                except OSError:
+                    section_line_maps[rp] = {}
+            span = section_line_maps[rp].get(heading)
+            if span:
+                try:
+                    lines = self.abspath(proj, rp).read_text().splitlines()
+                    return "\n".join(lines[span[0] - 1:span[1]])
+                except OSError:
+                    pass
+            return fallback
+
+        seen_sections: set[str] = set()
+        targets: list[tuple[str, str, str, str]] = []   # (section_hash, relpath, heading, user)
+        skipped = 0
+        for _cid, (doc, meta) in self.store.get_docs({"project": proj}).items():
+            if relpath and meta.get("relpath") != relpath:
+                continue
+            sh = meta.get("section_hash") or meta.get("content_hash")
+            if not sh or sh in seen_sections:
+                continue
+            seen_sections.add(sh)
+            if not overwrite and store.has(label, sh):
+                skipped += 1
+                continue
+            rp = meta.get("relpath", "")
+            heading = meta.get("heading_path", "")
+            body = _section_text(rp, heading, doc)
+            user = f"{heading}\n\n{body}" if heading else body
+            targets.append((sh, rp, heading, user))
+
+        gen = self.config.generate
+        total = len(targets)
+        sem = asyncio.Semaphore(max(1, gen.concurrency))
+        counters = {"written": 0, "errors": 0, "done": 0}
+        tag = f"{purpose} {label}"
+        print(f"[{tag}] {total} sections to generate "
+              f"(skipped {skipped} cached; concurrency {gen.concurrency}, "
+              f"timeout {gen.timeout:g}s)", file=sys.stderr, flush=True)
+
+        async def _one(sh: str, rp: str, heading: str, user: str) -> None:
+            # Per-section: bounded-concurrent, timeout-capped, error-isolated —
+            # one hung/failed section is skipped, never sinks the pass.
+            try:
+                async with sem:
+                    text = await agenerate(gen, prompt, user, purpose=purpose,
+                                           timeout=gen.timeout)
+                terms = parse_terms(text)
+            except Exception as e:  # noqa: BLE001 — timeout or generation failure
+                counters["errors"] += 1
+                counters["done"] += 1
+                print(f"[{tag}] {counters['done']}/{total} ERR  {rp} :: "
+                      f"{heading[-44:]} — {type(e).__name__}: {e}",
+                      file=sys.stderr, flush=True)
+                return
+            if terms:
+                store.write(label, sh, terms, relpath=rp, heading=heading, model=model)
+                counters["written"] += 1
+            counters["done"] += 1
+            print(f"[{tag}] {counters['done']}/{total} ok   {rp} :: "
+                  f"{heading[-44:]} ({len(terms)} terms)", file=sys.stderr, flush=True)
+
+        if targets:
+            await asyncio.gather(*(_one(*t) for t in targets))
+            self.index.invalidate_caches(proj)   # feeds BM25 (keywords) + aliases (summaries)
+        return {"project": proj, "label": label, "written": counters["written"],
+                "skipped": skipped, "errors": counters["errors"], "total": total}
 
     # --- import ------------------------------------------------------------
     async def import_docs(self, project: str | None = None,

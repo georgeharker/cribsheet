@@ -24,6 +24,13 @@ def _read_content(value: str) -> str:
     return sys.stdin.read() if value == "-" else value
 
 
+def _split_labels(spec: str | None) -> list[str] | None:
+    """Parse a `--elaborations a,b,c` spec into a label list (None if unset)."""
+    if not spec:
+        return None
+    return [s.strip() for s in spec.split(",") if s.strip()]
+
+
 def _render_markdown(text: str) -> None:
     """Pretty-print note markdown via llmkit's rich renderer (honouring
     $CRIB_THEME_FILE). Falls back to raw text if the `render` extra
@@ -153,6 +160,18 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("query"); proj(s)
     s.add_argument("-k", type=int, default=8)
     s.add_argument("--tag", action="append", dest="tags")
+    s.add_argument("--keywords",
+                   help="comma-separated keyword_index labels to fold into BM25 "
+                        "for this query (overrides [retrieve].keyword_labels)")
+    s.add_argument("--keyword-weight", type=float, default=None, dest="keyword_weight",
+                   help="weight of keyword_index tokens vs body in BM25 "
+                        "(overrides [retrieve].keyword_weight)")
+    s.add_argument("--summaries",
+                   help="comma-separated summary_index labels to fold in as dense "
+                        "alias vectors (overrides [retrieve].summary_labels)")
+    s.add_argument("--summary-weight", type=float, default=None, dest="summary_weight",
+                   help="RRF fusion weight of the summary alias ranking "
+                        "(overrides [retrieve].summary_weight)")
     s.add_argument("-a", "--render", action="store_true",
                    help="render each matched section as markdown (like `apropos`) "
                         "instead of compact locator lines")
@@ -207,6 +226,26 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("import-memory",
                        help="mirror Claude Code's harness memory into a crib project")
     proj(s)
+
+    s = sub.add_parser("distill",
+                       help="LLM-revise a note in place (compress/dedupe/normalize)")
+    s.add_argument("relpath"); proj(s)
+
+    s = sub.add_parser("elaborate",
+                       help="keyword_index: generate BM25 search terms per section "
+                            "(keywords/questions/phrase/…) for a note or project")
+    s.add_argument("label")
+    s.add_argument("relpath", nargs="?"); proj(s)
+    s.add_argument("--overwrite", action="store_true",
+                   help="regenerate even if it already exists")
+
+    s = sub.add_parser("summarize",
+                       help="summary_index: generate dense alias rephrasings per "
+                            "section for a note or project")
+    s.add_argument("label")
+    s.add_argument("relpath", nargs="?"); proj(s)
+    s.add_argument("--overwrite", action="store_true",
+                   help="regenerate even if it already exists")
 
     s = sub.add_parser("snapshot", help="git checkpoint of the data tree")
     s.add_argument("-m", "--message")
@@ -323,8 +362,17 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
         # (the apropos tool returns full sections); plain `search` gets locators.
         tool = "apropos" if (v in ("apropos", "a") or getattr(args, "render", False)) \
             else "lookup"
-        return tool, {"query": args.query, "project": args.project,
-                      "k": args.k, "tags": args.tags, "cwd": cwd}
+        call = {"query": args.query, "project": args.project,
+                "k": args.k, "tags": args.tags, "cwd": cwd}
+        if tool == "lookup" and getattr(args, "keywords", None):
+            call["keyword_labels"] = _split_labels(args.keywords)
+        if tool == "lookup" and getattr(args, "keyword_weight", None) is not None:
+            call["keyword_weight"] = args.keyword_weight
+        if tool == "lookup" and getattr(args, "summaries", None):
+            call["summary_labels"] = _split_labels(args.summaries)
+        if tool == "lookup" and getattr(args, "summary_weight", None) is not None:
+            call["summary_weight"] = args.summary_weight
+        return tool, call
     if v == "read":
         return "read", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
     if v == "locate":
@@ -359,6 +407,12 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
         return "import", {"project": args.project, "cwd": cwd}
     if v == "import-memory":
         return "import_memory", {"project": args.project, "cwd": cwd}
+    if v == "distill":
+        return "distill", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
+    if v in ("elaborate", "summarize"):
+        return v, {"label": args.label, "relpath": args.relpath,
+                   "project": args.project, "overwrite": args.overwrite,
+                   "cwd": cwd}
     if v == "snapshot":
         return "snapshot", {"message": args.message}
     if v == "history":
@@ -451,7 +505,13 @@ def _run_inprocess(args: Any) -> None:
     j = args.json
     try:
         if args.cmd in ("lookup", "search") and not getattr(args, "render", False):
-            _emit(crib.lookup(args.query, args.project, args.k, args.tags, cwd=cwd), j)
+            _emit(crib.lookup(args.query, args.project, args.k, args.tags, cwd=cwd,
+                              keyword_labels=_split_labels(
+                                  getattr(args, "keywords", None)),
+                              keyword_weight=getattr(args, "keyword_weight", None),
+                              summary_labels=_split_labels(
+                                  getattr(args, "summaries", None)),
+                              summary_weight=getattr(args, "summary_weight", None)), j)
         elif args.cmd in ("lookup", "search", "apropos", "a"):
             _emit_apropos(
                 crib.apropos(args.query, args.project, args.k, args.tags, cwd=cwd), j)
@@ -489,6 +549,16 @@ def _run_inprocess(args: Any) -> None:
             _emit(asyncio.run(crib.import_docs(args.project, cwd=cwd)), j)
         elif args.cmd == "import-memory":
             _emit(asyncio.run(crib.import_claude_memory(args.project, cwd=cwd)), j)
+        elif args.cmd == "distill":
+            _emit(asyncio.run(crib.distill(args.relpath, args.project, cwd=cwd)), j)
+        elif args.cmd == "elaborate":
+            _emit(asyncio.run(crib.elaborate(
+                args.label, args.relpath, args.project, cwd=cwd,
+                overwrite=args.overwrite)), j)
+        elif args.cmd == "summarize":
+            _emit(asyncio.run(crib.summarize(
+                args.label, args.relpath, args.project, cwd=cwd,
+                overwrite=args.overwrite)), j)
         elif args.cmd == "snapshot":
             print(crib.snapshot(args.message))
         elif args.cmd == "history":

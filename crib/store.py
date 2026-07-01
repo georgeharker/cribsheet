@@ -33,6 +33,10 @@ class Hit:
 class Store(Protocol):
     def upsert(self, records: list[Record]) -> None: ...
     def delete(self, ids: list[str]) -> None: ...
+    def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:
+        """Replace metadata for the given ids WITHOUT re-embedding — for cheap
+        metadata-schema/frontmatter drift when a chunk's content is unchanged."""
+        ...
     def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:
         """Return {id: metadata} for records matching `where` (exact-match)."""
         ...
@@ -64,6 +68,11 @@ class InMemoryStore:
     def delete(self, ids: list[str]) -> None:
         for i in ids:
             self._recs.pop(i, None)
+
+    def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:
+        for i, meta in updates.items():
+            if i in self._recs:
+                self._recs[i].metadata = meta
 
     def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:
         return {i: r.metadata for i, r in self._recs.items()
@@ -118,6 +127,10 @@ class JsonStore(InMemoryStore):
         super().delete(ids)
         self._save()
 
+    def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:
+        super().set_meta(updates)
+        self._save()
+
 
 class ChromaStore:
     """Embedded or shared Chroma. Collection has no embedding function."""
@@ -154,6 +167,12 @@ class ChromaStore:
     def delete(self, ids: list[str]) -> None:
         if ids:
             self._col.delete(ids=ids)
+
+    def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:
+        # Chroma updates metadata in place; embeddings/documents untouched.
+        if updates:
+            ids = list(updates)
+            self._col.update(ids=ids, metadatas=[updates[i] for i in ids])
 
     def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:
         where_clause = _chroma_where(where)

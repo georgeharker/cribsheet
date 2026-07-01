@@ -72,14 +72,25 @@ def build_server(crib: Crib | None = None):
     @mcp.tool()
     def lookup(query: str, project: str | None = None, k: int = 8,
                tags: list[str] | None = None,
+               keyword_labels: list[str] | None = None,
+               keyword_weight: float | None = None,
+               summary_labels: list[str] | None = None,
+               summary_weight: float | None = None,
                cwd: str | None = None) -> list[dict[str, Any]]:
         """Semantic search over memory. Call this FIRST when the user asks
         about this project — a prior decision, convention, or investigation
         may already be stored. Returns ranked note sections, each with its
         relpath and the line_start/line_end span of the matching section so
-        you can jump straight to it (pair with `locate` for the abspath)."""
+        you can jump straight to it (pair with `locate` for the abspath).
+        `keyword_labels`/`keyword_weight` (BM25 keyword_index) and
+        `summary_labels` (dense summary_index aliases) override which LLM index
+        sets feed retrieval (default from config); mainly for eval sweeps."""
         return [vars(h) for h in
-                crib.lookup(query, _project(crib, project, cwd), k, tags)]
+                crib.lookup(query, _project(crib, project, cwd), k, tags,
+                            keyword_labels=keyword_labels,
+                            keyword_weight=keyword_weight,
+                            summary_labels=summary_labels,
+                            summary_weight=summary_weight)]
 
     @mcp.tool()
     def apropos(query: str, project: str | None = None, k: int = 8,
@@ -172,6 +183,36 @@ def build_server(crib: Crib | None = None):
         index back in line. Safe to call anytime — the hash gate no-ops anything
         already current."""
         return await crib.reconcile_all()
+
+    @mcp.tool()
+    async def distill(relpath: str, project: str | None = None,
+                      cwd: str | None = None) -> dict[str, Any]:
+        """LLM-revise a note in place: compress, dedupe, normalize — keeping
+        facts/decisions, dropping deliberation, preserving code verbatim.
+        Thrash-guarded (no-op if unchanged); the prior version is recoverable."""
+        return await crib.distill(relpath, _project(crib, project, cwd))
+
+    @mcp.tool()
+    async def elaborate(label: str, relpath: str | None = None,
+                        project: str | None = None, overwrite: bool = False,
+                        cwd: str | None = None) -> dict[str, Any]:
+        """keyword_index: generate BM25 search terms per section (or whole
+        project), section-addressed under `label` (e.g. `keywords`, `questions`,
+        `phrase`). Skips cached sections unless `overwrite`. Activate via
+        [retrieve].keyword_labels."""
+        return await crib.elaborate(label, relpath, _project(crib, project, cwd),
+                                    overwrite=overwrite)
+
+    @mcp.tool()
+    async def summarize(label: str, relpath: str | None = None,
+                        project: str | None = None, overwrite: bool = False,
+                        cwd: str | None = None) -> dict[str, Any]:
+        """summary_index: generate LLM rephrasings per section (or whole project),
+        embedded as dense alias vectors so paraphrased queries match a section
+        with zero shared tokens. Skips cached sections unless `overwrite`.
+        Activate via [retrieve].summary_labels."""
+        return await crib.summarize(label, relpath, _project(crib, project, cwd),
+                                    overwrite=overwrite)
 
     @mcp.tool()
     def snapshot(message: str | None = None) -> str:

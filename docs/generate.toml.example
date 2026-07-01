@@ -1,0 +1,45 @@
+# crib generation providers/profiles — llmkit format, modeled on
+# ~/.config/zsh-ai/models.toml. Point `[generate].config` in crib's config.toml
+# at a copy of this (e.g. ~/.config/crib/generate.toml) and pick a `profile`:
+#
+#   # ~/.config/crib/config.toml
+#   [generate]
+#   config  = "~/.config/crib/generate.toml"
+#   profile = "local"          # or "cloud"
+#
+# Then `crib distill` / `crib elaborate` resolve their provider from the profile's
+# widget key (distill / elaborate). Each provider needs its llmkit adapter extra
+# installed: openai-compatible → llmkit[bridge], anthropic → llmkit[anthropic],
+# google → llmkit[google], claude_code → llmkit[claude].
+
+[defaults]
+temperature = 0.2
+max_tokens  = 2048
+
+# Local llama-swap / Ollama (OpenAI-compatible /v1).
+[providers.qwen]
+adapter  = "openai-compatible"
+endpoint = "http://localhost:11435/v1"
+model    = "Qwen3.6-35B-A3B-Q4"
+
+# opencode "zen" — Anthropic Messages API format (not OpenAI). Needs
+# llmkit[anthropic]; key resolved from the OPENCODE_API_KEY env var.
+[providers.zen]
+adapter     = "anthropic"
+endpoint    = "https://opencode.ai/zen/v1/responses"
+api_key_env = "OPENCODE_API_KEY"
+model       = "qwen3.7-max"
+
+# Claude via the Claude Agent SDK (reuses the `claude` CLI login; no endpoint/key).
+[providers.claude]
+adapter = "claude_code"
+model   = "claude-sonnet-4-6"
+
+# ── Machine sections: map each purpose (widget) to a provider ───────────────
+[profiles.local]
+distill   = "qwen"
+elaborate = "qwen"
+
+[profiles.cloud]
+distill   = "zen"
+elaborate = "zen"

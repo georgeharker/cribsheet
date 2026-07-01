@@ -29,6 +29,11 @@ class Chunk:
     heading_path: list[str]
     window_idx: int
     text: str
+    # Full-section text this window came from — set by `chunk_note`. Identity for
+    # section-level LLM elaborations: hashing it (not the window) keeps those
+    # invariant to re-windowing, so an expensive asset isn't regenerated when the
+    # window size changes. Falls back to `text` for a one-window section.
+    section_text: str = ""
 
     @property
     def chunk_id(self) -> str:
@@ -36,6 +41,12 @@ class Chunk:
             self.project, self.relpath, "/".join(self.heading_path),
             str(self.window_idx),
         )
+
+    @property
+    def section_hash(self) -> str:
+        """Stable id of the whole section (heading + full body), invariant to how
+        the section is windowed — the key elaborations are stored under."""
+        return sha1_hex("/".join(self.heading_path), self.section_text or self.text)
 
     @property
     def index_text(self) -> str:
@@ -65,6 +76,7 @@ class Chunk:
             "heading_path": "/".join(self.heading_path),
             "window_idx": self.window_idx,
             "content_hash": self.content_hash,
+            "section_hash": self.section_hash,
             "source": source,
             "file_mtime": mtime,
         }
@@ -82,7 +94,21 @@ def _split_sections(body: str) -> list[tuple[list[str], str]]:
         if text:
             sections.append((list(heading_path), text))
 
+    in_fence = False
+    fence = ""                              # the ``` or ~~~ run that opened it
     for line in body.splitlines():
+        stripped = line.lstrip()
+        # Track fenced code blocks so `#`-comments inside them aren't parsed as
+        # markdown headings (config-heavy docs otherwise get bogus sections).
+        if not in_fence and (stripped.startswith("```") or stripped.startswith("~~~")):
+            in_fence, fence = True, stripped[:3]
+            cur.append(line)
+            continue
+        if in_fence:
+            if stripped.startswith(fence):
+                in_fence = False
+            cur.append(line)
+            continue
         m = _HEADING.match(line)
         if m:
             flush()
@@ -123,8 +149,11 @@ def chunk_note(project: str, relpath: str, note_id: str, body: str,
 
     chunks: list[Chunk] = []
     for heading_path, text in sections:
+        # `text` is the full section; each window carries it so `section_hash` is
+        # window-invariant.
         for i, win in enumerate(_window(text, window_words, overlap)):
-            chunks.append(Chunk(project, relpath, note_id, heading_path, i, win))
+            chunks.append(Chunk(project, relpath, note_id, heading_path, i, win,
+                                section_text=text))
     return chunks
 
 
@@ -158,7 +187,21 @@ def section_line_map(text: str) -> dict[str, tuple[int, int]]:
         if has_content and key not in out and end_idx >= sec_start:
             out[key] = (sec_start + 1, end_idx + 1)
 
+    in_fence = False
+    fence = ""
     for idx in range(start, len(lines)):
+        stripped = lines[idx].lstrip()
+        # Mirror _split_sections: ignore headings inside fenced code blocks, so
+        # the span keys match the chunk metadata keys exactly.
+        if not in_fence and (stripped.startswith("```") or stripped.startswith("~~~")):
+            in_fence, fence = True, stripped[:3]
+            has_content = True
+            continue
+        if in_fence:
+            if stripped.startswith(fence):
+                in_fence = False
+            has_content = True
+            continue
         m = _HEADING.match(lines[idx])
         if m:
             close(idx - 1)

@@ -29,11 +29,17 @@ git = []  # uses the `git` CLI via subprocess; no python dep
 # Sourced from the `vendor/llmkit` git submodule (see [tool.uv.sources]); the CLI
 # degrades to raw text when it isn't installed.
 render = ["llmkit[md]"]
+# LLM generation for `distill` + `elaborate` (knowledge-capture §2): llmkit's
+# streaming bridge over an OpenAI-compatible endpoint. Add the matching adapter
+# extra for other providers: `llmkit[anthropic]` (native Messages API, e.g. a
+# zen/qwen endpoint), `llmkit[google]`, or `llmkit[claude]` (Claude Agent SDK,
+# the default `claude_code` adapter). Degrades with a clear error if absent.
+generate = ["llmkit[bridge]"]
 full = [
     "fastembed>=0.3",
     "fastmcp>=2.0",
     "watchdog>=4.0",
-    "llmkit[md]",
+    "llmkit[md,bridge]",
 ]
 
 [project.scripts]

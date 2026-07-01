@@ -32,10 +32,25 @@ DEFAULT_CASES = Path(__file__).resolve().parent / "eval_retrieval.cases.json"
 
 
 def run_lookup(query: str, project: str, k: int, crib: str,
-               no_daemon: bool = False) -> list[dict[str, Any]]:
-    """One ``crib --json lookup`` call → its ranked hits (top-first)."""
+               no_daemon: bool = False,
+               keywords: str | None = None,
+               keyword_weight: float | None = None,
+               summaries: str | None = None,
+               summary_weight: float | None = None) -> list[dict[str, Any]]:
+    """One ``crib --json lookup`` call → its ranked hits (top-first).
+
+    ``keywords``/``keyword_weight`` drive BM25 keyword_index; ``summaries``/
+    ``summary_weight`` the dense summary_index aliases — the lift knobs (§3)."""
     cmd = [crib, *(["--no-daemon"] if no_daemon else []),
            "--json", "lookup", query, "-p", project, "-k", str(k)]
+    if keywords is not None:
+        cmd += ["--keywords", keywords]
+    if keyword_weight is not None:
+        cmd += ["--keyword-weight", str(keyword_weight)]
+    if summaries is not None:
+        cmd += ["--summaries", summaries]
+    if summary_weight is not None:
+        cmd += ["--summary-weight", str(summary_weight)]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
         raise RuntimeError(f"`crib lookup` failed ({proc.returncode}): {proc.stderr.strip()}")
@@ -88,14 +103,19 @@ def load_needs(spec: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def evaluate(spec: dict[str, Any], k: int, recall_k: int, crib: str,
-             no_daemon: bool = False) -> list[dict[str, Any]]:
+             no_daemon: bool = False,
+             keywords: str | None = None,
+             keyword_weight: float | None = None,
+             summaries: str | None = None,
+             summary_weight: float | None = None) -> list[dict[str, Any]]:
     """One row per (need, phrasing) — so a need with 3 phrasings yields 3 rows."""
     default_project = spec.get("project", "default")
     rows: list[dict[str, Any]] = []
     for need in load_needs(spec):
         project = need.get("project") or default_project
         for query in need["queries"]:
-            hits = run_lookup(query, project, k, crib, no_daemon)
+            hits = run_lookup(query, project, k, crib, no_daemon, keywords,
+                              keyword_weight, summaries, summary_weight)
             rank = rank_of(hits, need["expect"], need.get("expect_heading"))
             score = next(
                 (h.get("score") for h in hits if _rel_match(h.get("relpath", ""), need["expect"])),
@@ -157,6 +177,60 @@ def report(rows: list[dict[str, Any]], recall_k: int) -> tuple[float, float]:
     return mrr, recall
 
 
+def _run_lift(spec: dict[str, Any], args: Any) -> int:
+    """Measure index lift: run the full set with no LLM index (baseline), then
+    with `--lift` keyword labels and/or `--lift-summaries` summary labels, and
+    print MRR/recall for each plus the delta and rank moves."""
+    kw = args.lift          # keyword_index labels ("" baseline forced below)
+    sm = args.lift_summaries  # summary_index labels
+    try:
+        base = evaluate(spec, args.k, args.recall_k, args.crib, args.no_daemon,
+                        keywords="", summaries="")
+        withl = evaluate(spec, args.k, args.recall_k, args.crib, args.no_daemon,
+                         keywords=(kw if kw is not None else ""),
+                         keyword_weight=args.elab_weight,
+                         summaries=(sm if sm is not None else ""),
+                         summary_weight=args.summary_weight)
+    except RuntimeError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 2
+    if all(r["n_hits"] == 0 for r in base):
+        print("error: every query returned 0 hits — is the project seeded?", file=sys.stderr)
+        return 2
+
+    def agg(rows: list[dict[str, Any]]) -> tuple[float, float]:
+        return (sum(r["rr"] for r in rows) / len(rows),
+                sum(r["hit"] for r in rows) / len(rows))
+
+    bm, br = agg(base)
+    wm, wr = agg(withl)
+    rk = f"recall@{args.recall_k}"
+    parts = []
+    if kw is not None:
+        parts.append(f"kw={kw}" + (f"@w={args.elab_weight}" if args.elab_weight is not None else ""))
+    if sm is not None:
+        parts.append(f"sum={sm}" + (f"@w={args.summary_weight}" if args.summary_weight is not None else ""))
+    label_col = " ".join(parts) or "index"
+    print(f"index lift — baseline vs {label_col}  (n={len(base)} phrasings)")
+    print("-" * 62)
+    print(f"{'set':<28}{'MRR':>8}{rk:>14}")
+    print(f"{'baseline (none)':<28}{bm:>8.3f}{br:>14.3f}")
+    print(f"{label_col:<28}{wm:>8.3f}{wr:>14.3f}")
+    print(f"{'Δ':<28}{wm - bm:>+8.3f}{wr - br:>+14.3f}")
+    print("-" * 62)
+    base_rank = {(r["need"], r["query"]): r["rank"] for r in base}
+    moves = [(r["need"], r["query"], base_rank.get((r["need"], r["query"])), r["rank"])
+             for r in withl if base_rank.get((r["need"], r["query"])) != r["rank"]]
+    if moves:
+        print("rank moves (baseline → with index):")
+        for need, q, b, a in moves:
+            arrow = f"{b or '—'} → {a or '—'}"
+            print(f"  {need:<15} {arrow:<10} {q[:42]}")
+    else:
+        print("no rank moves (index changed nothing on this set)")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--cases", type=Path, default=DEFAULT_CASES, help="labeled cases JSON")
@@ -170,6 +244,24 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--crib", default="crib", help="crib executable")
     ap.add_argument("--no-daemon", action="store_true",
                     help="run each crib call in-process (fresh code, bypasses the warm daemon)")
+    ap.add_argument("--keywords", default=None,
+                    help="keyword_index labels to fold into BM25 for every query "
+                         "('' = none); overrides config for this run")
+    ap.add_argument("--summaries", default=None,
+                    help="summary_index labels to fold in as dense aliases "
+                         "('' = none); overrides config for this run")
+    ap.add_argument("--lift", default=None, metavar="LABELS",
+                    help="measure lift: baseline (no index) vs these keyword_index "
+                         "labels, printing the delta and rank moves")
+    ap.add_argument("--lift-summaries", default=None, metavar="LABELS",
+                    dest="lift_summaries",
+                    help="measure lift of these summary_index labels (dense aliases)")
+    ap.add_argument("--elab-weight", type=float, default=None, dest="elab_weight",
+                    help="BM25 weight of keyword_index tokens for --lift / --keywords "
+                         "(overrides config; e.g. 0.3 damps generic terms)")
+    ap.add_argument("--summary-weight", type=float, default=None, dest="summary_weight",
+                    help="RRF fusion weight of summary aliases for --lift-summaries "
+                         "(overrides config; e.g. 0.15 damps broad summaries)")
     args = ap.parse_args(argv)
 
     if shutil.which(args.crib) is None:
@@ -177,8 +269,13 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     spec = json.loads(args.cases.read_text())
+
+    if args.lift is not None or args.lift_summaries is not None:
+        return _run_lift(spec, args)
+
     try:
-        rows = evaluate(spec, args.k, args.recall_k, args.crib, args.no_daemon)
+        rows = evaluate(spec, args.k, args.recall_k, args.crib, args.no_daemon,
+                        args.keywords, args.elab_weight, args.summaries)
     except RuntimeError as e:
         print(f"error: {e}", file=sys.stderr)
         return 2

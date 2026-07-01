@@ -1,5 +1,51 @@
 # Retrieval quality & tool adoption (the prerequisite layer)
 
+> ## Build state & how to resume (2026-07-01)
+>
+> **Shipped & tested (88 unit tests pass):**
+> - **Generation bridge** (`crib/generate.py` over llmkit; providers/profiles TOML
+>   like `models.toml`, default `~/.config/crib/models.toml` → zen-qwen). Powers
+>   `distill` and the two index generators.
+> - **keyword_index** (BM25 side): `crib elaborate <label>` → section-addressed
+>   `keyword_index/<label>/<section_hash>.toml`, tokens folded into BM25 at
+>   `keyword_weight`. **Default: `keyword_labels=["keywords"], keyword_weight=0.3`**
+>   (measured best). Concurrent + timeout + progress + error-isolated generation.
+> - **summary_index** (dense side): `crib summarize <label>` → LLM rephrasings
+>   embedded as **alias vectors**, fused as a weighted third RRF list
+>   (`summary_weight`). **Default OFF (`summary_labels=[]`)** — see finding below.
+> - **section identity**: `section_hash` (window-invariant) keys both indexes;
+>   metadata self-heals on reindex (`set_meta`, no re-embed); code-fence `#`
+>   comments no longer parsed as headings.
+> - **Eval harness**: `scripts/eval_retrieval.py --lift <kw> / --lift-summaries
+>   <sum> [--elab-weight/--summary-weight]`, cases in `eval_retrieval.cases.json`.
+>
+> **Findings (cribsheet corpus, 71 sections, n=31 phrasings, baseline MRR 0.844 /
+> recall@3 0.968):**
+> - keyword_index `keywords@0.3`: the net-positive config (recall→1.0 in earlier
+>   runs; MRR neutral-to-slightly-up). **Shipped default.**
+> - summary_index: **net-negative at every weight** (best w=0.1: still −0.03
+>   recall). Better *doc2query* summaries were *worse* (compete harder). Root
+>   cause: **dense recall is already saturated** on this small clustered corpus —
+>   aliases can only displace, not rescue. Needs a **larger/diverse corpus** to
+>   show value → that's why `.crib` was added to zsh-ai, zdot, dotfiler,
+>   sharedserver, svg-mcp, mcp-companion (import for volume).
+>
+> **To resume on a new machine:**
+> 1. Clone this repo + `git submodule update --init` (vendor/llmkit at 67e8465).
+> 2. `uv sync` / `pip install -e '.[full,generate]'` then `pip install -e
+>    './vendor/llmkit[anthropic]'` (zen adapter). Optional: `[embed]` for bge.
+> 3. Config in dotfiles: `~/.config/crib/config.toml` (`[generate]` + `[retrieve]`
+>    blocks) and `~/.config/crib/models.toml` (providers); `export OPENCODE_API_KEY`.
+> 4. `crib pull` (notes from `georgeharker/.crib`), then `crib reindex --all`.
+>    **Indexes are gitignored/regenerable** — rebuild with `crib elaborate keywords`
+>    (+ `crib summarize summary` when testing dense) per project.
+> 5. `crib import` inside each `.crib`-tagged repo to load the volume corpora, then
+>    generate indexes + add eval cases spanning them to retest the summary hypothesis.
+>
+> **Open / next:** measure summary_index on the volume corpora (unsaturated recall);
+> keyword sidecar (tier-1 identifier splits) already in; llmkit `chat`→TextIO sink
+> (still temp-file); promote keyword_index to git-tracked once default is stable.
+
 Status: design. The substrate that must work **before** automatic capture
 ([knowledge-capture.md](knowledge-capture.md)) delivers any value: if `lookup`
 doesn't surface the right note, and if the connected agent doesn't *consult the
@@ -312,10 +358,15 @@ Those are tier-2's job (§3.1).
 
 ## 6. Recommended build order (each gated by a proof on §5)
 
-1. **Doc-side enrichment** — ✅ heading-breadcrumb injection (§5.2, MRR 0.889→0.926)
-   and ✅ tier-1 keyword sidecar (§3.1, compound-identifier splitting) done & proven;
-   next: tier-2 LLM keywords (git-communicable content-addressed map, §3.1) and the
-   LLM topic-phrase + doc2query — both once the bridge exists.
+1. **Doc-side enrichment** — ✅ heading-breadcrumb injection (§5.2, MRR 0.889→0.926),
+   ✅ tier-1 keyword sidecar (§3.1, compound-identifier splitting), and ✅ tier-2 LLM
+   **elaborations** (the generation bridge + `crib elaborate <label>` + content-
+   addressed TOML store + BM25 consumption, §3.1) are built. The generation bridge
+   (`crib/generate.py` over llmkit, providers/profiles config à la `models.toml`)
+   also powers `distill`. Remaining: run the LLM elaboration pass and **measure the
+   lift** on the eval harness (`eval_retrieval.py --lift keywords`) — the semantic
+   stragglers (§5.3) are the target; and (fast-follow) the `chat`→TextIO sink in
+   llmkit to drop the temp-file capture.
 2. **`SessionStart` digest injection + `UserPromptSubmit` auto-RAG** — the
    invocation unlock, the part that is actually missing.
 3. **Eval harness (both metrics)** — in parallel; without it 1 and 2 are unproven.

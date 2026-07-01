@@ -17,8 +17,14 @@ from pathlib import Path
 from . import notes
 from .chunk import WINDOW_OVERLAP, WINDOW_WORDS, chunk_note
 from .embed import Embedder
-from .retrieve import LexicalCache
+from .retrieve import LexicalCache, SummaryVectorCache
 from .store import Record, Store
+
+
+def _meta_stable(meta: dict) -> dict:
+    """Metadata minus fields that change on their own every reindex — so drift
+    detection fires on real schema/frontmatter changes, not a fresh mtime."""
+    return {k: v for k, v in meta.items() if k != "file_mtime"}
 
 
 @dataclass
@@ -33,16 +39,27 @@ class IndexResult:
 class IndexEngine:
     def __init__(self, store: Store, embedder: Embedder,
                  window_words: int = WINDOW_WORDS,
-                 overlap: int = WINDOW_OVERLAP) -> None:
+                 overlap: int = WINDOW_OVERLAP,
+                 keyword_terms=None, summary_terms=None) -> None:
         self.store = store
         self.embedder = embedder
         self.window_words = window_words
         self.overlap = overlap
-        self.lexical = LexicalCache(store)   # warm per-project BM25 (DESIGN §10.3)
+        # warm per-project BM25 (DESIGN §10.3); keyword_terms folds keyword_index
+        # labels into the corpus when activated (§3.1)
+        self.lexical = LexicalCache(store, keyword_terms)
+        # warm per-project summary_index alias vectors (dense side, §3)
+        self.summaries = SummaryVectorCache(store, embedder, summary_terms)
         self._locks: dict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
 
     def _key(self, project: str, relpath: str) -> str:
         return f"{project}\x00{relpath}"
+
+    def invalidate_caches(self, project: str) -> None:
+        """Drop both derived retrieval caches for a project — BM25 corpus and
+        summary alias vectors — after any mutation to its chunks or index assets."""
+        self.lexical.invalidate(project)
+        self.summaries.invalidate(project)
 
     async def index_file(self, project: str, notes_dir: Path, relpath: str) -> IndexResult:
         """Reindex one note. Idempotent + hash-gated under a per-path lock."""
@@ -57,7 +74,7 @@ class IndexEngine:
             existing = self.store.get_meta({"project": project, "relpath": relpath})
             self.store.delete(list(existing))
             if existing:
-                self.lexical.invalidate(project)
+                self.invalidate_caches(project)
             return IndexResult(relpath, changed=bool(existing), upserted=0,
                                deleted=len(existing))
 
@@ -71,6 +88,7 @@ class IndexEngine:
         new_chunks = chunk_note(project, relpath, note_id, note.body,
                                 self.window_words, self.overlap)
         new_by_id = {c.chunk_id: c for c in new_chunks}
+        source = note.frontmatter.get("source", "manual")
 
         existing = self.store.get_meta({"project": project, "relpath": relpath})
         existing_hash = {i: m.get("content_hash") for i, m in existing.items()}
@@ -80,11 +98,21 @@ class IndexEngine:
                     if existing_hash.get(cid) != c.content_hash]
         stale_ids = [cid for cid in existing if cid not in new_by_id]
 
-        if not to_embed and not stale_ids:
+        # Metadata drift on content-UNCHANGED chunks: a new schema field (e.g.
+        # section_hash) or edited frontmatter (tags/title/source) that the
+        # content gate misses. Refresh metadata cheaply — no re-embed. Compare
+        # ignoring file_mtime, which changes every reindex on its own.
+        meta_updates: dict[str, dict] = {}
+        for cid, c in new_by_id.items():
+            if existing_hash.get(cid) == c.content_hash:   # content unchanged
+                new_meta = c.metadata(note.title, note.tags, source, mtime)
+                if _meta_stable(existing.get(cid, {})) != _meta_stable(new_meta):
+                    meta_updates[cid] = new_meta
+
+        if not to_embed and not stale_ids and not meta_updates:
             return IndexResult(relpath, changed=False, upserted=0, deleted=0,
                                note_id=note_id)
 
-        source = note.frontmatter.get("source", "manual")
         records: list[Record] = []
         if to_embed:
             vectors = self.embedder.embed([c.index_text for c in to_embed])
@@ -95,6 +123,8 @@ class IndexEngine:
                 ))
         self.store.upsert(records)
         self.store.delete(stale_ids)
-        self.lexical.invalidate(project)   # corpus changed -> rebuild BM25 lazily
+        if meta_updates:
+            self.store.set_meta(meta_updates)
+        self.invalidate_caches(project)   # corpus + aliases changed -> rebuild lazily
         return IndexResult(relpath, changed=True, upserted=len(records),
                            deleted=len(stale_ids), note_id=note_id)
