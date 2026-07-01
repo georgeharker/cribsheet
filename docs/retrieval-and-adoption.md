@@ -411,6 +411,27 @@ instead) — the eval/gate drive the daemon by default, so every hit scored as a
 default), so `--lift keywords`'s baseline silently ran **with** keywords on → a Δ0 false
 null. Regression tests: `tests/test_client.py`, `tests/test_cli_labels.py`.
 
+**Whole-doc bulk generation (follow-up, same day).** The per-section stragglers
+motivated authoring a note's sections *together* (one structured call, whole-doc
+context → section-distinctive terms; `crib/app.py _generate_index`, `bulk=True`
+default). Re-generated both indexes for all five corpora via bulk and re-swept:
+
+- **Keywords improved (sparse side).** `kw@0.3`'s recall damage **disappeared**
+  (0.889→0.917) and `kw@0.15` rose to 0.855 / 6-of-12 all-rank-1 — sibling-aware
+  authoring de-generics the terms, the predicted win.
+- **Summaries: a wash** vs per-section (both ~0.843 at equal section count). The
+  apparent "bulk hurts summaries" in a first pass was a **section-count confound**:
+  `--overwrite` regenerated *every* section, and the fuller alias set scored below the
+  original *partial* one (0.866) — more alias vectors → more dense competition, a
+  *coverage/selectivity* effect, not authoring method (the equal-count bulk-vs-
+  per-section test showed no difference).
+- **So `bulk=True` is the right default for both verbs** — a keyword win, a summary
+  wash, far fewer round-trips (2 calls vs 17 on a 17-section note; a batch that
+  overruns the model output cap or is skipped is caught by the per-section mop-up).
+  Requires a generous provider `max_tokens` (the implicit 1024 truncated batches).
+  Open, orthogonal: whether to summarize *every* section or select (the dense-side
+  coverage tradeoff).
+
 ## 6. Recommended build order (each gated by a proof on §5)
 
 1. **Doc-side enrichment** — ✅ heading-breadcrumb injection (§5.2, MRR 0.889→0.926),
