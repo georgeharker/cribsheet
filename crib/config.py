@@ -81,6 +81,14 @@ class RetrieveConfig:
     # shared tokens. Section-addressed under
     # <project>/summary_index/<label>/<section_hash>.toml. Generate with
     # `crib summarize <label>`.
+    #
+    # OFF by default and a REMOVAL CANDIDATE (docs/retrieval-and-adoption.md §5.5
+    # verdict): across every corpus measured it never lifted recall (recall was
+    # already saturated) and moved MRR only marginally/inconsistently (0 to +0.025,
+    # sometimes negative), while being the most expensive enrichment (an LLM call
+    # per section). The reranker below targets the same near-tie/vocabulary gap more
+    # directly and cheaply (no per-section generation). Reconsider only for a
+    # genuinely unsaturated corpus (recall well below 1.0) — untested at that scale.
     summary_labels: list[str] = field(default_factory=list)
     # RRF fusion weight of the summary alias ranking vs the dense/BM25 lists
     # (1.0 = equal vote). Broad summaries swamp retrieval at equal weight, so

@@ -432,6 +432,22 @@ default). Re-generated both indexes for all five corpora via bulk and re-swept:
   Open, orthogonal: whether to summarize *every* section or select (the dense-side
   coverage tradeoff).
 
+**Verdict on summary_index — off by default, removal candidate (2026-07-01).** Across
+every corpus measured it **never lifted recall** (recall was already saturated, so
+there was no vocabulary-gap note to rescue — its whole reason to exist) and moved MRR
+only **marginally and inconsistently** (net-negative on cribsheet-only; +0.002 with
+full-coverage summaries on the volume set; +0.025 only with a *partial* set, i.e. an
+artifact of *less* alias crowding, not a robust win). It is also the **most expensive**
+enrichment — an LLM call per section, regenerated on any content change, plus alias
+vectors to embed and a third RRF list to fuse — and it can *hurt* (crowds the dense
+space at higher weight). The **reranker (§10.4, `rerank`)** targets the same near-tie /
+vocabulary-divergent ranking gap far more directly and cheaply: a cross-encoder over
+the top-k, no per-section generation, no stored vectors, no crowding. Keep the machinery
+(cheap to leave in the code, default off); don't spend generation cost on it. Reconsider
+**only** for a genuinely *unsaturated* corpus (recall well below 1.0, severe
+querier-vs-author vocabulary mismatch) — untested at that scale, and even then benchmark
+it against the reranker first.
+
 ## 6. Recommended build order (each gated by a proof on §5)
 
 1. **Doc-side enrichment** — ✅ heading-breadcrumb injection (§5.2, MRR 0.889→0.926),
