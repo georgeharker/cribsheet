@@ -136,6 +136,43 @@ def _emit_write_result(item: dict) -> None:
               + (f" — {s['heading']}" if s.get("heading") else ""))
 
 
+def _emit_code(data: Any, verb: str, as_json: bool) -> None:
+    """Human-readable rendering for the code verbs; raw JSON with the global --json."""
+    if as_json:
+        print(json.dumps(data, indent=2, default=str))
+        return
+    if verb == "code-index":
+        if not isinstance(data, dict):
+            print(data); return
+        if data.get("skipped"):
+            print(f"{data.get('file', '')}: {data['skipped']}"); return
+        err = (f"  (descriptions_error: {data['descriptions_error']})"
+               if data.get("descriptions_error") else "")
+        print(f"{data.get('file', '')}: {data.get('symbols', 0)} symbols, "
+              f"{data.get('described', 0)} described{err}")
+        if data.get("store"):
+            print(f"  → {data['store']}")
+    elif verb == "code-lookup":
+        if not data:
+            print("(no matches — is this project code-indexed?)"); return
+        for h in data:
+            cg = f"  {len(h.get('called_by') or [])}←/{len(h.get('calls') or [])}→"
+            print(f"[{h.get('rank', '?')}] {h.get('kind', ''):8} {h.get('fqname', '')}"
+                  f"  {h.get('file', '')}:{h.get('line', '')}{cg}")
+            if h.get("description"):
+                print(f"      {h['description']}")
+    elif verb == "code-xref":
+        if not data:
+            print("(symbol not found in the symbol_index)"); return
+        for e in data:
+            print(f"{e.get('fqname', '')}  ({e.get('kind', '')})  "
+                  f"{e.get('file', '')}:{e.get('line', '')}")
+            for c in e.get("called_by") or []:
+                print(f"   ← {c}")
+            for c in e.get("calls") or []:
+                print(f"   → {c}")
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="crib", description="markdown memory")
     p.add_argument("--mcp", action="store_true", help="run the MCP server")
@@ -189,6 +226,19 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("query"); proj(s)
     s.add_argument("-k", type=int, default=5)
     s.add_argument("--tag", action="append", dest="tags")
+
+    s = sub.add_parser("code-lookup",
+                       help="find a code symbol by concept OR name (hybrid dense+kw)")
+    s.add_argument("query"); proj(s)
+    s.add_argument("-k", type=int, default=8)
+
+    s = sub.add_parser("code-xref",
+                       help="a symbol's callers/callees from the symbol_index")
+    s.add_argument("symbol"); proj(s)
+
+    s = sub.add_parser("code-index",
+                       help="index a source file: symbols + call graph + descriptions")
+    s.add_argument("path"); proj(s)
 
     s = sub.add_parser("read", help="print a note's raw markdown")
     s.add_argument("relpath"); proj(s)
@@ -426,6 +476,15 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
         return "history", {"relpath": args.relpath}
     if v == "projects":
         return "projects", {}
+    if v == "code-lookup":
+        return "code_lookup", {"query": args.query, "project": args.project,
+                               "k": args.k, "cwd": cwd}
+    if v == "code-xref":
+        return "code_xref", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
+    if v == "code-index":
+        # resolve the path client-side (the daemon's cwd differs from the caller's)
+        return "code_index", {"path": str(Path(args.path).expanduser().resolve()),
+                              "project": args.project, "cwd": cwd}
     raise SystemExit(f"crib: unknown verb {v!r}")
 
 
@@ -439,6 +498,8 @@ def _run_daemon(args: Any, cfg: Any) -> None:
         _print_note(data, args.json)
     elif tool == "apropos":            # apropos verb, or `search --render`
         _emit_apropos(data, args.json)
+    elif args.cmd in ("code-lookup", "code-xref", "code-index"):
+        _emit_code(data, args.cmd, args.json)
     elif args.cmd in _RAW_PRINT:
         print(data)
     else:
@@ -572,6 +633,16 @@ def _run_inprocess(args: Any) -> None:
             _emit(crib.history(args.relpath), j)
         elif args.cmd == "projects":
             _emit(crib.projects(), j)
+        elif args.cmd == "code-lookup":
+            _emit_code(crib.code_lookup(args.query, args.project, args.k, cwd=cwd),
+                       "code-lookup", j)
+        elif args.cmd == "code-xref":
+            _emit_code(crib.code_xref(args.symbol, args.project, cwd=cwd),
+                       "code-xref", j)
+        elif args.cmd == "code-index":
+            _emit_code(asyncio.run(crib.code_index(
+                str(Path(args.path).expanduser().resolve()), args.project, cwd=cwd)),
+                "code-index", j)
     finally:
         crib.close()
 

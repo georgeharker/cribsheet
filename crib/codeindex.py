@@ -525,8 +525,10 @@ def _parse(text: str) -> dict:
             elif s:
                 arr.append(s.rstrip(",").strip().strip('"'))
             continue
-        if " = [" in s and s.endswith("["):
-            key = s.split(" = ")[0]
+        if s.endswith("= []"):                 # empty array on one line
+            e[s.split(" = ")[0].strip()] = []
+        elif s.endswith("= ["):                # multi-line array start
+            key = s.split(" = ")[0].strip()
             arr = []
         elif " = " in s:
             k, _, v = s.partition(" = ")
