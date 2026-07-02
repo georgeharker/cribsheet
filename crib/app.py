@@ -615,6 +615,126 @@ class Crib:
             "summary_index", "summarize", label, prompt, relpath, project, cwd,
             overwrite)
 
+    # --- code symbol index (docs/code-symbol-index.md) --------------------
+    async def code_index(self, path: str, project: str | None = None,
+                         cwd: Path | None = None) -> dict[str, Any]:
+        """Extract a source file's symbols + call graph via the LSP and persist them
+        content-addressed under `<project>/symbol_index/`. Live extraction (the warm-
+        session/watcher refresh is the next build); off the event loop in a thread."""
+        from .codeindex import (NoServer, SymbolIndex, describe_file,
+                                 describe_symbols, extract_file, find_root,
+                                 match_description)
+        p = Path(path)
+        if not p.is_absolute():
+            p = (Path(cwd) if cwd else Path.cwd()) / p
+        p = p.resolve()
+        root = find_root(p)
+        rel = str(p.relative_to(root))
+        proj = self.resolve_project(project, cwd)
+        try:
+            entries = await asyncio.to_thread(extract_file, root, rel)
+        except NoServer as exc:
+            return {"project": proj, "root": str(root), "file": rel,
+                    "symbols": 0, "skipped": str(exc)}
+        # Semantic facet: LLM one-line descriptions, merged by fqname (§4).
+        # content_hash GATE: reuse a cached description when the symbol's body is
+        # unchanged; only call the LLM when something is stale/new. BEST-EFFORT: a
+        # generation hiccup never loses the structural call graph (facets independent).
+        store = SymbolIndex(self.paths.project_dir(proj))
+        existing = {e["fqname"]: e for e in store.all()}
+        stale = [e for e in entries
+                 if existing.get(e["fqname"], {}).get("content_hash") != e["content_hash"]
+                 or not existing.get(e["fqname"], {}).get("description")]
+        gen_error: str | None = None
+        descs: dict[str, str] = {}
+        if stale:
+            try:
+                descs = await asyncio.to_thread(describe_file, self.config.generate,
+                                                root, rel)
+            except Exception as exc:  # noqa: BLE001 — LLM down → structural-only
+                gen_error = str(exc)
+        for sym in entries:
+            ex = existing.get(sym["fqname"], {})
+            if ex.get("content_hash") == sym["content_hash"] and ex.get("description"):
+                sym["description"] = ex["description"]          # cached, unchanged body
+            else:
+                sym["description"] = match_description(sym["fqname"], descs)
+        # MOP-UP: symbols the whole-file bulk pass missed (low-yield / partial LLM
+        # response) get a focused describe over just their bodies — far higher hit
+        # rate on a small set. Best-effort; content_hash gate keeps future runs cheap.
+        missed = [e for e in stale if not e.get("description")]
+        if missed:
+            try:
+                mop = await asyncio.to_thread(describe_symbols,
+                                              self.config.generate, missed)
+                for e in missed:
+                    e["description"] = (mop.get(e["name"])
+                                        or match_description(e["fqname"], mop))
+            except Exception:  # noqa: BLE001 — mop-up is best-effort
+                pass
+        store.write_all(entries)
+        out: dict[str, Any] = {
+            "project": proj, "root": str(root), "file": rel,
+            "symbols": len(entries),
+            "described": sum(1 for e in entries if e["description"]),
+            "store": str(store.root)}
+        if gen_error:
+            out["descriptions_error"] = gen_error
+        return out
+
+    def code_xref(self, symbol: str, project: str | None = None,
+                  cwd: Path | None = None) -> list[dict[str, Any]]:
+        """Callers/callees for a symbol from the persisted symbol_index — no live LSP."""
+        from .codeindex import SymbolIndex
+        proj = self.resolve_project(project, cwd)
+        return SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol)
+
+    def code_lookup(self, query: str, project: str | None = None, k: int = 8,
+                    cwd: Path | None = None) -> list[dict[str, Any]]:
+        """Find a symbol — HYBRID: dense concept search over LLM `description`s ⊕ BM25
+        over `name_terms` (unqualified/qualified/subtokens), RRF-fused. So a concept
+        query hits the dense side and a bare/partial *name* hits the sparse side. Served
+        from the content-addressed store at query time; no live LSP needed."""
+        from .codeindex import SymbolIndex
+        from .retrieve import BM25, _as_tf, _subtokens, reciprocal_rank_fusion, tokenize
+        proj = self.resolve_project(project, cwd)
+        entries = [e for e in SymbolIndex(self.paths.project_dir(proj)).all()
+                   if e.get("description") or e.get("name_terms")]
+        if not entries:
+            return []
+        ids = [e["fqname"] for e in entries]
+        by_id = {e["fqname"]: e for e in entries}
+        rankings: list[list[str]] = []
+        weights: list[float] = []
+        # dense: cosine over description embeddings
+        if any(e.get("description") for e in entries):
+            vecs = self.embedder.embed([e.get("description", "") for e in entries])
+            qv = self.embedder.embed_query([query])[0]
+            ds = [sum(a * b for a, b in zip(qv, vecs[i])) for i in range(len(entries))]
+            rankings.append([ids[i] for i in sorted(range(len(ids)),
+                                                    key=lambda i: ds[i], reverse=True)])
+            weights.append(1.0)
+        # sparse: BM25 over the name terms (the unqualified name is the load-bearing one)
+        corpus = [_as_tf([t.lower() for t in (e.get("name_terms") or [])])
+                  for e in entries]
+        ss = BM25(corpus).scores(tokenize(query) + _subtokens(query))
+        sparse = [ids[i] for i in sorted(range(len(ids)), key=lambda i: ss[i],
+                                         reverse=True) if ss[i] > 0]
+        if sparse:
+            rankings.append(sparse)
+            # Sparse damped below dense so a stray name-token match ("result" →
+            # IndexResult) can't outrank a concept hit — but a strong exact-name
+            # match still surfaces when dense is weak (a bare-name query). Mirrors
+            # the keyword_weight=0.3 damping on the note side (retrieve.py).
+            weights.append(0.4)
+        if not rankings:
+            return []
+        fused = reciprocal_rank_fusion(rankings, weights=weights)
+        keys = ("fqname", "name", "kind", "file", "line", "signature", "description",
+                "parent", "calls", "called_by")
+        return [{**{key: by_id[fid].get(key) for key in keys}, "rank": i + 1}
+                for i, fid in enumerate(fused[:k])]
+
     async def _generate_index(self, root_name: str, purpose: str, label: str,
                               prompt: str | None, relpath: str | None,
                               project: str | None, cwd: Path | None,

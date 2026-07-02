@@ -1,0 +1,37 @@
+{
+  "__doc__": "crib code-symbol-index LSP specs — Claude Code `.lsp.json` schema. Copy to ~/.config/crib/lsp.json and edit to override or extend. These five are the SHIPPED DEFAULTS (crib/codeindex.py DEFAULT_LSP_SPECS); listing one here overrides that default by label, so you only need the servers you want to change. Selection is by file EXTENSION via extensionToLanguage (its value is the LSP languageId sent in didOpen). `command` is resolved per-machine (which + ${ENV} expansion), so specs stay portable. For the call graph a server must implement textDocument/callHierarchy — basedpyright/pyright/rust-analyzer/gopls/clangd do; pylsp+jedi does NOT (callers only). Any top-level key without an extensionToLanguage (like this one) is simply never selected.",
+
+  "basedpyright": {
+    "command": "basedpyright-langserver",
+    "args": ["--stdio"],
+    "extensionToLanguage": { ".py": "python", ".pyi": "python" }
+  },
+  "pyright": {
+    "command": "pyright-langserver",
+    "args": ["--stdio"],
+    "extensionToLanguage": { ".py": "python", ".pyi": "python" }
+  },
+  "rust-analyzer": {
+    "command": "rust-analyzer",
+    "args": [],
+    "extensionToLanguage": { ".rs": "rust" }
+  },
+  "gopls": {
+    "command": "gopls",
+    "args": [],
+    "extensionToLanguage": { ".go": "go" }
+  },
+  "clangd": {
+    "command": "clangd",
+    "args": [],
+    "extensionToLanguage": { ".c": "c", ".h": "c", ".cc": "cpp", ".cpp": "cpp", ".hpp": "cpp", ".hh": "cpp" }
+  },
+
+  "example-tuned-override": {
+    "command": "basedpyright-langserver",
+    "args": ["--stdio"],
+    "extensionToLanguage": { ".py": "python" },
+    "settings": { "basedpyright": { "analysis": { "diagnosticMode": "workspace" } } },
+    "initializationOptions": {}
+  }
+}

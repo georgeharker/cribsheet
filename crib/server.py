@@ -215,6 +215,32 @@ def build_server(crib: Crib | None = None):
                                     overwrite=overwrite)
 
     @mcp.tool()
+    async def code_index(path: str, project: str | None = None,
+                         cwd: str | None = None) -> dict[str, Any]:
+        """symbol_index: extract a source file's symbols + call graph (callers/
+        callees, via the LSP) and persist them content-addressed under
+        `<project>/symbol_index/`. `path` is a source file (abs or relative to cwd).
+        Structural facet of docs/code-symbol-index.md."""
+        return await crib.code_index(path, _project(crib, project, cwd))
+
+    @mcp.tool()
+    async def code_xref(symbol: str, project: str | None = None,
+                        cwd: str | None = None) -> list[dict[str, Any]]:
+        """Look up a code symbol's callers/callees from the persisted symbol_index
+        (no live LSP needed). `symbol` is a bare name or dotted fqname."""
+        return crib.code_xref(symbol, _project(crib, project, cwd))
+
+    @mcp.tool()
+    async def code_lookup(query: str, project: str | None = None, k: int = 8,
+                          cwd: str | None = None) -> list[dict[str, Any]]:
+        """Find a code symbol by CONCEPT — semantic search over LLM descriptions of
+        functions/classes/methods (what they *do*, not their name). Returns ranked
+        symbols with signature, file:line, and callers/callees. This answers the
+        questions grep can't ("where do we fuse ranked lists" → the function).
+        Populate via code_index first."""
+        return crib.code_lookup(query, _project(crib, project, cwd), k)
+
+    @mcp.tool()
     def snapshot(message: str | None = None) -> str:
         """Create a git checkpoint of the data tree (if git is set up)."""
         return crib.snapshot(message)
