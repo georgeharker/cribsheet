@@ -47,6 +47,15 @@ class Store(Protocol):
         ...
     def query(self, embedding: list[float], k: int,
               where: dict[str, Any] | None = None) -> list[Hit]: ...
+    def current_dim(self) -> int | None:
+        """Dimension of stored vectors, or None if empty — lets a full reindex
+        detect an embedder change (e.g. a profile switch bge-small→bge-large)."""
+        ...
+    def recreate(self) -> None:
+        """Drop all vectors so the next upserts define a fresh dimension. For a
+        fixed-dim backend (Chroma) this recreates the collection; emptying the
+        store also makes the content-hash gate re-embed every chunk."""
+        ...
 
 
 def _cosine(a: list[float], b: list[float]) -> float:
@@ -92,6 +101,14 @@ class InMemoryStore:
         scored.sort(key=lambda h: h.score, reverse=True)
         return scored[:k]
 
+    def current_dim(self) -> int | None:
+        for r in self._recs.values():
+            return len(r.embedding)
+        return None
+
+    def recreate(self) -> None:
+        self._recs.clear()
+
 
 class JsonStore(InMemoryStore):
     """Persistent brute-force store: InMemoryStore + a JSON file on disk.
@@ -131,6 +148,10 @@ class JsonStore(InMemoryStore):
         super().set_meta(updates)
         self._save()
 
+    def recreate(self) -> None:
+        super().recreate()
+        self._save()
+
 
 class ChromaStore:
     """Embedded or shared Chroma. Collection has no embedding function."""
@@ -138,7 +159,26 @@ class ChromaStore:
     COLLECTION = "crib_chunks"
 
     def __init__(self, client: Any) -> None:
+        self._client = client
         self._col = client.get_or_create_collection(
+            name=self.COLLECTION, metadata={"hnsw:space": "cosine"}
+        )
+
+    def current_dim(self) -> int | None:
+        res = self._col.get(limit=1, include=["embeddings"])
+        embs = res.get("embeddings")
+        return len(embs[0]) if embs is not None and len(embs) else None
+
+    def recreate(self) -> None:
+        """Drop and remake the collection — Chroma fixes a collection's dimension
+        at first upsert, so an embedder change (new dim) needs a fresh one. In
+        shared mode this affects every project's chunks, so it belongs only on a
+        full reindex that re-embeds them all."""
+        try:
+            self._client.delete_collection(self.COLLECTION)
+        except Exception:  # noqa: BLE001 — absent/already-gone is fine
+            pass
+        self._col = self._client.get_or_create_collection(
             name=self.COLLECTION, metadata={"hnsw:space": "cosine"}
         )
 

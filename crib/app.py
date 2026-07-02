@@ -9,8 +9,9 @@ from __future__ import annotations
 
 import asyncio
 import datetime
+import os
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Callable
 
@@ -58,12 +59,34 @@ class LookupHit:
     line_end: int | None = None     # resolved against current disk (None if gone)
 
 
+def _resolve_embed_config(config: Config) -> Any:
+    """Pick the embed model by *active profile*, reusing the `models.toml`
+    profiles the generation layer already uses (`select(profile, "embed")`). The
+    profile is chosen **externally** — `$CRIB_PROFILE` (a per-host picker, the
+    Python analog of zsh-ai's per-host `zstyle ':zsh-ai:*' profile`), falling back
+    to `[generate].profile`. A capable box picks a profile whose `embed` names a
+    bigger model; a Pi sets nothing and keeps `[embed].model`. No model name lives
+    outside the config — only the profile does. Falls back to `[embed]` on any
+    miss (no profile, no `embed` key, unreadable config)."""
+    profile = os.environ.get("CRIB_PROFILE") or config.generate.profile
+    if profile and config.generate.config:
+        try:
+            from llmkit.bridge import load
+            conf = load(str(Path(config.generate.config).expanduser()))
+            spec = conf.select(profile, "embed")
+            if spec:
+                return replace(config.embed, model=spec)
+        except Exception:  # noqa: BLE001 — profile embed is best-effort; fall back
+            pass
+    return config.embed
+
+
 class Crib:
     def __init__(self, paths: Paths, config: Config, store: Store) -> None:
         self.paths = paths
         self.config = config
         self.store = store
-        self.embedder = build_embedder(config.embed)
+        self.embedder = build_embedder(_resolve_embed_config(config))
         self.index = IndexEngine(store, self.embedder,
                                  config.chunk.window_words,
                                  config.chunk.overlap_words,
@@ -319,6 +342,16 @@ class Crib:
         if relpath:
             targets = [relpath]
         else:
+            # Full reindex is the one safe place to switch embedder: if the stored
+            # vectors' dim differs from the current embedder (e.g. a profile flip
+            # to a bigger model), recreate the collection so all chunks re-embed at
+            # the new dim. Chroma is shared across projects, so this wipes them all
+            # — hence full-reindex-only; a --all sweep re-embeds the rest.
+            cur = self.store.current_dim()
+            if cur is not None and cur != self.embedder.dim:
+                print(f"crib: embedder dim {cur}→{self.embedder.dim}; recreating "
+                      f"the vector collection (full re-embed)", file=sys.stderr)
+                self.store.recreate()
             disk = {str(p.relative_to(nd)) for p in nd.rglob("*.md")}
             indexed = {m.get("relpath")
                        for m in self.store.get_meta({"project": proj}).values()}
