@@ -337,11 +337,15 @@ Build order:
    confirm with a target → move, id/history preserved), human/LLM-confirmed; `code_forget`
    removes a dead orphan without needing it to resolve
 
-Two things stay parked, both to keep the human layer clean of the machine layer:
-**git-history ranking** for `code_rehome` (rename detection + usage pointers — needs the
-code-repo root persisted at `code_index` time, which we don't store yet, so today's
-ranking is structural only), and feeding pinned learnings *into* the describe prompt (it
-would leak human truth into the regenerable description cache).
+**git-history rehoming is a prompt pattern, not more code.** `code_rehome`'s built-in
+ranking is structural (name / signature / file). Richer rename evidence — `git log
+--follow`, usage pointers — is something the *agent* consults at the prompt (read the
+rename from history, then call `code_rehome <old> <new>`), not a ranker we hardwire. The
+tool stays a confirmed move; the LLM brings the git context.
+
+One thing stays genuinely parked, to keep the human layer clean of the machine layer:
+feeding pinned learnings *into* the describe prompt — it would leak human truth into the
+regenerable description cache.
 
 ## 9. Open questions
 
