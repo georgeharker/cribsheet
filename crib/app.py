@@ -687,7 +687,8 @@ class Crib:
         """Callers/callees for a symbol from the persisted symbol_index — no live LSP."""
         from .codeindex import SymbolIndex
         proj = self.resolve_project(project, cwd)
-        return SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol)
+        return self._attach_learnings(
+            proj, SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol))
 
     # ── Durable learnings attached to a symbol (docs/code-symbol-index.md) ─────
     # Same primitives as notes — append / edit / forget / read — scoped to a code
@@ -714,6 +715,33 @@ class Crib:
     def _learning_relpath(self, entry: dict[str, Any]) -> str:
         from .codeindex import LEARNINGS_DIR, learning_slug
         return f"{LEARNINGS_DIR}/{learning_slug(entry['fqname'])}.md"
+
+    def _attach_learnings(self, proj: str,
+                          entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Enrich symbol entries in place with any attached learning (📌) + a
+        staleness flag, so pinned understanding resurfaces exactly where you're
+        already looking (code_lookup / code_xref). Keyed O(1) by learning_slug(fqn)
+        — only symbols that actually carry a note pay a read. `stale` = the symbol's
+        body changed (content_hash) since the learning was written; a heads-up, not
+        an invalidation — the subtlety usually still holds."""
+        from .codeindex import LEARNINGS_DIR, learning_slug
+        ldir = self.notes_dir(proj) / LEARNINGS_DIR
+        if not ldir.exists():
+            return entries
+        for e in entries:
+            fq = e.get("fqname")
+            if not fq:
+                continue
+            relpath = f"{LEARNINGS_DIR}/{learning_slug(fq)}.md"
+            path = self.notes_dir(proj) / relpath
+            if not path.exists():
+                continue
+            note = notes.load(path)
+            wrote, cur = note.frontmatter.get("content_hash"), e.get("content_hash")
+            e["learning"] = {"relpath": relpath,
+                             "stale": bool(wrote and cur and wrote != cur),
+                             "body": note.body.strip()}
+        return entries
 
     async def code_append(self, symbol: str, text: str, project: str | None = None,
                           cwd: Path | None = None) -> dict[str, Any]:
@@ -829,9 +857,10 @@ class Crib:
             return []
         fused = reciprocal_rank_fusion(rankings, weights=weights)
         keys = ("fqname", "name", "kind", "file", "line", "signature", "description",
-                "parent", "calls", "called_by")
-        return [{**{key: by_id[fid].get(key) for key in keys}, "rank": i + 1}
+                "parent", "calls", "called_by", "content_hash")
+        hits = [{**{key: by_id[fid].get(key) for key in keys}, "rank": i + 1}
                 for i, fid in enumerate(fused[:k])]
+        return self._attach_learnings(proj, hits)
 
     def code_graph(self, symbol: str, direction: str = "callees", depth: int = 6,
                    project: str | None = None,

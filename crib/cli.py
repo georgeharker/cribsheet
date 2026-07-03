@@ -161,6 +161,8 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
                   f"  {h.get('file', '')}:{h.get('line', '')}{cg}")
             if h.get("description"):
                 print(f"      {h['description']}")
+            if h.get("learning"):
+                _print_learning(h["learning"], "      ")
     elif verb == "code-xref":
         if not data:
             print("(symbol not found in the symbol_index)"); return
@@ -171,6 +173,16 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
                 print(f"   ← {c}")
             for c in e.get("calls") or []:
                 print(f"   → {c}")
+            if e.get("learning"):
+                _print_learning(e["learning"], "   ")
+
+
+def _print_learning(learning: dict, indent: str) -> None:
+    """Render an attached symbol learning (📌) under a code-lookup/xref hit."""
+    flag = "  ⚠ stale — body changed since written" if learning.get("stale") else ""
+    print(f"{indent}📌 note ({learning.get('relpath', '')}){flag}")
+    for line in (learning.get("body") or "").splitlines():
+        print(f"{indent}  {line}" if line.strip() else "")
 
 
 def _emit_code_learning(data: Any, verb: str, as_json: bool) -> None:

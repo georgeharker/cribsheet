@@ -303,23 +303,37 @@ The BM25 cache is keyed by project+corpus-hash; I misread it as global for a whi
 `fqname` still points true after a body edit. The failure mode is *rename/move*, which
 orphans the fqn key. The rule: **never auto-attach a durable learning to a symbol it
 wasn't authored against** — a wrong attachment is worse than a dangling one. So orphans
-are *surfaced, not solved* (report-only, never gates indexing), and re-homing is a
-confirmed action, suggestion-assisted by the strongest structural signal we already
-have — call-graph neighborhood (same callers/callees survive a rename) — plus signature
-match. The authoring-time `signature` snapshot keeps an orphan legible even if the
-symbol is gone.
+are *surfaced, not solved* (report-only, never gates indexing). The report (§ step 4)
+distinguishes two cases: a **true orphan** (the `symbol:` fqn no longer resolves at all)
+and a **moved** learning (the fqn still resolves but its snapshot `file:` no longer
+matches the symbol's current file — a same-name relocation worth flagging, cheaply
+auto-updatable). Re-homing (§ step 5) is a confirmed action, suggestion-assisted by
+signals we already have — strongest is **git history** (`git log --follow` / rename
+detection across the code repo) plus **call-graph neighborhood** (the callers/callees
+set survives a rename) and signature match; usage pointers become the evidence a human
+(or the LLM, on request) weighs. LLM-assisted, manually invoked or agent-proposed —
+never silent. The authoring-time `signature` snapshot keeps an orphan legible even if
+the symbol is gone.
 
 **Staleness for free.** The learning snapshots `content_hash` at authoring; when
 surfaced (via `code_lookup`/`code_xref`), if the symbol's current `content_hash` differs
 it's marked `⚠ written against an older body` — not auto-invalidated (the subtlety often
 still holds), just honestly flagged.
 
-Build order: **(1) `code_append`/`edit`/`forget`/`read` + the subtree** ✓ — then (2) the
-query-time join (📌 block in `code_lookup`/`code_xref` + staleness ⚠), (3) a `code_graph`
-glyph marking nodes that carry learnings, (4) the orphan report, (5) `--rehome`
-(manual → suggestion-ranked) + `--forget`. Feeding pinned learnings *into* the describe
-prompt (so regenerated descriptions respect your corrections) is deliberately parked —
-it would leak human truth into the regenerable cache.
+Build order:
+1. `code_append`/`edit`/`forget`/`read` + the `code-learnings/` subtree ✓
+2. Query-time join — 📌 block in `code_lookup`/`code_xref` + staleness ⚠ ✓ (keyed
+   O(1) by `learning_slug(fqn)`; only symbols that carry a note pay a read)
+3. `code_graph` glyph marking nodes that carry a learning (walk fqn→slug, membership
+   test against the subtree — never filename→fqn, since the munge is lossy)
+4. Orphan/moved report — true orphans (fqn unresolved) *and* moved learnings (fqn
+   resolves, snapshot `file:` drifted); report-only, never gates indexing
+5. `--rehome` — git-history + call-graph-ranked suggestions, human/LLM-confirmed —
+   plus `--forget` for dead symbols
+
+Feeding pinned learnings *into* the describe prompt (so regenerated descriptions
+respect your corrections) is deliberately parked — it would leak human truth into the
+regenerable cache.
 
 ## 9. Open questions
 
