@@ -82,3 +82,61 @@ def test_join_surfaces_learning_and_flags_staleness(crib):
     _seed_symbol(crib, "p", fqname="pkg.Mod.bar")
     bar = [h for h in crib.code_xref("pkg.Mod.bar", project="p")][0]
     assert "learning" not in bar
+
+
+def test_reaffirm_clears_stale_without_touching_body(crib):
+    _seed_symbol(crib, "p", content_hash="aaaa1111")
+    run(crib.code_append("pkg.Mod.foo", "still true", project="p"))
+    _seed_symbol(crib, "p", content_hash="bbbb2222")          # body moved on
+    assert crib.code_xref("pkg.Mod.foo", project="p")[0]["learning"]["stale"] is True
+
+    out = run(crib.code_reaffirm("pkg.Mod.foo", project="p"))
+    assert out["reaffirmed"]
+    hit = crib.code_xref("pkg.Mod.foo", project="p")[0]
+    assert hit["learning"]["stale"] is False                  # cleared
+    assert hit["learning"]["body"].endswith("still true")     # body untouched
+
+
+def test_code_graph_marks_nodes_with_learnings(crib):
+    # foo → bar (callee); attach a learning to bar, expect the glyph flag on that node
+    SymbolIndex(crib.paths.project_dir("p")).write({
+        "fqname": "pkg.Mod.foo", "name": "foo", "kind": "function", "lang": "python",
+        "module": "pkg.Mod", "parent": "", "content_hash": "h1", "file": "pkg/mod.py",
+        "line": 1, "signature": "def foo():", "description": "", "container": [],
+        "calls": ["bar [pkg/mod.py]"], "called_by": [], "name_terms": ["foo"]})
+    _seed_symbol(crib, "p", fqname="pkg.Mod.bar")
+    run(crib.code_append("pkg.Mod.bar", "gotcha", project="p"))
+    tree = crib.code_graph("pkg.Mod.foo", project="p")
+    assert not tree.get("has_learning")                       # foo has none
+    assert tree["children"][0]["fqname"].endswith("bar")
+    assert tree["children"][0]["has_learning"] is True        # bar is glyphed
+
+
+def test_learnings_report_and_orphan_lifecycle(crib):
+    _seed_symbol(crib, "p", fqname="a.foo", content_hash="h")
+    run(crib.code_append("a.foo", "note", project="p"))
+    assert crib.code_learnings(project="p")[0]["status"] == "ok"
+
+    # the symbol is renamed away → the learning orphans; report flags it
+    import shutil
+    shutil.rmtree(crib.paths.project_dir("p") / "symbol_index")
+    _seed_symbol(crib, "p", fqname="a.bar", content_hash="h")     # renamed foo→bar
+    rows = crib.code_learnings(project="p", orphans_only=True)
+    assert rows and rows[0]["symbol"] == "a.foo" and rows[0]["status"] == "orphan"
+
+    # rehome suggestions surface the rename target; then confirm the move
+    sugg = run(crib.code_rehome("a.foo", project="p"))
+    assert any(c["fqname"] == "a.bar" for c in sugg["candidates"])
+    moved = run(crib.code_rehome("a.foo", "a.bar", project="p"))
+    assert moved["new"] == "a.bar"
+    assert crib.code_read("a.bar", project="p")["found"] is True
+    assert crib.code_learnings(project="p", orphans_only=True) == []   # resolved
+
+
+def test_forget_removes_an_orphan(crib):
+    _seed_symbol(crib, "p", fqname="a.foo")
+    run(crib.code_append("a.foo", "note", project="p"))
+    import shutil
+    shutil.rmtree(crib.paths.project_dir("p") / "symbol_index")        # foo is gone
+    out = run(crib.code_forget("a.foo", project="p"))                 # still removable
+    assert out["symbol"] == "a.foo" and out["removed"] >= 1

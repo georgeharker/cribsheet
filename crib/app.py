@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import datetime
 import os
+import re
 import sys
 from dataclasses import dataclass, replace
 from pathlib import Path
@@ -793,11 +794,150 @@ class Crib:
     async def code_forget(self, symbol: str, project: str | None = None,
                           cwd: Path | None = None) -> dict[str, Any]:
         """Remove a symbol's learning (stashed to the version ring first, so it's
-        recoverable) — the standard forget, scoped to a symbol."""
+        recoverable). Works on ORPHANS too: if the symbol no longer resolves, forget
+        by its recorded fqn — so cleanup never requires a live symbol."""
+        from .codeindex import LEARNINGS_DIR, learning_slug
+        proj = self.resolve_project(project, cwd)
+        try:
+            fqn = self._resolve_symbol(proj, symbol)["fqname"]
+        except ValueError:
+            fqn = symbol                      # orphan: gone from the index, note lingers
+        relpath = f"{LEARNINGS_DIR}/{learning_slug(fqn)}.md"
+        if not self.abspath(proj, relpath).exists():
+            raise ValueError(f"no learning for {symbol!r} in project {proj!r}")
+        res = await self.forget(relpath, proj)
+        return {**res, "symbol": fqn}
+
+    async def code_reaffirm(self, symbol: str, project: str | None = None,
+                            cwd: Path | None = None) -> dict[str, Any]:
+        """Clear a learning's ⚠ stale flag WITHOUT editing the body — you re-checked
+        it against the current code and it still holds. Re-snapshots content_hash /
+        file / signature to the symbol's current state and stamps `reaffirmed`."""
         proj = self.resolve_project(project, cwd)
         entry = self._resolve_symbol(proj, symbol)
-        res = await self.forget(self._learning_relpath(entry), proj)
-        return {**res, "symbol": entry["fqname"]}
+        relpath = self._learning_relpath(entry)
+        path = self.abspath(proj, relpath)
+        if not path.exists():
+            raise ValueError(f"no learning for {entry['fqname']!r} yet — code_append first")
+        note = notes.load(path)
+        note.frontmatter["content_hash"] = entry.get("content_hash", "")
+        note.frontmatter["file"] = entry.get("file", note.frontmatter.get("file", ""))
+        note.frontmatter["signature"] = entry.get("signature",
+                                                  note.frontmatter.get("signature", ""))
+        note.frontmatter["reaffirmed"] = datetime.date.today().isoformat()
+        res = await self._write_note(proj, relpath, note)
+        return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
+                "reaffirmed": note.frontmatter["reaffirmed"], "indexed": res.upserted}
+
+    def _learning_fqns(self, proj: str) -> set[str]:
+        """Set of fqns that carry a learning (read from `symbol:` frontmatter — the
+        authoritative fqn, so the lossy slug never has to be reversed)."""
+        from .codeindex import LEARNINGS_DIR
+        ldir = self.notes_dir(proj) / LEARNINGS_DIR
+        out: set[str] = set()
+        if ldir.exists():
+            for p in ldir.glob("*.md"):
+                fq = notes.load(p).frontmatter.get("symbol")
+                if fq:
+                    out.add(fq)
+        return out
+
+    def code_learnings(self, project: str | None = None, cwd: Path | None = None,
+                       orphans_only: bool = False) -> list[dict[str, Any]]:
+        """Health of every attached learning: `ok` | `moved` | `orphan`. `moved` =
+        the fqn still resolves but the symbol's file drifted from the snapshot;
+        `orphan` = the fqn no longer resolves (rename/move/delete). Report-only —
+        never gates indexing; drives cleanup (code_rehome / code_forget)."""
+        from .codeindex import LEARNINGS_DIR, SymbolIndex
+        proj = self.resolve_project(project, cwd)
+        ldir = self.notes_dir(proj) / LEARNINGS_DIR
+        by_fq = {e["fqname"]: e
+                 for e in SymbolIndex(self.paths.project_dir(proj)).all()}
+        out: list[dict[str, Any]] = []
+        if ldir.exists():
+            for p in sorted(ldir.glob("*.md")):
+                fm = notes.load(p).frontmatter
+                fq = fm.get("symbol", "")
+                cur = by_fq.get(fq)
+                if cur is None:
+                    status, new_file = "orphan", None
+                elif cur.get("file") != fm.get("file"):
+                    status, new_file = "moved", cur.get("file")
+                else:
+                    status, new_file = "ok", None
+                if orphans_only and status == "ok":
+                    continue
+                out.append({"symbol": fq, "status": status, "file": fm.get("file", ""),
+                            "new_file": new_file, "signature": fm.get("signature", ""),
+                            "relpath": f"{LEARNINGS_DIR}/{p.name}"})
+        return out
+
+    def _rehome_candidates(self, fm: dict[str, Any], entries: list[dict[str, Any]],
+                           top: int = 6) -> list[dict[str, Any]]:
+        """Rank index symbols as rehome targets for an orphaned learning from the
+        snapshot we kept — unqualified name (survives a container/module rename),
+        signature token overlap, same file. Structural only; the human/LLM confirms.
+        (git-history ranking is the documented next lever — see docs § step 5.)"""
+        oldname = fm.get("symbol", "").split(".")[-1]
+        oldfile = fm.get("file", "")
+        oldsig = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", fm.get("signature", "")))
+        scored: list[tuple[float, dict[str, Any]]] = []
+        for e in entries:
+            if e.get("fqname") == fm.get("symbol"):
+                continue                                    # itself, if it resolves
+            s = 0.0
+            if e.get("name") == oldname:
+                s += 3.0
+            if oldfile and e.get("file") == oldfile:
+                s += 2.0
+            sig = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", e.get("signature", "")))
+            if oldsig and sig:
+                s += 2.0 * len(oldsig & sig) / len(oldsig | sig)
+            if s > 0:
+                scored.append((s, e))
+        scored.sort(key=lambda t: t[0], reverse=True)
+        return [{"fqname": e["fqname"], "file": e.get("file", ""),
+                 "signature": e.get("signature", ""), "score": round(s, 2)}
+                for s, e in scored[:top]]
+
+    async def code_rehome(self, old_fqn: str, new_fqn: str | None = None,
+                          project: str | None = None,
+                          cwd: Path | None = None) -> dict[str, Any]:
+        """Re-point an orphaned learning at the symbol it became. Without `new_fqn`:
+        return ranked candidates (never auto-move — a wrong attach is worse than a
+        dangling one). With `new_fqn`: move the note to the new symbol's slug,
+        re-snapshot its frontmatter, preserve the note id/history."""
+        from .codeindex import LEARNINGS_DIR, SymbolIndex, learning_slug
+        proj = self.resolve_project(project, cwd)
+        old_rel = f"{LEARNINGS_DIR}/{learning_slug(old_fqn)}.md"
+        old_path = self.abspath(proj, old_rel)
+        if not old_path.exists():
+            raise ValueError(f"no learning for {old_fqn!r} in project {proj!r}")
+        entries = SymbolIndex(self.paths.project_dir(proj)).all()
+        if new_fqn is None:
+            fm = notes.load(old_path).frontmatter
+            return {"old": old_fqn, "relpath": old_rel,
+                    "candidates": self._rehome_candidates(fm, entries)}
+        new_entry = next((e for e in entries if e.get("fqname") == new_fqn), None)
+        if new_entry is None:                               # allow a unique bare name
+            m = [e for e in entries if e["fqname"].endswith("." + new_fqn)
+                 or e.get("name") == new_fqn]
+            if len(m) != 1:
+                raise ValueError(f"target {new_fqn!r} not found or not unique in index")
+            new_entry = m[0]
+        new_rel = f"{LEARNINGS_DIR}/{learning_slug(new_entry['fqname'])}.md"
+        note = notes.load(old_path)
+        note.frontmatter.update({
+            "symbol": new_entry["fqname"], "title": new_entry["fqname"],
+            "lang": new_entry.get("lang", ""), "file": new_entry.get("file", ""),
+            "signature": new_entry.get("signature", ""),
+            "content_hash": new_entry.get("content_hash", ""), "rehomed_from": old_fqn})
+        res = await self._write_note(proj, new_rel, note)   # id preserved
+        if new_rel != old_rel:
+            old_path.unlink()
+            await self.index.index_file(proj, self.notes_dir(proj), old_rel)
+        return {"project": proj, "old": old_fqn, "new": new_entry["fqname"],
+                "relpath": new_rel, "indexed": res.upserted}
 
     def code_read(self, symbol: str, project: str | None = None,
                   cwd: Path | None = None) -> dict[str, Any]:
@@ -905,7 +1045,16 @@ class Crib:
                                              "children": []})
             return node
 
-        return build(root, depth)
+        tree = build(root, depth)
+        marked = self._learning_fqns(proj)           # step 3: glyph carriers
+        if marked:
+            stack = [tree]
+            while stack:
+                n = stack.pop()
+                if n.get("fqname") in marked:
+                    n["has_learning"] = True
+                stack.extend(n.get("children") or [])
+        return tree
 
     async def _generate_index(self, root_name: str, purpose: str, label: str,
                               prompt: str | None, relpath: str | None,

@@ -196,10 +196,49 @@ def _emit_code_learning(data: Any, verb: str, as_json: bool) -> None:
         print(f"# {sym}  [{rel}]\n{(data.get('body') or '').strip()}"); return
     if verb == "code-forget":
         print(f"forgot {sym}  ({rel})"); return
+    if verb == "code-reaffirm":
+        print(f"reaffirmed {sym} (cleared ⚠ stale)  → {rel}"); return
     if verb == "code-append":
         print(f"{'created' if data.get('created') else 'appended'} learning: {sym}  → {rel}")
         return
     print(f"edited learning: {sym}  → {rel}")   # code-edit
+
+
+def _emit_code_report(rows: Any, as_json: bool) -> None:
+    """Health report for attached learnings (ok/moved/orphan)."""
+    if as_json:
+        print(json.dumps(rows, indent=2, default=str)); return
+    if not rows:
+        print("(no learnings recorded)"); return
+    icon = {"ok": "·", "moved": "~", "orphan": "✗"}
+    for r in rows:
+        st = r.get("status", "")
+        line = f"{icon.get(st, '?')} {st:7} {r.get('symbol', '')}"
+        if st == "moved":
+            line += f"   {r.get('file', '')} → {r.get('new_file', '')}"
+        elif st == "orphan":
+            line += f"   (was {r.get('file', '')})"
+        print(line)
+    bad = sum(1 for r in rows if r.get("status") != "ok")
+    if bad:
+        print(f"\n{bad} need attention — `crib code-rehome <fqn>` for suggestions, "
+              f"or `crib code-forget <fqn>`")
+
+
+def _emit_code_rehome(data: Any, as_json: bool) -> None:
+    """Ranked rehome candidates (no target) or a move confirmation."""
+    if as_json:
+        print(json.dumps(data, indent=2, default=str)); return
+    if "candidates" in data:
+        print(f"rehome {data.get('old', '')} → candidates:")
+        cands = data.get("candidates") or []
+        if not cands:
+            print("  (none — `crib code-forget` if it's truly gone)"); return
+        for c in cands:
+            print(f"  [{c.get('score', '')}] {c.get('fqname', '')}   {c.get('file', '')}")
+        print(f"\nconfirm: crib code-rehome {data.get('old', '')} <fqname>")
+        return
+    print(f"rehomed {data.get('old', '')} → {data.get('new', '')}  ({data.get('relpath', '')})")
 
 
 def _emit_code_graph(tree: Any, args: Any) -> None:
@@ -210,12 +249,15 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
     if not tree:
         print("(symbol not found — is this project code-indexed?)"); return
     callers = getattr(args, "callers", False)
-    if getattr(args, "ascii", False):
+    ascii_mode = getattr(args, "ascii", False)
+    if ascii_mode:
         branch, last, vert, blank, arrow = "|-", "`-", "|  ", "   ", ("<" if callers else ">")
     else:
         branch, last, vert, blank, arrow = "├─", "└─", "│  ", "   ", ("◂" if callers else "▸")
+    pin = " *" if ascii_mode else " 📌"          # step 3: node carries a learning
     print(f"{tree['fqname']}  ({tree.get('kind', '')})   "
-          f"[{'callers' if callers else 'callees'}]")
+          f"[{'callers' if callers else 'callees'}]"
+          f"{pin if tree.get('has_learning') else ''}")
 
     def render(node: dict, prefix: str) -> None:
         kids = node.get("children") or []
@@ -223,6 +265,8 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
             islast = i == len(kids) - 1
             conn = last if islast else branch
             tag = " ↑" if c.get("repeat") else (" ·ext" if c.get("external") else "")
+            if c.get("has_learning"):
+                tag += pin
             loc = (f"   {c.get('file', '')}:{c.get('line', '')}"
                    if c.get("line") and not c.get("external") else "")
             print(f"{prefix}{conn}{arrow} {c.get('fqname', '')}{tag}{loc}")
@@ -314,11 +358,26 @@ def build_parser() -> argparse.ArgumentParser:
                        help="rewrite a symbol's learning body ('-' reads stdin)")
     s.add_argument("symbol"); s.add_argument("text"); proj(s)
 
-    s = sub.add_parser("code-forget", help="remove a symbol's learning (recoverable)")
+    s = sub.add_parser("code-forget",
+                       help="remove a symbol's learning (recoverable; works on orphans)")
     s.add_argument("symbol"); proj(s)
 
     s = sub.add_parser("code-read", help="print a symbol's attached learning")
     s.add_argument("symbol"); proj(s)
+
+    s = sub.add_parser("code-reaffirm",
+                       help="clear a learning's ⚠ stale flag without rewriting it")
+    s.add_argument("symbol"); proj(s)
+
+    s = sub.add_parser("code-learnings",
+                       help="health report for attached learnings (ok/moved/orphan)")
+    proj(s)
+    s.add_argument("--orphans", action="store_true",
+                   help="only the actionable ones (moved/orphan)")
+
+    s = sub.add_parser("code-rehome",
+                       help="re-point an orphaned learning (no target = ranked suggestions)")
+    s.add_argument("old"); s.add_argument("new", nargs="?"); proj(s)
 
     s = sub.add_parser("read", help="print a note's raw markdown")
     s.add_argument("relpath"); proj(s)
@@ -580,6 +639,14 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
         return "code_forget", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
     if v == "code-read":
         return "code_read", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
+    if v == "code-reaffirm":
+        return "code_reaffirm", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
+    if v == "code-learnings":
+        return "code_learnings", {"project": args.project, "orphans_only": args.orphans,
+                                  "cwd": cwd}
+    if v == "code-rehome":
+        return "code_rehome", {"old_fqn": args.old, "new_fqn": args.new,
+                               "project": args.project, "cwd": cwd}
     raise SystemExit(f"crib: unknown verb {v!r}")
 
 
@@ -597,8 +664,13 @@ def _run_daemon(args: Any, cfg: Any) -> None:
         _emit_code_graph(data, args)
     elif args.cmd in ("code-lookup", "code-xref", "code-index"):
         _emit_code(data, args.cmd, args.json)
-    elif args.cmd in ("code-append", "code-edit", "code-forget", "code-read"):
+    elif args.cmd in ("code-append", "code-edit", "code-forget", "code-read",
+                      "code-reaffirm"):
         _emit_code_learning(data, args.cmd, args.json)
+    elif args.cmd == "code-learnings":
+        _emit_code_report(data, args.json)
+    elif args.cmd == "code-rehome":
+        _emit_code_rehome(data, args.json)
     elif args.cmd in _RAW_PRINT:
         print(data)
     else:
@@ -760,6 +832,15 @@ def _run_inprocess(args: Any) -> None:
         elif args.cmd == "code-read":
             _emit_code_learning(crib.code_read(args.symbol, args.project, cwd=cwd),
                                 "code-read", j)
+        elif args.cmd == "code-reaffirm":
+            _emit_code_learning(asyncio.run(crib.code_reaffirm(
+                args.symbol, args.project, cwd=cwd)), "code-reaffirm", j)
+        elif args.cmd == "code-learnings":
+            _emit_code_report(crib.code_learnings(
+                args.project, cwd=cwd, orphans_only=args.orphans), j)
+        elif args.cmd == "code-rehome":
+            _emit_code_rehome(asyncio.run(crib.code_rehome(
+                args.old, args.new, args.project, cwd=cwd)), j)
     finally:
         crib.close()
 

@@ -300,6 +300,35 @@ def build_server(crib: Crib | None = None):
         return crib.code_read(symbol, _project(crib, project, cwd))
 
     @mcp.tool()
+    async def code_reaffirm(symbol: str, project: str | None = None,
+                            cwd: str | None = None) -> dict[str, Any]:
+        """Clear a learning's ⚠ stale flag WITHOUT rewriting it — you re-checked the
+        note against the current code and it still holds. Re-snapshots the symbol's
+        content_hash so it reads as fresh again. Use when code_lookup shows a 📌 note
+        flagged stale but the understanding is still correct."""
+        return await crib.code_reaffirm(symbol, _project(crib, project, cwd))
+
+    @mcp.tool()
+    def code_learnings(project: str | None = None, orphans_only: bool = False,
+                       cwd: str | None = None) -> list[dict[str, Any]]:
+        """Health report for attached learnings: each is `ok` | `moved` (fqn resolves
+        but the symbol's file drifted) | `orphan` (fqn no longer resolves — a rename/
+        move/delete left the note dangling). `orphans_only` filters to the actionable
+        ones. Report-only; drives cleanup via code_rehome / code_forget."""
+        return crib.code_learnings(_project(crib, project, cwd), orphans_only=orphans_only)
+
+    @mcp.tool()
+    async def code_rehome(old_fqn: str, new_fqn: str | None = None,
+                          project: str | None = None,
+                          cwd: str | None = None) -> dict[str, Any]:
+        """Re-point an orphaned learning at the symbol it became. Call with just
+        `old_fqn` FIRST to get ranked candidate targets (name/signature/file signals);
+        then call again with the chosen `new_fqn` to move the note (id/history
+        preserved, frontmatter re-snapshotted). Never auto-moves — you pick, because a
+        wrong attach is worse than a dangling one."""
+        return await crib.code_rehome(old_fqn, new_fqn, _project(crib, project, cwd))
+
+    @mcp.tool()
     def snapshot(message: str | None = None) -> str:
         """Create a git checkpoint of the data tree (if git is set up)."""
         return crib.snapshot(message)

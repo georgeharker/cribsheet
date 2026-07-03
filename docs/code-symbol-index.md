@@ -289,10 +289,12 @@ The BM25 cache is keyed by project+corpus-hash; I misread it as global for a whi
   the filename never has to round-trip. (`crib/codeindex.py: learning_slug`.)
 - **Same primitives as notes, `code_`-scoped** — `code_append` (attach a dated entry,
   creating the running note on first use), `code_edit` (rewrite the body), `code_forget`
-  (remove, recoverable via the ring), `code_read`. Each resolves the symbol against the
-  index (exact fqn wins; a bare name only if unique — never silently pick, so a learning
-  can't land on the wrong symbol) and reuses `_write_note`/`forget`. MCP + CLI
-  (`crib code-append <symbol> "…"`).
+  (remove, recoverable via the ring — works on orphans too), `code_read`, plus
+  `code_reaffirm` (clear a ⚠ stale flag without a rewrite) and the maintenance pair
+  `code_learnings` (health report) / `code_rehome` (re-point an orphan). Each resolves
+  the symbol against the index (exact fqn wins; a bare name only if unique — never
+  silently pick, so a learning can't land on the wrong symbol) and reuses
+  `_write_note`/`forget`. MCP + CLI (`crib code-append <symbol> "…"`).
 - **Attach to code you can't edit.** A learning is external, so it pins understanding to
   vendored deps and read-only explorations — where a comment structurally can't go. The
   comment-vs-learning line: a comment is for the next reader and ships in the repo; a
@@ -318,22 +320,28 @@ the symbol is gone.
 **Staleness for free.** The learning snapshots `content_hash` at authoring; when
 surfaced (via `code_lookup`/`code_xref`), if the symbol's current `content_hash` differs
 it's marked `⚠ written against an older body` — not auto-invalidated (the subtlety often
-still holds), just honestly flagged.
+still holds), just honestly flagged. When you've re-checked a flagged note and it still
+holds, **`code_reaffirm` clears the flag without a rewrite** — it re-snapshots
+`content_hash`/`file`/`signature` and stamps `reaffirmed`, so the body stays untouched.
 
 Build order:
 1. `code_append`/`edit`/`forget`/`read` + the `code-learnings/` subtree ✓
 2. Query-time join — 📌 block in `code_lookup`/`code_xref` + staleness ⚠ ✓ (keyed
    O(1) by `learning_slug(fqn)`; only symbols that carry a note pay a read)
-3. `code_graph` glyph marking nodes that carry a learning (walk fqn→slug, membership
-   test against the subtree — never filename→fqn, since the munge is lossy)
-4. Orphan/moved report — true orphans (fqn unresolved) *and* moved learnings (fqn
+3. `code_graph` glyph (📌) marking nodes that carry a learning ✓ — the call tree
+   becomes a treasure map. fqn→slug membership against the subtree (never filename→fqn,
+   since the munge is lossy)
+4. `code_learnings` report ✓ — true orphans (fqn unresolved) *and* moved learnings (fqn
    resolves, snapshot `file:` drifted); report-only, never gates indexing
-5. `--rehome` — git-history + call-graph-ranked suggestions, human/LLM-confirmed —
-   plus `--forget` for dead symbols
+5. `code_rehome` ✓ — suggestion-ranked (no target → candidates by name/signature/file;
+   confirm with a target → move, id/history preserved), human/LLM-confirmed; `code_forget`
+   removes a dead orphan without needing it to resolve
 
-Feeding pinned learnings *into* the describe prompt (so regenerated descriptions
-respect your corrections) is deliberately parked — it would leak human truth into the
-regenerable cache.
+Two things stay parked, both to keep the human layer clean of the machine layer:
+**git-history ranking** for `code_rehome` (rename detection + usage pointers — needs the
+code-repo root persisted at `code_index` time, which we don't store yet, so today's
+ranking is structural only), and feeding pinned learnings *into* the describe prompt (it
+would leak human truth into the regenerable description cache).
 
 ## 9. Open questions
 
