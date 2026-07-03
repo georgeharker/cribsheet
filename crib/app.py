@@ -690,7 +690,8 @@ class Crib:
         return SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol)
 
     def code_lookup(self, query: str, project: str | None = None, k: int = 8,
-                    cwd: Path | None = None) -> list[dict[str, Any]]:
+                    cwd: Path | None = None,
+                    sparse_weight: float = 0.2) -> list[dict[str, Any]]:
         """Find a symbol — HYBRID: dense concept search over LLM `description`s ⊕ BM25
         over `name_terms` (unqualified/qualified/subtokens), RRF-fused. So a concept
         query hits the dense side and a bare/partial *name* hits the sparse side. Served
@@ -725,8 +726,9 @@ class Crib:
             # Sparse damped below dense so a stray name-token match ("result" →
             # IndexResult) can't outrank a concept hit — but a strong exact-name
             # match still surfaces when dense is weak (a bare-name query). Mirrors
-            # the keyword_weight=0.3 damping on the note side (retrieve.py).
-            weights.append(0.4)
+            # the keyword_weight=0.3 damping on the note side (retrieve.py); the
+            # default is tuned on scripts/eval_code.py.
+            weights.append(sparse_weight)
         if not rankings:
             return []
         fused = reciprocal_rank_fusion(rankings, weights=weights)

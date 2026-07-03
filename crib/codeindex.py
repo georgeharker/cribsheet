@@ -270,7 +270,11 @@ def _module_of(relpath: str, lang: str) -> str:
     # drop common source-root prefixes so the module reads naturally
     while parts and parts[0] in ("src", "lua", "lib"):
         parts = parts[1:]
-    if parts and parts[-1] in ("init", "__init__", "mod"):
+    # the index-file whose name is the *directory's* module is language-specific:
+    # Rust mod.rs, Lua init.lua, Python __init__.py — but a Python `mod.py` is a
+    # real module and must NOT be dropped.
+    index_file = {"rust": "mod", "lua": "init"}.get(lang, "__init__")
+    if parts and parts[-1] == index_file:
         parts = parts[:-1]
     sep = "::" if lang == "rust" else "."
     return sep.join(parts)

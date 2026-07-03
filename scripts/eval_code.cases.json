@@ -1,0 +1,22 @@
+{
+  "_doc": "Concept→symbol eval for code_lookup (docs/code-symbol-index.md §6). Each case: a query, the expected symbol (substring match on fqname; a list = any-of), the project, and kind (concept | name). `name` cases probe the sparse/BM25 side (bare/partial identifiers); `concept` cases probe the dense description side. The kind split lets scripts/eval_code.py show whether a given RRF sparse_weight trades concept accuracy for name accuracy. Requires the projects to be code-indexed first (crib code-index …).",
+  "cases": [
+    {"q": "combine several ranked result lists into one ranking", "expect": "reciprocal_rank_fusion", "project": "cribsheet", "kind": "concept"},
+    {"q": "the per-project cache holding BM25 indexes", "expect": "LexicalCache", "project": "cribsheet", "kind": "concept"},
+    {"q": "score documents against a query with a cross-encoder", "expect": "CrossEncoderReranker", "project": "cribsheet", "kind": "concept"},
+    {"q": "split a compound identifier so a spaced query matches", "expect": "_subtokens", "project": "cribsheet", "kind": "concept"},
+    {"q": "brute-force in-memory cosine vector store", "expect": "InMemoryStore", "project": "cribsheet", "kind": "concept"},
+    {"q": "render a language-idiomatic qualified symbol name", "expect": ["_qualify", ".qualify"], "project": "cribsheet", "kind": "concept"},
+    {"q": "gate whether an LLM description needs regenerating by body hash", "expect": ["code_index", "content_hash"], "project": "cribsheet", "kind": "concept"},
+    {"q": "BM25", "expect": "BM25", "project": "cribsheet", "kind": "name"},
+    {"q": "reciprocal rank fusion", "expect": "reciprocal_rank_fusion", "project": "cribsheet", "kind": "name"},
+    {"q": "lexical cache", "expect": "LexicalCache", "project": "cribsheet", "kind": "name"},
+    {"q": "symbol index", "expect": "SymbolIndex", "project": "cribsheet", "kind": "name"},
+    {"q": "refresh an expired oauth access token", "expect": ["RefreshToken", "refresh"], "project": "mcp-companion", "kind": "concept"},
+    {"q": "manage a shared background server process with refcounting", "expect": "SharedServerManager", "project": "mcp-companion", "kind": "concept"},
+    {"q": "validate or normalize a tool's json schema", "expect": ["normalize_object_schema", "schema"], "project": "mcp-companion", "kind": "concept"},
+    {"q": "filter which tools are visible for a chat session", "expect": ["filter", "session"], "project": "mcp-companion", "kind": "concept"},
+    {"q": "SharedServerManager", "expect": "SharedServerManager", "project": "mcp-companion", "kind": "name"},
+    {"q": "nvim channel", "expect": "NvimChannel", "project": "mcp-companion", "kind": "name"}
+  ]
+}
