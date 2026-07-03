@@ -735,6 +735,51 @@ class Crib:
         return [{**{key: by_id[fid].get(key) for key in keys}, "rank": i + 1}
                 for i, fid in enumerate(fused[:k])]
 
+    def code_graph(self, symbol: str, direction: str = "callees", depth: int = 6,
+                   project: str | None = None,
+                   cwd: Path | None = None) -> dict[str, Any]:
+        """Build a call-graph TREE around `symbol` from the persisted symbol_index —
+        `callees` follows `calls`, `callers` follows `called_by`. Returns a nested
+        {fqname, kind, file, line, children[]} with DAG-repeats marked `repeat` and
+        unresolved edges `external`. Rendered pstree-style by the CLI. No LSP/LLM."""
+        from .codeindex import SymbolIndex
+        proj = self.resolve_project(project, cwd)
+        entries = SymbolIndex(self.paths.project_dir(proj)).all()
+        by_fq = {e["fqname"]: e for e in entries}
+        by_nf: dict[tuple[str, str], dict] = {}
+        for e in entries:
+            by_nf.setdefault((e.get("name", ""), e.get("file", "")), e)
+        root = (by_fq.get(symbol)
+                or next((e for e in entries if e.get("name") == symbol
+                         or e["fqname"].endswith("." + symbol)), None))
+        if not root:
+            return {}
+        edge = "calls" if direction == "callees" else "called_by"
+        seen: set[str] = set()
+
+        def build(e: dict, d: int) -> dict:
+            node = {"fqname": e["fqname"], "kind": e.get("kind", ""),
+                    "file": e.get("file", ""), "line": e.get("line"), "children": []}
+            if e["fqname"] in seen:
+                node["repeat"] = True
+                return node
+            seen.add(e["fqname"])
+            if d <= 0:
+                return node
+            for ref in e.get(edge) or []:
+                name, _, rest = ref.partition(" [")
+                fref = rest.rstrip("]")
+                child = by_nf.get((name.strip(), fref))
+                if child:
+                    node["children"].append(build(child, d - 1))
+                else:
+                    node["children"].append({"fqname": name.strip(), "kind": "?",
+                                             "file": fref, "external": True,
+                                             "children": []})
+            return node
+
+        return build(root, depth)
+
     async def _generate_index(self, root_name: str, purpose: str, label: str,
                               prompt: str | None, relpath: str | None,
                               project: str | None, cwd: Path | None,

@@ -241,6 +241,15 @@ def build_server(crib: Crib | None = None):
         return crib.code_lookup(query, _project(crib, project, cwd), k)
 
     @mcp.tool()
+    async def code_graph(symbol: str, direction: str = "callees", depth: int = 6,
+                         project: str | None = None,
+                         cwd: str | None = None) -> dict[str, Any]:
+        """Call-graph tree around a symbol from the symbol_index: `callees` (what it
+        calls) or `callers` (what calls it), recursive to `depth`. Nested
+        {fqname, kind, file, line, children[]} — the CLI renders it pstree-style."""
+        return crib.code_graph(symbol, direction, depth, _project(crib, project, cwd))
+
+    @mcp.tool()
     def snapshot(message: str | None = None) -> str:
         """Create a git checkpoint of the data tree (if git is set up)."""
         return crib.snapshot(message)

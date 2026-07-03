@@ -173,6 +173,35 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
                 print(f"   → {c}")
 
 
+def _emit_code_graph(tree: Any, args: Any) -> None:
+    """pstree-style call graph (modeled on zdot's hook graph). `--json` = raw tree.
+    `↑` marks a DAG node already shown; `·ext` an edge target outside the index."""
+    if getattr(args, "json", False):
+        print(json.dumps(tree, indent=2, default=str)); return
+    if not tree:
+        print("(symbol not found — is this project code-indexed?)"); return
+    callers = getattr(args, "callers", False)
+    if getattr(args, "ascii", False):
+        branch, last, vert, blank, arrow = "|-", "`-", "|  ", "   ", ("<" if callers else ">")
+    else:
+        branch, last, vert, blank, arrow = "├─", "└─", "│  ", "   ", ("◂" if callers else "▸")
+    print(f"{tree['fqname']}  ({tree.get('kind', '')})   "
+          f"[{'callers' if callers else 'callees'}]")
+
+    def render(node: dict, prefix: str) -> None:
+        kids = node.get("children") or []
+        for i, c in enumerate(kids):
+            islast = i == len(kids) - 1
+            conn = last if islast else branch
+            tag = " ↑" if c.get("repeat") else (" ·ext" if c.get("external") else "")
+            loc = (f"   {c.get('file', '')}:{c.get('line', '')}"
+                   if c.get("line") and not c.get("external") else "")
+            print(f"{prefix}{conn}{arrow} {c.get('fqname', '')}{tag}{loc}")
+            render(c, prefix + (blank if islast else vert))
+
+    render(tree, "")
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="crib", description="markdown memory")
     p.add_argument("--mcp", action="store_true", help="run the MCP server")
@@ -235,6 +264,14 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("code-xref",
                        help="a symbol's callers/callees from the symbol_index")
     s.add_argument("symbol"); proj(s)
+
+    s = sub.add_parser("code-graph",
+                       help="pstree-style call graph around a symbol (recursive)")
+    s.add_argument("symbol"); proj(s)
+    s.add_argument("--callers", action="store_true",
+                   help="what CALLS the symbol (default: what it calls)")
+    s.add_argument("--depth", type=int, default=6)
+    s.add_argument("--ascii", action="store_true", help="ASCII glyphs, no box-drawing")
 
     s = sub.add_parser("code-index",
                        help="index a source file: symbols + call graph + descriptions")
@@ -481,6 +518,10 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
                                "k": args.k, "cwd": cwd}
     if v == "code-xref":
         return "code_xref", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
+    if v == "code-graph":
+        return "code_graph", {"symbol": args.symbol,
+                              "direction": "callers" if args.callers else "callees",
+                              "depth": args.depth, "project": args.project, "cwd": cwd}
     if v == "code-index":
         # resolve the path client-side (the daemon's cwd differs from the caller's)
         return "code_index", {"path": str(Path(args.path).expanduser().resolve()),
@@ -498,6 +539,8 @@ def _run_daemon(args: Any, cfg: Any) -> None:
         _print_note(data, args.json)
     elif tool == "apropos":            # apropos verb, or `search --render`
         _emit_apropos(data, args.json)
+    elif args.cmd == "code-graph":
+        _emit_code_graph(data, args)
     elif args.cmd in ("code-lookup", "code-xref", "code-index"):
         _emit_code(data, args.cmd, args.json)
     elif args.cmd in _RAW_PRINT:
@@ -643,6 +686,10 @@ def _run_inprocess(args: Any) -> None:
             _emit_code(asyncio.run(crib.code_index(
                 str(Path(args.path).expanduser().resolve()), args.project, cwd=cwd)),
                 "code-index", j)
+        elif args.cmd == "code-graph":
+            _emit_code_graph(crib.code_graph(
+                args.symbol, "callers" if args.callers else "callees",
+                args.depth, args.project, cwd=cwd), args)
     finally:
         crib.close()
 
