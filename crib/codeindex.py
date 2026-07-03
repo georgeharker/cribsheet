@@ -478,6 +478,28 @@ def _render(e: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+# ── Durable human learnings attached to a symbol ──────────────────────────────
+# A learning is a first-class NOTE (under <project>/code-learnings/), keyed to a
+# symbol's fqn — deliberately SEPARATE from the LLM description (a regenerable
+# cache): re-indexing never touches it, and it rides the normal watch/index/sync/
+# merge. See docs/code-symbol-index.md § Learnings.
+LEARNINGS_DIR = "code-learnings"
+_SLUG_UNSAFE = re.compile(r"[^A-Za-z0-9._-]+")
+
+
+def learning_slug(fqn: str) -> str:
+    """fqn → a filesystem- and git-sync-safe basename (no extension). Whitelist
+    `[A-Za-z0-9._-]`; everything else (`::` `/` `<>` `*` `&` spaces `~` operators
+    …) collapses to `-`. When the munge is lossy, append a short fqn hash so
+    distinct symbols can't collide and the exact name is recoverable — the note's
+    `symbol:` frontmatter stays authoritative regardless. Clean dotted fqns pass
+    through verbatim: `crib.retrieve.LexicalCache.get`."""
+    safe = _SLUG_UNSAFE.sub("-", fqn).strip("-")
+    if safe != fqn:
+        safe = f"{safe}-{hashlib.sha1(fqn.encode()).hexdigest()[:8]}"
+    return safe
+
+
 class SymbolIndex:
     """Content-addressed structural store: symbol_index/<symbol_hash>.toml under the
     project data dir — git-communicable, byte-deterministic, merge-conflict-free."""

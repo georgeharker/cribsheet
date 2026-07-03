@@ -173,6 +173,23 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
                 print(f"   → {c}")
 
 
+def _emit_code_learning(data: Any, verb: str, as_json: bool) -> None:
+    """Confirmation/print for the symbol-learning verbs (append/edit/forget/read)."""
+    if as_json:
+        print(json.dumps(data, indent=2, default=str)); return
+    sym, rel = data.get("symbol", ""), data.get("relpath", "")
+    if verb == "code-read":
+        if not data.get("found"):
+            print(f"(no learning for {sym})"); return
+        print(f"# {sym}  [{rel}]\n{(data.get('body') or '').strip()}"); return
+    if verb == "code-forget":
+        print(f"forgot {sym}  ({rel})"); return
+    if verb == "code-append":
+        print(f"{'created' if data.get('created') else 'appended'} learning: {sym}  → {rel}")
+        return
+    print(f"edited learning: {sym}  → {rel}")   # code-edit
+
+
 def _emit_code_graph(tree: Any, args: Any) -> None:
     """pstree-style call graph (modeled on zdot's hook graph). `--json` = raw tree.
     `↑` marks a DAG node already shown; `·ext` an edge target outside the index."""
@@ -276,6 +293,20 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("code-index",
                        help="index a source file: symbols + call graph + descriptions")
     s.add_argument("path"); proj(s)
+
+    s = sub.add_parser("code-append",
+                       help="attach a durable learning to a code symbol ('-' reads stdin)")
+    s.add_argument("symbol"); s.add_argument("text"); proj(s)
+
+    s = sub.add_parser("code-edit",
+                       help="rewrite a symbol's learning body ('-' reads stdin)")
+    s.add_argument("symbol"); s.add_argument("text"); proj(s)
+
+    s = sub.add_parser("code-forget", help="remove a symbol's learning (recoverable)")
+    s.add_argument("symbol"); proj(s)
+
+    s = sub.add_parser("code-read", help="print a symbol's attached learning")
+    s.add_argument("symbol"); proj(s)
 
     s = sub.add_parser("read", help="print a note's raw markdown")
     s.add_argument("relpath"); proj(s)
@@ -526,6 +557,17 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
         # resolve the path client-side (the daemon's cwd differs from the caller's)
         return "code_index", {"path": str(Path(args.path).expanduser().resolve()),
                               "project": args.project, "cwd": cwd}
+    if v == "code-append":
+        return "code_append", {"symbol": args.symbol, "text": _read_content(args.text),
+                               "project": args.project, "cwd": cwd}
+    if v == "code-edit":
+        return "code_edit", {"symbol": args.symbol,
+                             "new_content": _read_content(args.text),
+                             "project": args.project, "cwd": cwd}
+    if v == "code-forget":
+        return "code_forget", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
+    if v == "code-read":
+        return "code_read", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
     raise SystemExit(f"crib: unknown verb {v!r}")
 
 
@@ -543,6 +585,8 @@ def _run_daemon(args: Any, cfg: Any) -> None:
         _emit_code_graph(data, args)
     elif args.cmd in ("code-lookup", "code-xref", "code-index"):
         _emit_code(data, args.cmd, args.json)
+    elif args.cmd in ("code-append", "code-edit", "code-forget", "code-read"):
+        _emit_code_learning(data, args.cmd, args.json)
     elif args.cmd in _RAW_PRINT:
         print(data)
     else:
@@ -690,6 +734,20 @@ def _run_inprocess(args: Any) -> None:
             _emit_code_graph(crib.code_graph(
                 args.symbol, "callers" if args.callers else "callees",
                 args.depth, args.project, cwd=cwd), args)
+        elif args.cmd == "code-append":
+            _emit_code_learning(asyncio.run(crib.code_append(
+                args.symbol, _read_content(args.text), args.project, cwd=cwd)),
+                "code-append", j)
+        elif args.cmd == "code-edit":
+            _emit_code_learning(asyncio.run(crib.code_edit(
+                args.symbol, _read_content(args.text), args.project, cwd=cwd)),
+                "code-edit", j)
+        elif args.cmd == "code-forget":
+            _emit_code_learning(asyncio.run(crib.code_forget(
+                args.symbol, args.project, cwd=cwd)), "code-forget", j)
+        elif args.cmd == "code-read":
+            _emit_code_learning(crib.code_read(args.symbol, args.project, cwd=cwd),
+                                "code-read", j)
     finally:
         crib.close()
 

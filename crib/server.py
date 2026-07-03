@@ -68,7 +68,10 @@ def build_server(crib: Crib | None = None):
             "(find a symbol by CONCEPT or by name, even a cryptic private one) and "
             "`code_xref` / `code_graph` (callers/callees, recursively) FIRST: they "
             "answer by intent and cross-reference, which grep cannot. `code_index "
-            "<file>` populates it. "
+            "<file>` populates it. When you finally UNDERSTAND a symbol — a subtlety, "
+            "a gotcha, a 'now I get it' worth keeping — `code_append <symbol> \"…\"` "
+            "pins a durable learning to it (survives re-indexing, works even on code "
+            "you can't edit); it surfaces back next time via `code_lookup`/`code_xref`. "
             "CROSS-MACHINE: some notes are mirrored from another machine's Claude "
             "memory (frontmatter `source: claude_memory`, `host: <name>`, under "
             "`claude-memory/<host>/`). Treat the *learning* as portable — "
@@ -259,6 +262,42 @@ def build_server(crib: Crib | None = None):
         calls) or `callers` (what calls it), recursive to `depth`. Nested
         {fqname, kind, file, line, children[]} — the CLI renders it pstree-style."""
         return crib.code_graph(symbol, direction, depth, _project(crib, project, cwd))
+
+    @mcp.tool()
+    async def code_append(symbol: str, text: str, project: str | None = None,
+                          cwd: str | None = None) -> dict[str, Any]:
+        """Pin a durable human learning to a code symbol — the 'now I get it',
+        the subtlety, the gotcha you don't want to re-derive next session. Stored
+        as a first-class note under <project>/code-learnings/ keyed to the symbol's
+        fqn, SEPARATE from the regenerable LLM description, so it survives
+        re-indexing and rides git sync (and works on code you can't edit — vendored
+        deps, read-only explorations — where a comment can't go). Appends a dated
+        entry to the symbol's running note. `symbol` is a bare name or dotted
+        fqname already in the symbol_index (code_index the file first). Surfaces
+        back via code_lookup/code_xref."""
+        return await crib.code_append(symbol, text, _project(crib, project, cwd))
+
+    @mcp.tool()
+    async def code_edit(symbol: str, new_content: str, project: str | None = None,
+                        cwd: str | None = None) -> dict[str, Any]:
+        """Rewrite a symbol's learning body wholesale (frontmatter preserved) —
+        the standard edit, scoped to a symbol. Errors if none exists; code_append
+        creates."""
+        return await crib.code_edit(symbol, new_content, _project(crib, project, cwd))
+
+    @mcp.tool()
+    async def code_forget(symbol: str, project: str | None = None,
+                          cwd: str | None = None) -> dict[str, Any]:
+        """Remove a symbol's learning (stashed to the version ring first, so it's
+        recoverable) — the standard forget, scoped to a symbol."""
+        return await crib.code_forget(symbol, _project(crib, project, cwd))
+
+    @mcp.tool()
+    def code_read(symbol: str, project: str | None = None,
+                  cwd: str | None = None) -> dict[str, Any]:
+        """Read a symbol's attached learning note (frontmatter + body), or found=
+        False if none is written yet. `symbol` is a bare name or dotted fqname."""
+        return crib.code_read(symbol, _project(crib, project, cwd))
 
     @mcp.tool()
     def snapshot(message: str | None = None) -> str:

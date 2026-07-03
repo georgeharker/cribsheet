@@ -253,7 +253,75 @@ the per-machine embedder-profile mechanism and the dim-switch reindex apply unch
 
 Each of 3–5 lands behind a harness proof, same as the retrieval work.
 
-## 8. Open questions
+## 8. Learnings — durable human understanding attached to a symbol
+
+The LLM `description` is a **regenerable cache** — it's recomputed whenever the
+symbol body changes (`content_hash` gate, §2.1). A hard-won *"oh, that's why"* — a
+subtlety you finally understood, a gotcha, a "I misread this as X for a while" — is
+the opposite: irreplaceable, human, source-of-truth. Putting it in the symbol file
+would marry the durable thing to the disposable one (regen churn, mixed provenance,
+sync riding on a cache). So it lives elsewhere.
+
+**A learning is a first-class cribsheet note**, keyed to a symbol's `fqname`, under a
+dedicated `<project>/code-learnings/` subtree. The symbol index gains a *join*, never
+a storage responsibility — and the learning inherits the entire note machinery for
+free: the version ring, git sync, the frontmatter merge driver, semantic search
+(`lookup`/`apropos` find it as a note *and* it surfaces via the symbol). Same move as
+`import-memory`: one source of truth, two searchable surfaces.
+
+```
+code-learnings/crib.retrieve.LexicalCache.get.md
+---
+kind: code-learning
+symbol: crib.retrieve.LexicalCache.get   # fqn — the foreign key (authoritative)
+lang, file, signature                    # snapshot at authoring (for orphan legibility)
+content_hash: 1f89…                      # body hash when written → staleness signal
+---
+### 2026-07-03
+The BM25 cache is keyed by project+corpus-hash; I misread it as global for a while.
+```
+
+- **Filename = the fqn, munged only as the filesystem forces.** Whitelist
+  `[A-Za-z0-9._-]`; everything else (`::` `/` `<>` `*` `&` spaces `~` operators)
+  collapses to `-`, and a *lossy* munge appends a short fqn hash so distinct symbols
+  can't collide (`core::cache::Store::get` → `core-cache-Store-get-132ab1a5`). Clean
+  dotted fqns pass through verbatim. The `symbol:` frontmatter is authoritative, so
+  the filename never has to round-trip. (`crib/codeindex.py: learning_slug`.)
+- **Same primitives as notes, `code_`-scoped** — `code_append` (attach a dated entry,
+  creating the running note on first use), `code_edit` (rewrite the body), `code_forget`
+  (remove, recoverable via the ring), `code_read`. Each resolves the symbol against the
+  index (exact fqn wins; a bare name only if unique — never silently pick, so a learning
+  can't land on the wrong symbol) and reuses `_write_note`/`forget`. MCP + CLI
+  (`crib code-append <symbol> "…"`).
+- **Attach to code you can't edit.** A learning is external, so it pins understanding to
+  vendored deps and read-only explorations — where a comment structurally can't go. The
+  comment-vs-learning line: a comment is for the next reader and ships in the repo; a
+  learning is cross-session memory for the explorer (the meta stuff that doesn't earn a
+  comment but shouldn't be re-derived).
+
+**Identity drift.** `content_hash` already immunizes against body churn — the same
+`fqname` still points true after a body edit. The failure mode is *rename/move*, which
+orphans the fqn key. The rule: **never auto-attach a durable learning to a symbol it
+wasn't authored against** — a wrong attachment is worse than a dangling one. So orphans
+are *surfaced, not solved* (report-only, never gates indexing), and re-homing is a
+confirmed action, suggestion-assisted by the strongest structural signal we already
+have — call-graph neighborhood (same callers/callees survive a rename) — plus signature
+match. The authoring-time `signature` snapshot keeps an orphan legible even if the
+symbol is gone.
+
+**Staleness for free.** The learning snapshots `content_hash` at authoring; when
+surfaced (via `code_lookup`/`code_xref`), if the symbol's current `content_hash` differs
+it's marked `⚠ written against an older body` — not auto-invalidated (the subtlety often
+still holds), just honestly flagged.
+
+Build order: **(1) `code_append`/`edit`/`forget`/`read` + the subtree** ✓ — then (2) the
+query-time join (📌 block in `code_lookup`/`code_xref` + staleness ⚠), (3) a `code_graph`
+glyph marking nodes that carry learnings, (4) the orphan report, (5) `--rehome`
+(manual → suggestion-ranked) + `--forget`. Feeding pinned learnings *into* the describe
+prompt (so regenerated descriptions respect your corrections) is deliberately parked —
+it would leak human truth into the regenerable cache.
+
+## 9. Open questions
 
 - **Granularity & hierarchy.** Symbols vs also module- and class-level descriptions
   (a breadcrumb hierarchy, like heading paths). Does file/class context help concept

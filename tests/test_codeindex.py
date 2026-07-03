@@ -49,6 +49,27 @@ def test_name_terms_split_compound_identifiers():
     assert "SharedServerManager" in terms                          # unqualified name
 
 
+# --- learning_slug: fqn → filesystem/git-safe basename ----------------------
+def test_learning_slug_clean_fqn_verbatim():
+    # a pure dotted fqn is already filesystem-clean → passes through unchanged
+    assert ci.learning_slug("crib.retrieve.LexicalCache.get") == \
+        "crib.retrieve.LexicalCache.get"
+
+
+def test_learning_slug_munges_unsafe_and_disambiguates():
+    # anything outside [A-Za-z0-9._-] collapses to '-'; a lossy munge appends a
+    # short fqn hash so distinct symbols can't collide on disk
+    a = ci.learning_slug("core::cache::Store::get")
+    b = ci.learning_slug("core-cache-Store-get")        # would collide sans hash
+    assert a.startswith("core-cache-Store-get-")
+    assert a != b and "::" not in a and "/" not in a
+    # Go import paths, C++ generics/operators/dtors — all land valid and unique
+    for fq in ("pkg/foo.Bar", "Vec<T>::push", "operator+", "ns::~Dtor"):
+        s = ci.learning_slug(fq)
+        assert set(s) <= set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._-")
+        assert s and not s.startswith("-") and not s.endswith("-")
+
+
 # --- documentSymbol flattening (descend classes into methods) ----------------
 def test_walk_descends_containers():
     tree = [{"name": "C", "kind": 5, "children": [

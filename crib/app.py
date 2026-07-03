@@ -689,6 +689,102 @@ class Crib:
         proj = self.resolve_project(project, cwd)
         return SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol)
 
+    # ── Durable learnings attached to a symbol (docs/code-symbol-index.md) ─────
+    # Same primitives as notes — append / edit / forget / read — scoped to a code
+    # symbol. Each resolves the fqn to a note under <project>/code-learnings/ and
+    # reuses the standard note machinery, so learnings inherit versioning, git
+    # sync and the frontmatter merge driver. They are SEPARATE from the LLM
+    # description (a regenerable cache): re-indexing never disturbs them.
+    def _resolve_symbol(self, proj: str, symbol: str) -> dict[str, Any]:
+        """Resolve a user-supplied symbol to exactly one indexed entry. Exact fqn
+        wins; a bare/partial name resolves only if unique — else raise, listing
+        candidates (never silently pick, so a learning can't land on the wrong one)."""
+        from .codeindex import SymbolIndex
+        matches = SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol)
+        if not matches:
+            raise ValueError(f"unknown symbol {symbol!r} in project {proj!r} — "
+                             f"code_lookup it, or code_index the file first")
+        exact = [m for m in matches if m.get("fqname") == symbol]
+        cands = exact or matches
+        if len(cands) > 1:
+            names = ", ".join(sorted(m.get("fqname", "") for m in cands)[:8])
+            raise ValueError(f"ambiguous symbol {symbol!r} → {names}; pass a full fqname")
+        return cands[0]
+
+    def _learning_relpath(self, entry: dict[str, Any]) -> str:
+        from .codeindex import LEARNINGS_DIR, learning_slug
+        return f"{LEARNINGS_DIR}/{learning_slug(entry['fqname'])}.md"
+
+    async def code_append(self, symbol: str, text: str, project: str | None = None,
+                          cwd: Path | None = None) -> dict[str, Any]:
+        """Attach a durable learning to a symbol: append a dated entry to its
+        running note (create it, with symbol-keyed frontmatter, on first use)."""
+        proj = self.resolve_project(project, cwd)
+        entry = self._resolve_symbol(proj, symbol)
+        fqn = entry["fqname"]
+        relpath = self._learning_relpath(entry)
+        path = self.abspath(proj, relpath)
+        existed = path.exists()
+        if existed:
+            note = notes.load(path)
+            # refresh the drift/staleness snapshot to the most-recent authoring
+            note.frontmatter["content_hash"] = entry.get("content_hash", "")
+            note.frontmatter["file"] = entry.get("file", note.frontmatter.get("file", ""))
+            note.frontmatter["signature"] = entry.get("signature",
+                                                      note.frontmatter.get("signature", ""))
+        else:
+            note = Note(path=path, body="", frontmatter={
+                "title": fqn, "kind": "code-learning", "symbol": fqn,
+                "lang": entry.get("lang", ""), "file": entry.get("file", ""),
+                "signature": entry.get("signature", ""),
+                "content_hash": entry.get("content_hash", ""),
+                "source": "code-note"})
+        today = datetime.date.today().isoformat()
+        note.body = note.body.rstrip() + f"\n\n### {today}\n{text.strip()}\n"
+        res = await self._write_note(proj, relpath, note)
+        return {"project": proj, "symbol": fqn, "relpath": relpath,
+                "created": not existed, "indexed": res.upserted}
+
+    async def code_edit(self, symbol: str, new_content: str, project: str | None = None,
+                        cwd: Path | None = None) -> dict[str, Any]:
+        """Replace a symbol's learning body wholesale (fix/rewrite), frontmatter
+        preserved. Errors if no learning exists yet — use code_append to create."""
+        proj = self.resolve_project(project, cwd)
+        entry = self._resolve_symbol(proj, symbol)
+        relpath = self._learning_relpath(entry)
+        path = self.abspath(proj, relpath)
+        if not path.exists():
+            raise ValueError(f"no learning for {entry['fqname']!r} yet — code_append first")
+        note = notes.load(path)
+        note.frontmatter["content_hash"] = entry.get("content_hash", "")
+        note.body = new_content.strip() + "\n"
+        res = await self._write_note(proj, relpath, note)
+        return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
+                "indexed": res.upserted}
+
+    async def code_forget(self, symbol: str, project: str | None = None,
+                          cwd: Path | None = None) -> dict[str, Any]:
+        """Remove a symbol's learning (stashed to the version ring first, so it's
+        recoverable) — the standard forget, scoped to a symbol."""
+        proj = self.resolve_project(project, cwd)
+        entry = self._resolve_symbol(proj, symbol)
+        res = await self.forget(self._learning_relpath(entry), proj)
+        return {**res, "symbol": entry["fqname"]}
+
+    def code_read(self, symbol: str, project: str | None = None,
+                  cwd: Path | None = None) -> dict[str, Any]:
+        """Read a symbol's learning note (frontmatter + body), or None if unwritten."""
+        proj = self.resolve_project(project, cwd)
+        entry = self._resolve_symbol(proj, symbol)
+        relpath = self._learning_relpath(entry)
+        path = self.abspath(proj, relpath)
+        if not path.exists():
+            return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
+                    "found": False, "body": None}
+        note = notes.load(path)
+        return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
+                "found": True, "frontmatter": note.frontmatter, "body": note.body}
+
     def code_lookup(self, query: str, project: str | None = None, k: int = 8,
                     cwd: Path | None = None,
                     sparse_weight: float = 0.2) -> list[dict[str, Any]]:
