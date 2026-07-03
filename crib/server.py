@@ -60,6 +60,15 @@ def build_server(crib: Crib | None = None):
             "session and reaches other agents: `store` a new note, or "
             "`append`/`edit` one found via `lookup`. Prefer updating an existing "
             "note over creating near-duplicates. "
+            "CODE: a project may also carry a *code symbol index* — its "
+            "functions/classes/methods with an LLM 'what it does' description AND a "
+            "real cross-file call graph (callers/callees). When you would reach for "
+            "grep to answer a CODE question — *where is X handled*, *what does this "
+            "function do*, *what calls Y*, *what does Z call* — try `code_lookup` "
+            "(find a symbol by CONCEPT or by name, even a cryptic private one) and "
+            "`code_xref` / `code_graph` (callers/callees, recursively) FIRST: they "
+            "answer by intent and cross-reference, which grep cannot. `code_index "
+            "<file>` populates it. "
             "CROSS-MACHINE: some notes are mirrored from another machine's Claude "
             "memory (frontmatter `source: claude_memory`, `host: <name>`, under "
             "`claude-memory/<host>/`). Treat the *learning* as portable — "
@@ -233,11 +242,13 @@ def build_server(crib: Crib | None = None):
     @mcp.tool()
     async def code_lookup(query: str, project: str | None = None, k: int = 8,
                           cwd: str | None = None) -> list[dict[str, Any]]:
-        """Find a code symbol by CONCEPT — semantic search over LLM descriptions of
-        functions/classes/methods (what they *do*, not their name). Returns ranked
-        symbols with signature, file:line, and callers/callees. This answers the
-        questions grep can't ("where do we fuse ranked lists" → the function).
-        Populate via code_index first."""
+        """Find a code symbol by CONCEPT or NAME — call this FIRST when you'd grep
+        the codebase for a function/class ("where do we fuse ranked lists", "the
+        oauth refresh"). HYBRID: a dense search over LLM 'what it does' descriptions
+        ⊕ a name/subtoken match, so it finds a symbol by intent (grep can't) OR by a
+        bare/partial/cryptic name. Returns ranked symbols with signature, file:line,
+        and callers/callees. Pair with `code_xref`/`code_graph` to walk the call
+        graph. Populate a project first with `code_index <file>`."""
         return crib.code_lookup(query, _project(crib, project, cwd), k)
 
     @mcp.tool()

@@ -25,6 +25,13 @@ external edits), `import` of a repo's local docs via `.crib`, shared Chroma via
 - **Hybrid retrieval** — dense (vector) ⊕ BM25 lexical, fused by reciprocal-rank
   fusion, with an optional cross-encoder rerank stage. (§10.3)
 - **`apropos`** — like `lookup` but renders the full matching sections.
+- **Code symbol index** — index a source file's functions/classes/methods with an
+  LLM "what it does" description **and** a real LSP call graph (callers/callees),
+  then answer the questions grep can't: find a symbol by **concept or name**
+  (`code_lookup`, hybrid dense⊕BM25), walk its call graph (`code_xref`), or render
+  it as a terminal pstree (`code_graph`). Multi-language via `.lsp.json` specs
+  (basedpyright/pyright, rust-analyzer, gopls, clangd, emmylua_ls).
+  ([docs/code-symbol-index.md](docs/code-symbol-index.md))
 - **Harness-memory mirror** — `import-memory` mirrors Claude Code's own
   `memory/*.md` into a crib project (host-namespaced) and live-syncs it. (§13)
 - **Git sync** — `setup`/`sync`/`push`/`pull` share notes across machines, with a
@@ -70,11 +77,17 @@ crib import                                          # ingest a repo's docs via 
 crib import-memory                                   # mirror Claude's harness memory (§13)
 crib setup --remote git@host:notes.git               # join the shared repo on a new machine (§14)
 crib sync                                            # share notes across machines via git (§14)
+
+crib code-index crib/retrieve.py -p mycode           # index a file: symbols + call graph + descriptions
+crib code-lookup "combine ranked lists" -p mycode    # find a symbol by CONCEPT or name (hybrid)
+crib code-xref BM25.scores -p mycode                 # a symbol's callers ← / callees →
+crib code-graph LexicalCache.get -p mycode           # pstree call graph (--callers, --depth, --ascii)
 ```
 Verbs: `lookup`/`search` (`-a` renders), `apropos`/`a`, `read`, `locate`,
 `store`, `append`, `edit`, `reindex`, `reconcile`, `versions`, `restore`,
 `import`, `import-memory`, `setup`, `snapshot`, `sync`/`push`/`pull`, `history`,
-`projects`, `info`.
+`projects`, `info`, and the code index `code-lookup`/`code-xref`/`code-graph`/
+`code-index`.
 
 By default a verb attaches to the **warm daemon** (one process shared with the
 MCP server) via `sharedserver`, avoiding a per-call cold start; `--no-daemon`
@@ -205,6 +218,8 @@ only sees them once it has decided to reach for a tool, which is too late for a
 # Memory (cribsheet)
 - Before answering about a project/topic/past decision — or exploring a codebase
   cold — `lookup`/`apropos` cribsheet first; the answer may be stored.
+- For code questions ("where is X handled", "what calls Y", "what does Z do"),
+  reach for `code_lookup`/`code_xref`/`code_graph` before grep (when indexed).
 - When a durable fact emerges (decision, convention, gotcha, contract), `store`
   it — `lookup` first, `append`/`edit` over duplicating.
 ```
