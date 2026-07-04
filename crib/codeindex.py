@@ -59,6 +59,12 @@ DEFAULT_LSP_SPECS: dict[str, dict[str, Any]] = {
                    "extensionToLanguage": {".lua": "lua"}},
     "lua-language-server": {"command": "lua-language-server", "args": [],
                             "extensionToLanguage": {".lua": "lua"}},
+    # Shell/zsh: shuck (Rust shell checker; `shuck server` speaks LSP over stdio).
+    # documentSymbol + definition + references, but NO call hierarchy — symbols
+    # index fine, calls/called_by stay empty (§3.4). shuck ignores the languageId
+    # (it keys on content/extension), so "zsh" is just the stored `lang` label.
+    "shuck": {"command": "shuck", "args": ["server"],
+              "extensionToLanguage": {".zsh": "zsh"}},
 }
 
 
