@@ -49,6 +49,43 @@ def test_name_terms_split_compound_identifiers():
     assert "SharedServerManager" in terms                          # unqualified name
 
 
+# --- shebang routing for extension-less scripts ------------------------------
+def test_shebang_lang_maps_interpreters(tmp_path):
+    cases = {
+        "#!/usr/bin/env zsh\n": "zsh",
+        "#!/bin/zsh -f\n": "zsh",                       # trailing interpreter args
+        "#!/usr/bin/python3\n": "python",
+        "#!/usr/bin/env python3.11\n": "python",        # version suffix stripped
+        "#!/usr/bin/node\n": "javascript",
+        "plain file, no shebang\n": None,
+        "#!/opt/weird/thing\n": None,                   # unknown interpreter
+    }
+    for src, exp in cases.items():
+        p = tmp_path / "s"
+        p.write_text(src)
+        assert ci._shebang_lang(p) == exp, src
+
+
+def test_server_for_shebang_fallback(tmp_path):
+    # a spec whose binary always resolves ("sh" is everywhere), claiming .zsh→zsh
+    specs = {"fakezsh": {"command": "sh", "args": ["-c", ":"],
+                         "extensionToLanguage": {".zsh": "zsh"}}}
+    # extension-less file with a zsh shebang → routed by shebang to the zsh server
+    f = tmp_path / "myscript"
+    f.write_text("#!/usr/bin/env zsh\nfoo() { :; }\n")
+    sel = ci.server_for(f.name, specs=specs, abspath=f)
+    assert sel and sel[0] == "fakezsh" and sel[2] == "zsh"
+    # no shebang → no server (never guess)
+    g = tmp_path / "plain"
+    g.write_text("hello\n")
+    assert ci.server_for(g.name, specs=specs, abspath=g) is None
+    # a KNOWN extension wins over the shebang (extension precedence)
+    h = tmp_path / "real.zsh"
+    h.write_text("#!/usr/bin/env python3\n")
+    sel2 = ci.server_for(h.name, specs=specs, abspath=h)
+    assert sel2 and sel2[2] == "zsh"                    # by extension, not the py shebang
+
+
 # --- learning_slug: fqn → filesystem/git-safe basename ----------------------
 def test_learning_slug_clean_fqn_verbatim():
     # a pure dotted fqn is already filesystem-clean → passes through unchanged

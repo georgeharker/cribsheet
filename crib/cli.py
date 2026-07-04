@@ -156,7 +156,9 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
         if not data:
             print("(no matches — is this project code-indexed?)"); return
         for h in data:
-            cg = f"  {len(h.get('called_by') or [])}←/{len(h.get('calls') or [])}→"
+            refs = len(h.get('references') or [])
+            cg = (f"  {len(h.get('called_by') or [])}←/{len(h.get('calls') or [])}→"
+                  + (f"/{refs}⇐" if refs else ""))
             print(f"[{h.get('rank', '?')}] {h.get('kind', ''):8} {h.get('fqname', '')}"
                   f"  {h.get('file', '')}:{h.get('line', '')}{cg}")
             if h.get("description"):
@@ -173,6 +175,8 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
                 print(f"   ← {c}")
             for c in e.get("calls") or []:
                 print(f"   → {c}")
+            for c in e.get("references") or []:      # ⇐ = referenced by (broader than a call)
+                print(f"   ⇐ {c}")
             if e.get("learning"):
                 _print_learning(e["learning"], "   ")
 
@@ -241,6 +245,13 @@ def _emit_code_rehome(data: Any, as_json: bool) -> None:
     print(f"rehomed {data.get('old', '')} → {data.get('new', '')}  ({data.get('relpath', '')})")
 
 
+def _graph_direction(args: Any) -> str:
+    """--references > --callers > default callees."""
+    if getattr(args, "references", False):
+        return "references"
+    return "callers" if getattr(args, "callers", False) else "callees"
+
+
 def _emit_code_graph(tree: Any, args: Any) -> None:
     """pstree-style call graph (modeled on zdot's hook graph). `--json` = raw tree.
     `↑` marks a DAG node already shown; `·ext` an edge target outside the index."""
@@ -248,15 +259,16 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
         print(json.dumps(tree, indent=2, default=str)); return
     if not tree:
         print("(symbol not found — is this project code-indexed?)"); return
-    callers = getattr(args, "callers", False)
+    direction = _graph_direction(args)
     ascii_mode = getattr(args, "ascii", False)
+    arrows = {"callees": (">", "▸"), "callers": ("<", "◂"), "references": ("=", "⇐")}
+    arrow = arrows[direction][0 if ascii_mode else 1]
     if ascii_mode:
-        branch, last, vert, blank, arrow = "|-", "`-", "|  ", "   ", ("<" if callers else ">")
+        branch, last, vert, blank = "|-", "`-", "|  ", "   "
     else:
-        branch, last, vert, blank, arrow = "├─", "└─", "│  ", "   ", ("◂" if callers else "▸")
+        branch, last, vert, blank = "├─", "└─", "│  ", "   "
     pin = " *" if ascii_mode else " 📌"          # step 3: node carries a learning
-    print(f"{tree['fqname']}  ({tree.get('kind', '')})   "
-          f"[{'callers' if callers else 'callees'}]"
+    print(f"{tree['fqname']}  ({tree.get('kind', '')})   [{direction}]"
           f"{pin if tree.get('has_learning') else ''}")
 
     def render(node: dict, prefix: str) -> None:
@@ -343,6 +355,8 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("symbol"); proj(s)
     s.add_argument("--callers", action="store_true",
                    help="what CALLS the symbol (default: what it calls)")
+    s.add_argument("--references", action="store_true",
+                   help="everywhere the symbol is REFERENCED (broader than calls)")
     s.add_argument("--depth", type=int, default=6)
     s.add_argument("--ascii", action="store_true", help="ASCII glyphs, no box-drawing")
 
@@ -622,7 +636,7 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
         return "code_xref", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
     if v == "code-graph":
         return "code_graph", {"symbol": args.symbol,
-                              "direction": "callers" if args.callers else "callees",
+                              "direction": _graph_direction(args),
                               "depth": args.depth, "project": args.project, "cwd": cwd}
     if v == "code-index":
         # resolve the path client-side (the daemon's cwd differs from the caller's)
@@ -816,7 +830,7 @@ def _run_inprocess(args: Any) -> None:
                 "code-index", j)
         elif args.cmd == "code-graph":
             _emit_code_graph(crib.code_graph(
-                args.symbol, "callers" if args.callers else "callees",
+                args.symbol, _graph_direction(args),
                 args.depth, args.project, cwd=cwd), args)
         elif args.cmd == "code-append":
             _emit_code_learning(asyncio.run(crib.code_append(

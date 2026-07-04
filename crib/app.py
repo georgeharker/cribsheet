@@ -997,7 +997,7 @@ class Crib:
             return []
         fused = reciprocal_rank_fusion(rankings, weights=weights)
         keys = ("fqname", "name", "kind", "file", "line", "signature", "description",
-                "parent", "calls", "called_by", "content_hash")
+                "parent", "calls", "called_by", "references", "content_hash")
         hits = [{**{key: by_id[fid].get(key) for key in keys}, "rank": i + 1}
                 for i, fid in enumerate(fused[:k])]
         return self._attach_learnings(proj, hits)
@@ -1021,7 +1021,8 @@ class Crib:
                          or e["fqname"].endswith("." + symbol)), None))
         if not root:
             return {}
-        edge = "calls" if direction == "callees" else "called_by"
+        edge = {"callees": "calls", "callers": "called_by",
+                "references": "references"}.get(direction, "calls")
         seen: set[str] = set()
 
         def build(e: dict, d: int) -> dict:

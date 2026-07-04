@@ -259,8 +259,10 @@ def build_server(crib: Crib | None = None):
                          project: str | None = None,
                          cwd: str | None = None) -> dict[str, Any]:
         """Call-graph tree around a symbol from the symbol_index: `callees` (what it
-        calls) or `callers` (what calls it), recursive to `depth`. Nested
-        {fqname, kind, file, line, children[]} — the CLI renders it pstree-style."""
+        calls), `callers` (what calls it), or `references` (everywhere it's mentioned —
+        broader than calls, and the only relation for symbols-only servers like zsh's
+        shuck), recursive to `depth`. Nested {fqname, kind, file, line, children[]} —
+        the CLI renders it pstree-style."""
         return crib.code_graph(symbol, direction, depth, _project(crib, project, cwd))
 
     @mcp.tool()

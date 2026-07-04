@@ -60,7 +60,11 @@ symbol → {
   kind          # function | method | class
 
   # structural facet — LSP, served LIVE (§3)
-  signature, calls[], called_by[]
+  signature, calls[], called_by[]     # call hierarchy (precise; not all servers)
+  references[]                         # textDocument/references (broader — reads +
+                                       # mentions, not just calls); FIRST-CLASS, kept
+                                       # separate from called_by — call-vs-ref is the
+                                       # consumer's/LLM's call to make
 
   # semantic facet — LLM, cached + embedded (§4)
   description, doc2query[], embedding_ref
@@ -174,11 +178,23 @@ loaded; that incantation is the remaining nvim-side tidy-up.)
 - **callers** → `textDocument/references` (or `callHierarchy/incomingCalls`). Well
   supported everywhere.
 - **callees** → `callHierarchy/prepareCallHierarchy` + `outgoingCalls`. Support is
-  **uneven**: basedpyright, rust-analyzer, gopls, clangd yes; many others no. Design
-  for it: try call hierarchy; fall back to references-for-callers + call-site→
-  `definition` for callees; degrade to references-only for servers (Lua/zsh/query)
-  that lack it — and **`log()` the degradation** so a thin graph isn't mistaken for a
-  complete one.
+  **uneven**: basedpyright, rust-analyzer, gopls, clangd yes; many others no.
+- **references** → `textDocument/references`, resolved back to the *enclosing* symbol
+  (`_enclosing_symbol`: innermost documentSymbol range containing the ref line). A
+  **first-class relation** populated whenever the server has `referencesProvider` —
+  which is nearly everywhere, incl. symbols-only servers like **shuck** (zsh). It is
+  deliberately NOT folded into `called_by`: a reference is *broader* than a call (it
+  includes reads, assignments, mentions), and collapsing the two would launder a
+  guess as a fact. Both are surfaced separately (`←` callers, `⇐` references) and the
+  call-vs-reference distinction is left to the consumer/LLM. Capability is read from
+  the `initialize` result (`callHierarchyProvider` / `referencesProvider`) so a server
+  that lacks a facet contributes empty edges for it rather than hanging.
+
+**Language routing.** Selection is by extension (§3.3); for **extension-less scripts**
+the `#!` shebang is read and mapped to a language (`_shebang_lang`: `env` and version
+suffixes handled — `#!/usr/bin/env zsh`→zsh, `#!/usr/bin/python3`→python), then the
+first installed spec serving that language is used. Extension always wins over shebang;
+a file with neither a known extension nor a recognized shebang is silently skipped.
 
 ## 4. Semantic facet — the description index
 

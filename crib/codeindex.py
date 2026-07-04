@@ -103,15 +103,47 @@ def resolve_command(spec: dict) -> list[str] | None:
     return [resolved, *args] if resolved else None
 
 
-def server_for(relpath: str, specs: dict | None = None
-               ) -> tuple[str, list[str], str, dict] | None:
-    """Pick a server for `relpath` by extension. Iterates specs IN ORDER (user
+# Interpreter basename → languageId, for shebang routing of extension-less scripts.
+# Version suffixes are stripped first (python3.11 → python).
+_INTERP_LANG = {
+    "zsh": "zsh", "bash": "bash", "sh": "sh", "ksh": "ksh",
+    "python": "python", "node": "javascript", "nodejs": "javascript",
+    "ruby": "ruby", "perl": "perl", "lua": "lua",
+}
+
+
+def _shebang_lang(abspath: Path) -> str | None:
+    """languageId from a `#!` line, for a file whose extension maps to no server
+    (`#!/usr/bin/env zsh` → zsh, `#!/usr/bin/python3` → python). Handles `env` and a
+    version suffix; None if there's no shebang or the interpreter isn't known."""
+    try:
+        with abspath.open("rb") as fh:
+            first = fh.readline(256).decode("utf-8", "replace")
+    except OSError:
+        return None
+    if not first.startswith("#!"):
+        return None
+    toks = first[2:].split()
+    if not toks:
+        return None
+    exe = Path(toks[0]).name
+    if exe == "env" and len(toks) > 1:          # `#!/usr/bin/env python3`
+        exe = Path(toks[1]).name
+    exe = re.sub(r"[0-9.]+$", "", exe)          # python3.11 → python
+    return _INTERP_LANG.get(exe)
+
+
+def server_for(relpath: str, specs: dict | None = None,
+               abspath: Path | None = None) -> tuple[str, list[str], str, dict] | None:
+    """Pick a server for `relpath`. FIRST by extension: iterate specs IN ORDER (user
     ~/.config/crib/lsp.json first, then shipped defaults backfilling missing labels)
-    and returns the FIRST that BOTH claims the extension (`extensionToLanguage`) AND
-    has an installed binary (`resolve_command`) — so a missing binary falls through
-    to the next candidate (e.g. basedpyright→pyright for `.py`). Order = precedence.
-    → (label, argv, languageId, spec), or None if nothing matches/resolves (that
-    language is then silently skipped)."""
+    and take the FIRST that BOTH claims the extension (`extensionToLanguage`) AND has
+    an installed binary (`resolve_command`) — a missing binary falls through to the
+    next candidate (basedpyright→pyright for `.py`). Order = precedence. If the
+    extension maps to NO server at all (extension-less scripts, unknown suffix) and
+    `abspath` is given, fall back to the `#!` shebang: read its interpreter → language,
+    then take the first installed spec serving that language. → (label, argv,
+    languageId, spec), or None (that file is then silently skipped)."""
     specs = specs if specs is not None else load_specs()
     ext = Path(relpath).suffix.lower()
     for label, spec in specs.items():
@@ -123,6 +155,19 @@ def server_for(relpath: str, specs: dict | None = None
         argv = resolve_command(spec)
         if argv:
             return label, argv, lang, spec
+    # shebang fallback — only when the extension is claimed by no spec at all
+    ext_known = any(ext in (sp.get("extensionToLanguage") or {})
+                    for sp in specs.values() if isinstance(sp, dict))
+    if abspath is not None and not ext_known:
+        lang = _shebang_lang(abspath)
+        if lang:
+            for label, spec in specs.items():
+                if not isinstance(spec, dict):
+                    continue
+                if lang in (spec.get("extensionToLanguage") or {}).values():
+                    argv = resolve_command(spec)
+                    if argv:
+                        return label, argv, lang, spec
     return None
 
 
@@ -221,15 +266,17 @@ class LspClient:
         self._send({"jsonrpc": "2.0", "method": method, "params": params})
 
     def initialize(self) -> None:
-        self.request("initialize", {
+        res = self.request("initialize", {
             "processId": os.getpid(), "rootUri": self.root.as_uri(),
             "initializationOptions": self.init_options,
             "capabilities": {"textDocument": {
                 "documentSymbol": {"hierarchicalDocumentSymbolSupport": True},
-                "callHierarchy": {"dynamicRegistration": True}},
+                "callHierarchy": {"dynamicRegistration": True},
+                "references": {"dynamicRegistration": True}},
                 "workspace": {"configuration": True}},
             "workspaceFolders": [{"uri": self.root.as_uri(), "name": self.root.name}],
         })
+        self.capabilities: dict = (res or {}).get("capabilities", {})
         self.notify("initialized", {})
 
     def close(self) -> None:
@@ -264,8 +311,48 @@ def _walk(syms: list, parents: tuple[str, ...] = ()) -> list[tuple[dict, tuple]]
 
 
 _KIND = {5: "class", 6: "method", 12: "function"}
+_REF_CAP = 80  # references resolved per symbol — bounds worst-case on hot helpers
 # Lua binds modules to a local table var (`M.setup`); those aren't real qualifiers.
 _LUA_TABLE_VARS = {"M", "_M", "self", "Module", "mod"}
+
+
+def _symbol_ranges(c: LspClient, uri: str, language_id: str,
+                   cache: dict[str, list], opened: set[str]) -> list[tuple[str, int, int]]:
+    """(local_name, start_line, end_line) for every symbol in `uri` via documentSymbol
+    (opening the file first if needed). Cached per session — used to map a reference
+    location back to the symbol that encloses it (the referrer)."""
+    if uri in cache:
+        return cache[uri]
+    if uri not in opened:
+        opened.add(uri)
+        path = uri[len("file://"):] if uri.startswith("file://") else ""
+        try:
+            text = Path(path).read_text() if path else ""
+        except OSError:
+            text = ""
+        if text:
+            c.notify("textDocument/didOpen", {"textDocument": {
+                "uri": uri, "languageId": language_id, "version": 1, "text": text}})
+            time.sleep(0.15)
+    out: list[tuple[str, int, int]] = []
+    for s, _p in _walk(c.request("textDocument/documentSymbol",
+                                 {"textDocument": {"uri": uri}}) or []):
+        rng = s.get("range", {})
+        out.append((_local_name(s.get("name", ""), language_id),
+                    rng.get("start", {}).get("line", 0),
+                    rng.get("end", {}).get("line", 0)))
+    cache[uri] = out
+    return out
+
+
+def _enclosing_symbol(c: LspClient, uri: str, line: int, language_id: str,
+                      cache: dict[str, list], opened: set[str]) -> str | None:
+    """Innermost symbol in `uri` whose range contains `line` — the referrer symbol."""
+    best: tuple[str, int] | None = None
+    for name, s0, e0 in _symbol_ranges(c, uri, language_id, cache, opened):
+        if s0 <= line <= e0 and (best is None or (e0 - s0) < best[1]):
+            best = (name, e0 - s0)
+    return best[0] if best else None
 
 
 def _module_of(relpath: str, lang: str) -> str:
@@ -326,12 +413,12 @@ class NoServer(RuntimeError):
 def extract_file(root: Path, relpath: str, settle: float = 1.5) -> list[dict]:
     """Symbols + workspace-resolved call edges for one file, via the LSP server the
     specs select for its extension (docs §3.3). Raises NoServer if none resolves."""
-    sel = server_for(relpath)
+    path = (root / relpath).resolve()
+    sel = server_for(relpath, abspath=path)
     if sel is None:
-        raise NoServer(f"no LSP server for {Path(relpath).suffix} "
+        raise NoServer(f"no LSP server for {Path(relpath).suffix or '(no ext)'} "
                        f"(configure ~/.config/crib/lsp.json)")
     _label, argv, language_id, spec = sel
-    path = (root / relpath).resolve()
     lines = path.read_text().splitlines()
     c = LspClient(argv, root, init_options=spec.get("initializationOptions"),
                   settings=spec.get("settings"))
@@ -345,6 +432,9 @@ def extract_file(root: Path, relpath: str, settle: float = 1.5) -> list[dict]:
         time.sleep(settle)
         module = _module_of(relpath, language_id)
         syms = c.request("textDocument/documentSymbol", {"textDocument": {"uri": uri}})
+        has_refs = bool(c.capabilities.get("referencesProvider"))
+        sym_cache: dict[str, list] = {}     # uri → symbol ranges (encloser resolution)
+        opened: set[str] = {uri}            # target already open
         for s, parents in _walk(syms):
             if s.get("kind") not in _FUNC_KINDS | {5}:
                 continue
@@ -362,10 +452,10 @@ def extract_file(root: Path, relpath: str, settle: float = 1.5) -> list[dict]:
                       if container else "")
             content_hash = hashlib.sha1(body.encode()).hexdigest()[:16]
             sig = lines[start].strip()[:120]
+            pos = (s.get("selectionRange") or rng)["start"]
             calls: list[str] = []
             called_by: list[str] = []
-            if s.get("kind") in _FUNC_KINDS:
-                pos = (s.get("selectionRange") or rng)["start"]
+            if s.get("kind") in _FUNC_KINDS and c.capabilities.get("callHierarchyProvider"):
                 prep = c.request("textDocument/prepareCallHierarchy",
                                  {"textDocument": {"uri": uri}, "position": pos})
                 if prep:
@@ -378,6 +468,25 @@ def extract_file(root: Path, relpath: str, settle: float = 1.5) -> list[dict]:
                         fr = e.get("from", {})
                         if _in_workspace(fr.get("uri", ""), root):
                             called_by.append(f"{fr.get('name')} [{_rel(fr.get('uri',''), root)}]")
+            # references: a FIRST-CLASS relation (everywhere this symbol is mentioned),
+            # for any server with referencesProvider — deliberately SEPARATE from
+            # called_by (call-hierarchy only). A reference is broader than a call (it
+            # includes reads/mentions); the reference-vs-call distinction is left to the
+            # consumer/LLM. This is the caller signal for symbols-only servers (shuck).
+            references: list[str] = []
+            if has_refs:
+                refs = c.request("textDocument/references", {
+                    "textDocument": {"uri": uri}, "position": pos,
+                    "context": {"includeDeclaration": False}}) or []
+                for loc in refs[:_REF_CAP]:
+                    ruri = loc.get("uri", "")
+                    if not _in_workspace(ruri, root):
+                        continue
+                    rline = loc.get("range", {}).get("start", {}).get("line", 0)
+                    enc = _enclosing_symbol(c, ruri, rline, language_id, sym_cache, opened)
+                    if not enc or (enc == local and _rel(ruri, root) == relpath):
+                        continue                    # skip self-references
+                    references.append(f"{enc} [{_rel(ruri, root)}]")
             entries.append({
                 "fqname": fqname, "name": local,
                 "kind": _KIND.get(s.get("kind") or 0, "?"),
@@ -385,6 +494,7 @@ def extract_file(root: Path, relpath: str, settle: float = 1.5) -> list[dict]:
                 "parent": parent, "content_hash": content_hash,
                 "file": relpath, "line": start + 1, "signature": sig,
                 "calls": sorted(set(calls)), "called_by": sorted(set(called_by)),
+                "references": sorted(set(references)),
                 "name_terms": _name_terms(local, fqname),
                 "_body": body,   # transient: for the description mop-up; never persisted
             })
@@ -467,7 +577,7 @@ def _esc(s: str) -> str:
 
 _SCALARS = ("fqname", "name", "kind", "lang", "module", "parent", "content_hash",
             "file", "signature", "description")
-_ARRAYS = ("container", "calls", "called_by", "name_terms")
+_ARRAYS = ("container", "calls", "called_by", "references", "name_terms")
 
 
 def _render(e: dict) -> str:
