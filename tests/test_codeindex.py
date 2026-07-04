@@ -113,10 +113,25 @@ def test_walk_descends_containers():
         {"name": "m", "kind": 6, "children": []}]},
         {"name": "f", "kind": 12}]
     flat = ci._walk(tree)
-    names = {(s["name"], parents) for s, parents in flat}
+    names = {(s["name"], parents) for s, parents, _kinds in flat}
     assert ("C", ()) in names
     assert ("m", ("C",)) in names          # method carries its class as container
     assert ("f", ()) in names
+
+
+def test_walk_tracks_container_kinds_for_scope_guard():
+    # a Variable under a class body vs one under a method — the scope guard uses
+    # container KINDS to tell a class attribute from a function-local
+    tree = [{"name": "C", "kind": 5, "children": [
+        {"name": "attr", "kind": 13, "children": []},                      # class attr
+        {"name": "meth", "kind": 6, "children": [
+            {"name": "local", "kind": 13, "children": []}]}]},             # local
+        {"name": "G", "kind": 13}]                                          # module global
+    by_name = {s["name"]: kinds for s, _p, kinds in ci._walk(tree)}
+    is_local = lambda name: any(k in ci._FUNC_KINDS for k in by_name[name])
+    assert not is_local("attr")            # class-scoped → kept
+    assert not is_local("G")               # module-scoped → kept
+    assert is_local("local")               # under a method → dropped as noise
 
 
 # --- TOML store render/parse round-trip (incl. the empty-array case) ---------

@@ -183,6 +183,11 @@ def find_root(path: Path) -> Path:
 # documentSymbol kinds we index as callables/containers (LSP SymbolKind numbers).
 _FUNC_KINDS = {6, 12}          # Method, Function
 _CONTAINER_KINDS = {5, 6, 12}  # Class, Method, Function (descend into these)
+# Data declarations — globals/constants and class attributes/fields. Indexed ONLY
+# at module or class scope (a var nested under a function is a local → noise): the
+# scope guard in extract_file drops any whose ancestry includes a function/method.
+_DATA_KINDS = {13, 14, 8, 7}   # Variable, Constant, Field, Property
+_INDEX_KINDS = _FUNC_KINDS | {5} | _DATA_KINDS   # Class(5) + callables + data
 
 
 class LspClient:
@@ -300,17 +305,22 @@ def _rel(uri: str, root: Path) -> str:
         return Path(p).name
 
 
-def _walk(syms: list, parents: tuple[str, ...] = ()) -> list[tuple[dict, tuple]]:
-    """Flatten documentSymbol tree → [(symbol, container_path)], descending classes."""
+def _walk(syms: list, parents: tuple[str, ...] = (),
+          kinds: tuple[int, ...] = ()) -> list[tuple[dict, tuple, tuple]]:
+    """Flatten documentSymbol tree → [(symbol, container_names, container_kinds)],
+    descending containers. `container_kinds` lets a caller tell a module/class-level
+    declaration from a function-local (a Variable nested under a function)."""
     out = []
     for s in syms or []:
-        out.append((s, parents))
+        out.append((s, parents, kinds))
         if s.get("kind") in _CONTAINER_KINDS and s.get("children"):
-            out.extend(_walk(s["children"], parents + (s.get("name", ""),)))
+            out.extend(_walk(s["children"], parents + (s.get("name", ""),),
+                             kinds + (s.get("kind") or 0,)))
     return out
 
 
-_KIND = {5: "class", 6: "method", 12: "function"}
+_KIND = {5: "class", 6: "method", 12: "function",
+         13: "variable", 14: "constant", 8: "field", 7: "property"}
 _REF_CAP = 80  # references resolved per symbol — bounds worst-case on hot helpers
 # Lua binds modules to a local table var (`M.setup`); those aren't real qualifiers.
 _LUA_TABLE_VARS = {"M", "_M", "self", "Module", "mod"}
@@ -335,8 +345,8 @@ def _symbol_ranges(c: LspClient, uri: str, language_id: str,
                 "uri": uri, "languageId": language_id, "version": 1, "text": text}})
             time.sleep(0.15)
     out: list[tuple[str, int, int]] = []
-    for s, _p in _walk(c.request("textDocument/documentSymbol",
-                                 {"textDocument": {"uri": uri}}) or []):
+    for s, _p, _k in _walk(c.request("textDocument/documentSymbol",
+                                     {"textDocument": {"uri": uri}}) or []):
         rng = s.get("range", {})
         out.append((_local_name(s.get("name", ""), language_id),
                     rng.get("start", {}).get("line", 0),
@@ -435,8 +445,13 @@ def extract_file(root: Path, relpath: str, settle: float = 1.5) -> list[dict]:
         has_refs = bool(c.capabilities.get("referencesProvider"))
         sym_cache: dict[str, list] = {}     # uri → symbol ranges (encloser resolution)
         opened: set[str] = {uri}            # target already open
-        for s, parents in _walk(syms):
-            if s.get("kind") not in _FUNC_KINDS | {5}:
+        for s, parents, pkinds in _walk(syms):
+            kind = s.get("kind")
+            if kind not in _INDEX_KINDS:
+                continue
+            # scope guard: a data declaration (global/const/field) is indexed only at
+            # module or class scope — one nested under a function is a LOCAL (noise).
+            if kind in _DATA_KINDS and any(pk in _FUNC_KINDS for pk in pkinds):
                 continue
             rng = s.get("range", {})
             start = rng.get("start", {}).get("line", 0)
@@ -455,7 +470,7 @@ def extract_file(root: Path, relpath: str, settle: float = 1.5) -> list[dict]:
             pos = (s.get("selectionRange") or rng)["start"]
             calls: list[str] = []
             called_by: list[str] = []
-            if s.get("kind") in _FUNC_KINDS and c.capabilities.get("callHierarchyProvider"):
+            if kind in _FUNC_KINDS and c.capabilities.get("callHierarchyProvider"):
                 prep = c.request("textDocument/prepareCallHierarchy",
                                  {"textDocument": {"uri": uri}, "position": pos})
                 if prep:
@@ -487,9 +502,12 @@ def extract_file(root: Path, relpath: str, settle: float = 1.5) -> list[dict]:
                     if not enc or (enc == local and _rel(ruri, root) == relpath):
                         continue                    # skip self-references
                     references.append(f"{enc} [{_rel(ruri, root)}]")
+            # module-level variables read more naturally as "global" than "variable"
+            kind_label = ("global" if kind == 13 and not container
+                          else _KIND.get(kind or 0, "?"))
             entries.append({
                 "fqname": fqname, "name": local,
-                "kind": _KIND.get(s.get("kind") or 0, "?"),
+                "kind": kind_label,
                 "lang": language_id, "module": module, "container": list(container),
                 "parent": parent, "content_hash": content_hash,
                 "file": relpath, "line": start + 1, "signature": sig,

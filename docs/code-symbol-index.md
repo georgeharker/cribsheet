@@ -48,8 +48,16 @@ alias with nothing to add. **Code inverts every term of that:**
 
 ## 2. Two facets, one identity
 
-The unit is a **symbol** (function / method / class). Structural and semantic facets
-share one identity so the two subsystems compose rather than diverge:
+The unit is a **symbol** — functions/methods/classes **and data declarations**:
+module-level globals/constants and class members (class-body attributes *and* the
+`self.x` instance attributes pyright hoists to class scope). Callables get calls/
+called_by (call hierarchy) + references; data gets references only (it isn't called).
+Indexing is **scope-aware**: a Variable/Constant is kept only at module or class scope —
+one nested under a function is a *local* and dropped, because documentSymbol reports
+locals too (pyright lists 52 in one file, ~all locals) and indexing them would be pure
+noise. The guard is "no ancestor is a function/method" (`_walk` tracks container kinds).
+Structural and semantic facets share one identity so the two subsystems compose rather
+than diverge:
 
 ```
 symbol → {
