@@ -627,7 +627,13 @@ class Crib:
                                  match_description)
         p = Path(path)
         if not p.is_absolute():
-            p = (Path(cwd) if cwd else Path.cwd()) / p
+            if cwd:
+                p = Path(cwd) / p
+            else:
+                raise ValueError(
+                    f"code_index needs an ABSOLUTE path (got relative {path!r}) — a "
+                    f"relative path resolves against the daemon's cwd, not yours. Pass "
+                    f"an absolute path, or cwd=<your working dir>.")
         p = p.resolve()
         root = find_root(p)
         rel = str(p.relative_to(root))
@@ -719,6 +725,44 @@ class Crib:
         self._require_code_index(proj)
         return self._attach_learnings(
             proj, SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol))
+
+    def code_dossier(self, symbol: str, project: str | None = None,
+                     cwd: Path | None = None, edge_cap: int = 20) -> dict[str, Any]:
+        """Everything about ONE symbol in a single call: its signature + description,
+        its callers / callees / references — each annotated with the NEIGHBOUR'S own
+        description — and any attached learning. Built for agents: read a symbol and
+        understand its neighbourhood without a dozen follow-up lookups."""
+        from .codeindex import SymbolIndex
+        proj = self.resolve_project(project, cwd)
+        self._require_code_index(proj)
+        entry = self._resolve_symbol(proj, symbol)          # exactly one; raises if ambiguous
+        self._attach_learnings(proj, [entry])
+        idx = SymbolIndex(self.paths.project_dir(proj)).all()
+        desc = {e["fqname"]: e.get("description", "") for e in idx}
+        by_nf = {(e.get("name", ""), e.get("file", "")): e["fqname"] for e in idx}
+
+        def neigh(edges: list[str] | None) -> list[dict[str, Any]]:
+            out = []
+            for ref in (edges or [])[:edge_cap]:
+                name, _, rest = ref.partition(" [")
+                fq = by_nf.get((name.strip(), rest.rstrip("]")))
+                out.append({"symbol": fq or name.strip(),
+                            "file": rest.rstrip("]"),
+                            "description": desc.get(fq or "", "")})
+            extra = max(len(edges or []) - edge_cap, 0)
+            if extra:
+                out.append({"symbol": f"… +{extra} more", "file": "", "description": ""})
+            return out
+
+        return {
+            "fqname": entry["fqname"], "kind": entry.get("kind"),
+            "file": entry.get("file"), "line": entry.get("line"),
+            "signature": entry.get("signature"), "description": entry.get("description"),
+            "learning": entry.get("learning"),
+            "calls": neigh(entry.get("calls")),
+            "called_by": neigh(entry.get("called_by")),
+            "references": neigh(entry.get("references")),
+        }
 
     # ── Durable learnings attached to a symbol (docs/code-symbol-index.md) ─────
     # Same primitives as notes — append / edit / forget / read — scoped to a code

@@ -61,18 +61,22 @@ def build_server(crib: Crib | None = None):
             "session and reaches other agents: `store` a new note, or "
             "`append`/`edit` one found via `lookup`. Prefer updating an existing "
             "note over creating near-duplicates. "
-            "CODE: a project may also carry a *code symbol index* — its "
-            "functions/classes/methods with an LLM 'what it does' description AND a "
-            "real cross-file call graph (callers/callees). When you would reach for "
-            "grep to answer a CODE question — *where is X handled*, *what does this "
-            "function do*, *what calls Y*, *what does Z call* — try `code_lookup` "
-            "(find a symbol by CONCEPT or by name, even a cryptic private one) and "
-            "`code_xref` / `code_graph` (callers/callees, recursively) FIRST: they "
-            "answer by intent and cross-reference, which grep cannot. `code_index "
-            "<file>` populates it. When you finally UNDERSTAND a symbol — a subtlety, "
-            "a gotcha, a 'now I get it' worth keeping — `code_append <symbol> \"…\"` "
-            "pins a durable learning to it (survives re-indexing, works even on code "
-            "you can't edit); it surfaces back next time via `code_lookup`/`code_xref`. "
+            "CODE: a project may carry a *code symbol index* — its functions, classes, "
+            "globals and class members, each with an LLM 'what it does' description, a "
+            "real cross-file call graph (callers/callees) and references. For ANY code "
+            "question — *where/what/how is X*, *what calls Y*, *what does Z do* — reach "
+            "for these BEFORE grep/Read: `code_lookup` FIRST (find a symbol by CONCEPT or "
+            "by name, even a cryptic private one — answers by intent, which grep can't), "
+            "then `code_dossier <symbol>` for the full picture (signature + description + "
+            "callers/callees/references, each neighbour annotated, + any pinned learning) "
+            "in one call, or `code_xref`/`code_graph` to walk the graph. Don't grep the "
+            "code first and reach for these as a fallback — invert it. If a project isn't "
+            "indexed the tools SELF-DIAGNOSE (they name the indexed projects, or tell you "
+            "to `code_index <abs-file>`); pass `cwd=<your working dir>` so the right "
+            "project resolves via .crib. When you finally UNDERSTAND a symbol — a "
+            "subtlety, a gotcha, a 'now I get it' — `code_append <symbol> \"…\"` pins a "
+            "durable learning to it (survives re-indexing, works even on code you can't "
+            "edit); it surfaces back via `code_lookup`/`code_xref`/`code_dossier`. "
             "CROSS-MACHINE: some notes are mirrored from another machine's Claude "
             "memory (frontmatter `source: claude_memory`, `host: <name>`, under "
             "`claude-memory/<host>/`). Treat the *learning* as portable — "
@@ -230,40 +234,57 @@ def build_server(crib: Crib | None = None):
     @mcp.tool()
     async def code_index(path: str, project: str | None = None,
                          cwd: str | None = None) -> dict[str, Any]:
-        """symbol_index: extract a source file's symbols + call graph (callers/
-        callees, via the LSP) and persist them content-addressed under
-        `<project>/symbol_index/`. `path` is a source file (abs or relative to cwd).
-        Structural facet of docs/code-symbol-index.md."""
+        """Populate the code index for a source file: extract its symbols (functions,
+        classes, globals, class members) + call graph + references via the LSP,
+        describe them, persist under `<project>/symbol_index/`. Use when code_lookup
+        says a project isn't indexed yet. `path` MUST be ABSOLUTE — a relative path
+        resolves against the daemon's cwd (not yours) and fails; also pass
+        `cwd=<your working dir>` so the project resolves via .crib."""
         return await crib.code_index(path, _project(crib, project, cwd))
 
     @mcp.tool()
     async def code_xref(symbol: str, project: str | None = None,
                         cwd: str | None = None) -> list[dict[str, Any]]:
-        """Look up a code symbol's callers/callees from the persisted symbol_index
-        (no live LSP needed). `symbol` is a bare name or dotted fqname."""
+        """A symbol's callers (←), callees (→) and references (⇐ — broader than calls),
+        plus any human learning pinned to it — from the persisted index, no live LSP.
+        `symbol` is a bare name or dotted fqname. Pass `cwd=<your working dir>` on first
+        use so the right project resolves (via .crib)."""
         return crib.code_xref(symbol, _project(crib, project, cwd))
 
     @mcp.tool()
     async def code_lookup(query: str, project: str | None = None, k: int = 8,
                           cwd: str | None = None) -> list[dict[str, Any]]:
-        """Find a code symbol by CONCEPT or NAME — call this FIRST when you'd grep
-        the codebase for a function/class ("where do we fuse ranked lists", "the
-        oauth refresh"). HYBRID: a dense search over LLM 'what it does' descriptions
-        ⊕ a name/subtoken match, so it finds a symbol by intent (grep can't) OR by a
-        bare/partial/cryptic name. Returns ranked symbols with signature, file:line,
-        and callers/callees. Pair with `code_xref`/`code_graph` to walk the call
-        graph. Populate a project first with `code_index <file>`."""
+        """FIND A SYMBOL BY CONCEPT OR NAME — reach for this FIRST, before grep/Read,
+        on ANY "where/what/how is X" code question ("where do we fuse ranked lists",
+        "the oauth refresh", a bare/cryptic name). HYBRID: dense search over LLM 'what
+        it does' descriptions ⊕ name/subtoken match — finds by intent (grep can't) OR by
+        name. Returns ranked symbols with signature, file:line, callers/callees/refs. If
+        the project isn't indexed it SELF-DIAGNOSES (names the indexed projects, or tells
+        you to code_index) — so just try it. Pass `cwd=<your working dir>` so the project
+        resolves via .crib. Then `code_dossier` a hit to go deep, or `code_graph` to walk
+        the tree."""
         return crib.code_lookup(query, _project(crib, project, cwd), k)
+
+    @mcp.tool()
+    def code_dossier(symbol: str, project: str | None = None,
+                     cwd: str | None = None) -> dict[str, Any]:
+        """EVERYTHING about one symbol in a single call: signature + description, and its
+        callers/callees/references EACH annotated with the NEIGHBOUR'S own description,
+        plus any pinned learning. The efficient way to *understand* a symbol (vs
+        code_lookup which *finds* it) — read a symbol and its whole neighbourhood without
+        follow-up lookups. `symbol` is a bare name or dotted fqname; pass `cwd=` for .crib
+        project resolution."""
+        return crib.code_dossier(symbol, _project(crib, project, cwd))
 
     @mcp.tool()
     async def code_graph(symbol: str, direction: str = "callees", depth: int = 6,
                          project: str | None = None,
                          cwd: str | None = None) -> dict[str, Any]:
-        """Call-graph tree around a symbol from the symbol_index: `callees` (what it
-        calls), `callers` (what calls it), or `references` (everywhere it's mentioned —
-        broader than calls, and the only relation for symbols-only servers like zsh's
-        shuck), recursive to `depth`. Nested {fqname, kind, file, line, children[]} —
-        the CLI renders it pstree-style."""
+        """Call-graph TREE around a symbol from the index: `callees` (what it calls),
+        `callers` (what calls it), or `references` (everywhere mentioned — broader than
+        calls, and the only relation for symbols-only servers like zsh's shuck),
+        recursive to `depth`. Nested {fqname, kind, file, line, children[]}; nodes with a
+        pinned learning are flagged. Pass `cwd=` for .crib project resolution."""
         return crib.code_graph(symbol, direction, depth, _project(crib, project, cwd))
 
     @mcp.tool()

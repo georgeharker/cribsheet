@@ -133,6 +133,22 @@ def test_learnings_report_and_orphan_lifecycle(crib):
     assert crib.code_learnings(project="p", orphans_only=True) == []   # resolved
 
 
+def test_dossier_annotates_neighbours_with_their_descriptions(crib):
+    si = SymbolIndex(crib.paths.project_dir("p"))
+    si.write({"fqname": "m.foo", "name": "foo", "kind": "function", "lang": "python",
+              "module": "m", "parent": "", "content_hash": "h", "file": "m.py", "line": 1,
+              "signature": "def foo():", "description": "does foo", "container": [],
+              "calls": ["bar [m.py]"], "called_by": [], "references": [], "name_terms": ["foo"]})
+    si.write({"fqname": "m.bar", "name": "bar", "kind": "function", "lang": "python",
+              "module": "m", "parent": "", "content_hash": "h", "file": "m.py", "line": 9,
+              "signature": "def bar():", "description": "does the bar thing", "container": [],
+              "calls": [], "called_by": ["foo [m.py]"], "references": [], "name_terms": ["bar"]})
+    d = crib.code_dossier("m.foo", project="p")
+    assert d["fqname"] == "m.foo" and d["description"] == "does foo"
+    assert d["calls"][0]["symbol"] == "m.bar"
+    assert d["calls"][0]["description"] == "does the bar thing"   # neighbour's OWN description
+
+
 def test_code_tools_self_diagnose_unindexed_project(crib):
     # an unindexed project → a helpful error naming the fix, not a bare [] the agent
     # would misread as "this codebase isn't indexed"

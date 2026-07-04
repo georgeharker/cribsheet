@@ -181,6 +181,28 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
                 _print_learning(e["learning"], "   ")
 
 
+def _emit_code_dossier(d: Any, as_json: bool) -> None:
+    """Full single-symbol view: header + description + annotated neighbours + learning."""
+    if as_json:
+        print(json.dumps(d, indent=2, default=str)); return
+    if not d or not d.get("fqname"):
+        print("(symbol not found — is this project code-indexed?)"); return
+    print(f"{d['fqname']}  ({d.get('kind', '')})  {d.get('file', '')}:{d.get('line', '')}")
+    if d.get("signature"):
+        print(f"  {d['signature']}")
+    if d.get("description"):
+        print(f"  {d['description']}")
+    if d.get("learning"):
+        _print_learning(d["learning"], "  ")
+    for label, arrow in (("called_by", "←"), ("calls", "→"), ("references", "⇐")):
+        rows = d.get(label) or []
+        if rows:
+            print(f"  {label} {arrow}")
+            for r in rows:
+                desc = f"  — {r['description']}" if r.get("description") else ""
+                print(f"     {r.get('symbol', '')}{desc}")
+
+
 def _print_learning(learning: dict, indent: str) -> None:
     """Render an attached symbol learning (📌) under a code-lookup/xref hit."""
     flag = "  ⚠ stale — body changed since written" if learning.get("stale") else ""
@@ -347,7 +369,11 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("-k", type=int, default=8)
 
     s = sub.add_parser("code-xref",
-                       help="a symbol's callers/callees from the symbol_index")
+                       help="a symbol's callers/callees/references from the symbol_index")
+    s.add_argument("symbol"); proj(s)
+
+    s = sub.add_parser("code-dossier",
+                       help="everything about one symbol (+ neighbour descriptions)")
     s.add_argument("symbol"); proj(s)
 
     s = sub.add_parser("code-graph",
@@ -634,6 +660,8 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
                                "k": args.k, "cwd": cwd}
     if v == "code-xref":
         return "code_xref", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
+    if v == "code-dossier":
+        return "code_dossier", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
     if v == "code-graph":
         return "code_graph", {"symbol": args.symbol,
                               "direction": _graph_direction(args),
@@ -676,6 +704,8 @@ def _run_daemon(args: Any, cfg: Any) -> None:
         _emit_apropos(data, args.json)
     elif args.cmd == "code-graph":
         _emit_code_graph(data, args)
+    elif args.cmd == "code-dossier":
+        _emit_code_dossier(data, args.json)
     elif args.cmd in ("code-lookup", "code-xref", "code-index"):
         _emit_code(data, args.cmd, args.json)
     elif args.cmd in ("code-append", "code-edit", "code-forget", "code-read",
@@ -824,6 +854,8 @@ def _run_inprocess(args: Any) -> None:
         elif args.cmd == "code-xref":
             _emit_code(crib.code_xref(args.symbol, args.project, cwd=cwd),
                        "code-xref", j)
+        elif args.cmd == "code-dossier":
+            _emit_code_dossier(crib.code_dossier(args.symbol, args.project, cwd=cwd), j)
         elif args.cmd == "code-index":
             _emit_code(asyncio.run(crib.code_index(
                 str(Path(args.path).expanduser().resolve()), args.project, cwd=cwd)),
