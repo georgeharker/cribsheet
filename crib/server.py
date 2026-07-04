@@ -26,7 +26,8 @@ def _project(crib: Crib, project: str | None, cwd: str | None) -> str:
     project (seeded once from cwd/.crib) is used (DESIGN §15)."""
     return resolve_session_project(
         session_state(), project, _cwd(cwd),
-        lambda c: crib.resolve_project(None, c))
+        lambda c: crib.resolve_project(None, c),
+        default=crib.config.default_project)
 
 
 def _switch_if_created(result: dict) -> dict:

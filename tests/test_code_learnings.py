@@ -133,6 +133,19 @@ def test_learnings_report_and_orphan_lifecycle(crib):
     assert crib.code_learnings(project="p", orphans_only=True) == []   # resolved
 
 
+def test_code_tools_self_diagnose_unindexed_project(crib):
+    # an unindexed project → a helpful error naming the fix, not a bare [] the agent
+    # would misread as "this codebase isn't indexed"
+    with pytest.raises(ValueError, match="no code index"):
+        crib.code_xref("anything", project="ghost")
+    with pytest.raises(ValueError, match="no code index"):
+        crib.code_graph("anything", project="ghost")
+    # once populated, the guard passes; an unknown symbol just returns empty
+    _seed_symbol(crib, "ghost", fqname="pkg.foo")
+    assert crib.code_xref("pkg.foo", project="ghost")            # found
+    assert crib.code_xref("nonexistent", project="ghost") == []  # indexed → plain miss
+
+
 def test_forget_removes_an_orphan(crib):
     _seed_symbol(crib, "p", fqname="a.foo")
     run(crib.code_append("a.foo", "note", project="p"))

@@ -683,11 +683,40 @@ class Crib:
             out["descriptions_error"] = gen_error
         return out
 
+    def code_indexed_projects(self) -> list[dict[str, Any]]:
+        """Projects that have a symbol_index, with counts — for orienting an agent
+        whose call resolved to the wrong/empty project."""
+        from .codeindex import SymbolIndex
+        out = []
+        for p in self.projects():
+            name = p["project"] if isinstance(p, dict) else p
+            si = SymbolIndex(self.paths.project_dir(name))
+            if si.is_populated():
+                out.append({"project": name, "symbols": len(si.all())})
+        return sorted(out, key=lambda x: -x["symbols"])
+
+    def _require_code_index(self, proj: str) -> None:
+        """Raise a self-diagnosing error when `proj` has no code index — so a call
+        that silently resolved to the wrong/`default` project tells the agent how to
+        fix it (which projects ARE indexed; pass project=/cwd= or use_project) rather
+        than returning a bare `[]` it will misread as 'this codebase isn't indexed'."""
+        from .codeindex import SymbolIndex
+        if SymbolIndex(self.paths.project_dir(proj)).is_populated():
+            return
+        avail = self.code_indexed_projects()
+        listing = ("; code-indexed projects: "
+                   + ", ".join(f"{p['project']} ({p['symbols']})" for p in avail)
+                   if avail else "; no projects are code-indexed yet")
+        raise ValueError(
+            f"project {proj!r} has no code index{listing}. Pass project=<name> or "
+            f"cwd=<abs dir> (resolved via .crib), call use_project, or code_index a file.")
+
     def code_xref(self, symbol: str, project: str | None = None,
                   cwd: Path | None = None) -> list[dict[str, Any]]:
         """Callers/callees for a symbol from the persisted symbol_index — no live LSP."""
         from .codeindex import SymbolIndex
         proj = self.resolve_project(project, cwd)
+        self._require_code_index(proj)
         return self._attach_learnings(
             proj, SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol))
 
@@ -963,6 +992,7 @@ class Crib:
         from .codeindex import SymbolIndex
         from .retrieve import BM25, _as_tf, _subtokens, reciprocal_rank_fusion, tokenize
         proj = self.resolve_project(project, cwd)
+        self._require_code_index(proj)
         entries = [e for e in SymbolIndex(self.paths.project_dir(proj)).all()
                    if e.get("description") or e.get("name_terms")]
         if not entries:
@@ -1011,6 +1041,7 @@ class Crib:
         unresolved edges `external`. Rendered pstree-style by the CLI. No LSP/LLM."""
         from .codeindex import SymbolIndex
         proj = self.resolve_project(project, cwd)
+        self._require_code_index(proj)
         entries = SymbolIndex(self.paths.project_dir(proj)).all()
         by_fq = {e["fqname"]: e for e in entries}
         by_nf: dict[tuple[str, str], dict] = {}

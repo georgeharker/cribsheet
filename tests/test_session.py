@@ -33,6 +33,28 @@ def test_session_current_used_over_seed():
     assert called == []                            # seed not invoked when set
 
 
+def test_bare_default_seed_is_upgraded_by_a_later_cwd():
+    # a stray early call with no cwd seeds the session to `default`...
+    st = SessionState()
+    seeds = iter(["default", "real-project"])
+    seed = lambda _cwd: next(seeds)
+    assert resolve_session_project(st, None, None, seed, default="default") == "default"
+    # ...and a later call carrying a cwd/.crib UPGRADES it off the bare default
+    assert resolve_session_project(st, None, "/repo", seed, default="default") \
+        == "real-project"
+    assert st.current_project == "real-project"
+
+
+def test_a_real_seed_still_sticks_against_a_later_cwd():
+    # only the bare default is re-seeded; a real project stays sticky
+    st = SessionState()
+    calls = []
+    seed = lambda c: calls.append(c) or "svg-mcp"
+    assert resolve_session_project(st, None, "/a", seed, default="default") == "svg-mcp"
+    assert resolve_session_project(st, None, "/b", seed, default="default") == "svg-mcp"
+    assert calls == ["/a"]                          # not re-seeded on the second call
+
+
 def test_session_state_falls_back_to_default_without_context():
     # no MCP request context (CLI/tests) → shared default, not a crash
     st = session_state()

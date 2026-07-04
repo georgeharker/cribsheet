@@ -670,6 +670,10 @@ class SymbolIndex:
         return [_parse(p.read_text()) for p in self.root.glob("*.toml")] \
             if self.root.exists() else []
 
+    def is_populated(self) -> bool:
+        """Cheap check (no parse) — does this project have any indexed symbols?"""
+        return self.root.exists() and any(self.root.glob("*.toml"))
+
 
 def _parse(text: str) -> dict:
     """Tiny reader for the flat TOML we write (no external toml dep on the hot path)."""

@@ -43,15 +43,23 @@ def session_state() -> SessionState:
 
 
 def resolve_session_project(state: SessionState, project_arg: str | None,
-                            cwd: Any, seed: Callable[[Any], str]) -> str:
+                            cwd: Any, seed: Callable[[Any], str],
+                            default: str | None = None) -> str:
     """Pick the project for a call (DESIGN §15 precedence):
 
       1. explicit `project_arg`  — one-off override; does NOT change the session
-      2. the session's current project — sticky once set
+      2. the session's current project — sticky once set to a REAL project
       3. seed lazily from cwd/.crib (`seed(cwd)`) and stick it to the session
+
+    The seed sticks — EXCEPT the bare `default`. A stray early call with no cwd
+    (e.g. a notes `lookup`) would otherwise seed the session to `default` and lock
+    it there forever, so a later call carrying a cwd/.crib could never point the
+    code tools at the right project. So while the session is still only on `default`
+    and a cwd is now offered, we re-seed to let that cwd UPGRADE it.
     """
     if project_arg:
         return project_arg
-    if state.current_project is None:
+    if state.current_project is None or (
+            state.current_project == default and cwd is not None):
         state.current_project = seed(cwd)
     return state.current_project
