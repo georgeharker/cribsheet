@@ -714,8 +714,160 @@ class Crib:
                    + ", ".join(f"{p['project']} ({p['symbols']})" for p in avail)
                    if avail else "; no projects are code-indexed yet")
         raise ValueError(
-            f"project {proj!r} has no code index{listing}. Pass project=<name> or "
-            f"cwd=<abs dir> (resolved via .crib), call use_project, or code_index a file.")
+            f"project {proj!r} has no code index{listing}. Point at an indexed one "
+            f"(project=<name>, cwd=<abs dir> via .crib, or use_project) — or ONBOARD "
+            f"this repo: run project_setup / project_index (whole-project), which "
+            f"auto-writes a .crib and indexes the source. (CLI: crib project setup.)")
+
+    # ── Whole-project lifecycle: setup / index / forget / status ──────────────
+    # Shared engine behind `crib project <verb>` (superset) and the code/notes
+    # facets. Everything defers to `_ensure_crib`, the sensible-default .crib
+    # creator, so onboarding an unfamiliar repo is one call (docs §…).
+    def _code_ignore(self) -> frozenset[str]:
+        return frozenset({".git", "node_modules", ".venv", "venv", "__pycache__",
+                          ".mypy_cache", ".pytest_cache", ".ruff_cache", "dist",
+                          "build", "target", ".tox", ".idea", "site-packages",
+                          ".cache", ".claude", ".DS_Store"})
+
+    def _detect_code_globs(self, root: Path) -> list[str]:
+        """Auto-detect source globs: which LSP-supported extensions actually occur
+        under `root` (junk dirs pruned) → `**/*.<ext>` per present type."""
+        from .codeindex import load_specs
+        exts = {e for spec in load_specs().values() if isinstance(spec, dict)
+                for e in (spec.get("extensionToLanguage") or {})}
+        junk, present = self._code_ignore(), set()
+        for dp, dirs, files in os.walk(root):
+            dirs[:] = [d for d in dirs if d not in junk and not d.startswith(".")]
+            for fn in files:
+                if (e := Path(fn).suffix.lower()) in exts:
+                    present.add(e)
+        return sorted(f"**/*{e}" for e in present)
+
+    def _enumerate_code_files(self, root: Path, globs: list[str]) -> list[Path]:
+        junk, seen = self._code_ignore(), set()
+        for g in globs:
+            for p in root.glob(g):
+                if p.is_file() and not any(part in junk
+                                           for part in p.relative_to(root).parts):
+                    seen.add(p)
+        return sorted(seen)
+
+    def _ensure_crib(self, cwd: Path | None, project: str | None,
+                     want_code: bool, want_docs: bool) -> tuple[Any, bool]:
+        """Find the repo's `.crib`, or CREATE one with sensible defaults (project =
+        repo dir name; auto-detected code `paths:` + doc `import:` globs). Returns
+        (CribLink, created?). The one primitive both `project setup` and the facet
+        setups defer to."""
+        base = (Path(cwd) if cwd else Path.cwd()).resolve()
+        link = CribLink.find(base)
+        if link and link.root:
+            return link, False
+        # Anchor at the nearest repo marker, else at `base` ITSELF — never escape to
+        # base.parent (find_root's no-marker fallback), which would write .crib in the
+        # wrong dir and index the parent tree.
+        root = base
+        for d in (base, *base.parents):
+            if (d / ".git").exists() or (d / "pyproject.toml").exists() \
+                    or (d / "setup.py").exists():
+                root = d
+                break
+        name = project or root.name.replace(" ", "-")
+        lines = ["# Auto-created by `crib project setup` — ties this repo to a crib "
+                 "project.", f"project: {name}"]
+        # globs are quoted: a bare `- **/*.py` makes YAML read `*` as an alias anchor.
+        if want_code and (globs := self._detect_code_globs(root)):
+            lines += ["paths:", *[f'  - "{g}"' for g in globs]]
+        if want_docs:
+            lines += ["import:", '  - "README.md"', '  - "docs/**/*.md"']
+        (root / ".crib").write_text("\n".join(lines) + "\n")
+        return CribLink.find(root), True
+
+    async def _index_project_code(self, proj: str, root: Path,
+                                  globs: list[str]) -> dict[str, Any]:
+        """Index every source file under `globs`, reusing the per-file code_index
+        (content_hash gate keeps re-runs cheap). Non-code files self-skip (NoServer)."""
+        files = self._enumerate_code_files(root, globs)
+        syms = desc = indexed = 0
+        errors: list[dict[str, str]] = []
+        for f in files:
+            try:
+                r = await self.code_index(str(f), project=proj)
+            except Exception as exc:  # noqa: BLE001 — one bad file never aborts the sweep
+                errors.append({"file": str(f), "error": str(exc)})
+                continue
+            if r.get("skipped"):
+                continue
+            indexed += 1
+            syms += r.get("symbols", 0)
+            desc += r.get("described", 0)
+        out: dict[str, Any] = {"files_indexed": indexed, "files_seen": len(files),
+                               "symbols": syms, "described": desc}
+        if errors:
+            out["errors"] = errors
+        return out
+
+    async def project_setup(self, project: str | None = None,
+                            cwd: Path | None = None) -> dict[str, Any]:
+        """Onboard a repo end-to-end: ensure `.crib` (create with sensible defaults if
+        missing), import its declared docs into notes, AND index all its source code.
+        The superset — `code`+`notes`. Idempotent; safe to re-run."""
+        link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=True)
+        proj = project or link.project
+        docs = await self.import_docs(proj, cwd)
+        globs = link.paths or self._detect_code_globs(link.root)
+        code = await self._index_project_code(proj, link.root, globs)
+        return {"project": proj, "root": str(link.root), "crib_created": created,
+                "docs_imported": docs.get("imported", 0), **code}
+
+    async def project_index(self, project: str | None = None,
+                            cwd: Path | None = None) -> dict[str, Any]:
+        """(Re)index the project's SOURCE CODE from its `.crib` paths (ensuring a
+        `.crib` first). The code facet — no doc import. Cheap re-run via the gate."""
+        link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
+        proj = project or link.project
+        globs = link.paths or self._detect_code_globs(link.root)
+        code = await self._index_project_code(proj, link.root, globs)
+        return {"project": proj, "root": str(link.root), "crib_created": created, **code}
+
+    def project_status(self, project: str | None = None,
+                       cwd: Path | None = None) -> dict[str, Any]:
+        """Is this project code-indexed? symbol/file counts, kind breakdown, the
+        `.crib` source paths — for orienting before setup/index."""
+        from collections import Counter
+
+        from .codeindex import SymbolIndex
+        proj = self.resolve_project(project, cwd)
+        si = SymbolIndex(self.paths.project_dir(proj))
+        entries = si.all()
+        link = CribLink.find(Path(cwd)) if cwd else None
+        return {"project": proj, "indexed": si.is_populated(),
+                "symbols": len(entries),
+                "files": len({e.get("file") for e in entries}),
+                "kinds": dict(Counter(e.get("kind", "?") for e in entries)),
+                "paths": (link.paths if link else []),
+                "crib": (str(link.root / ".crib") if link and link.root else None)}
+
+    def project_forget(self, project: str | None = None, cwd: Path | None = None,
+                       with_learnings: bool = False) -> dict[str, Any]:
+        """Clear the project's code index (the symbol_index). KEEPS attached learnings,
+        notes and `.crib` by default — learnings are durable human source-of-truth;
+        pass with_learnings=True to drop those too."""
+        import shutil
+
+        from .codeindex import LEARNINGS_DIR, SymbolIndex
+        proj = self.resolve_project(project, cwd)
+        si_root = SymbolIndex(self.paths.project_dir(proj)).root
+        removed = len(list(si_root.glob("*.toml"))) if si_root.exists() else 0
+        if si_root.exists():
+            shutil.rmtree(si_root)
+        learnings = 0
+        if with_learnings:
+            ldir = self.notes_dir(proj) / LEARNINGS_DIR
+            if ldir.exists():
+                learnings = len(list(ldir.glob("*.md")))
+                shutil.rmtree(ldir)
+        return {"project": proj, "symbols_removed": removed,
+                "learnings_removed": learnings}
 
     def code_xref(self, symbol: str, project: str | None = None,
                   cwd: Path | None = None) -> list[dict[str, Any]]:

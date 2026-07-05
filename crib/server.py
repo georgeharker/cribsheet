@@ -243,6 +243,45 @@ def build_server(crib: Crib | None = None):
         return await crib.code_index(path, _project(crib, project, cwd))
 
     @mcp.tool()
+    async def project_setup(project: str | None = None,
+                            cwd: str | None = None) -> dict[str, Any]:
+        """ONBOARD a repo for crib in one call — when code_lookup says a project isn't
+        indexed, do THIS, don't fall back to grep. Ensures a `.crib` (auto-created with
+        sensible defaults if missing), imports the repo's docs into notes, AND indexes
+        all its source code (functions/classes/globals/members + call graph +
+        references + descriptions). Pass `cwd=<the repo dir>`. Idempotent. Then
+        code_lookup/code_dossier work. Code-only variant: project_index."""
+        return _switch_if_created(
+            await crib.project_setup(_project(crib, project, cwd)))
+
+    @mcp.tool()
+    async def project_index(project: str | None = None,
+                            cwd: str | None = None) -> dict[str, Any]:
+        """(Re)index a project's SOURCE CODE from its `.crib` (code facet of
+        project_setup — no doc import). Use to index a repo for code_lookup/code_dossier,
+        or to refresh after edits (cheap: unchanged files are skipped). Pass
+        `cwd=<the repo dir>`; a `.crib` is auto-created if missing."""
+        return _switch_if_created(
+            await crib.project_index(_project(crib, project, cwd)))
+
+    @mcp.tool()
+    def project_status(project: str | None = None,
+                       cwd: str | None = None) -> dict[str, Any]:
+        """Is this repo code-indexed? Returns symbol/file counts, a kind breakdown, and
+        the `.crib` source paths — to orient before project_setup / a code_lookup. Pass
+        `cwd=<the repo dir>`."""
+        return crib.project_status(_project(crib, project, cwd))
+
+    @mcp.tool()
+    def project_forget(project: str | None = None, with_learnings: bool = False,
+                       cwd: str | None = None) -> dict[str, Any]:
+        """Clear a project's CODE INDEX (symbol_index). Keeps attached learnings, notes
+        and `.crib` by default (learnings are durable — pass with_learnings=True to drop
+        them too). Recoverable by re-running project_index. Pass `cwd=<the repo dir>`."""
+        return crib.project_forget(_project(crib, project, cwd),
+                                   with_learnings=with_learnings)
+
+    @mcp.tool()
     async def code_xref(symbol: str, project: str | None = None,
                         cwd: str | None = None) -> list[dict[str, Any]]:
         """A symbol's callers (←), callees (→) and references (⇐ — broader than calls),

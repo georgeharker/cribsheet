@@ -162,6 +162,34 @@ def test_code_tools_self_diagnose_unindexed_project(crib):
     assert crib.code_xref("nonexistent", project="ghost") == []  # indexed → plain miss
 
 
+def test_ensure_crib_creates_sensible_defaults_and_anchors_in_repo(crib, tmp_path):
+    repo = tmp_path / "myrepo"
+    (repo / "src").mkdir(parents=True)
+    (repo / ".git").mkdir()                     # marker → anchors here, not the parent
+    (repo / "src" / "a.py").write_text("x = 1\n")
+    link, created = crib._ensure_crib(repo, None, want_code=True, want_docs=True)
+    assert created and link.root == repo         # never escapes to tmp_path
+    assert link.project == "myrepo"
+    text = (repo / ".crib").read_text()
+    assert 'project: myrepo' in text
+    assert '"**/*.py"' in text                    # quoted glob (YAML-safe, not an alias)
+    # idempotent: a second call finds the existing .crib, doesn't recreate
+    link2, created2 = crib._ensure_crib(repo, None, want_code=True, want_docs=False)
+    assert not created2 and link2.project == "myrepo"
+
+
+def test_project_forget_clears_index_but_keeps_learnings(crib):
+    _seed_symbol(crib, "p", fqname="m.foo")
+    run(crib.code_append("m.foo", "keep me", project="p"))
+    assert crib.project_status(project="p")["indexed"]
+    out = crib.project_forget(project="p")        # default: keep learnings
+    assert out["symbols_removed"] == 1 and out["learnings_removed"] == 0
+    assert not crib.project_status(project="p")["indexed"]
+    # the learning survived the index wipe (durable human source-of-truth)
+    _seed_symbol(crib, "p", fqname="m.foo")       # re-index the symbol
+    assert crib.code_read("m.foo", project="p")["found"]
+
+
 def test_forget_removes_an_orphan(crib):
     _seed_symbol(crib, "p", fqname="a.foo")
     run(crib.code_append("a.foo", "note", project="p"))

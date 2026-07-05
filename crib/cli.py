@@ -181,6 +181,37 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
                 _print_learning(e["learning"], "   ")
 
 
+def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
+    """Human summary for `crib project <verb>`."""
+    if as_json:
+        print(json.dumps(d, indent=2, default=str)); return
+    if not isinstance(d, dict):
+        print(d); return
+    proj = d.get("project", "")
+    if verb == "status":
+        state = "indexed" if d.get("indexed") else "NOT indexed"
+        print(f"{proj}: {state} — {d.get('symbols', 0)} symbols "
+              f"in {d.get('files', 0)} files")
+        kinds = d.get("kinds") or {}
+        if kinds:
+            print("  " + ", ".join(f"{k}:{n}" for k, n in sorted(kinds.items())))
+        if d.get("paths"):
+            print(f"  paths: {', '.join(d['paths'])}")
+        return
+    if verb == "forget":
+        print(f"{proj}: cleared {d.get('symbols_removed', 0)} symbols"
+              + (f", {d['learnings_removed']} learnings" if d.get("learnings_removed") else ""))
+        return
+    # setup / index
+    made = "  (created .crib)" if d.get("crib_created") else ""
+    docs = f", {d['docs_imported']} docs imported" if d.get("docs_imported") else ""
+    print(f"{proj}: indexed {d.get('files_indexed', 0)}/{d.get('files_seen', 0)} files, "
+          f"{d.get('symbols', 0)} symbols, {d.get('described', 0)} described{docs}{made}")
+    errs = d.get("errors") or []
+    if errs:
+        print(f"  {len(errs)} file(s) errored (first: {errs[0].get('file', '')})")
+
+
 def _emit_code_dossier(d: Any, as_json: bool) -> None:
     """Full single-symbol view: header + description + annotated neighbours + learning."""
     if as_json:
@@ -335,6 +366,20 @@ def build_parser() -> argparse.ArgumentParser:
     sv.add_argument("--port", type=int, default=None)
     sub.add_parser("projects", help="list projects")
     sub.add_parser("info", help="show resolved paths and available backends")
+
+    # `crib project <verb>` — whole-project lifecycle (superset of code + notes)
+    pj = sub.add_parser("project", help="onboard/index a whole repo (setup/index/"
+                                        "status/forget)")
+    pjsub = pj.add_subparsers(dest="project_verb")
+    for _v, _h in (("setup", "ensure .crib + import docs + index all code"),
+                   ("index", "(re)index the repo's code from its .crib"),
+                   ("status", "is it indexed? counts, kinds, .crib paths")):
+        _sp = pjsub.add_parser(_v, help=_h)
+        proj(_sp)
+    _pf = pjsub.add_parser("forget", help="clear the code index (keeps learnings/notes)")
+    proj(_pf)
+    _pf.add_argument("--with-learnings", action="store_true",
+                     help="also drop attached learnings (default: keep them)")
 
     s = sub.add_parser("lookup", aliases=["search"], help="semantic search")
     s.add_argument("query"); proj(s)
@@ -593,6 +638,14 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
     sent so the daemon resolves `.crib`/project relative to the caller."""
     cwd = str(Path.cwd())
     v = args.cmd
+    if v == "project":
+        pv = getattr(args, "project_verb", None) or "status"
+        tool = {"setup": "project_setup", "index": "project_index",
+                "status": "project_status", "forget": "project_forget"}[pv]
+        call = {"project": args.project, "cwd": cwd}
+        if pv == "forget":
+            call["with_learnings"] = getattr(args, "with_learnings", False)
+        return tool, call
     if v in ("lookup", "search", "apropos", "a"):
         # `apropos`/`a`, or `search --render`, take the section-rendering path
         # (the apropos tool returns full sections); plain `search` gets locators.
@@ -715,6 +768,8 @@ def _run_daemon(args: Any, cfg: Any) -> None:
         _emit_code_report(data, args.json)
     elif args.cmd == "code-rehome":
         _emit_code_rehome(data, args.json)
+    elif args.cmd == "project":
+        _emit_project(data, getattr(args, "project_verb", None), args.json)
     elif args.cmd in _RAW_PRINT:
         print(data)
     else:
@@ -887,6 +942,18 @@ def _run_inprocess(args: Any) -> None:
         elif args.cmd == "code-rehome":
             _emit_code_rehome(asyncio.run(crib.code_rehome(
                 args.old, args.new, args.project, cwd=cwd)), j)
+        elif args.cmd == "project":
+            pv = getattr(args, "project_verb", None) or "status"
+            if pv == "setup":
+                r = asyncio.run(crib.project_setup(args.project, cwd=cwd))
+            elif pv == "index":
+                r = asyncio.run(crib.project_index(args.project, cwd=cwd))
+            elif pv == "forget":
+                r = crib.project_forget(args.project, cwd=cwd,
+                                        with_learnings=args.with_learnings)
+            else:
+                r = crib.project_status(args.project, cwd=cwd)
+            _emit_project(r, pv, j)
     finally:
         crib.close()
 
