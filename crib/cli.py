@@ -958,7 +958,37 @@ def _run_inprocess(args: Any) -> None:
         crib.close()
 
 
+# Noun-verb interface: `crib code <verb>` is canonical (not `crib code-<verb>`).
+# A thin argv rewrite keeps one set of parsers/dispatch while accepting the
+# namespaced spelling. The hyphenated forms still parse (back-compat / muscle memory).
+_CODE_SUBVERBS = {"lookup", "dossier", "xref", "graph", "index", "append", "edit",
+                  "forget", "read", "reaffirm", "learnings", "rehome"}
+_CODE_LIFECYCLE = {"setup": ["project", "index"],    # code-only onboard (no docs)
+                   "status": ["project", "status"]}
+
+
+_GLOBAL_VALUE_OPTS = {"--host", "--port"}   # global flags that consume the next token
+
+
+def _normalize_argv(argv: list[str]) -> list[str]:
+    """Rewrite `code <verb> …` → the canonical verb, skipping any leading global
+    flags (`--no-daemon`, `--json`, `--host X`, …). `code lookup` → `code-lookup`;
+    `code setup`/`code status` → the code facet of the project lifecycle."""
+    i = 0
+    while i < len(argv) and argv[i].startswith("-"):
+        i += 2 if argv[i] in _GLOBAL_VALUE_OPTS else 1
+    if i + 1 < len(argv) and argv[i] == "code":
+        v, rest = argv[i + 1], argv[i + 2:]
+        if v in _CODE_SUBVERBS:
+            return [*argv[:i], f"code-{v}", *rest]
+        if v in _CODE_LIFECYCLE:
+            return [*argv[:i], *_CODE_LIFECYCLE[v], *rest]
+    return argv
+
+
 def main(argv: list[str] | None = None) -> int:
+    import sys as _sys
+    argv = _normalize_argv(list(argv if argv is not None else _sys.argv[1:]))
     args = build_parser().parse_args(argv)
 
     if args.mcp or args.cmd == "serve":
