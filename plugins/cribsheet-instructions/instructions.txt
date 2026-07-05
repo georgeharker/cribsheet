@@ -1,0 +1,16 @@
+Memory & code index (cribsheet) — habits for this session:
+
+- Consult memory first: before answering about a project, topic, or past decision — or
+  exploring a codebase cold — lookup/apropos cribsheet first; the answer may be stored.
+- Prefer the code index over grep/Read for understanding code. The reflex to grep/rg/Glob
+  for a symbol — or to open a file to see what it does — is the cue to reach for the index
+  first; grep is the fallback when it misses, not the default:
+    - find code by concept or name -> code_lookup "…in your own words" (not grep -r)
+    - understand a symbol + who uses it -> code_dossier <symbol> (not reading the file):
+      one call gives signature, description, callers/callees/references
+    - trace calls -> code_xref / code_graph (not chains of greps)
+    - project not indexed? -> project_setup (auto-writes .crib, indexes the repo), then
+      look up — don't fall back to grep
+  When you finally understand a tricky symbol, code_append <symbol> "…" pins it for next time.
+- Persist durably: when a durable fact emerges (decision, convention, gotcha, contract),
+  store it — lookup first, append/edit over duplicating.

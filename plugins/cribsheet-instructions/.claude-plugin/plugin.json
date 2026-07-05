@@ -1,0 +1,26 @@
+{
+  "name": "cribsheet-instructions",
+  "version": "0.1.0",
+  "description": "Reach-for-crib instructions only (prefer the code index over grep; consult/store memory), injected each session. No MCP registration — use this when crib's tools already reach you another way (e.g. proxied by mcp-combiner).",
+  "author": {
+    "name": "George Harker",
+    "email": "george@georgeharker.com"
+  },
+  "homepage": "https://github.com/georgeharker/cribsheet",
+  "repository": "https://github.com/georgeharker/cribsheet",
+  "license": "MIT",
+  "keywords": ["memory", "code-index", "instructions", "mcp"],
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 10,
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

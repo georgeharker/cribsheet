@@ -1,0 +1,42 @@
+{
+  "name": "cribsheet",
+  "version": "0.1.0",
+  "description": "Persistent markdown memory + a code symbol index (concept/name lookup, call graph, references, durable learnings) for your AI. Registers the crib MCP server over a sharedserver-managed HTTP backend (one warm crib shared across sessions; respects a globally-installed `crib`), and injects the reach-for-crib instructions.",
+  "author": {
+    "name": "George Harker",
+    "email": "george@georgeharker.com"
+  },
+  "homepage": "https://github.com/georgeharker/cribsheet",
+  "repository": "https://github.com/georgeharker/cribsheet",
+  "license": "MIT",
+  "keywords": ["memory", "code-index", "mcp", "sharedserver", "fastmcp"],
+  "mcpServers": {
+    "cribsheet": {
+      "url": "http://127.0.0.1:7732/mcp"
+    }
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 30,
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 10,
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/session-end.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

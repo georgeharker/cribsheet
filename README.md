@@ -225,12 +225,54 @@ only sees them once it has decided to reach for a tool, which is too late for a
 ```
 
 Put it at `$CLAUDE_CONFIG_DIR/CLAUDE.md` (e.g. dotfiles-managed, like
-`settings.json`). Plugins can't bundle eager instructions, so this stays a
-CLAUDE.md file; the MCP registration is what the plugin/combiner carries.
+`settings.json`) — copy [`CLAUDE.md.example`](CLAUDE.md.example). The directive
+directs *approach* (prefer the index over the grep/Read reflex, with examples);
+the tool descriptions carry the mechanics. A lean reflex-substitution rule flips
+the habit on a bare prompt where a feature-list directive doesn't.
 
 Pair it with `crib import-memory` so the harness `memory/*.md` notes you (Claude)
 already write are mirrored into cribsheet's searchable index automatically — one
 source of truth, two searchable surfaces.
+
+## Plugins
+
+A [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) ships two
+plugins — pick by whether crib's MCP tools already reach you:
+
+- **`cribsheet`** (full) — registers the crib MCP server over a **sharedserver**-managed
+  HTTP backend (one warm `crib` shared across sessions; respects a globally-installed
+  `crib` on PATH — never bundles a copy) **and** injects the reach-for-crib
+  instructions. Set `CRIB_EXTERNAL=1` to skip the backend management (when crib is
+  served for you already).
+- **`cribsheet-instructions`** — the instructions only (a `SessionStart` hook injecting
+  the directive), **no MCP**. Use this when crib's tools already arrive another way —
+  e.g. proxied by [mcp-combiner](https://github.com/georgeharker/claude-sharedserver).
+
+```bash
+claude plugin marketplace add georgeharker/cribsheet
+claude plugin install cribsheet                 # full (MCP + instructions)
+claude plugin install cribsheet-instructions    # instructions only
+```
+
+> If you run the combiner, everything routes through `sharedserver` and **refcounts
+> onto one crib process** — no duplicate backend. To also avoid duplicate *tools*
+> (the combiner proxies crib *and* the full plugin registers it), install
+> `cribsheet-instructions` instead of `cribsheet`. That structural split is the
+> answer to "is another MCP already serving crib" — it's an install choice, not
+> something to auto-detect.
+
+### Onboarding a repo (project lifecycle)
+
+```bash
+crib project setup     # ensure .crib (auto-created) + import docs + index all source
+crib project index     # (re)index the code from .crib (cheap re-run)
+crib project status     # indexed? symbol/file counts, kinds, .crib paths
+crib project forget     # clear the code index (keeps learnings/notes/.crib)
+crib code setup         # code facet only (no doc import); crib code <verb> is noun-verb
+```
+
+An agent that hits an unindexed project self-diagnoses toward `project_setup`, runs
+it, then looks up — the "clear the index → it re-indexes itself → queries" loop.
 
 ## Tests
 

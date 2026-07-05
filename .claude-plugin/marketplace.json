@@ -1,0 +1,19 @@
+{
+  "name": "cribsheet",
+  "owner": {
+    "name": "George Harker",
+    "email": "george@georgeharker.com"
+  },
+  "plugins": [
+    {
+      "name": "cribsheet",
+      "source": "./plugins/cribsheet",
+      "description": "Persistent markdown memory + a code symbol index (concept/name lookup, call graph, references, learnings) for your AI. Registers the crib MCP server via sharedserver (respects a global install; skip with CRIB_EXTERNAL) and carries the reach-for-crib instructions."
+    },
+    {
+      "name": "cribsheet-instructions",
+      "source": "./plugins/cribsheet-instructions",
+      "description": "Instructions only — the 'prefer the code index over grep, consult/store memory' directives, injected each session. No MCP registration. For when crib's tools already reach you another way (e.g. via mcp-combiner)."
+    }
+  ]
+}

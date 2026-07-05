@@ -1,0 +1,24 @@
+# Memory (cribsheet)
+
+Copy this into your global `$CLAUDE_CONFIG_DIR/CLAUDE.md` (e.g. dotfiles-managed).
+It's always in context, so it's the reliable lever for the "reach for crib" habits —
+the MCP tool descriptions carry the mechanics; this just directs the *approach*.
+
+- **Consult memory first.** Before answering about a project, topic, or past decision
+  — or exploring a codebase cold — `lookup`/`apropos` cribsheet first; the answer may
+  already be stored, and more current than reasoning from scratch.
+- **Prefer the code index over grep/Read for understanding code.** The reflex to
+  `grep`/`rg`/`Glob` for a symbol — or to open a file to see what it does — is the cue
+  to reach for the index first; grep is the fallback when it misses, not the default.
+    - *find code by concept or name* → `code_lookup "…in your own words"`, **not**
+      `grep -r` (answers by intent + cross-file).
+    - *understand a symbol + who uses it* → `code_dossier <symbol>`, **not** reading
+      the whole file (one call: signature, description, callers/callees/references).
+    - *trace calls* → `code_xref` / `code_graph`, **not** chains of greps.
+    - *project not indexed?* → `project_setup` (auto-writes `.crib`, indexes the repo),
+      then look up — don't fall back to grep. (CLI: `crib project setup`.)
+  E.g. not `grep -rn "def boolean"` then reading the file — `code_lookup "boolean path
+  union/difference"` → `code_dossier` the top hit. (When you finally *get* a tricky
+  symbol, `code_append <symbol> "…"` pins that understanding for next time.)
+- **Persist durably.** When a durable fact emerges (a decision, convention, gotcha,
+  contract), `store` it — `lookup` first, `append`/`edit` over duplicating.

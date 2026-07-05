@@ -371,7 +371,39 @@ One thing stays genuinely parked, to keep the human layer clean of the machine l
 feeding pinned learnings *into* the describe prompt — it would leak human truth into the
 regenerable description cache.
 
-## 9. Open questions
+## 9. Project lifecycle — onboarding a whole repo
+
+Per-file `code_index` is the primitive; the **lifecycle** commands wrap it so an agent
+(or a human) onboards a repo in one call and the "cleared index → re-index → look up"
+loop closes without manual per-file work. Three parallel facets share one engine, all
+deferring to `_ensure_crib`:
+
+| CLI (noun-verb) | MCP | does |
+|---|---|---|
+| `crib project setup`  | `project_setup`  | ensure `.crib` + import docs + index all source (**superset**) |
+| `crib project index`  | `project_index`  | (re)index the source from `.crib` (cheap re-run via the content-hash gate) |
+| `crib project status` | `project_status` | indexed? symbol/file counts, kind breakdown, `.crib` paths |
+| `crib project forget` | `project_forget` | clear the `symbol_index` (KEEPS learnings/notes/`.crib` by default) |
+| `crib code setup` / `code status` | — | the **code facet** (code-only, no doc import) |
+
+- **`_ensure_crib` — sensible defaults, one primitive.** Finds the repo's `.crib`, or
+  writes one: `project` = repo dir name; `paths:` = the LSP-supported extensions that
+  actually occur under the root (junk dirs pruned); `import:` = `README.md` +
+  `docs/**/*.md`. Globs are YAML-quoted (a bare `- **/*.py` reads `*` as an alias
+  anchor). It anchors at the nearest repo marker (`.git`/`pyproject.toml`) **or the cwd
+  itself** — never `find_root`'s `base.parent` fallback, which would write `.crib` in the
+  wrong dir and index the parent tree.
+- **The autonomous loop.** `code_lookup` on an unindexed project self-diagnoses toward
+  `project_setup`; the agent runs it (auto-`.crib`, index), then looks up — no grep
+  fallback. That's the "clear svg-mcp's index and it re-indexes itself, then queries"
+  behaviour.
+- **Forget keeps the durable layer.** `project forget` wipes only the regenerable
+  `symbol_index`; attached learnings (human source-of-truth), notes and `.crib` survive
+  unless you pass `with_learnings`.
+
+The `notes` facet (`notes setup` = docs-only) is the obvious symmetric follow-on.
+
+## 10. Open questions
 
 - **Granularity & hierarchy.** Symbols vs also module- and class-level descriptions
   (a breadcrumb hierarchy, like heading paths). Does file/class context help concept
