@@ -71,9 +71,11 @@ def build_server(crib: Crib | None = None):
             "callers/callees/references, each neighbour annotated, + any pinned learning) "
             "in one call, or `code_xref`/`code_graph` to walk the graph. Don't grep the "
             "code first and reach for these as a fallback — invert it. If a project isn't "
-            "indexed the tools SELF-DIAGNOSE (they name the indexed projects, or tell you "
-            "to `code_index <abs-file>`); pass `cwd=<your working dir>` so the right "
-            "project resolves via .crib. When you finally UNDERSTAND a symbol — a "
+            "indexed the tools SELF-DIAGNOSE (they name the indexed projects); when the "
+            "repo you're in has NO index, ONBOARD it — `project_setup` (auto-writes a "
+            ".crib, imports docs, indexes the whole repo), then look up. Don't fall back "
+            "to grep. Pass `cwd=<your working dir>` so the right project resolves via "
+            ".crib. When you finally UNDERSTAND a symbol — a "
             "subtlety, a gotcha, a 'now I get it' — `code_append <symbol> \"…\"` pins a "
             "durable learning to it (survives re-indexing, works even on code you can't "
             "edit); it surfaces back via `code_lookup`/`code_xref`/`code_dossier`. "
@@ -298,10 +300,11 @@ def build_server(crib: Crib | None = None):
         "the oauth refresh", a bare/cryptic name). HYBRID: dense search over LLM 'what
         it does' descriptions ⊕ name/subtoken match — finds by intent (grep can't) OR by
         name. Returns ranked symbols with signature, file:line, callers/callees/refs. If
-        the project isn't indexed it SELF-DIAGNOSES (names the indexed projects, or tells
-        you to code_index) — so just try it. Pass `cwd=<your working dir>` so the project
-        resolves via .crib. Then `code_dossier` a hit to go deep, or `code_graph` to walk
-        the tree."""
+        the project isn't indexed it SELF-DIAGNOSES (names the indexed projects) — so just
+        try it. If THIS repo has no index yet, onboard it with `project_setup` (auto-.crib
+        + indexes the repo), then look up — don't fall back to grep. Pass `cwd=<your
+        working dir>` so the project resolves via .crib. Then `code_dossier` a hit to go
+        deep, or `code_graph` to walk the tree."""
         return crib.code_lookup(query, _project(crib, project, cwd), k)
 
     @mcp.tool()
