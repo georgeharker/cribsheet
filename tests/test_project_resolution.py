@@ -39,6 +39,24 @@ def test_no_path_falls_back_to_session(crib):
     assert _source_project(crib, None, None) == "sticky-proj"
 
 
+def test_write_tools_carry_project_or_path_anyof(crib):
+    # the wire schema declares "project OR project_path required" (anyOf), so a
+    # validating client enforces it up front — not only the runtime guard.
+    import asyncio
+
+    from crib.server import build_server
+    mcp = build_server(crib)
+
+    async def schema(name):
+        return (await mcp.get_tool(name)).to_mcp_tool().inputSchema
+
+    want = [{"required": ["project"]}, {"required": ["project_path"]}]
+    for w in ("store", "append", "edit", "forget", "move"):
+        assert asyncio.run(schema(w)).get("anyOf") == want, w
+    for r in ("lookup", "read", "code_lookup"):        # reads are unconstrained
+        assert asyncio.run(schema(r)).get("anyOf") is None, r
+
+
 def test_write_project_requires_explicit_target(crib):
     # writes never inherit the sticky session — a fact belongs to its subject's project
     session_state().current_project = "some-repo-im-browsing"
