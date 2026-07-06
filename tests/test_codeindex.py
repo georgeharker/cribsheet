@@ -33,6 +33,29 @@ def test_local_name_strips_lua_table_prefix():
     assert ci._local_name("plain", "python") == "plain"
 
 
+def test_local_name_reduces_rust_impl_to_type():
+    # rust-analyzer names impl symbols `impl Type` / `impl Trait for Type` — reduce to
+    # the TYPE so its methods qualify as Type::method, not "impl Type"::method.
+    assert ci._local_name("impl ServerState", "rust") == "ServerState"
+    assert ci._local_name("impl Display for ServerState", "rust") == "ServerState"
+    assert ci._local_name("impl<T> Foo<T>", "rust") == "Foo"
+    assert ci._local_name("impl Iterator for Foo<Bar>", "rust") == "Foo"
+    # a plain fn named like a keyword-prefix must NOT be munged (word boundary)
+    assert ci._local_name("implement", "rust") == "implement"
+    assert ci._local_name("ServerState", "rust") == "ServerState"
+
+
+def test_type_kinds_indexed_and_descended():
+    # Struct(23)/Enum(10)/Interface(11) are indexed AND descended (Rust/Go/TS types);
+    # Object(19)=impl and Module(2)/Namespace(3) are descended so nested methods land.
+    for k in (5, 10, 11, 23):
+        assert k in ci._INDEX_KINDS and k in ci._CONTAINER_KINDS
+    for k in (2, 3, 19):
+        assert k in ci._CONTAINER_KINDS
+    assert ci._KIND[23] == "struct" and ci._KIND[10] == "enum"
+    assert ci._KIND_LABEL_OVERRIDE[("rust", 11)] == "trait"
+
+
 def test_qualify_is_language_idiomatic():
     assert ci._qualify("python", "crib.retrieve", ("BM25",), "scores") \
         == "crib.retrieve.BM25.scores"
