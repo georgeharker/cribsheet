@@ -1,5 +1,20 @@
 # todos — deferred / to-test
 
+## To discuss / fix
+- **Vendored sub-repos pollute the parent's index (mis-rooted paths).** `project_index`
+  enumerates `vendor/**/*.py` (`vendor` isn't in the code-ignore set), and per-file
+  `find_root` then escapes into the vendored sub-repo (its own `.git`/`pyproject`), so the
+  entries get stored under the *parent* project with paths relative to the *sub-repo*
+  (e.g. `src/llmkit/…` inside the `cribsheet` project). Against the parent's `source_root`
+  they read as "source GONE". Observed: 161 phantom llmkit symbols in the cribsheet index.
+  Options to weigh: (a) add `vendor` + nested-`.git` dirs to the enumeration ignore set;
+  (b) the deeper fix — in the project-index path, pin the root to the project's `.crib`
+  root instead of per-file `find_root`, so a project only ever holds files under its own
+  root. `_revalidate` self-heals existing phantoms on the next query (stat fails →
+  `_drop_file`), but the enumeration bug re-pollutes on the next `project_index`.
+  (Also note: watcher only catches edits made *after* it starts — edits while the daemon
+  is down are caught by the lazy mtime gate on next query, not retroactively by the watcher.)
+
 ## To test
 - **ty as the Python indexer, end-to-end.** Just added (first-choice `.py` LSP; verified
   documentSymbol + callHierarchy + references + speed in isolation). Do a clean-index
