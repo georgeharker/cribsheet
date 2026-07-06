@@ -16,8 +16,9 @@
     - *understand a symbol + who uses it* → `code_dossier <symbol>`, **not** reading
       the whole file (one call: signature, description, callers/callees/references).
     - *trace calls* → `code_xref` / `code_graph`, **not** chains of greps.
-    - *project not indexed?* → `project_setup` (auto-writes `.crib`, indexes the repo),
-      then look up — don't fall back to grep. (CLI: `crib project setup`.)
+    - *repo not indexed?* → that's the expected first step, not a dead end: **index it**
+      — `project_index` (indexes the source in one call), then look up. Do NOT read
+      files or grep instead; there's no shortcut, the utility comes from the index.
   E.g. not `grep -rn "def boolean"` then reading the file — `code_lookup "boolean path
   union/difference"` → `code_dossier` the top hit. (When you finally *get* a tricky
   symbol, `code_append <symbol> "…"` pins that understanding for next time.)

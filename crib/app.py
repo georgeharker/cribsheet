@@ -803,14 +803,15 @@ class Crib:
         if SymbolIndex(self.paths.project_dir(proj)).is_populated():
             return
         avail = self.code_indexed_projects()
-        listing = ("; code-indexed projects: "
-                   + ", ".join(f"{p['project']} ({p['symbols']})" for p in avail)
-                   if avail else "; no projects are code-indexed yet")
+        others = (" (a DIFFERENT already-indexed project — pass project=/cwd= only if "
+                  "you meant to query it instead: "
+                  + ", ".join(f"{p['project']}" for p in avail) + ")") if avail else ""
         raise ValueError(
-            f"project {proj!r} has no code index{listing}. Point at an indexed one "
-            f"(project=<name>, cwd=<abs dir> via .crib, or use_project) — or ONBOARD "
-            f"this repo: run project_setup / project_index (whole-project), which "
-            f"auto-writes a .crib and indexes the source. (CLI: crib project setup.)")
+            f"project {proj!r} isn't code-indexed yet. INDEX IT NOW, then retry this "
+            f"call: run project_index (cwd=<this repo dir>) — it indexes the repo's "
+            f"source so lookup/dossier/xref work. This is the expected first step for a "
+            f"new repo; do NOT fall back to grep or reading files instead — index first."
+            f"{others}")
 
     # ── Whole-project lifecycle: setup / index / forget / status ──────────────
     # Shared engine behind `crib project <verb>` (superset) and the code/notes
