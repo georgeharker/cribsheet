@@ -433,6 +433,7 @@ def extract_file(root: Path, relpath: str, settle: float = 1.5) -> list[dict]:
     c = LspClient(argv, root, init_options=spec.get("initializationOptions"),
                   settings=spec.get("settings"))
     entries: list[dict] = []
+    mtime = path.stat().st_mtime_ns   # staleness gate: reindex when the source moves
     try:
         c.initialize()
         uri = path.as_uri()
@@ -510,7 +511,7 @@ def extract_file(root: Path, relpath: str, settle: float = 1.5) -> list[dict]:
                 "kind": kind_label,
                 "lang": language_id, "module": module, "container": list(container),
                 "parent": parent, "content_hash": content_hash,
-                "file": relpath, "line": start + 1, "signature": sig,
+                "file": relpath, "line": start + 1, "mtime": mtime, "signature": sig,
                 "calls": sorted(set(calls)), "called_by": sorted(set(called_by)),
                 "references": sorted(set(references)),
                 "name_terms": _name_terms(local, fqname),
@@ -601,6 +602,7 @@ _ARRAYS = ("container", "calls", "called_by", "references", "name_terms")
 def _render(e: dict) -> str:
     lines = [f'{k} = "{_esc(str(e.get(k, "")))}"' for k in _SCALARS]
     lines.append(f'line = {e.get("line", 0)}')
+    lines.append(f'mtime = {e.get("mtime", 0)}')
     for key in _ARRAYS:
         vals = e.get(key) or []
         if vals:
@@ -673,6 +675,29 @@ class SymbolIndex:
     def is_populated(self) -> bool:
         """Cheap check (no parse) — does this project have any indexed symbols?"""
         return self.root.exists() and any(self.root.glob("*.toml"))
+
+    def delete(self, fqname: str) -> bool:
+        """Drop one symbol's entry by exact fqname (rename/removal). Returns hit."""
+        p = self.root / f"{hashlib.sha1(fqname.encode()).hexdigest()[:16]}.toml"
+        if p.exists():
+            p.unlink()
+            return True
+        return False
+
+    _ROOT_META = ".source_root"
+
+    def set_source_root(self, root: Path) -> None:
+        """Persist the source repo root, so staleness revalidation can stat the source
+        files later (at query time) without needing the caller's cwd/.crib."""
+        self.root.mkdir(parents=True, exist_ok=True)
+        (self.root / self._ROOT_META).write_text(str(root))
+
+    def source_root(self) -> Path | None:
+        f = self.root / self._ROOT_META
+        try:
+            return Path(f.read_text().strip()) if f.exists() else None
+        except OSError:
+            return None
 
 
 def _parse(text: str) -> dict:

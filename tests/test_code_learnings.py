@@ -190,6 +190,47 @@ def test_project_forget_clears_index_but_keeps_learnings(crib):
     assert crib.code_read("m.foo", project="p")["found"]
 
 
+def test_patch_called_by_keeps_cross_file_graph_consistent(crib):
+    from crib.codeindex import SymbolIndex
+    store = SymbolIndex(crib.paths.project_dir("p"))
+    # target lives in a.py; caller (b.py) already calls it
+    store.write({"fqname": "a.target", "name": "target", "kind": "function",
+                 "file": "a.py", "line": 1, "mtime": 1, "calls": [],
+                 "called_by": ["caller [b.py]"], "references": [], "container": [],
+                 "name_terms": ["target"], "lang": "python", "module": "a", "parent": ""})
+    # b.py is reindexed with a NEW second caller — patch must update a.target.called_by
+    new_b = [
+        {"name": "caller", "file": "b.py", "calls": ["target [a.py]"]},
+        {"name": "caller2", "file": "b.py", "calls": ["target [a.py]"]},
+    ]
+    crib._patch_called_by(store, new_b, "b.py")
+    cb = store.by_fqname("a.target")[0]["called_by"]
+    assert cb == ["caller [b.py]", "caller2 [b.py]"]     # both, no dup, no stale
+
+    # a removed call (caller2 no longer calls target) is stripped on the next reindex
+    crib._patch_called_by(store, [{"name": "caller", "file": "b.py",
+                                   "calls": ["target [a.py]"]}], "b.py")
+    assert store.by_fqname("a.target")[0]["called_by"] == ["caller [b.py]"]
+
+
+def test_drop_file_removes_symbols_and_edges(crib):
+    from crib.codeindex import SymbolIndex
+    store = SymbolIndex(crib.paths.project_dir("p"))
+    store.write({"fqname": "a.target", "name": "target", "kind": "function",
+                 "file": "a.py", "line": 1, "mtime": 1, "calls": [],
+                 "called_by": ["gone [b.py]"], "references": ["gone [b.py]"],
+                 "container": [], "name_terms": ["target"], "lang": "python",
+                 "module": "a", "parent": ""})
+    store.write({"fqname": "b.gone", "name": "gone", "kind": "function", "file": "b.py",
+                 "line": 1, "mtime": 1, "calls": ["target [a.py]"], "called_by": [],
+                 "references": [], "container": [], "name_terms": ["gone"],
+                 "lang": "python", "module": "b", "parent": ""})
+    crib._drop_file(store, "b.py")               # b.py deleted
+    assert not store.by_fqname("b.gone")          # its symbols gone
+    tgt = store.by_fqname("a.target")[0]          # edges from b.py stripped
+    assert tgt["called_by"] == [] and tgt["references"] == []
+
+
 def test_forget_removes_an_orphan(crib):
     _seed_symbol(crib, "p", fqname="a.foo")
     run(crib.code_append("a.foo", "note", project="p"))

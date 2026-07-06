@@ -107,6 +107,15 @@ def test_learning_slug_munges_unsafe_and_disambiguates():
         assert s and not s.startswith("-") and not s.endswith("-")
 
 
+# --- mtime survives the TOML render/parse round-trip (the staleness gate) --------
+def test_mtime_round_trips_as_bare_int():
+    e = {"fqname": "m.f", "name": "f", "kind": "function", "line": 3,
+         "mtime": 1730000000123456789, "container": [], "calls": [],
+         "called_by": [], "references": [], "name_terms": ["f"]}
+    got = ci._parse(ci._render(e))
+    assert got["mtime"] == 1730000000123456789 and isinstance(got["mtime"], int)
+
+
 # --- documentSymbol flattening (descend classes into methods) ----------------
 def test_walk_descends_containers():
     tree = [{"name": "C", "kind": 5, "children": [

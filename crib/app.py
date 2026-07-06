@@ -618,10 +618,15 @@ class Crib:
 
     # --- code symbol index (docs/code-symbol-index.md) --------------------
     async def code_index(self, path: str, project: str | None = None,
-                         cwd: Path | None = None) -> dict[str, Any]:
+                         cwd: Path | None = None,
+                         patch_edges: bool = True) -> dict[str, Any]:
         """Extract a source file's symbols + call graph via the LSP and persist them
-        content-addressed under `<project>/symbol_index/`. Live extraction (the warm-
-        session/watcher refresh is the next build); off the event loop in a thread."""
+        content-addressed under `<project>/symbol_index/`. Idempotent per file: drops
+        symbols that vanished from it, records the file's mtime (the staleness gate),
+        and — when `patch_edges` (a standalone/incremental reindex) — patches other
+        files' `called_by` from this file's fresh outbound calls, so a single-file
+        reindex keeps the cross-file call graph consistent. `patch_edges=False` in a
+        full-project sweep (the LSP hands each file its edges directly). Off the loop."""
         from .codeindex import (NoServer, SymbolIndex, describe_file,
                                  describe_symbols, extract_file, find_root,
                                  match_description)
@@ -638,8 +643,17 @@ class Crib:
         root = find_root(p)
         rel = str(p.relative_to(root))
         proj = self.resolve_project(project, cwd)
+        return await asyncio.to_thread(self._index_file_sync, root, rel, proj, patch_edges)
+
+    def _index_file_sync(self, root: Path, rel: str, proj: str,
+                         patch_edges: bool) -> dict[str, Any]:
+        """The blocking core of code_index — extract + describe + persist one file. Sync
+        so the lazy revalidation path (also sync) can reuse it directly; code_index runs
+        it off the event loop via to_thread."""
+        from .codeindex import (NoServer, SymbolIndex, describe_file,
+                                 describe_symbols, extract_file, match_description)
         try:
-            entries = await asyncio.to_thread(extract_file, root, rel)
+            entries = extract_file(root, rel)
         except NoServer as exc:
             return {"project": proj, "root": str(root), "file": rel,
                     "symbols": 0, "skipped": str(exc)}
@@ -649,6 +663,7 @@ class Crib:
         # generation hiccup never loses the structural call graph (facets independent).
         store = SymbolIndex(self.paths.project_dir(proj))
         existing = {e["fqname"]: e for e in store.all()}
+        old_in_file = {fq for fq, e in existing.items() if e.get("file") == rel}
         stale = [e for e in entries
                  if existing.get(e["fqname"], {}).get("content_hash") != e["content_hash"]
                  or not existing.get(e["fqname"], {}).get("description")]
@@ -656,8 +671,7 @@ class Crib:
         descs: dict[str, str] = {}
         if stale:
             try:
-                descs = await asyncio.to_thread(describe_file, self.config.generate,
-                                                root, rel)
+                descs = describe_file(self.config.generate, root, rel)
             except Exception as exc:  # noqa: BLE001 — LLM down → structural-only
                 gen_error = str(exc)
         for sym in entries:
@@ -672,14 +686,19 @@ class Crib:
         missed = [e for e in stale if not e.get("description")]
         if missed:
             try:
-                mop = await asyncio.to_thread(describe_symbols,
-                                              self.config.generate, missed)
+                mop = describe_symbols(self.config.generate, missed)
                 for e in missed:
                     e["description"] = (mop.get(e["name"])
                                         or match_description(e["fqname"], mop))
             except Exception:  # noqa: BLE001 — mop-up is best-effort
                 pass
         store.write_all(entries)
+        store.set_source_root(root)                         # for query-time revalidation
+        # drop symbols that vanished from this file (renamed/removed) — else they orphan
+        for fq in old_in_file - {e["fqname"] for e in entries}:
+            store.delete(fq)
+        if patch_edges:
+            self._patch_called_by(store, entries, rel)
         out: dict[str, Any] = {
             "project": proj, "root": str(root), "file": rel,
             "symbols": len(entries),
@@ -688,6 +707,38 @@ class Crib:
         if gen_error:
             out["descriptions_error"] = gen_error
         return out
+
+    @staticmethod
+    def _patch_called_by(store: Any, new_entries: list[dict[str, Any]],
+                         relpath: str) -> None:
+        """Keep the cross-file call graph consistent after a single-file reindex: every
+        `A→B` in the reindexed file A's fresh outbound `calls` must show as `A` in B's
+        `called_by`. Strip stale edges originating from A (`… [A]`), then re-add the
+        current ones. Cheap (in-memory from A's calls; no extra LSP)."""
+        tag = f"[{relpath}]"
+        entries = store.all()
+        by_key = {(e.get("name", ""), e.get("file", "")): e for e in entries}
+        changed: dict[str, dict] = {}
+        for e in entries:                                   # 1) strip edges from A
+            if e.get("file") == relpath:
+                continue
+            cb = [x for x in (e.get("called_by") or []) if not x.endswith(tag)]
+            if cb != (e.get("called_by") or []):
+                e["called_by"] = cb
+                changed[e["fqname"]] = e
+        for s in new_entries:                               # 2) re-add A's current edges
+            for call in s.get("calls") or []:
+                name, _, rest = call.partition(" [")
+                tgt = by_key.get((name.strip(), rest.rstrip("]")))
+                if tgt is None or tgt.get("file") == relpath:
+                    continue
+                e = changed.get(tgt["fqname"], tgt)
+                edge = f"{s['name']} [{relpath}]"
+                if edge not in (e.get("called_by") or []):
+                    e["called_by"] = sorted(set((e.get("called_by") or []) + [edge]))
+                    changed[e["fqname"]] = e
+        for e in changed.values():
+            store.write(e)
 
     def code_indexed_projects(self) -> list[dict[str, Any]]:
         """Projects that have a symbol_index, with counts — for orienting an agent
@@ -700,6 +751,48 @@ class Crib:
             if si.is_populated():
                 out.append({"project": name, "symbols": len(si.all())})
         return sorted(out, key=lambda x: -x["symbols"])
+
+    def _revalidate(self, proj: str) -> None:
+        """Lazy staleness gate: stat every indexed source file; reindex any whose mtime
+        moved since it was indexed, and drop symbols of deleted files. Keeps queries
+        honest under live editing without a watcher (the watcher just makes it eager).
+        Best-effort — an LSP hiccup leaves the stale entry rather than failing the query.
+        No-op when the source root is unknown (older index / no meta). Sync (called from
+        the sync query path); a reindex blocks only when a file actually changed."""
+        from .codeindex import SymbolIndex
+        store = SymbolIndex(self.paths.project_dir(proj))
+        root = store.source_root()
+        if root is None:
+            return
+        stored: dict[str, int] = {}          # file → its recorded mtime (any symbol's)
+        for e in store.all():
+            stored.setdefault(e.get("file", ""), e.get("mtime") or 0)
+        for rel, mt in stored.items():
+            src = root / rel
+            try:
+                cur = src.stat().st_mtime_ns
+            except OSError:                  # deleted → drop all its symbols + its edges
+                self._drop_file(store, rel)
+                continue
+            if cur != mt:
+                try:
+                    self._index_file_sync(root, rel, proj, patch_edges=True)
+                except Exception:  # noqa: BLE001 — keep the stale entry over a failed query
+                    pass
+
+    @staticmethod
+    def _drop_file(store: Any, relpath: str) -> None:
+        """Remove a deleted file's symbols and strip edges that originated from it."""
+        tag = f"[{relpath}]"
+        for e in store.all():
+            if e.get("file") == relpath:
+                store.delete(e["fqname"])
+                continue
+            cb = [x for x in (e.get("called_by") or []) if not x.endswith(tag)]
+            rf = [x for x in (e.get("references") or []) if not x.endswith(tag)]
+            if cb != (e.get("called_by") or []) or rf != (e.get("references") or []):
+                e["called_by"], e["references"] = cb, rf
+                store.write(e)
 
     def _require_code_index(self, proj: str) -> None:
         """Raise a self-diagnosing error when `proj` has no code index — so a call
@@ -791,7 +884,9 @@ class Crib:
         errors: list[dict[str, str]] = []
         for f in files:
             try:
-                r = await self.code_index(str(f), project=proj)
+                # bulk sweep: the LSP hands each file its cross-file edges directly, so
+                # skip the per-file edge-patch (it's for standalone/incremental reindex)
+                r = await self.code_index(str(f), project=proj, patch_edges=False)
             except Exception as exc:  # noqa: BLE001 — one bad file never aborts the sweep
                 errors.append({"file": str(f), "error": str(exc)})
                 continue
@@ -874,6 +969,7 @@ class Crib:
         """Callers/callees for a symbol from the persisted symbol_index — no live LSP."""
         from .codeindex import SymbolIndex
         proj = self.resolve_project(project, cwd)
+        self._revalidate(proj)               # reindex any edited files before serving
         self._require_code_index(proj)
         return self._attach_learnings(
             proj, SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol))
@@ -886,6 +982,7 @@ class Crib:
         understand its neighbourhood without a dozen follow-up lookups."""
         from .codeindex import SymbolIndex
         proj = self.resolve_project(project, cwd)
+        self._revalidate(proj)
         self._require_code_index(proj)
         entry = self._resolve_symbol(proj, symbol)          # exactly one; raises if ambiguous
         self._attach_learnings(proj, [entry])
@@ -1188,6 +1285,7 @@ class Crib:
         from .codeindex import SymbolIndex
         from .retrieve import BM25, _as_tf, _subtokens, reciprocal_rank_fusion, tokenize
         proj = self.resolve_project(project, cwd)
+        self._revalidate(proj)
         self._require_code_index(proj)
         entries = [e for e in SymbolIndex(self.paths.project_dir(proj)).all()
                    if e.get("description") or e.get("name_terms")]
@@ -1237,6 +1335,7 @@ class Crib:
         unresolved edges `external`. Rendered pstree-style by the CLI. No LSP/LLM."""
         from .codeindex import SymbolIndex
         proj = self.resolve_project(project, cwd)
+        self._revalidate(proj)
         self._require_code_index(proj)
         entries = SymbolIndex(self.paths.project_dir(proj)).all()
         by_fq = {e["fqname"]: e for e in entries}
