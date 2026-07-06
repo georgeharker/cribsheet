@@ -13,6 +13,11 @@ from typing import Any
 from .app import Crib
 from .session import resolve_session_project, session_state
 
+try:  # Context annotates the elicitation param; needed at runtime for injection AND
+    from fastmcp import Context  # for the forward-ref eval of `ctx: Context`.
+except Exception:  # pragma: no cover — package stays importable without fastmcp
+    Context = Any  # type: ignore[assignment,misc]
+
 
 def _cwd(project_path: str | None) -> Path | None:
     """The CLI (an MCP client) passes its own working directory so the daemon
@@ -63,6 +68,27 @@ def _write_project(crib: Crib, project: str | None, project_path: str | None) ->
         "fact is ABOUT, which may differ from your current one (cross-cutting tooling "
         "knowledge often belongs in `default` or its own project) — or project_path="
         "<a path in that repo>. Writes don't inherit the sticky current project.")
+
+
+async def _write_project_elicit(crib: Crib, project: str | None,
+                                project_path: str | None, ctx: Any) -> str:
+    """Like `_write_project`, but when NEITHER project nor project_path is given, ASK
+    the client for the project (MCP elicitation) instead of hard-erroring — the human
+    decides the fact's home. Degrades gracefully: a client that declines/cancels or
+    doesn't support elicitation falls through to the `_write_project` error."""
+    if project or project_path:
+        return _write_project(crib, project, project_path)
+    try:
+        result = await ctx.elicit(
+            "Which crib project should this fact be stored in? Name the project it's "
+            "ABOUT — often `default` for cross-cutting tooling/convention knowledge, "
+            "not the repo you're currently working in.", response_type=str)
+        chosen = getattr(result, "data", None)          # AcceptedElicitation.data
+        if isinstance(chosen, str) and chosen.strip():
+            return chosen.strip()
+    except Exception:  # noqa: BLE001 — no elicitation support → fall back to the error
+        pass
+    return _write_project(crib, None, None)             # raises the explicit-target error
 
 
 def _switch_if_created(result: dict) -> dict:
@@ -192,7 +218,8 @@ def build_server(crib: Crib | None = None):
     async def store(content: str, title: str | None = None,
                     project: str | None = None,
                     tags: list[str] | None = None,
-                    project_path: str | None = None) -> dict[str, Any]:
+                    project_path: str | None = None,
+                    ctx: Context | None = None) -> dict[str, Any]:
         """Persist a durable fact to memory — a decision, preference,
         convention, gotcha, or hard-won detail worth recalling in a future
         session. Assigns an id, writes markdown, indexes it. If a related
@@ -203,15 +230,17 @@ def build_server(crib: Crib | None = None):
         which may NOT be the repo you're working in, so a write won't inherit your
         current project: pass `project=` (the subject's project — often `default` or a
         tool's own project for cross-cutting knowledge like a CLI/editor/convention),
-        or `project_path=` a path in that repo. Then tell the user which project it
-        landed in."""
+        or `project_path=` a path in that repo. If you omit both, you'll be ASKED which
+        project (elicitation). Then tell the user which project it landed in."""
         # A write is a ONE-OFF at an explicitly-named target — it must NOT flip the
         # session's current project (no _switch_if_created): storing a cross-cutting
-        # fact shouldn't hijack the repo you're working in.
-        res = await crib.store_note(content, title,
-                                    _write_project(crib, project, project_path), tags)
+        # fact shouldn't hijack the repo you're working in. When the target is omitted,
+        # elicit it from the client rather than erroring outright.
+        proj = await _write_project_elicit(crib, project, project_path, ctx)
+        res = await crib.store_note(content, title, proj, tags)
         if isinstance(res, dict):
-            res["project_source"] = "explicit" if project else "project_path"
+            res["project_source"] = ("explicit" if project else
+                                     "project_path" if project_path else "elicited")
         return res
 
     @write_tool
