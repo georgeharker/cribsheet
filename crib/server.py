@@ -75,6 +75,7 @@ def _switch_if_created(result: dict) -> dict:
 
 def build_server(crib: Crib | None = None):
     from fastmcp import FastMCP  # lazy
+    from fastmcp.tools import FunctionTool
 
     crib = crib or Crib.open()
     mcp = FastMCP(
@@ -129,6 +130,17 @@ def build_server(crib: Crib | None = None):
         ),
     )
 
+    def write_tool(fn):
+        """Register a notes-WRITE tool with a wire-schema constraint that `project`
+        OR `project_path` must be supplied (a top-level JSON-Schema `anyOf` on
+        `required`), so a validating client sees the requirement up front — not just
+        the runtime `_write_project` guard. `add_tool` returns the FunctionTool, whose
+        `.parameters` dict is the served input schema."""
+        tool = mcp.add_tool(FunctionTool.from_function(fn))
+        tool.parameters.setdefault(
+            "anyOf", [{"required": ["project"]}, {"required": ["project_path"]}])
+        return fn
+
     @mcp.tool()
     def lookup(query: str, project: str | None = None, k: int = 8,
                tags: list[str] | None = None,
@@ -176,7 +188,7 @@ def build_server(crib: Crib | None = None):
         now (the watcher would catch it shortly regardless)."""
         return crib.locate(relpath, _project(crib, project, project_path))
 
-    @mcp.tool()
+    @write_tool
     async def store(content: str, title: str | None = None,
                     project: str | None = None,
                     tags: list[str] | None = None,
@@ -202,7 +214,7 @@ def build_server(crib: Crib | None = None):
             res["project_source"] = "explicit" if project else "project_path"
         return res
 
-    @mcp.tool()
+    @write_tool
     async def append(relpath: str, content: str, heading: str | None = None,
                      project: str | None = None,
                      project_path: str | None = None) -> dict[str, Any]:
@@ -212,7 +224,7 @@ def build_server(crib: Crib | None = None):
         return await crib.append_note(relpath, content, heading,
                                       _write_project(crib, project, project_path))
 
-    @mcp.tool()
+    @write_tool
     async def edit(relpath: str, new_content: str,
                    project: str | None = None,
                    project_path: str | None = None) -> dict[str, Any]:
@@ -222,7 +234,7 @@ def build_server(crib: Crib | None = None):
         return await crib.edit_note(relpath, new_content,
                                     _write_project(crib, project, project_path))
 
-    @mcp.tool()
+    @write_tool
     async def forget(relpath: str, project: str | None = None,
                      project_path: str | None = None) -> dict[str, Any]:
         """Delete a note when its information is obsolete or wrong. Removed from
@@ -482,7 +494,7 @@ def build_server(crib: Crib | None = None):
         return _switch_if_created(
             await crib.import_claude_memory(project, cwd=_cwd(project_path)))
 
-    @mcp.tool()
+    @write_tool
     async def move(relpath: str, to_project: str | None = None,
                    to_relpath: str | None = None, project: str | None = None,
                    project_path: str | None = None) -> dict[str, Any]:
