@@ -27,6 +27,25 @@ def test_decode_path_to_project_relpath(tmp_path):
     assert decode(projects, str(other)) is None
 
 
+def test_code_watcher_decode_filters(tmp_path):
+    from crib.watch import CodeWatcher
+    root = tmp_path / "repo"
+    (root / "src").mkdir(parents=True)
+    cw = CodeWatcher(lambda *a: None, asyncio.new_event_loop())  # type: ignore[arg-type]
+    cw.watch_root("proj", root)
+    # a code file under the watched root → (project, root, relpath, deleted)
+    f = root / "src" / "a.py"; f.write_text("x=1")
+    assert cw._decode(str(f), False) == ("proj", str(root.resolve()), "src/a.py", False)
+    # a delete still decodes (so its symbols get dropped)
+    assert cw._decode(str(f), True) == ("proj", str(root.resolve()), "src/a.py", True)
+    # non-code extension → ignored
+    assert cw._decode(str(root / "README.md"), False) is None
+    # junk dir → ignored
+    assert cw._decode(str(root / "__pycache__" / "a.py"), False) is None
+    # outside any watched root → ignored
+    assert cw._decode(str(tmp_path / "elsewhere" / "b.py"), False) is None
+
+
 def test_watcher_indexes_external_edit(tmp_path, monkeypatch):
     monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "config"))
     monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "data"))

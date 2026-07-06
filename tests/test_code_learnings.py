@@ -152,9 +152,9 @@ def test_dossier_annotates_neighbours_with_their_descriptions(crib):
 def test_code_tools_self_diagnose_unindexed_project(crib):
     # an unindexed project → a helpful error naming the fix, not a bare [] the agent
     # would misread as "this codebase isn't indexed"
-    with pytest.raises(ValueError, match="no code index"):
+    with pytest.raises(ValueError, match="isn't code-indexed yet"):
         crib.code_xref("anything", project="ghost")
-    with pytest.raises(ValueError, match="no code index"):
+    with pytest.raises(ValueError, match="isn't code-indexed yet"):
         crib.code_graph("anything", project="ghost")
     # once populated, the guard passes; an unknown symbol just returns empty
     _seed_symbol(crib, "ghost", fqname="pkg.foo")

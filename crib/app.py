@@ -29,7 +29,7 @@ from .paths import Paths
 from .store import Hit, InMemoryStore, Store
 from .util import derived_ulid
 from .versions import VersionRing
-from .watch import Watcher
+from .watch import CodeWatcher, Watcher
 
 
 def _slug(title: str) -> str:
@@ -98,6 +98,7 @@ class Crib:
         self.memory_bindings = MemoryBindings(paths.data_dir / "memory-bindings.json")
         self._reranker: Any = None      # lazy cross-encoder, warm for the daemon
         self._watcher: Watcher | None = None
+        self._code_watcher: CodeWatcher | None = None
         self._mirror: Any = None        # MemoryMirror, started by the daemon
         self._on_close: Callable[[], None] | None = None
 
@@ -121,9 +122,41 @@ class Crib:
             return
         self._watcher = Watcher(self.paths.projects_dir, self._on_fs_change, loop)
         self._watcher.start()
+        # Code watcher — reindexes source on edit (notes-watcher reloads notes,
+        # code-watcher reindexes code). Seed it with every code-indexed project's root.
+        self._code_watcher = CodeWatcher(self._on_code_change, loop)
+        from .codeindex import SymbolIndex
+        for p in self.projects():
+            name = p["project"] if isinstance(p, dict) else p
+            root = SymbolIndex(self.paths.project_dir(name)).source_root()
+            if root is not None:
+                self._code_watcher.watch_root(name, root)
+        self._code_watcher.start()
 
     async def _on_fs_change(self, project: str, relpath: str) -> None:
         await self.index.index_file(project, self.notes_dir(project), relpath)
+
+    async def _on_code_change(self, project: str, root: str, relpath: str,
+                              deleted: bool) -> None:
+        """Reindex (or drop) a source file the watcher saw change — eager counterpart
+        to the lazy query-time revalidation. Off the loop; best-effort (a transient
+        syntax error mid-edit just leaves the prior entry until the next save)."""
+        from .codeindex import SymbolIndex
+        try:
+            if deleted:
+                await asyncio.to_thread(
+                    self._drop_file, SymbolIndex(self.paths.project_dir(project)), relpath)
+            else:
+                await asyncio.to_thread(
+                    self._index_file_sync, Path(root), relpath, project, True)
+        except Exception:  # noqa: BLE001 — never let a watcher event crash the loop
+            pass
+
+    def _register_code_root(self, project: str, root: Any) -> None:
+        """Watch a repo's source root as soon as it's indexed (so a mid-session
+        onboard starts live-updating immediately)."""
+        if self._code_watcher is not None:
+            self._code_watcher.watch_root(project, root)
 
     async def start_memory_mirror(self, loop: asyncio.AbstractEventLoop) -> None:
         """Catch up + live-mirror bound Claude harness memory dirs (DESIGN §13).
@@ -143,6 +176,9 @@ class Crib:
         if self._watcher is not None:
             self._watcher.stop()
             self._watcher = None
+        if self._code_watcher is not None:
+            self._code_watcher.stop()
+            self._code_watcher = None
         if self._mirror is not None:
             self._mirror.stop()
             self._mirror = None
@@ -694,6 +730,7 @@ class Crib:
                 pass
         store.write_all(entries)
         store.set_source_root(root)                         # for query-time revalidation
+        self._register_code_root(proj, root)                # live-watch this repo's source
         # drop symbols that vanished from this file (renamed/removed) — else they orphan
         for fq in old_in_file - {e["fqname"] for e in entries}:
             store.delete(fq)
