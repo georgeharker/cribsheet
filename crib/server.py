@@ -243,7 +243,7 @@ def build_server(crib: Crib | None = None):
         says a project isn't indexed yet. `path` MUST be ABSOLUTE — a relative path
         resolves against the daemon's cwd (not yours) and fails; also pass
         `cwd=<your working dir>` so the project resolves via .crib."""
-        return await crib.code_index(path, _project(crib, project, cwd))
+        return await crib.code_index(path, _project(crib, project, cwd), cwd=_cwd(cwd))
 
     @mcp.tool()
     async def project_setup(project: str | None = None,
@@ -255,7 +255,7 @@ def build_server(crib: Crib | None = None):
         references + descriptions). Pass `cwd=<the repo dir>`. Idempotent. Then
         code_lookup/code_dossier work. Code-only variant: project_index."""
         return _switch_if_created(
-            await crib.project_setup(_project(crib, project, cwd)))
+            await crib.project_setup(_project(crib, project, cwd), cwd=_cwd(cwd)))
 
     @mcp.tool()
     async def project_index(project: str | None = None,
@@ -265,7 +265,7 @@ def build_server(crib: Crib | None = None):
         or to refresh after edits (cheap: unchanged files are skipped). Pass
         `cwd=<the repo dir>`; a `.crib` is auto-created if missing."""
         return _switch_if_created(
-            await crib.project_index(_project(crib, project, cwd)))
+            await crib.project_index(_project(crib, project, cwd), cwd=_cwd(cwd)))
 
     @mcp.tool()
     def project_status(project: str | None = None,
@@ -273,7 +273,7 @@ def build_server(crib: Crib | None = None):
         """Is this repo code-indexed? Returns symbol/file counts, a kind breakdown, and
         the `.crib` source paths — to orient before project_setup / a code_lookup. Pass
         `cwd=<the repo dir>`."""
-        return crib.project_status(_project(crib, project, cwd))
+        return crib.project_status(_project(crib, project, cwd), cwd=_cwd(cwd))
 
     @mcp.tool()
     def project_forget(project: str | None = None, with_learnings: bool = False,
@@ -282,7 +282,7 @@ def build_server(crib: Crib | None = None):
         and `.crib` by default (learnings are durable — pass with_learnings=True to drop
         them too). Recoverable by re-running project_index. Pass `cwd=<the repo dir>`."""
         return crib.project_forget(_project(crib, project, cwd),
-                                   with_learnings=with_learnings)
+                                   with_learnings=with_learnings, cwd=_cwd(cwd))
 
     @mcp.tool()
     async def code_xref(symbol: str, project: str | None = None,
