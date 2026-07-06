@@ -30,6 +30,23 @@ def _project(crib: Crib, project: str | None, project_path: str | None) -> str:
         default=crib.config.default_project)
 
 
+def _source_project(crib: Crib, project: str | None,
+                    project_path: str | None) -> str | None:
+    """Project selector for REPO-SCOPED ops (project_setup/index/status/forget).
+
+    These act on a specific repo, so an explicit `project_path` must decide WHICH
+    project via that repo's `.crib` — never the sticky session project (a call with
+    project_path=/other/repo but no project once indexed the OTHER repo INTO the
+    current one). Precedence: explicit `project` wins; else if a `project_path` is
+    given, return None so `crib.project_*` reads `link.project` from that repo's
+    `.crib`; else fall back to the session's current project."""
+    if project:
+        return project
+    if project_path:
+        return None                     # let the repo's .crib name the project
+    return _project(crib, None, None)   # neither given → sticky session project
+
+
 def _switch_if_created(result: dict) -> dict:
     """Creating a project switches the session into it — referencing an existing
     one (a one-off `project` arg) does not (DESIGN §15)."""
@@ -260,7 +277,8 @@ def build_server(crib: Crib | None = None):
         references + descriptions). Pass `project_path=<the repo dir>`. Idempotent. Then
         code_lookup/code_dossier work. Code-only variant: project_index."""
         return _switch_if_created(
-            await crib.project_setup(_project(crib, project, project_path), cwd=_cwd(project_path)))
+            await crib.project_setup(_source_project(crib, project, project_path),
+                                     cwd=_cwd(project_path)))
 
     @mcp.tool()
     async def project_index(project: str | None = None,
@@ -270,7 +288,8 @@ def build_server(crib: Crib | None = None):
         or to refresh after edits (cheap: unchanged files are skipped). Pass
         `project_path=<the repo dir>`; a `.crib` is auto-created if missing."""
         return _switch_if_created(
-            await crib.project_index(_project(crib, project, project_path), cwd=_cwd(project_path)))
+            await crib.project_index(_source_project(crib, project, project_path),
+                                     cwd=_cwd(project_path)))
 
     @mcp.tool()
     def project_status(project: str | None = None,
@@ -278,7 +297,8 @@ def build_server(crib: Crib | None = None):
         """Is this repo code-indexed? Returns symbol/file counts, a kind breakdown, and
         the `.crib` source paths — to orient before project_setup / a code_lookup. Pass
         `project_path=<the repo dir>`."""
-        return crib.project_status(_project(crib, project, project_path), cwd=_cwd(project_path))
+        return crib.project_status(_source_project(crib, project, project_path),
+                                   cwd=_cwd(project_path))
 
     @mcp.tool()
     def project_forget(project: str | None = None, with_learnings: bool = False,
@@ -286,7 +306,7 @@ def build_server(crib: Crib | None = None):
         """Clear a project's CODE INDEX (symbol_index). Keeps attached learnings, notes
         and `.crib` by default (learnings are durable — pass with_learnings=True to drop
         them too). Recoverable by re-running project_index. Pass `project_path=<the repo dir>`."""
-        return crib.project_forget(_project(crib, project, project_path),
+        return crib.project_forget(_source_project(crib, project, project_path),
                                    with_learnings=with_learnings, cwd=_cwd(project_path))
 
     @mcp.tool()
