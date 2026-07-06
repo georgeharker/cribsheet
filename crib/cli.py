@@ -642,7 +642,7 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
         pv = getattr(args, "project_verb", None) or "status"
         tool = {"setup": "project_setup", "index": "project_index",
                 "status": "project_status", "forget": "project_forget"}[pv]
-        call = {"project": args.project, "cwd": cwd}
+        call = {"project": args.project, "project_path": cwd}
         if pv == "forget":
             call["with_learnings"] = getattr(args, "with_learnings", False)
         return tool, call
@@ -652,7 +652,7 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
         tool = "apropos" if (v in ("apropos", "a") or getattr(args, "render", False)) \
             else "lookup"
         call = {"query": args.query, "project": args.project,
-                "k": args.k, "tags": args.tags, "cwd": cwd}
+                "k": args.k, "tags": args.tags, "project_path": cwd}
         if tool == "lookup" and getattr(args, "keywords", None):
             call["keyword_labels"] = _split_labels(args.keywords)
         if tool == "lookup" and getattr(args, "keyword_weight", None) is not None:
@@ -663,45 +663,45 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
             call["summary_weight"] = args.summary_weight
         return tool, call
     if v == "read":
-        return "read", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
+        return "read", {"relpath": args.relpath, "project": args.project, "project_path": cwd}
     if v == "locate":
-        return "locate", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
+        return "locate", {"relpath": args.relpath, "project": args.project, "project_path": cwd}
     if v == "store":
         return "store", {"content": _read_content(args.content), "title": args.title,
-                         "project": args.project, "tags": args.tags, "cwd": cwd}
+                         "project": args.project, "tags": args.tags, "project_path": cwd}
     if v == "append":
         return "append", {"relpath": args.relpath,
                           "content": _read_content(args.content),
-                          "heading": args.heading, "project": args.project, "cwd": cwd}
+                          "heading": args.heading, "project": args.project, "project_path": cwd}
     if v == "edit":
         return "edit", {"relpath": args.relpath,
                         "new_content": _read_content(args.content),
-                        "project": args.project, "cwd": cwd}
+                        "project": args.project, "project_path": cwd}
     if v == "forget":
-        return "forget", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
+        return "forget", {"relpath": args.relpath, "project": args.project, "project_path": cwd}
     if v == "move":
         return "move", {"relpath": args.relpath, "to_project": args.to_project,
                         "to_relpath": args.to_relpath, "project": args.project,
-                        "cwd": cwd}
+                        "project_path": cwd}
     if v == "reindex":
-        return "reindex", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
+        return "reindex", {"relpath": args.relpath, "project": args.project, "project_path": cwd}
     if v == "reconcile":
         return "reconcile", {}
     if v == "versions":
-        return "versions", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
+        return "versions", {"relpath": args.relpath, "project": args.project, "project_path": cwd}
     if v == "restore":
         return "restore", {"relpath": args.relpath, "version": args.version,
-                           "project": args.project, "cwd": cwd}
+                           "project": args.project, "project_path": cwd}
     if v == "import":
-        return "import", {"project": args.project, "cwd": cwd}
+        return "import", {"project": args.project, "project_path": cwd}
     if v == "import-memory":
-        return "import_memory", {"project": args.project, "cwd": cwd}
+        return "import_memory", {"project": args.project, "project_path": cwd}
     if v == "distill":
-        return "distill", {"relpath": args.relpath, "project": args.project, "cwd": cwd}
+        return "distill", {"relpath": args.relpath, "project": args.project, "project_path": cwd}
     if v in ("elaborate", "summarize"):
         return v, {"label": args.label, "relpath": args.relpath,
                    "project": args.project, "overwrite": args.overwrite,
-                   "cwd": cwd}
+                   "project_path": cwd}
     if v == "snapshot":
         return "snapshot", {"message": args.message}
     if v == "history":
@@ -710,38 +710,38 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
         return "projects", {}
     if v == "code-lookup":
         return "code_lookup", {"query": args.query, "project": args.project,
-                               "k": args.k, "cwd": cwd}
+                               "k": args.k, "project_path": cwd}
     if v == "code-xref":
-        return "code_xref", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
+        return "code_xref", {"symbol": args.symbol, "project": args.project, "project_path": cwd}
     if v == "code-dossier":
-        return "code_dossier", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
+        return "code_dossier", {"symbol": args.symbol, "project": args.project, "project_path": cwd}
     if v == "code-graph":
         return "code_graph", {"symbol": args.symbol,
                               "direction": _graph_direction(args),
-                              "depth": args.depth, "project": args.project, "cwd": cwd}
+                              "depth": args.depth, "project": args.project, "project_path": cwd}
     if v == "code-index":
         # resolve the path client-side (the daemon's cwd differs from the caller's)
         return "code_index", {"path": str(Path(args.path).expanduser().resolve()),
-                              "project": args.project, "cwd": cwd}
+                              "project": args.project, "project_path": cwd}
     if v == "code-append":
         return "code_append", {"symbol": args.symbol, "text": _read_content(args.text),
-                               "project": args.project, "cwd": cwd}
+                               "project": args.project, "project_path": cwd}
     if v == "code-edit":
         return "code_edit", {"symbol": args.symbol,
                              "new_content": _read_content(args.text),
-                             "project": args.project, "cwd": cwd}
+                             "project": args.project, "project_path": cwd}
     if v == "code-forget":
-        return "code_forget", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
+        return "code_forget", {"symbol": args.symbol, "project": args.project, "project_path": cwd}
     if v == "code-read":
-        return "code_read", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
+        return "code_read", {"symbol": args.symbol, "project": args.project, "project_path": cwd}
     if v == "code-reaffirm":
-        return "code_reaffirm", {"symbol": args.symbol, "project": args.project, "cwd": cwd}
+        return "code_reaffirm", {"symbol": args.symbol, "project": args.project, "project_path": cwd}
     if v == "code-learnings":
         return "code_learnings", {"project": args.project, "orphans_only": args.orphans,
-                                  "cwd": cwd}
+                                  "project_path": cwd}
     if v == "code-rehome":
         return "code_rehome", {"old_fqn": args.old, "new_fqn": args.new,
-                               "project": args.project, "cwd": cwd}
+                               "project": args.project, "project_path": cwd}
     raise SystemExit(f"crib: unknown verb {v!r}")
 
 

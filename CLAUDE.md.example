@@ -19,6 +19,12 @@
     - *repo not indexed?* → that's the expected first step, not a dead end: **index it**
       — `project_index` (indexes the source in one call), then look up. Do NOT read
       files or grep instead; there's no shortcut, the utility comes from the index.
+    - *which project?* → code tools act on ONE **current project**. Set it once for the
+      codebase you're in (`use_project <name>`, or it's inferred from `project_path` on
+      your first code call); reads then need no project args. To look up a **different**
+      project (a related codebase you're referencing), you MUST name it: `project=<name>`
+      or `project_path=<a path in that repo>`. (`project_path` ≠ your shell cwd — it just
+      says which repo you mean.)
   E.g. not `grep -rn "def boolean"` then reading the file — `code_lookup "boolean path
   union/difference"` → `code_dossier` the top hit. (When you finally *get* a tricky
   symbol, `code_append <symbol> "…"` pins that understanding for next time.)

@@ -1001,22 +1001,25 @@ class Crib:
 
     def _require_code_index(self, proj: str) -> None:
         """Raise a self-diagnosing error when `proj` has no code index — so a call
-        that silently resolved to the wrong/`default` project tells the agent how to
-        fix it (which projects ARE indexed; pass project=/cwd= or use_project) rather
-        than returning a bare `[]` it will misread as 'this codebase isn't indexed'."""
+        that resolved to the wrong/unset project tells the agent how to fix it (set the
+        project, or name a different one; which projects ARE indexed) rather than
+        returning a bare `[]` it misreads as 'this codebase isn't indexed'."""
         from .codeindex import SymbolIndex
         if SymbolIndex(self.paths.project_dir(proj)).is_populated():
             return
         avail = self.code_indexed_projects()
-        others = (" (a DIFFERENT already-indexed project — pass project=/cwd= only if "
-                  "you meant to query it instead: "
-                  + ", ".join(f"{p['project']}" for p in avail) + ")") if avail else ""
+        if avail:
+            names = ", ".join(f"{p['project']}" for p in avail)
+            hint = (f" If you meant a DIFFERENT, already-indexed project ({names}), name "
+                    f"it: pass project=<name> or project_path=<a path in that repo> (or "
+                    f"use_project <name> to switch your current project).")
+        else:
+            hint = ""
         raise ValueError(
-            f"project {proj!r} isn't code-indexed yet. INDEX IT NOW, then retry this "
-            f"call: run project_index (cwd=<this repo dir>) — it indexes the repo's "
-            f"source so lookup/dossier/xref work. This is the expected first step for a "
-            f"new repo; do NOT fall back to grep or reading files instead — index first."
-            f"{others}")
+            f"project {proj!r} isn't code-indexed yet. If this is the repo you're working "
+            f"in, INDEX IT NOW then retry: run project_index (project_path=<this repo dir>) "
+            f"— it indexes the source so lookup/dossier/xref work; do NOT grep or read "
+            f"files instead.{hint}")
 
     # ── Whole-project lifecycle: setup / index / forget / status ──────────────
     # Shared engine behind `crib project <verb>` (superset) and the code/notes
@@ -1542,7 +1545,10 @@ class Crib:
         fused = reciprocal_rank_fusion(rankings, weights=weights)
         keys = ("fqname", "name", "kind", "file", "line", "signature", "description",
                 "parent", "calls", "called_by", "references", "content_hash")
-        hits = [{**{key: by_id[fid].get(key) for key in keys}, "rank": i + 1}
+        # echo the resolved project on each hit — cheap orientation so the agent
+        # always sees which project answered (esp. useful across related codebases)
+        hits = [{**{key: by_id[fid].get(key) for key in keys},
+                 "project": proj, "rank": i + 1}
                 for i, fid in enumerate(fused[:k])]
         return self._attach_learnings(proj, hits)
 

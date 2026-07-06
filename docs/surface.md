@@ -2,8 +2,10 @@
 
 Every capability, its CLI form, its MCP tool, and a one-line description. Grouped by
 facet. Noun-verb is canonical on the CLI (`crib code lookup`); the hyphenated form
-(`crib code-lookup`) still parses. `-p/--project` and (MCP) `cwd`/`project` select the
-project everywhere; `--json` before a CLI verb gives machine output.
+(`crib code-lookup`) still parses. `-p/--project` (CLI) and `project`/`project_path`
+(MCP) select the project — code tools act on ONE *current* project (set via
+`use_project` or inferred from `project_path` on first use); name a different one with
+`project=`/`project_path=`. `--json` before a CLI verb gives machine output.
 
 ## Memory — notes
 
