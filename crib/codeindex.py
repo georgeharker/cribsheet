@@ -108,19 +108,53 @@ def resolve_command(spec: dict) -> list[str] | None:
     return [resolved, *args] if resolved else None
 
 
-# Interpreter basename → languageId, for shebang routing of extension-less scripts.
-# Version suffixes are stripped first (python3.11 → python).
-_INTERP_LANG = {
-    "zsh": "zsh", "bash": "bash", "sh": "sh", "ksh": "ksh",
-    "python": "python", "node": "javascript", "nodejs": "javascript",
-    "ruby": "ruby", "perl": "perl", "lua": "lua",
+# Grammar map — how a file's language is inferred BEYOND its extension, so
+# extensionless sources (shell autoload functions, dotfiles) get indexed like any
+# other. Configurable via ~/.config/crib/grammar.json (merged over these defaults,
+# user keys win — same pattern as lsp.json). `extensionToLanguage` on each LSP spec
+# stays the primary, fast path; these rules cover files the extension can't.
+DEFAULT_GRAMMAR: dict[str, dict[str, str]] = {
+    # `#!` interpreter basename (version suffix stripped, `env` unwrapped) → language
+    "shebangs": {
+        "zsh": "zsh", "bash": "bash", "sh": "sh", "dash": "sh",
+        "ksh": "ksh", "mksh": "ksh", "python": "python", "node": "javascript",
+        "nodejs": "javascript", "ruby": "ruby", "perl": "perl", "lua": "lua",
+    },
+    # exact bare filename → language (shells key rc files by name, no extension)
+    "filenames": {
+        ".zshrc": "zsh", ".zshenv": "zsh", ".zprofile": "zsh", ".zlogin": "zsh",
+        ".zlogout": "zsh", ".bashrc": "bash", ".bash_profile": "bash",
+        ".bash_login": "bash", ".profile": "sh",
+    },
+    # first-line tag (letters directly after `#`, NO space) → language. zsh
+    # autoload/completion files begin `#compdef`/`#autoload` instead of a shebang;
+    # matches compinit + shuck (prose `# compdef` with a space is NOT swept in).
+    "firstLineMarkers": {"compdef": "zsh", "autoload": "zsh"},
 }
 
 
-def _shebang_lang(abspath: Path) -> str | None:
-    """languageId from a `#!` line, for a file whose extension maps to no server
-    (`#!/usr/bin/env zsh` → zsh, `#!/usr/bin/python3` → python). Handles `env` and a
-    version suffix; None if there's no shebang or the interpreter isn't known."""
+def load_grammar() -> dict[str, dict[str, str]]:
+    """Merged grammar map: `~/.config/crib/grammar.json` (user) ⊕ DEFAULT_GRAMMAR.
+    Per-category dict merge — a user category overlays the default (user keys win),
+    other categories keep their defaults."""
+    merged = {k: dict(v) for k, v in DEFAULT_GRAMMAR.items()}
+    f = _config_dir() / "grammar.json"
+    if f.exists():
+        try:
+            user = json.loads(f.read_text())
+            if isinstance(user, dict):
+                for cat, rules in user.items():
+                    if isinstance(rules, dict):
+                        merged.setdefault(cat, {}).update(rules)
+        except (ValueError, OSError):
+            pass
+    return merged
+
+
+def _shebang_lang(abspath: Path, grammar: dict | None = None) -> str | None:
+    """languageId from a `#!` line (`#!/usr/bin/env zsh` → zsh). Handles `env` and a
+    version suffix; None without a shebang or for an unknown interpreter."""
+    g = (grammar or load_grammar()).get("shebangs", {})
     try:
         with abspath.open("rb") as fh:
             first = fh.readline(256).decode("utf-8", "replace")
@@ -132,10 +166,34 @@ def _shebang_lang(abspath: Path) -> str | None:
     if not toks:
         return None
     exe = Path(toks[0]).name
-    if exe == "env" and len(toks) > 1:          # `#!/usr/bin/env python3`
-        exe = Path(toks[1]).name
+    if exe == "env":                            # `#!/usr/bin/env [-S] [VAR=v] zsh -f`
+        rest = [t for t in toks[1:] if not t.startswith("-") and "=" not in t]
+        if not rest:                            # only flags/assignments → no interpreter
+            return None
+        exe = Path(rest[0]).name
     exe = re.sub(r"[0-9.]+$", "", exe)          # python3.11 → python
-    return _INTERP_LANG.get(exe)
+    return g.get(exe)
+
+
+def content_lang(abspath: Path, grammar: dict | None = None) -> str | None:
+    """Language for an extensionless/unknown-suffix file from (in order) its exact
+    NAME, its `#!` shebang, or a first-line `#compdef`/`#autoload` marker. None if
+    nothing matches. This is what lets discovery + routing reach files the
+    extension map can't."""
+    grammar = grammar if grammar is not None else load_grammar()
+    if (lang := grammar.get("filenames", {}).get(abspath.name)):
+        return lang
+    if (lang := _shebang_lang(abspath, grammar)):
+        return lang
+    try:
+        with abspath.open("rb") as fh:
+            first = fh.readline(256).decode("utf-8", "replace")
+    except OSError:
+        return None
+    m = re.match(r"#([A-Za-z_]+)", first)        # tag directly after # (no space)
+    if m:
+        return grammar.get("firstLineMarkers", {}).get(m.group(1))
+    return None
 
 
 def server_for(relpath: str, specs: dict | None = None,
@@ -160,11 +218,12 @@ def server_for(relpath: str, specs: dict | None = None,
         argv = resolve_command(spec)
         if argv:
             return label, argv, lang, spec
-    # shebang fallback — only when the extension is claimed by no spec at all
+    # content fallback (shebang / bare name / #compdef|#autoload marker) — only
+    # when the extension is claimed by no spec at all (extensionless scripts, etc.)
     ext_known = any(ext in (sp.get("extensionToLanguage") or {})
                     for sp in specs.values() if isinstance(sp, dict))
     if abspath is not None and not ext_known:
-        lang = _shebang_lang(abspath)
+        lang = content_lang(abspath)
         if lang:
             for label, spec in specs.items():
                 if not isinstance(spec, dict):
