@@ -17,6 +17,13 @@ from typing import Any, Awaitable, Callable
 _IGNORE = ["*~", ".*.swp", "*.tmp", "4913", ".#*", "*.orig"]
 _IGNORE_DIRS = {".git", ".versions"}
 DEBOUNCE_SEC = 0.2
+# Code edits arrive in bursts (a formatter rewrites a tree, `git checkout` touches
+# hundreds of files), and each reindex is a live LSP call — so the code watcher
+# COALESCES per project over a slightly longer window, then hands the whole changed
+# set to one dispatch. A batch bigger than the fallback threshold isn't reindexed
+# file-by-file at all: it's collapsed to a single project revalidation sweep.
+CODE_DEBOUNCE_SEC = 0.5
+CODE_BATCH_FALLBACK = 50
 
 
 def _ignored(path: Path) -> bool:
@@ -154,12 +161,16 @@ class CodeWatcher(_FSWatcher):
     as projects get indexed (`watch_root`), so a repo onboarded mid-session is watched
     at once."""
 
-    def __init__(self, on_change: Callable[[str, str, str, bool], Awaitable[None]],
+    def __init__(self, on_change: Callable[[str, dict[str, tuple[str, bool]]],
+                                           Awaitable[None]],
                  loop: asyncio.AbstractEventLoop) -> None:
         super().__init__(loop)
         self._on_change = on_change
         self._roots: dict[str, str] = {}          # abs root → project
         self._exts: set[str] | None = None
+        # per-project coalescing: {project: {relpath: (root, deleted)}} + one timer
+        self._batch: dict[str, dict[str, tuple[str, bool]]] = {}
+        self._batch_timers: dict[str, asyncio.TimerHandle] = {}
 
     def _code_exts(self) -> set[str]:
         if self._exts is None:
@@ -175,6 +186,11 @@ class CodeWatcher(_FSWatcher):
         self._roots[key] = project
         if new and self._observer is not None:
             self._schedule_dir(key)
+
+    def watches(self, project: str) -> bool:
+        """Is this project's source root being watched (so its index refreshes
+        eagerly on save, and a per-query source scan is redundant)?"""
+        return project in self._roots.values()
 
     def _watch_dirs(self) -> list[str]:
         return list(self._roots)
@@ -196,6 +212,28 @@ class CodeWatcher(_FSWatcher):
                 best = (proj, key, str(rel), deleted)
         return best
 
-    async def _dispatch(self, project: str, root: str, relpath: str,
-                        deleted: bool) -> None:
-        await self._on_change(project, root, relpath, deleted)
+    # Coalesce: instead of the base's per-file debounce, accumulate every changed
+    # file for a project and (re)arm ONE timer, so a burst becomes a single dispatch.
+    def _schedule(self, key: tuple[Any, ...]) -> None:
+        project, root, relpath, deleted = key
+        self._batch.setdefault(project, {})[relpath] = (root, deleted)  # last event wins
+        if (h := self._batch_timers.pop(project, None)) is not None:
+            h.cancel()
+        self._batch_timers[project] = self._loop.call_later(
+            CODE_DEBOUNCE_SEC, self._flush, project)
+
+    def _flush(self, project: str) -> None:
+        self._batch_timers.pop(project, None)
+        changes = self._batch.pop(project, None)
+        if changes:
+            self._loop.create_task(self._dispatch(project, changes))
+
+    async def _dispatch(self, *key: Any) -> None:  # (project, changes)
+        await self._on_change(*key)
+
+    def stop(self) -> None:
+        for h in self._batch_timers.values():
+            h.cancel()
+        self._batch_timers.clear()
+        self._batch.clear()
+        super().stop()

@@ -94,6 +94,18 @@ class RetrieveConfig:
     # (1.0 = equal vote). Broad summaries swamp retrieval at equal weight, so
     # they should contribute below the primary signals; tune on the eval harness.
     summary_weight: float = 0.3
+    # How the resident code-index cache decides it's stale on a `code_*` query
+    # (the cache keeps parsed symbols + description embeddings resident so a query
+    # need not re-parse every TOML and re-embed every description):
+    #   "scan"  — stat the symbol_index dir each query (catches ANY on-disk change,
+    #             incl. an out-of-process `git pull`); also runs the lazy source
+    #             mtime revalidation unless the code watcher already covers the
+    #             project. Safe default.
+    #   "trust" — invalidate only on an in-process index write (epoch bump) and
+    #             rely on the code watcher for source edits. Fastest — no per-query
+    #             stat sweep — and lossless WHEN the watcher is running; a
+    #             `git pull` of the store isn't seen until the next in-process write.
+    code_freshness: str = "scan"
 
 
 @dataclass

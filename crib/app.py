@@ -12,6 +12,7 @@ import datetime
 import os
 import re
 import sys
+import threading
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Callable
@@ -60,6 +61,54 @@ class LookupHit:
     line_end: int | None = None     # resolved against current disk (None if gone)
 
 
+class _ResidentCode:
+    """A project's code index kept RESIDENT so a `code_*` query need not re-parse
+    every symbol TOML and re-embed every description (the dominant cost). Built once
+    per freshness token (`tok`); rebuilt only when the token changes — and even then
+    description embeddings are reused by description text, so an unchanged symbol is
+    never re-embedded. Holds the parsed entries, an fqname index, the description→
+    vector map, and the precomputed dense/sparse query arrays (`_prepare`)."""
+
+    def __init__(self, tok: Any, entries: list[dict[str, Any]],
+                 emb: dict[str, list[float]]) -> None:
+        self.tok = tok
+        self.entries = entries
+        self.emb = emb                                       # description text → vector
+        self.by_fq: dict[str, dict[str, Any]] = {e["fqname"]: e for e in entries}
+        self._prepare()
+
+    def by_fqname(self, name: str) -> list[dict[str, Any]]:
+        """Entries whose fqname is, ends with `.name`, or has last segment `name` —
+        the resident mirror of SymbolIndex.by_fqname (no disk read)."""
+        return [e for e in self.entries
+                if e["fqname"] == name or e["fqname"].endswith("." + name)
+                or e["fqname"].split(".")[-1] == name]
+
+    def _prepare(self) -> None:
+        from .retrieve import BM25, _as_tf
+        # Only symbols with a description or name terms are query candidates.
+        self.lk = [e for e in self.entries
+                   if e.get("description") or e.get("name_terms")]
+        self.lk_ids = [e["fqname"] for e in self.lk]
+        self.bm25 = BM25([_as_tf([t.lower() for t in (e.get("name_terms") or [])])
+                          for e in self.lk])
+        self._dense: list[list[float] | None] | None = None   # built lazily (code_lookup only)
+
+    def dense(self, embedder: Any) -> list[list[float] | None]:
+        """Dense vectors aligned to `lk` — embedding only the descriptions not already
+        cached in `emb` (reused across queries AND across reloads). ONLY code_lookup
+        needs these, so dossier/graph/xref never pay to embed."""
+        if self._dense is None:
+            missing = list(dict.fromkeys(
+                e["description"] for e in self.lk
+                if e.get("description") and e["description"] not in self.emb))
+            if missing:
+                self.emb.update(zip(missing, embedder.embed(missing)))
+            self._dense = [self.emb.get(e["description"]) if e.get("description")
+                           else None for e in self.lk]
+        return self._dense
+
+
 def _resolve_embed_config(config: Config) -> Any:
     """Pick the embed model by *active profile*, reusing the `models.toml`
     profiles the generation layer already uses (`select(profile, "embed")`). The
@@ -101,6 +150,15 @@ class Crib:
         self._code_watcher: CodeWatcher | None = None
         self._mirror: Any = None        # MemoryMirror, started by the daemon
         self._on_close: Callable[[], None] | None = None
+        # Resident code index (per project): parsed symbols + description embeddings,
+        # so a query skips the full TOML re-parse + re-embed. `_code_epoch` bumps on
+        # every in-process index write (trust-mode invalidation); `_code_locks`
+        # serialize the store read-modify-write so concurrent reindexes (watcher vs
+        # query vs explicit index) can't corrupt the cross-file call graph.
+        self._code_cache: dict[str, _ResidentCode] = {}
+        self._code_epoch: dict[str, int] = {}
+        self._code_locks: dict[str, threading.Lock] = {}
+        self._code_locks_guard = threading.Lock()
 
     # --- construction ------------------------------------------------------
     @classmethod
@@ -136,21 +194,29 @@ class Crib:
     async def _on_fs_change(self, project: str, relpath: str) -> None:
         await self.index.index_file(project, self.notes_dir(project), relpath)
 
-    async def _on_code_change(self, project: str, root: str, relpath: str,
-                              deleted: bool) -> None:
-        """Reindex (or drop) a source file the watcher saw change — eager counterpart
-        to the lazy query-time revalidation. Off the loop; best-effort (a transient
-        syntax error mid-edit just leaves the prior entry until the next save)."""
-        from .codeindex import SymbolIndex
-        try:
-            if deleted:
-                await asyncio.to_thread(
-                    self._drop_file, SymbolIndex(self.paths.project_dir(project)), relpath)
-            else:
-                await asyncio.to_thread(
-                    self._index_file_sync, Path(root), relpath, project, True)
-        except Exception:  # noqa: BLE001 — never let a watcher event crash the loop
-            pass
+    async def _on_code_change(
+            self, project: str, changes: dict[str, tuple[str, bool]]) -> None:
+        """Reindex (or drop) the source files the watcher coalesced for a project —
+        eager counterpart to the lazy query-time revalidation. Off the loop;
+        best-effort (a transient syntax error mid-edit just leaves the prior entry
+        until the next save). A batch too large to reindex file-by-file (a branch
+        switch) collapses to a single revalidation sweep."""
+        from .watch import CODE_BATCH_FALLBACK
+        if len(changes) > CODE_BATCH_FALLBACK:
+            try:
+                await asyncio.to_thread(self._revalidate, project)
+            except Exception:  # noqa: BLE001 — never let a watcher event crash the loop
+                pass
+            return
+        for relpath, (root, deleted) in changes.items():
+            try:
+                if deleted:
+                    await asyncio.to_thread(self._drop_file, project, relpath)
+                else:
+                    await asyncio.to_thread(
+                        self._index_file_sync, Path(root), relpath, project, True)
+            except Exception:  # noqa: BLE001 — one bad file never aborts the batch
+                pass
 
     def _register_code_root(self, project: str, root: Any) -> None:
         """Watch a repo's source root as soon as it's indexed (so a mid-session
@@ -728,14 +794,21 @@ class Crib:
                                         or match_description(e["fqname"], mop))
             except Exception:  # noqa: BLE001 — mop-up is best-effort
                 pass
-        store.write_all(entries)
-        store.set_source_root(root)                         # for query-time revalidation
+        # Serialize only the store read-modify-write (NOT the LSP/LLM work above),
+        # so a concurrent reindex of another file — watcher vs query vs explicit
+        # index — can't interleave writes and corrupt the cross-file call graph
+        # (`_patch_called_by`). Kept off the slow describe path so the loop-thread
+        # revalidation never blocks on a worker's LLM call.
+        with self._code_lock(proj):
+            store.write_all(entries)
+            store.set_source_root(root)                     # for query-time revalidation
+            # drop symbols that vanished from this file (renamed/removed) — else orphan
+            for fq in old_in_file - {e["fqname"] for e in entries}:
+                store.delete(fq)
+            if patch_edges:
+                self._patch_called_by(store, entries, rel)
         self._register_code_root(proj, root)                # live-watch this repo's source
-        # drop symbols that vanished from this file (renamed/removed) — else they orphan
-        for fq in old_in_file - {e["fqname"] for e in entries}:
-            store.delete(fq)
-        if patch_edges:
-            self._patch_called_by(store, entries, rel)
+        self._bump_code_epoch(proj)                         # invalidate the resident cache
         out: dict[str, Any] = {
             "project": proj, "root": str(root), "file": rel,
             "symbols": len(entries),
@@ -777,6 +850,91 @@ class Crib:
         for e in changed.values():
             store.write(e)
 
+    # ── Resident code cache: lock + epoch + freshness ─────────────────────────
+    def _code_lock(self, proj: str) -> threading.Lock:
+        """Per-project lock guarding the symbol_index read-modify-write."""
+        with self._code_locks_guard:
+            lk = self._code_locks.get(proj)
+            if lk is None:
+                lk = self._code_locks[proj] = threading.Lock()
+            return lk
+
+    def _bump_code_epoch(self, proj: str) -> None:
+        self._code_epoch[proj] = self._code_epoch.get(proj, 0) + 1
+
+    def _code_freshness(self) -> str:
+        return getattr(self.config.retrieve, "code_freshness", "scan")
+
+    def _code_watched(self, proj: str) -> bool:
+        """True when the code watcher is live-watching this project's source, so a
+        per-query source revalidation sweep is redundant (edits refresh on save)."""
+        cw = self._code_watcher
+        return cw is not None and cw.watches(proj)
+
+    def _dir_sig(self, proj: str) -> tuple[int, int]:
+        """Cheap signature of the symbol_index dir — (toml count, max mtime_ns) — so
+        ANY on-disk change (our writes, a `git pull` of the store) flips it. One
+        scandir; no parse. In-place body edits keep the filename, so dir-mtime alone
+        misses them — hence max(file mtime), not the dir's."""
+        from .codeindex import SymbolIndex
+        root = SymbolIndex(self.paths.project_dir(proj)).root
+        if not root.exists():
+            return (0, 0)
+        n, mx = 0, 0
+        with os.scandir(root) as it:
+            for e in it:
+                if e.name.endswith(".toml"):
+                    n += 1
+                    try:
+                        m = e.stat().st_mtime_ns
+                    except OSError:
+                        continue
+                    if m > mx:
+                        mx = m
+        return (n, mx)
+
+    def _code_tok(self, proj: str) -> tuple[str, Any]:
+        """Freshness token the resident cache is keyed on: an in-process epoch in
+        `trust` mode (no stat), the dir signature in `scan` mode (catches external
+        writes too)."""
+        if self._code_freshness() == "trust":
+            return ("epoch", self._code_epoch.get(proj, 0))
+        return ("sig", self._dir_sig(proj))
+
+    def _resident_code(self, proj: str) -> _ResidentCode:
+        """Return the project's resident code index, refreshing source freshness and
+        rebuilding the cache only when its token moved. On a COLD cache we always run
+        the lazy source revalidation once (catches edits made while the daemon — and
+        its watcher — were down); when warm, we skip it in `trust` mode and whenever
+        the watcher already covers the project (edits refreshed eagerly on save)."""
+        rc = self._code_cache.get(proj)
+        if rc is None or (self._code_freshness() == "scan"
+                          and not self._code_watched(proj)):
+            self._revalidate(proj)                          # source → index freshness
+        tok = self._code_tok(proj)
+        rc = self._code_cache.get(proj)
+        if rc is not None and rc.tok == tok:
+            return rc
+        return self._reload_code(proj, tok, rc)
+
+    def _reload_code(self, proj: str, tok: Any,
+                     prev: _ResidentCode | None) -> _ResidentCode:
+        """Reparse the symbol TOMLs and rebuild the resident cache, CARRYING FORWARD
+        every description embedding whose text is unchanged (from `prev.emb`, pruned to
+        current descriptions). Nothing is embedded here — code_lookup fills in only the
+        genuinely new/edited descriptions lazily, so a reload after an edit re-embeds
+        just what changed, and dossier/graph/xref reloads embed nothing at all."""
+        from .codeindex import SymbolIndex
+        entries = SymbolIndex(self.paths.project_dir(proj)).all()
+        prev_emb = prev.emb if prev is not None else {}
+        emb = {d: prev_emb[d]
+               for d in dict.fromkeys(e["description"] for e in entries
+                                      if e.get("description"))
+               if d in prev_emb}
+        rc = _ResidentCode(tok, entries, emb)
+        self._code_cache[proj] = rc
+        return rc
+
     def code_indexed_projects(self) -> list[dict[str, Any]]:
         """Projects that have a symbol_index, with counts — for orienting an agent
         whose call resolved to the wrong/empty project."""
@@ -809,7 +967,7 @@ class Crib:
             try:
                 cur = src.stat().st_mtime_ns
             except OSError:                  # deleted → drop all its symbols + its edges
-                self._drop_file(store, rel)
+                self._drop_file(proj, rel)
                 continue
             if cur != mt:
                 try:
@@ -817,19 +975,24 @@ class Crib:
                 except Exception:  # noqa: BLE001 — keep the stale entry over a failed query
                     pass
 
-    @staticmethod
-    def _drop_file(store: Any, relpath: str) -> None:
-        """Remove a deleted file's symbols and strip edges that originated from it."""
+    def _drop_file(self, proj: str, relpath: str) -> None:
+        """Remove a deleted file's symbols and strip edges that originated from it —
+        under the per-project lock (a delete mutates the same cross-file edges a
+        concurrent reindex does), bumping the resident-cache epoch."""
+        from .codeindex import SymbolIndex
         tag = f"[{relpath}]"
-        for e in store.all():
-            if e.get("file") == relpath:
-                store.delete(e["fqname"])
-                continue
-            cb = [x for x in (e.get("called_by") or []) if not x.endswith(tag)]
-            rf = [x for x in (e.get("references") or []) if not x.endswith(tag)]
-            if cb != (e.get("called_by") or []) or rf != (e.get("references") or []):
-                e["called_by"], e["references"] = cb, rf
-                store.write(e)
+        with self._code_lock(proj):
+            store = SymbolIndex(self.paths.project_dir(proj))
+            for e in store.all():
+                if e.get("file") == relpath:
+                    store.delete(e["fqname"])
+                    continue
+                cb = [x for x in (e.get("called_by") or []) if not x.endswith(tag)]
+                rf = [x for x in (e.get("references") or []) if not x.endswith(tag)]
+                if cb != (e.get("called_by") or []) or rf != (e.get("references") or []):
+                    e["called_by"], e["references"] = cb, rf
+                    store.write(e)
+        self._bump_code_epoch(proj)
 
     def _require_code_index(self, proj: str) -> None:
         """Raise a self-diagnosing error when `proj` has no code index — so a call
@@ -993,6 +1156,8 @@ class Crib:
         removed = len(list(si_root.glob("*.toml"))) if si_root.exists() else 0
         if si_root.exists():
             shutil.rmtree(si_root)
+        self._code_cache.pop(proj, None)     # drop resident cache (trust-mode won't see rmtree)
+        self._bump_code_epoch(proj)
         learnings = 0
         if with_learnings:
             ldir = self.notes_dir(proj) / LEARNINGS_DIR
@@ -1005,12 +1170,10 @@ class Crib:
     def code_xref(self, symbol: str, project: str | None = None,
                   cwd: Path | None = None) -> list[dict[str, Any]]:
         """Callers/callees for a symbol from the persisted symbol_index — no live LSP."""
-        from .codeindex import SymbolIndex
         proj = self.resolve_project(project, cwd)
-        self._revalidate(proj)               # reindex any edited files before serving
         self._require_code_index(proj)
-        return self._attach_learnings(
-            proj, SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol))
+        rc = self._resident_code(proj)       # resident; refreshes source per freshness mode
+        return self._attach_learnings(proj, rc.by_fqname(symbol))
 
     def code_dossier(self, symbol: str, project: str | None = None,
                      cwd: Path | None = None, edge_cap: int = 20) -> dict[str, Any]:
@@ -1018,13 +1181,12 @@ class Crib:
         its callers / callees / references — each annotated with the NEIGHBOUR'S own
         description — and any attached learning. Built for agents: read a symbol and
         understand its neighbourhood without a dozen follow-up lookups."""
-        from .codeindex import SymbolIndex
         proj = self.resolve_project(project, cwd)
-        self._revalidate(proj)
         self._require_code_index(proj)
-        entry = self._resolve_symbol(proj, symbol)          # exactly one; raises if ambiguous
+        rc = self._resident_code(proj)
+        entry = self._resolve_symbol(proj, symbol, rc)      # exactly one; raises if ambiguous
         self._attach_learnings(proj, [entry])
-        idx = SymbolIndex(self.paths.project_dir(proj)).all()
+        idx = rc.entries
         desc = {e["fqname"]: e.get("description", "") for e in idx}
         by_nf = {(e.get("name", ""), e.get("file", "")): e["fqname"] for e in idx}
 
@@ -1057,12 +1219,15 @@ class Crib:
     # reuses the standard note machinery, so learnings inherit versioning, git
     # sync and the frontmatter merge driver. They are SEPARATE from the LLM
     # description (a regenerable cache): re-indexing never disturbs them.
-    def _resolve_symbol(self, proj: str, symbol: str) -> dict[str, Any]:
+    def _resolve_symbol(self, proj: str, symbol: str,
+                        rc: "_ResidentCode | None" = None) -> dict[str, Any]:
         """Resolve a user-supplied symbol to exactly one indexed entry. Exact fqn
         wins; a bare/partial name resolves only if unique — else raise, listing
-        candidates (never silently pick, so a learning can't land on the wrong one)."""
+        candidates (never silently pick, so a learning can't land on the wrong one).
+        Resolves against a resident cache when one is passed (avoids a disk read)."""
         from .codeindex import SymbolIndex
-        matches = SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol)
+        matches = (rc.by_fqname(symbol) if rc is not None
+                   else SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol))
         if not matches:
             raise ValueError(f"unknown symbol {symbol!r} in project {proj!r} — "
                              f"code_lookup it, or code_index the file first")
@@ -1320,31 +1485,27 @@ class Crib:
         over `name_terms` (unqualified/qualified/subtokens), RRF-fused. So a concept
         query hits the dense side and a bare/partial *name* hits the sparse side. Served
         from the content-addressed store at query time; no live LSP needed."""
-        from .codeindex import SymbolIndex
-        from .retrieve import BM25, _as_tf, _subtokens, reciprocal_rank_fusion, tokenize
+        from .retrieve import _subtokens, reciprocal_rank_fusion, tokenize
         proj = self.resolve_project(project, cwd)
-        self._revalidate(proj)
         self._require_code_index(proj)
-        entries = [e for e in SymbolIndex(self.paths.project_dir(proj)).all()
-                   if e.get("description") or e.get("name_terms")]
+        rc = self._resident_code(proj)                       # resident: no re-parse/re-embed
+        entries = rc.lk
         if not entries:
             return []
-        ids = [e["fqname"] for e in entries]
-        by_id = {e["fqname"]: e for e in entries}
+        ids = rc.lk_ids
+        by_id = rc.by_fq
         rankings: list[list[str]] = []
         weights: list[float] = []
-        # dense: cosine over description embeddings
-        if any(e.get("description") for e in entries):
-            vecs = self.embedder.embed([e.get("description", "") for e in entries])
+        # dense: cosine over the resident description embeddings (only the query embeds)
+        dense = rc.dense(self.embedder)
+        if any(v for v in dense):
             qv = self.embedder.embed_query([query])[0]
-            ds = [sum(a * b for a, b in zip(qv, vecs[i])) for i in range(len(entries))]
+            ds = [sum(a * b for a, b in zip(qv, v)) if v else -2.0 for v in dense]
             rankings.append([ids[i] for i in sorted(range(len(ids)),
                                                     key=lambda i: ds[i], reverse=True)])
             weights.append(1.0)
         # sparse: BM25 over the name terms (the unqualified name is the load-bearing one)
-        corpus = [_as_tf([t.lower() for t in (e.get("name_terms") or [])])
-                  for e in entries]
-        ss = BM25(corpus).scores(tokenize(query) + _subtokens(query))
+        ss = rc.bm25.scores(tokenize(query) + _subtokens(query))
         sparse = [ids[i] for i in sorted(range(len(ids)), key=lambda i: ss[i],
                                          reverse=True) if ss[i] > 0]
         if sparse:
@@ -1371,12 +1532,11 @@ class Crib:
         `callees` follows `calls`, `callers` follows `called_by`. Returns a nested
         {fqname, kind, file, line, children[]} with DAG-repeats marked `repeat` and
         unresolved edges `external`. Rendered pstree-style by the CLI. No LSP/LLM."""
-        from .codeindex import SymbolIndex
         proj = self.resolve_project(project, cwd)
-        self._revalidate(proj)
         self._require_code_index(proj)
-        entries = SymbolIndex(self.paths.project_dir(proj)).all()
-        by_fq = {e["fqname"]: e for e in entries}
+        rc = self._resident_code(proj)
+        entries = rc.entries
+        by_fq = rc.by_fq
         by_nf: dict[tuple[str, str], dict] = {}
         for e in entries:
             by_nf.setdefault((e.get("name", ""), e.get("file", "")), e)

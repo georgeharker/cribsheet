@@ -225,7 +225,7 @@ def test_drop_file_removes_symbols_and_edges(crib):
                  "line": 1, "mtime": 1, "calls": ["target [a.py]"], "called_by": [],
                  "references": [], "container": [], "name_terms": ["gone"],
                  "lang": "python", "module": "b", "parent": ""})
-    crib._drop_file(store, "b.py")               # b.py deleted
+    crib._drop_file("p", "b.py")                  # b.py deleted (proj, relpath)
     assert not store.by_fqname("b.gone")          # its symbols gone
     tgt = store.by_fqname("a.target")[0]          # edges from b.py stripped
     assert tgt["called_by"] == [] and tgt["references"] == []
