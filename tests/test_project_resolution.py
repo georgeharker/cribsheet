@@ -9,7 +9,7 @@ import pytest
 from crib.app import Crib
 from crib.config import Config
 from crib.paths import Paths
-from crib.server import _source_project
+from crib.server import _source_project, _write_project
 from crib.session import session_state
 from crib.store import InMemoryStore
 
@@ -37,3 +37,14 @@ def test_project_path_defers_to_crib_not_sticky(crib):
 def test_no_path_falls_back_to_session(crib):
     session_state().current_project = "sticky-proj"
     assert _source_project(crib, None, None) == "sticky-proj"
+
+
+def test_write_project_requires_explicit_target(crib):
+    # writes never inherit the sticky session — a fact belongs to its subject's project
+    session_state().current_project = "some-repo-im-browsing"
+    with pytest.raises(ValueError, match="explicit target"):
+        _write_project(crib, None, None)
+    # explicit project wins
+    assert _write_project(crib, "shuck", None) == "shuck"
+    # project_path resolves via that repo's .crib (here: no .crib → default)
+    assert _write_project(crib, None, str(crib.paths.data_dir)) == crib.config.default_project

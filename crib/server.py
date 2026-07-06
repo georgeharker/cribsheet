@@ -47,6 +47,24 @@ def _source_project(crib: Crib, project: str | None,
     return _project(crib, None, None)   # neither given → sticky session project
 
 
+def _write_project(crib: Crib, project: str | None, project_path: str | None) -> str:
+    """Project for a WRITE op (store/append/edit/forget/move). Writes must NAME their
+    target — they do NOT inherit the sticky session project, because a durable fact
+    belongs to the project it's ABOUT, not whatever repo you're browsing (that's how a
+    shuck note once landed in `zdot`). Precedence: explicit `project`; else the `.crib`
+    at `project_path`; else ERROR asking the caller to specify. Reads keep the sticky
+    convenience via `_project`; only writes are forced."""
+    if project:
+        return project
+    if project_path:
+        return crib.resolve_project(None, _cwd(project_path))
+    raise ValueError(
+        "a write needs an explicit target: pass project=<name> — the project this "
+        "fact is ABOUT, which may differ from your current one (cross-cutting tooling "
+        "knowledge often belongs in `default` or its own project) — or project_path="
+        "<a path in that repo>. Writes don't inherit the sticky current project.")
+
+
 def _switch_if_created(result: dict) -> dict:
     """Creating a project switches the session into it — referencing an existing
     one (a one-off `project` arg) does not (DESIGN §15)."""
@@ -167,9 +185,22 @@ def build_server(crib: Crib | None = None):
         convention, gotcha, or hard-won detail worth recalling in a future
         session. Assigns an id, writes markdown, indexes it. If a related
         note already exists (check with `lookup`), prefer `append`/`edit`
-        over creating a near-duplicate."""
-        return _switch_if_created(
-            await crib.store_note(content, title, _project(crib, project, project_path), tags))
+        over creating a near-duplicate.
+
+        PICK THE RIGHT PROJECT — REQUIRED. A fact belongs to the project it is ABOUT,
+        which may NOT be the repo you're working in, so a write won't inherit your
+        current project: pass `project=` (the subject's project — often `default` or a
+        tool's own project for cross-cutting knowledge like a CLI/editor/convention),
+        or `project_path=` a path in that repo. Then tell the user which project it
+        landed in."""
+        # A write is a ONE-OFF at an explicitly-named target — it must NOT flip the
+        # session's current project (no _switch_if_created): storing a cross-cutting
+        # fact shouldn't hijack the repo you're working in.
+        res = await crib.store_note(content, title,
+                                    _write_project(crib, project, project_path), tags)
+        if isinstance(res, dict):
+            res["project_source"] = "explicit" if project else "project_path"
+        return res
 
     @mcp.tool()
     async def append(relpath: str, content: str, heading: str | None = None,
@@ -179,7 +210,7 @@ def build_server(crib: Crib | None = None):
         information extends or continues something already remembered, rather than
         `store`-ing a near-duplicate. Optionally files it under a new heading."""
         return await crib.append_note(relpath, content, heading,
-                                      _project(crib, project, project_path))
+                                      _write_project(crib, project, project_path))
 
     @mcp.tool()
     async def edit(relpath: str, new_content: str,
@@ -188,7 +219,8 @@ def build_server(crib: Crib | None = None):
         """Rewrite a note's full content — use when remembered information has
         changed, needs correcting, or several notes should be consolidated (read
         it first). Frontmatter (and the note's id/history) is preserved."""
-        return await crib.edit_note(relpath, new_content, _project(crib, project, project_path))
+        return await crib.edit_note(relpath, new_content,
+                                    _write_project(crib, project, project_path))
 
     @mcp.tool()
     async def forget(relpath: str, project: str | None = None,
@@ -196,7 +228,7 @@ def build_server(crib: Crib | None = None):
         """Delete a note when its information is obsolete or wrong. Removed from
         disk and the index, but stashed to the version ring first, so it stays
         recoverable by id."""
-        return await crib.forget(relpath, _project(crib, project, project_path))
+        return await crib.forget(relpath, _write_project(crib, project, project_path))
 
     @mcp.tool()
     async def reindex(relpath: str | None = None,
@@ -457,8 +489,11 @@ def build_server(crib: Crib | None = None):
         """Relocate a note to another project and/or rename it, preserving its id
         and version history (the curation primitive — not store-new + forget-old).
         `to_project` moves it across namespaces; `to_relpath` renames it."""
-        return _switch_if_created(await crib.move_note(
-            relpath, to_project, to_relpath, _project(crib, project, project_path)))
+        # a move is a one-off curation op — it must not flip the session project
+        # onto the source or destination (no _switch_if_created).
+        return await crib.move_note(
+            relpath, to_project, to_relpath,
+            _write_project(crib, project, project_path))
 
     @mcp.tool()
     def projects() -> list[str]:

@@ -29,4 +29,8 @@
   union/difference"` → `code_dossier` the top hit. (When you finally *get* a tricky
   symbol, `code_append <symbol> "…"` pins that understanding for next time.)
 - **Persist durably.** When a durable fact emerges (a decision, convention, gotcha,
-  contract), `store` it — `lookup` first, `append`/`edit` over duplicating.
+  contract), `store` it — `lookup` first, `append`/`edit` over duplicating. **Name the
+  project it's ABOUT** (writes require an explicit `project=`/`project_path=` — they
+  won't inherit your current one): a fact about the repo you're in goes there, but
+  cross-cutting/tooling knowledge (a CLI, an editor, a shared convention) belongs in
+  `default` or that tool's own project. Say which project it landed in.
