@@ -56,6 +56,41 @@ def test_type_kinds_indexed_and_descended():
     assert ci._KIND_LABEL_OVERRIDE[("rust", 11)] == "trait"
 
 
+def test_content_lang_shebang_marker_filename(tmp_path, monkeypatch):
+    monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "cfg"))
+    cases = {
+        "#!/usr/bin/env zsh\n": "zsh",
+        "#!/usr/bin/env -S zsh\n": "zsh",          # -S split-string flag
+        "#!/usr/bin/env VAR=1 zsh\n": "zsh",       # env var assignment
+        "#!/usr/bin/env python3.11\n": "python",   # version suffix stripped
+        "#!/bin/zsh -f\n": "zsh",                  # args after interpreter
+        "#compdef foo\n": "zsh",                   # completion marker
+        "#autoload\n": "zsh",                      # autoload marker
+        "# compdef spaced\n": None,                # prose (space) must NOT match
+        "#!/usr/bin/env\n": None,                  # env with no interpreter
+        "plain text\n": None,
+    }
+    for content, exp in cases.items():
+        f = tmp_path / "probe"
+        f.write_text(content)
+        assert ci.content_lang(f) == exp, content
+    # bare filename rule
+    rc = tmp_path / ".zshrc"; rc.write_text("alias x=y\n")
+    assert ci.content_lang(rc) == "zsh"
+
+
+def test_load_grammar_merges_user_over_defaults(tmp_path, monkeypatch):
+    cfg = tmp_path / "cfg"; cfg.mkdir()
+    monkeypatch.setenv("CRIB_CONFIG_DIR", str(cfg))
+    (cfg / "grammar.json").write_text(
+        '{"shebangs": {"fish": "fish"}, "firstLineMarkers": {"funcdef": "fish"}}')
+    g = ci.load_grammar()
+    assert g["shebangs"]["fish"] == "fish"          # user rule added
+    assert g["shebangs"]["zsh"] == "zsh"            # defaults preserved
+    assert g["firstLineMarkers"]["funcdef"] == "fish"
+    assert g["firstLineMarkers"]["compdef"] == "zsh"
+
+
 def test_qualify_is_language_idiomatic():
     assert ci._qualify("python", "crib.retrieve", ("BM25",), "scores") \
         == "crib.retrieve.BM25.scores"

@@ -477,8 +477,13 @@ class Crib:
                       f"the vector collection (full re-embed)", file=sys.stderr)
                 self.store.recreate()
             disk = {str(p.relative_to(nd)) for p in nd.rglob("*.md")}
+            # Source-anchored docs (`sources/<repo>/…`) live in the REPO, not under
+            # the notes tree — the notes reconcile's on-disk sweep must NOT treat them
+            # as deleted (that wiped in-situ doc chunks). They're owned by
+            # index_docs_insitu + the code watcher.
             indexed = {m.get("relpath")
-                       for m in self.store.get_meta({"project": proj}).values()}
+                       for m in self.store.get_meta({"project": proj}).values()
+                       if not (m.get("relpath") or "").startswith(SRC_PREFIX)}
             targets = sorted(disk | {r for r in indexed if r})
         changed = removed = 0
         for rp in targets:
@@ -792,6 +797,21 @@ class Crib:
         if existing is None:
             existing = {e["fqname"]: e for e in store.all()}
         old_in_file = {fq for fq, e in existing.items() if e.get("file") == rel}
+        # KEEP-PRIOR-ON-EMPTY: a still-present, non-trivial file that extracts to ZERO
+        # symbols is almost always a flaky LSP pass (empty documentSymbol from an init
+        # race / short settle — shuck does this on zsh), not a real emptying. Pruning
+        # here would silently delete real symbols until the next good reindex, so skip
+        # it. A genuinely-emptied file (no code left) still prunes.
+        if not entries and old_in_file:
+            try:
+                body = (root / rel).read_text(errors="ignore")
+            except OSError:
+                body = ""
+            codeish = [ln for ln in body.splitlines()
+                       if ln.strip() and not ln.lstrip().startswith("#")]
+            if len(codeish) > 3:
+                return {"project": proj, "root": str(root), "file": rel,
+                        "symbols": len(old_in_file), "skipped": "empty-extract-kept-prior"}
         stale = [e for e in entries
                  if existing.get(e["fqname"], {}).get("content_hash") != e["content_hash"]
                  or not existing.get(e["fqname"], {}).get("description")]
@@ -1067,11 +1087,34 @@ class Crib:
         return sorted(f"**/*{e}" for e in present)
 
     def _enumerate_code_files(self, root: Path, globs: list[str]) -> list[Path]:
+        """Files to index: the extension globs, PLUS extensionless/unknown-suffix
+        files whose grammar (shebang / bare name / `#compdef`|`#autoload` marker)
+        resolves to a language served by an installed LSP — so shell autoload
+        functions and dotfiles get indexed, not just `*.zsh`."""
+        from .codeindex import content_lang, load_grammar, load_specs, resolve_command
         junk, seen = self._code_ignore(), set()
         for g in globs:
             for p in root.glob(g):
                 if p.is_file() and not any(part in junk
                                            for part in p.relative_to(root).parts):
+                    seen.add(p)
+        # extensionless / unknown-extension files matched by the grammar map
+        specs = load_specs()
+        served: set[str] = set()
+        for sp in specs.values():
+            if isinstance(sp, dict) and resolve_command(sp):
+                served.update((sp.get("extensionToLanguage") or {}).values())
+        known_exts = {e for sp in specs.values() if isinstance(sp, dict)
+                      for e in (sp.get("extensionToLanguage") or {})}
+        grammar = load_grammar()
+        for dp, dirs, files in os.walk(root):
+            dirs[:] = [d for d in dirs if d not in junk and not d.startswith(".")]
+            for fn in files:
+                p = Path(dp) / fn
+                if p in seen or p.suffix.lower() in known_exts:
+                    continue                    # globs already cover known extensions
+                lang = content_lang(p, grammar)
+                if lang and lang in served:
                     seen.add(p)
         return sorted(seen)
 
