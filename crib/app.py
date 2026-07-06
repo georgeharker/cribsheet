@@ -1081,21 +1081,30 @@ class Crib:
         """Index every source file under `globs`, reusing the per-file code_index
         (content_hash gate keeps re-runs cheap). Non-code files self-skip (NoServer)."""
         files = self._enumerate_code_files(root, globs)
+        # Index files CONCURRENTLY, bounded by [generate].concurrency (same default as
+        # the notes describe path). The per-file describe is a network-bound LLM call
+        # and _index_file_sync takes the project lock only for the tiny write (not the
+        # LLM), so N-at-once cuts the cold-onboard wall-clock ~N×. Bulk sweep skips the
+        # per-file edge-patch (the LSP hands each file its cross-file edges directly).
+        sem = asyncio.Semaphore(max(1, self.config.generate.concurrency))
+
+        async def _one(f: Path) -> tuple[Path, dict[str, Any] | None, str | None]:
+            async with sem:
+                try:
+                    return f, await self.code_index(str(f), project=proj,
+                                                    patch_edges=False), None
+                except Exception as exc:  # noqa: BLE001 — one bad file never aborts the sweep
+                    return f, None, str(exc)
+
         syms = desc = indexed = 0
         errors: list[dict[str, str]] = []
-        for f in files:
-            try:
-                # bulk sweep: the LSP hands each file its cross-file edges directly, so
-                # skip the per-file edge-patch (it's for standalone/incremental reindex)
-                r = await self.code_index(str(f), project=proj, patch_edges=False)
-            except Exception as exc:  # noqa: BLE001 — one bad file never aborts the sweep
-                errors.append({"file": str(f), "error": str(exc)})
-                continue
-            if r.get("skipped"):
-                continue
-            indexed += 1
-            syms += r.get("symbols", 0)
-            desc += r.get("described", 0)
+        for f, r, err in await asyncio.gather(*(_one(f) for f in files)):
+            if err is not None:
+                errors.append({"file": str(f), "error": err})
+            elif not (r or {}).get("skipped"):
+                indexed += 1
+                syms += (r or {}).get("symbols", 0)
+                desc += (r or {}).get("described", 0)
         out: dict[str, Any] = {"files_indexed": indexed, "files_seen": len(files),
                                "symbols": syms, "described": desc}
         if errors:
