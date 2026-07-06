@@ -748,10 +748,14 @@ class Crib:
         return await asyncio.to_thread(self._index_file_sync, root, rel, proj, patch_edges)
 
     def _index_file_sync(self, root: Path, rel: str, proj: str,
-                         patch_edges: bool) -> dict[str, Any]:
+                         patch_edges: bool,
+                         existing: dict[str, dict] | None = None) -> dict[str, Any]:
         """The blocking core of code_index — extract + describe + persist one file. Sync
         so the lazy revalidation path (also sync) can reuse it directly; code_index runs
-        it off the event loop via to_thread."""
+        it off the event loop via to_thread. `existing` is the by-fqname snapshot of the
+        prior index (for the content_hash gate + vanished-symbol drop); a full-project
+        sweep parses it ONCE and passes it here so we don't re-`store.all()` per file
+        (that made a cold onboard O(files × symbols)). None → parse it (standalone path)."""
         from .codeindex import (NoServer, SymbolIndex, describe_file,
                                  describe_symbols, extract_file, match_description)
         try:
@@ -764,7 +768,8 @@ class Crib:
         # unchanged; only call the LLM when something is stale/new. BEST-EFFORT: a
         # generation hiccup never loses the structural call graph (facets independent).
         store = SymbolIndex(self.paths.project_dir(proj))
-        existing = {e["fqname"]: e for e in store.all()}
+        if existing is None:
+            existing = {e["fqname"]: e for e in store.all()}
         old_in_file = {fq for fq, e in existing.items() if e.get("file") == rel}
         stale = [e for e in entries
                  if existing.get(e["fqname"], {}).get("content_hash") != e["content_hash"]
@@ -1078,21 +1083,28 @@ class Crib:
 
     async def _index_project_code(self, proj: str, root: Path,
                                   globs: list[str]) -> dict[str, Any]:
-        """Index every source file under `globs`, reusing the per-file code_index
-        (content_hash gate keeps re-runs cheap). Non-code files self-skip (NoServer)."""
+        """Index every source file under `globs`. Non-code files self-skip (NoServer)."""
+        from .codeindex import SymbolIndex
         files = self._enumerate_code_files(root, globs)
+        # Parse the prior index ONCE (by fqname) and share it across the whole sweep —
+        # each file only needs its own prior entries (content_hash gate + vanished-drop),
+        # so re-`store.all()` per file made a cold onboard O(files × symbols). Now O(N).
+        existing = {e["fqname"]: e for e in SymbolIndex(self.paths.project_dir(proj)).all()}
         # Index files CONCURRENTLY, bounded by [generate].concurrency (same default as
         # the notes describe path). The per-file describe is a network-bound LLM call
         # and _index_file_sync takes the project lock only for the tiny write (not the
-        # LLM), so N-at-once cuts the cold-onboard wall-clock ~N×. Bulk sweep skips the
+        # LLM), so N-at-once cuts the cold-onboard wall-clock ~N×. Bulk sweep pins the
+        # root to the project's `.crib` root (consistent source_root) and skips the
         # per-file edge-patch (the LSP hands each file its cross-file edges directly).
         sem = asyncio.Semaphore(max(1, self.config.generate.concurrency))
 
         async def _one(f: Path) -> tuple[Path, dict[str, Any] | None, str | None]:
+            rel = str(f.resolve().relative_to(root.resolve()))
             async with sem:
                 try:
-                    return f, await self.code_index(str(f), project=proj,
-                                                    patch_edges=False), None
+                    r = await asyncio.to_thread(self._index_file_sync, root, rel, proj,
+                                                False, existing)
+                    return f, r, None
                 except Exception as exc:  # noqa: BLE001 — one bad file never aborts the sweep
                     return f, None, str(exc)
 

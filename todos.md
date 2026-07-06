@@ -1,19 +1,23 @@
 # todos — deferred / to-test
 
-## To discuss / fix
-- **Vendored sub-repos pollute the parent's index (mis-rooted paths).** `project_index`
-  enumerates `vendor/**/*.py` (`vendor` isn't in the code-ignore set), and per-file
-  `find_root` then escapes into the vendored sub-repo (its own `.git`/`pyproject`), so the
-  entries get stored under the *parent* project with paths relative to the *sub-repo*
-  (e.g. `src/llmkit/…` inside the `cribsheet` project). Against the parent's `source_root`
-  they read as "source GONE". Observed: 161 phantom llmkit symbols in the cribsheet index.
-  Options to weigh: (a) add `vendor` + nested-`.git` dirs to the enumeration ignore set;
-  (b) the deeper fix — in the project-index path, pin the root to the project's `.crib`
-  root instead of per-file `find_root`, so a project only ever holds files under its own
-  root. `_revalidate` self-heals existing phantoms on the next query (stat fails →
-  `_drop_file`), but the enumeration bug re-pollutes on the next `project_index`.
-  (Also note: watcher only catches edits made *after* it starts — edits while the daemon
-  is down are caught by the lazy mtime gate on next query, not retroactively by the watcher.)
+## To fix (perf)
+- **`store.all()` per file at index time is O(N²).** `_index_file_sync` re-parses the
+  ENTIRE symbol_index (`existing = store.all()`) on every file, for the content_hash
+  gate + vanished-symbol drop. As the index grows (cribsheet+llmkit ≈ 1000+ symbols)
+  each file re-parses the whole thing, so a cold `project_index` scales quadratically and
+  the parallel-describe win gets eaten. Fix: snapshot `store.all()` ONCE before the sweep
+  (or reuse the resident cache) and pass the by-fqname map to each file. Correct today,
+  just wasteful — concurrent full-parses also contend.
+
+## Resolved
+- **Submodule/vendored code rooting.** Was: vendored sub-repos got mis-rooted (per-file
+  `find_root` escaped into the submodule → `source_root` flip-flopped → `_revalidate`
+  evicted the real symbols, collapsing the index). Fixed by `find_root` resolving to the
+  top-level repo (a submodule's `.git` is a FILE, a real repo's is a DIRECTORY). Decision:
+  vendored submodule code (e.g. `vendor/llmkit/…`) SHOULD be indexed as part of the
+  parent — it's real code the parent uses — just correctly rooted. So NOT excluding
+  vendor. (Note: the watcher only catches edits made *after* it starts; down-time edits
+  fall to the lazy mtime gate on the next query.)
 
 ## To test
 - **ty as the Python indexer, end-to-end.** Just added (first-choice `.py` LSP; verified
