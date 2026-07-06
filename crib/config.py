@@ -121,7 +121,9 @@ class GenerateConfig:
     endpoint: str | None = None
     api_key_env: str | None = None
     api_key: str | None = None
-    max_tokens: int = 2048
+    max_tokens: int = 8192           # inline-fallback default; keep generous — a low
+                                     # cap truncates bulk structured output (the models.toml
+                                     # providers set 8192 too; 2048/1024 cut batches mid-JSON)
     temperature: float = 0.2
     # per-call wall-clock cap (seconds) — a hung endpoint is abandoned, not left
     # to stall a batch; concurrency bounds parallel generation calls (network-
