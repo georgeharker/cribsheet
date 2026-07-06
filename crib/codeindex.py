@@ -198,12 +198,20 @@ def find_root(path: Path) -> Path:
 
 # documentSymbol kinds we index as callables/containers (LSP SymbolKind numbers).
 _FUNC_KINDS = {6, 12}          # Method, Function
-_CONTAINER_KINDS = {5, 6, 12}  # Class, Method, Function (descend into these)
-# Data declarations — globals/constants and class attributes/fields. Indexed ONLY
-# at module or class scope (a var nested under a function is a local → noise): the
-# scope guard in extract_file drops any whose ancestry includes a function/method.
+# Type definitions across languages: Class(5, Py/JS/TS), Enum(10), Interface(11,
+# Go iface / Rust trait / TS interface), Struct(23, Rust/Go/C). Indexed as symbols
+# AND descended into — their methods/fields live inside.
+_TYPE_KINDS = {5, 10, 11, 23}
+# Descend to find nested items: types, callables (nested/closures), impl blocks
+# (Object 19 — where Rust methods actually live), and modules/namespaces (2/3 —
+# Rust inline `mod`, C++/TS namespaces). Without Object(19), every Rust `impl`
+# method was silently dropped.
+_CONTAINER_KINDS = _FUNC_KINDS | _TYPE_KINDS | {2, 3, 19}
+# Data declarations — globals/constants and class/struct fields. Indexed ONLY at
+# module/type scope (a var nested under a function is a local → noise): the scope
+# guard in extract_file drops any whose ancestry includes a function/method.
 _DATA_KINDS = {13, 14, 8, 7}   # Variable, Constant, Field, Property
-_INDEX_KINDS = _FUNC_KINDS | {5} | _DATA_KINDS   # Class(5) + callables + data
+_INDEX_KINDS = _FUNC_KINDS | _TYPE_KINDS | _DATA_KINDS
 
 
 class LspClient:
@@ -335,8 +343,12 @@ def _walk(syms: list, parents: tuple[str, ...] = (),
     return out
 
 
-_KIND = {5: "class", 6: "method", 12: "function",
-         13: "variable", 14: "constant", 8: "field", 7: "property"}
+_KIND = {5: "class", 6: "method", 12: "function", 10: "enum", 11: "interface",
+         23: "struct", 13: "variable", 14: "constant", 8: "field", 7: "property"}
+# Per-language label niceties: same SymbolKind, different idiom (a trait IS an
+# Interface(11) to the LSP, but reads better as "trait"). Naming quirk, not a kind
+# distinction — so it lives here, not in the universal _INDEX_KINDS sets.
+_KIND_LABEL_OVERRIDE = {("rust", 11): "trait"}
 _REF_CAP = 80  # references resolved per symbol — bounds worst-case on hot helpers
 # Lua binds modules to a local table var (`M.setup`); those aren't real qualifiers.
 _LUA_TABLE_VARS = {"M", "_M", "self", "Module", "mod"}
@@ -401,9 +413,17 @@ def _module_of(relpath: str, lang: str) -> str:
 
 def _local_name(raw: str, lang: str) -> str:
     """The bare symbol name — strip a Lua module-table prefix (`M.setup`→`setup`,
-    `T:method`→`method`) that documentSymbol folds into the name."""
+    `T:method`→`method`) that documentSymbol folds into the name, and reduce a Rust
+    `impl` block's name to the TYPE it's for, so its methods qualify as `Type::method`
+    (rust-analyzer names impl symbols `impl Type` / `impl Trait for Type`)."""
     if lang == "lua":
         return raw.replace(":", ".").split(".")[-1]
+    if lang == "rust" and re.match(r"impl\b", raw):
+        body = re.sub(r"^impl\s*<[^>]*>", "impl", raw)[4:].strip()  # drop impl-generics
+        if " for " in body:                       # `Trait for Type` → the Type
+            body = body.split(" for ")[-1].strip()
+        base = re.sub(r"<.*$", "", body).strip().split("::")[-1]    # strip type args/path
+        return base or raw
     return raw
 
 
@@ -521,7 +541,8 @@ def extract_file(root: Path, relpath: str, settle: float = 1.5) -> list[dict]:
                     references.append(f"{enc} [{_rel(ruri, root)}]")
             # module-level variables read more naturally as "global" than "variable"
             kind_label = ("global" if kind == 13 and not container
-                          else _KIND.get(kind or 0, "?"))
+                          else _KIND_LABEL_OVERRIDE.get((language_id, kind or 0))
+                          or _KIND.get(kind or 0, "?"))
             entries.append({
                 "fqname": fqname, "name": local,
                 "kind": kind_label,
