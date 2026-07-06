@@ -40,6 +40,11 @@ from typing import IO, Any
 # rust-analyzer, gopls, clangd implement it; pylsp+jedi does NOT (callers only, via
 # references). basedpyright is preferred with pyright as the fallback for `.py`.
 DEFAULT_LSP_SPECS: dict[str, dict[str, Any]] = {
+    # Python: ty (Astral, Rust) FIRST — full LSP (documentSymbol + callHierarchy +
+    # references, all verified) and much faster than pyright; falls through to
+    # basedpyright/pyright when ty isn't installed.
+    "ty": {"command": "ty", "args": ["server"],
+           "extensionToLanguage": {".py": "python", ".pyi": "python"}},
     "basedpyright": {"command": "basedpyright-langserver", "args": ["--stdio"],
                      "extensionToLanguage": {".py": "python", ".pyi": "python"}},
     "pyright": {"command": "pyright-langserver", "args": ["--stdio"],
