@@ -96,13 +96,28 @@ def merge_note_texts(base: str, ours: str, theirs: str) -> tuple[str, bool]:
     return notes.serialize(fm, body), conflicted
 
 
+def merge_symbol_texts(base: str, ours: str, theirs: str) -> str:
+    """Merge two symbol_index `.toml` versions. The toml is a FLAT key→value record
+    (no body), so `merge_frontmatter` resolves it directly and deterministically —
+    a description/edge divergence or a `mtime` difference auto-resolves instead of
+    conflicting. Always clean (structured record, no free-text body)."""
+    from .codeindex import _parse, _render
+    return _render(merge_frontmatter(_parse(base), _parse(ours), _parse(theirs)))
+
+
 def run_driver(base_path: str, current_path: str, other_path: str) -> int:
-    """git merge-driver entry: merge into %A (current) in place, exit 0 when the
-    body merged clean (git marks it resolved) or 1 when a body conflict remains
-    (git leaves it unmerged → surfaced). On any error, leave %A untouched and
-    report a conflict so a bad merge is surfaced, never silently lost."""
+    """git merge-driver entry: merge into %A (current) in place, exit 0 when clean
+    (git marks it resolved) or 1 when a body conflict remains (git leaves it unmerged
+    → surfaced). Routes by extension: `.toml` = a symbol_index record (always clean),
+    else a markdown note (header deterministic, body 3-way). On any error, leave %A
+    untouched and report a conflict so a bad merge is surfaced, never silently lost."""
     current = Path(current_path)
     try:
+        if current.suffix == ".toml":
+            current.write_text(merge_symbol_texts(
+                Path(base_path).read_text(), current.read_text(),
+                Path(other_path).read_text()))
+            return 0
         merged, conflicted = merge_note_texts(
             Path(base_path).read_text(),
             current.read_text(),

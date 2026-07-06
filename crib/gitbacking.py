@@ -25,12 +25,17 @@ _GITIGNORE = """\
 memory-bindings.json
 *.tmp
 .tmp
+
+# Per-project code-index local state: the source repo's absolute path on THIS
+# machine (regenerated on index). The symbol tomls themselves ARE shared.
+.source_root
 """
 
-# Route every note through the frontmatter-aware merge driver (DESIGN §14): the
-# header merges deterministically (provenance never conflicts) while real body
-# conflicts still surface. Committed so it travels with the repo.
-_GITATTRIBUTES = "*.md merge=cribnote\n"
+# Route notes AND symbol_index records through the crib merge driver (DESIGN §14):
+# a note's header merges deterministically (provenance never conflicts) while real
+# body conflicts still surface; a symbol_index `.toml` (flat record) merges fully
+# clean (description/edge/mtime divergence auto-resolves). Committed so it travels.
+_GITATTRIBUTES = "*.md merge=cribnote\n**/symbol_index/*.toml merge=cribnote\n"
 
 # The driver itself is registered in each machine's *local* `.git/config` (git
 # config doesn't sync), so it must be (re)ensured on every machine — see

@@ -45,6 +45,43 @@ def test_local_name_reduces_rust_impl_to_type():
     assert ci._local_name("ServerState", "rust") == "ServerState"
 
 
+def test_symbol_index_uses_legible_slug_filenames(tmp_path):
+    si = ci.SymbolIndex(tmp_path)
+    # clean dotted fqn → verbatim; lossy (rust ::) → munged + hash suffix
+    assert si._relname("crib.retrieve.LexicalCache.get") == "crib.retrieve.LexicalCache.get.toml"
+    p = si.write({"fqname": "a::b::C", "name": "C", "kind": "struct",
+                  "content_hash": "h", "file": "a.rs", "line": 1, "mtime": 1,
+                  "signature": "", "description": "d", "container": [], "calls": [],
+                  "called_by": [], "references": [], "name_terms": ["C"]})
+    assert p.name.startswith("a-b-C-") and p.suffix == ".toml"     # munged + hash
+    assert si.by_fqname("a::b::C") and si.delete("a::b::C")        # write/delete round-trip
+    assert not si.by_fqname("a::b::C")
+
+
+def test_derive_mtime_git_date_for_committed_disk_for_modified(tmp_path):
+    import subprocess
+    r = tmp_path / "repo"; (r / "sub").mkdir(parents=True)
+    def git(*a): subprocess.run(["git", "-C", str(r), *a], check=True,
+                                capture_output=True)
+    git("init"); git("config", "user.email", "t@t"); git("config", "user.name", "t")
+    f = r / "sub" / "mod.py"; f.write_text("x = 1\n")
+    git("add", "-A")
+    import os
+    env = {**os.environ, "GIT_COMMITTER_DATE": "1700000000 +0000",
+           "GIT_AUTHOR_DATE": "1700000000 +0000"}
+    subprocess.run(["git", "-C", str(r), "commit", "-m", "c"], check=True,
+                   capture_output=True, env=env)
+    # committed + clean → git commit date (seconds → ns)
+    assert ci.derive_mtime(r, "sub/mod.py") == 1700000000 * 1_000_000_000
+    # now modify it → on-disk mtime (a plausibly-large ns value, not the commit date)
+    f.write_text("x = 2\n")
+    dm = ci.derive_mtime(r, "sub/mod.py")
+    assert dm != 1700000000 * 1_000_000_000 and dm == f.stat().st_mtime_ns
+    # outside a git repo → on-disk mtime, no crash
+    g = tmp_path / "bare.py"; g.write_text("y=1\n")
+    assert ci.derive_mtime(tmp_path, "bare.py") == g.stat().st_mtime_ns
+
+
 def test_type_kinds_indexed_and_descended():
     # Struct(23)/Enum(10)/Interface(11) are indexed AND descended (Rust/Go/TS types);
     # Object(19)=impl and Module(2)/Namespace(3) are descended so nested methods land.

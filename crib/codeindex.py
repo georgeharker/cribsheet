@@ -235,6 +235,34 @@ def server_for(relpath: str, specs: dict | None = None,
     return None
 
 
+def derive_mtime(root: Path, relpath: str) -> int:
+    """A portable index timestamp for a source file, in ns. For a COMMITTED, clean
+    file: its git commit date (identical on every machine for the same commit → the
+    tracked toml doesn't churn on sync). For a locally-MODIFIED/untracked file (no
+    stable commit date): the on-disk `st_mtime_ns`. Outside a git repo / on any git
+    error: on-disk mtime. Precedence: disk-if-modified, else git, else disk."""
+    abspath = root / relpath
+    try:
+        disk = abspath.stat().st_mtime_ns
+    except OSError:
+        disk = 0
+    try:
+        st = subprocess.run(["git", "-C", str(root), "status", "--porcelain", "--", relpath],
+                            capture_output=True, text=True, timeout=5)
+        if st.returncode != 0:
+            return disk                          # not a git repo (or error) → disk
+        if st.stdout.strip():
+            return disk                          # modified/untracked → local disk mtime
+        log = subprocess.run(["git", "-C", str(root), "log", "-1", "--format=%ct", "--", relpath],
+                             capture_output=True, text=True, timeout=5)
+        ct = log.stdout.strip()
+        if log.returncode == 0 and ct.isdigit():
+            return int(ct) * 1_000_000_000       # commit seconds → ns (same unit as disk)
+    except (OSError, ValueError, subprocess.SubprocessError):
+        pass
+    return disk
+
+
 def find_root(path: Path) -> Path:
     """The TOP-LEVEL repo root for `path` — the LSP workspace root.
 
@@ -528,7 +556,7 @@ def extract_file(root: Path, relpath: str, settle: float = 1.5) -> list[dict]:
     c = LspClient(argv, root, init_options=spec.get("initializationOptions"),
                   settings=spec.get("settings"))
     entries: list[dict] = []
-    mtime = path.stat().st_mtime_ns   # staleness gate: reindex when the source moves
+    mtime = derive_mtime(root, relpath)   # portable index timestamp (git date / disk)
     try:
         c.initialize()
         uri = path.as_uri()
@@ -710,6 +738,10 @@ _ARRAYS = ("container", "calls", "called_by", "references", "name_terms")
 def _render(e: dict) -> str:
     lines = [f'{k} = "{_esc(str(e.get(k, "")))}"' for k in _SCALARS]
     lines.append(f'line = {e.get("line", 0)}')
+    # `mtime` is DERIVED (see derive_mtime): the git commit date for committed code
+    # (identical across machines → the tracked toml doesn't churn on sync) or the
+    # on-disk mtime for locally-modified files. It's a record; the staleness GATE uses
+    # the toml file's own mtime (Crib._revalidate), so it never needs git at query time.
     lines.append(f'mtime = {e.get("mtime", 0)}')
     for key in _ARRAYS:
         vals = e.get(key) or []
@@ -745,18 +777,23 @@ def learning_slug(fqn: str) -> str:
 
 
 class SymbolIndex:
-    """Content-addressed structural store: symbol_index/<symbol_hash>.toml under the
-    project data dir — git-communicable, byte-deterministic, merge-conflict-free."""
+    """Structural store: symbol_index/<slug(fqn)>.toml under the project data dir.
+    Filename is the LEGIBLE munged fqn (same scheme as learnings) — deterministic
+    across machines (same symbol → same path → git 3-way merges it), and a git diff
+    names the symbol (`crib.retrieve.LexicalCache.get.toml`) instead of an opaque
+    hash. The `merge=cribnote` driver auto-resolves any field divergence on sync."""
 
     def __init__(self, project_dir: Path) -> None:
         self.root = project_dir / "symbol_index"
+
+    def _relname(self, fqname: str) -> str:
+        return f"{learning_slug(fqname)}.toml"
 
     def write(self, entry: dict) -> Path:
         self.root.mkdir(parents=True, exist_ok=True)
         # Filename keyed by the FQN (identity), so a body edit UPDATES the same file
         # (clean git diff) instead of orphaning it — content_hash is a field inside.
-        fh = hashlib.sha1(entry["fqname"].encode()).hexdigest()[:16]
-        p = self.root / f"{fh}.toml"
+        p = self.root / self._relname(entry["fqname"])
         p.write_text(_render(entry))
         return p
 
@@ -786,7 +823,7 @@ class SymbolIndex:
 
     def delete(self, fqname: str) -> bool:
         """Drop one symbol's entry by exact fqname (rename/removal). Returns hit."""
-        p = self.root / f"{hashlib.sha1(fqname.encode()).hexdigest()[:16]}.toml"
+        p = self.root / self._relname(fqname)
         if p.exists():
             p.unlink()
             return True
