@@ -1000,23 +1000,32 @@ class Crib:
         Best-effort — an LSP hiccup leaves the stale entry rather than failing the query.
         No-op when the source root is unknown (older index / no meta). Sync (called from
         the sync query path); a reindex blocks only when a file actually changed."""
-        from .codeindex import SymbolIndex
+        from .codeindex import SymbolIndex, _parse
         store = SymbolIndex(self.paths.project_dir(proj))
         root = store.source_root()
-        if root is None:
+        if root is None or not store.root.exists():
             return
-        stored: dict[str, int] = {}          # file → its recorded mtime (any symbol's)
-        for e in store.all():
-            stored.setdefault(e.get("file", ""), e.get("mtime") or 0)
-        for rel, mt in stored.items():
+        # Baseline = the on-disk mtime of a source file's symbol tomls (= WHEN indexed),
+        # derived locally + cheap. NOT the toml's stored `mtime` field (that's a portable
+        # git-date record, not comparable to a local st_mtime — and would need git here).
+        baseline: dict[str, int] = {}        # source file → oldest mtime of its tomls
+        for p in store.root.glob("*.toml"):
+            try:
+                mt = p.stat().st_mtime_ns
+                f = _parse(p.read_text()).get("file", "")
+            except OSError:
+                continue
+            if f:
+                baseline[f] = min(baseline.get(f, mt), mt)
+        for rel, base_mt in baseline.items():
             src = root / rel
             try:
                 cur = src.stat().st_mtime_ns
             except OSError:                  # deleted → drop all its symbols + its edges
                 self._drop_file(proj, rel)
                 continue
-            if cur != mt:
-                try:
+            if cur > base_mt:                # source edited after it was indexed → reindex
+                try:                         # (content_hash gate no-ops if unchanged)
                     self._index_file_sync(root, rel, proj, patch_edges=True)
                 except Exception:  # noqa: BLE001 — keep the stale entry over a failed query
                     pass

@@ -74,3 +74,31 @@ def test_run_driver_writes_and_signals(tmp_path):
     rc = merge.run_driver(str(base), str(cur), str(oth))
     assert rc == 1                               # body conflict → git leaves unmerged
     assert "<<<<<<<" in cur.read_text()
+
+
+def test_symbol_toml_merge_is_clean_and_symmetric():
+    from crib.codeindex import _parse, _render
+    base = _render({"fqname": "m.f", "name": "f", "kind": "function",
+                    "content_hash": "h1", "description": "old", "file": "m.py",
+                    "line": 1, "mtime": 100, "calls": [], "called_by": [],
+                    "references": [], "name_terms": ["f"]})
+    ours = _render({**_parse(base), "description": "better", "mtime": 200})
+    theirs = _render({**_parse(base), "mtime": 150})
+    m1 = merge.merge_symbol_texts(base, ours, theirs)
+    assert "<<<<<<<" not in m1
+    assert _parse(m1)["description"] == "better"   # theirs==base → ours (changed) wins
+    # symmetric: A/B swap yields identical bytes (never re-conflicts on the next sync)
+    assert merge.merge_symbol_texts(base, theirs, ours) == m1
+
+
+def test_run_driver_routes_toml_clean(tmp_path):
+    from crib.codeindex import _parse, _render
+    e = {"fqname": "m.f", "name": "f", "kind": "function", "content_hash": "h",
+         "description": "d", "file": "m.py", "line": 1, "mtime": 1, "calls": [],
+         "called_by": [], "references": [], "name_terms": ["f"]}
+    b = tmp_path / "O.toml"; c = tmp_path / "A.toml"; o = tmp_path / "B.toml"
+    b.write_text(_render(e))
+    c.write_text(_render({**e, "mtime": 2}))
+    o.write_text(_render({**e, "mtime": 3}))
+    assert merge.run_driver(str(b), str(c), str(o)) == 0   # toml always clean
+    assert "<<<<<<<" not in c.read_text()
