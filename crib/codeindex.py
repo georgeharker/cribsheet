@@ -177,11 +177,22 @@ def server_for(relpath: str, specs: dict | None = None,
 
 
 def find_root(path: Path) -> Path:
-    """Nearest ancestor with a project marker — the LSP workspace root."""
+    """The TOP-LEVEL repo root for `path` — the LSP workspace root.
+
+    A git submodule's `.git` is a FILE (a gitlink); a real repo's `.git` is a
+    DIRECTORY. So we resolve to the nearest ancestor with a `.git` *directory*,
+    walking straight past submodule boundaries — a vendored/submodule file is thus
+    indexed as part of the enclosing top-level repo (e.g. `vendor/llmkit/…` under
+    `cribsheet`), NOT as its own root. That keeps a project's `source_root` single
+    and consistent; without it, per-file roots flip-flop into a submodule and
+    `_revalidate` evicts the real symbols (they resolve under the wrong root)."""
     path = path.resolve()
     for d in [path, *path.parents]:
-        if (d / "pyproject.toml").exists() or (d / ".git").exists() \
-                or (d / "setup.py").exists():
+        if (d / ".git").is_dir():           # top-level repo (submodule .git is a file)
+            return d
+    # No enclosing git repo → fall back to a package marker (nearest pyproject/setup).
+    for d in [path, *path.parents]:
+        if (d / "pyproject.toml").exists() or (d / "setup.py").exists():
             return d
     return path.parent
 

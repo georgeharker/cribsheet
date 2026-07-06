@@ -107,6 +107,22 @@ def test_learning_slug_munges_unsafe_and_disambiguates():
         assert s and not s.startswith("-") and not s.endswith("-")
 
 
+# --- find_root resolves to the TOP-LEVEL repo, past submodule gitlinks -----------
+def test_find_root_walks_past_submodule_to_top_level(tmp_path):
+    top = tmp_path / "repo"
+    (top / ".git").mkdir(parents=True)               # real repo: .git is a DIRECTORY
+    sub = top / "vendor" / "dep"
+    (sub / "src").mkdir(parents=True)
+    (sub / ".git").write_text("gitdir: ../../.git/modules/dep")  # submodule: .git is a FILE
+    (sub / "pyproject.toml").write_text("[project]\nname='dep'\n")  # would trap a naive finder
+    f = sub / "src" / "mod.py"
+    f.write_text("x = 1\n")
+    # a normal file → the top-level repo
+    assert ci.find_root((top / "a.py")) == top
+    # a vendored/submodule file → STILL the top-level repo (not the submodule)
+    assert ci.find_root(f) == top
+
+
 # --- mtime survives the TOML render/parse round-trip (the staleness gate) --------
 def test_mtime_round_trips_as_bare_int():
     e = {"fqname": "m.f", "name": "f", "kind": "function", "line": 3,
