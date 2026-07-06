@@ -268,9 +268,16 @@ class CribLink:
     """`.crib` — found at a code repo root; ties the repo to a crib project."""
     project: str
     paths: list[str] = field(default_factory=list)
+    docs: list[str] = field(default_factory=list)
     imports: list[str] = field(default_factory=list)
     import_into: str | None = None
     root: Path | None = None  # dir the .crib was found in
+
+    @property
+    def doc_patterns(self) -> list[str]:
+        """Globs for docs indexed IN-SITU. `docs:` is canonical; legacy `import:`
+        is honoured as a fallback (it used to drive the copy-in import)."""
+        return self.docs or self.imports
 
     @classmethod
     def find(cls, start: Path) -> "CribLink | None":
@@ -283,6 +290,7 @@ class CribLink:
                 return cls(
                     project=data["project"],
                     paths=data.get("paths", []),
+                    docs=data.get("docs", []),
                     imports=data.get("import", []),
                     import_into=data.get("import_into"),
                     root=d,

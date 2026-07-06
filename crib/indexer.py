@@ -16,6 +16,7 @@ from pathlib import Path
 
 from . import notes
 from .chunk import WINDOW_OVERLAP, WINDOW_WORDS, chunk_note
+from .util import derived_ulid as _derive_id
 from .embed import Embedder
 from .retrieve import LexicalCache, SummaryVectorCache
 from .store import Record, Store
@@ -61,13 +62,19 @@ class IndexEngine:
         self.lexical.invalidate(project)
         self.summaries.invalidate(project)
 
-    async def index_file(self, project: str, notes_dir: Path, relpath: str) -> IndexResult:
-        """Reindex one note. Idempotent + hash-gated under a per-path lock."""
-        async with self._locks[self._key(project, relpath)]:
-            return self._index_locked(project, notes_dir, relpath)
+    async def index_file(self, project: str, notes_dir: Path, relpath: str,
+                         content_path: Path | None = None) -> IndexResult:
+        """Reindex one note. Idempotent + hash-gated under a per-path lock.
 
-    def _index_locked(self, project: str, notes_dir: Path, relpath: str) -> IndexResult:
-        path = notes_dir / relpath
+        `content_path` decouples where the bytes are READ from how the note is
+        KEYED: source-anchored docs are read from the repo (`content_path`) but
+        keyed by their `sources/<repo>/…` relpath. Default reads `notes_dir/relpath`."""
+        async with self._locks[self._key(project, relpath)]:
+            return self._index_locked(project, notes_dir, relpath, content_path)
+
+    def _index_locked(self, project: str, notes_dir: Path, relpath: str,
+                      content_path: Path | None = None) -> IndexResult:
+        path = content_path if content_path is not None else notes_dir / relpath
 
         # Deleted on disk -> drop all its chunks.
         if not path.exists():
@@ -78,17 +85,26 @@ class IndexEngine:
             return IndexResult(relpath, changed=bool(existing), upserted=0,
                                deleted=len(existing))
 
-        notes.heal_file(path)               # self-heal merge-duplicated frontmatter (§14)
+        # A source-anchored doc (content_path given) is READ-ONLY: the repo owns
+        # it, so never heal/rewrite it or stamp an id into it — derive a stable id
+        # from its relpath instead.
+        read_only = content_path is not None
+        if not read_only:
+            notes.heal_file(path)           # self-heal merge-duplicated frontmatter (§14)
         note = notes.load(path)
-        if notes.ensure_id(note):           # assign + persist a stable id
-            notes.save_atomic(note)
-        note_id = note.id or ""
+        if read_only:
+            note_id = note.id or _derive_id(relpath)
+        else:
+            if notes.ensure_id(note):       # assign + persist a stable id
+                notes.save_atomic(note)
+            note_id = note.id or ""
         mtime = path.stat().st_mtime
 
         new_chunks = chunk_note(project, relpath, note_id, note.body,
                                 self.window_words, self.overlap)
         new_by_id = {c.chunk_id: c for c in new_chunks}
-        source = note.frontmatter.get("source", "manual")
+        source = note.frontmatter.get("source",
+                                      "doc-insitu" if read_only else "manual")
 
         existing = self.store.get_meta({"project": project, "relpath": relpath})
         existing_hash = {i: m.get("content_hash") for i, m in existing.items()}

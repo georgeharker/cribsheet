@@ -357,8 +357,10 @@ def build_parser() -> argparse.ArgumentParser:
                    help="run the verb in-process instead of via the daemon")
     sub = p.add_subparsers(dest="cmd")
 
-    def proj(sp):  # shared --project option
-        sp.add_argument("-p", "--project")
+    def proj(sp):  # shared project selectors
+        sp.add_argument("-p", "--project")            # by NAME
+        sp.add_argument("-P", "--project-path",       # by PATH (resolve .crib from here
+                        dest="project_path")          # instead of the actual cwd)
 
     sv = sub.add_parser("serve", help="run the MCP server (stdio or --http)")
     sv.add_argument("--http", action="store_true")
@@ -501,7 +503,9 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("restore", help="restore a prior version of a note")
     s.add_argument("relpath"); s.add_argument("version"); proj(s)
 
-    s = sub.add_parser("import", help="ingest local docs via the nearest .crib")
+    s = sub.add_parser("import",
+                       help="copy explicit files into memory as crib-owned notes")
+    s.add_argument("paths", nargs="+", help="files to copy into memory")
     proj(s)
 
     s = sub.add_parser("import-memory",
@@ -636,7 +640,9 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
 
     Content args read stdin here (client-side) — the daemon has none; `cwd` is
     sent so the daemon resolves `.crib`/project relative to the caller."""
-    cwd = str(Path.cwd())
+    # -P/--project-path resolves the project from THAT dir instead of the actual cwd
+    cwd = str(Path(args.project_path).expanduser()) if getattr(args, "project_path", None) \
+        else str(Path.cwd())
     v = args.cmd
     if v == "project":
         pv = getattr(args, "project_verb", None) or "status"
@@ -693,7 +699,8 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
         return "restore", {"relpath": args.relpath, "version": args.version,
                            "project": args.project, "project_path": cwd}
     if v == "import":
-        return "import", {"project": args.project, "project_path": cwd}
+        return "import", {"paths": args.paths, "project": args.project,
+                          "project_path": cwd}
     if v == "import-memory":
         return "import_memory", {"project": args.project, "project_path": cwd}
     if v == "distill":
@@ -839,7 +846,8 @@ def _reconcile(cfg: Any) -> Any:
 
 def _run_inprocess(args: Any) -> None:
     crib = Crib.open()
-    cwd = Path.cwd()
+    cwd = Path(args.project_path).expanduser() if getattr(args, "project_path", None) \
+        else Path.cwd()
     j = args.json
     try:
         if args.cmd in ("lookup", "search") and not getattr(args, "render", False):
@@ -884,7 +892,7 @@ def _run_inprocess(args: Any) -> None:
             _emit(asyncio.run(crib.restore(
                 args.relpath, args.version, args.project, cwd=cwd)), j)
         elif args.cmd == "import":
-            _emit(asyncio.run(crib.import_docs(args.project, cwd=cwd)), j)
+            _emit(asyncio.run(crib.import_files(args.paths, args.project, cwd=cwd)), j)
         elif args.cmd == "import-memory":
             _emit(asyncio.run(crib.import_claude_memory(args.project, cwd=cwd)), j)
         elif args.cmd == "distill":

@@ -9,6 +9,14 @@ facet. Noun-verb is canonical on the CLI (`crib code lookup`); the hyphenated fo
 
 ## Memory — notes
 
+Two note classes share one index (both surface via `lookup`/`apropos`):
+**crib-owned** notes (`store`/`append`/`edit`, code learnings, explicit `import`
+copies) live under the crib tree, are editable + git-synced, and are watched for
+external edits; **source-owned** docs (a repo's `.crib`-declared docs) are indexed
+**in-situ** — the source tree is master, crib holds only the index, `read`/`locate`
+return the repo path, and a source watcher reindexes them on save. Every note —
+including code learnings — exposes its on-disk `path`.
+
 | CLI | MCP | Description |
 |---|---|---|
 | `crib lookup` / `search` | `lookup` | Semantic search over notes; returns ranked locator lines (hybrid dense ⊕ BM25). |
@@ -27,10 +35,10 @@ facet. Noun-verb is canonical on the CLI (`crib code lookup`); the hyphenated fo
 | `crib history [rel]` | `history` | Git history for a note or the whole data tree. |
 | `crib snapshot [msg]` | `snapshot` | Git checkpoint of the data tree. |
 | `crib distill` | `distill` | Re-digest a note via MCP sampling (knowledge capture). |
-| `crib elaborate` | `elaborate` | Expand a terse note into fuller prose. |
-| `crib summarize` | `summarize` | Summarize a note/section. |
-| `crib import` | — | Ingest a repo's local docs declared in its `.crib` (one-way, source wins). |
-| `crib import-memory` | — | Mirror Claude Code's harness `memory/*.md` into a crib project (host-namespaced). |
+| `crib elaborate` | `elaborate` | Generate per-section *keyword search terms* (synonyms + phrases a searcher would type, esp. words not in the text) → BM25 `keyword_index`. Not prose expansion. |
+| `crib summarize` | `summarize` | Generate per-section *rephrasings* embedded as dense alias vectors → `summary_index` (so differently-worded queries still match). |
+| `crib import <path>…` | `import` | Copy NAMED files into memory as crib-owned notes (a snapshot you own: git-synced, editable, versioned). Manual only. Distinct from in-situ docs. |
+| `crib import-memory` | — | Live-mirror Claude Code's harness `memory/*.md` into a crib project (host-namespaced; bind-once, daemon keeps synced). |
 | `crib projects` | `projects` | List projects. |
 | — | `use_project` | Set the session's current project (sticky). |
 | — | `current_project` | Report the session's current project. |
@@ -62,9 +70,9 @@ facet. Noun-verb is canonical on the CLI (`crib code lookup`); the hyphenated fo
 
 | CLI | MCP | Description |
 |---|---|---|
-| `crib project setup` | `project_setup` | Onboard: ensure `.crib` (auto-created), import docs, index all source. The one-call "get me going." |
-| `crib project index` | `project_index` | (Re)index the repo's code from `.crib` (cheap re-run via the content-hash gate). |
-| `crib project status` | `project_status` | Indexed? symbol/file counts, kind breakdown, `.crib` paths. |
+| `crib project setup` | `project_setup` | Onboard: ensure `.crib` (auto-created), index docs IN-SITU + all source. The one-call "get me going." |
+| `crib project index` | `project_index` | (Re)index the repo's code AND in-situ docs from `.crib` (cheap re-run via the content-hash gate). |
+| `crib project status` | `project_status` | Indexed? symbol/file counts, kind breakdown, `.crib` paths, doc sources/chunks. |
 | `crib project forget` | `project_forget` | Clear the code index (keeps learnings/notes/`.crib`; `--with-learnings` to drop those too). |
 | `crib code setup` / `code status` | — | The code facet only (no doc import) — sugar over `project index` / `project status`. |
 

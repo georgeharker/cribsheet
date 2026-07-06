@@ -153,6 +153,8 @@ _CODE_IGNORE_DIRS = {".git", ".versions", "node_modules", ".venv", "venv",
                      "__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache",
                      "dist", "build", "target", ".tox", ".idea", "site-packages",
                      ".cache", ".claude"}
+# Prose docs indexed in-situ alongside code (same source roots, same watcher).
+DOC_EXTS = {".md", ".rst", ".txt", ".markdown"}
 
 
 class CodeWatcher(_FSWatcher):
@@ -199,7 +201,9 @@ class CodeWatcher(_FSWatcher):
         p = Path(raw_path)
         if any(part in _CODE_IGNORE_DIRS for part in p.parts):
             return None
-        if p.suffix.lower() not in self._code_exts():
+        suffix = p.suffix.lower()
+        is_doc = suffix in DOC_EXTS
+        if suffix not in self._code_exts() and not is_doc:
             return None
         rp = p.resolve() if p.exists() else p
         best: tuple[str, str, str, bool] | None = None
@@ -209,7 +213,10 @@ class CodeWatcher(_FSWatcher):
             except ValueError:
                 continue
             if best is None or len(key) > len(best[1]):
-                best = (proj, key, str(rel), deleted)
+                # relpath prefixed so the handler routes doc vs code; the batch key
+                # stays unique per file either way.
+                tag = f"\x00doc\x00{rel}" if is_doc else str(rel)
+                best = (proj, key, tag, deleted)
         return best
 
     # Coalesce: instead of the base's per-file debounce, accumulate every changed
