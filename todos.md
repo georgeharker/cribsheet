@@ -10,6 +10,16 @@
   just wasteful — concurrent full-parses also contend.
 
 ## Resolved
+- **Docs indexed in-situ (source is master), not copied.** Was: `.crib` docs were
+  *copied* into `imported/<repo>/` (a stale snapshot). Now a repo's `.crib` `docs:`
+  globs are indexed IN-SITU as source-anchored notes (`sources/<repo>/<rel>`): crib
+  holds only the index, `read`/`locate` return the repo path, the source watcher
+  reindexes on save, and `project index` reconciles adds/edits/deletes. `import` is
+  now manual-only and takes an explicit list of paths to copy INTO memory (a
+  crib-owned snapshot you deliberately own). Two note classes, one index; both
+  surface via `lookup`. Every note (incl. code learnings) exposes its on-disk `path`.
+  (`SourceRoots` registry = `doc-sources.json`; `CribLink.doc_patterns` honours legacy
+  `import:` as a fallback.)
 - **Submodule/vendored code rooting.** Was: vendored sub-repos got mis-rooted (per-file
   `find_root` escaped into the submodule → `source_root` flip-flopped → `_revalidate`
   evicted the real symbols, collapsing the index). Fixed by `find_root` resolving to the

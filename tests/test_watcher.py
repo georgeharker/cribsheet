@@ -38,8 +38,11 @@ def test_code_watcher_decode_filters(tmp_path):
     assert cw._decode(str(f), False) == ("proj", str(root.resolve()), "src/a.py", False)
     # a delete still decodes (so its symbols get dropped)
     assert cw._decode(str(f), True) == ("proj", str(root.resolve()), "src/a.py", True)
-    # non-code extension → ignored
-    assert cw._decode(str(root / "README.md"), False) is None
+    # a doc under the watched root → routed as an in-situ doc (\x00doc\x00-tagged)
+    assert cw._decode(str(root / "README.md"), False) == (
+        "proj", str(root.resolve()), "\x00doc\x00README.md", False)
+    # a non-code, non-doc extension → ignored
+    assert cw._decode(str(root / "a.png"), False) is None
     # junk dir → ignored
     assert cw._decode(str(root / "__pycache__" / "a.py"), False) is None
     # outside any watched root → ignored

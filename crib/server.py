@@ -411,12 +411,13 @@ def build_server(crib: Crib | None = None):
         return crib.history(relpath)
 
     @mcp.tool(name="import")
-    async def import_docs(project: str | None = None,
-                          project_path: str | None = None) -> dict[str, Any]:
-        """Ingest local docs declared in the nearest `.crib` into a project — a
-        one-way pull (source wins, note ids/history preserved), safe to re-run as
-        the source repo's docs change."""
-        return _switch_if_created(await crib.import_docs(project, cwd=_cwd(project_path)))
+    async def import_files(paths: list[str], project: str | None = None,
+                           project_path: str | None = None) -> dict[str, Any]:
+        """Copy the NAMED files into memory as crib-owned notes (snapshot you own:
+        git-synced, editable, versioned). Distinct from a repo's `.crib` docs, which
+        are indexed IN-SITU (source is master, never copied) by `project index`."""
+        return _switch_if_created(
+            await crib.import_files(paths, project, cwd=_cwd(project_path)))
 
     @mcp.tool(name="import_memory")
     async def import_memory(project: str | None = None,

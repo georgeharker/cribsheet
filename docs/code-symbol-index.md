@@ -388,9 +388,10 @@ deferring to `_ensure_crib`:
 
 - **`_ensure_crib` — sensible defaults, one primitive.** Finds the repo's `.crib`, or
   writes one: `project` = repo dir name; `paths:` = the LSP-supported extensions that
-  actually occur under the root (junk dirs pruned); `import:` = `README.md` +
-  `docs/**/*.md`. Globs are YAML-quoted (a bare `- **/*.py` reads `*` as an alias
-  anchor). It anchors at the nearest repo marker (`.git`/`pyproject.toml`) **or the cwd
+  actually occur under the root (junk dirs pruned); `docs:` = `README.md` +
+  `docs/**/*.md` (indexed IN-SITU — source is master, never copied; legacy `import:`
+  is still honoured as a fallback). Globs are YAML-quoted (a bare `- **/*.py` reads
+  `*` as an alias anchor). It anchors at the nearest repo marker (`.git`/`pyproject.toml`) **or the cwd
   itself** — never `find_root`'s `base.parent` fallback, which would write `.crib` in the
   wrong dir and index the parent tree.
 - **The autonomous loop.** `code_lookup` on an unindexed project self-diagnoses toward

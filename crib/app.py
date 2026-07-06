@@ -27,6 +27,7 @@ from .gitbacking import GitBacking
 from .indexer import IndexEngine, IndexResult
 from .notes import Note
 from .paths import Paths
+from .sources import SRC_PREFIX, SourceRoots, src_relpath
 from .store import Hit, InMemoryStore, Store
 from .util import derived_ulid
 from .versions import VersionRing
@@ -210,7 +211,15 @@ class Crib:
             return
         for relpath, (root, deleted) in changes.items():
             try:
-                if deleted:
+                if relpath.startswith("\x00doc\x00"):     # in-situ doc (see CodeWatcher._decode)
+                    # index_file is async (asyncio locks) — await on THIS loop, don't
+                    # thread it (a per-thread asyncio.run would strand stale-loop locks).
+                    rel_to_repo = relpath[len("\x00doc\x00"):]
+                    src_rel = src_relpath(Path(root).name, rel_to_repo)
+                    await self.index.index_file(
+                        project, self.notes_dir(project), src_rel,
+                        content_path=self.abspath(project, src_rel))
+                elif deleted:
                     await asyncio.to_thread(self._drop_file, project, relpath)
                 else:
                     await asyncio.to_thread(
@@ -284,7 +293,19 @@ class Crib:
         return SectionIndex(self.paths.project_dir(project), "summary_index") \
             .terms_for(section_hash, list(labels))
 
+    def _source_roots(self, project: str) -> "SourceRoots":
+        """Per-project registry of docs indexed in-situ (prefix -> repo root)."""
+        from .sources import SourceRoots
+        return SourceRoots(self.paths.project_dir(project) / "doc-sources.json")
+
     def abspath(self, project: str, relpath: str) -> Path:
+        """On-disk file for a note. Source-anchored docs (`sources/<repo>/…`)
+        resolve to the repo file via the registry; everything else lives under the
+        crib notes tree."""
+        if relpath.startswith(SRC_PREFIX):
+            src = self._source_roots(project).resolve(relpath)
+            if src is not None:
+                return src
         return self.notes_dir(project) / relpath
 
     async def _write_note(self, project: str, relpath: str, note: Note) -> IndexResult:
@@ -1057,9 +1078,9 @@ class Crib:
     def _ensure_crib(self, cwd: Path | None, project: str | None,
                      want_code: bool, want_docs: bool) -> tuple[Any, bool]:
         """Find the repo's `.crib`, or CREATE one with sensible defaults (project =
-        repo dir name; auto-detected code `paths:` + doc `import:` globs). Returns
-        (CribLink, created?). The one primitive both `project setup` and the facet
-        setups defer to."""
+        repo dir name; auto-detected code `paths:` + doc `docs:` globs indexed
+        in-situ). Returns (CribLink, created?). The one primitive both `project
+        setup` and the facet setups defer to."""
         base = (Path(cwd) if cwd else Path.cwd()).resolve()
         link = CribLink.find(base)
         if link and link.root:
@@ -1080,7 +1101,7 @@ class Crib:
         if want_code and (globs := self._detect_code_globs(root)):
             lines += ["paths:", *[f'  - "{g}"' for g in globs]]
         if want_docs:
-            lines += ["import:", '  - "README.md"', '  - "docs/**/*.md"']
+            lines += ["docs:", '  - "README.md"', '  - "docs/**/*.md"']
         (root / ".crib").write_text("\n".join(lines) + "\n")
         return CribLink.find(root), True
 
@@ -1129,25 +1150,29 @@ class Crib:
     async def project_setup(self, project: str | None = None,
                             cwd: Path | None = None) -> dict[str, Any]:
         """Onboard a repo end-to-end: ensure `.crib` (create with sensible defaults if
-        missing), import its declared docs into notes, AND index all its source code.
-        The superset — `code`+`notes`. Idempotent; safe to re-run."""
+        missing), index its declared docs IN-SITU (source is master, never copied),
+        AND index all its source code. The superset — `code`+`notes`. Idempotent;
+        safe to re-run. (`import` — copy a file into memory — stays a separate,
+        explicit verb.)"""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=True)
         proj = project or link.project
-        docs = await self.import_docs(proj, cwd)
+        docs = await self.index_docs_insitu(proj, cwd) if link.doc_patterns else {}
         globs = link.paths or self._detect_code_globs(link.root)
         code = await self._index_project_code(proj, link.root, globs)
         return {"project": proj, "root": str(link.root), "crib_created": created,
-                "docs_imported": docs.get("imported", 0), **code}
+                "docs_indexed": docs.get("docs", 0), **code}
 
     async def project_index(self, project: str | None = None,
                             cwd: Path | None = None) -> dict[str, Any]:
-        """(Re)index the project's SOURCE CODE from its `.crib` paths (ensuring a
-        `.crib` first). The code facet — no doc import. Cheap re-run via the gate."""
+        """(Re)index the project's SOURCE CODE and in-situ docs from its `.crib`
+        (ensuring a `.crib` first). Cheap re-run via the content-hash gate."""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
         proj = project or link.project
+        docs = await self.index_docs_insitu(proj, cwd) if link.doc_patterns else {}
         globs = link.paths or self._detect_code_globs(link.root)
         code = await self._index_project_code(proj, link.root, globs)
-        return {"project": proj, "root": str(link.root), "crib_created": created, **code}
+        return {"project": proj, "root": str(link.root), "crib_created": created,
+                "docs_indexed": docs.get("docs", 0), **code}
 
     def project_status(self, project: str | None = None,
                        cwd: Path | None = None) -> dict[str, Any]:
@@ -1160,11 +1185,15 @@ class Crib:
         si = SymbolIndex(self.paths.project_dir(proj))
         entries = si.all()
         link = CribLink.find(Path(cwd)) if cwd else None
+        srcs = self._source_roots(proj).all()
+        doc_count = sum(1 for m in self.store.get_meta({"project": proj}).values()
+                        if m.get("relpath", "").startswith(SRC_PREFIX))
         return {"project": proj, "indexed": si.is_populated(),
                 "symbols": len(entries),
                 "files": len({e.get("file") for e in entries}),
                 "kinds": dict(Counter(e.get("kind", "?") for e in entries)),
                 "paths": (link.paths if link else []),
+                "doc_sources": srcs, "doc_chunks": doc_count,
                 "crib": (str(link.root / ".crib") if link and link.root else None)}
 
     def project_forget(self, project: str | None = None, cwd: Path | None = None,
@@ -1182,6 +1211,16 @@ class Crib:
             shutil.rmtree(si_root)
         self._code_cache.pop(proj, None)     # drop resident cache (trust-mode won't see rmtree)
         self._bump_code_epoch(proj)
+        # In-situ docs are index-only (source is master) — drop their chunks + the
+        # source registry too; re-runnable via `project index`.
+        reg = self._source_roots(proj)
+        doc_ids = [i for i, m in self.store.get_meta({"project": proj}).items()
+                   if m.get("relpath", "").startswith(SRC_PREFIX)]
+        if doc_ids:
+            self.store.delete(doc_ids)
+            self.index.invalidate_caches(proj)
+        for prefix in list(reg.all()):
+            reg.remove(prefix)
         learnings = 0
         if with_learnings:
             ldir = self.notes_dir(proj) / LEARNINGS_DIR
@@ -1189,7 +1228,7 @@ class Crib:
                 learnings = len(list(ldir.glob("*.md")))
                 shutil.rmtree(ldir)
         return {"project": proj, "symbols_removed": removed,
-                "learnings_removed": learnings}
+                "doc_chunks_removed": len(doc_ids), "learnings_removed": learnings}
 
     def code_xref(self, symbol: str, project: str | None = None,
                   cwd: Path | None = None) -> list[dict[str, Any]]:
@@ -1288,7 +1327,7 @@ class Crib:
                 continue
             note = notes.load(path)
             wrote, cur = note.frontmatter.get("content_hash"), e.get("content_hash")
-            e["learning"] = {"relpath": relpath,
+            e["learning"] = {"relpath": relpath, "path": str(path),
                              "stale": bool(wrote and cur and wrote != cur),
                              "body": note.body.strip()}
         return entries
@@ -1497,10 +1536,11 @@ class Crib:
         path = self.abspath(proj, relpath)
         if not path.exists():
             return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
-                    "found": False, "body": None}
+                    "path": str(path), "found": False, "body": None}
         note = notes.load(path)
         return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
-                "found": True, "frontmatter": note.frontmatter, "body": note.body}
+                "path": str(path), "found": True,
+                "frontmatter": note.frontmatter, "body": note.body}
 
     def code_lookup(self, query: str, project: str | None = None, k: int = 8,
                     cwd: Path | None = None,
@@ -1799,53 +1839,90 @@ class Crib:
                 "skipped": skipped, "errors": counters["errors"], "total": total,
                 "bulk_docs": counters["bulk_docs"]}
 
-    # --- import ------------------------------------------------------------
-    async def import_docs(self, project: str | None = None,
-                          cwd: Path | None = None) -> dict[str, Any]:
-        """Ingest local docs declared in a code repo's `.crib` (DESIGN §6).
-
-        One-way pull: copy matched files into the project under `import_into`,
-        stamp provenance frontmatter, index. Source wins on re-import; the target
-        note id (and thus version-ring history) is preserved across re-pulls.
-        """
+    # --- in-situ docs (default: source is master, never copied) ------------
+    async def index_docs_insitu(self, project: str | None = None,
+                                cwd: Path | None = None) -> dict[str, Any]:
+        """Index a repo's `.crib`-declared docs IN-SITU — the source tree is the
+        master; crib holds only the index, never a copy. Each doc is a
+        source-anchored note keyed `sources/<repo>/<rel>`; `read`/`locate` return
+        the repo file, so an LLM that edits it edits the master. Re-runnable
+        (hash-gated), and it prunes docs deleted from the source."""
         link = CribLink.find(cwd or Path.cwd())
         if link is None or link.root is None:
             raise ValueError("no .crib found from cwd upward")
         proj = project or link.project
-        created = self.project_is_new(proj)
-        into = link.import_into or f"imported/{link.root.name}/"
-        if not into.endswith("/"):
-            into += "/"
-        today = datetime.date.today().isoformat()
+        repo = link.root.name
+        prefix = f"{SRC_PREFIX}{repo}/"
+        self._source_roots(proj).upsert(prefix, link.root)
+        self._register_code_root(proj, link.root)   # watch source-tree edits (docs + code)
 
-        imported: list[str] = []
-        for pattern in link.imports:
+        nd = self.notes_dir(proj)
+        seen: set[str] = set()
+        indexed: list[str] = []
+        for pattern in link.doc_patterns:
             for src in sorted(link.root.glob(pattern)):
                 if not src.is_file():
                     continue
-                rel_to_repo = src.relative_to(link.root)
-                relpath = f"{into}{rel_to_repo.as_posix()}"
-                sfm, sbody = notes.parse(src.read_text())
-                tgt = self.abspath(proj, relpath)
-                prev = notes.load(tgt) if tgt.exists() else None
-                fm = dict(sfm)
-                # Provenance built to be byte-identical across machines, so a
-                # git sync never conflicts on it (DESIGN §14): id derived from the
-                # target path (not a per-machine random ULID), source_repo stored
-                # as a portable $LOCATION token (not an absolute path), and the
-                # import date pinned to first-import (preserved across re-pulls).
-                fm.update({
-                    "source": "imported",
-                    "source_repo": portable_path(link.root, self.config.locations),
-                    "source_path": rel_to_repo.as_posix(),
-                    "imported": (prev.frontmatter.get("imported") if prev else None)
-                                or today,
-                })
-                note_id = (prev.id if prev and prev.id else None) or derived_ulid(relpath)
-                fm = {"id": note_id, **fm}
-                note = Note(path=tgt, frontmatter=fm, body=sbody)
-                await self._write_note(proj, relpath, note)
-                imported.append(relpath)
+                rel = src.relative_to(link.root)
+                relpath = src_relpath(repo, rel.as_posix())
+                seen.add(relpath)
+                res = await self.index.index_file(proj, nd, relpath, content_path=src)
+                if res.changed:
+                    indexed.append(relpath)
+        # Prune docs removed from the source tree (indexed under this prefix but
+        # no longer on disk): re-index with a now-missing content_path drops them.
+        removed = 0
+        for rp in self._indexed_relpaths(proj, prefix) - seen:
+            res = await self.index.index_file(proj, nd, rp, content_path=self.abspath(proj, rp))
+            removed += res.deleted
+        return {"project": proj, "root": str(link.root), "prefix": prefix,
+                "docs": len(seen), "changed": len(indexed), "removed": removed}
+
+    def _indexed_relpaths(self, project: str, prefix: str) -> set[str]:
+        """Relpaths currently indexed under `prefix` (one meta scan)."""
+        out: set[str] = set()
+        for m in self.store.get_meta({"project": project}).values():
+            rp = m.get("relpath", "")
+            if rp.startswith(prefix):
+                out.add(rp)
+        return out
+
+    # --- import ------------------------------------------------------------
+    async def import_files(self, paths: list[str], project: str | None = None,
+                           cwd: Path | None = None) -> dict[str, Any]:
+        """Copy explicit files INTO memory as crib-owned notes — manual only.
+
+        Unlike in-situ docs (source is master, never copied), this takes a list of
+        paths you name and pulls a snapshot into `imported/<name>.md`: git-synced,
+        editable in crib, versioned. Use it to *own* a copy (annotate it, carry it
+        cross-machine). Source wins on re-import; the note id (and history) is
+        preserved across re-pulls. Provenance is byte-identical across machines so a
+        git sync never conflicts on it (DESIGN §14)."""
+        proj = self.resolve_project(project, cwd)
+        created = self.project_is_new(proj)
+        today = datetime.date.today().isoformat()
+
+        imported: list[str] = []
+        for p in paths:
+            src = Path(p).expanduser().resolve()
+            if not src.is_file():
+                raise ValueError(f"not a file: {p}")
+            relpath = f"imported/{src.name}"
+            sfm, sbody = notes.parse(src.read_text())
+            tgt = self.abspath(proj, relpath)
+            prev = notes.load(tgt) if tgt.exists() else None
+            fm = dict(sfm)
+            fm.update({
+                "source": "imported",
+                "source_path": portable_path(src, self.config.locations),
+                "imported": (prev.frontmatter.get("imported") if prev else None)
+                            or today,
+            })
+            note_id = (prev.id if prev and prev.id else None) or derived_ulid(relpath)
+            fm = {"id": note_id, **fm}
+            note = Note(path=tgt, frontmatter=fm, body=sbody)
+            await self._write_note(proj, relpath, note)
+            imported.append(relpath)
         return {"project": proj, "imported": len(imported), "files": imported,
                 "created": created}
 
