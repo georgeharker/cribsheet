@@ -1,8 +1,9 @@
 # Memory (cribsheet)
 
-Copy this into your global `$CLAUDE_CONFIG_DIR/CLAUDE.md` (e.g. dotfiles-managed).
-It's always in context, so it's the reliable lever for the "reach for crib" habits —
-the MCP tool descriptions carry the mechanics; this just directs the *approach*.
+<!-- Canonical reach-for-crib directive. Copy into your global
+     $CLAUDE_CONFIG_DIR/CLAUDE.md, or let a cribsheet plugin inject it each session
+     (the plugins symlink this file). It directs *approach*; the MCP tool
+     descriptions carry the mechanics. -->
 
 - **Consult memory first.** Before answering about a project, topic, or past decision
   — or exploring a codebase cold — `lookup`/`apropos` cribsheet first; the answer may
