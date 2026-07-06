@@ -107,6 +107,16 @@ def test_learning_slug_munges_unsafe_and_disambiguates():
         assert s and not s.startswith("-") and not s.endswith("-")
 
 
+# --- describe response shape tolerance (GLM wraps, qwen returns a bare array) -----
+def test_describe_rows_accepts_both_shapes():
+    rows = [{"name": "f", "description": "does f"}]
+    assert ci._describe_rows({"symbols": rows}) == rows      # GLM: wrapped object
+    assert ci._describe_rows(rows) == rows                    # qwen: bare array
+    assert ci._describe_rows({}) == []                        # empty object
+    assert ci._describe_rows(None) == []                      # nothing
+    assert ci._describe_rows("nope") == []                    # junk
+
+
 # --- find_root resolves to the TOP-LEVEL repo, past submodule gitlinks -----------
 def test_find_root_walks_past_submodule_to_top_level(tmp_path):
     top = tmp_path / "repo"

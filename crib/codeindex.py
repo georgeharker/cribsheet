@@ -554,7 +554,10 @@ DESCRIBE_SYSTEM = (
     "or method — IN ORDER, output its qualified name (Class.method), its kind "
     "(class|function|method), and ONE concise sentence describing what it does: the "
     "intent, not a restatement of the signature. A class description says what the "
-    "type represents or manages. Return every definition.")
+    "type represents or manages. Return every definition as JSON matching the schema. "
+    # NB: the literal word 'json' is required here — Alibaba/qwen rejects a
+    # response_format=json_object request whose messages never mention 'json'.
+    )
 
 
 def describe_file(gen_cfg: Any, root: Path, relpath: str) -> dict[str, str]:
@@ -566,10 +569,19 @@ def describe_file(gen_cfg: Any, root: Path, relpath: str) -> dict[str, str]:
     data = generate_structured(gen_cfg, DESCRIBE_SYSTEM, src, DESCRIBE_SCHEMA,
                                purpose="elaborate", schema_name="describe_symbols")
     out: dict[str, str] = {}
-    for s in (data or {}).get("symbols", []) if isinstance(data, dict) else []:
+    for s in _describe_rows(data):
         if isinstance(s, dict) and s.get("name") and s.get("description"):
             out[s["name"]] = s["description"]
     return out
+
+
+def _describe_rows(data: Any) -> list:
+    """The symbol rows from a structured describe response — tolerating both shapes:
+    a wrapped object `{"symbols": [...]}` (GLM) OR a bare array `[...]` (qwen/Alibaba
+    returns the array directly under json_object)."""
+    if isinstance(data, dict):
+        return data.get("symbols", []) or []
+    return data if isinstance(data, list) else []
 
 
 def describe_symbols(gen_cfg: Any, symbols: list[dict]) -> dict[str, str]:
@@ -583,11 +595,11 @@ def describe_symbols(gen_cfg: Any, symbols: list[dict]) -> dict[str, str]:
                        for s in symbols)
     sysp = ("For EACH `# kind name`-delimited definition below, output its name and "
             "ONE concise sentence on what it does (intent, not the signature). Cover "
-            "every one.")
+            "every one, as JSON matching the schema.")   # 'json' required for qwen
     data = generate_structured(gen_cfg, sysp, blob, DESCRIBE_SCHEMA,
                                purpose="elaborate", schema_name="describe_symbols")
     out: dict[str, str] = {}
-    for s in (data or {}).get("symbols", []) if isinstance(data, dict) else []:
+    for s in _describe_rows(data):
         if isinstance(s, dict) and s.get("name") and s.get("description"):
             out[s["name"]] = s["description"]
     return out
