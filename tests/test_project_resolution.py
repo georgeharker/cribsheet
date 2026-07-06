@@ -57,6 +57,34 @@ def test_write_tools_carry_project_or_path_anyof(crib):
         assert asyncio.run(schema(r)).get("anyOf") is None, r
 
 
+def test_write_project_elicits_when_target_omitted(crib):
+    import asyncio
+
+    from crib.server import _write_project_elicit
+
+    class _Accepted:                       # mimics fastmcp AcceptedElicitation
+        def __init__(self, data): self.data = data
+
+    class _Ctx:
+        def __init__(self, behaviour): self.behaviour = behaviour
+        async def elicit(self, message, response_type=None):
+            if self.behaviour == "accept":
+                return _Accepted("chosen-proj")
+            if self.behaviour == "decline":
+                return object()            # no .data → treated as declined
+            raise RuntimeError("client has no elicitation capability")
+
+    run = asyncio.run
+    # explicit project short-circuits (never elicits)
+    assert run(_write_project_elicit(crib, "shuck", None, _Ctx("accept"))) == "shuck"
+    # omitted → elicited value is used
+    assert run(_write_project_elicit(crib, None, None, _Ctx("accept"))) == "chosen-proj"
+    # declined or unsupported → falls back to the hard error
+    for b in ("decline", "unsupported"):
+        with pytest.raises(ValueError, match="explicit target"):
+            run(_write_project_elicit(crib, None, None, _Ctx(b)))
+
+
 def test_write_project_requires_explicit_target(crib):
     # writes never inherit the sticky session — a fact belongs to its subject's project
     session_state().current_project = "some-repo-im-browsing"
