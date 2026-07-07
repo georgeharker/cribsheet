@@ -36,8 +36,12 @@ def test_code_watcher_decode_filters(tmp_path):
     # a code file under the watched root → (project, root, relpath, deleted)
     f = root / "src" / "a.py"; f.write_text("x=1")
     assert cw._decode(str(f), False) == ("proj", str(root.resolve()), "src/a.py", False)
-    # a delete still decodes (so its symbols get dropped)
-    assert cw._decode(str(f), True) == ("proj", str(root.resolve()), "src/a.py", True)
+    # a delete event for a file that still EXISTS is FSEvents rename-save noise
+    # → recorded as a change (trusting it wiped whole files' symbols)
+    assert cw._decode(str(f), True) == ("proj", str(root.resolve()), "src/a.py", False)
+    # a delete of a genuinely-missing file decodes as deleted
+    g = root / "src" / "gone.py"
+    assert cw._decode(str(g), True) == ("proj", str(root.resolve()), "src/gone.py", True)
     # a doc under the watched root → routed as an in-situ doc (\x00doc\x00-tagged)
     assert cw._decode(str(root / "README.md"), False) == (
         "proj", str(root.resolve()), "\x00doc\x00README.md", False)

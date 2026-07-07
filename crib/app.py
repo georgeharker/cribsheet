@@ -15,7 +15,10 @@ import sys
 import threading
 from dataclasses import dataclass, replace
 from pathlib import Path
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
+
+if TYPE_CHECKING:
+    from .codeindex import RefProjects
 
 from . import claudemem, notes
 from .chunk import section_line_map
@@ -233,15 +236,21 @@ class Crib:
                     await self.index.index_file(
                         project, self.notes_dir(project), src_rel,
                         content_path=self.abspath(project, src_rel))
-                elif deleted:
+                elif deleted and not (Path(root) / relpath).exists():
                     await asyncio.to_thread(self._drop_file, project, relpath)
                 else:
+                    # NB: a `deleted` flag for a file that EXISTS is a spurious
+                    # delete — macOS FSEvents coalesces a rename-style save into
+                    # flag bundles that watchdog re-expands in arbitrary order,
+                    # and the batch's last-event-wins can land on the delete.
+                    # Trusting it evicted whole files' symbols; the file's actual
+                    # state at dispatch time (post-debounce) is the truth.
                     await asyncio.to_thread(
                         self._index_file_sync, Path(root), relpath, project, True)
             except Exception:  # noqa: BLE001 — one bad file never aborts the batch
                 pass
 
-    def _register_code_root(self, project: str, root: Any) -> None:
+    def _register_code_root(self, project: str, root: str | Path) -> None:
         """Watch a repo's source root as soon as it's indexed (so a mid-session
         onboard starts live-updating immediately)."""
         if self._code_watcher is not None:
@@ -849,6 +858,38 @@ class Crib:
                 if not files:
                     self._indexing.pop(proj, None)
 
+    def _ref_edge_ctx(self, proj: str, root: Path | None = None) -> "RefProjects":
+        """`extract_file`'s cross-project attribution context: each `.crib` ref's
+        locally-resolved root (pre-resolved) + its indexed file set (for the
+        site-packages suffix match). When `root` is given, an IN-TREE checkout of
+        a ref'd project (nested `.crib` naming it — e.g. `vendor/llmkit`) is added
+        as an extra attribution root for that ref: same repo, same relative paths,
+        so edges into the vendored copy resolve to the ref project. Reads the
+        refs' resident caches — cheap after first touch."""
+        out: RefProjects = []
+        nested_by_proj: dict[str, Path] = {}
+        if root is not None:
+            for nd in self._nested_project_roots(root):
+                link = CribLink.find(nd)
+                if link is not None:
+                    nested_by_proj[link.project] = nd.resolve()
+            root = root.resolve()
+        for ref in self._project_refs(proj):
+            files: frozenset[str] = frozenset()
+            if ref["indexed"]:
+                try:
+                    files = frozenset(
+                        e.get("file", "")
+                        for e in self._resident_code(ref["project"]).entries)
+                except Exception:  # noqa: BLE001 — a broken ref never fails indexing
+                    pass
+            rroot = ref["root"].resolve() if ref["root"] else None
+            out.append((ref["project"], rroot, files))
+            nested = nested_by_proj.get(ref["project"])
+            if nested is not None and nested != rroot:
+                out.append((ref["project"], nested, files))
+        return out
+
     def _index_file_inner(self, root: Path, rel: str, proj: str,
                           patch_edges: bool,
                           existing: dict[str, dict] | None = None) -> dict[str, Any]:
@@ -860,8 +901,28 @@ class Crib:
         (that made a cold onboard O(files × symbols)). None → parse it (standalone path)."""
         from .codeindex import (NoServer, SymbolIndex, describe_file,
                                  describe_symbols, extract_file, match_description)
+        ref_ctx = self._ref_edge_ctx(proj, root)
+        abs_p = (root / rel).resolve()
+        for rname, rroot, _files in ref_ctx:
+            # an in-tree ref checkout (e.g. vendor/llmkit) belongs to ITS project,
+            # not this one — never index it into the parent (refs supersede the
+            # old vendored-code-indexed-as-parent model)
+            if rroot is not None and rroot != root.resolve() \
+                    and abs_p.is_relative_to(rroot):
+                return {"project": proj, "root": str(root), "file": rel,
+                        "symbols": 0, "skipped": f"belongs to ref'd project {rname!r}"}
+        # likewise a nested `.crib` bounds another project (watcher events for
+        # files inside it must not index into the parent). Strictly UNDER root:
+        # an ancestor .crib above a rootless project must not skip everything.
+        link = CribLink.find(abs_p.parent)
+        if link is not None and link.root is not None:
+            lroot = link.root.resolve()
+            if lroot != root.resolve() and lroot.is_relative_to(root.resolve()):
+                return {"project": proj, "root": str(root), "file": rel,
+                        "symbols": 0,
+                        "skipped": f"inside nested project {link.project!r}"}
         try:
-            entries = extract_file(root, rel)
+            entries = extract_file(root, rel, ref_projects=ref_ctx)
         except NoServer as exc:
             return {"project": proj, "root": str(root), "file": rel,
                     "symbols": 0, "skipped": str(exc)}
@@ -888,6 +949,20 @@ class Crib:
             if len(codeish) > 3:
                 return {"project": proj, "root": str(root), "file": rel,
                         "symbols": len(old_in_file), "skipped": "empty-extract-kept-prior"}
+        # PARTIAL-extract guard — the empty guard's unguarded cousin. Deleting a
+        # symbol from the index on the LSP's say-so is only safe if the listing is
+        # complete; a server answering mid-settle (esp. on the short warm-session
+        # settle) can return a partial documentSymbol. Signature of partial:
+        # strictly FEWER symbols and NOTHING new — a genuine edit that removes a
+        # symbol virtually always also changes another (hash/line churn). Confirm
+        # with one slow re-extract before trusting the shrink.
+        fresh_fqns = {e["fqname"] for e in entries}
+        if entries and old_in_file and len(fresh_fqns) < len(old_in_file) \
+                and not (fresh_fqns - old_in_file):
+            try:
+                entries = extract_file(root, rel, settle=3.0, ref_projects=ref_ctx)
+            except Exception:  # noqa: BLE001 — keep the fast read if the slow one fails
+                pass
         stale = [e for e in entries
                  if existing.get(e["fqname"], {}).get("content_hash") != e["content_hash"]
                  or not existing.get(e["fqname"], {}).get("description")]
@@ -1175,17 +1250,34 @@ class Crib:
                     present.add(e)
         return sorted(f"**/*{e}" for e in present)
 
+    def _nested_project_roots(self, root: Path) -> list[Path]:
+        """Directories under `root` carrying their OWN `.crib` — project
+        BOUNDARIES: their code belongs to the nested project (a vendored
+        submodule with a .crib, say), never to the parent's index. `refs:` is
+        how the parent xrefs into it (cross-project refs)."""
+        junk = self._code_ignore()
+        out: list[Path] = []
+        for dp, dirs, files in os.walk(root):
+            dirs[:] = [d for d in dirs if d not in junk and not d.startswith(".")]
+            if ".crib" in files and Path(dp) != root:
+                out.append(Path(dp))
+                dirs[:] = []                 # bounded — no need to descend
+        return out
+
     def _enumerate_code_files(self, root: Path, globs: list[str]) -> list[Path]:
         """Files to index: the extension globs, PLUS extensionless/unknown-suffix
         files whose grammar (shebang / bare name / `#compdef`|`#autoload` marker)
         resolves to a language served by an installed LSP — so shell autoload
-        functions and dotfiles get indexed, not just `*.zsh`."""
+        functions and dotfiles get indexed, not just `*.zsh`. Subtrees with
+        their own `.crib` are skipped (project boundaries)."""
         from .codeindex import content_lang, load_grammar, load_specs, resolve_command
         junk, seen = self._code_ignore(), set()
+        bounds = self._nested_project_roots(root)
         for g in globs:
             for p in root.glob(g):
                 if p.is_file() and not any(part in junk
-                                           for part in p.relative_to(root).parts):
+                                           for part in p.relative_to(root).parts) \
+                        and not any(p.is_relative_to(b) for b in bounds):
                     seen.add(p)
         # extensionless / unknown-extension files matched by the grammar map
         specs = load_specs()
@@ -1197,7 +1289,8 @@ class Crib:
                       for e in (sp.get("extensionToLanguage") or {})}
         grammar = load_grammar()
         for dp, dirs, files in os.walk(root):
-            dirs[:] = [d for d in dirs if d not in junk and not d.startswith(".")]
+            dirs[:] = [d for d in dirs if d not in junk and not d.startswith(".")
+                       and not any((Path(dp) / d) == b for b in bounds)]
             for fn in files:
                 p = Path(dp) / fn
                 if p in seen or p.suffix.lower() in known_exts:
@@ -1254,6 +1347,24 @@ class Crib:
         # per-file edge-patch (the LSP hands each file its cross-file edges directly).
         sem = asyncio.Semaphore(max(1, self.config.generate.concurrency))
 
+        # MEMBERSHIP pins (docs §3.2): didOpen the sweep's FULL doc set on servers
+        # whose spec opts in (`pinWorkspace`) — an open doc is in the server's
+        # analysis set even when its own discovery would miss it (shuck can't find
+        # extensionless autoloads), so cross-file edges cover everything crib
+        # enumerated. Held for the sweep, released in the finally.
+        from .codeindex import _POOL, server_for
+        pins: dict[str, tuple[list[str], dict, list[tuple[Path, str]]]] = {}
+        for f in files:
+            sel = server_for(str(f.resolve().relative_to(root.resolve())), abspath=f)
+            if sel and sel[3].get("pinWorkspace"):
+                label, argv, lang, spec = sel
+                pins.setdefault(label, (argv, spec, []))[2].append((f, lang))
+        for label, (argv, spec, docs) in pins.items():
+            try:
+                await asyncio.to_thread(_POOL.pin_docs, root, label, argv, spec, docs)
+            except Exception:  # noqa: BLE001 — pinning is best-effort enrichment
+                pass
+
         async def _one(f: Path) -> tuple[Path, dict[str, Any] | None, str | None]:
             rel = str(f.resolve().relative_to(root.resolve()))
             async with sem:
@@ -1266,13 +1377,17 @@ class Crib:
 
         syms = desc = indexed = 0
         errors: list[dict[str, str]] = []
-        for f, r, err in await asyncio.gather(*(_one(f) for f in files)):
-            if err is not None:
-                errors.append({"file": str(f), "error": err})
-            elif not (r or {}).get("skipped"):
-                indexed += 1
-                syms += (r or {}).get("symbols", 0)
-                desc += (r or {}).get("described", 0)
+        try:
+            for f, r, err in await asyncio.gather(*(_one(f) for f in files)):
+                if err is not None:
+                    errors.append({"file": str(f), "error": err})
+                elif not (r or {}).get("skipped"):
+                    indexed += 1
+                    syms += (r or {}).get("symbols", 0)
+                    desc += (r or {}).get("described", 0)
+        finally:
+            if pins:
+                await asyncio.to_thread(_POOL.unpin, root)
         out: dict[str, Any] = {"files_indexed": indexed, "files_seen": len(files),
                                "symbols": syms, "described": desc}
         if errors:
@@ -1306,6 +1421,27 @@ class Crib:
         return {"project": proj, "root": str(link.root), "crib_created": created,
                 "docs_indexed": docs.get("docs", 0), **code}
 
+    def _project_refs(self, proj: str) -> list[dict[str, Any]]:
+        """The projects `proj`'s `.crib` names in `refs:` — cross-project xref
+        targets. Each ref resolves to its own LOCAL checkout via that project's
+        `.source_root` (machine-local, gitignored), so the committed `.crib`
+        carries NAMES only and survives differently-located clones. → [{project,
+        root (None when not locally present), indexed}]."""
+        from .codeindex import SymbolIndex
+        my_root = SymbolIndex(self.paths.project_dir(proj)).source_root()
+        link = (CribLink.find(my_root)
+                if my_root is not None and my_root.exists() else None)
+        out: list[dict[str, Any]] = []
+        for name in (link.refs if link else []):
+            if name == proj:
+                continue                     # self-reference is meaningless
+            si = SymbolIndex(self.paths.project_dir(name))
+            root = si.source_root()
+            out.append({"project": name,
+                        "root": root if root is not None and root.exists() else None,
+                        "indexed": si.is_populated()})
+        return out
+
     def project_status(self, project: str | None = None,
                        cwd: Path | None = None) -> dict[str, Any]:
         """Is this project code-indexed? symbol/file counts, kind breakdown, the
@@ -1320,11 +1456,14 @@ class Crib:
         srcs = self._source_roots(proj).all()
         doc_count = sum(1 for m in self.store.get_meta({"project": proj}).values()
                         if m.get("relpath", "").startswith(SRC_PREFIX))
+        refs = [{**r, "root": str(r["root"]) if r["root"] else None}
+                for r in self._project_refs(proj)]
         return {"project": proj, "indexed": si.is_populated(),
                 "symbols": len(entries),
                 "files": len({e.get("file") for e in entries}),
                 "kinds": dict(Counter(e.get("kind", "?") for e in entries)),
                 "paths": (link.paths if link else []),
+                "refs": refs,
                 "doc_sources": srcs, "doc_chunks": doc_count,
                 "crib": (str(link.root / ".crib") if link and link.root else None)}
 
@@ -1394,11 +1533,25 @@ class Crib:
 
     def code_xref(self, symbol: str, project: str | None = None,
                   cwd: Path | None = None) -> list[dict[str, Any]]:
-        """Callers/callees for a symbol from the persisted symbol_index — no live LSP."""
+        """Callers/callees for a symbol from the persisted symbol_index — no live
+        LSP. A local miss falls through to the project's `.crib` `refs:` (cross-
+        project xref); every entry carries `project`."""
         proj = self.resolve_project(project, cwd)
         self._require_code_index(proj)
         rc = self._resident_code(proj)       # resident; refreshes source per freshness mode
-        return self._attach_learnings(proj, rc.by_fqname(symbol))
+        matches = rc.by_fqname(symbol)
+        owner = proj
+        if not matches:
+            for ref in self._project_refs(proj):
+                if not ref["indexed"]:
+                    continue
+                matches = self._resident_code(ref["project"]).by_fqname(symbol)
+                if matches:
+                    owner = ref["project"]
+                    break
+        for m in matches:
+            m["project"] = owner
+        return self._attach_learnings(owner, matches)
 
     def code_dossier(self, symbol: str, project: str | None = None,
                      cwd: Path | None = None, edge_cap: int = 20) -> dict[str, Any]:
@@ -1409,19 +1562,44 @@ class Crib:
         proj = self.resolve_project(project, cwd)
         self._require_code_index(proj)
         rc = self._resident_code(proj)
-        entry = self._resolve_symbol(proj, symbol, rc)      # exactly one; raises if ambiguous
-        self._attach_learnings(proj, [entry])
+        # local first, then the `.crib` refs — the neighbourhood (edges, learnings)
+        # lives with the OWNING project, so everything below reads from there
+        owner, entry = self._resolve_symbol_or_ref(proj, symbol, rc)
+        if owner != proj:
+            rc = self._resident_code(owner)
+        self._attach_learnings(owner, [entry])
         idx = rc.entries
         desc = {e["fqname"]: e.get("description", "") for e in idx}
         by_nf = {(e.get("name", ""), e.get("file", "")): e["fqname"] for e in idx}
+
+        ref_maps: dict[str, tuple[dict, dict]] = {}   # ref proj → (desc, by_nf)
+
+        def _maps(rp: str) -> tuple[dict, dict]:
+            if rp not in ref_maps:
+                try:
+                    rrc = self._resident_code(rp)
+                    ref_maps[rp] = (
+                        {e["fqname"]: e.get("description", "") for e in rrc.entries},
+                        {(e.get("name", ""), e.get("file", "")): e["fqname"]
+                         for e in rrc.entries})
+                except Exception:  # noqa: BLE001 — unindexed ref → unresolved edge
+                    ref_maps[rp] = ({}, {})
+            return ref_maps[rp]
 
         def neigh(edges: list[str] | None) -> list[dict[str, Any]]:
             out = []
             for ref in (edges or [])[:edge_cap]:
                 name, _, rest = ref.partition(" [")
-                fq = by_nf.get((name.strip(), rest.rstrip("]")))
-                out.append({"symbol": fq or name.strip(),
-                            "file": rest.rstrip("]"),
+                nm, fref = name.strip(), rest.rstrip("]")
+                if ":" in fref:            # QUALIFIED edge — lives in a ref'd project
+                    rp, _, rrel = fref.partition(":")
+                    rdesc, rnf = _maps(rp)
+                    fq = rnf.get((nm, rrel))
+                    out.append({"symbol": fq or nm, "file": rrel, "project": rp,
+                                "description": rdesc.get(fq or "", "")})
+                    continue
+                fq = by_nf.get((nm, fref))
+                out.append({"symbol": fq or nm, "file": fref,
                             "description": desc.get(fq or "", "")})
             extra = max(len(edges or []) - edge_cap, 0)
             if extra:
@@ -1430,6 +1608,7 @@ class Crib:
 
         return {
             "fqname": entry["fqname"], "kind": entry.get("kind"),
+            "project": owner,
             "file": entry.get("file"), "line": entry.get("line"),
             "signature": entry.get("signature"), "description": entry.get("description"),
             "learning": entry.get("learning"),
@@ -1462,6 +1641,37 @@ class Crib:
             names = ", ".join(sorted(m.get("fqname", "") for m in cands)[:8])
             raise ValueError(f"ambiguous symbol {symbol!r} → {names}; pass a full fqname")
         return cands[0]
+
+    def _resolve_symbol_or_ref(self, proj: str, symbol: str,
+                               rc: "_ResidentCode | None" = None,
+                               ) -> tuple[str, dict[str, Any]]:
+        """Resolve locally first; on a LOCAL MISS, try the project's `.crib`
+        `refs:` (cross-project xref) → (owning_project, entry). Exactly one ref
+        matching wins; several → ambiguous error naming the projects; none →
+        the local unknown-symbol error. A local AMBIGUITY still raises (refs
+        never paper over it)."""
+        try:
+            return proj, self._resolve_symbol(proj, symbol, rc)
+        except ValueError as local_err:
+            if "unknown symbol" not in str(local_err):
+                raise
+            found: list[tuple[str, dict[str, Any]]] = []
+            for ref in self._project_refs(proj):
+                if not ref["indexed"]:
+                    continue
+                try:
+                    found.append((ref["project"],
+                                  self._resolve_symbol(ref["project"], symbol)))
+                except ValueError:
+                    continue
+            if len(found) == 1:
+                return found[0]
+            if len(found) > 1:
+                names = ", ".join(f"{p}:{e['fqname']}" for p, e in found)
+                raise ValueError(
+                    f"ambiguous symbol {symbol!r} across refs → {names}; "
+                    f"pass project= to disambiguate") from None
+            raise local_err
 
     def _learning_relpath(self, entry: dict[str, Any]) -> str:
         from .codeindex import LEARNINGS_DIR, learning_slug
@@ -1710,10 +1920,45 @@ class Crib:
         """Find a symbol — HYBRID: dense concept search over LLM `description`s ⊕ BM25
         over `name_terms` (unqualified/qualified/subtokens), RRF-fused. So a concept
         query hits the dense side and a bare/partial *name* hits the sparse side. Served
-        from the content-addressed store at query time; no live LSP needed."""
-        from .retrieve import _subtokens, reciprocal_rank_fusion, tokenize
+        from the content-addressed store at query time; no live LSP needed.
+
+        FANS OUT to the project's `.crib` `refs:` (cross-project xref): each indexed
+        ref is searched the same way and the per-project rankings RRF-fuse, the
+        queried project weighted above its refs. Every hit carries `project`."""
+        from .retrieve import reciprocal_rank_fusion
         proj = self.resolve_project(project, cwd)
         self._require_code_index(proj)
+        pools: dict[str, list[dict[str, Any]]] = {
+            proj: self._code_lookup_one(proj, query, k, sparse_weight)}
+        for ref in self._project_refs(proj):
+            if not ref["indexed"] or ref["project"] in pools:
+                continue
+            try:
+                pools[ref["project"]] = self._code_lookup_one(
+                    ref["project"], query, k, sparse_weight)
+            except Exception:  # noqa: BLE001 — a broken ref never fails the query
+                continue
+        if len(pools) == 1:
+            hits = pools[proj][:k]
+        else:
+            # EQUAL weights: rank decides (a ref's best hit must be able to beat a
+            # local mid-ranker — a damped weight buries refs below any full local
+            # top-k, since RRF is rank- not score-based). The queried project is
+            # the FIRST ranking, so exact rank ties break local-first.
+            by_key = {f"{p}:{h['fqname']}": h for p, hs in pools.items() for h in hs}
+            fused = reciprocal_rank_fusion(
+                [[f"{p}:{h['fqname']}" for h in hs] for p, hs in pools.items()])
+            hits = [by_key[key] for key in fused[:k]]
+        for i, h in enumerate(hits):
+            h["rank"] = i + 1
+        return hits
+
+    def _code_lookup_one(self, proj: str, query: str, k: int,
+                         sparse_weight: float) -> list[dict[str, Any]]:
+        """The single-project core of `code_lookup` (dense ⊕ sparse, RRF-fused),
+        project-tagged and learning-annotated. `rank` is per-pool; the caller
+        re-ranks after any cross-project fusion."""
+        from .retrieve import _subtokens, reciprocal_rank_fusion, tokenize
         rc = self._resident_code(proj)                       # resident: no re-parse/re-embed
         entries = rc.lk
         if not entries:
@@ -1765,49 +2010,76 @@ class Crib:
         self._require_code_index(proj)
         rc = self._resident_code(proj)
         entries = rc.entries
-        by_fq = rc.by_fq
-        by_nf: dict[tuple[str, str], dict] = {}
-        for e in entries:
-            by_nf.setdefault((e.get("name", ""), e.get("file", "")), e)
-        root = (by_fq.get(symbol)
+        # per-project (name, file) maps — the tree can cross into ref'd projects
+        # via QUALIFIED edges ("name [proj:rel]") and keeps walking there
+        nf_maps: dict[str, dict[tuple[str, str], dict]] = {}
+
+        def _nf(p: str) -> dict[tuple[str, str], dict]:
+            if p not in nf_maps:
+                try:
+                    m: dict[tuple[str, str], dict] = {}
+                    for e in self._resident_code(p).entries:
+                        m.setdefault((e.get("name", ""), e.get("file", "")), e)
+                    nf_maps[p] = m
+                except Exception:  # noqa: BLE001 — unindexed ref → external leaf
+                    nf_maps[p] = {}
+            return nf_maps[p]
+
+        _nf(proj)
+        root = (rc.by_fq.get(symbol)
                 or next((e for e in entries if e.get("name") == symbol
                          or e["fqname"].endswith("." + symbol)), None))
-        if not root:
-            return {}
+        root_proj = proj
+        if not root:                          # local miss → the `.crib` refs
+            try:
+                root_proj, root = self._resolve_symbol_or_ref(proj, symbol, rc)
+            except ValueError:
+                return {}
         edge = {"callees": "calls", "callers": "called_by",
                 "references": "references"}.get(direction, "calls")
         seen: set[str] = set()
 
-        def build(e: dict, d: int) -> dict:
+        def build(e: dict, p: str, d: int) -> dict:
             node = {"fqname": e["fqname"], "kind": e.get("kind", ""),
                     "file": e.get("file", ""), "line": e.get("line"), "children": []}
-            if e["fqname"] in seen:
+            if p != proj:
+                node["project"] = p
+            key = f"{p}:{e['fqname']}"
+            if key in seen:
                 node["repeat"] = True
                 return node
-            seen.add(e["fqname"])
+            seen.add(key)
             if d <= 0:
                 return node
             for ref in e.get(edge) or []:
                 name, _, rest = ref.partition(" [")
                 fref = rest.rstrip("]")
-                child = by_nf.get((name.strip(), fref))
+                if ":" in fref:               # qualified → hop into the ref project
+                    tp, _, trel = fref.partition(":")
+                else:
+                    tp, trel = p, fref
+                child = _nf(tp).get((name.strip(), trel))
                 if child:
-                    node["children"].append(build(child, d - 1))
+                    node["children"].append(build(child, tp, d - 1))
                 else:
                     node["children"].append({"fqname": name.strip(), "kind": "?",
                                              "file": fref, "external": True,
                                              "children": []})
             return node
 
-        tree = build(root, depth)
-        marked = self._learning_fqns(proj)           # step 3: glyph carriers
-        if marked:
-            stack = [tree]
-            while stack:
-                n = stack.pop()
-                if n.get("fqname") in marked:
-                    n["has_learning"] = True
-                stack.extend(n.get("children") or [])
+        tree = build(root, root_proj, depth)
+        # glyph carriers, per owning project (a cross-project node's learning
+        # lives with ITS project, and same-named local fqns must not false-mark)
+        marks: dict[str, set[str]] = {}
+        stack = [tree]
+        while stack:
+            n = stack.pop()
+            p = n.get("project") or proj
+            if p not in marks:
+                marks[p] = self._learning_fqns(p)
+            if n.get("fqname") in marks[p]:
+                n["has_learning"] = True
+            stack.extend(n.get("children") or [])
         return tree
 
     async def _generate_index(self, root_name: str, purpose: str, label: str,

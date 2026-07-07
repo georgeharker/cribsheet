@@ -60,6 +60,15 @@ which `elaborate`/`summarize` index sets feed retrieval — mainly for eval swee
 
 ## Code index — query (reach for these before grep/Read)
 
+**Cross-project refs**: a repo's `.crib` may name other projects under `refs:`
+(names, never paths — each machine resolves them to its own checkouts via the
+refs' `.source_root`). Queries then FAN OUT: a symbol missing locally resolves
+from the refs, `code lookup` merges ranked hits (every hit carries `project`),
+and dossier/graph follow qualified `name [proj:rel]` edges across. Indexing
+attributes out-of-root LSP resolutions to the refs (local checkout, in-tree
+vendored copy with its own `.crib`, or a site-packages install) — and a nested
+`.crib` bounds the parent's index: vendored code belongs to ITS project.
+
 | CLI | MCP | Description |
 |---|---|---|
 | `crib code lookup <query>` | `code_lookup` | Find a symbol by CONCEPT or name — hybrid dense (LLM descriptions) ⊕ name/subtoken. The entry point; self-diagnoses an unindexed project. |

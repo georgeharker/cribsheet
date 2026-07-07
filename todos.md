@@ -57,10 +57,51 @@
   `callHierarchyProvider` capability, so no code change needed; just re-index zdot and
   confirm `calls`/`called_by` populate (today references-only).
 
+## LSP workspace knowledge (what the server considers "live")
+- **`$/progress` readiness barrier.** The settle (1.5s fresh / 0.3s warm) is a GUESS
+  at when the server has finished discovering/indexing its workspace; a cold server
+  answering early yields under-resolved cross-file edges (and the edge patch then
+  propagates the loss). Servers report indexing via `$/progress` (workDoneProgress:
+  pyright, rust-analyzer, gopls) — track begin/end in `LspClient._reader` and wait
+  for quiescence (with timeout) on FRESH sessions before the first edge query.
+  Symbol listings are already safe (didOpen'd doc + empty/partial guards); this is
+  about EDGES.
+- **Workspace membership — didOpen pinning SHIPPED (`pinWorkspace` spec flag).**
+  The server discovers sources by ITS config (pyright include/exclude, cargo
+  targets, clangd compile db, shuck's scan); a file it never discovered is
+  invisible to cross-file references. `didOpen` is the protocol's membership
+  signal, so a sweep now PINS the full enumerated doc set open on servers whose
+  spec sets `pinWorkspace` (shipped on shuck — zdot's extensionless autoloads are
+  the live case), released at sweep end. Remaining: document per-language
+  membership settings in `docs/lsp.json.example`; consider pinning on single-file
+  watcher reindexes too (currently sweep-only).
+- **Multi-root workspaceFolders for refs.** Advertising a ref's local root as a
+  second workspace folder (servers that support it) would make references INTO ref
+  projects visible — today the server only searches its own root, so cross-project
+  `references`/`called_by` edges are one-directional (outgoing calls resolve;
+  inbound references don't). Phase-3-adjacent.
+
 ## Live-update (mtime gate shipped; these are the follow-ons)
 - **Source watcher — eager revalidation (Phase 2).** Query-time revalidation is in; a
   watcher over `.crib` `paths:` would reindex on save proactively so the first
   post-edit query isn't the one that pays the reindex.
+
+## Resolved (recent)
+- **Cross-project refs (phases 1+2) — SHIPPED.** `.crib refs: [llmkit]`: query-time
+  fan-out (lookup merge, dossier/xref/graph fall-through + cross-edge traversal) and
+  index-time attribution (qualified `name [proj:rel]` edges via local ref root,
+  in-tree nested-`.crib` checkout, or site-packages suffix match — keyed by
+  name+file, sidestepping the path-derived fqname wrinkle). Nested `.crib`s bound
+  the parent's enumeration (vendored code belongs to its project). Remaining from
+  the design below: phase 3 (inbound reverse xref via a who-refs-whom registry) and
+  the refs-you-don't-own extensions (version-tagged dep indexes, shareable indexes).
+- **Watcher spurious-delete wipe (199 cribsheet + 255 mcp-companion tomls,
+  2026-07-07).** FSEvents coalesces rename-style saves into flag bundles; watchdog
+  re-expands them in arbitrary order and the code watcher's last-event-wins batch
+  could land `deleted=True` for a LIVE file → `_drop_file` evicted the whole file's
+  symbols (invisible to `_revalidate` afterwards — no tomls, no baseline entry; only
+  an enumeration sweep recovers). Fixed: existence re-verified at decode AND at
+  dispatch (post-debounce, authoritative); recovery = `crib project index`.
 
 ## Parked features
 - **Cross-project refs — `.crib refs: [llmkit]`, xref against a named external project.**
