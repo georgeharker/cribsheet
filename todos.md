@@ -1,5 +1,20 @@
 # todos — deferred / to-test
 
+## To fix (ergonomics — adoption-critical)
+- **Sticky session project is COMBINER-GLOBAL, not per-chat.** Observed 2026-07-07:
+  an agent in the cribsheet repo had code queries resolve to `music-llm` and gave
+  up on crib ("I'll read the repo directly"). The combiner multiplexes every chat
+  over ONE persistent crib connection, so the per-connection session project
+  (DESIGN §15) is actually shared mutable state across all chats — whichever chat
+  last seeded/switched it wins, and other agents silently inherit the wrong
+  project. Options: (a) crib stops trusting stickiness on proxied connections and
+  requires/uses `project_path` per call (directive already tells agents to pass it
+  for a DIFFERENT project, but not for their own); (b) combiner forwards a per-chat
+  identity crib can key session state by; (c) mcp-companion's per-chat isolated
+  proxy sessions for crib (infra exists in connections.py). Until fixed, the
+  self-diagnosing move: code tools should echo which project answered AND how it
+  resolved (sticky vs path) so a wrong resolution is visible, not silent.
+
 ## To fix (perf)
 - **`store.all()` per file at index time is O(N²).** `_index_file_sync` re-parses the
   ENTIRE symbol_index (`existing = store.all()`) on every file, for the content_hash
