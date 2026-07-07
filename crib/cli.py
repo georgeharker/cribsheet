@@ -204,6 +204,8 @@ def _emit_status(d: Any, as_json: bool) -> None:
         alive = "" if s.get("alive") else "  DEAD"
         print(f"{'lsp':10} {s.get('server')}  {s.get('root')}  "
               f"pid {s.get('pid')}  {state}{alive}")
+    for proj, sw in (d.get("sweeps") or {}).items():
+        print(f"{'sweep':10} {proj}: {sw.get('done', 0)}/{sw.get('total', 0)} files")
     for proj, files in (d.get("indexing") or {}).items():
         print(f"{'indexing':10} {proj}: {', '.join(files)}")
     projs = d.get("projects") or []

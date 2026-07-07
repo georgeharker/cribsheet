@@ -311,10 +311,13 @@ class LspClient:
 
     def __init__(self, cmd: list[str], root: Path,
                  init_options: dict | None = None,
-                 settings: dict | None = None) -> None:
+                 settings: dict | None = None,
+                 extra_folders: list[Path] | None = None) -> None:
         self.root = root
+        self.extra_folders = extra_folders or []   # ref roots (multi-root xref)
         self.init_options = init_options or {}
         self.settings = settings or {}
+        self._progress: set[Any] = set()   # active $/progress tokens (busy signal)
         self.proc = subprocess.Popen(cmd, stdin=subprocess.PIPE,
                                      stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
         assert self.proc.stdin and self.proc.stdout
@@ -352,6 +355,16 @@ class LspClient:
             elif "id" in msg:
                 with self._lock:
                     self._resp[msg["id"]] = msg
+            elif msg.get("method") == "$/progress":
+                # workDoneProgress: the server's OWN "busy indexing" signal —
+                # `wait_quiescent` waits on this instead of guessing with sleeps
+                params = msg.get("params") or {}
+                kind = (params.get("value") or {}).get("kind")
+                with self._lock:
+                    if kind == "begin":
+                        self._progress.add(params.get("token"))
+                    elif kind == "end":
+                        self._progress.discard(params.get("token"))
 
     def _answer(self, msg: dict) -> None:
         m = msg["method"]
@@ -397,15 +410,37 @@ class LspClient:
                 "documentSymbol": {"hierarchicalDocumentSymbolSupport": True},
                 "callHierarchy": {"dynamicRegistration": True},
                 "references": {"dynamicRegistration": True}},
+                # workDoneProgress: ask the server to REPORT its indexing, so
+                # readiness is its signal, not our sleep (`wait_quiescent`).
+                "window": {"workDoneProgress": True},
                 # didChangeWatchedFiles: servers that don't self-watch the fs
                 # register watchers (client/registerCapability → null-acked in
                 # `_answer`) and rely on the pool's `notify_changes` pump.
                 "workspace": {"configuration": True,
                               "didChangeWatchedFiles": {"dynamicRegistration": True}}},
-            "workspaceFolders": [{"uri": self.root.as_uri(), "name": self.root.name}],
+            # multi-root: the ref projects' local roots ride along, so
+            # references/incomingCalls INTO ref code resolve (cross-project xref)
+            "workspaceFolders": [
+                {"uri": self.root.as_uri(), "name": self.root.name},
+                *({"uri": f.as_uri(), "name": f.name} for f in self.extra_folders),
+            ],
         })
         self.capabilities: dict = (res or {}).get("capabilities", {})
         self.notify("initialized", {})
+
+    def wait_quiescent(self, initial: float, timeout: float) -> None:
+        """Wait until the server reports no active background work: give it
+        `initial` to START reporting (or to just settle, for servers that never
+        send `$/progress`), then wait for every active token to end, bounded by
+        `timeout`. The principled replacement for a fixed-length sleep."""
+        time.sleep(initial)
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            with self._lock:
+                busy = bool(self._progress)
+            if not busy:
+                return
+            time.sleep(0.05)
 
     def close(self) -> None:
         try:
@@ -459,13 +494,15 @@ class LspSessionPool:
         self._sessions: dict[tuple[str, str], _Session] = {}
         self.grace = grace
 
-    def acquire(self, root: Path, label: str, argv: list[str],
-                spec: dict) -> tuple[_Session, bool]:
+    def acquire(self, root: Path, label: str, argv: list[str], spec: dict,
+                extra_roots: list[Path] | None = None) -> tuple[_Session, bool]:
         """The warm session for (root, label), spawning + initializing on first
         use → (session, fresh). Callers hold `session.lock` while using it.
         Spawn/initialize happens under the pool lock: a concurrent cold start of
         another language briefly serializes — rare, and far cheaper than the
-        races it removes."""
+        races it removes. `extra_roots` (ref projects' local checkouts) become
+        additional workspaceFolders AT CREATION — an existing session keeps the
+        folders it was born with (refs changed → bounce the daemon)."""
         key = (str(root.resolve()), label)
         self._reap()
         with self._lock:
@@ -477,7 +514,8 @@ class LspSessionPool:
                 return sess, False
             client = LspClient(argv, root,
                                init_options=spec.get("initializationOptions"),
-                               settings=spec.get("settings"))
+                               settings=spec.get("settings"),
+                               extra_folders=extra_roots)
             try:
                 client.initialize()
             except Exception:
@@ -531,14 +569,15 @@ class LspSessionPool:
                     sess.lock.release()
 
     def pin_docs(self, root: Path, label: str, argv: list[str], spec: dict,
-                 docs: list[tuple[Path, str]]) -> int:
+                 docs: list[tuple[Path, str]],
+                 extra_roots: list[Path] | None = None) -> int:
         """didOpen every (path, languageId) and HOLD them open — the protocol's
         membership signal: an open document is part of the server's analysis set
         even when its own discovery (include config, compile db, module graph)
         would never find it. Without this, cross-file edges for undiscovered
         files are silently incomplete. Sweep-scoped: `unpin(root)` releases.
         → count newly pinned."""
-        sess, _fresh = self.acquire(root, label, argv, spec)
+        sess, _fresh = self.acquire(root, label, argv, spec, extra_roots)
         n = 0
         with sess.lock:
             for pd, lang in docs:
@@ -816,7 +855,12 @@ def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
     lines = path.read_text().splitlines()
     entries: list[dict] = []
     mtime = derive_mtime(root, relpath)   # portable index timestamp (git date / disk)
-    sess, fresh = pool.acquire(root, label, argv, spec)
+    # ref checkouts OUTSIDE the workspace ride along as extra workspaceFolders
+    # (multi-root xref); in-tree ones are already inside the root
+    extra = list(dict.fromkeys(
+        rr for _p, rr, _f in (ref_projects or [])
+        if rr is not None and not rr.is_relative_to(root.resolve())))
+    sess, fresh = pool.acquire(root, label, argv, spec, extra_roots=extra)
     with sess.lock:
         c = sess.client
         uri = path.as_uri()
@@ -836,7 +880,11 @@ def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
                 c.notify("textDocument/didOpen", {"textDocument": {
                     "uri": uri, "languageId": language_id, "version": 1,
                     "text": "\n".join(lines)}})
-            time.sleep(settle if fresh else min(settle, _REUSE_SETTLE))
+            # readiness: honor the server's own $/progress over a blind sleep —
+            # fresh sessions may be mid-workspace-index (minutes on big repos)
+            c.wait_quiescent(
+                initial=settle if fresh else min(settle, _REUSE_SETTLE),
+                timeout=60.0 if fresh else 10.0)
             module = _module_of(relpath, language_id)
             syms = c.request("textDocument/documentSymbol",
                              {"textDocument": {"uri": uri}})
