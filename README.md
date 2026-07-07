@@ -105,7 +105,7 @@ Every capability, its CLI form, its MCP tool, and a one-liner lives in
 |---|---|---|
 | **find** | `lookup` / `apropos` (full sections) | `code lookup` (concept ⊕ name), `code dossier`, `code graph`/`xref` |
 | **write** | `store`, `append`, `edit`, `forget`, `move` | `code append`/`edit`/`forget` (learnings) |
-| **onboard** | `import` (files → memory) | `project setup` / `index` / `status` |
+| **onboard** | `import` (files → memory), `import-memory` | `project setup` / `index` / `status` |
 | **housekeeping** | `reindex`, `reconcile`, `versions`, `restore`, `history` | `code learnings`, `code rehome` |
 
 Notes and code share one store, so `lookup` surfaces a repo's docs alongside your
@@ -132,9 +132,9 @@ runs), so it's fast; `--no-daemon` runs in-process, `--json` gives machine outpu
   crib sync                               # thereafter: commit + pull + push
   ```
   Full walkthrough: [docs/resume-on-new-machine.md](docs/resume-on-new-machine.md).
-- **Mirror Claude's own memory** — `crib import-memory` mirrors Claude Code's
-  harness `memory/*.md` into crib (host-namespaced) and live-syncs it, so it's
-  searchable alongside everything else.
+- **Mirror Claude's own memory** — `crib import-memory` (MCP: `import_memory`, so
+  an agent can do it too) mirrors Claude Code's harness `memory/*.md` into crib
+  (host-namespaced) and live-syncs it, so it's searchable alongside everything else.
 - **Configure** — `$XDG_CONFIG_HOME/crib/config.toml` picks the embedder, retrieval
   mode, daemon, and backends; `crib info` prints the resolved paths. The defaults are
   sensible — a minimal override:
