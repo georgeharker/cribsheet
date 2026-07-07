@@ -135,6 +135,24 @@ def test_revalidate_reindexes_merge_dirtied_file(crib, tmp_path, monkeypatch):
     assert reindexed == ["pkg/mod.py"]                   # dirty forces the rebuild
 
 
+def test_spurious_delete_reindexes_instead_of_dropping(crib, tmp_path, monkeypatch):
+    """A watcher `deleted` flag for a file that EXISTS (FSEvents rename-save
+    coalescing noise) must reindex, never `_drop_file` — trusting it evicted
+    whole files' symbols (the 199-toml wipe, 2026-07-07)."""
+    root = tmp_path / "src"
+    (root / "pkg").mkdir(parents=True)
+    (root / "pkg" / "mod.py").write_text("def f():\n    pass\n")
+    dropped: list[str] = []
+    indexed: list[str] = []
+    monkeypatch.setattr(crib, "_drop_file", lambda p, r: dropped.append(r))
+    monkeypatch.setattr(crib, "_index_file_sync",
+                        lambda rt, rel, p, patch_edges: indexed.append(rel))
+    run(crib._on_code_change("p", {"pkg/mod.py": (str(root), True),      # exists!
+                                   "pkg/gone.py": (str(root), True)}))   # really gone
+    assert indexed == ["pkg/mod.py"]      # spurious delete → reindexed
+    assert dropped == ["pkg/gone.py"]     # real delete → dropped
+
+
 def test_on_code_change_pumps_watched_files_into_lsp_pool(crib, monkeypatch):
     """Watcher batches reach the warm LSP sessions as didChangeWatchedFiles
     (docs §3.2) so a server that doesn't self-watch stays disk-fresh."""
@@ -215,3 +233,42 @@ def test_on_code_change_falls_back_to_revalidate_on_large_burst(crib, monkeypatc
     small = {"one.py": ("/root", False), "two.py": ("/root", False)}
     run(crib._on_code_change("p", small))
     assert sorted(per_file) == ["one.py", "two.py"]         # reindexed file-by-file
+
+
+def test_partial_extract_reconfirms_before_trusting_shrink(crib, tmp_path, monkeypatch):
+    """A documentSymbol listing with strictly FEWER symbols and nothing new reads
+    as a mid-settle partial answer — deletion on the LSP's say-so requires a
+    slow confirming re-extract, which here returns the full set (nothing lost)."""
+    from crib import codeindex as ci
+    root = tmp_path / "src"
+    root.mkdir()
+    (root / "m.py").write_text("def a(): pass\n\ndef b(): pass\n")
+
+    def entry(fq):
+        return {"fqname": fq, "name": fq.split(".")[-1], "kind": "function",
+                "lang": "python", "module": "m", "parent": "",
+                "content_hash": f"h_{fq}", "file": "m.py", "line": 1,
+                "signature": "def _():", "description": "d", "container": [],
+                "calls": [], "called_by": [], "references": [],
+                "name_terms": [fq.split(".")[-1]], "_body": "def _(): pass"}
+
+    for fq in ("m.a", "m.b"):
+        _write(crib, "p", fq, "d", f"h_{fq}")
+        e = SymbolIndex(crib.paths.project_dir("p")).by_fqname(fq)[0]
+        e["file"] = "m.py"
+        SymbolIndex(crib.paths.project_dir("p")).write(e)
+
+    settles: list[float] = []
+
+    def fake_extract(r, rel, settle=1.5, pool=None, ref_projects=None):
+        settles.append(settle)
+        full = [entry("m.a"), entry("m.b")]
+        return full[:1] if len(settles) == 1 else full     # partial, then full
+
+    monkeypatch.setattr(ci, "extract_file", fake_extract)
+    monkeypatch.setattr(ci, "describe_file", lambda *a, **k: {})
+    out = crib._index_file_sync(root, "m.py", "p", patch_edges=False)
+    assert settles == [1.5, 3.0]                # fast read → slow confirmation
+    assert out["symbols"] == 2                  # the full set won
+    kept = {e["fqname"] for e in SymbolIndex(crib.paths.project_dir("p")).all()}
+    assert {"m.a", "m.b"} <= kept               # nothing deleted on a partial say-so

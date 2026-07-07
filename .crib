@@ -3,3 +3,5 @@ import:                   # design docs to ingest (one-way pull; source wins on 
   - DESIGN.md
   - docs/**/*.md
   - README.md
+refs:                     # cross-project xref: resolve llmkit symbols + attribute
+  - llmkit                # edges into ~/Development/llmkit's own index

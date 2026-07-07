@@ -69,8 +69,12 @@ DEFAULT_LSP_SPECS: dict[str, dict[str, Any]] = {
     # documentSymbol + definition + references, but NO call hierarchy — symbols
     # index fine, calls/called_by stay empty (§3.4). shuck ignores the languageId
     # (it keys on content/extension), so "zsh" is just the stored `lang` label.
+    # pinWorkspace: shuck's own discovery misses what crib enumerates by grammar
+    # (extensionless autoload files, dotfiles) — the sweep didOpen-pins the full
+    # doc set so cross-file references cover them (LSP membership via open docs).
     "shuck": {"command": "shuck", "args": ["server"],
-              "extensionToLanguage": {".zsh": "zsh"}},
+              "extensionToLanguage": {".zsh": "zsh"},
+              "pinWorkspace": True},
 }
 
 
@@ -420,6 +424,14 @@ class _Session:
         self.client = client
         self.lock = threading.Lock()
         self.last_used = time.monotonic()
+        # Sweep-scoped MEMBERSHIP pins: uri → doc version, didOpen'd to tell the
+        # server these documents matter (its own discovery may miss them —
+        # extensionless autoloads, no compile db). Held open across extractions;
+        # released by `LspSessionPool.unpin`. An OPEN doc's truth is the CLIENT's
+        # (the server ignores disk and watched-file events for it), so extracting
+        # a pinned uri must didChange the current text — never analyze pin-time
+        # text against disk-time hashes.
+        self.pinned: dict[str, int] = {}
 
 
 class LspSessionPool:
@@ -518,6 +530,47 @@ class LspSessionPool:
                 finally:
                     sess.lock.release()
 
+    def pin_docs(self, root: Path, label: str, argv: list[str], spec: dict,
+                 docs: list[tuple[Path, str]]) -> int:
+        """didOpen every (path, languageId) and HOLD them open — the protocol's
+        membership signal: an open document is part of the server's analysis set
+        even when its own discovery (include config, compile db, module graph)
+        would never find it. Without this, cross-file edges for undiscovered
+        files are silently incomplete. Sweep-scoped: `unpin(root)` releases.
+        → count newly pinned."""
+        sess, _fresh = self.acquire(root, label, argv, spec)
+        n = 0
+        with sess.lock:
+            for pd, lang in docs:
+                puri = pd.resolve().as_uri()
+                if puri in sess.pinned:
+                    continue
+                try:
+                    text = pd.read_text()
+                except OSError:
+                    continue
+                sess.client.notify("textDocument/didOpen", {"textDocument": {
+                    "uri": puri, "languageId": lang, "version": 1, "text": text}})
+                sess.pinned[puri] = 1
+                n += 1
+            sess.last_used = time.monotonic()
+        return n
+
+    def unpin(self, root: Path) -> None:
+        """Release every pinned doc for `root`'s sessions (sweep teardown)."""
+        key_root = str(root.resolve())
+        with self._lock:
+            sessions = [s for (r, _l), s in self._sessions.items() if r == key_root]
+        for sess in sessions:
+            with sess.lock:
+                for u in sess.pinned:
+                    try:
+                        sess.client.notify("textDocument/didClose",
+                                           {"textDocument": {"uri": u}})
+                    except Exception:  # noqa: BLE001 — dead pipe → respawn later
+                        pass
+                sess.pinned.clear()
+
     def stats(self) -> list[dict[str, Any]]:
         """Live sessions for `status`: which servers are attached where, whether
         each is alive/busy, and how long it's been idle."""
@@ -544,6 +597,50 @@ atexit.register(_POOL.close_all)
 
 def _in_workspace(uri: str, root: Path) -> bool:
     return uri.startswith(root.as_uri()) and not uri.endswith(".pyi")
+
+
+# (project, locally-resolved root or None, the ref index's file set)
+RefProjects = list[tuple[str, "Path | None", frozenset[str]]]
+
+
+def _locate(uri: str, root: Path, ref_projects: RefProjects | None) -> str | None:
+    """Location tag for an edge target: `rel` for an in-workspace uri, `proj:rel`
+    when the uri attributes to a REF'D project (cross-project xref), None when
+    it's neither (dropped, as before). Attribution strategies:
+      (a) path under the ref's local checkout (submodule / editable install) —
+          roots arrive pre-resolved;
+      (b) site-packages suffix match against the ref's indexed files (git/wheel
+          install: …/site-packages/llmkit/bridge/cli.py matches the ref index's
+          src/llmkit/bridge/cli.py by trailing segments).
+    Qualified edges key by (name, file-rel-to-the-ref-root), which sidesteps the
+    path-derived fqname mismatch between checkouts. Ref roots are checked BEFORE
+    the workspace: an IN-TREE checkout of a ref'd project (a vendored submodule
+    with its own .crib) attributes to the ref, not to the parent — same repo,
+    so the relative path matches the ref's own index either way."""
+    if not ref_projects:
+        return _rel(uri, root) if _in_workspace(uri, root) else None
+    if not uri.startswith("file://") or uri.endswith(".pyi"):
+        return None
+    try:
+        p = Path(uri[len("file://"):]).resolve()
+    except OSError:
+        return None
+    for proj, rroot, _files in ref_projects:
+        if rroot is not None:
+            try:
+                return f"{proj}:{p.relative_to(rroot)}"
+            except ValueError:
+                continue
+    if _in_workspace(uri, root):
+        return _rel(uri, root)
+    m = re.search(r"/site-packages/(.+)$", str(p))
+    if m:
+        tail = m.group(1)
+        for proj, _rroot, files in ref_projects:
+            for f in files:
+                if f and (f.endswith(tail) or tail.endswith(f)):
+                    return f"{proj}:{f}"
+    return None
 
 
 def _rel(uri: str, root: Path) -> str:
@@ -687,13 +784,16 @@ _REUSE_SETTLE = 0.3
 
 
 def extract_file(root: Path, relpath: str, settle: float = 1.5,
-                 pool: LspSessionPool | None = None) -> list[dict]:
+                 pool: LspSessionPool | None = None,
+                 ref_projects: RefProjects | None = None) -> list[dict]:
     """Symbols + workspace-resolved call edges for one file, via the LSP server the
     specs select for its extension (docs §3.3). Raises NoServer if none resolves.
     The session comes WARM from the pool (docs §3.1) — spawn + `initialize` (the
     whole-workspace index, the expensive part) is paid once per (root, server),
     not per file. A wedged/dead server is discarded and the extraction retried
-    once on a fresh one."""
+    once on a fresh one. Edges resolving OUTSIDE the root attribute to
+    `ref_projects` (the `.crib` `refs:`) as qualified `name [proj:rel]` edges
+    instead of being dropped."""
     path = (root / relpath).resolve()
     sel = server_for(relpath, abspath=path)
     if sel is None:
@@ -703,16 +803,16 @@ def extract_file(root: Path, relpath: str, settle: float = 1.5,
     pool = pool or _POOL
     try:
         return _extract(pool, root, relpath, path, settle, label, argv,
-                        language_id, spec)
+                        language_id, spec, ref_projects)
     except (TimeoutError, OSError, ValueError):
         pool.discard(root, label)        # crash supervision: respawn once and retry
         return _extract(pool, root, relpath, path, settle, label, argv,
-                        language_id, spec)
+                        language_id, spec, ref_projects)
 
 
 def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
              settle: float, label: str, argv: list[str], language_id: str,
-             spec: dict) -> list[dict]:
+             spec: dict, ref_projects: RefProjects | None = None) -> list[dict]:
     lines = path.read_text().splitlines()
     entries: list[dict] = []
     mtime = derive_mtime(root, relpath)   # portable index timestamp (git date / disk)
@@ -720,12 +820,22 @@ def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
     with sess.lock:
         c = sess.client
         uri = path.as_uri()
-        opened: set[str] = set()
+        # seeded with the sweep's membership pins: already open, never re-opened
+        # here, and never closed by this call's teardown
+        opened: set[str] = set(sess.pinned)
         try:
-            opened.add(uri)
-            c.notify("textDocument/didOpen", {"textDocument": {
-                "uri": uri, "languageId": language_id, "version": 1,
-                "text": "\n".join(lines)}})
+            if uri in sess.pinned:
+                # open doc ⇒ client truth: sync the server to the SAME text we
+                # hash below (the file may have changed since it was pinned)
+                sess.pinned[uri] += 1
+                c.notify("textDocument/didChange", {
+                    "textDocument": {"uri": uri, "version": sess.pinned[uri]},
+                    "contentChanges": [{"text": "\n".join(lines)}]})
+            else:
+                opened.add(uri)
+                c.notify("textDocument/didOpen", {"textDocument": {
+                    "uri": uri, "languageId": language_id, "version": 1,
+                    "text": "\n".join(lines)}})
             time.sleep(settle if fresh else min(settle, _REUSE_SETTLE))
             module = _module_of(relpath, language_id)
             syms = c.request("textDocument/documentSymbol",
@@ -765,15 +875,15 @@ def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
                         for e in c.request("callHierarchy/outgoingCalls",
                                            {"item": item}) or []:
                             t = e.get("to", {})
-                            if _in_workspace(t.get("uri", ""), root):
-                                calls.append(
-                                    f"{t.get('name')} [{_rel(t.get('uri',''), root)}]")
+                            loc = _locate(t.get("uri", ""), root, ref_projects)
+                            if loc:
+                                calls.append(f"{t.get('name')} [{loc}]")
                         for e in c.request("callHierarchy/incomingCalls",
                                            {"item": item}) or []:
                             fr = e.get("from", {})
-                            if _in_workspace(fr.get("uri", ""), root):
-                                called_by.append(
-                                    f"{fr.get('name')} [{_rel(fr.get('uri',''), root)}]")
+                            loc = _locate(fr.get("uri", ""), root, ref_projects)
+                            if loc:
+                                called_by.append(f"{fr.get('name')} [{loc}]")
                 # references: a FIRST-CLASS relation (everywhere this symbol is mentioned),
                 # for any server with referencesProvider — deliberately SEPARATE from
                 # called_by (call-hierarchy only). A reference is broader than a call (it
@@ -786,14 +896,15 @@ def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
                         "context": {"includeDeclaration": False}}) or []
                     for loc in refs[:_REF_CAP]:
                         ruri = loc.get("uri", "")
-                        if not _in_workspace(ruri, root):
+                        rloc = _locate(ruri, root, ref_projects)
+                        if rloc is None:
                             continue
                         rline = loc.get("range", {}).get("start", {}).get("line", 0)
                         enc = _enclosing_symbol(c, ruri, rline, language_id,
                                                 sym_cache, opened)
-                        if not enc or (enc == local and _rel(ruri, root) == relpath):
+                        if not enc or (enc == local and rloc == relpath):
                             continue                    # skip self-references
-                        references.append(f"{enc} [{_rel(ruri, root)}]")
+                        references.append(f"{enc} [{rloc}]")
                 # module-level variables read more naturally as "global" than "variable"
                 kind_label = ("global" if kind == 13 and not container
                               else _KIND_LABEL_OVERRIDE.get((language_id, kind or 0))
@@ -810,9 +921,10 @@ def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
                     "_body": body,   # transient: for the description mop-up; not persisted
                 })
         finally:
-            for u in opened:            # close what THIS call opened — the next call
-                try:                    # reads fresh disk; server doc-memory bounded
-                    c.notify("textDocument/didClose", {"textDocument": {"uri": u}})
+            for u in opened - sess.pinned.keys():   # close what THIS call opened —
+                try:                         # call reads fresh disk; server doc-
+                    c.notify("textDocument/didClose",   # memory stays bounded.
+                             {"textDocument": {"uri": u}})   # PINNED docs stay
                 except Exception:  # noqa: BLE001 — best-effort teardown
                     pass
             sess.last_used = time.monotonic()

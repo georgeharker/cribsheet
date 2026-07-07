@@ -181,7 +181,7 @@ class CodeWatcher(_FSWatcher):
                           for e in (sp.get("extensionToLanguage") or {})}
         return self._exts
 
-    def watch_root(self, project: str, root: Any) -> None:
+    def watch_root(self, project: str, root: str | Path) -> None:
         """Register (or re-point) a source root for a project; idempotent."""
         key = str(Path(root).resolve())
         new = key not in self._roots
@@ -205,7 +205,12 @@ class CodeWatcher(_FSWatcher):
         is_doc = suffix in DOC_EXTS
         if suffix not in self._code_exts() and not is_doc:
             return None
-        rp = p.resolve() if p.exists() else p
+        # A delete event for a file that exists is FSEvents/watchdog coalescing
+        # noise from a rename-style save — record it as a change, not a delete
+        # (the dispatch handler re-verifies against the final state anyway).
+        exists = p.exists()
+        deleted = deleted and not exists
+        rp = p.resolve() if exists else p
         best: tuple[str, str, str, bool] | None = None
         for key, proj in self._roots.items():
             try:

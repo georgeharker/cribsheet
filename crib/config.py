@@ -272,6 +272,11 @@ class CribLink:
     imports: list[str] = field(default_factory=list)
     import_into: str | None = None
     root: Path | None = None  # dir the .crib was found in
+    # Other crib projects this repo's code REFERENCES (cross-project xref):
+    # project NAMES only, never paths — each machine resolves a ref to its own
+    # local checkout via that project's `.source_root`, so the committed `.crib`
+    # stays portable across differently-located clones.
+    refs: list[str] = field(default_factory=list)
 
     @property
     def doc_patterns(self) -> list[str]:
@@ -294,6 +299,7 @@ class CribLink:
                     imports=data.get("import", []),
                     import_into=data.get("import_into"),
                     root=d,
+                    refs=data.get("refs", []),
                 )
         return None
 

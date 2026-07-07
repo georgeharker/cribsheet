@@ -7,6 +7,7 @@ NOT tested here — this gate is the structural, deterministic contract.
 """
 from __future__ import annotations
 
+import time
 from pathlib import Path
 
 import pytest
@@ -400,3 +401,29 @@ def test_session_pool_respawns_after_crash(tmp_path, monkeypatch):
         pool.close_all()
     assert [e["name"] for e in e2] == ["f"]
     assert log.read_text().count("spawn") == 2
+
+
+def test_session_pool_pins_docs_across_calls(tmp_path, monkeypatch):
+    """Pinned docs (LSP membership: didOpen'd so the server's analysis set covers
+    files its own discovery would miss) survive an extraction's teardown and
+    close only on unpin."""
+    root, argv, log = _fake_lsp(tmp_path, monkeypatch)
+    pool = ci.LspSessionPool()
+    try:
+        n = pool.pin_docs(root, "fake", argv, {},
+                          [(root / "a.py", "python"), (root / "b.py", "python")])
+        assert n == 2
+        ci.extract_file(root, "a.py", settle=0, pool=pool)   # a.py already pinned
+        txt = log.read_text()
+        assert txt.count("textDocument/didOpen") == 2   # the pins; no re-open
+        # open doc => client truth: extracting a pinned uri syncs via didChange
+        assert txt.count("textDocument/didChange") == 1
+        assert txt.count("textDocument/didClose") == 0  # teardown keeps pins open
+        pool.unpin(root)
+        deadline = time.monotonic() + 2.0     # notifications have no reply barrier
+        while time.monotonic() < deadline \
+                and log.read_text().count("textDocument/didClose") < 2:
+            time.sleep(0.02)
+        assert log.read_text().count("textDocument/didClose") == 2
+    finally:
+        pool.close_all()
