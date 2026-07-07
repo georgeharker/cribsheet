@@ -174,10 +174,15 @@ index. Retrieval fuses a dense vector ranking with a warm BM25 lexical ranking
 servers (`.lsp.json` specs — ty/pyright, rust-analyzer, gopls, clangd, shuck, …) for
 the structural facet and an LLM for the "what it does" descriptions.
 
-The full picture — the design decisions and the *why* behind them — lives in
-separate docs, not this README:
+The full picture lives in separate docs, not this README — pick by what you want:
 
-- **[DESIGN.md](DESIGN.md)** — the architecture, end to end.
+- **[docs/implementation.md](docs/implementation.md)** — *how it works today*: a
+  subsystem-by-subsystem map (ingestion, indexing, watchers, warm LSP sessions,
+  cross-project refs, sync/merge), anchored to files and symbols. Start here to
+  work on the code.
+- **[DESIGN.md](DESIGN.md)** — the architecture and the *why* behind the
+  decisions, end to end.
+- **[docs/surface.md](docs/surface.md)** — the complete CLI + MCP reference.
 - **[docs/code-symbol-index.md](docs/code-symbol-index.md)** — how the code↔note
   index is built, and the learnings model.
 - **[docs/retrieval-and-adoption.md](docs/retrieval-and-adoption.md)** — retrieval
