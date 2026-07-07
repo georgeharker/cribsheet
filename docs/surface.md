@@ -1,11 +1,17 @@
-# crib surface — CLI & MCP (for shape review)
+# crib surface — CLI & MCP reference
 
-Every capability, its CLI form, its MCP tool, and a one-line description. Grouped by
-facet. Noun-verb is canonical on the CLI (`crib code lookup`); the hyphenated form
+The complete surface: every capability, its CLI form, its MCP tool, and a one-line
+description, grouped by facet. (For an intro and quickstart, start at the
+[README](../README.md).)
+
+Noun-verb is canonical on the CLI (`crib code lookup`); the hyphenated form
 (`crib code-lookup`) still parses. `-p/--project` (CLI) and `project`/`project_path`
 (MCP) select the project — code tools act on ONE *current* project (set via
 `use_project` or inferred from `project_path` on first use); name a different one with
-`project=`/`project_path=`. `--json` before a CLI verb gives machine output.
+`project=`/`project_path=`. **Writes** (`store`/`append`/`edit`/`forget`/`move`)
+require an explicit `project=`/`project_path=` — they never inherit the current one,
+so a fact can't land in the wrong project. `--json` before a CLI verb gives machine
+output.
 
 ## Memory — notes
 
