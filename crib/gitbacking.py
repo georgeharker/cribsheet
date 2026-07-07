@@ -68,18 +68,44 @@ class GitBacking:
             capture_output=True, text=True,
         )
 
+    def _pending_join(self) -> bool:
+        """True when `origin/<branch>` has been fetched but isn't part of local
+        history yet — a join (first merge) is imminent. Cheap and local: reads
+        only refs already fetched, never the network."""
+        branch = self._branch()
+        if self._run("rev-parse", "--verify", "-q", f"origin/{branch}").returncode != 0:
+            return False
+        if self._run("rev-parse", "--verify", "-q", "HEAD").returncode != 0:
+            return True                  # unborn local branch → nothing merged yet
+        return self._run("merge-base", "HEAD", f"origin/{branch}").returncode != 0
+
+    def _remote_file(self, name: str) -> str | None:
+        """When a join is pending and the fetched branch carries `name`, its
+        content — the joining machine seeds the REMOTE's copy of a shared file
+        rather than its own default: seeding ours would both-added-conflict with
+        the join merge whenever the contents diverge, yet the file must exist
+        before that merge (`.gitattributes` routes the merge itself)."""
+        if not self._pending_join():
+            return None
+        r = self._run("show", f"origin/{self._branch()}:{name}")
+        return r.stdout if r.returncode == 0 else None
+
     def _ensure_gitignore(self) -> None:
         """Guarantee the data repo excludes machine-specific/transient files,
-        even when the user created the repo by hand (no `init`)."""
+        even when the user created the repo by hand (no `init`). A pending join
+        seeds the remote branch's copy, never our default over theirs."""
         gi = self.data_dir / ".gitignore"
         if not gi.exists():
-            gi.write_text(_GITIGNORE)
+            gi.write_text(self._remote_file(".gitignore") or _GITIGNORE)
 
     def _ensure_gitattributes(self) -> None:
-        """Ensure `*.md` routes through the cribnote merge driver (committed)."""
+        """Ensure `*.md` routes through the cribnote merge driver (committed).
+        A pending join seeds the remote branch's copy, never our default over
+        theirs — the attributes must exist BEFORE the join merge (they route
+        it), so deferring isn't an option."""
         ga = self.data_dir / ".gitattributes"
         if not ga.exists():
-            ga.write_text(_GITATTRIBUTES)
+            ga.write_text(self._remote_file(".gitattributes") or _GITATTRIBUTES)
 
     def _ensure_merge_driver(self) -> None:
         """Register the cribnote merge driver in this machine's local git config.
@@ -126,16 +152,14 @@ class GitBacking:
     def init(self, remote: str | None = None) -> str:
         """Bootstrap the data dir as a shareable repo: `git init`, write the
         `.gitignore` + `.gitattributes`, register the merge driver, add the
-        remote. Idempotent."""
+        remote. Idempotent. When the remote already has our branch (joining, not
+        bootstrapping), the shared files are seeded from the REMOTE's copies so
+        the join merge can't both-added-conflict on them — fetch first so
+        `_pending_join`/`_remote_file` can see the branch."""
         out = []
         if not self.enabled:
             self._run("init")
             out.append("initialized repo")
-        for f, body in ((".gitignore", _GITIGNORE), (".gitattributes", _GITATTRIBUTES)):
-            p = self.data_dir / f
-            if not p.exists():
-                p.write_text(body)
-                out.append(f"wrote {f}")
         self._ensure_merge_driver()
         if remote:
             if self._run("remote", "get-url", "origin").returncode == 0:
@@ -144,6 +168,12 @@ class GitBacking:
             else:
                 self._run("remote", "add", "origin", remote)
                 out.append("added remote origin")
+            self._run("fetch", "origin")     # best-effort; visibility for the join guard
+        for f, ensure in ((".gitignore", self._ensure_gitignore),
+                          (".gitattributes", self._ensure_gitattributes)):
+            if not (self.data_dir / f).exists():
+                ensure()
+                out.append(f"wrote {f}")
         return "; ".join(out) or "already initialized"
 
     def setup(self, remote: str) -> SyncResult:
@@ -193,7 +223,8 @@ class GitBacking:
         the caller tells the user to resolve them manually, then re-run."""
         if not self.enabled:
             return SyncResult(False, False, False, False, [], "git not enabled")
-        self._ensure_repo_config()       # driver must be registered before the merge
+        self._run("fetch", "origin")     # best-effort, pull refetches; makes a joinable
+        self._ensure_repo_config()       # branch visible so the shared files defer to it
         before = self._run("rev-parse", "HEAD").stdout.strip()
         # --allow-unrelated-histories lets a machine join an existing remote: the
         # two independently-init'd trees merge as a union (conflicts only on
@@ -214,6 +245,10 @@ class GitBacking:
             return SyncResult(False, False, False, False, [],
                               f"pull failed: {r.stderr.strip()}")
         after = self._run("rev-parse", "HEAD").stdout.strip()
+        # Post-merge: if the join deferred the shared files and the remote turned
+        # out not to carry them (older remote), write them now (no-op otherwise).
+        self._ensure_gitignore()
+        self._ensure_gitattributes()
         return SyncResult(True, False, True, False, [],
                           r.stdout.strip() or "up to date", changed=(before != after))
 

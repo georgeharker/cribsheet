@@ -113,8 +113,9 @@ class InMemoryStore:
 class JsonStore(InMemoryStore):
     """Persistent brute-force store: InMemoryStore + a JSON file on disk.
 
-    The dependency-free default when Chroma isn't installed — fine for personal-
-    scale memory, and it makes crib fully usable with zero heavy deps.
+    The fallback when Chroma is unavailable (or `[chroma].mode = "json"`) — fine
+    for personal-scale memory, and what keeps the core loop testable with no
+    backend installed. Chroma ships in the base install and is the default store.
     """
 
     def __init__(self, path: Path) -> None:

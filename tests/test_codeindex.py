@@ -293,3 +293,110 @@ def test_extract_call_graph_anchor_edges():
     assert {"BM25", "_lexical_tf", "get_docs"} <= callees
     callers = {c.split(" [")[0] for c in get["called_by"]}
     assert "_retrieve" in callers
+
+
+# --- warm LSP session pool: one spawn across files, crash respawn ------------
+# A minimal stdio LSP server: answers initialize + documentSymbol (one function
+# "f"), logs each SPAWN to $FAKE_LSP_LOG so tests can count real processes.
+_FAKE_LSP = r'''
+import json, os, sys
+
+def send(msg):
+    data = json.dumps(msg).encode()
+    sys.stdout.buffer.write(b"Content-Length: %d\r\n\r\n" % len(data))
+    sys.stdout.buffer.write(data)
+    sys.stdout.buffer.flush()
+
+with open(os.environ["FAKE_LSP_LOG"], "a") as fh:
+    fh.write("spawn\n")
+
+SYM = [{"name": "f", "kind": 12,
+        "range": {"start": {"line": 0, "character": 0},
+                  "end": {"line": 1, "character": 0}},
+        "selectionRange": {"start": {"line": 0, "character": 4},
+                           "end": {"line": 0, "character": 5}}}]
+while True:
+    headers = {}
+    while True:
+        line = sys.stdin.buffer.readline()
+        if not line:
+            sys.exit(0)
+        t = line.decode().strip()
+        if not t:
+            break
+        k, _, v = t.partition(":")
+        headers[k.strip().lower()] = v.strip()
+    msg = json.loads(sys.stdin.buffer.read(int(headers.get("content-length", 0))))
+    m, mid = msg.get("method"), msg.get("id")
+    with open(os.environ["FAKE_LSP_LOG"], "a") as fh:
+        fh.write((m or "?") + "\n")
+    if m == "initialize":
+        send({"jsonrpc": "2.0", "id": mid,
+              "result": {"capabilities": {"documentSymbolProvider": True}}})
+    elif m == "textDocument/documentSymbol":
+        send({"jsonrpc": "2.0", "id": mid, "result": SYM})
+    elif m == "shutdown":
+        send({"jsonrpc": "2.0", "id": mid, "result": None})
+    elif m == "exit":
+        sys.exit(0)
+    elif mid is not None:
+        send({"jsonrpc": "2.0", "id": mid, "result": None})
+'''
+
+
+def _fake_lsp(tmp_path, monkeypatch):
+    import sys as _sys
+    server = tmp_path / "fake_lsp.py"
+    server.write_text(_FAKE_LSP)
+    log = tmp_path / "spawns.log"
+    log.write_text("")
+    monkeypatch.setenv("FAKE_LSP_LOG", str(log))
+    argv = [_sys.executable, str(server)]
+    monkeypatch.setattr(ci, "server_for",
+                        lambda rel, specs=None, abspath=None:
+                        ("fake", argv, "python", {}))
+    root = tmp_path / "ws"
+    root.mkdir()
+    (root / "a.py").write_text("def f():\n    pass\n")
+    (root / "b.py").write_text("def f():\n    pass\n")
+    return root, argv, log
+
+
+def test_session_pool_reuses_one_server_across_files(tmp_path, monkeypatch):
+    root, _argv, log = _fake_lsp(tmp_path, monkeypatch)
+    pool = ci.LspSessionPool()
+    try:
+        e1 = ci.extract_file(root, "a.py", settle=0, pool=pool)
+        e2 = ci.extract_file(root, "b.py", settle=0, pool=pool)
+    finally:
+        pool.close_all()
+    assert [e["name"] for e in e1] == ["f"] == [e["name"] for e in e2]
+    assert log.read_text().count("spawn") == 1     # ONE warm server served both files
+
+
+def test_session_pool_pumps_watched_file_changes(tmp_path, monkeypatch):
+    root, _argv, log = _fake_lsp(tmp_path, monkeypatch)
+    pool = ci.LspSessionPool()
+    try:
+        ci.extract_file(root, "a.py", settle=0, pool=pool)      # warm session up
+        pool.notify_changes(root, [("b.py", 2), ("gone.py", 3)])
+        pool.notify_changes(tmp_path / "other", [("x.py", 2)])  # no session → no-op
+    finally:
+        pool.close_all()
+    assert log.read_text().count("workspace/didChangeWatchedFiles") == 1
+
+
+def test_session_pool_respawns_after_crash(tmp_path, monkeypatch):
+    root, argv, log = _fake_lsp(tmp_path, monkeypatch)
+    pool = ci.LspSessionPool()
+    try:
+        ci.extract_file(root, "a.py", settle=0, pool=pool)
+        sess, fresh = pool.acquire(root, "fake", argv, {})   # the warm session…
+        assert not fresh
+        sess.client.proc.kill()                              # …dies out from under us
+        sess.client.proc.wait()
+        e2 = ci.extract_file(root, "b.py", settle=0, pool=pool)  # poll() → respawn
+    finally:
+        pool.close_all()
+    assert [e["name"] for e in e2] == ["f"]
+    assert log.read_text().count("spawn") == 2
