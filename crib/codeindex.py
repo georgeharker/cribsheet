@@ -822,6 +822,19 @@ class NoServer(RuntimeError):
 _REUSE_SETTLE = 0.3
 
 
+def _hierarchy_edges(c: LspClient, method: str, item: dict, key: str,
+                     root: Path, ref_projects: RefProjects | None) -> list[str]:
+    """One callHierarchy direction → located `name [loc]` edge strings (`key` is
+    the LSP result field naming the counterpart: `to` outgoing, `from` incoming)."""
+    out = []
+    for e in c.request(method, {"item": item}) or []:
+        t = e.get(key, {})
+        loc = _locate(t.get("uri", ""), root, ref_projects)
+        if loc:
+            out.append(f"{t.get('name')} [{loc}]")
+    return out
+
+
 def extract_file(root: Path, relpath: str, settle: float = 1.5,
                  pool: LspSessionPool | None = None,
                  ref_projects: RefProjects | None = None) -> list[dict]:
@@ -920,18 +933,10 @@ def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
                                      {"textDocument": {"uri": uri}, "position": pos})
                     if prep:
                         item = prep[0]
-                        for e in c.request("callHierarchy/outgoingCalls",
-                                           {"item": item}) or []:
-                            t = e.get("to", {})
-                            loc = _locate(t.get("uri", ""), root, ref_projects)
-                            if loc:
-                                calls.append(f"{t.get('name')} [{loc}]")
-                        for e in c.request("callHierarchy/incomingCalls",
-                                           {"item": item}) or []:
-                            fr = e.get("from", {})
-                            loc = _locate(fr.get("uri", ""), root, ref_projects)
-                            if loc:
-                                called_by.append(f"{fr.get('name')} [{loc}]")
+                        calls = _hierarchy_edges(c, "callHierarchy/outgoingCalls",
+                                                 item, "to", root, ref_projects)
+                        called_by = _hierarchy_edges(c, "callHierarchy/incomingCalls",
+                                                     item, "from", root, ref_projects)
                 # references: a FIRST-CLASS relation (everywhere this symbol is mentioned),
                 # for any server with referencesProvider — deliberately SEPARATE from
                 # called_by (call-hierarchy only). A reference is broader than a call (it
