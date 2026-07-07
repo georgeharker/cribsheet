@@ -138,7 +138,11 @@
 - **zsh cross-file references + autoload indexing.** shuck can't statically resolve
   dynamically-sourced zsh, and function definers live in extension-less autoload files.
   A name-based cross-file reference layer (+ index the autoload files via shebang) would
-  make zsh refs complete. Deferred behind the "pause zsh" call.
+  make zsh refs complete. Deferred behind the "pause zsh" call. (2026-07-07: autoload
+  files now didOpen-PINNED during sweeps — 566→604 zdot symbols — but zdot→dotfiler
+  cross-project EDGES still don't materialize: shuck neither resolves dynamically-
+  sourced calls nor searches the extra multi-root workspaceFolder. Query-time refs
+  fan-out is the working zsh cross-project path; edges need this upstream work.)
 - **git-history-driven `code_rehome`.** Ranking rehome candidates via `git log --follow`
   + usage pointers — a prompt pattern (the agent reads history, calls `code_rehome`),
   not hardwired ranking.
