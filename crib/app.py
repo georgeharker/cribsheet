@@ -158,6 +158,10 @@ class Crib:
         # query vs explicit index) can't corrupt the cross-file call graph.
         self._code_cache: dict[str, _ResidentCode] = {}
         self._code_epoch: dict[str, int] = {}
+        # In-flight code indexing (project → files currently in _index_file_sync),
+        # surfaced by `status` so "what's indexing right now" is answerable.
+        self._indexing: dict[str, list[str]] = {}
+        self._indexing_lock = threading.Lock()
         self._code_locks: dict[str, threading.Lock] = {}
         self._code_locks_guard = threading.Lock()
 
@@ -831,6 +835,23 @@ class Crib:
     def _index_file_sync(self, root: Path, rel: str, proj: str,
                          patch_edges: bool,
                          existing: dict[str, dict] | None = None) -> dict[str, Any]:
+        """Tracked entry point for one-file indexing: registers (proj, rel) as
+        in-flight for `status`, then runs `_index_file_inner`."""
+        with self._indexing_lock:
+            self._indexing.setdefault(proj, []).append(rel)
+        try:
+            return self._index_file_inner(root, rel, proj, patch_edges, existing)
+        finally:
+            with self._indexing_lock:
+                files = self._indexing.get(proj, [])
+                if rel in files:
+                    files.remove(rel)
+                if not files:
+                    self._indexing.pop(proj, None)
+
+    def _index_file_inner(self, root: Path, rel: str, proj: str,
+                          patch_edges: bool,
+                          existing: dict[str, dict] | None = None) -> dict[str, Any]:
         """The blocking core of code_index — extract + describe + persist one file. Sync
         so the lazy revalidation path (also sync) can reuse it directly; code_index runs
         it off the event loop via to_thread. `existing` is the by-fqname snapshot of the
@@ -1306,6 +1327,36 @@ class Crib:
                 "paths": (link.paths if link else []),
                 "doc_sources": srcs, "doc_chunks": doc_count,
                 "crib": (str(link.root / ".crib") if link and link.root else None)}
+
+    def status(self) -> dict[str, Any]:
+        """One-call health summary (the `status` CLI verb / MCP tool): every
+        project's inventory (notes, in-situ doc chunks, code symbols, learnings),
+        git-sync state, the warm LSP sessions (which servers are attached,
+        alive/busy/idle), and any in-flight indexing. Counts are cheap file
+        counts (1 toml = 1 symbol), never full parses."""
+        from .codeindex import _POOL, LEARNINGS_DIR
+        projects = []
+        for name in self.projects():
+            nd = self.paths.notes_dir(name)
+            ld = nd / LEARNINGS_DIR
+            sd = self.paths.project_dir(name) / "symbol_index"
+            doc_chunks = sum(1 for m in self.store.get_meta({"project": name}).values()
+                             if m.get("relpath", "").startswith(SRC_PREFIX))
+            projects.append({
+                "project": name,
+                "notes": sum(1 for _ in nd.rglob("*.md")) if nd.exists() else 0,
+                "learnings": sum(1 for _ in ld.glob("*.md")) if ld.exists() else 0,
+                "symbols": sum(1 for _ in sd.glob("*.toml")) if sd.exists() else 0,
+                "doc_chunks": doc_chunks,
+            })
+        with self._indexing_lock:
+            indexing = {p: list(v) for p, v in self._indexing.items() if v}
+        return {"projects": projects,
+                "git": self.git.state(),
+                "lsp_sessions": _POOL.stats(),
+                "indexing": indexing,
+                "store": type(self.store).__name__,
+                "embed_model": self.config.embed.model}
 
     def project_forget(self, project: str | None = None, cwd: Path | None = None,
                        with_learnings: bool = False) -> dict[str, Any]:

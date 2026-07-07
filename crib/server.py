@@ -539,6 +539,15 @@ def build_server(crib: Crib | None = None):
             _write_project(crib, project, project_path))
 
     @mcp.tool()
+    def status() -> dict[str, Any]:
+        """One-call health summary: every project's inventory (notes, in-situ doc
+        chunks, code symbols, learnings), git-sync state (dirty/ahead/behind),
+        which warm LSP sessions are attached (alive/busy/idle), and any indexing
+        currently in flight. Use to orient across ALL projects; `project_status`
+        goes deep on one."""
+        return crib.status()
+
+    @mcp.tool()
     def projects() -> list[str]:
         """List crib projects (separate memory namespaces). Use to discover
         what's available before a `lookup`/`store` in a specific project."""

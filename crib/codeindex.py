@@ -518,6 +518,19 @@ class LspSessionPool:
                 finally:
                     sess.lock.release()
 
+    def stats(self) -> list[dict[str, Any]]:
+        """Live sessions for `status`: which servers are attached where, whether
+        each is alive/busy, and how long it's been idle."""
+        now = time.monotonic()
+        with self._lock:
+            items = list(self._sessions.items())
+        return [{"root": root, "server": label,
+                 "pid": sess.client.proc.pid,
+                 "alive": sess.client.proc.poll() is None,
+                 "busy": sess.lock.locked(),
+                 "idle_s": round(now - sess.last_used, 1)}
+                for (root, label), sess in items]
+
     def close_all(self) -> None:
         with self._lock:
             sessions, self._sessions = list(self._sessions.values()), {}
