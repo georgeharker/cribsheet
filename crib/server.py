@@ -508,7 +508,9 @@ def build_server(crib: Crib | None = None):
                            project_path: str | None = None) -> dict[str, Any]:
         """Copy the NAMED files into memory as crib-owned notes (snapshot you own:
         git-synced, editable, versioned). Distinct from a repo's `.crib` docs, which
-        are indexed IN-SITU (source is master, never copied) by `project index`."""
+        are indexed IN-SITU (source is master, never copied) by `project index`.
+        `paths` must be absolute, or relative to `project_path` (there is no shell
+        cwd here for them to be relative to)."""
         return _switch_if_created(
             await crib.import_files(paths, project, cwd=_cwd(project_path)))
 

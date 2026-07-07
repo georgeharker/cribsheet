@@ -97,3 +97,20 @@ def test_import_rejects_non_file(crib, tmp_path):
 def _id_of(crib, relpath):
     from crib import notes
     return notes.load(crib.abspath("notes", relpath)).id
+
+
+def test_import_resolves_relative_paths_against_caller_cwd(crib, tmp_path):
+    """Via the daemon, `paths` arrive relative to the CALLER's cwd (shipped as
+    `cwd`) — they must not resolve against the daemon process's own cwd."""
+    d = _files(tmp_path)
+    out = asyncio.run(crib.import_files(
+        ["arch.md"], project="notes", cwd=d))          # relative + caller cwd
+    assert out["imported"] == 1
+    assert "hash gate" in crib.read_note("imported/arch.md", project="notes")
+    # a relative path that doesn't exist under the anchor still errors clearly
+    with pytest.raises(ValueError, match="not a file"):
+        asyncio.run(crib.import_files(["nope.md"], project="notes", cwd=d))
+    # NO anchor at all (MCP with only project= — a name, not a place): explicit
+    # error, never a silent resolve against the daemon's own cwd
+    with pytest.raises(ValueError, match="no anchor"):
+        asyncio.run(crib.import_files(["arch.md"], project="notes"))
