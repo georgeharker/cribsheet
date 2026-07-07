@@ -6,275 +6,180 @@
 
 <p align="center"><em>persistent memory for your AI — plain markdown on disk, semantically indexed</em></p>
 
-A local MCP server that keeps your long-term memory as plain markdown on disk,
-indexed for semantic retrieval by embeddings. Disk is the source of truth; the
-vector index is a derived, rebuildable cache. See [DESIGN.md](DESIGN.md) for the
-full architecture.
+Your AI assistant forgets everything between sessions. **cribsheet** gives it a
+durable, searchable memory — as plain markdown files you own, not a black box —
+that persists across sessions and is shared across every agent and tool you run.
 
-`crib` = the command. `cribsheet` = the project.
+It remembers two kinds of things:
 
-## Status
+- **Notes** — decisions, conventions, gotchas, hard-won facts. Written as markdown,
+  found by meaning (semantic + keyword search), not just exact words.
+- **Code** — a symbol index of your repos: every function/class/method with an LLM
+  "what it does" description, a real call graph (who calls what), and any durable
+  *learnings* you pin to a symbol. It answers the questions `grep` can't — *find
+  this by concept*, *what calls this*, *what does this do* — across files.
 
-Working: `store → index → lookup`, the hash-gated single index path, the
-per-write version ring, append/edit/restore, the file watcher (auto-reindex on
-external edits), `import` of a repo's local docs via `.crib`, shared Chroma via
-`sharedserver`, and a CLI + MCP tool surface. Plus:
+Disk is the source of truth; the vector index is a derived, rebuildable cache. One
+warm process serves your editor (over MCP) and your terminal (`crib <verb>`) alike.
 
-- **Daemon-client CLI** — `crib <verb>` attaches to the warm MCP daemon over the
-  same sharedserver process instead of cold-starting (≈13s → ≈2s). (§10.2)
-- **Hybrid retrieval** — dense (vector) ⊕ BM25 lexical, fused by reciprocal-rank
-  fusion, with an optional cross-encoder rerank stage. (§10.3)
-- **`apropos`** — like `lookup` but renders the full matching sections.
-- **Code symbol index** — index a source file's functions/classes/methods with an
-  LLM "what it does" description **and** a real LSP call graph (callers/callees),
-  then answer the questions grep can't: find a symbol by **concept or name**
-  (`code_lookup`, hybrid dense⊕BM25), walk its call graph (`code_xref`), or render
-  it as a terminal pstree (`code_graph`). Multi-language via `.lsp.json` specs
-  (basedpyright/pyright, rust-analyzer, gopls, clangd, emmylua_ls).
-  ([docs/code-symbol-index.md](docs/code-symbol-index.md))
-- **Harness-memory mirror** — `import-memory` mirrors Claude Code's own
-  `memory/*.md` into a crib project (host-namespaced) and live-syncs it. (§13)
-- **Git sync** — `setup`/`sync`/`push`/`pull` share notes across machines, with a
-  frontmatter-aware merge driver so provenance never conflicts. (§14)
+> `crib` = the command. `cribsheet` = the project. See **[DESIGN.md](DESIGN.md)**
+> for the full architecture.
 
-It runs with **zero heavy dependencies** — only PyYAML — using a dependency-free
-hash embedder and a persistent JSON store. Install the real backends
-(sentence-transformers/fastembed, Chroma, watchdog, fastmcp, rich) for production.
+## Why
 
-Not yet built: `distill` (MCP-sampling re-digest).
+- **Agents forget. Memory should be durable and shared.** A decision you made last
+  week, in another repo, in another tool's session, is one `lookup` away — because
+  it's the same markdown tree behind every agent.
+- **`grep` can't answer "what does this do" or "what calls this."** The code index
+  answers by *intent* and traces the real call graph, so an agent (or you) finds
+  code by concept and understands its neighbourhood in one call.
+- **It's plain markdown you own.** No proprietary store — edit notes in your own
+  editor, diff them in git, sync them across machines. The index rebuilds itself.
+- **Built to actually get used.** The hard part of memory isn't storing — it's
+  *recall at the right moment*. cribsheet ships the delivery layer: a one-line
+  directive that keeps the habit in context, plugins that wire it into Claude Code,
+  and an always-warm daemon so a lookup is never the slow path.
 
-Section refs (§) point at `DESIGN.md`.
+## Quickstart
 
-## Install
+**1 — Install** (`pipx` keeps the heavy deps isolated and puts `crib` on your PATH):
 
-**Dev (editable, local venv):**
 ```bash
-git submodule update --init      # vendor/llmkit — markdown rendering (the `render` extra)
+git clone https://github.com/georgeharker/cribsheet && cd cribsheet
+git submodule update --init          # vendored llmkit (markdown rendering)
+pipx install -e '.[full]'            # crib + chroma, embeddings, fastmcp, watcher
+```
+
+<details><summary>Dev install (editable venv)</summary>
+
+```bash
 python -m venv .venv && . .venv/bin/activate
-pip install -e .                 # core only (PyYAML)
-pip install -e ./vendor/llmkit   # llmkit isn't on PyPI; uv users can skip (uv.sources handles it)
-pip install -e '.[full]'         # + chroma, sentence-transformers, fastmcp, watchdog, render
+pip install -e '.[full]'             # core is zero-dep (PyYAML only); [full] adds backends
+pip install -e ./vendor/llmkit       # not on PyPI; uv users can skip
 ```
+</details>
 
-**Daily driver (global `crib` on PATH)** — `pipx` keeps the heavy deps isolated:
-```bash
-pipx install -e '/home/geohar/Development/cribsheet[full]'
-```
-HTTP serving and the registered MCP entry need `crib` on PATH with the `[mcp]`
-(or `[full]`) extra.
-
-## CLI
-
-One binary, two faces — verbs mirror the MCP tools:
-```bash
-crib store "Chroma is refcounted by sharedserver." --title "process model" -p notes
-crib lookup "how is chroma managed" -p notes        # alias: crib search — locator lines
-crib search -a "how is chroma managed" -p notes     # -a/--render: full sections (alias: apropos)
-echo "# Note" | crib store -                         # '-' reads stdin
-crib --json lookup "..." -p notes | jq               # scriptable (--json before the verb)
-crib info                                            # paths, backends, daemon/chunk/retrieve
-crib import                                          # ingest a repo's docs via .crib
-crib import-memory                                   # mirror Claude's harness memory (§13)
-crib setup --remote git@host:notes.git               # join the shared repo on a new machine (§14)
-crib sync                                            # share notes across machines via git (§14)
-
-crib code-index crib/retrieve.py -p mycode           # index a file: symbols + call graph + descriptions
-crib code-lookup "combine ranked lists" -p mycode    # find a symbol by CONCEPT or name (hybrid)
-crib code-xref BM25.scores -p mycode                 # a symbol's callers ← / callees →
-crib code-graph LexicalCache.get -p mycode           # pstree call graph (--callers, --depth, --ascii)
-```
-Verbs: `lookup`/`search` (`-a` renders), `apropos`/`a`, `read`, `locate`,
-`store`, `append`, `edit`, `reindex`, `reconcile`, `versions`, `restore`,
-`import`, `import-memory`, `setup`, `snapshot`, `sync`/`push`/`pull`, `history`,
-`projects`, `info`, and the code index `code-lookup`/`code-xref`/`code-graph`/
-`code-index`.
-
-By default a verb attaches to the **warm daemon** (one process shared with the
-MCP server) via `sharedserver`, avoiding a per-call cold start; `--no-daemon`
-runs in-process, `--host`/`--port` override the endpoint. Human output is
-formatted (markdown rendered via the vendored rich pipeline on a tty); `--json`
-is machine-readable.
-
-On server startup crib runs a **reconcile sweep** (changed/added files reindexed,
-deleted notes' chunks dropped) so offline edits are caught even though the
-watcher wasn't running. `crib reconcile` runs it manually across all projects.
-
-## MCP server
-
-```bash
-crib --mcp                                   # stdio (default)
-crib --mcp --http --port 7732                # streamable-HTTP on a port
-crib serve --http --port 7732                # equivalent
-```
-
-Registered in `~/.config/secrets/mcpservers.json` as a **sharedserver-backed
-HTTP MCP** (so one warm crib serves every client, refcounted with a grace
-period — same pattern as `jupyter`/`svg-mcp`):
-```jsonc
-"mcpServers":  { "cribsheet": { "url": "http://localhost:7732/mcp",
-                                "sharedServer": "cribsheet" } },
-"sharedServers": { "cribsheet": {
-    "command": "crib",
-    "args": ["--mcp", "--http", "--host", "127.0.0.1", "--port", "7732"],
-    "grace_period": "1h", "health_timeout": 30 } }
-```
-
-This is the same warm process the CLI attaches to (§10.2) — Claude (over MCP) and
-`crib <verb>` share one daemon. Tools: `lookup`, `apropos`, `read`, `locate`,
-`store`, `append`, `edit`, `reindex`, `reconcile`, `versions`, `restore`,
-`import`, `import_memory`, `snapshot`, `history`, `projects`. (`sync`/`push`/`pull`
-are CLI-only — pushing notes is outward-facing and needs interactive auth.)
-
-## How it's wired
-
-- **One path to the index** — every writer (tools, watcher, direct edits) funnels
-  through a single idempotent, content-hash-gated `index_file` under a per-path
-  lock. Races and noisy filesystem events degrade to redundant work, never a
-  wrong index. (`crib/indexer.py`)
-- **Pluggable embedder** — `hash` (dependency-free, default for dev/tests),
-  `fe:<model>` (fastembed/ONNX), or `st:<model>` (sentence-transformers). English
-  BGE models get the s2p query instruction automatically. (`crib/embed.py`)
-- **Pluggable store** — `InMemoryStore` (tests), `JsonStore` (persistent, no
-  deps), `ChromaStore` (embedded or shared via `sharedserver`). (`crib/store.py`)
-- **Hybrid retrieval** — dense vector ranking fused with a warm-cached BM25
-  lexical ranking via RRF; optional cross-encoder rerank (fused, default off).
-  (`crib/retrieve.py`)
-- **Daemon-client** — the CLI speaks MCP to the warm `crib --mcp --http` process;
-  git ops in `sync` run client-side, then trigger a daemon reconcile.
-  (`crib/client.py`)
-- **Harness-memory mirror** — one-way sync of Claude Code's `memory/*.md` into
-  `notes/claude-memory/<host>/`, with a live daemon watcher. (`crib/claudemem.py`,
-  `crib/memmirror.py`)
-- **Two-layer versioning + git sync** — automatic per-write ring + git snapshots,
-  shareable across machines. (`crib/versions.py`, `crib/gitbacking.py`)
-- **Frontmatter-aware merge** — a `merge=cribnote` git driver resolves note
-  *headers* deterministically (provenance never conflicts) while genuine *body*
-  conflicts still surface, header already merged. (`crib/merge.py`)
-
-## Sharing notes across machines (§14)
-
-The data dir is a git repo with a remote; notes sync via plain git.
-
-```bash
-# first machine — create the shared repo and push
-crib sync --remote git@host:notes.git
-
-# every other machine — join it
-crib setup --remote git@host:notes.git    # init + merge driver + pull
-crib sync                                  # thereafter: commit + pull + push
-```
-
-Derived-note provenance is built to *not* conflict: each note's `id` is derived
-from its path (not a per-machine random id), `source_repo` is stored as a portable
-`$LOCATION/rest` token (see `[locations]`), and `imported` is pinned to
-first-import. Anything that still diverges is settled by the `cribnote` merge
-driver — a header-only difference resolves silently; a body difference stops the
-pull and is listed for you to resolve, with the header already merged clean. (`crib
-setup` registers the driver per machine; git config doesn't travel with the repo.)
-
-## Config
-
-`$XDG_CONFIG_HOME/crib/config.toml` (override roots with `CRIB_CONFIG_DIR`,
-`CRIB_DATA_DIR`, `CRIB_INDEX_DIR`):
-
-```toml
-default_project = "default"
-versions_keep = 20
-
-[embed]
-model = "hash"            # or "fe:BAAI/bge-small-en-v1.5", "st:<model>"
-# query_prefix = ""       # override the auto BGE s2p query instruction
-
-[chunk]
-window_words = 320        # split long sections under the model's token cap
-overlap_ratio = 0.20      # overlap between adjacent windows (derived: 64 words)
-
-[retrieve]
-hybrid = true             # dense ⊕ BM25, RRF-fused
-rerank = false            # optional cross-encoder rerank (fused)
-
-[daemon]
-enabled = true            # CLI attaches to the warm MCP process
-port = 7732               # also the bind port for `serve`/`--mcp`
-
-[memory]
-watch = true              # daemon live-mirrors bound harness memory dirs (§13)
-
-[chroma]
-mode = "embedded"         # "embedded" | "shared" | "json"
-
-[locations]              # named path roots → portable $LOCATION tokens (§14)
-DEV = "~/Development"     # provenance paths stored as $DEV/... so they sync clean
-```
-
-## Make Claude actually use it
-
-The MCP tools and the server's `instructions` are loaded **lazily** — the model
-only sees them once it has decided to reach for a tool, which is too late for a
-"check memory first" habit. The reliable lever is a short directive in a global
-`CLAUDE.md` (always in context, loaded once per session — not per turn):
-
-```markdown
-# Memory (cribsheet)
-- Before answering about a project/topic/past decision — or exploring a codebase
-  cold — `lookup`/`apropos` cribsheet first; the answer may be stored.
-- For code questions ("where is X handled", "what calls Y", "what does Z do"),
-  reach for `code_lookup`/`code_xref`/`code_graph` before grep (when indexed).
-- When a durable fact emerges (decision, convention, gotcha, contract), `store`
-  it — `lookup` first, `append`/`edit` over duplicating.
-```
-
-Put it at `$CLAUDE_CONFIG_DIR/CLAUDE.md` (e.g. dotfiles-managed, like
-`settings.json`) — copy [`CLAUDE.md.example`](CLAUDE.md.example). The directive
-directs *approach* (prefer the index over the grep/Read reflex, with examples);
-the tool descriptions carry the mechanics. A lean reflex-substitution rule flips
-the habit on a bare prompt where a feature-list directive doesn't.
-
-Pair it with `crib import-memory` so the harness `memory/*.md` notes you (Claude)
-already write are mirrored into cribsheet's searchable index automatically — one
-source of truth, two searchable surfaces.
-
-## Plugins
-
-A [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) ships two
-plugins — pick by whether crib's MCP tools already reach you:
-
-- **`cribsheet`** (full) — registers the crib MCP server over a **sharedserver**-managed
-  HTTP backend (one warm `crib` shared across sessions; respects a globally-installed
-  `crib` on PATH — never bundles a copy) **and** injects the reach-for-crib
-  instructions. Set `CRIB_EXTERNAL=1` to skip the backend management (when crib is
-  served for you already).
-- **`cribsheet-instructions`** — the instructions only (a `SessionStart` hook injecting
-  the directive), **no MCP**. Use this when crib's tools already arrive another way —
-  e.g. proxied by [mcp-combiner](https://github.com/georgeharker/claude-sharedserver).
+**2 — Wire it into Claude Code.** The simplest path installs the MCP server *and* the
+"reach for memory" directive as a plugin:
 
 ```bash
 claude plugin marketplace add georgeharker/cribsheet
-claude plugin install cribsheet                 # full (MCP + instructions)
-claude plugin install cribsheet-instructions    # instructions only
+claude plugin install cribsheet                 # MCP tools + instructions
+# already have crib served another way? use the instructions only:
+claude plugin install cribsheet-instructions
 ```
 
-> If you run the combiner, everything routes through `sharedserver` and **refcounts
-> onto one crib process** — no duplicate backend. To also avoid duplicate *tools*
-> (the combiner proxies crib *and* the full plugin registers it), install
-> `cribsheet-instructions` instead of `cribsheet`. That structural split is the
-> answer to "is another MCP already serving crib" — it's an install choice, not
-> something to auto-detect.
+Prefer to wire it by hand? Copy [`CLAUDE.md.example`](CLAUDE.md.example) into your
+global `$CLAUDE_CONFIG_DIR/CLAUDE.md` — that one-line directive is what keeps the
+habit in context (tool descriptions alone load too late to form it).
 
-### Onboarding a repo (project lifecycle)
+**3 — Use it.** The CLI verbs mirror the MCP tools, so anything Claude does you can
+do too:
 
 ```bash
-crib project setup     # ensure .crib (auto-created) + import docs + index all source
-crib project index     # (re)index the code from .crib (cheap re-run)
-crib project status     # indexed? symbol/file counts, kinds, .crib paths
-crib project forget     # clear the code index (keeps learnings/notes/.crib)
-crib code setup         # code facet only (no doc import); crib code <verb> is noun-verb
+# notes
+crib store "Chroma is refcounted by sharedserver." -p notes   # remember a fact
+crib lookup "how is chroma managed" -p notes                  # find it by meaning
+crib search -a "how is chroma managed" -p notes               # -a: full sections
+
+# code — onboard a repo, then ask it questions grep can't answer
+cd ~/Development/myrepo
+crib project setup                                # index code + docs (one call)
+crib code lookup "combine ranked lists"           # find a symbol by CONCEPT
+crib code dossier LexicalCache.get                # everything about one symbol
+crib code graph reciprocal_rank_fusion            # walk the call graph (pstree)
+crib code append reciprocal_rank_fusion \
+     "fuses by RANK, not score — robust to scale differences"   # pin a learning to it
 ```
 
-An agent that hits an unindexed project self-diagnoses toward `project_setup`, runs
-it, then looks up — the "clear the index → it re-indexes itself → queries" loop.
+That's the loop: **store what's worth keeping, look it up by meaning, onboard a repo
+and explore it by concept.** An agent that hits an unindexed repo self-diagnoses
+toward `project setup`, runs it, and carries on.
 
-## Tests
+## The surface
+
+Every capability, its CLI form, its MCP tool, and a one-liner lives in
+**[docs/surface.md](docs/surface.md)** — the full reference. The essentials:
+
+| | notes | code |
+|---|---|---|
+| **find** | `lookup` / `apropos` (full sections) | `code lookup` (concept ⊕ name), `code dossier`, `code graph`/`xref` |
+| **write** | `store`, `append`, `edit`, `forget`, `move` | `code append`/`edit`/`forget` (learnings) |
+| **onboard** | `import` (files → memory) | `project setup` / `index` / `status` |
+| **housekeeping** | `reindex`, `reconcile`, `versions`, `restore`, `history` | `code learnings`, `code rehome` |
+
+Notes and code share one store, so `lookup` surfaces a repo's docs alongside your
+stored knowledge. A repo's `.crib` file ties it to a project and declares which
+source and docs to index (docs are indexed **in-situ** — the repo stays the master;
+crib holds only the index).
+
+By default a verb attaches to the **warm daemon** (the same process the MCP server
+runs), so it's fast; `--no-daemon` runs in-process, `--json` gives machine output.
+
+## Going further
+
+- **Run the MCP server** — the plugin (Quickstart) is the easy path. To run it
+  yourself: `crib --mcp` (stdio) or `crib serve --http --port 7732`, registered as a
+  [`sharedserver`](https://github.com/georgeharker/claude-sharedserver)-backed HTTP
+  MCP so one warm crib serves every client (and the same process the CLI attaches
+  to). If a combiner already proxies crib's tools to you, install
+  `cribsheet-instructions` (directive only, no second MCP).
+- **Share across machines** — the data dir is a git repo; notes sync via plain git
+  with a frontmatter-aware merge driver so provenance never conflicts:
+  ```bash
+  crib sync --remote git@host:notes.git   # first machine: create + push
+  crib setup --remote git@host:notes.git  # every other: init + merge driver + pull
+  crib sync                               # thereafter: commit + pull + push
+  ```
+  Full walkthrough: [docs/resume-on-new-machine.md](docs/resume-on-new-machine.md).
+- **Mirror Claude's own memory** — `crib import-memory` mirrors Claude Code's
+  harness `memory/*.md` into crib (host-namespaced) and live-syncs it, so it's
+  searchable alongside everything else.
+- **Configure** — `$XDG_CONFIG_HOME/crib/config.toml` picks the embedder, retrieval
+  mode, daemon, and backends; `crib info` prints the resolved paths. The defaults are
+  sensible — a minimal override:
+  ```toml
+  [embed]
+  model = "hash"          # or "fe:BAAI/bge-small-en-v1.5" (fastembed), "st:<model>"
+  [retrieve]
+  hybrid = true           # dense ⊕ BM25, RRF-fused; rerank = true adds a cross-encoder
+  [chroma]
+  mode = "embedded"       # "embedded" | "shared" (sharedserver) | "json"
+  [locations]
+  DEV = "~/Development"   # provenance paths stored as $DEV/… so they sync clean
+  ```
+  Language-server and generation-provider examples:
+  [`docs/lsp.json.example`](docs/lsp.json.example),
+  [`docs/generate.toml.example`](docs/generate.toml.example).
+
+## How it works
+
+The short version: every write funnels through one idempotent, content-hash-gated
+index path under a per-path lock, so races degrade to redundant work, never a wrong
+index. Retrieval fuses a dense vector ranking with a warm BM25 lexical ranking
+(RRF), with an optional cross-encoder rerank. Embedder and store are both pluggable
+(dependency-free defaults for dev). The code index is built live from language
+servers (`.lsp.json` specs — ty/pyright, rust-analyzer, gopls, clangd, shuck, …) for
+the structural facet and an LLM for the "what it does" descriptions.
+
+The full picture — the design decisions and the *why* behind them — lives in
+separate docs, not this README:
+
+- **[DESIGN.md](DESIGN.md)** — the architecture, end to end.
+- **[docs/code-symbol-index.md](docs/code-symbol-index.md)** — how the code↔note
+  index is built, and the learnings model.
+- **[docs/retrieval-and-adoption.md](docs/retrieval-and-adoption.md)** — retrieval
+  quality, and why delivery (not capability) is what makes a memory tool get used.
+- **[docs/knowledge-capture.md](docs/knowledge-capture.md)** — `distill` /
+  `elaborate` / `summarize`, the generation layer over notes.
+
+## Status & tests
+
+Runs with **zero heavy dependencies** — only PyYAML — using a dependency-free hash
+embedder and a persistent JSON store; install the `[full]` extra for the real
+backends (embeddings, Chroma, watcher, MCP, rich rendering). The store → index →
+lookup path, the version ring, the file watcher, git sync, the code index, and the
+CLI + MCP surface are all working.
 
 ```bash
 pip install pytest && pytest -q
