@@ -128,6 +128,27 @@ class GitBacking:
         r = self._run("remote", "get-url", "origin")
         return r.stdout.strip() if r.returncode == 0 else None
 
+    def state(self) -> dict:
+        """Local-only sync health for `status`: remote, uncommitted count, last
+        commit, and ahead/behind vs the last-FETCHED origin ref (no network —
+        the numbers are as fresh as the last fetch/pull)."""
+        if not self.enabled:
+            return {"enabled": False}
+        branch = self._branch()
+        dirty = len([ln for ln in self._run("status", "--porcelain").stdout.splitlines()
+                     if ln.strip()])
+        last = self._run("log", "-1", "--pretty=%h %ad %s",
+                         "--date=short").stdout.strip() or None
+        out: dict = {"enabled": True, "remote": self.current_remote(),
+                     "branch": branch, "dirty": dirty, "last_commit": last}
+        if self._run("rev-parse", "--verify", "-q",
+                     f"origin/{branch}").returncode == 0:
+            out["ahead"] = int(self._run(
+                "rev-list", "--count", f"origin/{branch}..HEAD").stdout.strip() or 0)
+            out["behind"] = int(self._run(
+                "rev-list", "--count", f"HEAD..origin/{branch}").stdout.strip() or 0)
+        return out
+
     # --- local checkpoints -------------------------------------------------
     def snapshot(self, message: str | None = None) -> str:
         if not self.enabled:

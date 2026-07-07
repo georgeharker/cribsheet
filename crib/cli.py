@@ -181,6 +181,41 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
                 _print_learning(e["learning"], "   ")
 
 
+def _emit_status(d: Any, as_json: bool) -> None:
+    """Human summary for `crib status`: backend + git lines, live LSP sessions,
+    in-flight indexing, then a per-project inventory table."""
+    if as_json:
+        _emit(d, True)
+        return
+    print(f"{'store':10} {d.get('store')}  embed: {d.get('embed_model')}")
+    g = d.get("git") or {}
+    if g.get("enabled"):
+        parts = [g.get("remote") or "no remote",
+                 "clean" if not g.get("dirty") else f"{g['dirty']} uncommitted"]
+        if "ahead" in g:
+            parts.append(f"↑{g['ahead']} ↓{g['behind']}")
+        print(f"{'git':10} " + "  ".join(parts))
+        if g.get("last_commit"):
+            print(f"{'':10} last: {g['last_commit']}")
+    else:
+        print(f"{'git':10} not enabled (crib setup --remote <url>)")
+    for s in d.get("lsp_sessions") or []:
+        state = "busy" if s.get("busy") else f"idle {s.get('idle_s', 0):.0f}s"
+        alive = "" if s.get("alive") else "  DEAD"
+        print(f"{'lsp':10} {s.get('server')}  {s.get('root')}  "
+              f"pid {s.get('pid')}  {state}{alive}")
+    for proj, files in (d.get("indexing") or {}).items():
+        print(f"{'indexing':10} {proj}: {', '.join(files)}")
+    projs = d.get("projects") or []
+    print(f"{'projects':10} {len(projs)}")
+    if projs:
+        w = max(len(p["project"]) for p in projs)
+        for p in projs:
+            print(f"  {p['project']:{w}}  notes {p['notes']:4}  "
+                  f"docs {p['doc_chunks']:4}  symbols {p['symbols']:5}  "
+                  f"learnings {p['learnings']:3}")
+
+
 def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
     """Human summary for `crib project <verb>`."""
     if as_json:
@@ -368,6 +403,8 @@ def build_parser() -> argparse.ArgumentParser:
     sv.add_argument("--port", type=int, default=None)
     sub.add_parser("projects", help="list projects")
     sub.add_parser("info", help="show resolved paths and available backends")
+    sub.add_parser("status", help="health summary: projects (notes/docs/code/"
+                                  "learnings), git sync, LSP sessions, indexing")
 
     # `crib project <verb>` — whole-project lifecycle (superset of code + notes)
     pj = sub.add_parser("project", help="onboard/index a whole repo (setup/index/"
@@ -715,6 +752,8 @@ def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
         return "history", {"relpath": args.relpath}
     if v == "projects":
         return "projects", {}
+    if v == "status":
+        return "status", {}
     if v == "code-lookup":
         return "code_lookup", {"query": args.query, "project": args.project,
                                "k": args.k, "project_path": cwd}
@@ -777,6 +816,8 @@ def _run_daemon(args: Any, cfg: Any) -> None:
         _emit_code_rehome(data, args.json)
     elif args.cmd == "project":
         _emit_project(data, getattr(args, "project_verb", None), args.json)
+    elif args.cmd == "status":
+        _emit_status(data, args.json)
     elif args.cmd in _RAW_PRINT:
         print(data)
     else:
@@ -911,6 +952,8 @@ def _run_inprocess(args: Any) -> None:
             _emit(crib.history(args.relpath), j)
         elif args.cmd == "projects":
             _emit(crib.projects(), j)
+        elif args.cmd == "status":
+            _emit_status(crib.status(), j)
         elif args.cmd == "code-lookup":
             _emit_code(crib.code_lookup(args.query, args.project, args.k, cwd=cwd),
                        "code-lookup", j)

@@ -92,12 +92,13 @@ which `elaborate`/`summarize` index sets feed retrieval — mainly for eval swee
 
 ## Server & daemon — one warm process behind CLI and MCP
 
-| CLI | Description |
-|---|---|
-| `crib serve` / `crib --mcp` | Run the MCP server: stdio by default, `--http --host --port` for HTTP (explicit flags win over config `[daemon]`). |
-| `crib info` | Resolved paths, backends, daemon/chunk/retrieve config. |
-| `--no-daemon` (global) | Run the verb in-process instead of attaching to the warm daemon — e.g. to exercise freshly edited code without a daemon restart. |
-| `--json` (global) | Machine-readable output for any verb. |
+| CLI | MCP | Description |
+|---|---|---|
+| `crib status` | `status` | One-call health summary: per-project inventory (notes/docs/symbols/learnings), git-sync state, attached LSP sessions (alive/busy/idle), in-flight indexing. |
+| `crib serve` / `crib --mcp` | — | Run the MCP server: stdio by default, `--http --host --port` for HTTP (explicit flags win over config `[daemon]`). |
+| `crib info` | — | Resolved paths, backends, daemon/chunk/retrieve config. |
+| `--no-daemon` (global) | — | Run the verb in-process instead of attaching to the warm daemon — e.g. to exercise freshly edited code without a daemon restart. |
+| `--json` (global) | — | Machine-readable output for any verb. |
 
 ## Git sync — share notes across machines (CLI-only; pushing is outward-facing)
 
