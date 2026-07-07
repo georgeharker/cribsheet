@@ -33,15 +33,6 @@ dependencies = [
 #   Pi / CPU    : CPU index (no CUDA)  -> pip install torch --index-url \
 #                                         https://download.pytorch.org/whl/cpu
 st = ["sentence-transformers>=2.2"]
-# Legacy no-op aliases: everything these named is a base dependency now, kept
-# so existing `.[full]`-style invocations keep working.
-embed = []
-mcp = []
-watch = []
-git = []
-render = []
-generate = []
-full = []
 
 [project.scripts]
 crib = "crib.cli:main"
