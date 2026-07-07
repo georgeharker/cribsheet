@@ -29,11 +29,10 @@ cd ~/Development/cribsheet
 git pull --ff-only origin main
 git submodule update --init --recursive          # vendor/llmkit → pinned commit
 
-# install crib + the extras this work needs
-uv sync                                            # resolves vendored llmkit itself
-# plain pip instead: llmkit is NOT on PyPI — co-install it from vendor/ in ONE resolve
-# (the [anthropic] extra is the zen adapter, native Messages API):
-#   pip install -e './vendor/llmkit[md,bridge,anthropic]' -e '.[full,generate]'
+# install crib (the default install is complete; llmkit resolves from its git head)
+uv sync                                            # or: pip install -e .
+# the zen adapter (native Messages API) is an llmkit extra:
+#   pip install 'llmkit[md,bridge,anthropic] @ git+https://github.com/georgeharker/llmkit'
 ```
 
 **Restart the daemon after updating source.** The warm MCP daemon (sharedserver
