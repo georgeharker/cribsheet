@@ -75,3 +75,23 @@ def test_watcher_indexes_external_edit(tmp_path, monkeypatch):
 
     hits = asyncio.run(scenario())
     assert hits and hits[0].relpath == "external.md"
+
+
+def test_code_watcher_decode_routes_new_extensionless_files(tmp_path, monkeypatch):
+    """A NEW extensionless autoload/dotfile routes by content (shebang/marker),
+    like sweep enumeration — it must not wait for the next full sweep."""
+    import asyncio
+
+    from crib.watch import CodeWatcher
+    monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "cfg"))
+    root = tmp_path / "repo"
+    root.mkdir()
+    cw = CodeWatcher(lambda *a: None, asyncio.new_event_loop())  # type: ignore[arg-type]
+    cw.watch_root("proj", root)
+    f = root / "_zdot_helper"                       # autoload: marker, no extension
+    f.write_text("#autoload\n_zdot_helper() { :; }\n")
+    assert cw._decode(str(f), False) == ("proj", str(root.resolve()),
+                                         "_zdot_helper", False)
+    g = root / "notes"                              # extensionless NON-code → ignored
+    g.write_text("plain text\n")
+    assert cw._decode(str(g), False) is None

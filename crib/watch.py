@@ -204,7 +204,16 @@ class CodeWatcher(_FSWatcher):
         suffix = p.suffix.lower()
         is_doc = suffix in DOC_EXTS
         if suffix not in self._code_exts() and not is_doc:
-            return None
+            # extensionless files route by CONTENT (name/shebang/#compdef marker),
+            # the same grammar the sweep enumeration uses — a NEW autoload file
+            # must reach the index without waiting for the next full sweep. (A
+            # DELETED one can't be sniffed; its entry falls to the lazy
+            # revalidation gate, which drops symbols of missing sources.)
+            if suffix or not p.is_file():
+                return None
+            from .codeindex import content_lang
+            if content_lang(p) is None:
+                return None
         # A delete event for a file that exists is FSEvents/watchdog coalescing
         # noise from a rename-style save — record it as a change, not a delete
         # (the dispatch handler re-verifies against the final state anyway).
