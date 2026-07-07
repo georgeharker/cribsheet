@@ -46,26 +46,28 @@ warm process serves your editor (over MCP) and your terminal (`crib <verb>`) ali
 
 ```bash
 git clone https://github.com/georgeharker/cribsheet && cd cribsheet
-git submodule update --init            # vendored llmkit — NOT on PyPI, installed from here
-pipx install -e '.[embed,mcp,watch]'   # crib + chroma, embeddings, fastmcp, watcher
-pipx inject cribsheet -e './vendor/llmkit[md,bridge]'   # rich rendering + LLM generation
+pipx install -e .            # everything: crib + chroma, embeddings, fastmcp, watcher, llmkit
 ```
 
-(`[full]` = those three extras + `llmkit[md,bridge]` — but since llmkit resolves from
-`vendor/`, plain pip/pipx must install it explicitly, as above; only uv resolves it
-automatically via `[tool.uv.sources]`.)
+The default install is complete — no extras needed (`[st]`, the torch embedder,
+is the one genuine extra; torch wheels are host-specific). llmkit isn't on PyPI —
+it installs from its git head, so no submodule dance is needed; the
+`vendor/llmkit` submodule is only for hacking on llmkit itself or indexing it
+in-tree (`git submodule update --init` when you want it).
 
 <details><summary>Dev install (editable venv / uv)</summary>
 
 ```bash
 python -m venv .venv && . .venv/bin/activate
-pip install -e './vendor/llmkit[md,bridge]' -e '.[full]'   # one resolve; llmkit from vendor/
+pip install -e .                        # llmkit comes from its git head
 
-# uv instead: resolves the vendored llmkit itself
-uv sync                                 # or: uv pip install -e '.[full]'
+uv sync                                 # or: uv pip install -e .
 
-# everything (adds the torch embedder + native LLM adapters):
-pip install -e './vendor/llmkit[md,bridge,anthropic,google,claude]' -e '.[full,st]'
+# the torch embedder + llmkit's native LLM adapters:
+pip install -e '.[st]' 'llmkit[md,bridge,anthropic,google,claude] @ git+https://github.com/georgeharker/llmkit'
+
+# hacking on llmkit itself: overlay the submodule editable (uv sync restores git)
+git submodule update --init && pip install -e ./vendor/llmkit
 ```
 </details>
 
@@ -185,16 +187,15 @@ separate docs, not this README:
 
 ## Status & tests
 
-Treat `[full]` as the standard install — most extras are only nominally optional.
-The base install is PyYAML + chromadb; on top of that, **fastmcp** is required to
-serve MCP *and* for the warm-daemon path the CLI uses by default (without it, only
-`--no-daemon` works), **watchdog** powers the external-edit watchers, **fastembed**
-is the recommended real embedder (the base falls back to a dependency-free hash
-embedder), and the vendored **llmkit** does rendering + generation. The
-dependency-free fallbacks (hash embedder, JSON store, `--no-daemon`) are what tests
-and CI exercise, not the intended daily setup. The store → index → lookup path, the
-version ring, the file watcher, git sync, the code index, and the CLI + MCP surface
-are all working.
+The default install is the complete product: chromadb (store), **fastembed** (the
+recommended embedder — ONNX, no torch), **fastmcp** (serves MCP *and* the
+warm-daemon path the CLI uses by default), **watchdog** (external-edit watchers),
+and **llmkit** from its git head (rendering + generation). The only real extra is
+`[st]`, the torch embedder — torch wheels are host-specific. The dependency-free
+fallbacks (hash embedder, JSON store, `--no-daemon`) exist as *code properties*
+that tests and CI exercise, not install profiles. The store → index → lookup path,
+the version ring, the file watcher, git sync, the code index, and the CLI + MCP
+surface are all working.
 
 ```bash
 pip install pytest && pytest -q
