@@ -2015,7 +2015,18 @@ class Crib:
 
         imported: list[str] = []
         for p in paths:
-            src = Path(p).expanduser().resolve()
+            src = Path(p).expanduser()
+            if not src.is_absolute():
+                # Relative paths anchor to the CALLER: the CLI ships its shell cwd,
+                # an MCP agent's `project_path` names the repo. Without an anchor,
+                # error — resolving against the daemon's own cwd would be silent
+                # nonsense (and could even hit an unrelated same-named file).
+                if cwd is None:
+                    raise ValueError(
+                        f"relative path {p!r} has no anchor: pass absolute paths, "
+                        "or project_path=<repo dir> to resolve them against")
+                src = cwd / src
+            src = src.resolve()
             if not src.is_file():
                 raise ValueError(f"not a file: {p}")
             relpath = f"imported/{src.name}"
