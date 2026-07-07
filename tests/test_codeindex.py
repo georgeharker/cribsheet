@@ -332,8 +332,14 @@ while True:
     with open(os.environ["FAKE_LSP_LOG"], "a") as fh:
         fh.write((m or "?") + "\n")
     if m == "initialize":
+        with open(os.environ["FAKE_LSP_LOG"], "a") as fh:
+            fh.write("folders=%d\n" % len(msg["params"].get("workspaceFolders") or []))
+        send({"jsonrpc": "2.0", "method": "$/progress",
+              "params": {"token": "idx", "value": {"kind": "begin"}}})
         send({"jsonrpc": "2.0", "id": mid,
               "result": {"capabilities": {"documentSymbolProvider": True}}})
+        send({"jsonrpc": "2.0", "method": "$/progress",
+              "params": {"token": "idx", "value": {"kind": "end"}}})
     elif m == "textDocument/documentSymbol":
         send({"jsonrpc": "2.0", "id": mid, "result": SYM})
     elif m == "shutdown":
@@ -425,5 +431,42 @@ def test_session_pool_pins_docs_across_calls(tmp_path, monkeypatch):
                 and log.read_text().count("textDocument/didClose") < 2:
             time.sleep(0.02)
         assert log.read_text().count("textDocument/didClose") == 2
+    finally:
+        pool.close_all()
+
+
+def test_progress_tracked_and_wait_quiescent_honors_it(tmp_path, monkeypatch):
+    """$/progress begin/end tokens gate `wait_quiescent` — readiness is the
+    server's signal, not a guessed sleep."""
+    import threading
+    root, argv, log = _fake_lsp(tmp_path, monkeypatch)
+    pool = ci.LspSessionPool()
+    try:
+        ci.extract_file(root, "a.py", settle=0, pool=pool)   # parses begin+end
+        sess, fresh = pool.acquire(root, "fake", argv, {})
+        assert not fresh and sess.client._progress == set()  # tokens consumed
+        sess.client._progress.add("t")                       # simulate busy server
+        threading.Timer(0.25, lambda: sess.client._progress.discard("t")).start()
+        t0 = time.monotonic()
+        sess.client.wait_quiescent(initial=0.0, timeout=5.0)
+        dt = time.monotonic() - t0
+        assert 0.2 <= dt < 3.0            # waited for the token, not the timeout
+    finally:
+        pool.close_all()
+
+
+def test_extra_roots_ride_as_workspace_folders(tmp_path, monkeypatch):
+    """Ref projects' local roots become additional workspaceFolders at session
+    creation (multi-root xref: inbound references into refs resolve)."""
+    root, argv, log = _fake_lsp(tmp_path, monkeypatch)
+    dep = tmp_path / "depcheckout"
+    dep.mkdir()
+    pool = ci.LspSessionPool()
+    try:
+        pool.acquire(root, "fake", argv, {}, extra_roots=[dep])
+        deadline = time.monotonic() + 2.0
+        while time.monotonic() < deadline and "folders=" not in log.read_text():
+            time.sleep(0.02)
+        assert "folders=2" in log.read_text()     # root + the ref checkout
     finally:
         pool.close_all()

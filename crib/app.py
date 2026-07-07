@@ -164,6 +164,10 @@ class Crib:
         # In-flight code indexing (project → files currently in _index_file_sync),
         # surfaced by `status` so "what's indexing right now" is answerable.
         self._indexing: dict[str, list[str]] = {}
+        # Sweep progress (project → {done, total}) — a RELIABLE wait signal for an
+        # agent polling `status` on a background index: present while the sweep
+        # runs, gone when it finishes.
+        self._sweeps: dict[str, dict[str, int]] = {}
         self._indexing_lock = threading.Lock()
         self._code_locks: dict[str, threading.Lock] = {}
         self._code_locks_guard = threading.Lock()
@@ -1353,6 +1357,9 @@ class Crib:
         # extensionless autoloads), so cross-file edges cover everything crib
         # enumerated. Held for the sweep, released in the finally.
         from .codeindex import _POOL, server_for
+        extra_roots = [r["root"].resolve() for r in self._project_refs(proj)
+                       if r["root"] is not None
+                       and not r["root"].resolve().is_relative_to(root.resolve())]
         pins: dict[str, tuple[list[str], dict, list[tuple[Path, str]]]] = {}
         for f in files:
             sel = server_for(str(f.resolve().relative_to(root.resolve())), abspath=f)
@@ -1361,7 +1368,8 @@ class Crib:
                 pins.setdefault(label, (argv, spec, []))[2].append((f, lang))
         for label, (argv, spec, docs) in pins.items():
             try:
-                await asyncio.to_thread(_POOL.pin_docs, root, label, argv, spec, docs)
+                await asyncio.to_thread(_POOL.pin_docs, root, label, argv, spec,
+                                        docs, extra_roots)
             except Exception:  # noqa: BLE001 — pinning is best-effort enrichment
                 pass
 
@@ -1374,9 +1382,15 @@ class Crib:
                     return f, r, None
                 except Exception as exc:  # noqa: BLE001 — one bad file never aborts the sweep
                     return f, None, str(exc)
+                finally:
+                    with self._indexing_lock:   # live progress for `status` pollers
+                        if proj in self._sweeps:
+                            self._sweeps[proj]["done"] += 1
 
         syms = desc = indexed = 0
         errors: list[dict[str, str]] = []
+        with self._indexing_lock:
+            self._sweeps[proj] = {"done": 0, "total": len(files)}
         try:
             for f, r, err in await asyncio.gather(*(_one(f) for f in files)):
                 if err is not None:
@@ -1386,6 +1400,8 @@ class Crib:
                     syms += (r or {}).get("symbols", 0)
                     desc += (r or {}).get("described", 0)
         finally:
+            with self._indexing_lock:
+                self._sweeps.pop(proj, None)
             if pins:
                 await asyncio.to_thread(_POOL.unpin, root)
         out: dict[str, Any] = {"files_indexed": indexed, "files_seen": len(files),
@@ -1490,10 +1506,14 @@ class Crib:
             })
         with self._indexing_lock:
             indexing = {p: list(v) for p, v in self._indexing.items() if v}
+            sweeps = {p: dict(v) for p, v in self._sweeps.items()}
         return {"projects": projects,
                 "git": self.git.state(),
                 "lsp_sessions": _POOL.stats(),
                 "indexing": indexing,
+                # sweep progress: {proj: {done, total}} while a project index runs,
+                # ABSENT when finished — poll this to wait on a background index
+                "sweeps": sweeps,
                 "store": type(self.store).__name__,
                 "embed_model": self.config.embed.model}
 

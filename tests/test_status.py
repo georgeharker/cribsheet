@@ -56,3 +56,23 @@ def test_status_reports_in_flight_indexing(crib, monkeypatch):
     crib._index_file_sync("root", "pkg/mod.py", "alpha", True)  # type: ignore[arg-type]
     assert seen == [{"alpha": ["pkg/mod.py"]}]
     assert crib.status()["indexing"] == {}    # cleared once the work finishes
+
+
+def test_status_sweeps_progress_signal(crib, tmp_path, monkeypatch):
+    """`status.sweeps` is the poll-able wait signal for a background project
+    index: {done, total} visible while the sweep runs, ABSENT once finished."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    (root / "a.py").write_text("def a(): pass\n")
+    (root / "b.py").write_text("def b(): pass\n")
+    seen: list[dict] = []
+
+    def fake(rt, rel, proj, patch_edges, existing=None):
+        seen.append(dict(crib.status()["sweeps"].get("p", {})))
+        return {"symbols": 1, "described": 1}
+
+    monkeypatch.setattr(crib, "_index_file_sync", fake)
+    out = asyncio.run(crib._index_project_code("p", root, ["**/*.py"]))
+    assert out["files_seen"] == 2
+    assert seen and all(s.get("total") == 2 for s in seen)   # visible mid-sweep
+    assert crib.status()["sweeps"] == {}                     # gone when finished

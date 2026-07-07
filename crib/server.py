@@ -543,8 +543,10 @@ def build_server(crib: Crib | None = None):
         """One-call health summary: every project's inventory (notes, in-situ doc
         chunks, code symbols, learnings), git-sync state (dirty/ahead/behind),
         which warm LSP sessions are attached (alive/busy/idle), and any indexing
-        currently in flight. Use to orient across ALL projects; `project_status`
-        goes deep on one."""
+        currently in flight. `sweeps` is the RELIABLE wait signal for a background
+        `project_index`: {project: {done, total}} while it runs, absent when done —
+        poll status until your project leaves `sweeps`. Use to orient across ALL
+        projects; `project_status` goes deep on one."""
         return crib.status()
 
     @mcp.tool()
