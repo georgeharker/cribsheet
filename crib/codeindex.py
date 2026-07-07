@@ -14,6 +14,7 @@ changed.
 """
 from __future__ import annotations
 
+import atexit
 import hashlib
 import json
 import os
@@ -318,12 +319,15 @@ class LspClient:
         self._id = 0
         self._resp: dict[int, dict] = {}
         self._lock = threading.Lock()
-        threading.Thread(target=self._reader, daemon=True).start()
+        self._wlock = threading.Lock()   # frames must not interleave: the watcher
+        threading.Thread(target=self._reader, daemon=True).start()  # pump notifies
+        # concurrently with an in-flight extraction's requests (SessionPool).
 
     def _send(self, msg: dict) -> None:
         data = json.dumps(msg).encode()
-        self.w.write(f"Content-Length: {len(data)}\r\n\r\n".encode() + data)
-        self.w.flush()
+        with self._wlock:
+            self.w.write(f"Content-Length: {len(data)}\r\n\r\n".encode() + data)
+            self.w.flush()
 
     def _reader(self) -> None:
         while True:
@@ -389,7 +393,11 @@ class LspClient:
                 "documentSymbol": {"hierarchicalDocumentSymbolSupport": True},
                 "callHierarchy": {"dynamicRegistration": True},
                 "references": {"dynamicRegistration": True}},
-                "workspace": {"configuration": True}},
+                # didChangeWatchedFiles: servers that don't self-watch the fs
+                # register watchers (client/registerCapability → null-acked in
+                # `_answer`) and rely on the pool's `notify_changes` pump.
+                "workspace": {"configuration": True,
+                              "didChangeWatchedFiles": {"dynamicRegistration": True}}},
             "workspaceFolders": [{"uri": self.root.as_uri(), "name": self.root.name}],
         })
         self.capabilities: dict = (res or {}).get("capabilities", {})
@@ -402,6 +410,123 @@ class LspClient:
         except Exception:  # noqa: BLE001
             pass
         self.proc.terminate()
+
+
+class _Session:
+    """One warm server + its reuse state. All use is serialized by `lock` —
+    request/response over a single stdio pipe is inherently one-at-a-time."""
+
+    def __init__(self, client: LspClient) -> None:
+        self.client = client
+        self.lock = threading.Lock()
+        self.last_used = time.monotonic()
+
+
+class LspSessionPool:
+    """Warm LSP sessions, one per (workspace root, server label) — docs §3.1.
+
+    An LSP server is Chroma's twin (docs §3): warm, stateful, and expensive to
+    cold-start — `initialize` pays the whole workspace index (seconds on
+    pyright, minutes on rust-analyzer). The pool keeps each initialized client
+    alive across `extract_file` calls, so a sweep or revalidation pays the
+    spin-up ONCE per (root, server), not per file. A dead server is detected
+    (`proc.poll()`) and respawned on next use; sessions idle past `grace` are
+    reaped opportunistically on each acquire (the daemon would otherwise hold
+    basedpyright + rust-analyzer + gopls at once — real memory weight).
+
+    Docs are NOT kept open across calls: each extraction didOpens what it needs
+    and didCloses it after, so every call reads fresh disk and the server's
+    per-doc memory stays bounded. What persists is the expensive part — the
+    process and its workspace index — kept in sync with disk two ways: the big
+    servers watch the fs themselves, AND crib's code watcher pumps
+    `workspace/didChangeWatchedFiles` into every warm session for the changed
+    root (`notify_changes`, docs §3.2) for the servers that don't."""
+
+    def __init__(self, grace: float = 900.0) -> None:
+        self._lock = threading.Lock()
+        self._sessions: dict[tuple[str, str], _Session] = {}
+        self.grace = grace
+
+    def acquire(self, root: Path, label: str, argv: list[str],
+                spec: dict) -> tuple[_Session, bool]:
+        """The warm session for (root, label), spawning + initializing on first
+        use → (session, fresh). Callers hold `session.lock` while using it.
+        Spawn/initialize happens under the pool lock: a concurrent cold start of
+        another language briefly serializes — rare, and far cheaper than the
+        races it removes."""
+        key = (str(root.resolve()), label)
+        self._reap()
+        with self._lock:
+            sess = self._sessions.get(key)
+            if sess is not None and sess.client.proc.poll() is not None:
+                self._sessions.pop(key)          # died since last use
+                sess = None
+            if sess is not None:
+                return sess, False
+            client = LspClient(argv, root,
+                               init_options=spec.get("initializationOptions"),
+                               settings=spec.get("settings"))
+            try:
+                client.initialize()
+            except Exception:
+                client.close()
+                raise
+            sess = self._sessions[key] = _Session(client)
+            return sess, True
+
+    def discard(self, root: Path, label: str) -> None:
+        """Drop (and close) a session after a wedged/failed extraction, so the
+        next acquire respawns clean."""
+        with self._lock:
+            sess = self._sessions.pop((str(root.resolve()), label), None)
+        if sess is not None:
+            sess.client.close()
+
+    def notify_changes(self, root: Path, changes: list[tuple[str, int]]) -> None:
+        """Pump `workspace/didChangeWatchedFiles` into every warm session for
+        `root` — (relpath, type) with LSP FileChangeType 1=created 2=changed
+        3=deleted — so a server that doesn't watch the fs itself still
+        invalidates its workspace index for files we never didOpen (docs §3.2).
+        Best-effort and lock-free (a notification is one atomic framed write;
+        a dead session surfaces at its next acquire)."""
+        key_root = str(root.resolve())
+        with self._lock:
+            sessions = [s for (r, _label), s in self._sessions.items()
+                        if r == key_root]
+        if not sessions:
+            return
+        events = [{"uri": (Path(key_root) / rel).as_uri(), "type": t}
+                  for rel, t in changes]
+        for sess in sessions:
+            try:
+                sess.client.notify("workspace/didChangeWatchedFiles",
+                                   {"changes": events})
+            except Exception:  # noqa: BLE001 — dead pipe → respawned on next use
+                pass
+
+    def _reap(self) -> None:
+        now = time.monotonic()
+        with self._lock:
+            for key, sess in list(self._sessions.items()):
+                if now - sess.last_used < self.grace:
+                    continue
+                if not sess.lock.acquire(blocking=False):
+                    continue                     # in use → not actually idle
+                try:
+                    self._sessions.pop(key, None)
+                    sess.client.close()
+                finally:
+                    sess.lock.release()
+
+    def close_all(self) -> None:
+        with self._lock:
+            sessions, self._sessions = list(self._sessions.values()), {}
+        for sess in sessions:
+            sess.client.close()
+
+
+_POOL = LspSessionPool()
+atexit.register(_POOL.close_all)
 
 
 def _in_workspace(uri: str, root: Path) -> bool:
@@ -543,106 +668,141 @@ class NoServer(RuntimeError):
     """No LSP server for a file's extension is available on this machine."""
 
 
-def extract_file(root: Path, relpath: str, settle: float = 1.5) -> list[dict]:
+# Post-didOpen settle on a WARM session: the workspace index already exists, only
+# this one file's analysis is pending — a fraction of the fresh-session settle.
+_REUSE_SETTLE = 0.3
+
+
+def extract_file(root: Path, relpath: str, settle: float = 1.5,
+                 pool: LspSessionPool | None = None) -> list[dict]:
     """Symbols + workspace-resolved call edges for one file, via the LSP server the
-    specs select for its extension (docs §3.3). Raises NoServer if none resolves."""
+    specs select for its extension (docs §3.3). Raises NoServer if none resolves.
+    The session comes WARM from the pool (docs §3.1) — spawn + `initialize` (the
+    whole-workspace index, the expensive part) is paid once per (root, server),
+    not per file. A wedged/dead server is discarded and the extraction retried
+    once on a fresh one."""
     path = (root / relpath).resolve()
     sel = server_for(relpath, abspath=path)
     if sel is None:
         raise NoServer(f"no LSP server for {Path(relpath).suffix or '(no ext)'} "
                        f"(configure ~/.config/crib/lsp.json)")
-    _label, argv, language_id, spec = sel
+    label, argv, language_id, spec = sel
+    pool = pool or _POOL
+    try:
+        return _extract(pool, root, relpath, path, settle, label, argv,
+                        language_id, spec)
+    except (TimeoutError, OSError, ValueError):
+        pool.discard(root, label)        # crash supervision: respawn once and retry
+        return _extract(pool, root, relpath, path, settle, label, argv,
+                        language_id, spec)
+
+
+def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
+             settle: float, label: str, argv: list[str], language_id: str,
+             spec: dict) -> list[dict]:
     lines = path.read_text().splitlines()
-    c = LspClient(argv, root, init_options=spec.get("initializationOptions"),
-                  settings=spec.get("settings"))
     entries: list[dict] = []
     mtime = derive_mtime(root, relpath)   # portable index timestamp (git date / disk)
-    try:
-        c.initialize()
+    sess, fresh = pool.acquire(root, label, argv, spec)
+    with sess.lock:
+        c = sess.client
         uri = path.as_uri()
-        c.notify("textDocument/didOpen", {"textDocument": {
-            "uri": uri, "languageId": language_id, "version": 1,
-            "text": "\n".join(lines)}})
-        time.sleep(settle)
-        module = _module_of(relpath, language_id)
-        syms = c.request("textDocument/documentSymbol", {"textDocument": {"uri": uri}})
-        has_refs = bool(c.capabilities.get("referencesProvider"))
-        sym_cache: dict[str, list] = {}     # uri → symbol ranges (encloser resolution)
-        opened: set[str] = {uri}            # target already open
-        for s, parents, pkinds in _walk(syms):
-            kind = s.get("kind")
-            if kind not in _INDEX_KINDS:
-                continue
-            # scope guard: a data declaration (global/const/field) is indexed only at
-            # module or class scope — one nested under a function is a LOCAL (noise).
-            if kind in _DATA_KINDS and any(pk in _FUNC_KINDS for pk in pkinds):
-                continue
-            rng = s.get("range", {})
-            start = rng.get("start", {}).get("line", 0)
-            body = "\n".join(lines[start:rng.get("end", {}).get("line", 0) + 1])
-            container = tuple(parents)
-            local = _local_name(s.get("name", ""), language_id)
-            # IDENTITY = the language-normalized qualified name (stable across body
-            # edits; changes only on rename/move). content_hash is a SEPARATE field
-            # that gates description regeneration — the two jobs, split (docs §2.1).
-            fqname = _qualify(language_id, module, container, local)
-            parent = (_qualify(language_id, module, container[:-1],
-                               _local_name(container[-1], language_id))
-                      if container else "")
-            content_hash = hashlib.sha1(body.encode()).hexdigest()[:16]
-            sig = lines[start].strip()[:120]
-            pos = (s.get("selectionRange") or rng)["start"]
-            calls: list[str] = []
-            called_by: list[str] = []
-            if kind in _FUNC_KINDS and c.capabilities.get("callHierarchyProvider"):
-                prep = c.request("textDocument/prepareCallHierarchy",
-                                 {"textDocument": {"uri": uri}, "position": pos})
-                if prep:
-                    item = prep[0]
-                    for e in c.request("callHierarchy/outgoingCalls", {"item": item}) or []:
-                        t = e.get("to", {})
-                        if _in_workspace(t.get("uri", ""), root):
-                            calls.append(f"{t.get('name')} [{_rel(t.get('uri',''), root)}]")
-                    for e in c.request("callHierarchy/incomingCalls", {"item": item}) or []:
-                        fr = e.get("from", {})
-                        if _in_workspace(fr.get("uri", ""), root):
-                            called_by.append(f"{fr.get('name')} [{_rel(fr.get('uri',''), root)}]")
-            # references: a FIRST-CLASS relation (everywhere this symbol is mentioned),
-            # for any server with referencesProvider — deliberately SEPARATE from
-            # called_by (call-hierarchy only). A reference is broader than a call (it
-            # includes reads/mentions); the reference-vs-call distinction is left to the
-            # consumer/LLM. This is the caller signal for symbols-only servers (shuck).
-            references: list[str] = []
-            if has_refs:
-                refs = c.request("textDocument/references", {
-                    "textDocument": {"uri": uri}, "position": pos,
-                    "context": {"includeDeclaration": False}}) or []
-                for loc in refs[:_REF_CAP]:
-                    ruri = loc.get("uri", "")
-                    if not _in_workspace(ruri, root):
-                        continue
-                    rline = loc.get("range", {}).get("start", {}).get("line", 0)
-                    enc = _enclosing_symbol(c, ruri, rline, language_id, sym_cache, opened)
-                    if not enc or (enc == local and _rel(ruri, root) == relpath):
-                        continue                    # skip self-references
-                    references.append(f"{enc} [{_rel(ruri, root)}]")
-            # module-level variables read more naturally as "global" than "variable"
-            kind_label = ("global" if kind == 13 and not container
-                          else _KIND_LABEL_OVERRIDE.get((language_id, kind or 0))
-                          or _KIND.get(kind or 0, "?"))
-            entries.append({
-                "fqname": fqname, "name": local,
-                "kind": kind_label,
-                "lang": language_id, "module": module, "container": list(container),
-                "parent": parent, "content_hash": content_hash,
-                "file": relpath, "line": start + 1, "mtime": mtime, "signature": sig,
-                "calls": sorted(set(calls)), "called_by": sorted(set(called_by)),
-                "references": sorted(set(references)),
-                "name_terms": _name_terms(local, fqname),
-                "_body": body,   # transient: for the description mop-up; never persisted
-            })
-    finally:
-        c.close()
+        opened: set[str] = set()
+        try:
+            opened.add(uri)
+            c.notify("textDocument/didOpen", {"textDocument": {
+                "uri": uri, "languageId": language_id, "version": 1,
+                "text": "\n".join(lines)}})
+            time.sleep(settle if fresh else min(settle, _REUSE_SETTLE))
+            module = _module_of(relpath, language_id)
+            syms = c.request("textDocument/documentSymbol",
+                             {"textDocument": {"uri": uri}})
+            has_refs = bool(c.capabilities.get("referencesProvider"))
+            sym_cache: dict[str, list] = {}   # uri → symbol ranges (encloser resolution)
+            for s, parents, pkinds in _walk(syms):
+                kind = s.get("kind")
+                if kind not in _INDEX_KINDS:
+                    continue
+                # scope guard: a data declaration (global/const/field) is indexed only at
+                # module or class scope — one nested under a function is a LOCAL (noise).
+                if kind in _DATA_KINDS and any(pk in _FUNC_KINDS for pk in pkinds):
+                    continue
+                rng = s.get("range", {})
+                start = rng.get("start", {}).get("line", 0)
+                body = "\n".join(lines[start:rng.get("end", {}).get("line", 0) + 1])
+                container = tuple(parents)
+                local = _local_name(s.get("name", ""), language_id)
+                # IDENTITY = the language-normalized qualified name (stable across body
+                # edits; changes only on rename/move). content_hash is a SEPARATE field
+                # that gates description regeneration — the two jobs, split (docs §2.1).
+                fqname = _qualify(language_id, module, container, local)
+                parent = (_qualify(language_id, module, container[:-1],
+                                   _local_name(container[-1], language_id))
+                          if container else "")
+                content_hash = hashlib.sha1(body.encode()).hexdigest()[:16]
+                sig = lines[start].strip()[:120]
+                pos = (s.get("selectionRange") or rng)["start"]
+                calls: list[str] = []
+                called_by: list[str] = []
+                if kind in _FUNC_KINDS and c.capabilities.get("callHierarchyProvider"):
+                    prep = c.request("textDocument/prepareCallHierarchy",
+                                     {"textDocument": {"uri": uri}, "position": pos})
+                    if prep:
+                        item = prep[0]
+                        for e in c.request("callHierarchy/outgoingCalls",
+                                           {"item": item}) or []:
+                            t = e.get("to", {})
+                            if _in_workspace(t.get("uri", ""), root):
+                                calls.append(
+                                    f"{t.get('name')} [{_rel(t.get('uri',''), root)}]")
+                        for e in c.request("callHierarchy/incomingCalls",
+                                           {"item": item}) or []:
+                            fr = e.get("from", {})
+                            if _in_workspace(fr.get("uri", ""), root):
+                                called_by.append(
+                                    f"{fr.get('name')} [{_rel(fr.get('uri',''), root)}]")
+                # references: a FIRST-CLASS relation (everywhere this symbol is mentioned),
+                # for any server with referencesProvider — deliberately SEPARATE from
+                # called_by (call-hierarchy only). A reference is broader than a call (it
+                # includes reads/mentions); the reference-vs-call distinction is left to the
+                # consumer/LLM. This is the caller signal for symbols-only servers (shuck).
+                references: list[str] = []
+                if has_refs:
+                    refs = c.request("textDocument/references", {
+                        "textDocument": {"uri": uri}, "position": pos,
+                        "context": {"includeDeclaration": False}}) or []
+                    for loc in refs[:_REF_CAP]:
+                        ruri = loc.get("uri", "")
+                        if not _in_workspace(ruri, root):
+                            continue
+                        rline = loc.get("range", {}).get("start", {}).get("line", 0)
+                        enc = _enclosing_symbol(c, ruri, rline, language_id,
+                                                sym_cache, opened)
+                        if not enc or (enc == local and _rel(ruri, root) == relpath):
+                            continue                    # skip self-references
+                        references.append(f"{enc} [{_rel(ruri, root)}]")
+                # module-level variables read more naturally as "global" than "variable"
+                kind_label = ("global" if kind == 13 and not container
+                              else _KIND_LABEL_OVERRIDE.get((language_id, kind or 0))
+                              or _KIND.get(kind or 0, "?"))
+                entries.append({
+                    "fqname": fqname, "name": local,
+                    "kind": kind_label,
+                    "lang": language_id, "module": module, "container": list(container),
+                    "parent": parent, "content_hash": content_hash,
+                    "file": relpath, "line": start + 1, "mtime": mtime, "signature": sig,
+                    "calls": sorted(set(calls)), "called_by": sorted(set(called_by)),
+                    "references": sorted(set(references)),
+                    "name_terms": _name_terms(local, fqname),
+                    "_body": body,   # transient: for the description mop-up; not persisted
+                })
+        finally:
+            for u in opened:            # close what THIS call opened — the next call
+                try:                    # reads fresh disk; server doc-memory bounded
+                    c.notify("textDocument/didClose", {"textDocument": {"uri": u}})
+                except Exception:  # noqa: BLE001 — best-effort teardown
+                    pass
+            sess.last_used = time.monotonic()
     return entries
 
 

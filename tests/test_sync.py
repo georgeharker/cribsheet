@@ -64,6 +64,36 @@ def test_sync_round_trips_between_two_machines(tmp_path, remote):
     assert res.changed                   # the pull brought new files
 
 
+def test_join_seeds_shared_files_from_the_remote(tmp_path, remote):
+    """A machine joining a POPULATED remote must not seed its own `.gitignore`/
+    `.gitattributes` defaults — when the remote's copies diverge (e.g. another
+    crib version wrote them), that both-added-conflicts with the join merge.
+    Instead the remote branch's copies are adopted at init time."""
+    a = _machine(tmp_path, "a", remote)
+    gi = a.data_dir / ".gitignore"
+    gi.write_text(gi.read_text() + "# remote-custom-rule\n")   # diverge from the default
+    _note(a, "seed.md", "# seed\n")
+    assert a.sync("seed").ok
+
+    # machine b: local pre-join notes, joins via the `sync --remote` flow (init + sync)
+    d = tmp_path / "b"
+    (d / "projects" / "default" / "notes").mkdir(parents=True)
+    b = GitBacking(d)
+    b.init(f"file://{remote}")                  # fetch sees origin/main → adopt its copies
+    for k, v in (("user.email", "t@t"), ("user.name", "t"),
+                 ("init.defaultBranch", "main")):
+        git(d, "config", k, v)
+    git(d, "checkout", "-b", "main")
+    assert "# remote-custom-rule" in (d / ".gitignore").read_text()   # theirs, not default
+
+    _note(b, "local.md", "# local\n")
+    res = b.sync("join")                        # commit local → pull (join) → push
+    assert res.ok and not res.conflicts         # identical add/add can't conflict
+    assert "# remote-custom-rule" in (d / ".gitignore").read_text()
+    assert (d / "projects/default/notes/seed.md").exists()
+    assert "merge=cribnote" in (d / ".gitattributes").read_text()
+
+
 def test_pull_reports_conflicts_without_pushing(tmp_path, remote):
     a = _machine(tmp_path, "a", remote)
     _note(a, "x.md", "base\n")

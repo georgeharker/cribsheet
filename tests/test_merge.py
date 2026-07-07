@@ -91,6 +91,29 @@ def test_symbol_toml_merge_is_clean_and_symmetric():
     assert merge.merge_symbol_texts(base, theirs, ours) == m1
 
 
+def test_symbol_merge_divergent_code_states_marks_dirty():
+    """Sides that indexed DIFFERENT code (content_hash disagrees) can't be
+    field-mixed — the merged record goes out blank-hashed (dirty), so each
+    machine rebuilds it from its own checkout on the next query."""
+    from crib.codeindex import _parse, _render
+    e = {"fqname": "m.f", "name": "f", "kind": "function", "content_hash": "h1",
+         "description": "old", "file": "m.py", "line": 1, "mtime": 100,
+         "calls": [], "called_by": [], "references": [], "name_terms": ["f"]}
+    base = _render(e)
+    ours = _render({**e, "content_hash": "h2", "signature": "def f(x):",
+                    "mtime": 200})                       # code changed on this machine
+    theirs = _render({**e, "description": "re-described", "mtime": 150})  # same code, re-run
+    m = merge.merge_symbol_texts(base, ours, theirs)
+    assert "<<<<<<<" not in m                            # never a manual conflict
+    assert _parse(m)["content_hash"] == ""               # dirty → force-rebuilt from code
+    assert merge.merge_symbol_texts(base, theirs, ours) == m   # symmetric
+
+    # same code state on both sides → field merge is valid, hash retained
+    m2 = merge.merge_symbol_texts(
+        base, _render({**e, "description": "better"}), _render({**e, "mtime": 150}))
+    assert _parse(m2)["content_hash"] == "h1"
+
+
 def test_run_driver_routes_toml_clean(tmp_path):
     from crib.codeindex import _parse, _render
     e = {"fqname": "m.f", "name": "f", "kind": "function", "content_hash": "h",

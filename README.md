@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="cribsheet-logo-v2@2x.png" alt="cribsheet logo" width="200">
+  <img src="docs/images/cribsheet-logo-v2@2x.png" alt="cribsheet logo" width="200">
 </p>
 
 <h1 align="center">cribsheet</h1>
@@ -46,16 +46,26 @@ warm process serves your editor (over MCP) and your terminal (`crib <verb>`) ali
 
 ```bash
 git clone https://github.com/georgeharker/cribsheet && cd cribsheet
-git submodule update --init          # vendored llmkit (markdown rendering)
-pipx install -e '.[full]'            # crib + chroma, embeddings, fastmcp, watcher
+git submodule update --init            # vendored llmkit — NOT on PyPI, installed from here
+pipx install -e '.[embed,mcp,watch]'   # crib + chroma, embeddings, fastmcp, watcher
+pipx inject cribsheet -e './vendor/llmkit[md,bridge]'   # rich rendering + LLM generation
 ```
 
-<details><summary>Dev install (editable venv)</summary>
+(`[full]` = those three extras + `llmkit[md,bridge]` — but since llmkit resolves from
+`vendor/`, plain pip/pipx must install it explicitly, as above; only uv resolves it
+automatically via `[tool.uv.sources]`.)
+
+<details><summary>Dev install (editable venv / uv)</summary>
 
 ```bash
 python -m venv .venv && . .venv/bin/activate
-pip install -e '.[full]'             # core is zero-dep (PyYAML only); [full] adds backends
-pip install -e ./vendor/llmkit       # not on PyPI; uv users can skip
+pip install -e './vendor/llmkit[md,bridge]' -e '.[full]'   # one resolve; llmkit from vendor/
+
+# uv instead: resolves the vendored llmkit itself
+uv sync                                 # or: uv pip install -e '.[full]'
+
+# everything (adds the torch embedder + native LLM adapters):
+pip install -e './vendor/llmkit[md,bridge,anthropic,google,claude]' -e '.[full,st]'
 ```
 </details>
 
@@ -175,11 +185,16 @@ separate docs, not this README:
 
 ## Status & tests
 
-Runs with **zero heavy dependencies** — only PyYAML — using a dependency-free hash
-embedder and a persistent JSON store; install the `[full]` extra for the real
-backends (embeddings, Chroma, watcher, MCP, rich rendering). The store → index →
-lookup path, the version ring, the file watcher, git sync, the code index, and the
-CLI + MCP surface are all working.
+Treat `[full]` as the standard install — most extras are only nominally optional.
+The base install is PyYAML + chromadb; on top of that, **fastmcp** is required to
+serve MCP *and* for the warm-daemon path the CLI uses by default (without it, only
+`--no-daemon` works), **watchdog** powers the external-edit watchers, **fastembed**
+is the recommended real embedder (the base falls back to a dependency-free hash
+embedder), and the vendored **llmkit** does rendering + generation. The
+dependency-free fallbacks (hash embedder, JSON store, `--no-daemon`) are what tests
+and CI exercise, not the intended daily setup. The store → index → lookup path, the
+version ring, the file watcher, git sync, the code index, and the CLI + MCP surface
+are all working.
 
 ```bash
 pip install pytest && pytest -q

@@ -109,6 +109,65 @@ def test_drop_file_bumps_epoch_and_invalidates(crib):
     assert crib._code_epoch["p"] == before + 1           # epoch bumped → cache stale
 
 
+def test_revalidate_reindexes_merge_dirtied_file(crib, tmp_path, monkeypatch):
+    """A merge-dirtied symbol (blank content_hash, written by the sync merge
+    driver on divergent code states) forces a reindex of its file even though
+    the toml is FRESHER than the source (post-pull mtime) — the mtime gate
+    alone would never catch it."""
+    src_root = tmp_path / "srcrepo"
+    (src_root / "pkg").mkdir(parents=True)
+    (src_root / "pkg" / "mod.py").write_text("def alpha():\n    pass\n")
+    _write(crib, "p", "pkg.alpha", "alpha", "h1")        # toml written AFTER the source
+    si = SymbolIndex(crib.paths.project_dir("p"))
+    si.set_source_root(src_root)
+
+    reindexed: list[str] = []
+    monkeypatch.setattr(
+        crib, "_index_file_sync",
+        lambda root, rel, proj, patch_edges, existing=None: reindexed.append(rel))
+    crib._revalidate("p")
+    assert reindexed == []                               # fresh toml, real hash → clean
+
+    e = si.by_fqname("pkg.alpha")[0]
+    e["content_hash"] = ""                               # what the merge driver writes
+    si.write(e)
+    crib._revalidate("p")
+    assert reindexed == ["pkg/mod.py"]                   # dirty forces the rebuild
+
+
+def test_on_code_change_pumps_watched_files_into_lsp_pool(crib, monkeypatch):
+    """Watcher batches reach the warm LSP sessions as didChangeWatchedFiles
+    (docs §3.2) so a server that doesn't self-watch stays disk-fresh."""
+    from crib import codeindex as ci
+    pumped: list = []
+    monkeypatch.setattr(ci._POOL, "notify_changes",
+                        lambda root, changes: pumped.append((str(root), sorted(changes))))
+    monkeypatch.setattr(crib, "_index_file_sync", lambda *a, **k: None)
+    monkeypatch.setattr(crib, "_drop_file", lambda *a, **k: None)
+    run(crib._on_code_change("p", {"pkg/mod.py": ("/src/repo", False),
+                                   "pkg/gone.py": ("/src/repo", True)}))
+    assert pumped == [("/src/repo", [("pkg/gone.py", 3), ("pkg/mod.py", 2)])]
+
+
+def test_reconcile_rebuilds_merge_dirtied_files(crib, tmp_path, monkeypatch):
+    """Post-pull reconcile eagerly rebuilds files with merge-dirtied symbols —
+    and collapses many dirty symbols of one file into ONE rebuild."""
+    src_root = tmp_path / "srcrepo"
+    (src_root / "pkg").mkdir(parents=True)
+    (src_root / "pkg" / "mod.py").write_text("def alpha():\n    pass\n")
+    _write(crib, "p", "pkg.alpha", "alpha", "")          # merge-dirtied (blank hash)
+    _write(crib, "p", "pkg.beta", "beta", "")            # second dirty sym, SAME file
+    SymbolIndex(crib.paths.project_dir("p")).set_source_root(src_root)
+
+    reindexed: list[str] = []
+    monkeypatch.setattr(
+        crib, "_index_file_sync",
+        lambda root, rel, proj, patch_edges, existing=None: reindexed.append(rel))
+    out = run(crib._reindex_dirty_code())
+    assert out == {"p": 1}                               # one FILE rebuilt…
+    assert reindexed == ["pkg/mod.py"]                   # …for two dirty symbols
+
+
 def test_code_lock_is_per_project_and_stable(crib):
     assert crib._code_lock("p") is crib._code_lock("p")  # same lock reused per project
     assert crib._code_lock("p") is not crib._code_lock("q")

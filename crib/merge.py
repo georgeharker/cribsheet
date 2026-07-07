@@ -100,9 +100,24 @@ def merge_symbol_texts(base: str, ours: str, theirs: str) -> str:
     """Merge two symbol_index `.toml` versions. The toml is a FLAT key→value record
     (no body), so `merge_frontmatter` resolves it directly and deterministically —
     a description/edge divergence or a `mtime` difference auto-resolves instead of
-    conflicting. Always clean (structured record, no free-text body)."""
+    conflicting. Always clean (structured record, no free-text body).
+
+    A symbol record is a CACHE of the code, so its validity depends on the code
+    state: when the two sides' `content_hash` disagree, they indexed DIFFERENT
+    versions of the symbol and no field-wise mix of the two is trustworthy (ours'
+    description could end up attached to theirs' hash and pass the staleness gate
+    forever). Rather than surface a manual conflict on a file that reindexing
+    regenerates anyway, mark the merged record DIRTY by blanking `content_hash`:
+    `_revalidate` force-reindexes the file on the next query regardless of mtime,
+    and the blank hash can't match any fresh extraction, so the describe gate
+    rebuilds it from each machine's own checkout. Still symmetric (inequality is
+    order-independent), so both machines converge on identical bytes."""
     from .codeindex import _parse, _render
-    return _render(merge_frontmatter(_parse(base), _parse(ours), _parse(theirs)))
+    o, a, b = _parse(base), _parse(ours), _parse(theirs)
+    merged = merge_frontmatter(o, a, b)
+    if a.get("content_hash") != b.get("content_hash"):
+        merged["content_hash"] = ""     # dirty → rebuilt from local code on next query
+    return _render(merged)
 
 
 def run_driver(base_path: str, current_path: str, other_path: str) -> int:

@@ -30,9 +30,10 @@ git pull --ff-only origin main
 git submodule update --init --recursive          # vendor/llmkit → pinned commit
 
 # install crib + the extras this work needs
-uv sync                                            # or: pip install -e '.[full,generate]'
-pip install -e './vendor/llmkit[anthropic]'        # zen adapter (native Messages API)
-# optional real embedder (bge via ONNX): pip install -e '.[embed]'
+uv sync                                            # resolves vendored llmkit itself
+# plain pip instead: llmkit is NOT on PyPI — co-install it from vendor/ in ONE resolve
+# (the [anthropic] extra is the zen adapter, native Messages API):
+#   pip install -e './vendor/llmkit[md,bridge,anthropic]' -e '.[full,generate]'
 ```
 
 **Restart the daemon after updating source.** The warm MCP daemon (sharedserver
@@ -41,8 +42,9 @@ hit a stale tool schema — e.g. `import` fails with `Unexpected keyword argumen
 cwd`. Bounce it so it reloads:
 
 ```sh
-sharedserver stop cribsheet        # next crib call respawns from the new code
-# (won't stop? sharedserver admin kill cribsheet)
+sharedserver admin stop cribsheet    # next crib call respawns from the new code
+# (won't stop? sharedserver admin kill cribsheet; via MCP: the combiner's
+#  restart_server tool does a stop --force + respawn in one step)
 ```
 
 Alternatively, add `--no-daemon` to any verb to run current code in-process and

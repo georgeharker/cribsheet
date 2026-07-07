@@ -202,7 +202,17 @@ class Crib:
         best-effort (a transient syntax error mid-edit just leaves the prior entry
         until the next save). A batch too large to reindex file-by-file (a branch
         switch) collapses to a single revalidation sweep."""
+        from .codeindex import _POOL
         from .watch import CODE_BATCH_FALLBACK
+        # Pump the same events into the warm LSP sessions (docs §3.2) BEFORE
+        # reindexing, so a server that doesn't self-watch the fs invalidates its
+        # workspace index — cross-file edges then resolve against current code.
+        by_root: dict[str, list[tuple[str, int]]] = {}
+        for relpath, (root, deleted) in changes.items():
+            if not relpath.startswith("\x00doc\x00"):
+                by_root.setdefault(root, []).append((relpath, 3 if deleted else 2))
+        for root, events in by_root.items():
+            _POOL.notify_changes(Path(root), events)
         if len(changes) > CODE_BATCH_FALLBACK:
             try:
                 await asyncio.to_thread(self._revalidate, project)
@@ -259,8 +269,11 @@ class Crib:
             self._mirror = None
 
     def close(self) -> None:
-        """Stop watchers and release the shared Chroma refcount, if any."""
+        """Stop watchers, shut warm LSP sessions down, and release the shared
+        Chroma refcount, if any."""
         self.stop_watchers()
+        from .codeindex import _POOL
+        _POOL.close_all()
         if self._on_close is not None:
             self._on_close()
             self._on_close = None
@@ -494,14 +507,56 @@ class Crib:
                 "changed": changed, "removed": removed}
 
     async def reconcile_all(self) -> dict[str, Any]:
-        """Startup sweep across every project — catch up on offline changes."""
+        """Startup/post-pull sweep across every project — catch up on offline
+        note changes, then eagerly rebuild merge-dirtied code files (a pull
+        that merged divergent symbol records lands here via the CLI's
+        post-pull reconcile)."""
         projects = sorted(set(self.projects()) | self._indexed_projects())
-        total = {"projects": len(projects), "changed": 0, "removed": 0}
+        total: dict[str, Any] = {"projects": len(projects), "changed": 0, "removed": 0}
         for proj in projects:
             r = await self.reindex(project=proj)
             total["changed"] += r["changed"]
             total["removed"] += r["removed"]
+        dirty = await self._reindex_dirty_code()
+        if dirty:
+            total["code_files_rebuilt"] = dirty
         return total
+
+    async def _reindex_dirty_code(self) -> dict[str, int]:
+        """Rebuild every code file carrying a merge-dirtied symbol (blank
+        `content_hash`, written by the sync merge driver on divergent code
+        states) — CONCURRENTLY, bounded by [generate].concurrency, so the
+        post-pull reconcile pays this cost in parallel instead of the first
+        code query absorbing it serially in `_revalidate` (which remains the
+        lazy backstop for pulls done outside crib). Best-effort per file.
+        → {project: files rebuilt} for the projects that had any."""
+        from .codeindex import SymbolIndex
+        sem = asyncio.Semaphore(max(1, self.config.generate.concurrency))
+        out: dict[str, int] = {}
+        for proj in self.projects():
+            store = SymbolIndex(self.paths.project_dir(proj))
+            if not store.is_populated():
+                continue
+            root = store.source_root()
+            if root is None or not root.exists():
+                continue                 # index synced from another machine — lazy path
+            src_root: Path = root        # narrowed rebind (mypy: closure default)
+            files = sorted({e["file"] for e in store.all()
+                            if e.get("file") and not e.get("content_hash")})
+            if not files:
+                continue
+
+            async def _one(rel: str, proj: str = proj, root: Path = src_root) -> bool:
+                async with sem:
+                    try:
+                        await asyncio.to_thread(
+                            self._index_file_sync, root, rel, proj, True)
+                        return True
+                    except Exception:  # noqa: BLE001 — the lazy gate backstops
+                        return False
+            done = await asyncio.gather(*(_one(f) for f in files))
+            out[proj] = sum(done)
+        return out
 
     def _indexed_projects(self) -> set[str]:
         out: set[str] = set()
@@ -1009,14 +1064,18 @@ class Crib:
         # derived locally + cheap. NOT the toml's stored `mtime` field (that's a portable
         # git-date record, not comparable to a local st_mtime — and would need git here).
         baseline: dict[str, int] = {}        # source file → oldest mtime of its tomls
-        for p in store.root.glob("*.toml"):
-            try:
-                mt = p.stat().st_mtime_ns
-                f = _parse(p.read_text()).get("file", "")
+        dirty: set[str] = set()              # files with merge-dirtied symbols (blank
+        for p in store.root.glob("*.toml"):  # content_hash, written by the sync merge
+            try:                             # driver on divergent code states) — their
+                mt = p.stat().st_mtime_ns    # tomls are FRESH (post-pull mtime), so the
+                e = _parse(p.read_text())    # mtime gate alone would never catch them
+                f = e.get("file", "")
             except OSError:
                 continue
             if f:
                 baseline[f] = min(baseline.get(f, mt), mt)
+                if not e.get("content_hash"):
+                    dirty.add(f)
         for rel, base_mt in baseline.items():
             src = root / rel
             try:
@@ -1024,7 +1083,7 @@ class Crib:
             except OSError:                  # deleted → drop all its symbols + its edges
                 self._drop_file(proj, rel)
                 continue
-            if cur > base_mt:                # source edited after it was indexed → reindex
+            if rel in dirty or cur > base_mt:   # merge-dirtied, or edited after indexing
                 try:                         # (content_hash gate no-ops if unchanged)
                     self._index_file_sync(root, rel, proj, patch_edges=True)
                 except Exception:  # noqa: BLE001 — keep the stale entry over a failed query

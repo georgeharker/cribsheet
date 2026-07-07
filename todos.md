@@ -10,6 +10,23 @@
   just wasteful — concurrent full-parses also contend.
 
 ## Resolved
+- **Warm LSP sessions (was: per-file cold spin-up).** `LspSessionPool` in
+  `crib/codeindex.py`: one initialized client per (workspace root, server label),
+  lazy-started, reused across `extract_file` calls — spawn + `initialize` (the
+  whole-workspace index) is paid once per sweep instead of per file. Dead servers
+  are `poll()`-detected and respawned (plus one wedged-server retry per extraction);
+  idle sessions grace-reap on acquire; docs are didOpen/didClose'd per call so every
+  extraction reads fresh disk and server doc-memory stays bounded. Warm calls settle
+  0.3s instead of 1.5s. `Crib.close()`/atexit shut the pool down. Workspace-index
+  freshness (docs §3.2): `_on_code_change` pumps the watcher's batches into every
+  warm session for the root as `workspace/didChangeWatchedFiles` (capability
+  advertised; `client/registerCapability` null-acked), covering servers that don't
+  self-watch the fs.
+- **Post-pull eager rebuild of merge-dirtied code files.** `reconcile_all` (already
+  fired by the CLI after a changed pull) now runs `_reindex_dirty_code`: files with
+  blank-hash symbols rebuild CONCURRENTLY ([generate].concurrency semaphore,
+  best-effort per file) instead of serially inside the first code query;
+  `_revalidate` stays as the lazy backstop for pulls done outside crib.
 - **Docs indexed in-situ (source is master), not copied.** Was: `.crib` docs were
   *copied* into `imported/<repo>/` (a stale snapshot). Now a repo's `.crib` `docs:`
   globs are indexed IN-SITU as source-anchored notes (`sources/<repo>/<rel>`): crib
@@ -44,11 +61,39 @@
 - **Source watcher — eager revalidation (Phase 2).** Query-time revalidation is in; a
   watcher over `.crib` `paths:` would reindex on save proactively so the first
   post-edit query isn't the one that pays the reindex.
-- **Warm LSP session (perf).** Kill the per-reindex init + settle (~1–2s/file) by keeping
-  one initialized `LspClient` per (root, lang) warm in the daemon; incremental
-  `didChange` re-query instead of cold spin-up. The design doc's step 2.
 
 ## Parked features
+- **Cross-project refs — `.crib refs: [llmkit]`, xref against a named external project.**
+  Motivation: de-vendor llmkit (packaging refers to its git) without losing the unified
+  crib↔llmkit call graph — which today exists only because the editable install points
+  into `vendor/`, keeping LSP resolutions under the one root (`_index_project_code` is
+  single-root: `relative_to(root)`, out-of-root edges are dropped). A `refs:` list of
+  crib project names would decouple xref from vendoring, in three independent phases:
+  1. *Query-time fan-out* (cheap, read-only): `code_lookup`/`dossier`/`xref`/`graph`
+     also resolve names against ref'd projects' symbol indexes, results project-tagged;
+     an unindexed ref self-diagnoses ("run project setup in <its root>").
+  2. *Index-time edge attribution*: when the LSP resolves a def/ref to a file OUTSIDE
+     the root, attribute it to a ref'd project (by that project's recorded root, or by
+     module-name match for site-packages installs) and store a project-qualified edge
+     (`llmkit:<fqname>`) instead of dropping it. Wrinkle: fqnames are path-derived, so
+     the same symbol is `vendor.llmkit.src.llmkit.*` under the parent but `src.llmkit.*`
+     in its own project — needs import-name normalization (or a root-relative mapping)
+     before qualified edges can resolve.
+  3. *Inbound reverse xref*: llmkit's `code_xref` showing crib callers, WITHOUT
+     cross-project writes — record each project's `refs` at index time (who-refs-whom
+     registry), answer inbound queries by scanning declared referrers' outbound edges.
+  Portability: resolve ref targets by project NAME (their own .crib/source-roots), never
+  absolute paths. Supersedes the "vendored submodule code SHOULD be indexed as part of
+  the parent" decision above once shipped — vendoring becomes purely a packaging choice.
+  *Also covers refs you DON'T own*: index a dependency's source (its site-packages copy,
+  or a pinned upstream clone) as its own project — `refs: [chromadb, fastmcp]` — and get
+  dossier/lookup into third-party internals, inbound xref as dependency-impact analysis
+  ("who in MY code calls chromadb.PersistentClient" before an upgrade), and learnings
+  pinned to upstream symbols (where gotcha-notes are most valuable; `code_rehome` already
+  handles symbols moving between versions). Read-only fits naturally — refs never write
+  into the target. Follow-ons this opens: tag a dep's index with its version/commit and
+  self-diagnose installed-vs-indexed mismatch; the portable symbol_index format means
+  pre-built indexes for popular libs could be shared/shipped rather than rebuilt.
 - **zsh cross-file references + autoload indexing.** shuck can't statically resolve
   dynamically-sourced zsh, and function definers live in extension-less autoload files.
   A name-based cross-file reference layer (+ index the autoload files via shebang) would
