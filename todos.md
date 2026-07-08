@@ -113,6 +113,15 @@
   for quiescence (with timeout) on FRESH sessions before the first edge query.
   Symbol listings are already safe (didOpen'd doc + empty/partial guards); this is
   about EDGES.
+  - **DEMONSTRATED (2026-07-08) by `scripts/snapshot_harness.py`.** Idempotency
+    (index the SAME clean checkout twice) is EXACT for llmkit/cribsheet/mcp-companion/
+    dotfiler/zdot/zsh-ai — but svg-mcp (pyright) and sharedserver (rust-analyzer) differ
+    run-to-run ONLY in `references`/`calls` edges (3 and 2 symbols resp.; symbol counts +
+    all structural fields identical). So the readiness barrier is a REAL, per-project edge
+    nondeterminism, not hypothetical — and it means git-synced indexes for those projects
+    would show spurious edge churn. The harness's `compare` now classifies STRUCTURAL vs
+    edge diffs (fails only on structural; edge wobble = LSP noise), so it stays a valid
+    refactor gate; fixing the barrier (quiescence wait) would also make those goldens exact.
 - **Workspace membership — didOpen pinning SHIPPED (`pinWorkspace` spec flag).**
   The server discovers sources by ITS config (pyright include/exclude, cargo
   targets, clangd compile db, shuck's scan); a file it never discovered is
