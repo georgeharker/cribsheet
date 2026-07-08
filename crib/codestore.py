@@ -195,3 +195,35 @@ class CodeStore:
                     e["called_by"], e["references"] = cb, rf
                     store.write(e)
         self.bump_epoch(proj)
+
+    @staticmethod
+    def patch_called_by(store: Any, new_entries: list[dict[str, Any]],
+                        relpath: str) -> None:
+        """Keep the cross-file call graph consistent after a single-file reindex: every
+        `A→B` in the reindexed file A's fresh outbound `calls` must show as `A` in B's
+        `called_by`. Strip stale edges originating from A (`… [A]`), then re-add the
+        current ones. Cheap (in-memory from A's calls; no extra LSP)."""
+        tag = f"[{relpath}]"
+        entries = store.all()
+        by_key = {(e.get("name", ""), e.get("file", "")): e for e in entries}
+        changed: dict[str, dict] = {}
+        for e in entries:                                   # 1) strip edges from A
+            if e.get("file") == relpath:
+                continue
+            cb = [x for x in (e.get("called_by") or []) if not x.endswith(tag)]
+            if cb != (e.get("called_by") or []):
+                e["called_by"] = cb
+                changed[e["fqname"]] = e
+        for s in new_entries:                               # 2) re-add A's current edges
+            for call in s.get("calls") or []:
+                name, _, rest = call.partition(" [")
+                tgt = by_key.get((name.strip(), rest.rstrip("]")))
+                if tgt is None or tgt.get("file") == relpath:
+                    continue
+                e = changed.get(tgt["fqname"], tgt)
+                edge = f"{s['name']} [{relpath}]"
+                if edge not in (e.get("called_by") or []):
+                    e["called_by"] = sorted(set((e.get("called_by") or []) + [edge]))
+                    changed[e["fqname"]] = e
+        for e in changed.values():
+            store.write(e)
