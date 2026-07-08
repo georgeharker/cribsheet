@@ -1110,6 +1110,23 @@ def _esc(s: str) -> str:
     return s.replace("\\", "\\\\").replace('"', '\\"')
 
 
+def _unesc(s: str) -> str:
+    """Exact inverse of `_esc` — undoes the quote-escape then the backslash-escape (the
+    REVERSE order of `_esc`). Without this, `_parse` returned still-escaped strings, so a
+    read-modify-write cycle (e.g. `_patch_called_by` rewriting a heavily-called symbol on
+    every reindex) re-escaped each time and DOUBLED the backslashes — a signature with a
+    quote grew 1→3→7→…→64GB over a session of repeated reindexes."""
+    return s.replace('\\"', '"').replace("\\\\", "\\")
+
+
+def _unquote(v: str) -> str:
+    """Strip exactly one pair of delimiter quotes (not `.strip('"')`, which over-eats a
+    trailing escaped quote) and un-escape the contents."""
+    if len(v) >= 2 and v[0] == '"' and v[-1] == '"':
+        v = v[1:-1]
+    return _unesc(v)
+
+
 _SCALARS = ("fqname", "name", "kind", "lang", "module", "parent", "content_hash",
             "file", "signature", "description")
 _ARRAYS = ("container", "calls", "called_by", "references", "name_terms")
@@ -1237,7 +1254,7 @@ def _parse(text: str) -> dict:
                 e[key] = arr
                 key, arr = None, []
             elif s:
-                arr.append(s.rstrip(",").strip().strip('"'))
+                arr.append(_unquote(s.rstrip(",").strip()))
             continue
         if s.endswith("= []"):                 # empty array on one line
             e[s.split(" = ")[0].strip()] = []
@@ -1247,5 +1264,5 @@ def _parse(text: str) -> dict:
         elif " = " in s:
             k, _, v = s.partition(" = ")
             v = v.strip()
-            e[k] = int(v) if v.isdigit() else v.strip('"')
+            e[k] = int(v) if v.isdigit() else _unquote(v)
     return e

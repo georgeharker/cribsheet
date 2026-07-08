@@ -28,7 +28,7 @@ class Paths:
     index_dir: Path
 
     @classmethod
-    def resolve(cls) -> "Paths":
+    def resolve(cls) -> Paths:
         return cls(
             config_dir=_resolve("CRIB_CONFIG_DIR", "XDG_CONFIG_HOME", ".config"),
             data_dir=_resolve("CRIB_DATA_DIR", "XDG_DATA_HOME", ".local/share"),
@@ -58,7 +58,7 @@ class Paths:
     def notes_dir(self, project: str) -> Path:
         return self.project_dir(project) / "notes"
 
-    def ensure(self) -> "Paths":
+    def ensure(self) -> Paths:
         for d in (self.config_dir, self.data_dir, self.projects_dir,
                   self.versions_dir, self.index_dir):
             d.mkdir(parents=True, exist_ok=True)
