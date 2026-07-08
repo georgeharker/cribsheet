@@ -30,6 +30,7 @@ from .project_services import ProjectServices
 from .refs import Refs
 from .embed import build_embedder
 from .gitbacking import GitBacking
+from .codequery import CodeQuery
 from .indexer import IndexEngine, IndexResult
 from .learnings import Learnings
 from .notes import Note
@@ -135,6 +136,10 @@ class Crib:
         # Durable symbol learnings (notes under code-learnings/), over refs + notestore.
         # Crib keeps resolve_project + delegate public wrappers (code_append/…).
         self.learnings = Learnings(paths, self.refs, self.notestore)
+        # Code-index queries (lookup/xref/dossier/graph) over refs + learnings + the
+        # resident cache. Crib keeps resolve_project + delegate public wrappers.
+        self.query = CodeQuery(self.refs, self.learnings, self.embedder,
+                               self._resident_code, self._require_code_index)
 
     # --- construction ------------------------------------------------------
     @classmethod
@@ -1027,89 +1032,13 @@ class Crib:
 
     def code_xref(self, symbol: str, project: str | None = None,
                   cwd: Path | None = None) -> list[dict[str, Any]]:
-        """Callers/callees for a symbol from the persisted symbol_index — no live
-        LSP. A local miss falls through to the project's `.crib` `refs:` (cross-
-        project xref); every entry carries `project`."""
-        proj = self.resolve_project(project, cwd)
-        self._require_code_index(proj)
-        rc = self._resident_code(proj)       # resident; refreshes source per freshness mode
-        matches = rc.by_fqname(symbol)
-        owner = proj
-        if not matches:
-            for ref in self._project_refs(proj):
-                if not ref["indexed"]:
-                    continue
-                matches = self._resident_code(ref["project"]).by_fqname(symbol)
-                if matches:
-                    owner = ref["project"]
-                    break
-        for m in matches:
-            m["project"] = owner
-        return self._attach_learnings(owner, matches)
+        """A symbol's callers/callees/references from the persisted symbol_index."""
+        return self.query.xref(self.resolve_project(project, cwd), symbol)
 
     def code_dossier(self, symbol: str, project: str | None = None,
                      cwd: Path | None = None, edge_cap: int = 20) -> dict[str, Any]:
-        """Everything about ONE symbol in a single call: its signature + description,
-        its callers / callees / references — each annotated with the NEIGHBOUR'S own
-        description — and any attached learning. Built for agents: read a symbol and
-        understand its neighbourhood without a dozen follow-up lookups."""
-        proj = self.resolve_project(project, cwd)
-        self._require_code_index(proj)
-        rc = self._resident_code(proj)
-        # local first, then the `.crib` refs — the neighbourhood (edges, learnings)
-        # lives with the OWNING project, so everything below reads from there
-        owner, entry = self._resolve_symbol_or_ref(proj, symbol, rc)
-        if owner != proj:
-            rc = self._resident_code(owner)
-        self._attach_learnings(owner, [entry])
-        idx = rc.entries
-        desc = {e["fqname"]: e.get("description", "") for e in idx}
-        by_nf = {(e.get("name", ""), e.get("file", "")): e["fqname"] for e in idx}
-
-        ref_maps: dict[str, tuple[dict, dict]] = {}   # ref proj → (desc, by_nf)
-
-        def _maps(rp: str) -> tuple[dict, dict]:
-            if rp not in ref_maps:
-                try:
-                    rrc = self._resident_code(rp)
-                    ref_maps[rp] = (
-                        {e["fqname"]: e.get("description", "") for e in rrc.entries},
-                        {(e.get("name", ""), e.get("file", "")): e["fqname"]
-                         for e in rrc.entries})
-                except Exception:  # noqa: BLE001 — unindexed ref → unresolved edge
-                    ref_maps[rp] = ({}, {})
-            return ref_maps[rp]
-
-        def neigh(edges: list[str] | None) -> list[dict[str, Any]]:
-            out = []
-            for ref in (edges or [])[:edge_cap]:
-                name, _, rest = ref.partition(" [")
-                nm, fref = name.strip(), rest.rstrip("]")
-                if ":" in fref:            # QUALIFIED edge — lives in a ref'd project
-                    rp, _, rrel = fref.partition(":")
-                    rdesc, rnf = _maps(rp)
-                    fq = rnf.get((nm, rrel))
-                    out.append({"symbol": fq or nm, "file": rrel, "project": rp,
-                                "description": rdesc.get(fq or "", "")})
-                    continue
-                fq = by_nf.get((nm, fref))
-                out.append({"symbol": fq or nm, "file": fref,
-                            "description": desc.get(fq or "", "")})
-            extra = max(len(edges or []) - edge_cap, 0)
-            if extra:
-                out.append({"symbol": f"… +{extra} more", "file": "", "description": ""})
-            return out
-
-        return {
-            "fqname": entry["fqname"], "kind": entry.get("kind"),
-            "project": owner,
-            "file": entry.get("file"), "line": entry.get("line"),
-            "signature": entry.get("signature"), "description": entry.get("description"),
-            "learning": entry.get("learning"),
-            "calls": neigh(entry.get("calls")),
-            "called_by": neigh(entry.get("called_by")),
-            "references": neigh(entry.get("references")),
-        }
+        """Everything about one symbol (+ neighbour descriptions + any learning)."""
+        return self.query.dossier(self.resolve_project(project, cwd), symbol, edge_cap)
 
     def _resolve_symbol(self, proj: str, symbol: str,
                         rc: "_ResidentCode | None" = None) -> dict[str, Any]:
@@ -1179,170 +1108,14 @@ class Crib:
     def code_lookup(self, query: str, project: str | None = None, k: int = 8,
                     cwd: Path | None = None,
                     sparse_weight: float = 0.2) -> list[dict[str, Any]]:
-        """Find a symbol — HYBRID: dense concept search over LLM `description`s ⊕ BM25
-        over `name_terms` (unqualified/qualified/subtokens), RRF-fused. So a concept
-        query hits the dense side and a bare/partial *name* hits the sparse side. Served
-        from the content-addressed store at query time; no live LSP needed.
-
-        FANS OUT to the project's `.crib` `refs:` (cross-project xref): each indexed
-        ref is searched the same way and the per-project rankings RRF-fuse, the
-        queried project weighted above its refs. Every hit carries `project`."""
-        from .retrieve import reciprocal_rank_fusion
-        proj = self.resolve_project(project, cwd)
-        self._require_code_index(proj)
-        pools: dict[str, list[dict[str, Any]]] = {
-            proj: self._code_lookup_one(proj, query, k, sparse_weight)}
-        for ref in self._project_refs(proj):
-            if not ref["indexed"] or ref["project"] in pools:
-                continue
-            try:
-                pools[ref["project"]] = self._code_lookup_one(
-                    ref["project"], query, k, sparse_weight)
-            except Exception:  # noqa: BLE001 — a broken ref never fails the query
-                continue
-        if len(pools) == 1:
-            hits = pools[proj][:k]
-        else:
-            # EQUAL weights: rank decides (a ref's best hit must be able to beat a
-            # local mid-ranker — a damped weight buries refs below any full local
-            # top-k, since RRF is rank- not score-based). The queried project is
-            # the FIRST ranking, so exact rank ties break local-first.
-            by_key = {f"{p}:{h['fqname']}": h for p, hs in pools.items() for h in hs}
-            fused = reciprocal_rank_fusion(
-                [[f"{p}:{h['fqname']}" for h in hs] for p, hs in pools.items()])
-            hits = [by_key[key] for key in fused[:k]]
-        for i, h in enumerate(hits):
-            h["rank"] = i + 1
-        return hits
-
-    def _code_lookup_one(self, proj: str, query: str, k: int,
-                         sparse_weight: float) -> list[dict[str, Any]]:
-        """The single-project core of `code_lookup` (dense ⊕ sparse, RRF-fused),
-        project-tagged and learning-annotated. `rank` is per-pool; the caller
-        re-ranks after any cross-project fusion."""
-        from .retrieve import _subtokens, reciprocal_rank_fusion, tokenize
-        rc = self._resident_code(proj)                       # resident: no re-parse/re-embed
-        entries = rc.lk
-        if not entries:
-            return []
-        ids = rc.lk_ids
-        by_id = rc.by_fq
-        rankings: list[list[str]] = []
-        weights: list[float] = []
-        # dense: cosine over the resident description embeddings (only the query embeds)
-        dense = rc.dense(self.embedder)
-        if any(v for v in dense):
-            qv = self.embedder.embed_query([query])[0]
-            ds = [sum(a * b for a, b in zip(qv, v)) if v else -2.0 for v in dense]
-            rankings.append([ids[i] for i in sorted(range(len(ids)),
-                                                    key=lambda i: ds[i], reverse=True)])
-            weights.append(1.0)
-        # sparse: BM25 over the name terms (the unqualified name is the load-bearing one)
-        ss = rc.bm25.scores(tokenize(query) + _subtokens(query))
-        sparse = [ids[i] for i in sorted(range(len(ids)), key=lambda i: ss[i],
-                                         reverse=True) if ss[i] > 0]
-        if sparse:
-            rankings.append(sparse)
-            # Sparse damped below dense so a stray name-token match ("result" →
-            # IndexResult) can't outrank a concept hit — but a strong exact-name
-            # match still surfaces when dense is weak (a bare-name query). Mirrors
-            # the keyword_weight=0.3 damping on the note side (retrieve.py); the
-            # default is tuned on scripts/eval_code.py.
-            weights.append(sparse_weight)
-        if not rankings:
-            return []
-        fused = reciprocal_rank_fusion(rankings, weights=weights)
-        keys = ("fqname", "name", "kind", "file", "line", "signature", "description",
-                "parent", "calls", "called_by", "references", "content_hash")
-        # echo the resolved project on each hit — cheap orientation so the agent
-        # always sees which project answered (esp. useful across related codebases)
-        hits = [{**{key: by_id[fid].get(key) for key in keys},
-                 "project": proj, "rank": i + 1}
-                for i, fid in enumerate(fused[:k])]
-        return self._attach_learnings(proj, hits)
+        """Find a code symbol by concept OR name (hybrid dense+kw), fanning out to refs."""
+        return self.query.lookup(self.resolve_project(project, cwd), query, k, sparse_weight)
 
     def code_graph(self, symbol: str, direction: str = "callees", depth: int = 6,
                    project: str | None = None,
                    cwd: Path | None = None) -> dict[str, Any]:
-        """Build a call-graph TREE around `symbol` from the persisted symbol_index —
-        `callees` follows `calls`, `callers` follows `called_by`. Returns a nested
-        {fqname, kind, file, line, children[]} with DAG-repeats marked `repeat` and
-        unresolved edges `external`. Rendered pstree-style by the CLI. No LSP/LLM."""
-        proj = self.resolve_project(project, cwd)
-        self._require_code_index(proj)
-        rc = self._resident_code(proj)
-        entries = rc.entries
-        # per-project (name, file) maps — the tree can cross into ref'd projects
-        # via QUALIFIED edges ("name [proj:rel]") and keeps walking there
-        nf_maps: dict[str, dict[tuple[str, str], dict]] = {}
-
-        def _nf(p: str) -> dict[tuple[str, str], dict]:
-            if p not in nf_maps:
-                try:
-                    m: dict[tuple[str, str], dict] = {}
-                    for e in self._resident_code(p).entries:
-                        m.setdefault((e.get("name", ""), e.get("file", "")), e)
-                    nf_maps[p] = m
-                except Exception:  # noqa: BLE001 — unindexed ref → external leaf
-                    nf_maps[p] = {}
-            return nf_maps[p]
-
-        _nf(proj)
-        root = (rc.by_fq.get(symbol)
-                or next((e for e in entries if e.get("name") == symbol
-                         or e["fqname"].endswith("." + symbol)), None))
-        root_proj = proj
-        if not root:                          # local miss → the `.crib` refs
-            try:
-                root_proj, root = self._resolve_symbol_or_ref(proj, symbol, rc)
-            except ValueError:
-                return {}
-        edge = {"callees": "calls", "callers": "called_by",
-                "references": "references"}.get(direction, "calls")
-        seen: set[str] = set()
-
-        def build(e: dict, p: str, d: int) -> dict:
-            node = {"fqname": e["fqname"], "kind": e.get("kind", ""),
-                    "file": e.get("file", ""), "line": e.get("line"), "children": []}
-            if p != proj:
-                node["project"] = p
-            key = f"{p}:{e['fqname']}"
-            if key in seen:
-                node["repeat"] = True
-                return node
-            seen.add(key)
-            if d <= 0:
-                return node
-            for ref in e.get(edge) or []:
-                name, _, rest = ref.partition(" [")
-                fref = rest.rstrip("]")
-                if ":" in fref:               # qualified → hop into the ref project
-                    tp, _, trel = fref.partition(":")
-                else:
-                    tp, trel = p, fref
-                child = _nf(tp).get((name.strip(), trel))
-                if child:
-                    node["children"].append(build(child, tp, d - 1))
-                else:
-                    node["children"].append({"fqname": name.strip(), "kind": "?",
-                                             "file": fref, "external": True,
-                                             "children": []})
-            return node
-
-        tree = build(root, root_proj, depth)
-        # glyph carriers, per owning project (a cross-project node's learning
-        # lives with ITS project, and same-named local fqns must not false-mark)
-        marks: dict[str, set[str]] = {}
-        stack = [tree]
-        while stack:
-            n = stack.pop()
-            p = n.get("project") or proj
-            if p not in marks:
-                marks[p] = self._learning_fqns(p)
-            if n.get("fqname") in marks[p]:
-                n["has_learning"] = True
-            stack.extend(n.get("children") or [])
-        return tree
+        """pstree-style call graph around a symbol (recursive), crossing into refs."""
+        return self.query.graph(self.resolve_project(project, cwd), symbol, direction, depth)
 
     async def _generate_index(self, root_name: str, purpose: str, label: str,
                               prompt: str | None, relpath: str | None,
