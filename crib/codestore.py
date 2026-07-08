@@ -175,3 +175,23 @@ class CodeStore:
         rc = _ResidentCode(tok, entries, emb)
         self.cache[proj] = rc
         return rc
+
+    def drop_file(self, proj: str, relpath: str) -> None:
+        """Remove a deleted file's symbols and strip edges that originated from it —
+        under the per-project lock (a delete mutates the same cross-file edges a
+        concurrent reindex does), bumping the resident-cache epoch. Pure symbol_index
+        mutation (no LSP), so its integrity invariants live with the state."""
+        from .codeindex import SymbolIndex
+        tag = f"[{relpath}]"
+        with self.lock(proj):
+            store = SymbolIndex(self.paths.project_dir(proj))
+            for e in store.all():
+                if e.get("file") == relpath:
+                    store.delete(e["fqname"])
+                    continue
+                cb = [x for x in (e.get("called_by") or []) if not x.endswith(tag)]
+                rf = [x for x in (e.get("references") or []) if not x.endswith(tag)]
+                if cb != (e.get("called_by") or []) or rf != (e.get("references") or []):
+                    e["called_by"], e["references"] = cb, rf
+                    store.write(e)
+        self.bump_epoch(proj)

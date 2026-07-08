@@ -1077,23 +1077,7 @@ class Crib:
                     pass
 
     def _drop_file(self, proj: str, relpath: str) -> None:
-        """Remove a deleted file's symbols and strip edges that originated from it —
-        under the per-project lock (a delete mutates the same cross-file edges a
-        concurrent reindex does), bumping the resident-cache epoch."""
-        from .codeindex import SymbolIndex
-        tag = f"[{relpath}]"
-        with self._code_lock(proj):
-            store = SymbolIndex(self.paths.project_dir(proj))
-            for e in store.all():
-                if e.get("file") == relpath:
-                    store.delete(e["fqname"])
-                    continue
-                cb = [x for x in (e.get("called_by") or []) if not x.endswith(tag)]
-                rf = [x for x in (e.get("references") or []) if not x.endswith(tag)]
-                if cb != (e.get("called_by") or []) or rf != (e.get("references") or []):
-                    e["called_by"], e["references"] = cb, rf
-                    store.write(e)
-        self._bump_code_epoch(proj)
+        self.code.drop_file(proj, relpath)
 
     def _require_code_index(self, proj: str) -> None:
         """Raise a self-diagnosing error when `proj` has no code index — so a call
