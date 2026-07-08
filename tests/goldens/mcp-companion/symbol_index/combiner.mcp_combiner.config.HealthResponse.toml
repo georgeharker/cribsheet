@@ -1,0 +1,25 @@
+fqname = "combiner.mcp_combiner.config.HealthResponse"
+name = "HealthResponse"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = ""
+content_hash = "608e25d2997103ba"
+file = "combiner/mcp_combiner/config.py"
+signature = "class HealthResponse(BaseModel):"
+description = ""
+line = 278
+mtime = 1782954213000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "HealthResponse",
+  "combiner",
+  "combiner.mcp_combiner.config.HealthResponse",
+  "config",
+  "health",
+  "mcp",
+  "response",
+]

@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_reload_config._FakeSSManager.ensure_started"
+name = "ensure_started"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = "combiner.tests.test_reload_config._FakeSSManager"
+content_hash = "8caf3abb3a3a6a94"
+file = "combiner/tests/test_reload_config.py"
+signature = "async def ensure_started(self, name: str) -> None:"
+description = ""
+line = 90
+mtime = 1783452495000000000
+container = [
+  "_FakeSSManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_reload_config._FakeSSManager.ensure_started",
+  "config",
+  "ensure",
+  "ensure_started",
+  "fake",
+  "manager",
+  "reload",
+  "ss",
+  "started",
+  "test",
+  "tests",
+]

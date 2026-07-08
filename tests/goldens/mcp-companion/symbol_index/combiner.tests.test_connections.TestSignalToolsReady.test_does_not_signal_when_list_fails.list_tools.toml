@@ -1,0 +1,37 @@
+fqname = "combiner.tests.test_connections.TestSignalToolsReady.test_does_not_signal_when_list_fails.list_tools"
+name = "list_tools"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestSignalToolsReady.test_does_not_signal_when_list_fails"
+content_hash = "77e04007490a1aec"
+file = "combiner/tests/test_connections.py"
+signature = "async def list_tools():"
+description = ""
+line = 47
+mtime = 1783473323000000000
+container = [
+  "TestSignalToolsReady",
+  "test_does_not_signal_when_list_fails",
+]
+calls = []
+called_by = []
+references = [
+  "test_does_not_signal_when_list_fails [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.test_connections.TestSignalToolsReady.test_does_not_signal_when_list_fails.list_tools",
+  "connections",
+  "does",
+  "fails",
+  "list",
+  "list_tools",
+  "not",
+  "ready",
+  "signal",
+  "test",
+  "tests",
+  "tools",
+  "when",
+]

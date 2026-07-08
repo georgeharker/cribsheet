@@ -1,0 +1,28 @@
+fqname = "tests.test_cc_tools.if.tools_tbl"
+name = "tools_tbl"
+kind = "variable"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = "tests.test_cc_tools.if"
+content_hash = "31671e91b8f24524"
+file = "tests/test_cc_tools.lua"
+signature = "local tools_tbl = cc_config.interactions and cc_config.interactions.chat and cc_config.interactions.chat.tools"
+description = ""
+line = 178
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cc",
+  "if",
+  "tbl",
+  "test",
+  "tests",
+  "tests.test_cc_tools.if.tools_tbl",
+  "tools",
+  "tools_tbl",
+]

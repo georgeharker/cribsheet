@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.config.FastMCPConfig.mcpServers"
+name = "mcpServers"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.FastMCPConfig"
+content_hash = "173c03dc55e528dc"
+file = "combiner/mcp_combiner/config.py"
+signature = "mcpServers: dict[str, FastMCPServerEntry]  # noqa: N815"
+description = ""
+line = 256
+mtime = 1782954213000000000
+container = [
+  "FastMCPConfig",
+]
+calls = []
+called_by = []
+references = [
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.FastMCPConfig.mcpServers",
+  "config",
+  "fast",
+  "mcp",
+  "mcpServers",
+  "servers",
+]

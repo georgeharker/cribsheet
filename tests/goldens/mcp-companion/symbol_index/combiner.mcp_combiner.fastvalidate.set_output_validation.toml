@@ -1,0 +1,26 @@
+fqname = "combiner.mcp_combiner.fastvalidate.set_output_validation"
+name = "set_output_validation"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.fastvalidate"
+parent = ""
+content_hash = "b65f7938af963d44"
+file = "combiner/mcp_combiner/fastvalidate.py"
+signature = "def set_output_validation(value: bool | None) -> None:"
+description = ""
+line = 64
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.fastvalidate.set_output_validation",
+  "fastvalidate",
+  "mcp",
+  "output",
+  "set",
+  "set_output_validation",
+  "validation",
+]

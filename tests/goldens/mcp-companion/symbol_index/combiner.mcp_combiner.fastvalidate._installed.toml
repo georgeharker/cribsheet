@@ -1,0 +1,26 @@
+fqname = "combiner.mcp_combiner.fastvalidate._installed"
+name = "_installed"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.fastvalidate"
+parent = ""
+content_hash = "4638e95c0e20c779"
+file = "combiner/mcp_combiner/fastvalidate.py"
+signature = "_installed = False"
+description = ""
+line = 131
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "install [combiner/mcp_combiner/fastvalidate.py]",
+]
+name_terms = [
+  "_installed",
+  "combiner",
+  "combiner.mcp_combiner.fastvalidate._installed",
+  "fastvalidate",
+  "installed",
+  "mcp",
+]

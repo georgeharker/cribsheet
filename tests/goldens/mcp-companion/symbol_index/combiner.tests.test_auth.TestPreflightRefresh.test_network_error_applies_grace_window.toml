@@ -1,0 +1,36 @@
+fqname = "combiner.tests.test_auth.TestPreflightRefresh.test_network_error_applies_grace_window"
+name = "test_network_error_applies_grace_window"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestPreflightRefresh"
+content_hash = "2b3a8c513fc15ac5"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 486
+mtime = 1782852601000000000
+container = [
+  "TestPreflightRefresh",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "applies",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestPreflightRefresh.test_network_error_applies_grace_window",
+  "error",
+  "grace",
+  "network",
+  "preflight",
+  "refresh",
+  "test",
+  "test_network_error_applies_grace_window",
+  "tests",
+  "window",
+]

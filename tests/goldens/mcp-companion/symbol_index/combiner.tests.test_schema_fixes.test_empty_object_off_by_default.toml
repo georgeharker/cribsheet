@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_schema_fixes.test_empty_object_off_by_default"
+name = "test_empty_object_off_by_default"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_schema_fixes"
+parent = ""
+content_hash = "49726ac73d7e2580"
+file = "combiner/tests/test_schema_fixes.py"
+signature = "def test_empty_object_off_by_default():"
+description = ""
+line = 39
+mtime = 1782861732000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "by",
+  "combiner",
+  "combiner.tests.test_schema_fixes.test_empty_object_off_by_default",
+  "default",
+  "empty",
+  "fixes",
+  "object",
+  "off",
+  "schema",
+  "test",
+  "test_empty_object_off_by_default",
+  "tests",
+]

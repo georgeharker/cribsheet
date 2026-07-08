@@ -1,0 +1,31 @@
+fqname = "tests.test_real_servers.find_config"
+name = "find_config"
+kind = "function"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "423b5d1eb5f67843"
+file = "tests/test_real_servers.lua"
+signature = "local function find_config(plugin_root)"
+description = ""
+line = 87
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_real_servers.lua [tests/test_real_servers.lua]",
+]
+references = [
+  "config_path [tests/test_real_servers.lua]",
+  "plugin_root [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "config",
+  "find",
+  "find_config",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.find_config",
+]

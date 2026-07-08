@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_auth.TestIsNetworkError.test_runtime_error_not_network"
+name = "test_runtime_error_not_network"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestIsNetworkError"
+content_hash = "ca95082f1f68e1ac"
+file = "combiner/tests/test_auth.py"
+signature = "def test_runtime_error_not_network(self) -> None:"
+description = ""
+line = 244
+mtime = 1782852601000000000
+container = [
+  "TestIsNetworkError",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestIsNetworkError.test_runtime_error_not_network",
+  "error",
+  "is",
+  "network",
+  "not",
+  "runtime",
+  "test",
+  "test_runtime_error_not_network",
+  "tests",
+]

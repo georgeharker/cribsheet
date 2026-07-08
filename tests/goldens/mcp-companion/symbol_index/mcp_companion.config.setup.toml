@@ -1,0 +1,85 @@
+fqname = "mcp_companion.config.setup"
+name = "setup"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.config"
+parent = ""
+content_hash = "9b3dd29d792005c2"
+file = "lua/mcp_companion/config.lua"
+signature = "function M.setup(opts)"
+description = ""
+line = 357
+mtime = 1783185942000000000
+container = []
+calls = []
+called_by = [
+  "M._apply_token_filter [lua/mcp_companion/cc/init.lua]",
+  "M._cleanup_session_filter [lua/mcp_companion/cc/init.lua]",
+  "M._cli_inject_combiner_env [lua/mcp_companion/cc/init.lua]",
+  "M._resolve_session_allowed [lua/mcp_companion/cc/init.lua]",
+  "M._save_project_config [lua/mcp_companion/cc/init.lua]",
+  "M._setup_system_prompt_injection [lua/mcp_companion/cc/editor_context.lua]",
+  "M.check [lua/mcp_companion/cc/approval.lua]",
+  "M.combiner_url [lua/mcp_companion/config.lua]",
+  "M.enabled [lua/mcp_companion/native/channel.lua]",
+  "M.get [lua/mcp_companion/config.lua]",
+  "M.open [lua/mcp_companion/ui/init.lua]",
+  "M.register [lua/mcp_companion/cc/tools.lua]",
+  "M.register_native [lua/mcp_companion/cc/tools.lua]",
+  "M.setup [lua/mcp_companion/config.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "M.target_venv [lua/mcp_companion/install.lua]",
+  "build_combiner_entry [lua/mcp_companion/cc/init.lua]",
+  "combiner_base [lua/mcp_companion/native/channel.lua]",
+  "combiner_src [lua/mcp_companion/install.lua]",
+  "config.lua [lua/mcp_companion/config.lua]",
+  "tools.lua [lua/mcp_companion/cc/tools.lua]",
+]
+references = [
+  "M [lua/mcp_companion/config.lua]",
+  "cc [lua/mcp_companion/cc/init.lua]",
+  "cfg [lua/mcp_companion/cc/init.lua]",
+  "cfg [lua/mcp_companion/cc/session_commands.lua]",
+  "cfg [lua/mcp_companion/config.lua]",
+  "cfg [lua/mcp_companion/install.lua]",
+  "cfg [lua/mcp_companion/native/channel.lua]",
+  "combiner_base [lua/mcp_companion/native/channel.lua]",
+  "combiner_url [lua/mcp_companion/config.lua]",
+  "config [lua/mcp_companion/cc/approval.lua]",
+  "config [lua/mcp_companion/cc/editor_context.lua]",
+  "config [lua/mcp_companion/cc/init.lua]",
+  "config [lua/mcp_companion/cc/tools.lua]",
+  "config [lua/mcp_companion/init.lua]",
+  "config [lua/mcp_companion/install.lua]",
+  "config [lua/mcp_companion/ui/init.lua]",
+  "get [lua/mcp_companion/config.lua]",
+  "host [lua/mcp_companion/cc/init.lua]",
+  "host [lua/mcp_companion/cc/session_commands.lua]",
+  "if [lua/mcp_companion/cc/approval.lua]",
+  "if [lua/mcp_companion/cc/init.lua]",
+  "if [lua/mcp_companion/init.lua]",
+  "if [lua/mcp_companion/install.lua]",
+  "issues [lua/mcp_companion/init.lua]",
+  "n [lua/mcp_companion/native/channel.lua]",
+  "ns [lua/mcp_companion/cc/approval.lua]",
+  "ns [lua/mcp_companion/native/channel.lua]",
+  "ok [lua/mcp_companion/cc/approval.lua]",
+  "opts [lua/mcp_companion/config.lua]",
+  "plugin_dir [lua/mcp_companion/config.lua]",
+  "port [lua/mcp_companion/cc/init.lua]",
+  "port [lua/mcp_companion/cc/session_commands.lua]",
+  "refresh_python_cmd [lua/mcp_companion/config.lua]",
+  "root [lua/mcp_companion/install.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+  "spr [lua/mcp_companion/cc/editor_context.lua]",
+  "sysp_enabled [lua/mcp_companion/cc/tools.lua]",
+  "token_in_url [lua/mcp_companion/cc/init.lua]",
+  "ui_opts [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "companion",
+  "config",
+  "mcp",
+  "mcp_companion.config.setup",
+  "setup",
+]

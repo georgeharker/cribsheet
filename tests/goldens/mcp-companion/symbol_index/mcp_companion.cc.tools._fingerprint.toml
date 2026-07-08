@@ -1,0 +1,31 @@
+fqname = "mcp_companion.cc.tools._fingerprint"
+name = "_fingerprint"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.tools"
+parent = ""
+content_hash = "35c544b980195610"
+file = "lua/mcp_companion/cc/tools.lua"
+signature = "local function _fingerprint(servers)"
+description = ""
+line = 23
+mtime = 1783013405000000000
+container = []
+calls = []
+called_by = [
+  "M.register [lua/mcp_companion/cc/tools.lua]",
+  "tools.lua [lua/mcp_companion/cc/tools.lua]",
+]
+references = [
+  "fp [lua/mcp_companion/cc/tools.lua]",
+  "servers [lua/mcp_companion/cc/tools.lua]",
+]
+name_terms = [
+  "_fingerprint",
+  "cc",
+  "companion",
+  "fingerprint",
+  "mcp",
+  "mcp_companion.cc.tools._fingerprint",
+  "tools",
+]

@@ -1,0 +1,26 @@
+fqname = "tests.test_real_servers.config_path"
+name = "config_path"
+kind = "global"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "81ed2729e06b92d4"
+file = "tests/test_real_servers.lua"
+signature = "local config_path = find_config(plugin_root)"
+description = ""
+line = 224
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "config",
+  "config_path",
+  "path",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.config_path",
+]

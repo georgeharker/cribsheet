@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_reload_config._FakeConnManager.connect"
+name = "connect"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = "combiner.tests.test_reload_config._FakeConnManager"
+content_hash = "a1cadbbf1ca0b611"
+file = "combiner/tests/test_reload_config.py"
+signature = "async def connect(self, _config: CombinerConfig, name: str, _srv: ServerConfig) -> None:"
+description = ""
+line = 75
+mtime = 1783452495000000000
+container = [
+  "_FakeConnManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_reload_config._FakeConnManager.connect",
+  "config",
+  "conn",
+  "connect",
+  "fake",
+  "manager",
+  "reload",
+  "test",
+  "tests",
+]

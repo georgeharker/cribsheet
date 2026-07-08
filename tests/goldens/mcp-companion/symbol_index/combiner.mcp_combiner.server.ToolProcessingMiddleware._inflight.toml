@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.server.ToolProcessingMiddleware._inflight"
+name = "_inflight"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server.ToolProcessingMiddleware"
+content_hash = "703c7f942e4c995d"
+file = "combiner/mcp_combiner/server.py"
+signature = "_inflight: ClassVar[asyncio.Future[list[Tool]] | None] = None"
+description = ""
+line = 878
+mtime = 1783473323000000000
+container = [
+  "ToolProcessingMiddleware",
+]
+calls = []
+called_by = []
+references = [
+  "_fetch_or_join [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_inflight",
+  "combiner",
+  "combiner.mcp_combiner.server.ToolProcessingMiddleware._inflight",
+  "inflight",
+  "mcp",
+  "middleware",
+  "processing",
+  "server",
+  "tool",
+]

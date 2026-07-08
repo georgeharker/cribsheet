@@ -1,0 +1,36 @@
+fqname = "combiner.tests.test_session_filter.TestStaleServerTools.test_present_server_marked_tools_ready"
+name = "test_present_server_marked_tools_ready"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestStaleServerTools"
+content_hash = "809391369c613052"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_present_server_marked_tools_ready(self):"
+description = ""
+line = 492
+mtime = 1783452495000000000
+container = [
+  "TestStaleServerTools",
+]
+calls = [
+  "_config [combiner/tests/test_session_filter.py]",
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools.test_present_server_marked_tools_ready",
+  "filter",
+  "marked",
+  "present",
+  "ready",
+  "server",
+  "session",
+  "stale",
+  "test",
+  "test_present_server_marked_tools_ready",
+  "tests",
+  "tools",
+]

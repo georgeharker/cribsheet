@@ -1,0 +1,44 @@
+fqname = "mcp_companion.native.winpick.maybe_focus"
+name = "maybe_focus"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.native.winpick"
+parent = ""
+content_hash = "f0cee7881869e48d"
+file = "lua/mcp_companion/native/winpick.lua"
+signature = "function M.maybe_focus(win)"
+description = ""
+line = 116
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.code_buf [lua/mcp_companion/native/winpick.lua]",
+  "buffers.lua [lua/mcp_companion/native/neovim/buffers.lua]",
+  "diagnostics.lua [lua/mcp_companion/native/neovim/diagnostics.lua]",
+  "winpick.lua [lua/mcp_companion/native/winpick.lua]",
+]
+references = [
+  "M [lua/mcp_companion/native/winpick.lua]",
+  "code_buf [lua/mcp_companion/native/winpick.lua]",
+  "code_win [lua/mcp_companion/native/winpick.lua]",
+  "cw [lua/mcp_companion/native/winpick.lua]",
+  "else [tests/test_native.lua]",
+  "if [lua/mcp_companion/native/winpick.lua]",
+  "if [tests/test_native.lua]",
+  "path [lua/mcp_companion/native/winpick.lua]",
+  "win [lua/mcp_companion/native/winpick.lua]",
+  "winpick [lua/mcp_companion/native/neovim/buffers.lua]",
+  "winpick [lua/mcp_companion/native/neovim/diagnostics.lua]",
+  "winpick [tests/test_native.lua]",
+]
+name_terms = [
+  "companion",
+  "focus",
+  "maybe",
+  "maybe_focus",
+  "mcp",
+  "mcp_companion.native.winpick.maybe_focus",
+  "native",
+  "winpick",
+]

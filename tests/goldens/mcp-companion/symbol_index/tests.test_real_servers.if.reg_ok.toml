@@ -1,0 +1,31 @@
+fqname = "tests.test_real_servers.if.reg_ok"
+name = "reg_ok"
+kind = "variable"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = "tests.test_real_servers.if"
+content_hash = "03b981eef15467c5"
+file = "tests/test_real_servers.lua"
+signature = "local reg_ok, reg_err = pcall(tools.register)"
+description = ""
+line = 516
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = [
+  "if [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "if",
+  "ok",
+  "real",
+  "reg",
+  "reg_ok",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.reg_ok",
+]

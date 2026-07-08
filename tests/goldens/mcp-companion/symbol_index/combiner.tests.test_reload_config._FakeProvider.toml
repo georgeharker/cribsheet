@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_reload_config._FakeProvider"
+name = "_FakeProvider"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "90c950a21eda0f62"
+file = "combiner/tests/test_reload_config.py"
+signature = "class _FakeProvider:"
+description = ""
+line = 22
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "mount [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "_FakeProvider",
+  "combiner",
+  "combiner.tests.test_reload_config._FakeProvider",
+  "config",
+  "fake",
+  "provider",
+  "reload",
+  "test",
+  "tests",
+]

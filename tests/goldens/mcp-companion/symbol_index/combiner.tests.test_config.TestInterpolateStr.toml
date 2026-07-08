@@ -1,0 +1,26 @@
+fqname = "combiner.tests.test_config.TestInterpolateStr"
+name = "TestInterpolateStr"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = ""
+content_hash = "8a9f87face89ac2b"
+file = "combiner/tests/test_config.py"
+signature = "class TestInterpolateStr:"
+description = ""
+line = 240
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestInterpolateStr",
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateStr",
+  "config",
+  "interpolate",
+  "str",
+  "test",
+  "tests",
+]

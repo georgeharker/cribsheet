@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.fastvalidate._output_validation"
+name = "_output_validation"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.fastvalidate"
+parent = ""
+content_hash = "e4865bd311792af8"
+file = "combiner/mcp_combiner/fastvalidate.py"
+signature = "_output_validation: bool | None = None"
+description = ""
+line = 57
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_get_cached_tool_definition [combiner/mcp_combiner/fastvalidate.py]",
+  "set_output_validation [combiner/mcp_combiner/fastvalidate.py]",
+]
+name_terms = [
+  "_output_validation",
+  "combiner",
+  "combiner.mcp_combiner.fastvalidate._output_validation",
+  "fastvalidate",
+  "mcp",
+  "output",
+  "validation",
+]

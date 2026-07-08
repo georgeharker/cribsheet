@@ -1,0 +1,36 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression._drive_401.fake_super_flow"
+name = "fake_super_flow"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression._drive_401"
+content_hash = "2bd6d2b62046d612"
+file = "combiner/tests/test_auth.py"
+signature = "async def fake_super_flow(self_inner, request):"
+description = ""
+line = 704
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+  "_drive_401",
+]
+calls = []
+called_by = []
+references = [
+  "_drive_401 [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression._drive_401.fake_super_flow",
+  "drive",
+  "fake",
+  "fake_super_flow",
+  "flow",
+  "super",
+  "suppression",
+  "test",
+  "tests",
+  "upstream",
+]

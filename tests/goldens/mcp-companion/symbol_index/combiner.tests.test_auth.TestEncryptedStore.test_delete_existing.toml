@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_auth.TestEncryptedStore.test_delete_existing"
+name = "test_delete_existing"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestEncryptedStore"
+content_hash = "e017f38d8f37b8d4"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 43
+mtime = 1782852601000000000
+container = [
+  "TestEncryptedStore",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestEncryptedStore.test_delete_existing",
+  "delete",
+  "encrypted",
+  "existing",
+  "store",
+  "test",
+  "test_delete_existing",
+  "tests",
+]

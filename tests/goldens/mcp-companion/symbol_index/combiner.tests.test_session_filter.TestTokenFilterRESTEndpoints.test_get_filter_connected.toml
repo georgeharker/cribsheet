@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints.test_get_filter_connected"
+name = "test_get_filter_connected"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints"
+content_hash = "97ca15f73a384df5"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_get_filter_connected(self, client):"
+description = ""
+line = 997
+mtime = 1783452495000000000
+container = [
+  "TestTokenFilterRESTEndpoints",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints.test_get_filter_connected",
+  "connected",
+  "endpoints",
+  "filter",
+  "get",
+  "rest",
+  "session",
+  "test",
+  "test_get_filter_connected",
+  "tests",
+  "token",
+]

@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.server._tool_cache_time"
+name = "_tool_cache_time"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "27e6f130f67e74b9"
+file = "combiner/mcp_combiner/server.py"
+signature = "_tool_cache_time: float = 0"
+description = ""
+line = 75
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "on_list_tools [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_tool_cache_time",
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.server._tool_cache_time",
+  "mcp",
+  "server",
+  "time",
+  "tool",
+]

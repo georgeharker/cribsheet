@@ -1,0 +1,25 @@
+fqname = "tests.test_cc_tools.tools_tbl"
+name = "tools_tbl"
+kind = "global"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = ""
+content_hash = "b2d4561a274b7aa3"
+file = "tests/test_cc_tools.lua"
+signature = "local tools_tbl = nil"
+description = ""
+line = 226
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cc",
+  "tbl",
+  "test",
+  "tests",
+  "tests.test_cc_tools.tools_tbl",
+  "tools",
+  "tools_tbl",
+]

@@ -1,0 +1,38 @@
+fqname = "combiner.mcp_combiner.auth._RefreshTokenOAuth._has_third_party_validator"
+name = "_has_third_party_validator"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._RefreshTokenOAuth"
+content_hash = "258312a9bb09eb26"
+file = "combiner/mcp_combiner/auth.py"
+signature = "def _has_third_party_validator(self) -> bool:"
+description = ""
+line = 653
+mtime = 1782852601000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+calls = [
+  "_delegated_validator_host [combiner/mcp_combiner/auth.py]",
+]
+called_by = [
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+references = [
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_has_third_party_validator",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth._has_third_party_validator",
+  "has",
+  "mcp",
+  "o",
+  "party",
+  "refresh",
+  "third",
+  "token",
+  "validator",
+]

@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.sharedserver.SharedServerManager.restart"
+name = "restart"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.sharedserver"
+parent = "combiner.mcp_combiner.sharedserver.SharedServerManager"
+content_hash = "471136844c835094"
+file = "combiner/mcp_combiner/sharedserver.py"
+signature = "async def restart(self, server_name: str) -> bool:"
+description = ""
+line = 287
+mtime = 1782539642000000000
+container = [
+  "SharedServerManager",
+]
+calls = [
+  "_get_binary [combiner/mcp_combiner/sharedserver.py]",
+  "_start_one [combiner/mcp_combiner/sharedserver.py]",
+  "_stop_force [combiner/mcp_combiner/sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.SharedServerManager.restart",
+  "manager",
+  "mcp",
+  "restart",
+  "server",
+  "shared",
+  "sharedserver",
+]

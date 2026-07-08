@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.server._partition_by_server"
+name = "_partition_by_server"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "31191448e995c7d1"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _partition_by_server(tools: list[Tool]) -> tuple[dict[str, list[Tool]], list[Tool]]:"
+description = ""
+line = 347
+mtime = 1783473323000000000
+container = []
+calls = [
+  "_find_server_for_tool [combiner/mcp_combiner/server.py]",
+]
+called_by = [
+  "_merge_stale_server_tools [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_merge_stale_server_tools [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_partition_by_server",
+  "by",
+  "combiner",
+  "combiner.mcp_combiner.server._partition_by_server",
+  "mcp",
+  "partition",
+  "server",
+]

@@ -1,0 +1,36 @@
+fqname = "mcp_companion.install.target_venv"
+name = "target_venv"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.install"
+parent = ""
+content_hash = "2ff9e1b92a1b3802"
+file = "lua/mcp_companion/install.lua"
+signature = "function M.target_venv()"
+description = ""
+line = 60
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.ensure [lua/mcp_companion/install.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "install.lua [lua/mcp_companion/install.lua]",
+]
+references = [
+  "M [lua/mcp_companion/install.lua]",
+  "ensure [lua/mcp_companion/install.lua]",
+  "if [lua/mcp_companion/init.lua]",
+  "if [lua/mcp_companion/install.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+  "venv [lua/mcp_companion/install.lua]",
+]
+name_terms = [
+  "companion",
+  "install",
+  "mcp",
+  "mcp_companion.install.target_venv",
+  "target",
+  "target_venv",
+  "venv",
+]

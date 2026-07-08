@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_session_filter.TestCoerceObjectSchemas.test_valid_required_preserved"
+name = "test_valid_required_preserved"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestCoerceObjectSchemas"
+content_hash = "db63e4aabfdec254"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_valid_required_preserved(self):"
+description = ""
+line = 665
+mtime = 1783452495000000000
+container = [
+  "TestCoerceObjectSchemas",
+]
+calls = [
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "coerce",
+  "combiner",
+  "combiner.tests.test_session_filter.TestCoerceObjectSchemas.test_valid_required_preserved",
+  "filter",
+  "object",
+  "preserved",
+  "required",
+  "schemas",
+  "session",
+  "test",
+  "test_valid_required_preserved",
+  "tests",
+  "valid",
+]

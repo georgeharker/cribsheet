@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.config.ServerStatusInfo.auto_approve"
+name = "auto_approve"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.ServerStatusInfo"
+content_hash = "f4706276d278d8fe"
+file = "combiner/mcp_combiner/config.py"
+signature = "auto_approve: list[str] = Field(default_factory=list)"
+description = ""
+line = 266
+mtime = 1782954213000000000
+container = [
+  "ServerStatusInfo",
+]
+calls = []
+called_by = []
+references = [
+  "get_server_status [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "approve",
+  "auto",
+  "auto_approve",
+  "combiner",
+  "combiner.mcp_combiner.config.ServerStatusInfo.auto_approve",
+  "config",
+  "info",
+  "mcp",
+  "server",
+  "status",
+]

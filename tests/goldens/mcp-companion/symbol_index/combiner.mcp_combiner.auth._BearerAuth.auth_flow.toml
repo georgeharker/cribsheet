@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.auth._BearerAuth.auth_flow"
+name = "auth_flow"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._BearerAuth"
+content_hash = "8403fac5bf494b30"
+file = "combiner/mcp_combiner/auth.py"
+signature = "def auth_flow(self, request: httpx.Request) -> Any:"
+description = ""
+line = 1052
+mtime = 1782852601000000000
+container = [
+  "_BearerAuth",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "auth_flow",
+  "bearer",
+  "combiner",
+  "combiner.mcp_combiner.auth._BearerAuth.auth_flow",
+  "flow",
+  "mcp",
+]

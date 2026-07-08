@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.__main__._signal_handler"
+name = "_signal_handler"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.__main__"
+parent = ""
+content_hash = "c32c52ac0976cb84"
+file = "combiner/mcp_combiner/__main__.py"
+signature = "def _signal_handler(signum: int, frame: types.FrameType | None) -> None:"
+description = ""
+line = 193
+mtime = 1783185942000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "main [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "_signal_handler",
+  "combiner",
+  "combiner.mcp_combiner.__main__._signal_handler",
+  "handler",
+  "main",
+  "mcp",
+  "signal",
+]

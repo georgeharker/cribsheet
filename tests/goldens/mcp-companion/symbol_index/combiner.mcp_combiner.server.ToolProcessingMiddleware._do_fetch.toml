@@ -1,0 +1,38 @@
+fqname = "combiner.mcp_combiner.server.ToolProcessingMiddleware._do_fetch"
+name = "_do_fetch"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server.ToolProcessingMiddleware"
+content_hash = "1f80098fd624bc9c"
+file = "combiner/mcp_combiner/server.py"
+signature = "async def _do_fetch("
+description = ""
+line = 980
+mtime = 1783473323000000000
+container = [
+  "ToolProcessingMiddleware",
+]
+calls = [
+  "_filter_tools [combiner/mcp_combiner/server.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/server.py]",
+  "_sanitize_tools [combiner/mcp_combiner/server.py]",
+]
+called_by = [
+  "_fetch_or_join [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_fetch_or_join [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_do_fetch",
+  "combiner",
+  "combiner.mcp_combiner.server.ToolProcessingMiddleware._do_fetch",
+  "do",
+  "fetch",
+  "mcp",
+  "middleware",
+  "processing",
+  "server",
+  "tool",
+]

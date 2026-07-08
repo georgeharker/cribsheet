@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.server.clear_tool_cache"
+name = "clear_tool_cache"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "c68cda626f75029f"
+file = "combiner/mcp_combiner/server.py"
+signature = "def clear_tool_cache() -> None:"
+description = ""
+line = 326
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "invalidate_tool_cache [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "invalidate_tool_cache [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "cache",
+  "clear",
+  "clear_tool_cache",
+  "combiner",
+  "combiner.mcp_combiner.server.clear_tool_cache",
+  "mcp",
+  "server",
+  "tool",
+]

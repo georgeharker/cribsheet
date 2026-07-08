@@ -1,0 +1,32 @@
+fqname = "mcp_companion.cc.build_combiner_entry"
+name = "build_combiner_entry"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc"
+parent = ""
+content_hash = "0789d2d741388dd6"
+file = "lua/mcp_companion/cc/init.lua"
+signature = "local function build_combiner_entry(agent_capabilities, token)"
+description = ""
+line = 87
+mtime = 1783452478000000000
+container = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/cc/init.lua]",
+]
+references = [
+  "agent_capabilities [lua/mcp_companion/cc/init.lua]",
+  "if [lua/mcp_companion/cc/init.lua]",
+  "setup [lua/mcp_companion/cc/init.lua]",
+]
+name_terms = [
+  "build",
+  "build_combiner_entry",
+  "cc",
+  "combiner",
+  "companion",
+  "entry",
+  "mcp",
+  "mcp_companion.cc.build_combiner_entry",
+]

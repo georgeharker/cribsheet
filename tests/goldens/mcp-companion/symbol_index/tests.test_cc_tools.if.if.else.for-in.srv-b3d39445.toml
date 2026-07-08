@@ -1,0 +1,36 @@
+fqname = "tests.test_cc_tools.if.if.else.for in.srv"
+name = "srv"
+kind = "variable"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = "tests.test_cc_tools.if.if.else.for in"
+content_hash = "9ff9bbf11a2612cc"
+file = "tests/test_cc_tools.lua"
+signature = "for _, srv in ipairs(servers) do"
+description = ""
+line = 265
+mtime = 1782853510000000000
+container = [
+  "if",
+  "if",
+  "else",
+  "for in",
+]
+calls = []
+called_by = []
+references = [
+  "_ [tests/test_cc_tools.lua]",
+  "for in [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "else",
+  "for",
+  "if",
+  "in",
+  "srv",
+  "test",
+  "tests",
+  "tests.test_cc_tools.if.if.else.for in.srv",
+  "tools",
+]

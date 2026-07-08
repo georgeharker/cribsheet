@@ -1,0 +1,28 @@
+fqname = "tests.test_real_servers.if.test_key"
+name = "test_key"
+kind = "variable"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = "tests.test_real_servers.if"
+content_hash = "dc331d582a3965bb"
+file = "tests/test_real_servers.lua"
+signature = "local test_key = nil"
+description = ""
+line = 563
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "key",
+  "real",
+  "servers",
+  "test",
+  "test_key",
+  "tests",
+  "tests.test_real_servers.if.test_key",
+]

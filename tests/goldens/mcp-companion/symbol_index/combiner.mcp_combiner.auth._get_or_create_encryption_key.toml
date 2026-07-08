@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.auth._get_or_create_encryption_key"
+name = "_get_or_create_encryption_key"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "d92a9e1184bdb064"
+file = "combiner/mcp_combiner/auth.py"
+signature = "def _get_or_create_encryption_key(token_dir: Path) -> bytes:"
+description = ""
+line = 131
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "create_encrypted_store [combiner/mcp_combiner/auth.py]",
+]
+references = [
+  "create_encrypted_store [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_get_or_create_encryption_key",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._get_or_create_encryption_key",
+  "create",
+  "encryption",
+  "get",
+  "key",
+  "mcp",
+  "or",
+]

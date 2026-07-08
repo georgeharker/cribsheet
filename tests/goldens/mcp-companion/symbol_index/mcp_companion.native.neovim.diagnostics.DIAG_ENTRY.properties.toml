@@ -1,0 +1,29 @@
+fqname = "mcp_companion.native.neovim.diagnostics.DIAG_ENTRY.properties"
+name = "properties"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.native.neovim.diagnostics"
+parent = "mcp_companion.native.neovim.diagnostics.DIAG_ENTRY"
+content_hash = "cc441ea96903def3"
+file = "lua/mcp_companion/native/neovim/diagnostics.lua"
+signature = "properties = {"
+description = ""
+line = 18
+mtime = 1783022631000000000
+container = [
+  "DIAG_ENTRY",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "companion",
+  "diag",
+  "diagnostics",
+  "entry",
+  "mcp",
+  "mcp_companion.native.neovim.diagnostics.DIAG_ENTRY.properties",
+  "native",
+  "neovim",
+  "properties",
+]

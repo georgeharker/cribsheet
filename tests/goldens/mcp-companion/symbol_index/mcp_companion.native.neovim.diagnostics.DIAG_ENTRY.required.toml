@@ -1,0 +1,29 @@
+fqname = "mcp_companion.native.neovim.diagnostics.DIAG_ENTRY.required"
+name = "required"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.native.neovim.diagnostics"
+parent = "mcp_companion.native.neovim.diagnostics.DIAG_ENTRY"
+content_hash = "3dd7f004bfde08db"
+file = "lua/mcp_companion/native/neovim/diagnostics.lua"
+signature = "required = { \"severity\", \"range\", \"message\" },"
+description = ""
+line = 34
+mtime = 1783022631000000000
+container = [
+  "DIAG_ENTRY",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "companion",
+  "diag",
+  "diagnostics",
+  "entry",
+  "mcp",
+  "mcp_companion.native.neovim.diagnostics.DIAG_ENTRY.required",
+  "native",
+  "neovim",
+  "required",
+]

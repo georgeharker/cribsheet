@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_nvim_channel.test_unknown_tool_returns_is_error"
+name = "test_unknown_tool_returns_is_error"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_nvim_channel"
+parent = ""
+content_hash = "9685910a264a16cf"
+file = "combiner/tests/test_nvim_channel.py"
+signature = "async def test_unknown_tool_returns_is_error(nvim_instance: str) -> None:"
+description = ""
+line = 103
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.tests.test_nvim_channel.test_unknown_tool_returns_is_error",
+  "error",
+  "is",
+  "nvim",
+  "returns",
+  "test",
+  "test_unknown_tool_returns_is_error",
+  "tests",
+  "tool",
+  "unknown",
+]

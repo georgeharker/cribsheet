@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.config.HealthResponse.status"
+name = "status"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.HealthResponse"
+content_hash = "c594d7f4767ccf4c"
+file = "combiner/mcp_combiner/config.py"
+signature = "status: str = \"ok\""
+description = ""
+line = 281
+mtime = 1782954213000000000
+container = [
+  "HealthResponse",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.HealthResponse.status",
+  "config",
+  "health",
+  "mcp",
+  "response",
+  "status",
+]

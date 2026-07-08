@@ -1,0 +1,28 @@
+fqname = "tests.test_schema.err"
+name = "err"
+kind = "function"
+lang = "lua"
+module = "tests.test_schema"
+parent = ""
+content_hash = "0e42cffe1ea46879"
+file = "tests/test_schema.lua"
+signature = "local function err(name, msg)"
+description = ""
+line = 18
+mtime = 1783013405000000000
+container = []
+calls = []
+called_by = [
+  "test_schema.lua [tests/test_schema.lua]",
+]
+references = [
+  "else [tests/test_schema.lua]",
+  "name [tests/test_schema.lua]",
+]
+name_terms = [
+  "err",
+  "schema",
+  "test",
+  "tests",
+  "tests.test_schema.err",
+]

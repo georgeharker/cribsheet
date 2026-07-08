@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.server.STALE_TOOL_GRACE"
+name = "STALE_TOOL_GRACE"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "742b9e09525a93a9"
+file = "combiner/mcp_combiner/server.py"
+signature = "STALE_TOOL_GRACE = 30.0  # seconds (default)"
+description = ""
+line = 102
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_merge_stale_server_tools [combiner/mcp_combiner/server.py]",
+  "create_combiner [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "STALE_TOOL_GRACE",
+  "combiner",
+  "combiner.mcp_combiner.server.STALE_TOOL_GRACE",
+  "grace",
+  "mcp",
+  "server",
+  "stale",
+  "tool",
+]

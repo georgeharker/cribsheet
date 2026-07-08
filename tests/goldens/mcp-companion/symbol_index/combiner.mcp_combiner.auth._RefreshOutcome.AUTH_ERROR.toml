@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.auth._RefreshOutcome.AUTH_ERROR"
+name = "AUTH_ERROR"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._RefreshOutcome"
+content_hash = "d0083b1fba3ace7c"
+file = "combiner/mcp_combiner/auth.py"
+signature = "AUTH_ERROR = \"auth_error\"  # permanent — need full re-auth"
+description = ""
+line = 61
+mtime = 1782852601000000000
+container = [
+  "_RefreshOutcome",
+]
+calls = []
+called_by = []
+references = [
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "AUTH_ERROR",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshOutcome.AUTH_ERROR",
+  "error",
+  "mcp",
+  "outcome",
+  "refresh",
+]

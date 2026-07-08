@@ -1,0 +1,36 @@
+fqname = "combiner.tests.test_session_filter.TestOutputSchemaPlumbing.test_build_nvim_tools_carries_output_schema"
+name = "test_build_nvim_tools_carries_output_schema"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestOutputSchemaPlumbing"
+content_hash = "7c0d2fe3146b12e7"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_build_nvim_tools_carries_output_schema(self):"
+description = ""
+line = 844
+mtime = 1783452495000000000
+container = [
+  "TestOutputSchemaPlumbing",
+]
+calls = [
+  "_out [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "carries",
+  "combiner",
+  "combiner.tests.test_session_filter.TestOutputSchemaPlumbing.test_build_nvim_tools_carries_output_schema",
+  "filter",
+  "nvim",
+  "output",
+  "plumbing",
+  "schema",
+  "session",
+  "test",
+  "test_build_nvim_tools_carries_output_schema",
+  "tests",
+  "tools",
+]

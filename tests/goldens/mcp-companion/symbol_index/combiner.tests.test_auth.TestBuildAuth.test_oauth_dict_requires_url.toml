@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_auth.TestBuildAuth.test_oauth_dict_requires_url"
+name = "test_oauth_dict_requires_url"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestBuildAuth"
+content_hash = "5d6f3cbbd606769b"
+file = "combiner/tests/test_auth.py"
+signature = "def test_oauth_dict_requires_url(self) -> None:"
+description = ""
+line = 132
+mtime = 1782852601000000000
+container = [
+  "TestBuildAuth",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "build",
+  "combiner",
+  "combiner.tests.test_auth.TestBuildAuth.test_oauth_dict_requires_url",
+  "dict",
+  "oauth",
+  "requires",
+  "test",
+  "test_oauth_dict_requires_url",
+  "tests",
+  "url",
+]

@@ -1,0 +1,41 @@
+fqname = "combiner.mcp_combiner.auth._RefreshTokenOAuth._proactive_refresh"
+name = "_proactive_refresh"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._RefreshTokenOAuth"
+content_hash = "e79906de26959d0d"
+file = "combiner/mcp_combiner/auth.py"
+signature = "async def _proactive_refresh(self) -> _RefreshOutcome:"
+description = ""
+line = 420
+mtime = 1782852601000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+calls = [
+  "_build_refresh_request [combiner/mcp_combiner/auth.py]",
+  "_discover_oauth_metadata [combiner/mcp_combiner/auth.py]",
+  "_is_network_error [combiner/mcp_combiner/auth.py]",
+]
+called_by = [
+  "_initialize [combiner/mcp_combiner/auth.py]",
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+references = [
+  "_initialize [combiner/mcp_combiner/auth.py]",
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_proactive_refresh",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth._proactive_refresh",
+  "mcp",
+  "o",
+  "proactive",
+  "refresh",
+  "token",
+]

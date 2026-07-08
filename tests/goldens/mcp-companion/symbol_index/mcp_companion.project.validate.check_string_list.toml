@@ -1,0 +1,34 @@
+fqname = "mcp_companion.project.validate.check_string_list"
+name = "check_string_list"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.project"
+parent = "mcp_companion.project.validate"
+content_hash = "c00dec62a2dc7f42"
+file = "lua/mcp_companion/project.lua"
+signature = "local function check_string_list(value, field)"
+description = ""
+line = 93
+mtime = 1782852601000000000
+container = [
+  "validate",
+]
+calls = []
+called_by = [
+  "validate [lua/mcp_companion/project.lua]",
+]
+references = [
+  "err [lua/mcp_companion/project.lua]",
+  "value [lua/mcp_companion/project.lua]",
+]
+name_terms = [
+  "check",
+  "check_string_list",
+  "companion",
+  "list",
+  "mcp",
+  "mcp_companion.project.validate.check_string_list",
+  "project",
+  "string",
+  "validate",
+]

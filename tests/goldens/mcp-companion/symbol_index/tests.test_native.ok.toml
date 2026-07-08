@@ -1,0 +1,28 @@
+fqname = "tests.test_native.ok"
+name = "ok"
+kind = "function"
+lang = "lua"
+module = "tests.test_native"
+parent = ""
+content_hash = "7455c1e12778334c"
+file = "tests/test_native.lua"
+signature = "local function ok(name)"
+description = ""
+line = 11
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = [
+  "test_native.lua [tests/test_native.lua]",
+]
+references = [
+  "if [tests/test_native.lua]",
+  "name [tests/test_native.lua]",
+]
+name_terms = [
+  "native",
+  "ok",
+  "test",
+  "tests",
+  "tests.test_native.ok",
+]

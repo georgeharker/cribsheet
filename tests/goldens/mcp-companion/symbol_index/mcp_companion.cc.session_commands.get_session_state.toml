@@ -1,0 +1,37 @@
+fqname = "mcp_companion.cc.session_commands.get_session_state"
+name = "get_session_state"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.session_commands"
+parent = ""
+content_hash = "ec09d3f62166d7d6"
+file = "lua/mcp_companion/cc/session_commands.lua"
+signature = "function M.get_session_state(bufnr)"
+description = ""
+line = 322
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.register [lua/mcp_companion/cc/session_commands.lua]",
+  "M.setup [lua/mcp_companion/cc/init.lua]",
+  "session_commands.lua [lua/mcp_companion/cc/session_commands.lua]",
+]
+references = [
+  "M [lua/mcp_companion/cc/session_commands.lua]",
+  "bufnr [lua/mcp_companion/cc/session_commands.lua]",
+  "chat [lua/mcp_companion/cc/session_commands.lua]",
+  "register [lua/mcp_companion/cc/session_commands.lua]",
+  "setup [lua/mcp_companion/cc/init.lua]",
+]
+name_terms = [
+  "cc",
+  "commands",
+  "companion",
+  "get",
+  "get_session_state",
+  "mcp",
+  "mcp_companion.cc.session_commands.get_session_state",
+  "session",
+  "state",
+]

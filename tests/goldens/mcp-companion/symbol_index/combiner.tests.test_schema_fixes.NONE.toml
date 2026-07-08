@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_schema_fixes.NONE"
+name = "NONE"
+kind = "constant"
+lang = "python"
+module = "combiner.tests.test_schema_fixes"
+parent = ""
+content_hash = "75b19ebfbea84580"
+file = "combiner/tests/test_schema_fixes.py"
+signature = "NONE: frozenset[str] = frozenset()"
+description = ""
+line = 10
+mtime = 1782861732000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "test_empty_object_off_by_default [combiner/tests/test_schema_fixes.py]",
+  "test_no_fixes_is_a_noop [combiner/tests/test_schema_fixes.py]",
+]
+name_terms = [
+  "NONE",
+  "combiner",
+  "combiner.tests.test_schema_fixes.NONE",
+  "fixes",
+  "none",
+  "schema",
+  "test",
+  "tests",
+]

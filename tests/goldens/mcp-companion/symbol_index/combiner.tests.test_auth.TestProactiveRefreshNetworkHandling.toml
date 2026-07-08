@@ -1,0 +1,28 @@
+fqname = "combiner.tests.test_auth.TestProactiveRefreshNetworkHandling"
+name = "TestProactiveRefreshNetworkHandling"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = ""
+content_hash = "e0567f1158f1442a"
+file = "combiner/tests/test_auth.py"
+signature = "class TestProactiveRefreshNetworkHandling:"
+description = ""
+line = 251
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestProactiveRefreshNetworkHandling",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestProactiveRefreshNetworkHandling",
+  "handling",
+  "network",
+  "proactive",
+  "refresh",
+  "test",
+  "tests",
+]

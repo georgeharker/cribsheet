@@ -1,0 +1,26 @@
+fqname = "tests.test_native.if.wf"
+name = "wf"
+kind = "variable"
+lang = "lua"
+module = "tests.test_native"
+parent = "tests.test_native.if"
+content_hash = "a708f631acfe9668"
+file = "tests/test_native.lua"
+signature = "local wf = native.dispatch(\"write_file\", { path = tmp .. \".out\", content = \"hello\\nworld\" })"
+description = ""
+line = 166
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "native",
+  "test",
+  "tests",
+  "tests.test_native.if.wf",
+  "wf",
+]

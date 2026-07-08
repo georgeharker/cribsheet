@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_auth.TestIsNetworkError.test_os_error"
+name = "test_os_error"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestIsNetworkError"
+content_hash = "d3e7b24cdfc07512"
+file = "combiner/tests/test_auth.py"
+signature = "def test_os_error(self) -> None:"
+description = ""
+line = 230
+mtime = 1782852601000000000
+container = [
+  "TestIsNetworkError",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestIsNetworkError.test_os_error",
+  "error",
+  "is",
+  "network",
+  "os",
+  "test",
+  "test_os_error",
+  "tests",
+]

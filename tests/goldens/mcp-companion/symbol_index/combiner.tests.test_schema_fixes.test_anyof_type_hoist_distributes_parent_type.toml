@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_schema_fixes.test_anyof_type_hoist_distributes_parent_type"
+name = "test_anyof_type_hoist_distributes_parent_type"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_schema_fixes"
+parent = ""
+content_hash = "c00306c96356b230"
+file = "combiner/tests/test_schema_fixes.py"
+signature = "def test_anyof_type_hoist_distributes_parent_type():"
+description = ""
+line = 57
+mtime = 1782861732000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "anyof",
+  "combiner",
+  "combiner.tests.test_schema_fixes.test_anyof_type_hoist_distributes_parent_type",
+  "distributes",
+  "fixes",
+  "hoist",
+  "parent",
+  "schema",
+  "test",
+  "test_anyof_type_hoist_distributes_parent_type",
+  "tests",
+  "type",
+]

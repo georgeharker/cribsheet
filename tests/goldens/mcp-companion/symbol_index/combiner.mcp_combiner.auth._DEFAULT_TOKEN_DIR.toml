@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.auth._DEFAULT_TOKEN_DIR"
+name = "_DEFAULT_TOKEN_DIR"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "6f9718d99862a7e4"
+file = "combiner/mcp_combiner/auth.py"
+signature = "_DEFAULT_TOKEN_DIR = Path.home() / \".cache\" / \"mcp-combiner\" / \"oauth-tokens\""
+description = ""
+line = 125
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "build_auth [combiner/mcp_combiner/auth.py]",
+  "has_cached_oauth_token [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_DEFAULT_TOKEN_DIR",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._DEFAULT_TOKEN_DIR",
+  "default",
+  "dir",
+  "mcp",
+  "token",
+]

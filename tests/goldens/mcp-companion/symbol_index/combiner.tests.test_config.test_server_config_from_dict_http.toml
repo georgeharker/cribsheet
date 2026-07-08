@@ -1,0 +1,28 @@
+fqname = "combiner.tests.test_config.test_server_config_from_dict_http"
+name = "test_server_config_from_dict_http"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = ""
+content_hash = "4bd7440e88831fd9"
+file = "combiner/tests/test_config.py"
+signature = "def test_server_config_from_dict_http() -> None:"
+description = ""
+line = 119
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.test_server_config_from_dict_http",
+  "config",
+  "dict",
+  "from",
+  "http",
+  "server",
+  "test",
+  "test_server_config_from_dict_http",
+  "tests",
+]

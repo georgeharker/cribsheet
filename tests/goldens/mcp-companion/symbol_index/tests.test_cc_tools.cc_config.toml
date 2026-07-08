@@ -1,0 +1,30 @@
+fqname = "tests.test_cc_tools.cc_config"
+name = "cc_config"
+kind = "global"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = ""
+content_hash = "4d3030a7d997ca57"
+file = "tests/test_cc_tools.lua"
+signature = "local ok_cc, cc_config = pcall(require, \"codecompanion.config\")"
+description = ""
+line = 167
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "else [tests/test_cc_tools.lua]",
+  "if [tests/test_cc_tools.lua]",
+  "ok_cc [tests/test_cc_tools.lua]",
+  "tools_tbl [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "cc_config",
+  "config",
+  "test",
+  "tests",
+  "tests.test_cc_tools.cc_config",
+  "tools",
+]

@@ -1,0 +1,42 @@
+fqname = "mcp_companion.ui.close"
+name = "close"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.ui"
+parent = ""
+content_hash = "6208c8ca802804c7"
+file = "lua/mcp_companion/ui/init.lua"
+signature = "function M.close()"
+description = ""
+line = 764
+mtime = 1783473333000000000
+container = []
+calls = []
+called_by = [
+  "M._fetch_and_render [lua/mcp_companion/ui/init.lua]",
+  "M.close [lua/mcp_companion/ui/init.lua]",
+  "M.open [lua/mcp_companion/ui/init.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "init.lua [lua/mcp_companion/ui/init.lua]",
+  "render_server [lua/mcp_companion/ui/init.lua]",
+]
+references = [
+  "M [lua/mcp_companion/ui/init.lua]",
+  "_cleanup [lua/mcp_companion/ui/init.lua]",
+  "_fetch_and_render [lua/mcp_companion/ui/init.lua]",
+  "else [lua/mcp_companion/ui/init.lua]",
+  "if [lua/mcp_companion/ui/init.lua]",
+  "is_open [lua/mcp_companion/ui/init.lua]",
+  "open [lua/mcp_companion/ui/init.lua]",
+  "render [lua/mcp_companion/ui/init.lua]",
+  "render_server [lua/mcp_companion/ui/init.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+  "toggle [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "close",
+  "companion",
+  "mcp",
+  "mcp_companion.ui.close",
+  "ui",
+]

@@ -1,0 +1,33 @@
+fqname = "combiner.mcp_combiner.auth._RefreshOutcome.NETWORK_ERROR"
+name = "NETWORK_ERROR"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._RefreshOutcome"
+content_hash = "4dbf35b537571eba"
+file = "combiner/mcp_combiner/auth.py"
+signature = "NETWORK_ERROR = \"network_error\"  # transient — token may still be usable"
+description = ""
+line = 60
+mtime = 1782852601000000000
+container = [
+  "_RefreshOutcome",
+]
+calls = []
+called_by = []
+references = [
+  "_initialize [combiner/mcp_combiner/auth.py]",
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "NETWORK_ERROR",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshOutcome.NETWORK_ERROR",
+  "error",
+  "mcp",
+  "network",
+  "outcome",
+  "refresh",
+]

@@ -1,0 +1,26 @@
+fqname = "combiner.mcp_combiner.__main__.main"
+name = "main"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.__main__"
+parent = ""
+content_hash = "4454608ae20679db"
+file = "combiner/mcp_combiner/__main__.py"
+signature = "def main() -> None:"
+description = ""
+line = 267
+mtime = 1783185942000000000
+container = []
+calls = [
+  "create_app [combiner/mcp_combiner/__main__.py]",
+]
+called_by = [
+  "__main__ [combiner/mcp_combiner/__main__.py]",
+]
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.__main__.main",
+  "main",
+  "mcp",
+]

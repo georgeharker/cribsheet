@@ -1,0 +1,28 @@
+fqname = "tests.test_cc_tools.section"
+name = "section"
+kind = "function"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = ""
+content_hash = "263d99dec04ed11f"
+file = "tests/test_cc_tools.lua"
+signature = "local function section(title)"
+description = ""
+line = 29
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_cc_tools.lua [tests/test_cc_tools.lua]",
+]
+references = [
+  "title [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "section",
+  "test",
+  "tests",
+  "tests.test_cc_tools.section",
+  "tools",
+]

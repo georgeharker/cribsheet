@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.nvim_proxy._dispatch_result_to_tool_result"
+name = "_dispatch_result_to_tool_result"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_proxy"
+parent = ""
+content_hash = "7483184b0e9c9586"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+signature = "def _dispatch_result_to_tool_result(result: Any, tool_name: str) -> ToolResult:"
+description = ""
+line = 180
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = [
+  "call_nvim_tool [combiner/mcp_combiner/nvim_proxy.py]",
+]
+references = [
+  "call_nvim_tool [combiner/mcp_combiner/nvim_proxy.py]",
+]
+name_terms = [
+  "_dispatch_result_to_tool_result",
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy._dispatch_result_to_tool_result",
+  "dispatch",
+  "mcp",
+  "nvim",
+  "proxy",
+  "result",
+  "to",
+  "tool",
+]

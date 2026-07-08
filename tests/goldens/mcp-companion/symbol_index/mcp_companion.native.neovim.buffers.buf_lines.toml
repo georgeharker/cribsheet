@@ -1,0 +1,31 @@
+fqname = "mcp_companion.native.neovim.buffers.buf_lines"
+name = "buf_lines"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.native.neovim.buffers"
+parent = ""
+content_hash = "1d83c4cfab6e08b9"
+file = "lua/mcp_companion/native/neovim/buffers.lua"
+signature = "local function buf_lines(buf)"
+description = ""
+line = 10
+mtime = 1783022818000000000
+container = []
+calls = []
+called_by = [
+  "buffers.lua [lua/mcp_companion/native/neovim/buffers.lua]",
+]
+references = [
+  "buf [lua/mcp_companion/native/neovim/buffers.lua]",
+]
+name_terms = [
+  "buf",
+  "buf_lines",
+  "buffers",
+  "companion",
+  "lines",
+  "mcp",
+  "mcp_companion.native.neovim.buffers.buf_lines",
+  "native",
+  "neovim",
+]

@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.config.OAuthConfig.cache_tokens"
+name = "cache_tokens"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.OAuthConfig"
+content_hash = "9db89384b6772993"
+file = "combiner/mcp_combiner/config.py"
+signature = "cache_tokens: bool = True"
+description = ""
+line = 301
+mtime = 1782954213000000000
+container = [
+  "OAuthConfig",
+]
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "auth",
+  "cache",
+  "cache_tokens",
+  "combiner",
+  "combiner.mcp_combiner.config.OAuthConfig.cache_tokens",
+  "config",
+  "mcp",
+  "o",
+  "tokens",
+]

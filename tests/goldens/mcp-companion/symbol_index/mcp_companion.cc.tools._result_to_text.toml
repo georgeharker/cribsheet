@@ -1,0 +1,32 @@
+fqname = "mcp_companion.cc.tools._result_to_text"
+name = "_result_to_text"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.tools"
+parent = ""
+content_hash = "695b45097caef88e"
+file = "lua/mcp_companion/cc/tools.lua"
+signature = "local function _result_to_text(result)"
+description = ""
+line = 93
+mtime = 1783013405000000000
+container = []
+calls = []
+called_by = [
+  "tools.lua [lua/mcp_companion/cc/tools.lua]",
+]
+references = [
+  "_make_native_cmd [lua/mcp_companion/cc/tools.lua]",
+  "result [lua/mcp_companion/cc/tools.lua]",
+]
+name_terms = [
+  "_result_to_text",
+  "cc",
+  "companion",
+  "mcp",
+  "mcp_companion.cc.tools._result_to_text",
+  "result",
+  "text",
+  "to",
+  "tools",
+]

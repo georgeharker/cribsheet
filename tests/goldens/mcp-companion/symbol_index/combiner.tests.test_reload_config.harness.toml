@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_reload_config.harness"
+name = "harness"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "ff4ffae44a0354fc"
+file = "combiner/tests/test_reload_config.py"
+signature = "@pytest.fixture"
+description = ""
+line = 109
+mtime = 1783452495000000000
+container = []
+calls = [
+  "_FakeCombiner [combiner/tests/test_reload_config.py]",
+  "_FakeConnManager [combiner/tests/test_reload_config.py]",
+  "_FakeSSManager [combiner/tests/test_reload_config.py]",
+  "_http [combiner/tests/test_reload_config.py]",
+  "_write [combiner/tests/test_reload_config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_reload_config.harness",
+  "config",
+  "harness",
+  "reload",
+  "test",
+  "tests",
+]

@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.auth._RefreshOutcome.SUCCESS"
+name = "SUCCESS"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._RefreshOutcome"
+content_hash = "3bddd8e7539bc504"
+file = "combiner/mcp_combiner/auth.py"
+signature = "SUCCESS = \"success\""
+description = ""
+line = 59
+mtime = 1782852601000000000
+container = [
+  "_RefreshOutcome",
+]
+calls = []
+called_by = []
+references = [
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "SUCCESS",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshOutcome.SUCCESS",
+  "mcp",
+  "outcome",
+  "refresh",
+  "success",
+]

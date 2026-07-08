@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.sharedserver._require_binary"
+name = "_require_binary"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.sharedserver"
+parent = ""
+content_hash = "c295f29e78273b13"
+file = "combiner/mcp_combiner/sharedserver.py"
+signature = "def _require_binary() -> str:"
+description = ""
+line = 33
+mtime = 1782539642000000000
+container = []
+calls = []
+called_by = [
+  "_get_binary [combiner/mcp_combiner/sharedserver.py]",
+]
+references = [
+  "_get_binary [combiner/mcp_combiner/sharedserver.py]",
+]
+name_terms = [
+  "_require_binary",
+  "binary",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver._require_binary",
+  "mcp",
+  "require",
+  "sharedserver",
+]

@@ -1,0 +1,42 @@
+fqname = "combiner.tests.test_reload_config._write"
+name = "_write"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "15a6dd69d9225d01"
+file = "combiner/tests/test_reload_config.py"
+signature = "def _write(path: Path, servers: dict[str, Any]) -> None:"
+description = ""
+line = 101
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = [
+  "harness [combiner/tests/test_reload_config.py]",
+  "test_add_server [combiner/tests/test_reload_config.py]",
+  "test_changed_server_remounts [combiner/tests/test_reload_config.py]",
+  "test_disabling_server_unmounts_without_remount [combiner/tests/test_reload_config.py]",
+  "test_remove_server [combiner/tests/test_reload_config.py]",
+  "test_restart_non_sharedserver_reopens_connection [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+]
+references = [
+  "harness [combiner/tests/test_reload_config.py]",
+  "test_add_server [combiner/tests/test_reload_config.py]",
+  "test_changed_server_remounts [combiner/tests/test_reload_config.py]",
+  "test_disabling_server_unmounts_without_remount [combiner/tests/test_reload_config.py]",
+  "test_remove_server [combiner/tests/test_reload_config.py]",
+  "test_restart_non_sharedserver_reopens_connection [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "_write",
+  "combiner",
+  "combiner.tests.test_reload_config._write",
+  "config",
+  "reload",
+  "test",
+  "tests",
+  "write",
+]

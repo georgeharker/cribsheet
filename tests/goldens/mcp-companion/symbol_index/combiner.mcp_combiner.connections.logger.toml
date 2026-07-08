@@ -1,0 +1,34 @@
+fqname = "combiner.mcp_combiner.connections.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = ""
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/connections.py"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+line = 54
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_connect_one [combiner/mcp_combiner/connections.py]",
+  "_log_auth_failure_details [combiner/mcp_combiner/connections.py]",
+  "_monitor [combiner/mcp_combiner/connections.py]",
+  "_open [combiner/mcp_combiner/connections.py]",
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+  "_signal_tools_ready [combiner/mcp_combiner/connections.py]",
+  "_teardown [combiner/mcp_combiner/connections.py]",
+  "close_all [combiner/mcp_combiner/connections.py]",
+  "connect [combiner/mcp_combiner/connections.py]",
+  "connect_all [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections.logger",
+  "connections",
+  "logger",
+  "mcp",
+]

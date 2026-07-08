@@ -1,0 +1,40 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager._open"
+name = "_open"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections.ConnectionManager"
+content_hash = "3215e5eee34d4474"
+file = "combiner/mcp_combiner/connections.py"
+signature = "async def _open(self, conn: _ManagedConnection) -> None:"
+description = ""
+line = 450
+mtime = 1783473323000000000
+container = [
+  "ConnectionManager",
+]
+calls = [
+  "_is_auth_error [combiner/mcp_combiner/connections.py]",
+  "_log_auth_failure_details [combiner/mcp_combiner/connections.py]",
+  "_make_disconnected_client [combiner/mcp_combiner/connections.py]",
+  "_signal_tools_ready [combiner/mcp_combiner/connections.py]",
+  "get_auth [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+  "connect [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+  "connect [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_open",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager._open",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+  "open",
+]

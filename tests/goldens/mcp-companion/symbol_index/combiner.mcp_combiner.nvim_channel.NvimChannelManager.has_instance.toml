@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.nvim_channel.NvimChannelManager.has_instance"
+name = "has_instance"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = "combiner.mcp_combiner.nvim_channel.NvimChannelManager"
+content_hash = "877b8bfc9cae3bda"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "def has_instance(self, instance_id: str) -> bool:"
+description = ""
+line = 133
+mtime = 1782852601000000000
+container = [
+  "NvimChannelManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager.has_instance",
+  "has",
+  "has_instance",
+  "instance",
+  "manager",
+  "mcp",
+  "nvim",
+]

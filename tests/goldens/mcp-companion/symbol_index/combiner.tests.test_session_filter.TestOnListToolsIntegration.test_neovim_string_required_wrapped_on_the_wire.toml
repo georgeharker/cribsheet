@@ -1,0 +1,40 @@
+fqname = "combiner.tests.test_session_filter.TestOnListToolsIntegration.test_neovim_string_required_wrapped_on_the_wire"
+name = "test_neovim_string_required_wrapped_on_the_wire"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestOnListToolsIntegration"
+content_hash = "af4dbaff6ac1b362"
+file = "combiner/tests/test_session_filter.py"
+signature = "async def test_neovim_string_required_wrapped_on_the_wire(self):"
+description = ""
+line = 803
+mtime = 1783452495000000000
+container = [
+  "TestOnListToolsIntegration",
+]
+calls = [
+  "_inject_manifest [combiner/tests/test_session_filter.py]",
+  "_list [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestOnListToolsIntegration.test_neovim_string_required_wrapped_on_the_wire",
+  "filter",
+  "integration",
+  "list",
+  "neovim",
+  "on",
+  "required",
+  "session",
+  "string",
+  "test",
+  "test_neovim_string_required_wrapped_on_the_wire",
+  "tests",
+  "the",
+  "tools",
+  "wire",
+  "wrapped",
+]

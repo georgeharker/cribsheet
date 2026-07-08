@@ -1,0 +1,36 @@
+fqname = "combiner.mcp_combiner.auth._RefreshTokenOAuth._probe_token_at"
+name = "_probe_token_at"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._RefreshTokenOAuth"
+content_hash = "c461cca195b1d89f"
+file = "combiner/mcp_combiner/auth.py"
+signature = "async def _probe_token_at(self, probe_url: str) -> _ProbeOutcome:"
+description = ""
+line = 657
+mtime = 1782852601000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+calls = [
+  "_is_network_error [combiner/mcp_combiner/auth.py]",
+]
+called_by = [
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+references = [
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_probe_token_at",
+  "at",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth._probe_token_at",
+  "mcp",
+  "o",
+  "probe",
+  "refresh",
+  "token",
+]

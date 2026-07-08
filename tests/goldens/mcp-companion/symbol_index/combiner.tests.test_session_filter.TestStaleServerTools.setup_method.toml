@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_session_filter.TestStaleServerTools.setup_method"
+name = "setup_method"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestStaleServerTools"
+content_hash = "5aec69dcefd2377a"
+file = "combiner/tests/test_session_filter.py"
+signature = "def setup_method(self):"
+description = ""
+line = 369
+mtime = 1783452495000000000
+container = [
+  "TestStaleServerTools",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools.setup_method",
+  "filter",
+  "method",
+  "server",
+  "session",
+  "setup",
+  "setup_method",
+  "stale",
+  "test",
+  "tests",
+  "tools",
+]

@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.server._on_upstream_tools_ready"
+name = "_on_upstream_tools_ready"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "7645aeab028b5c07"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _on_upstream_tools_ready(name: str) -> None:"
+description = ""
+line = 528
+mtime = 1783473323000000000
+container = []
+calls = [
+  "_prime_or_announce [combiner/mcp_combiner/server.py]",
+  "invalidate_tool_cache [combiner/mcp_combiner/server.py]",
+]
+called_by = []
+references = [
+  "create_combiner [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_on_upstream_tools_ready",
+  "combiner",
+  "combiner.mcp_combiner.server._on_upstream_tools_ready",
+  "mcp",
+  "on",
+  "ready",
+  "server",
+  "tools",
+  "upstream",
+]

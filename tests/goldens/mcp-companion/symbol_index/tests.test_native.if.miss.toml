@@ -1,0 +1,26 @@
+fqname = "tests.test_native.if.miss"
+name = "miss"
+kind = "variable"
+lang = "lua"
+module = "tests.test_native"
+parent = "tests.test_native.if"
+content_hash = "401ee5cc339a6ba4"
+file = "tests/test_native.lua"
+signature = "local miss = rjson("
+description = ""
+line = 152
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "miss",
+  "native",
+  "test",
+  "tests",
+  "tests.test_native.if.miss",
+]

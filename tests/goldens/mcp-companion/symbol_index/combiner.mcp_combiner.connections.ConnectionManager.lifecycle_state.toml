@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager.lifecycle_state"
+name = "lifecycle_state"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections.ConnectionManager"
+content_hash = "81974a2410c06965"
+file = "combiner/mcp_combiner/connections.py"
+signature = "def lifecycle_state(self, name: str) -> str:"
+description = ""
+line = 295
+mtime = 1783473323000000000
+container = [
+  "ConnectionManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.lifecycle_state",
+  "connection",
+  "connections",
+  "lifecycle",
+  "lifecycle_state",
+  "manager",
+  "mcp",
+  "state",
+]

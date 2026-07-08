@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_nvim_channel._LUA_DIR"
+name = "_LUA_DIR"
+kind = "constant"
+lang = "python"
+module = "combiner.tests.test_nvim_channel"
+parent = ""
+content_hash = "4e90f683ee7c9741"
+file = "combiner/tests/test_nvim_channel.py"
+signature = "_LUA_DIR = _REPO_ROOT / \"lua\""
+description = ""
+line = 26
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "nvim_instance [combiner/tests/test_nvim_channel.py]",
+]
+name_terms = [
+  "_LUA_DIR",
+  "channel",
+  "combiner",
+  "combiner.tests.test_nvim_channel._LUA_DIR",
+  "dir",
+  "lua",
+  "nvim",
+  "test",
+  "tests",
+]

@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.auth.is_stale_client_error"
+name = "is_stale_client_error"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "55a3f2b8dcd8d999"
+file = "combiner/mcp_combiner/auth.py"
+signature = "def is_stale_client_error(error: Exception) -> bool:"
+description = ""
+line = 1262
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "client",
+  "combiner",
+  "combiner.mcp_combiner.auth.is_stale_client_error",
+  "error",
+  "is",
+  "is_stale_client_error",
+  "mcp",
+  "stale",
+]

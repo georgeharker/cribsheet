@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_config.test_oauth_config_from_dict_token_dir"
+name = "test_oauth_config_from_dict_token_dir"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = ""
+content_hash = "bdd17457fc6d72d6"
+file = "combiner/tests/test_config.py"
+signature = "def test_oauth_config_from_dict_token_dir() -> None:"
+description = ""
+line = 81
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.test_oauth_config_from_dict_token_dir",
+  "config",
+  "dict",
+  "dir",
+  "from",
+  "oauth",
+  "test",
+  "test_oauth_config_from_dict_token_dir",
+  "tests",
+  "token",
+]

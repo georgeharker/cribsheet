@@ -1,0 +1,42 @@
+fqname = "combiner.tests.test_auth.TestProactiveRefreshNetworkHandling.test_initialize_sets_grace_window_on_network_error._fake_super_init"
+name = "_fake_super_init"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestProactiveRefreshNetworkHandling.test_initialize_sets_grace_window_on_network_error"
+content_hash = "1ac8294d036be7b4"
+file = "combiner/tests/test_auth.py"
+signature = "async def _fake_super_init(self_inner):"
+description = ""
+line = 343
+mtime = 1782852601000000000
+container = [
+  "TestProactiveRefreshNetworkHandling",
+  "test_initialize_sets_grace_window_on_network_error",
+]
+calls = []
+called_by = []
+references = [
+  "test_initialize_sets_grace_window_on_network_error [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "_fake_super_init",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestProactiveRefreshNetworkHandling.test_initialize_sets_grace_window_on_network_error._fake_super_init",
+  "error",
+  "fake",
+  "grace",
+  "handling",
+  "init",
+  "initialize",
+  "network",
+  "on",
+  "proactive",
+  "refresh",
+  "sets",
+  "super",
+  "test",
+  "tests",
+  "window",
+]

@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.config.ServerConfig.transport"
+name = "transport"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.ServerConfig"
+content_hash = "ff75e274b02c326f"
+file = "combiner/mcp_combiner/config.py"
+signature = "transport: Transport = Transport.STDIO"
+description = ""
+line = 133
+mtime = 1782954213000000000
+container = [
+  "ServerConfig",
+]
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "get_server_status [combiner/mcp_combiner/config.py]",
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.transport",
+  "config",
+  "mcp",
+  "server",
+  "transport",
+]

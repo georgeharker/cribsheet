@@ -1,0 +1,25 @@
+fqname = "combiner.mcp_combiner.sharedserver.cleanup"
+name = "cleanup"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.sharedserver"
+parent = ""
+content_hash = "d34c3ad5cea45111"
+file = "combiner/mcp_combiner/sharedserver.py"
+signature = "def cleanup() -> None:"
+description = ""
+line = 394
+mtime = 1782539642000000000
+container = []
+calls = [
+  "stop_all [combiner/mcp_combiner/sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cleanup",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.cleanup",
+  "mcp",
+  "sharedserver",
+]

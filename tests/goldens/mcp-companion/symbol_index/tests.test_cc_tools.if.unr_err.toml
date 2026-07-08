@@ -1,0 +1,32 @@
+fqname = "tests.test_cc_tools.if.unr_err"
+name = "unr_err"
+kind = "variable"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = "tests.test_cc_tools.if"
+content_hash = "c86f27180c6c6039"
+file = "tests/test_cc_tools.lua"
+signature = "local unr_ok, unr_err = pcall(tools.unregister)"
+description = ""
+line = 435
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = [
+  "else [tests/test_cc_tools.lua]",
+  "unr_ok [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "err",
+  "if",
+  "test",
+  "tests",
+  "tests.test_cc_tools.if.unr_err",
+  "tools",
+  "unr",
+  "unr_err",
+]

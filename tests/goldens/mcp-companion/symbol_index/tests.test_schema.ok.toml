@@ -1,0 +1,28 @@
+fqname = "tests.test_schema.ok"
+name = "ok"
+kind = "function"
+lang = "lua"
+module = "tests.test_schema"
+parent = ""
+content_hash = "7455c1e12778334c"
+file = "tests/test_schema.lua"
+signature = "local function ok(name)"
+description = ""
+line = 13
+mtime = 1783013405000000000
+container = []
+calls = []
+called_by = [
+  "test_schema.lua [tests/test_schema.lua]",
+]
+references = [
+  "if [tests/test_schema.lua]",
+  "name [tests/test_schema.lua]",
+]
+name_terms = [
+  "ok",
+  "schema",
+  "test",
+  "tests",
+  "tests.test_schema.ok",
+]

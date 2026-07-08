@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_sharedserver.test_build_use_cmd_no_grace_period"
+name = "test_build_use_cmd_no_grace_period"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_sharedserver"
+parent = ""
+content_hash = "46f236fb06549f25"
+file = "combiner/tests/test_sharedserver.py"
+signature = "def test_build_use_cmd_no_grace_period() -> None:"
+description = ""
+line = 84
+mtime = 1782420032000000000
+container = []
+calls = [
+  "_make_ss [combiner/tests/test_sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "cmd",
+  "combiner",
+  "combiner.tests.test_sharedserver.test_build_use_cmd_no_grace_period",
+  "grace",
+  "no",
+  "period",
+  "sharedserver",
+  "test",
+  "test_build_use_cmd_no_grace_period",
+  "tests",
+  "use",
+]

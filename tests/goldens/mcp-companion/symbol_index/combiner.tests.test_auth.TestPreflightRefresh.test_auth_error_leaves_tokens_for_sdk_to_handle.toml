@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_auth.TestPreflightRefresh.test_auth_error_leaves_tokens_for_sdk_to_handle"
+name = "test_auth_error_leaves_tokens_for_sdk_to_handle"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestPreflightRefresh"
+content_hash = "16d16fa5d2f24674"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 518
+mtime = 1782852601000000000
+container = [
+  "TestPreflightRefresh",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestPreflightRefresh.test_auth_error_leaves_tokens_for_sdk_to_handle",
+  "error",
+  "for",
+  "handle",
+  "leaves",
+  "preflight",
+  "refresh",
+  "sdk",
+  "test",
+  "test_auth_error_leaves_tokens_for_sdk_to_handle",
+  "tests",
+  "to",
+  "tokens",
+]

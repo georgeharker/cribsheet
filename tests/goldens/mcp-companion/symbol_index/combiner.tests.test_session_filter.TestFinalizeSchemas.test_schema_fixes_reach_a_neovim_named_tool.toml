@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_session_filter.TestFinalizeSchemas.test_schema_fixes_reach_a_neovim_named_tool"
+name = "test_schema_fixes_reach_a_neovim_named_tool"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestFinalizeSchemas"
+content_hash = "11b3f1be63663a04"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_schema_fixes_reach_a_neovim_named_tool(self):"
+description = ""
+line = 689
+mtime = 1783452495000000000
+container = [
+  "TestFinalizeSchemas",
+]
+calls = [
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "combiner",
+  "combiner.tests.test_session_filter.TestFinalizeSchemas.test_schema_fixes_reach_a_neovim_named_tool",
+  "filter",
+  "finalize",
+  "fixes",
+  "named",
+  "neovim",
+  "reach",
+  "schema",
+  "schemas",
+  "session",
+  "test",
+  "test_schema_fixes_reach_a_neovim_named_tool",
+  "tests",
+  "tool",
+]

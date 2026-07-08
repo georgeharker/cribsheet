@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_connections.TestSignalToolsReady.test_signals_ready_when_list_succeeds"
+name = "test_signals_ready_when_list_succeeds"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestSignalToolsReady"
+content_hash = "879efdabb59a876e"
+file = "combiner/tests/test_connections.py"
+signature = "async def test_signals_ready_when_list_succeeds(self):"
+description = ""
+line = 31
+mtime = 1783473323000000000
+container = [
+  "TestSignalToolsReady",
+]
+calls = [
+  "_fake_conn [combiner/tests/test_connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_connections.TestSignalToolsReady.test_signals_ready_when_list_succeeds",
+  "connections",
+  "list",
+  "ready",
+  "signal",
+  "signals",
+  "succeeds",
+  "test",
+  "test_signals_ready_when_list_succeeds",
+  "tests",
+  "tools",
+  "when",
+]

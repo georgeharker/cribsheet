@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints.client"
+name = "client"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints"
+content_hash = "ed7234188456e9b8"
+file = "combiner/tests/test_session_filter.py"
+signature = "@pytest.fixture"
+description = ""
+line = 968
+mtime = 1783452495000000000
+container = [
+  "TestTokenFilterRESTEndpoints",
+]
+calls = [
+  "_make_combiner_app [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "combiner",
+  "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints.client",
+  "endpoints",
+  "filter",
+  "rest",
+  "session",
+  "test",
+  "tests",
+  "token",
+]

@@ -1,0 +1,28 @@
+fqname = "tests.test_real_servers._log"
+name = "_log"
+kind = "global"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "c792d4f3b4271f5f"
+file = "tests/test_real_servers.lua"
+signature = "local ok_log, _log = pcall(require, \"mcp_companion.log\")"
+description = ""
+line = 178
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "else [tests/test_real_servers.lua]",
+  "ok_log [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "_log",
+  "log",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers._log",
+]

@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.meta_tools.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.meta_tools"
+parent = ""
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/meta_tools.py"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+line = 14
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "combiner__disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__session_disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__session_enable_server [combiner/mcp_combiner/meta_tools.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.logger",
+  "logger",
+  "mcp",
+  "meta",
+  "tools",
+]

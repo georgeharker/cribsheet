@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_session_filter.TestOnListToolsIntegration"
+name = "TestOnListToolsIntegration"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = ""
+content_hash = "4c5e2b4c6cb9fe58"
+file = "combiner/tests/test_session_filter.py"
+signature = "class TestOnListToolsIntegration:"
+description = ""
+line = 751
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestOnListToolsIntegration",
+  "combiner",
+  "combiner.tests.test_session_filter.TestOnListToolsIntegration",
+  "filter",
+  "integration",
+  "list",
+  "on",
+  "session",
+  "test",
+  "tests",
+  "tools",
+]

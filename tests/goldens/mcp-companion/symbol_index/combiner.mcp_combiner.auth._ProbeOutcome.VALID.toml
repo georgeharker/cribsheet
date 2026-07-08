@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.auth._ProbeOutcome.VALID"
+name = "VALID"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._ProbeOutcome"
+content_hash = "c1608b3a3da9ac74"
+file = "combiner/mcp_combiner/auth.py"
+signature = "VALID = \"valid\"  # Google accepts our token — 401 is downstream's problem"
+description = ""
+line = 73
+mtime = 1782852601000000000
+container = [
+  "_ProbeOutcome",
+]
+calls = []
+called_by = []
+references = [
+  "_probe_token_at [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "VALID",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._ProbeOutcome.VALID",
+  "mcp",
+  "outcome",
+  "probe",
+  "valid",
+]

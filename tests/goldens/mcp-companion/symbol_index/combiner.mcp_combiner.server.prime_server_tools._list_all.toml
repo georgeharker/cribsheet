@@ -1,0 +1,33 @@
+fqname = "combiner.mcp_combiner.server.prime_server_tools._list_all"
+name = "_list_all"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server.prime_server_tools"
+content_hash = "8df2219d9251b9f2"
+file = "combiner/mcp_combiner/server.py"
+signature = "async def _list_all(provs: list[Any]) -> list[Tool]:"
+description = ""
+line = 486
+mtime = 1783473323000000000
+container = [
+  "prime_server_tools",
+]
+calls = []
+called_by = [
+  "prime_server_tools [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "prime_server_tools [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_list_all",
+  "all",
+  "combiner",
+  "combiner.mcp_combiner.server.prime_server_tools._list_all",
+  "list",
+  "mcp",
+  "prime",
+  "server",
+  "tools",
+]

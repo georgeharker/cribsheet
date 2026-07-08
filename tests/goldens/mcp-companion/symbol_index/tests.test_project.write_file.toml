@@ -1,0 +1,29 @@
+fqname = "tests.test_project.write_file"
+name = "write_file"
+kind = "function"
+lang = "lua"
+module = "tests.test_project"
+parent = ""
+content_hash = "f0289a231bced96e"
+file = "tests/test_project.lua"
+signature = "local function write_file(path, content)"
+description = ""
+line = 68
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_project.lua [tests/test_project.lua]",
+]
+references = [
+  "path [tests/test_project.lua]",
+]
+name_terms = [
+  "file",
+  "project",
+  "test",
+  "tests",
+  "tests.test_project.write_file",
+  "write",
+  "write_file",
+]

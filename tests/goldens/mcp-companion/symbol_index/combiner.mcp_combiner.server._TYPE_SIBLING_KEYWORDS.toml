@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.server._TYPE_SIBLING_KEYWORDS"
+name = "_TYPE_SIBLING_KEYWORDS"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "c2da6dc08bafe13c"
+file = "combiner/mcp_combiner/server.py"
+signature = "_TYPE_SIBLING_KEYWORDS = frozenset("
+description = ""
+line = 667
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_normalize_schema [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_TYPE_SIBLING_KEYWORDS",
+  "combiner",
+  "combiner.mcp_combiner.server._TYPE_SIBLING_KEYWORDS",
+  "keywords",
+  "mcp",
+  "server",
+  "sibling",
+  "type",
+]

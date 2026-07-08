@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.server._safe_json_clone"
+name = "_safe_json_clone"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "134247864a16bc5f"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _safe_json_clone(obj: object) -> Any:"
+description = ""
+line = 557
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "_normalize_tool_schema [combiner/mcp_combiner/server.py]",
+  "_to_clean_tool [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_normalize_tool_schema [combiner/mcp_combiner/server.py]",
+  "_to_clean_tool [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_safe_json_clone",
+  "clone",
+  "combiner",
+  "combiner.mcp_combiner.server._safe_json_clone",
+  "json",
+  "mcp",
+  "safe",
+  "server",
+]

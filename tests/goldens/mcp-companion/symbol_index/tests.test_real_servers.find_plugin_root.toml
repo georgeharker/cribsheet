@@ -1,0 +1,31 @@
+fqname = "tests.test_real_servers.find_plugin_root"
+name = "find_plugin_root"
+kind = "function"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "f76ff84920508567"
+file = "tests/test_real_servers.lua"
+signature = "local function find_plugin_root()"
+description = ""
+line = 61
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_real_servers.lua [tests/test_real_servers.lua]",
+]
+references = [
+  "plugin_root [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "find",
+  "find_plugin_root",
+  "plugin",
+  "real",
+  "root",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.find_plugin_root",
+]

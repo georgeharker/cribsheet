@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.server._create_server_proxy"
+name = "_create_server_proxy"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "612973c1afce5164"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _create_server_proxy(config: CombinerConfig, name: str, srv: ServerConfig) -> FastMCP:"
+description = ""
+line = 1193
+mtime = 1783473323000000000
+container = []
+calls = [
+  "_create_isolated_proxy [combiner/mcp_combiner/server.py]",
+  "_effective_isolate [combiner/mcp_combiner/server.py]",
+]
+called_by = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_create_server_proxy",
+  "combiner",
+  "combiner.mcp_combiner.server._create_server_proxy",
+  "create",
+  "mcp",
+  "proxy",
+  "server",
+]

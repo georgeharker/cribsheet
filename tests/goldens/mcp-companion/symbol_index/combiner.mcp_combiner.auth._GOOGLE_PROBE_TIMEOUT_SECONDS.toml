@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.auth._GOOGLE_PROBE_TIMEOUT_SECONDS"
+name = "_GOOGLE_PROBE_TIMEOUT_SECONDS"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "0ae84c81ba5ea0b2"
+file = "combiner/mcp_combiner/auth.py"
+signature = "_GOOGLE_PROBE_TIMEOUT_SECONDS = 5.0"
+description = ""
+line = 82
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_probe_token_at [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_GOOGLE_PROBE_TIMEOUT_SECONDS",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._GOOGLE_PROBE_TIMEOUT_SECONDS",
+  "google",
+  "mcp",
+  "probe",
+  "seconds",
+  "timeout",
+]

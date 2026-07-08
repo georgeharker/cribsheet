@@ -1,0 +1,65 @@
+fqname = "mcp_companion.cc._save_project_config"
+name = "_save_project_config"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc"
+parent = ""
+content_hash = "3c9e40c2e97e0061"
+file = "lua/mcp_companion/cc/init.lua"
+signature = "function M._save_project_config(chat, format, force, done)"
+description = ""
+line = 933
+mtime = 1783452478000000000
+container = []
+calls = []
+called_by = [
+  "M._auto_http_tools [lua/mcp_companion/cc/init.lua]",
+  "M._cli_inject_combiner_env [lua/mcp_companion/cc/init.lua]",
+  "M._handle_for_bufnr [lua/mcp_companion/cc/init.lua]",
+  "M._register_all [lua/mcp_companion/cc/init.lua]",
+  "M._save_project_config_interactive [lua/mcp_companion/cc/init.lua]",
+  "M._setup_http_per_chat [lua/mcp_companion/cc/init.lua]",
+  "M.register [lua/mcp_companion/cc/session_commands.lua]",
+  "M.setup [lua/mcp_companion/cc/init.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "init.lua [lua/mcp_companion/cc/init.lua]",
+  "test_cc_resolve_session.lua [tests/test_cc_resolve_session.lua]",
+]
+references = [
+  "M [lua/mcp_companion/cc/init.lua]",
+  "_auto_http_tools [lua/mcp_companion/cc/init.lua]",
+  "_current_chat_for_save [lua/mcp_companion/cc/init.lua]",
+  "_generate_token [lua/mcp_companion/cc/init.lua]",
+  "_handle_for_bufnr [lua/mcp_companion/cc/init.lua]",
+  "_register_all [lua/mcp_companion/cc/init.lua]",
+  "_register_editor_context [lua/mcp_companion/cc/init.lua]",
+  "_register_prompts [lua/mcp_companion/cc/init.lua]",
+  "_register_tools [lua/mcp_companion/cc/init.lua]",
+  "_save_project_config_interactive [lua/mcp_companion/cc/init.lua]",
+  "_setup_http_per_chat [lua/mcp_companion/cc/init.lua]",
+  "_start_combiner_async [lua/mcp_companion/cc/init.lua]",
+  "allowed [lua/mcp_companion/cc/init.lua]",
+  "bufnr [lua/mcp_companion/cc/init.lua]",
+  "cc [tests/test_cc_resolve_session.lua]",
+  "chat [lua/mcp_companion/cc/init.lua]",
+  "create_args [lua/mcp_companion/cc/init.lua]",
+  "event_data [lua/mcp_companion/cc/init.lua]",
+  "if [lua/mcp_companion/cc/init.lua]",
+  "kind [lua/mcp_companion/cc/init.lua]",
+  "register [lua/mcp_companion/cc/session_commands.lua]",
+  "schema [lua/mcp_companion/cc/init.lua]",
+  "setup [lua/mcp_companion/cc/init.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+  "timeout_ms [lua/mcp_companion/cc/init.lua]",
+  "token [lua/mcp_companion/cc/init.lua]",
+]
+name_terms = [
+  "_save_project_config",
+  "cc",
+  "companion",
+  "config",
+  "mcp",
+  "mcp_companion.cc._save_project_config",
+  "project",
+  "save",
+]

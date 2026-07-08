@@ -1,0 +1,30 @@
+fqname = "mcp_companion.config._validate"
+name = "_validate"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.config"
+parent = ""
+content_hash = "a7ef21958b57d9a5"
+file = "lua/mcp_companion/config.lua"
+signature = "local function _validate(cfg)"
+description = ""
+line = 309
+mtime = 1783185942000000000
+container = []
+calls = []
+called_by = [
+  "M.setup [lua/mcp_companion/config.lua]",
+  "config.lua [lua/mcp_companion/config.lua]",
+]
+references = [
+  "cfg [lua/mcp_companion/config.lua]",
+  "setup [lua/mcp_companion/config.lua]",
+]
+name_terms = [
+  "_validate",
+  "companion",
+  "config",
+  "mcp",
+  "mcp_companion.config._validate",
+  "validate",
+]

@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_auth.TestPreflightRefresh.test_wake_up_forces_refresh_even_with_time_left"
+name = "test_wake_up_forces_refresh_even_with_time_left"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestPreflightRefresh"
+content_hash = "d5ed5f23c6847f23"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 448
+mtime = 1782852601000000000
+container = [
+  "TestPreflightRefresh",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestPreflightRefresh.test_wake_up_forces_refresh_even_with_time_left",
+  "even",
+  "forces",
+  "left",
+  "preflight",
+  "refresh",
+  "test",
+  "test_wake_up_forces_refresh_even_with_time_left",
+  "tests",
+  "time",
+  "up",
+  "wake",
+  "with",
+]

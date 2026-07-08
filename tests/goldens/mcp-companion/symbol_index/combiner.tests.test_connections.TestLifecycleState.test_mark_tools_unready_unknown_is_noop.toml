@@ -1,0 +1,34 @@
+fqname = "combiner.tests.test_connections.TestLifecycleState.test_mark_tools_unready_unknown_is_noop"
+name = "test_mark_tools_unready_unknown_is_noop"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestLifecycleState"
+content_hash = "5896e52992a58c35"
+file = "combiner/tests/test_connections.py"
+signature = "def test_mark_tools_unready_unknown_is_noop(self):"
+description = ""
+line = 365
+mtime = 1783473323000000000
+container = [
+  "TestLifecycleState",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_connections.TestLifecycleState.test_mark_tools_unready_unknown_is_noop",
+  "connections",
+  "is",
+  "lifecycle",
+  "mark",
+  "noop",
+  "state",
+  "test",
+  "test_mark_tools_unready_unknown_is_noop",
+  "tests",
+  "tools",
+  "unknown",
+  "unready",
+]

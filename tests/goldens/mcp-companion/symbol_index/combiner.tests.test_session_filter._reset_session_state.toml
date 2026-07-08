@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_session_filter._reset_session_state"
+name = "_reset_session_state"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = ""
+content_hash = "df83dac956e1d28c"
+file = "combiner/tests/test_session_filter.py"
+signature = "def _reset_session_state():"
+description = ""
+line = 39
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = [
+  "setup [combiner/tests/test_session_filter.py]",
+  "setup_method [combiner/tests/test_session_filter.py]",
+  "teardown_method [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "setup [combiner/tests/test_session_filter.py]",
+  "setup_method [combiner/tests/test_session_filter.py]",
+  "teardown_method [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_reset_session_state",
+  "combiner",
+  "combiner.tests.test_session_filter._reset_session_state",
+  "filter",
+  "reset",
+  "session",
+  "state",
+  "test",
+  "tests",
+]

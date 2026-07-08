@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_reload_config._http"
+name = "_http"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "18b5737ece7e523b"
+file = "combiner/tests/test_reload_config.py"
+signature = "def _http(url: str) -> dict[str, Any]:"
+description = ""
+line = 105
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = [
+  "harness [combiner/tests/test_reload_config.py]",
+  "test_add_server [combiner/tests/test_reload_config.py]",
+  "test_changed_server_remounts [combiner/tests/test_reload_config.py]",
+  "test_disabling_server_unmounts_without_remount [combiner/tests/test_reload_config.py]",
+  "test_restart_non_sharedserver_reopens_connection [combiner/tests/test_reload_config.py]",
+]
+references = [
+  "harness [combiner/tests/test_reload_config.py]",
+  "test_add_server [combiner/tests/test_reload_config.py]",
+  "test_changed_server_remounts [combiner/tests/test_reload_config.py]",
+  "test_disabling_server_unmounts_without_remount [combiner/tests/test_reload_config.py]",
+  "test_restart_non_sharedserver_reopens_connection [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "_http",
+  "combiner",
+  "combiner.tests.test_reload_config._http",
+  "config",
+  "http",
+  "reload",
+  "test",
+  "tests",
+]

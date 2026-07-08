@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.sharedserver.SharedServerManager"
+name = "SharedServerManager"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.sharedserver"
+parent = ""
+content_hash = "3bbee4c7416eadec"
+file = "combiner/mcp_combiner/sharedserver.py"
+signature = "class SharedServerManager:"
+description = ""
+line = 119
+mtime = 1782539642000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_manager [combiner/mcp_combiner/sharedserver.py]",
+  "register_for_cleanup [combiner/mcp_combiner/sharedserver.py]",
+]
+name_terms = [
+  "SharedServerManager",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.SharedServerManager",
+  "manager",
+  "mcp",
+  "server",
+  "shared",
+  "sharedserver",
+]

@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.server.create_combiner.lookup_session_token"
+name = "lookup_session_token"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server.create_combiner"
+content_hash = "67497fa0b04e4f87"
+file = "combiner/mcp_combiner/server.py"
+signature = "@combiner.custom_route(\"/sessions/token/{token}\", methods=[\"GET\"])"
+description = ""
+line = 1780
+mtime = 1783473323000000000
+container = [
+  "create_combiner",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.server.create_combiner.lookup_session_token",
+  "create",
+  "lookup",
+  "lookup_session_token",
+  "mcp",
+  "server",
+  "session",
+  "token",
+]

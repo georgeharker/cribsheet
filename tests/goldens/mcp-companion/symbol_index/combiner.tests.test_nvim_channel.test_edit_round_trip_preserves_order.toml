@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_nvim_channel.test_edit_round_trip_preserves_order"
+name = "test_edit_round_trip_preserves_order"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_nvim_channel"
+parent = ""
+content_hash = "8054f7ee1b11d411"
+file = "combiner/tests/test_nvim_channel.py"
+signature = "async def test_edit_round_trip_preserves_order(nvim_instance: str) -> None:"
+description = ""
+line = 113
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.tests.test_nvim_channel.test_edit_round_trip_preserves_order",
+  "edit",
+  "nvim",
+  "order",
+  "preserves",
+  "round",
+  "test",
+  "test_edit_round_trip_preserves_order",
+  "tests",
+  "trip",
+]

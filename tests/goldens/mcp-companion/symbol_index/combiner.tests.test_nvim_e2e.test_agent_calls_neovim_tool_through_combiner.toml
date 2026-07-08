@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_nvim_e2e.test_agent_calls_neovim_tool_through_combiner"
+name = "test_agent_calls_neovim_tool_through_combiner"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_nvim_e2e"
+parent = ""
+content_hash = "00eb29aaabc14b84"
+file = "combiner/tests/test_nvim_e2e.py"
+signature = "async def test_agent_calls_neovim_tool_through_combiner(combiner_and_nvim: None) -> None:"
+description = ""
+line = 214
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "2",
+  "agent",
+  "calls",
+  "combiner",
+  "combiner.tests.test_nvim_e2e.test_agent_calls_neovim_tool_through_combiner",
+  "e",
+  "neovim",
+  "nvim",
+  "test",
+  "test_agent_calls_neovim_tool_through_combiner",
+  "tests",
+  "through",
+  "tool",
+]

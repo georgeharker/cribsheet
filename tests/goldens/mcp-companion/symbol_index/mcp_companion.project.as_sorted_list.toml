@@ -1,0 +1,32 @@
+fqname = "mcp_companion.project.as_sorted_list"
+name = "as_sorted_list"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.project"
+parent = ""
+content_hash = "190bbb74b447d4eb"
+file = "lua/mcp_companion/project.lua"
+signature = "local function as_sorted_list(disabled)"
+description = ""
+line = 343
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.format_payload [lua/mcp_companion/project.lua]",
+  "project.lua [lua/mcp_companion/project.lua]",
+]
+references = [
+  "disabled [lua/mcp_companion/project.lua]",
+  "disabled_list [lua/mcp_companion/project.lua]",
+]
+name_terms = [
+  "as",
+  "as_sorted_list",
+  "companion",
+  "list",
+  "mcp",
+  "mcp_companion.project.as_sorted_list",
+  "project",
+  "sorted",
+]

@@ -1,0 +1,40 @@
+fqname = "combiner.tests.test_session_filter.TestOnListToolsIntegration.test_neovim_list_schema_becomes_object_on_the_wire"
+name = "test_neovim_list_schema_becomes_object_on_the_wire"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestOnListToolsIntegration"
+content_hash = "a83f35cef5fe0c5e"
+file = "combiner/tests/test_session_filter.py"
+signature = "async def test_neovim_list_schema_becomes_object_on_the_wire(self):"
+description = ""
+line = 824
+mtime = 1783452495000000000
+container = [
+  "TestOnListToolsIntegration",
+]
+calls = [
+  "_inject_manifest [combiner/tests/test_session_filter.py]",
+  "_list [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "becomes",
+  "combiner",
+  "combiner.tests.test_session_filter.TestOnListToolsIntegration.test_neovim_list_schema_becomes_object_on_the_wire",
+  "filter",
+  "integration",
+  "list",
+  "neovim",
+  "object",
+  "on",
+  "schema",
+  "session",
+  "test",
+  "test_neovim_list_schema_becomes_object_on_the_wire",
+  "tests",
+  "the",
+  "tools",
+  "wire",
+]

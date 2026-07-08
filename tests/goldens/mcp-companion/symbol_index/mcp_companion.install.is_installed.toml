@@ -1,0 +1,37 @@
+fqname = "mcp_companion.install.is_installed"
+name = "is_installed"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.install"
+parent = ""
+content_hash = "9e8051ac4dcd5ce5"
+file = "lua/mcp_companion/install.lua"
+signature = "function M.is_installed(venv)"
+description = ""
+line = 74
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.ensure [lua/mcp_companion/install.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "install.lua [lua/mcp_companion/install.lua]",
+]
+references = [
+  "M [lua/mcp_companion/install.lua]",
+  "ensure [lua/mcp_companion/install.lua]",
+  "if [lua/mcp_companion/init.lua]",
+  "if [lua/mcp_companion/install.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+  "target_venv [lua/mcp_companion/install.lua]",
+  "venv [lua/mcp_companion/install.lua]",
+]
+name_terms = [
+  "companion",
+  "install",
+  "installed",
+  "is",
+  "is_installed",
+  "mcp",
+  "mcp_companion.install.is_installed",
+]

@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_connections.TestSignalToolsReady.test_no_callback_is_noop"
+name = "test_no_callback_is_noop"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestSignalToolsReady"
+content_hash = "2a340dea798724a7"
+file = "combiner/tests/test_connections.py"
+signature = "async def test_no_callback_is_noop(self):"
+description = ""
+line = 62
+mtime = 1783473323000000000
+container = [
+  "TestSignalToolsReady",
+]
+calls = [
+  "_fake_conn [combiner/tests/test_connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "callback",
+  "combiner",
+  "combiner.tests.test_connections.TestSignalToolsReady.test_no_callback_is_noop",
+  "connections",
+  "is",
+  "no",
+  "noop",
+  "ready",
+  "signal",
+  "test",
+  "test_no_callback_is_noop",
+  "tests",
+  "tools",
+]

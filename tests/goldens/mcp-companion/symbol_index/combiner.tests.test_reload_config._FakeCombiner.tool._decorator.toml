@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_reload_config._FakeCombiner.tool._decorator"
+name = "_decorator"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = "combiner.tests.test_reload_config._FakeCombiner.tool"
+content_hash = "3bbb6ca2f2cc35b9"
+file = "combiner/tests/test_reload_config.py"
+signature = "def _decorator(fn: Any) -> Any:"
+description = ""
+line = 41
+mtime = 1783452495000000000
+container = [
+  "_FakeCombiner",
+  "tool",
+]
+calls = []
+called_by = []
+references = [
+  "tool [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "_decorator",
+  "combiner",
+  "combiner.tests.test_reload_config._FakeCombiner.tool._decorator",
+  "config",
+  "decorator",
+  "fake",
+  "reload",
+  "test",
+  "tests",
+  "tool",
+]

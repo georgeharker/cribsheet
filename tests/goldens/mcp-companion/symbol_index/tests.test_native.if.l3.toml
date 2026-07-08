@@ -1,0 +1,28 @@
+fqname = "tests.test_native.if.l3"
+name = "l3"
+kind = "variable"
+lang = "lua"
+module = "tests.test_native"
+parent = "tests.test_native.if"
+content_hash = "2f85f47a547fe2fc"
+file = "tests/test_native.lua"
+signature = "local l3 = vim.api.nvim_buf_get_lines(buf, 2, 3, false)[1]"
+description = ""
+line = 145
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "3",
+  "if",
+  "l",
+  "l3",
+  "native",
+  "test",
+  "tests",
+  "tests.test_native.if.l3",
+]

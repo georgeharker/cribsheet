@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.config.Transport"
+name = "Transport"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = ""
+content_hash = "6f1117b44859b460"
+file = "combiner/mcp_combiner/config.py"
+signature = "class Transport(str, Enum):"
+description = ""
+line = 35
+mtime = 1782954213000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+  "transport [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "Transport",
+  "combiner",
+  "combiner.mcp_combiner.config.Transport",
+  "config",
+  "mcp",
+  "transport",
+]

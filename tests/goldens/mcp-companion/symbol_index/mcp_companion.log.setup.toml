@@ -1,0 +1,90 @@
+fqname = "mcp_companion.log.setup"
+name = "setup"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.log"
+parent = ""
+content_hash = "db0cb094b8b19cff"
+file = "lua/mcp_companion/log.lua"
+signature = "function M.setup(opts)"
+description = ""
+line = 21
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "Client._fetch_server_names [lua/mcp_companion/combiner/client.lua]",
+  "Client._handle_sse_notification [lua/mcp_companion/combiner/client.lua]",
+  "Client._schedule_sse_reconnect [lua/mcp_companion/combiner/client.lua]",
+  "Client._start_polling [lua/mcp_companion/combiner/client.lua]",
+  "Client._start_sse [lua/mcp_companion/combiner/client.lua]",
+  "Client._stop_sse [lua/mcp_companion/combiner/client.lua]",
+  "Client.call_tool [lua/mcp_companion/combiner/client.lua]",
+  "Client.connect [lua/mcp_companion/combiner/client.lua]",
+  "Client.disconnect [lua/mcp_companion/combiner/client.lua]",
+  "Client.get_prompt [lua/mcp_companion/combiner/client.lua]",
+  "Client.read_resource [lua/mcp_companion/combiner/client.lua]",
+  "Client.reload_config [lua/mcp_companion/combiner/client.lua]",
+  "Client.restart_server [lua/mcp_companion/combiner/client.lua]",
+  "Client.toggle_server [lua/mcp_companion/combiner/client.lua]",
+  "M._cleanup_session_filter [lua/mcp_companion/cc/init.lua]",
+  "M._cli_inject_combiner_env [lua/mcp_companion/cc/init.lua]",
+  "M._register_with_sharedserver [lua/mcp_companion/combiner/init.lua]",
+  "M._setup_http_per_chat [lua/mcp_companion/cc/init.lua]",
+  "M._setup_system_prompt_injection [lua/mcp_companion/cc/editor_context.lua]",
+  "M._start_direct [lua/mcp_companion/combiner/init.lua]",
+  "M._start_with_sharedserver [lua/mcp_companion/combiner/init.lua]",
+  "M.register [lua/mcp_companion/cc/session_commands.lua]",
+  "M.register [lua/mcp_companion/cc/tools.lua]",
+  "M.register_native [lua/mcp_companion/cc/tools.lua]",
+  "M.setup [lua/mcp_companion/cc/init.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "M.stop [lua/mcp_companion/combiner/init.lua]",
+  "M.toggle_server_for_session [lua/mcp_companion/cc/session_commands.lua]",
+  "M.unbind [lua/mcp_companion/native/channel.lua]",
+  "M.unregister [lua/mcp_companion/cc/tools.lua]",
+  "channel.lua [lua/mcp_companion/native/channel.lua]",
+  "client.lua [lua/mcp_companion/combiner/client.lua]",
+  "editor_context.lua [lua/mcp_companion/cc/editor_context.lua]",
+  "init.lua [lua/mcp_companion/cc/init.lua]",
+  "init.lua [lua/mcp_companion/combiner/init.lua]",
+  "install.lua [lua/mcp_companion/install.lua]",
+  "log.lua [lua/mcp_companion/log.lua]",
+  "project.lua [lua/mcp_companion/project.lua]",
+  "session_commands.lua [lua/mcp_companion/cc/session_commands.lua]",
+  "slash_commands.lua [lua/mcp_companion/cc/slash_commands.lua]",
+  "tools.lua [lua/mcp_companion/cc/tools.lua]",
+]
+references = [
+  "M [lua/mcp_companion/log.lua]",
+  "_apply_token_filter [lua/mcp_companion/cc/init.lua]",
+  "_cleanup_session_filter [lua/mcp_companion/cc/init.lua]",
+  "_cli_inject_combiner_env [lua/mcp_companion/cc/init.lua]",
+  "_setup_http_per_chat [lua/mcp_companion/cc/init.lua]",
+  "_setup_system_prompt_injection [lua/mcp_companion/cc/editor_context.lua]",
+  "else [lua/mcp_companion/cc/init.lua]",
+  "elseif [lua/mcp_companion/cc/init.lua]",
+  "for in [lua/mcp_companion/cc/slash_commands.lua]",
+  "get_log_path [lua/mcp_companion/log.lua]",
+  "if [lua/mcp_companion/cc/editor_context.lua]",
+  "if [lua/mcp_companion/cc/init.lua]",
+  "if [lua/mcp_companion/cc/slash_commands.lua]",
+  "if [lua/mcp_companion/cc/tools.lua]",
+  "log [lua/mcp_companion/cc/editor_context.lua]",
+  "log [lua/mcp_companion/cc/init.lua]",
+  "log [lua/mcp_companion/cc/slash_commands.lua]",
+  "log [lua/mcp_companion/cc/tools.lua]",
+  "msg [lua/mcp_companion/log.lua]",
+  "opts [lua/mcp_companion/log.lua]",
+  "register [lua/mcp_companion/cc/tools.lua]",
+  "register_native [lua/mcp_companion/cc/tools.lua]",
+  "setup [lua/mcp_companion/cc/init.lua]",
+  "unregister [lua/mcp_companion/cc/tools.lua]",
+]
+name_terms = [
+  "companion",
+  "log",
+  "mcp",
+  "mcp_companion.log.setup",
+  "setup",
+]

@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_session_filter.TestStaleServerTools"
+name = "TestStaleServerTools"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = ""
+content_hash = "ceb58013bb20ac0d"
+file = "combiner/tests/test_session_filter.py"
+signature = "class TestStaleServerTools:"
+description = ""
+line = 358
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "list_tools [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "TestStaleServerTools",
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools",
+  "filter",
+  "server",
+  "session",
+  "stale",
+  "test",
+  "tests",
+  "tools",
+]

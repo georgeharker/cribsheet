@@ -1,0 +1,38 @@
+fqname = "combiner.mcp_combiner.auth._RefreshTokenOAuth._apply_network_grace_window"
+name = "_apply_network_grace_window"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._RefreshTokenOAuth"
+content_hash = "00f6315e658fc3de"
+file = "combiner/mcp_combiner/auth.py"
+signature = "async def _apply_network_grace_window(self) -> None:"
+description = ""
+line = 512
+mtime = 1782852601000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+calls = []
+called_by = [
+  "_initialize [combiner/mcp_combiner/auth.py]",
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+]
+references = [
+  "_initialize [combiner/mcp_combiner/auth.py]",
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_apply_network_grace_window",
+  "apply",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth._apply_network_grace_window",
+  "grace",
+  "mcp",
+  "network",
+  "o",
+  "refresh",
+  "token",
+  "window",
+]

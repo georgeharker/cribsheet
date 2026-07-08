@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_session_filter.TestBuildNvimTools.test_list_schema_yields_object_tool"
+name = "test_list_schema_yields_object_tool"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestBuildNvimTools"
+content_hash = "0ef8f429be2ea930"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_list_schema_yields_object_tool(self):"
+description = ""
+line = 739
+mtime = 1783452495000000000
+container = [
+  "TestBuildNvimTools",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "combiner",
+  "combiner.tests.test_session_filter.TestBuildNvimTools.test_list_schema_yields_object_tool",
+  "filter",
+  "list",
+  "nvim",
+  "object",
+  "schema",
+  "session",
+  "test",
+  "test_list_schema_yields_object_tool",
+  "tests",
+  "tool",
+  "tools",
+  "yields",
+]

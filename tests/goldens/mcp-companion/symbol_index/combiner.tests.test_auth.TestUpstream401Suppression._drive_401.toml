@@ -1,0 +1,44 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression._drive_401"
+name = "_drive_401"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression"
+content_hash = "1304fa78c1728e2e"
+file = "combiner/tests/test_auth.py"
+signature = "async def _drive_401("
+description = ""
+line = 678
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+]
+calls = []
+called_by = [
+  "test_401_propagated_when_google_says_token_valid [combiner/tests/test_auth.py]",
+  "test_401_propagated_when_probe_unknown [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_auth_error_falls_through [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_network_error_propagates [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retries_quietly [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retry_still_401_propagates [combiner/tests/test_auth.py]",
+]
+references = [
+  "test_401_propagated_when_google_says_token_valid [combiner/tests/test_auth.py]",
+  "test_401_propagated_when_probe_unknown [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_auth_error_falls_through [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_network_error_propagates [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retries_quietly [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retry_still_401_propagates [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "401",
+  "_drive_401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression._drive_401",
+  "drive",
+  "suppression",
+  "test",
+  "tests",
+  "upstream",
+]

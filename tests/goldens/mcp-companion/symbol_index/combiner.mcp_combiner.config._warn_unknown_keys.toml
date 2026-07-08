@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.config._warn_unknown_keys"
+name = "_warn_unknown_keys"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = ""
+content_hash = "9a87ad17f51d64d5"
+file = "combiner/mcp_combiner/config.py"
+signature = "def _warn_unknown_keys(kind: str, name: str, data: dict[str, Any], known: set[str]) -> None:"
+description = ""
+line = 18
+mtime = 1782954213000000000
+container = []
+calls = []
+called_by = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "_warn_unknown_keys",
+  "combiner",
+  "combiner.mcp_combiner.config._warn_unknown_keys",
+  "config",
+  "keys",
+  "mcp",
+  "unknown",
+  "warn",
+]

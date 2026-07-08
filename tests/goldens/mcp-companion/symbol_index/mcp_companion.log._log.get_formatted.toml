@@ -1,0 +1,32 @@
+fqname = "mcp_companion.log._log.get_formatted"
+name = "get_formatted"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.log"
+parent = "mcp_companion.log._log"
+content_hash = "17e5917bcce2ae11"
+file = "lua/mcp_companion/log.lua"
+signature = "local function get_formatted()"
+description = ""
+line = 62
+mtime = 1782852601000000000
+container = [
+  "_log",
+]
+calls = []
+called_by = [
+  "_log [lua/mcp_companion/log.lua]",
+]
+references = [
+  "if [lua/mcp_companion/log.lua]",
+  "text [lua/mcp_companion/log.lua]",
+]
+name_terms = [
+  "companion",
+  "formatted",
+  "get",
+  "get_formatted",
+  "log",
+  "mcp",
+  "mcp_companion.log._log.get_formatted",
+]

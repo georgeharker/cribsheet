@@ -1,0 +1,26 @@
+fqname = "tests.test_schema.schema"
+name = "schema"
+kind = "global"
+lang = "lua"
+module = "tests.test_schema"
+parent = ""
+content_hash = "670f05fd8bc3a6d5"
+file = "tests/test_schema.lua"
+signature = "local ok_mod, schema = pcall(require, \"mcp_companion.schema\")"
+description = ""
+line = 34
+mtime = 1783013405000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "else [tests/test_schema.lua]",
+  "ok_mod [tests/test_schema.lua]",
+  "out [tests/test_schema.lua]",
+]
+name_terms = [
+  "schema",
+  "test",
+  "tests",
+  "tests.test_schema.schema",
+]

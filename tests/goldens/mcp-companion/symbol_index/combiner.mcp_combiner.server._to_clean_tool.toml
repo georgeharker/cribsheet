@@ -1,0 +1,33 @@
+fqname = "combiner.mcp_combiner.server._to_clean_tool"
+name = "_to_clean_tool"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "af0763486b80e30a"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _to_clean_tool(tool: Tool) -> Tool:"
+description = ""
+line = 600
+mtime = 1783473323000000000
+container = []
+calls = [
+  "_normalize_schema [combiner/mcp_combiner/server.py]",
+  "_safe_json_clone [combiner/mcp_combiner/server.py]",
+]
+called_by = [
+  "_sanitize_tools [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_sanitize_tools [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_to_clean_tool",
+  "clean",
+  "combiner",
+  "combiner.mcp_combiner.server._to_clean_tool",
+  "mcp",
+  "server",
+  "to",
+  "tool",
+]

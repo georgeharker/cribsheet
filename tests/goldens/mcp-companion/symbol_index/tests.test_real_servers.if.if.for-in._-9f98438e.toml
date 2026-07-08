@@ -1,0 +1,31 @@
+fqname = "tests.test_real_servers.if.if.for in._"
+name = "_"
+kind = "variable"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = "tests.test_real_servers.if.if.for in"
+content_hash = "343caf804cd00c85"
+file = "tests/test_real_servers.lua"
+signature = "for _, v in pairs(tools_tbl.groups or {}) do"
+description = ""
+line = 531
+mtime = 1782853510000000000
+container = [
+  "if",
+  "if",
+  "for in",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_",
+  "for",
+  "if",
+  "in",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.if.for in._",
+]

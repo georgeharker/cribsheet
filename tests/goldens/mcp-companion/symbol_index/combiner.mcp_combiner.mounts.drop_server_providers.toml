@@ -1,0 +1,33 @@
+fqname = "combiner.mcp_combiner.mounts.drop_server_providers"
+name = "drop_server_providers"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.mounts"
+parent = ""
+content_hash = "46f16d678506a96d"
+file = "combiner/mcp_combiner/mounts.py"
+signature = "def drop_server_providers(combiner: FastMCP, server_name: str) -> int:"
+description = ""
+line = 88
+mtime = 1783452495000000000
+container = []
+calls = [
+  "_registry [combiner/mcp_combiner/mounts.py]",
+  "_sniff_namespace [combiner/mcp_combiner/mounts.py]",
+]
+called_by = [
+  "mount_server_provider [combiner/mcp_combiner/mounts.py]",
+]
+references = [
+  "mount_server_provider [combiner/mcp_combiner/mounts.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mounts.drop_server_providers",
+  "drop",
+  "drop_server_providers",
+  "mcp",
+  "mounts",
+  "providers",
+  "server",
+]

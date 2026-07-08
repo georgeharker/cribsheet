@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_sharedserver.test_health_poll_timeout_warns_but_continues"
+name = "test_health_poll_timeout_warns_but_continues"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_sharedserver"
+parent = ""
+content_hash = "ceceac9f7d15947c"
+file = "combiner/tests/test_sharedserver.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 241
+mtime = 1782420032000000000
+container = []
+calls = [
+  "_make_config [combiner/tests/test_sharedserver.py]",
+  "_mock_async_process [combiner/tests/test_sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "but",
+  "combiner",
+  "combiner.tests.test_sharedserver.test_health_poll_timeout_warns_but_continues",
+  "continues",
+  "health",
+  "poll",
+  "sharedserver",
+  "test",
+  "test_health_poll_timeout_warns_but_continues",
+  "tests",
+  "timeout",
+  "warns",
+]

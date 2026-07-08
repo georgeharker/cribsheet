@@ -1,0 +1,28 @@
+fqname = "mcp_companion.ui.icons.combiner_on"
+name = "combiner_on"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.ui"
+parent = "mcp_companion.ui.icons"
+content_hash = "ba48c516d5221209"
+file = "lua/mcp_companion/ui/init.lua"
+signature = "combiner_on = \"⬢\","
+description = ""
+line = 39
+mtime = 1783473333000000000
+container = [
+  "icons",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner_on",
+  "companion",
+  "icons",
+  "mcp",
+  "mcp_companion.ui.icons.combiner_on",
+  "on",
+  "ui",
+]

@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.config.OAuthConfig"
+name = "OAuthConfig"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = ""
+content_hash = "4257a0fa02e5dbb7"
+file = "combiner/mcp_combiner/config.py"
+signature = "class OAuthConfig(BaseModel):"
+description = ""
+line = 287
+mtime = 1782954213000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "load [combiner/mcp_combiner/config.py]",
+  "oauth [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "OAuthConfig",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.config.OAuthConfig",
+  "config",
+  "mcp",
+  "o",
+]

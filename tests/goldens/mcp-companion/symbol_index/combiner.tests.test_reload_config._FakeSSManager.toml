@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_reload_config._FakeSSManager"
+name = "_FakeSSManager"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "61cb330a7d7b7a86"
+file = "combiner/tests/test_reload_config.py"
+signature = "class _FakeSSManager:"
+description = ""
+line = 84
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "harness [combiner/tests/test_reload_config.py]",
+  "test_restart_leaves_one_live_provider [combiner/tests/test_mounts.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "_FakeSSManager",
+  "combiner",
+  "combiner.tests.test_reload_config._FakeSSManager",
+  "config",
+  "fake",
+  "manager",
+  "reload",
+  "ss",
+  "test",
+  "tests",
+]

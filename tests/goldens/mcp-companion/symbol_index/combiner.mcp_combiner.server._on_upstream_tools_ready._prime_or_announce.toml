@@ -1,0 +1,39 @@
+fqname = "combiner.mcp_combiner.server._on_upstream_tools_ready._prime_or_announce"
+name = "_prime_or_announce"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server._on_upstream_tools_ready"
+content_hash = "732b8117e2fee42c"
+file = "combiner/mcp_combiner/server.py"
+signature = "async def _prime_or_announce() -> None:"
+description = ""
+line = 543
+mtime = 1783473323000000000
+container = [
+  "_on_upstream_tools_ready",
+]
+calls = [
+  "invalidate_tool_cache [combiner/mcp_combiner/server.py]",
+  "prime_server_tools [combiner/mcp_combiner/server.py]",
+]
+called_by = [
+  "_on_upstream_tools_ready [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_on_upstream_tools_ready [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_prime_or_announce",
+  "announce",
+  "combiner",
+  "combiner.mcp_combiner.server._on_upstream_tools_ready._prime_or_announce",
+  "mcp",
+  "on",
+  "or",
+  "prime",
+  "ready",
+  "server",
+  "tools",
+  "upstream",
+]

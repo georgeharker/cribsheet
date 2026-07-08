@@ -1,0 +1,29 @@
+fqname = "mcp_companion.ui.icons.prompt"
+name = "prompt"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.ui"
+parent = "mcp_companion.ui.icons"
+content_hash = "ddd673f94a74904a"
+file = "lua/mcp_companion/ui/init.lua"
+signature = "prompt = \"💬\","
+description = ""
+line = 35
+mtime = 1783473333000000000
+container = [
+  "icons",
+]
+calls = []
+called_by = []
+references = [
+  "else [lua/mcp_companion/ui/init.lua]",
+  "if [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "companion",
+  "icons",
+  "mcp",
+  "mcp_companion.ui.icons.prompt",
+  "prompt",
+  "ui",
+]

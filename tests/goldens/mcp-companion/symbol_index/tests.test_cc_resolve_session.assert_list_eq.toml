@@ -1,0 +1,32 @@
+fqname = "tests.test_cc_resolve_session.assert_list_eq"
+name = "assert_list_eq"
+kind = "function"
+lang = "lua"
+module = "tests.test_cc_resolve_session"
+parent = ""
+content_hash = "70c601970f437d66"
+file = "tests/test_cc_resolve_session.lua"
+signature = "local function assert_list_eq(a, b, msg)"
+description = ""
+line = 74
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_cc_resolve_session.lua [tests/test_cc_resolve_session.lua]",
+]
+references = [
+  "a [tests/test_cc_resolve_session.lua]",
+]
+name_terms = [
+  "assert",
+  "assert_list_eq",
+  "cc",
+  "eq",
+  "list",
+  "resolve",
+  "session",
+  "test",
+  "tests",
+  "tests.test_cc_resolve_session.assert_list_eq",
+]

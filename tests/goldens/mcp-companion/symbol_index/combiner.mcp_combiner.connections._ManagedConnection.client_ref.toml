@@ -1,0 +1,39 @@
+fqname = "combiner.mcp_combiner.connections._ManagedConnection.client_ref"
+name = "client_ref"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections._ManagedConnection"
+content_hash = "19aa7891407c5cbf"
+file = "combiner/mcp_combiner/connections.py"
+signature = "client_ref: list[HttpClient | None] = field(default_factory=lambda: [None])"
+description = ""
+line = 101
+mtime = 1783473323000000000
+container = [
+  "_ManagedConnection",
+]
+calls = []
+called_by = []
+references = [
+  "_factory [combiner/mcp_combiner/connections.py]",
+  "_monitor [combiner/mcp_combiner/connections.py]",
+  "_open [combiner/mcp_combiner/connections.py]",
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+  "_signal_tools_ready [combiner/mcp_combiner/connections.py]",
+  "_teardown [combiner/mcp_combiner/connections.py]",
+  "connect [combiner/mcp_combiner/connections.py]",
+  "is_connected [combiner/mcp_combiner/connections.py]",
+  "lifecycle_state [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "client",
+  "client_ref",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection.client_ref",
+  "connection",
+  "connections",
+  "managed",
+  "mcp",
+  "ref",
+]

@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.server._combiner_config"
+name = "_combiner_config"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "410b630a21cc1758"
+file = "combiner/mcp_combiner/server.py"
+signature = "_combiner_config: CombinerConfig | None = None"
+description = ""
+line = 206
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_filter_tools [combiner/mcp_combiner/server.py]",
+  "_find_server_for_tool [combiner/mcp_combiner/server.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/server.py]",
+  "on_call_tool [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_combiner_config",
+  "combiner",
+  "combiner.mcp_combiner.server._combiner_config",
+  "config",
+  "mcp",
+  "server",
+]

@@ -1,0 +1,62 @@
+fqname = "mcp_companion.project.save"
+name = "save"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.project"
+parent = ""
+content_hash = "1a2c771862535ba0"
+file = "lua/mcp_companion/project.lua"
+signature = "function M.save(opts)"
+description = ""
+line = 582
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M._resolve_session_allowed [lua/mcp_companion/cc/init.lua]",
+  "M._save_project_config [lua/mcp_companion/cc/init.lua]",
+  "M.open [lua/mcp_companion/ui/init.lua]",
+  "M.register [lua/mcp_companion/cc/tools.lua]",
+  "M.register_native [lua/mcp_companion/cc/tools.lua]",
+  "M.resolve [lua/mcp_companion/project.lua]",
+  "M.resolve_allowed [lua/mcp_companion/project.lua]",
+  "M.resolve_auto_approve [lua/mcp_companion/project.lua]",
+  "M.resolve_tool_system_prompts [lua/mcp_companion/project.lua]",
+  "M.save [lua/mcp_companion/project.lua]",
+  "M.save_target_path [lua/mcp_companion/project.lua]",
+  "M.toggle_in_project_file [lua/mcp_companion/project.lua]",
+  "project.lua [lua/mcp_companion/project.lua]",
+  "test_project.lua [tests/test_project.lua]",
+]
+references = [
+  "M [lua/mcp_companion/project.lua]",
+  "_ [lua/mcp_companion/project.lua]",
+  "_resolve_session_allowed [lua/mcp_companion/cc/init.lua]",
+  "_save_project_config [lua/mcp_companion/cc/init.lua]",
+  "auto_value [lua/mcp_companion/project.lua]",
+  "cfg [lua/mcp_companion/project.lua]",
+  "contents [lua/mcp_companion/project.lua]",
+  "disabled [lua/mcp_companion/project.lua]",
+  "global_value [lua/mcp_companion/project.lua]",
+  "if [lua/mcp_companion/project.lua]",
+  "open [lua/mcp_companion/ui/init.lua]",
+  "opts [lua/mcp_companion/project.lua]",
+  "path [lua/mcp_companion/project.lua]",
+  "payload [lua/mcp_companion/project.lua]",
+  "project [lua/mcp_companion/cc/init.lua]",
+  "project [lua/mcp_companion/cc/tools.lua]",
+  "project [tests/test_project.lua]",
+  "project_cfg [lua/mcp_companion/project.lua]",
+  "result [lua/mcp_companion/project.lua]",
+  "root [lua/mcp_companion/project.lua]",
+  "server_name [lua/mcp_companion/project.lua]",
+  "start_dir [lua/mcp_companion/project.lua]",
+  "sysp_enabled [lua/mcp_companion/cc/tools.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.project.save",
+  "project",
+  "save",
+]

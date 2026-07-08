@@ -1,0 +1,29 @@
+fqname = "tests.test_schema.if.for in.out"
+name = "out"
+kind = "variable"
+lang = "lua"
+module = "tests.test_schema"
+parent = "tests.test_schema.if.for in"
+content_hash = "a8537c622c12b01c"
+file = "tests/test_schema.lua"
+signature = "local out = schema.normalize(case.v)"
+description = ""
+line = 46
+mtime = 1783013405000000000
+container = [
+  "if",
+  "for in",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "for",
+  "if",
+  "in",
+  "out",
+  "schema",
+  "test",
+  "tests",
+  "tests.test_schema.if.for in.out",
+]

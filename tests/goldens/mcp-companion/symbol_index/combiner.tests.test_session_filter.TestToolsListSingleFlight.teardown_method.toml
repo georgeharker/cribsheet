@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_session_filter.TestToolsListSingleFlight.teardown_method"
+name = "teardown_method"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestToolsListSingleFlight"
+content_hash = "41ffc3da9fbbfd5b"
+file = "combiner/tests/test_session_filter.py"
+signature = "def teardown_method(self):"
+description = ""
+line = 287
+mtime = 1783452495000000000
+container = [
+  "TestToolsListSingleFlight",
+]
+calls = [
+  "_reset_session_state [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestToolsListSingleFlight.teardown_method",
+  "filter",
+  "flight",
+  "list",
+  "method",
+  "session",
+  "single",
+  "teardown",
+  "teardown_method",
+  "test",
+  "tests",
+  "tools",
+]

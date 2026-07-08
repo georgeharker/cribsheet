@@ -1,0 +1,27 @@
+fqname = "tests.test_native.do end.ns"
+name = "ns"
+kind = "variable"
+lang = "lua"
+module = "tests.test_native"
+parent = "tests.test_native.do end"
+content_hash = "13751fc3c3340e35"
+file = "tests/test_native.lua"
+signature = "local ns = state.field(\"native_servers\") or {}"
+description = ""
+line = 217
+mtime = 1783022631000000000
+container = [
+  "do end",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "do",
+  "end",
+  "native",
+  "ns",
+  "test",
+  "tests",
+  "tests.test_native.do end.ns",
+]

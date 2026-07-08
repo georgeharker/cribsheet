@@ -1,0 +1,35 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager.connect"
+name = "connect"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections.ConnectionManager"
+content_hash = "b7c908b364659f5d"
+file = "combiner/mcp_combiner/connections.py"
+signature = "async def connect(self, config: CombinerConfig, name: str, srv: ServerConfig) -> None:"
+description = ""
+line = 356
+mtime = 1783473323000000000
+container = [
+  "ConnectionManager",
+]
+calls = [
+  "_ManagedConnection [combiner/mcp_combiner/connections.py]",
+  "_monitor [combiner/mcp_combiner/connections.py]",
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "_connect_one [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "_connect_one [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.connect",
+  "connect",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+]

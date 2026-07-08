@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_nvim_e2e.test_tokenless_client_must_name_instance"
+name = "test_tokenless_client_must_name_instance"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_nvim_e2e"
+parent = ""
+content_hash = "0c6ba2c598ff732f"
+file = "combiner/tests/test_nvim_e2e.py"
+signature = "async def test_tokenless_client_must_name_instance() -> None:"
+description = ""
+line = 116
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "2",
+  "client",
+  "combiner",
+  "combiner.tests.test_nvim_e2e.test_tokenless_client_must_name_instance",
+  "e",
+  "instance",
+  "must",
+  "name",
+  "nvim",
+  "test",
+  "test_tokenless_client_must_name_instance",
+  "tests",
+  "tokenless",
+]

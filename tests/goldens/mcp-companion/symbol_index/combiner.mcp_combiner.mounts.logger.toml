@@ -1,0 +1,26 @@
+fqname = "combiner.mcp_combiner.mounts.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.mounts"
+parent = ""
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/mounts.py"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+line = 23
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "drop_server_providers [combiner/mcp_combiner/mounts.py]",
+  "mount_server_provider [combiner/mcp_combiner/mounts.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mounts.logger",
+  "logger",
+  "mcp",
+  "mounts",
+]

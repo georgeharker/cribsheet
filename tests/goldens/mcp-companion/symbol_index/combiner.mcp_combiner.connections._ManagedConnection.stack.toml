@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.connections._ManagedConnection.stack"
+name = "stack"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections._ManagedConnection"
+content_hash = "6b2567967bf9cc46"
+file = "combiner/mcp_combiner/connections.py"
+signature = "stack: AsyncExitStack = field(default_factory=AsyncExitStack)"
+description = ""
+line = 108
+mtime = 1783473323000000000
+container = [
+  "_ManagedConnection",
+]
+calls = []
+called_by = []
+references = [
+  "_open [combiner/mcp_combiner/connections.py]",
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+  "_teardown [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection.stack",
+  "connection",
+  "connections",
+  "managed",
+  "mcp",
+  "stack",
+]

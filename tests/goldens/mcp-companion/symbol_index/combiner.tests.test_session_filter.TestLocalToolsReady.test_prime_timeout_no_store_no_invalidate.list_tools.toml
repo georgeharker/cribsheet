@@ -1,0 +1,39 @@
+fqname = "combiner.tests.test_session_filter.TestLocalToolsReady.test_prime_timeout_no_store_no_invalidate.list_tools"
+name = "list_tools"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestLocalToolsReady.test_prime_timeout_no_store_no_invalidate"
+content_hash = "003c42531afa683b"
+file = "combiner/tests/test_session_filter.py"
+signature = "async def list_tools():"
+description = ""
+line = 571
+mtime = 1783452495000000000
+container = [
+  "TestLocalToolsReady",
+  "test_prime_timeout_no_store_no_invalidate",
+]
+calls = []
+called_by = []
+references = [
+  "test_prime_timeout_no_store_no_invalidate [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestLocalToolsReady.test_prime_timeout_no_store_no_invalidate.list_tools",
+  "filter",
+  "invalidate",
+  "list",
+  "list_tools",
+  "local",
+  "no",
+  "prime",
+  "ready",
+  "session",
+  "store",
+  "test",
+  "tests",
+  "timeout",
+  "tools",
+]

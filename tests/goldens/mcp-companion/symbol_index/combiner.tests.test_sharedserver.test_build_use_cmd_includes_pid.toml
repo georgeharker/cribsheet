@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_sharedserver.test_build_use_cmd_includes_pid"
+name = "test_build_use_cmd_includes_pid"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_sharedserver"
+parent = ""
+content_hash = "59de885ef2506f00"
+file = "combiner/tests/test_sharedserver.py"
+signature = "def test_build_use_cmd_includes_pid() -> None:"
+description = ""
+line = 90
+mtime = 1782420032000000000
+container = []
+calls = [
+  "_make_ss [combiner/tests/test_sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "cmd",
+  "combiner",
+  "combiner.tests.test_sharedserver.test_build_use_cmd_includes_pid",
+  "includes",
+  "pid",
+  "sharedserver",
+  "test",
+  "test_build_use_cmd_includes_pid",
+  "tests",
+  "use",
+]

@@ -1,0 +1,25 @@
+fqname = "combiner.mcp_combiner.meta_tools.register_meta_tools"
+name = "register_meta_tools"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.meta_tools"
+parent = ""
+content_hash = "4bec7045bbe440d2"
+file = "combiner/mcp_combiner/meta_tools.py"
+signature = "def register_meta_tools("
+description = ""
+line = 17
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools",
+  "mcp",
+  "meta",
+  "register",
+  "register_meta_tools",
+  "tools",
+]

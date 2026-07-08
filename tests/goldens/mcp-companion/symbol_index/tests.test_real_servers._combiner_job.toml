@@ -1,0 +1,26 @@
+fqname = "tests.test_real_servers._combiner_job"
+name = "_combiner_job"
+kind = "global"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "7c34a29d858f9bf1"
+file = "tests/test_real_servers.lua"
+signature = "local _combiner_job = nil"
+description = ""
+line = 20
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_combiner_job",
+  "combiner",
+  "job",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers._combiner_job",
+]

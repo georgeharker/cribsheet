@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_session_filter.TestMiddlewareFiltering.setup_method"
+name = "setup_method"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestMiddlewareFiltering"
+content_hash = "f79558d3c8ba1854"
+file = "combiner/tests/test_session_filter.py"
+signature = "def setup_method(self):"
+description = ""
+line = 253
+mtime = 1783452495000000000
+container = [
+  "TestMiddlewareFiltering",
+]
+calls = [
+  "_reset_session_state [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestMiddlewareFiltering.setup_method",
+  "filter",
+  "filtering",
+  "method",
+  "middleware",
+  "session",
+  "setup",
+  "setup_method",
+  "test",
+  "tests",
+]

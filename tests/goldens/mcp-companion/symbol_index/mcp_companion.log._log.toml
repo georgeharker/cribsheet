@@ -1,0 +1,37 @@
+fqname = "mcp_companion.log._log"
+name = "_log"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.log"
+parent = ""
+content_hash = "cf43c5e6ad6bd5dd"
+file = "lua/mcp_companion/log.lua"
+signature = "local function _log(level, msg, ...)"
+description = ""
+line = 54
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.debug [lua/mcp_companion/log.lua]",
+  "M.error [lua/mcp_companion/log.lua]",
+  "M.info [lua/mcp_companion/log.lua]",
+  "M.trace [lua/mcp_companion/log.lua]",
+  "M.warn [lua/mcp_companion/log.lua]",
+  "log.lua [lua/mcp_companion/log.lua]",
+]
+references = [
+  "debug [lua/mcp_companion/log.lua]",
+  "error [lua/mcp_companion/log.lua]",
+  "info [lua/mcp_companion/log.lua]",
+  "level [lua/mcp_companion/log.lua]",
+  "trace [lua/mcp_companion/log.lua]",
+  "warn [lua/mcp_companion/log.lua]",
+]
+name_terms = [
+  "_log",
+  "companion",
+  "log",
+  "mcp",
+  "mcp_companion.log._log",
+]

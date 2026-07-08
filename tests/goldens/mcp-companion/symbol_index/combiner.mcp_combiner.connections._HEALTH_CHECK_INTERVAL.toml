@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.connections._HEALTH_CHECK_INTERVAL"
+name = "_HEALTH_CHECK_INTERVAL"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = ""
+content_hash = "8b9581228486d56d"
+file = "combiner/mcp_combiner/connections.py"
+signature = "_HEALTH_CHECK_INTERVAL = 30.0  # seconds between keepalive pings"
+description = ""
+line = 73
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_HEALTH_CHECK_INTERVAL",
+  "check",
+  "combiner",
+  "combiner.mcp_combiner.connections._HEALTH_CHECK_INTERVAL",
+  "connections",
+  "health",
+  "interval",
+  "mcp",
+]

@@ -1,0 +1,29 @@
+fqname = "mcp_companion.log._levels.error"
+name = "error"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.log"
+parent = "mcp_companion.log._levels"
+content_hash = "501cba96adc38c91"
+file = "lua/mcp_companion/log.lua"
+signature = "local _levels = { trace = 0, debug = 1, info = 2, warn = 3, error = 4 }"
+description = ""
+line = 8
+mtime = 1782852601000000000
+container = [
+  "_levels",
+]
+calls = []
+called_by = []
+references = [
+  "_levels [lua/mcp_companion/log.lua]",
+  "notify_threshold [lua/mcp_companion/log.lua]",
+]
+name_terms = [
+  "companion",
+  "error",
+  "levels",
+  "log",
+  "mcp",
+  "mcp_companion.log._levels.error",
+]

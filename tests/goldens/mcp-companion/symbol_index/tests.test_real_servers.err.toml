@@ -1,0 +1,31 @@
+fqname = "tests.test_real_servers.err"
+name = "err"
+kind = "function"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "0e42cffe1ea46879"
+file = "tests/test_real_servers.lua"
+signature = "local function err(name, msg)"
+description = ""
+line = 32
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_real_servers.lua [tests/test_real_servers.lua]",
+]
+references = [
+  "else [tests/test_real_servers.lua]",
+  "elseif [tests/test_real_servers.lua]",
+  "if [tests/test_real_servers.lua]",
+  "name [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "err",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.err",
+]

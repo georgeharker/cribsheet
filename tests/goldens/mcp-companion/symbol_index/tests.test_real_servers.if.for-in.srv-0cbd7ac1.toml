@@ -1,0 +1,33 @@
+fqname = "tests.test_real_servers.if.for in.srv"
+name = "srv"
+kind = "variable"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = "tests.test_real_servers.if.for in"
+content_hash = "66c03f16e0da5c25"
+file = "tests/test_real_servers.lua"
+signature = "for _, srv in ipairs(servers) do"
+description = ""
+line = 303
+mtime = 1782853510000000000
+container = [
+  "if",
+  "for in",
+]
+calls = []
+called_by = []
+references = [
+  "_ [tests/test_real_servers.lua]",
+  "for in [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "for",
+  "if",
+  "in",
+  "real",
+  "servers",
+  "srv",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.for in.srv",
+]

@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.server._LOCAL_TOOLS_READY_ATTEMPT"
+name = "_LOCAL_TOOLS_READY_ATTEMPT"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "8a62655253b0cffb"
+file = "combiner/mcp_combiner/server.py"
+signature = "_LOCAL_TOOLS_READY_ATTEMPT = 5.0  # per-attempt bound, so a hung list can't block"
+description = ""
+line = 117
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "prime_server_tools [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_LOCAL_TOOLS_READY_ATTEMPT",
+  "attempt",
+  "combiner",
+  "combiner.mcp_combiner.server._LOCAL_TOOLS_READY_ATTEMPT",
+  "local",
+  "mcp",
+  "ready",
+  "server",
+  "tools",
+]

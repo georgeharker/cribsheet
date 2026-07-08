@@ -1,0 +1,58 @@
+fqname = "mcp_companion.http.request"
+name = "request"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.http"
+parent = ""
+content_hash = "6fa29cd57d12cd7f"
+file = "lua/mcp_companion/http.lua"
+signature = "function M.request(opts)"
+description = ""
+line = 153
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "Client._fetch_server_names [lua/mcp_companion/combiner/client.lua]",
+  "Client._refresh_server_health [lua/mcp_companion/combiner/client.lua]",
+  "M._apply_token_filter [lua/mcp_companion/cc/init.lua]",
+  "M._check_existing [lua/mcp_companion/combiner/init.lua]",
+  "M._cleanup_session_filter [lua/mcp_companion/cc/init.lua]",
+  "M._save_project_config [lua/mcp_companion/cc/init.lua]",
+  "M._wait_and_connect [lua/mcp_companion/combiner/init.lua]",
+  "M.deregister [lua/mcp_companion/native/channel.lua]",
+  "M.start [lua/mcp_companion/native/channel.lua]",
+  "M.sync [lua/mcp_companion/native/channel.lua]",
+  "M.unbind [lua/mcp_companion/native/channel.lua]",
+  "http.lua [lua/mcp_companion/http.lua]",
+  "init.lua [lua/mcp_companion/combiner/init.lua]",
+  "post_bind [lua/mcp_companion/native/channel.lua]",
+]
+references = [
+  "M [lua/mcp_companion/http.lua]",
+  "_apply_token_filter [lua/mcp_companion/cc/init.lua]",
+  "_check_existing [lua/mcp_companion/combiner/init.lua]",
+  "_cleanup_session_filter [lua/mcp_companion/cc/init.lua]",
+  "_fetch_server_names [lua/mcp_companion/combiner/client.lua]",
+  "_refresh_server_health [lua/mcp_companion/combiner/client.lua]",
+  "_save_project_config [lua/mcp_companion/cc/init.lua]",
+  "_wait_and_connect [lua/mcp_companion/combiner/init.lua]",
+  "deregister [lua/mcp_companion/native/channel.lua]",
+  "http [lua/mcp_companion/cc/init.lua]",
+  "http [lua/mcp_companion/cc/session_commands.lua]",
+  "http [lua/mcp_companion/combiner/client.lua]",
+  "http [lua/mcp_companion/combiner/init.lua]",
+  "if [lua/mcp_companion/cc/session_commands.lua]",
+  "opts [lua/mcp_companion/http.lua]",
+  "post_bind [lua/mcp_companion/native/channel.lua]",
+  "start [lua/mcp_companion/native/channel.lua]",
+  "sync [lua/mcp_companion/native/channel.lua]",
+  "unbind [lua/mcp_companion/native/channel.lua]",
+]
+name_terms = [
+  "companion",
+  "http",
+  "mcp",
+  "mcp_companion.http.request",
+  "request",
+]

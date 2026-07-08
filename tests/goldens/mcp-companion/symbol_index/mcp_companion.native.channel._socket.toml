@@ -1,0 +1,25 @@
+fqname = "mcp_companion.native.channel._socket"
+name = "_socket"
+kind = "global"
+lang = "lua"
+module = "mcp_companion.native.channel"
+parent = ""
+content_hash = "24ca34afc7846e16"
+file = "lua/mcp_companion/native/channel.lua"
+signature = "local _socket = nil"
+description = ""
+line = 17
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_socket",
+  "channel",
+  "companion",
+  "mcp",
+  "mcp_companion.native.channel._socket",
+  "native",
+  "socket",
+]

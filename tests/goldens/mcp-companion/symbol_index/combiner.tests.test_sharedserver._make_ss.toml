@@ -1,0 +1,42 @@
+fqname = "combiner.tests.test_sharedserver._make_ss"
+name = "_make_ss"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_sharedserver"
+parent = ""
+content_hash = "a2de4e458cab658c"
+file = "combiner/tests/test_sharedserver.py"
+signature = "def _make_ss(**kwargs: Any) -> SharedServerConfig:"
+description = ""
+line = 45
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = [
+  "test_build_use_cmd_basic [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_empty_env [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_explicit_pid [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_grace_period [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_includes_env [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_includes_pid [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_no_grace_period [combiner/tests/test_sharedserver.py]",
+]
+references = [
+  "test_build_use_cmd_basic [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_empty_env [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_explicit_pid [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_grace_period [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_includes_env [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_includes_pid [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_no_grace_period [combiner/tests/test_sharedserver.py]",
+]
+name_terms = [
+  "_make_ss",
+  "combiner",
+  "combiner.tests.test_sharedserver._make_ss",
+  "make",
+  "sharedserver",
+  "ss",
+  "test",
+  "tests",
+]

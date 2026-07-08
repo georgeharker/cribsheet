@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.connections._TOOLS_READY_TIMEOUT"
+name = "_TOOLS_READY_TIMEOUT"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = ""
+content_hash = "0163f4574db1db9e"
+file = "combiner/mcp_combiner/connections.py"
+signature = "_TOOLS_READY_TIMEOUT = 30.0  # seconds to await a just-connected upstream's first tools/list"
+description = ""
+line = 74
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_signal_tools_ready [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_TOOLS_READY_TIMEOUT",
+  "combiner",
+  "combiner.mcp_combiner.connections._TOOLS_READY_TIMEOUT",
+  "connections",
+  "mcp",
+  "ready",
+  "timeout",
+  "tools",
+]

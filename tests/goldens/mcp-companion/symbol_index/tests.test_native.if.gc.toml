@@ -1,0 +1,26 @@
+fqname = "tests.test_native.if.gc"
+name = "gc"
+kind = "variable"
+lang = "lua"
+module = "tests.test_native"
+parent = "tests.test_native.if"
+content_hash = "9dab2ec5b7582f42"
+file = "tests/test_native.lua"
+signature = "local gc = rjson(native.dispatch(\"get_cursor\", {}))"
+description = ""
+line = 269
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "gc",
+  "if",
+  "native",
+  "test",
+  "tests",
+  "tests.test_native.if.gc",
+]

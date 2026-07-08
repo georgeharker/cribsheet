@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_reload_config._FakeConnManager.has_connection"
+name = "has_connection"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = "combiner.tests.test_reload_config._FakeConnManager"
+content_hash = "79d199823238a91d"
+file = "combiner/tests/test_reload_config.py"
+signature = "def has_connection(self, name: str) -> bool:"
+description = ""
+line = 60
+mtime = 1783452495000000000
+container = [
+  "_FakeConnManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_reload_config._FakeConnManager.has_connection",
+  "config",
+  "conn",
+  "connection",
+  "fake",
+  "has",
+  "has_connection",
+  "manager",
+  "reload",
+  "test",
+  "tests",
+]

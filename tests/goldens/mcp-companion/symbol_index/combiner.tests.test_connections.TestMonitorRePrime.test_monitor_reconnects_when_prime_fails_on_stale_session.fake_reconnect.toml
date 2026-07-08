@@ -1,0 +1,40 @@
+fqname = "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_reconnects_when_prime_fails_on_stale_session.fake_reconnect"
+name = "fake_reconnect"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_reconnects_when_prime_fails_on_stale_session"
+content_hash = "223b9df9cdc3c898"
+file = "combiner/tests/test_connections.py"
+signature = "async def fake_reconnect(_conn):"
+description = ""
+line = 158
+mtime = 1783473323000000000
+container = [
+  "TestMonitorRePrime",
+  "test_monitor_reconnects_when_prime_fails_on_stale_session",
+]
+calls = []
+called_by = []
+references = [
+  "test_monitor_reconnects_when_prime_fails_on_stale_session [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_reconnects_when_prime_fails_on_stale_session.fake_reconnect",
+  "connections",
+  "fails",
+  "fake",
+  "fake_reconnect",
+  "monitor",
+  "on",
+  "prime",
+  "re",
+  "reconnect",
+  "reconnects",
+  "session",
+  "stale",
+  "test",
+  "tests",
+  "when",
+]

@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.config.OAuthConfig.token_dir"
+name = "token_dir"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.OAuthConfig"
+content_hash = "52f20c32c045fde8"
+file = "combiner/mcp_combiner/config.py"
+signature = "token_dir: str | None = None"
+description = ""
+line = 309
+mtime = 1782954213000000000
+container = [
+  "OAuthConfig",
+]
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "token_dir_path [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.config.OAuthConfig.token_dir",
+  "config",
+  "dir",
+  "mcp",
+  "o",
+  "token",
+  "token_dir",
+]

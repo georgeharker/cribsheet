@@ -1,0 +1,28 @@
+fqname = "combiner.tests.test_reload_config._FakeCombiner.tool"
+name = "tool"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = "combiner.tests.test_reload_config._FakeCombiner"
+content_hash = "637e14ff4a8f6bbb"
+file = "combiner/tests/test_reload_config.py"
+signature = "def tool(self, *_args: Any, **_kwargs: Any):"
+description = ""
+line = 40
+mtime = 1783452495000000000
+container = [
+  "_FakeCombiner",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_reload_config._FakeCombiner.tool",
+  "config",
+  "fake",
+  "reload",
+  "test",
+  "tests",
+  "tool",
+]

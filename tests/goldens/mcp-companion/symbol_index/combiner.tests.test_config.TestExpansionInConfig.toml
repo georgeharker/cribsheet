@@ -1,0 +1,26 @@
+fqname = "combiner.tests.test_config.TestExpansionInConfig"
+name = "TestExpansionInConfig"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = ""
+content_hash = "71a6ca8dd37e7bdc"
+file = "combiner/tests/test_config.py"
+signature = "class TestExpansionInConfig:"
+description = ""
+line = 331
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestExpansionInConfig",
+  "combiner",
+  "combiner.tests.test_config.TestExpansionInConfig",
+  "config",
+  "expansion",
+  "in",
+  "test",
+  "tests",
+]

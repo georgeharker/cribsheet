@@ -1,0 +1,32 @@
+fqname = "mcp_companion.native._strip_prefix"
+name = "_strip_prefix"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.native"
+parent = ""
+content_hash = "0fce299e2b439a81"
+file = "lua/mcp_companion/native/init.lua"
+signature = "local function _strip_prefix(name)"
+description = ""
+line = 113
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = [
+  "M.dispatch [lua/mcp_companion/native/init.lua]",
+  "M.tool_tier [lua/mcp_companion/native/init.lua]",
+  "init.lua [lua/mcp_companion/native/init.lua]",
+]
+references = [
+  "entry [lua/mcp_companion/native/init.lua]",
+  "name [lua/mcp_companion/native/init.lua]",
+]
+name_terms = [
+  "_strip_prefix",
+  "companion",
+  "mcp",
+  "mcp_companion.native._strip_prefix",
+  "native",
+  "prefix",
+  "strip",
+]
