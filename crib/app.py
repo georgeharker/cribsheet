@@ -938,7 +938,7 @@ class Crib:
         # Serialize only the store read-modify-write (NOT the LSP/LLM work above),
         # so a concurrent reindex of another file — watcher vs query vs explicit
         # index — can't interleave writes and corrupt the cross-file call graph
-        # (`_patch_called_by`). Kept off the slow describe path so the loop-thread
+        # (`CodeStore.patch_called_by`). Kept off the slow describe path so the loop-thread
         # revalidation never blocks on a worker's LLM call.
         with self._code_lock(proj):
             store.write_all(entries)
@@ -947,7 +947,7 @@ class Crib:
             for fq in old_in_file - {e["fqname"] for e in entries}:
                 store.delete(fq)
             if patch_edges:
-                self._patch_called_by(store, entries, rel)
+                self.code.patch_called_by(store, entries, rel)
         self._register_code_root(proj, root)                # live-watch this repo's source
         self._bump_code_epoch(proj)                         # invalidate the resident cache
         out: dict[str, Any] = {
@@ -958,38 +958,6 @@ class Crib:
         if gen_error:
             out["descriptions_error"] = gen_error
         return out
-
-    @staticmethod
-    def _patch_called_by(store: Any, new_entries: list[dict[str, Any]],
-                         relpath: str) -> None:
-        """Keep the cross-file call graph consistent after a single-file reindex: every
-        `A→B` in the reindexed file A's fresh outbound `calls` must show as `A` in B's
-        `called_by`. Strip stale edges originating from A (`… [A]`), then re-add the
-        current ones. Cheap (in-memory from A's calls; no extra LSP)."""
-        tag = f"[{relpath}]"
-        entries = store.all()
-        by_key = {(e.get("name", ""), e.get("file", "")): e for e in entries}
-        changed: dict[str, dict] = {}
-        for e in entries:                                   # 1) strip edges from A
-            if e.get("file") == relpath:
-                continue
-            cb = [x for x in (e.get("called_by") or []) if not x.endswith(tag)]
-            if cb != (e.get("called_by") or []):
-                e["called_by"] = cb
-                changed[e["fqname"]] = e
-        for s in new_entries:                               # 2) re-add A's current edges
-            for call in s.get("calls") or []:
-                name, _, rest = call.partition(" [")
-                tgt = by_key.get((name.strip(), rest.rstrip("]")))
-                if tgt is None or tgt.get("file") == relpath:
-                    continue
-                e = changed.get(tgt["fqname"], tgt)
-                edge = f"{s['name']} [{relpath}]"
-                if edge not in (e.get("called_by") or []):
-                    e["called_by"] = sorted(set((e.get("called_by") or []) + [edge]))
-                    changed[e["fqname"]] = e
-        for e in changed.values():
-            store.write(e)
 
     # ── Resident code cache: delegates to CodeStore (crib/codestore.py) ────────
     # Thin delegators so existing call sites are untouched; the state + its

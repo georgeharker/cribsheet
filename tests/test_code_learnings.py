@@ -203,12 +203,12 @@ def test_patch_called_by_keeps_cross_file_graph_consistent(crib):
         {"name": "caller", "file": "b.py", "calls": ["target [a.py]"]},
         {"name": "caller2", "file": "b.py", "calls": ["target [a.py]"]},
     ]
-    crib._patch_called_by(store, new_b, "b.py")
+    crib.code.patch_called_by(store, new_b, "b.py")
     cb = store.by_fqname("a.target")[0]["called_by"]
     assert cb == ["caller [b.py]", "caller2 [b.py]"]     # both, no dup, no stale
 
     # a removed call (caller2 no longer calls target) is stripped on the next reindex
-    crib._patch_called_by(store, [{"name": "caller", "file": "b.py",
+    crib.code.patch_called_by(store, [{"name": "caller", "file": "b.py",
                                    "calls": ["target [a.py]"]}], "b.py")
     assert store.by_fqname("a.target")[0]["called_by"] == ["caller [b.py]"]
 
