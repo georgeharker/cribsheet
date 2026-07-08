@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import fnmatch
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, Awaitable, Callable
 
 _IGNORE = ["*~", ".*.swp", "*.tmp", "4913", ".#*", "*.orig"]
@@ -157,6 +157,19 @@ _CODE_IGNORE_DIRS = {".git", ".versions", "node_modules", ".venv", "venv",
 DOC_EXTS = {".md", ".rst", ".txt", ".markdown"}
 
 
+def _matches_doc_globs(root: Path, rel: Path) -> bool:
+    """True when `rel` matches the repo's `.crib` `docs:` globs — the SAME scoping
+    the in-situ sweep honors (`index_docs_insitu`), so which prose files count as
+    docs no longer depends on whether the change arrived via a save or a sweep.
+    (`full_match` mirrors the sweep's `Path.glob`, incl. `**`; needs py3.13+.)"""
+    from .config import CribLink
+    link = CribLink.find(root)
+    if link is None:
+        return False
+    rp = PurePosixPath(rel.as_posix())
+    return any(rp.full_match(pat) for pat in link.doc_patterns)
+
+
 class CodeWatcher(_FSWatcher):
     """Watches the SOURCE roots of code-indexed projects; reindexes an indexable code
     file on change — `on_change(project, root, relpath, deleted)`. Roots are registered
@@ -202,8 +215,8 @@ class CodeWatcher(_FSWatcher):
         if any(part in _CODE_IGNORE_DIRS for part in p.parts):
             return None
         suffix = p.suffix.lower()
-        is_doc = suffix in DOC_EXTS
-        if suffix not in self._code_exts() and not is_doc:
+        is_doc_ext = suffix in DOC_EXTS
+        if suffix not in self._code_exts() and not is_doc_ext:
             # extensionless files route by CONTENT (name/shebang/#compdef marker),
             # the same grammar the sweep enumeration uses — a NEW autoload file
             # must reach the index without waiting for the next full sweep. (A
@@ -225,6 +238,14 @@ class CodeWatcher(_FSWatcher):
             try:
                 rel = rp.relative_to(key)
             except ValueError:
+                continue
+            # A doc-EXTENSION file counts as a doc ONLY if it matches this project's
+            # declared `docs:` globs — the same scoping the sweep honors, so which
+            # docs get indexed no longer depends on how the change arrived. A `.md`
+            # outside the globs is not ours to index (falls through like any other
+            # non-indexable file); code files are unaffected.
+            is_doc = is_doc_ext and _matches_doc_globs(Path(key), rel)
+            if is_doc_ext and not is_doc:
                 continue
             if best is None or len(key) > len(best[1]):
                 # relpath prefixed so the handler routes doc vs code; the batch key

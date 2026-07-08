@@ -72,6 +72,18 @@ class IndexEngine:
         async with self._locks[self._key(project, relpath)]:
             return self._index_locked(project, notes_dir, relpath, content_path)
 
+    async def forget(self, project: str, relpath: str) -> int:
+        """Drop a note's index entry (all its chunks) REGARDLESS of disk state, under
+        the per-path lock — unlike `index_file`, which only deletes a note gone from
+        disk. For pruning an in-situ doc that no longer matches the `.crib` `docs:`
+        globs (the source file stays; crib never owned it). Returns chunks removed."""
+        async with self._locks[self._key(project, relpath)]:
+            existing = self.store.get_meta({"project": project, "relpath": relpath})
+            self.store.delete(list(existing))
+            if existing:
+                self.invalidate_caches(project)
+            return len(existing)
+
     def _index_locked(self, project: str, notes_dir: Path, relpath: str,
                       content_path: Path | None = None) -> IndexResult:
         path = content_path if content_path is not None else notes_dir / relpath

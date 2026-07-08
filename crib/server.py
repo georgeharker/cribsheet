@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from .app import Crib
-from .session import resolve_session_project, session_state
+from .session import ProjectResolution, resolve_session_project, session_state
 
 try:  # Context annotates the elicitation param; needed at runtime for injection AND
     from fastmcp import Context  # for the forward-ref eval of `ctx: Context`.
@@ -25,14 +25,49 @@ def _cwd(project_path: str | None) -> Path | None:
     return Path(project_path) if project_path else None
 
 
-def _project(crib: Crib, project: str | None, project_path: str | None) -> str:
-    """Resolve the project for a tool call through the connection's session: an
-    explicit `project` overrides for this call; otherwise the session's current
-    project (seeded once from `project_path`/.crib) is used (DESIGN §15)."""
+# ── Project resolution: three policies over one ProjectResolution ──────────────
+# A tool call's project can be decided three ways, differing by op class (DESIGN
+# §15). All produce (or hinge on) a `ProjectResolution` carrying *how* it resolved:
+#   • _resolve / _project  — READS: explicit > sticky session > seed-from-path.
+#       Sticky is the ergonomic default; the `via` lets a read tool ECHO an
+#       implicit (session/seed) resolution so a wrong one is visible, not silent.
+#   • _source_project      — REPO-SCOPED ops: a given path's .crib decides (never
+#       sticky), so indexing /other/repo never lands in the current project.
+#   • _write_project(_elicit) — WRITES: must NAME the target (a durable fact belongs
+#       to the project it's ABOUT), never inheriting sticky.
+def _resolve(crib: Crib, project: str | None,
+             project_path: str | None) -> ProjectResolution:
+    """The READ policy as a `ProjectResolution` (project + how it resolved)."""
     return resolve_session_project(
         session_state(), project, _cwd(project_path),
         lambda c: crib.resolve_project(None, c),
         default=crib.config.default_project)
+
+
+def _project(crib: Crib, project: str | None, project_path: str | None) -> str:
+    """The resolved project name for a read (sticky-session convenience)."""
+    return _resolve(crib, project, project_path).project
+
+
+def _echo_dict(out: Any, res: ProjectResolution) -> Any:
+    """Stamp an IMPLICIT resolution onto a dict result (a non-breaking extra key),
+    so an agent that didn't name a project can see which one — and how — answered."""
+    if isinstance(out, dict) and res.implicit:
+        out.setdefault("resolved", res.echo())
+    return out
+
+
+def _echo_list(hits: Any, res: ProjectResolution) -> Any:
+    """Surface an IMPLICIT resolution on a LIST result where it would otherwise be
+    invisible: an EMPTY result from a sticky/seeded project is indistinguishable
+    from 'answered the wrong project', so return one diagnostic marker instead of a
+    bare `[]`. Non-empty lists already tag each hit with its owning `project`."""
+    if res.implicit and isinstance(hits, list) and not hits:
+        return [{"resolved": res.echo(), "matches": 0,
+                 "note": (f"resolved implicitly to {res.project!r} via {res.via}; "
+                          "0 matches. If you meant another project pass "
+                          "project=<name> or project_path=<a path in that repo>.")}]
+    return hits
 
 
 def _source_project(crib: Crib, project: str | None,
@@ -389,7 +424,8 @@ def build_server(crib: Crib | None = None):
         plus any human learning pinned to it — from the persisted index, no live LSP.
         `symbol` is a bare name or dotted fqname. Pass `project_path=<your working dir>` on first
         use so the right project resolves (via .crib)."""
-        return crib.code_xref(symbol, _project(crib, project, project_path))
+        res = _resolve(crib, project, project_path)
+        return _echo_list(crib.code_xref(symbol, res.project), res)
 
     @mcp.tool()
     async def code_lookup(query: str, project: str | None = None, k: int = 8,
@@ -404,7 +440,8 @@ def build_server(crib: Crib | None = None):
         (project_path=<the repo dir>), then retry the lookup — do NOT read files or grep instead.
         Pass `project_path=<your working dir>` so the project resolves via .crib. Then `code_dossier`
         a hit to go deep, or `code_graph` to walk the tree."""
-        return crib.code_lookup(query, _project(crib, project, project_path), k)
+        res = _resolve(crib, project, project_path)
+        return _echo_list(crib.code_lookup(query, res.project, k), res)
 
     @mcp.tool()
     def code_dossier(symbol: str, project: str | None = None,
@@ -415,7 +452,8 @@ def build_server(crib: Crib | None = None):
         code_lookup which *finds* it) — read a symbol and its whole neighbourhood without
         follow-up lookups. `symbol` is a bare name or dotted fqname; pass `project_path=`/`project=` to target a DIFFERENT project than your current
         project resolution."""
-        return crib.code_dossier(symbol, _project(crib, project, project_path))
+        res = _resolve(crib, project, project_path)
+        return _echo_dict(crib.code_dossier(symbol, res.project), res)
 
     @mcp.tool()
     async def code_graph(symbol: str, direction: str = "callees", depth: int = 6,
@@ -426,7 +464,8 @@ def build_server(crib: Crib | None = None):
         calls, and the only relation for symbols-only servers like zsh's shuck),
         recursive to `depth`. Nested {fqname, kind, file, line, children[]}; nodes with a
         pinned learning are flagged. Pass `project_path=<a path in the repo>` (or `project=<name>`) only to target a DIFFERENT project than your current one."""
-        return crib.code_graph(symbol, direction, depth, _project(crib, project, project_path))
+        res = _resolve(crib, project, project_path)
+        return _echo_dict(crib.code_graph(symbol, direction, depth, res.project), res)
 
     @mcp.tool()
     async def code_append(symbol: str, text: str, project: str | None = None,
@@ -571,8 +610,9 @@ def build_server(crib: Crib | None = None):
     @mcp.tool()
     def current_project(project_path: str | None = None) -> dict[str, Any]:
         """Show this session's current project (seeding it from `project_path`/.crib if not
-        yet set), plus the available projects."""
-        return {"current_project": _project(crib, None, project_path),
+        yet set), how it resolved, plus the available projects."""
+        res = _resolve(crib, None, project_path)
+        return {"current_project": res.project, "resolved_via": res.via,
                 "projects": crib.projects()}
 
     return mcp

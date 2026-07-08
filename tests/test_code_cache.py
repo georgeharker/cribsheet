@@ -3,7 +3,7 @@
 The cache keeps parsed symbols and description embeddings resident so a `code_*`
 query need not re-parse every TOML or re-embed every description; it invalidates
 by an in-process epoch (`trust`) or the symbol_index dir signature (`scan`). The
-code watcher coalesces bursts per project; `_index_file_sync`/`_drop_file` bump
+code watcher coalesces bursts per project; `_index_code_file_tracked`/`_drop_file` bump
 the epoch under a per-project lock.
 """
 
@@ -123,7 +123,7 @@ def test_revalidate_reindexes_merge_dirtied_file(crib, tmp_path, monkeypatch):
 
     reindexed: list[str] = []
     monkeypatch.setattr(
-        crib, "_index_file_sync",
+        crib, "_index_code_file_tracked",
         lambda root, rel, proj, patch_edges, existing=None: reindexed.append(rel))
     crib._revalidate("p")
     assert reindexed == []                               # fresh toml, real hash → clean
@@ -145,7 +145,7 @@ def test_spurious_delete_reindexes_instead_of_dropping(crib, tmp_path, monkeypat
     dropped: list[str] = []
     indexed: list[str] = []
     monkeypatch.setattr(crib, "_drop_file", lambda p, r: dropped.append(r))
-    monkeypatch.setattr(crib, "_index_file_sync",
+    monkeypatch.setattr(crib, "_index_code_file_tracked",
                         lambda rt, rel, p, patch_edges: indexed.append(rel))
     run(crib._on_code_change("p", {"pkg/mod.py": (str(root), True),      # exists!
                                    "pkg/gone.py": (str(root), True)}))   # really gone
@@ -160,7 +160,7 @@ def test_on_code_change_pumps_watched_files_into_lsp_pool(crib, monkeypatch):
     pumped: list = []
     monkeypatch.setattr(ci._POOL, "notify_changes",
                         lambda root, changes: pumped.append((str(root), sorted(changes))))
-    monkeypatch.setattr(crib, "_index_file_sync", lambda *a, **k: None)
+    monkeypatch.setattr(crib, "_index_code_file_tracked", lambda *a, **k: None)
     monkeypatch.setattr(crib, "_drop_file", lambda *a, **k: None)
     run(crib._on_code_change("p", {"pkg/mod.py": ("/src/repo", False),
                                    "pkg/gone.py": ("/src/repo", True)}))
@@ -179,7 +179,7 @@ def test_reconcile_rebuilds_merge_dirtied_files(crib, tmp_path, monkeypatch):
 
     reindexed: list[str] = []
     monkeypatch.setattr(
-        crib, "_index_file_sync",
+        crib, "_index_code_file_tracked",
         lambda root, rel, proj, patch_edges, existing=None: reindexed.append(rel))
     out = run(crib._reindex_dirty_code())
     assert out == {"p": 1}                               # one FILE rebuilt…
@@ -222,7 +222,7 @@ def test_on_code_change_falls_back_to_revalidate_on_large_burst(crib, monkeypatc
     revalidated: list[str] = []
     per_file: list[str] = []
     monkeypatch.setattr(crib, "_revalidate", lambda proj: revalidated.append(proj))
-    monkeypatch.setattr(crib, "_index_file_sync",
+    monkeypatch.setattr(crib, "_index_code_file_tracked",
                         lambda root, rel, proj, patch: per_file.append(rel))
     from crib.watch import CODE_BATCH_FALLBACK
 
@@ -267,7 +267,7 @@ def test_partial_extract_reconfirms_before_trusting_shrink(crib, tmp_path, monke
 
     monkeypatch.setattr(ci, "extract_file", fake_extract)
     monkeypatch.setattr(ci, "describe_file", lambda *a, **k: {})
-    out = crib._index_file_sync(root, "m.py", "p", patch_edges=False)
+    out = crib._index_code_file_tracked(root, "m.py", "p", patch_edges=False)
     assert settles == [1.5, 3.0]                # fast read → slow confirmation
     assert out["symbols"] == 2                  # the full set won
     kept = {e["fqname"] for e in SymbolIndex(crib.paths.project_dir("p")).all()}

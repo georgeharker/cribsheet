@@ -161,7 +161,7 @@ class Crib:
         # query vs explicit index) can't corrupt the cross-file call graph.
         self._code_cache: dict[str, _ResidentCode] = {}
         self._code_epoch: dict[str, int] = {}
-        # In-flight code indexing (project → files currently in _index_file_sync),
+        # In-flight code indexing (project → files currently in _index_code_file_tracked),
         # surfaced by `status` so "what's indexing right now" is answerable.
         self._indexing: dict[str, list[str]] = {}
         # Sweep progress (project → {done, total}) — a RELIABLE wait signal for an
@@ -250,7 +250,7 @@ class Crib:
                     # Trusting it evicted whole files' symbols; the file's actual
                     # state at dispatch time (post-debounce) is the truth.
                     await asyncio.to_thread(
-                        self._index_file_sync, Path(root), relpath, project, True)
+                        self._index_code_file_tracked, Path(root), relpath, project, True)
             except Exception:  # noqa: BLE001 — one bad file never aborts the batch
                 pass
 
@@ -567,7 +567,7 @@ class Crib:
                 async with sem:
                     try:
                         await asyncio.to_thread(
-                            self._index_file_sync, root, rel, proj, True)
+                            self._index_code_file_tracked, root, rel, proj, True)
                         return True
                     except Exception:  # noqa: BLE001 — the lazy gate backstops
                         return False
@@ -843,17 +843,17 @@ class Crib:
         root = find_root(p)
         rel = str(p.relative_to(root))
         proj = self.resolve_project(project, cwd)
-        return await asyncio.to_thread(self._index_file_sync, root, rel, proj, patch_edges)
+        return await asyncio.to_thread(self._index_code_file_tracked, root, rel, proj, patch_edges)
 
-    def _index_file_sync(self, root: Path, rel: str, proj: str,
+    def _index_code_file_tracked(self, root: Path, rel: str, proj: str,
                          patch_edges: bool,
                          existing: dict[str, dict] | None = None) -> dict[str, Any]:
         """Tracked entry point for one-file indexing: registers (proj, rel) as
-        in-flight for `status`, then runs `_index_file_inner`."""
+        in-flight for `status`, then runs `_index_code_file`."""
         with self._indexing_lock:
             self._indexing.setdefault(proj, []).append(rel)
         try:
-            return self._index_file_inner(root, rel, proj, patch_edges, existing)
+            return self._index_code_file(root, rel, proj, patch_edges, existing)
         finally:
             with self._indexing_lock:
                 files = self._indexing.get(proj, [])
@@ -894,7 +894,7 @@ class Crib:
                 out.append((ref["project"], nested, files))
         return out
 
-    def _index_file_inner(self, root: Path, rel: str, proj: str,
+    def _index_code_file(self, root: Path, rel: str, proj: str,
                           patch_edges: bool,
                           existing: dict[str, dict] | None = None) -> dict[str, Any]:
         """The blocking core of code_index — extract + describe + persist one file. Sync
@@ -1141,8 +1141,7 @@ class Crib:
         whose call resolved to the wrong/empty project."""
         from .codeindex import SymbolIndex
         out = []
-        for p in self.projects():
-            name = p["project"] if isinstance(p, dict) else p
+        for name in self.projects():
             si = SymbolIndex(self.paths.project_dir(name))
             if si.is_populated():
                 out.append({"project": name, "symbols": len(si.all())})
@@ -1185,7 +1184,7 @@ class Crib:
                 continue
             if rel in dirty or cur > base_mt:   # merge-dirtied, or edited after indexing
                 try:                         # (content_hash gate no-ops if unchanged)
-                    self._index_file_sync(root, rel, proj, patch_edges=True)
+                    self._index_code_file_tracked(root, rel, proj, patch_edges=True)
                 except Exception:  # noqa: BLE001 — keep the stale entry over a failed query
                     pass
 
@@ -1345,7 +1344,7 @@ class Crib:
         existing = {e["fqname"]: e for e in SymbolIndex(self.paths.project_dir(proj)).all()}
         # Index files CONCURRENTLY, bounded by [generate].concurrency (same default as
         # the notes describe path). The per-file describe is a network-bound LLM call
-        # and _index_file_sync takes the project lock only for the tiny write (not the
+        # and _index_code_file_tracked takes the project lock only for the tiny write (not the
         # LLM), so N-at-once cuts the cold-onboard wall-clock ~N×. Bulk sweep pins the
         # root to the project's `.crib` root (consistent source_root) and skips the
         # per-file edge-patch (the LSP hands each file its cross-file edges directly).
@@ -1377,7 +1376,7 @@ class Crib:
             rel = str(f.resolve().relative_to(root.resolve()))
             async with sem:
                 try:
-                    r = await asyncio.to_thread(self._index_file_sync, root, rel, proj,
+                    r = await asyncio.to_thread(self._index_code_file_tracked, root, rel, proj,
                                                 False, existing)
                     return f, r, None
                 except Exception as exc:  # noqa: BLE001 — one bad file never aborts the sweep
@@ -2323,12 +2322,14 @@ class Crib:
                 res = await self.index.index_file(proj, nd, relpath, content_path=src)
                 if res.changed:
                     indexed.append(relpath)
-        # Prune docs removed from the source tree (indexed under this prefix but
-        # no longer on disk): re-index with a now-missing content_path drops them.
+        # Prune so the `docs:` globs are AUTHORITATIVE: anything indexed under this
+        # prefix that the current globs no longer match is dropped — whether it was
+        # removed from the source tree OR indexed out-of-glob by the watcher (which
+        # now filters by the same globs, but this cleans up ones that leaked in
+        # before that). The source file, if any, stays; crib only owned the index.
         removed = 0
         for rp in self._indexed_relpaths(proj, prefix) - seen:
-            res = await self.index.index_file(proj, nd, rp, content_path=self.abspath(proj, rp))
-            removed += res.deleted
+            removed += await self.index.forget(proj, rp)
         return {"project": proj, "root": str(link.root), "prefix": prefix,
                 "docs": len(seen), "changed": len(indexed), "removed": removed}
 

@@ -42,9 +42,17 @@ def test_code_watcher_decode_filters(tmp_path):
     # a delete of a genuinely-missing file decodes as deleted
     g = root / "src" / "gone.py"
     assert cw._decode(str(g), True) == ("proj", str(root.resolve()), "src/gone.py", True)
-    # a doc under the watched root → routed as an in-situ doc (\x00doc\x00-tagged)
+    # docs are scoped to the `.crib docs:` globs (same as the sweep): with no
+    # matching glob, a doc-ext file is NOT indexed regardless of how it arrived.
+    assert cw._decode(str(root / "README.md"), False) is None
+    # declare the globs → a MATCHING doc routes as an in-situ doc (\x00doc\x00-tagged)
+    (root / ".crib").write_text('project: proj\ndocs:\n  - "README.md"\n  - "docs/**/*.md"\n')
     assert cw._decode(str(root / "README.md"), False) == (
         "proj", str(root.resolve()), "\x00doc\x00README.md", False)
+    assert cw._decode(str(root / "docs" / "guide.md"), False) == (
+        "proj", str(root.resolve()), "\x00doc\x00docs/guide.md", False)
+    # a doc-ext file OUTSIDE the globs → filtered (not ours to index)
+    assert cw._decode(str(root / "scratch.md"), False) is None
     # a non-code, non-doc extension → ignored
     assert cw._decode(str(root / "a.png"), False) is None
     # junk dir → ignored

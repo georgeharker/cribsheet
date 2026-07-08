@@ -37,9 +37,10 @@ docs (`index_docs_insitu`), the Claude-memory mirror (`import_claude_memory` /
 - **Source-owned** docs are indexed **in-situ**: the repo's `.crib` `docs:`
   globs are swept by `index_docs_insitu`; `SourceRoots` (`crib/sources.py`,
   `doc-sources.json`) records repo→root so `read`/`locate` return the *repo*
-  path. The source watcher reindexes them on save. Note an asymmetry: the
-  watcher indexes *any* doc-extension file under a watched root, the sweep only
-  declared globs (see ledger).
+  path. The source watcher reindexes them on save — and filters by the SAME
+  `docs:` globs the sweep honors (`_matches_doc_globs`), so which docs get indexed
+  no longer depends on how the change arrived; the sweep's prune drops anything
+  under the prefix the globs don't match, making `docs:` authoritative.
 
 ## 3. Retrieval (notes)
 
@@ -64,8 +65,8 @@ fold in via config or per-call overrides.
    full doc set didOpen'd (`LspSessionPool.pin_docs`) for the sweep — an open
    doc is in the server's analysis set even when its own discovery would miss
    it. Released in the sweep's `finally`.
-3. **Per file** — `_index_file_sync` (the tracked wrapper: registers in-flight
-   state for `status`) → `_index_file_inner`:
+3. **Per file** — `_index_code_file_tracked` (the tracked wrapper: registers
+   in-flight state for `status`) → `_index_code_file`:
    - skip guards: in-tree ref checkouts, nested projects;
    - `extract_file` (`crib/codeindex.py`) — structural facet via the warm LSP
      session (below): one `documentSymbol` pass, callHierarchy + references per
@@ -192,35 +193,54 @@ Found while writing this map; none are bugs, all are friction.
 1. **`crib/app.py` is a 2,500-line god object.** Crib holds notes CRUD,
    retrieval, the whole code-index pipeline, learnings, refs, git, mirrors,
    status. Natural seams: `codeproject.py` (indexing pipeline + resident cache
-   + revalidation), `refs.py`, `learnings.py`. The `_index_file_inner` body
+   + revalidation), `refs.py`, `learnings.py`. The `_index_code_file` body
    alone is ~120 lines of guards + describe + write.
-2. **Two CLI dispatch tables.** `_verb_call` (daemon path) and
-   `_run_inprocess` (in-process path) each enumerate every verb — adding a verb
-   means editing both plus the parser plus an emitter. A single verb registry
-   (parser spec + tool name + arg mapper + emitter) would collapse three
-   hand-maintained if-chains.
-3. **`extract_file`/`_extract` is ~150 lines** mixing session mgmt, doc
-   lifecycle, symbol walking, edge collection, and entry assembly. The edge
-   collectors (calls/called_by/references) are three near-identical
-   locate-and-append loops.
-4. **`elaborate`/`summarize` are near-duplicates** (`_generate_index` covers
-   both, but their CLI/MCP/docstring surfaces repeat the distinction in four
-   places).
-5. **Doc-glob asymmetry** (§2): the watcher indexes any doc-extension file
-   under a watched root; the sweep honors `.crib` `docs:` globs. Either the
-   watcher should filter by the globs, or the sweep should take all doc files —
-   currently which docs are indexed depends on *how* they arrived.
-6. **`code_indexed_projects` defensive shape-check** (`p["project"] if
-   isinstance(p, dict) else p`) — `projects()` returns `list[str]`; the dict
-   branch is dead code from an older shape.
-7. **Session project state vs write-elicitation** both live in `server.py`
-   helpers (`_project`, `_write_project`, `_write_project_elicit`,
-   `_source_project`) with subtly different precedence rules each — a
-   `ProjectResolution` object with named policies would make the four variants
-   legible.
-8. **`_RAW_PRINT` + per-verb emitter if-chain in `cli.py`** — same growth
-   problem as (2); emitters keyed by verb in one dict would do.
-9. **Naming**: `_index_file_sync` (tracked wrapper) vs `_index_file_inner`
-   (work) vs `IndexEngine.index_file` (notes!) — three "index file" spellings
-   across two unrelated pipelines invite the exact confusion this doc exists
-   to dispel.
+2. **~~Two CLI dispatch tables.~~ ✓ Resolved (2026-07-07).** The daemon
+   arg-mapper (`_verb_call`), the in-process dispatcher (`_run_inprocess`), and
+   the emitter switch collapsed into one `VERBS` registry (`crib/cli.py`): one
+   `Verb` row per verb (tool name + arg-builder + emitter + method/async/cwd
+   flags), and two ~12-line dispatchers (`_run_daemon`/`_run_inprocess`) that
+   differ only in `project_path`-str-vs-`cwd`-Path and sync-vs-`asyncio.run`.
+   Adding a verb is now one row. (Folds in #8.)
+3. **~~`extract_file`/`_extract` is ~150 lines.~~ ✓ Resolved (2026-07-07).** Split
+   by concern: `_extract` is now a lifecycle skeleton (acquire → open/sync doc →
+   quiescence → walk → teardown); the ~65-line loop body became `_symbol_entry`
+   (one documentSymbol node → one record, or None if filtered), sharing per-file
+   invariants via an `_ExtractCtx`; the reference loop became `_reference_edges`,
+   symmetric with the `_hierarchy_edges` callHierarchy collector. `opened`/`sym_cache`
+   stay single objects through the ctx so the "close only what THIS call opened,
+   keep the pins" teardown is byte-for-byte unchanged.
+4. **~~`elaborate`/`summarize` are near-duplicates.~~ ✓ Resolved (2026-07-07).**
+   Dispatch is deduped by the #2 registry; the CLI parser's two identical blocks
+   collapsed to one loop. The remaining two surfaces (the `@mcp.tool()` pair and
+   the `Crib.elaborate`/`summarize` methods) are *intentionally* distinct — each
+   is a thin wrapper over `_generate_index` whose user-facing docstring carries
+   the real keyword_index-vs-summary_index distinction; merging them would hurt
+   the tool/method surface, not help it.
+5. **~~Doc-glob asymmetry.~~ ✓ Resolved (2026-07-07).** The watcher now filters
+   doc-extension events by the project's `.crib` `docs:` globs (`_matches_doc_globs`,
+   `full_match` mirroring the sweep's `Path.glob` — hence the py3.13 floor), so it
+   and the sweep agree on which prose is a doc regardless of arrival. The sweep's
+   prune is authoritative too: `index_docs_insitu` now `forget`s (index-only drop)
+   anything under the prefix the globs no longer match — cleaning up docs that
+   leaked in before the filter — rather than re-indexing on-disk stragglers.
+6. **~~`code_indexed_projects` defensive shape-check.~~ ✓ Resolved (2026-07-07).**
+   The dead `isinstance(p, dict)` branch is gone — `projects()` returns
+   `list[str]`, so the loop iterates names directly.
+7. **~~Session project state vs write-elicitation.~~ ✓ Resolved (2026-07-07).**
+   The read policy now flows through a `ProjectResolution` (`crib/session.py`:
+   project + how it resolved — `explicit`/`path`/`session`/`seed`), with the three
+   policies documented together as one block above the `server.py` helpers
+   (`_resolve`/`_project` = reads, `_source_project` = repo-scoped, `_write_project`
+   = must-name). This also fixed the real bug behind it — the combiner-global sticky
+   leak (config `isolate: true`, matching svg-mcp) — with the read code tools now
+   *echoing* an implicit resolution so a wrong one is visible. See
+   [todos.md](../todos.md) "Resolved → Sticky session project".
+8. **~~`_RAW_PRINT` + per-verb emitter if-chain in `cli.py`.~~ ✓ Resolved
+   (2026-07-07).** Folded into #2: each `Verb` carries its own `emit` callback,
+   so the emitter switch and the `_RAW_PRINT` set are gone (raw-print verbs just
+   use a `print` emitter).
+9. **~~Naming: three "index file" spellings.~~ ✓ Resolved (2026-07-07).** The
+   code-index pair renamed to `_index_code_file_tracked` (the tracked wrapper)
+   and `_index_code_file` (the work), so neither collides with the notes
+   pipeline's `IndexEngine.index_file`.
