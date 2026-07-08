@@ -33,6 +33,7 @@ from .embed import build_embedder
 from .gitbacking import GitBacking
 from .indexer import IndexEngine, IndexResult
 from .notes import Note
+from .notestore import NoteStore
 from .paths import Paths
 from .sources import SRC_PREFIX, SourceRoots, src_relpath
 from .store import Hit, Store
@@ -104,6 +105,10 @@ class Crib:
                                  summary_terms=self._summary_terms)
         self.git = GitBacking(paths.data_dir)
         self.versions = VersionRing(paths.versions_dir, config.versions_keep)
+        # Note-file store: path resolution + the write path (stash→save→index) over the
+        # shared backends (store/index/versions stay Crib attrs — retrieval, docs,
+        # import, generation all use them). Crib keeps delegators (below).
+        self.notestore = NoteStore(paths, store, self.index, self.versions)
         self.memory_bindings = MemoryBindings(paths.data_dir / "memory-bindings.json")
         self._reranker: Any = None      # lazy cross-encoder, warm for the daemon
         self._watcher: Watcher | None = None
@@ -256,9 +261,7 @@ class Crib:
         return resolve_project(self.config, project, cwd)
 
     def notes_dir(self, project: str) -> Path:
-        d = self.paths.notes_dir(project)
-        d.mkdir(parents=True, exist_ok=True)
-        return d
+        return self.notestore.dir(project)
 
     def _keyword_terms(self, project: str, section_hash: str,
                        labels: tuple[str, ...]) -> list[str]:
@@ -281,31 +284,13 @@ class Crib:
 
     def _source_roots(self, project: str) -> "SourceRoots":
         """Per-project registry of docs indexed in-situ (prefix -> repo root)."""
-        from .sources import SourceRoots
-        return SourceRoots(self.paths.project_dir(project) / "doc-sources.json")
+        return self.notestore.source_roots(project)
 
     def abspath(self, project: str, relpath: str) -> Path:
-        """On-disk file for a note. Source-anchored docs (`sources/<repo>/…`)
-        resolve to the repo file via the registry; everything else lives under the
-        crib notes tree."""
-        if relpath.startswith(SRC_PREFIX):
-            src = self._source_roots(project).resolve(relpath)
-            if src is not None:
-                return src
-        return self.notes_dir(project) / relpath
+        return self.notestore.abspath(project, relpath)
 
     async def _write_note(self, project: str, relpath: str, note: Note) -> IndexResult:
-        """Stash prior content (ring), write atomically, then index."""
-        path = self.abspath(project, relpath)
-        if path.exists():
-            existing = notes.load(path)
-            if existing.id:
-                self.versions.stash(existing.id, notes.serialize(
-                    existing.frontmatter, existing.body))
-        notes.ensure_id(note)
-        note.path = path
-        notes.save_atomic(note)
-        return await self.index.index_file(project, self.notes_dir(project), relpath)
+        return await self.notestore.write(project, relpath, note)
 
     # --- tool verbs --------------------------------------------------------
     # near-duplicate nudge: a stored note whose probe matches an existing note
