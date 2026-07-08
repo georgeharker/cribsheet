@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "def _hierarchy_edges(c: LspClient, method: str, item: dict, key: str,"
 description = ""
 line = 826
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = [
   "_locate [crib/codeindex.py]",

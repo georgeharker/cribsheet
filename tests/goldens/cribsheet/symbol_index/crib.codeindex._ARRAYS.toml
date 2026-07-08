@@ -8,8 +8,8 @@ content_hash = "f1433bc040f3be17"
 file = "crib/codeindex.py"
 signature = "_ARRAYS = (\"container\", \"calls\", \"called_by\", \"references\", \"name_terms\")"
 description = ""
-line = 1132
-mtime = 1783533619000000000
+line = 1265
+mtime = 1783544236000000000
 container = []
 calls = []
 called_by = []

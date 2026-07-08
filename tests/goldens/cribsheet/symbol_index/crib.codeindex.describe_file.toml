@@ -8,8 +8,8 @@ content_hash = "3ba021b17cb0fbd8"
 file = "crib/codeindex.py"
 signature = "def describe_file(gen_cfg: Any, root: Path, relpath: str) -> dict[str, str]:"
 description = ""
-line = 1051
-mtime = 1783533619000000000
+line = 1184
+mtime = 1783544236000000000
 container = []
 calls = [
   "_describe_rows [crib/codeindex.py]",

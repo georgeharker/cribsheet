@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "def wait_quiescent(self, initial: float, timeout: float) -> None:"
 description = ""
 line = 432
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = [
   "LspClient",
 ]

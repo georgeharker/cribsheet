@@ -4,12 +4,12 @@ kind = "function"
 lang = "python"
 module = "tests.test_codeindex"
 parent = ""
-content_hash = "9c1cc6f7cbfa746b"
+content_hash = "dbce470c222697e1"
 file = "tests/test_codeindex.py"
 signature = "def test_render_parse_roundtrip_including_empty_arrays():"
 description = ""
-line = 269
-mtime = 1783533619000000000
+line = 298
+mtime = 1783544236000000000
 container = []
 calls = [
   "_parse [crib/codeindex.py]",

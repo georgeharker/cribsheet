@@ -8,8 +8,8 @@ content_hash = "8c616af5f833ab30"
 file = "crib/codeindex.py"
 signature = "_SLUG_UNSAFE = re.compile(r\"[^A-Za-z0-9._-]+\")"
 description = ""
-line = 1160
-mtime = 1783533619000000000
+line = 1293
+mtime = 1783544236000000000
 container = []
 calls = []
 called_by = []

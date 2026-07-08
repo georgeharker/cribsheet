@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "def pin_docs(self, root: Path, label: str, argv: list[str], spec: dict,"
 description = ""
 line = 572
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = [
   "LspSessionPool",
 ]

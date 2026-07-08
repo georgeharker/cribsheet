@@ -4,12 +4,12 @@ kind = "constant"
 lang = "python"
 module = "crib.codeindex"
 parent = ""
-content_hash = "71a7919f69bc2bec"
+content_hash = "b33828ecf5fdcdab"
 file = "crib/codeindex.py"
 signature = "DESCRIBE_SCHEMA: dict[str, Any] = {"
 description = ""
-line = 1031
-mtime = 1783533619000000000
+line = 1164
+mtime = 1783544236000000000
 container = []
 calls = []
 called_by = []

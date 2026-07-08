@@ -4,12 +4,12 @@ kind = "method"
 lang = "python"
 module = "crib.codeindex"
 parent = "crib.codeindex.LspClient"
-content_hash = "38c80d8555d55d20"
+content_hash = "e5a78d79670ea850"
 file = "crib/codeindex.py"
 signature = "def _send(self, msg: dict) -> None:"
 description = ""
 line = 334
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = [
   "LspClient",
 ]

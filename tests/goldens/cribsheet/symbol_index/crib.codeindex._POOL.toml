@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "_POOL = LspSessionPool()"
 description = ""
 line = 634
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = []
 called_by = []

@@ -8,8 +8,8 @@ content_hash = "324b33f7ba3823b4"
 file = "crib/codeindex.py"
 signature = "DESCRIBE_SYSTEM = ("
 description = ""
-line = 1040
-mtime = 1783533619000000000
+line = 1173
+mtime = 1783544236000000000
 container = []
 calls = []
 called_by = []

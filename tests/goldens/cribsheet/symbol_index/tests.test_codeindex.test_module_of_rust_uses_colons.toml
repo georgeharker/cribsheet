@@ -9,7 +9,7 @@ file = "tests/test_codeindex.py"
 signature = "def test_module_of_rust_uses_colons():"
 description = ""
 line = 27
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = [
   "_module_of [crib/codeindex.py]",

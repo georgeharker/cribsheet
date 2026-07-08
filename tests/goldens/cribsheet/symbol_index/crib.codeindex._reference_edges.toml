@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "def _reference_edges(ctx: _ExtractCtx, pos: dict, local: str) -> list[str]:"
 description = ""
 line = 886
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = [
   "_enclosing_symbol [crib/codeindex.py]",

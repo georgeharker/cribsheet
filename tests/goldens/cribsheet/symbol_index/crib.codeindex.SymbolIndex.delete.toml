@@ -8,8 +8,8 @@ content_hash = "89c3ad4b142157cd"
 file = "crib/codeindex.py"
 signature = "def delete(self, fqname: str) -> bool:"
 description = ""
-line = 1221
-mtime = 1783533619000000000
+line = 1354
+mtime = 1783544236000000000
 container = [
   "SymbolIndex",
 ]

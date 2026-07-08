@@ -4,12 +4,12 @@ kind = "function"
 lang = "python"
 module = "tests.test_codeindex"
 parent = ""
-content_hash = "796f64e44fd81217"
+content_hash = "8045edf06e8e50ba"
 file = "tests/test_codeindex.py"
 signature = "def test_find_root_walks_past_submodule_to_top_level(tmp_path):"
 description = ""
-line = 217
-mtime = 1783533619000000000
+line = 246
+mtime = 1783544236000000000
 container = []
 calls = [
   "find_root [crib/codeindex.py]",

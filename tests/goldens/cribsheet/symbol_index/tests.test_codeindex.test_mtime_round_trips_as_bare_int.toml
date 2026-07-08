@@ -4,12 +4,12 @@ kind = "function"
 lang = "python"
 module = "tests.test_codeindex"
 parent = ""
-content_hash = "d78bcf3456b20d36"
+content_hash = "ddc31e1788d95a70"
 file = "tests/test_codeindex.py"
 signature = "def test_mtime_round_trips_as_bare_int():"
 description = ""
-line = 233
-mtime = 1783533619000000000
+line = 262
+mtime = 1783544236000000000
 container = []
 calls = [
   "_parse [crib/codeindex.py]",

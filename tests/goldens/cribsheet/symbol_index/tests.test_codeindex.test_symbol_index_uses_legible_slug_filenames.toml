@@ -9,7 +9,7 @@ file = "tests/test_codeindex.py"
 signature = "def test_symbol_index_uses_legible_slug_filenames(tmp_path):"
 description = ""
 line = 49
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = [
   "SymbolIndex [crib/codeindex.py]",

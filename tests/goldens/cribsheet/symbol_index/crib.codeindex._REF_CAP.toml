@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "_REF_CAP = 80  # references resolved per symbol — bounds worst-case on hot helpers"
 description = ""
 line = 714
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = []
 called_by = []

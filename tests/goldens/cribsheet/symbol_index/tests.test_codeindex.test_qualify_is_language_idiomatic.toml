@@ -9,7 +9,7 @@ file = "tests/test_codeindex.py"
 signature = "def test_qualify_is_language_idiomatic():"
 description = ""
 line = 132
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = [
   "_qualify [crib/codeindex.py]",

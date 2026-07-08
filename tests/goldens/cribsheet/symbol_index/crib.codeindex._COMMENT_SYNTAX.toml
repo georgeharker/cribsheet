@@ -1,0 +1,26 @@
+fqname = "crib.codeindex._COMMENT_SYNTAX"
+name = "_COMMENT_SYNTAX"
+kind = "constant"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "cd7197701c1a9ecb"
+file = "crib/codeindex.py"
+signature = "_COMMENT_SYNTAX: dict[str, dict] = {"
+description = ""
+line = 920
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_leading_comment [crib/codeindex.py]",
+]
+name_terms = [
+  "_COMMENT_SYNTAX",
+  "codeindex",
+  "comment",
+  "crib",
+  "crib.codeindex._COMMENT_SYNTAX",
+  "syntax",
+]
