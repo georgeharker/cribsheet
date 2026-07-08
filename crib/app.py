@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 from . import claudemem, notes
 from .chunk import section_line_map
 from .claudemem import MemoryBindings
+from .codestore import CodeStore, _ResidentCode
 from .config import (Config, CribLink, ProjectConfig, portable_path,
                      resolve_project)
 from .embed import build_embedder
@@ -63,54 +64,6 @@ class LookupHit:
     score: float
     line_start: int | None = None   # 1-based span of the section in the file,
     line_end: int | None = None     # resolved against current disk (None if gone)
-
-
-class _ResidentCode:
-    """A project's code index kept RESIDENT so a `code_*` query need not re-parse
-    every symbol TOML and re-embed every description (the dominant cost). Built once
-    per freshness token (`tok`); rebuilt only when the token changes — and even then
-    description embeddings are reused by description text, so an unchanged symbol is
-    never re-embedded. Holds the parsed entries, an fqname index, the description→
-    vector map, and the precomputed dense/sparse query arrays (`_prepare`)."""
-
-    def __init__(self, tok: Any, entries: list[dict[str, Any]],
-                 emb: dict[str, list[float]]) -> None:
-        self.tok = tok
-        self.entries = entries
-        self.emb = emb                                       # description text → vector
-        self.by_fq: dict[str, dict[str, Any]] = {e["fqname"]: e for e in entries}
-        self._prepare()
-
-    def by_fqname(self, name: str) -> list[dict[str, Any]]:
-        """Entries whose fqname is, ends with `.name`, or has last segment `name` —
-        the resident mirror of SymbolIndex.by_fqname (no disk read)."""
-        return [e for e in self.entries
-                if e["fqname"] == name or e["fqname"].endswith("." + name)
-                or e["fqname"].split(".")[-1] == name]
-
-    def _prepare(self) -> None:
-        from .retrieve import BM25, _as_tf
-        # Only symbols with a description or name terms are query candidates.
-        self.lk = [e for e in self.entries
-                   if e.get("description") or e.get("name_terms")]
-        self.lk_ids = [e["fqname"] for e in self.lk]
-        self.bm25 = BM25([_as_tf([t.lower() for t in (e.get("name_terms") or [])])
-                          for e in self.lk])
-        self._dense: list[list[float] | None] | None = None   # built lazily (code_lookup only)
-
-    def dense(self, embedder: Any) -> list[list[float] | None]:
-        """Dense vectors aligned to `lk` — embedding only the descriptions not already
-        cached in `emb` (reused across queries AND across reloads). ONLY code_lookup
-        needs these, so dossier/graph/xref never pay to embed."""
-        if self._dense is None:
-            missing = list(dict.fromkeys(
-                e["description"] for e in self.lk
-                if e.get("description") and e["description"] not in self.emb))
-            if missing:
-                self.emb.update(zip(missing, embedder.embed(missing)))
-            self._dense = [self.emb.get(e["description"]) if e.get("description")
-                           else None for e in self.lk]
-        return self._dense
 
 
 def _resolve_embed_config(config: Config) -> Any:
@@ -154,23 +107,10 @@ class Crib:
         self._code_watcher: CodeWatcher | None = None
         self._mirror: Any = None        # MemoryMirror, started by the daemon
         self._on_close: Callable[[], None] | None = None
-        # Resident code index (per project): parsed symbols + description embeddings,
-        # so a query skips the full TOML re-parse + re-embed. `_code_epoch` bumps on
-        # every in-process index write (trust-mode invalidation); `_code_locks`
-        # serialize the store read-modify-write so concurrent reindexes (watcher vs
-        # query vs explicit index) can't corrupt the cross-file call graph.
-        self._code_cache: dict[str, _ResidentCode] = {}
-        self._code_epoch: dict[str, int] = {}
-        # In-flight code indexing (project → files currently in _index_code_file_tracked),
-        # surfaced by `status` so "what's indexing right now" is answerable.
-        self._indexing: dict[str, list[str]] = {}
-        # Sweep progress (project → {done, total}) — a RELIABLE wait signal for an
-        # agent polling `status` on a background index: present while the sweep
-        # runs, gone when it finishes.
-        self._sweeps: dict[str, dict[str, int]] = {}
-        self._indexing_lock = threading.Lock()
-        self._code_locks: dict[str, threading.Lock] = {}
-        self._code_locks_guard = threading.Lock()
+        # The code subsystem's shared per-project state (resident cache, freshness
+        # epoch, write locks, in-flight/sweep tracking) — owned by CodeStore; the
+        # methods below reach through `self.code` (codestore.py).
+        self.code = CodeStore()
 
     # --- construction ------------------------------------------------------
     @classmethod
@@ -850,17 +790,17 @@ class Crib:
                          existing: dict[str, dict] | None = None) -> dict[str, Any]:
         """Tracked entry point for one-file indexing: registers (proj, rel) as
         in-flight for `status`, then runs `_index_code_file`."""
-        with self._indexing_lock:
-            self._indexing.setdefault(proj, []).append(rel)
+        with self.code.indexing_lock:
+            self.code.indexing.setdefault(proj, []).append(rel)
         try:
             return self._index_code_file(root, rel, proj, patch_edges, existing)
         finally:
-            with self._indexing_lock:
-                files = self._indexing.get(proj, [])
+            with self.code.indexing_lock:
+                files = self.code.indexing.get(proj, [])
                 if rel in files:
                     files.remove(rel)
                 if not files:
-                    self._indexing.pop(proj, None)
+                    self.code.indexing.pop(proj, None)
 
     def _ref_edge_ctx(self, proj: str, root: Path | None = None) -> "RefProjects":
         """`extract_file`'s cross-project attribution context: each `.crib` ref's
@@ -1054,14 +994,14 @@ class Crib:
     # ── Resident code cache: lock + epoch + freshness ─────────────────────────
     def _code_lock(self, proj: str) -> threading.Lock:
         """Per-project lock guarding the symbol_index read-modify-write."""
-        with self._code_locks_guard:
-            lk = self._code_locks.get(proj)
+        with self.code.locks_guard:
+            lk = self.code.locks.get(proj)
             if lk is None:
-                lk = self._code_locks[proj] = threading.Lock()
+                lk = self.code.locks[proj] = threading.Lock()
             return lk
 
     def _bump_code_epoch(self, proj: str) -> None:
-        self._code_epoch[proj] = self._code_epoch.get(proj, 0) + 1
+        self.code.epoch[proj] = self.code.epoch.get(proj, 0) + 1
 
     def _code_freshness(self) -> str:
         return getattr(self.config.retrieve, "code_freshness", "scan")
@@ -1099,7 +1039,7 @@ class Crib:
         `trust` mode (no stat), the dir signature in `scan` mode (catches external
         writes too)."""
         if self._code_freshness() == "trust":
-            return ("epoch", self._code_epoch.get(proj, 0))
+            return ("epoch", self.code.epoch.get(proj, 0))
         return ("sig", self._dir_sig(proj))
 
     def _resident_code(self, proj: str) -> _ResidentCode:
@@ -1108,12 +1048,12 @@ class Crib:
         the lazy source revalidation once (catches edits made while the daemon — and
         its watcher — were down); when warm, we skip it in `trust` mode and whenever
         the watcher already covers the project (edits refreshed eagerly on save)."""
-        rc = self._code_cache.get(proj)
+        rc = self.code.cache.get(proj)
         if rc is None or (self._code_freshness() == "scan"
                           and not self._code_watched(proj)):
             self._revalidate(proj)                          # source → index freshness
         tok = self._code_tok(proj)
-        rc = self._code_cache.get(proj)
+        rc = self.code.cache.get(proj)
         if rc is not None and rc.tok == tok:
             return rc
         return self._reload_code(proj, tok, rc)
@@ -1133,7 +1073,7 @@ class Crib:
                                       if e.get("description"))
                if d in prev_emb}
         rc = _ResidentCode(tok, entries, emb)
-        self._code_cache[proj] = rc
+        self.code.cache[proj] = rc
         return rc
 
     def code_indexed_projects(self) -> list[dict[str, Any]]:
@@ -1382,14 +1322,14 @@ class Crib:
                 except Exception as exc:  # noqa: BLE001 — one bad file never aborts the sweep
                     return f, None, str(exc)
                 finally:
-                    with self._indexing_lock:   # live progress for `status` pollers
-                        if proj in self._sweeps:
-                            self._sweeps[proj]["done"] += 1
+                    with self.code.indexing_lock:   # live progress for `status` pollers
+                        if proj in self.code.sweeps:
+                            self.code.sweeps[proj]["done"] += 1
 
         syms = desc = indexed = 0
         errors: list[dict[str, str]] = []
-        with self._indexing_lock:
-            self._sweeps[proj] = {"done": 0, "total": len(files)}
+        with self.code.indexing_lock:
+            self.code.sweeps[proj] = {"done": 0, "total": len(files)}
         try:
             for f, r, err in await asyncio.gather(*(_one(f) for f in files)):
                 if err is not None:
@@ -1399,8 +1339,8 @@ class Crib:
                     syms += (r or {}).get("symbols", 0)
                     desc += (r or {}).get("described", 0)
         finally:
-            with self._indexing_lock:
-                self._sweeps.pop(proj, None)
+            with self.code.indexing_lock:
+                self.code.sweeps.pop(proj, None)
             if pins:
                 await asyncio.to_thread(_POOL.unpin, root)
         out: dict[str, Any] = {"files_indexed": indexed, "files_seen": len(files),
@@ -1503,9 +1443,9 @@ class Crib:
                 "symbols": sum(1 for _ in sd.glob("*.toml")) if sd.exists() else 0,
                 "doc_chunks": doc_chunks,
             })
-        with self._indexing_lock:
-            indexing = {p: list(v) for p, v in self._indexing.items() if v}
-            sweeps = {p: dict(v) for p, v in self._sweeps.items()}
+        with self.code.indexing_lock:
+            indexing = {p: list(v) for p, v in self.code.indexing.items() if v}
+            sweeps = {p: dict(v) for p, v in self.code.sweeps.items()}
         return {"projects": projects,
                 "git": self.git.state(),
                 "lsp_sessions": _POOL.stats(),
@@ -1529,7 +1469,7 @@ class Crib:
         removed = len(list(si_root.glob("*.toml"))) if si_root.exists() else 0
         if si_root.exists():
             shutil.rmtree(si_root)
-        self._code_cache.pop(proj, None)     # drop resident cache (trust-mode won't see rmtree)
+        self.code.cache.pop(proj, None)     # drop resident cache (trust-mode won't see rmtree)
         self._bump_code_epoch(proj)
         # In-situ docs are index-only (source is master) — drop their chunks + the
         # source registry too; re-runnable via `project index`.

@@ -47,25 +47,25 @@ def test_lookup_builds_resident_cache_and_reuses_it(crib):
     _write(crib, "p", "pkg.beta", "renders the beta view", "h_beta")
 
     hits = crib.code_lookup("alpha metric", project="p")
-    rc = crib._code_cache.get("p")
+    rc = crib.code.cache.get("p")
     assert hits and rc is not None                      # cache populated
     assert set(rc.emb) == {"computes the alpha metric", "renders the beta view"}
     assert rc._dense is not None                        # dense vectors materialised
 
     crib.code_lookup("beta view", project="p")          # same freshness token
-    assert crib._code_cache["p"] is rc                  # SAME cache object — no reload
+    assert crib.code.cache["p"] is rc                  # SAME cache object — no reload
 
 
 def test_reload_reuses_unchanged_embedding_vectors(crib):
     _write(crib, "p", "pkg.alpha", "computes the alpha metric", "h_alpha")
     _write(crib, "p", "pkg.beta", "renders the beta view", "h_beta")
     crib.code_lookup("x", project="p")
-    rc1 = crib._code_cache["p"]
+    rc1 = crib.code.cache["p"]
 
     # A third symbol appears on disk → dir signature (scan mode) flips → reload.
     _write(crib, "p", "pkg.gamma", "summarises the gamma path", "h_gamma")
     hits = crib.code_lookup("gamma path", project="p")
-    rc2 = crib._code_cache["p"]
+    rc2 = crib.code.cache["p"]
     assert rc2 is not rc1                                # reloaded (new token)
     assert any(h["fqname"] == "pkg.gamma" for h in hits)  # new symbol is queryable
     # unchanged descriptions carried the SAME vector object across the reload (no
@@ -104,9 +104,9 @@ def test_drop_file_bumps_epoch_and_invalidates(crib):
     si = SymbolIndex(crib.paths.project_dir("p"))
     e = si.by_fqname("b.gone")[0]; e["file"] = "b.py"; si.write(e)
     crib.code_lookup("target", project="p")
-    before = crib._code_epoch.get("p", 0)
+    before = crib.code.epoch.get("p", 0)
     crib._drop_file("p", "b.py")
-    assert crib._code_epoch["p"] == before + 1           # epoch bumped → cache stale
+    assert crib.code.epoch["p"] == before + 1           # epoch bumped → cache stale
 
 
 def test_revalidate_reindexes_merge_dirtied_file(crib, tmp_path, monkeypatch):
