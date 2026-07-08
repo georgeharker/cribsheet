@@ -1004,45 +1004,8 @@ class Crib:
         return sorted(out, key=lambda x: -x["symbols"])
 
     def _revalidate(self, proj: str) -> None:
-        """Lazy staleness gate: stat every indexed source file; reindex any whose mtime
-        moved since it was indexed, and drop symbols of deleted files. Keeps queries
-        honest under live editing without a watcher (the watcher just makes it eager).
-        Best-effort — an LSP hiccup leaves the stale entry rather than failing the query.
-        No-op when the source root is unknown (older index / no meta). Sync (called from
-        the sync query path); a reindex blocks only when a file actually changed."""
-        from .codeindex import SymbolIndex, _parse
-        store = SymbolIndex(self.paths.project_dir(proj))
-        root = store.source_root()
-        if root is None or not store.root.exists():
-            return
-        # Baseline = the on-disk mtime of a source file's symbol tomls (= WHEN indexed),
-        # derived locally + cheap. NOT the toml's stored `mtime` field (that's a portable
-        # git-date record, not comparable to a local st_mtime — and would need git here).
-        baseline: dict[str, int] = {}        # source file → oldest mtime of its tomls
-        dirty: set[str] = set()              # files with merge-dirtied symbols (blank
-        for p in store.root.glob("*.toml"):  # content_hash, written by the sync merge
-            try:                             # driver on divergent code states) — their
-                mt = p.stat().st_mtime_ns    # tomls are FRESH (post-pull mtime), so the
-                e = _parse(p.read_text())    # mtime gate alone would never catch them
-                f = e.get("file", "")
-            except OSError:
-                continue
-            if f:
-                baseline[f] = min(baseline.get(f, mt), mt)
-                if not e.get("content_hash"):
-                    dirty.add(f)
-        for rel, base_mt in baseline.items():
-            src = root / rel
-            try:
-                cur = src.stat().st_mtime_ns
-            except OSError:                  # deleted → drop all its symbols + its edges
-                self._drop_file(proj, rel)
-                continue
-            if rel in dirty or cur > base_mt:   # merge-dirtied, or edited after indexing
-                try:                         # (content_hash gate no-ops if unchanged)
-                    self._index_code_file_tracked(root, rel, proj, patch_edges=True)
-                except Exception:  # noqa: BLE001 — keep the stale entry over a failed query
-                    pass
+        """Delegate to CodeStore, injecting the pipeline's per-file indexer."""
+        self.code.revalidate(proj, self._index_code_file_tracked)
 
     def _drop_file(self, proj: str, relpath: str) -> None:
         self.code.drop_file(proj, relpath)

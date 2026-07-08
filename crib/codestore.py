@@ -176,6 +176,47 @@ class CodeStore:
         self.cache[proj] = rc
         return rc
 
+    def revalidate(self, proj: str, reindex: Callable[..., Any]) -> None:
+        """Lazy staleness gate: stat every indexed source file; reindex any whose mtime
+        moved since it was indexed, and drop symbols of deleted files. Keeps queries
+        honest under live editing without a watcher (the watcher just makes it eager).
+        Best-effort — an LSP hiccup leaves the stale entry rather than failing the query.
+        No-op when the source root is unknown (older index / no meta). `reindex` is Crib's
+        pipeline-coupled per-file indexer, injected so this object stays free of the LSP."""
+        from .codeindex import SymbolIndex, _parse
+        store = SymbolIndex(self.paths.project_dir(proj))
+        root = store.source_root()
+        if root is None or not store.root.exists():
+            return
+        # Baseline = the on-disk mtime of a source file's symbol tomls (= WHEN indexed),
+        # derived locally + cheap. NOT the toml's stored `mtime` field (that's a portable
+        # git-date record, not comparable to a local st_mtime — and would need git here).
+        baseline: dict[str, int] = {}        # source file → oldest mtime of its tomls
+        dirty: set[str] = set()              # files with merge-dirtied symbols (blank
+        for p in store.root.glob("*.toml"):  # content_hash, written by the sync merge
+            try:                             # driver on divergent code states) — their
+                mt = p.stat().st_mtime_ns    # tomls are FRESH (post-pull mtime), so the
+                e = _parse(p.read_text())    # mtime gate alone would never catch them
+                f = e.get("file", "")
+            except OSError:
+                continue
+            if f:
+                baseline[f] = min(baseline.get(f, mt), mt)
+                if not e.get("content_hash"):
+                    dirty.add(f)
+        for rel, base_mt in baseline.items():
+            src = root / rel
+            try:
+                cur = src.stat().st_mtime_ns
+            except OSError:                  # deleted → drop all its symbols + its edges
+                self.drop_file(proj, rel)
+                continue
+            if rel in dirty or cur > base_mt:   # merge-dirtied, or edited after indexing
+                try:                         # (content_hash gate no-ops if unchanged)
+                    reindex(root, rel, proj, patch_edges=True)
+                except Exception:  # noqa: BLE001 — keep the stale entry over a failed query
+                    pass
+
     def drop_file(self, proj: str, relpath: str) -> None:
         """Remove a deleted file's symbols and strip edges that originated from it —
         under the per-project lock (a delete mutates the same cross-file edges a
