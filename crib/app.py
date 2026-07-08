@@ -26,6 +26,7 @@ from .claudemem import MemoryBindings
 from .codestore import CodeStore, _ResidentCode
 from .config import (Config, CribLink, ProjectConfig, portable_path,
                      resolve_project)
+from .project_services import ProjectServices
 from .embed import build_embedder
 from .gitbacking import GitBacking
 from .indexer import IndexEngine, IndexResult
@@ -111,6 +112,10 @@ class Crib:
         # epoch, write locks, in-flight/sweep tracking) — owned by CodeStore; the
         # methods below reach through `self.code` (codestore.py).
         self.code = CodeStore(paths, config)
+        # The project-layer surface the indexing pipeline depends on (refs, enumerate,
+        # source-root registration, project resolution) — a seam that defers back here,
+        # so the pipeline can move to a CodeIndexer without reaching into Crib.
+        self.services = ProjectServices(self)
 
     # --- construction ------------------------------------------------------
     @classmethod
@@ -845,7 +850,7 @@ class Crib:
         (that made a cold onboard O(files × symbols)). None → parse it (standalone path)."""
         from .codeindex import (NoServer, SymbolIndex, describe_file,
                                  describe_symbols, extract_file, match_description)
-        ref_ctx = self._ref_edge_ctx(proj, root)
+        ref_ctx = self.services.ref_edge_ctx(proj, root)
         abs_p = (root / rel).resolve()
         for rname, rroot, _files in ref_ctx:
             # an in-tree ref checkout (e.g. vendor/llmkit) belongs to ITS project,
@@ -940,7 +945,7 @@ class Crib:
         # index — can't interleave writes and corrupt the cross-file call graph
         # (`CodeStore.patch_called_by`). Kept off the slow describe path so the loop-thread
         # revalidation never blocks on a worker's LLM call.
-        with self._code_lock(proj):
+        with self.code.lock(proj):
             store.write_all(entries)
             store.set_source_root(root)                     # for query-time revalidation
             # drop symbols that vanished from this file (renamed/removed) — else orphan
@@ -948,8 +953,8 @@ class Crib:
                 store.delete(fq)
             if patch_edges:
                 self.code.patch_called_by(store, entries, rel)
-        self._register_code_root(proj, root)                # live-watch this repo's source
-        self._bump_code_epoch(proj)                         # invalidate the resident cache
+        self.services.register_code_root(proj, root)        # live-watch this repo's source
+        self.code.bump_epoch(proj)                          # invalidate the resident cache
         out: dict[str, Any] = {
             "project": proj, "root": str(root), "file": rel,
             "symbols": len(entries),
@@ -1140,7 +1145,7 @@ class Crib:
                                   globs: list[str]) -> dict[str, Any]:
         """Index every source file under `globs`. Non-code files self-skip (NoServer)."""
         from .codeindex import SymbolIndex
-        files = self._enumerate_code_files(root, globs)
+        files = self.services.enumerate_code_files(root, globs)
         # Parse the prior index ONCE (by fqname) and share it across the whole sweep —
         # each file only needs its own prior entries (content_hash gate + vanished-drop),
         # so re-`store.all()` per file made a cold onboard O(files × symbols). Now O(N).
@@ -1159,7 +1164,7 @@ class Crib:
         # extensionless autoloads), so cross-file edges cover everything crib
         # enumerated. Held for the sweep, released in the finally.
         from .codeindex import _POOL, server_for
-        extra_roots = [r["root"].resolve() for r in self._project_refs(proj)
+        extra_roots = [r["root"].resolve() for r in self.services.project_refs(proj)
                        if r["root"] is not None
                        and not r["root"].resolve().is_relative_to(root.resolve())]
         pins: dict[str, tuple[list[str], dict, list[tuple[Path, str]]]] = {}
