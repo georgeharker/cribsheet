@@ -14,10 +14,7 @@ import sys
 import threading
 from dataclasses import dataclass, replace
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
-
-if TYPE_CHECKING:
-    from .codeindex import RefProjects
+from typing import Any, Callable
 
 from . import claudemem, notes
 from .chunk import section_line_map
@@ -722,10 +719,6 @@ class Crib:
         resident-cache revalidate hook call it unchanged)."""
         return self.indexer._index_code_file_tracked(root, rel, proj, patch_edges, existing)
 
-    def _ref_edge_ctx(self, proj: str, root: Path | None = None) -> "RefProjects":
-        """Delegate to Refs (crib/refs.py) — cross-project edge attribution context."""
-        return self.refs.ref_edge_ctx(proj, root)
-
     # ── Resident code cache: delegates to CodeStore (crib/codestore.py) ────────
     # Thin delegators so existing call sites are untouched; the state + its
     # invariants live in `self.code`. `_code_watched` (watcher, not code state) and
@@ -1042,35 +1035,10 @@ class Crib:
         """Everything about one symbol (+ neighbour descriptions + any learning)."""
         return self.query.dossier(self.resolve_project(project, cwd), symbol, edge_cap)
 
-    def _resolve_symbol(self, proj: str, symbol: str,
-                        rc: "_ResidentCode | None" = None) -> dict[str, Any]:
-        """Delegate to Refs (crib/refs.py) — resolve a symbol to one indexed entry."""
-        return self.refs.resolve_symbol(proj, symbol, rc)
-
-    def _resolve_symbol_or_ref(self, proj: str, symbol: str,
-                               rc: "_ResidentCode | None" = None,
-                               ) -> tuple[str, dict[str, Any]]:
-        """Delegate to Refs — resolve locally, then across `.crib` refs on a miss."""
-        return self.refs.resolve_symbol_or_ref(proj, symbol, rc)
-
     # ── Durable learnings: delegate to Learnings (crib/learnings.py) ───────────
     # Public code_* wrappers resolve_project then delegate; the internal helpers
     # (_attach_learnings / _learning_relpath / _learning_fqns / _rehome_candidates,
     # called by the code query methods) delegate directly.
-    def _learning_relpath(self, entry: dict[str, Any]) -> str:
-        return self.learnings.relpath(entry)
-
-    def _attach_learnings(self, proj: str,
-                          entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        return self.learnings.attach(proj, entries)
-
-    def _learning_fqns(self, proj: str) -> set[str]:
-        return self.learnings.fqns(proj)
-
-    def _rehome_candidates(self, fm: dict[str, Any], entries: list[dict[str, Any]],
-                           top: int = 6) -> list[dict[str, Any]]:
-        return self.learnings.candidates(fm, entries, top)
-
     async def code_append(self, symbol: str, text: str, project: str | None = None,
                           cwd: Path | None = None) -> dict[str, Any]:
         """Attach a durable learning to a code symbol (append a dated entry)."""
