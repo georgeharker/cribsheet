@@ -908,6 +908,129 @@ def _reference_edges(ctx: _ExtractCtx, pos: dict, local: str) -> list[str]:
     return out
 
 
+# Per-language comment syntax for the leading-doc capture (docs code-symbol-index §3).
+# The LSP `documentSymbol` range starts at the def/decorator, so the human-authored
+# comment ABOVE a symbol — often its richest intent — is outside the body we index. We
+# recover it two ways (§): the LSP `hover` documentation where the server carries it
+# (doc-comment languages), and a config-driven reverse upward-scan for everything else
+# (notably Python `#`, which hover omits). `line`: line-comment prefixes, longest-first
+# so `///` wins over `//`. `block`: (open, close) delimiter pairs, multi-line. `skip`:
+# lines between comment and symbol that still attach it (decorators/attributes) — walked
+# over so a comment above them is reached. Prefix/delimiter matching, no tree-sitter.
+_COMMENT_SYNTAX: dict[str, dict] = {
+    "python": {"line": ("#",),               "block": (),                "skip": ("@",)},
+    "zsh":    {"line": ("#",),               "block": (),                "skip": ()},
+    "rust":   {"line": ("///", "//!", "//"), "block": (("/*", "*/"),),   "skip": ("#[", "#![")},
+    "go":     {"line": ("//",),              "block": (("/*", "*/"),),   "skip": ()},
+    "c":      {"line": ("//",),              "block": (("/*", "*/"),),   "skip": ()},
+    "cpp":    {"line": ("//",),              "block": (("/*", "*/"),),   "skip": ()},
+    "lua":    {"line": ("--",),              "block": (("--[[", "]]"),), "skip": ()},
+}
+# Servers whose `hover` documentation carries the doc-comment above a decl (so it's worth
+# the extra round-trip). Python/zsh omitted: pyright hover returns only the in-body
+# docstring, never the `#` block — the reverse-scan covers those with no LSP cost.
+_HOVER_DOC_LANGS = frozenset({"rust", "go", "c", "cpp", "lua"})
+
+
+def _strip_comment_markers(text: str, syn: dict) -> str:
+    """Strip line-comment prefixes and block delimiters (plus decorative leading `*`)
+    from a collected comment block, leaving the prose. Blank result → ""."""
+    out: list[str] = []
+    for raw in text.splitlines():
+        s = raw.strip()
+        for op, cl in syn["block"]:
+            if s.startswith(op):
+                s = s[len(op):].strip()
+            if s.endswith(cl):
+                s = s[: len(s) - len(cl)].strip()
+        pfx = next((p for p in syn["line"] if s.startswith(p)), None)
+        if pfx is not None:
+            s = s[len(pfx):].strip()
+        elif s.startswith("*"):                 # `/* * */`-style continuation bullets
+            s = s[1:].strip()
+        out.append(s)
+    return "\n".join(out).strip()
+
+
+def _leading_comment(lines: list[str], start: int, lang: str) -> str:
+    """The contiguous comment block immediately above the symbol at `start` (0-based),
+    reverse-scanned per the language's comment syntax. Walks over decorator/attribute
+    lines (`skip`) and a single blank-line gap, so a comment above a decorator still
+    attaches; >1 blank line severs it. Handles line comments and multi-line block
+    comments. Returns the prose (markers stripped) or ""."""
+    syn = _COMMENT_SYNTAX.get(lang)
+    if syn is None or start <= 0:
+        return ""
+    collected: list[str] = []          # bottom-up; reversed at the end
+    i = start - 1
+    blanks = 0
+    while i >= 0:
+        s = lines[i].strip()
+        if not s:
+            blanks += 1
+            if blanks > 1:
+                break
+            i -= 1
+            continue
+        if syn["skip"] and s.startswith(syn["skip"]):   # decorator/attribute — step over
+            blanks = 0
+            i -= 1
+            continue
+        # multi-line block comment: we meet the CLOSE first going up — gather to the OPEN.
+        blk = next((b for b in syn["block"] if s.endswith(b[1])), None)
+        if blk is not None:
+            op = blk[0]
+            while i >= 0:
+                collected.append(lines[i])
+                if lines[i].strip().startswith(op) or op in lines[i]:
+                    break
+                i -= 1
+            blanks = 0
+            i -= 1
+            continue
+        if any(s.startswith(p) for p in syn["line"]):
+            collected.append(lines[i])
+            blanks = 0
+            i -= 1
+            continue
+        break                          # real code — stop
+    if not collected:
+        return ""
+    return _strip_comment_markers("\n".join(reversed(collected)), syn)
+
+
+def _hover_doc(ctx: "_ExtractCtx", pos: dict) -> str:
+    """LSP `hover` documentation for the symbol at `pos`, prose only (fenced signature
+    code stripped). "" when unsupported/empty. Used only for `_HOVER_DOC_LANGS` — the
+    servers whose hover actually carries the doc-comment above a decl."""
+    if not ctx.c.capabilities.get("hoverProvider"):
+        return ""
+    try:
+        res = ctx.c.request("textDocument/hover",
+                            {"textDocument": {"uri": ctx.uri}, "position": pos})
+    except (TimeoutError, OSError, ValueError):
+        return ""
+    if not res:
+        return ""
+    contents = res.get("contents")
+    parts: list[str] = []
+    for c in (contents if isinstance(contents, list) else [contents]):
+        if isinstance(c, str):
+            parts.append(c)
+        elif isinstance(c, dict) and "value" in c:
+            parts.append(c["value"])
+    text = "\n".join(parts)
+    # drop fenced code blocks (the rendered signature); keep the prose doc-comment.
+    prose, fenced = [], False
+    for ln in text.splitlines():
+        if ln.lstrip().startswith("```"):
+            fenced = not fenced
+            continue
+        if not fenced:
+            prose.append(ln)
+    return "\n".join(prose).strip()
+
+
 def _symbol_entry(ctx: _ExtractCtx, s: dict, parents: tuple[str, ...],
                   pkinds: tuple[int, ...]) -> dict | None:
     """Assemble one indexed-symbol record from a documentSymbol node (+ its call/
@@ -923,6 +1046,17 @@ def _symbol_entry(ctx: _ExtractCtx, s: dict, parents: tuple[str, ...],
     rng = s.get("range", {})
     start = rng.get("start", {}).get("line", 0)
     body = "\n".join(ctx.lines[start:rng.get("end", {}).get("line", 0) + 1])
+    # Leading-doc capture (§3): the LSP range starts at the def, so the comment ABOVE the
+    # symbol is excluded — fold it in (reverse-scan, plus hover for doc-comment servers)
+    # so its authored intent gates description regen (content_hash) and enriches search.
+    pos = (s.get("selectionRange") or rng)["start"]
+    lead = _leading_comment(ctx.lines, start, ctx.language_id)
+    if ctx.language_id in _HOVER_DOC_LANGS:
+        hov = _hover_doc(ctx, pos)
+        if hov and hov not in lead and hov not in body:
+            lead = (lead + "\n\n" + hov).strip() if lead else hov
+    if lead and lead not in body:
+        body = lead + "\n\n" + body
     container = tuple(parents)
     local = _local_name(s.get("name", ""), ctx.language_id)
     # IDENTITY = the language-normalized qualified name (stable across body edits;
@@ -934,7 +1068,6 @@ def _symbol_entry(ctx: _ExtractCtx, s: dict, parents: tuple[str, ...],
               if container else "")
     content_hash = hashlib.sha1(body.encode()).hexdigest()[:16]
     sig = ctx.lines[start].strip()[:120]
-    pos = (s.get("selectionRange") or rng)["start"]
     calls: list[str] = []
     called_by: list[str] = []
     if kind in _FUNC_KINDS and ctx.c.capabilities.get("callHierarchyProvider"):

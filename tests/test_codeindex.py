@@ -145,6 +145,35 @@ def test_name_terms_split_compound_identifiers():
     assert "SharedServerManager" in terms                          # unqualified name
 
 
+# --- leading-comment capture (reverse upward-scan) ---------------------------
+def test_leading_comment_python_skips_decorators_and_globs_hash_block():
+    lines = ["# build the store from paths",
+             "# returns a Crib",
+             "@classmethod",
+             "def open(cls):", "    pass"]
+    assert ci._leading_comment(lines, 3, "python") == (
+        "build the store from paths\nreturns a Crib")
+
+
+def test_leading_comment_one_blank_glues_two_severs():
+    glued = ["# attached", "", "def f():"]
+    severed = ["# unrelated", "", "", "def f():"]
+    assert ci._leading_comment(glued, 2, "python") == "attached"
+    assert ci._leading_comment(severed, 3, "python") == ""
+
+
+def test_leading_comment_rust_doc_over_attribute_and_go_block():
+    rust = ["/// reindex a project", "#[inline]", "pub fn reindex() {}"]
+    go = ["/* fetch the widget", "   from the store */", "func Fetch() {}"]
+    assert ci._leading_comment(rust, 2, "rust") == "reindex a project"
+    assert ci._leading_comment(go, 2, "go") == "fetch the widget\nfrom the store"
+
+
+def test_leading_comment_stops_at_real_code_and_unknown_lang():
+    assert ci._leading_comment(["x = 1", "def f():"], 1, "python") == ""
+    assert ci._leading_comment(["# c", "def f():"], 1, "haskell") == ""
+
+
 # --- shebang routing for extension-less scripts ------------------------------
 def test_shebang_lang_maps_interpreters(tmp_path):
     cases = {
