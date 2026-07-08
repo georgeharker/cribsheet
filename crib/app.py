@@ -347,27 +347,8 @@ class Crib:
         """Relocate a note across projects and/or rename it, preserving its `id`
         (and thus version-ring history). One-way: write destination, drop source."""
         src_proj = self.resolve_project(project, cwd)
-        dst_proj = to_project or src_proj
-        dst_relpath = to_relpath or relpath
-        src = self.abspath(src_proj, relpath)
-        if not src.exists():
-            raise ValueError(f"no such note: {relpath} in project {src_proj!r}")
-        if src_proj == dst_proj and dst_relpath == relpath:
-            raise ValueError("source and destination are the same")
-        # capture BEFORE any abspath(dst_proj) call — abspath mkdir's the notes dir
-        created = self.project_is_new(dst_proj)
-        if self.abspath(dst_proj, dst_relpath).exists():
-            raise ValueError(f"destination exists: {dst_relpath} in {dst_proj!r}")
-        note = notes.load(src)              # carries the id in frontmatter
-        dst = Note(path=self.abspath(dst_proj, dst_relpath),
-                   frontmatter=note.frontmatter, body=note.body)
-        notes.save_atomic(dst)
-        await self.index.index_file(dst_proj, self.notes_dir(dst_proj), dst_relpath)
-        src.unlink()                        # drop source + its chunks
-        await self.index.index_file(src_proj, self.notes_dir(src_proj), relpath)
-        return {"from": {"project": src_proj, "relpath": relpath},
-                "to": {"project": dst_proj, "relpath": dst_relpath},
-                "id": note.id, "created": created}
+        return await self.notestore.move(src_proj, relpath,
+                                         to_project or src_proj, to_relpath or relpath)
 
     async def append_note(self, relpath: str, content: str,
                           heading: str | None = None, project: str | None = None,
@@ -402,23 +383,12 @@ class Crib:
         of the index entry happens through the same `index_file` — once the file
         is gone, it sees a missing path and drops all chunks for that relpath."""
         proj = self.resolve_project(project, cwd)
-        path = self.abspath(proj, relpath)
-        note_id = None
-        if path.exists():
-            note = notes.load(path)
-            note_id = note.id
-            if note_id:
-                self.versions.stash(
-                    note_id, notes.serialize(note.frontmatter, note.body))
-            path.unlink()
-        res = await self.index.index_file(proj, self.notes_dir(proj), relpath)
-        return {"project": proj, "relpath": relpath, "removed": res.deleted,
-                "recoverable_id": note_id}
+        return await self.notestore.delete(proj, relpath)
 
     def read_note(self, relpath: str, project: str | None = None,
                   cwd: Path | None = None) -> str:
         proj = self.resolve_project(project, cwd)
-        return self.abspath(proj, relpath).read_text()
+        return self.notestore.read(proj, relpath)
 
     def locate(self, relpath: str, project: str | None = None,
                cwd: Path | None = None) -> str:
@@ -433,36 +403,7 @@ class Crib:
         catches files added/edited while crib was down AND drops orphaned chunks
         for notes deleted off disk. All idempotent via the hash gate (§4)."""
         proj = self.resolve_project(project, cwd)
-        nd = self.notes_dir(proj)
-        if relpath:
-            targets = [relpath]
-        else:
-            # Full reindex is the one safe place to switch embedder: if the stored
-            # vectors' dim differs from the current embedder (e.g. a profile flip
-            # to a bigger model), recreate the collection so all chunks re-embed at
-            # the new dim. Chroma is shared across projects, so this wipes them all
-            # — hence full-reindex-only; a --all sweep re-embeds the rest.
-            cur = self.store.current_dim()
-            if cur is not None and cur != self.embedder.dim:
-                print(f"crib: embedder dim {cur}→{self.embedder.dim}; recreating "
-                      f"the vector collection (full re-embed)", file=sys.stderr)
-                self.store.recreate()
-            disk = {str(p.relative_to(nd)) for p in nd.rglob("*.md")}
-            # Source-anchored docs (`sources/<repo>/…`) live in the REPO, not under
-            # the notes tree — the notes reconcile's on-disk sweep must NOT treat them
-            # as deleted (that wiped in-situ doc chunks). They're owned by
-            # index_docs_insitu + the code watcher.
-            indexed = {m.get("relpath")
-                       for m in self.store.get_meta({"project": proj}).values()
-                       if not (m.get("relpath") or "").startswith(SRC_PREFIX)}
-            targets = sorted(disk | {r for r in indexed if r})
-        changed = removed = 0
-        for rp in targets:
-            res = await self.index.index_file(proj, nd, rp)
-            changed += int(res.changed)
-            removed += res.deleted
-        return {"project": proj, "files": len(targets),
-                "changed": changed, "removed": removed}
+        return await self.notestore.reindex(proj, relpath)
 
     async def reconcile_all(self) -> dict[str, Any]:
         """Startup/post-pull sweep across every project — catch up on offline
@@ -1962,19 +1903,12 @@ class Crib:
     def list_versions(self, relpath: str, project: str | None = None,
                       cwd: Path | None = None) -> list[dict[str, Any]]:
         proj = self.resolve_project(project, cwd)
-        note = notes.load(self.abspath(proj, relpath))
-        if not note.id:
-            return []
-        return [{"version": e.name, "seq": e.seq, "mtime": e.mtime}
-                for e in self.versions.list(note.id)]
+        return self.notestore.list_versions(proj, relpath)
 
     async def restore(self, relpath: str, version: str, project: str | None = None,
                       cwd: Path | None = None) -> dict[str, Any]:
         proj = self.resolve_project(project, cwd)
-        note = notes.load(self.abspath(proj, relpath))
-        if not note.id:
-            raise ValueError("note has no id; nothing to restore")
-        content = self.versions.read(note.id, version)
+        content = self.notestore.version_content(proj, relpath, version)
         return await self.edit_note(relpath, content, project=proj)
 
     def snapshot(self, message: str | None = None) -> str:
