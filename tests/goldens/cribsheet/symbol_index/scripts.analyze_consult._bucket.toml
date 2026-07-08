@@ -1,0 +1,28 @@
+fqname = "scripts.analyze_consult._bucket"
+name = "_bucket"
+kind = "function"
+lang = "python"
+module = "scripts.analyze_consult"
+parent = ""
+content_hash = "4fa662e558812606"
+file = "scripts/analyze_consult.py"
+signature = "def _bucket(ts: str | None, crib_first: str | None) -> str:"
+description = ""
+line = 160
+mtime = 1783033314000000000
+container = []
+calls = []
+called_by = [
+  "main [scripts/analyze_consult.py]",
+]
+references = [
+  "main [scripts/analyze_consult.py]",
+]
+name_terms = [
+  "_bucket",
+  "analyze",
+  "bucket",
+  "consult",
+  "scripts",
+  "scripts.analyze_consult._bucket",
+]

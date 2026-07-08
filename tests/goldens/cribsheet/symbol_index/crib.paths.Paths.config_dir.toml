@@ -1,0 +1,31 @@
+fqname = "crib.paths.Paths.config_dir"
+name = "config_dir"
+kind = "field"
+lang = "python"
+module = "crib.paths"
+parent = "crib.paths.Paths"
+content_hash = "5f7825af95d47601"
+file = "crib/paths.py"
+signature = "config_dir: Path"
+description = ""
+line = 26
+mtime = 1783533619000000000
+container = [
+  "Paths",
+]
+calls = []
+called_by = []
+references = [
+  "cmd_info [crib/cli.py]",
+  "config_file [crib/paths.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+name_terms = [
+  "config",
+  "config_dir",
+  "crib",
+  "crib.paths.Paths.config_dir",
+  "dir",
+  "paths",
+]

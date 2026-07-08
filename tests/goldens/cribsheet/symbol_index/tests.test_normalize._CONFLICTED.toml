@@ -1,0 +1,28 @@
+fqname = "tests.test_normalize._CONFLICTED"
+name = "_CONFLICTED"
+kind = "constant"
+lang = "python"
+module = "tests.test_normalize"
+parent = ""
+content_hash = "289874ec2f74238a"
+file = "tests/test_normalize.py"
+signature = "_CONFLICTED = \"\"\"\\"
+description = ""
+line = 55
+mtime = 1782755212000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "test_heal_file_rewrites_only_when_dirty [tests/test_normalize.py]",
+  "test_normalize_collapses_duplicate_keys_deterministically [tests/test_normalize.py]",
+  "test_normalize_is_order_independent [tests/test_normalize.py]",
+]
+name_terms = [
+  "_CONFLICTED",
+  "conflicted",
+  "normalize",
+  "test",
+  "tests",
+  "tests.test_normalize._CONFLICTED",
+]

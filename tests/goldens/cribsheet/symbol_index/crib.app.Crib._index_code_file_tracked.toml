@@ -1,0 +1,34 @@
+fqname = "crib.app.Crib._index_code_file_tracked"
+name = "_index_code_file_tracked"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "a430f473c0a8aac2"
+file = "crib/app.py"
+signature = "def _index_code_file_tracked(self, root: Path, rel: str, proj: str,"
+description = ""
+line = 715
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "_index_code_file_tracked [crib/codeindexer.py]",
+]
+called_by = []
+references = [
+  "_on_code_change [crib/app.py]",
+  "_one [crib/app.py]",
+  "_revalidate [crib/app.py]",
+]
+name_terms = [
+  "_index_code_file_tracked",
+  "app",
+  "code",
+  "crib",
+  "crib.app.Crib._index_code_file_tracked",
+  "file",
+  "index",
+  "tracked",
+]

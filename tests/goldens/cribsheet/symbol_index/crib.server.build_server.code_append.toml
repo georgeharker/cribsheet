@@ -1,0 +1,30 @@
+fqname = "crib.server.build_server.code_append"
+name = "code_append"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "7cde8e23cd98b18d"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 470
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_project [crib/server.py]",
+  "code_append [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "append",
+  "build",
+  "code",
+  "code_append",
+  "crib",
+  "crib.server.build_server.code_append",
+  "server",
+]

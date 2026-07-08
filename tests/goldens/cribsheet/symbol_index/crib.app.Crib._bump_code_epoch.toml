@@ -1,0 +1,33 @@
+fqname = "crib.app.Crib._bump_code_epoch"
+name = "_bump_code_epoch"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "9dcb1306fab2058e"
+file = "crib/app.py"
+signature = "def _bump_code_epoch(self, proj: str) -> None:"
+description = ""
+line = 729
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "bump_epoch [crib/codestore.py]",
+]
+called_by = [
+  "project_forget [crib/app.py]",
+]
+references = [
+  "project_forget [crib/app.py]",
+]
+name_terms = [
+  "_bump_code_epoch",
+  "app",
+  "bump",
+  "code",
+  "crib",
+  "crib.app.Crib._bump_code_epoch",
+  "epoch",
+]

@@ -1,0 +1,34 @@
+fqname = "crib.app.Crib._nested_project_roots"
+name = "_nested_project_roots"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "0aa8688beb0b3185"
+file = "crib/app.py"
+signature = "def _nested_project_roots(self, root: Path) -> list[Path]:"
+description = ""
+line = 819
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "_code_ignore [crib/app.py]",
+]
+called_by = [
+  "_enumerate_code_files [crib/app.py]",
+]
+references = [
+  "__init__ [crib/app.py]",
+  "_enumerate_code_files [crib/app.py]",
+]
+name_terms = [
+  "_nested_project_roots",
+  "app",
+  "crib",
+  "crib.app.Crib._nested_project_roots",
+  "nested",
+  "project",
+  "roots",
+]

@@ -1,0 +1,31 @@
+fqname = "crib.store.ChromaStore.embedded"
+name = "embedded"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.ChromaStore"
+content_hash = "15146b54deb9131f"
+file = "crib/store.py"
+signature = "@classmethod"
+description = ""
+line = 186
+mtime = 1783446057000000000
+container = [
+  "ChromaStore",
+]
+calls = [
+  "__init__ [crib/store.py]",
+]
+called_by = [
+  "_build_store [crib/app.py]",
+]
+references = [
+  "_build_store [crib/app.py]",
+]
+name_terms = [
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore.embedded",
+  "embedded",
+  "store",
+]

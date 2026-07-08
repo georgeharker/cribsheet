@@ -1,0 +1,31 @@
+fqname = "tests.test_code_cache.test_reload_reuses_unchanged_embedding_vectors"
+name = "test_reload_reuses_unchanged_embedding_vectors"
+kind = "function"
+lang = "python"
+module = "tests.test_code_cache"
+parent = ""
+content_hash = "2963cbfe67c4d515"
+file = "tests/test_code_cache.py"
+signature = "def test_reload_reuses_unchanged_embedding_vectors(crib):"
+description = ""
+line = 59
+mtime = 1783489700000000000
+container = []
+calls = [
+  "_write [tests/test_code_cache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "code",
+  "embedding",
+  "reload",
+  "reuses",
+  "test",
+  "test_reload_reuses_unchanged_embedding_vectors",
+  "tests",
+  "tests.test_code_cache.test_reload_reuses_unchanged_embedding_vectors",
+  "unchanged",
+  "vectors",
+]

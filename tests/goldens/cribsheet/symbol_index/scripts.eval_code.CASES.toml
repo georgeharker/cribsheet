@@ -1,0 +1,26 @@
+fqname = "scripts.eval_code.CASES"
+name = "CASES"
+kind = "constant"
+lang = "python"
+module = "scripts.eval_code"
+parent = ""
+content_hash = "99fe33a3b4bf4531"
+file = "scripts/eval_code.py"
+signature = "CASES = Path(__file__).resolve().parent / \"eval_code.cases.json\""
+description = ""
+line = 21
+mtime = 1783096343000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "main [scripts/eval_code.py]",
+]
+name_terms = [
+  "CASES",
+  "cases",
+  "code",
+  "eval",
+  "scripts",
+  "scripts.eval_code.CASES",
+]

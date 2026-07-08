@@ -1,0 +1,33 @@
+fqname = "crib.app.Crib.code_graph"
+name = "code_graph"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "834c0b286dfb80ce"
+file = "crib/app.py"
+signature = "def code_graph(self, symbol: str, direction: str = \"callees\", depth: int = 6,"
+description = ""
+line = 1084
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "graph [crib/codequery.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "code_graph [crib/server.py]",
+]
+references = [
+  "code_graph [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "code",
+  "code_graph",
+  "crib",
+  "crib.app.Crib.code_graph",
+  "graph",
+]

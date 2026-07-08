@@ -1,0 +1,26 @@
+fqname = "crib.retrieve.QwenReranker"
+name = "QwenReranker"
+kind = "class"
+lang = "python"
+module = "crib.retrieve"
+parent = ""
+content_hash = "81b6b1b04d98582b"
+file = "crib/retrieve.py"
+signature = "class QwenReranker:"
+description = ""
+line = 181
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "build_reranker [crib/retrieve.py]",
+]
+name_terms = [
+  "QwenReranker",
+  "crib",
+  "crib.retrieve.QwenReranker",
+  "qwen",
+  "reranker",
+  "retrieve",
+]

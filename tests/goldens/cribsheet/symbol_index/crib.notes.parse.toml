@@ -1,0 +1,44 @@
+fqname = "crib.notes.parse"
+name = "parse"
+kind = "function"
+lang = "python"
+module = "crib.notes"
+parent = ""
+content_hash = "b96a1ac4bf6a253e"
+file = "crib/notes.py"
+signature = "def parse(text: str) -> tuple[dict[str, Any], str]:"
+description = ""
+line = 39
+mtime = 1782755212000000000
+container = []
+calls = []
+called_by = [
+  "edit_note [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "load [crib/notes.py]",
+  "merge_note_texts [crib/merge.py]",
+  "test_body_divergence_surfaces_with_healed_header [tests/test_merge.py]",
+  "test_frontmatter_only_divergence_merges_clean [tests/test_merge.py]",
+  "test_normalize_collapses_duplicate_keys_deterministically [tests/test_normalize.py]",
+  "test_normalize_is_order_independent [tests/test_normalize.py]",
+  "test_run_driver_writes_and_signals [tests/test_merge.py]",
+]
+references = [
+  "edit_note [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "load [crib/notes.py]",
+  "merge_note_texts [crib/merge.py]",
+  "test_body_divergence_surfaces_with_healed_header [tests/test_merge.py]",
+  "test_frontmatter_only_divergence_merges_clean [tests/test_merge.py]",
+  "test_normalize_collapses_duplicate_keys_deterministically [tests/test_normalize.py]",
+  "test_normalize_is_order_independent [tests/test_normalize.py]",
+  "test_run_driver_writes_and_signals [tests/test_merge.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notes.parse",
+  "notes",
+  "parse",
+]

@@ -1,0 +1,29 @@
+fqname = "tests.test_import.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+module = "tests.test_import"
+parent = ""
+content_hash = "65387a609655e14a"
+file = "tests/test_import.py"
+signature = "@pytest.fixture()"
+description = ""
+line = 16
+mtime = 1783450349000000000
+container = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "import",
+  "test",
+  "tests",
+  "tests.test_import.crib",
+]

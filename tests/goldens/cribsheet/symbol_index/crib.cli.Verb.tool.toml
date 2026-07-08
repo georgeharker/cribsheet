@@ -1,0 +1,28 @@
+fqname = "crib.cli.Verb.tool"
+name = "tool"
+kind = "field"
+lang = "python"
+module = "crib.cli"
+parent = "crib.cli.Verb"
+content_hash = "d0829e81b97f8852"
+file = "crib/cli.py"
+signature = "tool: str                                   # MCP tool name (daemon path)"
+description = ""
+line = 680
+mtime = 1783476730000000000
+container = [
+  "Verb",
+]
+calls = []
+called_by = []
+references = [
+  "_run_daemon [crib/cli.py]",
+  "crib_method [crib/cli.py]",
+]
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli.Verb.tool",
+  "tool",
+  "verb",
+]

@@ -1,0 +1,45 @@
+fqname = "crib.codeindex.extract_file"
+name = "extract_file"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "642831d73756384d"
+file = "crib/codeindex.py"
+signature = "def extract_file(root: Path, relpath: str, settle: float = 1.5,"
+description = ""
+line = 839
+mtime = 1783533619000000000
+container = []
+calls = [
+  "NoServer [crib/codeindex.py]",
+  "_extract [crib/codeindex.py]",
+  "discard [crib/codeindex.py]",
+  "server_for [crib/codeindex.py]",
+]
+called_by = [
+  "_index_code_file [crib/codeindexer.py]",
+  "test_extract_call_graph_anchor_edges [tests/test_codeindex.py]",
+  "test_progress_tracked_and_wait_quiescent_honors_it [tests/test_codeindex.py]",
+  "test_session_pool_pins_docs_across_calls [tests/test_codeindex.py]",
+  "test_session_pool_pumps_watched_file_changes [tests/test_codeindex.py]",
+  "test_session_pool_respawns_after_crash [tests/test_codeindex.py]",
+  "test_session_pool_reuses_one_server_across_files [tests/test_codeindex.py]",
+]
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+  "test_extract_call_graph_anchor_edges [tests/test_codeindex.py]",
+  "test_progress_tracked_and_wait_quiescent_honors_it [tests/test_codeindex.py]",
+  "test_session_pool_pins_docs_across_calls [tests/test_codeindex.py]",
+  "test_session_pool_pumps_watched_file_changes [tests/test_codeindex.py]",
+  "test_session_pool_respawns_after_crash [tests/test_codeindex.py]",
+  "test_session_pool_reuses_one_server_across_files [tests/test_codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.extract_file",
+  "extract",
+  "extract_file",
+  "file",
+]

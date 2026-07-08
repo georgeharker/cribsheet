@@ -1,0 +1,34 @@
+fqname = "scripts.codeindex.lsp_probe.Client.shutdown"
+name = "shutdown"
+kind = "method"
+lang = "python"
+module = "scripts.codeindex.lsp_probe"
+parent = "scripts.codeindex.lsp_probe.Client"
+content_hash = "b12f89b90b40d1e8"
+file = "scripts/codeindex/lsp_probe.py"
+signature = "def shutdown(self) -> None:"
+description = ""
+line = 122
+mtime = 1783033292000000000
+container = [
+  "Client",
+]
+calls = [
+  "notify [scripts/codeindex/lsp_probe.py]",
+  "request [scripts/codeindex/lsp_probe.py]",
+]
+called_by = [
+  "main [scripts/codeindex/lsp_probe.py]",
+]
+references = [
+  "main [scripts/codeindex/lsp_probe.py]",
+]
+name_terms = [
+  "client",
+  "codeindex",
+  "lsp",
+  "probe",
+  "scripts",
+  "scripts.codeindex.lsp_probe.Client.shutdown",
+  "shutdown",
+]

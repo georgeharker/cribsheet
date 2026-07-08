@@ -1,0 +1,30 @@
+fqname = "crib.config.RetrieveConfig.rerank_top_n"
+name = "rerank_top_n"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.RetrieveConfig"
+content_hash = "86d84803b7632fbd"
+file = "crib/config.py"
+signature = "rerank_top_n: int = 20                               # candidate pool to rerank"
+description = ""
+line = 69
+mtime = 1783455339000000000
+container = [
+  "RetrieveConfig",
+]
+calls = []
+called_by = []
+references = [
+  "_rerank [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.RetrieveConfig.rerank_top_n",
+  "n",
+  "rerank",
+  "rerank_top_n",
+  "retrieve",
+  "top",
+]

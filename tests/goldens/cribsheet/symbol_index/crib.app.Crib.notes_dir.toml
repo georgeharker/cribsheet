@@ -1,0 +1,48 @@
+fqname = "crib.app.Crib.notes_dir"
+name = "notes_dir"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "9dfb45b5768cd349"
+file = "crib/app.py"
+signature = "def notes_dir(self, project: str) -> Path:"
+description = ""
+line = 270
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "dir [crib/notestore.py]",
+]
+called_by = [
+  "_on_code_change [crib/app.py]",
+  "_on_fs_change [crib/app.py]",
+  "_reconcile_memory_dir [crib/app.py]",
+  "_unique_relpath [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "project_forget [crib/app.py]",
+  "scenario [tests/test_watcher.py]",
+  "use_project [crib/server.py]",
+]
+references = [
+  "_on_code_change [crib/app.py]",
+  "_on_fs_change [crib/app.py]",
+  "_reconcile_memory_dir [crib/app.py]",
+  "_unique_relpath [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "project_forget [crib/app.py]",
+  "scenario [tests/test_watcher.py]",
+  "use_project [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.notes_dir",
+  "dir",
+  "notes",
+  "notes_dir",
+]

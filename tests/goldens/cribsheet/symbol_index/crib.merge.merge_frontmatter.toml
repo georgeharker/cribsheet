@@ -1,0 +1,35 @@
+fqname = "crib.merge.merge_frontmatter"
+name = "merge_frontmatter"
+kind = "function"
+lang = "python"
+module = "crib.merge"
+parent = ""
+content_hash = "358aaef1c9800b48"
+file = "crib/merge.py"
+signature = "def merge_frontmatter(base: dict, ours: dict, theirs: dict) -> dict:"
+description = ""
+line = 50
+mtime = 1783446057000000000
+container = []
+calls = [
+  "_resolve [crib/merge.py]",
+]
+called_by = [
+  "merge_note_texts [crib/merge.py]",
+  "merge_symbol_texts [crib/merge.py]",
+  "test_frontmatter_merge_is_symmetric_and_deterministic [tests/test_merge.py]",
+  "test_frontmatter_merge_takes_changed_side [tests/test_merge.py]",
+]
+references = [
+  "merge_note_texts [crib/merge.py]",
+  "merge_symbol_texts [crib/merge.py]",
+  "test_frontmatter_merge_is_symmetric_and_deterministic [tests/test_merge.py]",
+  "test_frontmatter_merge_takes_changed_side [tests/test_merge.py]",
+]
+name_terms = [
+  "crib",
+  "crib.merge.merge_frontmatter",
+  "frontmatter",
+  "merge",
+  "merge_frontmatter",
+]

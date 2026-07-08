@@ -1,0 +1,32 @@
+fqname = "tests.test_elaborate.test_elaborate_bulk_path_covers_all_sections"
+name = "test_elaborate_bulk_path_covers_all_sections"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "3d8b13568a717a80"
+file = "tests/test_elaborate.py"
+signature = "def test_elaborate_bulk_path_covers_all_sections(crib, monkeypatch):"
+description = ""
+line = 204
+mtime = 1782958917000000000
+container = []
+calls = [
+  "SectionIndex [crib/section_index.py]",
+  "read_terms [crib/section_index.py]",
+  "run [tests/test_elaborate.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "all",
+  "bulk",
+  "covers",
+  "elaborate",
+  "path",
+  "sections",
+  "test",
+  "test_elaborate_bulk_path_covers_all_sections",
+  "tests",
+  "tests.test_elaborate.test_elaborate_bulk_path_covers_all_sections",
+]

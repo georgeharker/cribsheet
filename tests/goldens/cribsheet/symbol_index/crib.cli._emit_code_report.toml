@@ -1,0 +1,29 @@
+fqname = "crib.cli._emit_code_report"
+name = "_emit_code_report"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "dbd74503e2c1e338"
+file = "crib/cli.py"
+signature = "def _emit_code_report(rows: Any, as_json: bool) -> None:"
+description = ""
+line = 306
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = [
+  "_E_report [crib/cli.py]",
+]
+references = [
+  "_E_report [crib/cli.py]",
+]
+name_terms = [
+  "_emit_code_report",
+  "cli",
+  "code",
+  "crib",
+  "crib.cli._emit_code_report",
+  "emit",
+  "report",
+]

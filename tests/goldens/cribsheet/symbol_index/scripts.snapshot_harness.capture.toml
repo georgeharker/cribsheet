@@ -1,0 +1,29 @@
+fqname = "scripts.snapshot_harness.capture"
+name = "capture"
+kind = "function"
+lang = "python"
+module = "scripts.snapshot_harness"
+parent = ""
+content_hash = "36c0dc45c50a1223"
+file = "scripts/snapshot_harness.py"
+signature = "def capture(repo: str, sha: str, golden: Path) -> int:"
+description = ""
+line = 123
+mtime = 1783498271000000000
+container = []
+calls = [
+  "_load [scripts/snapshot_harness.py]",
+  "checkout [scripts/snapshot_harness.py]",
+  "index [scripts/snapshot_harness.py]",
+]
+called_by = [
+  "snapshot_harness [scripts/snapshot_harness.py]",
+]
+references = []
+name_terms = [
+  "capture",
+  "harness",
+  "scripts",
+  "scripts.snapshot_harness.capture",
+  "snapshot",
+]

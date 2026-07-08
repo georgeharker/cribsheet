@@ -1,0 +1,30 @@
+fqname = "crib.app.Crib.reranker"
+name = "reranker"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "bc383c868b95a49e"
+file = "crib/app.py"
+signature = "@property"
+description = ""
+line = 474
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "build_reranker [crib/retrieve.py]",
+]
+called_by = [
+  "_rerank [crib/app.py]",
+]
+references = [
+  "_rerank [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.reranker",
+  "reranker",
+]

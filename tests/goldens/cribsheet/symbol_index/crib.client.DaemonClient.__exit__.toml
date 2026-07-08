@@ -1,0 +1,28 @@
+fqname = "crib.client.DaemonClient.__exit__"
+name = "__exit__"
+kind = "method"
+lang = "python"
+module = "crib.client"
+parent = "crib.client.DaemonClient"
+content_hash = "ffc94dbfa955e067"
+file = "crib/client.py"
+signature = "def __exit__(self, *exc: object) -> None:"
+description = ""
+line = 74
+mtime = 1782958917000000000
+container = [
+  "DaemonClient",
+]
+calls = [
+  "unuse [crib/sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "__exit__",
+  "client",
+  "crib",
+  "crib.client.DaemonClient.__exit__",
+  "daemon",
+  "exit",
+]

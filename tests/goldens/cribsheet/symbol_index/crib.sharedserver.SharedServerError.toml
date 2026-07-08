@@ -1,0 +1,28 @@
+fqname = "crib.sharedserver.SharedServerError"
+name = "SharedServerError"
+kind = "class"
+lang = "python"
+module = "crib.sharedserver"
+parent = ""
+content_hash = "3683909e263ea8f8"
+file = "crib/sharedserver.py"
+signature = "class SharedServerError(RuntimeError):"
+description = ""
+line = 16
+mtime = 1782609751000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "use [crib/sharedserver.py]",
+  "wait_ready [crib/sharedserver.py]",
+]
+name_terms = [
+  "SharedServerError",
+  "crib",
+  "crib.sharedserver.SharedServerError",
+  "error",
+  "server",
+  "shared",
+  "sharedserver",
+]

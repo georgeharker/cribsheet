@@ -1,0 +1,34 @@
+fqname = "tests.test_code_cache.test_on_code_change_falls_back_to_revalidate_on_large_burst"
+name = "test_on_code_change_falls_back_to_revalidate_on_large_burst"
+kind = "function"
+lang = "python"
+module = "tests.test_code_cache"
+parent = ""
+content_hash = "fbd368690f9cbaef"
+file = "tests/test_code_cache.py"
+signature = "def test_on_code_change_falls_back_to_revalidate_on_large_burst(crib, monkeypatch):"
+description = ""
+line = 221
+mtime = 1783489700000000000
+container = []
+calls = [
+  "run [tests/test_code_cache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "back",
+  "burst",
+  "cache",
+  "change",
+  "code",
+  "falls",
+  "large",
+  "on",
+  "revalidate",
+  "test",
+  "test_on_code_change_falls_back_to_revalidate_on_large_burst",
+  "tests",
+  "tests.test_code_cache.test_on_code_change_falls_back_to_revalidate_on_large_burst",
+  "to",
+]

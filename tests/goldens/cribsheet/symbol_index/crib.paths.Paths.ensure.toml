@@ -1,0 +1,72 @@
+fqname = "crib.paths.Paths.ensure"
+name = "ensure"
+kind = "method"
+lang = "python"
+module = "crib.paths"
+parent = "crib.paths.Paths"
+content_hash = "21689c723a500f4b"
+file = "crib/paths.py"
+signature = "def ensure(self) -> Paths:"
+description = ""
+line = 61
+mtime = 1783533619000000000
+container = [
+  "Paths",
+]
+calls = []
+called_by = [
+  "_run_git [crib/cli.py]",
+  "crib [tests/test_code_cache.py]",
+  "crib [tests/test_code_learnings.py]",
+  "crib [tests/test_core_loop.py]",
+  "crib [tests/test_curation.py]",
+  "crib [tests/test_elaborate.py]",
+  "crib [tests/test_forget.py]",
+  "crib [tests/test_grammar_enum.py]",
+  "crib [tests/test_import.py]",
+  "crib [tests/test_insitu_docs.py]",
+  "crib [tests/test_lexical_cache.py]",
+  "crib [tests/test_line_map.py]",
+  "crib [tests/test_notestore_snapshot.py]",
+  "crib [tests/test_project_resolution.py]",
+  "crib [tests/test_reconcile.py]",
+  "crib [tests/test_refs.py]",
+  "crib [tests/test_rerank.py]",
+  "crib [tests/test_status.py]",
+  "env [tests/test_claude_memory.py]",
+  "fresh [tests/test_import.py]",
+  "index [scripts/snapshot_harness.py]",
+  "open [crib/app.py]",
+  "test_watcher_indexes_external_edit [tests/test_watcher.py]",
+]
+references = [
+  "_run_git [crib/cli.py]",
+  "crib [tests/test_code_cache.py]",
+  "crib [tests/test_code_learnings.py]",
+  "crib [tests/test_core_loop.py]",
+  "crib [tests/test_curation.py]",
+  "crib [tests/test_elaborate.py]",
+  "crib [tests/test_forget.py]",
+  "crib [tests/test_grammar_enum.py]",
+  "crib [tests/test_import.py]",
+  "crib [tests/test_insitu_docs.py]",
+  "crib [tests/test_lexical_cache.py]",
+  "crib [tests/test_line_map.py]",
+  "crib [tests/test_notestore_snapshot.py]",
+  "crib [tests/test_project_resolution.py]",
+  "crib [tests/test_reconcile.py]",
+  "crib [tests/test_refs.py]",
+  "crib [tests/test_rerank.py]",
+  "crib [tests/test_status.py]",
+  "env [tests/test_claude_memory.py]",
+  "fresh [tests/test_import.py]",
+  "index [scripts/snapshot_harness.py]",
+  "open [crib/app.py]",
+  "test_watcher_indexes_external_edit [tests/test_watcher.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.Paths.ensure",
+  "ensure",
+  "paths",
+]

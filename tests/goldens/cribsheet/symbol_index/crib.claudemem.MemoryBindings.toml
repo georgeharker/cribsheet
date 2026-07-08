@@ -1,0 +1,27 @@
+fqname = "crib.claudemem.MemoryBindings"
+name = "MemoryBindings"
+kind = "class"
+lang = "python"
+module = "crib.claudemem"
+parent = ""
+content_hash = "d85ae6d23c71b727"
+file = "crib/claudemem.py"
+signature = "class MemoryBindings:"
+description = ""
+line = 74
+mtime = 1782762348000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/memmirror.py]",
+]
+name_terms = [
+  "MemoryBindings",
+  "bindings",
+  "claudemem",
+  "crib",
+  "crib.claudemem.MemoryBindings",
+  "memory",
+]

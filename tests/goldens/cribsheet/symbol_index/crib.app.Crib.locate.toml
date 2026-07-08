@@ -1,0 +1,31 @@
+fqname = "crib.app.Crib.locate"
+name = "locate"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "d7fe324eeba5866b"
+file = "crib/app.py"
+signature = "def locate(self, relpath: str, project: str | None = None,"
+description = ""
+line = 400
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "abspath [crib/app.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "locate [crib/server.py]",
+]
+references = [
+  "locate [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.locate",
+  "locate",
+]

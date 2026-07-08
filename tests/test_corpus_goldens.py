@@ -36,7 +36,7 @@ pytestmark = pytest.mark.skipif(
     reason="opt-in: clones source repos from GitHub + reindexes; set CRIB_CORPUS_GOLDENS=1")
 
 
-@pytest.mark.parametrize("project", ["mcp-companion"])
+@pytest.mark.parametrize("project", ["cribsheet", "mcp-companion"])
 def test_corpus_golden_structurally_identical(project):
     golden = _GOLDENS / project
     assert (golden / "meta").exists(), f"no committed golden for {project}"

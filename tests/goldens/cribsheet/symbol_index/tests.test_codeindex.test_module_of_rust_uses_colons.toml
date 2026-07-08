@@ -1,0 +1,30 @@
+fqname = "tests.test_codeindex.test_module_of_rust_uses_colons"
+name = "test_module_of_rust_uses_colons"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "a2725e82519ae7ed"
+file = "tests/test_codeindex.py"
+signature = "def test_module_of_rust_uses_colons():"
+description = ""
+line = 27
+mtime = 1783533619000000000
+container = []
+calls = [
+  "_module_of [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "colons",
+  "module",
+  "of",
+  "rust",
+  "test",
+  "test_module_of_rust_uses_colons",
+  "tests",
+  "tests.test_codeindex.test_module_of_rust_uses_colons",
+  "uses",
+]

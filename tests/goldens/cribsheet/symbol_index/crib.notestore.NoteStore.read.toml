@@ -1,0 +1,32 @@
+fqname = "crib.notestore.NoteStore.read"
+name = "read"
+kind = "method"
+lang = "python"
+module = "crib.notestore"
+parent = "crib.notestore.NoteStore"
+content_hash = "a3a44af597c3fb40"
+file = "crib/notestore.py"
+signature = "def read(self, project: str, relpath: str) -> str:"
+description = ""
+line = 67
+mtime = 1783525700000000000
+container = [
+  "NoteStore",
+]
+calls = [
+  "abspath [crib/notestore.py]",
+]
+called_by = [
+  "read_note [crib/app.py]",
+]
+references = [
+  "read_note [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.NoteStore.read",
+  "note",
+  "notestore",
+  "read",
+  "store",
+]

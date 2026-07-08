@@ -1,0 +1,36 @@
+fqname = "crib.notes.serialize"
+name = "serialize"
+kind = "function"
+lang = "python"
+module = "crib.notes"
+parent = ""
+content_hash = "337640d710dcd5ef"
+file = "crib/notes.py"
+signature = "def serialize(frontmatter: dict[str, Any], body: str) -> str:"
+description = ""
+line = 54
+mtime = 1782755212000000000
+container = []
+calls = []
+called_by = [
+  "_note [tests/test_merge.py]",
+  "delete [crib/notestore.py]",
+  "merge_note_texts [crib/merge.py]",
+  "normalize_text [crib/notes.py]",
+  "save_atomic [crib/notes.py]",
+  "write [crib/notestore.py]",
+]
+references = [
+  "_note [tests/test_merge.py]",
+  "delete [crib/notestore.py]",
+  "merge_note_texts [crib/merge.py]",
+  "normalize_text [crib/notes.py]",
+  "save_atomic [crib/notes.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notes.serialize",
+  "notes",
+  "serialize",
+]

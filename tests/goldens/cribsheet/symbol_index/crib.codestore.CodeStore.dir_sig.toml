@@ -1,0 +1,37 @@
+fqname = "crib.codestore.CodeStore.dir_sig"
+name = "dir_sig"
+kind = "method"
+lang = "python"
+module = "crib.codestore"
+parent = "crib.codestore.CodeStore"
+content_hash = "78905f103f22ed77"
+file = "crib/codestore.py"
+signature = "def dir_sig(self, proj: str) -> tuple[int, int]:"
+description = ""
+line = 112
+mtime = 1783494290000000000
+container = [
+  "CodeStore",
+]
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "project_dir [crib/paths.py]",
+]
+called_by = [
+  "_dir_sig [crib/app.py]",
+  "tok [crib/codestore.py]",
+]
+references = [
+  "_dir_sig [crib/app.py]",
+  "tok [crib/codestore.py]",
+]
+name_terms = [
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore.CodeStore.dir_sig",
+  "dir",
+  "dir_sig",
+  "sig",
+  "store",
+]

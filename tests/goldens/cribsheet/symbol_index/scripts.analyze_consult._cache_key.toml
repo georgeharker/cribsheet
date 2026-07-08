@@ -1,0 +1,29 @@
+fqname = "scripts.analyze_consult._cache_key"
+name = "_cache_key"
+kind = "function"
+lang = "python"
+module = "scripts.analyze_consult"
+parent = ""
+content_hash = "443f51d6a83c32b1"
+file = "scripts/analyze_consult.py"
+signature = "def _cache_key(path: Path) -> Path:"
+description = ""
+line = 108
+mtime = 1783033314000000000
+container = []
+calls = []
+called_by = [
+  "_load [scripts/analyze_consult.py]",
+]
+references = [
+  "_load [scripts/analyze_consult.py]",
+]
+name_terms = [
+  "_cache_key",
+  "analyze",
+  "cache",
+  "consult",
+  "key",
+  "scripts",
+  "scripts.analyze_consult._cache_key",
+]

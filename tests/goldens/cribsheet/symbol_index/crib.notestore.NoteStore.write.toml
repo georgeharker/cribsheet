@@ -1,0 +1,47 @@
+fqname = "crib.notestore.NoteStore.write"
+name = "write"
+kind = "method"
+lang = "python"
+module = "crib.notestore"
+parent = "crib.notestore.NoteStore"
+content_hash = "597837040ff7bcee"
+file = "crib/notestore.py"
+signature = "async def write(self, project: str, relpath: str, note: Note) -> IndexResult:"
+description = ""
+line = 54
+mtime = 1783525700000000000
+container = [
+  "NoteStore",
+]
+calls = [
+  "abspath [crib/notestore.py]",
+  "dir [crib/notestore.py]",
+  "ensure_id [crib/notes.py]",
+  "index_file [crib/indexer.py]",
+  "load [crib/notes.py]",
+  "save_atomic [crib/notes.py]",
+  "serialize [crib/notes.py]",
+  "stash [crib/versions.py]",
+]
+called_by = [
+  "_write_note [crib/app.py]",
+  "append [crib/learnings.py]",
+  "edit [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+]
+references = [
+  "_write_note [crib/app.py]",
+  "append [crib/learnings.py]",
+  "edit [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.NoteStore.write",
+  "note",
+  "notestore",
+  "store",
+  "write",
+]

@@ -1,0 +1,26 @@
+fqname = "crib.embed.FastEmbedEmbedder"
+name = "FastEmbedEmbedder"
+kind = "class"
+lang = "python"
+module = "crib.embed"
+parent = ""
+content_hash = "e243f8984f9c6dbf"
+file = "crib/embed.py"
+signature = "class FastEmbedEmbedder:"
+description = ""
+line = 58
+mtime = 1782690118000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "build_embedder [crib/embed.py]",
+]
+name_terms = [
+  "FastEmbedEmbedder",
+  "crib",
+  "crib.embed.FastEmbedEmbedder",
+  "embed",
+  "embedder",
+  "fast",
+]

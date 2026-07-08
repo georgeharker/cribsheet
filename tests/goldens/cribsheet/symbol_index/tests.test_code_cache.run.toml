@@ -1,0 +1,34 @@
+fqname = "tests.test_code_cache.run"
+name = "run"
+kind = "function"
+lang = "python"
+module = "tests.test_code_cache"
+parent = ""
+content_hash = "44052857cf112194"
+file = "tests/test_code_cache.py"
+signature = "def run(coro):"
+description = ""
+line = 31
+mtime = 1783489700000000000
+container = []
+calls = []
+called_by = [
+  "test_on_code_change_falls_back_to_revalidate_on_large_burst [tests/test_code_cache.py]",
+  "test_on_code_change_pumps_watched_files_into_lsp_pool [tests/test_code_cache.py]",
+  "test_reconcile_rebuilds_merge_dirtied_files [tests/test_code_cache.py]",
+  "test_spurious_delete_reindexes_instead_of_dropping [tests/test_code_cache.py]",
+]
+references = [
+  "test_on_code_change_falls_back_to_revalidate_on_large_burst [tests/test_code_cache.py]",
+  "test_on_code_change_pumps_watched_files_into_lsp_pool [tests/test_code_cache.py]",
+  "test_reconcile_rebuilds_merge_dirtied_files [tests/test_code_cache.py]",
+  "test_spurious_delete_reindexes_instead_of_dropping [tests/test_code_cache.py]",
+]
+name_terms = [
+  "cache",
+  "code",
+  "run",
+  "test",
+  "tests",
+  "tests.test_code_cache.run",
+]

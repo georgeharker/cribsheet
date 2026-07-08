@@ -1,0 +1,32 @@
+fqname = "crib.retrieve._lexical_tf"
+name = "_lexical_tf"
+kind = "function"
+lang = "python"
+module = "crib.retrieve"
+parent = ""
+content_hash = "a9ac9d0d8a24357e"
+file = "crib/retrieve.py"
+signature = "def _lexical_tf(document: str, meta: dict | None,"
+description = ""
+line = 123
+mtime = 1782930371000000000
+container = []
+calls = [
+  "_lexical_text [crib/retrieve.py]",
+  "_subtokens [crib/retrieve.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = [
+  "get [crib/retrieve.py]",
+]
+references = [
+  "get [crib/retrieve.py]",
+]
+name_terms = [
+  "_lexical_tf",
+  "crib",
+  "crib.retrieve._lexical_tf",
+  "lexical",
+  "retrieve",
+  "tf",
+]

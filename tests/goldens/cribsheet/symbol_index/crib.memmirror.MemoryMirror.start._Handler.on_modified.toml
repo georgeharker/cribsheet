@@ -1,0 +1,34 @@
+fqname = "crib.memmirror.MemoryMirror.start._Handler.on_modified"
+name = "on_modified"
+kind = "method"
+lang = "python"
+module = "crib.memmirror"
+parent = "crib.memmirror.MemoryMirror.start._Handler"
+content_hash = "38259518760a701b"
+file = "crib/memmirror.py"
+signature = "def on_modified(self, e):  # noqa: ANN001"
+description = ""
+line = 65
+mtime = 1782755761000000000
+container = [
+  "MemoryMirror",
+  "start",
+  "_Handler",
+]
+calls = [
+  "_emit [crib/memmirror.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.memmirror.MemoryMirror.start._Handler.on_modified",
+  "handler",
+  "memmirror",
+  "memory",
+  "mirror",
+  "modified",
+  "on",
+  "on_modified",
+  "start",
+]

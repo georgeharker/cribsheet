@@ -1,0 +1,31 @@
+fqname = "tests.test_normalize.test_derived_ulid_is_stable_and_ulid_shaped"
+name = "test_derived_ulid_is_stable_and_ulid_shaped"
+kind = "function"
+lang = "python"
+module = "tests.test_normalize"
+parent = ""
+content_hash = "80de11a653711020"
+file = "tests/test_normalize.py"
+signature = "def test_derived_ulid_is_stable_and_ulid_shaped():"
+description = ""
+line = 17
+mtime = 1782755212000000000
+container = []
+calls = [
+  "derived_ulid [crib/util.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "derived",
+  "is",
+  "normalize",
+  "shaped",
+  "stable",
+  "test",
+  "test_derived_ulid_is_stable_and_ulid_shaped",
+  "tests",
+  "tests.test_normalize.test_derived_ulid_is_stable_and_ulid_shaped",
+  "ulid",
+]

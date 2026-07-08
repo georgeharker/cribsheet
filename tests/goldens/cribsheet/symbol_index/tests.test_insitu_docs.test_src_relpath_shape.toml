@@ -1,0 +1,29 @@
+fqname = "tests.test_insitu_docs.test_src_relpath_shape"
+name = "test_src_relpath_shape"
+kind = "function"
+lang = "python"
+module = "tests.test_insitu_docs"
+parent = ""
+content_hash = "3c716fc27f28beeb"
+file = "tests/test_insitu_docs.py"
+signature = "def test_src_relpath_shape():"
+description = ""
+line = 40
+mtime = 1783476730000000000
+container = []
+calls = [
+  "src_relpath [crib/sources.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "docs",
+  "insitu",
+  "relpath",
+  "shape",
+  "src",
+  "test",
+  "test_src_relpath_shape",
+  "tests",
+  "tests.test_insitu_docs.test_src_relpath_shape",
+]

@@ -1,0 +1,26 @@
+fqname = "crib.watch._IGNORE_DIRS"
+name = "_IGNORE_DIRS"
+kind = "constant"
+lang = "python"
+module = "crib.watch"
+parent = ""
+content_hash = "5e2f7da17b912b63"
+file = "crib/watch.py"
+signature = "_IGNORE_DIRS = {\".git\", \".versions\"}"
+description = ""
+line = 18
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_ignored [crib/watch.py]",
+]
+name_terms = [
+  "_IGNORE_DIRS",
+  "crib",
+  "crib.watch._IGNORE_DIRS",
+  "dirs",
+  "ignore",
+  "watch",
+]

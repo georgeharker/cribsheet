@@ -1,0 +1,50 @@
+fqname = "crib.indexer.IndexEngine.index_file"
+name = "index_file"
+kind = "method"
+lang = "python"
+module = "crib.indexer"
+parent = "crib.indexer.IndexEngine"
+content_hash = "21091374f34dde75"
+file = "crib/indexer.py"
+signature = "async def index_file(self, project: str, notes_dir: Path, relpath: str,"
+description = ""
+line = 65
+mtime = 1783476730000000000
+container = [
+  "IndexEngine",
+]
+calls = [
+  "_index_locked [crib/indexer.py]",
+  "_key [crib/indexer.py]",
+]
+called_by = [
+  "_on_code_change [crib/app.py]",
+  "_on_fs_change [crib/app.py]",
+  "_reconcile_memory_dir [crib/app.py]",
+  "delete [crib/notestore.py]",
+  "import_claude_memory [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "move [crib/notestore.py]",
+  "reindex [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+references = [
+  "_on_code_change [crib/app.py]",
+  "_on_fs_change [crib/app.py]",
+  "_reconcile_memory_dir [crib/app.py]",
+  "delete [crib/notestore.py]",
+  "import_claude_memory [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "move [crib/notestore.py]",
+  "reindex [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.indexer.IndexEngine.index_file",
+  "engine",
+  "file",
+  "index",
+  "index_file",
+  "indexer",
+]

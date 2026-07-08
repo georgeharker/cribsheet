@@ -1,0 +1,24 @@
+fqname = "tests.test_corpus_goldens.pytestmark"
+name = "pytestmark"
+kind = "global"
+lang = "python"
+module = "tests.test_corpus_goldens"
+parent = ""
+content_hash = "2394754a3cf45a29"
+file = "tests/test_corpus_goldens.py"
+signature = "pytestmark = pytest.mark.skipif("
+description = ""
+line = 34
+mtime = 1783535200000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "corpus",
+  "goldens",
+  "pytestmark",
+  "test",
+  "tests",
+  "tests.test_corpus_goldens.pytestmark",
+]

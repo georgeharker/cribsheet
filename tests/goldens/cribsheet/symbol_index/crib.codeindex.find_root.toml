@@ -1,0 +1,30 @@
+fqname = "crib.codeindex.find_root"
+name = "find_root"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "b5d72348710f523c"
+file = "crib/codeindex.py"
+signature = "def find_root(path: Path) -> Path:"
+description = ""
+line = 272
+mtime = 1783533619000000000
+container = []
+calls = []
+called_by = [
+  "code_index [crib/codeindexer.py]",
+  "test_find_root_walks_past_submodule_to_top_level [tests/test_codeindex.py]",
+]
+references = [
+  "code_index [crib/codeindexer.py]",
+  "test_find_root_walks_past_submodule_to_top_level [tests/test_codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.find_root",
+  "find",
+  "find_root",
+  "root",
+]

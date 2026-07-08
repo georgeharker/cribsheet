@@ -1,0 +1,28 @@
+fqname = "crib.store.ChromaStore"
+name = "ChromaStore"
+kind = "class"
+lang = "python"
+module = "crib.store"
+parent = ""
+content_hash = "b348e0ac490cc52b"
+file = "crib/store.py"
+signature = "class ChromaStore:"
+description = ""
+line = 157
+mtime = 1783446057000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_build_shared_chroma [crib/app.py]",
+  "_build_store [crib/app.py]",
+  "embedded [crib/store.py]",
+  "shared [crib/store.py]",
+]
+name_terms = [
+  "ChromaStore",
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore",
+  "store",
+]

@@ -1,0 +1,30 @@
+fqname = "crib.server.build_server.code_forget"
+name = "code_forget"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "ca64af123af91eb2"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 492
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_project [crib/server.py]",
+  "code_forget [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "code",
+  "code_forget",
+  "crib",
+  "crib.server.build_server.code_forget",
+  "forget",
+  "server",
+]

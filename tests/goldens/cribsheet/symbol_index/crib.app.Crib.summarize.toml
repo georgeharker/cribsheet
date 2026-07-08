@@ -1,0 +1,31 @@
+fqname = "crib.app.Crib.summarize"
+name = "summarize"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "eb54ad38f231a5d0"
+file = "crib/app.py"
+signature = "async def summarize(self, label: str, relpath: str | None = None,"
+description = ""
+line = 696
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "_generate_index [crib/app.py]",
+  "resolve_prompt [crib/section_index.py]",
+]
+called_by = [
+  "summarize [crib/server.py]",
+]
+references = [
+  "summarize [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.summarize",
+  "summarize",
+]

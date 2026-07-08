@@ -1,0 +1,31 @@
+fqname = "crib.watch._matches_doc_globs"
+name = "_matches_doc_globs"
+kind = "function"
+lang = "python"
+module = "crib.watch"
+parent = ""
+content_hash = "78b4268ab4bb35e3"
+file = "crib/watch.py"
+signature = "def _matches_doc_globs(root: Path, rel: Path) -> bool:"
+description = ""
+line = 160
+mtime = 1783476730000000000
+container = []
+calls = [
+  "find [crib/config.py]",
+]
+called_by = [
+  "_decode [crib/watch.py]",
+]
+references = [
+  "_decode [crib/watch.py]",
+]
+name_terms = [
+  "_matches_doc_globs",
+  "crib",
+  "crib.watch._matches_doc_globs",
+  "doc",
+  "globs",
+  "matches",
+  "watch",
+]

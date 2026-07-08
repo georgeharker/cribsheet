@@ -1,0 +1,30 @@
+fqname = "crib.cli._cwd_of"
+name = "_cwd_of"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "c149c09ca1fc6a02"
+file = "crib/cli.py"
+signature = "def _cwd_of(args: Any) -> Path:"
+description = ""
+line = 816
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = [
+  "_run_daemon [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+]
+references = [
+  "_run_daemon [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+]
+name_terms = [
+  "_cwd_of",
+  "cli",
+  "crib",
+  "crib.cli._cwd_of",
+  "cwd",
+  "of",
+]

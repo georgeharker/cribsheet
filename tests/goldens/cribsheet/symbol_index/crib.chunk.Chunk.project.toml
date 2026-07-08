@@ -1,0 +1,27 @@
+fqname = "crib.chunk.Chunk.project"
+name = "project"
+kind = "field"
+lang = "python"
+module = "crib.chunk"
+parent = "crib.chunk.Chunk"
+content_hash = "72bf42a4f223d84d"
+file = "crib/chunk.py"
+signature = "project: str"
+description = ""
+line = 26
+mtime = 1782930371000000000
+container = [
+  "Chunk",
+]
+calls = []
+called_by = []
+references = [
+  "chunk_id [crib/chunk.py]",
+  "metadata [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.project",
+  "project",
+]

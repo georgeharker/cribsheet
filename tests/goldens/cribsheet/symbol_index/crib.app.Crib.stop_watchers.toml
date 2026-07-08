@@ -1,0 +1,34 @@
+fqname = "crib.app.Crib.stop_watchers"
+name = "stop_watchers"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "fe8349afe328d1b3"
+file = "crib/app.py"
+signature = "def stop_watchers(self) -> None:"
+description = ""
+line = 245
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "stop [crib/watch.py]",
+]
+called_by = [
+  "close [crib/app.py]",
+  "scenario [tests/test_watcher.py]",
+]
+references = [
+  "close [crib/app.py]",
+  "scenario [tests/test_watcher.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.stop_watchers",
+  "stop",
+  "stop_watchers",
+  "watchers",
+]

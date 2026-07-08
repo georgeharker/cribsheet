@@ -1,0 +1,34 @@
+fqname = "crib.learnings.Learnings.report"
+name = "report"
+kind = "method"
+lang = "python"
+module = "crib.learnings"
+parent = "crib.learnings.Learnings"
+content_hash = "a8b06ac0e04efca6"
+file = "crib/learnings.py"
+signature = "def report(self, proj: str, orphans_only: bool = False) -> list[dict[str, Any]]:"
+description = ""
+line = 151
+mtime = 1783529664000000000
+container = [
+  "Learnings",
+]
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "all [crib/codeindex.py]",
+  "dir [crib/notestore.py]",
+  "load [crib/notes.py]",
+  "project_dir [crib/paths.py]",
+]
+called_by = [
+  "code_learnings [crib/app.py]",
+]
+references = [
+  "code_learnings [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.learnings.Learnings.report",
+  "learnings",
+  "report",
+]

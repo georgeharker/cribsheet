@@ -1,0 +1,27 @@
+fqname = "crib.codestore.CodeStore"
+name = "CodeStore"
+kind = "class"
+lang = "python"
+module = "crib.codestore"
+parent = ""
+content_hash = "d77d698a31b3dabc"
+file = "crib/codestore.py"
+signature = "class CodeStore:"
+description = ""
+line = 71
+mtime = 1783494290000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/project_services.py]",
+]
+name_terms = [
+  "CodeStore",
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore.CodeStore",
+  "store",
+]

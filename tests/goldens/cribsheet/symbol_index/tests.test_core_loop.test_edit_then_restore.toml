@@ -1,0 +1,29 @@
+fqname = "tests.test_core_loop.test_edit_then_restore"
+name = "test_edit_then_restore"
+kind = "function"
+lang = "python"
+module = "tests.test_core_loop"
+parent = ""
+content_hash = "b29c5249c0b3ee64"
+file = "tests/test_core_loop.py"
+signature = "def test_edit_then_restore(crib):"
+description = ""
+line = 81
+mtime = 1782930371000000000
+container = []
+calls = [
+  "run [tests/test_core_loop.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "core",
+  "edit",
+  "loop",
+  "restore",
+  "test",
+  "test_edit_then_restore",
+  "tests",
+  "tests.test_core_loop.test_edit_then_restore",
+  "then",
+]

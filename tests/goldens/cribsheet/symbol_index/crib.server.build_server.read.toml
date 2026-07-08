@@ -1,0 +1,28 @@
+fqname = "crib.server.build_server.read"
+name = "read"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "7cce9f5a075fc4ee"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 237
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_project [crib/server.py]",
+  "read_note [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.read",
+  "read",
+  "server",
+]

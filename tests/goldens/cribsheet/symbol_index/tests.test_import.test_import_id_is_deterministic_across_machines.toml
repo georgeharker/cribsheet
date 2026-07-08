@@ -1,0 +1,32 @@
+fqname = "tests.test_import.test_import_id_is_deterministic_across_machines"
+name = "test_import_id_is_deterministic_across_machines"
+kind = "function"
+lang = "python"
+module = "tests.test_import"
+parent = ""
+content_hash = "2ea366e7fe5b3c02"
+file = "tests/test_import.py"
+signature = "def test_import_id_is_deterministic_across_machines(tmp_path, monkeypatch):"
+description = ""
+line = 78
+mtime = 1783450349000000000
+container = []
+calls = [
+  "_files [tests/test_import.py]",
+  "_id_of [tests/test_import.py]",
+  "fresh [tests/test_import.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "across",
+  "deterministic",
+  "id",
+  "import",
+  "is",
+  "machines",
+  "test",
+  "test_import_id_is_deterministic_across_machines",
+  "tests",
+  "tests.test_import.test_import_id_is_deterministic_across_machines",
+]

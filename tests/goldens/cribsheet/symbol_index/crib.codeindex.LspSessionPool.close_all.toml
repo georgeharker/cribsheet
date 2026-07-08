@@ -1,0 +1,47 @@
+fqname = "crib.codeindex.LspSessionPool.close_all"
+name = "close_all"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.LspSessionPool"
+content_hash = "694c66a9f551200c"
+file = "crib/codeindex.py"
+signature = "def close_all(self) -> None:"
+description = ""
+line = 627
+mtime = 1783533619000000000
+container = [
+  "LspSessionPool",
+]
+calls = [
+  "close [crib/codeindex.py]",
+]
+called_by = [
+  "close [crib/app.py]",
+  "test_extra_roots_ride_as_workspace_folders [tests/test_codeindex.py]",
+  "test_progress_tracked_and_wait_quiescent_honors_it [tests/test_codeindex.py]",
+  "test_session_pool_pins_docs_across_calls [tests/test_codeindex.py]",
+  "test_session_pool_pumps_watched_file_changes [tests/test_codeindex.py]",
+  "test_session_pool_respawns_after_crash [tests/test_codeindex.py]",
+  "test_session_pool_reuses_one_server_across_files [tests/test_codeindex.py]",
+]
+references = [
+  "close [crib/app.py]",
+  "test_extra_roots_ride_as_workspace_folders [tests/test_codeindex.py]",
+  "test_progress_tracked_and_wait_quiescent_honors_it [tests/test_codeindex.py]",
+  "test_session_pool_pins_docs_across_calls [tests/test_codeindex.py]",
+  "test_session_pool_pumps_watched_file_changes [tests/test_codeindex.py]",
+  "test_session_pool_respawns_after_crash [tests/test_codeindex.py]",
+  "test_session_pool_reuses_one_server_across_files [tests/test_codeindex.py]",
+]
+name_terms = [
+  "all",
+  "close",
+  "close_all",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspSessionPool.close_all",
+  "lsp",
+  "pool",
+  "session",
+]

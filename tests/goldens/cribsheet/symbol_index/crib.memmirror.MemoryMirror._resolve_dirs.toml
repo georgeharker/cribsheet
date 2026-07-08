@@ -1,0 +1,36 @@
+fqname = "crib.memmirror.MemoryMirror._resolve_dirs"
+name = "_resolve_dirs"
+kind = "method"
+lang = "python"
+module = "crib.memmirror"
+parent = "crib.memmirror.MemoryMirror"
+content_hash = "27586b395871ed70"
+file = "crib/memmirror.py"
+signature = "def _resolve_dirs(self) -> list[Path]:"
+description = ""
+line = 82
+mtime = 1782755761000000000
+container = [
+  "MemoryMirror",
+]
+calls = [
+  "all [crib/claudemem.py]",
+  "harness_memory_dir [crib/claudemem.py]",
+  "resolve_path [crib/claudemem.py]",
+]
+called_by = [
+  "start [crib/memmirror.py]",
+]
+references = [
+  "start [crib/memmirror.py]",
+]
+name_terms = [
+  "_resolve_dirs",
+  "crib",
+  "crib.memmirror.MemoryMirror._resolve_dirs",
+  "dirs",
+  "memmirror",
+  "memory",
+  "mirror",
+  "resolve",
+]

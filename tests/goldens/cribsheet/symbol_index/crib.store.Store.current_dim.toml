@@ -1,0 +1,30 @@
+fqname = "crib.store.Store.current_dim"
+name = "current_dim"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Store"
+content_hash = "140e842c43c6af67"
+file = "crib/store.py"
+signature = "def current_dim(self) -> int | None:"
+description = ""
+line = 50
+mtime = 1783446057000000000
+container = [
+  "Store",
+]
+calls = []
+called_by = [
+  "reindex [crib/notestore.py]",
+]
+references = [
+  "reindex [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Store.current_dim",
+  "current",
+  "current_dim",
+  "dim",
+  "store",
+]

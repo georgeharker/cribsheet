@@ -1,0 +1,31 @@
+fqname = "tests.test_codeindex.test_symbol_toml_roundtrip_is_stable"
+name = "test_symbol_toml_roundtrip_is_stable"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "e34b58d9f46c2466"
+file = "tests/test_codeindex.py"
+signature = "def test_symbol_toml_roundtrip_is_stable():"
+description = ""
+line = 475
+mtime = 1783533619000000000
+container = []
+calls = [
+  "_parse [crib/codeindex.py]",
+  "_render [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "is",
+  "roundtrip",
+  "stable",
+  "symbol",
+  "test",
+  "test_symbol_toml_roundtrip_is_stable",
+  "tests",
+  "tests.test_codeindex.test_symbol_toml_roundtrip_is_stable",
+  "toml",
+]

@@ -1,0 +1,36 @@
+fqname = "scripts.codeindex.lsp_probe.Client._send"
+name = "_send"
+kind = "method"
+lang = "python"
+module = "scripts.codeindex.lsp_probe"
+parent = "scripts.codeindex.lsp_probe.Client"
+content_hash = "659c06275a857ae5"
+file = "scripts/codeindex/lsp_probe.py"
+signature = "def _send(self, msg: dict) -> None:"
+description = ""
+line = 38
+mtime = 1783033292000000000
+container = [
+  "Client",
+]
+calls = []
+called_by = [
+  "_on_request [scripts/codeindex/lsp_probe.py]",
+  "notify [scripts/codeindex/lsp_probe.py]",
+  "request [scripts/codeindex/lsp_probe.py]",
+]
+references = [
+  "_on_request [scripts/codeindex/lsp_probe.py]",
+  "notify [scripts/codeindex/lsp_probe.py]",
+  "request [scripts/codeindex/lsp_probe.py]",
+]
+name_terms = [
+  "_send",
+  "client",
+  "codeindex",
+  "lsp",
+  "probe",
+  "scripts",
+  "scripts.codeindex.lsp_probe.Client._send",
+  "send",
+]

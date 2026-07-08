@@ -1,0 +1,36 @@
+fqname = "crib.section_index.SectionIndex.write"
+name = "write"
+kind = "method"
+lang = "python"
+module = "crib.section_index"
+parent = "crib.section_index.SectionIndex"
+content_hash = "5af1eb1995596600"
+file = "crib/section_index.py"
+signature = "def write(self, label: str, section_hash: str, terms: list[str], *,"
+description = ""
+line = 147
+mtime = 1782930371000000000
+container = [
+  "SectionIndex",
+]
+calls = [
+  "_render_toml [crib/section_index.py]",
+  "path [crib/section_index.py]",
+]
+called_by = [
+  "_record [crib/app.py]",
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+  "test_store_toml_is_deterministic [tests/test_elaborate.py]",
+]
+references = [
+  "_record [crib/app.py]",
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+  "test_store_toml_is_deterministic [tests/test_elaborate.py]",
+]
+name_terms = [
+  "crib",
+  "crib.section_index.SectionIndex.write",
+  "index",
+  "section",
+  "write",
+]

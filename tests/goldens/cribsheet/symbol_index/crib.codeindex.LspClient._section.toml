@@ -1,0 +1,31 @@
+fqname = "crib.codeindex.LspClient._section"
+name = "_section"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.LspClient"
+content_hash = "211f884692a3fad8"
+file = "crib/codeindex.py"
+signature = "def _section(self, section: str | None) -> Any:"
+description = ""
+line = 378
+mtime = 1783533619000000000
+container = [
+  "LspClient",
+]
+calls = []
+called_by = [
+  "_answer [crib/codeindex.py]",
+]
+references = [
+  "_answer [crib/codeindex.py]",
+]
+name_terms = [
+  "_section",
+  "client",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspClient._section",
+  "lsp",
+  "section",
+]

@@ -1,0 +1,26 @@
+fqname = "crib.config.Config.locations"
+name = "locations"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.Config"
+content_hash = "3dc2472ecff71af5"
+file = "crib/config.py"
+signature = "locations: dict[str, str] = field(default_factory=dict)"
+description = ""
+line = 206
+mtime = 1783455339000000000
+container = [
+  "Config",
+]
+calls = []
+called_by = []
+references = [
+  "import_files [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.locations",
+  "locations",
+]

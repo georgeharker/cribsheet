@@ -1,0 +1,34 @@
+fqname = "crib.codestore._ResidentCode._prepare"
+name = "_prepare"
+kind = "method"
+lang = "python"
+module = "crib.codestore"
+parent = "crib.codestore._ResidentCode"
+content_hash = "5e0485d4d1fbd93b"
+file = "crib/codestore.py"
+signature = "def _prepare(self) -> None:"
+description = ""
+line = 46
+mtime = 1783494290000000000
+container = [
+  "_ResidentCode",
+]
+calls = [
+  "BM25 [crib/retrieve.py]",
+  "_as_tf [crib/retrieve.py]",
+]
+called_by = [
+  "__init__ [crib/codestore.py]",
+]
+references = [
+  "__init__ [crib/codestore.py]",
+]
+name_terms = [
+  "_prepare",
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore._ResidentCode._prepare",
+  "prepare",
+  "resident",
+]

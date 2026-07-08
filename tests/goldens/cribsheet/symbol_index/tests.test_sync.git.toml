@@ -1,0 +1,33 @@
+fqname = "tests.test_sync.git"
+name = "git"
+kind = "function"
+lang = "python"
+module = "tests.test_sync"
+parent = ""
+content_hash = "c7b278ed010ab7ad"
+file = "tests/test_sync.py"
+signature = "def git(cwd: Path, *args: str) -> str:"
+description = ""
+line = 14
+mtime = 1783446057000000000
+container = []
+calls = []
+called_by = [
+  "_machine [tests/test_sync.py]",
+  "test_init_writes_gitignore_and_remote [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_memory_bindings_is_gitignored [tests/test_sync.py]",
+]
+references = [
+  "_machine [tests/test_sync.py]",
+  "test_init_writes_gitignore_and_remote [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_memory_bindings_is_gitignored [tests/test_sync.py]",
+]
+name_terms = [
+  "git",
+  "sync",
+  "test",
+  "tests",
+  "tests.test_sync.git",
+]

@@ -1,0 +1,37 @@
+fqname = "tests.test_watcher.test_watcher_indexes_external_edit.scenario"
+name = "scenario"
+kind = "function"
+lang = "python"
+module = "tests.test_watcher"
+parent = "tests.test_watcher.test_watcher_indexes_external_edit"
+content_hash = "056b4b3efbce09c4"
+file = "tests/test_watcher.py"
+signature = "async def scenario():"
+description = ""
+line = 71
+mtime = 1783476730000000000
+container = [
+  "test_watcher_indexes_external_edit",
+]
+calls = [
+  "lookup [crib/app.py]",
+  "notes_dir [crib/app.py]",
+  "start_watchers [crib/app.py]",
+  "stop_watchers [crib/app.py]",
+]
+called_by = [
+  "test_watcher_indexes_external_edit [tests/test_watcher.py]",
+]
+references = [
+  "test_watcher_indexes_external_edit [tests/test_watcher.py]",
+]
+name_terms = [
+  "edit",
+  "external",
+  "indexes",
+  "scenario",
+  "test",
+  "tests",
+  "tests.test_watcher.test_watcher_indexes_external_edit.scenario",
+  "watcher",
+]

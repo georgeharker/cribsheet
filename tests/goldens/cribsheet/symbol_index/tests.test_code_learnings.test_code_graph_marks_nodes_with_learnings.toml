@@ -1,0 +1,33 @@
+fqname = "tests.test_code_learnings.test_code_graph_marks_nodes_with_learnings"
+name = "test_code_graph_marks_nodes_with_learnings"
+kind = "function"
+lang = "python"
+module = "tests.test_code_learnings"
+parent = ""
+content_hash = "60d738d71293e7fb"
+file = "tests/test_code_learnings.py"
+signature = "def test_code_graph_marks_nodes_with_learnings(crib):"
+description = ""
+line = 100
+mtime = 1783494048000000000
+container = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_seed_symbol [tests/test_code_learnings.py]",
+  "run [tests/test_code_learnings.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "graph",
+  "learnings",
+  "marks",
+  "nodes",
+  "test",
+  "test_code_graph_marks_nodes_with_learnings",
+  "tests",
+  "tests.test_code_learnings.test_code_graph_marks_nodes_with_learnings",
+  "with",
+]

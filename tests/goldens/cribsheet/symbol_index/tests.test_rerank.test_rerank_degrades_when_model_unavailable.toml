@@ -1,0 +1,30 @@
+fqname = "tests.test_rerank.test_rerank_degrades_when_model_unavailable"
+name = "test_rerank_degrades_when_model_unavailable"
+kind = "function"
+lang = "python"
+module = "tests.test_rerank"
+parent = ""
+content_hash = "86bebdf96f206ea8"
+file = "tests/test_rerank.py"
+signature = "def test_rerank_degrades_when_model_unavailable(crib):"
+description = ""
+line = 53
+mtime = 1782704221000000000
+container = []
+calls = [
+  "_Boom [tests/test_rerank.py]",
+  "run [tests/test_rerank.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "degrades",
+  "model",
+  "rerank",
+  "test",
+  "test_rerank_degrades_when_model_unavailable",
+  "tests",
+  "tests.test_rerank.test_rerank_degrades_when_model_unavailable",
+  "unavailable",
+  "when",
+]

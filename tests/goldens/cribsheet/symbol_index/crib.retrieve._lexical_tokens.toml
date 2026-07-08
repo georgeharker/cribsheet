@@ -1,0 +1,32 @@
+fqname = "crib.retrieve._lexical_tokens"
+name = "_lexical_tokens"
+kind = "function"
+lang = "python"
+module = "crib.retrieve"
+parent = ""
+content_hash = "3c6a0779a229a87f"
+file = "crib/retrieve.py"
+signature = "def _lexical_tokens(document: str, meta: dict | None,"
+description = ""
+line = 110
+mtime = 1782930371000000000
+container = []
+calls = [
+  "_lexical_text [crib/retrieve.py]",
+  "_subtokens [crib/retrieve.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = [
+  "test_subtokens_let_spaced_query_match_a_solid_identifier [tests/test_retrieve.py]",
+]
+references = [
+  "test_subtokens_let_spaced_query_match_a_solid_identifier [tests/test_retrieve.py]",
+]
+name_terms = [
+  "_lexical_tokens",
+  "crib",
+  "crib.retrieve._lexical_tokens",
+  "lexical",
+  "retrieve",
+  "tokens",
+]

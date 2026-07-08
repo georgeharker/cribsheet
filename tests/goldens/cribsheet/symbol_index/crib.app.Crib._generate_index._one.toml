@@ -1,0 +1,36 @@
+fqname = "crib.app.Crib._generate_index._one"
+name = "_one"
+kind = "function"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib._generate_index"
+content_hash = "f2f0cd822ccf5491"
+file = "crib/app.py"
+signature = "async def _one(sh: str, rp: str, heading: str, body: str) -> None:"
+description = ""
+line = 1168
+mtime = 1783530649000000000
+container = [
+  "Crib",
+  "_generate_index",
+]
+calls = [
+  "_record [crib/app.py]",
+  "agenerate [crib/generate.py]",
+  "parse_terms [crib/section_index.py]",
+]
+called_by = [
+  "_generate_index [crib/app.py]",
+]
+references = [
+  "_generate_index [crib/app.py]",
+]
+name_terms = [
+  "_one",
+  "app",
+  "crib",
+  "crib.app.Crib._generate_index._one",
+  "generate",
+  "index",
+  "one",
+]

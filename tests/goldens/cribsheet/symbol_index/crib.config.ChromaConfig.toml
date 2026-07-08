@@ -1,0 +1,26 @@
+fqname = "crib.config.ChromaConfig"
+name = "ChromaConfig"
+kind = "class"
+lang = "python"
+module = "crib.config"
+parent = ""
+content_hash = "66bc6a527167f5ec"
+file = "crib/config.py"
+signature = "@dataclass"
+description = ""
+line = 157
+mtime = 1783455339000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "chroma [crib/config.py]",
+  "load [crib/config.py]",
+]
+name_terms = [
+  "ChromaConfig",
+  "chroma",
+  "config",
+  "crib",
+  "crib.config.ChromaConfig",
+]

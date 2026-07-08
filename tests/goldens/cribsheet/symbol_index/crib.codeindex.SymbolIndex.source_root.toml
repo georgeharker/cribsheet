@@ -1,0 +1,38 @@
+fqname = "crib.codeindex.SymbolIndex.source_root"
+name = "source_root"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.SymbolIndex"
+content_hash = "ea8dc34bc5ae6d43"
+file = "crib/codeindex.py"
+signature = "def source_root(self) -> Path | None:"
+description = ""
+line = 1237
+mtime = 1783533619000000000
+container = [
+  "SymbolIndex",
+]
+calls = []
+called_by = [
+  "_reindex_dirty_code [crib/app.py]",
+  "project_refs [crib/refs.py]",
+  "revalidate [crib/codestore.py]",
+  "start_watchers [crib/app.py]",
+]
+references = [
+  "_reindex_dirty_code [crib/app.py]",
+  "project_refs [crib/refs.py]",
+  "revalidate [crib/codestore.py]",
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex.source_root",
+  "index",
+  "root",
+  "source",
+  "source_root",
+  "symbol",
+]

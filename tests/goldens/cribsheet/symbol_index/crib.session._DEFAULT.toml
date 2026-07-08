@@ -1,0 +1,25 @@
+fqname = "crib.session._DEFAULT"
+name = "_DEFAULT"
+kind = "constant"
+lang = "python"
+module = "crib.session"
+parent = ""
+content_hash = "b6b49acc2d3d17c4"
+file = "crib/session.py"
+signature = "_DEFAULT = SessionState()   # non-request contexts: in-process CLI, tests"
+description = ""
+line = 53
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "session_state [crib/session.py]",
+]
+name_terms = [
+  "_DEFAULT",
+  "crib",
+  "crib.session._DEFAULT",
+  "default",
+  "session",
+]

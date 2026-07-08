@@ -1,0 +1,33 @@
+fqname = "crib.watch._FSWatcher.start"
+name = "start"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch._FSWatcher"
+content_hash = "ddb440d5ed938942"
+file = "crib/watch.py"
+signature = "def start(self) -> None:"
+description = ""
+line = 76
+mtime = 1783476730000000000
+container = [
+  "_FSWatcher",
+]
+calls = [
+  "_schedule_dir [crib/watch.py]",
+  "_watch_dirs [crib/watch.py]",
+]
+called_by = [
+  "start_watchers [crib/app.py]",
+]
+references = [
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.watch._FSWatcher.start",
+  "fs",
+  "start",
+  "watch",
+  "watcher",
+]

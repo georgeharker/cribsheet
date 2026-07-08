@@ -1,0 +1,30 @@
+fqname = "crib.retrieve._as_tf"
+name = "_as_tf"
+kind = "function"
+lang = "python"
+module = "crib.retrieve"
+parent = ""
+content_hash = "7832227cc200d14e"
+file = "crib/retrieve.py"
+signature = "def _as_tf(doc) -> dict[str, float]:"
+description = ""
+line = 31
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = [
+  "__init__ [crib/retrieve.py]",
+  "_prepare [crib/codestore.py]",
+]
+references = [
+  "__init__ [crib/retrieve.py]",
+  "_prepare [crib/codestore.py]",
+]
+name_terms = [
+  "_as_tf",
+  "as",
+  "crib",
+  "crib.retrieve._as_tf",
+  "retrieve",
+  "tf",
+]

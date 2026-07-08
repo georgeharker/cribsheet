@@ -1,0 +1,31 @@
+fqname = "crib.server.build_server.code_graph"
+name = "code_graph"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "daac3942b4ee0e8e"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 458
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_echo_dict [crib/server.py]",
+  "_resolve [crib/server.py]",
+  "code_graph [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "code",
+  "code_graph",
+  "crib",
+  "crib.server.build_server.code_graph",
+  "graph",
+  "server",
+]

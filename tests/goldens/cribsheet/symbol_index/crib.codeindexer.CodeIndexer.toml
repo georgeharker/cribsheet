@@ -1,0 +1,26 @@
+fqname = "crib.codeindexer.CodeIndexer"
+name = "CodeIndexer"
+kind = "class"
+lang = "python"
+module = "crib.codeindexer"
+parent = ""
+content_hash = "0d08e9580b8ab94b"
+file = "crib/codeindexer.py"
+signature = "class CodeIndexer:"
+description = ""
+line = 23
+mtime = 1783496808000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+]
+name_terms = [
+  "CodeIndexer",
+  "code",
+  "codeindexer",
+  "crib",
+  "crib.codeindexer.CodeIndexer",
+  "indexer",
+]

@@ -1,0 +1,34 @@
+fqname = "tests.test_elaborate.test_downweight_scales_elaboration_contribution.FakeStore.get_docs"
+name = "get_docs"
+kind = "method"
+lang = "python"
+module = "tests.test_elaborate"
+parent = "tests.test_elaborate.test_downweight_scales_elaboration_contribution.FakeStore"
+content_hash = "906abc3d657ae389"
+file = "tests/test_elaborate.py"
+signature = "def get_docs(self, where):"
+description = ""
+line = 117
+mtime = 1782958917000000000
+container = [
+  "test_downweight_scales_elaboration_contribution",
+  "FakeStore",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "contribution",
+  "docs",
+  "downweight",
+  "elaborate",
+  "elaboration",
+  "fake",
+  "get",
+  "get_docs",
+  "scales",
+  "store",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_downweight_scales_elaboration_contribution.FakeStore.get_docs",
+]

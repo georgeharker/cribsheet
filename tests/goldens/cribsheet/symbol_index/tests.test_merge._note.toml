@@ -1,0 +1,34 @@
+fqname = "tests.test_merge._note"
+name = "_note"
+kind = "function"
+lang = "python"
+module = "tests.test_merge"
+parent = ""
+content_hash = "7d645f456582a059"
+file = "tests/test_merge.py"
+signature = "def _note(id_, repo, imported, body):"
+description = ""
+line = 9
+mtime = 1783446057000000000
+container = []
+calls = [
+  "serialize [crib/notes.py]",
+]
+called_by = [
+  "test_body_divergence_surfaces_with_healed_header [tests/test_merge.py]",
+  "test_frontmatter_only_divergence_merges_clean [tests/test_merge.py]",
+  "test_run_driver_writes_and_signals [tests/test_merge.py]",
+]
+references = [
+  "test_body_divergence_surfaces_with_healed_header [tests/test_merge.py]",
+  "test_frontmatter_only_divergence_merges_clean [tests/test_merge.py]",
+  "test_run_driver_writes_and_signals [tests/test_merge.py]",
+]
+name_terms = [
+  "_note",
+  "merge",
+  "note",
+  "test",
+  "tests",
+  "tests.test_merge._note",
+]

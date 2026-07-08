@@ -1,0 +1,31 @@
+fqname = "crib.section_index._render_toml"
+name = "_render_toml"
+kind = "function"
+lang = "python"
+module = "crib.section_index"
+parent = ""
+content_hash = "64ddd1828e9fadf7"
+file = "crib/section_index.py"
+signature = "def _render_toml(section_hash: str, label: str, terms: list[str],"
+description = ""
+line = 95
+mtime = 1782930371000000000
+container = []
+calls = [
+  "_esc [crib/section_index.py]",
+]
+called_by = [
+  "write [crib/section_index.py]",
+]
+references = [
+  "write [crib/section_index.py]",
+]
+name_terms = [
+  "_render_toml",
+  "crib",
+  "crib.section_index._render_toml",
+  "index",
+  "render",
+  "section",
+  "toml",
+]

@@ -1,0 +1,36 @@
+fqname = "tests.test_codeindex.test_session_pool_pins_docs_across_calls"
+name = "test_session_pool_pins_docs_across_calls"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "af9e9e1db921877d"
+file = "tests/test_codeindex.py"
+signature = "def test_session_pool_pins_docs_across_calls(tmp_path, monkeypatch):"
+description = ""
+line = 412
+mtime = 1783533619000000000
+container = []
+calls = [
+  "LspSessionPool [crib/codeindex.py]",
+  "_fake_lsp [tests/test_codeindex.py]",
+  "close_all [crib/codeindex.py]",
+  "extract_file [crib/codeindex.py]",
+  "pin_docs [crib/codeindex.py]",
+  "unpin [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "across",
+  "calls",
+  "codeindex",
+  "docs",
+  "pins",
+  "pool",
+  "session",
+  "test",
+  "test_session_pool_pins_docs_across_calls",
+  "tests",
+  "tests.test_codeindex.test_session_pool_pins_docs_across_calls",
+]

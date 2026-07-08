@@ -1,0 +1,29 @@
+fqname = "tests.test_normalize.test_normalize_is_order_independent"
+name = "test_normalize_is_order_independent"
+kind = "function"
+lang = "python"
+module = "tests.test_normalize"
+parent = ""
+content_hash = "ec4b57971e8de0c9"
+file = "tests/test_normalize.py"
+signature = "def test_normalize_is_order_independent():"
+description = ""
+line = 87
+mtime = 1782755212000000000
+container = []
+calls = [
+  "normalize_text [crib/notes.py]",
+  "parse [crib/notes.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "independent",
+  "is",
+  "normalize",
+  "order",
+  "test",
+  "test_normalize_is_order_independent",
+  "tests",
+  "tests.test_normalize.test_normalize_is_order_independent",
+]

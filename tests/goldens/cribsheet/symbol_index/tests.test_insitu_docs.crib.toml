@@ -1,0 +1,30 @@
+fqname = "tests.test_insitu_docs.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+module = "tests.test_insitu_docs"
+parent = ""
+content_hash = "843661f7d5a24b5e"
+file = "tests/test_insitu_docs.py"
+signature = "@pytest.fixture()"
+description = ""
+line = 18
+mtime = 1783476730000000000
+container = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "docs",
+  "insitu",
+  "test",
+  "tests",
+  "tests.test_insitu_docs.crib",
+]

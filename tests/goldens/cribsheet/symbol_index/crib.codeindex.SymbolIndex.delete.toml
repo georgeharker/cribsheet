@@ -1,0 +1,36 @@
+fqname = "crib.codeindex.SymbolIndex.delete"
+name = "delete"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.SymbolIndex"
+content_hash = "89c3ad4b142157cd"
+file = "crib/codeindex.py"
+signature = "def delete(self, fqname: str) -> bool:"
+description = ""
+line = 1221
+mtime = 1783533619000000000
+container = [
+  "SymbolIndex",
+]
+calls = [
+  "_relname [crib/codeindex.py]",
+]
+called_by = [
+  "_index_code_file [crib/codeindexer.py]",
+  "drop_file [crib/codestore.py]",
+  "test_symbol_index_uses_legible_slug_filenames [tests/test_codeindex.py]",
+]
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+  "drop_file [crib/codestore.py]",
+  "test_symbol_index_uses_legible_slug_filenames [tests/test_codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex.delete",
+  "delete",
+  "index",
+  "symbol",
+]

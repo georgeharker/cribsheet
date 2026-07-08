@@ -1,0 +1,36 @@
+fqname = "tests.test_elaborate.test_summary_alias_cache_ranks_section_by_rephrasing"
+name = "test_summary_alias_cache_ranks_section_by_rephrasing"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "80ad5a902464a8ed"
+file = "tests/test_elaborate.py"
+signature = "def test_summary_alias_cache_ranks_section_by_rephrasing():"
+description = ""
+line = 165
+mtime = 1782958917000000000
+container = []
+calls = [
+  "FakeStore [tests/test_elaborate.py]",
+  "HashEmbedder [crib/embed.py]",
+  "SummaryVectorCache [crib/retrieve.py]",
+  "embed_query [crib/embed.py]",
+  "ranking [crib/retrieve.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "alias",
+  "by",
+  "cache",
+  "elaborate",
+  "ranks",
+  "rephrasing",
+  "section",
+  "summary",
+  "test",
+  "test_summary_alias_cache_ranks_section_by_rephrasing",
+  "tests",
+  "tests.test_elaborate.test_summary_alias_cache_ranks_section_by_rephrasing",
+]

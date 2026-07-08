@@ -1,0 +1,26 @@
+fqname = "crib.indexer.IndexResult.relpath"
+name = "relpath"
+kind = "field"
+lang = "python"
+module = "crib.indexer"
+parent = "crib.indexer.IndexResult"
+content_hash = "b1f401c0f0bb3a24"
+file = "crib/indexer.py"
+signature = "relpath: str"
+description = ""
+line = 33
+mtime = 1783476730000000000
+container = [
+  "IndexResult",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.indexer.IndexResult.relpath",
+  "index",
+  "indexer",
+  "relpath",
+  "result",
+]

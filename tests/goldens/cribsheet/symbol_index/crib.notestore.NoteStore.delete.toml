@@ -1,0 +1,39 @@
+fqname = "crib.notestore.NoteStore.delete"
+name = "delete"
+kind = "method"
+lang = "python"
+module = "crib.notestore"
+parent = "crib.notestore.NoteStore"
+content_hash = "5b3407d8912369a0"
+file = "crib/notestore.py"
+signature = "async def delete(self, project: str, relpath: str) -> dict[str, Any]:"
+description = ""
+line = 70
+mtime = 1783525700000000000
+container = [
+  "NoteStore",
+]
+calls = [
+  "abspath [crib/notestore.py]",
+  "dir [crib/notestore.py]",
+  "index_file [crib/indexer.py]",
+  "load [crib/notes.py]",
+  "serialize [crib/notes.py]",
+  "stash [crib/versions.py]",
+]
+called_by = [
+  "forget [crib/app.py]",
+  "forget [crib/learnings.py]",
+]
+references = [
+  "forget [crib/app.py]",
+  "forget [crib/learnings.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.NoteStore.delete",
+  "delete",
+  "note",
+  "notestore",
+  "store",
+]

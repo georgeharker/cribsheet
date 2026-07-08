@@ -1,0 +1,39 @@
+fqname = "crib.session.ProjectResolution.project"
+name = "project"
+kind = "field"
+lang = "python"
+module = "crib.session"
+parent = "crib.session.ProjectResolution"
+content_hash = "72bf42a4f223d84d"
+file = "crib/session.py"
+signature = "project: str"
+description = ""
+line = 34
+mtime = 1783476730000000000
+container = [
+  "ProjectResolution",
+]
+calls = []
+called_by = []
+references = [
+  "_echo_list [crib/server.py]",
+  "_project [crib/server.py]",
+  "code_dossier [crib/server.py]",
+  "code_graph [crib/server.py]",
+  "code_lookup [crib/server.py]",
+  "code_xref [crib/server.py]",
+  "current_project [crib/server.py]",
+  "echo [crib/session.py]",
+  "test_a_real_seed_still_sticks_against_a_later_cwd [tests/test_session.py]",
+  "test_bare_default_seed_is_upgraded_by_a_later_cwd [tests/test_session.py]",
+  "test_explicit_arg_overrides_without_touching_session [tests/test_session.py]",
+  "test_seeds_lazily_and_sticks [tests/test_session.py]",
+  "test_session_current_used_over_seed [tests/test_session.py]",
+]
+name_terms = [
+  "crib",
+  "crib.session.ProjectResolution.project",
+  "project",
+  "resolution",
+  "session",
+]

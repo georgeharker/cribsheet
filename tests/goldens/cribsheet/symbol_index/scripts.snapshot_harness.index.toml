@@ -1,0 +1,41 @@
+fqname = "scripts.snapshot_harness.index"
+name = "index"
+kind = "function"
+lang = "python"
+module = "scripts.snapshot_harness"
+parent = ""
+content_hash = "bfcbf947283f904e"
+file = "scripts/snapshot_harness.py"
+signature = "def index(checkout_dir: Path, data_root: Path) -> tuple[str, Path]:"
+description = ""
+line = 38
+mtime = 1783498271000000000
+container = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "SymbolIndex [crib/codeindex.py]",
+  "close [crib/app.py]",
+  "ensure [crib/paths.py]",
+  "project_dir [crib/paths.py]",
+  "project_index [crib/app.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = [
+  "capture [scripts/snapshot_harness.py]",
+  "compare [scripts/snapshot_harness.py]",
+  "idempotency [scripts/snapshot_harness.py]",
+]
+references = [
+  "capture [scripts/snapshot_harness.py]",
+  "compare [scripts/snapshot_harness.py]",
+  "idempotency [scripts/snapshot_harness.py]",
+]
+name_terms = [
+  "harness",
+  "index",
+  "scripts",
+  "scripts.snapshot_harness.index",
+  "snapshot",
+]

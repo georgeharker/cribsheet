@@ -1,0 +1,31 @@
+fqname = "crib.config.CribLink.root"
+name = "root"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.CribLink"
+content_hash = "69f8dd1808923094"
+file = "crib/config.py"
+signature = "root: Path | None = None  # dir the .crib was found in"
+description = ""
+line = 274
+mtime = 1783455339000000000
+container = [
+  "CribLink",
+]
+calls = []
+called_by = []
+references = [
+  "_ensure_crib [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "find [crib/config.py]",
+  "index_docs_insitu [crib/app.py]",
+  "project_status [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.root",
+  "link",
+  "root",
+]

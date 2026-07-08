@@ -1,0 +1,41 @@
+fqname = "crib.app.Crib.project_status"
+name = "project_status"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "3eb59ef95598c3ad"
+file = "crib/app.py"
+signature = "def project_status(self, project: str | None = None,"
+description = ""
+line = 935
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_project_refs [crib/app.py]",
+  "_source_roots [crib/app.py]",
+  "all [crib/codeindex.py]",
+  "all [crib/sources.py]",
+  "find [crib/config.py]",
+  "get_meta [crib/store.py]",
+  "is_populated [crib/codeindex.py]",
+  "project_dir [crib/paths.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "project_status [crib/server.py]",
+]
+references = [
+  "project_status [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.project_status",
+  "project",
+  "project_status",
+  "status",
+]

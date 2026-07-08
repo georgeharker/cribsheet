@@ -1,0 +1,42 @@
+fqname = "crib.retrieve.BM25.scores"
+name = "scores"
+kind = "method"
+lang = "python"
+module = "crib.retrieve"
+parent = "crib.retrieve.BM25"
+content_hash = "cf5d1a3383dd25ea"
+file = "crib/retrieve.py"
+signature = "def scores(self, query: list[str]) -> list[float]:"
+description = ""
+line = 64
+mtime = 1782930371000000000
+container = [
+  "BM25",
+]
+calls = []
+called_by = [
+  "_lookup_one [crib/codequery.py]",
+  "_retrieve [crib/app.py]",
+  "test_bm25_ranks_exact_term_match_first [tests/test_retrieve.py]",
+  "test_bm25_unknown_terms_score_zero [tests/test_retrieve.py]",
+  "test_downweight_scales_elaboration_contribution [tests/test_elaborate.py]",
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+  "test_subtokens_let_spaced_query_match_a_solid_identifier [tests/test_retrieve.py]",
+]
+references = [
+  "_lookup_one [crib/codequery.py]",
+  "_retrieve [crib/app.py]",
+  "test_bm25_ranks_exact_term_match_first [tests/test_retrieve.py]",
+  "test_bm25_unknown_terms_score_zero [tests/test_retrieve.py]",
+  "test_downweight_scales_elaboration_contribution [tests/test_elaborate.py]",
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+  "test_subtokens_let_spaced_query_match_a_solid_identifier [tests/test_retrieve.py]",
+]
+name_terms = [
+  "25",
+  "bm",
+  "crib",
+  "crib.retrieve.BM25.scores",
+  "retrieve",
+  "scores",
+]

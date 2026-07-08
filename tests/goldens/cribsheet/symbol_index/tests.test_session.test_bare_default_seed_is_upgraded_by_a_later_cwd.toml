@@ -1,0 +1,35 @@
+fqname = "tests.test_session.test_bare_default_seed_is_upgraded_by_a_later_cwd"
+name = "test_bare_default_seed_is_upgraded_by_a_later_cwd"
+kind = "function"
+lang = "python"
+module = "tests.test_session"
+parent = ""
+content_hash = "4046f7f38da3c0ee"
+file = "tests/test_session.py"
+signature = "def test_bare_default_seed_is_upgraded_by_a_later_cwd():"
+description = ""
+line = 41
+mtime = 1783476730000000000
+container = []
+calls = [
+  "SessionState [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "bare",
+  "by",
+  "cwd",
+  "default",
+  "is",
+  "later",
+  "seed",
+  "session",
+  "test",
+  "test_bare_default_seed_is_upgraded_by_a_later_cwd",
+  "tests",
+  "tests.test_session.test_bare_default_seed_is_upgraded_by_a_later_cwd",
+  "upgraded",
+]

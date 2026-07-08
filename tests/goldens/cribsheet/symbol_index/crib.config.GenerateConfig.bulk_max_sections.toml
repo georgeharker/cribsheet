@@ -1,0 +1,30 @@
+fqname = "crib.config.GenerateConfig.bulk_max_sections"
+name = "bulk_max_sections"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.GenerateConfig"
+content_hash = "4688bcd55668c553"
+file = "crib/config.py"
+signature = "bulk_max_sections: int = 10"
+description = ""
+line = 154
+mtime = 1783455339000000000
+container = [
+  "GenerateConfig",
+]
+calls = []
+called_by = []
+references = [
+  "_generate_index [crib/app.py]",
+]
+name_terms = [
+  "bulk",
+  "bulk_max_sections",
+  "config",
+  "crib",
+  "crib.config.GenerateConfig.bulk_max_sections",
+  "generate",
+  "max",
+  "sections",
+]

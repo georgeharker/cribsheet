@@ -1,0 +1,32 @@
+fqname = "crib.section_index.SectionIndex"
+name = "SectionIndex"
+kind = "class"
+lang = "python"
+module = "crib.section_index"
+parent = ""
+content_hash = "e029e7db0535543b"
+file = "crib/section_index.py"
+signature = "class SectionIndex:"
+description = ""
+line = 112
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_generate_index [crib/app.py]",
+  "_keyword_terms [crib/app.py]",
+  "_summary_terms [crib/app.py]",
+  "test_elaborate_bulk_path_covers_all_sections [tests/test_elaborate.py]",
+  "test_elaborate_writes_store_and_skips_existing [tests/test_elaborate.py]",
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+  "test_store_toml_is_deterministic [tests/test_elaborate.py]",
+  "test_summarize_writes_summary_index [tests/test_elaborate.py]",
+]
+name_terms = [
+  "SectionIndex",
+  "crib",
+  "crib.section_index.SectionIndex",
+  "index",
+  "section",
+]

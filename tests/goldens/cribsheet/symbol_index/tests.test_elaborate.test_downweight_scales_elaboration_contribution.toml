@@ -1,0 +1,33 @@
+fqname = "tests.test_elaborate.test_downweight_scales_elaboration_contribution"
+name = "test_downweight_scales_elaboration_contribution"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "2ef32a78fd805774"
+file = "tests/test_elaborate.py"
+signature = "def test_downweight_scales_elaboration_contribution():"
+description = ""
+line = 111
+mtime = 1782958917000000000
+container = []
+calls = [
+  "FakeStore [tests/test_elaborate.py]",
+  "LexicalCache [crib/retrieve.py]",
+  "get [crib/retrieve.py]",
+  "scores [crib/retrieve.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "contribution",
+  "downweight",
+  "elaborate",
+  "elaboration",
+  "scales",
+  "test",
+  "test_downweight_scales_elaboration_contribution",
+  "tests",
+  "tests.test_elaborate.test_downweight_scales_elaboration_contribution",
+]

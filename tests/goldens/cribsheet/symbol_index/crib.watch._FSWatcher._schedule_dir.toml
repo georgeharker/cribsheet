@@ -1,0 +1,36 @@
+fqname = "crib.watch._FSWatcher._schedule_dir"
+name = "_schedule_dir"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch._FSWatcher"
+content_hash = "ef4a61f7d96c5a0c"
+file = "crib/watch.py"
+signature = "def _schedule_dir(self, d: str) -> None:"
+description = ""
+line = 83
+mtime = 1783476730000000000
+container = [
+  "_FSWatcher",
+]
+calls = [
+  "_Handler [crib/watch.py]",
+]
+called_by = [
+  "start [crib/watch.py]",
+  "watch_root [crib/watch.py]",
+]
+references = [
+  "start [crib/watch.py]",
+  "watch_root [crib/watch.py]",
+]
+name_terms = [
+  "_schedule_dir",
+  "crib",
+  "crib.watch._FSWatcher._schedule_dir",
+  "dir",
+  "fs",
+  "schedule",
+  "watch",
+  "watcher",
+]

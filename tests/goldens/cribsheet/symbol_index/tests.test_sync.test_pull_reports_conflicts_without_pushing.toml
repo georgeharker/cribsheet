@@ -1,0 +1,32 @@
+fqname = "tests.test_sync.test_pull_reports_conflicts_without_pushing"
+name = "test_pull_reports_conflicts_without_pushing"
+kind = "function"
+lang = "python"
+module = "tests.test_sync"
+parent = ""
+content_hash = "99d445d3257f1274"
+file = "tests/test_sync.py"
+signature = "def test_pull_reports_conflicts_without_pushing(tmp_path, remote):"
+description = ""
+line = 97
+mtime = 1783446057000000000
+container = []
+calls = [
+  "_machine [tests/test_sync.py]",
+  "_note [tests/test_sync.py]",
+  "sync [crib/gitbacking.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "conflicts",
+  "pull",
+  "pushing",
+  "reports",
+  "sync",
+  "test",
+  "test_pull_reports_conflicts_without_pushing",
+  "tests",
+  "tests.test_sync.test_pull_reports_conflicts_without_pushing",
+  "without",
+]

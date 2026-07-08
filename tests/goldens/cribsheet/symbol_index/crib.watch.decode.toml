@@ -1,0 +1,30 @@
+fqname = "crib.watch.decode"
+name = "decode"
+kind = "function"
+lang = "python"
+module = "crib.watch"
+parent = ""
+content_hash = "65bb8537b56a15ba"
+file = "crib/watch.py"
+signature = "def decode(projects_dir: Path, raw_path: str) -> tuple[str, str] | None:"
+description = ""
+line = 38
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_ignored [crib/watch.py]",
+]
+called_by = [
+  "_decode [crib/watch.py]",
+  "test_decode_path_to_project_relpath [tests/test_watcher.py]",
+]
+references = [
+  "_decode [crib/watch.py]",
+  "test_decode_path_to_project_relpath [tests/test_watcher.py]",
+]
+name_terms = [
+  "crib",
+  "crib.watch.decode",
+  "decode",
+  "watch",
+]

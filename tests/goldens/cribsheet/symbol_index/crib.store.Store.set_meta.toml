@@ -1,0 +1,30 @@
+fqname = "crib.store.Store.set_meta"
+name = "set_meta"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Store"
+content_hash = "56ee8a5e7a030160"
+file = "crib/store.py"
+signature = "def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:"
+description = ""
+line = 36
+mtime = 1783446057000000000
+container = [
+  "Store",
+]
+calls = []
+called_by = [
+  "_index_locked [crib/indexer.py]",
+]
+references = [
+  "_index_locked [crib/indexer.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Store.set_meta",
+  "meta",
+  "set",
+  "set_meta",
+  "store",
+]

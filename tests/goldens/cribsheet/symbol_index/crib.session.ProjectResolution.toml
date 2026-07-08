@@ -1,0 +1,29 @@
+fqname = "crib.session.ProjectResolution"
+name = "ProjectResolution"
+kind = "class"
+lang = "python"
+module = "crib.session"
+parent = ""
+content_hash = "dd91ed733d6dc28c"
+file = "crib/session.py"
+signature = "@dataclass(frozen=True)"
+description = ""
+line = 20
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_echo_dict [crib/server.py]",
+  "_echo_list [crib/server.py]",
+  "_resolve [crib/server.py]",
+  "resolve_session_project [crib/session.py]",
+]
+name_terms = [
+  "ProjectResolution",
+  "crib",
+  "crib.session.ProjectResolution",
+  "project",
+  "resolution",
+  "session",
+]

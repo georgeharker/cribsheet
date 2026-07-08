@@ -1,0 +1,55 @@
+fqname = "crib.gitbacking.GitBacking._run"
+name = "_run"
+kind = "method"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.GitBacking"
+content_hash = "50fd492911546492"
+file = "crib/gitbacking.py"
+signature = "def _run(self, *args: str) -> subprocess.CompletedProcess:"
+description = ""
+line = 65
+mtime = 1783451795000000000
+container = [
+  "GitBacking",
+]
+calls = []
+called_by = [
+  "_branch [crib/gitbacking.py]",
+  "_conflicts [crib/gitbacking.py]",
+  "_ensure_merge_driver [crib/gitbacking.py]",
+  "_pending_join [crib/gitbacking.py]",
+  "_remote_file [crib/gitbacking.py]",
+  "current_remote [crib/gitbacking.py]",
+  "history [crib/gitbacking.py]",
+  "init [crib/gitbacking.py]",
+  "pull [crib/gitbacking.py]",
+  "push [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+  "snapshot [crib/gitbacking.py]",
+  "state [crib/gitbacking.py]",
+]
+references = [
+  "_branch [crib/gitbacking.py]",
+  "_conflicts [crib/gitbacking.py]",
+  "_ensure_merge_driver [crib/gitbacking.py]",
+  "_pending_join [crib/gitbacking.py]",
+  "_remote_file [crib/gitbacking.py]",
+  "current_remote [crib/gitbacking.py]",
+  "history [crib/gitbacking.py]",
+  "init [crib/gitbacking.py]",
+  "pull [crib/gitbacking.py]",
+  "push [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+  "snapshot [crib/gitbacking.py]",
+  "state [crib/gitbacking.py]",
+]
+name_terms = [
+  "_run",
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking._run",
+  "git",
+  "gitbacking",
+  "run",
+]

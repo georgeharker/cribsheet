@@ -1,0 +1,32 @@
+fqname = "tests.test_elaborate.test_lexical_cache_folds_elaboration_terms.elab"
+name = "elab"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = "tests.test_elaborate.test_lexical_cache_folds_elaboration_terms"
+content_hash = "843060d73cfa655f"
+file = "tests/test_elaborate.py"
+signature = "def elab(project, ch, labels):"
+description = ""
+line = 74
+mtime = 1782958917000000000
+container = [
+  "test_lexical_cache_folds_elaboration_terms",
+]
+calls = []
+called_by = []
+references = [
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+]
+name_terms = [
+  "cache",
+  "elab",
+  "elaborate",
+  "elaboration",
+  "folds",
+  "lexical",
+  "terms",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_lexical_cache_folds_elaboration_terms.elab",
+]

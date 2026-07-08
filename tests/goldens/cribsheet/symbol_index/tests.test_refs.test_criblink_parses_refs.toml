@@ -1,0 +1,27 @@
+fqname = "tests.test_refs.test_criblink_parses_refs"
+name = "test_criblink_parses_refs"
+kind = "function"
+lang = "python"
+module = "tests.test_refs"
+parent = ""
+content_hash = "c3981292b7a6c9df"
+file = "tests/test_refs.py"
+signature = "def test_criblink_parses_refs(tmp_path):"
+description = ""
+line = 58
+mtime = 1783476730000000000
+container = []
+calls = [
+  "find [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "criblink",
+  "parses",
+  "refs",
+  "test",
+  "test_criblink_parses_refs",
+  "tests",
+  "tests.test_refs.test_criblink_parses_refs",
+]

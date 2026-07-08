@@ -11,14 +11,19 @@ Each `<project>/` holds:
 
 ## What's committed, and why
 
-- `mcp-companion` — public repo, ours, byte-stable, and pinned to a SHA that is **on
-  GitHub** (so `compare` can clone + reproduce it anywhere). Verified IDENTICAL.
+- `cribsheet` — self, pinned to `c9ec609` on the pushed `codestore-refactor` branch.
+  Verified IDENTICAL (1157 symbols, byte-clean). **Durability caveat:** the pin is a
+  *branch* commit, not `main`. If the branch is later squash-merged and deleted, that SHA
+  becomes unreachable and `compare` can't clone it — re-capture at the merge commit then
+  (`capture <url> <merge-sha> tests/goldens/cribsheet`).
+- `mcp-companion` — public repo, ours, byte-stable, pinned to a SHA **on GitHub**.
+  Verified IDENTICAL.
+
+A committed golden MUST pin to a SHA reachable on the remote — that's the whole point of
+URL pinning. (An early self-golden attempt pinned to an unpushed local commit; `compare`
+cloned fine but couldn't `checkout` it. Pushing the branch fixed it.)
 
 Deliberately NOT committed:
-- **cribsheet (self):** tempting, but a committed golden must pin to a SHA that exists on
-  the remote. The refactor-branch commits aren't pushed, so a self-golden would pin to an
-  unreachable SHA and `compare` couldn't clone it. Add one once a representative commit is
-  pushed to `origin` (capture at that SHA, then commit).
 - **Other repos' indexes** would leak their structure into this repo's history and aren't
   portable — they stay in `~/.cache/crib-goldens/` (regenerable via the harness), for
   ad-hoc thorough validation.

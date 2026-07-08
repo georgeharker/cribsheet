@@ -1,0 +1,28 @@
+fqname = "crib.cli._E_graph"
+name = "_E_graph"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "6a6f91ce7319d6e8"
+file = "crib/cli.py"
+signature = "def _E_graph(d, a): _emit_code_graph(d, a)"
+description = ""
+line = 700
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_emit_code_graph [crib/cli.py]",
+]
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_E_graph",
+  "cli",
+  "crib",
+  "crib.cli._E_graph",
+  "e",
+  "graph",
+]

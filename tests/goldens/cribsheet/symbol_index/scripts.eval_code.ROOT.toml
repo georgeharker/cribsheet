@@ -1,0 +1,24 @@
+fqname = "scripts.eval_code.ROOT"
+name = "ROOT"
+kind = "constant"
+lang = "python"
+module = "scripts.eval_code"
+parent = ""
+content_hash = "ccf98307102c6636"
+file = "scripts/eval_code.py"
+signature = "ROOT = Path(__file__).resolve().parent.parent"
+description = ""
+line = 19
+mtime = 1783096343000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "ROOT",
+  "code",
+  "eval",
+  "root",
+  "scripts",
+  "scripts.eval_code.ROOT",
+]

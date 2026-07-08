@@ -1,0 +1,33 @@
+fqname = "crib.app.Crib.code_forget"
+name = "code_forget"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "450afb65c456b7cd"
+file = "crib/app.py"
+signature = "async def code_forget(self, symbol: str, project: str | None = None,"
+description = ""
+line = 1052
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "forget [crib/learnings.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "code_forget [crib/server.py]",
+]
+references = [
+  "code_forget [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "code",
+  "code_forget",
+  "crib",
+  "crib.app.Crib.code_forget",
+  "forget",
+]

@@ -1,0 +1,38 @@
+fqname = "crib.app.Crib._detect_code_globs"
+name = "_detect_code_globs"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "1cf7a35bba0b690c"
+file = "crib/app.py"
+signature = "def _detect_code_globs(self, root: Path) -> list[str]:"
+description = ""
+line = 805
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "_code_ignore [crib/app.py]",
+  "load_specs [crib/codeindex.py]",
+]
+called_by = [
+  "_ensure_crib [crib/app.py]",
+  "project_index [crib/app.py]",
+  "project_setup [crib/app.py]",
+]
+references = [
+  "_ensure_crib [crib/app.py]",
+  "project_index [crib/app.py]",
+  "project_setup [crib/app.py]",
+]
+name_terms = [
+  "_detect_code_globs",
+  "app",
+  "code",
+  "crib",
+  "crib.app.Crib._detect_code_globs",
+  "detect",
+  "globs",
+]

@@ -1,0 +1,34 @@
+fqname = "crib.claudemem.find_harness_root"
+name = "find_harness_root"
+kind = "function"
+lang = "python"
+module = "crib.claudemem"
+parent = ""
+content_hash = "7b1660350d31dcb4"
+file = "crib/claudemem.py"
+signature = "def find_harness_root(start: Path) -> Path | None:"
+description = ""
+line = 64
+mtime = 1782762348000000000
+container = []
+calls = [
+  "harness_memory_dir [crib/claudemem.py]",
+  "resolve_path [crib/claudemem.py]",
+]
+called_by = [
+  "import_claude_memory [crib/app.py]",
+  "test_find_harness_root_walks_up [tests/test_claude_memory.py]",
+]
+references = [
+  "import_claude_memory [crib/app.py]",
+  "test_find_harness_root_walks_up [tests/test_claude_memory.py]",
+]
+name_terms = [
+  "claudemem",
+  "crib",
+  "crib.claudemem.find_harness_root",
+  "find",
+  "find_harness_root",
+  "harness",
+  "root",
+]

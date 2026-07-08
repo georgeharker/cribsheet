@@ -1,0 +1,26 @@
+fqname = "crib.watch.Watcher"
+name = "Watcher"
+kind = "class"
+lang = "python"
+module = "crib.watch"
+parent = ""
+content_hash = "aacdfb8cdfc8ed1f"
+file = "crib/watch.py"
+signature = "class Watcher(_FSWatcher):"
+description = ""
+line = 130
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "Watcher",
+  "crib",
+  "crib.watch.Watcher",
+  "watch",
+  "watcher",
+]

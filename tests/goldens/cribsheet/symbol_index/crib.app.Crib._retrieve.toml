@@ -1,0 +1,40 @@
+fqname = "crib.app.Crib._retrieve"
+name = "_retrieve"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "0a4ac74511482948"
+file = "crib/app.py"
+signature = "def _retrieve(self, proj: str, query: str, vec: list[float], topn: int,"
+description = ""
+line = 507
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "Hit [crib/store.py]",
+  "_rerank [crib/app.py]",
+  "embed [crib/embed.py]",
+  "get [crib/retrieve.py]",
+  "get_docs [crib/store.py]",
+  "query [crib/store.py]",
+  "ranking [crib/retrieve.py]",
+  "reciprocal_rank_fusion [crib/retrieve.py]",
+  "scores [crib/retrieve.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = [
+  "lookup [crib/app.py]",
+]
+references = [
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "_retrieve",
+  "app",
+  "crib",
+  "crib.app.Crib._retrieve",
+  "retrieve",
+]

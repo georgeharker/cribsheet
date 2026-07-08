@@ -1,0 +1,31 @@
+fqname = "tests.test_elaborate.test_parse_terms_strips_noise_and_dedupes"
+name = "test_parse_terms_strips_noise_and_dedupes"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "40cb65936f7cd37b"
+file = "tests/test_elaborate.py"
+signature = "def test_parse_terms_strips_noise_and_dedupes():"
+description = ""
+line = 33
+mtime = 1782958917000000000
+container = []
+calls = [
+  "parse_terms [crib/section_index.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "dedupes",
+  "elaborate",
+  "noise",
+  "parse",
+  "strips",
+  "terms",
+  "test",
+  "test_parse_terms_strips_noise_and_dedupes",
+  "tests",
+  "tests.test_elaborate.test_parse_terms_strips_noise_and_dedupes",
+]

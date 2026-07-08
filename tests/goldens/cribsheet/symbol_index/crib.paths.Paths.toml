@@ -1,0 +1,59 @@
+fqname = "crib.paths.Paths"
+name = "Paths"
+kind = "class"
+lang = "python"
+module = "crib.paths"
+parent = ""
+content_hash = "b93b9de4373f7167"
+file = "crib/paths.py"
+signature = "@dataclass(frozen=True)"
+description = ""
+line = 24
+mtime = 1783533619000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/codestore.py]",
+  "__init__ [crib/learnings.py]",
+  "__init__ [crib/notestore.py]",
+  "__init__ [crib/project_services.py]",
+  "__init__ [crib/refs.py]",
+  "_build_shared_chroma [crib/app.py]",
+  "_build_store [crib/app.py]",
+  "_resolve_serve_endpoint [crib/cli.py]",
+  "_run_git [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+  "crib [tests/test_code_cache.py]",
+  "crib [tests/test_code_learnings.py]",
+  "crib [tests/test_core_loop.py]",
+  "crib [tests/test_curation.py]",
+  "crib [tests/test_elaborate.py]",
+  "crib [tests/test_forget.py]",
+  "crib [tests/test_grammar_enum.py]",
+  "crib [tests/test_import.py]",
+  "crib [tests/test_insitu_docs.py]",
+  "crib [tests/test_lexical_cache.py]",
+  "crib [tests/test_line_map.py]",
+  "crib [tests/test_notestore_snapshot.py]",
+  "crib [tests/test_project_resolution.py]",
+  "crib [tests/test_reconcile.py]",
+  "crib [tests/test_refs.py]",
+  "crib [tests/test_rerank.py]",
+  "crib [tests/test_status.py]",
+  "ensure [crib/paths.py]",
+  "env [tests/test_claude_memory.py]",
+  "fresh [tests/test_import.py]",
+  "index [scripts/snapshot_harness.py]",
+  "main [crib/cli.py]",
+  "open [crib/app.py]",
+  "resolve [crib/paths.py]",
+  "test_watcher_indexes_external_edit [tests/test_watcher.py]",
+]
+name_terms = [
+  "Paths",
+  "crib",
+  "crib.paths.Paths",
+  "paths",
+]

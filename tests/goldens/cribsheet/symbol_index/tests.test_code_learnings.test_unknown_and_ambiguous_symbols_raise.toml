@@ -1,0 +1,32 @@
+fqname = "tests.test_code_learnings.test_unknown_and_ambiguous_symbols_raise"
+name = "test_unknown_and_ambiguous_symbols_raise"
+kind = "function"
+lang = "python"
+module = "tests.test_code_learnings"
+parent = ""
+content_hash = "a8bbec7383143ab9"
+file = "tests/test_code_learnings.py"
+signature = "def test_unknown_and_ambiguous_symbols_raise(crib):"
+description = ""
+line = 50
+mtime = 1783494048000000000
+container = []
+calls = [
+  "_seed_symbol [tests/test_code_learnings.py]",
+  "run [tests/test_code_learnings.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "ambiguous",
+  "and",
+  "code",
+  "learnings",
+  "raise",
+  "symbols",
+  "test",
+  "test_unknown_and_ambiguous_symbols_raise",
+  "tests",
+  "tests.test_code_learnings.test_unknown_and_ambiguous_symbols_raise",
+  "unknown",
+]

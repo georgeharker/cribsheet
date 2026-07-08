@@ -1,0 +1,37 @@
+fqname = "crib.notes.normalize_text"
+name = "normalize_text"
+kind = "function"
+lang = "python"
+module = "crib.notes"
+parent = ""
+content_hash = "b46429689f387f06"
+file = "crib/notes.py"
+signature = "def normalize_text(text: str) -> tuple[str, bool]:"
+description = ""
+line = 80
+mtime = 1782755212000000000
+container = []
+calls = [
+  "_top_level_entries [crib/notes.py]",
+  "serialize [crib/notes.py]",
+]
+called_by = [
+  "heal_file [crib/notes.py]",
+  "test_normalize_collapses_duplicate_keys_deterministically [tests/test_normalize.py]",
+  "test_normalize_is_order_independent [tests/test_normalize.py]",
+  "test_normalize_noop_on_clean_frontmatter [tests/test_normalize.py]",
+]
+references = [
+  "heal_file [crib/notes.py]",
+  "test_normalize_collapses_duplicate_keys_deterministically [tests/test_normalize.py]",
+  "test_normalize_is_order_independent [tests/test_normalize.py]",
+  "test_normalize_noop_on_clean_frontmatter [tests/test_normalize.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notes.normalize_text",
+  "normalize",
+  "normalize_text",
+  "notes",
+  "text",
+]

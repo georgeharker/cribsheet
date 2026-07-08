@@ -1,0 +1,36 @@
+fqname = "crib.paths.Paths.config_file"
+name = "config_file"
+kind = "method"
+lang = "python"
+module = "crib.paths"
+parent = "crib.paths.Paths"
+content_hash = "614226280a805ed5"
+file = "crib/paths.py"
+signature = "@property"
+description = ""
+line = 39
+mtime = 1783533619000000000
+container = [
+  "Paths",
+]
+calls = []
+called_by = [
+  "_resolve_serve_endpoint [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+  "main [crib/cli.py]",
+  "open [crib/app.py]",
+]
+references = [
+  "_resolve_serve_endpoint [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+  "main [crib/cli.py]",
+  "open [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "config_file",
+  "crib",
+  "crib.paths.Paths.config_file",
+  "file",
+  "paths",
+]

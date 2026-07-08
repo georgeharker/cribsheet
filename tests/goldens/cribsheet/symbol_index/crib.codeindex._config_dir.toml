@@ -1,0 +1,30 @@
+fqname = "crib.codeindex._config_dir"
+name = "_config_dir"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "740721a95c955011"
+file = "crib/codeindex.py"
+signature = "def _config_dir() -> Path:"
+description = ""
+line = 82
+mtime = 1783533619000000000
+container = []
+calls = []
+called_by = [
+  "load_grammar [crib/codeindex.py]",
+  "load_specs [crib/codeindex.py]",
+]
+references = [
+  "load_grammar [crib/codeindex.py]",
+  "load_specs [crib/codeindex.py]",
+]
+name_terms = [
+  "_config_dir",
+  "codeindex",
+  "config",
+  "crib",
+  "crib.codeindex._config_dir",
+  "dir",
+]

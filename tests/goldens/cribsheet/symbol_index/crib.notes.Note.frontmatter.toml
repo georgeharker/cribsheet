@@ -1,0 +1,52 @@
+fqname = "crib.notes.Note.frontmatter"
+name = "frontmatter"
+kind = "field"
+lang = "python"
+module = "crib.notes"
+parent = "crib.notes.Note"
+content_hash = "958cb7d74e29076c"
+file = "crib/notes.py"
+signature = "frontmatter: dict[str, Any] = field(default_factory=dict)"
+description = ""
+line = 22
+mtime = 1782755212000000000
+container = [
+  "Note",
+]
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "append [crib/learnings.py]",
+  "append_note [crib/app.py]",
+  "attach [crib/learnings.py]",
+  "delete [crib/notestore.py]",
+  "distill [crib/app.py]",
+  "edit [crib/learnings.py]",
+  "edit_note [crib/app.py]",
+  "ensure_id [crib/notes.py]",
+  "fqns [crib/learnings.py]",
+  "id [crib/notes.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "load [crib/notes.py]",
+  "move [crib/notestore.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "report [crib/learnings.py]",
+  "save_atomic [crib/notes.py]",
+  "store_note [crib/app.py]",
+  "tags [crib/notes.py]",
+  "test_distill_revises_and_thrash_guards [tests/test_elaborate.py]",
+  "test_import_pins_first_import_date [tests/test_import.py]",
+  "title [crib/notes.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notes.Note.frontmatter",
+  "frontmatter",
+  "note",
+  "notes",
+]

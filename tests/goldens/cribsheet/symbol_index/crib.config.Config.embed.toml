@@ -1,0 +1,29 @@
+fqname = "crib.config.Config.embed"
+name = "embed"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.Config"
+content_hash = "9c16e5fd92d2165b"
+file = "crib/config.py"
+signature = "embed: EmbedConfig = field(default_factory=EmbedConfig)"
+description = ""
+line = 187
+mtime = 1783455339000000000
+container = [
+  "Config",
+]
+calls = []
+called_by = []
+references = [
+  "_resolve_embed_config [crib/app.py]",
+  "cmd_info [crib/cli.py]",
+  "load [crib/config.py]",
+  "status [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.embed",
+  "embed",
+]

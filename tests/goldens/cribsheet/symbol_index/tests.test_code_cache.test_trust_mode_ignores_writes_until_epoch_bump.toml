@@ -1,0 +1,33 @@
+fqname = "tests.test_code_cache.test_trust_mode_ignores_writes_until_epoch_bump"
+name = "test_trust_mode_ignores_writes_until_epoch_bump"
+kind = "function"
+lang = "python"
+module = "tests.test_code_cache"
+parent = ""
+content_hash = "5e4d6ed313121121"
+file = "tests/test_code_cache.py"
+signature = "def test_trust_mode_ignores_writes_until_epoch_bump(crib):"
+description = ""
+line = 87
+mtime = 1783489700000000000
+container = []
+calls = [
+  "_write [tests/test_code_cache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "bump",
+  "cache",
+  "code",
+  "epoch",
+  "ignores",
+  "mode",
+  "test",
+  "test_trust_mode_ignores_writes_until_epoch_bump",
+  "tests",
+  "tests.test_code_cache.test_trust_mode_ignores_writes_until_epoch_bump",
+  "trust",
+  "until",
+  "writes",
+]

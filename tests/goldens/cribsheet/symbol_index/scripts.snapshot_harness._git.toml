@@ -1,0 +1,28 @@
+fqname = "scripts.snapshot_harness._git"
+name = "_git"
+kind = "function"
+lang = "python"
+module = "scripts.snapshot_harness"
+parent = ""
+content_hash = "78aedc51b9d49577"
+file = "scripts/snapshot_harness.py"
+signature = "def _git(*args: str, cwd: str | Path | None = None) -> str:"
+description = ""
+line = 25
+mtime = 1783498271000000000
+container = []
+calls = []
+called_by = [
+  "checkout [scripts/snapshot_harness.py]",
+]
+references = [
+  "checkout [scripts/snapshot_harness.py]",
+]
+name_terms = [
+  "_git",
+  "git",
+  "harness",
+  "scripts",
+  "scripts.snapshot_harness._git",
+  "snapshot",
+]

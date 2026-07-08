@@ -1,0 +1,32 @@
+fqname = "tests.test_code_cache.test_lookup_builds_resident_cache_and_reuses_it"
+name = "test_lookup_builds_resident_cache_and_reuses_it"
+kind = "function"
+lang = "python"
+module = "tests.test_code_cache"
+parent = ""
+content_hash = "5eca3f95fcc936c8"
+file = "tests/test_code_cache.py"
+signature = "def test_lookup_builds_resident_cache_and_reuses_it(crib):"
+description = ""
+line = 45
+mtime = 1783489700000000000
+container = []
+calls = [
+  "_write [tests/test_code_cache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "builds",
+  "cache",
+  "code",
+  "it",
+  "lookup",
+  "resident",
+  "reuses",
+  "test",
+  "test_lookup_builds_resident_cache_and_reuses_it",
+  "tests",
+  "tests.test_code_cache.test_lookup_builds_resident_cache_and_reuses_it",
+]

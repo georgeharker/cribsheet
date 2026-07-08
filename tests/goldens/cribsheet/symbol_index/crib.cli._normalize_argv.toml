@@ -1,0 +1,28 @@
+fqname = "crib.cli._normalize_argv"
+name = "_normalize_argv"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "184d508921ee6f12"
+file = "crib/cli.py"
+signature = "def _normalize_argv(argv: list[str]) -> list[str]:"
+description = ""
+line = 959
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = [
+  "main [crib/cli.py]",
+]
+references = [
+  "main [crib/cli.py]",
+]
+name_terms = [
+  "_normalize_argv",
+  "argv",
+  "cli",
+  "crib",
+  "crib.cli._normalize_argv",
+  "normalize",
+]

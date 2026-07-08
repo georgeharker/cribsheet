@@ -1,0 +1,32 @@
+fqname = "crib.server.build_server"
+name = "build_server"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = ""
+content_hash = "d574158b2fc20077"
+file = "crib/server.py"
+signature = "def build_server(crib: Crib | None = None):"
+description = ""
+line = 137
+mtime = 1783476730000000000
+container = []
+calls = [
+  "open [crib/app.py]",
+  "write_tool [crib/server.py]",
+]
+called_by = [
+  "_serve_async [crib/server.py]",
+  "test_write_tools_carry_project_or_path_anyof [tests/test_project_resolution.py]",
+]
+references = [
+  "_serve_async [crib/server.py]",
+  "test_write_tools_carry_project_or_path_anyof [tests/test_project_resolution.py]",
+]
+name_terms = [
+  "build",
+  "build_server",
+  "crib",
+  "crib.server.build_server",
+  "server",
+]

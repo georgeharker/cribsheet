@@ -1,0 +1,45 @@
+fqname = "crib.config.CribLink.find"
+name = "find"
+kind = "method"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.CribLink"
+content_hash = "3b02242a090973da"
+file = "crib/config.py"
+signature = "@classmethod"
+description = ""
+line = 287
+mtime = 1783455339000000000
+container = [
+  "CribLink",
+]
+calls = []
+called_by = [
+  "_ensure_crib [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_matches_doc_globs [crib/watch.py]",
+  "index_docs_insitu [crib/app.py]",
+  "project_refs [crib/refs.py]",
+  "project_status [crib/app.py]",
+  "ref_edge_ctx [crib/refs.py]",
+  "resolve_project [crib/config.py]",
+  "test_criblink_parses_refs [tests/test_refs.py]",
+]
+references = [
+  "_ensure_crib [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_matches_doc_globs [crib/watch.py]",
+  "index_docs_insitu [crib/app.py]",
+  "project_refs [crib/refs.py]",
+  "project_status [crib/app.py]",
+  "ref_edge_ctx [crib/refs.py]",
+  "resolve_project [crib/config.py]",
+  "test_criblink_parses_refs [tests/test_refs.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.find",
+  "find",
+  "link",
+]

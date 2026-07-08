@@ -1,0 +1,30 @@
+fqname = "crib.config.DaemonConfig.port"
+name = "port"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.DaemonConfig"
+content_hash = "5edb7785396bd9f5"
+file = "crib/config.py"
+signature = "port: int = 7732                # crib's MCP band (chroma is 7733)"
+description = ""
+line = 180
+mtime = 1783455339000000000
+container = [
+  "DaemonConfig",
+]
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/client.py]",
+  "_command [crib/client.py]",
+  "_resolve_serve_endpoint [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.DaemonConfig.port",
+  "daemon",
+  "port",
+]

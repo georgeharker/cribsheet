@@ -1,0 +1,27 @@
+fqname = "crib.retrieve.CrossEncoderReranker"
+name = "CrossEncoderReranker"
+kind = "class"
+lang = "python"
+module = "crib.retrieve"
+parent = ""
+content_hash = "01c6cc91f4919e5b"
+file = "crib/retrieve.py"
+signature = "class CrossEncoderReranker:"
+description = ""
+line = 156
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "build_reranker [crib/retrieve.py]",
+]
+name_terms = [
+  "CrossEncoderReranker",
+  "crib",
+  "crib.retrieve.CrossEncoderReranker",
+  "cross",
+  "encoder",
+  "reranker",
+  "retrieve",
+]

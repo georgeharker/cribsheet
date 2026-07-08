@@ -1,0 +1,26 @@
+fqname = "crib.merge._MISSING"
+name = "_MISSING"
+kind = "constant"
+lang = "python"
+module = "crib.merge"
+parent = ""
+content_hash = "44df01857bd4eecc"
+file = "crib/merge.py"
+signature = "_MISSING: Any = object()"
+description = ""
+line = 23
+mtime = 1783446057000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_resolve [crib/merge.py]",
+  "merge_frontmatter [crib/merge.py]",
+]
+name_terms = [
+  "_MISSING",
+  "crib",
+  "crib.merge._MISSING",
+  "merge",
+  "missing",
+]

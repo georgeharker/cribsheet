@@ -1,0 +1,39 @@
+fqname = "crib.section_index.SectionIndex.read_terms"
+name = "read_terms"
+kind = "method"
+lang = "python"
+module = "crib.section_index"
+parent = "crib.section_index.SectionIndex"
+content_hash = "98d18ee9f328deef"
+file = "crib/section_index.py"
+signature = "def read_terms(self, label: str, section_hash: str) -> list[str]:"
+description = ""
+line = 129
+mtime = 1782930371000000000
+container = [
+  "SectionIndex",
+]
+calls = [
+  "path [crib/section_index.py]",
+]
+called_by = [
+  "terms_for [crib/section_index.py]",
+  "test_elaborate_bulk_path_covers_all_sections [tests/test_elaborate.py]",
+  "test_elaborate_writes_store_and_skips_existing [tests/test_elaborate.py]",
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+]
+references = [
+  "terms_for [crib/section_index.py]",
+  "test_elaborate_bulk_path_covers_all_sections [tests/test_elaborate.py]",
+  "test_elaborate_writes_store_and_skips_existing [tests/test_elaborate.py]",
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+]
+name_terms = [
+  "crib",
+  "crib.section_index.SectionIndex.read_terms",
+  "index",
+  "read",
+  "read_terms",
+  "section",
+  "terms",
+]

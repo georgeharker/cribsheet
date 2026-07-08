@@ -1,0 +1,27 @@
+fqname = "scripts.analyze_consult.SEARCH_CMD"
+name = "SEARCH_CMD"
+kind = "constant"
+lang = "python"
+module = "scripts.analyze_consult"
+parent = ""
+content_hash = "58dea6a96c9473fd"
+file = "scripts/analyze_consult.py"
+signature = "SEARCH_CMD = re.compile(r\"\\b(rg|grep|egrep|fgrep|ag|ack|ast-grep|sg|find|fd|ctags)\\b\")"
+description = ""
+line = 50
+mtime = 1783033314000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_classify [scripts/analyze_consult.py]",
+]
+name_terms = [
+  "SEARCH_CMD",
+  "analyze",
+  "cmd",
+  "consult",
+  "scripts",
+  "scripts.analyze_consult.SEARCH_CMD",
+  "search",
+]

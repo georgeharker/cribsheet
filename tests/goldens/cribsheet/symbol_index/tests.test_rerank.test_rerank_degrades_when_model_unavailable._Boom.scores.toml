@@ -1,0 +1,31 @@
+fqname = "tests.test_rerank.test_rerank_degrades_when_model_unavailable._Boom.scores"
+name = "scores"
+kind = "method"
+lang = "python"
+module = "tests.test_rerank"
+parent = "tests.test_rerank.test_rerank_degrades_when_model_unavailable._Boom"
+content_hash = "08035367ea0b82f5"
+file = "tests/test_rerank.py"
+signature = "def scores(self, *_):"
+description = ""
+line = 57
+mtime = 1782704221000000000
+container = [
+  "test_rerank_degrades_when_model_unavailable",
+  "_Boom",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "boom",
+  "degrades",
+  "model",
+  "rerank",
+  "scores",
+  "test",
+  "tests",
+  "tests.test_rerank.test_rerank_degrades_when_model_unavailable._Boom.scores",
+  "unavailable",
+  "when",
+]

@@ -1,0 +1,41 @@
+fqname = "crib.app.Crib.store_note"
+name = "store_note"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "060168962943d31e"
+file = "crib/app.py"
+signature = "async def store_note(self, content: str, title: str | None = None,"
+description = ""
+line = 336
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "Note [crib/notes.py]",
+  "_similar [crib/app.py]",
+  "_slug [crib/app.py]",
+  "_unique_relpath [crib/app.py]",
+  "_write_note [crib/app.py]",
+  "abspath [crib/app.py]",
+  "project_is_new [crib/app.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "_scenario [tests/test_notestore_snapshot.py]",
+  "store [crib/server.py]",
+]
+references = [
+  "_scenario [tests/test_notestore_snapshot.py]",
+  "store [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.store_note",
+  "note",
+  "store",
+  "store_note",
+]

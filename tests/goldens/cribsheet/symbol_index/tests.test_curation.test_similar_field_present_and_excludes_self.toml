@@ -1,0 +1,31 @@
+fqname = "tests.test_curation.test_similar_field_present_and_excludes_self"
+name = "test_similar_field_present_and_excludes_self"
+kind = "function"
+lang = "python"
+module = "tests.test_curation"
+parent = ""
+content_hash = "e68f978f994d97d6"
+file = "tests/test_curation.py"
+signature = "def test_similar_field_present_and_excludes_self(crib):"
+description = ""
+line = 66
+mtime = 1782717497000000000
+container = []
+calls = [
+  "run [tests/test_curation.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "curation",
+  "excludes",
+  "field",
+  "present",
+  "self",
+  "similar",
+  "test",
+  "test_similar_field_present_and_excludes_self",
+  "tests",
+  "tests.test_curation.test_similar_field_present_and_excludes_self",
+]

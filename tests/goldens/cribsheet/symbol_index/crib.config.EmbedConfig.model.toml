@@ -1,0 +1,33 @@
+fqname = "crib.config.EmbedConfig.model"
+name = "model"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.EmbedConfig"
+content_hash = "e5d7ae9760c09f0b"
+file = "crib/config.py"
+signature = "model: str = \"hash\""
+description = ""
+line = 17
+mtime = 1783455339000000000
+container = [
+  "EmbedConfig",
+]
+calls = []
+called_by = []
+references = [
+  "build_embedder [crib/embed.py]",
+  "cmd_info [crib/cli.py]",
+  "status [crib/app.py]",
+  "test_bge_en_gets_query_instruction_by_default [tests/test_embed.py]",
+  "test_custom_prefix_wins [tests/test_embed.py]",
+  "test_explicit_empty_prefix_disables_instruction [tests/test_embed.py]",
+  "test_non_bge_models_get_no_instruction [tests/test_embed.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.EmbedConfig.model",
+  "embed",
+  "model",
+]

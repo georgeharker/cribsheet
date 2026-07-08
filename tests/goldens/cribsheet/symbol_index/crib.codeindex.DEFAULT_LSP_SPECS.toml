@@ -1,0 +1,27 @@
+fqname = "crib.codeindex.DEFAULT_LSP_SPECS"
+name = "DEFAULT_LSP_SPECS"
+kind = "constant"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "1ff1cba9bc928062"
+file = "crib/codeindex.py"
+signature = "DEFAULT_LSP_SPECS: dict[str, dict[str, Any]] = {"
+description = ""
+line = 44
+mtime = 1783533619000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "load_specs [crib/codeindex.py]",
+]
+name_terms = [
+  "DEFAULT_LSP_SPECS",
+  "codeindex",
+  "crib",
+  "crib.codeindex.DEFAULT_LSP_SPECS",
+  "default",
+  "lsp",
+  "specs",
+]

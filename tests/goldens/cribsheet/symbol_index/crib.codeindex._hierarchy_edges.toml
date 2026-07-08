@@ -1,0 +1,31 @@
+fqname = "crib.codeindex._hierarchy_edges"
+name = "_hierarchy_edges"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "48c2d78c2243ea07"
+file = "crib/codeindex.py"
+signature = "def _hierarchy_edges(c: LspClient, method: str, item: dict, key: str,"
+description = ""
+line = 826
+mtime = 1783533619000000000
+container = []
+calls = [
+  "_locate [crib/codeindex.py]",
+  "request [crib/codeindex.py]",
+]
+called_by = [
+  "_symbol_entry [crib/codeindex.py]",
+]
+references = [
+  "_symbol_entry [crib/codeindex.py]",
+]
+name_terms = [
+  "_hierarchy_edges",
+  "codeindex",
+  "crib",
+  "crib.codeindex._hierarchy_edges",
+  "edges",
+  "hierarchy",
+]

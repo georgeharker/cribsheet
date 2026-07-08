@@ -1,0 +1,33 @@
+fqname = "crib.sources.SRC_PREFIX"
+name = "SRC_PREFIX"
+kind = "constant"
+lang = "python"
+module = "crib.sources"
+parent = ""
+content_hash = "b2c6997a538afe9a"
+file = "crib/sources.py"
+signature = "SRC_PREFIX = \"sources/\""
+description = ""
+line = 21
+mtime = 1783358913000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "abspath [crib/notestore.py]",
+  "index_docs_insitu [crib/app.py]",
+  "project_forget [crib/app.py]",
+  "project_status [crib/app.py]",
+  "reindex [crib/notestore.py]",
+  "src_relpath [crib/sources.py]",
+  "status [crib/app.py]",
+  "test_src_relpath_shape [tests/test_insitu_docs.py]",
+]
+name_terms = [
+  "SRC_PREFIX",
+  "crib",
+  "crib.sources.SRC_PREFIX",
+  "prefix",
+  "sources",
+  "src",
+]

@@ -1,0 +1,29 @@
+fqname = "crib.config.RetrieveConfig.keyword_weight"
+name = "keyword_weight"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.RetrieveConfig"
+content_hash = "ea90f8ae93bae4a9"
+file = "crib/config.py"
+signature = "keyword_weight: float = 0.3"
+description = ""
+line = 78
+mtime = 1783455339000000000
+container = [
+  "RetrieveConfig",
+]
+calls = []
+called_by = []
+references = [
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.RetrieveConfig.keyword_weight",
+  "keyword",
+  "keyword_weight",
+  "retrieve",
+  "weight",
+]

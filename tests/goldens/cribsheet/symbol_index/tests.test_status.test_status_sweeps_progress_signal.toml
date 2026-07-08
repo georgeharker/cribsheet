@@ -1,0 +1,26 @@
+fqname = "tests.test_status.test_status_sweeps_progress_signal"
+name = "test_status_sweeps_progress_signal"
+kind = "function"
+lang = "python"
+module = "tests.test_status"
+parent = ""
+content_hash = "70ab967c93a99d2b"
+file = "tests/test_status.py"
+signature = "def test_status_sweeps_progress_signal(crib, tmp_path, monkeypatch):"
+description = ""
+line = 61
+mtime = 1783496808000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "progress",
+  "signal",
+  "status",
+  "sweeps",
+  "test",
+  "test_status_sweeps_progress_signal",
+  "tests",
+  "tests.test_status.test_status_sweeps_progress_signal",
+]

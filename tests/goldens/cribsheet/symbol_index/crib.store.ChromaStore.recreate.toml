@@ -1,0 +1,25 @@
+fqname = "crib.store.ChromaStore.recreate"
+name = "recreate"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.ChromaStore"
+content_hash = "9bbfdf3044e5174c"
+file = "crib/store.py"
+signature = "def recreate(self) -> None:"
+description = ""
+line = 173
+mtime = 1783446057000000000
+container = [
+  "ChromaStore",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore.recreate",
+  "recreate",
+  "store",
+]

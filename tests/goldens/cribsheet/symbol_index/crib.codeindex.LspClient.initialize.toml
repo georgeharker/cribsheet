@@ -1,0 +1,33 @@
+fqname = "crib.codeindex.LspClient.initialize"
+name = "initialize"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.LspClient"
+content_hash = "7855e1423de598af"
+file = "crib/codeindex.py"
+signature = "def initialize(self) -> None:"
+description = ""
+line = 406
+mtime = 1783533619000000000
+container = [
+  "LspClient",
+]
+calls = [
+  "notify [crib/codeindex.py]",
+  "request [crib/codeindex.py]",
+]
+called_by = [
+  "acquire [crib/codeindex.py]",
+]
+references = [
+  "acquire [crib/codeindex.py]",
+]
+name_terms = [
+  "client",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspClient.initialize",
+  "initialize",
+  "lsp",
+]

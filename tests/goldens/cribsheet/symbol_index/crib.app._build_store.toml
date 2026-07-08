@@ -1,0 +1,32 @@
+fqname = "crib.app._build_store"
+name = "_build_store"
+kind = "function"
+lang = "python"
+module = "crib.app"
+parent = ""
+content_hash = "1567e53ac764b3d9"
+file = "crib/app.py"
+signature = "def _build_store(paths: Paths, config: Config) -> tuple[Store, Callable[[], None] | None]:"
+description = ""
+line = 1484
+mtime = 1783530649000000000
+container = []
+calls = [
+  "JsonStore [crib/store.py]",
+  "_build_shared_chroma [crib/app.py]",
+  "embedded [crib/store.py]",
+]
+called_by = [
+  "open [crib/app.py]",
+]
+references = [
+  "open [crib/app.py]",
+]
+name_terms = [
+  "_build_store",
+  "app",
+  "build",
+  "crib",
+  "crib.app._build_store",
+  "store",
+]

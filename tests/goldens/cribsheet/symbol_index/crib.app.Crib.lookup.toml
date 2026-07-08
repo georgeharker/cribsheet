@@ -1,0 +1,41 @@
+fqname = "crib.app.Crib.lookup"
+name = "lookup"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "0ec93a1a316fbc98"
+file = "crib/app.py"
+signature = "def lookup(self, query: str, project: str | None = None, k: int = 8,"
+description = ""
+line = 574
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "LookupHit [crib/app.py]",
+  "_retrieve [crib/app.py]",
+  "abspath [crib/app.py]",
+  "embed_query [crib/embed.py]",
+  "resolve_project [crib/app.py]",
+  "section_line_map [crib/chunk.py]",
+]
+called_by = [
+  "_similar [crib/app.py]",
+  "apropos [crib/app.py]",
+  "lookup [crib/server.py]",
+  "scenario [tests/test_watcher.py]",
+]
+references = [
+  "_similar [crib/app.py]",
+  "apropos [crib/app.py]",
+  "lookup [crib/server.py]",
+  "scenario [tests/test_watcher.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.lookup",
+  "lookup",
+]

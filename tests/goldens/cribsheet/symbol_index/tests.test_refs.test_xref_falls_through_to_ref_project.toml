@@ -1,0 +1,31 @@
+fqname = "tests.test_refs.test_xref_falls_through_to_ref_project"
+name = "test_xref_falls_through_to_ref_project"
+kind = "function"
+lang = "python"
+module = "tests.test_refs"
+parent = ""
+content_hash = "5ad4d45f7d64f15e"
+file = "tests/test_refs.py"
+signature = "def test_xref_falls_through_to_ref_project(crib, tmp_path):"
+description = ""
+line = 72
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_two_projects [tests/test_refs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "falls",
+  "project",
+  "ref",
+  "refs",
+  "test",
+  "test_xref_falls_through_to_ref_project",
+  "tests",
+  "tests.test_refs.test_xref_falls_through_to_ref_project",
+  "through",
+  "to",
+  "xref",
+]

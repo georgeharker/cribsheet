@@ -1,0 +1,29 @@
+fqname = "crib.chunk.Chunk.window_idx"
+name = "window_idx"
+kind = "field"
+lang = "python"
+module = "crib.chunk"
+parent = "crib.chunk.Chunk"
+content_hash = "6a91dca2bc320d0f"
+file = "crib/chunk.py"
+signature = "window_idx: int"
+description = ""
+line = 30
+mtime = 1782930371000000000
+container = [
+  "Chunk",
+]
+calls = []
+called_by = []
+references = [
+  "chunk_id [crib/chunk.py]",
+  "metadata [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.window_idx",
+  "idx",
+  "window",
+  "window_idx",
+]

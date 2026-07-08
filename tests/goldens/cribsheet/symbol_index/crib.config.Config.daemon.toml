@@ -1,0 +1,29 @@
+fqname = "crib.config.Config.daemon"
+name = "daemon"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.Config"
+content_hash = "c35c21dd9da16114"
+file = "crib/config.py"
+signature = "daemon: DaemonConfig = field(default_factory=DaemonConfig)"
+description = ""
+line = 192
+mtime = 1783455339000000000
+container = [
+  "Config",
+]
+calls = []
+called_by = []
+references = [
+  "_resolve_serve_endpoint [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+  "load [crib/config.py]",
+  "main [crib/cli.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.daemon",
+  "daemon",
+]

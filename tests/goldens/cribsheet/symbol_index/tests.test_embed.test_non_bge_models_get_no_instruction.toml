@@ -1,0 +1,32 @@
+fqname = "tests.test_embed.test_non_bge_models_get_no_instruction"
+name = "test_non_bge_models_get_no_instruction"
+kind = "function"
+lang = "python"
+module = "tests.test_embed"
+parent = ""
+content_hash = "6d10c77c8a368d91"
+file = "tests/test_embed.py"
+signature = "def test_non_bge_models_get_no_instruction():"
+description = ""
+line = 26
+mtime = 1782690118000000000
+container = []
+calls = [
+  "EmbedConfig [crib/config.py]",
+  "_resolve_query_prefix [crib/embed.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "bge",
+  "embed",
+  "get",
+  "instruction",
+  "models",
+  "no",
+  "non",
+  "test",
+  "test_non_bge_models_get_no_instruction",
+  "tests",
+  "tests.test_embed.test_non_bge_models_get_no_instruction",
+]

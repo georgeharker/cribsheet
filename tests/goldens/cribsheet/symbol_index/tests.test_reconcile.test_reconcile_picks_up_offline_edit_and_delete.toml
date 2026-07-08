@@ -1,0 +1,31 @@
+fqname = "tests.test_reconcile.test_reconcile_picks_up_offline_edit_and_delete"
+name = "test_reconcile_picks_up_offline_edit_and_delete"
+kind = "function"
+lang = "python"
+module = "tests.test_reconcile"
+parent = ""
+content_hash = "140f344dd4141c91"
+file = "tests/test_reconcile.py"
+signature = "def test_reconcile_picks_up_offline_edit_and_delete(crib):"
+description = ""
+line = 28
+mtime = 1782609751000000000
+container = []
+calls = [
+  "run [tests/test_reconcile.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "delete",
+  "edit",
+  "offline",
+  "picks",
+  "reconcile",
+  "test",
+  "test_reconcile_picks_up_offline_edit_and_delete",
+  "tests",
+  "tests.test_reconcile.test_reconcile_picks_up_offline_edit_and_delete",
+  "up",
+]

@@ -1,0 +1,30 @@
+fqname = "crib.store.InMemoryStore.get_docs"
+name = "get_docs"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.InMemoryStore"
+content_hash = "d35818851dbd8049"
+file = "crib/store.py"
+signature = "def get_docs(self, where: dict[str, Any]"
+description = ""
+line = 90
+mtime = 1783446057000000000
+container = [
+  "InMemoryStore",
+]
+calls = [
+  "_matches [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.store.InMemoryStore.get_docs",
+  "docs",
+  "get",
+  "get_docs",
+  "in",
+  "memory",
+  "store",
+]

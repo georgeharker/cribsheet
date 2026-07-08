@@ -1,0 +1,37 @@
+fqname = "crib.merge.merge_note_texts"
+name = "merge_note_texts"
+kind = "function"
+lang = "python"
+module = "crib.merge"
+parent = ""
+content_hash = "39440c450e04a854"
+file = "crib/merge.py"
+signature = "def merge_note_texts(base: str, ours: str, theirs: str) -> tuple[str, bool]:"
+description = ""
+line = 88
+mtime = 1783446057000000000
+container = []
+calls = [
+  "_merge_body [crib/merge.py]",
+  "merge_frontmatter [crib/merge.py]",
+  "parse [crib/notes.py]",
+  "serialize [crib/notes.py]",
+]
+called_by = [
+  "run_driver [crib/merge.py]",
+  "test_body_divergence_surfaces_with_healed_header [tests/test_merge.py]",
+  "test_frontmatter_only_divergence_merges_clean [tests/test_merge.py]",
+]
+references = [
+  "run_driver [crib/merge.py]",
+  "test_body_divergence_surfaces_with_healed_header [tests/test_merge.py]",
+  "test_frontmatter_only_divergence_merges_clean [tests/test_merge.py]",
+]
+name_terms = [
+  "crib",
+  "crib.merge.merge_note_texts",
+  "merge",
+  "merge_note_texts",
+  "note",
+  "texts",
+]

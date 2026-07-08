@@ -1,0 +1,27 @@
+fqname = "scripts.analyze_consult.SOURCE_EXT"
+name = "SOURCE_EXT"
+kind = "constant"
+lang = "python"
+module = "scripts.analyze_consult"
+parent = ""
+content_hash = "de96dfc978db3716"
+file = "scripts/analyze_consult.py"
+signature = "SOURCE_EXT = {\".py\", \".rs\", \".lua\", \".zsh\", \".sh\", \".ts\", \".tsx\", \".js\", \".jsx\","
+description = ""
+line = 48
+mtime = 1783033314000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_classify [scripts/analyze_consult.py]",
+]
+name_terms = [
+  "SOURCE_EXT",
+  "analyze",
+  "consult",
+  "ext",
+  "scripts",
+  "scripts.analyze_consult.SOURCE_EXT",
+  "source",
+]

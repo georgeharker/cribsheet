@@ -1,0 +1,30 @@
+fqname = "crib.codeindex.resolve_command"
+name = "resolve_command"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "30925eb10c4b5f3b"
+file = "crib/codeindex.py"
+signature = "def resolve_command(spec: dict) -> list[str] | None:"
+description = ""
+line = 104
+mtime = 1783533619000000000
+container = []
+calls = []
+called_by = [
+  "_enumerate_code_files [crib/app.py]",
+  "server_for [crib/codeindex.py]",
+]
+references = [
+  "_enumerate_code_files [crib/app.py]",
+  "server_for [crib/codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "command",
+  "crib",
+  "crib.codeindex.resolve_command",
+  "resolve",
+  "resolve_command",
+]

@@ -1,0 +1,32 @@
+fqname = "crib.project_services.ProjectServices.register_code_root"
+name = "register_code_root"
+kind = "method"
+lang = "python"
+module = "crib.project_services"
+parent = "crib.project_services.ProjectServices"
+content_hash = "d2a7162d18ed5ced"
+file = "crib/project_services.py"
+signature = "def register_code_root(self, proj: str, root: str | Path) -> None:"
+description = ""
+line = 50
+mtime = 1783530318000000000
+container = [
+  "ProjectServices",
+]
+calls = []
+called_by = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+name_terms = [
+  "code",
+  "crib",
+  "crib.project_services.ProjectServices.register_code_root",
+  "project",
+  "register",
+  "register_code_root",
+  "root",
+  "services",
+]

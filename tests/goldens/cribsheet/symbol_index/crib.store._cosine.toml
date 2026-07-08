@@ -1,0 +1,27 @@
+fqname = "crib.store._cosine"
+name = "_cosine"
+kind = "function"
+lang = "python"
+module = "crib.store"
+parent = ""
+content_hash = "c13c56e6f819539e"
+file = "crib/store.py"
+signature = "def _cosine(a: list[float], b: list[float]) -> float:"
+description = ""
+line = 61
+mtime = 1783446057000000000
+container = []
+calls = []
+called_by = [
+  "query [crib/store.py]",
+]
+references = [
+  "query [crib/store.py]",
+]
+name_terms = [
+  "_cosine",
+  "cosine",
+  "crib",
+  "crib.store._cosine",
+  "store",
+]

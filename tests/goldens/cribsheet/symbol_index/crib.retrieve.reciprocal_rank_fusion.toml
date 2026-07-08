@@ -1,0 +1,39 @@
+fqname = "crib.retrieve.reciprocal_rank_fusion"
+name = "reciprocal_rank_fusion"
+kind = "function"
+lang = "python"
+module = "crib.retrieve"
+parent = ""
+content_hash = "d081b98b52b9acca"
+file = "crib/retrieve.py"
+signature = "def reciprocal_rank_fusion(rankings: list[list[str]], k: int = 60,"
+description = ""
+line = 141
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = [
+  "_lookup_one [crib/codequery.py]",
+  "_rerank [crib/app.py]",
+  "_retrieve [crib/app.py]",
+  "lookup [crib/codequery.py]",
+  "test_rrf_rewards_agreement_across_rankings [tests/test_retrieve.py]",
+  "test_rrf_union_includes_all_ids [tests/test_retrieve.py]",
+]
+references = [
+  "_lookup_one [crib/codequery.py]",
+  "_rerank [crib/app.py]",
+  "_retrieve [crib/app.py]",
+  "lookup [crib/codequery.py]",
+  "test_rrf_rewards_agreement_across_rankings [tests/test_retrieve.py]",
+  "test_rrf_union_includes_all_ids [tests/test_retrieve.py]",
+]
+name_terms = [
+  "crib",
+  "crib.retrieve.reciprocal_rank_fusion",
+  "fusion",
+  "rank",
+  "reciprocal",
+  "reciprocal_rank_fusion",
+  "retrieve",
+]

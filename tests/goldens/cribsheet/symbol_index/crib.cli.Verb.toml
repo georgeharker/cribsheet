@@ -1,0 +1,27 @@
+fqname = "crib.cli.Verb"
+name = "Verb"
+kind = "class"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "076c5282730cd090"
+file = "crib/cli.py"
+signature = "@dataclass(frozen=True)"
+description = ""
+line = 678
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+  "_project_verb [crib/cli.py]",
+  "_resolve_verb [crib/cli.py]",
+]
+name_terms = [
+  "Verb",
+  "cli",
+  "crib",
+  "crib.cli.Verb",
+  "verb",
+]

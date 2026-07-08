@@ -1,0 +1,32 @@
+fqname = "tests.test_codeindex.test_mtime_round_trips_as_bare_int"
+name = "test_mtime_round_trips_as_bare_int"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "d78bcf3456b20d36"
+file = "tests/test_codeindex.py"
+signature = "def test_mtime_round_trips_as_bare_int():"
+description = ""
+line = 233
+mtime = 1783533619000000000
+container = []
+calls = [
+  "_parse [crib/codeindex.py]",
+  "_render [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "as",
+  "bare",
+  "codeindex",
+  "int",
+  "mtime",
+  "round",
+  "test",
+  "test_mtime_round_trips_as_bare_int",
+  "tests",
+  "tests.test_codeindex.test_mtime_round_trips_as_bare_int",
+  "trips",
+]

@@ -1,0 +1,36 @@
+fqname = "tests.test_sync._note"
+name = "_note"
+kind = "function"
+lang = "python"
+module = "tests.test_sync"
+parent = ""
+content_hash = "b50b382367dfe93d"
+file = "tests/test_sync.py"
+signature = "def _note(g: GitBacking, name: str, body: str) -> None:"
+description = ""
+line = 38
+mtime = 1783446057000000000
+container = []
+calls = []
+called_by = [
+  "_imported_note [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_memory_bindings_is_gitignored [tests/test_sync.py]",
+  "test_pull_reports_conflicts_without_pushing [tests/test_sync.py]",
+  "test_sync_round_trips_between_two_machines [tests/test_sync.py]",
+]
+references = [
+  "_imported_note [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_memory_bindings_is_gitignored [tests/test_sync.py]",
+  "test_pull_reports_conflicts_without_pushing [tests/test_sync.py]",
+  "test_sync_round_trips_between_two_machines [tests/test_sync.py]",
+]
+name_terms = [
+  "_note",
+  "note",
+  "sync",
+  "test",
+  "tests",
+  "tests.test_sync._note",
+]

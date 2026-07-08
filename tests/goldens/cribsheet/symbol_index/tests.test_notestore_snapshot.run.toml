@@ -1,0 +1,28 @@
+fqname = "tests.test_notestore_snapshot.run"
+name = "run"
+kind = "function"
+lang = "python"
+module = "tests.test_notestore_snapshot"
+parent = ""
+content_hash = "44052857cf112194"
+file = "tests/test_notestore_snapshot.py"
+signature = "def run(coro):"
+description = ""
+line = 32
+mtime = 1783525700000000000
+container = []
+calls = []
+called_by = [
+  "test_notestore_scenario_snapshot [tests/test_notestore_snapshot.py]",
+]
+references = [
+  "test_notestore_scenario_snapshot [tests/test_notestore_snapshot.py]",
+]
+name_terms = [
+  "notestore",
+  "run",
+  "snapshot",
+  "test",
+  "tests",
+  "tests.test_notestore_snapshot.run",
+]

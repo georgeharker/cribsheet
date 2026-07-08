@@ -1,0 +1,40 @@
+fqname = "crib.app.Crib._write_note"
+name = "_write_note"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "d37d9d97397570b4"
+file = "crib/app.py"
+signature = "async def _write_note(self, project: str, relpath: str, note: Note) -> IndexResult:"
+description = ""
+line = 299
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "write [crib/notestore.py]",
+]
+called_by = [
+  "append_note [crib/app.py]",
+  "distill [crib/app.py]",
+  "edit_note [crib/app.py]",
+  "import_files [crib/app.py]",
+  "store_note [crib/app.py]",
+]
+references = [
+  "append_note [crib/app.py]",
+  "distill [crib/app.py]",
+  "edit_note [crib/app.py]",
+  "import_files [crib/app.py]",
+  "store_note [crib/app.py]",
+]
+name_terms = [
+  "_write_note",
+  "app",
+  "crib",
+  "crib.app.Crib._write_note",
+  "note",
+  "write",
+]

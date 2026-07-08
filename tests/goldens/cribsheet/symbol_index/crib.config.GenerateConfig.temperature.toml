@@ -1,0 +1,27 @@
+fqname = "crib.config.GenerateConfig.temperature"
+name = "temperature"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.GenerateConfig"
+content_hash = "0c059b5849293612"
+file = "crib/config.py"
+signature = "temperature: float = 0.2"
+description = ""
+line = 139
+mtime = 1783455339000000000
+container = [
+  "GenerateConfig",
+]
+calls = []
+called_by = []
+references = [
+  "resolve_provider [crib/generate.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.GenerateConfig.temperature",
+  "generate",
+  "temperature",
+]

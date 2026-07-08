@@ -1,0 +1,25 @@
+fqname = "crib.watch._IGNORE"
+name = "_IGNORE"
+kind = "constant"
+lang = "python"
+module = "crib.watch"
+parent = ""
+content_hash = "c90c8d64c36f7b20"
+file = "crib/watch.py"
+signature = "_IGNORE = [\"*~\", \".*.swp\", \"*.tmp\", \"4913\", \".#*\", \"*.orig\"]"
+description = ""
+line = 17
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_ignored [crib/watch.py]",
+]
+name_terms = [
+  "_IGNORE",
+  "crib",
+  "crib.watch._IGNORE",
+  "ignore",
+  "watch",
+]

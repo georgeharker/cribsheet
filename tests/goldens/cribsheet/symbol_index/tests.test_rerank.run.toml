@@ -1,0 +1,29 @@
+fqname = "tests.test_rerank.run"
+name = "run"
+kind = "function"
+lang = "python"
+module = "tests.test_rerank"
+parent = ""
+content_hash = "44052857cf112194"
+file = "tests/test_rerank.py"
+signature = "def run(coro):"
+description = ""
+line = 37
+mtime = 1782704221000000000
+container = []
+calls = []
+called_by = [
+  "test_rerank_degrades_when_model_unavailable [tests/test_rerank.py]",
+  "test_rerank_fuses_promotes_but_does_not_dethrone [tests/test_rerank.py]",
+]
+references = [
+  "test_rerank_degrades_when_model_unavailable [tests/test_rerank.py]",
+  "test_rerank_fuses_promotes_but_does_not_dethrone [tests/test_rerank.py]",
+]
+name_terms = [
+  "rerank",
+  "run",
+  "test",
+  "tests",
+  "tests.test_rerank.run",
+]

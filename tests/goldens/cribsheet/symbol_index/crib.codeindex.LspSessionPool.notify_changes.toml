@@ -1,0 +1,37 @@
+fqname = "crib.codeindex.LspSessionPool.notify_changes"
+name = "notify_changes"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.LspSessionPool"
+content_hash = "c7b91c7f529f6a79"
+file = "crib/codeindex.py"
+signature = "def notify_changes(self, root: Path, changes: list[tuple[str, int]]) -> None:"
+description = ""
+line = 536
+mtime = 1783533619000000000
+container = [
+  "LspSessionPool",
+]
+calls = [
+  "notify [crib/codeindex.py]",
+]
+called_by = [
+  "_on_code_change [crib/app.py]",
+  "test_session_pool_pumps_watched_file_changes [tests/test_codeindex.py]",
+]
+references = [
+  "_on_code_change [crib/app.py]",
+  "test_session_pool_pumps_watched_file_changes [tests/test_codeindex.py]",
+]
+name_terms = [
+  "changes",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspSessionPool.notify_changes",
+  "lsp",
+  "notify",
+  "notify_changes",
+  "pool",
+  "session",
+]

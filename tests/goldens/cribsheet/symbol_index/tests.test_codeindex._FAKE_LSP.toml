@@ -1,0 +1,39 @@
+fqname = "tests.test_codeindex._fake_lsp"
+name = "_fake_lsp"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "c9d6f4ea3b52f0e5"
+file = "tests/test_codeindex.py"
+signature = "def _fake_lsp(tmp_path, monkeypatch):"
+description = ""
+line = 354
+mtime = 1783533619000000000
+container = []
+calls = []
+called_by = [
+  "test_extra_roots_ride_as_workspace_folders [tests/test_codeindex.py]",
+  "test_progress_tracked_and_wait_quiescent_honors_it [tests/test_codeindex.py]",
+  "test_session_pool_pins_docs_across_calls [tests/test_codeindex.py]",
+  "test_session_pool_pumps_watched_file_changes [tests/test_codeindex.py]",
+  "test_session_pool_respawns_after_crash [tests/test_codeindex.py]",
+  "test_session_pool_reuses_one_server_across_files [tests/test_codeindex.py]",
+]
+references = [
+  "test_extra_roots_ride_as_workspace_folders [tests/test_codeindex.py]",
+  "test_progress_tracked_and_wait_quiescent_honors_it [tests/test_codeindex.py]",
+  "test_session_pool_pins_docs_across_calls [tests/test_codeindex.py]",
+  "test_session_pool_pumps_watched_file_changes [tests/test_codeindex.py]",
+  "test_session_pool_respawns_after_crash [tests/test_codeindex.py]",
+  "test_session_pool_reuses_one_server_across_files [tests/test_codeindex.py]",
+]
+name_terms = [
+  "_fake_lsp",
+  "codeindex",
+  "fake",
+  "lsp",
+  "test",
+  "tests",
+  "tests.test_codeindex._fake_lsp",
+]

@@ -1,0 +1,34 @@
+fqname = "crib.gitbacking.SyncResult.ok"
+name = "ok"
+kind = "field"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.SyncResult"
+content_hash = "503112e48ee2a825"
+file = "crib/gitbacking.py"
+signature = "ok: bool"
+description = ""
+line = 48
+mtime = 1783451795000000000
+container = [
+  "SyncResult",
+]
+calls = []
+called_by = []
+references = [
+  "_run_git [crib/cli.py]",
+  "sync [crib/gitbacking.py]",
+  "test_body_conflict_surfaces_but_header_is_healed [tests/test_sync.py]",
+  "test_frontmatter_only_conflict_auto_resolves [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_pull_reports_conflicts_without_pushing [tests/test_sync.py]",
+  "test_sync_round_trips_between_two_machines [tests/test_sync.py]",
+]
+name_terms = [
+  "crib",
+  "crib.gitbacking.SyncResult.ok",
+  "gitbacking",
+  "ok",
+  "result",
+  "sync",
+]

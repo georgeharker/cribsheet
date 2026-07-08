@@ -1,0 +1,22 @@
+fqname = "crib.__version__"
+name = "__version__"
+kind = "global"
+lang = "python"
+module = "crib"
+parent = ""
+content_hash = "c840ccaec7866117"
+file = "crib/__init__.py"
+signature = "__version__ = \"0.1.0\""
+description = ""
+line = 10
+mtime = 1783446057000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "__version__",
+  "crib",
+  "crib.__version__",
+  "version",
+]

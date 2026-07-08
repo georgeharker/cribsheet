@@ -1,0 +1,29 @@
+fqname = "tests.test_embed.test_custom_prefix_wins"
+name = "test_custom_prefix_wins"
+kind = "function"
+lang = "python"
+module = "tests.test_embed"
+parent = ""
+content_hash = "0bf33d80e63b82b4"
+file = "tests/test_embed.py"
+signature = "def test_custom_prefix_wins():"
+description = ""
+line = 21
+mtime = 1782690118000000000
+container = []
+calls = [
+  "EmbedConfig [crib/config.py]",
+  "_resolve_query_prefix [crib/embed.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "custom",
+  "embed",
+  "prefix",
+  "test",
+  "test_custom_prefix_wins",
+  "tests",
+  "tests.test_embed.test_custom_prefix_wins",
+  "wins",
+]

@@ -1,0 +1,30 @@
+fqname = "crib.cli.Verb.crib_method"
+name = "crib_method"
+kind = "method"
+lang = "python"
+module = "crib.cli"
+parent = "crib.cli.Verb"
+content_hash = "5ae4c01c60b490af"
+file = "crib/cli.py"
+signature = "def crib_method(self) -> str:"
+description = ""
+line = 687
+mtime = 1783476730000000000
+container = [
+  "Verb",
+]
+calls = []
+called_by = [
+  "_run_inprocess [crib/cli.py]",
+]
+references = [
+  "_run_inprocess [crib/cli.py]",
+]
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli.Verb.crib_method",
+  "crib_method",
+  "method",
+  "verb",
+]

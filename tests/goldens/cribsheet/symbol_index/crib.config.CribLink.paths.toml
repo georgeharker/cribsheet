@@ -1,0 +1,28 @@
+fqname = "crib.config.CribLink.paths"
+name = "paths"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.CribLink"
+content_hash = "3b096b6e665d43c1"
+file = "crib/config.py"
+signature = "paths: list[str] = field(default_factory=list)"
+description = ""
+line = 270
+mtime = 1783455339000000000
+container = [
+  "CribLink",
+]
+calls = []
+called_by = []
+references = [
+  "find [crib/config.py]",
+  "project_status [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.paths",
+  "link",
+  "paths",
+]

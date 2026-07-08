@@ -1,0 +1,28 @@
+fqname = "crib.chunk.Chunk.text"
+name = "text"
+kind = "field"
+lang = "python"
+module = "crib.chunk"
+parent = "crib.chunk.Chunk"
+content_hash = "d20c3c4eb85ef28c"
+file = "crib/chunk.py"
+signature = "text: str"
+description = ""
+line = 31
+mtime = 1782930371000000000
+container = [
+  "Chunk",
+]
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "index_text [crib/chunk.py]",
+  "section_hash [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.text",
+  "text",
+]

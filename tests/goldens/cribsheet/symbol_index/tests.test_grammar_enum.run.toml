@@ -1,0 +1,24 @@
+fqname = "tests.test_grammar_enum.run"
+name = "run"
+kind = "function"
+lang = "python"
+module = "tests.test_grammar_enum"
+parent = ""
+content_hash = "44052857cf112194"
+file = "tests/test_grammar_enum.py"
+signature = "def run(coro):"
+description = ""
+line = 26
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "enum",
+  "grammar",
+  "run",
+  "test",
+  "tests",
+  "tests.test_grammar_enum.run",
+]

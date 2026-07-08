@@ -1,0 +1,25 @@
+fqname = "crib.server.Context"
+name = "Context"
+kind = "global"
+lang = "python"
+module = "crib.server"
+parent = ""
+content_hash = "e06d1dba6fc9b250"
+file = "crib/server.py"
+signature = "Context = Any  # type: ignore[assignment,misc]"
+description = ""
+line = 19
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "store [crib/server.py]",
+]
+name_terms = [
+  "Context",
+  "context",
+  "crib",
+  "crib.server.Context",
+  "server",
+]
