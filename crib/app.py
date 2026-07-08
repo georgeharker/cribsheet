@@ -125,10 +125,12 @@ class Crib:
         # pipeline revalidate hook) and nested-.crib boundary detection (shared with
         # code enumeration). Crib keeps delegators (below) for its many callers.
         self.refs = Refs(paths, self._resident_code, self._nested_project_roots)
-        # The project-layer surface the indexing pipeline depends on (refs, enumerate,
-        # source-root registration, project resolution) — a seam that defers back here,
-        # so the pipeline can move to a CodeIndexer without reaching into Crib.
-        self.services = ProjectServices(self)
+        # The project-layer surface the indexing pipeline depends on — narrow deps
+        # (refs + code + config for resolution/ref-context, plus two injected callables
+        # for enumeration + watcher registration). No back-reference to Crib.
+        self.services = ProjectServices(self.refs, self.code, paths, config,
+                                        self._enumerate_code_files,
+                                        self._register_code_root)
         # The code-index pipeline (extract → describe → persist), over CodeStore +
         # ProjectServices. Crib keeps delegators (below) so the watcher, the resident
         # revalidate hook, and project setup/index call it unchanged.
