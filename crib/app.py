@@ -110,7 +110,7 @@ class Crib:
         # The code subsystem's shared per-project state (resident cache, freshness
         # epoch, write locks, in-flight/sweep tracking) — owned by CodeStore; the
         # methods below reach through `self.code` (codestore.py).
-        self.code = CodeStore()
+        self.code = CodeStore(paths, config)
 
     # --- construction ------------------------------------------------------
     @classmethod
@@ -991,20 +991,18 @@ class Crib:
         for e in changed.values():
             store.write(e)
 
-    # ── Resident code cache: lock + epoch + freshness ─────────────────────────
+    # ── Resident code cache: delegates to CodeStore (crib/codestore.py) ────────
+    # Thin delegators so existing call sites are untouched; the state + its
+    # invariants live in `self.code`. `_code_watched` (watcher, not code state) and
+    # `_revalidate`/`_drop_file` (pipeline-coupled) stay as real methods below.
     def _code_lock(self, proj: str) -> threading.Lock:
-        """Per-project lock guarding the symbol_index read-modify-write."""
-        with self.code.locks_guard:
-            lk = self.code.locks.get(proj)
-            if lk is None:
-                lk = self.code.locks[proj] = threading.Lock()
-            return lk
+        return self.code.lock(proj)
 
     def _bump_code_epoch(self, proj: str) -> None:
-        self.code.epoch[proj] = self.code.epoch.get(proj, 0) + 1
+        self.code.bump_epoch(proj)
 
     def _code_freshness(self) -> str:
-        return getattr(self.config.retrieve, "code_freshness", "scan")
+        return self.code.freshness()
 
     def _code_watched(self, proj: str) -> bool:
         """True when the code watcher is live-watching this project's source, so a
@@ -1013,68 +1011,18 @@ class Crib:
         return cw is not None and cw.watches(proj)
 
     def _dir_sig(self, proj: str) -> tuple[int, int]:
-        """Cheap signature of the symbol_index dir — (toml count, max mtime_ns) — so
-        ANY on-disk change (our writes, a `git pull` of the store) flips it. One
-        scandir; no parse. In-place body edits keep the filename, so dir-mtime alone
-        misses them — hence max(file mtime), not the dir's."""
-        from .codeindex import SymbolIndex
-        root = SymbolIndex(self.paths.project_dir(proj)).root
-        if not root.exists():
-            return (0, 0)
-        n, mx = 0, 0
-        with os.scandir(root) as it:
-            for e in it:
-                if e.name.endswith(".toml"):
-                    n += 1
-                    try:
-                        m = e.stat().st_mtime_ns
-                    except OSError:
-                        continue
-                    if m > mx:
-                        mx = m
-        return (n, mx)
+        return self.code.dir_sig(proj)
 
     def _code_tok(self, proj: str) -> tuple[str, Any]:
-        """Freshness token the resident cache is keyed on: an in-process epoch in
-        `trust` mode (no stat), the dir signature in `scan` mode (catches external
-        writes too)."""
-        if self._code_freshness() == "trust":
-            return ("epoch", self.code.epoch.get(proj, 0))
-        return ("sig", self._dir_sig(proj))
+        return self.code.tok(proj)
 
     def _resident_code(self, proj: str) -> _ResidentCode:
-        """Return the project's resident code index, refreshing source freshness and
-        rebuilding the cache only when its token moved. On a COLD cache we always run
-        the lazy source revalidation once (catches edits made while the daemon — and
-        its watcher — were down); when warm, we skip it in `trust` mode and whenever
-        the watcher already covers the project (edits refreshed eagerly on save)."""
-        rc = self.code.cache.get(proj)
-        if rc is None or (self._code_freshness() == "scan"
-                          and not self._code_watched(proj)):
-            self._revalidate(proj)                          # source → index freshness
-        tok = self._code_tok(proj)
-        rc = self.code.cache.get(proj)
-        if rc is not None and rc.tok == tok:
-            return rc
-        return self._reload_code(proj, tok, rc)
+        return self.code.resident(proj, revalidate=self._revalidate,
+                                  watched=self._code_watched(proj))
 
     def _reload_code(self, proj: str, tok: Any,
                      prev: _ResidentCode | None) -> _ResidentCode:
-        """Reparse the symbol TOMLs and rebuild the resident cache, CARRYING FORWARD
-        every description embedding whose text is unchanged (from `prev.emb`, pruned to
-        current descriptions). Nothing is embedded here — code_lookup fills in only the
-        genuinely new/edited descriptions lazily, so a reload after an edit re-embeds
-        just what changed, and dossier/graph/xref reloads embed nothing at all."""
-        from .codeindex import SymbolIndex
-        entries = SymbolIndex(self.paths.project_dir(proj)).all()
-        prev_emb = prev.emb if prev is not None else {}
-        emb = {d: prev_emb[d]
-               for d in dict.fromkeys(e["description"] for e in entries
-                                      if e.get("description"))
-               if d in prev_emb}
-        rc = _ResidentCode(tok, entries, emb)
-        self.code.cache[proj] = rc
-        return rc
+        return self.code.reload(proj, tok, prev)
 
     def code_indexed_projects(self) -> list[dict[str, Any]]:
         """Projects that have a symbol_index, with counts — for orienting an agent
