@@ -69,6 +69,30 @@
   vendor. (Note: the watcher only catches edits made *after* it starts; down-time edits
   fall to the lazy mtime gate on the next query.)
 
+## Live-index staleness — investigate AFTER the store restructure
+- **The live daemon index has drifted stale for some projects (surfaced 2026-07-07 by
+  `scripts/snapshot_harness.py`).** The harness indexes a CLEAN checkout at a pinned SHA;
+  comparing those goldens (`~/.cache/crib-goldens/`) to the LIVE daemon index shows golden
+  (clean source) < live for two projects, with clean working trees at HEAD:
+    - zsh-ai:        golden 241 vs live 387  (−146, big)
+    - mcp-companion: golden 1216 vs live 1222 (−6, mild)
+    - cribsheet, llmkit, svg-mcp, sharedserver, dotfiler, zdot: golden == live.
+  The goldens are REPRODUCIBLE (idempotency floor is ∅; zsh-ai indexes to 241 twice), so this
+  is LIVE STALENESS, not capture nondeterminism: the daemon holds symbols for files that
+  changed/were removed but were never pruned. Suspected: a watcher/revalidation gap on
+  deletions + an index left half-reconciled across a daemon reboot (the combiner-global
+  session era + the `isolate:true` bounce). Investigations:
+    - Reconcile/reindex the live daemon, re-compare vs goldens → should collapse to 0. If a
+      project STILL drifts after a clean reconcile, that's a real PRUNE bug, not staleness.
+    - Root-cause zsh-ai's +146: bucket the live-vs-golden symbol diff by file → the un-pruned
+      files. Prime suspect: extensionless zsh autoloads — a DELETED one can't be content-sniffed
+      (watcher §6), so it falls to the lazy mtime gate, which only fires on a query touching the
+      project; a project rarely queried stays stale.
+    - Confirm whether the reboot/grace-period path can leave an index un-reconciled (built before
+      a bounce, never swept). If so, add a startup reconcile or a staleness self-check.
+    - Keep a periodic "live vs SHA golden" drift check as a health signal — the harness already
+      does exactly this (`compare` against `~/.cache/crib-goldens`).
+
 ## To test
 - **ty as the Python indexer, end-to-end.** Just added (first-choice `.py` LSP; verified
   documentSymbol + callHierarchy + references + speed in isolation). Do a clean-index
