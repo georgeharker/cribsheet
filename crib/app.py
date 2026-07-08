@@ -28,6 +28,7 @@ from .codestore import CodeStore, _ResidentCode
 from .config import (Config, CribLink, ProjectConfig, portable_path,
                      resolve_project)
 from .project_services import ProjectServices
+from .refs import Refs
 from .embed import build_embedder
 from .gitbacking import GitBacking
 from .indexer import IndexEngine, IndexResult
@@ -113,6 +114,11 @@ class Crib:
         # epoch, write locks, in-flight/sweep tracking) — owned by CodeStore; the
         # methods below reach through `self.code` (codestore.py).
         self.code = CodeStore(paths, config)
+        # Cross-project refs (.crib refs:) — resolution + edge attribution. Needs two
+        # Crib-owned callables it can't own: a ref's resident cache (carries the
+        # pipeline revalidate hook) and nested-.crib boundary detection (shared with
+        # code enumeration). Crib keeps delegators (below) for its many callers.
+        self.refs = Refs(paths, self._resident_code, self._nested_project_roots)
         # The project-layer surface the indexing pipeline depends on (refs, enumerate,
         # source-root registration, project resolution) — a seam that defers back here,
         # so the pipeline can move to a CodeIndexer without reaching into Crib.
@@ -781,36 +787,8 @@ class Crib:
         return self.indexer._index_code_file_tracked(root, rel, proj, patch_edges, existing)
 
     def _ref_edge_ctx(self, proj: str, root: Path | None = None) -> "RefProjects":
-        """`extract_file`'s cross-project attribution context: each `.crib` ref's
-        locally-resolved root (pre-resolved) + its indexed file set (for the
-        site-packages suffix match). When `root` is given, an IN-TREE checkout of
-        a ref'd project (nested `.crib` naming it — e.g. `vendor/llmkit`) is added
-        as an extra attribution root for that ref: same repo, same relative paths,
-        so edges into the vendored copy resolve to the ref project. Reads the
-        refs' resident caches — cheap after first touch."""
-        out: RefProjects = []
-        nested_by_proj: dict[str, Path] = {}
-        if root is not None:
-            for nd in self._nested_project_roots(root):
-                link = CribLink.find(nd)
-                if link is not None:
-                    nested_by_proj[link.project] = nd.resolve()
-            root = root.resolve()
-        for ref in self._project_refs(proj):
-            files: frozenset[str] = frozenset()
-            if ref["indexed"]:
-                try:
-                    files = frozenset(
-                        e.get("file", "")
-                        for e in self._resident_code(ref["project"]).entries)
-                except Exception:  # noqa: BLE001 — a broken ref never fails indexing
-                    pass
-            rroot = ref["root"].resolve() if ref["root"] else None
-            out.append((ref["project"], rroot, files))
-            nested = nested_by_proj.get(ref["project"])
-            if nested is not None and nested != rroot:
-                out.append((ref["project"], nested, files))
-        return out
+        """Delegate to Refs (crib/refs.py) — cross-project edge attribution context."""
+        return self.refs.ref_edge_ctx(proj, root)
 
     # ── Resident code cache: delegates to CodeStore (crib/codestore.py) ────────
     # Thin delegators so existing call sites are untouched; the state + its
@@ -1022,25 +1000,8 @@ class Crib:
                 "docs_indexed": docs.get("docs", 0), **code}
 
     def _project_refs(self, proj: str) -> list[dict[str, Any]]:
-        """The projects `proj`'s `.crib` names in `refs:` — cross-project xref
-        targets. Each ref resolves to its own LOCAL checkout via that project's
-        `.source_root` (machine-local, gitignored), so the committed `.crib`
-        carries NAMES only and survives differently-located clones. → [{project,
-        root (None when not locally present), indexed}]."""
-        from .codeindex import SymbolIndex
-        my_root = SymbolIndex(self.paths.project_dir(proj)).source_root()
-        link = (CribLink.find(my_root)
-                if my_root is not None and my_root.exists() else None)
-        out: list[dict[str, Any]] = []
-        for name in (link.refs if link else []):
-            if name == proj:
-                continue                     # self-reference is meaningless
-            si = SymbolIndex(self.paths.project_dir(name))
-            root = si.source_root()
-            out.append({"project": name,
-                        "root": root if root is not None and root.exists() else None,
-                        "indexed": si.is_populated()})
-        return out
+        """Delegate to Refs (crib/refs.py) — a project's `.crib` refs: targets."""
+        return self.refs.project_refs(proj)
 
     def project_status(self, project: str | None = None,
                        cwd: Path | None = None) -> dict[str, Any]:
@@ -1229,53 +1190,14 @@ class Crib:
     # description (a regenerable cache): re-indexing never disturbs them.
     def _resolve_symbol(self, proj: str, symbol: str,
                         rc: "_ResidentCode | None" = None) -> dict[str, Any]:
-        """Resolve a user-supplied symbol to exactly one indexed entry. Exact fqn
-        wins; a bare/partial name resolves only if unique — else raise, listing
-        candidates (never silently pick, so a learning can't land on the wrong one).
-        Resolves against a resident cache when one is passed (avoids a disk read)."""
-        from .codeindex import SymbolIndex
-        matches = (rc.by_fqname(symbol) if rc is not None
-                   else SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol))
-        if not matches:
-            raise ValueError(f"unknown symbol {symbol!r} in project {proj!r} — "
-                             f"code_lookup it, or code_index the file first")
-        exact = [m for m in matches if m.get("fqname") == symbol]
-        cands = exact or matches
-        if len(cands) > 1:
-            names = ", ".join(sorted(m.get("fqname", "") for m in cands)[:8])
-            raise ValueError(f"ambiguous symbol {symbol!r} → {names}; pass a full fqname")
-        return cands[0]
+        """Delegate to Refs (crib/refs.py) — resolve a symbol to one indexed entry."""
+        return self.refs.resolve_symbol(proj, symbol, rc)
 
     def _resolve_symbol_or_ref(self, proj: str, symbol: str,
                                rc: "_ResidentCode | None" = None,
                                ) -> tuple[str, dict[str, Any]]:
-        """Resolve locally first; on a LOCAL MISS, try the project's `.crib`
-        `refs:` (cross-project xref) → (owning_project, entry). Exactly one ref
-        matching wins; several → ambiguous error naming the projects; none →
-        the local unknown-symbol error. A local AMBIGUITY still raises (refs
-        never paper over it)."""
-        try:
-            return proj, self._resolve_symbol(proj, symbol, rc)
-        except ValueError as local_err:
-            if "unknown symbol" not in str(local_err):
-                raise
-            found: list[tuple[str, dict[str, Any]]] = []
-            for ref in self._project_refs(proj):
-                if not ref["indexed"]:
-                    continue
-                try:
-                    found.append((ref["project"],
-                                  self._resolve_symbol(ref["project"], symbol)))
-                except ValueError:
-                    continue
-            if len(found) == 1:
-                return found[0]
-            if len(found) > 1:
-                names = ", ".join(f"{p}:{e['fqname']}" for p, e in found)
-                raise ValueError(
-                    f"ambiguous symbol {symbol!r} across refs → {names}; "
-                    f"pass project= to disambiguate") from None
-            raise local_err
+        """Delegate to Refs — resolve locally, then across `.crib` refs on a miss."""
+        return self.refs.resolve_symbol_or_ref(proj, symbol, rc)
 
     def _learning_relpath(self, entry: dict[str, Any]) -> str:
         from .codeindex import LEARNINGS_DIR, learning_slug
