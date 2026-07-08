@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.server._LOCAL_TOOLS_READY_TIMEOUT"
+name = "_LOCAL_TOOLS_READY_TIMEOUT"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "108cc962af617844"
+file = "combiner/mcp_combiner/server.py"
+signature = "_LOCAL_TOOLS_READY_TIMEOUT = 30.0  # seconds"
+description = ""
+line = 116
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "prime_server_tools [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_LOCAL_TOOLS_READY_TIMEOUT",
+  "combiner",
+  "combiner.mcp_combiner.server._LOCAL_TOOLS_READY_TIMEOUT",
+  "local",
+  "mcp",
+  "ready",
+  "server",
+  "timeout",
+  "tools",
+]

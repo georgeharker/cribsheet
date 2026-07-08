@@ -1,0 +1,24 @@
+fqname = "tests.test_cc_tools.client"
+name = "client"
+kind = "global"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = ""
+content_hash = "d24429c4f4aeb502"
+file = "tests/test_cc_tools.lua"
+signature = "local client = nil"
+description = ""
+line = 223
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cc",
+  "client",
+  "test",
+  "tests",
+  "tests.test_cc_tools.client",
+  "tools",
+]

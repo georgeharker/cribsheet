@@ -1,0 +1,25 @@
+fqname = "tests.test_client.session_id"
+name = "session_id"
+kind = "global"
+lang = "lua"
+module = "tests.test_client"
+parent = ""
+content_hash = "a879159e971c0a0d"
+file = "tests/test_client.lua"
+signature = "local session_id = nil"
+description = ""
+line = 5
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "id",
+  "session",
+  "session_id",
+  "test",
+  "tests",
+  "tests.test_client.session_id",
+]

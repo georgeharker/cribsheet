@@ -1,0 +1,28 @@
+fqname = "tests.test_schema.section"
+name = "section"
+kind = "function"
+lang = "lua"
+module = "tests.test_schema"
+parent = ""
+content_hash = "b84664b822bfa57b"
+file = "tests/test_schema.lua"
+signature = "local function section(t)"
+description = ""
+line = 23
+mtime = 1783013405000000000
+container = []
+calls = []
+called_by = [
+  "test_schema.lua [tests/test_schema.lua]",
+]
+references = [
+  "if [tests/test_schema.lua]",
+  "t [tests/test_schema.lua]",
+]
+name_terms = [
+  "schema",
+  "section",
+  "test",
+  "tests",
+  "tests.test_schema.section",
+]

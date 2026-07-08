@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.auth._RefreshOutcome"
+name = "_RefreshOutcome"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "e6baec89f3d1601e"
+file = "combiner/mcp_combiner/auth.py"
+signature = "class _RefreshOutcome(enum.Enum):"
+description = ""
+line = 56
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_initialize [combiner/mcp_combiner/auth.py]",
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_RefreshOutcome",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshOutcome",
+  "mcp",
+  "outcome",
+  "refresh",
+]

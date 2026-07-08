@@ -1,0 +1,28 @@
+fqname = "combiner.tests.test_session_filter.TestLocalToolsReady"
+name = "TestLocalToolsReady"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = ""
+content_hash = "fa76bf9c4a2c3b1c"
+file = "combiner/tests/test_session_filter.py"
+signature = "class TestLocalToolsReady:"
+description = ""
+line = 516
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestLocalToolsReady",
+  "combiner",
+  "combiner.tests.test_session_filter.TestLocalToolsReady",
+  "filter",
+  "local",
+  "ready",
+  "session",
+  "test",
+  "tests",
+  "tools",
+]

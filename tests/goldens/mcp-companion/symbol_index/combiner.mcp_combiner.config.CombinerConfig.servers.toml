@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.config.CombinerConfig.servers"
+name = "servers"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.CombinerConfig"
+content_hash = "968cb0c829a71a59"
+file = "combiner/mcp_combiner/config.py"
+signature = "servers: dict[str, ServerConfig] = Field(default_factory=dict)"
+description = ""
+line = 335
+mtime = 1782954213000000000
+container = [
+  "CombinerConfig",
+]
+calls = []
+called_by = []
+references = [
+  "get_enabled_servers [combiner/mcp_combiner/config.py]",
+  "get_server_status [combiner/mcp_combiner/config.py]",
+  "load [combiner/mcp_combiner/config.py]",
+  "resolve_shared_server [combiner/mcp_combiner/config.py]",
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.CombinerConfig.servers",
+  "config",
+  "mcp",
+  "servers",
+]

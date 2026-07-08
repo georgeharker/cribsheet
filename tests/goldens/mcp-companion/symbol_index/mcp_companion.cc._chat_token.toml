@@ -1,0 +1,33 @@
+fqname = "mcp_companion.cc._chat_token"
+name = "_chat_token"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc"
+parent = ""
+content_hash = "37d130b1cb3dfd20"
+file = "lua/mcp_companion/cc/init.lua"
+signature = "local function _chat_token(chat)"
+description = ""
+line = 912
+mtime = 1783452478000000000
+container = []
+calls = []
+called_by = [
+  "M._current_chat_for_save [lua/mcp_companion/cc/init.lua]",
+  "M._save_project_config [lua/mcp_companion/cc/init.lua]",
+  "init.lua [lua/mcp_companion/cc/init.lua]",
+]
+references = [
+  "chat [lua/mcp_companion/cc/init.lua]",
+  "if [lua/mcp_companion/cc/init.lua]",
+  "token [lua/mcp_companion/cc/init.lua]",
+]
+name_terms = [
+  "_chat_token",
+  "cc",
+  "chat",
+  "companion",
+  "mcp",
+  "mcp_companion.cc._chat_token",
+  "token",
+]

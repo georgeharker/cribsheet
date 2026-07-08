@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.server._notification_tasks"
+name = "_notification_tasks"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "4dc6799ccc291c48"
+file = "combiner/mcp_combiner/server.py"
+signature = "_notification_tasks: set[asyncio.Task[None]] = set()"
+description = ""
+line = 171
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "invalidate_tool_cache [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_notification_tasks",
+  "combiner",
+  "combiner.mcp_combiner.server._notification_tasks",
+  "mcp",
+  "notification",
+  "server",
+  "tasks",
+]

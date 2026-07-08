@@ -1,0 +1,33 @@
+fqname = "mcp_companion.combiner.client._http_request.cleanup"
+name = "cleanup"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.combiner.client"
+parent = "mcp_companion.combiner.client._http_request"
+content_hash = "b4aaf694bc255c08"
+file = "lua/mcp_companion/combiner/client.lua"
+signature = "local function cleanup()"
+description = ""
+line = 237
+mtime = 1783473333000000000
+container = [
+  "Client:_http_request",
+]
+calls = []
+called_by = [
+  "Client._http_request [lua/mcp_companion/combiner/client.lua]",
+]
+references = [
+  "_http_request [lua/mcp_companion/combiner/client.lua]",
+  "if [lua/mcp_companion/combiner/client.lua]",
+]
+name_terms = [
+  "cleanup",
+  "client",
+  "combiner",
+  "companion",
+  "http",
+  "mcp",
+  "mcp_companion.combiner.client._http_request.cleanup",
+  "request",
+]

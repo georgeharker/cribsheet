@@ -1,0 +1,44 @@
+fqname = "combiner.tests.test_connections._inject_conn"
+name = "_inject_conn"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = ""
+content_hash = "0b9d44c3f170bc97"
+file = "combiner/tests/test_connections.py"
+signature = "def _inject_conn("
+description = ""
+line = 313
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "test_auth_failed_takes_precedence [combiner/tests/test_connections.py]",
+  "test_call_failure_overrides_optimistic_http_ready [combiner/tests/test_connections.py]",
+  "test_connected_when_tools_not_ready [combiner/tests/test_connections.py]",
+  "test_disconnected_when_client_not_connected [combiner/tests/test_connections.py]",
+  "test_disconnected_when_no_client [combiner/tests/test_connections.py]",
+  "test_http_server_reflects_connection_lifecycle [combiner/tests/test_connections.py]",
+  "test_mark_tools_unready_downgrades_ready_to_connected [combiner/tests/test_connections.py]",
+  "test_ready_when_connected_and_tools_ready [combiner/tests/test_connections.py]",
+]
+references = [
+  "test_auth_failed_takes_precedence [combiner/tests/test_connections.py]",
+  "test_call_failure_overrides_optimistic_http_ready [combiner/tests/test_connections.py]",
+  "test_connected_when_tools_not_ready [combiner/tests/test_connections.py]",
+  "test_disconnected_when_client_not_connected [combiner/tests/test_connections.py]",
+  "test_disconnected_when_no_client [combiner/tests/test_connections.py]",
+  "test_http_server_reflects_connection_lifecycle [combiner/tests/test_connections.py]",
+  "test_mark_tools_unready_downgrades_ready_to_connected [combiner/tests/test_connections.py]",
+  "test_ready_when_connected_and_tools_ready [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "_inject_conn",
+  "combiner",
+  "combiner.tests.test_connections._inject_conn",
+  "conn",
+  "connections",
+  "inject",
+  "test",
+  "tests",
+]

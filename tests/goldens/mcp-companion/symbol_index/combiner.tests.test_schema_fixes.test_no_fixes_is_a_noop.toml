@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_schema_fixes.test_no_fixes_is_a_noop"
+name = "test_no_fixes_is_a_noop"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_schema_fixes"
+parent = ""
+content_hash = "0bdecee8ab99266c"
+file = "combiner/tests/test_schema_fixes.py"
+signature = "def test_no_fixes_is_a_noop():"
+description = ""
+line = 13
+mtime = 1782861732000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "combiner",
+  "combiner.tests.test_schema_fixes.test_no_fixes_is_a_noop",
+  "fixes",
+  "is",
+  "no",
+  "noop",
+  "schema",
+  "test",
+  "test_no_fixes_is_a_noop",
+  "tests",
+]

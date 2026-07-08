@@ -1,0 +1,26 @@
+fqname = "combiner.mcp_combiner.config.FastMCPConfig"
+name = "FastMCPConfig"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = ""
+content_hash = "560a3a951f61ad6d"
+file = "combiner/mcp_combiner/config.py"
+signature = "class FastMCPConfig(BaseModel):"
+description = ""
+line = 253
+mtime = 1782954213000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "FastMCPConfig",
+  "combiner",
+  "combiner.mcp_combiner.config.FastMCPConfig",
+  "config",
+  "fast",
+  "mcp",
+]

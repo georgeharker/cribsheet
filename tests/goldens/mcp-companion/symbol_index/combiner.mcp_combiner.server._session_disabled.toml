@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.server._session_disabled"
+name = "_session_disabled"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "4c138bcd6305800b"
+file = "combiner/mcp_combiner/server.py"
+signature = "_session_disabled: dict[str, set[str]] = {}"
+description = ""
+line = 131
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_apply_session_filter [combiner/mcp_combiner/server.py]",
+  "list_sessions [combiner/mcp_combiner/server.py]",
+  "manage_session_filter [combiner/mcp_combiner/server.py]",
+  "manage_token_filter [combiner/mcp_combiner/server.py]",
+  "on_call_tool [combiner/mcp_combiner/server.py]",
+  "on_list_tools [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_session_disabled",
+  "combiner",
+  "combiner.mcp_combiner.server._session_disabled",
+  "disabled",
+  "mcp",
+  "server",
+  "session",
+]

@@ -1,0 +1,42 @@
+fqname = "mcp_companion.ui.add_line"
+name = "add_line"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.ui"
+parent = ""
+content_hash = "6ebb1ff12eb90ead"
+file = "lua/mcp_companion/ui/init.lua"
+signature = "local function add_line(text, hl, action, server_name)"
+description = ""
+line = 88
+mtime = 1783473333000000000
+container = []
+calls = []
+called_by = [
+  "add_separator [lua/mcp_companion/ui/init.lua]",
+  "build_logs_view [lua/mcp_companion/ui/init.lua]",
+  "build_status_view [lua/mcp_companion/ui/init.lua]",
+  "init.lua [lua/mcp_companion/ui/init.lua]",
+  "render_server [lua/mcp_companion/ui/init.lua]",
+]
+references = [
+  "add_separator [lua/mcp_companion/ui/init.lua]",
+  "build_logs_view [lua/mcp_companion/ui/init.lua]",
+  "build_status_view [lua/mcp_companion/ui/init.lua]",
+  "else [lua/mcp_companion/ui/init.lua]",
+  "elseif [lua/mcp_companion/ui/init.lua]",
+  "for [lua/mcp_companion/ui/init.lua]",
+  "for in [lua/mcp_companion/ui/init.lua]",
+  "if [lua/mcp_companion/ui/init.lua]",
+  "render_server [lua/mcp_companion/ui/init.lua]",
+  "text [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "add",
+  "add_line",
+  "companion",
+  "line",
+  "mcp",
+  "mcp_companion.ui.add_line",
+  "ui",
+]

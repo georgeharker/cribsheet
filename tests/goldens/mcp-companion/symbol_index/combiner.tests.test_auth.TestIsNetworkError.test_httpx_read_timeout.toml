@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_auth.TestIsNetworkError.test_httpx_read_timeout"
+name = "test_httpx_read_timeout"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestIsNetworkError"
+content_hash = "72183a7d7f37fe40"
+file = "combiner/tests/test_auth.py"
+signature = "def test_httpx_read_timeout(self) -> None:"
+description = ""
+line = 224
+mtime = 1782852601000000000
+container = [
+  "TestIsNetworkError",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestIsNetworkError.test_httpx_read_timeout",
+  "error",
+  "httpx",
+  "is",
+  "network",
+  "read",
+  "test",
+  "test_httpx_read_timeout",
+  "tests",
+  "timeout",
+]

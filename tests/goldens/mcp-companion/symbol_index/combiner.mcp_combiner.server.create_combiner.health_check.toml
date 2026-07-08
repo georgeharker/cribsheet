@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.server.create_combiner.health_check"
+name = "health_check"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server.create_combiner"
+content_hash = "4a82e87b7ba75465"
+file = "combiner/mcp_combiner/server.py"
+signature = "@combiner.custom_route(\"/health\", methods=[\"GET\"])"
+description = ""
+line = 1595
+mtime = 1783473323000000000
+container = [
+  "create_combiner",
+]
+calls = [
+  "build_server_status [combiner/mcp_combiner/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "check",
+  "combiner",
+  "combiner.mcp_combiner.server.create_combiner.health_check",
+  "create",
+  "health",
+  "health_check",
+  "mcp",
+  "server",
+]

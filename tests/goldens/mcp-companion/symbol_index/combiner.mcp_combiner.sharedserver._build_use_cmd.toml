@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.sharedserver._build_use_cmd"
+name = "_build_use_cmd"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.sharedserver"
+parent = ""
+content_hash = "c2761a1e24fc587f"
+file = "combiner/mcp_combiner/sharedserver.py"
+signature = "def _build_use_cmd("
+description = ""
+line = 81
+mtime = 1782539642000000000
+container = []
+calls = []
+called_by = [
+  "_start_one [combiner/mcp_combiner/sharedserver.py]",
+]
+references = [
+  "_start_one [combiner/mcp_combiner/sharedserver.py]",
+]
+name_terms = [
+  "_build_use_cmd",
+  "build",
+  "cmd",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver._build_use_cmd",
+  "mcp",
+  "sharedserver",
+  "use",
+]

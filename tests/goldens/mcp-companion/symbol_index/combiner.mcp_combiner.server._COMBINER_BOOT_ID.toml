@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.server._COMBINER_BOOT_ID"
+name = "_COMBINER_BOOT_ID"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "ac1d1e33b7be9101"
+file = "combiner/mcp_combiner/server.py"
+signature = "_COMBINER_BOOT_ID = uuid.uuid4().hex"
+description = ""
+line = 151
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "health_check [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_COMBINER_BOOT_ID",
+  "boot",
+  "combiner",
+  "combiner.mcp_combiner.server._COMBINER_BOOT_ID",
+  "id",
+  "mcp",
+  "server",
+]

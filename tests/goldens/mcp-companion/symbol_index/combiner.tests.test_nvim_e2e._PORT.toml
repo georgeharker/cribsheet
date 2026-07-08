@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_nvim_e2e._PORT"
+name = "_PORT"
+kind = "constant"
+lang = "python"
+module = "combiner.tests.test_nvim_e2e"
+parent = ""
+content_hash = "628ceb0c4c63acad"
+file = "combiner/tests/test_nvim_e2e.py"
+signature = "_PORT = 9743"
+description = ""
+line = 34
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_poll_health [combiner/tests/test_nvim_e2e.py]",
+  "combiner_and_nvim [combiner/tests/test_nvim_e2e.py]",
+  "test_agent_calls_neovim_tool_through_combiner [combiner/tests/test_nvim_e2e.py]",
+]
+name_terms = [
+  "2",
+  "_PORT",
+  "combiner",
+  "combiner.tests.test_nvim_e2e._PORT",
+  "e",
+  "nvim",
+  "port",
+  "test",
+  "tests",
+]

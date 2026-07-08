@@ -1,0 +1,27 @@
+fqname = "combiner.tests.test_auth.TestIsNetworkError"
+name = "TestIsNetworkError"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = ""
+content_hash = "38e7c6c2c089815a"
+file = "combiner/tests/test_auth.py"
+signature = "class TestIsNetworkError:"
+description = ""
+line = 215
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestIsNetworkError",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestIsNetworkError",
+  "error",
+  "is",
+  "network",
+  "test",
+  "tests",
+]

@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager.has_connection"
+name = "has_connection"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections.ConnectionManager"
+content_hash = "223f75922d37402a"
+file = "combiner/mcp_combiner/connections.py"
+signature = "def has_connection(self, name: str) -> bool:"
+description = ""
+line = 189
+mtime = 1783473323000000000
+container = [
+  "ConnectionManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.has_connection",
+  "connection",
+  "connections",
+  "has",
+  "has_connection",
+  "manager",
+  "mcp",
+]

@@ -1,0 +1,36 @@
+fqname = "combiner.tests.test_connections.TestBuildServerStatus.test_http_server_reflects_connection_lifecycle"
+name = "test_http_server_reflects_connection_lifecycle"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestBuildServerStatus"
+content_hash = "b6b9e8482145323a"
+file = "combiner/tests/test_connections.py"
+signature = "def test_http_server_reflects_connection_lifecycle(self):"
+description = ""
+line = 402
+mtime = 1783473323000000000
+container = [
+  "TestBuildServerStatus",
+]
+calls = [
+  "_config [combiner/tests/test_connections.py]",
+  "_inject_conn [combiner/tests/test_connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "combiner",
+  "combiner.tests.test_connections.TestBuildServerStatus.test_http_server_reflects_connection_lifecycle",
+  "connection",
+  "connections",
+  "http",
+  "lifecycle",
+  "reflects",
+  "server",
+  "status",
+  "test",
+  "test_http_server_reflects_connection_lifecycle",
+  "tests",
+]

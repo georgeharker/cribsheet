@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.server._notify_tool_list_changed"
+name = "_notify_tool_list_changed"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "797e7418bcb2cd81"
+file = "combiner/mcp_combiner/server.py"
+signature = "async def _notify_tool_list_changed() -> None:"
+description = ""
+line = 174
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "invalidate_tool_cache [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "create_combiner [combiner/mcp_combiner/server.py]",
+  "invalidate_tool_cache [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_notify_tool_list_changed",
+  "changed",
+  "combiner",
+  "combiner.mcp_combiner.server._notify_tool_list_changed",
+  "list",
+  "mcp",
+  "notify",
+  "server",
+  "tool",
+]

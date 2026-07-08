@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_config.TestExpansionInConfig.test_raw_config_not_mutated"
+name = "test_raw_config_not_mutated"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestExpansionInConfig"
+content_hash = "7a066cc566bdd2aa"
+file = "combiner/tests/test_config.py"
+signature = "def test_raw_config_not_mutated(self) -> None:"
+description = ""
+line = 396
+mtime = 1782852601000000000
+container = [
+  "TestExpansionInConfig",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.TestExpansionInConfig.test_raw_config_not_mutated",
+  "config",
+  "expansion",
+  "in",
+  "mutated",
+  "not",
+  "raw",
+  "test",
+  "test_raw_config_not_mutated",
+  "tests",
+]

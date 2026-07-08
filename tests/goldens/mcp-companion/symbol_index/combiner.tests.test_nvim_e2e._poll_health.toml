@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_nvim_e2e._poll_health"
+name = "_poll_health"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_nvim_e2e"
+parent = ""
+content_hash = "01445326fc70bba2"
+file = "combiner/tests/test_nvim_e2e.py"
+signature = "async def _poll_health(timeout: float = 20.0) -> None:"
+description = ""
+line = 40
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "combiner_and_nvim [combiner/tests/test_nvim_e2e.py]",
+]
+references = [
+  "combiner_and_nvim [combiner/tests/test_nvim_e2e.py]",
+]
+name_terms = [
+  "2",
+  "_poll_health",
+  "combiner",
+  "combiner.tests.test_nvim_e2e._poll_health",
+  "e",
+  "health",
+  "nvim",
+  "poll",
+  "test",
+  "tests",
+]

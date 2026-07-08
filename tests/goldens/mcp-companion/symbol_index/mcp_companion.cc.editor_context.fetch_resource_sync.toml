@@ -1,0 +1,34 @@
+fqname = "mcp_companion.cc.editor_context.fetch_resource_sync"
+name = "fetch_resource_sync"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.editor_context"
+parent = ""
+content_hash = "7fe90bf635af9f30"
+file = "lua/mcp_companion/cc/editor_context.lua"
+signature = "local function fetch_resource_sync(client, uri)"
+description = ""
+line = 34
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "editor_context.lua [lua/mcp_companion/cc/editor_context.lua]",
+]
+references = [
+  "_setup_system_prompt_injection [lua/mcp_companion/cc/editor_context.lua]",
+  "client [lua/mcp_companion/cc/editor_context.lua]",
+  "for in [lua/mcp_companion/cc/editor_context.lua]",
+]
+name_terms = [
+  "cc",
+  "companion",
+  "context",
+  "editor",
+  "fetch",
+  "fetch_resource_sync",
+  "mcp",
+  "mcp_companion.cc.editor_context.fetch_resource_sync",
+  "resource",
+  "sync",
+]

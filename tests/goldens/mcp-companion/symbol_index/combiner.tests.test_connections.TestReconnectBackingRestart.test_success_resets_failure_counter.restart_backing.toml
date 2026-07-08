@@ -1,0 +1,36 @@
+fqname = "combiner.tests.test_connections.TestReconnectBackingRestart.test_success_resets_failure_counter.restart_backing"
+name = "restart_backing"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestReconnectBackingRestart.test_success_resets_failure_counter"
+content_hash = "f9307cae467d2ec5"
+file = "combiner/tests/test_connections.py"
+signature = "async def restart_backing(name: str) -> bool:"
+description = ""
+line = 247
+mtime = 1783473323000000000
+container = [
+  "TestReconnectBackingRestart",
+  "test_success_resets_failure_counter",
+]
+calls = []
+called_by = []
+references = [
+  "test_success_resets_failure_counter [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "backing",
+  "combiner",
+  "combiner.tests.test_connections.TestReconnectBackingRestart.test_success_resets_failure_counter.restart_backing",
+  "connections",
+  "counter",
+  "failure",
+  "reconnect",
+  "resets",
+  "restart",
+  "restart_backing",
+  "success",
+  "test",
+  "tests",
+]

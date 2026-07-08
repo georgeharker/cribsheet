@@ -1,0 +1,34 @@
+fqname = "combiner.mcp_combiner.auth._RefreshTokenOAuth._build_refresh_request"
+name = "_build_refresh_request"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._RefreshTokenOAuth"
+content_hash = "e299901765d6f633"
+file = "combiner/mcp_combiner/auth.py"
+signature = "def _build_refresh_request(self) -> httpx.Request:"
+description = ""
+line = 391
+mtime = 1782852601000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+calls = []
+called_by = [
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+]
+references = [
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_build_refresh_request",
+  "auth",
+  "build",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth._build_refresh_request",
+  "mcp",
+  "o",
+  "refresh",
+  "request",
+  "token",
+]

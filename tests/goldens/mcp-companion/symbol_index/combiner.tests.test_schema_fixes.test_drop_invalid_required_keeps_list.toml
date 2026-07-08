@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_schema_fixes.test_drop_invalid_required_keeps_list"
+name = "test_drop_invalid_required_keeps_list"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_schema_fixes"
+parent = ""
+content_hash = "d4e9555aee023944"
+file = "combiner/tests/test_schema_fixes.py"
+signature = "def test_drop_invalid_required_keeps_list():"
+description = ""
+line = 50
+mtime = 1782861732000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_schema_fixes.test_drop_invalid_required_keeps_list",
+  "drop",
+  "fixes",
+  "invalid",
+  "keeps",
+  "list",
+  "required",
+  "schema",
+  "test",
+  "test_drop_invalid_required_keeps_list",
+  "tests",
+]

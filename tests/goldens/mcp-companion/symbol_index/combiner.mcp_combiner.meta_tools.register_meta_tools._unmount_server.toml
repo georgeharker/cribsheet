@@ -1,0 +1,33 @@
+fqname = "combiner.mcp_combiner.meta_tools.register_meta_tools._unmount_server"
+name = "_unmount_server"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.meta_tools"
+parent = "combiner.mcp_combiner.meta_tools.register_meta_tools"
+content_hash = "31292a4f9752b30e"
+file = "combiner/mcp_combiner/meta_tools.py"
+signature = "async def _unmount_server(server_name: str) -> None:"
+description = ""
+line = 150
+mtime = 1783452495000000000
+container = [
+  "register_meta_tools",
+]
+calls = []
+called_by = [
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+]
+references = [
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+]
+name_terms = [
+  "_unmount_server",
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools._unmount_server",
+  "mcp",
+  "meta",
+  "register",
+  "server",
+  "tools",
+  "unmount",
+]

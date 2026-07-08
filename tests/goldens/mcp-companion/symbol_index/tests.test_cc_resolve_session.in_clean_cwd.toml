@@ -1,0 +1,32 @@
+fqname = "tests.test_cc_resolve_session.in_clean_cwd"
+name = "in_clean_cwd"
+kind = "function"
+lang = "lua"
+module = "tests.test_cc_resolve_session"
+parent = ""
+content_hash = "5955fe5a0e2970ce"
+file = "tests/test_cc_resolve_session.lua"
+signature = "local function in_clean_cwd(fn)"
+description = ""
+line = 87
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_cc_resolve_session.lua [tests/test_cc_resolve_session.lua]",
+]
+references = [
+  "fn [tests/test_cc_resolve_session.lua]",
+]
+name_terms = [
+  "cc",
+  "clean",
+  "cwd",
+  "in",
+  "in_clean_cwd",
+  "resolve",
+  "session",
+  "test",
+  "tests",
+  "tests.test_cc_resolve_session.in_clean_cwd",
+]

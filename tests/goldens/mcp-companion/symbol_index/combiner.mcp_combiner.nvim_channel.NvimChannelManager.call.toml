@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.nvim_channel.NvimChannelManager.call"
+name = "call"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = "combiner.mcp_combiner.nvim_channel.NvimChannelManager"
+content_hash = "2468724ccbe277c3"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "async def call("
+description = ""
+line = 145
+mtime = 1782852601000000000
+container = [
+  "NvimChannelManager",
+]
+calls = [
+  "_enqueue [combiner/mcp_combiner/nvim_channel.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "call",
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager.call",
+  "manager",
+  "mcp",
+  "nvim",
+]

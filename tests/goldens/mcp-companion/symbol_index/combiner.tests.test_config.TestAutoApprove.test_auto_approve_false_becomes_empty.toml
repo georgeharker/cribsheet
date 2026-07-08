@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_config.TestAutoApprove.test_auto_approve_false_becomes_empty"
+name = "test_auto_approve_false_becomes_empty"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestAutoApprove"
+content_hash = "f9ebe461ac746d4b"
+file = "combiner/tests/test_config.py"
+signature = "def test_auto_approve_false_becomes_empty(self) -> None:"
+description = ""
+line = 199
+mtime = 1782852601000000000
+container = [
+  "TestAutoApprove",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "approve",
+  "auto",
+  "becomes",
+  "combiner",
+  "combiner.tests.test_config.TestAutoApprove.test_auto_approve_false_becomes_empty",
+  "config",
+  "empty",
+  "false",
+  "test",
+  "test_auto_approve_false_becomes_empty",
+  "tests",
+]

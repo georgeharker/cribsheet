@@ -1,0 +1,34 @@
+fqname = "combiner.tests.test_session_filter.TestOutputSchemaPlumbing.test_dispatch_forwards_structured_content"
+name = "test_dispatch_forwards_structured_content"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestOutputSchemaPlumbing"
+content_hash = "be7d4afd7567a5f5"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_dispatch_forwards_structured_content(self):"
+description = ""
+line = 863
+mtime = 1783452495000000000
+container = [
+  "TestOutputSchemaPlumbing",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestOutputSchemaPlumbing.test_dispatch_forwards_structured_content",
+  "content",
+  "dispatch",
+  "filter",
+  "forwards",
+  "output",
+  "plumbing",
+  "schema",
+  "session",
+  "structured",
+  "test",
+  "test_dispatch_forwards_structured_content",
+  "tests",
+]

@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_schema_fixes.test_empty_object_fills_properties_on_object"
+name = "test_empty_object_fills_properties_on_object"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_schema_fixes"
+parent = ""
+content_hash = "68bb4c978b0420e2"
+file = "combiner/tests/test_schema_fixes.py"
+signature = "def test_empty_object_fills_properties_on_object():"
+description = ""
+line = 23
+mtime = 1782861732000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_schema_fixes.test_empty_object_fills_properties_on_object",
+  "empty",
+  "fills",
+  "fixes",
+  "object",
+  "on",
+  "properties",
+  "schema",
+  "test",
+  "test_empty_object_fills_properties_on_object",
+  "tests",
+]

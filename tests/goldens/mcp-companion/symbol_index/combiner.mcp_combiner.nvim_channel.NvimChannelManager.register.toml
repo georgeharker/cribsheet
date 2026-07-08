@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.nvim_channel.NvimChannelManager.register"
+name = "register"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = "combiner.mcp_combiner.nvim_channel.NvimChannelManager"
+content_hash = "792c40137dd8e4f5"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "def register(self, instance_id: str, socket: str, meta: dict[str, Any] | None = None) -> None:"
+description = ""
+line = 101
+mtime = 1782852601000000000
+container = [
+  "NvimChannelManager",
+]
+calls = [
+  "_Instance [combiner/mcp_combiner/nvim_channel.py]",
+  "_close [combiner/mcp_combiner/nvim_channel.py]",
+  "_run [combiner/mcp_combiner/nvim_channel.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager.register",
+  "manager",
+  "mcp",
+  "nvim",
+  "register",
+]

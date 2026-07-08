@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.auth._RefreshTokenOAuth.redirect_handler"
+name = "redirect_handler"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._RefreshTokenOAuth"
+content_hash = "c8818a3092c970f8"
+file = "combiner/mcp_combiner/auth.py"
+signature = "async def redirect_handler(self, authorization_url: str) -> None:"
+description = ""
+line = 1032
+mtime = 1782852601000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth.redirect_handler",
+  "handler",
+  "mcp",
+  "o",
+  "redirect",
+  "redirect_handler",
+  "refresh",
+  "token",
+]

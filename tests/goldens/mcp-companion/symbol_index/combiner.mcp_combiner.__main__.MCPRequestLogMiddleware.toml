@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.__main__.MCPRequestLogMiddleware"
+name = "MCPRequestLogMiddleware"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.__main__"
+parent = ""
+content_hash = "ed50c85b72bd31cf"
+file = "combiner/mcp_combiner/__main__.py"
+signature = "class MCPRequestLogMiddleware(BaseHTTPMiddleware):"
+description = ""
+line = 155
+mtime = 1783185942000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "create_app [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "MCPRequestLogMiddleware",
+  "combiner",
+  "combiner.mcp_combiner.__main__.MCPRequestLogMiddleware",
+  "log",
+  "main",
+  "mcp",
+  "middleware",
+  "request",
+]

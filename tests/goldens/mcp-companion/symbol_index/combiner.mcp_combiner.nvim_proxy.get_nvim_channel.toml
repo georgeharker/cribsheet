@@ -1,0 +1,36 @@
+fqname = "combiner.mcp_combiner.nvim_proxy.get_nvim_channel"
+name = "get_nvim_channel"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_proxy"
+parent = ""
+content_hash = "78f325041a3e701e"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+signature = "def get_nvim_channel() -> NvimChannelManager:"
+description = ""
+line = 61
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = [
+  "append_nvim_tools [combiner/mcp_combiner/nvim_proxy.py]",
+  "call_nvim_tool [combiner/mcp_combiner/nvim_proxy.py]",
+  "manage_nvim_bind [combiner/mcp_combiner/nvim_proxy.py]",
+  "manage_nvim_instances [combiner/mcp_combiner/nvim_proxy.py]",
+]
+references = [
+  "append_nvim_tools [combiner/mcp_combiner/nvim_proxy.py]",
+  "call_nvim_tool [combiner/mcp_combiner/nvim_proxy.py]",
+  "manage_nvim_bind [combiner/mcp_combiner/nvim_proxy.py]",
+  "manage_nvim_instances [combiner/mcp_combiner/nvim_proxy.py]",
+]
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy.get_nvim_channel",
+  "get",
+  "get_nvim_channel",
+  "mcp",
+  "nvim",
+  "proxy",
+]

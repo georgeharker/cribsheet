@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_reload_config.test_restart_sharedserver_backed"
+name = "test_restart_sharedserver_backed"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "cc229ab94c92b08e"
+file = "combiner/tests/test_reload_config.py"
+signature = "async def test_restart_sharedserver_backed(harness: dict[str, Any]) -> None:"
+description = ""
+line = 239
+mtime = 1783452495000000000
+container = []
+calls = [
+  "_namespaces [combiner/tests/test_reload_config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "backed",
+  "combiner",
+  "combiner.tests.test_reload_config.test_restart_sharedserver_backed",
+  "config",
+  "reload",
+  "restart",
+  "sharedserver",
+  "test",
+  "test_restart_sharedserver_backed",
+  "tests",
+]

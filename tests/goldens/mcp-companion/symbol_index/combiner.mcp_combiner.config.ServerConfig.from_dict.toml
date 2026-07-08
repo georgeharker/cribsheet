@@ -1,0 +1,35 @@
+fqname = "combiner.mcp_combiner.config.ServerConfig.from_dict"
+name = "from_dict"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.ServerConfig"
+content_hash = "bcbc0af398eb1982"
+file = "combiner/mcp_combiner/config.py"
+signature = "@classmethod"
+description = ""
+line = 182
+mtime = 1782954213000000000
+container = [
+  "ServerConfig",
+]
+calls = [
+  "Transport [combiner/mcp_combiner/config.py]",
+  "_warn_unknown_keys [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "load [combiner/mcp_combiner/config.py]",
+]
+references = [
+  "load [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.from_dict",
+  "config",
+  "dict",
+  "from",
+  "from_dict",
+  "mcp",
+  "server",
+]

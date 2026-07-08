@@ -1,0 +1,31 @@
+fqname = "tests.test_cc_tools.start_test_combiner"
+name = "start_test_combiner"
+kind = "function"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = ""
+content_hash = "5e7be9c8a1c83411"
+file = "tests/test_cc_tools.lua"
+signature = "local function start_test_combiner(combiner_dir, fixture_path)"
+description = ""
+line = 78
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_cc_tools.lua [tests/test_cc_tools.lua]",
+]
+references = [
+  "combiner_dir [tests/test_cc_tools.lua]",
+  "started [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "combiner",
+  "start",
+  "start_test_combiner",
+  "test",
+  "tests",
+  "tests.test_cc_tools.start_test_combiner",
+  "tools",
+]

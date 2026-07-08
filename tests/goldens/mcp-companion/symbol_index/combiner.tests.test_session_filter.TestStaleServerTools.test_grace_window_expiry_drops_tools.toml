@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_session_filter.TestStaleServerTools.test_grace_window_expiry_drops_tools"
+name = "test_grace_window_expiry_drops_tools"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestStaleServerTools"
+content_hash = "2e1e3bf3c73c0739"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_grace_window_expiry_drops_tools(self):"
+description = ""
+line = 445
+mtime = 1783452495000000000
+container = [
+  "TestStaleServerTools",
+]
+calls = [
+  "_config [combiner/tests/test_session_filter.py]",
+  "_names [combiner/tests/test_session_filter.py]",
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools.test_grace_window_expiry_drops_tools",
+  "drops",
+  "expiry",
+  "filter",
+  "grace",
+  "server",
+  "session",
+  "stale",
+  "test",
+  "test_grace_window_expiry_drops_tools",
+  "tests",
+  "tools",
+  "window",
+]

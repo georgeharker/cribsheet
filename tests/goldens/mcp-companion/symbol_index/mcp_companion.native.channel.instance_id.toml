@@ -1,0 +1,60 @@
+fqname = "mcp_companion.native.channel.instance_id"
+name = "instance_id"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.native.channel"
+parent = ""
+content_hash = "e0a51c63b359610d"
+file = "lua/mcp_companion/native/channel.lua"
+signature = "function M.instance_id()"
+description = ""
+line = 53
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M._apply_token_filter [lua/mcp_companion/cc/init.lua]",
+  "M._cleanup_session_filter [lua/mcp_companion/cc/init.lua]",
+  "M._cli_inject_combiner_env [lua/mcp_companion/cc/init.lua]",
+  "M.bind [lua/mcp_companion/native/channel.lua]",
+  "M.deregister [lua/mcp_companion/native/channel.lua]",
+  "M.reassert [lua/mcp_companion/native/channel.lua]",
+  "M.setup [lua/mcp_companion/cc/init.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "M.start [lua/mcp_companion/native/channel.lua]",
+  "M.sync [lua/mcp_companion/native/channel.lua]",
+  "M.unbind [lua/mcp_companion/native/channel.lua]",
+  "channel.lua [lua/mcp_companion/native/channel.lua]",
+  "post_bind [lua/mcp_companion/native/channel.lua]",
+]
+references = [
+  "M [lua/mcp_companion/native/channel.lua]",
+  "_apply_token_filter [lua/mcp_companion/cc/init.lua]",
+  "_cleanup_session_filter [lua/mcp_companion/cc/init.lua]",
+  "_cli_inject_combiner_env [lua/mcp_companion/cc/init.lua]",
+  "channel [lua/mcp_companion/init.lua]",
+  "deregister [lua/mcp_companion/native/channel.lua]",
+  "else [lua/mcp_companion/native/channel.lua]",
+  "enabled [lua/mcp_companion/native/channel.lua]",
+  "if [lua/mcp_companion/init.lua]",
+  "if [lua/mcp_companion/native/channel.lua]",
+  "path [lua/mcp_companion/native/channel.lua]",
+  "post_bind [lua/mcp_companion/native/channel.lua]",
+  "reassert [lua/mcp_companion/native/channel.lua]",
+  "setup [lua/mcp_companion/cc/init.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+  "socket_path [lua/mcp_companion/native/channel.lua]",
+  "start [lua/mcp_companion/native/channel.lua]",
+  "sync [lua/mcp_companion/native/channel.lua]",
+  "token [lua/mcp_companion/native/channel.lua]",
+]
+name_terms = [
+  "channel",
+  "companion",
+  "id",
+  "instance",
+  "instance_id",
+  "mcp",
+  "mcp_companion.native.channel.instance_id",
+  "native",
+]

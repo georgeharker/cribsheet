@@ -1,0 +1,26 @@
+fqname = "combiner.tests.test_config.TestEnvCoercion"
+name = "TestEnvCoercion"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = ""
+content_hash = "8d7578392442f69b"
+file = "combiner/tests/test_config.py"
+signature = "class TestEnvCoercion:"
+description = ""
+line = 164
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestEnvCoercion",
+  "coercion",
+  "combiner",
+  "combiner.tests.test_config.TestEnvCoercion",
+  "config",
+  "env",
+  "test",
+  "tests",
+]

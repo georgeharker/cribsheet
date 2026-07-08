@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager.is_http_server"
+name = "is_http_server"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections.ConnectionManager"
+content_hash = "a2d5797377412896"
+file = "combiner/mcp_combiner/connections.py"
+signature = "@staticmethod"
+description = ""
+line = 184
+mtime = 1783473323000000000
+container = [
+  "ConnectionManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.is_http_server",
+  "connection",
+  "connections",
+  "http",
+  "is",
+  "is_http_server",
+  "manager",
+  "mcp",
+  "server",
+]

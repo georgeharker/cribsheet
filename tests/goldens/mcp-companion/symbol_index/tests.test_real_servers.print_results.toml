@@ -1,0 +1,28 @@
+fqname = "tests.test_real_servers.print_results"
+name = "print_results"
+kind = "function"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "558270caff48a8aa"
+file = "tests/test_real_servers.lua"
+signature = "local function print_results()"
+description = ""
+line = 41
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_real_servers.lua [tests/test_real_servers.lua]",
+]
+references = []
+name_terms = [
+  "print",
+  "print_results",
+  "real",
+  "results",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.print_results",
+]

@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.config.FastMCPServerEntry.headers"
+name = "headers"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.FastMCPServerEntry"
+content_hash = "a0f9157a1d70bd54"
+file = "combiner/mcp_combiner/config.py"
+signature = "headers: dict[str, str] | None = None"
+description = ""
+line = 250
+mtime = 1782954213000000000
+container = [
+  "FastMCPServerEntry",
+]
+calls = []
+called_by = []
+references = [
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.FastMCPServerEntry.headers",
+  "config",
+  "entry",
+  "fast",
+  "headers",
+  "mcp",
+  "server",
+]

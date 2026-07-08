@@ -1,0 +1,25 @@
+fqname = "combiner.tests.test_auth.TestBearerAuth"
+name = "TestBearerAuth"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = ""
+content_hash = "5e9684b06ea1cc48"
+file = "combiner/tests/test_auth.py"
+signature = "class TestBearerAuth:"
+description = ""
+line = 83
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestBearerAuth",
+  "auth",
+  "bearer",
+  "combiner",
+  "combiner.tests.test_auth.TestBearerAuth",
+  "test",
+  "tests",
+]

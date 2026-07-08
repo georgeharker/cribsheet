@@ -1,0 +1,25 @@
+fqname = "tests.test_client.tcp1"
+name = "tcp1"
+kind = "global"
+lang = "lua"
+module = "tests.test_client"
+parent = ""
+content_hash = "cd796861e198a1da"
+file = "tests/test_client.lua"
+signature = "local tcp1 = assert(uv.new_tcp())"
+description = ""
+line = 4
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "1",
+  "client",
+  "tcp",
+  "tcp1",
+  "test",
+  "tests",
+  "tests.test_client.tcp1",
+]

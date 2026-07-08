@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.__main__.create_app._tristate"
+name = "_tristate"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.__main__"
+parent = "combiner.mcp_combiner.__main__.create_app"
+content_hash = "0f7c153f4c0d1e9c"
+file = "combiner/mcp_combiner/__main__.py"
+signature = "def _tristate(name: str) -> bool | None:"
+description = ""
+line = 228
+mtime = 1783185942000000000
+container = [
+  "create_app",
+]
+calls = []
+called_by = [
+  "create_app [combiner/mcp_combiner/__main__.py]",
+]
+references = [
+  "create_app [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "_tristate",
+  "app",
+  "combiner",
+  "combiner.mcp_combiner.__main__.create_app._tristate",
+  "create",
+  "main",
+  "mcp",
+  "tristate",
+]

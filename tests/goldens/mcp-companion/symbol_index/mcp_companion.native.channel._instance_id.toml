@@ -1,0 +1,26 @@
+fqname = "mcp_companion.native.channel._instance_id"
+name = "_instance_id"
+kind = "global"
+lang = "lua"
+module = "mcp_companion.native.channel"
+parent = ""
+content_hash = "729f47206b3f6334"
+file = "lua/mcp_companion/native/channel.lua"
+signature = "local _instance_id = nil"
+description = ""
+line = 15
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_instance_id",
+  "channel",
+  "companion",
+  "id",
+  "instance",
+  "mcp",
+  "mcp_companion.native.channel._instance_id",
+  "native",
+]

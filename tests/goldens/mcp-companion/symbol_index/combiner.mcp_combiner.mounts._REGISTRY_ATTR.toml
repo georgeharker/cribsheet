@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.mounts._REGISTRY_ATTR"
+name = "_REGISTRY_ATTR"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.mounts"
+parent = ""
+content_hash = "d8dfedf23c6984c9"
+file = "combiner/mcp_combiner/mounts.py"
+signature = "_REGISTRY_ATTR = \"_mounted_provider_registry\""
+description = ""
+line = 25
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_registry [combiner/mcp_combiner/mounts.py]",
+]
+name_terms = [
+  "_REGISTRY_ATTR",
+  "attr",
+  "combiner",
+  "combiner.mcp_combiner.mounts._REGISTRY_ATTR",
+  "mcp",
+  "mounts",
+  "registry",
+]

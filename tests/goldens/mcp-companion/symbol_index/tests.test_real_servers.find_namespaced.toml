@@ -1,0 +1,26 @@
+fqname = "tests.test_real_servers.find_namespaced"
+name = "find_namespaced"
+kind = "function"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "01e66e076d1bed5e"
+file = "tests/test_real_servers.lua"
+signature = "local function find_namespaced(cc_key)"
+description = ""
+line = 390
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "find",
+  "find_namespaced",
+  "namespaced",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.find_namespaced",
+]

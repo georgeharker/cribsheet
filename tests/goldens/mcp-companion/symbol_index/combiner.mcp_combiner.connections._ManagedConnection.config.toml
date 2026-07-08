@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.connections._ManagedConnection.config"
+name = "config"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections._ManagedConnection"
+content_hash = "de0ecc74d350dc32"
+file = "combiner/mcp_combiner/connections.py"
+signature = "config: CombinerConfig"
+description = ""
+line = 98
+mtime = 1783473323000000000
+container = [
+  "_ManagedConnection",
+]
+calls = []
+called_by = []
+references = [
+  "_open [combiner/mcp_combiner/connections.py]",
+  "connect [combiner/mcp_combiner/connections.py]",
+  "get_auth [combiner/mcp_combiner/connections.py]",
+  "register [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection.config",
+  "config",
+  "connection",
+  "connections",
+  "managed",
+  "mcp",
+]

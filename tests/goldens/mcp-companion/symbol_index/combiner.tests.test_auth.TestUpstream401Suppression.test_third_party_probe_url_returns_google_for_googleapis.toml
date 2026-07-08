@@ -1,0 +1,40 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression.test_third_party_probe_url_returns_google_for_googleapis"
+name = "test_third_party_probe_url_returns_google_for_googleapis"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression"
+content_hash = "f43b70344dddf7a8"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 1082
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed_valid_tokens [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression.test_third_party_probe_url_returns_google_for_googleapis",
+  "for",
+  "google",
+  "googleapis",
+  "party",
+  "probe",
+  "returns",
+  "suppression",
+  "test",
+  "test_third_party_probe_url_returns_google_for_googleapis",
+  "tests",
+  "third",
+  "upstream",
+  "url",
+]

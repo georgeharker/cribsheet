@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_auth.TestBuildAuth.test_oauth_with_client_id"
+name = "test_oauth_with_client_id"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestBuildAuth"
+content_hash = "62203ad3d5cd353d"
+file = "combiner/tests/test_auth.py"
+signature = "def test_oauth_with_client_id(self, tmp_path: Path) -> None:"
+description = ""
+line = 180
+mtime = 1782852601000000000
+container = [
+  "TestBuildAuth",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "build",
+  "client",
+  "combiner",
+  "combiner.tests.test_auth.TestBuildAuth.test_oauth_with_client_id",
+  "id",
+  "oauth",
+  "test",
+  "test_oauth_with_client_id",
+  "tests",
+  "with",
+]

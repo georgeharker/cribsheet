@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.server._pending_token_filters"
+name = "_pending_token_filters"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "bd57373cf8c084c2"
+file = "combiner/mcp_combiner/server.py"
+signature = "_pending_token_filters: dict[str, set[str]] = {}"
+description = ""
+line = 144
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "manage_token_filter [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_pending_token_filters",
+  "combiner",
+  "combiner.mcp_combiner.server._pending_token_filters",
+  "filters",
+  "mcp",
+  "pending",
+  "server",
+  "token",
+]

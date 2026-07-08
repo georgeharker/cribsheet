@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager.is_auth_failed"
+name = "is_auth_failed"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections.ConnectionManager"
+content_hash = "57f3e519e6458419"
+file = "combiner/mcp_combiner/connections.py"
+signature = "def is_auth_failed(self, name: str) -> bool:"
+description = ""
+line = 290
+mtime = 1783473323000000000
+container = [
+  "ConnectionManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.is_auth_failed",
+  "connection",
+  "connections",
+  "failed",
+  "is",
+  "is_auth_failed",
+  "manager",
+  "mcp",
+]

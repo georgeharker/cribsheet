@@ -1,0 +1,32 @@
+fqname = "tests.test_real_servers.if.if.spec"
+name = "spec"
+kind = "variable"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = "tests.test_real_servers.if.if"
+content_hash = "3cf6ca159ca3e6a0"
+file = "tests/test_real_servers.lua"
+signature = "local spec_ok, spec = pcall(entry.callback)"
+description = ""
+line = 588
+mtime = 1782853510000000000
+container = [
+  "if",
+  "if",
+]
+calls = []
+called_by = []
+references = [
+  "else [tests/test_real_servers.lua]",
+  "if [tests/test_real_servers.lua]",
+  "spec_ok [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "if",
+  "real",
+  "servers",
+  "spec",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.if.spec",
+]

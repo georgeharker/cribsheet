@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.server._merge_stale_server_tools"
+name = "_merge_stale_server_tools"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "fa331a26258c8903"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _merge_stale_server_tools(fresh: list[Tool], now: float) -> list[Tool]:"
+description = ""
+line = 365
+mtime = 1783473323000000000
+container = []
+calls = [
+  "_partition_by_server [combiner/mcp_combiner/server.py]",
+]
+called_by = [
+  "_do_fetch [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_do_fetch [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_merge_stale_server_tools",
+  "combiner",
+  "combiner.mcp_combiner.server._merge_stale_server_tools",
+  "mcp",
+  "merge",
+  "server",
+  "stale",
+  "tools",
+]

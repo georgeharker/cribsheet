@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression.test_probe_returns_unknown_on_network_error"
+name = "test_probe_returns_unknown_on_network_error"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression"
+content_hash = "7feea0c9b99bf9d6"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 943
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed_valid_tokens [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression.test_probe_returns_unknown_on_network_error",
+  "error",
+  "network",
+  "on",
+  "probe",
+  "returns",
+  "suppression",
+  "test",
+  "test_probe_returns_unknown_on_network_error",
+  "tests",
+  "unknown",
+  "upstream",
+]

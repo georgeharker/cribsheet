@@ -1,0 +1,30 @@
+fqname = "mcp_companion.log._write_file"
+name = "_write_file"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.log"
+parent = ""
+content_hash = "94883ebc59789407"
+file = "lua/mcp_companion/log.lua"
+signature = "local function _write_file(level, msg)"
+description = ""
+line = 39
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "log.lua [lua/mcp_companion/log.lua]",
+]
+references = [
+  "if [lua/mcp_companion/log.lua]",
+  "level [lua/mcp_companion/log.lua]",
+]
+name_terms = [
+  "_write_file",
+  "companion",
+  "file",
+  "log",
+  "mcp",
+  "mcp_companion.log._write_file",
+  "write",
+]

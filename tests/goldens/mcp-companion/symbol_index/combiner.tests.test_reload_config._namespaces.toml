@@ -1,0 +1,42 @@
+fqname = "combiner.tests.test_reload_config._namespaces"
+name = "_namespaces"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "7cc034153964d72a"
+file = "combiner/tests/test_reload_config.py"
+signature = "def _namespaces(combiner: _FakeCombiner) -> set[str]:"
+description = ""
+line = 160
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = [
+  "test_add_server [combiner/tests/test_reload_config.py]",
+  "test_changed_server_remounts [combiner/tests/test_reload_config.py]",
+  "test_disabling_server_unmounts_without_remount [combiner/tests/test_reload_config.py]",
+  "test_remove_server [combiner/tests/test_reload_config.py]",
+  "test_restart_http_down_defers_notification [combiner/tests/test_reload_config.py]",
+  "test_restart_non_sharedserver_reopens_connection [combiner/tests/test_reload_config.py]",
+  "test_restart_sharedserver_backed [combiner/tests/test_reload_config.py]",
+]
+references = [
+  "test_add_server [combiner/tests/test_reload_config.py]",
+  "test_changed_server_remounts [combiner/tests/test_reload_config.py]",
+  "test_disabling_server_unmounts_without_remount [combiner/tests/test_reload_config.py]",
+  "test_remove_server [combiner/tests/test_reload_config.py]",
+  "test_restart_http_down_defers_notification [combiner/tests/test_reload_config.py]",
+  "test_restart_non_sharedserver_reopens_connection [combiner/tests/test_reload_config.py]",
+  "test_restart_sharedserver_backed [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "_namespaces",
+  "combiner",
+  "combiner.tests.test_reload_config._namespaces",
+  "config",
+  "namespaces",
+  "reload",
+  "test",
+  "tests",
+]

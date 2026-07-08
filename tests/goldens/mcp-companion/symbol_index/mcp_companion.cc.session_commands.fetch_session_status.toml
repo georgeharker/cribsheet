@@ -1,0 +1,37 @@
+fqname = "mcp_companion.cc.session_commands.fetch_session_status"
+name = "fetch_session_status"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.session_commands"
+parent = ""
+content_hash = "7b77f6652ffacb0a"
+file = "lua/mcp_companion/cc/session_commands.lua"
+signature = "function M.fetch_session_status(chat, callback)"
+description = ""
+line = 338
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.register [lua/mcp_companion/cc/session_commands.lua]",
+  "M.setup [lua/mcp_companion/cc/init.lua]",
+  "session_commands.lua [lua/mcp_companion/cc/session_commands.lua]",
+]
+references = [
+  "M [lua/mcp_companion/cc/session_commands.lua]",
+  "bufnr [lua/mcp_companion/cc/session_commands.lua]",
+  "chat [lua/mcp_companion/cc/session_commands.lua]",
+  "register [lua/mcp_companion/cc/session_commands.lua]",
+  "setup [lua/mcp_companion/cc/init.lua]",
+]
+name_terms = [
+  "cc",
+  "commands",
+  "companion",
+  "fetch",
+  "fetch_session_status",
+  "mcp",
+  "mcp_companion.cc.session_commands.fetch_session_status",
+  "session",
+  "status",
+]

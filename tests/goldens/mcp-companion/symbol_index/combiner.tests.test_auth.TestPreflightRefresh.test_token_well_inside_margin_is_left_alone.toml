@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_auth.TestPreflightRefresh.test_token_well_inside_margin_is_left_alone"
+name = "test_token_well_inside_margin_is_left_alone"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestPreflightRefresh"
+content_hash = "73190293e5389727"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 417
+mtime = 1782852601000000000
+container = [
+  "TestPreflightRefresh",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "alone",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestPreflightRefresh.test_token_well_inside_margin_is_left_alone",
+  "inside",
+  "is",
+  "left",
+  "margin",
+  "preflight",
+  "refresh",
+  "test",
+  "test_token_well_inside_margin_is_left_alone",
+  "tests",
+  "token",
+  "well",
+]

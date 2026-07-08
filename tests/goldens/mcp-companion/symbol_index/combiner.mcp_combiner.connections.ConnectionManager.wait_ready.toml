@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager.wait_ready"
+name = "wait_ready"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections.ConnectionManager"
+content_hash = "25ac543cea958e17"
+file = "combiner/mcp_combiner/connections.py"
+signature = "async def wait_ready(self, name: str, timeout: float = _FACTORY_WAIT_TIMEOUT) -> None:"
+description = ""
+line = 270
+mtime = 1783473323000000000
+container = [
+  "ConnectionManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.wait_ready",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+  "ready",
+  "wait",
+  "wait_ready",
+]

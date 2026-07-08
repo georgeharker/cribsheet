@@ -1,0 +1,24 @@
+fqname = "tests.test_real_servers.client"
+name = "client"
+kind = "global"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "d24429c4f4aeb502"
+file = "tests/test_real_servers.lua"
+signature = "local client = nil"
+description = ""
+line = 250
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.client",
+]

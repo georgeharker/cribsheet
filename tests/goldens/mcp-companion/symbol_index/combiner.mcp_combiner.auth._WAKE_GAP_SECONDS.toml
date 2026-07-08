@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.auth._WAKE_GAP_SECONDS"
+name = "_WAKE_GAP_SECONDS"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "5c2313fefcaed98f"
+file = "combiner/mcp_combiner/auth.py"
+signature = "_WAKE_GAP_SECONDS = 300.0  # 5 minutes"
+description = ""
+line = 121
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_WAKE_GAP_SECONDS",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._WAKE_GAP_SECONDS",
+  "gap",
+  "mcp",
+  "seconds",
+  "wake",
+]

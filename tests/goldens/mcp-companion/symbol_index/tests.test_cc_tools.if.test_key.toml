@@ -1,0 +1,28 @@
+fqname = "tests.test_cc_tools.if.test_key"
+name = "test_key"
+kind = "variable"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = "tests.test_cc_tools.if"
+content_hash = "dc331d582a3965bb"
+file = "tests/test_cc_tools.lua"
+signature = "local test_key = nil"
+description = ""
+line = 384
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cc",
+  "if",
+  "key",
+  "test",
+  "test_key",
+  "tests",
+  "tests.test_cc_tools.if.test_key",
+  "tools",
+]

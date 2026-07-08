@@ -1,0 +1,37 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression.test_probe_returns_valid_on_200"
+name = "test_probe_returns_valid_on_200"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression"
+content_hash = "82911733a7383aed"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 909
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed_valid_tokens [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "200",
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression.test_probe_returns_valid_on_200",
+  "on",
+  "probe",
+  "returns",
+  "suppression",
+  "test",
+  "test_probe_returns_valid_on_200",
+  "tests",
+  "upstream",
+  "valid",
+]

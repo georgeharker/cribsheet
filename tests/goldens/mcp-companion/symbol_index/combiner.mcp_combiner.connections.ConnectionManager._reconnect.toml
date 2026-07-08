@@ -1,0 +1,35 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager._reconnect"
+name = "_reconnect"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections.ConnectionManager"
+content_hash = "eeeb8caffeb80ec2"
+file = "combiner/mcp_combiner/connections.py"
+signature = "async def _reconnect(self, conn: _ManagedConnection) -> None:"
+description = ""
+line = 567
+mtime = 1783473323000000000
+container = [
+  "ConnectionManager",
+]
+calls = [
+  "_is_local_upstream [combiner/mcp_combiner/connections.py]",
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_reconnect",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager._reconnect",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+  "reconnect",
+]

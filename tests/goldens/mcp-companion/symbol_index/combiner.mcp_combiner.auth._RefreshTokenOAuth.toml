@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.auth._RefreshTokenOAuth"
+name = "_RefreshTokenOAuth"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "6b876beaf677b869"
+file = "combiner/mcp_combiner/auth.py"
+signature = "class _RefreshTokenOAuth(OAuth):"
+description = ""
+line = 280
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_build_oauth [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_RefreshTokenOAuth",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth",
+  "mcp",
+  "o",
+  "refresh",
+  "token",
+]

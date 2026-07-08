@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_session_filter.TestLocalToolsReady._combiner_with_provider"
+name = "_combiner_with_provider"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestLocalToolsReady"
+content_hash = "2ba353a38f7a4e93"
+file = "combiner/tests/test_session_filter.py"
+signature = "@staticmethod"
+description = ""
+line = 521
+mtime = 1783452495000000000
+container = [
+  "TestLocalToolsReady",
+]
+calls = []
+called_by = [
+  "test_prime_retries_stores_then_invalidates [combiner/tests/test_session_filter.py]",
+  "test_prime_timeout_no_store_no_invalidate [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "test_prime_retries_stores_then_invalidates [combiner/tests/test_session_filter.py]",
+  "test_prime_timeout_no_store_no_invalidate [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_combiner_with_provider",
+  "combiner",
+  "combiner.tests.test_session_filter.TestLocalToolsReady._combiner_with_provider",
+  "filter",
+  "local",
+  "provider",
+  "ready",
+  "session",
+  "test",
+  "tests",
+  "tools",
+  "with",
+]

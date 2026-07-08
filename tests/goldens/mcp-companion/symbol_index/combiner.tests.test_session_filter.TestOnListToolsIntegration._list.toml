@@ -1,0 +1,37 @@
+fqname = "combiner.tests.test_session_filter.TestOnListToolsIntegration._list"
+name = "_list"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestOnListToolsIntegration"
+content_hash = "c0fa01d3010ceb14"
+file = "combiner/tests/test_session_filter.py"
+signature = "async def _list(self):"
+description = ""
+line = 790
+mtime = 1783452495000000000
+container = [
+  "TestOnListToolsIntegration",
+]
+calls = []
+called_by = [
+  "test_neovim_list_schema_becomes_object_on_the_wire [combiner/tests/test_session_filter.py]",
+  "test_neovim_string_required_wrapped_on_the_wire [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "test_neovim_list_schema_becomes_object_on_the_wire [combiner/tests/test_session_filter.py]",
+  "test_neovim_string_required_wrapped_on_the_wire [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_list",
+  "combiner",
+  "combiner.tests.test_session_filter.TestOnListToolsIntegration._list",
+  "filter",
+  "integration",
+  "list",
+  "on",
+  "session",
+  "test",
+  "tests",
+  "tools",
+]

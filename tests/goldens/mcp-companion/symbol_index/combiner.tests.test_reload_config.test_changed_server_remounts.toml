@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_reload_config.test_changed_server_remounts"
+name = "test_changed_server_remounts"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "fcfedb880673c424"
+file = "combiner/tests/test_reload_config.py"
+signature = "async def test_changed_server_remounts(harness: dict[str, Any]) -> None:"
+description = ""
+line = 195
+mtime = 1783452495000000000
+container = []
+calls = [
+  "_http [combiner/tests/test_reload_config.py]",
+  "_namespaces [combiner/tests/test_reload_config.py]",
+  "_write [combiner/tests/test_reload_config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "changed",
+  "combiner",
+  "combiner.tests.test_reload_config.test_changed_server_remounts",
+  "config",
+  "reload",
+  "remounts",
+  "server",
+  "test",
+  "test_changed_server_remounts",
+  "tests",
+]

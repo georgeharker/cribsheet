@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_auth.TestEncryptedStore.test_delete_missing"
+name = "test_delete_missing"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestEncryptedStore"
+content_hash = "7d766522bce74a4b"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 50
+mtime = 1782852601000000000
+container = [
+  "TestEncryptedStore",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestEncryptedStore.test_delete_missing",
+  "delete",
+  "encrypted",
+  "missing",
+  "store",
+  "test",
+  "test_delete_missing",
+  "tests",
+]

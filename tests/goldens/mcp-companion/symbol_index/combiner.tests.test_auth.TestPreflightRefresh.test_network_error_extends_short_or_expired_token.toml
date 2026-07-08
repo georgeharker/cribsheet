@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_auth.TestPreflightRefresh.test_network_error_extends_short_or_expired_token"
+name = "test_network_error_extends_short_or_expired_token"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestPreflightRefresh"
+content_hash = "4095373f2e7c890f"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 583
+mtime = 1782852601000000000
+container = [
+  "TestPreflightRefresh",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestPreflightRefresh.test_network_error_extends_short_or_expired_token",
+  "error",
+  "expired",
+  "extends",
+  "network",
+  "or",
+  "preflight",
+  "refresh",
+  "short",
+  "test",
+  "test_network_error_extends_short_or_expired_token",
+  "tests",
+  "token",
+]

@@ -1,0 +1,31 @@
+fqname = "tests.test_schema.has_no_array"
+name = "has_no_array"
+kind = "function"
+lang = "lua"
+module = "tests.test_schema"
+parent = ""
+content_hash = "4b4134ccf7020695"
+file = "tests/test_schema.lua"
+signature = "local function has_no_array(schema)"
+description = ""
+line = 29
+mtime = 1783013405000000000
+container = []
+calls = []
+called_by = [
+  "test_schema.lua [tests/test_schema.lua]",
+]
+references = [
+  "if [tests/test_schema.lua]",
+  "schema [tests/test_schema.lua]",
+]
+name_terms = [
+  "array",
+  "has",
+  "has_no_array",
+  "no",
+  "schema",
+  "test",
+  "tests",
+  "tests.test_schema.has_no_array",
+]

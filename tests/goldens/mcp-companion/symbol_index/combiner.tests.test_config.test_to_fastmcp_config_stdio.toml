@@ -1,0 +1,27 @@
+fqname = "combiner.tests.test_config.test_to_fastmcp_config_stdio"
+name = "test_to_fastmcp_config_stdio"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = ""
+content_hash = "e0afd7777698b0c4"
+file = "combiner/tests/test_config.py"
+signature = "def test_to_fastmcp_config_stdio() -> None:"
+description = ""
+line = 220
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.test_to_fastmcp_config_stdio",
+  "config",
+  "fastmcp",
+  "stdio",
+  "test",
+  "test_to_fastmcp_config_stdio",
+  "tests",
+  "to",
+]

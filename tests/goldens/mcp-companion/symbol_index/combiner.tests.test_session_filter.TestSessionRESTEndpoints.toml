@@ -1,0 +1,27 @@
+fqname = "combiner.tests.test_session_filter.TestSessionRESTEndpoints"
+name = "TestSessionRESTEndpoints"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = ""
+content_hash = "406ab48acdb6c3d9"
+file = "combiner/tests/test_session_filter.py"
+signature = "class TestSessionRESTEndpoints:"
+description = ""
+line = 140
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestSessionRESTEndpoints",
+  "combiner",
+  "combiner.tests.test_session_filter.TestSessionRESTEndpoints",
+  "endpoints",
+  "filter",
+  "rest",
+  "session",
+  "test",
+  "tests",
+]

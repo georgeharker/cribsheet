@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.__main__._MCP_TOKEN_PATH_RE"
+name = "_MCP_TOKEN_PATH_RE"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.__main__"
+parent = ""
+content_hash = "2b6d631ba64d31cd"
+file = "combiner/mcp_combiner/__main__.py"
+signature = "_MCP_TOKEN_PATH_RE = re.compile("
+description = ""
+line = 38
+mtime = 1783185942000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "dispatch [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "_MCP_TOKEN_PATH_RE",
+  "combiner",
+  "combiner.mcp_combiner.__main__._MCP_TOKEN_PATH_RE",
+  "main",
+  "mcp",
+  "path",
+  "re",
+  "token",
+]

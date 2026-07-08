@@ -1,0 +1,32 @@
+fqname = "mcp_companion.combiner.client._extract_jsonrpc"
+name = "_extract_jsonrpc"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.combiner.client"
+parent = ""
+content_hash = "8ef7d2dd5dcf1cb2"
+file = "lua/mcp_companion/combiner/client.lua"
+signature = "local function _extract_jsonrpc(body)"
+description = ""
+line = 191
+mtime = 1783473333000000000
+container = []
+calls = []
+called_by = [
+  "client.lua [lua/mcp_companion/combiner/client.lua]",
+]
+references = [
+  "body [lua/mcp_companion/combiner/client.lua]",
+  "else [lua/mcp_companion/combiner/client.lua]",
+  "if [lua/mcp_companion/combiner/client.lua]",
+]
+name_terms = [
+  "_extract_jsonrpc",
+  "client",
+  "combiner",
+  "companion",
+  "extract",
+  "jsonrpc",
+  "mcp",
+  "mcp_companion.combiner.client._extract_jsonrpc",
+]

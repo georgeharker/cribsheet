@@ -1,0 +1,36 @@
+fqname = "combiner.mcp_combiner.nvim_channel.NvimChannelManager._close"
+name = "_close"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = "combiner.mcp_combiner.nvim_channel.NvimChannelManager"
+content_hash = "d3a97002463920dc"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "@staticmethod"
+description = ""
+line = 258
+mtime = 1782852601000000000
+container = [
+  "NvimChannelManager",
+]
+calls = []
+called_by = [
+  "_run [combiner/mcp_combiner/nvim_channel.py]",
+  "deregister [combiner/mcp_combiner/nvim_channel.py]",
+  "register [combiner/mcp_combiner/nvim_channel.py]",
+]
+references = [
+  "_run [combiner/mcp_combiner/nvim_channel.py]",
+  "deregister [combiner/mcp_combiner/nvim_channel.py]",
+  "register [combiner/mcp_combiner/nvim_channel.py]",
+]
+name_terms = [
+  "_close",
+  "channel",
+  "close",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager._close",
+  "manager",
+  "mcp",
+  "nvim",
+]

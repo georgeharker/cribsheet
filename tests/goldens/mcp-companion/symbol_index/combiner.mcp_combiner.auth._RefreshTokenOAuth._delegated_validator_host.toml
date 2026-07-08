@@ -1,0 +1,37 @@
+fqname = "combiner.mcp_combiner.auth._RefreshTokenOAuth._delegated_validator_host"
+name = "_delegated_validator_host"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._RefreshTokenOAuth"
+content_hash = "fb50f94018c3d4cd"
+file = "combiner/mcp_combiner/auth.py"
+signature = "def _delegated_validator_host(self) -> str | None:"
+description = ""
+line = 599
+mtime = 1782852601000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+calls = []
+called_by = [
+  "_has_third_party_validator [combiner/mcp_combiner/auth.py]",
+  "_third_party_probe_url [combiner/mcp_combiner/auth.py]",
+]
+references = [
+  "_has_third_party_validator [combiner/mcp_combiner/auth.py]",
+  "_third_party_probe_url [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_delegated_validator_host",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth._delegated_validator_host",
+  "delegated",
+  "host",
+  "mcp",
+  "o",
+  "refresh",
+  "token",
+  "validator",
+]

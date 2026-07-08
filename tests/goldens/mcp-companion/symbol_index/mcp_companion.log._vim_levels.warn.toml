@@ -1,0 +1,27 @@
+fqname = "mcp_companion.log._vim_levels.warn"
+name = "warn"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.log"
+parent = "mcp_companion.log._vim_levels"
+content_hash = "0444a683df5cbd2a"
+file = "lua/mcp_companion/log.lua"
+signature = "warn = vim.log.levels.WARN,"
+description = ""
+line = 13
+mtime = 1782852601000000000
+container = [
+  "_vim_levels",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "companion",
+  "levels",
+  "log",
+  "mcp",
+  "mcp_companion.log._vim_levels.warn",
+  "vim",
+  "warn",
+]

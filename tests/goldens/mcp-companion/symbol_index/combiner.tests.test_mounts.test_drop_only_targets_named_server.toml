@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_mounts.test_drop_only_targets_named_server"
+name = "test_drop_only_targets_named_server"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_mounts"
+parent = ""
+content_hash = "190a8fd4b806194d"
+file = "combiner/tests/test_mounts.py"
+signature = "def test_drop_only_targets_named_server() -> None:"
+description = ""
+line = 51
+mtime = 1783452495000000000
+container = []
+calls = [
+  "_child [combiner/tests/test_mounts.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_mounts.test_drop_only_targets_named_server",
+  "drop",
+  "mounts",
+  "named",
+  "only",
+  "server",
+  "targets",
+  "test",
+  "test_drop_only_targets_named_server",
+  "tests",
+]

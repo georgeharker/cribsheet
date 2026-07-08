@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.server._server_tool_cache"
+name = "_server_tool_cache"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "281784f6db058f46"
+file = "combiner/mcp_combiner/server.py"
+signature = "_server_tool_cache: dict[str, list[Tool]] = {}"
+description = ""
+line = 93
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_merge_stale_server_tools [combiner/mcp_combiner/server.py]",
+  "prime_server_tools [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_server_tool_cache",
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.server._server_tool_cache",
+  "mcp",
+  "server",
+  "tool",
+]

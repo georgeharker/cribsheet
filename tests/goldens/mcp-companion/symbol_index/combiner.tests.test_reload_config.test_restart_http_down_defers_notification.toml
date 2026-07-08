@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_reload_config.test_restart_http_down_defers_notification"
+name = "test_restart_http_down_defers_notification"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "82533c68721e7a00"
+file = "combiner/tests/test_reload_config.py"
+signature = "async def test_restart_http_down_defers_notification("
+description = ""
+line = 288
+mtime = 1783452495000000000
+container = []
+calls = [
+  "_namespaces [combiner/tests/test_reload_config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_reload_config.test_restart_http_down_defers_notification",
+  "config",
+  "defers",
+  "down",
+  "http",
+  "notification",
+  "reload",
+  "restart",
+  "test",
+  "test_restart_http_down_defers_notification",
+  "tests",
+]

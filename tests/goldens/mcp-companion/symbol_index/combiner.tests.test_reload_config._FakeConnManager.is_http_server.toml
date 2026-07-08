@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_reload_config._FakeConnManager.is_http_server"
+name = "is_http_server"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = "combiner.tests.test_reload_config._FakeConnManager"
+content_hash = "5d21bd575961ca7b"
+file = "combiner/tests/test_reload_config.py"
+signature = "@staticmethod"
+description = ""
+line = 56
+mtime = 1783452495000000000
+container = [
+  "_FakeConnManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_reload_config._FakeConnManager.is_http_server",
+  "config",
+  "conn",
+  "fake",
+  "http",
+  "is",
+  "is_http_server",
+  "manager",
+  "reload",
+  "server",
+  "test",
+  "tests",
+]

@@ -1,0 +1,24 @@
+fqname = "mcp_companion.log._log_file"
+name = "_log_file"
+kind = "global"
+lang = "lua"
+module = "mcp_companion.log"
+parent = ""
+content_hash = "453dc49e4aab6bac"
+file = "lua/mcp_companion/log.lua"
+signature = "local _log_file = nil"
+description = ""
+line = 16
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_log_file",
+  "companion",
+  "file",
+  "log",
+  "mcp",
+  "mcp_companion.log._log_file",
+]

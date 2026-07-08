@@ -1,0 +1,26 @@
+fqname = "combiner.tests.test_connections.TestLifecycleState"
+name = "TestLifecycleState"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = ""
+content_hash = "2ba5cba9b6af4a94"
+file = "combiner/tests/test_connections.py"
+signature = "class TestLifecycleState:"
+description = ""
+line = 329
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestLifecycleState",
+  "combiner",
+  "combiner.tests.test_connections.TestLifecycleState",
+  "connections",
+  "lifecycle",
+  "state",
+  "test",
+  "tests",
+]

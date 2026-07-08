@@ -1,0 +1,26 @@
+fqname = "combiner.mcp_combiner.auth.clear_oauth_cache"
+name = "clear_oauth_cache"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "9c9f70affdb74498"
+file = "combiner/mcp_combiner/auth.py"
+signature = "def clear_oauth_cache("
+description = ""
+line = 1226
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "cache",
+  "clear",
+  "clear_oauth_cache",
+  "combiner",
+  "combiner.mcp_combiner.auth.clear_oauth_cache",
+  "mcp",
+  "oauth",
+]

@@ -1,0 +1,32 @@
+fqname = "mcp_companion.install.combiner_src"
+name = "combiner_src"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.install"
+parent = ""
+content_hash = "7a55788cce9f05bb"
+file = "lua/mcp_companion/install.lua"
+signature = "local function combiner_src()"
+description = ""
+line = 17
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.ensure [lua/mcp_companion/install.lua]",
+  "M.target_venv [lua/mcp_companion/install.lua]",
+  "install.lua [lua/mcp_companion/install.lua]",
+  "source_hash [lua/mcp_companion/install.lua]",
+]
+references = [
+  "src [lua/mcp_companion/install.lua]",
+]
+name_terms = [
+  "combiner",
+  "combiner_src",
+  "companion",
+  "install",
+  "mcp",
+  "mcp_companion.install.combiner_src",
+  "src",
+]

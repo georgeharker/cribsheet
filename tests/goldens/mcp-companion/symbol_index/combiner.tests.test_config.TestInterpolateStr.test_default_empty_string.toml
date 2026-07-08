@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_config.TestInterpolateStr.test_default_empty_string"
+name = "test_default_empty_string"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestInterpolateStr"
+content_hash = "3df1bc401a0ca393"
+file = "combiner/tests/test_config.py"
+signature = "def test_default_empty_string(self) -> None:"
+description = ""
+line = 294
+mtime = 1782852601000000000
+container = [
+  "TestInterpolateStr",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateStr.test_default_empty_string",
+  "config",
+  "default",
+  "empty",
+  "interpolate",
+  "str",
+  "string",
+  "test",
+  "test_default_empty_string",
+  "tests",
+]

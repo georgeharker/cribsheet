@@ -1,0 +1,27 @@
+fqname = "mcp_companion.log._vim_levels.debug"
+name = "debug"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.log"
+parent = "mcp_companion.log._vim_levels"
+content_hash = "d010dc126dfebcba"
+file = "lua/mcp_companion/log.lua"
+signature = "debug = vim.log.levels.DEBUG,"
+description = ""
+line = 11
+mtime = 1782852601000000000
+container = [
+  "_vim_levels",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "companion",
+  "debug",
+  "levels",
+  "log",
+  "mcp",
+  "mcp_companion.log._vim_levels.debug",
+  "vim",
+]

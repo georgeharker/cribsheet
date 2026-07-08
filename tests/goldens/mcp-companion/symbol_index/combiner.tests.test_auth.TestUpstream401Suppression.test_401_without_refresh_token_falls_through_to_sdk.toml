@@ -1,0 +1,39 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression.test_401_without_refresh_token_falls_through_to_sdk"
+name = "test_401_without_refresh_token_falls_through_to_sdk"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression"
+content_hash = "6fd57e32934bcae6"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 867
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed_valid_tokens [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression.test_401_without_refresh_token_falls_through_to_sdk",
+  "falls",
+  "refresh",
+  "sdk",
+  "suppression",
+  "test",
+  "test_401_without_refresh_token_falls_through_to_sdk",
+  "tests",
+  "through",
+  "to",
+  "token",
+  "upstream",
+  "without",
+]

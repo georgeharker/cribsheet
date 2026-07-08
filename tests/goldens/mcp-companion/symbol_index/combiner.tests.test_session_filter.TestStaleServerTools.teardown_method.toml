@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_session_filter.TestStaleServerTools.teardown_method"
+name = "teardown_method"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestStaleServerTools"
+content_hash = "d967d025ee94b73f"
+file = "combiner/tests/test_session_filter.py"
+signature = "def teardown_method(self):"
+description = ""
+line = 378
+mtime = 1783452495000000000
+container = [
+  "TestStaleServerTools",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools.teardown_method",
+  "filter",
+  "method",
+  "server",
+  "session",
+  "stale",
+  "teardown",
+  "teardown_method",
+  "test",
+  "tests",
+  "tools",
+]

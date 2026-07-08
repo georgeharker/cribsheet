@@ -1,0 +1,33 @@
+fqname = "combiner.mcp_combiner.server._notify_session_by_id"
+name = "_notify_session_by_id"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "3c447332c81a5c11"
+file = "combiner/mcp_combiner/server.py"
+signature = "async def _notify_session_by_id(session_id: str) -> None:"
+description = ""
+line = 193
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "manage_session_filter [combiner/mcp_combiner/server.py]",
+  "manage_token_filter [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "manage_session_filter [combiner/mcp_combiner/server.py]",
+  "manage_token_filter [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_notify_session_by_id",
+  "by",
+  "combiner",
+  "combiner.mcp_combiner.server._notify_session_by_id",
+  "id",
+  "mcp",
+  "notify",
+  "server",
+  "session",
+]

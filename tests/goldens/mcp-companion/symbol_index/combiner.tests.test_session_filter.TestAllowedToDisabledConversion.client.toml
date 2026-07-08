@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_session_filter.TestAllowedToDisabledConversion.client"
+name = "client"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestAllowedToDisabledConversion"
+content_hash = "ed7234188456e9b8"
+file = "combiner/tests/test_session_filter.py"
+signature = "@pytest.fixture"
+description = ""
+line = 1145
+mtime = 1783452495000000000
+container = [
+  "TestAllowedToDisabledConversion",
+]
+calls = [
+  "_make_combiner_app [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "allowed",
+  "client",
+  "combiner",
+  "combiner.tests.test_session_filter.TestAllowedToDisabledConversion.client",
+  "conversion",
+  "disabled",
+  "filter",
+  "session",
+  "test",
+  "tests",
+  "to",
+]

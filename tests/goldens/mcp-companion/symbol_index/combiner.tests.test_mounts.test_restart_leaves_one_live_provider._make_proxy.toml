@@ -1,0 +1,39 @@
+fqname = "combiner.tests.test_mounts.test_restart_leaves_one_live_provider._make_proxy"
+name = "_make_proxy"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_mounts"
+parent = "combiner.tests.test_mounts.test_restart_leaves_one_live_provider"
+content_hash = "ff21191677299d0d"
+file = "combiner/tests/test_mounts.py"
+signature = "def _make_proxy(*_a: Any, **_k: Any) -> FastMCP:"
+description = ""
+line = 103
+mtime = 1783452495000000000
+container = [
+  "test_restart_leaves_one_live_provider",
+]
+calls = [
+  "_child [combiner/tests/test_mounts.py]",
+]
+called_by = [
+  "test_restart_leaves_one_live_provider [combiner/tests/test_mounts.py]",
+]
+references = [
+  "test_restart_leaves_one_live_provider [combiner/tests/test_mounts.py]",
+]
+name_terms = [
+  "_make_proxy",
+  "combiner",
+  "combiner.tests.test_mounts.test_restart_leaves_one_live_provider._make_proxy",
+  "leaves",
+  "live",
+  "make",
+  "mounts",
+  "one",
+  "provider",
+  "proxy",
+  "restart",
+  "test",
+  "tests",
+]

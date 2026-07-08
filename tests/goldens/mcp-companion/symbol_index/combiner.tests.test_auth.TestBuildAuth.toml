@@ -1,0 +1,25 @@
+fqname = "combiner.tests.test_auth.TestBuildAuth"
+name = "TestBuildAuth"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = ""
+content_hash = "03e0ebe4c120c635"
+file = "combiner/tests/test_auth.py"
+signature = "class TestBuildAuth:"
+description = ""
+line = 97
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestBuildAuth",
+  "auth",
+  "build",
+  "combiner",
+  "combiner.tests.test_auth.TestBuildAuth",
+  "test",
+  "tests",
+]

@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_session_filter.TestSessionDisabledDict.test_empty_by_default"
+name = "test_empty_by_default"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestSessionDisabledDict"
+content_hash = "999d49b09916338c"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_empty_by_default(self):"
+description = ""
+line = 61
+mtime = 1783452495000000000
+container = [
+  "TestSessionDisabledDict",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "by",
+  "combiner",
+  "combiner.tests.test_session_filter.TestSessionDisabledDict.test_empty_by_default",
+  "default",
+  "dict",
+  "disabled",
+  "empty",
+  "filter",
+  "session",
+  "test",
+  "test_empty_by_default",
+  "tests",
+]

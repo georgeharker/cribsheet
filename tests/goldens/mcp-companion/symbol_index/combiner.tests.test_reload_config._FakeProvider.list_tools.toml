@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_reload_config._FakeProvider.list_tools"
+name = "list_tools"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = "combiner.tests.test_reload_config._FakeProvider"
+content_hash = "6558aadfb5ca2860"
+file = "combiner/tests/test_reload_config.py"
+signature = "async def list_tools(self) -> list[Any]:"
+description = ""
+line = 26
+mtime = 1783452495000000000
+container = [
+  "_FakeProvider",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_reload_config._FakeProvider.list_tools",
+  "config",
+  "fake",
+  "list",
+  "list_tools",
+  "provider",
+  "reload",
+  "test",
+  "tests",
+  "tools",
+]

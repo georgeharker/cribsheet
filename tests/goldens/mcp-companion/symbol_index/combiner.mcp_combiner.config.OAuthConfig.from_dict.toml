@@ -1,0 +1,33 @@
+fqname = "combiner.mcp_combiner.config.OAuthConfig.from_dict"
+name = "from_dict"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.OAuthConfig"
+content_hash = "5c2aae053a92d9ab"
+file = "combiner/mcp_combiner/config.py"
+signature = "@classmethod"
+description = ""
+line = 323
+mtime = 1782954213000000000
+container = [
+  "OAuthConfig",
+]
+calls = []
+called_by = [
+  "load [combiner/mcp_combiner/config.py]",
+]
+references = [
+  "load [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.config.OAuthConfig.from_dict",
+  "config",
+  "dict",
+  "from",
+  "from_dict",
+  "mcp",
+  "o",
+]

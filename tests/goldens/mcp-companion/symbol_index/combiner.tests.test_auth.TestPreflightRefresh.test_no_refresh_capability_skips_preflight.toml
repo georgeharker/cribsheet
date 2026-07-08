@@ -1,0 +1,34 @@
+fqname = "combiner.tests.test_auth.TestPreflightRefresh.test_no_refresh_capability_skips_preflight"
+name = "test_no_refresh_capability_skips_preflight"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestPreflightRefresh"
+content_hash = "243932ab88a16dda"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 535
+mtime = 1782852601000000000
+container = [
+  "TestPreflightRefresh",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "capability",
+  "combiner",
+  "combiner.tests.test_auth.TestPreflightRefresh.test_no_refresh_capability_skips_preflight",
+  "no",
+  "preflight",
+  "refresh",
+  "skips",
+  "test",
+  "test_no_refresh_capability_skips_preflight",
+  "tests",
+]

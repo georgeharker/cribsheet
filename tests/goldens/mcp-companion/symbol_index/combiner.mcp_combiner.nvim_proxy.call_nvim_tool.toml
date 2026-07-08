@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.nvim_proxy.call_nvim_tool"
+name = "call_nvim_tool"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_proxy"
+parent = ""
+content_hash = "48864524235d0e29"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+signature = "async def call_nvim_tool("
+description = ""
+line = 236
+mtime = 1783022631000000000
+container = []
+calls = [
+  "_dispatch_result_to_tool_result [combiner/mcp_combiner/nvim_proxy.py]",
+  "_instance_for_session [combiner/mcp_combiner/nvim_proxy.py]",
+  "get_nvim_channel [combiner/mcp_combiner/nvim_proxy.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "call",
+  "call_nvim_tool",
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy.call_nvim_tool",
+  "mcp",
+  "nvim",
+  "proxy",
+  "tool",
+]

@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_sharedserver.test_start_all_skips_when_binary_missing"
+name = "test_start_all_skips_when_binary_missing"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_sharedserver"
+parent = ""
+content_hash = "60a57ed57b80098e"
+file = "combiner/tests/test_sharedserver.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 166
+mtime = 1782420032000000000
+container = []
+calls = [
+  "_make_config [combiner/tests/test_sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "all",
+  "binary",
+  "combiner",
+  "combiner.tests.test_sharedserver.test_start_all_skips_when_binary_missing",
+  "missing",
+  "sharedserver",
+  "skips",
+  "start",
+  "test",
+  "test_start_all_skips_when_binary_missing",
+  "tests",
+  "when",
+]

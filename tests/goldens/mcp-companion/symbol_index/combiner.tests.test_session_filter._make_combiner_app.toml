@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_session_filter._make_combiner_app"
+name = "_make_combiner_app"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = ""
+content_hash = "73e3c9c6c0323969"
+file = "combiner/tests/test_session_filter.py"
+signature = "def _make_combiner_app():"
+description = ""
+line = 24
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = [
+  "client [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "client [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_make_combiner_app",
+  "app",
+  "combiner",
+  "combiner.tests.test_session_filter._make_combiner_app",
+  "filter",
+  "make",
+  "session",
+  "test",
+  "tests",
+]

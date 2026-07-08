@@ -1,0 +1,35 @@
+fqname = "tests.test_native.rjson"
+name = "rjson"
+kind = "function"
+lang = "lua"
+module = "tests.test_native"
+parent = ""
+content_hash = "8a8046990affe0ac"
+file = "tests/test_native.lua"
+signature = "local function rjson(r)"
+description = ""
+line = 31
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = [
+  "test_native.lua [tests/test_native.lua]",
+]
+references = [
+  "del [tests/test_native.lua]",
+  "er [tests/test_native.lua]",
+  "gc [tests/test_native.lua]",
+  "gd [tests/test_native.lua]",
+  "lb [tests/test_native.lua]",
+  "miss [tests/test_native.lua]",
+  "of [tests/test_native.lua]",
+  "r [tests/test_native.lua]",
+  "res [tests/test_native.lua]",
+]
+name_terms = [
+  "native",
+  "rjson",
+  "test",
+  "tests",
+  "tests.test_native.rjson",
+]

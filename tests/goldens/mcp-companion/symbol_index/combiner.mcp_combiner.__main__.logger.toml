@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.__main__.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.__main__"
+parent = ""
+content_hash = "e9a1361ee4c73081"
+file = "combiner/mcp_combiner/__main__.py"
+signature = "logger = logging.getLogger(__name__)"
+description = ""
+line = 27
+mtime = 1783185942000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_signal_handler [combiner/mcp_combiner/__main__.py]",
+  "dispatch [combiner/mcp_combiner/__main__.py]",
+  "main [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.__main__.logger",
+  "logger",
+  "main",
+  "mcp",
+]

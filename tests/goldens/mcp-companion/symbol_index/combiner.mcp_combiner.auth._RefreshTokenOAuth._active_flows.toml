@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.auth._RefreshTokenOAuth._active_flows"
+name = "_active_flows"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._RefreshTokenOAuth"
+content_hash = "6f69324bdb58d164"
+file = "combiner/mcp_combiner/auth.py"
+signature = "_active_flows: ClassVar[dict[int, tuple[anyio.Event, OAuthCallbackResult]]] = {}"
+description = ""
+line = 301
+mtime = 1782852601000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+calls = []
+called_by = []
+references = [
+  "callback_handler [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_active_flows",
+  "active",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth._active_flows",
+  "flows",
+  "mcp",
+  "o",
+  "refresh",
+  "token",
+]

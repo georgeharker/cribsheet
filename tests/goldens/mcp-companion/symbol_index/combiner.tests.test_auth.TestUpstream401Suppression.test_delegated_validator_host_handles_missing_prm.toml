@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression.test_delegated_validator_host_handles_missing_prm"
+name = "test_delegated_validator_host_handles_missing_prm"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression"
+content_hash = "8092cb6a0d1dfe82"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 1059
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed_valid_tokens [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression.test_delegated_validator_host_handles_missing_prm",
+  "delegated",
+  "handles",
+  "host",
+  "missing",
+  "prm",
+  "suppression",
+  "test",
+  "test_delegated_validator_host_handles_missing_prm",
+  "tests",
+  "upstream",
+  "validator",
+]

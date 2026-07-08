@@ -1,0 +1,28 @@
+fqname = "mcp_companion.config._config_candidates"
+name = "_config_candidates"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.config"
+parent = ""
+content_hash = "5954c2d9ae9e0ca3"
+file = "lua/mcp_companion/config.lua"
+signature = "local function _config_candidates()"
+description = ""
+line = 294
+mtime = 1783185942000000000
+container = []
+calls = []
+called_by = [
+  "config.lua [lua/mcp_companion/config.lua]",
+]
+references = [
+  "_ [lua/mcp_companion/config.lua]",
+]
+name_terms = [
+  "_config_candidates",
+  "candidates",
+  "companion",
+  "config",
+  "mcp",
+  "mcp_companion.config._config_candidates",
+]

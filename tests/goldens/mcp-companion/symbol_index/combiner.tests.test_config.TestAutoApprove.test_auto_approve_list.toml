@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_config.TestAutoApprove.test_auto_approve_list"
+name = "test_auto_approve_list"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestAutoApprove"
+content_hash = "f59c874720b986bb"
+file = "combiner/tests/test_config.py"
+signature = "def test_auto_approve_list(self) -> None:"
+description = ""
+line = 191
+mtime = 1782852601000000000
+container = [
+  "TestAutoApprove",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "approve",
+  "auto",
+  "combiner",
+  "combiner.tests.test_config.TestAutoApprove.test_auto_approve_list",
+  "config",
+  "list",
+  "test",
+  "test_auto_approve_list",
+  "tests",
+]

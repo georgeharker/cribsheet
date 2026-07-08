@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.server._conn_manager"
+name = "_conn_manager"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "4f2fee8d6cb1a485"
+file = "combiner/mcp_combiner/server.py"
+signature = "_conn_manager: ConnectionManager | None = None"
+description = ""
+line = 58
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_create_isolated_proxy [combiner/mcp_combiner/server.py]",
+  "_create_server_proxy [combiner/mcp_combiner/server.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/server.py]",
+  "on_call_tool [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_conn_manager",
+  "combiner",
+  "combiner.mcp_combiner.server._conn_manager",
+  "conn",
+  "manager",
+  "mcp",
+  "server",
+]

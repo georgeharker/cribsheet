@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.server._prime_tasks"
+name = "_prime_tasks"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "325ad9fb3fa6bcb8"
+file = "combiner/mcp_combiner/server.py"
+signature = "_prime_tasks: set[asyncio.Task[Any]] = set()"
+description = ""
+line = 67
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "_on_upstream_tools_ready [combiner/mcp_combiner/server.py]",
+  "spawn_prime [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_prime_tasks",
+  "combiner",
+  "combiner.mcp_combiner.server._prime_tasks",
+  "mcp",
+  "prime",
+  "server",
+  "tasks",
+]

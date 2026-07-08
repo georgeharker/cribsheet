@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.server.create_combiner.manage_token_filter"
+name = "manage_token_filter"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server.create_combiner"
+content_hash = "e295afd5622abedc"
+file = "combiner/mcp_combiner/server.py"
+signature = "@combiner.custom_route(\"/sessions/token/{token}/filter\", methods=[\"GET\", \"POST\", \"DELETE\"])"
+description = ""
+line = 1796
+mtime = 1783473323000000000
+container = [
+  "create_combiner",
+]
+calls = [
+  "_notify_session_by_id [combiner/mcp_combiner/server.py]",
+  "_resolve_disabled [combiner/mcp_combiner/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.server.create_combiner.manage_token_filter",
+  "create",
+  "filter",
+  "manage",
+  "manage_token_filter",
+  "mcp",
+  "server",
+  "token",
+]

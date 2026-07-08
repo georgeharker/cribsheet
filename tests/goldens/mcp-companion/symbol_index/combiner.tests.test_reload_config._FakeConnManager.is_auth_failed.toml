@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_reload_config._FakeConnManager.is_auth_failed"
+name = "is_auth_failed"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = "combiner.tests.test_reload_config._FakeConnManager"
+content_hash = "ec219cdc6a8dcc5d"
+file = "combiner/tests/test_reload_config.py"
+signature = "def is_auth_failed(self, name: str) -> bool:"
+description = ""
+line = 66
+mtime = 1783452495000000000
+container = [
+  "_FakeConnManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_reload_config._FakeConnManager.is_auth_failed",
+  "config",
+  "conn",
+  "failed",
+  "fake",
+  "is",
+  "is_auth_failed",
+  "manager",
+  "reload",
+  "test",
+  "tests",
+]

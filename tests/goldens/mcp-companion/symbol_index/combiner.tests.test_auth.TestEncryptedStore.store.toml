@@ -1,0 +1,27 @@
+fqname = "combiner.tests.test_auth.TestEncryptedStore.store"
+name = "store"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestEncryptedStore"
+content_hash = "a275b8badf22b964"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.fixture"
+description = ""
+line = 29
+mtime = 1782852601000000000
+container = [
+  "TestEncryptedStore",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestEncryptedStore.store",
+  "encrypted",
+  "store",
+  "test",
+  "tests",
+]

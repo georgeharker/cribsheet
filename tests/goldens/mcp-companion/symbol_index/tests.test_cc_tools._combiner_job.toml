@@ -1,0 +1,26 @@
+fqname = "tests.test_cc_tools._combiner_job"
+name = "_combiner_job"
+kind = "global"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = ""
+content_hash = "94a44fd04968a386"
+file = "tests/test_cc_tools.lua"
+signature = "local _combiner_job = nil -- track the test combiner process for cleanup"
+description = ""
+line = 17
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_combiner_job",
+  "cc",
+  "combiner",
+  "job",
+  "test",
+  "tests",
+  "tests.test_cc_tools._combiner_job",
+  "tools",
+]

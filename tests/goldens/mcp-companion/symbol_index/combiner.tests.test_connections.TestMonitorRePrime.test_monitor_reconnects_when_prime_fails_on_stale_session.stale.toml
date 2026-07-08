@@ -1,0 +1,37 @@
+fqname = "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_reconnects_when_prime_fails_on_stale_session.stale"
+name = "stale"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_reconnects_when_prime_fails_on_stale_session"
+content_hash = "084fffcbeac0ae71"
+file = "combiner/tests/test_connections.py"
+signature = "async def stale(*_a, **_kw):"
+description = ""
+line = 148
+mtime = 1783473323000000000
+container = [
+  "TestMonitorRePrime",
+  "test_monitor_reconnects_when_prime_fails_on_stale_session",
+]
+calls = []
+called_by = []
+references = [
+  "test_monitor_reconnects_when_prime_fails_on_stale_session [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_reconnects_when_prime_fails_on_stale_session.stale",
+  "connections",
+  "fails",
+  "monitor",
+  "on",
+  "prime",
+  "re",
+  "reconnects",
+  "session",
+  "stale",
+  "test",
+  "tests",
+  "when",
+]

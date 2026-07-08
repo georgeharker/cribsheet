@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_connections.TestReconnectBackingRestart.test_success_resets_failure_counter"
+name = "test_success_resets_failure_counter"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestReconnectBackingRestart"
+content_hash = "7e4aa72ee62f7847"
+file = "combiner/tests/test_connections.py"
+signature = "async def test_success_resets_failure_counter(self, monkeypatch):"
+description = ""
+line = 244
+mtime = 1783473323000000000
+container = [
+  "TestReconnectBackingRestart",
+]
+calls = [
+  "_reconnect_conn [combiner/tests/test_connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "backing",
+  "combiner",
+  "combiner.tests.test_connections.TestReconnectBackingRestart.test_success_resets_failure_counter",
+  "connections",
+  "counter",
+  "failure",
+  "reconnect",
+  "resets",
+  "restart",
+  "success",
+  "test",
+  "test_success_resets_failure_counter",
+  "tests",
+]

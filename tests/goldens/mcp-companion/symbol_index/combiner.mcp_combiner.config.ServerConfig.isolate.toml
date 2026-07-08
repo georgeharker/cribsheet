@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.config.ServerConfig.isolate"
+name = "isolate"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.ServerConfig"
+content_hash = "e0e8ffa1ff85ae74"
+file = "combiner/mcp_combiner/config.py"
+signature = "isolate: bool | None = None"
+description = ""
+line = 159
+mtime = 1782954213000000000
+container = [
+  "ServerConfig",
+]
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.isolate",
+  "config",
+  "isolate",
+  "mcp",
+  "server",
+]

@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.config.Transport.SSE"
+name = "SSE"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.Transport"
+content_hash = "ef1a75c2837e19e3"
+file = "combiner/mcp_combiner/config.py"
+signature = "SSE = \"sse\""
+description = ""
+line = 40
+mtime = 1782954213000000000
+container = [
+  "Transport",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "SSE",
+  "combiner",
+  "combiner.mcp_combiner.config.Transport.SSE",
+  "config",
+  "mcp",
+  "sse",
+  "transport",
+]

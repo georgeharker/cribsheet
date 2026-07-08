@@ -1,0 +1,34 @@
+fqname = "mcp_companion.config._resolve_python_cmd"
+name = "_resolve_python_cmd"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.config"
+parent = ""
+content_hash = "736dbe11c1f580b9"
+file = "lua/mcp_companion/config.lua"
+signature = "local function _resolve_python_cmd(user_cmd, venv)"
+description = ""
+line = 265
+mtime = 1783185942000000000
+container = []
+calls = []
+called_by = [
+  "M.refresh_python_cmd [lua/mcp_companion/config.lua]",
+  "M.setup [lua/mcp_companion/config.lua]",
+  "config.lua [lua/mcp_companion/config.lua]",
+]
+references = [
+  "refresh_python_cmd [lua/mcp_companion/config.lua]",
+  "setup [lua/mcp_companion/config.lua]",
+  "user_cmd [lua/mcp_companion/config.lua]",
+]
+name_terms = [
+  "_resolve_python_cmd",
+  "cmd",
+  "companion",
+  "config",
+  "mcp",
+  "mcp_companion.config._resolve_python_cmd",
+  "python",
+  "resolve",
+]

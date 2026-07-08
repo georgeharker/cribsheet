@@ -1,0 +1,34 @@
+fqname = "mcp_companion.cc.session_commands.register"
+name = "register"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.session_commands"
+parent = ""
+content_hash = "f547271f7e6fedae"
+file = "lua/mcp_companion/cc/session_commands.lua"
+signature = "function M.register()"
+description = ""
+line = 226
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.register [lua/mcp_companion/cc/session_commands.lua]",
+  "M.setup [lua/mcp_companion/cc/init.lua]",
+  "session_commands.lua [lua/mcp_companion/cc/session_commands.lua]",
+]
+references = [
+  "M [lua/mcp_companion/cc/session_commands.lua]",
+  "bufnr [lua/mcp_companion/cc/session_commands.lua]",
+  "chat [lua/mcp_companion/cc/session_commands.lua]",
+  "setup [lua/mcp_companion/cc/init.lua]",
+]
+name_terms = [
+  "cc",
+  "commands",
+  "companion",
+  "mcp",
+  "mcp_companion.cc.session_commands.register",
+  "register",
+  "session",
+]

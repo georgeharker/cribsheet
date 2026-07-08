@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.server._local_tools_ready"
+name = "_local_tools_ready"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "17a65dd9cb19477f"
+file = "combiner/mcp_combiner/server.py"
+signature = "_local_tools_ready: dict[str, bool] = {}"
+description = ""
+line = 112
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_merge_stale_server_tools [combiner/mcp_combiner/server.py]",
+  "build_server_status [combiner/mcp_combiner/server.py]",
+  "prime_server_tools [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_local_tools_ready",
+  "combiner",
+  "combiner.mcp_combiner.server._local_tools_ready",
+  "local",
+  "mcp",
+  "ready",
+  "server",
+  "tools",
+]

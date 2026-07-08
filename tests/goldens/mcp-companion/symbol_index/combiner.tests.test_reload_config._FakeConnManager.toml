@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_reload_config._FakeConnManager"
+name = "_FakeConnManager"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "8f206f11d6ce7d68"
+file = "combiner/tests/test_reload_config.py"
+signature = "class _FakeConnManager:"
+description = ""
+line = 51
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "harness [combiner/tests/test_reload_config.py]",
+  "test_restart_leaves_one_live_provider [combiner/tests/test_mounts.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "_FakeConnManager",
+  "combiner",
+  "combiner.tests.test_reload_config._FakeConnManager",
+  "config",
+  "conn",
+  "fake",
+  "manager",
+  "reload",
+  "test",
+  "tests",
+]

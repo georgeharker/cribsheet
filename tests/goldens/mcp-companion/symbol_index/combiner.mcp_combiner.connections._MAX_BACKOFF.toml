@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.connections._MAX_BACKOFF"
+name = "_MAX_BACKOFF"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = ""
+content_hash = "623567bbfbbb071b"
+file = "combiner/mcp_combiner/connections.py"
+signature = "_MAX_BACKOFF = 60.0"
+description = ""
+line = 63
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_MAX_BACKOFF",
+  "backoff",
+  "combiner",
+  "combiner.mcp_combiner.connections._MAX_BACKOFF",
+  "connections",
+  "max",
+  "mcp",
+]

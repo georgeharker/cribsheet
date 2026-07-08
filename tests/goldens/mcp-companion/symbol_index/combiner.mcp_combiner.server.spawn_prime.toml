@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.server.spawn_prime"
+name = "spawn_prime"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "f2eae3bb7dfa75b3"
+file = "combiner/mcp_combiner/server.py"
+signature = "def spawn_prime(combiner: FastMCP, name: str) -> asyncio.Task[bool]:"
+description = ""
+line = 520
+mtime = 1783473323000000000
+container = []
+calls = [
+  "prime_server_tools [combiner/mcp_combiner/server.py]",
+]
+called_by = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.server.spawn_prime",
+  "mcp",
+  "prime",
+  "server",
+  "spawn",
+  "spawn_prime",
+]

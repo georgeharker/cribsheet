@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.nvim_channel._Job"
+name = "_Job"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = ""
+content_hash = "6f23f79c1e40e80e"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "class _Job:"
+description = ""
+line = 62
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [combiner/mcp_combiner/nvim_channel.py]",
+  "_enqueue [combiner/mcp_combiner/nvim_channel.py]",
+  "_exec [combiner/mcp_combiner/nvim_channel.py]",
+]
+name_terms = [
+  "_Job",
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel._Job",
+  "job",
+  "mcp",
+  "nvim",
+]

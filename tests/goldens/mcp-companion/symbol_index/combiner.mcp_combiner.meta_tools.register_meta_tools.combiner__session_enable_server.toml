@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__session_enable_server"
+name = "combiner__session_enable_server"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.meta_tools"
+parent = "combiner.mcp_combiner.meta_tools.register_meta_tools"
+content_hash = "bf4801d8c360b344"
+file = "combiner/mcp_combiner/meta_tools.py"
+signature = "@combiner.tool()"
+description = ""
+line = 436
+mtime = 1783452495000000000
+container = [
+  "register_meta_tools",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__session_enable_server",
+  "combiner__session_enable_server",
+  "enable",
+  "mcp",
+  "meta",
+  "register",
+  "server",
+  "session",
+  "tools",
+]

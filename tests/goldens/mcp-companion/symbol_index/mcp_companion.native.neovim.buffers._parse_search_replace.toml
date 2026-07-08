@@ -1,0 +1,36 @@
+fqname = "mcp_companion.native.neovim.buffers._parse_search_replace"
+name = "_parse_search_replace"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.native.neovim.buffers"
+parent = ""
+content_hash = "15d17cac3a915344"
+file = "lua/mcp_companion/native/neovim/buffers.lua"
+signature = "function M._parse_search_replace(diff)"
+description = ""
+line = 405
+mtime = 1783022818000000000
+container = []
+calls = []
+called_by = [
+  "M.build [lua/mcp_companion/native/neovim/init.lua]",
+  "buffers.lua [lua/mcp_companion/native/neovim/buffers.lua]",
+  "resources.lua [lua/mcp_companion/native/neovim/resources.lua]",
+]
+references = [
+  "M [lua/mcp_companion/native/neovim/buffers.lua]",
+  "build [lua/mcp_companion/native/neovim/init.lua]",
+  "diff [lua/mcp_companion/native/neovim/buffers.lua]",
+]
+name_terms = [
+  "_parse_search_replace",
+  "buffers",
+  "companion",
+  "mcp",
+  "mcp_companion.native.neovim.buffers._parse_search_replace",
+  "native",
+  "neovim",
+  "parse",
+  "replace",
+  "search",
+]

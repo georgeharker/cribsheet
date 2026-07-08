@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_auth.TestProactiveRefreshNetworkHandling._make_oauth"
+name = "_make_oauth"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestProactiveRefreshNetworkHandling"
+content_hash = "f98fb14e5170473b"
+file = "combiner/tests/test_auth.py"
+signature = "def _make_oauth(self, tmp_path: Path):"
+description = ""
+line = 254
+mtime = 1782852601000000000
+container = [
+  "TestProactiveRefreshNetworkHandling",
+]
+calls = []
+called_by = [
+  "test_initialize_sets_grace_window_on_network_error [combiner/tests/test_auth.py]",
+  "test_proactive_refresh_network_error_returns_outcome [combiner/tests/test_auth.py]",
+]
+references = [
+  "test_initialize_sets_grace_window_on_network_error [combiner/tests/test_auth.py]",
+  "test_proactive_refresh_network_error_returns_outcome [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "_make_oauth",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestProactiveRefreshNetworkHandling._make_oauth",
+  "handling",
+  "make",
+  "network",
+  "oauth",
+  "proactive",
+  "refresh",
+  "test",
+  "tests",
+]

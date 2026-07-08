@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.__main__.TokenRewriteMiddleware"
+name = "TokenRewriteMiddleware"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.__main__"
+parent = ""
+content_hash = "fd52588bb135c09c"
+file = "combiner/mcp_combiner/__main__.py"
+signature = "class TokenRewriteMiddleware(BaseHTTPMiddleware):"
+description = ""
+line = 43
+mtime = 1783185942000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "create_app [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "TokenRewriteMiddleware",
+  "combiner",
+  "combiner.mcp_combiner.__main__.TokenRewriteMiddleware",
+  "main",
+  "mcp",
+  "middleware",
+  "rewrite",
+  "token",
+]

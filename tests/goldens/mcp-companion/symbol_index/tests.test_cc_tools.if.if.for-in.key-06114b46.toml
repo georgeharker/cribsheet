@@ -1,0 +1,33 @@
+fqname = "tests.test_cc_tools.if.if.for in.key"
+name = "key"
+kind = "variable"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = "tests.test_cc_tools.if.if.for in"
+content_hash = "2996b081ca88f295"
+file = "tests/test_cc_tools.lua"
+signature = "for key, value in pairs(tools_tbl) do"
+description = ""
+line = 293
+mtime = 1782853510000000000
+container = [
+  "if",
+  "if",
+  "for in",
+]
+calls = []
+called_by = []
+references = [
+  "if [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "for",
+  "if",
+  "in",
+  "key",
+  "test",
+  "tests",
+  "tests.test_cc_tools.if.if.for in.key",
+  "tools",
+]

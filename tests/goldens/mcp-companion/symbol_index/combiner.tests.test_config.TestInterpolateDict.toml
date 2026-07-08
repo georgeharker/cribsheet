@@ -1,0 +1,26 @@
+fqname = "combiner.tests.test_config.TestInterpolateDict"
+name = "TestInterpolateDict"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = ""
+content_hash = "c0ca6f8c8fbcc5da"
+file = "combiner/tests/test_config.py"
+signature = "class TestInterpolateDict:"
+description = ""
+line = 314
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestInterpolateDict",
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateDict",
+  "config",
+  "dict",
+  "interpolate",
+  "test",
+  "tests",
+]

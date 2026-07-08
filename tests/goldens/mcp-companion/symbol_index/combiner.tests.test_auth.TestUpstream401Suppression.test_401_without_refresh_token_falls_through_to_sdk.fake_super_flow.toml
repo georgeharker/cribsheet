@@ -1,0 +1,42 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression.test_401_without_refresh_token_falls_through_to_sdk.fake_super_flow"
+name = "fake_super_flow"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression.test_401_without_refresh_token_falls_through_to_sdk"
+content_hash = "573d2a41ed7d7dba"
+file = "combiner/tests/test_auth.py"
+signature = "async def fake_super_flow(self_inner, request):"
+description = ""
+line = 885
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+  "test_401_without_refresh_token_falls_through_to_sdk",
+]
+calls = []
+called_by = []
+references = [
+  "test_401_without_refresh_token_falls_through_to_sdk [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression.test_401_without_refresh_token_falls_through_to_sdk.fake_super_flow",
+  "fake",
+  "fake_super_flow",
+  "falls",
+  "flow",
+  "refresh",
+  "sdk",
+  "super",
+  "suppression",
+  "test",
+  "tests",
+  "through",
+  "to",
+  "token",
+  "upstream",
+  "without",
+]

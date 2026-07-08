@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_session_filter.TestPendingTokenFilters.test_clear_pending"
+name = "test_clear_pending"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestPendingTokenFilters"
+content_hash = "d59ed792daad2c3b"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_clear_pending(self):"
+description = ""
+line = 936
+mtime = 1783452495000000000
+container = [
+  "TestPendingTokenFilters",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "clear",
+  "combiner",
+  "combiner.tests.test_session_filter.TestPendingTokenFilters.test_clear_pending",
+  "filter",
+  "filters",
+  "pending",
+  "session",
+  "test",
+  "test_clear_pending",
+  "tests",
+  "token",
+]

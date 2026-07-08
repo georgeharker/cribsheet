@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.connections._ManagedConnection.auth"
+name = "auth"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections._ManagedConnection"
+content_hash = "1b78a9559640229e"
+file = "combiner/mcp_combiner/connections.py"
+signature = "auth: httpx.Auth | None = field(default=None, repr=False)"
+description = ""
+line = 105
+mtime = 1783473323000000000
+container = [
+  "_ManagedConnection",
+]
+calls = []
+called_by = []
+references = [
+  "get_auth [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection.auth",
+  "connection",
+  "connections",
+  "managed",
+  "mcp",
+]

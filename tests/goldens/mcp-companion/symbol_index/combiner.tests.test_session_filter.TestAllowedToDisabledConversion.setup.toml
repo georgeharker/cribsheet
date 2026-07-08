@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_session_filter.TestAllowedToDisabledConversion.setup"
+name = "setup"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestAllowedToDisabledConversion"
+content_hash = "78f81b4bfc1a7e14"
+file = "combiner/tests/test_session_filter.py"
+signature = "@pytest.fixture(autouse=True)"
+description = ""
+line = 1139
+mtime = 1783452495000000000
+container = [
+  "TestAllowedToDisabledConversion",
+]
+calls = [
+  "_reset_session_state [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "allowed",
+  "combiner",
+  "combiner.tests.test_session_filter.TestAllowedToDisabledConversion.setup",
+  "conversion",
+  "disabled",
+  "filter",
+  "session",
+  "setup",
+  "test",
+  "tests",
+  "to",
+]

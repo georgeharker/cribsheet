@@ -1,0 +1,31 @@
+fqname = "tests.test_native.rtext"
+name = "rtext"
+kind = "function"
+lang = "lua"
+module = "tests.test_native"
+parent = ""
+content_hash = "6a72f8b9c2113d8d"
+file = "tests/test_native.lua"
+signature = "local function rtext(r)"
+description = ""
+line = 26
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = [
+  "rjson [tests/test_native.lua]",
+  "test_native.lua [tests/test_native.lua]",
+]
+references = [
+  "else [tests/test_native.lua]",
+  "if [tests/test_native.lua]",
+  "ok_d [tests/test_native.lua]",
+  "r [tests/test_native.lua]",
+]
+name_terms = [
+  "native",
+  "rtext",
+  "test",
+  "tests",
+  "tests.test_native.rtext",
+]

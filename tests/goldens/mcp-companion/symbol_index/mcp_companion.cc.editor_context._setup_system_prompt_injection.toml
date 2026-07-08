@@ -1,0 +1,36 @@
+fqname = "mcp_companion.cc.editor_context._setup_system_prompt_injection"
+name = "_setup_system_prompt_injection"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.editor_context"
+parent = ""
+content_hash = "fa4e2bf897d703f3"
+file = "lua/mcp_companion/cc/editor_context.lua"
+signature = "function M._setup_system_prompt_injection()"
+description = ""
+line = 140
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.register [lua/mcp_companion/cc/editor_context.lua]",
+  "editor_context.lua [lua/mcp_companion/cc/editor_context.lua]",
+]
+references = [
+  "M [lua/mcp_companion/cc/editor_context.lua]",
+  "register [lua/mcp_companion/cc/editor_context.lua]",
+  "teardown [lua/mcp_companion/cc/editor_context.lua]",
+]
+name_terms = [
+  "_setup_system_prompt_injection",
+  "cc",
+  "companion",
+  "context",
+  "editor",
+  "injection",
+  "mcp",
+  "mcp_companion.cc.editor_context._setup_system_prompt_injection",
+  "prompt",
+  "setup",
+  "system",
+]

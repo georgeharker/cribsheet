@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_connections.TestReconnectBackingRestart.test_no_restart_without_shared_server"
+name = "test_no_restart_without_shared_server"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestReconnectBackingRestart"
+content_hash = "682558c5a4ca7ceb"
+file = "combiner/tests/test_connections.py"
+signature = "async def test_no_restart_without_shared_server(self, monkeypatch):"
+description = ""
+line = 225
+mtime = 1783473323000000000
+container = [
+  "TestReconnectBackingRestart",
+]
+calls = [
+  "_reconnect_conn [combiner/tests/test_connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "backing",
+  "combiner",
+  "combiner.tests.test_connections.TestReconnectBackingRestart.test_no_restart_without_shared_server",
+  "connections",
+  "no",
+  "reconnect",
+  "restart",
+  "server",
+  "shared",
+  "test",
+  "test_no_restart_without_shared_server",
+  "tests",
+  "without",
+]

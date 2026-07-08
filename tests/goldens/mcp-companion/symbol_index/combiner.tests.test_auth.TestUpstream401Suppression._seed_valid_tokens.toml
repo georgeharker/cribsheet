@@ -1,0 +1,76 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression._seed_valid_tokens"
+name = "_seed_valid_tokens"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression"
+content_hash = "8c22969c6ed79446"
+file = "combiner/tests/test_auth.py"
+signature = "def _seed_valid_tokens("
+description = ""
+line = 629
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+]
+calls = []
+called_by = [
+  "test_401_propagated_when_google_says_token_valid [combiner/tests/test_auth.py]",
+  "test_401_propagated_when_probe_unknown [combiner/tests/test_auth.py]",
+  "test_401_without_refresh_token_falls_through_to_sdk [combiner/tests/test_auth.py]",
+  "test_delegated_validator_host_detects_different_host [combiner/tests/test_auth.py]",
+  "test_delegated_validator_host_handles_missing_prm [combiner/tests/test_auth.py]",
+  "test_delegated_validator_host_rejects_same_host [combiner/tests/test_auth.py]",
+  "test_delegated_validator_picks_external_when_mixed [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_auth_error_falls_through [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_network_error_propagates [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retries_quietly [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retry_still_401_propagates [combiner/tests/test_auth.py]",
+  "test_non_401_lets_sdk_flow_complete [combiner/tests/test_auth.py]",
+  "test_probe_returns_invalid_on_401 [combiner/tests/test_auth.py]",
+  "test_probe_returns_unknown_on_5xx [combiner/tests/test_auth.py]",
+  "test_probe_returns_unknown_on_network_error [combiner/tests/test_auth.py]",
+  "test_probe_returns_valid_on_200 [combiner/tests/test_auth.py]",
+  "test_self_validating_provider_falls_through_to_sdk [combiner/tests/test_auth.py]",
+  "test_third_party_probe_url_returns_google_for_googleapis [combiner/tests/test_auth.py]",
+  "test_third_party_probe_url_returns_none_for_unknown_provider [combiner/tests/test_auth.py]",
+  "test_third_party_probe_url_returns_none_when_self_validating [combiner/tests/test_auth.py]",
+  "test_third_party_unknown_validator_propagates [combiner/tests/test_auth.py]",
+]
+references = [
+  "test_401_propagated_when_google_says_token_valid [combiner/tests/test_auth.py]",
+  "test_401_propagated_when_probe_unknown [combiner/tests/test_auth.py]",
+  "test_401_without_refresh_token_falls_through_to_sdk [combiner/tests/test_auth.py]",
+  "test_delegated_validator_host_detects_different_host [combiner/tests/test_auth.py]",
+  "test_delegated_validator_host_handles_missing_prm [combiner/tests/test_auth.py]",
+  "test_delegated_validator_host_rejects_same_host [combiner/tests/test_auth.py]",
+  "test_delegated_validator_picks_external_when_mixed [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_auth_error_falls_through [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_network_error_propagates [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retries_quietly [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retry_still_401_propagates [combiner/tests/test_auth.py]",
+  "test_non_401_lets_sdk_flow_complete [combiner/tests/test_auth.py]",
+  "test_probe_returns_invalid_on_401 [combiner/tests/test_auth.py]",
+  "test_probe_returns_unknown_on_5xx [combiner/tests/test_auth.py]",
+  "test_probe_returns_unknown_on_network_error [combiner/tests/test_auth.py]",
+  "test_probe_returns_valid_on_200 [combiner/tests/test_auth.py]",
+  "test_self_validating_provider_falls_through_to_sdk [combiner/tests/test_auth.py]",
+  "test_third_party_probe_url_returns_google_for_googleapis [combiner/tests/test_auth.py]",
+  "test_third_party_probe_url_returns_none_for_unknown_provider [combiner/tests/test_auth.py]",
+  "test_third_party_probe_url_returns_none_when_self_validating [combiner/tests/test_auth.py]",
+  "test_third_party_unknown_validator_propagates [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "401",
+  "_seed_valid_tokens",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression._seed_valid_tokens",
+  "seed",
+  "suppression",
+  "test",
+  "tests",
+  "tokens",
+  "upstream",
+  "valid",
+]

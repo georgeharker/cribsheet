@@ -1,0 +1,33 @@
+fqname = "mcp_companion.cc.approval._server_auto_approve"
+name = "_server_auto_approve"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.approval"
+parent = ""
+content_hash = "a81a5f97fed1b2d1"
+file = "lua/mcp_companion/cc/approval.lua"
+signature = "local function _server_auto_approve(server_name)"
+description = ""
+line = 68
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.check [lua/mcp_companion/cc/approval.lua]",
+  "approval.lua [lua/mcp_companion/cc/approval.lua]",
+]
+references = [
+  "server_name [lua/mcp_companion/cc/approval.lua]",
+  "spec [lua/mcp_companion/cc/approval.lua]",
+]
+name_terms = [
+  "_server_auto_approve",
+  "approval",
+  "approve",
+  "auto",
+  "cc",
+  "companion",
+  "mcp",
+  "mcp_companion.cc.approval._server_auto_approve",
+  "server",
+]

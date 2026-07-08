@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.nvim_proxy._nvim_channel"
+name = "_nvim_channel"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_proxy"
+parent = ""
+content_hash = "79fbeb16ffc3617d"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+signature = "_nvim_channel: NvimChannelManager | None = None"
+description = ""
+line = 58
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_instance_for_session [combiner/mcp_combiner/nvim_proxy.py]",
+  "get_nvim_channel [combiner/mcp_combiner/nvim_proxy.py]",
+]
+name_terms = [
+  "_nvim_channel",
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy._nvim_channel",
+  "mcp",
+  "nvim",
+  "proxy",
+]

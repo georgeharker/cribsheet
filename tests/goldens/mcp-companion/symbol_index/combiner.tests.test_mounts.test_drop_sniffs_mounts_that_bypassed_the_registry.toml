@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_mounts.test_drop_sniffs_mounts_that_bypassed_the_registry"
+name = "test_drop_sniffs_mounts_that_bypassed_the_registry"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_mounts"
+parent = ""
+content_hash = "ddb289b8eb0e107d"
+file = "combiner/tests/test_mounts.py"
+signature = "def test_drop_sniffs_mounts_that_bypassed_the_registry() -> None:"
+description = ""
+line = 76
+mtime = 1783452495000000000
+container = []
+calls = [
+  "_child [combiner/tests/test_mounts.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "bypassed",
+  "combiner",
+  "combiner.tests.test_mounts.test_drop_sniffs_mounts_that_bypassed_the_registry",
+  "drop",
+  "mounts",
+  "registry",
+  "sniffs",
+  "test",
+  "test_drop_sniffs_mounts_that_bypassed_the_registry",
+  "tests",
+  "that",
+  "the",
+]

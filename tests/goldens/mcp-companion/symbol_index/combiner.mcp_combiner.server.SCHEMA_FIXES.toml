@@ -1,0 +1,25 @@
+fqname = "combiner.mcp_combiner.server.SCHEMA_FIXES"
+name = "SCHEMA_FIXES"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "876c25d2e424b340"
+file = "combiner/mcp_combiner/server.py"
+signature = "SCHEMA_FIXES: tuple[str, ...] = (\"anyof_type_hoist\", \"empty_object\", \"drop_invalid_required\")"
+description = ""
+line = 164
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "SCHEMA_FIXES",
+  "combiner",
+  "combiner.mcp_combiner.server.SCHEMA_FIXES",
+  "fixes",
+  "mcp",
+  "schema",
+  "server",
+]

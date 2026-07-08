@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.nvim_channel._Instance"
+name = "_Instance"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = ""
+content_hash = "5d3731941bd6b7ef"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "class _Instance:"
+description = ""
+line = 50
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [combiner/mcp_combiner/nvim_channel.py]",
+  "_close [combiner/mcp_combiner/nvim_channel.py]",
+  "_exec [combiner/mcp_combiner/nvim_channel.py]",
+  "_run [combiner/mcp_combiner/nvim_channel.py]",
+  "register [combiner/mcp_combiner/nvim_channel.py]",
+]
+name_terms = [
+  "_Instance",
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel._Instance",
+  "instance",
+  "mcp",
+  "nvim",
+]

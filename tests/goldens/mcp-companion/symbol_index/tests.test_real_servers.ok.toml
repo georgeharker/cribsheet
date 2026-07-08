@@ -1,0 +1,31 @@
+fqname = "tests.test_real_servers.ok"
+name = "ok"
+kind = "function"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "7455c1e12778334c"
+file = "tests/test_real_servers.lua"
+signature = "local function ok(name)"
+description = ""
+line = 27
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_real_servers.lua [tests/test_real_servers.lua]",
+]
+references = [
+  "else [tests/test_real_servers.lua]",
+  "elseif [tests/test_real_servers.lua]",
+  "if [tests/test_real_servers.lua]",
+  "name [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "ok",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.ok",
+]

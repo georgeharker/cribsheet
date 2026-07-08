@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.connections.HttpClient"
+name = "HttpClient"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = ""
+content_hash = "ed612c7ec2334c88"
+file = "combiner/mcp_combiner/connections.py"
+signature = "HttpClient = Client[StreamableHttpTransport | SSETransport]"
+description = ""
+line = 57
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_factory [combiner/mcp_combiner/connections.py]",
+  "_make_disconnected_client [combiner/mcp_combiner/connections.py]",
+  "client_ref [combiner/mcp_combiner/connections.py]",
+  "get_client_factory [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "HttpClient",
+  "client",
+  "combiner",
+  "combiner.mcp_combiner.connections.HttpClient",
+  "connections",
+  "http",
+  "mcp",
+]
