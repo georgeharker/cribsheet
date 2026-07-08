@@ -1,0 +1,31 @@
+fqname = "crib.embed.HashEmbedder._vec"
+name = "_vec"
+kind = "method"
+lang = "python"
+module = "crib.embed"
+parent = "crib.embed.HashEmbedder"
+content_hash = "4278d5f5b8b7a3d9"
+file = "crib/embed.py"
+signature = "def _vec(self, text: str) -> list[float]:"
+description = ""
+line = 44
+mtime = 1782690118000000000
+container = [
+  "HashEmbedder",
+]
+calls = []
+called_by = [
+  "embed [crib/embed.py]",
+]
+references = [
+  "embed [crib/embed.py]",
+]
+name_terms = [
+  "_vec",
+  "crib",
+  "crib.embed.HashEmbedder._vec",
+  "embed",
+  "embedder",
+  "hash",
+  "vec",
+]

@@ -1,0 +1,33 @@
+fqname = "crib.app.Crib.code_xref"
+name = "code_xref"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "16cf922b9acbd0a1"
+file = "crib/app.py"
+signature = "def code_xref(self, symbol: str, project: str | None = None,"
+description = ""
+line = 1028
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "resolve_project [crib/app.py]",
+  "xref [crib/codequery.py]",
+]
+called_by = [
+  "code_xref [crib/server.py]",
+]
+references = [
+  "code_xref [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "code",
+  "code_xref",
+  "crib",
+  "crib.app.Crib.code_xref",
+  "xref",
+]

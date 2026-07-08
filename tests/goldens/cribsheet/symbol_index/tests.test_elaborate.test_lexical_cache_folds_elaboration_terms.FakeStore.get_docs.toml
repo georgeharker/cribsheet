@@ -1,0 +1,35 @@
+fqname = "tests.test_elaborate.test_lexical_cache_folds_elaboration_terms.FakeStore.get_docs"
+name = "get_docs"
+kind = "method"
+lang = "python"
+module = "tests.test_elaborate"
+parent = "tests.test_elaborate.test_lexical_cache_folds_elaboration_terms.FakeStore"
+content_hash = "906abc3d657ae389"
+file = "tests/test_elaborate.py"
+signature = "def get_docs(self, where):"
+description = ""
+line = 71
+mtime = 1782958917000000000
+container = [
+  "test_lexical_cache_folds_elaboration_terms",
+  "FakeStore",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "docs",
+  "elaborate",
+  "elaboration",
+  "fake",
+  "folds",
+  "get",
+  "get_docs",
+  "lexical",
+  "store",
+  "terms",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_lexical_cache_folds_elaboration_terms.FakeStore.get_docs",
+]

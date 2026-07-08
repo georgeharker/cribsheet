@@ -1,0 +1,26 @@
+fqname = "crib.cli._E_raw"
+name = "_E_raw"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "a6c0f1d10de143eb"
+file = "crib/cli.py"
+signature = "def _E_raw(d, a): print(d)                                      # verbatim (locate/snapshot)"
+description = ""
+line = 693
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_E_raw",
+  "cli",
+  "crib",
+  "crib.cli._E_raw",
+  "e",
+  "raw",
+]

@@ -1,0 +1,31 @@
+fqname = "crib.retrieve.BM25"
+name = "BM25"
+kind = "class"
+lang = "python"
+module = "crib.retrieve"
+parent = ""
+content_hash = "d8aa7e5eead9fb87"
+file = "crib/retrieve.py"
+signature = "class BM25:"
+description = ""
+line = 40
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/retrieve.py]",
+  "_prepare [crib/codestore.py]",
+  "get [crib/retrieve.py]",
+  "test_bm25_ranks_exact_term_match_first [tests/test_retrieve.py]",
+  "test_bm25_unknown_terms_score_zero [tests/test_retrieve.py]",
+  "test_subtokens_let_spaced_query_match_a_solid_identifier [tests/test_retrieve.py]",
+]
+name_terms = [
+  "25",
+  "BM25",
+  "bm",
+  "crib",
+  "crib.retrieve.BM25",
+  "retrieve",
+]

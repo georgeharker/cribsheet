@@ -1,0 +1,35 @@
+fqname = "crib.app.Crib.code_lookup"
+name = "code_lookup"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "c67f3e45a134dcfc"
+file = "crib/app.py"
+signature = "def code_lookup(self, query: str, project: str | None = None, k: int = 8,"
+description = ""
+line = 1078
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "lookup [crib/codequery.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "code_lookup [crib/server.py]",
+  "main [scripts/eval_code.py]",
+]
+references = [
+  "code_lookup [crib/server.py]",
+  "main [scripts/eval_code.py]",
+]
+name_terms = [
+  "app",
+  "code",
+  "code_lookup",
+  "crib",
+  "crib.app.Crib.code_lookup",
+  "lookup",
+]

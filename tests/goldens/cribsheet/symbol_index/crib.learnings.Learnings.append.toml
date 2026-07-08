@@ -1,0 +1,35 @@
+fqname = "crib.learnings.Learnings.append"
+name = "append"
+kind = "method"
+lang = "python"
+module = "crib.learnings"
+parent = "crib.learnings.Learnings"
+content_hash = "04e01fb7114dafd1"
+file = "crib/learnings.py"
+signature = "async def append(self, proj: str, symbol: str, text: str) -> dict[str, Any]:"
+description = ""
+line = 76
+mtime = 1783529664000000000
+container = [
+  "Learnings",
+]
+calls = [
+  "Note [crib/notes.py]",
+  "abspath [crib/notestore.py]",
+  "load [crib/notes.py]",
+  "relpath [crib/learnings.py]",
+  "resolve_symbol [crib/refs.py]",
+  "write [crib/notestore.py]",
+]
+called_by = [
+  "code_append [crib/app.py]",
+]
+references = [
+  "code_append [crib/app.py]",
+]
+name_terms = [
+  "append",
+  "crib",
+  "crib.learnings.Learnings.append",
+  "learnings",
+]

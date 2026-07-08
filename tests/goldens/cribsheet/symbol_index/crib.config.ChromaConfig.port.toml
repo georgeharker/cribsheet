@@ -1,0 +1,28 @@
+fqname = "crib.config.ChromaConfig.port"
+name = "port"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.ChromaConfig"
+content_hash = "9d724ff8323ee5d9"
+file = "crib/config.py"
+signature = "port: int = 7733"
+description = ""
+line = 165
+mtime = 1783455339000000000
+container = [
+  "ChromaConfig",
+]
+calls = []
+called_by = []
+references = [
+  "_build_shared_chroma [crib/app.py]",
+  "probe [crib/app.py]",
+]
+name_terms = [
+  "chroma",
+  "config",
+  "crib",
+  "crib.config.ChromaConfig.port",
+  "port",
+]

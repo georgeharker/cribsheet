@@ -1,0 +1,32 @@
+fqname = "tests.test_project_resolution.test_write_project_elicits_when_target_omitted"
+name = "test_write_project_elicits_when_target_omitted"
+kind = "function"
+lang = "python"
+module = "tests.test_project_resolution"
+parent = ""
+content_hash = "549b90f810568d34"
+file = "tests/test_project_resolution.py"
+signature = "def test_write_project_elicits_when_target_omitted(crib):"
+description = ""
+line = 60
+mtime = 1783378845000000000
+container = []
+calls = [
+  "_Ctx [tests/test_project_resolution.py]",
+  "_write_project_elicit [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "elicits",
+  "omitted",
+  "project",
+  "resolution",
+  "target",
+  "test",
+  "test_write_project_elicits_when_target_omitted",
+  "tests",
+  "tests.test_project_resolution.test_write_project_elicits_when_target_omitted",
+  "when",
+  "write",
+]

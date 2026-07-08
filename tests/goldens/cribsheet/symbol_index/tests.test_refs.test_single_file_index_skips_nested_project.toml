@@ -1,0 +1,29 @@
+fqname = "tests.test_refs.test_single_file_index_skips_nested_project"
+name = "test_single_file_index_skips_nested_project"
+kind = "function"
+lang = "python"
+module = "tests.test_refs"
+parent = ""
+content_hash = "8b993f10b57ae071"
+file = "tests/test_refs.py"
+signature = "def test_single_file_index_skips_nested_project(crib, tmp_path):"
+description = ""
+line = 146
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "file",
+  "index",
+  "nested",
+  "project",
+  "refs",
+  "single",
+  "skips",
+  "test",
+  "test_single_file_index_skips_nested_project",
+  "tests",
+  "tests.test_refs.test_single_file_index_skips_nested_project",
+]

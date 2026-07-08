@@ -1,0 +1,27 @@
+fqname = "crib.config.Config.memory"
+name = "memory"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.Config"
+content_hash = "fd6ec0ead5a4fff9"
+file = "crib/config.py"
+signature = "memory: MemoryConfig = field(default_factory=MemoryConfig)"
+description = ""
+line = 190
+mtime = 1783455339000000000
+container = [
+  "Config",
+]
+calls = []
+called_by = []
+references = [
+  "load [crib/config.py]",
+  "start_memory_mirror [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.memory",
+  "memory",
+]

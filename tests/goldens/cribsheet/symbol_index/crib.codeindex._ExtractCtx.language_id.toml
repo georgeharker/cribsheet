@@ -1,0 +1,32 @@
+fqname = "crib.codeindex._ExtractCtx.language_id"
+name = "language_id"
+kind = "field"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex._ExtractCtx"
+content_hash = "759cd8ddefdf80ad"
+file = "crib/codeindex.py"
+signature = "language_id: str"
+description = ""
+line = 877
+mtime = 1783533619000000000
+container = [
+  "_ExtractCtx",
+]
+calls = []
+called_by = []
+references = [
+  "_extract [crib/codeindex.py]",
+  "_reference_edges [crib/codeindex.py]",
+  "_symbol_entry [crib/codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex._ExtractCtx.language_id",
+  "ctx",
+  "extract",
+  "id",
+  "language",
+  "language_id",
+]

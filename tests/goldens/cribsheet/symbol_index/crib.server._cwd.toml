@@ -1,0 +1,43 @@
+fqname = "crib.server._cwd"
+name = "_cwd"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = ""
+content_hash = "401670826c54b2e8"
+file = "crib/server.py"
+signature = "def _cwd(project_path: str | None) -> Path | None:"
+description = ""
+line = 22
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = [
+  "_resolve [crib/server.py]",
+  "_write_project [crib/server.py]",
+  "code_index [crib/server.py]",
+  "import_files [crib/server.py]",
+  "import_memory [crib/server.py]",
+  "project_forget [crib/server.py]",
+  "project_index [crib/server.py]",
+  "project_setup [crib/server.py]",
+  "project_status [crib/server.py]",
+]
+references = [
+  "_resolve [crib/server.py]",
+  "_write_project [crib/server.py]",
+  "code_index [crib/server.py]",
+  "import_files [crib/server.py]",
+  "import_memory [crib/server.py]",
+  "project_forget [crib/server.py]",
+  "project_index [crib/server.py]",
+  "project_setup [crib/server.py]",
+  "project_status [crib/server.py]",
+]
+name_terms = [
+  "_cwd",
+  "crib",
+  "crib.server._cwd",
+  "cwd",
+  "server",
+]

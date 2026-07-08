@@ -1,0 +1,39 @@
+fqname = "crib.app.Crib.project_is_new"
+name = "project_is_new"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "fce4af73432047c1"
+file = "crib/app.py"
+signature = "def project_is_new(self, proj: str) -> bool:"
+description = ""
+line = 308
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "notes_dir [crib/paths.py]",
+]
+called_by = [
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "store_note [crib/app.py]",
+  "use_project [crib/server.py]",
+]
+references = [
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "store_note [crib/app.py]",
+  "use_project [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.project_is_new",
+  "is",
+  "new",
+  "project",
+  "project_is_new",
+]

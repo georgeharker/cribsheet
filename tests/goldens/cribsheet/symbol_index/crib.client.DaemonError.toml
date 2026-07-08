@@ -1,0 +1,26 @@
+fqname = "crib.client.DaemonError"
+name = "DaemonError"
+kind = "class"
+lang = "python"
+module = "crib.client"
+parent = ""
+content_hash = "7e368a68eed9b1bd"
+file = "crib/client.py"
+signature = "class DaemonError(RuntimeError):"
+description = ""
+line = 24
+mtime = 1782958917000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_wait_ready [crib/client.py]",
+]
+name_terms = [
+  "DaemonError",
+  "client",
+  "crib",
+  "crib.client.DaemonError",
+  "daemon",
+  "error",
+]

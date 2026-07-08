@@ -1,0 +1,29 @@
+fqname = "scripts.eval_retrieval.main"
+name = "main"
+kind = "function"
+lang = "python"
+module = "scripts.eval_retrieval"
+parent = ""
+content_hash = "755f0d3481af1d29"
+file = "scripts/eval_retrieval.py"
+signature = "def main(argv: list[str] | None = None) -> int:"
+description = ""
+line = 234
+mtime = 1782930371000000000
+container = []
+calls = [
+  "_run_lift [scripts/eval_retrieval.py]",
+  "evaluate [scripts/eval_retrieval.py]",
+  "report [scripts/eval_retrieval.py]",
+]
+called_by = [
+  "eval_retrieval [scripts/eval_retrieval.py]",
+]
+references = []
+name_terms = [
+  "eval",
+  "main",
+  "retrieval",
+  "scripts",
+  "scripts.eval_retrieval.main",
+]

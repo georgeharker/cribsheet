@@ -1,0 +1,30 @@
+fqname = "crib.util._b32"
+name = "_b32"
+kind = "function"
+lang = "python"
+module = "crib.util"
+parent = ""
+content_hash = "dcec44352f15b245"
+file = "crib/util.py"
+signature = "def _b32(value: int) -> str:"
+description = ""
+line = 50
+mtime = 1782755212000000000
+container = []
+calls = []
+called_by = [
+  "derived_ulid [crib/util.py]",
+  "new_ulid [crib/util.py]",
+]
+references = [
+  "derived_ulid [crib/util.py]",
+  "new_ulid [crib/util.py]",
+]
+name_terms = [
+  "32",
+  "_b32",
+  "b",
+  "crib",
+  "crib.util._b32",
+  "util",
+]

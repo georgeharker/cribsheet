@@ -1,0 +1,29 @@
+fqname = "crib.config.ChromaConfig.grace_period"
+name = "grace_period"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.ChromaConfig"
+content_hash = "7ad9a22c99dd5361"
+file = "crib/config.py"
+signature = "grace_period: str = \"1h\""
+description = ""
+line = 161
+mtime = 1783455339000000000
+container = [
+  "ChromaConfig",
+]
+calls = []
+called_by = []
+references = [
+  "_build_shared_chroma [crib/app.py]",
+]
+name_terms = [
+  "chroma",
+  "config",
+  "crib",
+  "crib.config.ChromaConfig.grace_period",
+  "grace",
+  "grace_period",
+  "period",
+]

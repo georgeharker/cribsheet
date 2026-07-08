@@ -1,0 +1,30 @@
+fqname = "crib.claudemem.hostslug"
+name = "hostslug"
+kind = "function"
+lang = "python"
+module = "crib.claudemem"
+parent = ""
+content_hash = "a86ee1577f4a0702"
+file = "crib/claudemem.py"
+signature = "def hostslug() -> str:"
+description = ""
+line = 25
+mtime = 1782762348000000000
+container = []
+calls = []
+called_by = [
+  "import_claude_memory [crib/app.py]",
+  "test_resync_is_idempotent_and_reconciles_deletes [tests/test_claude_memory.py]",
+  "test_sync_mirrors_indexes_and_tags [tests/test_claude_memory.py]",
+]
+references = [
+  "import_claude_memory [crib/app.py]",
+  "test_resync_is_idempotent_and_reconciles_deletes [tests/test_claude_memory.py]",
+  "test_sync_mirrors_indexes_and_tags [tests/test_claude_memory.py]",
+]
+name_terms = [
+  "claudemem",
+  "crib",
+  "crib.claudemem.hostslug",
+  "hostslug",
+]

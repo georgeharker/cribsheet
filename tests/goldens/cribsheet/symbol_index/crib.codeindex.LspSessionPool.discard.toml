@@ -1,0 +1,33 @@
+fqname = "crib.codeindex.LspSessionPool.discard"
+name = "discard"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.LspSessionPool"
+content_hash = "e18a1d3e4546d5a3"
+file = "crib/codeindex.py"
+signature = "def discard(self, root: Path, label: str) -> None:"
+description = ""
+line = 528
+mtime = 1783533619000000000
+container = [
+  "LspSessionPool",
+]
+calls = [
+  "close [crib/codeindex.py]",
+]
+called_by = [
+  "extract_file [crib/codeindex.py]",
+]
+references = [
+  "extract_file [crib/codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspSessionPool.discard",
+  "discard",
+  "lsp",
+  "pool",
+  "session",
+]

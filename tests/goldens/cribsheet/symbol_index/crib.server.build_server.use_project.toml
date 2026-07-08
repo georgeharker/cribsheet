@@ -1,0 +1,31 @@
+fqname = "crib.server.build_server.use_project"
+name = "use_project"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "740f0cc37d06a016"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 597
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "notes_dir [crib/app.py]",
+  "project_is_new [crib/app.py]",
+  "session_state [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.use_project",
+  "project",
+  "server",
+  "use",
+  "use_project",
+]

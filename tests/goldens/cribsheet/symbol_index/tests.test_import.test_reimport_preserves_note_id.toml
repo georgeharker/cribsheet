@@ -1,0 +1,30 @@
+fqname = "tests.test_import.test_reimport_preserves_note_id"
+name = "test_reimport_preserves_note_id"
+kind = "function"
+lang = "python"
+module = "tests.test_import"
+parent = ""
+content_hash = "4f381e2c603ee781"
+file = "tests/test_import.py"
+signature = "def test_reimport_preserves_note_id(crib, tmp_path):"
+description = ""
+line = 50
+mtime = 1783450349000000000
+container = []
+calls = [
+  "_files [tests/test_import.py]",
+  "_id_of [tests/test_import.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "id",
+  "import",
+  "note",
+  "preserves",
+  "reimport",
+  "test",
+  "test_reimport_preserves_note_id",
+  "tests",
+  "tests.test_import.test_reimport_preserves_note_id",
+]

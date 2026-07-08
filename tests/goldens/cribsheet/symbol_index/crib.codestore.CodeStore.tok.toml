@@ -1,0 +1,35 @@
+fqname = "crib.codestore.CodeStore.tok"
+name = "tok"
+kind = "method"
+lang = "python"
+module = "crib.codestore"
+parent = "crib.codestore.CodeStore"
+content_hash = "40b40819be695938"
+file = "crib/codestore.py"
+signature = "def tok(self, proj: str) -> tuple[str, Any]:"
+description = ""
+line = 134
+mtime = 1783494290000000000
+container = [
+  "CodeStore",
+]
+calls = [
+  "dir_sig [crib/codestore.py]",
+  "freshness [crib/codestore.py]",
+]
+called_by = [
+  "_code_tok [crib/app.py]",
+  "resident [crib/codestore.py]",
+]
+references = [
+  "_code_tok [crib/app.py]",
+  "resident [crib/codestore.py]",
+]
+name_terms = [
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore.CodeStore.tok",
+  "store",
+  "tok",
+]

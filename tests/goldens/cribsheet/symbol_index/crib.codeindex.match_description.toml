@@ -1,0 +1,28 @@
+fqname = "crib.codeindex.match_description"
+name = "match_description"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "6d7f05197cdfa2f2"
+file = "crib/codeindex.py"
+signature = "def match_description(fqname: str, descs: dict[str, str]) -> str:"
+description = ""
+line = 1096
+mtime = 1783533619000000000
+container = []
+calls = []
+called_by = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.match_description",
+  "description",
+  "match",
+  "match_description",
+]

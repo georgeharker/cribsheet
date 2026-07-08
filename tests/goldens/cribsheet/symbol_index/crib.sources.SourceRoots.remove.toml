@@ -1,0 +1,32 @@
+fqname = "crib.sources.SourceRoots.remove"
+name = "remove"
+kind = "method"
+lang = "python"
+module = "crib.sources"
+parent = "crib.sources.SourceRoots"
+content_hash = "d35afb37b6405a48"
+file = "crib/sources.py"
+signature = "def remove(self, prefix: str) -> None:"
+description = ""
+line = 45
+mtime = 1783358913000000000
+container = [
+  "SourceRoots",
+]
+calls = [
+  "_save [crib/sources.py]",
+]
+called_by = [
+  "project_forget [crib/app.py]",
+]
+references = [
+  "project_forget [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.sources.SourceRoots.remove",
+  "remove",
+  "roots",
+  "source",
+  "sources",
+]

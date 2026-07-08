@@ -1,0 +1,37 @@
+fqname = "crib.notestore.NoteStore.source_roots"
+name = "source_roots"
+kind = "method"
+lang = "python"
+module = "crib.notestore"
+parent = "crib.notestore.NoteStore"
+content_hash = "d8969ba0a9f3669b"
+file = "crib/notestore.py"
+signature = "def source_roots(self, project: str) -> SourceRoots:"
+description = ""
+line = 41
+mtime = 1783525700000000000
+container = [
+  "NoteStore",
+]
+calls = [
+  "SourceRoots [crib/sources.py]",
+  "project_dir [crib/paths.py]",
+]
+called_by = [
+  "_source_roots [crib/app.py]",
+  "abspath [crib/notestore.py]",
+]
+references = [
+  "_source_roots [crib/app.py]",
+  "abspath [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.NoteStore.source_roots",
+  "note",
+  "notestore",
+  "roots",
+  "source",
+  "source_roots",
+  "store",
+]

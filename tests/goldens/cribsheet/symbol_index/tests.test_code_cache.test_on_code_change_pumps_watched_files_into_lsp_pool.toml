@@ -1,0 +1,34 @@
+fqname = "tests.test_code_cache.test_on_code_change_pumps_watched_files_into_lsp_pool"
+name = "test_on_code_change_pumps_watched_files_into_lsp_pool"
+kind = "function"
+lang = "python"
+module = "tests.test_code_cache"
+parent = ""
+content_hash = "73ecf3377645aa18"
+file = "tests/test_code_cache.py"
+signature = "def test_on_code_change_pumps_watched_files_into_lsp_pool(crib, monkeypatch):"
+description = ""
+line = 156
+mtime = 1783489700000000000
+container = []
+calls = [
+  "run [tests/test_code_cache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "change",
+  "code",
+  "files",
+  "into",
+  "lsp",
+  "on",
+  "pool",
+  "pumps",
+  "test",
+  "test_on_code_change_pumps_watched_files_into_lsp_pool",
+  "tests",
+  "tests.test_code_cache.test_on_code_change_pumps_watched_files_into_lsp_pool",
+  "watched",
+]

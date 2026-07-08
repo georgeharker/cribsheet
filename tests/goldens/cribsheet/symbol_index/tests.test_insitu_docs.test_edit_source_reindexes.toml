@@ -1,0 +1,30 @@
+fqname = "tests.test_insitu_docs.test_edit_source_reindexes"
+name = "test_edit_source_reindexes"
+kind = "function"
+lang = "python"
+module = "tests.test_insitu_docs"
+parent = ""
+content_hash = "1f0e043f1e77e1ea"
+file = "tests/test_insitu_docs.py"
+signature = "def test_edit_source_reindexes(crib, tmp_path):"
+description = ""
+line = 73
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_repo [tests/test_insitu_docs.py]",
+  "run [tests/test_insitu_docs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "docs",
+  "edit",
+  "insitu",
+  "reindexes",
+  "source",
+  "test",
+  "test_edit_source_reindexes",
+  "tests",
+  "tests.test_insitu_docs.test_edit_source_reindexes",
+]

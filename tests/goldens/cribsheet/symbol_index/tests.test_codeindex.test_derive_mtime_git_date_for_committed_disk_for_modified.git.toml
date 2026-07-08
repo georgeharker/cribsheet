@@ -1,0 +1,36 @@
+fqname = "tests.test_codeindex.test_derive_mtime_git_date_for_committed_disk_for_modified.git"
+name = "git"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = "tests.test_codeindex.test_derive_mtime_git_date_for_committed_disk_for_modified"
+content_hash = "2f8d66aed885d22e"
+file = "tests/test_codeindex.py"
+signature = "def git(*a): subprocess.run([\"git\", \"-C\", str(r), *a], check=True,"
+description = ""
+line = 65
+mtime = 1783533619000000000
+container = [
+  "test_derive_mtime_git_date_for_committed_disk_for_modified",
+]
+calls = []
+called_by = [
+  "test_derive_mtime_git_date_for_committed_disk_for_modified [tests/test_codeindex.py]",
+]
+references = [
+  "test_derive_mtime_git_date_for_committed_disk_for_modified [tests/test_codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "committed",
+  "date",
+  "derive",
+  "disk",
+  "for",
+  "git",
+  "modified",
+  "mtime",
+  "test",
+  "tests",
+  "tests.test_codeindex.test_derive_mtime_git_date_for_committed_disk_for_modified.git",
+]

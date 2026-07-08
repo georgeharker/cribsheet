@@ -1,0 +1,28 @@
+fqname = "crib.config.ChromaConfig.mode"
+name = "mode"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.ChromaConfig"
+content_hash = "d92324b1b19be714"
+file = "crib/config.py"
+signature = "mode: str = \"embedded\"          # \"embedded\" | \"shared\""
+description = ""
+line = 159
+mtime = 1783455339000000000
+container = [
+  "ChromaConfig",
+]
+calls = []
+called_by = []
+references = [
+  "_build_store [crib/app.py]",
+  "cmd_info [crib/cli.py]",
+]
+name_terms = [
+  "chroma",
+  "config",
+  "crib",
+  "crib.config.ChromaConfig.mode",
+  "mode",
+]

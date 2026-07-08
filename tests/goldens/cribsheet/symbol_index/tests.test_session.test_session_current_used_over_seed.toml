@@ -1,0 +1,30 @@
+fqname = "tests.test_session.test_session_current_used_over_seed"
+name = "test_session_current_used_over_seed"
+kind = "function"
+lang = "python"
+module = "tests.test_session"
+parent = ""
+content_hash = "15aed7c85bafb69c"
+file = "tests/test_session.py"
+signature = "def test_session_current_used_over_seed():"
+description = ""
+line = 32
+mtime = 1783476730000000000
+container = []
+calls = [
+  "SessionState [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "current",
+  "over",
+  "seed",
+  "session",
+  "test",
+  "test_session_current_used_over_seed",
+  "tests",
+  "tests.test_session.test_session_current_used_over_seed",
+  "used",
+]

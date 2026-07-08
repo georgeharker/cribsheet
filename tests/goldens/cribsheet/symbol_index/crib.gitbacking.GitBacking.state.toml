@@ -1,0 +1,34 @@
+fqname = "crib.gitbacking.GitBacking.state"
+name = "state"
+kind = "method"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.GitBacking"
+content_hash = "06752df82355ebda"
+file = "crib/gitbacking.py"
+signature = "def state(self) -> dict:"
+description = ""
+line = 131
+mtime = 1783451795000000000
+container = [
+  "GitBacking",
+]
+calls = [
+  "_branch [crib/gitbacking.py]",
+  "_run [crib/gitbacking.py]",
+  "current_remote [crib/gitbacking.py]",
+]
+called_by = [
+  "status [crib/app.py]",
+]
+references = [
+  "status [crib/app.py]",
+]
+name_terms = [
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking.state",
+  "git",
+  "gitbacking",
+  "state",
+]

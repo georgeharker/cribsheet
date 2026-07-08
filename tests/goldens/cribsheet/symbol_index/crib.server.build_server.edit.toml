@@ -1,0 +1,29 @@
+fqname = "crib.server.build_server.edit"
+name = "edit"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "4505420e178ece11"
+file = "crib/server.py"
+signature = "@write_tool"
+description = ""
+line = 291
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_write_project [crib/server.py]",
+  "edit_note [crib/app.py]",
+  "write_tool [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.edit",
+  "edit",
+  "server",
+]

@@ -1,0 +1,40 @@
+fqname = "crib.gitbacking.GitBacking.init"
+name = "init"
+kind = "method"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.GitBacking"
+content_hash = "17e0d540d46a291b"
+file = "crib/gitbacking.py"
+signature = "def init(self, remote: str | None = None) -> str:"
+description = ""
+line = 173
+mtime = 1783451795000000000
+container = [
+  "GitBacking",
+]
+calls = [
+  "_ensure_gitignore [crib/gitbacking.py]",
+  "_ensure_merge_driver [crib/gitbacking.py]",
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "_machine [tests/test_sync.py]",
+  "_run_git [crib/cli.py]",
+  "setup [crib/gitbacking.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+]
+references = [
+  "_machine [tests/test_sync.py]",
+  "_run_git [crib/cli.py]",
+  "setup [crib/gitbacking.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+]
+name_terms = [
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking.init",
+  "git",
+  "gitbacking",
+  "init",
+]

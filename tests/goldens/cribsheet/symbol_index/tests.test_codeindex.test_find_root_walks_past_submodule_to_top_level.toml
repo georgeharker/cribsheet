@@ -1,0 +1,33 @@
+fqname = "tests.test_codeindex.test_find_root_walks_past_submodule_to_top_level"
+name = "test_find_root_walks_past_submodule_to_top_level"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "796f64e44fd81217"
+file = "tests/test_codeindex.py"
+signature = "def test_find_root_walks_past_submodule_to_top_level(tmp_path):"
+description = ""
+line = 217
+mtime = 1783533619000000000
+container = []
+calls = [
+  "find_root [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "find",
+  "level",
+  "past",
+  "root",
+  "submodule",
+  "test",
+  "test_find_root_walks_past_submodule_to_top_level",
+  "tests",
+  "tests.test_codeindex.test_find_root_walks_past_submodule_to_top_level",
+  "to",
+  "top",
+  "walks",
+]

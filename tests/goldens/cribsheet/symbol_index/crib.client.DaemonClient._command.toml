@@ -1,0 +1,30 @@
+fqname = "crib.client.DaemonClient._command"
+name = "_command"
+kind = "method"
+lang = "python"
+module = "crib.client"
+parent = "crib.client.DaemonClient"
+content_hash = "85e21dd2b8713c64"
+file = "crib/client.py"
+signature = "@property"
+description = ""
+line = 63
+mtime = 1782958917000000000
+container = [
+  "DaemonClient",
+]
+calls = []
+called_by = [
+  "__enter__ [crib/client.py]",
+]
+references = [
+  "__enter__ [crib/client.py]",
+]
+name_terms = [
+  "_command",
+  "client",
+  "command",
+  "crib",
+  "crib.client.DaemonClient._command",
+  "daemon",
+]

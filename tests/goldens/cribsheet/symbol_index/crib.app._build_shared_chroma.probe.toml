@@ -1,0 +1,29 @@
+fqname = "crib.app._build_shared_chroma.probe"
+name = "probe"
+kind = "function"
+lang = "python"
+module = "crib.app"
+parent = "crib.app._build_shared_chroma"
+content_hash = "59985c14622ddbdb"
+file = "crib/app.py"
+signature = "def probe() -> None:"
+description = ""
+line = 1516
+mtime = 1783530649000000000
+container = [
+  "_build_shared_chroma",
+]
+calls = []
+called_by = []
+references = [
+  "_build_shared_chroma [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "build",
+  "chroma",
+  "crib",
+  "crib.app._build_shared_chroma.probe",
+  "probe",
+  "shared",
+]

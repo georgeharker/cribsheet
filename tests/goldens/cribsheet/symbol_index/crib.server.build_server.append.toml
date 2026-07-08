@@ -1,0 +1,29 @@
+fqname = "crib.server.build_server.append"
+name = "append"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "4862a3b2e3ed4025"
+file = "crib/server.py"
+signature = "@write_tool"
+description = ""
+line = 281
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_write_project [crib/server.py]",
+  "append_note [crib/app.py]",
+  "write_tool [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "append",
+  "build",
+  "crib",
+  "crib.server.build_server.append",
+  "server",
+]

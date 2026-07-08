@@ -1,0 +1,29 @@
+fqname = "tests.test_forget.run"
+name = "run"
+kind = "function"
+lang = "python"
+module = "tests.test_forget"
+parent = ""
+content_hash = "44052857cf112194"
+file = "tests/test_forget.py"
+signature = "def run(coro):"
+description = ""
+line = 25
+mtime = 1782609751000000000
+container = []
+calls = []
+called_by = [
+  "test_forget_missing_note_is_noop [tests/test_forget.py]",
+  "test_forget_removes_file_and_index_but_stashes_version [tests/test_forget.py]",
+]
+references = [
+  "test_forget_missing_note_is_noop [tests/test_forget.py]",
+  "test_forget_removes_file_and_index_but_stashes_version [tests/test_forget.py]",
+]
+name_terms = [
+  "forget",
+  "run",
+  "test",
+  "tests",
+  "tests.test_forget.run",
+]

@@ -1,0 +1,31 @@
+fqname = "crib.store._matches"
+name = "_matches"
+kind = "function"
+lang = "python"
+module = "crib.store"
+parent = ""
+content_hash = "fd811f99240a1c2e"
+file = "crib/store.py"
+signature = "def _matches(meta: dict[str, Any], where: dict[str, Any] | None) -> bool:"
+description = ""
+line = 65
+mtime = 1783446057000000000
+container = []
+calls = []
+called_by = [
+  "get_docs [crib/store.py]",
+  "get_meta [crib/store.py]",
+  "query [crib/store.py]",
+]
+references = [
+  "get_docs [crib/store.py]",
+  "get_meta [crib/store.py]",
+  "query [crib/store.py]",
+]
+name_terms = [
+  "_matches",
+  "crib",
+  "crib.store._matches",
+  "matches",
+  "store",
+]

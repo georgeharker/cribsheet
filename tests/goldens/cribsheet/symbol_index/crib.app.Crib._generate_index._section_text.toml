@@ -1,0 +1,36 @@
+fqname = "crib.app.Crib._generate_index._section_text"
+name = "_section_text"
+kind = "function"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib._generate_index"
+content_hash = "b0f05b41aa544fb7"
+file = "crib/app.py"
+signature = "def _section_text(rp: str, heading: str, fallback: str) -> str:"
+description = ""
+line = 1118
+mtime = 1783530649000000000
+container = [
+  "Crib",
+  "_generate_index",
+]
+calls = [
+  "abspath [crib/app.py]",
+  "section_line_map [crib/chunk.py]",
+]
+called_by = [
+  "_generate_index [crib/app.py]",
+]
+references = [
+  "_generate_index [crib/app.py]",
+]
+name_terms = [
+  "_section_text",
+  "app",
+  "crib",
+  "crib.app.Crib._generate_index._section_text",
+  "generate",
+  "index",
+  "section",
+  "text",
+]

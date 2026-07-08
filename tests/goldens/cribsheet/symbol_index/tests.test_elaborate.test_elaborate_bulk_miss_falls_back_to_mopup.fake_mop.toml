@@ -1,0 +1,35 @@
+fqname = "tests.test_elaborate.test_elaborate_bulk_miss_falls_back_to_mopup.fake_mop"
+name = "fake_mop"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = "tests.test_elaborate.test_elaborate_bulk_miss_falls_back_to_mopup"
+content_hash = "5c5efeb1be55b45a"
+file = "tests/test_elaborate.py"
+signature = "async def fake_mop(cfg, system, user, purpose=\"elaborate\", timeout=None):"
+description = ""
+line = 250
+mtime = 1782958917000000000
+container = [
+  "test_elaborate_bulk_miss_falls_back_to_mopup",
+]
+calls = []
+called_by = []
+references = [
+  "test_elaborate_bulk_miss_falls_back_to_mopup [tests/test_elaborate.py]",
+]
+name_terms = [
+  "back",
+  "bulk",
+  "elaborate",
+  "fake",
+  "fake_mop",
+  "falls",
+  "miss",
+  "mop",
+  "mopup",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_elaborate_bulk_miss_falls_back_to_mopup.fake_mop",
+  "to",
+]

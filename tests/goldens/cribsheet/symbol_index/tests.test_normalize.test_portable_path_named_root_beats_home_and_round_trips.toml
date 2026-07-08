@@ -1,0 +1,35 @@
+fqname = "tests.test_normalize.test_portable_path_named_root_beats_home_and_round_trips"
+name = "test_portable_path_named_root_beats_home_and_round_trips"
+kind = "function"
+lang = "python"
+module = "tests.test_normalize"
+parent = ""
+content_hash = "7632bf1dbd479d7e"
+file = "tests/test_normalize.py"
+signature = "def test_portable_path_named_root_beats_home_and_round_trips():"
+description = ""
+line = 41
+mtime = 1782755212000000000
+container = []
+calls = [
+  "expand_location [crib/config.py]",
+  "portable_path [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "beats",
+  "home",
+  "named",
+  "normalize",
+  "path",
+  "portable",
+  "root",
+  "round",
+  "test",
+  "test_portable_path_named_root_beats_home_and_round_trips",
+  "tests",
+  "tests.test_normalize.test_portable_path_named_root_beats_home_and_round_trips",
+  "trips",
+]

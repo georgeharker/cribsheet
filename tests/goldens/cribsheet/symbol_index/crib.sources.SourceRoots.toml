@@ -1,0 +1,28 @@
+fqname = "crib.sources.SourceRoots"
+name = "SourceRoots"
+kind = "class"
+lang = "python"
+module = "crib.sources"
+parent = ""
+content_hash = "609f738c30252856"
+file = "crib/sources.py"
+signature = "class SourceRoots:"
+description = ""
+line = 29
+mtime = 1783358913000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_source_roots [crib/app.py]",
+  "source_roots [crib/notestore.py]",
+  "test_index_insitu_no_copy_and_resolves_to_source [tests/test_insitu_docs.py]",
+]
+name_terms = [
+  "SourceRoots",
+  "crib",
+  "crib.sources.SourceRoots",
+  "roots",
+  "source",
+  "sources",
+]

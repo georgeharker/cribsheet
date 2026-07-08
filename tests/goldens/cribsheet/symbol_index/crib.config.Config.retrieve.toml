@@ -1,0 +1,33 @@
+fqname = "crib.config.Config.retrieve"
+name = "retrieve"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.Config"
+content_hash = "fe4ff40376fff188"
+file = "crib/config.py"
+signature = "retrieve: RetrieveConfig = field(default_factory=RetrieveConfig)"
+description = ""
+line = 189
+mtime = 1783455339000000000
+container = [
+  "Config",
+]
+calls = []
+called_by = []
+references = [
+  "_rerank [crib/app.py]",
+  "_retrieve [crib/app.py]",
+  "cmd_info [crib/cli.py]",
+  "crib [tests/test_rerank.py]",
+  "freshness [crib/codestore.py]",
+  "load [crib/config.py]",
+  "lookup [crib/app.py]",
+  "reranker [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.retrieve",
+  "retrieve",
+]

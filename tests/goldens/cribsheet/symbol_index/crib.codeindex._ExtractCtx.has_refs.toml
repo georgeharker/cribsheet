@@ -1,0 +1,31 @@
+fqname = "crib.codeindex._ExtractCtx.has_refs"
+name = "has_refs"
+kind = "field"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex._ExtractCtx"
+content_hash = "64f79936b7dead3b"
+file = "crib/codeindex.py"
+signature = "has_refs: bool"
+description = ""
+line = 881
+mtime = 1783533619000000000
+container = [
+  "_ExtractCtx",
+]
+calls = []
+called_by = []
+references = [
+  "_extract [crib/codeindex.py]",
+  "_symbol_entry [crib/codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex._ExtractCtx.has_refs",
+  "ctx",
+  "extract",
+  "has",
+  "has_refs",
+  "refs",
+]

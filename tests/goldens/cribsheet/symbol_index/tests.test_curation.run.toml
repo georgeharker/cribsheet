@@ -1,0 +1,35 @@
+fqname = "tests.test_curation.run"
+name = "run"
+kind = "function"
+lang = "python"
+module = "tests.test_curation"
+parent = ""
+content_hash = "44052857cf112194"
+file = "tests/test_curation.py"
+signature = "def run(coro):"
+description = ""
+line = 23
+mtime = 1782717497000000000
+container = []
+calls = []
+called_by = [
+  "test_move_across_projects_preserves_id [tests/test_curation.py]",
+  "test_move_rejects_clobber_and_noop [tests/test_curation.py]",
+  "test_relpath_is_predictable_then_collision_suffixed [tests/test_curation.py]",
+  "test_similar_field_present_and_excludes_self [tests/test_curation.py]",
+  "test_store_reports_created_for_new_project [tests/test_curation.py]",
+]
+references = [
+  "test_move_across_projects_preserves_id [tests/test_curation.py]",
+  "test_move_rejects_clobber_and_noop [tests/test_curation.py]",
+  "test_relpath_is_predictable_then_collision_suffixed [tests/test_curation.py]",
+  "test_similar_field_present_and_excludes_self [tests/test_curation.py]",
+  "test_store_reports_created_for_new_project [tests/test_curation.py]",
+]
+name_terms = [
+  "curation",
+  "run",
+  "test",
+  "tests",
+  "tests.test_curation.run",
+]

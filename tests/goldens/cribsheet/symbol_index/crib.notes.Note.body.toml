@@ -1,0 +1,42 @@
+fqname = "crib.notes.Note.body"
+name = "body"
+kind = "field"
+lang = "python"
+module = "crib.notes"
+parent = "crib.notes.Note"
+content_hash = "ae9d5aa7695a1124"
+file = "crib/notes.py"
+signature = "body: str = \"\""
+description = ""
+line = 23
+mtime = 1782755212000000000
+container = [
+  "Note",
+]
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "append [crib/learnings.py]",
+  "append_note [crib/app.py]",
+  "attach [crib/learnings.py]",
+  "delete [crib/notestore.py]",
+  "distill [crib/app.py]",
+  "edit_note [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "load [crib/notes.py]",
+  "move [crib/notestore.py]",
+  "read [crib/learnings.py]",
+  "save_atomic [crib/notes.py]",
+  "store_note [crib/app.py]",
+  "test_distill_revises_and_thrash_guards [tests/test_elaborate.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "body",
+  "crib",
+  "crib.notes.Note.body",
+  "note",
+  "notes",
+]

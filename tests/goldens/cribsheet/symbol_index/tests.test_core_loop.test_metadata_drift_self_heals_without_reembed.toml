@@ -1,0 +1,32 @@
+fqname = "tests.test_core_loop.test_metadata_drift_self_heals_without_reembed"
+name = "test_metadata_drift_self_heals_without_reembed"
+kind = "function"
+lang = "python"
+module = "tests.test_core_loop"
+parent = ""
+content_hash = "c17b48723d4a8af3"
+file = "tests/test_core_loop.py"
+signature = "def test_metadata_drift_self_heals_without_reembed(crib):"
+description = ""
+line = 51
+mtime = 1782930371000000000
+container = []
+calls = [
+  "run [tests/test_core_loop.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "core",
+  "drift",
+  "heals",
+  "loop",
+  "metadata",
+  "reembed",
+  "self",
+  "test",
+  "test_metadata_drift_self_heals_without_reembed",
+  "tests",
+  "tests.test_core_loop.test_metadata_drift_self_heals_without_reembed",
+  "without",
+]

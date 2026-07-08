@@ -1,0 +1,35 @@
+fqname = "tests.test_elaborate.test_elaborate_bulk_miss_falls_back_to_mopup.fake_struct"
+name = "fake_struct"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = "tests.test_elaborate.test_elaborate_bulk_miss_falls_back_to_mopup"
+content_hash = "43be46a2e4aba110"
+file = "tests/test_elaborate.py"
+signature = "async def fake_struct(cfg, system, user, schema, purpose=\"elaborate\","
+description = ""
+line = 244
+mtime = 1782958917000000000
+container = [
+  "test_elaborate_bulk_miss_falls_back_to_mopup",
+]
+calls = []
+called_by = []
+references = [
+  "test_elaborate_bulk_miss_falls_back_to_mopup [tests/test_elaborate.py]",
+]
+name_terms = [
+  "back",
+  "bulk",
+  "elaborate",
+  "fake",
+  "fake_struct",
+  "falls",
+  "miss",
+  "mopup",
+  "struct",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_elaborate_bulk_miss_falls_back_to_mopup.fake_struct",
+  "to",
+]

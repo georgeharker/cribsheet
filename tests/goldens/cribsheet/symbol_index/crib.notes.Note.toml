@@ -1,0 +1,36 @@
+fqname = "crib.notes.Note"
+name = "Note"
+kind = "class"
+lang = "python"
+module = "crib.notes"
+parent = ""
+content_hash = "a6f0c35899641fc9"
+file = "crib/notes.py"
+signature = "@dataclass"
+description = ""
+line = 19
+mtime = 1782755212000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_write_note [crib/app.py]",
+  "append [crib/learnings.py]",
+  "append_note [crib/app.py]",
+  "edit_note [crib/app.py]",
+  "ensure_id [crib/notes.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "load [crib/notes.py]",
+  "move [crib/notestore.py]",
+  "save_atomic [crib/notes.py]",
+  "store_note [crib/app.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "Note",
+  "crib",
+  "crib.notes.Note",
+  "note",
+  "notes",
+]

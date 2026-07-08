@@ -1,0 +1,30 @@
+fqname = "crib.cli.build_parser"
+name = "build_parser"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "60e602876abf1f89"
+file = "crib/cli.py"
+signature = "def build_parser() -> argparse.ArgumentParser:"
+description = ""
+line = 385
+mtime = 1783476730000000000
+container = []
+calls = [
+  "proj [crib/cli.py]",
+]
+called_by = [
+  "main [crib/cli.py]",
+]
+references = [
+  "main [crib/cli.py]",
+]
+name_terms = [
+  "build",
+  "build_parser",
+  "cli",
+  "crib",
+  "crib.cli.build_parser",
+  "parser",
+]

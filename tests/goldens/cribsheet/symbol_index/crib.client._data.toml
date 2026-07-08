@@ -1,0 +1,39 @@
+fqname = "crib.client._data"
+name = "_data"
+kind = "function"
+lang = "python"
+module = "crib.client"
+parent = ""
+content_hash = "2f7ffeeda8b5e372"
+file = "crib/client.py"
+signature = "def _data(res: Any) -> Any:"
+description = ""
+line = 28
+mtime = 1782958917000000000
+container = []
+calls = []
+called_by = [
+  "_call [crib/client.py]",
+  "test_falls_back_to_data_when_no_structured_content [tests/test_client.py]",
+  "test_falls_back_to_text_content_when_data_absent [tests/test_client.py]",
+  "test_list_of_scalars_unwrapped [tests/test_client.py]",
+  "test_lookup_prefers_structured_content_over_empty_data [tests/test_client.py]",
+  "test_scalar_result_envelope_is_unwrapped [tests/test_client.py]",
+  "test_write_dict_passthrough_not_unwrapped [tests/test_client.py]",
+]
+references = [
+  "_call [crib/client.py]",
+  "test_falls_back_to_data_when_no_structured_content [tests/test_client.py]",
+  "test_falls_back_to_text_content_when_data_absent [tests/test_client.py]",
+  "test_list_of_scalars_unwrapped [tests/test_client.py]",
+  "test_lookup_prefers_structured_content_over_empty_data [tests/test_client.py]",
+  "test_scalar_result_envelope_is_unwrapped [tests/test_client.py]",
+  "test_write_dict_passthrough_not_unwrapped [tests/test_client.py]",
+]
+name_terms = [
+  "_data",
+  "client",
+  "crib",
+  "crib.client._data",
+  "data",
+]

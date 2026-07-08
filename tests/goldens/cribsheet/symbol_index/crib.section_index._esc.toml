@@ -1,0 +1,28 @@
+fqname = "crib.section_index._esc"
+name = "_esc"
+kind = "function"
+lang = "python"
+module = "crib.section_index"
+parent = ""
+content_hash = "fa34d192a99324d6"
+file = "crib/section_index.py"
+signature = "def _esc(s: str) -> str:"
+description = ""
+line = 91
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = [
+  "_render_toml [crib/section_index.py]",
+]
+references = [
+  "_render_toml [crib/section_index.py]",
+]
+name_terms = [
+  "_esc",
+  "crib",
+  "crib.section_index._esc",
+  "esc",
+  "index",
+  "section",
+]

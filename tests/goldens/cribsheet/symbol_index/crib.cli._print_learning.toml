@@ -1,0 +1,30 @@
+fqname = "crib.cli._print_learning"
+name = "_print_learning"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "e75723d2a5686b23"
+file = "crib/cli.py"
+signature = "def _print_learning(learning: dict, indent: str) -> None:"
+description = ""
+line = 279
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = [
+  "_emit_code [crib/cli.py]",
+  "_emit_code_dossier [crib/cli.py]",
+]
+references = [
+  "_emit_code [crib/cli.py]",
+  "_emit_code_dossier [crib/cli.py]",
+]
+name_terms = [
+  "_print_learning",
+  "cli",
+  "crib",
+  "crib.cli._print_learning",
+  "learning",
+  "print",
+]

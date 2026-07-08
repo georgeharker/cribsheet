@@ -1,0 +1,33 @@
+fqname = "crib.section_index.SectionIndex.path"
+name = "path"
+kind = "method"
+lang = "python"
+module = "crib.section_index"
+parent = "crib.section_index.SectionIndex"
+content_hash = "50e058fb521953e9"
+file = "crib/section_index.py"
+signature = "def path(self, label: str, section_hash: str) -> Path:"
+description = ""
+line = 123
+mtime = 1782930371000000000
+container = [
+  "SectionIndex",
+]
+calls = []
+called_by = [
+  "has [crib/section_index.py]",
+  "read_terms [crib/section_index.py]",
+  "write [crib/section_index.py]",
+]
+references = [
+  "has [crib/section_index.py]",
+  "read_terms [crib/section_index.py]",
+  "write [crib/section_index.py]",
+]
+name_terms = [
+  "crib",
+  "crib.section_index.SectionIndex.path",
+  "index",
+  "path",
+  "section",
+]

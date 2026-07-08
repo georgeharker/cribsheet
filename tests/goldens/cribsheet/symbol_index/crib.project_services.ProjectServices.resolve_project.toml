@@ -1,0 +1,32 @@
+fqname = "crib.project_services.ProjectServices.resolve_project"
+name = "resolve_project"
+kind = "method"
+lang = "python"
+module = "crib.project_services"
+parent = "crib.project_services.ProjectServices"
+content_hash = "2d17209448240fcb"
+file = "crib/project_services.py"
+signature = "def resolve_project(self, project: str | None, cwd: Path | None = None) -> str:"
+description = ""
+line = 38
+mtime = 1783530318000000000
+container = [
+  "ProjectServices",
+]
+calls = [
+  "resolve_project [crib/config.py]",
+]
+called_by = [
+  "code_index [crib/codeindexer.py]",
+]
+references = [
+  "code_index [crib/codeindexer.py]",
+]
+name_terms = [
+  "crib",
+  "crib.project_services.ProjectServices.resolve_project",
+  "project",
+  "resolve",
+  "resolve_project",
+  "services",
+]

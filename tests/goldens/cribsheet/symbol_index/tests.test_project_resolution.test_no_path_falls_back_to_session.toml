@@ -1,0 +1,33 @@
+fqname = "tests.test_project_resolution.test_no_path_falls_back_to_session"
+name = "test_no_path_falls_back_to_session"
+kind = "function"
+lang = "python"
+module = "tests.test_project_resolution"
+parent = ""
+content_hash = "451ad48adb36edd4"
+file = "tests/test_project_resolution.py"
+signature = "def test_no_path_falls_back_to_session(crib):"
+description = ""
+line = 37
+mtime = 1783378845000000000
+container = []
+calls = [
+  "_source_project [crib/server.py]",
+  "session_state [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "back",
+  "falls",
+  "no",
+  "path",
+  "project",
+  "resolution",
+  "session",
+  "test",
+  "test_no_path_falls_back_to_session",
+  "tests",
+  "tests.test_project_resolution.test_no_path_falls_back_to_session",
+  "to",
+]

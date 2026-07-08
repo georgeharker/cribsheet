@@ -1,0 +1,37 @@
+fqname = "crib.section_index.SectionIndex.terms_for"
+name = "terms_for"
+kind = "method"
+lang = "python"
+module = "crib.section_index"
+parent = "crib.section_index.SectionIndex"
+content_hash = "e0baf3c93a053742"
+file = "crib/section_index.py"
+signature = "def terms_for(self, section_hash: str, labels: list[str]) -> list[str]:"
+description = ""
+line = 140
+mtime = 1782930371000000000
+container = [
+  "SectionIndex",
+]
+calls = [
+  "read_terms [crib/section_index.py]",
+]
+called_by = [
+  "_keyword_terms [crib/app.py]",
+  "_summary_terms [crib/app.py]",
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+]
+references = [
+  "_keyword_terms [crib/app.py]",
+  "_summary_terms [crib/app.py]",
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+]
+name_terms = [
+  "crib",
+  "crib.section_index.SectionIndex.terms_for",
+  "for",
+  "index",
+  "section",
+  "terms",
+  "terms_for",
+]

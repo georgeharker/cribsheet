@@ -1,0 +1,43 @@
+fqname = "crib.app.Crib._generate_index"
+name = "_generate_index"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "009a0b12472eaf36"
+file = "crib/app.py"
+signature = "async def _generate_index(self, root_name: str, purpose: str, label: str,"
+description = ""
+line = 1090
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "SectionIndex [crib/section_index.py]",
+  "_bulk [crib/app.py]",
+  "_one [crib/app.py]",
+  "_section_text [crib/app.py]",
+  "get_docs [crib/store.py]",
+  "has [crib/section_index.py]",
+  "invalidate_caches [crib/indexer.py]",
+  "project_dir [crib/paths.py]",
+  "resolve_project [crib/app.py]",
+  "resolve_provider [crib/generate.py]",
+]
+called_by = [
+  "elaborate [crib/app.py]",
+  "summarize [crib/app.py]",
+]
+references = [
+  "elaborate [crib/app.py]",
+  "summarize [crib/app.py]",
+]
+name_terms = [
+  "_generate_index",
+  "app",
+  "crib",
+  "crib.app.Crib._generate_index",
+  "generate",
+  "index",
+]

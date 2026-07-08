@@ -1,0 +1,33 @@
+fqname = "crib.indexer.IndexEngine._key"
+name = "_key"
+kind = "method"
+lang = "python"
+module = "crib.indexer"
+parent = "crib.indexer.IndexEngine"
+content_hash = "ece186edd0b2abe4"
+file = "crib/indexer.py"
+signature = "def _key(self, project: str, relpath: str) -> str:"
+description = ""
+line = 56
+mtime = 1783476730000000000
+container = [
+  "IndexEngine",
+]
+calls = []
+called_by = [
+  "forget [crib/indexer.py]",
+  "index_file [crib/indexer.py]",
+]
+references = [
+  "forget [crib/indexer.py]",
+  "index_file [crib/indexer.py]",
+]
+name_terms = [
+  "_key",
+  "crib",
+  "crib.indexer.IndexEngine._key",
+  "engine",
+  "index",
+  "indexer",
+  "key",
+]

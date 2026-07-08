@@ -1,0 +1,40 @@
+fqname = "tests.test_import.test_import_id_is_deterministic_across_machines.fresh"
+name = "fresh"
+kind = "function"
+lang = "python"
+module = "tests.test_import"
+parent = "tests.test_import.test_import_id_is_deterministic_across_machines"
+content_hash = "6434373cb11461b7"
+file = "tests/test_import.py"
+signature = "def fresh(slot):"
+description = ""
+line = 79
+mtime = 1783450349000000000
+container = [
+  "test_import_id_is_deterministic_across_machines",
+]
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = [
+  "test_import_id_is_deterministic_across_machines [tests/test_import.py]",
+]
+references = [
+  "test_import_id_is_deterministic_across_machines [tests/test_import.py]",
+]
+name_terms = [
+  "across",
+  "deterministic",
+  "fresh",
+  "id",
+  "import",
+  "is",
+  "machines",
+  "test",
+  "tests",
+  "tests.test_import.test_import_id_is_deterministic_across_machines.fresh",
+]

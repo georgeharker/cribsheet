@@ -1,0 +1,36 @@
+fqname = "crib.gitbacking.GitBacking.push"
+name = "push"
+kind = "method"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.GitBacking"
+content_hash = "a8fa3551b99548f2"
+file = "crib/gitbacking.py"
+signature = "def push(self) -> SyncResult:"
+description = ""
+line = 276
+mtime = 1783451795000000000
+container = [
+  "GitBacking",
+]
+calls = [
+  "SyncResult [crib/gitbacking.py]",
+  "_branch [crib/gitbacking.py]",
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "_run_git [crib/cli.py]",
+  "sync [crib/gitbacking.py]",
+]
+references = [
+  "_run_git [crib/cli.py]",
+  "sync [crib/gitbacking.py]",
+]
+name_terms = [
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking.push",
+  "git",
+  "gitbacking",
+  "push",
+]

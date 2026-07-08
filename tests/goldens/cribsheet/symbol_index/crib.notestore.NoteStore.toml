@@ -1,0 +1,27 @@
+fqname = "crib.notestore.NoteStore"
+name = "NoteStore"
+kind = "class"
+lang = "python"
+module = "crib.notestore"
+parent = ""
+content_hash = "e73649147b3edca7"
+file = "crib/notestore.py"
+signature = "class NoteStore:"
+description = ""
+line = 28
+mtime = 1783525700000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/learnings.py]",
+]
+name_terms = [
+  "NoteStore",
+  "crib",
+  "crib.notestore.NoteStore",
+  "note",
+  "notestore",
+  "store",
+]

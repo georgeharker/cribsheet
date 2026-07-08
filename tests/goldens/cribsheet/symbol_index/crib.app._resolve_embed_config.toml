@@ -1,0 +1,29 @@
+fqname = "crib.app._resolve_embed_config"
+name = "_resolve_embed_config"
+kind = "function"
+lang = "python"
+module = "crib.app"
+parent = ""
+content_hash = "e8ac5abe8a09e18f"
+file = "crib/app.py"
+signature = "def _resolve_embed_config(config: Config) -> Any:"
+description = ""
+line = 71
+mtime = 1783530649000000000
+container = []
+calls = []
+called_by = [
+  "__init__ [crib/app.py]",
+]
+references = [
+  "__init__ [crib/app.py]",
+]
+name_terms = [
+  "_resolve_embed_config",
+  "app",
+  "config",
+  "crib",
+  "crib.app._resolve_embed_config",
+  "embed",
+  "resolve",
+]

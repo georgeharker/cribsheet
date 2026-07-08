@@ -1,0 +1,32 @@
+fqname = "tests.test_normalize.test_portable_path_unmatched_falls_back_to_string"
+name = "test_portable_path_unmatched_falls_back_to_string"
+kind = "function"
+lang = "python"
+module = "tests.test_normalize"
+parent = ""
+content_hash = "0aa9b6ecf36c5e3f"
+file = "tests/test_normalize.py"
+signature = "def test_portable_path_unmatched_falls_back_to_string():"
+description = ""
+line = 48
+mtime = 1782755212000000000
+container = []
+calls = [
+  "portable_path [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "back",
+  "falls",
+  "normalize",
+  "path",
+  "portable",
+  "string",
+  "test",
+  "test_portable_path_unmatched_falls_back_to_string",
+  "tests",
+  "tests.test_normalize.test_portable_path_unmatched_falls_back_to_string",
+  "to",
+  "unmatched",
+]

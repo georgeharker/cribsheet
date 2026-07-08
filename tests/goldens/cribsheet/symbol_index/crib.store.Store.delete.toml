@@ -1,0 +1,32 @@
+fqname = "crib.store.Store.delete"
+name = "delete"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Store"
+content_hash = "0f78a5cd76f3fcf6"
+file = "crib/store.py"
+signature = "def delete(self, ids: list[str]) -> None: ..."
+description = ""
+line = 35
+mtime = 1783446057000000000
+container = [
+  "Store",
+]
+calls = []
+called_by = [
+  "_index_locked [crib/indexer.py]",
+  "forget [crib/indexer.py]",
+  "project_forget [crib/app.py]",
+]
+references = [
+  "_index_locked [crib/indexer.py]",
+  "forget [crib/indexer.py]",
+  "project_forget [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Store.delete",
+  "delete",
+  "store",
+]

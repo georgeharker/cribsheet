@@ -1,0 +1,31 @@
+fqname = "tests.test_elaborate.test_resolve_provider_missing_selection_errors"
+name = "test_resolve_provider_missing_selection_errors"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "357d59b04f9149a7"
+file = "tests/test_elaborate.py"
+signature = "def test_resolve_provider_missing_selection_errors(tmp_path):"
+description = ""
+line = 323
+mtime = 1782958917000000000
+container = []
+calls = [
+  "GenerateConfig [crib/config.py]",
+  "resolve_provider [crib/generate.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "elaborate",
+  "errors",
+  "missing",
+  "provider",
+  "resolve",
+  "selection",
+  "test",
+  "test_resolve_provider_missing_selection_errors",
+  "tests",
+  "tests.test_elaborate.test_resolve_provider_missing_selection_errors",
+]

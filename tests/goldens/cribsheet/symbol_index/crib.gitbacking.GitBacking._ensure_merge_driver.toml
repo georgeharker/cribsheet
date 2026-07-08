@@ -1,0 +1,39 @@
+fqname = "crib.gitbacking.GitBacking._ensure_merge_driver"
+name = "_ensure_merge_driver"
+kind = "method"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.GitBacking"
+content_hash = "739e83c77518f246"
+file = "crib/gitbacking.py"
+signature = "def _ensure_merge_driver(self) -> None:"
+description = ""
+line = 110
+mtime = 1783451795000000000
+container = [
+  "GitBacking",
+]
+calls = [
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "_ensure_repo_config [crib/gitbacking.py]",
+  "init [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+]
+references = [
+  "_ensure_repo_config [crib/gitbacking.py]",
+  "init [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+]
+name_terms = [
+  "_ensure_merge_driver",
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking._ensure_merge_driver",
+  "driver",
+  "ensure",
+  "git",
+  "gitbacking",
+  "merge",
+]

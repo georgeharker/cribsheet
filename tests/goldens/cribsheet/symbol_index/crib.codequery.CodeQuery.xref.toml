@@ -1,0 +1,34 @@
+fqname = "crib.codequery.CodeQuery.xref"
+name = "xref"
+kind = "method"
+lang = "python"
+module = "crib.codequery"
+parent = "crib.codequery.CodeQuery"
+content_hash = "2924fe8a34cad974"
+file = "crib/codequery.py"
+signature = "def xref(self, proj: str, symbol: str) -> list[dict[str, Any]]:"
+description = ""
+line = 32
+mtime = 1783529969000000000
+container = [
+  "CodeQuery",
+]
+calls = [
+  "attach [crib/learnings.py]",
+  "by_fqname [crib/codestore.py]",
+  "project_refs [crib/refs.py]",
+]
+called_by = [
+  "code_xref [crib/app.py]",
+]
+references = [
+  "code_xref [crib/app.py]",
+]
+name_terms = [
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery.xref",
+  "query",
+  "xref",
+]

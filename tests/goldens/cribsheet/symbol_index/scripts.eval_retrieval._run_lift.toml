@@ -1,0 +1,32 @@
+fqname = "scripts.eval_retrieval._run_lift"
+name = "_run_lift"
+kind = "function"
+lang = "python"
+module = "scripts.eval_retrieval"
+parent = ""
+content_hash = "904c1e7f36bd8c5e"
+file = "scripts/eval_retrieval.py"
+signature = "def _run_lift(spec: dict[str, Any], args: Any) -> int:"
+description = ""
+line = 180
+mtime = 1782930371000000000
+container = []
+calls = [
+  "agg [scripts/eval_retrieval.py]",
+  "evaluate [scripts/eval_retrieval.py]",
+]
+called_by = [
+  "main [scripts/eval_retrieval.py]",
+]
+references = [
+  "main [scripts/eval_retrieval.py]",
+]
+name_terms = [
+  "_run_lift",
+  "eval",
+  "lift",
+  "retrieval",
+  "run",
+  "scripts",
+  "scripts.eval_retrieval._run_lift",
+]

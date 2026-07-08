@@ -1,0 +1,35 @@
+fqname = "crib.app.Crib._index_project_code"
+name = "_index_project_code"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "ed6a286a5bb5fe55"
+file = "crib/app.py"
+signature = "async def _index_project_code(self, proj: str, root: Path,"
+description = ""
+line = 899
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "_index_project_code [crib/codeindexer.py]",
+]
+called_by = [
+  "project_index [crib/app.py]",
+  "project_setup [crib/app.py]",
+]
+references = [
+  "project_index [crib/app.py]",
+  "project_setup [crib/app.py]",
+]
+name_terms = [
+  "_index_project_code",
+  "app",
+  "code",
+  "crib",
+  "crib.app.Crib._index_project_code",
+  "index",
+  "project",
+]

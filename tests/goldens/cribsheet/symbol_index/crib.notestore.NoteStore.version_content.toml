@@ -1,0 +1,36 @@
+fqname = "crib.notestore.NoteStore.version_content"
+name = "version_content"
+kind = "method"
+lang = "python"
+module = "crib.notestore"
+parent = "crib.notestore.NoteStore"
+content_hash = "9f2b85479108d1e5"
+file = "crib/notestore.py"
+signature = "def version_content(self, project: str, relpath: str, version: str) -> str:"
+description = ""
+line = 152
+mtime = 1783525700000000000
+container = [
+  "NoteStore",
+]
+calls = [
+  "abspath [crib/notestore.py]",
+  "load [crib/notes.py]",
+  "read [crib/versions.py]",
+]
+called_by = [
+  "restore [crib/app.py]",
+]
+references = [
+  "restore [crib/app.py]",
+]
+name_terms = [
+  "content",
+  "crib",
+  "crib.notestore.NoteStore.version_content",
+  "note",
+  "notestore",
+  "store",
+  "version",
+  "version_content",
+]

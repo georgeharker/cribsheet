@@ -1,0 +1,30 @@
+fqname = "tests.test_elaborate.test_resolve_provider_inline_fallback"
+name = "test_resolve_provider_inline_fallback"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "e97a1fd0a66fa4c4"
+file = "tests/test_elaborate.py"
+signature = "def test_resolve_provider_inline_fallback():"
+description = ""
+line = 314
+mtime = 1782958917000000000
+container = []
+calls = [
+  "GenerateConfig [crib/config.py]",
+  "resolve_provider [crib/generate.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "elaborate",
+  "fallback",
+  "inline",
+  "provider",
+  "resolve",
+  "test",
+  "test_resolve_provider_inline_fallback",
+  "tests",
+  "tests.test_elaborate.test_resolve_provider_inline_fallback",
+]

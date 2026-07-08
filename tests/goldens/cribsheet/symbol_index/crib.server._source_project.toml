@@ -1,0 +1,42 @@
+fqname = "crib.server._source_project"
+name = "_source_project"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = ""
+content_hash = "78e29694382dc944"
+file = "crib/server.py"
+signature = "def _source_project(crib: Crib, project: str | None,"
+description = ""
+line = 73
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_project [crib/server.py]",
+]
+called_by = [
+  "project_forget [crib/server.py]",
+  "project_index [crib/server.py]",
+  "project_setup [crib/server.py]",
+  "project_status [crib/server.py]",
+  "test_explicit_project_wins [tests/test_project_resolution.py]",
+  "test_no_path_falls_back_to_session [tests/test_project_resolution.py]",
+  "test_project_path_defers_to_crib_not_sticky [tests/test_project_resolution.py]",
+]
+references = [
+  "project_forget [crib/server.py]",
+  "project_index [crib/server.py]",
+  "project_setup [crib/server.py]",
+  "project_status [crib/server.py]",
+  "test_explicit_project_wins [tests/test_project_resolution.py]",
+  "test_no_path_falls_back_to_session [tests/test_project_resolution.py]",
+  "test_project_path_defers_to_crib_not_sticky [tests/test_project_resolution.py]",
+]
+name_terms = [
+  "_source_project",
+  "crib",
+  "crib.server._source_project",
+  "project",
+  "server",
+  "source",
+]

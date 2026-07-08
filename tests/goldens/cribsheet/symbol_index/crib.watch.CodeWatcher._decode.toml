@@ -1,0 +1,37 @@
+fqname = "crib.watch.CodeWatcher._decode"
+name = "_decode"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch.CodeWatcher"
+content_hash = "a4049071236d6e26"
+file = "crib/watch.py"
+signature = "def _decode(self, raw_path: str, deleted: bool) -> tuple[str, str, str, bool] | None:"
+description = ""
+line = 213
+mtime = 1783476730000000000
+container = [
+  "CodeWatcher",
+]
+calls = [
+  "_code_exts [crib/watch.py]",
+  "_matches_doc_globs [crib/watch.py]",
+  "content_lang [crib/codeindex.py]",
+]
+called_by = [
+  "test_code_watcher_decode_filters [tests/test_watcher.py]",
+  "test_code_watcher_decode_routes_new_extensionless_files [tests/test_watcher.py]",
+]
+references = [
+  "test_code_watcher_decode_filters [tests/test_watcher.py]",
+  "test_code_watcher_decode_routes_new_extensionless_files [tests/test_watcher.py]",
+]
+name_terms = [
+  "_decode",
+  "code",
+  "crib",
+  "crib.watch.CodeWatcher._decode",
+  "decode",
+  "watch",
+  "watcher",
+]

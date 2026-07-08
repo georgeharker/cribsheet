@@ -1,0 +1,32 @@
+fqname = "crib.paths.Paths.index_dir"
+name = "index_dir"
+kind = "field"
+lang = "python"
+module = "crib.paths"
+parent = "crib.paths.Paths"
+content_hash = "13c067c0d7213a98"
+file = "crib/paths.py"
+signature = "index_dir: Path"
+description = ""
+line = 28
+mtime = 1783533619000000000
+container = [
+  "Paths",
+]
+calls = []
+called_by = []
+references = [
+  "_build_store [crib/app.py]",
+  "chroma_dir [crib/paths.py]",
+  "cmd_info [crib/cli.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.Paths.index_dir",
+  "dir",
+  "index",
+  "index_dir",
+  "paths",
+]

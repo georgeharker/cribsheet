@@ -1,0 +1,29 @@
+fqname = "crib.merge._resolve"
+name = "_resolve"
+kind = "function"
+lang = "python"
+module = "crib.merge"
+parent = ""
+content_hash = "0cde3c066f1091e6"
+file = "crib/merge.py"
+signature = "def _resolve(o: Any, a: Any, b: Any) -> Any:"
+description = ""
+line = 31
+mtime = 1783446057000000000
+container = []
+calls = [
+  "_canon [crib/merge.py]",
+]
+called_by = [
+  "merge_frontmatter [crib/merge.py]",
+]
+references = [
+  "merge_frontmatter [crib/merge.py]",
+]
+name_terms = [
+  "_resolve",
+  "crib",
+  "crib.merge._resolve",
+  "merge",
+  "resolve",
+]

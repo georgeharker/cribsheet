@@ -1,0 +1,32 @@
+fqname = "tests.test_cli_labels.test_absent_flag_is_none_use_default"
+name = "test_absent_flag_is_none_use_default"
+kind = "function"
+lang = "python"
+module = "tests.test_cli_labels"
+parent = ""
+content_hash = "1f679ba5e1e660f4"
+file = "tests/test_cli_labels.py"
+signature = "def test_absent_flag_is_none_use_default():"
+description = ""
+line = 14
+mtime = 1782958917000000000
+container = []
+calls = [
+  "_split_labels [crib/cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "absent",
+  "cli",
+  "default",
+  "flag",
+  "is",
+  "labels",
+  "none",
+  "test",
+  "test_absent_flag_is_none_use_default",
+  "tests",
+  "tests.test_cli_labels.test_absent_flag_is_none_use_default",
+  "use",
+]

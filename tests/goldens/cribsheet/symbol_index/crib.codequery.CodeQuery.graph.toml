@@ -1,0 +1,35 @@
+fqname = "crib.codequery.CodeQuery.graph"
+name = "graph"
+kind = "method"
+lang = "python"
+module = "crib.codequery"
+parent = "crib.codequery.CodeQuery"
+content_hash = "cea1a707cf9262da"
+file = "crib/codequery.py"
+signature = "def graph(self, proj: str, symbol: str, direction: str = \"callees\","
+description = ""
+line = 185
+mtime = 1783529969000000000
+container = [
+  "CodeQuery",
+]
+calls = [
+  "_nf [crib/codequery.py]",
+  "build [crib/codequery.py]",
+  "fqns [crib/learnings.py]",
+  "resolve_symbol_or_ref [crib/refs.py]",
+]
+called_by = [
+  "code_graph [crib/app.py]",
+]
+references = [
+  "code_graph [crib/app.py]",
+]
+name_terms = [
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery.graph",
+  "graph",
+  "query",
+]

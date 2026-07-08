@@ -1,0 +1,28 @@
+fqname = "crib.store.JsonStore.delete"
+name = "delete"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.JsonStore"
+content_hash = "c2579923266f2be5"
+file = "crib/store.py"
+signature = "def delete(self, ids: list[str]) -> None:"
+description = ""
+line = 144
+mtime = 1783446057000000000
+container = [
+  "JsonStore",
+]
+calls = [
+  "_save [crib/store.py]",
+  "delete [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.store.JsonStore.delete",
+  "delete",
+  "json",
+  "store",
+]

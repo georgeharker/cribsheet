@@ -1,0 +1,59 @@
+fqname = "crib.codeindex.SymbolIndex"
+name = "SymbolIndex"
+kind = "class"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "d3a7362135930a51"
+file = "crib/codeindex.py"
+signature = "class SymbolIndex:"
+description = ""
+line = 1176
+mtime = 1783533619000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+  "_index_project_code [crib/codeindexer.py]",
+  "_reindex_dirty_code [crib/app.py]",
+  "_require_code_index [crib/app.py]",
+  "_seed_symbol [tests/test_code_learnings.py]",
+  "_sym [tests/test_refs.py]",
+  "_two_projects [tests/test_refs.py]",
+  "_write [tests/test_code_cache.py]",
+  "code_indexed_projects [crib/app.py]",
+  "dir_sig [crib/codestore.py]",
+  "drop_file [crib/codestore.py]",
+  "index [scripts/snapshot_harness.py]",
+  "main [scripts/eval_code.py]",
+  "project_forget [crib/app.py]",
+  "project_refs [crib/refs.py]",
+  "project_status [crib/app.py]",
+  "rehome [crib/learnings.py]",
+  "reload [crib/codestore.py]",
+  "report [crib/learnings.py]",
+  "resolve_symbol [crib/refs.py]",
+  "revalidate [crib/codestore.py]",
+  "start_watchers [crib/app.py]",
+  "test_code_graph_marks_nodes_with_learnings [tests/test_code_learnings.py]",
+  "test_dossier_annotates_neighbours_with_their_descriptions [tests/test_code_learnings.py]",
+  "test_drop_file_bumps_epoch_and_invalidates [tests/test_code_cache.py]",
+  "test_drop_file_removes_symbols_and_edges [tests/test_code_learnings.py]",
+  "test_genuinely_empty_file_still_prunes [tests/test_grammar_enum.py]",
+  "test_keep_prior_on_empty_extraction [tests/test_grammar_enum.py]",
+  "test_partial_extract_reconfirms_before_trusting_shrink [tests/test_code_cache.py]",
+  "test_patch_called_by_keeps_cross_file_graph_consistent [tests/test_code_learnings.py]",
+  "test_reconcile_rebuilds_merge_dirtied_files [tests/test_code_cache.py]",
+  "test_revalidate_reindexes_merge_dirtied_file [tests/test_code_cache.py]",
+  "test_status_inventories_projects [tests/test_status.py]",
+  "test_symbol_index_uses_legible_slug_filenames [tests/test_codeindex.py]",
+]
+name_terms = [
+  "SymbolIndex",
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex",
+  "index",
+  "symbol",
+]

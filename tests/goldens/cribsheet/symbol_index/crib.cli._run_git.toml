@@ -1,0 +1,40 @@
+fqname = "crib.cli._run_git"
+name = "_run_git"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "317c5d1cd884acdf"
+file = "crib/cli.py"
+signature = "def _run_git(args: Any, cfg: Any) -> int:"
+description = ""
+line = 869
+mtime = 1783476730000000000
+container = []
+calls = [
+  "GitBacking [crib/gitbacking.py]",
+  "_prompt_remote [crib/cli.py]",
+  "_reconcile [crib/cli.py]",
+  "current_remote [crib/gitbacking.py]",
+  "ensure [crib/paths.py]",
+  "init [crib/gitbacking.py]",
+  "pull [crib/gitbacking.py]",
+  "push [crib/gitbacking.py]",
+  "resolve [crib/paths.py]",
+  "setup [crib/gitbacking.py]",
+  "sync [crib/gitbacking.py]",
+]
+called_by = [
+  "main [crib/cli.py]",
+]
+references = [
+  "main [crib/cli.py]",
+]
+name_terms = [
+  "_run_git",
+  "cli",
+  "crib",
+  "crib.cli._run_git",
+  "git",
+  "run",
+]

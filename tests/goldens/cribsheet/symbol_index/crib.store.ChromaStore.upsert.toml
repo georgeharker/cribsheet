@@ -1,0 +1,25 @@
+fqname = "crib.store.ChromaStore.upsert"
+name = "upsert"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.ChromaStore"
+content_hash = "f023a7046fe5eb92"
+file = "crib/store.py"
+signature = "def upsert(self, records: list[Record]) -> None:"
+description = ""
+line = 198
+mtime = 1783446057000000000
+container = [
+  "ChromaStore",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore.upsert",
+  "store",
+  "upsert",
+]

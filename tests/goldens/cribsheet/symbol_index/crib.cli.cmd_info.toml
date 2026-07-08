@@ -1,0 +1,31 @@
+fqname = "crib.cli.cmd_info"
+name = "cmd_info"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "0229bca3e8440c48"
+file = "crib/cli.py"
+signature = "def cmd_info(as_json: bool) -> None:"
+description = ""
+line = 606
+mtime = 1783476730000000000
+container = []
+calls = [
+  "load [crib/config.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = [
+  "main [crib/cli.py]",
+]
+references = [
+  "main [crib/cli.py]",
+]
+name_terms = [
+  "cli",
+  "cmd",
+  "cmd_info",
+  "crib",
+  "crib.cli.cmd_info",
+  "info",
+]

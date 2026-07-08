@@ -1,0 +1,29 @@
+fqname = "crib.retrieve.QwenReranker._INSTRUCT"
+name = "_INSTRUCT"
+kind = "constant"
+lang = "python"
+module = "crib.retrieve"
+parent = "crib.retrieve.QwenReranker"
+content_hash = "48c9989f32d87008"
+file = "crib/retrieve.py"
+signature = "_INSTRUCT = \"Given a search query, retrieve relevant passages that answer it\""
+description = ""
+line = 194
+mtime = 1782930371000000000
+container = [
+  "QwenReranker",
+]
+calls = []
+called_by = []
+references = [
+  "scores [crib/retrieve.py]",
+]
+name_terms = [
+  "_INSTRUCT",
+  "crib",
+  "crib.retrieve.QwenReranker._INSTRUCT",
+  "instruct",
+  "qwen",
+  "reranker",
+  "retrieve",
+]

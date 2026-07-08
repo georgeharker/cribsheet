@@ -1,0 +1,33 @@
+fqname = "crib.app.Crib.code_edit"
+name = "code_edit"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "25a27ccddc103c8c"
+file = "crib/app.py"
+signature = "async def code_edit(self, symbol: str, new_content: str, project: str | None = None,"
+description = ""
+line = 1047
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "edit [crib/learnings.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "code_edit [crib/server.py]",
+]
+references = [
+  "code_edit [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "code",
+  "code_edit",
+  "crib",
+  "crib.app.Crib.code_edit",
+  "edit",
+]

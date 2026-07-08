@@ -1,0 +1,33 @@
+fqname = "tests.test_merge.test_body_divergence_surfaces_with_healed_header"
+name = "test_body_divergence_surfaces_with_healed_header"
+kind = "function"
+lang = "python"
+module = "tests.test_merge"
+parent = ""
+content_hash = "f3680c921edef6b1"
+file = "tests/test_merge.py"
+signature = "def test_body_divergence_surfaces_with_healed_header():"
+description = ""
+line = 49
+mtime = 1783446057000000000
+container = []
+calls = [
+  "_note [tests/test_merge.py]",
+  "merge_note_texts [crib/merge.py]",
+  "parse [crib/notes.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "body",
+  "divergence",
+  "header",
+  "healed",
+  "merge",
+  "surfaces",
+  "test",
+  "test_body_divergence_surfaces_with_healed_header",
+  "tests",
+  "tests.test_merge.test_body_divergence_surfaces_with_healed_header",
+  "with",
+]

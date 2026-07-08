@@ -1,0 +1,29 @@
+fqname = "crib.server.build_server.forget"
+name = "forget"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "65e7bec4ba3a2802"
+file = "crib/server.py"
+signature = "@write_tool"
+description = ""
+line = 301
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_write_project [crib/server.py]",
+  "forget [crib/app.py]",
+  "write_tool [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.forget",
+  "forget",
+  "server",
+]

@@ -1,0 +1,28 @@
+fqname = "crib.codeindex._ExtractCtx"
+name = "_ExtractCtx"
+kind = "class"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "7aef90b851fa8cef"
+file = "crib/codeindex.py"
+signature = "@dataclass(frozen=True)"
+description = ""
+line = 866
+mtime = 1783533619000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_extract [crib/codeindex.py]",
+  "_reference_edges [crib/codeindex.py]",
+  "_symbol_entry [crib/codeindex.py]",
+]
+name_terms = [
+  "_ExtractCtx",
+  "codeindex",
+  "crib",
+  "crib.codeindex._ExtractCtx",
+  "ctx",
+  "extract",
+]

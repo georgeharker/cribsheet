@@ -1,0 +1,52 @@
+fqname = "crib.app.Crib.abspath"
+name = "abspath"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "276dccdd8bb5fb0f"
+file = "crib/app.py"
+signature = "def abspath(self, project: str, relpath: str) -> Path:"
+description = ""
+line = 296
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "abspath [crib/notestore.py]",
+]
+called_by = [
+  "_note_id [tests/test_claude_memory.py]",
+  "_on_code_change [crib/app.py]",
+  "_section_text [crib/app.py]",
+  "append_note [crib/app.py]",
+  "apropos [crib/app.py]",
+  "distill [crib/app.py]",
+  "edit_note [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "locate [crib/app.py]",
+  "lookup [crib/app.py]",
+  "store_note [crib/app.py]",
+]
+references = [
+  "_note_id [tests/test_claude_memory.py]",
+  "_on_code_change [crib/app.py]",
+  "_section_text [crib/app.py]",
+  "append_note [crib/app.py]",
+  "apropos [crib/app.py]",
+  "distill [crib/app.py]",
+  "edit_note [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "locate [crib/app.py]",
+  "lookup [crib/app.py]",
+  "store_note [crib/app.py]",
+]
+name_terms = [
+  "abspath",
+  "app",
+  "crib",
+  "crib.app.Crib.abspath",
+]

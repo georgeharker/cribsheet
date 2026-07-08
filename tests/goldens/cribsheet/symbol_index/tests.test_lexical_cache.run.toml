@@ -1,0 +1,32 @@
+fqname = "tests.test_lexical_cache.run"
+name = "run"
+kind = "function"
+lang = "python"
+module = "tests.test_lexical_cache"
+parent = ""
+content_hash = "44052857cf112194"
+file = "tests/test_lexical_cache.py"
+signature = "def run(coro):"
+description = ""
+line = 23
+mtime = 1782697902000000000
+container = []
+calls = []
+called_by = [
+  "test_cache_is_per_project [tests/test_lexical_cache.py]",
+  "test_cache_is_reused_until_a_write [tests/test_lexical_cache.py]",
+  "test_write_invalidates_then_rebuilds [tests/test_lexical_cache.py]",
+]
+references = [
+  "test_cache_is_per_project [tests/test_lexical_cache.py]",
+  "test_cache_is_reused_until_a_write [tests/test_lexical_cache.py]",
+  "test_write_invalidates_then_rebuilds [tests/test_lexical_cache.py]",
+]
+name_terms = [
+  "cache",
+  "lexical",
+  "run",
+  "test",
+  "tests",
+  "tests.test_lexical_cache.run",
+]

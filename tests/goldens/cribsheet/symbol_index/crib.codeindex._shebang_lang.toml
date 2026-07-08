@@ -1,0 +1,32 @@
+fqname = "crib.codeindex._shebang_lang"
+name = "_shebang_lang"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "50c4b49a315b09a1"
+file = "crib/codeindex.py"
+signature = "def _shebang_lang(abspath: Path, grammar: dict | None = None) -> str | None:"
+description = ""
+line = 160
+mtime = 1783533619000000000
+container = []
+calls = [
+  "load_grammar [crib/codeindex.py]",
+]
+called_by = [
+  "content_lang [crib/codeindex.py]",
+  "test_shebang_lang_maps_interpreters [tests/test_codeindex.py]",
+]
+references = [
+  "content_lang [crib/codeindex.py]",
+  "test_shebang_lang_maps_interpreters [tests/test_codeindex.py]",
+]
+name_terms = [
+  "_shebang_lang",
+  "codeindex",
+  "crib",
+  "crib.codeindex._shebang_lang",
+  "lang",
+  "shebang",
+]

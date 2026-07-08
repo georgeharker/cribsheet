@@ -1,0 +1,63 @@
+fqname = "crib.codeindex.SymbolIndex.write"
+name = "write"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.SymbolIndex"
+content_hash = "2fa432eb762c3e4e"
+file = "crib/codeindex.py"
+signature = "def write(self, entry: dict) -> Path:"
+description = ""
+line = 1189
+mtime = 1783533619000000000
+container = [
+  "SymbolIndex",
+]
+calls = [
+  "_relname [crib/codeindex.py]",
+  "_render [crib/codeindex.py]",
+]
+called_by = [
+  "_seed_symbol [tests/test_code_learnings.py]",
+  "_sym [tests/test_refs.py]",
+  "_write [tests/test_code_cache.py]",
+  "drop_file [crib/codestore.py]",
+  "test_code_graph_marks_nodes_with_learnings [tests/test_code_learnings.py]",
+  "test_dossier_annotates_neighbours_with_their_descriptions [tests/test_code_learnings.py]",
+  "test_drop_file_bumps_epoch_and_invalidates [tests/test_code_cache.py]",
+  "test_drop_file_removes_symbols_and_edges [tests/test_code_learnings.py]",
+  "test_genuinely_empty_file_still_prunes [tests/test_grammar_enum.py]",
+  "test_keep_prior_on_empty_extraction [tests/test_grammar_enum.py]",
+  "test_partial_extract_reconfirms_before_trusting_shrink [tests/test_code_cache.py]",
+  "test_patch_called_by_keeps_cross_file_graph_consistent [tests/test_code_learnings.py]",
+  "test_revalidate_reindexes_merge_dirtied_file [tests/test_code_cache.py]",
+  "test_status_inventories_projects [tests/test_status.py]",
+  "test_symbol_index_uses_legible_slug_filenames [tests/test_codeindex.py]",
+  "write_all [crib/codeindex.py]",
+]
+references = [
+  "_seed_symbol [tests/test_code_learnings.py]",
+  "_sym [tests/test_refs.py]",
+  "_write [tests/test_code_cache.py]",
+  "drop_file [crib/codestore.py]",
+  "test_code_graph_marks_nodes_with_learnings [tests/test_code_learnings.py]",
+  "test_dossier_annotates_neighbours_with_their_descriptions [tests/test_code_learnings.py]",
+  "test_drop_file_bumps_epoch_and_invalidates [tests/test_code_cache.py]",
+  "test_drop_file_removes_symbols_and_edges [tests/test_code_learnings.py]",
+  "test_genuinely_empty_file_still_prunes [tests/test_grammar_enum.py]",
+  "test_keep_prior_on_empty_extraction [tests/test_grammar_enum.py]",
+  "test_partial_extract_reconfirms_before_trusting_shrink [tests/test_code_cache.py]",
+  "test_patch_called_by_keeps_cross_file_graph_consistent [tests/test_code_learnings.py]",
+  "test_revalidate_reindexes_merge_dirtied_file [tests/test_code_cache.py]",
+  "test_status_inventories_projects [tests/test_status.py]",
+  "test_symbol_index_uses_legible_slug_filenames [tests/test_codeindex.py]",
+  "write_all [crib/codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex.write",
+  "index",
+  "symbol",
+  "write",
+]

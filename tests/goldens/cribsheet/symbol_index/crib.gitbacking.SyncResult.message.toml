@@ -1,0 +1,30 @@
+fqname = "crib.gitbacking.SyncResult.message"
+name = "message"
+kind = "field"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.SyncResult"
+content_hash = "7a0ea0ccc88226aa"
+file = "crib/gitbacking.py"
+signature = "message: str"
+description = ""
+line = 53
+mtime = 1783451795000000000
+container = [
+  "SyncResult",
+]
+calls = []
+called_by = []
+references = [
+  "_run_git [crib/cli.py]",
+  "sync [crib/gitbacking.py]",
+  "test_pull_reports_conflicts_without_pushing [tests/test_sync.py]",
+]
+name_terms = [
+  "crib",
+  "crib.gitbacking.SyncResult.message",
+  "gitbacking",
+  "message",
+  "result",
+  "sync",
+]

@@ -1,0 +1,26 @@
+fqname = "crib.config.ProjectConfig"
+name = "ProjectConfig"
+kind = "class"
+lang = "python"
+module = "crib.config"
+parent = ""
+content_hash = "d372bc1c61b5891b"
+file = "crib/config.py"
+signature = "@dataclass"
+description = ""
+line = 245
+mtime = 1783455339000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "load [crib/config.py]",
+  "project_config [crib/app.py]",
+]
+name_terms = [
+  "ProjectConfig",
+  "config",
+  "crib",
+  "crib.config.ProjectConfig",
+  "project",
+]

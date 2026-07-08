@@ -1,0 +1,34 @@
+fqname = "scripts.eval_retrieval.evaluate"
+name = "evaluate"
+kind = "function"
+lang = "python"
+module = "scripts.eval_retrieval"
+parent = ""
+content_hash = "1e4ec0d33b9e4666"
+file = "scripts/eval_retrieval.py"
+signature = "def evaluate(spec: dict[str, Any], k: int, recall_k: int, crib: str,"
+description = ""
+line = 105
+mtime = 1782930371000000000
+container = []
+calls = [
+  "_rel_match [scripts/eval_retrieval.py]",
+  "load_needs [scripts/eval_retrieval.py]",
+  "rank_of [scripts/eval_retrieval.py]",
+  "run_lookup [scripts/eval_retrieval.py]",
+]
+called_by = [
+  "_run_lift [scripts/eval_retrieval.py]",
+  "main [scripts/eval_retrieval.py]",
+]
+references = [
+  "_run_lift [scripts/eval_retrieval.py]",
+  "main [scripts/eval_retrieval.py]",
+]
+name_terms = [
+  "eval",
+  "evaluate",
+  "retrieval",
+  "scripts",
+  "scripts.eval_retrieval.evaluate",
+]

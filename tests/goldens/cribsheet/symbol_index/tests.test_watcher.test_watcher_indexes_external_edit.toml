@@ -1,0 +1,33 @@
+fqname = "tests.test_watcher.test_watcher_indexes_external_edit"
+name = "test_watcher_indexes_external_edit"
+kind = "function"
+lang = "python"
+module = "tests.test_watcher"
+parent = ""
+content_hash = "49687d137e6a1fc4"
+file = "tests/test_watcher.py"
+signature = "def test_watcher_indexes_external_edit(tmp_path, monkeypatch):"
+description = ""
+line = 64
+mtime = 1783476730000000000
+container = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+  "scenario [tests/test_watcher.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "edit",
+  "external",
+  "indexes",
+  "test",
+  "test_watcher_indexes_external_edit",
+  "tests",
+  "tests.test_watcher.test_watcher_indexes_external_edit",
+  "watcher",
+]

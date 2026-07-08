@@ -1,0 +1,27 @@
+fqname = "scripts.codeindex.lsp_probe.Client"
+name = "Client"
+kind = "class"
+lang = "python"
+module = "scripts.codeindex.lsp_probe"
+parent = ""
+content_hash = "f488812a5fdf8c75"
+file = "scripts/codeindex/lsp_probe.py"
+signature = "class Client:"
+description = ""
+line = 23
+mtime = 1783033292000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "main [scripts/codeindex/lsp_probe.py]",
+]
+name_terms = [
+  "Client",
+  "client",
+  "codeindex",
+  "lsp",
+  "probe",
+  "scripts",
+  "scripts.codeindex.lsp_probe.Client",
+]

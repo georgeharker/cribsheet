@@ -1,0 +1,26 @@
+fqname = "crib.cli._CODE_LIFECYCLE"
+name = "_CODE_LIFECYCLE"
+kind = "constant"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "bf44474b46357d2b"
+file = "crib/cli.py"
+signature = "_CODE_LIFECYCLE = {\"setup\": [\"project\", \"index\"],    # code-only onboard (no docs)"
+description = ""
+line = 952
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_normalize_argv [crib/cli.py]",
+]
+name_terms = [
+  "_CODE_LIFECYCLE",
+  "cli",
+  "code",
+  "crib",
+  "crib.cli._CODE_LIFECYCLE",
+  "lifecycle",
+]

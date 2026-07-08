@@ -1,0 +1,38 @@
+fqname = "crib.retrieve.LexicalCache.get"
+name = "get"
+kind = "method"
+lang = "python"
+module = "crib.retrieve"
+parent = "crib.retrieve.LexicalCache"
+content_hash = "1f8956aa004b3ce2"
+file = "crib/retrieve.py"
+signature = "def get(self, project: str, labels: tuple[str, ...] = (),"
+description = ""
+line = 268
+mtime = 1782930371000000000
+container = [
+  "LexicalCache",
+]
+calls = [
+  "BM25 [crib/retrieve.py]",
+  "_lexical_tf [crib/retrieve.py]",
+  "get_docs [crib/store.py]",
+]
+called_by = [
+  "_retrieve [crib/app.py]",
+  "test_downweight_scales_elaboration_contribution [tests/test_elaborate.py]",
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+]
+references = [
+  "_retrieve [crib/app.py]",
+  "test_downweight_scales_elaboration_contribution [tests/test_elaborate.py]",
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+]
+name_terms = [
+  "cache",
+  "crib",
+  "crib.retrieve.LexicalCache.get",
+  "get",
+  "lexical",
+  "retrieve",
+]

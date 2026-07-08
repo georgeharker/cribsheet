@@ -1,0 +1,29 @@
+fqname = "crib.store.ChromaStore.get_meta"
+name = "get_meta"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.ChromaStore"
+content_hash = "e06ecdc4d0db8f83"
+file = "crib/store.py"
+signature = "def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:"
+description = ""
+line = 218
+mtime = 1783446057000000000
+container = [
+  "ChromaStore",
+]
+calls = [
+  "_chroma_where [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore.get_meta",
+  "get",
+  "get_meta",
+  "meta",
+  "store",
+]

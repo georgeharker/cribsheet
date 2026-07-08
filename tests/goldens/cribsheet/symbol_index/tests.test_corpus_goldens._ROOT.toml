@@ -1,0 +1,28 @@
+fqname = "tests.test_corpus_goldens._ROOT"
+name = "_ROOT"
+kind = "constant"
+lang = "python"
+module = "tests.test_corpus_goldens"
+parent = ""
+content_hash = "462326d6521f1ed0"
+file = "tests/test_corpus_goldens.py"
+signature = "_ROOT = Path(__file__).resolve().parent.parent"
+description = ""
+line = 31
+mtime = 1783535200000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_GOLDENS [tests/test_corpus_goldens.py]",
+  "test_corpus_golden_structurally_identical [tests/test_corpus_goldens.py]",
+]
+name_terms = [
+  "_ROOT",
+  "corpus",
+  "goldens",
+  "root",
+  "test",
+  "tests",
+  "tests.test_corpus_goldens._ROOT",
+]

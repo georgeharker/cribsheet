@@ -1,0 +1,30 @@
+fqname = "crib.app.Crib.snapshot"
+name = "snapshot"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "c5547a9724cdc7b3"
+file = "crib/app.py"
+signature = "def snapshot(self, message: str | None = None) -> str:"
+description = ""
+line = 1467
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "snapshot [crib/gitbacking.py]",
+]
+called_by = [
+  "snapshot [crib/server.py]",
+]
+references = [
+  "snapshot [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.snapshot",
+  "snapshot",
+]

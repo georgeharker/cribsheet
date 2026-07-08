@@ -1,0 +1,30 @@
+fqname = "crib.codeindex._ExtractCtx.root"
+name = "root"
+kind = "field"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex._ExtractCtx"
+content_hash = "214e4f8431bd3b46"
+file = "crib/codeindex.py"
+signature = "root: Path"
+description = ""
+line = 874
+mtime = 1783533619000000000
+container = [
+  "_ExtractCtx",
+]
+calls = []
+called_by = []
+references = [
+  "_extract [crib/codeindex.py]",
+  "_reference_edges [crib/codeindex.py]",
+  "_symbol_entry [crib/codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex._ExtractCtx.root",
+  "ctx",
+  "extract",
+  "root",
+]

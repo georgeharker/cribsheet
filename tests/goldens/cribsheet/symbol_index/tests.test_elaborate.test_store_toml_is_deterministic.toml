@@ -1,0 +1,30 @@
+fqname = "tests.test_elaborate.test_store_toml_is_deterministic"
+name = "test_store_toml_is_deterministic"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "7d905a268aa771a3"
+file = "tests/test_elaborate.py"
+signature = "def test_store_toml_is_deterministic(tmp_path):"
+description = ""
+line = 53
+mtime = 1782958917000000000
+container = []
+calls = [
+  "SectionIndex [crib/section_index.py]",
+  "write [crib/section_index.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "deterministic",
+  "elaborate",
+  "is",
+  "store",
+  "test",
+  "test_store_toml_is_deterministic",
+  "tests",
+  "tests.test_elaborate.test_store_toml_is_deterministic",
+  "toml",
+]

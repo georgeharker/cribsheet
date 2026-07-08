@@ -1,0 +1,47 @@
+fqname = "crib.codeindex._parse"
+name = "_parse"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "fe35c583bc4f8c93"
+file = "crib/codeindex.py"
+signature = "def _parse(text: str) -> dict:"
+description = ""
+line = 1245
+mtime = 1783533619000000000
+container = []
+calls = [
+  "_unquote [crib/codeindex.py]",
+]
+called_by = [
+  "_load [scripts/snapshot_harness.py]",
+  "all [crib/codeindex.py]",
+  "by_fqname [crib/codeindex.py]",
+  "merge_symbol_texts [crib/merge.py]",
+  "revalidate [crib/codestore.py]",
+  "test_mtime_round_trips_as_bare_int [tests/test_codeindex.py]",
+  "test_render_parse_roundtrip_including_empty_arrays [tests/test_codeindex.py]",
+  "test_symbol_merge_divergent_code_states_marks_dirty [tests/test_merge.py]",
+  "test_symbol_toml_merge_is_clean_and_symmetric [tests/test_merge.py]",
+  "test_symbol_toml_roundtrip_is_stable [tests/test_codeindex.py]",
+]
+references = [
+  "_load [scripts/snapshot_harness.py]",
+  "all [crib/codeindex.py]",
+  "by_fqname [crib/codeindex.py]",
+  "merge_symbol_texts [crib/merge.py]",
+  "revalidate [crib/codestore.py]",
+  "test_mtime_round_trips_as_bare_int [tests/test_codeindex.py]",
+  "test_render_parse_roundtrip_including_empty_arrays [tests/test_codeindex.py]",
+  "test_symbol_merge_divergent_code_states_marks_dirty [tests/test_merge.py]",
+  "test_symbol_toml_merge_is_clean_and_symmetric [tests/test_merge.py]",
+  "test_symbol_toml_roundtrip_is_stable [tests/test_codeindex.py]",
+]
+name_terms = [
+  "_parse",
+  "codeindex",
+  "crib",
+  "crib.codeindex._parse",
+  "parse",
+]

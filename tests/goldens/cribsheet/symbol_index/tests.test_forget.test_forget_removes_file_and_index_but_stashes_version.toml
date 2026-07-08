@@ -1,0 +1,33 @@
+fqname = "tests.test_forget.test_forget_removes_file_and_index_but_stashes_version"
+name = "test_forget_removes_file_and_index_but_stashes_version"
+kind = "function"
+lang = "python"
+module = "tests.test_forget"
+parent = ""
+content_hash = "a0eea76d617a9a0a"
+file = "tests/test_forget.py"
+signature = "def test_forget_removes_file_and_index_but_stashes_version(crib):"
+description = ""
+line = 29
+mtime = 1782609751000000000
+container = []
+calls = [
+  "load [crib/notes.py]",
+  "run [tests/test_forget.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "but",
+  "file",
+  "forget",
+  "index",
+  "removes",
+  "stashes",
+  "test",
+  "test_forget_removes_file_and_index_but_stashes_version",
+  "tests",
+  "tests.test_forget.test_forget_removes_file_and_index_but_stashes_version",
+  "version",
+]

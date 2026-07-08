@@ -1,0 +1,31 @@
+fqname = "crib.config.EmbedConfig.query_prefix"
+name = "query_prefix"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.EmbedConfig"
+content_hash = "5ad00095b16fbdb1"
+file = "crib/config.py"
+signature = "query_prefix: str | None = None"
+description = ""
+line = 26
+mtime = 1783455339000000000
+container = [
+  "EmbedConfig",
+]
+calls = []
+called_by = []
+references = [
+  "_resolve_query_prefix [crib/embed.py]",
+  "test_custom_prefix_wins [tests/test_embed.py]",
+  "test_explicit_empty_prefix_disables_instruction [tests/test_embed.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.EmbedConfig.query_prefix",
+  "embed",
+  "prefix",
+  "query",
+  "query_prefix",
+]

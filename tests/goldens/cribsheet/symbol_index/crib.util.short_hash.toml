@@ -1,0 +1,28 @@
+fqname = "crib.util.short_hash"
+name = "short_hash"
+kind = "function"
+lang = "python"
+module = "crib.util"
+parent = ""
+content_hash = "83b706b3327e76fd"
+file = "crib/util.py"
+signature = "def short_hash(text: str, n: int = 8) -> str:"
+description = ""
+line = 21
+mtime = 1782755212000000000
+container = []
+calls = []
+called_by = [
+  "stash [crib/versions.py]",
+]
+references = [
+  "stash [crib/versions.py]",
+]
+name_terms = [
+  "crib",
+  "crib.util.short_hash",
+  "hash",
+  "short",
+  "short_hash",
+  "util",
+]

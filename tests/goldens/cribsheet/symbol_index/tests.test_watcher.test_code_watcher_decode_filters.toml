@@ -1,0 +1,30 @@
+fqname = "tests.test_watcher.test_code_watcher_decode_filters"
+name = "test_code_watcher_decode_filters"
+kind = "function"
+lang = "python"
+module = "tests.test_watcher"
+parent = ""
+content_hash = "f0e728b43d9645bd"
+file = "tests/test_watcher.py"
+signature = "def test_code_watcher_decode_filters(tmp_path):"
+description = ""
+line = 30
+mtime = 1783476730000000000
+container = []
+calls = [
+  "CodeWatcher [crib/watch.py]",
+  "_decode [crib/watch.py]",
+  "watch_root [crib/watch.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "decode",
+  "filters",
+  "test",
+  "test_code_watcher_decode_filters",
+  "tests",
+  "tests.test_watcher.test_code_watcher_decode_filters",
+  "watcher",
+]

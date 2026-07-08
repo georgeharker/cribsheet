@@ -1,0 +1,25 @@
+fqname = "crib.store.JsonStore"
+name = "JsonStore"
+kind = "class"
+lang = "python"
+module = "crib.store"
+parent = ""
+content_hash = "ec00e0213cbcf9bd"
+file = "crib/store.py"
+signature = "class JsonStore(InMemoryStore):"
+description = ""
+line = 113
+mtime = 1783446057000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_build_store [crib/app.py]",
+]
+name_terms = [
+  "JsonStore",
+  "crib",
+  "crib.store.JsonStore",
+  "json",
+  "store",
+]

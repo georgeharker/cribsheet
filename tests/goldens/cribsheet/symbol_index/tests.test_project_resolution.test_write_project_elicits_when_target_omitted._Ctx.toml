@@ -1,0 +1,34 @@
+fqname = "tests.test_project_resolution.test_write_project_elicits_when_target_omitted._Ctx"
+name = "_Ctx"
+kind = "class"
+lang = "python"
+module = "tests.test_project_resolution"
+parent = "tests.test_project_resolution.test_write_project_elicits_when_target_omitted"
+content_hash = "7919f4fba76ab18e"
+file = "tests/test_project_resolution.py"
+signature = "class _Ctx:"
+description = ""
+line = 68
+mtime = 1783378845000000000
+container = [
+  "test_write_project_elicits_when_target_omitted",
+]
+calls = []
+called_by = []
+references = [
+  "test_write_project_elicits_when_target_omitted [tests/test_project_resolution.py]",
+]
+name_terms = [
+  "_Ctx",
+  "ctx",
+  "elicits",
+  "omitted",
+  "project",
+  "resolution",
+  "target",
+  "test",
+  "tests",
+  "tests.test_project_resolution.test_write_project_elicits_when_target_omitted._Ctx",
+  "when",
+  "write",
+]

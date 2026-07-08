@@ -1,0 +1,36 @@
+fqname = "tests.test_import._files"
+name = "_files"
+kind = "function"
+lang = "python"
+module = "tests.test_import"
+parent = ""
+content_hash = "0811570afa014574"
+file = "tests/test_import.py"
+signature = "def _files(tmp_path):"
+description = ""
+line = 25
+mtime = 1783450349000000000
+container = []
+calls = []
+called_by = [
+  "test_import_copies_and_stamps_provenance [tests/test_import.py]",
+  "test_import_id_is_deterministic_across_machines [tests/test_import.py]",
+  "test_import_pins_first_import_date [tests/test_import.py]",
+  "test_import_resolves_relative_paths_against_caller_cwd [tests/test_import.py]",
+  "test_reimport_preserves_note_id [tests/test_import.py]",
+]
+references = [
+  "test_import_copies_and_stamps_provenance [tests/test_import.py]",
+  "test_import_id_is_deterministic_across_machines [tests/test_import.py]",
+  "test_import_pins_first_import_date [tests/test_import.py]",
+  "test_import_resolves_relative_paths_against_caller_cwd [tests/test_import.py]",
+  "test_reimport_preserves_note_id [tests/test_import.py]",
+]
+name_terms = [
+  "_files",
+  "files",
+  "import",
+  "test",
+  "tests",
+  "tests.test_import._files",
+]

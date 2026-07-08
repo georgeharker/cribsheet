@@ -1,0 +1,28 @@
+fqname = "crib.watch.CODE_BATCH_FALLBACK"
+name = "CODE_BATCH_FALLBACK"
+kind = "constant"
+lang = "python"
+module = "crib.watch"
+parent = ""
+content_hash = "e7656ebdbf5d6a17"
+file = "crib/watch.py"
+signature = "CODE_BATCH_FALLBACK = 50"
+description = ""
+line = 26
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_on_code_change [crib/app.py]",
+  "test_on_code_change_falls_back_to_revalidate_on_large_burst [tests/test_code_cache.py]",
+]
+name_terms = [
+  "CODE_BATCH_FALLBACK",
+  "batch",
+  "code",
+  "crib",
+  "crib.watch.CODE_BATCH_FALLBACK",
+  "fallback",
+  "watch",
+]

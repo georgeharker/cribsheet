@@ -1,0 +1,31 @@
+fqname = "scripts.codeindex.dump_lsp.for in.c"
+name = "c"
+kind = "variable"
+lang = "lua"
+module = "scripts.codeindex.dump_lsp"
+parent = "scripts.codeindex.dump_lsp.for in"
+content_hash = "e876ef3d2e5520bf"
+file = "scripts/codeindex/dump_lsp.lua"
+signature = "local ok, c = pcall(function() return vim.lsp.config[name] end)"
+description = ""
+line = 6
+mtime = 1783033292000000000
+container = [
+  "for in",
+]
+calls = []
+called_by = []
+references = [
+  "if [scripts/codeindex/dump_lsp.lua]",
+  "ok [scripts/codeindex/dump_lsp.lua]",
+]
+name_terms = [
+  "c",
+  "codeindex",
+  "dump",
+  "for",
+  "in",
+  "lsp",
+  "scripts",
+  "scripts.codeindex.dump_lsp.for in.c",
+]

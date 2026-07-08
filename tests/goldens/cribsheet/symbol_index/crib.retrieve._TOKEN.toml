@@ -1,0 +1,26 @@
+fqname = "crib.retrieve._TOKEN"
+name = "_TOKEN"
+kind = "constant"
+lang = "python"
+module = "crib.retrieve"
+parent = ""
+content_hash = "5aa6056f32ab9926"
+file = "crib/retrieve.py"
+signature = "_TOKEN = re.compile(r\"[A-Za-z0-9_]+\")"
+description = ""
+line = 24
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_subtokens [crib/retrieve.py]",
+  "tokenize [crib/retrieve.py]",
+]
+name_terms = [
+  "_TOKEN",
+  "crib",
+  "crib.retrieve._TOKEN",
+  "retrieve",
+  "token",
+]

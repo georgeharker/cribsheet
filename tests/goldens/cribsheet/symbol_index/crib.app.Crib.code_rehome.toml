@@ -1,0 +1,33 @@
+fqname = "crib.app.Crib.code_rehome"
+name = "code_rehome"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "344f8faa7246de12"
+file = "crib/app.py"
+signature = "async def code_rehome(self, old_fqn: str, new_fqn: str | None = None,"
+description = ""
+line = 1067
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "rehome [crib/learnings.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "code_rehome [crib/server.py]",
+]
+references = [
+  "code_rehome [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "code",
+  "code_rehome",
+  "crib",
+  "crib.app.Crib.code_rehome",
+  "rehome",
+]

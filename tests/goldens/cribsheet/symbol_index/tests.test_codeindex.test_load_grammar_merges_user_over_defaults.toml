@@ -1,0 +1,31 @@
+fqname = "tests.test_codeindex.test_load_grammar_merges_user_over_defaults"
+name = "test_load_grammar_merges_user_over_defaults"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "7b4ee4c2509b9643"
+file = "tests/test_codeindex.py"
+signature = "def test_load_grammar_merges_user_over_defaults(tmp_path, monkeypatch):"
+description = ""
+line = 120
+mtime = 1783533619000000000
+container = []
+calls = [
+  "load_grammar [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "defaults",
+  "grammar",
+  "load",
+  "merges",
+  "over",
+  "test",
+  "test_load_grammar_merges_user_over_defaults",
+  "tests",
+  "tests.test_codeindex.test_load_grammar_merges_user_over_defaults",
+  "user",
+]

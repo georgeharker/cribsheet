@@ -1,0 +1,31 @@
+fqname = "crib.store.ChromaStore.shared"
+name = "shared"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.ChromaStore"
+content_hash = "d6ab57e78959cf5f"
+file = "crib/store.py"
+signature = "@classmethod"
+description = ""
+line = 192
+mtime = 1783446057000000000
+container = [
+  "ChromaStore",
+]
+calls = [
+  "__init__ [crib/store.py]",
+]
+called_by = [
+  "_build_shared_chroma [crib/app.py]",
+]
+references = [
+  "_build_shared_chroma [crib/app.py]",
+]
+name_terms = [
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore.shared",
+  "shared",
+  "store",
+]

@@ -1,0 +1,32 @@
+fqname = "tests.test_codeindex.test_walk_tracks_container_kinds_for_scope_guard"
+name = "test_walk_tracks_container_kinds_for_scope_guard"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "423bd9d4f865bf21"
+file = "tests/test_codeindex.py"
+signature = "def test_walk_tracks_container_kinds_for_scope_guard():"
+description = ""
+line = 253
+mtime = 1783533619000000000
+container = []
+calls = [
+  "_walk [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "container",
+  "for",
+  "guard",
+  "kinds",
+  "scope",
+  "test",
+  "test_walk_tracks_container_kinds_for_scope_guard",
+  "tests",
+  "tests.test_codeindex.test_walk_tracks_container_kinds_for_scope_guard",
+  "tracks",
+  "walk",
+]

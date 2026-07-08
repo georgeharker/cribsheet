@@ -1,0 +1,32 @@
+fqname = "crib.codeindex.RefProjects"
+name = "RefProjects"
+kind = "global"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "29c71e881c4356c6"
+file = "crib/codeindex.py"
+signature = "RefProjects = list[tuple[str, \"Path | None\", frozenset[str]]]"
+description = ""
+line = 643
+mtime = 1783533619000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_extract [crib/codeindex.py]",
+  "_hierarchy_edges [crib/codeindex.py]",
+  "_locate [crib/codeindex.py]",
+  "extract_file [crib/codeindex.py]",
+  "ref_edge_ctx [crib/project_services.py]",
+  "ref_edge_ctx [crib/refs.py]",
+  "ref_projects [crib/codeindex.py]",
+]
+name_terms = [
+  "RefProjects",
+  "codeindex",
+  "crib",
+  "crib.codeindex.RefProjects",
+  "projects",
+  "ref",
+]

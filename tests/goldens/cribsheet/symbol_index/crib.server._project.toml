@@ -1,0 +1,65 @@
+fqname = "crib.server._project"
+name = "_project"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = ""
+content_hash = "5a6bd34df1ef3234"
+file = "crib/server.py"
+signature = "def _project(crib: Crib, project: str | None, project_path: str | None) -> str:"
+description = ""
+line = 47
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_resolve [crib/server.py]",
+]
+called_by = [
+  "_source_project [crib/server.py]",
+  "apropos [crib/server.py]",
+  "code_append [crib/server.py]",
+  "code_edit [crib/server.py]",
+  "code_forget [crib/server.py]",
+  "code_index [crib/server.py]",
+  "code_learnings [crib/server.py]",
+  "code_read [crib/server.py]",
+  "code_reaffirm [crib/server.py]",
+  "code_rehome [crib/server.py]",
+  "distill [crib/server.py]",
+  "elaborate [crib/server.py]",
+  "locate [crib/server.py]",
+  "lookup [crib/server.py]",
+  "read [crib/server.py]",
+  "reindex [crib/server.py]",
+  "restore [crib/server.py]",
+  "summarize [crib/server.py]",
+  "versions [crib/server.py]",
+]
+references = [
+  "_source_project [crib/server.py]",
+  "apropos [crib/server.py]",
+  "code_append [crib/server.py]",
+  "code_edit [crib/server.py]",
+  "code_forget [crib/server.py]",
+  "code_index [crib/server.py]",
+  "code_learnings [crib/server.py]",
+  "code_read [crib/server.py]",
+  "code_reaffirm [crib/server.py]",
+  "code_rehome [crib/server.py]",
+  "distill [crib/server.py]",
+  "elaborate [crib/server.py]",
+  "locate [crib/server.py]",
+  "lookup [crib/server.py]",
+  "read [crib/server.py]",
+  "reindex [crib/server.py]",
+  "restore [crib/server.py]",
+  "summarize [crib/server.py]",
+  "versions [crib/server.py]",
+]
+name_terms = [
+  "_project",
+  "crib",
+  "crib.server._project",
+  "project",
+  "server",
+]

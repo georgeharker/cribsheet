@@ -1,0 +1,33 @@
+fqname = "scripts.analyze_consult.main"
+name = "main"
+kind = "function"
+lang = "python"
+module = "scripts.analyze_consult"
+parent = ""
+content_hash = "0fbde97126e19125"
+file = "scripts/analyze_consult.py"
+signature = "def main(argv: list[str] | None = None) -> int:"
+description = ""
+line = 171
+mtime = 1783033314000000000
+container = []
+calls = [
+  "_bucket [scripts/analyze_consult.py]",
+  "_crib_first_available [scripts/analyze_consult.py]",
+  "_in_window [scripts/analyze_consult.py]",
+  "_load [scripts/analyze_consult.py]",
+  "_parse_transcript [scripts/analyze_consult.py]",
+  "_project_of [scripts/analyze_consult.py]",
+  "_report [scripts/analyze_consult.py]",
+]
+called_by = [
+  "analyze_consult [scripts/analyze_consult.py]",
+]
+references = []
+name_terms = [
+  "analyze",
+  "consult",
+  "main",
+  "scripts",
+  "scripts.analyze_consult.main",
+]

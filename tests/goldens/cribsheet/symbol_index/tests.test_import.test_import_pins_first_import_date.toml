@@ -1,0 +1,30 @@
+fqname = "tests.test_import.test_import_pins_first_import_date"
+name = "test_import_pins_first_import_date"
+kind = "function"
+lang = "python"
+module = "tests.test_import"
+parent = ""
+content_hash = "581abdbbf4ed6438"
+file = "tests/test_import.py"
+signature = "def test_import_pins_first_import_date(crib, tmp_path):"
+description = ""
+line = 63
+mtime = 1783450349000000000
+container = []
+calls = [
+  "_files [tests/test_import.py]",
+  "load [crib/notes.py]",
+  "save_atomic [crib/notes.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "date",
+  "first",
+  "import",
+  "pins",
+  "test",
+  "test_import_pins_first_import_date",
+  "tests",
+  "tests.test_import.test_import_pins_first_import_date",
+]

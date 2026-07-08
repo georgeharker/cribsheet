@@ -1,0 +1,34 @@
+fqname = "tests.test_client.test_lookup_prefers_structured_content_over_empty_data"
+name = "test_lookup_prefers_structured_content_over_empty_data"
+kind = "function"
+lang = "python"
+module = "tests.test_client"
+parent = ""
+content_hash = "9af0934a658026fe"
+file = "tests/test_client.py"
+signature = "def test_lookup_prefers_structured_content_over_empty_data():"
+description = ""
+line = 30
+mtime = 1782958917000000000
+container = []
+calls = [
+  "_Root [tests/test_client.py]",
+  "_data [crib/client.py]",
+  "_res [tests/test_client.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "content",
+  "data",
+  "empty",
+  "lookup",
+  "over",
+  "prefers",
+  "structured",
+  "test",
+  "test_lookup_prefers_structured_content_over_empty_data",
+  "tests",
+  "tests.test_client.test_lookup_prefers_structured_content_over_empty_data",
+]

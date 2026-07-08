@@ -1,0 +1,32 @@
+fqname = "tests.test_elaborate.test_elaborate_writes_store_and_skips_existing"
+name = "test_elaborate_writes_store_and_skips_existing"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "111392456f36eab9"
+file = "tests/test_elaborate.py"
+signature = "def test_elaborate_writes_store_and_skips_existing(crib, monkeypatch):"
+description = ""
+line = 131
+mtime = 1782958917000000000
+container = []
+calls = [
+  "SectionIndex [crib/section_index.py]",
+  "read_terms [crib/section_index.py]",
+  "run [tests/test_elaborate.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "elaborate",
+  "existing",
+  "skips",
+  "store",
+  "test",
+  "test_elaborate_writes_store_and_skips_existing",
+  "tests",
+  "tests.test_elaborate.test_elaborate_writes_store_and_skips_existing",
+  "writes",
+]

@@ -1,0 +1,26 @@
+fqname = "crib.watch.Watcher._dispatch"
+name = "_dispatch"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch.Watcher"
+content_hash = "1d73078539c186df"
+file = "crib/watch.py"
+signature = "async def _dispatch(self, project: str, relpath: str) -> None:"
+description = ""
+line = 148
+mtime = 1783476730000000000
+container = [
+  "Watcher",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_dispatch",
+  "crib",
+  "crib.watch.Watcher._dispatch",
+  "dispatch",
+  "watch",
+  "watcher",
+]

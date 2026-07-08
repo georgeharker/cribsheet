@@ -1,0 +1,32 @@
+fqname = "tests.test_elaborate.test_distill_revises_and_thrash_guards.unchanged"
+name = "unchanged"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = "tests.test_elaborate.test_distill_revises_and_thrash_guards"
+content_hash = "f997bd81503a2d1a"
+file = "tests/test_elaborate.py"
+signature = "async def unchanged(cfg, system, user, purpose=\"distill\", timeout=None):"
+description = ""
+line = 278
+mtime = 1782958917000000000
+container = [
+  "test_distill_revises_and_thrash_guards",
+]
+calls = []
+called_by = []
+references = [
+  "test_distill_revises_and_thrash_guards [tests/test_elaborate.py]",
+]
+name_terms = [
+  "and",
+  "distill",
+  "elaborate",
+  "guards",
+  "revises",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_distill_revises_and_thrash_guards.unchanged",
+  "thrash",
+  "unchanged",
+]

@@ -1,0 +1,33 @@
+fqname = "scripts.codeindex.lsp_probe._find_symbol"
+name = "_find_symbol"
+kind = "function"
+lang = "python"
+module = "scripts.codeindex.lsp_probe"
+parent = ""
+content_hash = "2aeefdd87804179c"
+file = "scripts/codeindex/lsp_probe.py"
+signature = "def _find_symbol(syms: Any, name: str) -> dict | None:"
+description = ""
+line = 131
+mtime = 1783033292000000000
+container = []
+calls = [
+  "_find_symbol [scripts/codeindex/lsp_probe.py]",
+]
+called_by = [
+  "_find_symbol [scripts/codeindex/lsp_probe.py]",
+  "main [scripts/codeindex/lsp_probe.py]",
+]
+references = [
+  "main [scripts/codeindex/lsp_probe.py]",
+]
+name_terms = [
+  "_find_symbol",
+  "codeindex",
+  "find",
+  "lsp",
+  "probe",
+  "scripts",
+  "scripts.codeindex.lsp_probe._find_symbol",
+  "symbol",
+]

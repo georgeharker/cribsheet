@@ -1,0 +1,28 @@
+fqname = "crib.store.Record"
+name = "Record"
+kind = "class"
+lang = "python"
+module = "crib.store"
+parent = ""
+content_hash = "39533e43b53ed61c"
+file = "crib/store.py"
+signature = "@dataclass"
+description = ""
+line = 17
+mtime = 1783446057000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/store.py]",
+  "_index_locked [crib/indexer.py]",
+  "_load [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+name_terms = [
+  "Record",
+  "crib",
+  "crib.store.Record",
+  "record",
+  "store",
+]

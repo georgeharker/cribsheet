@@ -1,0 +1,34 @@
+fqname = "crib.codeindexer.CodeIndexer.code_index"
+name = "code_index"
+kind = "method"
+lang = "python"
+module = "crib.codeindexer"
+parent = "crib.codeindexer.CodeIndexer"
+content_hash = "bce3224aec71fb77"
+file = "crib/codeindexer.py"
+signature = "async def code_index(self, path: str, project: str | None = None,"
+description = ""
+line = 30
+mtime = 1783496808000000000
+container = [
+  "CodeIndexer",
+]
+calls = [
+  "find_root [crib/codeindex.py]",
+  "resolve_project [crib/project_services.py]",
+]
+called_by = [
+  "code_index [crib/app.py]",
+]
+references = [
+  "code_index [crib/app.py]",
+]
+name_terms = [
+  "code",
+  "code_index",
+  "codeindexer",
+  "crib",
+  "crib.codeindexer.CodeIndexer.code_index",
+  "index",
+  "indexer",
+]

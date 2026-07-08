@@ -1,0 +1,38 @@
+fqname = "crib.config.portable_path"
+name = "portable_path"
+kind = "function"
+lang = "python"
+module = "crib.config"
+parent = ""
+content_hash = "d061564e2710d2f5"
+file = "crib/config.py"
+signature = "def portable_path(p: str | Path, locations: dict[str, str]) -> str:"
+description = ""
+line = 315
+mtime = 1783455339000000000
+container = []
+calls = [
+  "_location_roots [crib/config.py]",
+]
+called_by = [
+  "import_files [crib/app.py]",
+  "test_portable_path_collapses_two_machines [tests/test_normalize.py]",
+  "test_portable_path_named_root_beats_home_and_round_trips [tests/test_normalize.py]",
+  "test_portable_path_unmatched_falls_back_to_string [tests/test_normalize.py]",
+  "test_portable_path_uses_home_when_under_it [tests/test_normalize.py]",
+]
+references = [
+  "import_files [crib/app.py]",
+  "test_portable_path_collapses_two_machines [tests/test_normalize.py]",
+  "test_portable_path_named_root_beats_home_and_round_trips [tests/test_normalize.py]",
+  "test_portable_path_unmatched_falls_back_to_string [tests/test_normalize.py]",
+  "test_portable_path_uses_home_when_under_it [tests/test_normalize.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.portable_path",
+  "path",
+  "portable",
+  "portable_path",
+]

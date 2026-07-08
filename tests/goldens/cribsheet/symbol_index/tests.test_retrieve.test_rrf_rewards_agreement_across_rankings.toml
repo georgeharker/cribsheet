@@ -1,0 +1,30 @@
+fqname = "tests.test_retrieve.test_rrf_rewards_agreement_across_rankings"
+name = "test_rrf_rewards_agreement_across_rankings"
+kind = "function"
+lang = "python"
+module = "tests.test_retrieve"
+parent = ""
+content_hash = "343f13e495fc31ff"
+file = "tests/test_retrieve.py"
+signature = "def test_rrf_rewards_agreement_across_rankings():"
+description = ""
+line = 53
+mtime = 1782843962000000000
+container = []
+calls = [
+  "reciprocal_rank_fusion [crib/retrieve.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "across",
+  "agreement",
+  "rankings",
+  "retrieve",
+  "rewards",
+  "rrf",
+  "test",
+  "test_rrf_rewards_agreement_across_rankings",
+  "tests",
+  "tests.test_retrieve.test_rrf_rewards_agreement_across_rankings",
+]

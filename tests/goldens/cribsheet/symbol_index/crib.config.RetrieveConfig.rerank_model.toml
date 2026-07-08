@@ -1,0 +1,30 @@
+fqname = "crib.config.RetrieveConfig.rerank_model"
+name = "rerank_model"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.RetrieveConfig"
+content_hash = "44b6bd968c68dc71"
+file = "crib/config.py"
+signature = "rerank_model: str = \"Xenova/ms-marco-MiniLM-L-6-v2\"  # small ONNX cross-encoder"
+description = ""
+line = 68
+mtime = 1783455339000000000
+container = [
+  "RetrieveConfig",
+]
+calls = []
+called_by = []
+references = [
+  "cmd_info [crib/cli.py]",
+  "reranker [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.RetrieveConfig.rerank_model",
+  "model",
+  "rerank",
+  "rerank_model",
+  "retrieve",
+]

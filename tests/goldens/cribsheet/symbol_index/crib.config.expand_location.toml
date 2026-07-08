@@ -1,0 +1,28 @@
+fqname = "crib.config.expand_location"
+name = "expand_location"
+kind = "function"
+lang = "python"
+module = "crib.config"
+parent = ""
+content_hash = "81d8a7a550e075e1"
+file = "crib/config.py"
+signature = "def expand_location(token: str, locations: dict[str, str]) -> Path:"
+description = ""
+line = 330
+mtime = 1783455339000000000
+container = []
+calls = []
+called_by = [
+  "test_portable_path_named_root_beats_home_and_round_trips [tests/test_normalize.py]",
+]
+references = [
+  "test_portable_path_named_root_beats_home_and_round_trips [tests/test_normalize.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.expand_location",
+  "expand",
+  "expand_location",
+  "location",
+]

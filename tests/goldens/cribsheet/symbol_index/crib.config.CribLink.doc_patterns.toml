@@ -1,0 +1,33 @@
+fqname = "crib.config.CribLink.doc_patterns"
+name = "doc_patterns"
+kind = "method"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.CribLink"
+content_hash = "468b9c99e41d2b61"
+file = "crib/config.py"
+signature = "@property"
+description = ""
+line = 281
+mtime = 1783455339000000000
+container = [
+  "CribLink",
+]
+calls = []
+called_by = [
+  "_matches_doc_globs [crib/watch.py]",
+  "index_docs_insitu [crib/app.py]",
+]
+references = [
+  "_matches_doc_globs [crib/watch.py]",
+  "index_docs_insitu [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.doc_patterns",
+  "doc",
+  "doc_patterns",
+  "link",
+  "patterns",
+]

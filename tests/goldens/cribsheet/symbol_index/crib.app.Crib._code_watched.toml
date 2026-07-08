@@ -1,0 +1,32 @@
+fqname = "crib.app.Crib._code_watched"
+name = "_code_watched"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "7123a8a96bbe3ea3"
+file = "crib/app.py"
+signature = "def _code_watched(self, proj: str) -> bool:"
+description = ""
+line = 735
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "watches [crib/watch.py]",
+]
+called_by = [
+  "_resident_code [crib/app.py]",
+]
+references = [
+  "_resident_code [crib/app.py]",
+]
+name_terms = [
+  "_code_watched",
+  "app",
+  "code",
+  "crib",
+  "crib.app.Crib._code_watched",
+  "watched",
+]

@@ -1,0 +1,35 @@
+fqname = "tests.test_project_resolution.test_write_project_elicits_when_target_omitted._Ctx.elicit"
+name = "elicit"
+kind = "method"
+lang = "python"
+module = "tests.test_project_resolution"
+parent = "tests.test_project_resolution.test_write_project_elicits_when_target_omitted._Ctx"
+content_hash = "0575a76b46c45116"
+file = "tests/test_project_resolution.py"
+signature = "async def elicit(self, message, response_type=None):"
+description = ""
+line = 70
+mtime = 1783378845000000000
+container = [
+  "test_write_project_elicits_when_target_omitted",
+  "_Ctx",
+]
+calls = [
+  "_Accepted [tests/test_project_resolution.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "ctx",
+  "elicit",
+  "elicits",
+  "omitted",
+  "project",
+  "resolution",
+  "target",
+  "test",
+  "tests",
+  "tests.test_project_resolution.test_write_project_elicits_when_target_omitted._Ctx.elicit",
+  "when",
+  "write",
+]

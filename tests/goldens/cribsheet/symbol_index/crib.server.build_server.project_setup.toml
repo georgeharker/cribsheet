@@ -1,0 +1,32 @@
+fqname = "crib.server.build_server.project_setup"
+name = "project_setup"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "7dedc2b9f1c39262"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 378
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_cwd [crib/server.py]",
+  "_source_project [crib/server.py]",
+  "_switch_if_created [crib/server.py]",
+  "project_setup [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.project_setup",
+  "project",
+  "project_setup",
+  "server",
+  "setup",
+]

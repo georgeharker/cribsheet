@@ -1,0 +1,30 @@
+fqname = "crib.sources.SourceRoots.resolve"
+name = "resolve"
+kind = "method"
+lang = "python"
+module = "crib.sources"
+parent = "crib.sources.SourceRoots"
+content_hash = "e184d91ed28ee0df"
+file = "crib/sources.py"
+signature = "def resolve(self, relpath: str) -> Path | None:"
+description = ""
+line = 52
+mtime = 1783358913000000000
+container = [
+  "SourceRoots",
+]
+calls = []
+called_by = [
+  "abspath [crib/notestore.py]",
+]
+references = [
+  "abspath [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.sources.SourceRoots.resolve",
+  "resolve",
+  "roots",
+  "source",
+  "sources",
+]

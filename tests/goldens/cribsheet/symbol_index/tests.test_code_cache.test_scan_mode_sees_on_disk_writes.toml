@@ -1,0 +1,32 @@
+fqname = "tests.test_code_cache.test_scan_mode_sees_on_disk_writes"
+name = "test_scan_mode_sees_on_disk_writes"
+kind = "function"
+lang = "python"
+module = "tests.test_code_cache"
+parent = ""
+content_hash = "59ee63a6c094f55e"
+file = "tests/test_code_cache.py"
+signature = "def test_scan_mode_sees_on_disk_writes(crib):"
+description = ""
+line = 79
+mtime = 1783489700000000000
+container = []
+calls = [
+  "_write [tests/test_code_cache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "code",
+  "disk",
+  "mode",
+  "on",
+  "scan",
+  "sees",
+  "test",
+  "test_scan_mode_sees_on_disk_writes",
+  "tests",
+  "tests.test_code_cache.test_scan_mode_sees_on_disk_writes",
+  "writes",
+]

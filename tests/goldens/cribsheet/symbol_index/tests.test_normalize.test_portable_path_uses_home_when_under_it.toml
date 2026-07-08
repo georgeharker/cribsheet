@@ -1,0 +1,32 @@
+fqname = "tests.test_normalize.test_portable_path_uses_home_when_under_it"
+name = "test_portable_path_uses_home_when_under_it"
+kind = "function"
+lang = "python"
+module = "tests.test_normalize"
+parent = ""
+content_hash = "d5706f677923504c"
+file = "tests/test_normalize.py"
+signature = "def test_portable_path_uses_home_when_under_it(tmp_path, monkeypatch):"
+description = ""
+line = 35
+mtime = 1782755212000000000
+container = []
+calls = [
+  "portable_path [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "home",
+  "it",
+  "normalize",
+  "path",
+  "portable",
+  "test",
+  "test_portable_path_uses_home_when_under_it",
+  "tests",
+  "tests.test_normalize.test_portable_path_uses_home_when_under_it",
+  "under",
+  "uses",
+  "when",
+]

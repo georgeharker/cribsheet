@@ -1,0 +1,29 @@
+fqname = "crib.codeindex._FUNC_KINDS"
+name = "_FUNC_KINDS"
+kind = "constant"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "807c5d8864819446"
+file = "crib/codeindex.py"
+signature = "_FUNC_KINDS = {6, 12}          # Method, Function"
+description = ""
+line = 293
+mtime = 1783533619000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_CONTAINER_KINDS [crib/codeindex.py]",
+  "_INDEX_KINDS [crib/codeindex.py]",
+  "_symbol_entry [crib/codeindex.py]",
+  "test_walk_tracks_container_kinds_for_scope_guard [tests/test_codeindex.py]",
+]
+name_terms = [
+  "_FUNC_KINDS",
+  "codeindex",
+  "crib",
+  "crib.codeindex._FUNC_KINDS",
+  "func",
+  "kinds",
+]

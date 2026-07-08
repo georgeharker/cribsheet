@@ -1,0 +1,29 @@
+fqname = "crib.cli._emit_code_rehome"
+name = "_emit_code_rehome"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "59b34e673adfaa77"
+file = "crib/cli.py"
+signature = "def _emit_code_rehome(data: Any, as_json: bool) -> None:"
+description = ""
+line = 327
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = [
+  "_E_rehome [crib/cli.py]",
+]
+references = [
+  "_E_rehome [crib/cli.py]",
+]
+name_terms = [
+  "_emit_code_rehome",
+  "cli",
+  "code",
+  "crib",
+  "crib.cli._emit_code_rehome",
+  "emit",
+  "rehome",
+]

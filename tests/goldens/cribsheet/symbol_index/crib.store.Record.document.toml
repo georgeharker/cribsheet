@@ -1,0 +1,30 @@
+fqname = "crib.store.Record.document"
+name = "document"
+kind = "field"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Record"
+content_hash = "d42dd8d5f5d6426c"
+file = "crib/store.py"
+signature = "document: str"
+description = ""
+line = 21
+mtime = 1783446057000000000
+container = [
+  "Record",
+]
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "get_docs [crib/store.py]",
+  "query [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Record.document",
+  "document",
+  "record",
+  "store",
+]

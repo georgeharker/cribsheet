@@ -1,0 +1,32 @@
+fqname = "crib.app.Crib._generate_index._match"
+name = "_match"
+kind = "function"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib._generate_index"
+content_hash = "46af85c01e0e2cc1"
+file = "crib/app.py"
+signature = "def _match(h: str, by_head: dict[str, tuple]) -> tuple | None:"
+description = ""
+line = 1216
+mtime = 1783530649000000000
+container = [
+  "Crib",
+  "_generate_index",
+]
+calls = []
+called_by = [
+  "_bulk [crib/app.py]",
+]
+references = [
+  "_bulk [crib/app.py]",
+]
+name_terms = [
+  "_match",
+  "app",
+  "crib",
+  "crib.app.Crib._generate_index._match",
+  "generate",
+  "index",
+  "match",
+]

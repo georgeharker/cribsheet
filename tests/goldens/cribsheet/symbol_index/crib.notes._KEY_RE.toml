@@ -1,0 +1,26 @@
+fqname = "crib.notes._KEY_RE"
+name = "_KEY_RE"
+kind = "constant"
+lang = "python"
+module = "crib.notes"
+parent = ""
+content_hash = "c9b945851369fdfa"
+file = "crib/notes.py"
+signature = "_KEY_RE = re.compile(r\"^([A-Za-z0-9_][\\w-]*):\")"
+description = ""
+line = 16
+mtime = 1782755212000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_top_level_entries [crib/notes.py]",
+]
+name_terms = [
+  "_KEY_RE",
+  "crib",
+  "crib.notes._KEY_RE",
+  "key",
+  "notes",
+  "re",
+]

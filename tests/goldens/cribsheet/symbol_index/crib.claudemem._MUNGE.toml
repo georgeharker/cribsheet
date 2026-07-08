@@ -1,0 +1,25 @@
+fqname = "crib.claudemem._MUNGE"
+name = "_MUNGE"
+kind = "constant"
+lang = "python"
+module = "crib.claudemem"
+parent = ""
+content_hash = "d324773bab6c1c8b"
+file = "crib/claudemem.py"
+signature = "_MUNGE = re.compile(r\"[/.]\")"
+description = ""
+line = 22
+mtime = 1782762348000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "munge [crib/claudemem.py]",
+]
+name_terms = [
+  "_MUNGE",
+  "claudemem",
+  "crib",
+  "crib.claudemem._MUNGE",
+  "munge",
+]

@@ -1,0 +1,28 @@
+fqname = "crib.config.ChromaConfig.host"
+name = "host"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.ChromaConfig"
+content_hash = "22092ea10990ba9e"
+file = "crib/config.py"
+signature = "host: str = \"127.0.0.1\""
+description = ""
+line = 162
+mtime = 1783455339000000000
+container = [
+  "ChromaConfig",
+]
+calls = []
+called_by = []
+references = [
+  "_build_shared_chroma [crib/app.py]",
+  "probe [crib/app.py]",
+]
+name_terms = [
+  "chroma",
+  "config",
+  "crib",
+  "crib.config.ChromaConfig.host",
+  "host",
+]

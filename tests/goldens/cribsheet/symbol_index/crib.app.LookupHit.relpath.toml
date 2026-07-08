@@ -1,0 +1,31 @@
+fqname = "crib.app.LookupHit.relpath"
+name = "relpath"
+kind = "field"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.LookupHit"
+content_hash = "b1f401c0f0bb3a24"
+file = "crib/app.py"
+signature = "relpath: str"
+description = ""
+line = 62
+mtime = 1783530649000000000
+container = [
+  "LookupHit",
+]
+calls = []
+called_by = []
+references = [
+  "_emit_human_one [crib/cli.py]",
+  "_similar [crib/app.py]",
+  "apropos [crib/app.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.LookupHit.relpath",
+  "hit",
+  "lookup",
+  "relpath",
+]

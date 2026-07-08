@@ -1,0 +1,31 @@
+fqname = "tests.test_insitu_docs.test_read_returns_repo_bytes"
+name = "test_read_returns_repo_bytes"
+kind = "function"
+lang = "python"
+module = "tests.test_insitu_docs"
+parent = ""
+content_hash = "0f70c7e053f2e533"
+file = "tests/test_insitu_docs.py"
+signature = "def test_read_returns_repo_bytes(crib, tmp_path):"
+description = ""
+line = 66
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_repo [tests/test_insitu_docs.py]",
+  "run [tests/test_insitu_docs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "bytes",
+  "docs",
+  "insitu",
+  "read",
+  "repo",
+  "returns",
+  "test",
+  "test_read_returns_repo_bytes",
+  "tests",
+  "tests.test_insitu_docs.test_read_returns_repo_bytes",
+]

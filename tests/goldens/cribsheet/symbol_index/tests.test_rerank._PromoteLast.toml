@@ -1,0 +1,27 @@
+fqname = "tests.test_rerank._PromoteLast"
+name = "_PromoteLast"
+kind = "class"
+lang = "python"
+module = "tests.test_rerank"
+parent = ""
+content_hash = "57b2e8db63debc53"
+file = "tests/test_rerank.py"
+signature = "class _PromoteLast:"
+description = ""
+line = 18
+mtime = 1782704221000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "test_rerank_fuses_promotes_but_does_not_dethrone [tests/test_rerank.py]",
+]
+name_terms = [
+  "_PromoteLast",
+  "last",
+  "promote",
+  "rerank",
+  "test",
+  "tests",
+  "tests.test_rerank._PromoteLast",
+]

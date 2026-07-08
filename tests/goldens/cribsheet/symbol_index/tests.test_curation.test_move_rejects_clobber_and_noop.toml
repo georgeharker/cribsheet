@@ -1,0 +1,30 @@
+fqname = "tests.test_curation.test_move_rejects_clobber_and_noop"
+name = "test_move_rejects_clobber_and_noop"
+kind = "function"
+lang = "python"
+module = "tests.test_curation"
+parent = ""
+content_hash = "1cb8d4a4f7e4af4a"
+file = "tests/test_curation.py"
+signature = "def test_move_rejects_clobber_and_noop(crib):"
+description = ""
+line = 57
+mtime = 1782717497000000000
+container = []
+calls = [
+  "run [tests/test_curation.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "clobber",
+  "curation",
+  "move",
+  "noop",
+  "rejects",
+  "test",
+  "test_move_rejects_clobber_and_noop",
+  "tests",
+  "tests.test_curation.test_move_rejects_clobber_and_noop",
+]

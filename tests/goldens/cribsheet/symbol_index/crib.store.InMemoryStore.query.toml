@@ -1,0 +1,30 @@
+fqname = "crib.store.InMemoryStore.query"
+name = "query"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.InMemoryStore"
+content_hash = "fa06757beed0299e"
+file = "crib/store.py"
+signature = "def query(self, embedding: list[float], k: int,"
+description = ""
+line = 95
+mtime = 1783446057000000000
+container = [
+  "InMemoryStore",
+]
+calls = [
+  "Hit [crib/store.py]",
+  "_cosine [crib/store.py]",
+  "_matches [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.store.InMemoryStore.query",
+  "in",
+  "memory",
+  "query",
+  "store",
+]

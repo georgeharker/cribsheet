@@ -1,0 +1,36 @@
+fqname = "crib.codeindex.load_specs"
+name = "load_specs"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "3273a76137550d47"
+file = "crib/codeindex.py"
+signature = "def load_specs() -> dict[str, dict[str, Any]]:"
+description = ""
+line = 87
+mtime = 1783533619000000000
+container = []
+calls = [
+  "_config_dir [crib/codeindex.py]",
+]
+called_by = [
+  "_code_exts [crib/watch.py]",
+  "_detect_code_globs [crib/app.py]",
+  "_enumerate_code_files [crib/app.py]",
+  "server_for [crib/codeindex.py]",
+]
+references = [
+  "_code_exts [crib/watch.py]",
+  "_detect_code_globs [crib/app.py]",
+  "_enumerate_code_files [crib/app.py]",
+  "server_for [crib/codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.load_specs",
+  "load",
+  "load_specs",
+  "specs",
+]

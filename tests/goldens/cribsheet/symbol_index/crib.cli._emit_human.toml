@@ -1,0 +1,30 @@
+fqname = "crib.cli._emit_human"
+name = "_emit_human"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "450065473f0222b0"
+file = "crib/cli.py"
+signature = "def _emit_human(obj: Any) -> None:"
+description = ""
+line = 92
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_emit_human_one [crib/cli.py]",
+]
+called_by = [
+  "_emit [crib/cli.py]",
+]
+references = [
+  "_emit [crib/cli.py]",
+]
+name_terms = [
+  "_emit_human",
+  "cli",
+  "crib",
+  "crib.cli._emit_human",
+  "emit",
+  "human",
+]

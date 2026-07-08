@@ -1,0 +1,30 @@
+fqname = "tests.test_lexical_cache.test_write_invalidates_then_rebuilds"
+name = "test_write_invalidates_then_rebuilds"
+kind = "function"
+lang = "python"
+module = "tests.test_lexical_cache"
+parent = ""
+content_hash = "379b23d31cef06dc"
+file = "tests/test_lexical_cache.py"
+signature = "def test_write_invalidates_then_rebuilds(crib):"
+description = ""
+line = 35
+mtime = 1782697902000000000
+container = []
+calls = [
+  "run [tests/test_lexical_cache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "invalidates",
+  "lexical",
+  "rebuilds",
+  "test",
+  "test_write_invalidates_then_rebuilds",
+  "tests",
+  "tests.test_lexical_cache.test_write_invalidates_then_rebuilds",
+  "then",
+  "write",
+]

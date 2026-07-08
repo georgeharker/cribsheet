@@ -1,0 +1,26 @@
+fqname = "crib.watch.DOC_EXTS"
+name = "DOC_EXTS"
+kind = "constant"
+lang = "python"
+module = "crib.watch"
+parent = ""
+content_hash = "a09e09b877505ae3"
+file = "crib/watch.py"
+signature = "DOC_EXTS = {\".md\", \".rst\", \".txt\", \".markdown\"}"
+description = ""
+line = 157
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_decode [crib/watch.py]",
+]
+name_terms = [
+  "DOC_EXTS",
+  "crib",
+  "crib.watch.DOC_EXTS",
+  "doc",
+  "exts",
+  "watch",
+]

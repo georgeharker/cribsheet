@@ -1,0 +1,58 @@
+fqname = "crib.notestore.NoteStore.abspath"
+name = "abspath"
+kind = "method"
+lang = "python"
+module = "crib.notestore"
+parent = "crib.notestore.NoteStore"
+content_hash = "3b8391a806e29f43"
+file = "crib/notestore.py"
+signature = "def abspath(self, project: str, relpath: str) -> Path:"
+description = ""
+line = 45
+mtime = 1783525700000000000
+container = [
+  "NoteStore",
+]
+calls = [
+  "dir [crib/notestore.py]",
+  "resolve [crib/sources.py]",
+  "source_roots [crib/notestore.py]",
+]
+called_by = [
+  "abspath [crib/app.py]",
+  "append [crib/learnings.py]",
+  "delete [crib/notestore.py]",
+  "edit [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "list_versions [crib/notestore.py]",
+  "move [crib/notestore.py]",
+  "read [crib/learnings.py]",
+  "read [crib/notestore.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "version_content [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+references = [
+  "abspath [crib/app.py]",
+  "append [crib/learnings.py]",
+  "delete [crib/notestore.py]",
+  "edit [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "list_versions [crib/notestore.py]",
+  "move [crib/notestore.py]",
+  "read [crib/learnings.py]",
+  "read [crib/notestore.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "version_content [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "abspath",
+  "crib",
+  "crib.notestore.NoteStore.abspath",
+  "note",
+  "notestore",
+  "store",
+]

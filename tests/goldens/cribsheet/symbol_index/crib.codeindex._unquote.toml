@@ -1,0 +1,29 @@
+fqname = "crib.codeindex._unquote"
+name = "_unquote"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "82dc0f12aedac4c4"
+file = "crib/codeindex.py"
+signature = "def _unquote(v: str) -> str:"
+description = ""
+line = 1122
+mtime = 1783533619000000000
+container = []
+calls = [
+  "_unesc [crib/codeindex.py]",
+]
+called_by = [
+  "_parse [crib/codeindex.py]",
+]
+references = [
+  "_parse [crib/codeindex.py]",
+]
+name_terms = [
+  "_unquote",
+  "codeindex",
+  "crib",
+  "crib.codeindex._unquote",
+  "unquote",
+]

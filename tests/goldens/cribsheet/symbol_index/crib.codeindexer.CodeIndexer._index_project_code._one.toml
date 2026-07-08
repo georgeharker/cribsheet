@@ -1,0 +1,34 @@
+fqname = "crib.codeindexer.CodeIndexer._index_project_code._one"
+name = "_one"
+kind = "function"
+lang = "python"
+module = "crib.codeindexer"
+parent = "crib.codeindexer.CodeIndexer._index_project_code"
+content_hash = "4e3bd07f444d2382"
+file = "crib/codeindexer.py"
+signature = "async def _one(f: Path) -> tuple[Path, dict[str, Any] | None, str | None]:"
+description = ""
+line = 237
+mtime = 1783496808000000000
+container = [
+  "CodeIndexer",
+  "_index_project_code",
+]
+calls = []
+called_by = [
+  "_index_project_code [crib/codeindexer.py]",
+]
+references = [
+  "_index_project_code [crib/codeindexer.py]",
+]
+name_terms = [
+  "_one",
+  "code",
+  "codeindexer",
+  "crib",
+  "crib.codeindexer.CodeIndexer._index_project_code._one",
+  "index",
+  "indexer",
+  "one",
+  "project",
+]

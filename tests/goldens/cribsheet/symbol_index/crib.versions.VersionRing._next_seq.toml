@@ -1,0 +1,32 @@
+fqname = "crib.versions.VersionRing._next_seq"
+name = "_next_seq"
+kind = "method"
+lang = "python"
+module = "crib.versions"
+parent = "crib.versions.VersionRing"
+content_hash = "c2aff28b618e92a0"
+file = "crib/versions.py"
+signature = "def _next_seq(self, d: Path) -> int:"
+description = ""
+line = 58
+mtime = 1782609751000000000
+container = [
+  "VersionRing",
+]
+calls = []
+called_by = [
+  "stash [crib/versions.py]",
+]
+references = [
+  "stash [crib/versions.py]",
+]
+name_terms = [
+  "_next_seq",
+  "crib",
+  "crib.versions.VersionRing._next_seq",
+  "next",
+  "ring",
+  "seq",
+  "version",
+  "versions",
+]

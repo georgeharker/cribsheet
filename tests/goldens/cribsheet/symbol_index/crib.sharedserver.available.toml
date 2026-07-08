@@ -1,0 +1,32 @@
+fqname = "crib.sharedserver.available"
+name = "available"
+kind = "function"
+lang = "python"
+module = "crib.sharedserver"
+parent = ""
+content_hash = "bd6b4934eff83e4e"
+file = "crib/sharedserver.py"
+signature = "def available() -> bool:"
+description = ""
+line = 20
+mtime = 1782609751000000000
+container = []
+calls = []
+called_by = [
+  "_reconcile [crib/cli.py]",
+  "main [crib/cli.py]",
+  "unuse [crib/sharedserver.py]",
+  "use [crib/sharedserver.py]",
+]
+references = [
+  "_reconcile [crib/cli.py]",
+  "main [crib/cli.py]",
+  "unuse [crib/sharedserver.py]",
+  "use [crib/sharedserver.py]",
+]
+name_terms = [
+  "available",
+  "crib",
+  "crib.sharedserver.available",
+  "sharedserver",
+]

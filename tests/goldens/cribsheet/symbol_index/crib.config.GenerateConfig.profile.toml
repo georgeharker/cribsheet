@@ -1,0 +1,29 @@
+fqname = "crib.config.GenerateConfig.profile"
+name = "profile"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.GenerateConfig"
+content_hash = "0ae1c270e8541a75"
+file = "crib/config.py"
+signature = "profile: str | None = None       # profile whose widget keys map purpose→provider"
+description = ""
+line = 128
+mtime = 1783455339000000000
+container = [
+  "GenerateConfig",
+]
+calls = []
+called_by = []
+references = [
+  "_resolve_embed_config [crib/app.py]",
+  "resolve_provider [crib/generate.py]",
+  "test_resolve_provider_by_profile_and_purpose [tests/test_elaborate.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.GenerateConfig.profile",
+  "generate",
+  "profile",
+]

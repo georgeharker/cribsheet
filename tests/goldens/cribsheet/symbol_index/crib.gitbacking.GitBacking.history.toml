@@ -1,0 +1,32 @@
+fqname = "crib.gitbacking.GitBacking.history"
+name = "history"
+kind = "method"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.GitBacking"
+content_hash = "b98b3829c59d37f8"
+file = "crib/gitbacking.py"
+signature = "def history(self, relpath: str | None = None, limit: int = 20) -> list[str]:"
+description = ""
+line = 163
+mtime = 1783451795000000000
+container = [
+  "GitBacking",
+]
+calls = [
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "history [crib/app.py]",
+]
+references = [
+  "history [crib/app.py]",
+]
+name_terms = [
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking.history",
+  "git",
+  "gitbacking",
+  "history",
+]

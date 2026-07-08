@@ -1,0 +1,35 @@
+fqname = "crib.chunk.chunk_note"
+name = "chunk_note"
+kind = "function"
+lang = "python"
+module = "crib.chunk"
+parent = ""
+content_hash = "3ee56d9eb1701f54"
+file = "crib/chunk.py"
+signature = "def chunk_note(project: str, relpath: str, note_id: str, body: str,"
+description = ""
+line = 141
+mtime = 1782930371000000000
+container = []
+calls = [
+  "Chunk [crib/chunk.py]",
+  "_split_sections [crib/chunk.py]",
+  "_window [crib/chunk.py]",
+]
+called_by = [
+  "_index_locked [crib/indexer.py]",
+  "test_long_section_span_covers_full_extent [tests/test_line_map.py]",
+  "test_section_hash_invariant_to_windowing [tests/test_elaborate.py]",
+]
+references = [
+  "_index_locked [crib/indexer.py]",
+  "test_long_section_span_covers_full_extent [tests/test_line_map.py]",
+  "test_section_hash_invariant_to_windowing [tests/test_elaborate.py]",
+]
+name_terms = [
+  "chunk",
+  "chunk_note",
+  "crib",
+  "crib.chunk.chunk_note",
+  "note",
+]

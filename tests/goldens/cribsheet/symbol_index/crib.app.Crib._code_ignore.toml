@@ -1,0 +1,34 @@
+fqname = "crib.app.Crib._code_ignore"
+name = "_code_ignore"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "55fb51902bd5e972"
+file = "crib/app.py"
+signature = "def _code_ignore(self) -> frozenset[str]:"
+description = ""
+line = 799
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = []
+called_by = [
+  "_detect_code_globs [crib/app.py]",
+  "_enumerate_code_files [crib/app.py]",
+  "_nested_project_roots [crib/app.py]",
+]
+references = [
+  "_detect_code_globs [crib/app.py]",
+  "_enumerate_code_files [crib/app.py]",
+  "_nested_project_roots [crib/app.py]",
+]
+name_terms = [
+  "_code_ignore",
+  "app",
+  "code",
+  "crib",
+  "crib.app.Crib._code_ignore",
+  "ignore",
+]

@@ -1,0 +1,29 @@
+fqname = "tests.test_forget.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+module = "tests.test_forget"
+parent = ""
+content_hash = "65387a609655e14a"
+file = "tests/test_forget.py"
+signature = "@pytest.fixture()"
+description = ""
+line = 16
+mtime = 1782609751000000000
+container = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "forget",
+  "test",
+  "tests",
+  "tests.test_forget.crib",
+]

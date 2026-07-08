@@ -1,0 +1,30 @@
+fqname = "crib.store.Record.embedding"
+name = "embedding"
+kind = "field"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Record"
+content_hash = "1bb29407235cc9ac"
+file = "crib/store.py"
+signature = "embedding: list[float]"
+description = ""
+line = 20
+mtime = 1783446057000000000
+container = [
+  "Record",
+]
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "current_dim [crib/store.py]",
+  "query [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Record.embedding",
+  "embedding",
+  "record",
+  "store",
+]

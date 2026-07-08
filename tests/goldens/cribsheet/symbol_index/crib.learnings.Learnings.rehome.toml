@@ -1,0 +1,38 @@
+fqname = "crib.learnings.Learnings.rehome"
+name = "rehome"
+kind = "method"
+lang = "python"
+module = "crib.learnings"
+parent = "crib.learnings.Learnings"
+content_hash = "8686e3713212c859"
+file = "crib/learnings.py"
+signature = "async def rehome(self, proj: str, old_fqn: str,"
+description = ""
+line = 205
+mtime = 1783529664000000000
+container = [
+  "Learnings",
+]
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "abspath [crib/notestore.py]",
+  "all [crib/codeindex.py]",
+  "candidates [crib/learnings.py]",
+  "learning_slug [crib/codeindex.py]",
+  "load [crib/notes.py]",
+  "project_dir [crib/paths.py]",
+  "reindex [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+called_by = [
+  "code_rehome [crib/app.py]",
+]
+references = [
+  "code_rehome [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.learnings.Learnings.rehome",
+  "learnings",
+  "rehome",
+]

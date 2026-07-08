@@ -1,0 +1,26 @@
+fqname = "crib.codeindex._REUSE_SETTLE"
+name = "_REUSE_SETTLE"
+kind = "constant"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "fa229f78f1a11b14"
+file = "crib/codeindex.py"
+signature = "_REUSE_SETTLE = 0.3"
+description = ""
+line = 823
+mtime = 1783533619000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_extract [crib/codeindex.py]",
+]
+name_terms = [
+  "_REUSE_SETTLE",
+  "codeindex",
+  "crib",
+  "crib.codeindex._REUSE_SETTLE",
+  "reuse",
+  "settle",
+]

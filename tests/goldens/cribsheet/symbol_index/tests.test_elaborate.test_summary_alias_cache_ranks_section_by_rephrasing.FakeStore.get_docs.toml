@@ -1,0 +1,37 @@
+fqname = "tests.test_elaborate.test_summary_alias_cache_ranks_section_by_rephrasing.FakeStore.get_docs"
+name = "get_docs"
+kind = "method"
+lang = "python"
+module = "tests.test_elaborate"
+parent = "tests.test_elaborate.test_summary_alias_cache_ranks_section_by_rephrasing.FakeStore"
+content_hash = "906abc3d657ae389"
+file = "tests/test_elaborate.py"
+signature = "def get_docs(self, where):"
+description = ""
+line = 174
+mtime = 1782958917000000000
+container = [
+  "test_summary_alias_cache_ranks_section_by_rephrasing",
+  "FakeStore",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "alias",
+  "by",
+  "cache",
+  "docs",
+  "elaborate",
+  "fake",
+  "get",
+  "get_docs",
+  "ranks",
+  "rephrasing",
+  "section",
+  "store",
+  "summary",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_summary_alias_cache_ranks_section_by_rephrasing.FakeStore.get_docs",
+]

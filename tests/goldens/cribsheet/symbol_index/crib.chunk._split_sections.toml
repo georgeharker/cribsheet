@@ -1,0 +1,32 @@
+fqname = "crib.chunk._split_sections"
+name = "_split_sections"
+kind = "function"
+lang = "python"
+module = "crib.chunk"
+parent = ""
+content_hash = "aabf0859d1e1ec80"
+file = "crib/chunk.py"
+signature = "def _split_sections(body: str) -> list[tuple[list[str], str]]:"
+description = ""
+line = 85
+mtime = 1782930371000000000
+container = []
+calls = [
+  "flush [crib/chunk.py]",
+]
+called_by = [
+  "chunk_note [crib/chunk.py]",
+  "test_code_fence_comments_are_not_headings [tests/test_elaborate.py]",
+]
+references = [
+  "chunk_note [crib/chunk.py]",
+  "test_code_fence_comments_are_not_headings [tests/test_elaborate.py]",
+]
+name_terms = [
+  "_split_sections",
+  "chunk",
+  "crib",
+  "crib.chunk._split_sections",
+  "sections",
+  "split",
+]

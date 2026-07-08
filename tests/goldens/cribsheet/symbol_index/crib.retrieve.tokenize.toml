@@ -1,0 +1,44 @@
+fqname = "crib.retrieve.tokenize"
+name = "tokenize"
+kind = "function"
+lang = "python"
+module = "crib.retrieve"
+parent = ""
+content_hash = "3e23907d009491dd"
+file = "crib/retrieve.py"
+signature = "def tokenize(text: str) -> list[str]:"
+description = ""
+line = 27
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = [
+  "_corpus [tests/test_retrieve.py]",
+  "_lexical_tf [crib/retrieve.py]",
+  "_lexical_tokens [crib/retrieve.py]",
+  "_lookup_one [crib/codequery.py]",
+  "_retrieve [crib/app.py]",
+  "test_bm25_ranks_exact_term_match_first [tests/test_retrieve.py]",
+  "test_bm25_unknown_terms_score_zero [tests/test_retrieve.py]",
+  "test_downweight_scales_elaboration_contribution [tests/test_elaborate.py]",
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+  "test_subtokens_let_spaced_query_match_a_solid_identifier [tests/test_retrieve.py]",
+]
+references = [
+  "_corpus [tests/test_retrieve.py]",
+  "_lexical_tf [crib/retrieve.py]",
+  "_lexical_tokens [crib/retrieve.py]",
+  "_lookup_one [crib/codequery.py]",
+  "_retrieve [crib/app.py]",
+  "test_bm25_ranks_exact_term_match_first [tests/test_retrieve.py]",
+  "test_bm25_unknown_terms_score_zero [tests/test_retrieve.py]",
+  "test_downweight_scales_elaboration_contribution [tests/test_elaborate.py]",
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+  "test_subtokens_let_spaced_query_match_a_solid_identifier [tests/test_retrieve.py]",
+]
+name_terms = [
+  "crib",
+  "crib.retrieve.tokenize",
+  "retrieve",
+  "tokenize",
+]

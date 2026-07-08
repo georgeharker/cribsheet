@@ -1,0 +1,29 @@
+fqname = "crib.memmirror.MemoryMirror._fire"
+name = "_fire"
+kind = "method"
+lang = "python"
+module = "crib.memmirror"
+parent = "crib.memmirror.MemoryMirror"
+content_hash = "14936606e0e23234"
+file = "crib/memmirror.py"
+signature = "def _fire(self, binding: tuple[Path, str]) -> None:"
+description = ""
+line = 105
+mtime = 1782755761000000000
+container = [
+  "MemoryMirror",
+]
+calls = []
+called_by = []
+references = [
+  "_schedule [crib/memmirror.py]",
+]
+name_terms = [
+  "_fire",
+  "crib",
+  "crib.memmirror.MemoryMirror._fire",
+  "fire",
+  "memmirror",
+  "memory",
+  "mirror",
+]

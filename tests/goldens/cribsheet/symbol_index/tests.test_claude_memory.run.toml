@@ -1,0 +1,30 @@
+fqname = "tests.test_claude_memory.run"
+name = "run"
+kind = "function"
+lang = "python"
+module = "tests.test_claude_memory"
+parent = ""
+content_hash = "44052857cf112194"
+file = "tests/test_claude_memory.py"
+signature = "def run(coro):"
+description = ""
+line = 53
+mtime = 1782762348000000000
+container = []
+calls = []
+called_by = [
+  "test_resync_is_idempotent_and_reconciles_deletes [tests/test_claude_memory.py]",
+  "test_sync_mirrors_indexes_and_tags [tests/test_claude_memory.py]",
+]
+references = [
+  "test_resync_is_idempotent_and_reconciles_deletes [tests/test_claude_memory.py]",
+  "test_sync_mirrors_indexes_and_tags [tests/test_claude_memory.py]",
+]
+name_terms = [
+  "claude",
+  "memory",
+  "run",
+  "test",
+  "tests",
+  "tests.test_claude_memory.run",
+]

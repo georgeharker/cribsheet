@@ -1,0 +1,29 @@
+fqname = "crib.store.ChromaStore.get_docs"
+name = "get_docs"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.ChromaStore"
+content_hash = "94eab9af6bb48a3d"
+file = "crib/store.py"
+signature = "def get_docs(self, where: dict[str, Any]"
+description = ""
+line = 225
+mtime = 1783446057000000000
+container = [
+  "ChromaStore",
+]
+calls = [
+  "_chroma_where [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore.get_docs",
+  "docs",
+  "get",
+  "get_docs",
+  "store",
+]

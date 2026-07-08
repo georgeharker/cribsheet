@@ -1,0 +1,28 @@
+fqname = "scripts.analyze_consult._classify"
+name = "_classify"
+kind = "function"
+lang = "python"
+module = "scripts.analyze_consult"
+parent = ""
+content_hash = "23946cba098f97f6"
+file = "scripts/analyze_consult.py"
+signature = "def _classify(tool: str, inp: dict) -> tuple[str, str] | None:"
+description = ""
+line = 56
+mtime = 1783033314000000000
+container = []
+calls = []
+called_by = [
+  "_parse_transcript [scripts/analyze_consult.py]",
+]
+references = [
+  "_parse_transcript [scripts/analyze_consult.py]",
+]
+name_terms = [
+  "_classify",
+  "analyze",
+  "classify",
+  "consult",
+  "scripts",
+  "scripts.analyze_consult._classify",
+]

@@ -1,0 +1,31 @@
+fqname = "tests.test_embed.test_explicit_empty_prefix_disables_instruction"
+name = "test_explicit_empty_prefix_disables_instruction"
+kind = "function"
+lang = "python"
+module = "tests.test_embed"
+parent = ""
+content_hash = "b282d8511bad8817"
+file = "tests/test_embed.py"
+signature = "def test_explicit_empty_prefix_disables_instruction():"
+description = ""
+line = 16
+mtime = 1782690118000000000
+container = []
+calls = [
+  "EmbedConfig [crib/config.py]",
+  "_resolve_query_prefix [crib/embed.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "disables",
+  "embed",
+  "empty",
+  "explicit",
+  "instruction",
+  "prefix",
+  "test",
+  "test_explicit_empty_prefix_disables_instruction",
+  "tests",
+  "tests.test_embed.test_explicit_empty_prefix_disables_instruction",
+]

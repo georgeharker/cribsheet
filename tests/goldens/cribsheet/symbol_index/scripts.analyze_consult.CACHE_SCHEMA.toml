@@ -1,0 +1,28 @@
+fqname = "scripts.analyze_consult.CACHE_SCHEMA"
+name = "CACHE_SCHEMA"
+kind = "constant"
+lang = "python"
+module = "scripts.analyze_consult"
+parent = ""
+content_hash = "8fd248486343f5bc"
+file = "scripts/analyze_consult.py"
+signature = "CACHE_SCHEMA = 2   # bump to invalidate all caches on a parser change"
+description = ""
+line = 46
+mtime = 1783033314000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_cache_key [scripts/analyze_consult.py]",
+  "_parse_transcript [scripts/analyze_consult.py]",
+]
+name_terms = [
+  "CACHE_SCHEMA",
+  "analyze",
+  "cache",
+  "consult",
+  "schema",
+  "scripts",
+  "scripts.analyze_consult.CACHE_SCHEMA",
+]

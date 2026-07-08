@@ -1,0 +1,33 @@
+fqname = "crib.app.Crib.code_reaffirm"
+name = "code_reaffirm"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "fef41813edd3fcc3"
+file = "crib/app.py"
+signature = "async def code_reaffirm(self, symbol: str, project: str | None = None,"
+description = ""
+line = 1057
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "reaffirm [crib/learnings.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "code_reaffirm [crib/server.py]",
+]
+references = [
+  "code_reaffirm [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "code",
+  "code_reaffirm",
+  "crib",
+  "crib.app.Crib.code_reaffirm",
+  "reaffirm",
+]

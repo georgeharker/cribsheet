@@ -1,0 +1,48 @@
+fqname = "crib.notestore.NoteStore.dir"
+name = "dir"
+kind = "method"
+lang = "python"
+module = "crib.notestore"
+parent = "crib.notestore.NoteStore"
+content_hash = "9989217096d77ecc"
+file = "crib/notestore.py"
+signature = "def dir(self, project: str) -> Path:"
+description = ""
+line = 36
+mtime = 1783525700000000000
+container = [
+  "NoteStore",
+]
+calls = [
+  "notes_dir [crib/paths.py]",
+]
+called_by = [
+  "abspath [crib/notestore.py]",
+  "attach [crib/learnings.py]",
+  "delete [crib/notestore.py]",
+  "fqns [crib/learnings.py]",
+  "move [crib/notestore.py]",
+  "notes_dir [crib/app.py]",
+  "reindex [crib/notestore.py]",
+  "report [crib/learnings.py]",
+  "write [crib/notestore.py]",
+]
+references = [
+  "abspath [crib/notestore.py]",
+  "attach [crib/learnings.py]",
+  "delete [crib/notestore.py]",
+  "fqns [crib/learnings.py]",
+  "move [crib/notestore.py]",
+  "notes_dir [crib/app.py]",
+  "reindex [crib/notestore.py]",
+  "report [crib/learnings.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.NoteStore.dir",
+  "dir",
+  "note",
+  "notestore",
+  "store",
+]

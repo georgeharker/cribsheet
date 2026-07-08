@@ -1,0 +1,39 @@
+fqname = "crib.app.Crib.close"
+name = "close"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "18011380f9b947c6"
+file = "crib/app.py"
+signature = "def close(self) -> None:"
+description = ""
+line = 256
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "close_all [crib/codeindex.py]",
+  "stop_watchers [crib/app.py]",
+]
+called_by = [
+  "_reconcile [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+  "_serve_async [crib/server.py]",
+  "index [scripts/snapshot_harness.py]",
+  "main [scripts/eval_code.py]",
+]
+references = [
+  "_reconcile [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+  "_serve_async [crib/server.py]",
+  "index [scripts/snapshot_harness.py]",
+  "main [scripts/eval_code.py]",
+]
+name_terms = [
+  "app",
+  "close",
+  "crib",
+  "crib.app.Crib.close",
+]

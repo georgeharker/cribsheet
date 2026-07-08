@@ -1,0 +1,35 @@
+fqname = "crib.cli._run_inprocess"
+name = "_run_inprocess"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "bb48299915f7126d"
+file = "crib/cli.py"
+signature = "def _run_inprocess(args: Any) -> None:"
+description = ""
+line = 930
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_cwd_of [crib/cli.py]",
+  "_project_verb [crib/cli.py]",
+  "_resolve_verb [crib/cli.py]",
+  "close [crib/app.py]",
+  "crib_method [crib/cli.py]",
+  "open [crib/app.py]",
+]
+called_by = [
+  "main [crib/cli.py]",
+]
+references = [
+  "main [crib/cli.py]",
+]
+name_terms = [
+  "_run_inprocess",
+  "cli",
+  "crib",
+  "crib.cli._run_inprocess",
+  "inprocess",
+  "run",
+]

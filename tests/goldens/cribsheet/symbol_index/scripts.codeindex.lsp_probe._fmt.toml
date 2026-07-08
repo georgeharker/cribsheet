@@ -1,0 +1,29 @@
+fqname = "scripts.codeindex.lsp_probe._fmt"
+name = "_fmt"
+kind = "function"
+lang = "python"
+module = "scripts.codeindex.lsp_probe"
+parent = ""
+content_hash = "4c119db846bcedae"
+file = "scripts/codeindex/lsp_probe.py"
+signature = "def _fmt(items: Any, key: str) -> list[str]:"
+description = ""
+line = 141
+mtime = 1783033292000000000
+container = []
+calls = []
+called_by = [
+  "main [scripts/codeindex/lsp_probe.py]",
+]
+references = [
+  "main [scripts/codeindex/lsp_probe.py]",
+]
+name_terms = [
+  "_fmt",
+  "codeindex",
+  "fmt",
+  "lsp",
+  "probe",
+  "scripts",
+  "scripts.codeindex.lsp_probe._fmt",
+]

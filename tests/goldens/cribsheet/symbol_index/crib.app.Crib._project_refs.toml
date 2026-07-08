@@ -1,0 +1,32 @@
+fqname = "crib.app.Crib._project_refs"
+name = "_project_refs"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "9e89cb6991027f37"
+file = "crib/app.py"
+signature = "def _project_refs(self, proj: str) -> list[dict[str, Any]]:"
+description = ""
+line = 931
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "project_refs [crib/refs.py]",
+]
+called_by = [
+  "project_status [crib/app.py]",
+]
+references = [
+  "project_status [crib/app.py]",
+]
+name_terms = [
+  "_project_refs",
+  "app",
+  "crib",
+  "crib.app.Crib._project_refs",
+  "project",
+  "refs",
+]

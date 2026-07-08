@@ -1,0 +1,36 @@
+fqname = "crib.merge.merge_symbol_texts"
+name = "merge_symbol_texts"
+kind = "function"
+lang = "python"
+module = "crib.merge"
+parent = ""
+content_hash = "205260f1f902839e"
+file = "crib/merge.py"
+signature = "def merge_symbol_texts(base: str, ours: str, theirs: str) -> str:"
+description = ""
+line = 99
+mtime = 1783446057000000000
+container = []
+calls = [
+  "_parse [crib/codeindex.py]",
+  "_render [crib/codeindex.py]",
+  "merge_frontmatter [crib/merge.py]",
+]
+called_by = [
+  "run_driver [crib/merge.py]",
+  "test_symbol_merge_divergent_code_states_marks_dirty [tests/test_merge.py]",
+  "test_symbol_toml_merge_is_clean_and_symmetric [tests/test_merge.py]",
+]
+references = [
+  "run_driver [crib/merge.py]",
+  "test_symbol_merge_divergent_code_states_marks_dirty [tests/test_merge.py]",
+  "test_symbol_toml_merge_is_clean_and_symmetric [tests/test_merge.py]",
+]
+name_terms = [
+  "crib",
+  "crib.merge.merge_symbol_texts",
+  "merge",
+  "merge_symbol_texts",
+  "symbol",
+  "texts",
+]

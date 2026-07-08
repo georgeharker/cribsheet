@@ -1,0 +1,34 @@
+fqname = "crib.paths.Paths.data_dir"
+name = "data_dir"
+kind = "field"
+lang = "python"
+module = "crib.paths"
+parent = "crib.paths.Paths"
+content_hash = "1eebf4ef0492cb16"
+file = "crib/paths.py"
+signature = "data_dir: Path"
+description = ""
+line = 27
+mtime = 1783533619000000000
+container = [
+  "Paths",
+]
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "_run_git [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+  "ensure [crib/paths.py]",
+  "projects_dir [crib/paths.py]",
+  "resolve [crib/paths.py]",
+  "versions_dir [crib/paths.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.Paths.data_dir",
+  "data",
+  "data_dir",
+  "dir",
+  "paths",
+]

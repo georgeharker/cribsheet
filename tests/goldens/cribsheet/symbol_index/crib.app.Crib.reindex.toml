@@ -1,0 +1,33 @@
+fqname = "crib.app.Crib.reindex"
+name = "reindex"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "dcfbf2c0937c96b2"
+file = "crib/app.py"
+signature = "async def reindex(self, relpath: str | None = None, project: str | None = None,"
+description = ""
+line = 405
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "reindex [crib/notestore.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "reconcile_all [crib/app.py]",
+  "reindex [crib/server.py]",
+]
+references = [
+  "reconcile_all [crib/app.py]",
+  "reindex [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.reindex",
+  "reindex",
+]

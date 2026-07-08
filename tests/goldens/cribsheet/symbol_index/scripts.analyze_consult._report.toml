@@ -1,0 +1,28 @@
+fqname = "scripts.analyze_consult._report"
+name = "_report"
+kind = "function"
+lang = "python"
+module = "scripts.analyze_consult"
+parent = ""
+content_hash = "1abec631860ef5d3"
+file = "scripts/analyze_consult.py"
+signature = "def _report(agg, sessions, consult_sessions, save_sessions, first_move,"
+description = ""
+line = 237
+mtime = 1783033314000000000
+container = []
+calls = []
+called_by = [
+  "main [scripts/analyze_consult.py]",
+]
+references = [
+  "main [scripts/analyze_consult.py]",
+]
+name_terms = [
+  "_report",
+  "analyze",
+  "consult",
+  "report",
+  "scripts",
+  "scripts.analyze_consult._report",
+]

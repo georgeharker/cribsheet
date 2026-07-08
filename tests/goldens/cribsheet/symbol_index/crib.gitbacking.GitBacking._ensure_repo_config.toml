@@ -1,0 +1,39 @@
+fqname = "crib.gitbacking.GitBacking._ensure_repo_config"
+name = "_ensure_repo_config"
+kind = "method"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.GitBacking"
+content_hash = "bb2a5e0272899649"
+file = "crib/gitbacking.py"
+signature = "def _ensure_repo_config(self) -> None:"
+description = ""
+line = 119
+mtime = 1783451795000000000
+container = [
+  "GitBacking",
+]
+calls = [
+  "_ensure_gitattributes [crib/gitbacking.py]",
+  "_ensure_gitignore [crib/gitbacking.py]",
+  "_ensure_merge_driver [crib/gitbacking.py]",
+]
+called_by = [
+  "pull [crib/gitbacking.py]",
+  "snapshot [crib/gitbacking.py]",
+]
+references = [
+  "pull [crib/gitbacking.py]",
+  "snapshot [crib/gitbacking.py]",
+]
+name_terms = [
+  "_ensure_repo_config",
+  "backing",
+  "config",
+  "crib",
+  "crib.gitbacking.GitBacking._ensure_repo_config",
+  "ensure",
+  "git",
+  "gitbacking",
+  "repo",
+]
