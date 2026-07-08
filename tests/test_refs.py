@@ -149,5 +149,5 @@ def test_single_file_index_skips_nested_project(crib, tmp_path):
     (root / ".crib").write_text("project: par\n")
     (root / "vendor" / "dep" / ".crib").write_text("project: dep\n")
     (root / "vendor" / "dep" / "b.py").write_text("def b(): pass\n")
-    out = crib._index_file_sync(root, "vendor/dep/b.py", "par", True)
+    out = crib._index_code_file_tracked(root, "vendor/dep/b.py", "par", True)
     assert "nested project 'dep'" in out.get("skipped", "")

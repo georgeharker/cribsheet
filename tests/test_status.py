@@ -45,15 +45,15 @@ def test_status_inventories_projects(crib):
 
 
 def test_status_reports_in_flight_indexing(crib, monkeypatch):
-    """While `_index_file_sync` runs, status names the (project, file)."""
+    """While `_index_code_file_tracked` runs, status names the (project, file)."""
     seen: list[dict] = []
 
     def fake_inner(root, rel, proj, patch_edges, existing=None):
         seen.append(crib.status()["indexing"])
         return {"symbols": 0}
 
-    monkeypatch.setattr(crib, "_index_file_inner", fake_inner)
-    crib._index_file_sync("root", "pkg/mod.py", "alpha", True)  # type: ignore[arg-type]
+    monkeypatch.setattr(crib, "_index_code_file", fake_inner)
+    crib._index_code_file_tracked("root", "pkg/mod.py", "alpha", True)  # type: ignore[arg-type]
     assert seen == [{"alpha": ["pkg/mod.py"]}]
     assert crib.status()["indexing"] == {}    # cleared once the work finishes
 
@@ -71,7 +71,7 @@ def test_status_sweeps_progress_signal(crib, tmp_path, monkeypatch):
         seen.append(dict(crib.status()["sweeps"].get("p", {})))
         return {"symbols": 1, "described": 1}
 
-    monkeypatch.setattr(crib, "_index_file_sync", fake)
+    monkeypatch.setattr(crib, "_index_code_file_tracked", fake)
     out = asyncio.run(crib._index_project_code("p", root, ["**/*.py"]))
     assert out["files_seen"] == 2
     assert seen and all(s.get("total") == 2 for s in seen)   # visible mid-sweep

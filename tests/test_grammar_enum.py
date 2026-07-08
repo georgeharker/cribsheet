@@ -62,7 +62,7 @@ def test_keep_prior_on_empty_extraction(crib, tmp_path, monkeypatch):
 
     # simulate a flaky pass: extract_file returns [] for a file that still has code
     monkeypatch.setattr(ci, "extract_file", lambda root, rel, **k: [])
-    res = crib._index_file_sync(root, "thing.zsh", proj, False)
+    res = crib._index_code_file_tracked(root, "thing.zsh", proj, False)
     assert res.get("skipped") == "empty-extract-kept-prior"
     # the prior symbol survived
     assert SymbolIndex(crib.paths.project_dir(proj)).by_fqname("thing.frobnicate")
@@ -78,5 +78,5 @@ def test_genuinely_empty_file_still_prunes(crib, tmp_path, monkeypatch):
         "line": 1, "signature": "", "description": "d", "container": [], "calls": [],
         "called_by": [], "name_terms": ["old"]})
     monkeypatch.setattr(ci, "extract_file", lambda root, rel, **k: [])
-    crib._index_file_sync(root, "gone.zsh", proj, False)
+    crib._index_code_file_tracked(root, "gone.zsh", proj, False)
     assert not SymbolIndex(crib.paths.project_dir(proj)).by_fqname("gone.old")

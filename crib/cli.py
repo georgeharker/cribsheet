@@ -13,9 +13,9 @@ import argparse
 import asyncio
 import json
 import sys
-from dataclasses import asdict, is_dataclass
+from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from .app import Crib
 
@@ -141,6 +141,11 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
     if as_json:
         print(json.dumps(data, indent=2, default=str))
         return
+    # implicit-resolution diagnostic (server echoes it on an empty sticky/seeded
+    # result — see server._echo_list); render the note, not a blank hit row.
+    if isinstance(data, list) and len(data) == 1 and isinstance(data[0], dict) \
+            and data[0].get("note") and "resolved" in data[0]:
+        print(f"(0 matches) {data[0]['note']}"); return
     if verb == "code-index":
         if not isinstance(data, dict):
             print(data); return
@@ -555,21 +560,19 @@ def build_parser() -> argparse.ArgumentParser:
                        help="LLM-revise a note in place (compress/dedupe/normalize)")
     s.add_argument("relpath"); proj(s)
 
-    s = sub.add_parser("elaborate",
-                       help="keyword_index: generate BM25 search terms per section "
-                            "(keywords/questions/phrase/…) for a note or project")
-    s.add_argument("label")
-    s.add_argument("relpath", nargs="?"); proj(s)
-    s.add_argument("--overwrite", action="store_true",
-                   help="regenerate even if it already exists")
-
-    s = sub.add_parser("summarize",
-                       help="summary_index: generate dense alias rephrasings per "
-                            "section for a note or project")
-    s.add_argument("label")
-    s.add_argument("relpath", nargs="?"); proj(s)
-    s.add_argument("--overwrite", action="store_true",
-                   help="regenerate even if it already exists")
+    # elaborate (keyword_index/BM25) and summarize (summary_index/dense aliases)
+    # share one arg shape — label + optional note + --overwrite — differing only in
+    # which section-index they populate; the two prompts/dispatch split downstream.
+    for _v, _h in (
+        ("elaborate", "keyword_index: generate BM25 search terms per section "
+                      "(keywords/questions/phrase/…) for a note or project"),
+        ("summarize", "summary_index: generate dense alias rephrasings per "
+                      "section for a note or project")):
+        _s = sub.add_parser(_v, help=_h)
+        _s.add_argument("label")
+        _s.add_argument("relpath", nargs="?"); proj(_s)
+        _s.add_argument("--overwrite", action="store_true",
+                        help="regenerate even if it already exists")
 
     s = sub.add_parser("snapshot", help="git checkpoint of the data tree")
     s.add_argument("-m", "--message")
@@ -662,7 +665,182 @@ def cmd_info(as_json: bool) -> None:
         print(f"  {'✓' if ok else '✗'} {name}")
 
 
-_RAW_PRINT = {"locate", "snapshot"}  # printed verbatim (read handled separately)
+# ── Verb registry (one row per CLI verb) ──────────────────────────────────────
+# Collapses what used to be three hand-maintained if-chains (the daemon arg-mapper,
+# the in-process dispatcher, and the emitter switch) into a single table. The daemon
+# and in-process paths share the SAME logical call dict (`build`) and emitter; they
+# differ only in three mechanical ways the dispatchers apply: the daemon sends
+# `project_path=<cwd-str>` + calls the MCP `tool`, while in-process sends `cwd=<Path>`
+# + calls the Crib `method` (== tool unless overridden) and wraps async ones in
+# `asyncio.run`. Content args read stdin here (client-side) via `build`, since the
+# daemon has none. Special verbs (git, project, serve/info/merge-driver) are handled
+# outside the registry; `search`/`a`/`lookup --render` normalize to a canonical verb.
+@dataclass(frozen=True)
+class Verb:
+    tool: str                                   # MCP tool name (daemon path)
+    build: Callable[[Any], dict[str, Any]]      # parsed args → logical call params
+    emit: Callable[[Any, Any], None]            # (result, parsed args) → stdout
+    method: str = ""                            # Crib method (in-process); "" ⇒ tool
+    is_async: bool = False                      # in-process wraps in asyncio.run
+    wants_cwd: bool = True                       # append project_path / cwd
+
+    def crib_method(self) -> str:
+        return self.method or self.tool
+
+
+# emit adapters — normalize every emitter to the same (data, args) signature
+def _E(d, a): _emit(d, a.json)                                   # generic
+def _E_raw(d, a): print(d)                                      # verbatim (locate/snapshot)
+def _E_note(d, a): _print_note(d, a.json)
+def _E_apropos(d, a): _emit_apropos(d, a.json)
+def _E_status(d, a): _emit_status(d, a.json)
+def _E_dossier(d, a): _emit_code_dossier(d, a.json)
+def _E_report(d, a): _emit_code_report(d, a.json)
+def _E_rehome(d, a): _emit_code_rehome(d, a.json)
+def _E_graph(d, a): _emit_code_graph(d, a)
+def _E_code(verb): return lambda d, a: _emit_code(d, verb, a.json)
+def _E_learning(verb): return lambda d, a: _emit_code_learning(d, verb, a.json)
+
+
+def _b_lookup(a: Any) -> dict[str, Any]:
+    """`lookup` call params — the keyword/summary label + weight overrides fold in
+    only when given (absent ⇒ the method/[retrieve] default applies)."""
+    call = {"query": a.query, "project": a.project, "k": a.k, "tags": a.tags}
+    if getattr(a, "keywords", None):
+        call["keyword_labels"] = _split_labels(a.keywords)
+    if getattr(a, "keyword_weight", None) is not None:
+        call["keyword_weight"] = a.keyword_weight
+    if getattr(a, "summaries", None):
+        call["summary_labels"] = _split_labels(a.summaries)
+    if getattr(a, "summary_weight", None) is not None:
+        call["summary_weight"] = a.summary_weight
+    return call
+
+
+VERBS: dict[str, Verb] = {
+    # notes: search / read
+    "lookup": Verb("lookup", _b_lookup, _E),
+    "apropos": Verb("apropos", lambda a: {"query": a.query, "project": a.project,
+                                          "k": a.k, "tags": a.tags}, _E_apropos),
+    "read": Verb("read", lambda a: {"relpath": a.relpath, "project": a.project},
+                 _E_note, method="read_note"),
+    "locate": Verb("locate", lambda a: {"relpath": a.relpath, "project": a.project},
+                   _E_raw),
+    # notes: write
+    "store": Verb("store", lambda a: {"content": _read_content(a.content),
+                                      "title": a.title, "project": a.project,
+                                      "tags": a.tags}, _E, method="store_note",
+                  is_async=True),
+    "append": Verb("append", lambda a: {"relpath": a.relpath,
+                                        "content": _read_content(a.content),
+                                        "heading": a.heading, "project": a.project},
+                   _E, method="append_note", is_async=True),
+    "edit": Verb("edit", lambda a: {"relpath": a.relpath,
+                                    "new_content": _read_content(a.content),
+                                    "project": a.project}, _E,
+                 method="edit_note", is_async=True),
+    "forget": Verb("forget", lambda a: {"relpath": a.relpath, "project": a.project},
+                   _E, is_async=True),
+    "move": Verb("move", lambda a: {"relpath": a.relpath, "to_project": a.to_project,
+                                    "to_relpath": a.to_relpath, "project": a.project},
+                 _E, method="move_note", is_async=True),
+    "reindex": Verb("reindex", lambda a: {"relpath": a.relpath, "project": a.project},
+                    _E, is_async=True),
+    "reconcile": Verb("reconcile", lambda a: {}, _E, method="reconcile_all",
+                      is_async=True, wants_cwd=False),
+    "versions": Verb("versions", lambda a: {"relpath": a.relpath, "project": a.project},
+                     _E, method="list_versions"),
+    "restore": Verb("restore", lambda a: {"relpath": a.relpath, "version": a.version,
+                                          "project": a.project}, _E, is_async=True),
+    "import": Verb("import", lambda a: {"paths": a.paths, "project": a.project},
+                   _E, method="import_files", is_async=True),
+    "import-memory": Verb("import_memory", lambda a: {"project": a.project}, _E,
+                          method="import_claude_memory", is_async=True),
+    "distill": Verb("distill", lambda a: {"relpath": a.relpath, "project": a.project},
+                    _E, is_async=True),
+    "elaborate": Verb("elaborate", lambda a: {"label": a.label, "relpath": a.relpath,
+                                              "project": a.project,
+                                              "overwrite": a.overwrite}, _E,
+                      is_async=True),
+    "summarize": Verb("summarize", lambda a: {"label": a.label, "relpath": a.relpath,
+                                              "project": a.project,
+                                              "overwrite": a.overwrite}, _E,
+                      is_async=True),
+    "snapshot": Verb("snapshot", lambda a: {"message": a.message}, _E_raw,
+                     wants_cwd=False),
+    "history": Verb("history", lambda a: {"relpath": a.relpath}, _E, wants_cwd=False),
+    "projects": Verb("projects", lambda a: {}, _E, wants_cwd=False),
+    "status": Verb("status", lambda a: {}, _E_status, wants_cwd=False),
+    # code index
+    "code-lookup": Verb("code_lookup", lambda a: {"query": a.query,
+                                                 "project": a.project, "k": a.k},
+                        _E_code("code-lookup")),
+    "code-xref": Verb("code_xref", lambda a: {"symbol": a.symbol, "project": a.project},
+                      _E_code("code-xref")),
+    "code-dossier": Verb("code_dossier", lambda a: {"symbol": a.symbol,
+                                                   "project": a.project}, _E_dossier),
+    "code-graph": Verb("code_graph", lambda a: {"symbol": a.symbol,
+                                               "direction": _graph_direction(a),
+                                               "depth": a.depth, "project": a.project},
+                       _E_graph),
+    "code-index": Verb("code_index",
+                       lambda a: {"path": str(Path(a.path).expanduser().resolve()),
+                                  "project": a.project},
+                       _E_code("code-index"), is_async=True),
+    # code learnings
+    "code-append": Verb("code_append", lambda a: {"symbol": a.symbol,
+                                                 "text": _read_content(a.text),
+                                                 "project": a.project},
+                        _E_learning("code-append"), is_async=True),
+    "code-edit": Verb("code_edit", lambda a: {"symbol": a.symbol,
+                                             "new_content": _read_content(a.text),
+                                             "project": a.project},
+                      _E_learning("code-edit"), is_async=True),
+    "code-forget": Verb("code_forget", lambda a: {"symbol": a.symbol,
+                                                 "project": a.project},
+                        _E_learning("code-forget"), is_async=True),
+    "code-read": Verb("code_read", lambda a: {"symbol": a.symbol, "project": a.project},
+                      _E_learning("code-read")),
+    "code-reaffirm": Verb("code_reaffirm", lambda a: {"symbol": a.symbol,
+                                                     "project": a.project},
+                          _E_learning("code-reaffirm"), is_async=True),
+    "code-learnings": Verb("code_learnings", lambda a: {"project": a.project,
+                                                       "orphans_only": a.orphans},
+                           _E_report),
+    "code-rehome": Verb("code_rehome", lambda a: {"old_fqn": a.old, "new_fqn": a.new,
+                                                 "project": a.project}, _E_rehome,
+                        is_async=True),
+}
+
+
+def _cwd_of(args: Any) -> Path:
+    """The caller's project anchor: -P/--project-path overrides the actual cwd."""
+    return (Path(args.project_path).expanduser()
+            if getattr(args, "project_path", None) else Path.cwd())
+
+
+def _resolve_verb(args: Any) -> tuple[Verb, dict[str, Any]]:
+    """Map parsed args to a (Verb, call-params) pair. Normalizes the aliases
+    (`search`→lookup, `a`→apropos) and routes `lookup --render` to the apropos
+    section-rendering path (same tool + emitter as `apropos`)."""
+    v = {"search": "lookup", "a": "apropos"}.get(args.cmd, args.cmd)
+    if v == "lookup" and getattr(args, "render", False):
+        v = "apropos"
+    entry = VERBS[v]
+    return entry, entry.build(args)
+
+
+def _project_verb(args: Any) -> tuple[Verb, dict[str, Any]]:
+    """`crib project <sub>` as a synthetic Verb — the four sub-verbs share one
+    shape (differing only in tool/async), and one emitter keyed by the sub-verb."""
+    pv = getattr(args, "project_verb", None) or "status"
+    tool = {"setup": "project_setup", "index": "project_index",
+            "status": "project_status", "forget": "project_forget"}[pv]
+    call: dict[str, Any] = {"project": args.project}
+    if pv == "forget":
+        call["with_learnings"] = getattr(args, "with_learnings", False)
+    emit = lambda d, a: _emit_project(d, pv, a.json)     # noqa: E731
+    return Verb(tool, lambda a: call, emit, is_async=pv in ("setup", "index")), call
 
 
 def _resolve_serve_endpoint(args: Any) -> tuple[str, int]:
@@ -674,156 +852,18 @@ def _resolve_serve_endpoint(args: Any) -> tuple[str, int]:
     return (args.host or cfg.daemon.host, args.port or cfg.daemon.port)
 
 
-def _verb_call(args: Any) -> tuple[str, dict[str, Any]]:
-    """Map a parsed CLI verb to an (mcp_tool, arguments) pair for the daemon.
-
-    Content args read stdin here (client-side) — the daemon has none; `cwd` is
-    sent so the daemon resolves `.crib`/project relative to the caller."""
-    # -P/--project-path resolves the project from THAT dir instead of the actual cwd
-    cwd = str(Path(args.project_path).expanduser()) if getattr(args, "project_path", None) \
-        else str(Path.cwd())
-    v = args.cmd
-    if v == "project":
-        pv = getattr(args, "project_verb", None) or "status"
-        tool = {"setup": "project_setup", "index": "project_index",
-                "status": "project_status", "forget": "project_forget"}[pv]
-        call = {"project": args.project, "project_path": cwd}
-        if pv == "forget":
-            call["with_learnings"] = getattr(args, "with_learnings", False)
-        return tool, call
-    if v in ("lookup", "search", "apropos", "a"):
-        # `apropos`/`a`, or `search --render`, take the section-rendering path
-        # (the apropos tool returns full sections); plain `search` gets locators.
-        tool = "apropos" if (v in ("apropos", "a") or getattr(args, "render", False)) \
-            else "lookup"
-        call = {"query": args.query, "project": args.project,
-                "k": args.k, "tags": args.tags, "project_path": cwd}
-        if tool == "lookup" and getattr(args, "keywords", None):
-            call["keyword_labels"] = _split_labels(args.keywords)
-        if tool == "lookup" and getattr(args, "keyword_weight", None) is not None:
-            call["keyword_weight"] = args.keyword_weight
-        if tool == "lookup" and getattr(args, "summaries", None):
-            call["summary_labels"] = _split_labels(args.summaries)
-        if tool == "lookup" and getattr(args, "summary_weight", None) is not None:
-            call["summary_weight"] = args.summary_weight
-        return tool, call
-    if v == "read":
-        return "read", {"relpath": args.relpath, "project": args.project, "project_path": cwd}
-    if v == "locate":
-        return "locate", {"relpath": args.relpath, "project": args.project, "project_path": cwd}
-    if v == "store":
-        return "store", {"content": _read_content(args.content), "title": args.title,
-                         "project": args.project, "tags": args.tags, "project_path": cwd}
-    if v == "append":
-        return "append", {"relpath": args.relpath,
-                          "content": _read_content(args.content),
-                          "heading": args.heading, "project": args.project, "project_path": cwd}
-    if v == "edit":
-        return "edit", {"relpath": args.relpath,
-                        "new_content": _read_content(args.content),
-                        "project": args.project, "project_path": cwd}
-    if v == "forget":
-        return "forget", {"relpath": args.relpath, "project": args.project, "project_path": cwd}
-    if v == "move":
-        return "move", {"relpath": args.relpath, "to_project": args.to_project,
-                        "to_relpath": args.to_relpath, "project": args.project,
-                        "project_path": cwd}
-    if v == "reindex":
-        return "reindex", {"relpath": args.relpath, "project": args.project, "project_path": cwd}
-    if v == "reconcile":
-        return "reconcile", {}
-    if v == "versions":
-        return "versions", {"relpath": args.relpath, "project": args.project, "project_path": cwd}
-    if v == "restore":
-        return "restore", {"relpath": args.relpath, "version": args.version,
-                           "project": args.project, "project_path": cwd}
-    if v == "import":
-        return "import", {"paths": args.paths, "project": args.project,
-                          "project_path": cwd}
-    if v == "import-memory":
-        return "import_memory", {"project": args.project, "project_path": cwd}
-    if v == "distill":
-        return "distill", {"relpath": args.relpath, "project": args.project, "project_path": cwd}
-    if v in ("elaborate", "summarize"):
-        return v, {"label": args.label, "relpath": args.relpath,
-                   "project": args.project, "overwrite": args.overwrite,
-                   "project_path": cwd}
-    if v == "snapshot":
-        return "snapshot", {"message": args.message}
-    if v == "history":
-        return "history", {"relpath": args.relpath}
-    if v == "projects":
-        return "projects", {}
-    if v == "status":
-        return "status", {}
-    if v == "code-lookup":
-        return "code_lookup", {"query": args.query, "project": args.project,
-                               "k": args.k, "project_path": cwd}
-    if v == "code-xref":
-        return "code_xref", {"symbol": args.symbol, "project": args.project, "project_path": cwd}
-    if v == "code-dossier":
-        return "code_dossier", {"symbol": args.symbol, "project": args.project, "project_path": cwd}
-    if v == "code-graph":
-        return "code_graph", {"symbol": args.symbol,
-                              "direction": _graph_direction(args),
-                              "depth": args.depth, "project": args.project, "project_path": cwd}
-    if v == "code-index":
-        # resolve the path client-side (the daemon's cwd differs from the caller's)
-        return "code_index", {"path": str(Path(args.path).expanduser().resolve()),
-                              "project": args.project, "project_path": cwd}
-    if v == "code-append":
-        return "code_append", {"symbol": args.symbol, "text": _read_content(args.text),
-                               "project": args.project, "project_path": cwd}
-    if v == "code-edit":
-        return "code_edit", {"symbol": args.symbol,
-                             "new_content": _read_content(args.text),
-                             "project": args.project, "project_path": cwd}
-    if v == "code-forget":
-        return "code_forget", {"symbol": args.symbol, "project": args.project, "project_path": cwd}
-    if v == "code-read":
-        return "code_read", {"symbol": args.symbol, "project": args.project, "project_path": cwd}
-    if v == "code-reaffirm":
-        return "code_reaffirm", {"symbol": args.symbol, "project": args.project, "project_path": cwd}
-    if v == "code-learnings":
-        return "code_learnings", {"project": args.project, "orphans_only": args.orphans,
-                                  "project_path": cwd}
-    if v == "code-rehome":
-        return "code_rehome", {"old_fqn": args.old, "new_fqn": args.new,
-                               "project": args.project, "project_path": cwd}
-    raise SystemExit(f"crib: unknown verb {v!r}")
-
-
 def _run_daemon(args: Any, cfg: Any) -> None:
+    """Run a verb via the warm daemon: build the call, ship the caller's cwd as
+    `project_path`, call the MCP tool, and emit — all off one registry row."""
     from .client import DaemonClient
 
-    tool, call_args = _verb_call(args)
+    entry, call = (_project_verb(args) if args.cmd == "project"
+                   else _resolve_verb(args))
+    if entry.wants_cwd:
+        call["project_path"] = str(_cwd_of(args))
     with DaemonClient(cfg.daemon) as client:
-        data = client.call(tool, call_args)
-    if args.cmd == "read":
-        _print_note(data, args.json)
-    elif tool == "apropos":            # apropos verb, or `search --render`
-        _emit_apropos(data, args.json)
-    elif args.cmd == "code-graph":
-        _emit_code_graph(data, args)
-    elif args.cmd == "code-dossier":
-        _emit_code_dossier(data, args.json)
-    elif args.cmd in ("code-lookup", "code-xref", "code-index"):
-        _emit_code(data, args.cmd, args.json)
-    elif args.cmd in ("code-append", "code-edit", "code-forget", "code-read",
-                      "code-reaffirm"):
-        _emit_code_learning(data, args.cmd, args.json)
-    elif args.cmd == "code-learnings":
-        _emit_code_report(data, args.json)
-    elif args.cmd == "code-rehome":
-        _emit_code_rehome(data, args.json)
-    elif args.cmd == "project":
-        _emit_project(data, getattr(args, "project_verb", None), args.json)
-    elif args.cmd == "status":
-        _emit_status(data, args.json)
-    elif args.cmd in _RAW_PRINT:
-        print(data)
-    else:
-        _emit(data, args.json)
+        data = client.call(entry.tool, call)
+    entry.emit(data, args)
 
 
 def _run_git(args: Any, cfg: Any) -> int:
@@ -888,125 +928,18 @@ def _reconcile(cfg: Any) -> Any:
 
 
 def _run_inprocess(args: Any) -> None:
+    """Run a verb in-process against a Crib instance: same registry row as the
+    daemon path, but call the Crib `method` with `cwd=<Path>` and wrap async ones
+    in `asyncio.run` (the daemon does this awaiting server-side)."""
+    entry, call = (_project_verb(args) if args.cmd == "project"
+                   else _resolve_verb(args))
+    if entry.wants_cwd:
+        call["cwd"] = _cwd_of(args)
     crib = Crib.open()
-    cwd = Path(args.project_path).expanduser() if getattr(args, "project_path", None) \
-        else Path.cwd()
-    j = args.json
     try:
-        if args.cmd in ("lookup", "search") and not getattr(args, "render", False):
-            _emit(crib.lookup(args.query, args.project, args.k, args.tags, cwd=cwd,
-                              keyword_labels=_split_labels(
-                                  getattr(args, "keywords", None)),
-                              keyword_weight=getattr(args, "keyword_weight", None),
-                              summary_labels=_split_labels(
-                                  getattr(args, "summaries", None)),
-                              summary_weight=getattr(args, "summary_weight", None)), j)
-        elif args.cmd in ("lookup", "search", "apropos", "a"):
-            _emit_apropos(
-                crib.apropos(args.query, args.project, args.k, args.tags, cwd=cwd), j)
-        elif args.cmd == "read":
-            _print_note(crib.read_note(args.relpath, args.project, cwd=cwd), j)
-        elif args.cmd == "locate":
-            print(crib.locate(args.relpath, args.project, cwd=cwd))
-        elif args.cmd == "store":
-            _emit(asyncio.run(crib.store_note(
-                _read_content(args.content), args.title, args.project,
-                args.tags, cwd=cwd)), j)
-        elif args.cmd == "append":
-            _emit(asyncio.run(crib.append_note(
-                args.relpath, _read_content(args.content), args.heading,
-                args.project, cwd=cwd)), j)
-        elif args.cmd == "edit":
-            _emit(asyncio.run(crib.edit_note(
-                args.relpath, _read_content(args.content), args.project, cwd=cwd)), j)
-        elif args.cmd == "forget":
-            _emit(asyncio.run(crib.forget(args.relpath, args.project, cwd=cwd)), j)
-        elif args.cmd == "move":
-            _emit(asyncio.run(crib.move_note(
-                args.relpath, args.to_project, args.to_relpath,
-                args.project, cwd=cwd)), j)
-        elif args.cmd == "reindex":
-            _emit(asyncio.run(crib.reindex(args.relpath, args.project, cwd=cwd)), j)
-        elif args.cmd == "reconcile":
-            _emit(asyncio.run(crib.reconcile_all()), j)
-        elif args.cmd == "versions":
-            _emit(crib.list_versions(args.relpath, args.project, cwd=cwd), j)
-        elif args.cmd == "restore":
-            _emit(asyncio.run(crib.restore(
-                args.relpath, args.version, args.project, cwd=cwd)), j)
-        elif args.cmd == "import":
-            _emit(asyncio.run(crib.import_files(args.paths, args.project, cwd=cwd)), j)
-        elif args.cmd == "import-memory":
-            _emit(asyncio.run(crib.import_claude_memory(args.project, cwd=cwd)), j)
-        elif args.cmd == "distill":
-            _emit(asyncio.run(crib.distill(args.relpath, args.project, cwd=cwd)), j)
-        elif args.cmd == "elaborate":
-            _emit(asyncio.run(crib.elaborate(
-                args.label, args.relpath, args.project, cwd=cwd,
-                overwrite=args.overwrite)), j)
-        elif args.cmd == "summarize":
-            _emit(asyncio.run(crib.summarize(
-                args.label, args.relpath, args.project, cwd=cwd,
-                overwrite=args.overwrite)), j)
-        elif args.cmd == "snapshot":
-            print(crib.snapshot(args.message))
-        elif args.cmd == "history":
-            _emit(crib.history(args.relpath), j)
-        elif args.cmd == "projects":
-            _emit(crib.projects(), j)
-        elif args.cmd == "status":
-            _emit_status(crib.status(), j)
-        elif args.cmd == "code-lookup":
-            _emit_code(crib.code_lookup(args.query, args.project, args.k, cwd=cwd),
-                       "code-lookup", j)
-        elif args.cmd == "code-xref":
-            _emit_code(crib.code_xref(args.symbol, args.project, cwd=cwd),
-                       "code-xref", j)
-        elif args.cmd == "code-dossier":
-            _emit_code_dossier(crib.code_dossier(args.symbol, args.project, cwd=cwd), j)
-        elif args.cmd == "code-index":
-            _emit_code(asyncio.run(crib.code_index(
-                str(Path(args.path).expanduser().resolve()), args.project, cwd=cwd)),
-                "code-index", j)
-        elif args.cmd == "code-graph":
-            _emit_code_graph(crib.code_graph(
-                args.symbol, _graph_direction(args),
-                args.depth, args.project, cwd=cwd), args)
-        elif args.cmd == "code-append":
-            _emit_code_learning(asyncio.run(crib.code_append(
-                args.symbol, _read_content(args.text), args.project, cwd=cwd)),
-                "code-append", j)
-        elif args.cmd == "code-edit":
-            _emit_code_learning(asyncio.run(crib.code_edit(
-                args.symbol, _read_content(args.text), args.project, cwd=cwd)),
-                "code-edit", j)
-        elif args.cmd == "code-forget":
-            _emit_code_learning(asyncio.run(crib.code_forget(
-                args.symbol, args.project, cwd=cwd)), "code-forget", j)
-        elif args.cmd == "code-read":
-            _emit_code_learning(crib.code_read(args.symbol, args.project, cwd=cwd),
-                                "code-read", j)
-        elif args.cmd == "code-reaffirm":
-            _emit_code_learning(asyncio.run(crib.code_reaffirm(
-                args.symbol, args.project, cwd=cwd)), "code-reaffirm", j)
-        elif args.cmd == "code-learnings":
-            _emit_code_report(crib.code_learnings(
-                args.project, cwd=cwd, orphans_only=args.orphans), j)
-        elif args.cmd == "code-rehome":
-            _emit_code_rehome(asyncio.run(crib.code_rehome(
-                args.old, args.new, args.project, cwd=cwd)), j)
-        elif args.cmd == "project":
-            pv = getattr(args, "project_verb", None) or "status"
-            if pv == "setup":
-                r = asyncio.run(crib.project_setup(args.project, cwd=cwd))
-            elif pv == "index":
-                r = asyncio.run(crib.project_index(args.project, cwd=cwd))
-            elif pv == "forget":
-                r = crib.project_forget(args.project, cwd=cwd,
-                                        with_learnings=args.with_learnings)
-            else:
-                r = crib.project_status(args.project, cwd=cwd)
-            _emit_project(r, pv, j)
+        method = getattr(crib, entry.crib_method())
+        data = asyncio.run(method(**call)) if entry.is_async else method(**call)
+        entry.emit(data, args)
     finally:
         crib.close()
 

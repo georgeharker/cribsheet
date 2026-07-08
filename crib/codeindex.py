@@ -23,6 +23,7 @@ import shutil
 import subprocess
 import threading
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import IO, Any
 
@@ -862,18 +863,121 @@ def extract_file(root: Path, relpath: str, settle: float = 1.5,
                         language_id, spec, ref_projects)
 
 
+@dataclass(frozen=True)
+class _ExtractCtx:
+    """Per-file invariants shared by every `_symbol_entry` call for one extraction —
+    the warm client + the file's identity/location context. `sym_cache` and `opened`
+    are mutated in place across the loop (encloser-range cache; the didOpen'd-doc set
+    the teardown closes), so they're the SAME objects `_extract` reads afterwards."""
+    c: LspClient
+    uri: str
+    root: Path
+    ref_projects: RefProjects | None
+    module: str
+    language_id: str
+    relpath: str
+    lines: list[str]
+    mtime: Any
+    has_refs: bool
+    sym_cache: dict[str, list]
+    opened: set[str]
+
+
+def _reference_edges(ctx: _ExtractCtx, pos: dict, local: str) -> list[str]:
+    """`textDocument/references` for the symbol at `pos` → located `enc [loc]` edges.
+    A FIRST-CLASS relation (everywhere the symbol is mentioned), for any server with
+    referencesProvider — deliberately SEPARATE from `called_by` (call-hierarchy only):
+    a reference is broader than a call (reads/mentions too), the distinction left to
+    the consumer/LLM. This is the only caller signal for symbols-only servers (shuck).
+    Each hit is attributed to its enclosing symbol; self-references are dropped."""
+    refs = ctx.c.request("textDocument/references", {
+        "textDocument": {"uri": ctx.uri}, "position": pos,
+        "context": {"includeDeclaration": False}}) or []
+    out: list[str] = []
+    for loc in refs[:_REF_CAP]:
+        ruri = loc.get("uri", "")
+        rloc = _locate(ruri, ctx.root, ctx.ref_projects)
+        if rloc is None:
+            continue
+        rline = loc.get("range", {}).get("start", {}).get("line", 0)
+        enc = _enclosing_symbol(ctx.c, ruri, rline, ctx.language_id,
+                                ctx.sym_cache, ctx.opened)
+        if not enc or (enc == local and rloc == ctx.relpath):
+            continue                                # skip self-references
+        out.append(f"{enc} [{rloc}]")
+    return out
+
+
+def _symbol_entry(ctx: _ExtractCtx, s: dict, parents: tuple[str, ...],
+                  pkinds: tuple[int, ...]) -> dict | None:
+    """Assemble one indexed-symbol record from a documentSymbol node (+ its call/
+    reference edges), or None when the node is filtered out (uninteresting kind, or a
+    data decl nested in a function → a local, noise)."""
+    kind = s.get("kind")
+    if kind not in _INDEX_KINDS:
+        return None
+    # scope guard: a data declaration (global/const/field) is indexed only at module
+    # or class scope — one nested under a function is a LOCAL (noise).
+    if kind in _DATA_KINDS and any(pk in _FUNC_KINDS for pk in pkinds):
+        return None
+    rng = s.get("range", {})
+    start = rng.get("start", {}).get("line", 0)
+    body = "\n".join(ctx.lines[start:rng.get("end", {}).get("line", 0) + 1])
+    container = tuple(parents)
+    local = _local_name(s.get("name", ""), ctx.language_id)
+    # IDENTITY = the language-normalized qualified name (stable across body edits;
+    # changes only on rename/move). content_hash is a SEPARATE field that gates
+    # description regeneration — the two jobs, split (docs §2.1).
+    fqname = _qualify(ctx.language_id, ctx.module, container, local)
+    parent = (_qualify(ctx.language_id, ctx.module, container[:-1],
+                       _local_name(container[-1], ctx.language_id))
+              if container else "")
+    content_hash = hashlib.sha1(body.encode()).hexdigest()[:16]
+    sig = ctx.lines[start].strip()[:120]
+    pos = (s.get("selectionRange") or rng)["start"]
+    calls: list[str] = []
+    called_by: list[str] = []
+    if kind in _FUNC_KINDS and ctx.c.capabilities.get("callHierarchyProvider"):
+        prep = ctx.c.request("textDocument/prepareCallHierarchy",
+                             {"textDocument": {"uri": ctx.uri}, "position": pos})
+        if prep:
+            item = prep[0]
+            calls = _hierarchy_edges(ctx.c, "callHierarchy/outgoingCalls",
+                                     item, "to", ctx.root, ctx.ref_projects)
+            called_by = _hierarchy_edges(ctx.c, "callHierarchy/incomingCalls",
+                                         item, "from", ctx.root, ctx.ref_projects)
+    references = _reference_edges(ctx, pos, local) if ctx.has_refs else []
+    # module-level variables read more naturally as "global" than "variable"
+    kind_label = ("global" if kind == 13 and not container
+                  else _KIND_LABEL_OVERRIDE.get((ctx.language_id, kind or 0))
+                  or _KIND.get(kind or 0, "?"))
+    return {
+        "fqname": fqname, "name": local,
+        "kind": kind_label,
+        "lang": ctx.language_id, "module": ctx.module, "container": list(container),
+        "parent": parent, "content_hash": content_hash,
+        "file": ctx.relpath, "line": start + 1, "mtime": ctx.mtime, "signature": sig,
+        "calls": sorted(set(calls)), "called_by": sorted(set(called_by)),
+        "references": sorted(set(references)),
+        "name_terms": _name_terms(local, fqname),
+        "_body": body,   # transient: for the description mop-up; not persisted
+    }
+
+
 def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
              settle: float, label: str, argv: list[str], language_id: str,
              spec: dict, ref_projects: RefProjects | None = None) -> list[dict]:
+    """Session/doc lifecycle skeleton: acquire a warm session, open (or sync a pinned)
+    doc, wait for quiescence, then walk documentSymbol into `_symbol_entry` records —
+    closing only what THIS call opened (pins stay) in the finally."""
     lines = path.read_text().splitlines()
-    entries: list[dict] = []
-    mtime = derive_mtime(root, relpath)   # portable index timestamp (git date / disk)
     # ref checkouts OUTSIDE the workspace ride along as extra workspaceFolders
     # (multi-root xref); in-tree ones are already inside the root
     extra = list(dict.fromkeys(
         rr for _p, rr, _f in (ref_projects or [])
         if rr is not None and not rr.is_relative_to(root.resolve())))
     sess, fresh = pool.acquire(root, label, argv, spec, extra_roots=extra)
+    entries: list[dict] = []
     with sess.lock:
         c = sess.client
         uri = path.as_uri()
@@ -898,81 +1002,19 @@ def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
             c.wait_quiescent(
                 initial=settle if fresh else min(settle, _REUSE_SETTLE),
                 timeout=60.0 if fresh else 10.0)
-            module = _module_of(relpath, language_id)
             syms = c.request("textDocument/documentSymbol",
                              {"textDocument": {"uri": uri}})
-            has_refs = bool(c.capabilities.get("referencesProvider"))
-            sym_cache: dict[str, list] = {}   # uri → symbol ranges (encloser resolution)
+            ctx = _ExtractCtx(
+                c=c, uri=uri, root=root, ref_projects=ref_projects,
+                module=_module_of(relpath, language_id), language_id=language_id,
+                relpath=relpath, lines=lines,
+                mtime=derive_mtime(root, relpath),   # portable index timestamp
+                has_refs=bool(c.capabilities.get("referencesProvider")),
+                sym_cache={}, opened=opened)         # uri → ranges; didOpen'd docs
             for s, parents, pkinds in _walk(syms):
-                kind = s.get("kind")
-                if kind not in _INDEX_KINDS:
-                    continue
-                # scope guard: a data declaration (global/const/field) is indexed only at
-                # module or class scope — one nested under a function is a LOCAL (noise).
-                if kind in _DATA_KINDS and any(pk in _FUNC_KINDS for pk in pkinds):
-                    continue
-                rng = s.get("range", {})
-                start = rng.get("start", {}).get("line", 0)
-                body = "\n".join(lines[start:rng.get("end", {}).get("line", 0) + 1])
-                container = tuple(parents)
-                local = _local_name(s.get("name", ""), language_id)
-                # IDENTITY = the language-normalized qualified name (stable across body
-                # edits; changes only on rename/move). content_hash is a SEPARATE field
-                # that gates description regeneration — the two jobs, split (docs §2.1).
-                fqname = _qualify(language_id, module, container, local)
-                parent = (_qualify(language_id, module, container[:-1],
-                                   _local_name(container[-1], language_id))
-                          if container else "")
-                content_hash = hashlib.sha1(body.encode()).hexdigest()[:16]
-                sig = lines[start].strip()[:120]
-                pos = (s.get("selectionRange") or rng)["start"]
-                calls: list[str] = []
-                called_by: list[str] = []
-                if kind in _FUNC_KINDS and c.capabilities.get("callHierarchyProvider"):
-                    prep = c.request("textDocument/prepareCallHierarchy",
-                                     {"textDocument": {"uri": uri}, "position": pos})
-                    if prep:
-                        item = prep[0]
-                        calls = _hierarchy_edges(c, "callHierarchy/outgoingCalls",
-                                                 item, "to", root, ref_projects)
-                        called_by = _hierarchy_edges(c, "callHierarchy/incomingCalls",
-                                                     item, "from", root, ref_projects)
-                # references: a FIRST-CLASS relation (everywhere this symbol is mentioned),
-                # for any server with referencesProvider — deliberately SEPARATE from
-                # called_by (call-hierarchy only). A reference is broader than a call (it
-                # includes reads/mentions); the reference-vs-call distinction is left to the
-                # consumer/LLM. This is the caller signal for symbols-only servers (shuck).
-                references: list[str] = []
-                if has_refs:
-                    refs = c.request("textDocument/references", {
-                        "textDocument": {"uri": uri}, "position": pos,
-                        "context": {"includeDeclaration": False}}) or []
-                    for loc in refs[:_REF_CAP]:
-                        ruri = loc.get("uri", "")
-                        rloc = _locate(ruri, root, ref_projects)
-                        if rloc is None:
-                            continue
-                        rline = loc.get("range", {}).get("start", {}).get("line", 0)
-                        enc = _enclosing_symbol(c, ruri, rline, language_id,
-                                                sym_cache, opened)
-                        if not enc or (enc == local and rloc == relpath):
-                            continue                    # skip self-references
-                        references.append(f"{enc} [{rloc}]")
-                # module-level variables read more naturally as "global" than "variable"
-                kind_label = ("global" if kind == 13 and not container
-                              else _KIND_LABEL_OVERRIDE.get((language_id, kind or 0))
-                              or _KIND.get(kind or 0, "?"))
-                entries.append({
-                    "fqname": fqname, "name": local,
-                    "kind": kind_label,
-                    "lang": language_id, "module": module, "container": list(container),
-                    "parent": parent, "content_hash": content_hash,
-                    "file": relpath, "line": start + 1, "mtime": mtime, "signature": sig,
-                    "calls": sorted(set(calls)), "called_by": sorted(set(called_by)),
-                    "references": sorted(set(references)),
-                    "name_terms": _name_terms(local, fqname),
-                    "_body": body,   # transient: for the description mop-up; not persisted
-                })
+                e = _symbol_entry(ctx, s, parents, pkinds)
+                if e is not None:
+                    entries.append(e)
         finally:
             for u in opened - sess.pinned.keys():   # close what THIS call opened —
                 try:                         # call reads fresh disk; server doc-

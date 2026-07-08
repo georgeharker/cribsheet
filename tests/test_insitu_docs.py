@@ -90,6 +90,24 @@ def test_delete_source_prunes(crib, tmp_path):
         "sources/myrepo/docs/guide.md"}
 
 
+def test_sweep_prunes_out_of_glob_docs(crib, tmp_path):
+    """`docs:` globs are AUTHORITATIVE: a doc indexed earlier but no longer matching
+    the globs is dropped on the next sweep — even though its source file still exists
+    (A2). Keeps the sweep and the watcher agreeing on which docs are indexed."""
+    repo = _repo(tmp_path, project="proj")          # globs: README.md, docs/**/*.md
+    run(crib.index_docs_insitu(cwd=repo))
+    idx = crib._indexed_relpaths("proj", "sources/myrepo/")
+    assert "sources/myrepo/docs/guide.md" in idx
+    # narrow the globs so docs/** no longer qualifies; guide.md stays ON DISK
+    (repo / ".crib").write_text("project: proj\ndocs:\n  - README.md\n")
+    res = run(crib.index_docs_insitu(cwd=repo))
+    assert res["removed"] >= 1
+    assert (repo / "docs" / "guide.md").exists()     # the source file is untouched
+    assert "sources/myrepo/docs/guide.md" not in crib._indexed_relpaths(
+        "proj", "sources/myrepo/")
+    assert "sources/myrepo/README.md" in crib._indexed_relpaths("proj", "sources/myrepo/")
+
+
 def test_watcher_dispatch_reindexes_doc(crib, tmp_path):
     """The CodeWatcher hands \x00doc\x00-tagged changes to _on_code_change, which
     reindexes the in-situ doc on THIS loop (no thread/asyncio.run)."""

@@ -1,30 +1,38 @@
 # todos — deferred / to-test
 
-## To fix (ergonomics — adoption-critical)
-- **Sticky session project is COMBINER-GLOBAL, not per-chat.** Observed 2026-07-07:
-  an agent in the cribsheet repo had code queries resolve to `music-llm` and gave
-  up on crib ("I'll read the repo directly"). The combiner multiplexes every chat
-  over ONE persistent crib connection, so the per-connection session project
-  (DESIGN §15) is actually shared mutable state across all chats — whichever chat
-  last seeded/switched it wins, and other agents silently inherit the wrong
-  project. Options: (a) crib stops trusting stickiness on proxied connections and
-  requires/uses `project_path` per call (directive already tells agents to pass it
-  for a DIFFERENT project, but not for their own); (b) combiner forwards a per-chat
-  identity crib can key session state by; (c) mcp-companion's per-chat isolated
-  proxy sessions for crib (infra exists in connections.py). Until fixed, the
-  self-diagnosing move: code tools should echo which project answered AND how it
-  resolved (sticky vs path) so a wrong resolution is visible, not silent.
-
-## To fix (perf)
-- **`store.all()` per file at index time is O(N²).** `_index_file_sync` re-parses the
-  ENTIRE symbol_index (`existing = store.all()`) on every file, for the content_hash
-  gate + vanished-symbol drop. As the index grows (cribsheet+llmkit ≈ 1000+ symbols)
-  each file re-parses the whole thing, so a cold `project_index` scales quadratically and
-  the parallel-describe win gets eaten. Fix: snapshot `store.all()` ONCE before the sweep
-  (or reuse the resident cache) and pass the by-fqname map to each file. Correct today,
-  just wasteful — concurrent full-parses also contend.
-
 ## Resolved
+- **Sticky session project WAS combiner-global, not per-chat (2026-07-07).**
+  Observed: an agent in the cribsheet repo had code queries resolve to `music-llm`.
+  ROOT CAUSE (diagnosed by reading the combiner + svg-mcp): crib's per-connection
+  `SessionState` is keyed on the MCP `ServerSession` object (copied verbatim from
+  svg-mcp's `server.py` per-session document stores). That is correct ONLY when each
+  chat gets its own upstream session. The combiner grants a per-chat upstream session
+  (a distinct `Mcp-Session-Id` via FastMCP `StatefulProxyClient.new_stateful`) ONLY for
+  HTTP/SSE upstreams with `isolate: true`. **svg-mcp sets `isolate: true`; cribsheet
+  never did** → all chats collapsed onto one shared upstream session → one
+  `SessionState.current_project` → cross-chat leak. The combiner does NOT forward a
+  per-chat identity on non-isolated calls, so `isolate: true` (not sharing one session)
+  is the only per-chat mechanism. FIX, two parts:
+    1. **Config** (the leak): added `"isolate": true` to the cribsheet entry in
+       `~/.dotfiles/.config/secrets/mcpservers.json`, matching svg-mcp. (Needs the
+       generated `~/.cache/secrets/geohar.mcpservers.json` regenerated + a combiner/crib
+       restart to take effect.)
+    2. **Crib self-diagnosis** (defense-in-depth): `ProjectResolution` (`crib/session.py`)
+       now carries HOW a call resolved (`explicit`/`path`/`session`/`seed`; `implicit` =
+       session|seed). The read code tools echo it when resolution was implicit — free on
+       dict results (dossier/graph gain a `resolved` key), and as a one-element diagnostic
+       on an EMPTY list result (lookup/xref), the case a silently-wrong sticky project
+       can't otherwise be told from "no matches". `current_project` also returns
+       `resolved_via`. The CLI always sends `project_path` (via=`path`), so the echo is
+       agent-only. Stickiness is KEPT — with isolation it's per-chat-correct; the echo is
+       the safety net. Consolidates the `_project`/`_source_project`/`_write_project`
+       helper policies (ledger #7).
+- **`store.all()` per file at index time was O(N²).** `_index_project_code` now parses the
+  prior index ONCE (`existing = {e["fqname"]: e ...}`, `crib/app.py`) and passes the
+  by-fqname snapshot into every `_index_file_sync`/`_index_file_inner` call
+  (`existing` param), so the content_hash gate + vanished-symbol drop no longer re-`store.all()`
+  per file. Cold onboard is O(N), not O(files × symbols); the standalone single-file path
+  (existing=None) still parses once for itself.
 - **Warm LSP sessions (was: per-file cold spin-up).** `LspSessionPool` in
   `crib/codeindex.py`: one initialized client per (workspace root, server label),
   lazy-started, reused across `extract_file` calls — spawn + `initialize` (the
