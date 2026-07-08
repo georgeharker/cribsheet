@@ -8,8 +8,8 @@ content_hash = "d01d2a1731d47997"
 file = "crib/codeindex.py"
 signature = "def is_populated(self) -> bool:"
 description = ""
-line = 1217
-mtime = 1783533619000000000
+line = 1350
+mtime = 1783544236000000000
 container = [
   "SymbolIndex",
 ]

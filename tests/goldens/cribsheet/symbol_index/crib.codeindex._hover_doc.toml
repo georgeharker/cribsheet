@@ -1,0 +1,30 @@
+fqname = "crib.codeindex._hover_doc"
+name = "_hover_doc"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "9bd8502e736b596a"
+file = "crib/codeindex.py"
+signature = "def _hover_doc(ctx: \"_ExtractCtx\", pos: dict) -> str:"
+description = ""
+line = 1002
+mtime = 1783544236000000000
+container = []
+calls = [
+  "request [crib/codeindex.py]",
+]
+called_by = [
+  "_symbol_entry [crib/codeindex.py]",
+]
+references = [
+  "_symbol_entry [crib/codeindex.py]",
+]
+name_terms = [
+  "_hover_doc",
+  "codeindex",
+  "crib",
+  "crib.codeindex._hover_doc",
+  "doc",
+  "hover",
+]

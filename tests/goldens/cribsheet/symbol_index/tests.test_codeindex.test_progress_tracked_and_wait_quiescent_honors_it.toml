@@ -8,8 +8,8 @@ content_hash = "760e604e20beba8b"
 file = "tests/test_codeindex.py"
 signature = "def test_progress_tracked_and_wait_quiescent_honors_it(tmp_path, monkeypatch):"
 description = ""
-line = 438
-mtime = 1783533619000000000
+line = 467
+mtime = 1783544236000000000
 container = []
 calls = [
   "LspSessionPool [crib/codeindex.py]",

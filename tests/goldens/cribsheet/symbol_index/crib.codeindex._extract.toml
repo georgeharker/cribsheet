@@ -8,8 +8,8 @@ content_hash = "841f4b842fbc4b7c"
 file = "crib/codeindex.py"
 signature = "def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,"
 description = ""
-line = 967
-mtime = 1783533619000000000
+line = 1100
+mtime = 1783544236000000000
 container = []
 calls = [
   "_ExtractCtx [crib/codeindex.py]",

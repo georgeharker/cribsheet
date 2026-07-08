@@ -8,8 +8,8 @@ content_hash = "b822b8dd3ab5ec0e"
 file = "crib/codeindex.py"
 signature = "def set_source_root(self, root: Path) -> None:"
 description = ""
-line = 1231
-mtime = 1783533619000000000
+line = 1364
+mtime = 1783544236000000000
 container = [
   "SymbolIndex",
 ]

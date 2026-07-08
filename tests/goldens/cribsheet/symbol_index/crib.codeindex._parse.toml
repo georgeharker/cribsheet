@@ -8,8 +8,8 @@ content_hash = "fe35c583bc4f8c93"
 file = "crib/codeindex.py"
 signature = "def _parse(text: str) -> dict:"
 description = ""
-line = 1245
-mtime = 1783533619000000000
+line = 1378
+mtime = 1783544236000000000
 container = []
 calls = [
   "_unquote [crib/codeindex.py]",

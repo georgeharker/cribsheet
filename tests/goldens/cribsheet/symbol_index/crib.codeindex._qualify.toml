@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "def _qualify(lang: str, module: str, container: tuple[str, ...], name: str) -> str:"
 description = ""
 line = 792
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = [
   "_local_name [crib/codeindex.py]",

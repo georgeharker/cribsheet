@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "c: LspClient"
 description = ""
 line = 872
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = [
   "_ExtractCtx",
 ]
@@ -17,6 +17,7 @@ calls = []
 called_by = []
 references = [
   "_extract [crib/codeindex.py]",
+  "_hover_doc [crib/codeindex.py]",
   "_reference_edges [crib/codeindex.py]",
   "_symbol_entry [crib/codeindex.py]",
 ]

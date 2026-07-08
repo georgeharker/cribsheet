@@ -8,8 +8,8 @@ content_hash = "e34b58d9f46c2466"
 file = "tests/test_codeindex.py"
 signature = "def test_symbol_toml_roundtrip_is_stable():"
 description = ""
-line = 475
-mtime = 1783533619000000000
+line = 504
+mtime = 1783544236000000000
 container = []
 calls = [
   "_parse [crib/codeindex.py]",

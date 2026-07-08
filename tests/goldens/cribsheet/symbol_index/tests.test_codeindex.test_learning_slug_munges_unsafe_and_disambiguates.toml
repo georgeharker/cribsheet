@@ -8,8 +8,8 @@ content_hash = "16910aee5034ff05"
 file = "tests/test_codeindex.py"
 signature = "def test_learning_slug_munges_unsafe_and_disambiguates():"
 description = ""
-line = 192
-mtime = 1783533619000000000
+line = 221
+mtime = 1783544236000000000
 container = []
 calls = [
   "learning_slug [crib/codeindex.py]",

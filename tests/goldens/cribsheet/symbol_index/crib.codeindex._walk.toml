@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "def _walk(syms: list, parents: tuple[str, ...] = (),"
 description = ""
 line = 694
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = [
   "_walk [crib/codeindex.py]",

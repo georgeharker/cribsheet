@@ -8,8 +8,8 @@ content_hash = "dea1ec44a27afe8d"
 file = "tests/test_codeindex.py"
 signature = "def test_server_for_shebang_fallback(tmp_path):"
 description = ""
-line = 165
-mtime = 1783533619000000000
+line = 194
+mtime = 1783544236000000000
 container = []
 calls = [
   "server_for [crib/codeindex.py]",

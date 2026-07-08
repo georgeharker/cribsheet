@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "def notify_changes(self, root: Path, changes: list[tuple[str, int]]) -> None:"
 description = ""
 line = 536
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = [
   "LspSessionPool",
 ]

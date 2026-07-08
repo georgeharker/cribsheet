@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "def _enclosing_symbol(c: LspClient, uri: str, line: int, language_id: str,"
 description = ""
 line = 748
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = [
   "_symbol_ranges [crib/codeindex.py]",

@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "def close_all(self) -> None:"
 description = ""
 line = 627
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = [
   "LspSessionPool",
 ]

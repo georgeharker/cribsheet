@@ -9,12 +9,13 @@ file = "crib/codeindex.py"
 signature = "@dataclass(frozen=True)"
 description = ""
 line = 866
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = []
 called_by = []
 references = [
   "_extract [crib/codeindex.py]",
+  "_hover_doc [crib/codeindex.py]",
   "_reference_edges [crib/codeindex.py]",
   "_symbol_entry [crib/codeindex.py]",
 ]

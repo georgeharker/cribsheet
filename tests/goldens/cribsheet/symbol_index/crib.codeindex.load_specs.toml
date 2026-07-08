@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "def load_specs() -> dict[str, dict[str, Any]]:"
 description = ""
 line = 87
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = [
   "_config_dir [crib/codeindex.py]",

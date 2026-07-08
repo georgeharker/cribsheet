@@ -4,12 +4,12 @@ kind = "constant"
 lang = "python"
 module = "crib.codeindex"
 parent = ""
-content_hash = "807c5d8864819446"
+content_hash = "e6876218c6170768"
 file = "crib/codeindex.py"
 signature = "_FUNC_KINDS = {6, 12}          # Method, Function"
 description = ""
 line = 293
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = []
 called_by = []

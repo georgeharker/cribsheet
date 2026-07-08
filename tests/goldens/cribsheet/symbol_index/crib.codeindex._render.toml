@@ -8,8 +8,8 @@ content_hash = "ea8445614eda648e"
 file = "crib/codeindex.py"
 signature = "def _render(e: dict) -> str:"
 description = ""
-line = 1135
-mtime = 1783533619000000000
+line = 1268
+mtime = 1783544236000000000
 container = []
 calls = [
   "_esc [crib/codeindex.py]",

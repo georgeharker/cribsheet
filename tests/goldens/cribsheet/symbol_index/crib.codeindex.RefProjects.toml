@@ -4,12 +4,12 @@ kind = "global"
 lang = "python"
 module = "crib.codeindex"
 parent = ""
-content_hash = "29c71e881c4356c6"
+content_hash = "d6a62df3b91d435a"
 file = "crib/codeindex.py"
 signature = "RefProjects = list[tuple[str, \"Path | None\", frozenset[str]]]"
 description = ""
 line = 643
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = []
 called_by = []

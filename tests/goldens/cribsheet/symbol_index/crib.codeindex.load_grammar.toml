@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "def load_grammar() -> dict[str, dict[str, str]]:"
 description = ""
 line = 142
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = [
   "_config_dir [crib/codeindex.py]",

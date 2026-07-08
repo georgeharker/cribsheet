@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "sym_cache: dict[str, list]"
 description = ""
 line = 882
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = [
   "_ExtractCtx",
 ]

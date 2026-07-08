@@ -8,8 +8,8 @@ content_hash = "393d4a73c065b62a"
 file = "crib/codeindex.py"
 signature = "def by_fqname(self, name: str) -> list[dict]:"
 description = ""
-line = 1202
-mtime = 1783533619000000000
+line = 1335
+mtime = 1783544236000000000
 container = [
   "SymbolIndex",
 ]

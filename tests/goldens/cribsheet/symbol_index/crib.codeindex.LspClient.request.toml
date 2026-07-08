@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "def request(self, method: str, params: dict, timeout: float = 30.0) -> Any:"
 description = ""
 line = 390
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = [
   "LspClient",
 ]
@@ -19,6 +19,7 @@ calls = [
 called_by = [
   "_extract [crib/codeindex.py]",
   "_hierarchy_edges [crib/codeindex.py]",
+  "_hover_doc [crib/codeindex.py]",
   "_reference_edges [crib/codeindex.py]",
   "_symbol_entry [crib/codeindex.py]",
   "_symbol_ranges [crib/codeindex.py]",
@@ -28,6 +29,7 @@ called_by = [
 references = [
   "_extract [crib/codeindex.py]",
   "_hierarchy_edges [crib/codeindex.py]",
+  "_hover_doc [crib/codeindex.py]",
   "_reference_edges [crib/codeindex.py]",
   "_symbol_entry [crib/codeindex.py]",
   "_symbol_ranges [crib/codeindex.py]",

@@ -4,12 +4,12 @@ kind = "function"
 lang = "python"
 module = "tests.test_codeindex"
 parent = ""
-content_hash = "80baccf4df98ed96"
+content_hash = "1feafa681219be00"
 file = "tests/test_codeindex.py"
 signature = "def test_module_of_python_strips_roots_and_init():"
 description = ""
 line = 21
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = [
   "_module_of [crib/codeindex.py]",

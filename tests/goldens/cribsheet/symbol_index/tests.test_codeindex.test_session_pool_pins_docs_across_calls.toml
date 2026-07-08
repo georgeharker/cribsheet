@@ -8,8 +8,8 @@ content_hash = "af9e9e1db921877d"
 file = "tests/test_codeindex.py"
 signature = "def test_session_pool_pins_docs_across_calls(tmp_path, monkeypatch):"
 description = ""
-line = 412
-mtime = 1783533619000000000
+line = 441
+mtime = 1783544236000000000
 container = []
 calls = [
   "LspSessionPool [crib/codeindex.py]",

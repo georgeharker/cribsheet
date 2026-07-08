@@ -4,12 +4,12 @@ kind = "function"
 lang = "python"
 module = "scripts.eval_retrieval"
 parent = ""
-content_hash = "755f0d3481af1d29"
+content_hash = "207e324df3b489d1"
 file = "scripts/eval_retrieval.py"
 signature = "def main(argv: list[str] | None = None) -> int:"
 description = ""
 line = 234
-mtime = 1782930371000000000
+mtime = 1783541603000000000
 container = []
 calls = [
   "_run_lift [scripts/eval_retrieval.py]",

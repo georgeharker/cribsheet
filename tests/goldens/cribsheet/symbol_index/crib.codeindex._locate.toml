@@ -9,7 +9,7 @@ file = "crib/codeindex.py"
 signature = "def _locate(uri: str, root: Path, ref_projects: RefProjects | None) -> str | None:"
 description = ""
 line = 646
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = [
   "_in_workspace [crib/codeindex.py]",

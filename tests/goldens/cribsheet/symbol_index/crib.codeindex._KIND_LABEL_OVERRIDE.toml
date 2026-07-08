@@ -4,12 +4,12 @@ kind = "constant"
 lang = "python"
 module = "crib.codeindex"
 parent = ""
-content_hash = "af22ef0165446198"
+content_hash = "e2f7a483b10a9af4"
 file = "crib/codeindex.py"
 signature = "_KIND_LABEL_OVERRIDE = {(\"rust\", 11): \"trait\"}"
 description = ""
 line = 713
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = []
 called_by = []

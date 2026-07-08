@@ -4,12 +4,12 @@ kind = "constant"
 lang = "python"
 module = "crib.codeindex"
 parent = ""
-content_hash = "1ff1cba9bc928062"
+content_hash = "3849de854891068f"
 file = "crib/codeindex.py"
 signature = "DEFAULT_LSP_SPECS: dict[str, dict[str, Any]] = {"
 description = ""
 line = 44
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = []
 called_by = []

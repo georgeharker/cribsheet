@@ -4,12 +4,12 @@ kind = "constant"
 lang = "python"
 module = "crib.codeindex"
 parent = ""
-content_hash = "8af51ab5bb43dd5b"
+content_hash = "d705b319dd35b40c"
 file = "crib/codeindex.py"
 signature = "_LUA_TABLE_VARS = {\"M\", \"_M\", \"self\", \"Module\", \"mod\"}"
 description = ""
 line = 716
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = []
 called_by = []

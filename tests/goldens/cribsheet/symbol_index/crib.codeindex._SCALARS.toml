@@ -8,8 +8,8 @@ content_hash = "ed24a45d268ccd25"
 file = "crib/codeindex.py"
 signature = "_SCALARS = (\"fqname\", \"name\", \"kind\", \"lang\", \"module\", \"parent\", \"content_hash\","
 description = ""
-line = 1130
-mtime = 1783533619000000000
+line = 1263
+mtime = 1783544236000000000
 container = []
 calls = []
 called_by = []

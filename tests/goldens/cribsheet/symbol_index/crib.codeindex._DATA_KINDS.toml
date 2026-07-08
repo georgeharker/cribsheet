@@ -4,12 +4,12 @@ kind = "constant"
 lang = "python"
 module = "crib.codeindex"
 parent = ""
-content_hash = "5ec720276a980e5f"
+content_hash = "3d0bad7fafc3ab7f"
 file = "crib/codeindex.py"
 signature = "_DATA_KINDS = {13, 14, 8, 7}   # Variable, Constant, Field, Property"
 description = ""
 line = 306
-mtime = 1783533619000000000
+mtime = 1783544236000000000
 container = []
 calls = []
 called_by = []
