@@ -8,7 +8,9 @@ at the end collects what we found that deserves a cleanup round.
 
 ## 0. The shape — `Crib` as composition root
 
-![Collaborator architecture — Crib wires the acyclic collaborator graph](images/collaborator-architecture.svg)
+![Collaborator architecture — Crib wires the acyclic collaborator graph](images/collaborator-architecture.png)
+
+<sub>Source: [`collaborator-architecture.svg`](images/collaborator-architecture.svg) (authored with svg-mcp; the PNG is a 2× render).</sub>
 
 `Crib` (`crib/app.py`) no longer *is* the system; it *wires* it. `Crib.__init__`
 instantiates a set of single-responsibility collaborators and holds them, and its
