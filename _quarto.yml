@@ -1,0 +1,68 @@
+project:
+  type: website
+  render:
+    - index.md
+    - README.md        # README files must be listed explicitly; globs skip them
+    - DESIGN.md
+    - docs/*.md
+    # Repo-only documents — excluded from the published site:
+    # (todos.md and CLAUDE.md.example are top-level and outside the docs/*.md
+    # glob, so they never render; nothing else is repo-only.)
+
+  # Diagram + logo assets referenced by the pages. embed-resources inlines
+  # images into each page, but the site favicon/logo/social image are read as
+  # files, so ship the image tree.
+  resources:
+    - docs/images/*.png
+    - docs/images/*.svg
+
+# gfm_auto_identifiers makes heading anchors match GitHub's slugs, which the
+# docs' cross-links use. Keep pandoc's full markdown reader otherwise —
+# `from: gfm` breaks Quarto's navigation divs.
+from: markdown+gfm_auto_identifiers
+
+website:
+  title: "cribsheet"
+  favicon: docs/images/cribsheet-logo-v2.svg
+  image: docs/images/cribsheet-logo-v2@2x.png
+  search: true
+  sidebar:
+    style: docked
+    logo: docs/images/cribsheet-logo-v2.svg
+    tools:
+      - icon: github
+        href: https://github.com/georgeharker/cribsheet
+        text: GitHub repository
+    contents:
+      - text: "Home"
+        href: index.md
+      - text: "Overview (README)"
+        href: README.md
+      - section: "Using cribsheet"
+        contents:
+          - text: "User guide"
+            href: docs/guide.md
+          - text: "CLI / MCP reference"
+            href: docs/surface.md
+          - text: "Sync across machines"
+            href: docs/resume-on-new-machine.md
+      - section: "Under the hood"
+        contents:
+          - text: "Design & why"
+            href: DESIGN.md
+          - text: "Implementation map"
+            href: docs/implementation.md
+          - text: "Code symbol index"
+            href: docs/code-symbol-index.md
+          - text: "Retrieval & adoption"
+            href: docs/retrieval-and-adoption.md
+          - text: "Knowledge capture"
+            href: docs/knowledge-capture.md
+          - text: "Organic-memory eval"
+            href: docs/eval-organic-memory.md
+
+format:
+  html:
+    theme: pulse
+    toc: true
+    embed-resources: true
