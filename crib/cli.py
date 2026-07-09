@@ -383,7 +383,9 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    from . import __version__
     p = argparse.ArgumentParser(prog="crib", description="markdown memory")
+    p.add_argument("--version", action="version", version=f"crib {__version__}")
     p.add_argument("--mcp", action="store_true", help="run the MCP server")
     p.add_argument("--json", action="store_true", help="machine-readable output")
     # transport options (apply to --mcp and `serve`; also pick the daemon the CLI
