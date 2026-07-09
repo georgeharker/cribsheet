@@ -6,12 +6,50 @@ architecture and the *why*; this is the *how it works today*, written by walking
 the code with crib's own index. The [mess ledger](#mess-ledger--cleanup-candidates)
 at the end collects what we found that deserves a cleanup round.
 
+## 0. The shape — `Crib` as composition root
+
+`Crib` (`crib/app.py`) no longer *is* the system; it *wires* it. `Crib.__init__`
+instantiates a set of single-responsibility collaborators and holds them, and its
+public methods are thin `resolve_project` + delegate wrappers. The collaborators
+form an **acyclic** dependency graph — each takes only the narrow deps it needs,
+with no back-reference to the whole `Crib`:
+
+- **`NoteStore`** (`crib/notestore.py`) — the note-file store: path resolution
+  (`dir`/`abspath`/`source_roots`), `read`/`write`/`delete`/`move`/`reindex`, and
+  the version ring (`list_versions`/`version_content`).
+- **`CodeStore`** (`crib/codestore.py`) — the code subsystem's shared state: the
+  in-memory resident cache (`_ResidentCode`), per-project locks, the freshness
+  epoch, and the primitives (`resident`/`reload`/`revalidate`/`dir_sig`/`tok`/
+  `bump_epoch`).
+- **`CodeIndexer`** (`crib/codeindexer.py`) — the code-index *pipeline*
+  (`code_index`/`_index_project_code`/`_index_code_file[_tracked]`), driven by
+  `ProjectServices`.
+- **`CodeQuery`** (`crib/codequery.py`) — the code-index *queries*
+  (`lookup`/`xref`/`dossier`/`graph`), over `Refs` + `Learnings` + the embedder.
+- **`Refs`** (`crib/refs.py`) — cross-project references (`project_refs`,
+  `ref_edge_ctx`, `resolve_symbol`/`resolve_symbol_or_ref`).
+- **`Learnings`** (`crib/learnings.py`) — durable notes attached to code symbols
+  (`attach`/`report`/`rehome`/`read`, + append/edit/forget/reaffirm).
+- **`ProjectServices`** (`crib/project_services.py`) — the project layer
+  (`resolve_project`, `enumerate_code_files`, `register_code_root`); narrow deps
+  (refs + code + paths + config), no whole-`Crib` back-reference.
+
+The `__init__` wiring order *is* the DAG: `CodeStore` and `NoteStore` first, then
+`Refs` (needs the resident cache), then `ProjectServices` (refs + code) →
+`CodeIndexer` (services), and `Learnings` (refs + notestore) → `CodeQuery`
+(refs + learnings + embedder). Note *retrieval* (`Crib.lookup`) deliberately stays
+on `Crib` — it spans the note store and the embedder and isn't a code-index query.
+The whole split was made behavior-preserving and *proven* so: each extraction step
+was gated by `scripts/snapshot_harness.py` against a frozen symbol-index golden and
+had to reproduce it byte-for-byte (see `tests/goldens/`, `tests/test_corpus_goldens.py`).
+
 ## 1. Notes ingestion (store → chunks → index)
 
 Every write funnels through one path:
 
-- **Write**: `Crib._write_note` (`crib/app.py`) stashes the prior content to the
-  version ring, writes the new file atomically, and triggers reindexing.
+- **Write**: `NoteStore.write` (`crib/notestore.py`, reached via `Crib`'s thin
+  `store`/`append`/`edit` wrappers) stashes the prior content to the version ring,
+  writes the new file atomically, and triggers reindexing.
 - **Index**: `IndexEngine.index_file` (`crib/indexer.py`) takes a per-path lock
   and delegates to the locked inner routine — concurrent callers for the same
   note serialize; races degrade to redundant work, never a wrong index.
@@ -44,7 +82,7 @@ docs (`index_docs_insitu`), the Claude-memory mirror (`import_claude_memory` /
 
 ## 3. Retrieval (notes)
 
-`Crib.lookup` (`crib/app.py:685`) → `_retrieve`: dense cosine over chunk
+`Crib.lookup` (`crib/app.py` — note retrieval stays on `Crib`, §0) → `_retrieve`: dense cosine over chunk
 embeddings ⊕ BM25 (warm lexical cache, `crib/retrieve.py`) ⊕ optional
 summary-alias dense ranking, RRF-fused, optional cross-encoder rerank (a third
 *voter* fused in, never a unilateral reorderer). `apropos` is the same ranking
@@ -54,7 +92,8 @@ fold in via config or per-call overrides.
 
 ## 4. Code indexing pipeline
 
-`project setup` / `project index` → `_index_project_code` (`crib/app.py`):
+`crib project setup` / `crib project index` → `CodeIndexer._index_project_code`
+(`crib/codeindexer.py`, driven by `ProjectServices`):
 
 1. **Enumerate** (`_enumerate_code_files`): extension globs + grammar-routed
    extensionless files (shebang / `#compdef` / `#autoload` / bare names, via
@@ -88,11 +127,13 @@ fold in via config or per-call overrides.
 4. **Progress**: `_sweeps` {done,total} per project — the poll-able wait signal
    in `status`; gone when the sweep finishes.
 
-The **resident code cache** (`_ResidentCode`, `_reload_code`) keeps parsed
-symbols + description embeddings in memory; freshness is either `scan` (dir
-signature) or `trust` (in-process epoch). Query-time `_revalidate` is the lazy
+The **resident code cache** lives on `CodeStore` (`crib/codestore.py`):
+`_ResidentCode` + `resident`/`reload` keep parsed symbols + description embeddings
+in memory; freshness is either `scan` (dir signature, `dir_sig`) or `trust`
+(in-process epoch, `bump_epoch`). `CodeStore.revalidate` is the lazy query-time
 staleness gate: source mtime vs the toml's own mtime, plus force-reindex of
-merge-dirtied files (blank `content_hash` from the sync merge driver).
+merge-dirtied files (blank `content_hash` from the sync merge driver). `CodeStore`
+also owns the per-project locks the pipeline and queries coordinate on.
 
 ## 5. Warm LSP sessions (`LspSessionPool`, `crib/codeindex.py`)
 
@@ -137,12 +178,12 @@ deletion by LSP say-so requires a confirming slow re-extract (§4).
 
 `.crib` `refs:` names other projects (names only — each machine resolves a ref
 to its local checkout via the ref's machine-local `.source_root`;
-`Crib._project_refs`). Three mechanisms compose:
+`Refs.project_refs`, `crib/refs.py`). Three mechanisms compose:
 
-- **Query fan-out**: `code_lookup` merges per-project rankings (equal-weight
-  RRF, local-first tie-break); `_resolve_symbol_or_ref` falls through to refs
-  for dossier/xref/graph; dossier/graph traverse qualified edges and annotate
-  from the ref's index.
+- **Query fan-out**: `CodeQuery.lookup` (`crib/codequery.py`) merges per-project
+  rankings (equal-weight RRF, local-first tie-break); `Refs.resolve_symbol_or_ref`
+  falls through to refs for dossier/xref/graph; dossier/graph traverse qualified
+  edges and annotate from the ref's index.
 - **Edge attribution** (`_locate`): out-of-root LSP resolutions attribute to a
   ref via its local root, an in-tree vendored checkout carrying the ref's
   `.crib` (checked before the workspace — same repo, same rel paths), or a
@@ -153,11 +194,13 @@ to its local checkout via the ref's machine-local `.source_root`;
 
 ## 8. Learnings
 
-A learning is a first-class NOTE under `<project>/notes/code-learnings/`, keyed
-by slugged fqn — deliberately separate from the regenerable LLM description.
-`_attach_learnings` enriches query results O(1) by slug; staleness = the
-symbol's `content_hash` moved since authoring (a heads-up, not an
-invalidation). `code_learnings`/`code_rehome` audit and re-point orphans.
+The `Learnings` collaborator (`crib/learnings.py`) owns them. A learning is a
+first-class NOTE under `<project>/notes/code-learnings/`, keyed by slugged fqn —
+deliberately separate from the regenerable LLM description. `Learnings.attach`
+enriches query results O(1) by slug; staleness = the symbol's `content_hash`
+moved since authoring (a heads-up, not an invalidation). `Learnings.report`/
+`rehome` (surfaced as `crib learning report`/`crib learning rehome`) audit and
+re-point orphans.
 
 ## 9. Git sync & merge
 
@@ -176,9 +219,13 @@ blank-hashed (dirty) and each machine rebuilds it from its own checkout
 ## 10. Daemon & surfaces
 
 The MCP server (`crib/server.py:build_server`) is the daemon; the CLI is an MCP
-client of it (`crib/client.py`, sharedserver-managed) — `_verb_call`
-(`crib/cli.py`) maps each verb to a tool call, shipping the caller's cwd
-(stdin is read client-side). `--no-daemon` runs in-process. Writes require an
+client of it (`crib/client.py`, sharedserver-managed). The CLI surface is
+**noun-verb**: `crib <noun> <verb>` (`note`/`code`/`learning`/`project`, plus flat
+`serve`/`info`/`status`), nested argparse subparsers whose MCP counterparts are the
+flat `@mcp.tool()` names (`note_lookup`, `code_xref`, `learning_add`, `project_list`,
+…). One `VERBS` registry (`crib/cli.py`) maps each nested verb to its MCP tool + Crib
+method + emitter; `_run_daemon`/`_run_inprocess` are the two ~12-line dispatchers over
+it. `--no-daemon` runs in-process. Writes require an
 explicit project (schema-level `anyOf` via the `write_tool` decorator;
 elicitation when omitted); reads ride the sticky per-connection session project
 (DESIGN §15). `status` is the one-call health summary (inventory, git state,
@@ -190,11 +237,16 @@ LSP sessions, in-flight indexing, sweep progress).
 
 Found while writing this map; none are bugs, all are friction.
 
-1. **`crib/app.py` is a 2,500-line god object.** Crib holds notes CRUD,
-   retrieval, the whole code-index pipeline, learnings, refs, git, mirrors,
-   status. Natural seams: `codeproject.py` (indexing pipeline + resident cache
-   + revalidation), `refs.py`, `learnings.py`. The `_index_code_file` body
-   alone is ~120 lines of guards + describe + write.
+1. **~~`crib/app.py` is a 2,500-line god object.~~ ✓ Resolved (2026-07-08).**
+   Split into single-responsibility collaborators wired by `Crib` as a composition
+   root (§0): `NoteStore`, `CodeStore`, `CodeIndexer`, `CodeQuery`, `Refs`,
+   `Learnings`, `ProjectServices`. `app.py` dropped ~2,547 → ~1,530 lines; its
+   public methods are thin `resolve_project` + delegate wrappers, the collaborator
+   DAG is acyclic (narrow deps — `ProjectServices` and the rest take only what they
+   need, no whole-`Crib` back-reference), and all 11 extraction steps were gated
+   byte-identical against a frozen symbol-index golden (`scripts/snapshot_harness.py`,
+   `tests/goldens/`, `tests/test_corpus_goldens.py`). Note retrieval (`Crib.lookup`)
+   intentionally stayed on `Crib`.
 2. **~~Two CLI dispatch tables.~~ ✓ Resolved (2026-07-07).** The daemon
    arg-mapper (`_verb_call`), the in-process dispatcher (`_run_inprocess`), and
    the emitter switch collapsed into one `VERBS` registry (`crib/cli.py`): one
@@ -244,3 +296,11 @@ Found while writing this map; none are bugs, all are friction.
    code-index pair renamed to `_index_code_file_tracked` (the tracked wrapper)
    and `_index_code_file` (the work), so neither collides with the notes
    pipeline's `IndexEngine.index_file`.
+10. **Git sync/sharing has no home collaborator.** `setup`/`sync`/`push`/`pull`/
+    `snapshot` are app-level plumbing over `GitBacking` (`crib/gitbacking.py`),
+    not a first-class subsystem — the one area the noun-verb interface cleanup
+    (2026-07-08) could *not* map cleanly to a collaborator (it folded them under
+    the `note` noun as `crib note sync`/`push`/`pull`/… since they operate on the
+    note repo). Candidate seam: a `NoteRepo`/`Sync` collaborator owning the git
+    lifecycle, so the interface and the factoring line up. Low priority — the
+    surface reads fine as-is.
