@@ -29,6 +29,8 @@ install, see the [README](../README.md); for the exhaustive command list, see
 
 ## The interface
 
+![The command surface — four nouns (note, code, learning, project) and their verbs](images/command-surface.png)
+
 Every command reads as **`crib <noun> <verb>`** — a noun for the facet (`note`,
 `code`, `learning`, `project`) and a verb for the action:
 
