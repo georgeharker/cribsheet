@@ -20,7 +20,7 @@ It remembers two kinds of things:
   this by concept*, *what calls this*, *what does this do* — across files.
 
 Disk is the source of truth; the vector index is a derived, rebuildable cache. One
-warm process serves your editor (over MCP) and your terminal (`crib <verb>`) alike.
+warm process serves your editor (over MCP) and your terminal (`crib <noun> <verb>`) alike.
 
 > `crib` = the command. `cribsheet` = the project. See **[DESIGN.md](DESIGN.md)**
 > for the full architecture.
@@ -110,8 +110,13 @@ toward `project setup`, runs it, and carries on.
 
 ## The surface
 
+Every command reads as **`crib <noun> <verb>`** (and the matching MCP tool
+`<noun>_<verb>`) — four nouns for the four facets:
+
+![The command surface — note / code / learning / project and their verbs](docs/images/command-surface.png)
+
 Every capability, its CLI form, its MCP tool, and a one-liner lives in
-**[docs/surface.md](docs/surface.md)** — the full reference. The essentials:
+**[docs/surface.md](docs/surface.md)** — the full reference. Grouped by task:
 
 | | notes | code |
 |---|---|---|
