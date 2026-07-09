@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.config.FastMCPServerEntry"
+name = "FastMCPServerEntry"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = ""
+content_hash = "225c1e172f75e15c"
+file = "combiner/mcp_combiner/config.py"
+signature = "class FastMCPServerEntry(BaseModel):"
+description = ""
+line = 242
+mtime = 1782954213000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "mcpServers [combiner/mcp_combiner/config.py]",
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "FastMCPServerEntry",
+  "combiner",
+  "combiner.mcp_combiner.config.FastMCPServerEntry",
+  "config",
+  "entry",
+  "fast",
+  "mcp",
+  "server",
+]

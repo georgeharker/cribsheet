@@ -1,0 +1,31 @@
+fqname = "crib.gitbacking.GitBacking"
+name = "GitBacking"
+kind = "class"
+lang = "python"
+module = "crib.gitbacking"
+parent = ""
+content_hash = "5464243aeacaf78f"
+file = "crib/gitbacking.py"
+signature = "class GitBacking:"
+description = ""
+line = 57
+mtime = 1783451795000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "_imported_note [tests/test_sync.py]",
+  "_machine [tests/test_sync.py]",
+  "_note [tests/test_sync.py]",
+  "_run_git [crib/cli.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+]
+name_terms = [
+  "GitBacking",
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking",
+  "git",
+  "gitbacking",
+]

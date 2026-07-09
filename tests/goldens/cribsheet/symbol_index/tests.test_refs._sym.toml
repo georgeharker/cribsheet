@@ -1,0 +1,31 @@
+fqname = "tests.test_refs._sym"
+name = "_sym"
+kind = "function"
+lang = "python"
+module = "tests.test_refs"
+parent = ""
+content_hash = "486d550f4a09edcb"
+file = "tests/test_refs.py"
+signature = "def _sym(crib, project, fqname, file, description=\"\", **over):"
+description = ""
+line = 23
+mtime = 1783476730000000000
+container = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = [
+  "_two_projects [tests/test_refs.py]",
+]
+references = [
+  "_two_projects [tests/test_refs.py]",
+]
+name_terms = [
+  "_sym",
+  "refs",
+  "sym",
+  "test",
+  "tests",
+  "tests.test_refs._sym",
+]

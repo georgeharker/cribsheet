@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_session_filter.TestFinalizeSchemas._tool"
+name = "_tool"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestFinalizeSchemas"
+content_hash = "cf96d9571e1ae4c9"
+file = "combiner/tests/test_session_filter.py"
+signature = "@staticmethod"
+description = ""
+line = 683
+mtime = 1783452495000000000
+container = [
+  "TestFinalizeSchemas",
+]
+calls = []
+called_by = [
+  "test_coerce_still_runs_with_no_schema_fixes [combiner/tests/test_session_filter.py]",
+  "test_idempotent_across_repeat_calls [combiner/tests/test_session_filter.py]",
+  "test_schema_fixes_reach_a_neovim_named_tool [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "test_coerce_still_runs_with_no_schema_fixes [combiner/tests/test_session_filter.py]",
+  "test_idempotent_across_repeat_calls [combiner/tests/test_session_filter.py]",
+  "test_schema_fixes_reach_a_neovim_named_tool [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_tool",
+  "combiner",
+  "combiner.tests.test_session_filter.TestFinalizeSchemas._tool",
+  "filter",
+  "finalize",
+  "schemas",
+  "session",
+  "test",
+  "tests",
+  "tool",
+]

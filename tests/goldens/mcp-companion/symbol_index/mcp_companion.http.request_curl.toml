@@ -1,0 +1,31 @@
+fqname = "mcp_companion.http.request_curl"
+name = "request_curl"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.http"
+parent = ""
+content_hash = "8fe907816153302a"
+file = "lua/mcp_companion/http.lua"
+signature = "local function request_curl(opts)"
+description = ""
+line = 94
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "http.lua [lua/mcp_companion/http.lua]",
+]
+references = [
+  "else [lua/mcp_companion/http.lua]",
+  "if [lua/mcp_companion/http.lua]",
+  "opts [lua/mcp_companion/http.lua]",
+]
+name_terms = [
+  "companion",
+  "curl",
+  "http",
+  "mcp",
+  "mcp_companion.http.request_curl",
+  "request",
+  "request_curl",
+]

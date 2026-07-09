@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.nvim_channel._MANIFEST_LUA"
+name = "_MANIFEST_LUA"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = ""
+content_hash = "9a7482b7d55a5b8f"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "_MANIFEST_LUA = \"return require('mcp_companion.native').manifest()\""
+description = ""
+line = 39
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "ensure_manifest [combiner/mcp_combiner/nvim_channel.py]",
+]
+name_terms = [
+  "_MANIFEST_LUA",
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel._MANIFEST_LUA",
+  "lua",
+  "manifest",
+  "mcp",
+  "nvim",
+]

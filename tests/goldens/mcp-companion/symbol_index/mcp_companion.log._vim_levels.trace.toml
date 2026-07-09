@@ -1,0 +1,27 @@
+fqname = "mcp_companion.log._vim_levels.trace"
+name = "trace"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.log"
+parent = "mcp_companion.log._vim_levels"
+content_hash = "57cdc77bda4c8495"
+file = "lua/mcp_companion/log.lua"
+signature = "trace = vim.log.levels.TRACE,"
+description = ""
+line = 10
+mtime = 1782852601000000000
+container = [
+  "_vim_levels",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "companion",
+  "levels",
+  "log",
+  "mcp",
+  "mcp_companion.log._vim_levels.trace",
+  "trace",
+  "vim",
+]

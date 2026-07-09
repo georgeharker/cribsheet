@@ -1,0 +1,26 @@
+fqname = "crib.generate.generate"
+name = "generate"
+kind = "function"
+lang = "python"
+module = "crib.generate"
+parent = ""
+content_hash = "cf75fee3b96274b3"
+file = "crib/generate.py"
+signature = "def generate(cfg: GenerateConfig, system: str, user: str,"
+description = ""
+line = 57
+mtime = 1782958917000000000
+container = []
+calls = [
+  "GenerationError [crib/generate.py]",
+  "resolve_provider [crib/generate.py]",
+]
+called_by = []
+references = [
+  "agenerate [crib/generate.py]",
+]
+name_terms = [
+  "crib",
+  "crib.generate.generate",
+  "generate",
+]

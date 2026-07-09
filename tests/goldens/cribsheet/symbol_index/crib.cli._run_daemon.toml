@@ -1,0 +1,34 @@
+fqname = "crib.cli._run_daemon"
+name = "_run_daemon"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "58caac0c7076d705"
+file = "crib/cli.py"
+signature = "def _run_daemon(args: Any, cfg: Any) -> None:"
+description = ""
+line = 855
+mtime = 1783476730000000000
+container = []
+calls = [
+  "DaemonClient [crib/client.py]",
+  "_cwd_of [crib/cli.py]",
+  "_project_verb [crib/cli.py]",
+  "_resolve_verb [crib/cli.py]",
+  "call [crib/client.py]",
+]
+called_by = [
+  "main [crib/cli.py]",
+]
+references = [
+  "main [crib/cli.py]",
+]
+name_terms = [
+  "_run_daemon",
+  "cli",
+  "crib",
+  "crib.cli._run_daemon",
+  "daemon",
+  "run",
+]

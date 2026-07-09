@@ -1,0 +1,31 @@
+fqname = "tests.test_client.test_scalar_result_envelope_is_unwrapped"
+name = "test_scalar_result_envelope_is_unwrapped"
+kind = "function"
+lang = "python"
+module = "tests.test_client"
+parent = ""
+content_hash = "e2c074651b272e90"
+file = "tests/test_client.py"
+signature = "def test_scalar_result_envelope_is_unwrapped():"
+description = ""
+line = 39
+mtime = 1782958917000000000
+container = []
+calls = [
+  "_data [crib/client.py]",
+  "_res [tests/test_client.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "envelope",
+  "is",
+  "result",
+  "scalar",
+  "test",
+  "test_scalar_result_envelope_is_unwrapped",
+  "tests",
+  "tests.test_client.test_scalar_result_envelope_is_unwrapped",
+  "unwrapped",
+]

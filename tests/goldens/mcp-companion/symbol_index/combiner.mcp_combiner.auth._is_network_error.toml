@@ -1,0 +1,34 @@
+fqname = "combiner.mcp_combiner.auth._is_network_error"
+name = "_is_network_error"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "f33cd5178d0835f2"
+file = "combiner/mcp_combiner/auth.py"
+signature = "def _is_network_error(exc: BaseException) -> bool:"
+description = ""
+line = 85
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "_discover_oauth_metadata [combiner/mcp_combiner/auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "_probe_token_at [combiner/mcp_combiner/auth.py]",
+]
+references = [
+  "_discover_oauth_metadata [combiner/mcp_combiner/auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "_probe_token_at [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_is_network_error",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._is_network_error",
+  "error",
+  "is",
+  "mcp",
+  "network",
+]

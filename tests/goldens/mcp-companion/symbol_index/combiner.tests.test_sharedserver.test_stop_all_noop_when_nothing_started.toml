@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_sharedserver.test_stop_all_noop_when_nothing_started"
+name = "test_stop_all_noop_when_nothing_started"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_sharedserver"
+parent = ""
+content_hash = "453b43621a36e1eb"
+file = "combiner/tests/test_sharedserver.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 209
+mtime = 1782420032000000000
+container = []
+calls = [
+  "_make_config [combiner/tests/test_sharedserver.py]",
+  "_mock_async_process [combiner/tests/test_sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "all",
+  "combiner",
+  "combiner.tests.test_sharedserver.test_stop_all_noop_when_nothing_started",
+  "noop",
+  "nothing",
+  "sharedserver",
+  "started",
+  "stop",
+  "test",
+  "test_stop_all_noop_when_nothing_started",
+  "tests",
+  "when",
+]

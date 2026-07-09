@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_nvim_channel._REPO_ROOT"
+name = "_REPO_ROOT"
+kind = "constant"
+lang = "python"
+module = "combiner.tests.test_nvim_channel"
+parent = ""
+content_hash = "33cbaa70b0211ac7"
+file = "combiner/tests/test_nvim_channel.py"
+signature = "_REPO_ROOT = Path(__file__).resolve().parents[2]"
+description = ""
+line = 25
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_LUA_DIR [combiner/tests/test_nvim_channel.py]",
+]
+name_terms = [
+  "_REPO_ROOT",
+  "channel",
+  "combiner",
+  "combiner.tests.test_nvim_channel._REPO_ROOT",
+  "nvim",
+  "repo",
+  "root",
+  "test",
+  "tests",
+]

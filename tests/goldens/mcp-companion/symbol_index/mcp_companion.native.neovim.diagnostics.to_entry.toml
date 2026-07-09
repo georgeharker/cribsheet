@@ -1,0 +1,31 @@
+fqname = "mcp_companion.native.neovim.diagnostics.to_entry"
+name = "to_entry"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.native.neovim.diagnostics"
+parent = ""
+content_hash = "261f22f765687211"
+file = "lua/mcp_companion/native/neovim/diagnostics.lua"
+signature = "local function to_entry(d)"
+description = ""
+line = 40
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = [
+  "diagnostics.lua [lua/mcp_companion/native/neovim/diagnostics.lua]",
+]
+references = [
+  "d [lua/mcp_companion/native/neovim/diagnostics.lua]",
+]
+name_terms = [
+  "companion",
+  "diagnostics",
+  "entry",
+  "mcp",
+  "mcp_companion.native.neovim.diagnostics.to_entry",
+  "native",
+  "neovim",
+  "to",
+  "to_entry",
+]

@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.nvim_proxy._instance_for_session"
+name = "_instance_for_session"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_proxy"
+parent = ""
+content_hash = "50f04ff452ee89ef"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+signature = "def _instance_for_session(session_id: str | None) -> str | None:"
+description = ""
+line = 92
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = [
+  "call_nvim_tool [combiner/mcp_combiner/nvim_proxy.py]",
+]
+references = [
+  "call_nvim_tool [combiner/mcp_combiner/nvim_proxy.py]",
+]
+name_terms = [
+  "_instance_for_session",
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy._instance_for_session",
+  "for",
+  "instance",
+  "mcp",
+  "nvim",
+  "proxy",
+  "session",
+]

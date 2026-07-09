@@ -1,0 +1,26 @@
+fqname = "crib.project_services.ProjectServices"
+name = "ProjectServices"
+kind = "class"
+lang = "python"
+module = "crib.project_services"
+parent = ""
+content_hash = "800aa2b06e1c50af"
+file = "crib/project_services.py"
+signature = "class ProjectServices:"
+description = ""
+line = 27
+mtime = 1783530318000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/codeindexer.py]",
+]
+name_terms = [
+  "ProjectServices",
+  "crib",
+  "crib.project_services.ProjectServices",
+  "project",
+  "services",
+]

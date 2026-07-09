@@ -1,0 +1,36 @@
+fqname = "combiner.tests.test_connections._reconnect_conn"
+name = "_reconnect_conn"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = ""
+content_hash = "cac75a448f8f4fa3"
+file = "combiner/tests/test_connections.py"
+signature = "def _reconnect_conn(*, shared_server: str | None, url: str = \"http://127.0.0.1:1/mcp\"):"
+description = ""
+line = 176
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "test_local_backoff_capped [combiner/tests/test_connections.py]",
+  "test_no_restart_without_shared_server [combiner/tests/test_connections.py]",
+  "test_restarts_backing_after_threshold [combiner/tests/test_connections.py]",
+  "test_success_resets_failure_counter [combiner/tests/test_connections.py]",
+]
+references = [
+  "test_local_backoff_capped [combiner/tests/test_connections.py]",
+  "test_no_restart_without_shared_server [combiner/tests/test_connections.py]",
+  "test_restarts_backing_after_threshold [combiner/tests/test_connections.py]",
+  "test_success_resets_failure_counter [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "_reconnect_conn",
+  "combiner",
+  "combiner.tests.test_connections._reconnect_conn",
+  "conn",
+  "connections",
+  "reconnect",
+  "test",
+  "tests",
+]

@@ -1,0 +1,31 @@
+fqname = "mcp_companion.setup"
+name = "setup"
+kind = "function"
+lang = "lua"
+module = "mcp_companion"
+parent = ""
+content_hash = "6881f5c428848625"
+file = "lua/mcp_companion/init.lua"
+signature = "function M.setup(opts)"
+description = ""
+line = 11
+mtime = 1783452478000000000
+container = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/init.lua]",
+]
+references = [
+  "M [lua/mcp_companion/init.lua]",
+  "event [lua/mcp_companion/init.lua]",
+  "get_combiner [lua/mcp_companion/init.lua]",
+  "get_hub_instance [lua/mcp_companion/init.lua]",
+  "get_state [lua/mcp_companion/init.lua]",
+  "opts [lua/mcp_companion/init.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.setup",
+  "setup",
+]

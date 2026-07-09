@@ -1,0 +1,45 @@
+fqname = "crib.refs.Refs.project_refs"
+name = "project_refs"
+kind = "method"
+lang = "python"
+module = "crib.refs"
+parent = "crib.refs.Refs"
+content_hash = "1fa02f35812750b7"
+file = "crib/refs.py"
+signature = "def project_refs(self, proj: str) -> list[dict[str, Any]]:"
+description = ""
+line = 33
+mtime = 1783522850000000000
+container = [
+  "Refs",
+]
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "find [crib/config.py]",
+  "is_populated [crib/codeindex.py]",
+  "project_dir [crib/paths.py]",
+  "source_root [crib/codeindex.py]",
+]
+called_by = [
+  "_project_refs [crib/app.py]",
+  "lookup [crib/codequery.py]",
+  "project_refs [crib/project_services.py]",
+  "ref_edge_ctx [crib/refs.py]",
+  "resolve_symbol_or_ref [crib/refs.py]",
+  "xref [crib/codequery.py]",
+]
+references = [
+  "_project_refs [crib/app.py]",
+  "lookup [crib/codequery.py]",
+  "project_refs [crib/project_services.py]",
+  "ref_edge_ctx [crib/refs.py]",
+  "resolve_symbol_or_ref [crib/refs.py]",
+  "xref [crib/codequery.py]",
+]
+name_terms = [
+  "crib",
+  "crib.refs.Refs.project_refs",
+  "project",
+  "project_refs",
+  "refs",
+]

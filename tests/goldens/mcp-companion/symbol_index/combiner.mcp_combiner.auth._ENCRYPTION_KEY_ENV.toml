@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.auth._ENCRYPTION_KEY_ENV"
+name = "_ENCRYPTION_KEY_ENV"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "32609059d048847e"
+file = "combiner/mcp_combiner/auth.py"
+signature = "_ENCRYPTION_KEY_ENV = \"MCP_COMBINER_TOKEN_KEY\""
+description = ""
+line = 128
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_get_or_create_encryption_key [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_ENCRYPTION_KEY_ENV",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._ENCRYPTION_KEY_ENV",
+  "encryption",
+  "env",
+  "key",
+  "mcp",
+]

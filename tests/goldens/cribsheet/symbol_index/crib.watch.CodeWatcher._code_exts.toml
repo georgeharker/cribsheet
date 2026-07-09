@@ -1,0 +1,33 @@
+fqname = "crib.watch.CodeWatcher._code_exts"
+name = "_code_exts"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch.CodeWatcher"
+content_hash = "c5ad8be2a1de6acd"
+file = "crib/watch.py"
+signature = "def _code_exts(self) -> set[str]:"
+description = ""
+line = 190
+mtime = 1783476730000000000
+container = [
+  "CodeWatcher",
+]
+calls = [
+  "load_specs [crib/codeindex.py]",
+]
+called_by = [
+  "_decode [crib/watch.py]",
+]
+references = [
+  "_decode [crib/watch.py]",
+]
+name_terms = [
+  "_code_exts",
+  "code",
+  "crib",
+  "crib.watch.CodeWatcher._code_exts",
+  "exts",
+  "watch",
+  "watcher",
+]

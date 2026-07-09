@@ -1,0 +1,28 @@
+fqname = "combiner.tests.test_config.test_sharedserver_config_unknown_key_warns"
+name = "test_sharedserver_config_unknown_key_warns"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = ""
+content_hash = "cd4784826c894d1a"
+file = "combiner/tests/test_config.py"
+signature = "def test_sharedserver_config_unknown_key_warns(caplog: pytest.LogCaptureFixture) -> None:"
+description = ""
+line = 155
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.test_sharedserver_config_unknown_key_warns",
+  "config",
+  "key",
+  "sharedserver",
+  "test",
+  "test_sharedserver_config_unknown_key_warns",
+  "tests",
+  "unknown",
+  "warns",
+]

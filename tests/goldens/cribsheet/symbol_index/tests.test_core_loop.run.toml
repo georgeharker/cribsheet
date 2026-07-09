@@ -1,0 +1,38 @@
+fqname = "tests.test_core_loop.run"
+name = "run"
+kind = "function"
+lang = "python"
+module = "tests.test_core_loop"
+parent = ""
+content_hash = "44052857cf112194"
+file = "tests/test_core_loop.py"
+signature = "def run(coro):"
+description = ""
+line = 29
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = [
+  "test_append_and_version_ring [tests/test_core_loop.py]",
+  "test_edit_then_restore [tests/test_core_loop.py]",
+  "test_hash_gate_noop_on_unchanged [tests/test_core_loop.py]",
+  "test_metadata_drift_self_heals_without_reembed [tests/test_core_loop.py]",
+  "test_stable_id_assigned_and_persisted [tests/test_core_loop.py]",
+  "test_store_then_lookup [tests/test_core_loop.py]",
+]
+references = [
+  "test_append_and_version_ring [tests/test_core_loop.py]",
+  "test_edit_then_restore [tests/test_core_loop.py]",
+  "test_hash_gate_noop_on_unchanged [tests/test_core_loop.py]",
+  "test_metadata_drift_self_heals_without_reembed [tests/test_core_loop.py]",
+  "test_stable_id_assigned_and_persisted [tests/test_core_loop.py]",
+  "test_store_then_lookup [tests/test_core_loop.py]",
+]
+name_terms = [
+  "core",
+  "loop",
+  "run",
+  "test",
+  "tests",
+  "tests.test_core_loop.run",
+]

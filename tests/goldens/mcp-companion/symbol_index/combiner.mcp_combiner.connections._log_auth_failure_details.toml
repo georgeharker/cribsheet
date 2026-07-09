@@ -1,0 +1,33 @@
+fqname = "combiner.mcp_combiner.connections._log_auth_failure_details"
+name = "_log_auth_failure_details"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = ""
+content_hash = "3cbd9abd3ba9a7cf"
+file = "combiner/mcp_combiner/connections.py"
+signature = "def _log_auth_failure_details(name: str, srv: ServerConfig, exc: BaseException) -> None:"
+description = ""
+line = 677
+mtime = 1783473323000000000
+container = []
+calls = [
+  "_redact_header [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_log_auth_failure_details",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.connections._log_auth_failure_details",
+  "connections",
+  "details",
+  "failure",
+  "log",
+  "mcp",
+]

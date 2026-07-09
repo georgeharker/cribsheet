@@ -1,0 +1,34 @@
+fqname = "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints.test_post_filter_connected_applies_immediately"
+name = "test_post_filter_connected_applies_immediately"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints"
+content_hash = "dd52fc7384bc7b9b"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_post_filter_connected_applies_immediately(self, client):"
+description = ""
+line = 1054
+mtime = 1783452495000000000
+container = [
+  "TestTokenFilterRESTEndpoints",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "applies",
+  "combiner",
+  "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints.test_post_filter_connected_applies_immediately",
+  "connected",
+  "endpoints",
+  "filter",
+  "immediately",
+  "post",
+  "rest",
+  "session",
+  "test",
+  "test_post_filter_connected_applies_immediately",
+  "tests",
+  "token",
+]

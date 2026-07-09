@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_config.test_oauth_config_from_dict_token_dir_camel"
+name = "test_oauth_config_from_dict_token_dir_camel"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = ""
+content_hash = "43f5bf804815827f"
+file = "combiner/tests/test_config.py"
+signature = "def test_oauth_config_from_dict_token_dir_camel() -> None:"
+description = ""
+line = 88
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "camel",
+  "combiner",
+  "combiner.tests.test_config.test_oauth_config_from_dict_token_dir_camel",
+  "config",
+  "dict",
+  "dir",
+  "from",
+  "oauth",
+  "test",
+  "test_oauth_config_from_dict_token_dir_camel",
+  "tests",
+  "token",
+]

@@ -1,0 +1,29 @@
+fqname = "tests.test_real_servers.tools"
+name = "tools"
+kind = "global"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "3d1890323e6499af"
+file = "tests/test_real_servers.lua"
+signature = "local ok_tools, tools = pcall(require, \"mcp_companion.cc.tools\")"
+description = ""
+line = 199
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "else [tests/test_real_servers.lua]",
+  "if [tests/test_real_servers.lua]",
+  "ok_tools [tests/test_real_servers.lua]",
+  "reg_ok [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.tools",
+  "tools",
+]

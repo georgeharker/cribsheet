@@ -1,0 +1,42 @@
+fqname = "crib.codestore.CodeStore.drop_file"
+name = "drop_file"
+kind = "method"
+lang = "python"
+module = "crib.codestore"
+parent = "crib.codestore.CodeStore"
+content_hash = "f4eecbb5e81957b6"
+file = "crib/codestore.py"
+signature = "def drop_file(self, proj: str, relpath: str) -> None:"
+description = ""
+line = 220
+mtime = 1783494290000000000
+container = [
+  "CodeStore",
+]
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "all [crib/codeindex.py]",
+  "bump_epoch [crib/codestore.py]",
+  "delete [crib/codeindex.py]",
+  "lock [crib/codestore.py]",
+  "project_dir [crib/paths.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = [
+  "_drop_file [crib/app.py]",
+  "revalidate [crib/codestore.py]",
+]
+references = [
+  "_drop_file [crib/app.py]",
+  "revalidate [crib/codestore.py]",
+]
+name_terms = [
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore.CodeStore.drop_file",
+  "drop",
+  "drop_file",
+  "file",
+  "store",
+]

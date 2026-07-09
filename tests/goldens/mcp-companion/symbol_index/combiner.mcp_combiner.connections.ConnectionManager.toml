@@ -1,0 +1,25 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager"
+name = "ConnectionManager"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = ""
+content_hash = "562746654e1d4450"
+file = "combiner/mcp_combiner/connections.py"
+signature = "class ConnectionManager:"
+description = ""
+line = 133
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "ConnectionManager",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+]

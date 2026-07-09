@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.connections.AuthenticationError"
+name = "AuthenticationError"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = ""
+content_hash = "723f2438fe751ee8"
+file = "combiner/mcp_combiner/connections.py"
+signature = "class AuthenticationError(Exception):"
+description = ""
+line = 84
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_factory [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "AuthenticationError",
+  "authentication",
+  "combiner",
+  "combiner.mcp_combiner.connections.AuthenticationError",
+  "connections",
+  "error",
+  "mcp",
+]

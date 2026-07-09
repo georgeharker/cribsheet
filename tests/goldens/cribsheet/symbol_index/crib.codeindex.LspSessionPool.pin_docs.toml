@@ -1,0 +1,37 @@
+fqname = "crib.codeindex.LspSessionPool.pin_docs"
+name = "pin_docs"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.LspSessionPool"
+content_hash = "19d6be8bb063b76e"
+file = "crib/codeindex.py"
+signature = "def pin_docs(self, root: Path, label: str, argv: list[str], spec: dict,"
+description = ""
+line = 572
+mtime = 1783544236000000000
+container = [
+  "LspSessionPool",
+]
+calls = [
+  "acquire [crib/codeindex.py]",
+  "notify [crib/codeindex.py]",
+]
+called_by = [
+  "test_session_pool_pins_docs_across_calls [tests/test_codeindex.py]",
+]
+references = [
+  "_index_project_code [crib/codeindexer.py]",
+  "test_session_pool_pins_docs_across_calls [tests/test_codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspSessionPool.pin_docs",
+  "docs",
+  "lsp",
+  "pin",
+  "pin_docs",
+  "pool",
+  "session",
+]

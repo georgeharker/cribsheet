@@ -1,0 +1,36 @@
+fqname = "combiner.mcp_combiner.server.prime_server_tools"
+name = "prime_server_tools"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "e7c401205c2461da"
+file = "combiner/mcp_combiner/server.py"
+signature = "async def prime_server_tools("
+description = ""
+line = 451
+mtime = 1783473323000000000
+container = []
+calls = [
+  "_filter_tools [combiner/mcp_combiner/server.py]",
+  "_list_all [combiner/mcp_combiner/server.py]",
+  "_sanitize_tools [combiner/mcp_combiner/server.py]",
+  "invalidate_tool_cache [combiner/mcp_combiner/server.py]",
+]
+called_by = [
+  "_prime_or_announce [combiner/mcp_combiner/server.py]",
+  "spawn_prime [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_prime_or_announce [combiner/mcp_combiner/server.py]",
+  "spawn_prime [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.server.prime_server_tools",
+  "mcp",
+  "prime",
+  "prime_server_tools",
+  "server",
+  "tools",
+]

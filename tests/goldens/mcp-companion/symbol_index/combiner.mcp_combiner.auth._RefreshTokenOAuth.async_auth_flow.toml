@@ -1,0 +1,36 @@
+fqname = "combiner.mcp_combiner.auth._RefreshTokenOAuth.async_auth_flow"
+name = "async_auth_flow"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._RefreshTokenOAuth"
+content_hash = "df7d660aba563d79"
+file = "combiner/mcp_combiner/auth.py"
+signature = "async def async_auth_flow("
+description = ""
+line = 760
+mtime = 1782852601000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+calls = [
+  "_has_third_party_validator [combiner/mcp_combiner/auth.py]",
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "_probe_token_at [combiner/mcp_combiner/auth.py]",
+  "_third_party_probe_url [combiner/mcp_combiner/auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "async",
+  "async_auth_flow",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth.async_auth_flow",
+  "flow",
+  "mcp",
+  "o",
+  "refresh",
+  "token",
+]

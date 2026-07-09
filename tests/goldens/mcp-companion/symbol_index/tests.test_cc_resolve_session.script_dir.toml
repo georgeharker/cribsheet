@@ -1,0 +1,31 @@
+fqname = "tests.test_cc_resolve_session.script_dir"
+name = "script_dir"
+kind = "function"
+lang = "lua"
+module = "tests.test_cc_resolve_session"
+parent = ""
+content_hash = "9624e36f00e2f2fa"
+file = "tests/test_cc_resolve_session.lua"
+signature = "local function script_dir()"
+description = ""
+line = 11
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_cc_resolve_session.lua [tests/test_cc_resolve_session.lua]",
+]
+references = [
+  "repo_root [tests/test_cc_resolve_session.lua]",
+]
+name_terms = [
+  "cc",
+  "dir",
+  "resolve",
+  "script",
+  "script_dir",
+  "session",
+  "test",
+  "tests",
+  "tests.test_cc_resolve_session.script_dir",
+]

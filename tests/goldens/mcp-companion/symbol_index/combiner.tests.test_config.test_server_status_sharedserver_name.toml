@@ -1,0 +1,28 @@
+fqname = "combiner.tests.test_config.test_server_status_sharedserver_name"
+name = "test_server_status_sharedserver_name"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = ""
+content_hash = "db6e8df7615ffec2"
+file = "combiner/tests/test_config.py"
+signature = "def test_server_status_sharedserver_name() -> None:"
+description = ""
+line = 47
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.test_server_status_sharedserver_name",
+  "config",
+  "name",
+  "server",
+  "sharedserver",
+  "status",
+  "test",
+  "test_server_status_sharedserver_name",
+  "tests",
+]

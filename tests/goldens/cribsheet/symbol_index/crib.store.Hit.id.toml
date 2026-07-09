@@ -1,0 +1,28 @@
+fqname = "crib.store.Hit.id"
+name = "id"
+kind = "field"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Hit"
+content_hash = "815fab59afaac4c9"
+file = "crib/store.py"
+signature = "id: str"
+description = ""
+line = 27
+mtime = 1783446057000000000
+container = [
+  "Hit",
+]
+calls = []
+called_by = []
+references = [
+  "_rerank [crib/app.py]",
+  "_retrieve [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Hit.id",
+  "hit",
+  "id",
+  "store",
+]

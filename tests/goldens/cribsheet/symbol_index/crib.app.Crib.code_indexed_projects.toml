@@ -1,0 +1,37 @@
+fqname = "crib.app.Crib.code_indexed_projects"
+name = "code_indexed_projects"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "42c704818c34c1e5"
+file = "crib/app.py"
+signature = "def code_indexed_projects(self) -> list[dict[str, Any]]:"
+description = ""
+line = 755
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "all [crib/codeindex.py]",
+  "is_populated [crib/codeindex.py]",
+  "project_dir [crib/paths.py]",
+  "projects [crib/app.py]",
+]
+called_by = [
+  "_require_code_index [crib/app.py]",
+]
+references = [
+  "_require_code_index [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "code",
+  "code_indexed_projects",
+  "crib",
+  "crib.app.Crib.code_indexed_projects",
+  "indexed",
+  "projects",
+]

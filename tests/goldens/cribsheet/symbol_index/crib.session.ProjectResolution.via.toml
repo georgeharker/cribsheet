@@ -1,0 +1,35 @@
+fqname = "crib.session.ProjectResolution.via"
+name = "via"
+kind = "field"
+lang = "python"
+module = "crib.session"
+parent = "crib.session.ProjectResolution"
+content_hash = "9dd70e537e5486b2"
+file = "crib/session.py"
+signature = "via: str"
+description = ""
+line = 35
+mtime = 1783476730000000000
+container = [
+  "ProjectResolution",
+]
+calls = []
+called_by = []
+references = [
+  "_echo_list [crib/server.py]",
+  "current_project [crib/server.py]",
+  "echo [crib/session.py]",
+  "implicit [crib/session.py]",
+  "test_bare_default_seed_is_upgraded_by_a_later_cwd [tests/test_session.py]",
+  "test_explicit_arg_overrides_without_touching_session [tests/test_session.py]",
+  "test_seeds_lazily_and_sticks [tests/test_session.py]",
+  "test_session_current_used_over_seed [tests/test_session.py]",
+]
+name_terms = [
+  "crib",
+  "crib.session.ProjectResolution.via",
+  "project",
+  "resolution",
+  "session",
+  "via",
+]

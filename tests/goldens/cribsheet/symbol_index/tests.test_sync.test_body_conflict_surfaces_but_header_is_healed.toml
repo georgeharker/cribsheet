@@ -1,0 +1,34 @@
+fqname = "tests.test_sync.test_body_conflict_surfaces_but_header_is_healed"
+name = "test_body_conflict_surfaces_but_header_is_healed"
+kind = "function"
+lang = "python"
+module = "tests.test_sync"
+parent = ""
+content_hash = "1be4e7fef62711eb"
+file = "tests/test_sync.py"
+signature = "def test_body_conflict_surfaces_but_header_is_healed(tmp_path, remote):"
+description = ""
+line = 137
+mtime = 1783446057000000000
+container = []
+calls = [
+  "_imported_note [tests/test_sync.py]",
+  "_machine [tests/test_sync.py]",
+  "sync [crib/gitbacking.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "body",
+  "but",
+  "conflict",
+  "header",
+  "healed",
+  "is",
+  "surfaces",
+  "sync",
+  "test",
+  "test_body_conflict_surfaces_but_header_is_healed",
+  "tests",
+  "tests.test_sync.test_body_conflict_surfaces_but_header_is_healed",
+]

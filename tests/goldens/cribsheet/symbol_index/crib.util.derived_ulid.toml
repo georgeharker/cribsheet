@@ -1,0 +1,35 @@
+fqname = "crib.util.derived_ulid"
+name = "derived_ulid"
+kind = "function"
+lang = "python"
+module = "crib.util"
+parent = ""
+content_hash = "1d62adae03399994"
+file = "crib/util.py"
+signature = "def derived_ulid(*parts: str) -> str:"
+description = ""
+line = 37
+mtime = 1782755212000000000
+container = []
+calls = [
+  "_b32 [crib/util.py]",
+]
+called_by = [
+  "_index_locked [crib/indexer.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "test_derived_ulid_is_stable_and_ulid_shaped [tests/test_normalize.py]",
+]
+references = [
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "test_derived_ulid_is_stable_and_ulid_shaped [tests/test_normalize.py]",
+]
+name_terms = [
+  "crib",
+  "crib.util.derived_ulid",
+  "derived",
+  "derived_ulid",
+  "ulid",
+  "util",
+]

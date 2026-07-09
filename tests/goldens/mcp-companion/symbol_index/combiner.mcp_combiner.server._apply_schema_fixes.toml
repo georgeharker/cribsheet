@@ -1,0 +1,33 @@
+fqname = "combiner.mcp_combiner.server._apply_schema_fixes"
+name = "_apply_schema_fixes"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "8017fbbb210b1b7d"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _apply_schema_fixes(params: object, fixes: frozenset[str]) -> object:"
+description = ""
+line = 756
+mtime = 1783473323000000000
+container = []
+calls = [
+  "_apply_object_fixes [combiner/mcp_combiner/server.py]",
+  "_normalize_schema [combiner/mcp_combiner/server.py]",
+]
+called_by = [
+  "_normalize_tool_schema [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_normalize_tool_schema [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_apply_schema_fixes",
+  "apply",
+  "combiner",
+  "combiner.mcp_combiner.server._apply_schema_fixes",
+  "fixes",
+  "mcp",
+  "schema",
+  "server",
+]

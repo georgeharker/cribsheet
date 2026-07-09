@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.nvim_proxy._NVIM_INSTANCE_ARG"
+name = "_NVIM_INSTANCE_ARG"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_proxy"
+parent = ""
+content_hash = "7d67b7ccf54933c0"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+signature = "_NVIM_INSTANCE_ARG = \"nvim_instance\""
+description = ""
+line = 45
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_inject_instance_arg [combiner/mcp_combiner/nvim_proxy.py]",
+  "call_nvim_tool [combiner/mcp_combiner/nvim_proxy.py]",
+]
+name_terms = [
+  "_NVIM_INSTANCE_ARG",
+  "arg",
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy._NVIM_INSTANCE_ARG",
+  "instance",
+  "mcp",
+  "nvim",
+  "proxy",
+]

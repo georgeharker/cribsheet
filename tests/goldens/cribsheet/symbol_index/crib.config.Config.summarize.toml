@@ -1,0 +1,26 @@
+fqname = "crib.config.Config.summarize"
+name = "summarize"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.Config"
+content_hash = "0a6b3938a11d9a6d"
+file = "crib/config.py"
+signature = "summarize: dict[str, dict[str, Any]] = field(default_factory=dict)"
+description = ""
+line = 199
+mtime = 1783455339000000000
+container = [
+  "Config",
+]
+calls = []
+called_by = []
+references = [
+  "summarize [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.summarize",
+  "summarize",
+]

@@ -1,0 +1,34 @@
+fqname = "crib.codestore._ResidentCode"
+name = "_ResidentCode"
+kind = "class"
+lang = "python"
+module = "crib.codestore"
+parent = ""
+content_hash = "d511032866eb1409"
+file = "crib/codestore.py"
+signature = "class _ResidentCode:"
+description = ""
+line = 23
+mtime = 1783494290000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/codequery.py]",
+  "__init__ [crib/codestore.py]",
+  "__init__ [crib/refs.py]",
+  "_reload_code [crib/app.py]",
+  "_resident_code [crib/app.py]",
+  "reload [crib/codestore.py]",
+  "resident [crib/codestore.py]",
+  "resolve_symbol [crib/refs.py]",
+  "resolve_symbol_or_ref [crib/refs.py]",
+]
+name_terms = [
+  "_ResidentCode",
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore._ResidentCode",
+  "resident",
+]

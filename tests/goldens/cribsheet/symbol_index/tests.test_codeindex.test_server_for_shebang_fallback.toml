@@ -1,0 +1,29 @@
+fqname = "tests.test_codeindex.test_server_for_shebang_fallback"
+name = "test_server_for_shebang_fallback"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "dea1ec44a27afe8d"
+file = "tests/test_codeindex.py"
+signature = "def test_server_for_shebang_fallback(tmp_path):"
+description = ""
+line = 194
+mtime = 1783544236000000000
+container = []
+calls = [
+  "server_for [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "fallback",
+  "for",
+  "server",
+  "shebang",
+  "test",
+  "test_server_for_shebang_fallback",
+  "tests",
+  "tests.test_codeindex.test_server_for_shebang_fallback",
+]

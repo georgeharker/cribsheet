@@ -1,0 +1,33 @@
+fqname = "tests.test_line_map.test_long_section_span_covers_full_extent"
+name = "test_long_section_span_covers_full_extent"
+kind = "function"
+lang = "python"
+module = "tests.test_line_map"
+parent = ""
+content_hash = "01309f39d43d4244"
+file = "tests/test_line_map.py"
+signature = "def test_long_section_span_covers_full_extent(crib):"
+description = ""
+line = 97
+mtime = 1782631409000000000
+container = []
+calls = [
+  "chunk_note [crib/chunk.py]",
+  "run [tests/test_line_map.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "covers",
+  "extent",
+  "full",
+  "line",
+  "long",
+  "map",
+  "section",
+  "span",
+  "test",
+  "test_long_section_span_covers_full_extent",
+  "tests",
+  "tests.test_line_map.test_long_section_span_covers_full_extent",
+]

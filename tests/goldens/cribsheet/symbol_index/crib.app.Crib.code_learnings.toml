@@ -1,0 +1,33 @@
+fqname = "crib.app.Crib.code_learnings"
+name = "code_learnings"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "838b003713ca3962"
+file = "crib/app.py"
+signature = "def code_learnings(self, project: str | None = None, cwd: Path | None = None,"
+description = ""
+line = 1062
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "report [crib/learnings.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "code_learnings [crib/server.py]",
+]
+references = [
+  "code_learnings [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "code",
+  "code_learnings",
+  "crib",
+  "crib.app.Crib.code_learnings",
+  "learnings",
+]

@@ -1,0 +1,32 @@
+fqname = "tests.test_real_servers.content_text"
+name = "content_text"
+kind = "function"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "6d51bba7f1a7cbf0"
+file = "tests/test_real_servers.lua"
+signature = "local function content_text(result)"
+description = ""
+line = 375
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_real_servers.lua [tests/test_real_servers.lua]",
+]
+references = [
+  "elseif [tests/test_real_servers.lua]",
+  "result [tests/test_real_servers.lua]",
+  "text [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "content",
+  "content_text",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.content_text",
+  "text",
+]

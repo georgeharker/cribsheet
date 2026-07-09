@@ -1,0 +1,29 @@
+fqname = "tests.test_cc_tools.if.started"
+name = "started"
+kind = "variable"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = "tests.test_cc_tools.if"
+content_hash = "15ef4818249621e3"
+file = "tests/test_cc_tools.lua"
+signature = "local started, start_err = start_test_combiner(combiner_dir, fixture)"
+description = ""
+line = 207
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = [
+  "if [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "if",
+  "started",
+  "test",
+  "tests",
+  "tests.test_cc_tools.if.started",
+  "tools",
+]

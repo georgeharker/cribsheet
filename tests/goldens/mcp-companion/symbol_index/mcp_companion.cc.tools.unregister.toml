@@ -1,0 +1,33 @@
+fqname = "mcp_companion.cc.tools.unregister"
+name = "unregister"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.tools"
+parent = ""
+content_hash = "06e82c8d6b045cc5"
+file = "lua/mcp_companion/cc/tools.lua"
+signature = "function M.unregister()"
+description = ""
+line = 412
+mtime = 1783013405000000000
+container = []
+calls = []
+called_by = [
+  "M._auto_native_tools [lua/mcp_companion/cc/init.lua]",
+  "tools.lua [lua/mcp_companion/cc/tools.lua]",
+]
+references = [
+  "M [lua/mcp_companion/cc/tools.lua]",
+  "_auto_native_tools [lua/mcp_companion/cc/init.lua]",
+  "clear_fingerprint [lua/mcp_companion/cc/tools.lua]",
+  "register [lua/mcp_companion/cc/tools.lua]",
+  "register_native [lua/mcp_companion/cc/tools.lua]",
+]
+name_terms = [
+  "cc",
+  "companion",
+  "mcp",
+  "mcp_companion.cc.tools.unregister",
+  "tools",
+  "unregister",
+]

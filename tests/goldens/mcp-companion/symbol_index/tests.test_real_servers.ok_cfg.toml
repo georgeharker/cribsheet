@@ -1,0 +1,28 @@
+fqname = "tests.test_real_servers.ok_cfg"
+name = "ok_cfg"
+kind = "global"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "c4b8af9276102c3f"
+file = "tests/test_real_servers.lua"
+signature = "local ok_cfg, _cfg = pcall(require, \"mcp_companion.config\")"
+description = ""
+line = 185
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "cfg",
+  "ok",
+  "ok_cfg",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.ok_cfg",
+]

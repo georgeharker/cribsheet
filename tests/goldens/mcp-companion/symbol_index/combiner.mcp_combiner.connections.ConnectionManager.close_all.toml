@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager.close_all"
+name = "close_all"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections.ConnectionManager"
+content_hash = "39e6cb3a29bd1ce1"
+file = "combiner/mcp_combiner/connections.py"
+signature = "async def close_all(self) -> None:"
+description = ""
+line = 428
+mtime = 1783473323000000000
+container = [
+  "ConnectionManager",
+]
+calls = [
+  "disconnect [combiner/mcp_combiner/connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "all",
+  "close",
+  "close_all",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.close_all",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+]

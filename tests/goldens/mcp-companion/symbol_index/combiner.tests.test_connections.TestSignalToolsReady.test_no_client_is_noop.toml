@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_connections.TestSignalToolsReady.test_no_client_is_noop"
+name = "test_no_client_is_noop"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestSignalToolsReady"
+content_hash = "4708d22b5c717c0e"
+file = "combiner/tests/test_connections.py"
+signature = "async def test_no_client_is_noop(self):"
+description = ""
+line = 55
+mtime = 1783473323000000000
+container = [
+  "TestSignalToolsReady",
+]
+calls = [
+  "_fake_conn [combiner/tests/test_connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "combiner",
+  "combiner.tests.test_connections.TestSignalToolsReady.test_no_client_is_noop",
+  "connections",
+  "is",
+  "no",
+  "noop",
+  "ready",
+  "signal",
+  "test",
+  "test_no_client_is_noop",
+  "tests",
+  "tools",
+]

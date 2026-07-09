@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.__main__.TokenRewriteMiddleware.dispatch"
+name = "dispatch"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.__main__"
+parent = "combiner.mcp_combiner.__main__.TokenRewriteMiddleware"
+content_hash = "0b5232091e643b71"
+file = "combiner/mcp_combiner/__main__.py"
+signature = "async def dispatch("
+description = ""
+line = 55
+mtime = 1783185942000000000
+container = [
+  "TokenRewriteMiddleware",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.__main__.TokenRewriteMiddleware.dispatch",
+  "dispatch",
+  "main",
+  "mcp",
+  "middleware",
+  "rewrite",
+  "token",
+]

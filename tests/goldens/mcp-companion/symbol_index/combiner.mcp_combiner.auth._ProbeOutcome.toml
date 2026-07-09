@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.auth._ProbeOutcome"
+name = "_ProbeOutcome"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "03816d43c9941b46"
+file = "combiner/mcp_combiner/auth.py"
+signature = "class _ProbeOutcome(enum.Enum):"
+description = ""
+line = 64
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_probe_token_at [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_ProbeOutcome",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._ProbeOutcome",
+  "mcp",
+  "outcome",
+  "probe",
+]

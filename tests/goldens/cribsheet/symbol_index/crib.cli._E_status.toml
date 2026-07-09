@@ -1,0 +1,28 @@
+fqname = "crib.cli._E_status"
+name = "_E_status"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "7791ae1b7ae2f281"
+file = "crib/cli.py"
+signature = "def _E_status(d, a): _emit_status(d, a.json)"
+description = ""
+line = 696
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_emit_status [crib/cli.py]",
+]
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_E_status",
+  "cli",
+  "crib",
+  "crib.cli._E_status",
+  "e",
+  "status",
+]

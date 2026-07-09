@@ -1,0 +1,27 @@
+fqname = "crib.gitbacking._MERGE_DRIVER_NAME"
+name = "_MERGE_DRIVER_NAME"
+kind = "constant"
+lang = "python"
+module = "crib.gitbacking"
+parent = ""
+content_hash = "5d6036c1392dbafa"
+file = "crib/gitbacking.py"
+signature = "_MERGE_DRIVER_NAME = \"crib frontmatter-aware note merge\""
+description = ""
+line = 43
+mtime = 1783451795000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_ensure_merge_driver [crib/gitbacking.py]",
+]
+name_terms = [
+  "_MERGE_DRIVER_NAME",
+  "crib",
+  "crib.gitbacking._MERGE_DRIVER_NAME",
+  "driver",
+  "gitbacking",
+  "merge",
+  "name",
+]

@@ -1,0 +1,31 @@
+fqname = "mcp_companion.ui.build_logs_view"
+name = "build_logs_view"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.ui"
+parent = ""
+content_hash = "2bdf9966250cec0a"
+file = "lua/mcp_companion/ui/init.lua"
+signature = "local function build_logs_view(state)"
+description = ""
+line = 345
+mtime = 1783473333000000000
+container = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/ui/init.lua]",
+]
+references = [
+  "if [lua/mcp_companion/ui/init.lua]",
+  "state [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "build",
+  "build_logs_view",
+  "companion",
+  "logs",
+  "mcp",
+  "mcp_companion.ui.build_logs_view",
+  "ui",
+  "view",
+]

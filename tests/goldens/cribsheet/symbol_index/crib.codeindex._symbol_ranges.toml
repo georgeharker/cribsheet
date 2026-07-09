@@ -1,0 +1,33 @@
+fqname = "crib.codeindex._symbol_ranges"
+name = "_symbol_ranges"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "80512dfb552530bb"
+file = "crib/codeindex.py"
+signature = "def _symbol_ranges(c: LspClient, uri: str, language_id: str,"
+description = ""
+line = 719
+mtime = 1783544236000000000
+container = []
+calls = [
+  "_local_name [crib/codeindex.py]",
+  "_walk [crib/codeindex.py]",
+  "notify [crib/codeindex.py]",
+  "request [crib/codeindex.py]",
+]
+called_by = [
+  "_enclosing_symbol [crib/codeindex.py]",
+]
+references = [
+  "_enclosing_symbol [crib/codeindex.py]",
+]
+name_terms = [
+  "_symbol_ranges",
+  "codeindex",
+  "crib",
+  "crib.codeindex._symbol_ranges",
+  "ranges",
+  "symbol",
+]

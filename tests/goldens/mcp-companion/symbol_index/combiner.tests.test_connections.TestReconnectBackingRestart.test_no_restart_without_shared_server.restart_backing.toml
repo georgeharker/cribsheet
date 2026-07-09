@@ -1,0 +1,36 @@
+fqname = "combiner.tests.test_connections.TestReconnectBackingRestart.test_no_restart_without_shared_server.restart_backing"
+name = "restart_backing"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestReconnectBackingRestart.test_no_restart_without_shared_server"
+content_hash = "f9307cae467d2ec5"
+file = "combiner/tests/test_connections.py"
+signature = "async def restart_backing(name: str) -> bool:"
+description = ""
+line = 228
+mtime = 1783473323000000000
+container = [
+  "TestReconnectBackingRestart",
+  "test_no_restart_without_shared_server",
+]
+calls = []
+called_by = []
+references = [
+  "test_no_restart_without_shared_server [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "backing",
+  "combiner",
+  "combiner.tests.test_connections.TestReconnectBackingRestart.test_no_restart_without_shared_server.restart_backing",
+  "connections",
+  "no",
+  "reconnect",
+  "restart",
+  "restart_backing",
+  "server",
+  "shared",
+  "test",
+  "tests",
+  "without",
+]

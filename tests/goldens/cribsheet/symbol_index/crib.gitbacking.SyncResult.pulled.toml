@@ -1,0 +1,26 @@
+fqname = "crib.gitbacking.SyncResult.pulled"
+name = "pulled"
+kind = "field"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.SyncResult"
+content_hash = "bb53b9c621b19032"
+file = "crib/gitbacking.py"
+signature = "pulled: bool"
+description = ""
+line = 50
+mtime = 1783451795000000000
+container = [
+  "SyncResult",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.gitbacking.SyncResult.pulled",
+  "gitbacking",
+  "pulled",
+  "result",
+  "sync",
+]

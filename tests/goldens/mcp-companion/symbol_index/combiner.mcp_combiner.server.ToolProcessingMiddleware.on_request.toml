@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.server.ToolProcessingMiddleware.on_request"
+name = "on_request"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server.ToolProcessingMiddleware"
+content_hash = "b7cde1a94b020a8f"
+file = "combiner/mcp_combiner/server.py"
+signature = "async def on_request("
+description = ""
+line = 881
+mtime = 1783473323000000000
+container = [
+  "ToolProcessingMiddleware",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.server.ToolProcessingMiddleware.on_request",
+  "mcp",
+  "middleware",
+  "on",
+  "on_request",
+  "processing",
+  "request",
+  "server",
+  "tool",
+]

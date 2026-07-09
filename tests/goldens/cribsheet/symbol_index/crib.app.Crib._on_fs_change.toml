@@ -1,0 +1,32 @@
+fqname = "crib.app.Crib._on_fs_change"
+name = "_on_fs_change"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "c47049b56fe40af9"
+file = "crib/app.py"
+signature = "async def _on_fs_change(self, project: str, relpath: str) -> None:"
+description = ""
+line = 174
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "index_file [crib/indexer.py]",
+  "notes_dir [crib/app.py]",
+]
+called_by = []
+references = [
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "_on_fs_change",
+  "app",
+  "change",
+  "crib",
+  "crib.app.Crib._on_fs_change",
+  "fs",
+  "on",
+]

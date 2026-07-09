@@ -1,0 +1,27 @@
+fqname = "crib.retrieve.CrossEncoderReranker.scores"
+name = "scores"
+kind = "method"
+lang = "python"
+module = "crib.retrieve"
+parent = "crib.retrieve.CrossEncoderReranker"
+content_hash = "34e69eea52475984"
+file = "crib/retrieve.py"
+signature = "def scores(self, query: str, documents: list[str]) -> list[float]:"
+description = ""
+line = 175
+mtime = 1782930371000000000
+container = [
+  "CrossEncoderReranker",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.retrieve.CrossEncoderReranker.scores",
+  "cross",
+  "encoder",
+  "reranker",
+  "retrieve",
+  "scores",
+]

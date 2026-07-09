@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.config._interpolate"
+name = "_interpolate"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = ""
+content_hash = "bca52515e2d35093"
+file = "combiner/mcp_combiner/config.py"
+signature = "def _interpolate(value: str) -> str:"
+description = ""
+line = 438
+mtime = 1782954213000000000
+container = []
+calls = []
+called_by = [
+  "_interpolate_dict [combiner/mcp_combiner/config.py]",
+  "_interpolate_list [combiner/mcp_combiner/config.py]",
+  "_interpolate_str [combiner/mcp_combiner/config.py]",
+]
+references = [
+  "_interpolate_dict [combiner/mcp_combiner/config.py]",
+  "_interpolate_list [combiner/mcp_combiner/config.py]",
+  "_interpolate_str [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "_interpolate",
+  "combiner",
+  "combiner.mcp_combiner.config._interpolate",
+  "config",
+  "interpolate",
+  "mcp",
+]

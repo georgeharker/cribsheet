@@ -1,0 +1,33 @@
+fqname = "crib.versions.VersionRing.list"
+name = "list"
+kind = "method"
+lang = "python"
+module = "crib.versions"
+parent = "crib.versions.VersionRing"
+content_hash = "0be420dfa11cfc35"
+file = "crib/versions.py"
+signature = "def list(self, note_id: str) -> list[VersionEntry]:"
+description = ""
+line = 45
+mtime = 1782609751000000000
+container = [
+  "VersionRing",
+]
+calls = [
+  "VersionEntry [crib/versions.py]",
+  "_note_dir [crib/versions.py]",
+]
+called_by = [
+  "list_versions [crib/notestore.py]",
+]
+references = [
+  "list_versions [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.versions.VersionRing.list",
+  "list",
+  "ring",
+  "version",
+  "versions",
+]

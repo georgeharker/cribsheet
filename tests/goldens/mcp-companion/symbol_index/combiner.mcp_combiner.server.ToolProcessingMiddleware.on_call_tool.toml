@@ -1,0 +1,33 @@
+fqname = "combiner.mcp_combiner.server.ToolProcessingMiddleware.on_call_tool"
+name = "on_call_tool"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server.ToolProcessingMiddleware"
+content_hash = "a5bd5a6f17a81991"
+file = "combiner/mcp_combiner/server.py"
+signature = "async def on_call_tool("
+description = ""
+line = 1052
+mtime = 1783473323000000000
+container = [
+  "ToolProcessingMiddleware",
+]
+calls = [
+  "_find_server_for_tool [combiner/mcp_combiner/server.py]",
+  "_is_transport_dead [combiner/mcp_combiner/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "call",
+  "combiner",
+  "combiner.mcp_combiner.server.ToolProcessingMiddleware.on_call_tool",
+  "mcp",
+  "middleware",
+  "on",
+  "on_call_tool",
+  "processing",
+  "server",
+  "tool",
+]

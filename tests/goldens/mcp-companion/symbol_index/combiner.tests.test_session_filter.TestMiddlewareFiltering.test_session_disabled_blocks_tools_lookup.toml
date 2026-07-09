@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_session_filter.TestMiddlewareFiltering.test_session_disabled_blocks_tools_lookup"
+name = "test_session_disabled_blocks_tools_lookup"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestMiddlewareFiltering"
+content_hash = "ad72567f39104547"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_session_disabled_blocks_tools_lookup(self):"
+description = ""
+line = 259
+mtime = 1783452495000000000
+container = [
+  "TestMiddlewareFiltering",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "blocks",
+  "combiner",
+  "combiner.tests.test_session_filter.TestMiddlewareFiltering.test_session_disabled_blocks_tools_lookup",
+  "disabled",
+  "filter",
+  "filtering",
+  "lookup",
+  "middleware",
+  "session",
+  "test",
+  "test_session_disabled_blocks_tools_lookup",
+  "tests",
+  "tools",
+]

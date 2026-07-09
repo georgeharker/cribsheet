@@ -1,0 +1,29 @@
+fqname = "tests.test_normalize.test_normalize_noop_on_clean_frontmatter"
+name = "test_normalize_noop_on_clean_frontmatter"
+kind = "function"
+lang = "python"
+module = "tests.test_normalize"
+parent = ""
+content_hash = "f11d630eb7c66638"
+file = "tests/test_normalize.py"
+signature = "def test_normalize_noop_on_clean_frontmatter():"
+description = ""
+line = 99
+mtime = 1782755212000000000
+container = []
+calls = [
+  "normalize_text [crib/notes.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "clean",
+  "frontmatter",
+  "noop",
+  "normalize",
+  "on",
+  "test",
+  "test_normalize_noop_on_clean_frontmatter",
+  "tests",
+  "tests.test_normalize.test_normalize_noop_on_clean_frontmatter",
+]

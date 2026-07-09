@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__status"
+name = "combiner__status"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.meta_tools"
+parent = "combiner.mcp_combiner.meta_tools.register_meta_tools"
+content_hash = "8d0b2baee0132da0"
+file = "combiner/mcp_combiner/meta_tools.py"
+signature = "@combiner.tool()"
+description = ""
+line = 25
+mtime = 1783452495000000000
+container = [
+  "register_meta_tools",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__status",
+  "combiner__status",
+  "mcp",
+  "meta",
+  "register",
+  "status",
+  "tools",
+]

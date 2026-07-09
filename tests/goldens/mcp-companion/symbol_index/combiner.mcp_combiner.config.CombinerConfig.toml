@@ -1,0 +1,25 @@
+fqname = "combiner.mcp_combiner.config.CombinerConfig"
+name = "CombinerConfig"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = ""
+content_hash = "8cfbe9c1499ec261"
+file = "combiner/mcp_combiner/config.py"
+signature = "class CombinerConfig(BaseModel):"
+description = ""
+line = 332
+mtime = 1782954213000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "load [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "CombinerConfig",
+  "combiner",
+  "combiner.mcp_combiner.config.CombinerConfig",
+  "config",
+  "mcp",
+]

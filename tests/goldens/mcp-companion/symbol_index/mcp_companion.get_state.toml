@@ -1,0 +1,32 @@
+fqname = "mcp_companion.get_state"
+name = "get_state"
+kind = "function"
+lang = "lua"
+module = "mcp_companion"
+parent = ""
+content_hash = "3b1e968673907909"
+file = "lua/mcp_companion/init.lua"
+signature = "function M.get_state()"
+description = ""
+line = 273
+mtime = 1783452478000000000
+container = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/init.lua]",
+]
+references = [
+  "M [lua/mcp_companion/init.lua]",
+  "event [lua/mcp_companion/init.lua]",
+  "get_combiner [lua/mcp_companion/init.lua]",
+  "get_hub_instance [lua/mcp_companion/init.lua]",
+  "opts [lua/mcp_companion/init.lua]",
+]
+name_terms = [
+  "companion",
+  "get",
+  "get_state",
+  "mcp",
+  "mcp_companion.get_state",
+  "state",
+]

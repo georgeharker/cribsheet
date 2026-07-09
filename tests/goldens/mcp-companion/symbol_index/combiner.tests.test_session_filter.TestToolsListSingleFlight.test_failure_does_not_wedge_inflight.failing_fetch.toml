@@ -1,0 +1,41 @@
+fqname = "combiner.tests.test_session_filter.TestToolsListSingleFlight.test_failure_does_not_wedge_inflight.failing_fetch"
+name = "failing_fetch"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestToolsListSingleFlight.test_failure_does_not_wedge_inflight"
+content_hash = "9cbdf18d96740fec"
+file = "combiner/tests/test_session_filter.py"
+signature = "async def failing_fetch(_ctx):"
+description = ""
+line = 334
+mtime = 1783452495000000000
+container = [
+  "TestToolsListSingleFlight",
+  "test_failure_does_not_wedge_inflight",
+]
+calls = []
+called_by = []
+references = [
+  "test_failure_does_not_wedge_inflight [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestToolsListSingleFlight.test_failure_does_not_wedge_inflight.failing_fetch",
+  "does",
+  "failing",
+  "failing_fetch",
+  "failure",
+  "fetch",
+  "filter",
+  "flight",
+  "inflight",
+  "list",
+  "not",
+  "session",
+  "single",
+  "test",
+  "tests",
+  "tools",
+  "wedge",
+]

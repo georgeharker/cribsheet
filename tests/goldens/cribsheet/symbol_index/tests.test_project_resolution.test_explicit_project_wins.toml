@@ -1,0 +1,28 @@
+fqname = "tests.test_project_resolution.test_explicit_project_wins"
+name = "test_explicit_project_wins"
+kind = "function"
+lang = "python"
+module = "tests.test_project_resolution"
+parent = ""
+content_hash = "3bb23c8b998255a9"
+file = "tests/test_project_resolution.py"
+signature = "def test_explicit_project_wins(crib):"
+description = ""
+line = 25
+mtime = 1783378845000000000
+container = []
+calls = [
+  "_source_project [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "explicit",
+  "project",
+  "resolution",
+  "test",
+  "test_explicit_project_wins",
+  "tests",
+  "tests.test_project_resolution.test_explicit_project_wins",
+  "wins",
+]

@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_config.TestInterpolateStr.test_simple_var"
+name = "test_simple_var"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestInterpolateStr"
+content_hash = "c15799221ef61c8d"
+file = "combiner/tests/test_config.py"
+signature = "def test_simple_var(self) -> None:"
+description = ""
+line = 243
+mtime = 1782852601000000000
+container = [
+  "TestInterpolateStr",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateStr.test_simple_var",
+  "config",
+  "interpolate",
+  "simple",
+  "str",
+  "test",
+  "test_simple_var",
+  "tests",
+  "var",
+]

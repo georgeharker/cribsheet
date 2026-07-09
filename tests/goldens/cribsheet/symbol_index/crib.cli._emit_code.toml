@@ -1,0 +1,30 @@
+fqname = "crib.cli._emit_code"
+name = "_emit_code"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "465902442b7a2dc7"
+file = "crib/cli.py"
+signature = "def _emit_code(data: Any, verb: str, as_json: bool) -> None:"
+description = ""
+line = 139
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_print_learning [crib/cli.py]",
+]
+called_by = [
+  "(lambda) [crib/cli.py]",
+]
+references = [
+  "_E_code [crib/cli.py]",
+]
+name_terms = [
+  "_emit_code",
+  "cli",
+  "code",
+  "crib",
+  "crib.cli._emit_code",
+  "emit",
+]

@@ -1,0 +1,32 @@
+fqname = "crib.embed.Embedder.embed_query"
+name = "embed_query"
+kind = "method"
+lang = "python"
+module = "crib.embed"
+parent = "crib.embed.Embedder"
+content_hash = "caa3a522ed3bda71"
+file = "crib/embed.py"
+signature = "def embed_query(self, texts: list[str]) -> list[list[float]]:"
+description = ""
+line = 25
+mtime = 1782690118000000000
+container = [
+  "Embedder",
+]
+calls = []
+called_by = [
+  "_lookup_one [crib/codequery.py]",
+  "lookup [crib/app.py]",
+]
+references = [
+  "_lookup_one [crib/codequery.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.embed.Embedder.embed_query",
+  "embed",
+  "embed_query",
+  "embedder",
+  "query",
+]

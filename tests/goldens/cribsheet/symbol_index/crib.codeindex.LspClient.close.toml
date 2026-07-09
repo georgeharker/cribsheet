@@ -1,0 +1,39 @@
+fqname = "crib.codeindex.LspClient.close"
+name = "close"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.LspClient"
+content_hash = "14a096d5b17300d6"
+file = "crib/codeindex.py"
+signature = "def close(self) -> None:"
+description = ""
+line = 446
+mtime = 1783544236000000000
+container = [
+  "LspClient",
+]
+calls = [
+  "notify [crib/codeindex.py]",
+  "request [crib/codeindex.py]",
+]
+called_by = [
+  "_reap [crib/codeindex.py]",
+  "acquire [crib/codeindex.py]",
+  "close_all [crib/codeindex.py]",
+  "discard [crib/codeindex.py]",
+]
+references = [
+  "_reap [crib/codeindex.py]",
+  "acquire [crib/codeindex.py]",
+  "close_all [crib/codeindex.py]",
+  "discard [crib/codeindex.py]",
+]
+name_terms = [
+  "client",
+  "close",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspClient.close",
+  "lsp",
+]

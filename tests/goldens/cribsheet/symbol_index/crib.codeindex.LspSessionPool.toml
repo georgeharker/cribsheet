@@ -1,0 +1,35 @@
+fqname = "crib.codeindex.LspSessionPool"
+name = "LspSessionPool"
+kind = "class"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "3924fd55a160612f"
+file = "crib/codeindex.py"
+signature = "class LspSessionPool:"
+description = ""
+line = 473
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_POOL [crib/codeindex.py]",
+  "_extract [crib/codeindex.py]",
+  "extract_file [crib/codeindex.py]",
+  "test_extra_roots_ride_as_workspace_folders [tests/test_codeindex.py]",
+  "test_progress_tracked_and_wait_quiescent_honors_it [tests/test_codeindex.py]",
+  "test_session_pool_pins_docs_across_calls [tests/test_codeindex.py]",
+  "test_session_pool_pumps_watched_file_changes [tests/test_codeindex.py]",
+  "test_session_pool_respawns_after_crash [tests/test_codeindex.py]",
+  "test_session_pool_reuses_one_server_across_files [tests/test_codeindex.py]",
+]
+name_terms = [
+  "LspSessionPool",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspSessionPool",
+  "lsp",
+  "pool",
+  "session",
+]

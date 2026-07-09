@@ -1,0 +1,31 @@
+fqname = "mcp_companion.http.build_args"
+name = "build_args"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.http"
+parent = ""
+content_hash = "d87331d2a04ffde1"
+file = "lua/mcp_companion/http.lua"
+signature = "local function build_args(opts)"
+description = ""
+line = 52
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "http.lua [lua/mcp_companion/http.lua]",
+  "request_curl [lua/mcp_companion/http.lua]",
+]
+references = [
+  "args [lua/mcp_companion/http.lua]",
+  "opts [lua/mcp_companion/http.lua]",
+]
+name_terms = [
+  "args",
+  "build",
+  "build_args",
+  "companion",
+  "http",
+  "mcp",
+  "mcp_companion.http.build_args",
+]

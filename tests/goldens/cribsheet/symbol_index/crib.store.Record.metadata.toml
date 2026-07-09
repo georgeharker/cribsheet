@@ -1,0 +1,32 @@
+fqname = "crib.store.Record.metadata"
+name = "metadata"
+kind = "field"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Record"
+content_hash = "93da61fa692adf8d"
+file = "crib/store.py"
+signature = "metadata: dict[str, Any]"
+description = ""
+line = 22
+mtime = 1783446057000000000
+container = [
+  "Record",
+]
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "get_docs [crib/store.py]",
+  "get_meta [crib/store.py]",
+  "query [crib/store.py]",
+  "set_meta [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Record.metadata",
+  "metadata",
+  "record",
+  "store",
+]

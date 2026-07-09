@@ -1,0 +1,32 @@
+fqname = "tests.test_elaborate.test_code_fence_comments_are_not_headings"
+name = "test_code_fence_comments_are_not_headings"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "3c5e999b089bf254"
+file = "tests/test_elaborate.py"
+signature = "def test_code_fence_comments_are_not_headings():"
+description = ""
+line = 88
+mtime = 1782958917000000000
+container = []
+calls = [
+  "_split_sections [crib/chunk.py]",
+  "section_line_map [crib/chunk.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "are",
+  "code",
+  "comments",
+  "elaborate",
+  "fence",
+  "headings",
+  "not",
+  "test",
+  "test_code_fence_comments_are_not_headings",
+  "tests",
+  "tests.test_elaborate.test_code_fence_comments_are_not_headings",
+]

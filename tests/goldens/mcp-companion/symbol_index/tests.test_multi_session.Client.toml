@@ -1,0 +1,25 @@
+fqname = "tests.test_multi_session.Client"
+name = "Client"
+kind = "global"
+lang = "lua"
+module = "tests.test_multi_session"
+parent = ""
+content_hash = "fc6c755d75a306a6"
+file = "tests/test_multi_session.lua"
+signature = "local Client = require(\"mcp_companion.combiner.client\")"
+description = ""
+line = 2
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "Client",
+  "client",
+  "multi",
+  "session",
+  "test",
+  "tests",
+  "tests.test_multi_session.Client",
+]

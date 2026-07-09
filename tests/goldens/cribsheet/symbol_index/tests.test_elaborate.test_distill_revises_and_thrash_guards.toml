@@ -1,0 +1,31 @@
+fqname = "tests.test_elaborate.test_distill_revises_and_thrash_guards"
+name = "test_distill_revises_and_thrash_guards"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "5e13f1fc0765f5ff"
+file = "tests/test_elaborate.py"
+signature = "def test_distill_revises_and_thrash_guards(crib, monkeypatch):"
+description = ""
+line = 263
+mtime = 1782958917000000000
+container = []
+calls = [
+  "load [crib/notes.py]",
+  "run [tests/test_elaborate.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "distill",
+  "elaborate",
+  "guards",
+  "revises",
+  "test",
+  "test_distill_revises_and_thrash_guards",
+  "tests",
+  "tests.test_elaborate.test_distill_revises_and_thrash_guards",
+  "thrash",
+]

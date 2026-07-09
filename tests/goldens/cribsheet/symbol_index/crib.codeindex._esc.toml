@@ -1,0 +1,27 @@
+fqname = "crib.codeindex._esc"
+name = "_esc"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "1381d85250ffbc2b"
+file = "crib/codeindex.py"
+signature = "def _esc(s: str) -> str:"
+description = ""
+line = 1242
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = [
+  "_render [crib/codeindex.py]",
+]
+references = [
+  "_render [crib/codeindex.py]",
+]
+name_terms = [
+  "_esc",
+  "codeindex",
+  "crib",
+  "crib.codeindex._esc",
+  "esc",
+]

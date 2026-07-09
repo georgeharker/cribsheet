@@ -1,0 +1,42 @@
+fqname = "crib.app.Crib.project_forget"
+name = "project_forget"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "a91c56ed46df6b9d"
+file = "crib/app.py"
+signature = "def project_forget(self, project: str | None = None, cwd: Path | None = None,"
+description = ""
+line = 994
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_bump_code_epoch [crib/app.py]",
+  "_source_roots [crib/app.py]",
+  "all [crib/sources.py]",
+  "delete [crib/store.py]",
+  "get_meta [crib/store.py]",
+  "invalidate_caches [crib/indexer.py]",
+  "notes_dir [crib/app.py]",
+  "project_dir [crib/paths.py]",
+  "remove [crib/sources.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "project_forget [crib/server.py]",
+]
+references = [
+  "project_forget [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.project_forget",
+  "forget",
+  "project",
+  "project_forget",
+]

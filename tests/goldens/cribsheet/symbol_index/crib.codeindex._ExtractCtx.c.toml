@@ -1,0 +1,31 @@
+fqname = "crib.codeindex._ExtractCtx.c"
+name = "c"
+kind = "field"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex._ExtractCtx"
+content_hash = "b8e3ad72f33ab213"
+file = "crib/codeindex.py"
+signature = "c: LspClient"
+description = ""
+line = 872
+mtime = 1783544236000000000
+container = [
+  "_ExtractCtx",
+]
+calls = []
+called_by = []
+references = [
+  "_extract [crib/codeindex.py]",
+  "_hover_doc [crib/codeindex.py]",
+  "_reference_edges [crib/codeindex.py]",
+  "_symbol_entry [crib/codeindex.py]",
+]
+name_terms = [
+  "c",
+  "codeindex",
+  "crib",
+  "crib.codeindex._ExtractCtx.c",
+  "ctx",
+  "extract",
+]

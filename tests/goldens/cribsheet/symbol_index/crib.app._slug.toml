@@ -1,0 +1,27 @@
+fqname = "crib.app._slug"
+name = "_slug"
+kind = "function"
+lang = "python"
+module = "crib.app"
+parent = ""
+content_hash = "df355549a58a9591"
+file = "crib/app.py"
+signature = "def _slug(title: str) -> str:"
+description = ""
+line = 43
+mtime = 1783530649000000000
+container = []
+calls = []
+called_by = [
+  "store_note [crib/app.py]",
+]
+references = [
+  "store_note [crib/app.py]",
+]
+name_terms = [
+  "_slug",
+  "app",
+  "crib",
+  "crib.app._slug",
+  "slug",
+]

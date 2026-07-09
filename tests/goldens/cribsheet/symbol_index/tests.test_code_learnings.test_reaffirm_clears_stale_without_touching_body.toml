@@ -1,0 +1,33 @@
+fqname = "tests.test_code_learnings.test_reaffirm_clears_stale_without_touching_body"
+name = "test_reaffirm_clears_stale_without_touching_body"
+kind = "function"
+lang = "python"
+module = "tests.test_code_learnings"
+parent = ""
+content_hash = "1715ee9b46f01e31"
+file = "tests/test_code_learnings.py"
+signature = "def test_reaffirm_clears_stale_without_touching_body(crib):"
+description = ""
+line = 87
+mtime = 1783494048000000000
+container = []
+calls = [
+  "_seed_symbol [tests/test_code_learnings.py]",
+  "run [tests/test_code_learnings.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "body",
+  "clears",
+  "code",
+  "learnings",
+  "reaffirm",
+  "stale",
+  "test",
+  "test_reaffirm_clears_stale_without_touching_body",
+  "tests",
+  "tests.test_code_learnings.test_reaffirm_clears_stale_without_touching_body",
+  "touching",
+  "without",
+]

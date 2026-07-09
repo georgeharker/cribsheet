@@ -1,0 +1,28 @@
+fqname = "crib.config.GenerateConfig.endpoint"
+name = "endpoint"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.GenerateConfig"
+content_hash = "32451c1b023965a2"
+file = "crib/config.py"
+signature = "endpoint: str | None = None"
+description = ""
+line = 133
+mtime = 1783455339000000000
+container = [
+  "GenerateConfig",
+]
+calls = []
+called_by = []
+references = [
+  "resolve_provider [crib/generate.py]",
+  "test_resolve_provider_inline_fallback [tests/test_elaborate.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.GenerateConfig.endpoint",
+  "endpoint",
+  "generate",
+]

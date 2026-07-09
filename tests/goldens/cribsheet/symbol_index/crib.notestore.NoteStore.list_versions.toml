@@ -1,0 +1,36 @@
+fqname = "crib.notestore.NoteStore.list_versions"
+name = "list_versions"
+kind = "method"
+lang = "python"
+module = "crib.notestore"
+parent = "crib.notestore.NoteStore"
+content_hash = "938d6295991768b6"
+file = "crib/notestore.py"
+signature = "def list_versions(self, project: str, relpath: str) -> list[dict[str, Any]]:"
+description = ""
+line = 145
+mtime = 1783525700000000000
+container = [
+  "NoteStore",
+]
+calls = [
+  "abspath [crib/notestore.py]",
+  "list [crib/versions.py]",
+  "load [crib/notes.py]",
+]
+called_by = [
+  "list_versions [crib/app.py]",
+]
+references = [
+  "list_versions [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.NoteStore.list_versions",
+  "list",
+  "list_versions",
+  "note",
+  "notestore",
+  "store",
+  "versions",
+]

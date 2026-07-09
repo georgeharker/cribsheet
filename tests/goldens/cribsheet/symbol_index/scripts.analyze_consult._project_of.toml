@@ -1,0 +1,29 @@
+fqname = "scripts.analyze_consult._project_of"
+name = "_project_of"
+kind = "function"
+lang = "python"
+module = "scripts.analyze_consult"
+parent = ""
+content_hash = "84fdf1fc713942f0"
+file = "scripts/analyze_consult.py"
+signature = "def _project_of(transcript: Path) -> str:"
+description = ""
+line = 128
+mtime = 1783033314000000000
+container = []
+calls = []
+called_by = [
+  "main [scripts/analyze_consult.py]",
+]
+references = [
+  "main [scripts/analyze_consult.py]",
+]
+name_terms = [
+  "_project_of",
+  "analyze",
+  "consult",
+  "of",
+  "project",
+  "scripts",
+  "scripts.analyze_consult._project_of",
+]

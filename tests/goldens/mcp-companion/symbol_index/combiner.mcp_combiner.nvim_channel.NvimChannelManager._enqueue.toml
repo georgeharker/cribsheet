@@ -1,0 +1,37 @@
+fqname = "combiner.mcp_combiner.nvim_channel.NvimChannelManager._enqueue"
+name = "_enqueue"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = "combiner.mcp_combiner.nvim_channel.NvimChannelManager"
+content_hash = "fa557e975393879b"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "async def _enqueue("
+description = ""
+line = 200
+mtime = 1782852601000000000
+container = [
+  "NvimChannelManager",
+]
+calls = [
+  "NoInstanceError [combiner/mcp_combiner/nvim_channel.py]",
+  "_Job [combiner/mcp_combiner/nvim_channel.py]",
+]
+called_by = [
+  "call [combiner/mcp_combiner/nvim_channel.py]",
+  "ensure_manifest [combiner/mcp_combiner/nvim_channel.py]",
+]
+references = [
+  "call [combiner/mcp_combiner/nvim_channel.py]",
+  "ensure_manifest [combiner/mcp_combiner/nvim_channel.py]",
+]
+name_terms = [
+  "_enqueue",
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager._enqueue",
+  "enqueue",
+  "manager",
+  "mcp",
+  "nvim",
+]

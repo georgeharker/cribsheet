@@ -1,0 +1,30 @@
+fqname = "tests.test_codeindex.test_content_lang_shebang_marker_filename"
+name = "test_content_lang_shebang_marker_filename"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "2ae28c03b1cec4b0"
+file = "tests/test_codeindex.py"
+signature = "def test_content_lang_shebang_marker_filename(tmp_path, monkeypatch):"
+description = ""
+line = 97
+mtime = 1783544236000000000
+container = []
+calls = [
+  "content_lang [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "content",
+  "filename",
+  "lang",
+  "marker",
+  "shebang",
+  "test",
+  "test_content_lang_shebang_marker_filename",
+  "tests",
+  "tests.test_codeindex.test_content_lang_shebang_marker_filename",
+]

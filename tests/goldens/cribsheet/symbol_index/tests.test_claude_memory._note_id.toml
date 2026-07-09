@@ -1,0 +1,33 @@
+fqname = "tests.test_claude_memory._note_id"
+name = "_note_id"
+kind = "function"
+lang = "python"
+module = "tests.test_claude_memory"
+parent = ""
+content_hash = "ec4b6a5722b40760"
+file = "tests/test_claude_memory.py"
+signature = "def _note_id(crib: Crib, relpath: str) -> str:"
+description = ""
+line = 109
+mtime = 1782762348000000000
+container = []
+calls = [
+  "abspath [crib/app.py]",
+  "load [crib/notes.py]",
+]
+called_by = [
+  "test_resync_is_idempotent_and_reconciles_deletes [tests/test_claude_memory.py]",
+]
+references = [
+  "test_resync_is_idempotent_and_reconciles_deletes [tests/test_claude_memory.py]",
+]
+name_terms = [
+  "_note_id",
+  "claude",
+  "id",
+  "memory",
+  "note",
+  "test",
+  "tests",
+  "tests.test_claude_memory._note_id",
+]

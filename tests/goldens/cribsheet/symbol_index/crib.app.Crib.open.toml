@@ -1,0 +1,42 @@
+fqname = "crib.app.Crib.open"
+name = "open"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "ed5b8692b10eeb9d"
+file = "crib/app.py"
+signature = "@classmethod"
+description = ""
+line = 144
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "__init__ [crib/app.py]",
+  "_build_store [crib/app.py]",
+  "ensure [crib/paths.py]",
+  "load [crib/config.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = [
+  "_reconcile [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+  "_serve_async [crib/server.py]",
+  "build_server [crib/server.py]",
+  "main [scripts/eval_code.py]",
+]
+references = [
+  "_reconcile [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+  "_serve_async [crib/server.py]",
+  "build_server [crib/server.py]",
+  "main [scripts/eval_code.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.open",
+  "open",
+]

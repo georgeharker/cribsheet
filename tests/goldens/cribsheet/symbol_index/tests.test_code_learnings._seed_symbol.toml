@@ -1,0 +1,51 @@
+fqname = "tests.test_code_learnings._seed_symbol"
+name = "_seed_symbol"
+kind = "function"
+lang = "python"
+module = "tests.test_code_learnings"
+parent = ""
+content_hash = "7d2d9080c8815a56"
+file = "tests/test_code_learnings.py"
+signature = "def _seed_symbol(crib, project, fqname=\"pkg.Mod.foo\", content_hash=\"aaaa1111\"):"
+description = ""
+line = 30
+mtime = 1783494048000000000
+container = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = [
+  "test_append_creates_then_appends_dated_entries [tests/test_code_learnings.py]",
+  "test_code_graph_marks_nodes_with_learnings [tests/test_code_learnings.py]",
+  "test_code_tools_self_diagnose_unindexed_project [tests/test_code_learnings.py]",
+  "test_forget_removes_an_orphan [tests/test_code_learnings.py]",
+  "test_forget_removes_learning [tests/test_code_learnings.py]",
+  "test_join_surfaces_learning_and_flags_staleness [tests/test_code_learnings.py]",
+  "test_learnings_report_and_orphan_lifecycle [tests/test_code_learnings.py]",
+  "test_project_forget_clears_index_but_keeps_learnings [tests/test_code_learnings.py]",
+  "test_reaffirm_clears_stale_without_touching_body [tests/test_code_learnings.py]",
+  "test_unknown_and_ambiguous_symbols_raise [tests/test_code_learnings.py]",
+]
+references = [
+  "test_append_creates_then_appends_dated_entries [tests/test_code_learnings.py]",
+  "test_code_graph_marks_nodes_with_learnings [tests/test_code_learnings.py]",
+  "test_code_tools_self_diagnose_unindexed_project [tests/test_code_learnings.py]",
+  "test_forget_removes_an_orphan [tests/test_code_learnings.py]",
+  "test_forget_removes_learning [tests/test_code_learnings.py]",
+  "test_join_surfaces_learning_and_flags_staleness [tests/test_code_learnings.py]",
+  "test_learnings_report_and_orphan_lifecycle [tests/test_code_learnings.py]",
+  "test_project_forget_clears_index_but_keeps_learnings [tests/test_code_learnings.py]",
+  "test_reaffirm_clears_stale_without_touching_body [tests/test_code_learnings.py]",
+  "test_unknown_and_ambiguous_symbols_raise [tests/test_code_learnings.py]",
+]
+name_terms = [
+  "_seed_symbol",
+  "code",
+  "learnings",
+  "seed",
+  "symbol",
+  "test",
+  "tests",
+  "tests.test_code_learnings._seed_symbol",
+]

@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_session_filter.TestAllowedToDisabledConversion.test_allowed_inverts_to_disabled"
+name = "test_allowed_inverts_to_disabled"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestAllowedToDisabledConversion"
+content_hash = "34961eb4ee21d28f"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_allowed_inverts_to_disabled(self, client):"
+description = ""
+line = 1151
+mtime = 1783452495000000000
+container = [
+  "TestAllowedToDisabledConversion",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "allowed",
+  "combiner",
+  "combiner.tests.test_session_filter.TestAllowedToDisabledConversion.test_allowed_inverts_to_disabled",
+  "conversion",
+  "disabled",
+  "filter",
+  "inverts",
+  "session",
+  "test",
+  "test_allowed_inverts_to_disabled",
+  "tests",
+  "to",
+]

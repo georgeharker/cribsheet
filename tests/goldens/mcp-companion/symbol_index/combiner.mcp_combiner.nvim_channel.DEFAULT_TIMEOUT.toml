@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.nvim_channel.DEFAULT_TIMEOUT"
+name = "DEFAULT_TIMEOUT"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = ""
+content_hash = "df1d7b8b56d598f4"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "DEFAULT_TIMEOUT = 5.0"
+description = ""
+line = 43
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [combiner/mcp_combiner/nvim_channel.py]",
+]
+name_terms = [
+  "DEFAULT_TIMEOUT",
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.DEFAULT_TIMEOUT",
+  "default",
+  "mcp",
+  "nvim",
+  "timeout",
+]

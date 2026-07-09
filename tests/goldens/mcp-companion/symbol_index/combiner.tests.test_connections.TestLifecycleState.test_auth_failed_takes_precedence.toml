@@ -1,0 +1,34 @@
+fqname = "combiner.tests.test_connections.TestLifecycleState.test_auth_failed_takes_precedence"
+name = "test_auth_failed_takes_precedence"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestLifecycleState"
+content_hash = "f98a6acb025e0c63"
+file = "combiner/tests/test_connections.py"
+signature = "def test_auth_failed_takes_precedence(self):"
+description = ""
+line = 333
+mtime = 1783473323000000000
+container = [
+  "TestLifecycleState",
+]
+calls = [
+  "_inject_conn [combiner/tests/test_connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_connections.TestLifecycleState.test_auth_failed_takes_precedence",
+  "connections",
+  "failed",
+  "lifecycle",
+  "precedence",
+  "state",
+  "takes",
+  "test",
+  "test_auth_failed_takes_precedence",
+  "tests",
+]

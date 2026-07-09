@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_auth.TestBuildAuth.test_invalid_type"
+name = "test_invalid_type"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestBuildAuth"
+content_hash = "da1ffe1b0cf3472b"
+file = "combiner/tests/test_auth.py"
+signature = "def test_invalid_type(self) -> None:"
+description = ""
+line = 124
+mtime = 1782852601000000000
+container = [
+  "TestBuildAuth",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "build",
+  "combiner",
+  "combiner.tests.test_auth.TestBuildAuth.test_invalid_type",
+  "invalid",
+  "test",
+  "test_invalid_type",
+  "tests",
+  "type",
+]

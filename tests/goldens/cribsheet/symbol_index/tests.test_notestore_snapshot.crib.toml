@@ -1,0 +1,30 @@
+fqname = "tests.test_notestore_snapshot.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+module = "tests.test_notestore_snapshot"
+parent = ""
+content_hash = "843661f7d5a24b5e"
+file = "tests/test_notestore_snapshot.py"
+signature = "@pytest.fixture()"
+description = ""
+line = 24
+mtime = 1783525700000000000
+container = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "notestore",
+  "snapshot",
+  "test",
+  "tests",
+  "tests.test_notestore_snapshot.crib",
+]

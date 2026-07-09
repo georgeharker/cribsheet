@@ -1,0 +1,36 @@
+fqname = "crib.learnings.Learnings.attach"
+name = "attach"
+kind = "method"
+lang = "python"
+module = "crib.learnings"
+parent = "crib.learnings.Learnings"
+content_hash = "7c7c9e9fb8205bfa"
+file = "crib/learnings.py"
+signature = "def attach(self, proj: str,"
+description = ""
+line = 37
+mtime = 1783529664000000000
+container = [
+  "Learnings",
+]
+calls = [
+  "dir [crib/notestore.py]",
+  "learning_slug [crib/codeindex.py]",
+  "load [crib/notes.py]",
+]
+called_by = [
+  "_lookup_one [crib/codequery.py]",
+  "dossier [crib/codequery.py]",
+  "xref [crib/codequery.py]",
+]
+references = [
+  "_lookup_one [crib/codequery.py]",
+  "dossier [crib/codequery.py]",
+  "xref [crib/codequery.py]",
+]
+name_terms = [
+  "attach",
+  "crib",
+  "crib.learnings.Learnings.attach",
+  "learnings",
+]

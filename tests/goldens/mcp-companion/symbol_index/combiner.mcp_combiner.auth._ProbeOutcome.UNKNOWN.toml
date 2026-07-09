@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.auth._ProbeOutcome.UNKNOWN"
+name = "UNKNOWN"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._ProbeOutcome"
+content_hash = "4af68f95289e6489"
+file = "combiner/mcp_combiner/auth.py"
+signature = "UNKNOWN = \"unknown\"  # Couldn't tell (network error, 5xx, etc.)"
+description = ""
+line = 75
+mtime = 1782852601000000000
+container = [
+  "_ProbeOutcome",
+]
+calls = []
+called_by = []
+references = [
+  "_probe_token_at [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "UNKNOWN",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._ProbeOutcome.UNKNOWN",
+  "mcp",
+  "outcome",
+  "probe",
+  "unknown",
+]

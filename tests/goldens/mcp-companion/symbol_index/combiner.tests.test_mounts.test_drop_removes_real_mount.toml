@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_mounts.test_drop_removes_real_mount"
+name = "test_drop_removes_real_mount"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_mounts"
+parent = ""
+content_hash = "0474bb65f5b141ba"
+file = "combiner/tests/test_mounts.py"
+signature = "def test_drop_removes_real_mount() -> None:"
+description = ""
+line = 37
+mtime = 1783452495000000000
+container = []
+calls = [
+  "_child [combiner/tests/test_mounts.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_mounts.test_drop_removes_real_mount",
+  "drop",
+  "mount",
+  "mounts",
+  "real",
+  "removes",
+  "test",
+  "test_drop_removes_real_mount",
+  "tests",
+]

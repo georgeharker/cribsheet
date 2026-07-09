@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.server.create_combiner.list_sessions"
+name = "list_sessions"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server.create_combiner"
+content_hash = "46582e6ecb1ea238"
+file = "combiner/mcp_combiner/server.py"
+signature = "@combiner.custom_route(\"/sessions\", methods=[\"GET\"])"
+description = ""
+line = 1618
+mtime = 1783473323000000000
+container = [
+  "create_combiner",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.server.create_combiner.list_sessions",
+  "create",
+  "list",
+  "list_sessions",
+  "mcp",
+  "server",
+  "sessions",
+]

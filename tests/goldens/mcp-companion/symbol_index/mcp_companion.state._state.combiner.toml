@@ -1,0 +1,25 @@
+fqname = "mcp_companion.state._state.combiner"
+name = "combiner"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.state"
+parent = "mcp_companion.state._state"
+content_hash = "d6f51e3bd7e49f8c"
+file = "lua/mcp_companion/state.lua"
+signature = "combiner = {"
+description = ""
+line = 26
+mtime = 1782852601000000000
+container = [
+  "_state",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "companion",
+  "mcp",
+  "mcp_companion.state._state.combiner",
+  "state",
+]

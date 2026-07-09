@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.config.ServerConfig"
+name = "ServerConfig"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = ""
+content_hash = "568897f7fdb65058"
+file = "combiner/mcp_combiner/config.py"
+signature = "class ServerConfig(BaseModel):"
+description = ""
+line = 126
+mtime = 1782954213000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "get_enabled_servers [combiner/mcp_combiner/config.py]",
+  "load [combiner/mcp_combiner/config.py]",
+  "servers [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "ServerConfig",
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig",
+  "config",
+  "mcp",
+  "server",
+]

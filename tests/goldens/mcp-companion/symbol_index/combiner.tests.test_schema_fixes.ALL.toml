@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_schema_fixes.ALL"
+name = "ALL"
+kind = "constant"
+lang = "python"
+module = "combiner.tests.test_schema_fixes"
+parent = ""
+content_hash = "92c8a7230480d06f"
+file = "combiner/tests/test_schema_fixes.py"
+signature = "ALL = frozenset(SCHEMA_FIXES)"
+description = ""
+line = 9
+mtime = 1782861732000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "test_all_fixes_combine [combiner/tests/test_schema_fixes.py]",
+  "test_non_dict_schema_returned_unchanged [combiner/tests/test_schema_fixes.py]",
+]
+name_terms = [
+  "ALL",
+  "all",
+  "combiner",
+  "combiner.tests.test_schema_fixes.ALL",
+  "fixes",
+  "schema",
+  "test",
+  "tests",
+]

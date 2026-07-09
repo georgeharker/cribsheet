@@ -1,0 +1,23 @@
+fqname = "tests.test_sync.remote"
+name = "remote"
+kind = "function"
+lang = "python"
+module = "tests.test_sync"
+parent = ""
+content_hash = "4fe80c358ed90a77"
+file = "tests/test_sync.py"
+signature = "@pytest.fixture()"
+description = ""
+line = 19
+mtime = 1783446057000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "remote",
+  "sync",
+  "test",
+  "tests",
+  "tests.test_sync.remote",
+]

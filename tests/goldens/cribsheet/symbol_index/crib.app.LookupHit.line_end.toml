@@ -1,0 +1,32 @@
+fqname = "crib.app.LookupHit.line_end"
+name = "line_end"
+kind = "field"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.LookupHit"
+content_hash = "cd2c29723511d4e1"
+file = "crib/app.py"
+signature = "line_end: int | None = None     # resolved against current disk (None if gone)"
+description = ""
+line = 68
+mtime = 1783530649000000000
+container = [
+  "LookupHit",
+]
+calls = []
+called_by = []
+references = [
+  "_emit_human_one [crib/cli.py]",
+  "apropos [crib/app.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.LookupHit.line_end",
+  "end",
+  "hit",
+  "line",
+  "line_end",
+  "lookup",
+]

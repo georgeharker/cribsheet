@@ -1,0 +1,34 @@
+fqname = "combiner.tests.test_connections.TestReconnectBackingRestart.test_restarts_backing_after_threshold"
+name = "test_restarts_backing_after_threshold"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestReconnectBackingRestart"
+content_hash = "3f85d9f5c6570209"
+file = "combiner/tests/test_connections.py"
+signature = "async def test_restarts_backing_after_threshold(self, monkeypatch):"
+description = ""
+line = 199
+mtime = 1783473323000000000
+container = [
+  "TestReconnectBackingRestart",
+]
+calls = [
+  "_reconnect_conn [combiner/tests/test_connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "after",
+  "backing",
+  "combiner",
+  "combiner.tests.test_connections.TestReconnectBackingRestart.test_restarts_backing_after_threshold",
+  "connections",
+  "reconnect",
+  "restart",
+  "restarts",
+  "test",
+  "test_restarts_backing_after_threshold",
+  "tests",
+  "threshold",
+]

@@ -1,0 +1,35 @@
+fqname = "tests.test_retrieve.test_bm25_ranks_exact_term_match_first"
+name = "test_bm25_ranks_exact_term_match_first"
+kind = "function"
+lang = "python"
+module = "tests.test_retrieve"
+parent = ""
+content_hash = "0896646588ec743f"
+file = "tests/test_retrieve.py"
+signature = "def test_bm25_ranks_exact_term_match_first():"
+description = ""
+line = 20
+mtime = 1782843962000000000
+container = []
+calls = [
+  "BM25 [crib/retrieve.py]",
+  "_corpus [tests/test_retrieve.py]",
+  "scores [crib/retrieve.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "25",
+  "bm",
+  "exact",
+  "first",
+  "match",
+  "ranks",
+  "retrieve",
+  "term",
+  "test",
+  "test_bm25_ranks_exact_term_match_first",
+  "tests",
+  "tests.test_retrieve.test_bm25_ranks_exact_term_match_first",
+]

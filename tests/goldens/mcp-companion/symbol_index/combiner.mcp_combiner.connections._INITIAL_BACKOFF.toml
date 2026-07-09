@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.connections._INITIAL_BACKOFF"
+name = "_INITIAL_BACKOFF"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = ""
+content_hash = "267afb0c9a28b426"
+file = "combiner/mcp_combiner/connections.py"
+signature = "_INITIAL_BACKOFF = 2.0  # seconds"
+description = ""
+line = 62
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_backoff [combiner/mcp_combiner/connections.py]",
+  "_open [combiner/mcp_combiner/connections.py]",
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_INITIAL_BACKOFF",
+  "backoff",
+  "combiner",
+  "combiner.mcp_combiner.connections._INITIAL_BACKOFF",
+  "connections",
+  "initial",
+  "mcp",
+]

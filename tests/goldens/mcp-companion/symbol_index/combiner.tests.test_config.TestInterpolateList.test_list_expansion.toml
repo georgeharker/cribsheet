@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_config.TestInterpolateList.test_list_expansion"
+name = "test_list_expansion"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestInterpolateList"
+content_hash = "6dec2fd61f647893"
+file = "combiner/tests/test_config.py"
+signature = "def test_list_expansion(self) -> None:"
+description = ""
+line = 305
+mtime = 1782852601000000000
+container = [
+  "TestInterpolateList",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateList.test_list_expansion",
+  "config",
+  "expansion",
+  "interpolate",
+  "list",
+  "test",
+  "test_list_expansion",
+  "tests",
+]

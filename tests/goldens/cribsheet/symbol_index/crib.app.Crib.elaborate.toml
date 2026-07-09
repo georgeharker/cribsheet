@@ -1,0 +1,31 @@
+fqname = "crib.app.Crib.elaborate"
+name = "elaborate"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "e7c5c597da700235"
+file = "crib/app.py"
+signature = "async def elaborate(self, label: str, relpath: str | None = None,"
+description = ""
+line = 685
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "_generate_index [crib/app.py]",
+  "resolve_prompt [crib/section_index.py]",
+]
+called_by = [
+  "elaborate [crib/server.py]",
+]
+references = [
+  "elaborate [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.elaborate",
+  "elaborate",
+]

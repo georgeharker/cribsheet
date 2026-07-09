@@ -1,0 +1,24 @@
+fqname = "combiner.mcp_combiner.server.create_combiner"
+name = "create_combiner"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "905931c18c7d6488"
+file = "combiner/mcp_combiner/server.py"
+signature = "def create_combiner("
+description = ""
+line = 1377
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.server.create_combiner",
+  "create",
+  "create_combiner",
+  "mcp",
+  "server",
+]

@@ -1,0 +1,34 @@
+fqname = "combiner.mcp_combiner.connections._ManagedConnection._auth_failed"
+name = "_auth_failed"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections._ManagedConnection"
+content_hash = "a774a7c415a00826"
+file = "combiner/mcp_combiner/connections.py"
+signature = "_auth_failed: bool = field(default=False, repr=False)"
+description = ""
+line = 117
+mtime = 1783473323000000000
+container = [
+  "_ManagedConnection",
+]
+calls = []
+called_by = []
+references = [
+  "_factory [combiner/mcp_combiner/connections.py]",
+  "_monitor [combiner/mcp_combiner/connections.py]",
+  "is_auth_failed [combiner/mcp_combiner/connections.py]",
+  "lifecycle_state [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_auth_failed",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection._auth_failed",
+  "connection",
+  "connections",
+  "failed",
+  "managed",
+  "mcp",
+]

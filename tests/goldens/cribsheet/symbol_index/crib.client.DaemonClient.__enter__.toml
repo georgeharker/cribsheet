@@ -1,0 +1,28 @@
+fqname = "crib.client.DaemonClient.__enter__"
+name = "__enter__"
+kind = "method"
+lang = "python"
+module = "crib.client"
+parent = "crib.client.DaemonClient"
+content_hash = "a9764bb9fe708e1b"
+file = "crib/client.py"
+signature = "def __enter__(self) -> \"DaemonClient\":"
+description = ""
+line = 70
+mtime = 1782958917000000000
+container = [
+  "DaemonClient",
+]
+calls = [
+  "use [crib/sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "__enter__",
+  "client",
+  "crib",
+  "crib.client.DaemonClient.__enter__",
+  "daemon",
+  "enter",
+]

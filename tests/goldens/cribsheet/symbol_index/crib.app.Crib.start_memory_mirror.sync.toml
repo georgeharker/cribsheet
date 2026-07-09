@@ -1,0 +1,32 @@
+fqname = "crib.app.Crib.start_memory_mirror.sync"
+name = "sync"
+kind = "function"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib.start_memory_mirror"
+content_hash = "d2176f3ee35a89a0"
+file = "crib/app.py"
+signature = "async def sync(root: Path, project: str) -> Any:"
+description = ""
+line = 238
+mtime = 1783530649000000000
+container = [
+  "Crib",
+  "start_memory_mirror",
+]
+calls = [
+  "import_claude_memory [crib/app.py]",
+]
+called_by = []
+references = [
+  "start_memory_mirror [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.start_memory_mirror.sync",
+  "memory",
+  "mirror",
+  "start",
+  "sync",
+]

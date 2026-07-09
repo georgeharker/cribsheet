@@ -1,0 +1,49 @@
+fqname = "combiner.tests.test_session_filter.TestStaleServerTools._tool"
+name = "_tool"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestStaleServerTools"
+content_hash = "18db1d78b2b9f211"
+file = "combiner/tests/test_session_filter.py"
+signature = "@staticmethod"
+description = ""
+line = 385
+mtime = 1783452495000000000
+container = [
+  "TestStaleServerTools",
+]
+calls = []
+called_by = [
+  "list_tools [combiner/tests/test_session_filter.py]",
+  "test_auth_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_disabled_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_evicted_server_loses_ready [combiner/tests/test_session_filter.py]",
+  "test_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_grace_window_expiry_drops_tools [combiner/tests/test_session_filter.py]",
+  "test_present_server_marked_tools_ready [combiner/tests/test_session_filter.py]",
+  "test_reconnecting_peer_tools_survive [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "list_tools [combiner/tests/test_session_filter.py]",
+  "test_auth_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_disabled_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_evicted_server_loses_ready [combiner/tests/test_session_filter.py]",
+  "test_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_grace_window_expiry_drops_tools [combiner/tests/test_session_filter.py]",
+  "test_present_server_marked_tools_ready [combiner/tests/test_session_filter.py]",
+  "test_reconnecting_peer_tools_survive [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_tool",
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools._tool",
+  "filter",
+  "server",
+  "session",
+  "stale",
+  "test",
+  "tests",
+  "tool",
+  "tools",
+]

@@ -1,0 +1,43 @@
+fqname = "crib.gitbacking.GitBacking._branch"
+name = "_branch"
+kind = "method"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.GitBacking"
+content_hash = "e866aea8125b3796"
+file = "crib/gitbacking.py"
+signature = "def _branch(self) -> str:"
+description = ""
+line = 305
+mtime = 1783451795000000000
+container = [
+  "GitBacking",
+]
+calls = [
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "_pending_join [crib/gitbacking.py]",
+  "_remote_file [crib/gitbacking.py]",
+  "pull [crib/gitbacking.py]",
+  "push [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+  "state [crib/gitbacking.py]",
+]
+references = [
+  "_pending_join [crib/gitbacking.py]",
+  "_remote_file [crib/gitbacking.py]",
+  "pull [crib/gitbacking.py]",
+  "push [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+  "state [crib/gitbacking.py]",
+]
+name_terms = [
+  "_branch",
+  "backing",
+  "branch",
+  "crib",
+  "crib.gitbacking.GitBacking._branch",
+  "git",
+  "gitbacking",
+]

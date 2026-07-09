@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.config.ServerConfig.disabled"
+name = "disabled"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.ServerConfig"
+content_hash = "111e1c99f4df610d"
+file = "combiner/mcp_combiner/config.py"
+signature = "disabled: bool = False"
+description = ""
+line = 136
+mtime = 1782954213000000000
+container = [
+  "ServerConfig",
+]
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "get_enabled_servers [combiner/mcp_combiner/config.py]",
+  "get_server_status [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.disabled",
+  "config",
+  "disabled",
+  "mcp",
+  "server",
+]

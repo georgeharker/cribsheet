@@ -1,0 +1,31 @@
+fqname = "mcp_companion.ui.render_server"
+name = "render_server"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.ui"
+parent = ""
+content_hash = "b7f1328e1e3a21ed"
+file = "lua/mcp_companion/ui/init.lua"
+signature = "local function render_server(srv, session_disabled, project_disabled)"
+description = ""
+line = 149
+mtime = 1783473333000000000
+container = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/ui/init.lua]",
+]
+references = [
+  "for in [lua/mcp_companion/ui/init.lua]",
+  "if [lua/mcp_companion/ui/init.lua]",
+  "srv [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.ui.render_server",
+  "render",
+  "render_server",
+  "server",
+  "ui",
+]

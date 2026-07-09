@@ -1,0 +1,29 @@
+fqname = "crib.config.CribLink.import_into"
+name = "import_into"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.CribLink"
+content_hash = "4a1c1ebb5f0ea7de"
+file = "crib/config.py"
+signature = "import_into: str | None = None"
+description = ""
+line = 273
+mtime = 1783455339000000000
+container = [
+  "CribLink",
+]
+calls = []
+called_by = []
+references = [
+  "find [crib/config.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.import_into",
+  "import",
+  "import_into",
+  "into",
+  "link",
+]

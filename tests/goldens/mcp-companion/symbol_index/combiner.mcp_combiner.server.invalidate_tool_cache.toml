@@ -1,0 +1,37 @@
+fqname = "combiner.mcp_combiner.server.invalidate_tool_cache"
+name = "invalidate_tool_cache"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "0d0ba3708b2d29d2"
+file = "combiner/mcp_combiner/server.py"
+signature = "def invalidate_tool_cache() -> None:"
+description = ""
+line = 427
+mtime = 1783473323000000000
+container = []
+calls = [
+  "_notify_tool_list_changed [combiner/mcp_combiner/server.py]",
+  "clear_tool_cache [combiner/mcp_combiner/server.py]",
+]
+called_by = [
+  "_on_upstream_tools_ready [combiner/mcp_combiner/server.py]",
+  "_prime_or_announce [combiner/mcp_combiner/server.py]",
+  "prime_server_tools [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_on_upstream_tools_ready [combiner/mcp_combiner/server.py]",
+  "_prime_or_announce [combiner/mcp_combiner/server.py]",
+  "prime_server_tools [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.server.invalidate_tool_cache",
+  "invalidate",
+  "invalidate_tool_cache",
+  "mcp",
+  "server",
+  "tool",
+]

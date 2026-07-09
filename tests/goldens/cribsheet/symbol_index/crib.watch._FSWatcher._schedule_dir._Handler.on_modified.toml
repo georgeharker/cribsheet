@@ -1,0 +1,35 @@
+fqname = "crib.watch._FSWatcher._schedule_dir._Handler.on_modified"
+name = "on_modified"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch._FSWatcher._schedule_dir._Handler"
+content_hash = "38259518760a701b"
+file = "crib/watch.py"
+signature = "def on_modified(self, e):  # noqa: ANN001"
+description = ""
+line = 99
+mtime = 1783476730000000000
+container = [
+  "_FSWatcher",
+  "_schedule_dir",
+  "_Handler",
+]
+calls = [
+  "_emit [crib/watch.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.watch._FSWatcher._schedule_dir._Handler.on_modified",
+  "dir",
+  "fs",
+  "handler",
+  "modified",
+  "on",
+  "on_modified",
+  "schedule",
+  "watch",
+  "watcher",
+]

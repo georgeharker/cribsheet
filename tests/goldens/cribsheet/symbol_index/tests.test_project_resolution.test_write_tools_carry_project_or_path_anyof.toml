@@ -1,0 +1,33 @@
+fqname = "tests.test_project_resolution.test_write_tools_carry_project_or_path_anyof"
+name = "test_write_tools_carry_project_or_path_anyof"
+kind = "function"
+lang = "python"
+module = "tests.test_project_resolution"
+parent = ""
+content_hash = "db1937c2a8456e1f"
+file = "tests/test_project_resolution.py"
+signature = "def test_write_tools_carry_project_or_path_anyof(crib):"
+description = ""
+line = 42
+mtime = 1783378845000000000
+container = []
+calls = [
+  "build_server [crib/server.py]",
+  "schema [tests/test_project_resolution.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "anyof",
+  "carry",
+  "or",
+  "path",
+  "project",
+  "resolution",
+  "test",
+  "test_write_tools_carry_project_or_path_anyof",
+  "tests",
+  "tests.test_project_resolution.test_write_tools_carry_project_or_path_anyof",
+  "tools",
+  "write",
+]

@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_auth.TestBuildAuth.test_oauth_uses_encrypted_storage"
+name = "test_oauth_uses_encrypted_storage"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestBuildAuth"
+content_hash = "c8825efb4190a9b5"
+file = "combiner/tests/test_auth.py"
+signature = "def test_oauth_uses_encrypted_storage(self, tmp_path: Path) -> None:"
+description = ""
+line = 168
+mtime = 1782852601000000000
+container = [
+  "TestBuildAuth",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "build",
+  "combiner",
+  "combiner.tests.test_auth.TestBuildAuth.test_oauth_uses_encrypted_storage",
+  "encrypted",
+  "oauth",
+  "storage",
+  "test",
+  "test_oauth_uses_encrypted_storage",
+  "tests",
+  "uses",
+]

@@ -1,0 +1,31 @@
+fqname = "mcp_companion.native.neovim.files.read_lines"
+name = "read_lines"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.native.neovim.files"
+parent = ""
+content_hash = "3a9652b3c336170d"
+file = "lua/mcp_companion/native/neovim/files.lua"
+signature = "local function read_lines(path)"
+description = ""
+line = 9
+mtime = 1783022818000000000
+container = []
+calls = []
+called_by = [
+  "files.lua [lua/mcp_companion/native/neovim/files.lua]",
+]
+references = [
+  "path [lua/mcp_companion/native/neovim/files.lua]",
+]
+name_terms = [
+  "companion",
+  "files",
+  "lines",
+  "mcp",
+  "mcp_companion.native.neovim.files.read_lines",
+  "native",
+  "neovim",
+  "read",
+  "read_lines",
+]

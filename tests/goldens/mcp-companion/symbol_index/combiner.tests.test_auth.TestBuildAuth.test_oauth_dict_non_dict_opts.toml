@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_auth.TestBuildAuth.test_oauth_dict_non_dict_opts"
+name = "test_oauth_dict_non_dict_opts"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestBuildAuth"
+content_hash = "5a8fae05ef01bb3a"
+file = "combiner/tests/test_auth.py"
+signature = "def test_oauth_dict_non_dict_opts(self) -> None:"
+description = ""
+line = 136
+mtime = 1782852601000000000
+container = [
+  "TestBuildAuth",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "build",
+  "combiner",
+  "combiner.tests.test_auth.TestBuildAuth.test_oauth_dict_non_dict_opts",
+  "dict",
+  "non",
+  "oauth",
+  "opts",
+  "test",
+  "test_oauth_dict_non_dict_opts",
+  "tests",
+]

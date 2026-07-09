@@ -1,0 +1,35 @@
+fqname = "tests.test_claude_memory.test_resync_is_idempotent_and_reconciles_deletes"
+name = "test_resync_is_idempotent_and_reconciles_deletes"
+kind = "function"
+lang = "python"
+module = "tests.test_claude_memory"
+parent = ""
+content_hash = "4064748b40a11d0f"
+file = "tests/test_claude_memory.py"
+signature = "def test_resync_is_idempotent_and_reconciles_deletes(env):"
+description = ""
+line = 86
+mtime = 1782762348000000000
+container = []
+calls = [
+  "_note_id [tests/test_claude_memory.py]",
+  "_write [tests/test_claude_memory.py]",
+  "hostslug [crib/claudemem.py]",
+  "run [tests/test_claude_memory.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "claude",
+  "deletes",
+  "idempotent",
+  "is",
+  "memory",
+  "reconciles",
+  "resync",
+  "test",
+  "test_resync_is_idempotent_and_reconciles_deletes",
+  "tests",
+  "tests.test_claude_memory.test_resync_is_idempotent_and_reconciles_deletes",
+]

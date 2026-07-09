@@ -1,0 +1,27 @@
+fqname = "crib.chunk.Chunk.relpath"
+name = "relpath"
+kind = "field"
+lang = "python"
+module = "crib.chunk"
+parent = "crib.chunk.Chunk"
+content_hash = "b1f401c0f0bb3a24"
+file = "crib/chunk.py"
+signature = "relpath: str"
+description = ""
+line = 27
+mtime = 1782930371000000000
+container = [
+  "Chunk",
+]
+calls = []
+called_by = []
+references = [
+  "chunk_id [crib/chunk.py]",
+  "metadata [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.relpath",
+  "relpath",
+]

@@ -1,0 +1,30 @@
+fqname = "tests.test_code_learnings.test_forget_removes_learning"
+name = "test_forget_removes_learning"
+kind = "function"
+lang = "python"
+module = "tests.test_code_learnings"
+parent = ""
+content_hash = "da47c91d7c6c671d"
+file = "tests/test_code_learnings.py"
+signature = "def test_forget_removes_learning(crib):"
+description = ""
+line = 60
+mtime = 1783494048000000000
+container = []
+calls = [
+  "_seed_symbol [tests/test_code_learnings.py]",
+  "run [tests/test_code_learnings.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "forget",
+  "learning",
+  "learnings",
+  "removes",
+  "test",
+  "test_forget_removes_learning",
+  "tests",
+  "tests.test_code_learnings.test_forget_removes_learning",
+]

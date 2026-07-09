@@ -1,0 +1,28 @@
+fqname = "tests.test_native.if.ok_s"
+name = "ok_s"
+kind = "variable"
+lang = "lua"
+module = "tests.test_native"
+parent = "tests.test_native.if"
+content_hash = "5df91d8a135fb7e9"
+file = "tests/test_native.lua"
+signature = "local ok_s = pcall(native.setup, { native_servers = { neovim = { enabled = true } } })"
+description = ""
+line = 47
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "native",
+  "ok",
+  "ok_s",
+  "s",
+  "test",
+  "tests",
+  "tests.test_native.if.ok_s",
+]

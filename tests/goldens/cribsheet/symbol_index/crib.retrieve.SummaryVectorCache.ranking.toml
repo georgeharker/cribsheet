@@ -1,0 +1,35 @@
+fqname = "crib.retrieve.SummaryVectorCache.ranking"
+name = "ranking"
+kind = "method"
+lang = "python"
+module = "crib.retrieve"
+parent = "crib.retrieve.SummaryVectorCache"
+content_hash = "778ab7790b1ba344"
+file = "crib/retrieve.py"
+signature = "def ranking(self, project: str, labels: tuple[str, ...],"
+description = ""
+line = 347
+mtime = 1782930371000000000
+container = [
+  "SummaryVectorCache",
+]
+calls = [
+  "get [crib/retrieve.py]",
+]
+called_by = [
+  "_retrieve [crib/app.py]",
+  "test_summary_alias_cache_ranks_section_by_rephrasing [tests/test_elaborate.py]",
+]
+references = [
+  "_retrieve [crib/app.py]",
+  "test_summary_alias_cache_ranks_section_by_rephrasing [tests/test_elaborate.py]",
+]
+name_terms = [
+  "cache",
+  "crib",
+  "crib.retrieve.SummaryVectorCache.ranking",
+  "ranking",
+  "retrieve",
+  "summary",
+  "vector",
+]

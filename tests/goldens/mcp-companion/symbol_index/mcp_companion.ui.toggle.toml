@@ -1,0 +1,42 @@
+fqname = "mcp_companion.ui.toggle"
+name = "toggle"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.ui"
+parent = ""
+content_hash = "102718268dbffef8"
+file = "lua/mcp_companion/ui/init.lua"
+signature = "function M.toggle()"
+description = ""
+line = 406
+mtime = 1783473333000000000
+container = []
+calls = []
+called_by = [
+  "M._fetch_and_render [lua/mcp_companion/ui/init.lua]",
+  "M.close [lua/mcp_companion/ui/init.lua]",
+  "M.open [lua/mcp_companion/ui/init.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "init.lua [lua/mcp_companion/ui/init.lua]",
+  "render_server [lua/mcp_companion/ui/init.lua]",
+]
+references = [
+  "M [lua/mcp_companion/ui/init.lua]",
+  "_cleanup [lua/mcp_companion/ui/init.lua]",
+  "_fetch_and_render [lua/mcp_companion/ui/init.lua]",
+  "close [lua/mcp_companion/ui/init.lua]",
+  "else [lua/mcp_companion/ui/init.lua]",
+  "if [lua/mcp_companion/ui/init.lua]",
+  "is_open [lua/mcp_companion/ui/init.lua]",
+  "open [lua/mcp_companion/ui/init.lua]",
+  "render [lua/mcp_companion/ui/init.lua]",
+  "render_server [lua/mcp_companion/ui/init.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.ui.toggle",
+  "toggle",
+  "ui",
+]

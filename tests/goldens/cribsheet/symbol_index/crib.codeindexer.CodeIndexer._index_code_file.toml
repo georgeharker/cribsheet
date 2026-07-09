@@ -1,0 +1,49 @@
+fqname = "crib.codeindexer.CodeIndexer._index_code_file"
+name = "_index_code_file"
+kind = "method"
+lang = "python"
+module = "crib.codeindexer"
+parent = "crib.codeindexer.CodeIndexer"
+content_hash = "9d7bbcf357aa1a01"
+file = "crib/codeindexer.py"
+signature = "def _index_code_file(self, root: Path, rel: str, proj: str,"
+description = ""
+line = 73
+mtime = 1783496808000000000
+container = [
+  "CodeIndexer",
+]
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "all [crib/codeindex.py]",
+  "bump_epoch [crib/codestore.py]",
+  "delete [crib/codeindex.py]",
+  "describe_file [crib/codeindex.py]",
+  "describe_symbols [crib/codeindex.py]",
+  "extract_file [crib/codeindex.py]",
+  "find [crib/config.py]",
+  "lock [crib/codestore.py]",
+  "match_description [crib/codeindex.py]",
+  "patch_called_by [crib/codestore.py]",
+  "project_dir [crib/paths.py]",
+  "ref_edge_ctx [crib/project_services.py]",
+  "register_code_root [crib/project_services.py]",
+  "set_source_root [crib/codeindex.py]",
+  "write_all [crib/codeindex.py]",
+]
+called_by = [
+  "_index_code_file_tracked [crib/codeindexer.py]",
+]
+references = [
+  "_index_code_file_tracked [crib/codeindexer.py]",
+]
+name_terms = [
+  "_index_code_file",
+  "code",
+  "codeindexer",
+  "crib",
+  "crib.codeindexer.CodeIndexer._index_code_file",
+  "file",
+  "index",
+  "indexer",
+]

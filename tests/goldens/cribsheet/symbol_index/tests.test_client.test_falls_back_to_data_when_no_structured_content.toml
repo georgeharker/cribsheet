@@ -1,0 +1,34 @@
+fqname = "tests.test_client.test_falls_back_to_data_when_no_structured_content"
+name = "test_falls_back_to_data_when_no_structured_content"
+kind = "function"
+lang = "python"
+module = "tests.test_client"
+parent = ""
+content_hash = "7f4a1a199a9b222e"
+file = "tests/test_client.py"
+signature = "def test_falls_back_to_data_when_no_structured_content():"
+description = ""
+line = 59
+mtime = 1782958917000000000
+container = []
+calls = [
+  "_data [crib/client.py]",
+  "_res [tests/test_client.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "back",
+  "client",
+  "content",
+  "data",
+  "falls",
+  "no",
+  "structured",
+  "test",
+  "test_falls_back_to_data_when_no_structured_content",
+  "tests",
+  "tests.test_client.test_falls_back_to_data_when_no_structured_content",
+  "to",
+  "when",
+]

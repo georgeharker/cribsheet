@@ -1,0 +1,33 @@
+fqname = "tests.test_watcher.test_code_watcher_decode_routes_new_extensionless_files"
+name = "test_code_watcher_decode_routes_new_extensionless_files"
+kind = "function"
+lang = "python"
+module = "tests.test_watcher"
+parent = ""
+content_hash = "753c1f86b7755a53"
+file = "tests/test_watcher.py"
+signature = "def test_code_watcher_decode_routes_new_extensionless_files(tmp_path, monkeypatch):"
+description = ""
+line = 88
+mtime = 1783476730000000000
+container = []
+calls = [
+  "CodeWatcher [crib/watch.py]",
+  "_decode [crib/watch.py]",
+  "watch_root [crib/watch.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "decode",
+  "extensionless",
+  "files",
+  "new",
+  "routes",
+  "test",
+  "test_code_watcher_decode_routes_new_extensionless_files",
+  "tests",
+  "tests.test_watcher.test_code_watcher_decode_routes_new_extensionless_files",
+  "watcher",
+]

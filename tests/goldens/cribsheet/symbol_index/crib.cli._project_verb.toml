@@ -1,0 +1,32 @@
+fqname = "crib.cli._project_verb"
+name = "_project_verb"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "04af5e3de387dc9e"
+file = "crib/cli.py"
+signature = "def _project_verb(args: Any) -> tuple[Verb, dict[str, Any]]:"
+description = ""
+line = 833
+mtime = 1783476730000000000
+container = []
+calls = [
+  "Verb [crib/cli.py]",
+]
+called_by = [
+  "_run_daemon [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+]
+references = [
+  "_run_daemon [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+]
+name_terms = [
+  "_project_verb",
+  "cli",
+  "crib",
+  "crib.cli._project_verb",
+  "project",
+  "verb",
+]

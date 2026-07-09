@@ -1,0 +1,27 @@
+fqname = "crib.store.Hit.metadata"
+name = "metadata"
+kind = "field"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Hit"
+content_hash = "93da61fa692adf8d"
+file = "crib/store.py"
+signature = "metadata: dict[str, Any]"
+description = ""
+line = 29
+mtime = 1783446057000000000
+container = [
+  "Hit",
+]
+calls = []
+called_by = []
+references = [
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Hit.metadata",
+  "hit",
+  "metadata",
+  "store",
+]

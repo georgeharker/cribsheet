@@ -1,0 +1,27 @@
+fqname = "scripts.eval_retrieval.DEFAULT_CASES"
+name = "DEFAULT_CASES"
+kind = "constant"
+lang = "python"
+module = "scripts.eval_retrieval"
+parent = ""
+content_hash = "335b80ecfff52e3c"
+file = "scripts/eval_retrieval.py"
+signature = "DEFAULT_CASES = Path(__file__).resolve().parent / \"eval_retrieval.cases.json\""
+description = ""
+line = 31
+mtime = 1783541603000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "main [scripts/eval_retrieval.py]",
+]
+name_terms = [
+  "DEFAULT_CASES",
+  "cases",
+  "default",
+  "eval",
+  "retrieval",
+  "scripts",
+  "scripts.eval_retrieval.DEFAULT_CASES",
+]

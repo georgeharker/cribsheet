@@ -1,0 +1,34 @@
+fqname = "scripts.codeindex.lsp_probe.Client.initialize"
+name = "initialize"
+kind = "method"
+lang = "python"
+module = "scripts.codeindex.lsp_probe"
+parent = "scripts.codeindex.lsp_probe.Client"
+content_hash = "e385a894663cedcd"
+file = "scripts/codeindex/lsp_probe.py"
+signature = "def initialize(self) -> None:"
+description = ""
+line = 99
+mtime = 1783033292000000000
+container = [
+  "Client",
+]
+calls = [
+  "notify [scripts/codeindex/lsp_probe.py]",
+  "request [scripts/codeindex/lsp_probe.py]",
+]
+called_by = [
+  "main [scripts/codeindex/lsp_probe.py]",
+]
+references = [
+  "main [scripts/codeindex/lsp_probe.py]",
+]
+name_terms = [
+  "client",
+  "codeindex",
+  "initialize",
+  "lsp",
+  "probe",
+  "scripts",
+  "scripts.codeindex.lsp_probe.Client.initialize",
+]

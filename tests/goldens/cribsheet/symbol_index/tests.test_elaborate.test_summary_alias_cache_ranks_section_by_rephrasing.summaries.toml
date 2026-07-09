@@ -1,0 +1,34 @@
+fqname = "tests.test_elaborate.test_summary_alias_cache_ranks_section_by_rephrasing.summaries"
+name = "summaries"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = "tests.test_elaborate.test_summary_alias_cache_ranks_section_by_rephrasing"
+content_hash = "87c181f8f8578805"
+file = "tests/test_elaborate.py"
+signature = "def summaries(pr, sh, labels):"
+description = ""
+line = 179
+mtime = 1782958917000000000
+container = [
+  "test_summary_alias_cache_ranks_section_by_rephrasing",
+]
+calls = []
+called_by = []
+references = [
+  "test_summary_alias_cache_ranks_section_by_rephrasing [tests/test_elaborate.py]",
+]
+name_terms = [
+  "alias",
+  "by",
+  "cache",
+  "elaborate",
+  "ranks",
+  "rephrasing",
+  "section",
+  "summaries",
+  "summary",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_summary_alias_cache_ranks_section_by_rephrasing.summaries",
+]

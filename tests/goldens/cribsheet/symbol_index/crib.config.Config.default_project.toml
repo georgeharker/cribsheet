@@ -1,0 +1,30 @@
+fqname = "crib.config.Config.default_project"
+name = "default_project"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.Config"
+content_hash = "b820ec6b05c5e2bf"
+file = "crib/config.py"
+signature = "default_project: str = \"default\""
+description = ""
+line = 186
+mtime = 1783455339000000000
+container = [
+  "Config",
+]
+calls = []
+called_by = []
+references = [
+  "_resolve [crib/server.py]",
+  "cmd_info [crib/cli.py]",
+  "resolve_project [crib/config.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.default_project",
+  "default",
+  "default_project",
+  "project",
+]

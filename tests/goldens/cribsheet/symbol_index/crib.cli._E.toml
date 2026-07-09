@@ -1,0 +1,27 @@
+fqname = "crib.cli._E"
+name = "_E"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "458704ed8c00dc40"
+file = "crib/cli.py"
+signature = "def _E(d, a): _emit(d, a.json)                                   # generic"
+description = ""
+line = 692
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_emit [crib/cli.py]",
+]
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_E",
+  "cli",
+  "crib",
+  "crib.cli._E",
+  "e",
+]

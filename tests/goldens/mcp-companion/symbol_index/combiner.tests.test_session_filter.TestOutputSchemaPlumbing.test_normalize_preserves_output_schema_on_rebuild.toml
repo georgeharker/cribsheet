@@ -1,0 +1,36 @@
+fqname = "combiner.tests.test_session_filter.TestOutputSchemaPlumbing.test_normalize_preserves_output_schema_on_rebuild"
+name = "test_normalize_preserves_output_schema_on_rebuild"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestOutputSchemaPlumbing"
+content_hash = "6140fb1d0e7e5c26"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_normalize_preserves_output_schema_on_rebuild(self):"
+description = ""
+line = 883
+mtime = 1783452495000000000
+container = [
+  "TestOutputSchemaPlumbing",
+]
+calls = [
+  "_out [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestOutputSchemaPlumbing.test_normalize_preserves_output_schema_on_rebuild",
+  "filter",
+  "normalize",
+  "on",
+  "output",
+  "plumbing",
+  "preserves",
+  "rebuild",
+  "schema",
+  "session",
+  "test",
+  "test_normalize_preserves_output_schema_on_rebuild",
+  "tests",
+]

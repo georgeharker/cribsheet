@@ -1,0 +1,45 @@
+fqname = "crib.refs.Refs.resolve_symbol"
+name = "resolve_symbol"
+kind = "method"
+lang = "python"
+module = "crib.refs"
+parent = "crib.refs.Refs"
+content_hash = "062e2ac4d4db45b7"
+file = "crib/refs.py"
+signature = "def resolve_symbol(self, proj: str, symbol: str,"
+description = ""
+line = 86
+mtime = 1783522850000000000
+container = [
+  "Refs",
+]
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "by_fqname [crib/codeindex.py]",
+  "by_fqname [crib/codestore.py]",
+  "project_dir [crib/paths.py]",
+]
+called_by = [
+  "append [crib/learnings.py]",
+  "edit [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "resolve_symbol_or_ref [crib/refs.py]",
+]
+references = [
+  "append [crib/learnings.py]",
+  "edit [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "resolve_symbol_or_ref [crib/refs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.refs.Refs.resolve_symbol",
+  "refs",
+  "resolve",
+  "resolve_symbol",
+  "symbol",
+]

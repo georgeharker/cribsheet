@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints.test_delete_filter_connected_clears"
+name = "test_delete_filter_connected_clears"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints"
+content_hash = "c637bab6dd270eca"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_delete_filter_connected_clears(self, client):"
+description = ""
+line = 1113
+mtime = 1783452495000000000
+container = [
+  "TestTokenFilterRESTEndpoints",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "clears",
+  "combiner",
+  "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints.test_delete_filter_connected_clears",
+  "connected",
+  "delete",
+  "endpoints",
+  "filter",
+  "rest",
+  "session",
+  "test",
+  "test_delete_filter_connected_clears",
+  "tests",
+  "token",
+]

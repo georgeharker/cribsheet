@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.__main__._TOKEN_RE"
+name = "_TOKEN_RE"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.__main__"
+parent = ""
+content_hash = "e598c90c1fb1f12c"
+file = "combiner/mcp_combiner/__main__.py"
+signature = "_TOKEN_RE = re.compile(r\"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$\")"
+description = ""
+line = 35
+mtime = 1783185942000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "dispatch [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "_TOKEN_RE",
+  "combiner",
+  "combiner.mcp_combiner.__main__._TOKEN_RE",
+  "main",
+  "mcp",
+  "re",
+  "token",
+]

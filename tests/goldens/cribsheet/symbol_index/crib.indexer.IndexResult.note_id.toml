@@ -1,0 +1,30 @@
+fqname = "crib.indexer.IndexResult.note_id"
+name = "note_id"
+kind = "field"
+lang = "python"
+module = "crib.indexer"
+parent = "crib.indexer.IndexResult"
+content_hash = "f5df6f0a2d7f4eb2"
+file = "crib/indexer.py"
+signature = "note_id: str | None = None"
+description = ""
+line = 37
+mtime = 1783476730000000000
+container = [
+  "IndexResult",
+]
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+]
+name_terms = [
+  "crib",
+  "crib.indexer.IndexResult.note_id",
+  "id",
+  "index",
+  "indexer",
+  "note",
+  "note_id",
+  "result",
+]

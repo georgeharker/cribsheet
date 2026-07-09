@@ -1,0 +1,36 @@
+fqname = "crib.versions.VersionRing._note_dir"
+name = "_note_dir"
+kind = "method"
+lang = "python"
+module = "crib.versions"
+parent = "crib.versions.VersionRing"
+content_hash = "294a8c5c1e720b19"
+file = "crib/versions.py"
+signature = "def _note_dir(self, note_id: str) -> Path:"
+description = ""
+line = 27
+mtime = 1782609751000000000
+container = [
+  "VersionRing",
+]
+calls = []
+called_by = [
+  "list [crib/versions.py]",
+  "read [crib/versions.py]",
+  "stash [crib/versions.py]",
+]
+references = [
+  "list [crib/versions.py]",
+  "read [crib/versions.py]",
+  "stash [crib/versions.py]",
+]
+name_terms = [
+  "_note_dir",
+  "crib",
+  "crib.versions.VersionRing._note_dir",
+  "dir",
+  "note",
+  "ring",
+  "version",
+  "versions",
+]

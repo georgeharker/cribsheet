@@ -1,0 +1,34 @@
+fqname = "crib.codeindex.SymbolIndex.write_all"
+name = "write_all"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.SymbolIndex"
+content_hash = "1964ed64f51dab3c"
+file = "crib/codeindex.py"
+signature = "def write_all(self, entries: list[dict]) -> int:"
+description = ""
+line = 1330
+mtime = 1783544236000000000
+container = [
+  "SymbolIndex",
+]
+calls = [
+  "write [crib/codeindex.py]",
+]
+called_by = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+name_terms = [
+  "all",
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex.write_all",
+  "index",
+  "symbol",
+  "write",
+  "write_all",
+]

@@ -1,0 +1,29 @@
+fqname = "tests.test_codeindex.test_qualify_is_language_idiomatic"
+name = "test_qualify_is_language_idiomatic"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "604fb39d7905b131"
+file = "tests/test_codeindex.py"
+signature = "def test_qualify_is_language_idiomatic():"
+description = ""
+line = 132
+mtime = 1783544236000000000
+container = []
+calls = [
+  "_qualify [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "idiomatic",
+  "is",
+  "language",
+  "qualify",
+  "test",
+  "test_qualify_is_language_idiomatic",
+  "tests",
+  "tests.test_codeindex.test_qualify_is_language_idiomatic",
+]

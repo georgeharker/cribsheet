@@ -1,0 +1,37 @@
+fqname = "tests.test_codeindex.test_progress_tracked_and_wait_quiescent_honors_it"
+name = "test_progress_tracked_and_wait_quiescent_honors_it"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "760e604e20beba8b"
+file = "tests/test_codeindex.py"
+signature = "def test_progress_tracked_and_wait_quiescent_honors_it(tmp_path, monkeypatch):"
+description = ""
+line = 467
+mtime = 1783544236000000000
+container = []
+calls = [
+  "LspSessionPool [crib/codeindex.py]",
+  "_fake_lsp [tests/test_codeindex.py]",
+  "acquire [crib/codeindex.py]",
+  "close_all [crib/codeindex.py]",
+  "extract_file [crib/codeindex.py]",
+  "wait_quiescent [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "codeindex",
+  "honors",
+  "it",
+  "progress",
+  "quiescent",
+  "test",
+  "test_progress_tracked_and_wait_quiescent_honors_it",
+  "tests",
+  "tests.test_codeindex.test_progress_tracked_and_wait_quiescent_honors_it",
+  "tracked",
+  "wait",
+]

@@ -1,0 +1,32 @@
+fqname = "mcp_companion.install.stamp_path"
+name = "stamp_path"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.install"
+parent = ""
+content_hash = "d9679e2c0a497c27"
+file = "lua/mcp_companion/install.lua"
+signature = "local function stamp_path(venv)"
+description = ""
+line = 53
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.is_installed [lua/mcp_companion/install.lua]",
+  "install.lua [lua/mcp_companion/install.lua]",
+]
+references = [
+  "f [lua/mcp_companion/install.lua]",
+  "pip_install [lua/mcp_companion/install.lua]",
+  "venv [lua/mcp_companion/install.lua]",
+]
+name_terms = [
+  "companion",
+  "install",
+  "mcp",
+  "mcp_companion.install.stamp_path",
+  "path",
+  "stamp",
+  "stamp_path",
+]

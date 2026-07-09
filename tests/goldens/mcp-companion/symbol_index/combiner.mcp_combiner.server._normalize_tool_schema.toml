@@ -1,0 +1,33 @@
+fqname = "combiner.mcp_combiner.server._normalize_tool_schema"
+name = "_normalize_tool_schema"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "41bc40e17c5fb1df"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _normalize_tool_schema(tool: Tool, fixes: frozenset[str]) -> Tool:"
+description = ""
+line = 769
+mtime = 1783473323000000000
+container = []
+calls = [
+  "_apply_schema_fixes [combiner/mcp_combiner/server.py]",
+  "_safe_json_clone [combiner/mcp_combiner/server.py]",
+]
+called_by = [
+  "_finalize_schemas [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_finalize_schemas [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_normalize_tool_schema",
+  "combiner",
+  "combiner.mcp_combiner.server._normalize_tool_schema",
+  "mcp",
+  "normalize",
+  "schema",
+  "server",
+  "tool",
+]

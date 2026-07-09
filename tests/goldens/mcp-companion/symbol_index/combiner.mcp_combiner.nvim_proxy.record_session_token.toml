@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.nvim_proxy.record_session_token"
+name = "record_session_token"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_proxy"
+parent = ""
+content_hash = "96f391a709ff2d90"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+signature = "def record_session_token(session_id: str | None) -> None:"
+description = ""
+line = 74
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy.record_session_token",
+  "mcp",
+  "nvim",
+  "proxy",
+  "record",
+  "record_session_token",
+  "session",
+  "token",
+]

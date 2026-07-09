@@ -1,0 +1,33 @@
+fqname = "crib.util.sha1_hex"
+name = "sha1_hex"
+kind = "function"
+lang = "python"
+module = "crib.util"
+parent = ""
+content_hash = "9923380ad8826011"
+file = "crib/util.py"
+signature = "def sha1_hex(*parts: str) -> str:"
+description = ""
+line = 12
+mtime = 1782755212000000000
+container = []
+calls = []
+called_by = [
+  "chunk_id [crib/chunk.py]",
+  "content_hash [crib/chunk.py]",
+  "section_hash [crib/chunk.py]",
+]
+references = [
+  "chunk_id [crib/chunk.py]",
+  "content_hash [crib/chunk.py]",
+  "section_hash [crib/chunk.py]",
+]
+name_terms = [
+  "1",
+  "crib",
+  "crib.util.sha1_hex",
+  "hex",
+  "sha",
+  "sha1_hex",
+  "util",
+]

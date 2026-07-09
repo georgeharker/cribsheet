@@ -1,0 +1,36 @@
+fqname = "combiner.tests.test_session_filter.TestStaleServerTools.test_failed_server_tools_dropped"
+name = "test_failed_server_tools_dropped"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestStaleServerTools"
+content_hash = "753f228b229a5f95"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_failed_server_tools_dropped(self):"
+description = ""
+line = 476
+mtime = 1783452495000000000
+container = [
+  "TestStaleServerTools",
+]
+calls = [
+  "_config [combiner/tests/test_session_filter.py]",
+  "_names [combiner/tests/test_session_filter.py]",
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools.test_failed_server_tools_dropped",
+  "dropped",
+  "failed",
+  "filter",
+  "server",
+  "session",
+  "stale",
+  "test",
+  "test_failed_server_tools_dropped",
+  "tests",
+  "tools",
+]

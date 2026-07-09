@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.fastvalidate.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.fastvalidate"
+parent = ""
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/fastvalidate.py"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+line = 39
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "clear_cache [combiner/mcp_combiner/fastvalidate.py]",
+  "install [combiner/mcp_combiner/fastvalidate.py]",
+  "set_output_validation [combiner/mcp_combiner/fastvalidate.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.fastvalidate.logger",
+  "fastvalidate",
+  "logger",
+  "mcp",
+]

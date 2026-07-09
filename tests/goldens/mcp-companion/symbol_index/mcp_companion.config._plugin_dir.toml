@@ -1,0 +1,32 @@
+fqname = "mcp_companion.config._plugin_dir"
+name = "_plugin_dir"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.config"
+parent = ""
+content_hash = "6e409841840e7ff2"
+file = "lua/mcp_companion/config.lua"
+signature = "local function _plugin_dir()"
+description = ""
+line = 248
+mtime = 1783185942000000000
+container = []
+calls = []
+called_by = [
+  "M.plugin_dir [lua/mcp_companion/config.lua]",
+  "_resolve_python_cmd [lua/mcp_companion/config.lua]",
+  "config.lua [lua/mcp_companion/config.lua]",
+]
+references = [
+  "plugin_dir [lua/mcp_companion/config.lua]",
+  "root [lua/mcp_companion/config.lua]",
+]
+name_terms = [
+  "_plugin_dir",
+  "companion",
+  "config",
+  "dir",
+  "mcp",
+  "mcp_companion.config._plugin_dir",
+  "plugin",
+]

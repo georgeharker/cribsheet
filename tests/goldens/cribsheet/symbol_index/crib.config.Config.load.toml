@@ -1,0 +1,42 @@
+fqname = "crib.config.Config.load"
+name = "load"
+kind = "method"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.Config"
+content_hash = "942ecc3da3723fce"
+file = "crib/config.py"
+signature = "@classmethod"
+description = ""
+line = 208
+mtime = 1783455339000000000
+container = [
+  "Config",
+]
+calls = [
+  "ChromaConfig [crib/config.py]",
+  "ChunkConfig [crib/config.py]",
+  "DaemonConfig [crib/config.py]",
+  "EmbedConfig [crib/config.py]",
+  "GenerateConfig [crib/config.py]",
+  "MemoryConfig [crib/config.py]",
+  "RetrieveConfig [crib/config.py]",
+]
+called_by = [
+  "_resolve_serve_endpoint [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+  "main [crib/cli.py]",
+  "open [crib/app.py]",
+]
+references = [
+  "_resolve_serve_endpoint [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+  "main [crib/cli.py]",
+  "open [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.load",
+  "load",
+]

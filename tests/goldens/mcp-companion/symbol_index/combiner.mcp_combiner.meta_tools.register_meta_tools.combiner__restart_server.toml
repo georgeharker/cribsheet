@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__restart_server"
+name = "combiner__restart_server"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.meta_tools"
+parent = "combiner.mcp_combiner.meta_tools.register_meta_tools"
+content_hash = "b96de3ce73c82cba"
+file = "combiner/mcp_combiner/meta_tools.py"
+signature = "@combiner.tool()"
+description = ""
+line = 181
+mtime = 1783452495000000000
+container = [
+  "register_meta_tools",
+]
+calls = [
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__restart_server",
+  "combiner__restart_server",
+  "mcp",
+  "meta",
+  "register",
+  "restart",
+  "server",
+  "tools",
+]

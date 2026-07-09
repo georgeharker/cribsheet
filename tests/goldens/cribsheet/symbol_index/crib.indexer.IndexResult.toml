@@ -1,0 +1,29 @@
+fqname = "crib.indexer.IndexResult"
+name = "IndexResult"
+kind = "class"
+lang = "python"
+module = "crib.indexer"
+parent = ""
+content_hash = "469719f5a8a551c3"
+file = "crib/indexer.py"
+signature = "@dataclass"
+description = ""
+line = 31
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "_write_note [crib/app.py]",
+  "index_file [crib/indexer.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "IndexResult",
+  "crib",
+  "crib.indexer.IndexResult",
+  "index",
+  "indexer",
+  "result",
+]

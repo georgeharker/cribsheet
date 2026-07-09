@@ -1,0 +1,34 @@
+fqname = "mcp_companion.state.emit.for in.cb"
+name = "cb"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.state"
+parent = "mcp_companion.state.emit.for in"
+content_hash = "87d1ce66cb10eeda"
+file = "lua/mcp_companion/state.lua"
+signature = "for _, cb in ipairs(_event_subs[event] or {}) do"
+description = ""
+line = 164
+mtime = 1782852601000000000
+container = [
+  "M.emit",
+  "for in",
+]
+calls = []
+called_by = [
+  "M.emit [lua/mcp_companion/state.lua]",
+]
+references = [
+  "_ [lua/mcp_companion/state.lua]",
+  "for in [lua/mcp_companion/state.lua]",
+]
+name_terms = [
+  "cb",
+  "companion",
+  "emit",
+  "for",
+  "in",
+  "mcp",
+  "mcp_companion.state.emit.for in.cb",
+  "state",
+]

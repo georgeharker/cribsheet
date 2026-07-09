@@ -1,0 +1,31 @@
+fqname = "tests.test_codeindex.test_local_name_strips_lua_table_prefix"
+name = "test_local_name_strips_lua_table_prefix"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "07694f7201ee3b8e"
+file = "tests/test_codeindex.py"
+signature = "def test_local_name_strips_lua_table_prefix():"
+description = ""
+line = 31
+mtime = 1783544236000000000
+container = []
+calls = [
+  "_local_name [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "local",
+  "lua",
+  "name",
+  "prefix",
+  "strips",
+  "table",
+  "test",
+  "test_local_name_strips_lua_table_prefix",
+  "tests",
+  "tests.test_codeindex.test_local_name_strips_lua_table_prefix",
+]

@@ -1,0 +1,30 @@
+fqname = "crib.app.Crib._drop_file"
+name = "_drop_file"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "64a49191d29b2e8f"
+file = "crib/app.py"
+signature = "def _drop_file(self, proj: str, relpath: str) -> None:"
+description = ""
+line = 770
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "drop_file [crib/codestore.py]",
+]
+called_by = []
+references = [
+  "_on_code_change [crib/app.py]",
+]
+name_terms = [
+  "_drop_file",
+  "app",
+  "crib",
+  "crib.app.Crib._drop_file",
+  "drop",
+  "file",
+]

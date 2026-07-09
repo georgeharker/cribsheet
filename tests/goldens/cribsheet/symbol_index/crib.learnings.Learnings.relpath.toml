@@ -1,0 +1,36 @@
+fqname = "crib.learnings.Learnings.relpath"
+name = "relpath"
+kind = "method"
+lang = "python"
+module = "crib.learnings"
+parent = "crib.learnings.Learnings"
+content_hash = "1ab3019e1fc7178b"
+file = "crib/learnings.py"
+signature = "def relpath(self, entry: dict[str, Any]) -> str:"
+description = ""
+line = 33
+mtime = 1783529664000000000
+container = [
+  "Learnings",
+]
+calls = [
+  "learning_slug [crib/codeindex.py]",
+]
+called_by = [
+  "append [crib/learnings.py]",
+  "edit [crib/learnings.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+]
+references = [
+  "append [crib/learnings.py]",
+  "edit [crib/learnings.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+]
+name_terms = [
+  "crib",
+  "crib.learnings.Learnings.relpath",
+  "learnings",
+  "relpath",
+]

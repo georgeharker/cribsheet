@@ -1,0 +1,32 @@
+fqname = "crib.codeindex._reference_edges"
+name = "_reference_edges"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "5ed0b2df7239af4c"
+file = "crib/codeindex.py"
+signature = "def _reference_edges(ctx: _ExtractCtx, pos: dict, local: str) -> list[str]:"
+description = ""
+line = 886
+mtime = 1783544236000000000
+container = []
+calls = [
+  "_enclosing_symbol [crib/codeindex.py]",
+  "_locate [crib/codeindex.py]",
+  "request [crib/codeindex.py]",
+]
+called_by = [
+  "_symbol_entry [crib/codeindex.py]",
+]
+references = [
+  "_symbol_entry [crib/codeindex.py]",
+]
+name_terms = [
+  "_reference_edges",
+  "codeindex",
+  "crib",
+  "crib.codeindex._reference_edges",
+  "edges",
+  "reference",
+]

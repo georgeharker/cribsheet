@@ -1,0 +1,40 @@
+fqname = "crib.codequery.CodeQuery._lookup_one"
+name = "_lookup_one"
+kind = "method"
+lang = "python"
+module = "crib.codequery"
+parent = "crib.codequery.CodeQuery"
+content_hash = "1e6191a2309a389b"
+file = "crib/codequery.py"
+signature = "def _lookup_one(self, proj: str, query: str, k: int,"
+description = ""
+line = 145
+mtime = 1783529969000000000
+container = [
+  "CodeQuery",
+]
+calls = [
+  "_subtokens [crib/retrieve.py]",
+  "attach [crib/learnings.py]",
+  "dense [crib/codestore.py]",
+  "embed_query [crib/embed.py]",
+  "reciprocal_rank_fusion [crib/retrieve.py]",
+  "scores [crib/retrieve.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = [
+  "lookup [crib/codequery.py]",
+]
+references = [
+  "lookup [crib/codequery.py]",
+]
+name_terms = [
+  "_lookup_one",
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery._lookup_one",
+  "lookup",
+  "one",
+  "query",
+]

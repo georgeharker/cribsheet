@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.server._token_sessions"
+name = "_token_sessions"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "1c53a18fecb9876a"
+file = "combiner/mcp_combiner/server.py"
+signature = "_token_sessions: dict[str, str] = {}"
+description = ""
+line = 138
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "lookup_session_token [combiner/mcp_combiner/server.py]",
+  "manage_token_filter [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_token_sessions",
+  "combiner",
+  "combiner.mcp_combiner.server._token_sessions",
+  "mcp",
+  "server",
+  "sessions",
+  "token",
+]

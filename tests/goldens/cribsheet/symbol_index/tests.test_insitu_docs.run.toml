@@ -1,0 +1,38 @@
+fqname = "tests.test_insitu_docs.run"
+name = "run"
+kind = "function"
+lang = "python"
+module = "tests.test_insitu_docs"
+parent = ""
+content_hash = "44052857cf112194"
+file = "tests/test_insitu_docs.py"
+signature = "def run(coro):"
+description = ""
+line = 26
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = [
+  "test_delete_source_prunes [tests/test_insitu_docs.py]",
+  "test_edit_source_reindexes [tests/test_insitu_docs.py]",
+  "test_index_insitu_no_copy_and_resolves_to_source [tests/test_insitu_docs.py]",
+  "test_read_returns_repo_bytes [tests/test_insitu_docs.py]",
+  "test_sweep_prunes_out_of_glob_docs [tests/test_insitu_docs.py]",
+  "test_watcher_dispatch_reindexes_doc [tests/test_insitu_docs.py]",
+]
+references = [
+  "test_delete_source_prunes [tests/test_insitu_docs.py]",
+  "test_edit_source_reindexes [tests/test_insitu_docs.py]",
+  "test_index_insitu_no_copy_and_resolves_to_source [tests/test_insitu_docs.py]",
+  "test_read_returns_repo_bytes [tests/test_insitu_docs.py]",
+  "test_sweep_prunes_out_of_glob_docs [tests/test_insitu_docs.py]",
+  "test_watcher_dispatch_reindexes_doc [tests/test_insitu_docs.py]",
+]
+name_terms = [
+  "docs",
+  "insitu",
+  "run",
+  "test",
+  "tests",
+  "tests.test_insitu_docs.run",
+]

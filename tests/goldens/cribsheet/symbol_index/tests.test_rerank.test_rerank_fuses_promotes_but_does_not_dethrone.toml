@@ -1,0 +1,32 @@
+fqname = "tests.test_rerank.test_rerank_fuses_promotes_but_does_not_dethrone"
+name = "test_rerank_fuses_promotes_but_does_not_dethrone"
+kind = "function"
+lang = "python"
+module = "tests.test_rerank"
+parent = ""
+content_hash = "0f5b88b732838822"
+file = "tests/test_rerank.py"
+signature = "def test_rerank_fuses_promotes_but_does_not_dethrone(crib):"
+description = ""
+line = 41
+mtime = 1782704221000000000
+container = []
+calls = [
+  "_PromoteLast [tests/test_rerank.py]",
+  "run [tests/test_rerank.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "but",
+  "dethrone",
+  "does",
+  "fuses",
+  "not",
+  "promotes",
+  "rerank",
+  "test",
+  "test_rerank_fuses_promotes_but_does_not_dethrone",
+  "tests",
+  "tests.test_rerank.test_rerank_fuses_promotes_but_does_not_dethrone",
+]

@@ -1,0 +1,28 @@
+fqname = "tests.test_cc_tools.ok_log"
+name = "ok_log"
+kind = "global"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = ""
+content_hash = "32d89c5f43d2d4e2"
+file = "tests/test_cc_tools.lua"
+signature = "local ok_log, log = pcall(require, \"mcp_companion.log\")"
+description = ""
+line = 139
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "log",
+  "ok",
+  "ok_log",
+  "test",
+  "tests",
+  "tests.test_cc_tools.ok_log",
+  "tools",
+]

@@ -1,0 +1,38 @@
+fqname = "crib.gitbacking.GitBacking._remote_file"
+name = "_remote_file"
+kind = "method"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.GitBacking"
+content_hash = "560556bea352dafa"
+file = "crib/gitbacking.py"
+signature = "def _remote_file(self, name: str) -> str | None:"
+description = ""
+line = 82
+mtime = 1783451795000000000
+container = [
+  "GitBacking",
+]
+calls = [
+  "_branch [crib/gitbacking.py]",
+  "_pending_join [crib/gitbacking.py]",
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "_ensure_gitattributes [crib/gitbacking.py]",
+  "_ensure_gitignore [crib/gitbacking.py]",
+]
+references = [
+  "_ensure_gitattributes [crib/gitbacking.py]",
+  "_ensure_gitignore [crib/gitbacking.py]",
+]
+name_terms = [
+  "_remote_file",
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking._remote_file",
+  "file",
+  "git",
+  "gitbacking",
+  "remote",
+]

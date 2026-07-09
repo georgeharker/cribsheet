@@ -1,0 +1,37 @@
+fqname = "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_reprimes_connected_but_not_ready.ping"
+name = "ping"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_reprimes_connected_but_not_ready"
+content_hash = "9ec6265df4271435"
+file = "combiner/tests/test_connections.py"
+signature = "async def ping():"
+description = ""
+line = 111
+mtime = 1783473323000000000
+container = [
+  "TestMonitorRePrime",
+  "test_monitor_reprimes_connected_but_not_ready",
+]
+calls = []
+called_by = []
+references = [
+  "test_monitor_reprimes_connected_but_not_ready [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "but",
+  "combiner",
+  "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_reprimes_connected_but_not_ready.ping",
+  "connected",
+  "connections",
+  "monitor",
+  "not",
+  "ping",
+  "prime",
+  "re",
+  "ready",
+  "reprimes",
+  "test",
+  "tests",
+]

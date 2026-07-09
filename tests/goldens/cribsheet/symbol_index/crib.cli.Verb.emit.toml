@@ -1,0 +1,28 @@
+fqname = "crib.cli.Verb.emit"
+name = "emit"
+kind = "field"
+lang = "python"
+module = "crib.cli"
+parent = "crib.cli.Verb"
+content_hash = "266c1f7b77930005"
+file = "crib/cli.py"
+signature = "emit: Callable[[Any, Any], None]            # (result, parsed args) → stdout"
+description = ""
+line = 682
+mtime = 1783476730000000000
+container = [
+  "Verb",
+]
+calls = []
+called_by = []
+references = [
+  "_run_daemon [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+]
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli.Verb.emit",
+  "emit",
+  "verb",
+]

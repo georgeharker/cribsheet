@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.nvim_channel.NvimChannelManager.deregister"
+name = "deregister"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = "combiner.mcp_combiner.nvim_channel.NvimChannelManager"
+content_hash = "28229b5b3e4741aa"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "def deregister(self, instance_id: str) -> None:"
+description = ""
+line = 118
+mtime = 1782852601000000000
+container = [
+  "NvimChannelManager",
+]
+calls = [
+  "NoInstanceError [combiner/mcp_combiner/nvim_channel.py]",
+  "_close [combiner/mcp_combiner/nvim_channel.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager.deregister",
+  "deregister",
+  "manager",
+  "mcp",
+  "nvim",
+]

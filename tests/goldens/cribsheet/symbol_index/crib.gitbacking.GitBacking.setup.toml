@@ -1,0 +1,39 @@
+fqname = "crib.gitbacking.GitBacking.setup"
+name = "setup"
+kind = "method"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.GitBacking"
+content_hash = "1296d59b9a5c570f"
+file = "crib/gitbacking.py"
+signature = "def setup(self, remote: str) -> SyncResult:"
+description = ""
+line = 200
+mtime = 1783451795000000000
+container = [
+  "GitBacking",
+]
+calls = [
+  "SyncResult [crib/gitbacking.py]",
+  "_branch [crib/gitbacking.py]",
+  "_ensure_gitattributes [crib/gitbacking.py]",
+  "_ensure_gitignore [crib/gitbacking.py]",
+  "_ensure_merge_driver [crib/gitbacking.py]",
+  "_run [crib/gitbacking.py]",
+  "init [crib/gitbacking.py]",
+  "pull [crib/gitbacking.py]",
+]
+called_by = [
+  "_run_git [crib/cli.py]",
+]
+references = [
+  "_run_git [crib/cli.py]",
+]
+name_terms = [
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking.setup",
+  "git",
+  "gitbacking",
+  "setup",
+]

@@ -1,0 +1,32 @@
+fqname = "crib.sources.src_relpath"
+name = "src_relpath"
+kind = "function"
+lang = "python"
+module = "crib.sources"
+parent = ""
+content_hash = "8420d5076aceea35"
+file = "crib/sources.py"
+signature = "def src_relpath(repo: str, rel_to_repo: str) -> str:"
+description = ""
+line = 24
+mtime = 1783358913000000000
+container = []
+calls = []
+called_by = [
+  "_on_code_change [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "test_src_relpath_shape [tests/test_insitu_docs.py]",
+]
+references = [
+  "_on_code_change [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "test_src_relpath_shape [tests/test_insitu_docs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.sources.src_relpath",
+  "relpath",
+  "sources",
+  "src",
+  "src_relpath",
+]

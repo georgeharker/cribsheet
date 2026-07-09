@@ -1,0 +1,31 @@
+fqname = "tests.test_chunk_config.test_overlap_words_derived_from_ratio"
+name = "test_overlap_words_derived_from_ratio"
+kind = "function"
+lang = "python"
+module = "tests.test_chunk_config"
+parent = ""
+content_hash = "50fbe7abb50d2a03"
+file = "tests/test_chunk_config.py"
+signature = "def test_overlap_words_derived_from_ratio():"
+description = ""
+line = 7
+mtime = 1782690118000000000
+container = []
+calls = [
+  "ChunkConfig [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chunk",
+  "config",
+  "derived",
+  "from",
+  "overlap",
+  "ratio",
+  "test",
+  "test_overlap_words_derived_from_ratio",
+  "tests",
+  "tests.test_chunk_config.test_overlap_words_derived_from_ratio",
+  "words",
+]

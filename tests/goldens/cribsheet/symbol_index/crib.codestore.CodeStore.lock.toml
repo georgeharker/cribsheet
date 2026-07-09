@@ -1,0 +1,34 @@
+fqname = "crib.codestore.CodeStore.lock"
+name = "lock"
+kind = "method"
+lang = "python"
+module = "crib.codestore"
+parent = "crib.codestore.CodeStore"
+content_hash = "c204a88034c5388f"
+file = "crib/codestore.py"
+signature = "def lock(self, proj: str) -> threading.Lock:"
+description = ""
+line = 98
+mtime = 1783494290000000000
+container = [
+  "CodeStore",
+]
+calls = []
+called_by = [
+  "_code_lock [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "drop_file [crib/codestore.py]",
+]
+references = [
+  "_code_lock [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "drop_file [crib/codestore.py]",
+]
+name_terms = [
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore.CodeStore.lock",
+  "lock",
+  "store",
+]

@@ -1,0 +1,28 @@
+fqname = "tests.test_real_servers.section"
+name = "section"
+kind = "function"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "263d99dec04ed11f"
+file = "tests/test_real_servers.lua"
+signature = "local function section(title)"
+description = ""
+line = 37
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_real_servers.lua [tests/test_real_servers.lua]",
+]
+references = [
+  "title [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "real",
+  "section",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.section",
+]

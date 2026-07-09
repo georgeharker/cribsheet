@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.server._finalize_schemas"
+name = "_finalize_schemas"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "098db6711adb5b63"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _finalize_schemas(tools: Sequence[Tool]) -> list[Tool]:"
+description = ""
+line = 826
+mtime = 1783473323000000000
+container = []
+calls = [
+  "_coerce_object_schemas [combiner/mcp_combiner/server.py]",
+  "_normalize_tool_schema [combiner/mcp_combiner/server.py]",
+]
+called_by = [
+  "on_list_tools [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "on_list_tools [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_finalize_schemas",
+  "combiner",
+  "combiner.mcp_combiner.server._finalize_schemas",
+  "finalize",
+  "mcp",
+  "schemas",
+  "server",
+]

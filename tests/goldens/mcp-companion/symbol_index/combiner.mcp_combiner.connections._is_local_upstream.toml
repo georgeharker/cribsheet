@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.connections._is_local_upstream"
+name = "_is_local_upstream"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = ""
+content_hash = "14f7af8a74c238cd"
+file = "combiner/mcp_combiner/connections.py"
+signature = "def _is_local_upstream(srv: ServerConfig) -> bool:"
+description = ""
+line = 730
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_is_local_upstream",
+  "combiner",
+  "combiner.mcp_combiner.connections._is_local_upstream",
+  "connections",
+  "is",
+  "local",
+  "mcp",
+  "upstream",
+]

@@ -1,0 +1,31 @@
+fqname = "crib.config.CribLink.project"
+name = "project"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.CribLink"
+content_hash = "72bf42a4f223d84d"
+file = "crib/config.py"
+signature = "project: str"
+description = ""
+line = 269
+mtime = 1783455339000000000
+container = [
+  "CribLink",
+]
+calls = []
+called_by = []
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+  "find [crib/config.py]",
+  "index_docs_insitu [crib/app.py]",
+  "ref_edge_ctx [crib/refs.py]",
+  "resolve_project [crib/config.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.project",
+  "link",
+  "project",
+]

@@ -1,0 +1,35 @@
+fqname = "crib.app.Crib.status"
+name = "status"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "04704fbb360b2d66"
+file = "crib/app.py"
+signature = "def status(self) -> dict[str, Any]:"
+description = ""
+line = 960
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "get_meta [crib/store.py]",
+  "notes_dir [crib/paths.py]",
+  "project_dir [crib/paths.py]",
+  "projects [crib/app.py]",
+  "state [crib/gitbacking.py]",
+  "stats [crib/codeindex.py]",
+]
+called_by = [
+  "status [crib/server.py]",
+]
+references = [
+  "status [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.status",
+  "status",
+]

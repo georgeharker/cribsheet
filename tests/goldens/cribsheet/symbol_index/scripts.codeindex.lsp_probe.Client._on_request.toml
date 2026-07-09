@@ -1,0 +1,35 @@
+fqname = "scripts.codeindex.lsp_probe.Client._on_request"
+name = "_on_request"
+kind = "method"
+lang = "python"
+module = "scripts.codeindex.lsp_probe"
+parent = "scripts.codeindex.lsp_probe.Client"
+content_hash = "545c6e498d171881"
+file = "scripts/codeindex/lsp_probe.py"
+signature = "def _on_request(self, msg: dict) -> None:"
+description = ""
+line = 68
+mtime = 1783033292000000000
+container = [
+  "Client",
+]
+calls = [
+  "_send [scripts/codeindex/lsp_probe.py]",
+]
+called_by = [
+  "_reader [scripts/codeindex/lsp_probe.py]",
+]
+references = [
+  "_reader [scripts/codeindex/lsp_probe.py]",
+]
+name_terms = [
+  "_on_request",
+  "client",
+  "codeindex",
+  "lsp",
+  "on",
+  "probe",
+  "request",
+  "scripts",
+  "scripts.codeindex.lsp_probe.Client._on_request",
+]

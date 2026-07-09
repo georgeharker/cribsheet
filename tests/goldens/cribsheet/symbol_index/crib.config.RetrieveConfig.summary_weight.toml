@@ -1,0 +1,29 @@
+fqname = "crib.config.RetrieveConfig.summary_weight"
+name = "summary_weight"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.RetrieveConfig"
+content_hash = "4de9c62c764fd9b1"
+file = "crib/config.py"
+signature = "summary_weight: float = 0.3"
+description = ""
+line = 96
+mtime = 1783455339000000000
+container = [
+  "RetrieveConfig",
+]
+calls = []
+called_by = []
+references = [
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.RetrieveConfig.summary_weight",
+  "retrieve",
+  "summary",
+  "summary_weight",
+  "weight",
+]

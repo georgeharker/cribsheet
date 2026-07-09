@@ -1,0 +1,34 @@
+fqname = "mcp_companion.combiner.client.refresh_capabilities.check_done"
+name = "check_done"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.combiner.client"
+parent = "mcp_companion.combiner.client.refresh_capabilities"
+content_hash = "fd497c7086a4c866"
+file = "lua/mcp_companion/combiner/client.lua"
+signature = "local function check_done()"
+description = ""
+line = 730
+mtime = 1783473333000000000
+container = [
+  "Client:refresh_capabilities",
+]
+calls = []
+called_by = [
+  "Client.refresh_capabilities [lua/mcp_companion/combiner/client.lua]",
+]
+references = [
+  "refresh_capabilities [lua/mcp_companion/combiner/client.lua]",
+]
+name_terms = [
+  "capabilities",
+  "check",
+  "check_done",
+  "client",
+  "combiner",
+  "companion",
+  "done",
+  "mcp",
+  "mcp_companion.combiner.client.refresh_capabilities.check_done",
+  "refresh",
+]

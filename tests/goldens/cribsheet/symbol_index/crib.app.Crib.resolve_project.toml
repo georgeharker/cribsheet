@@ -1,0 +1,92 @@
+fqname = "crib.app.Crib.resolve_project"
+name = "resolve_project"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "0c1f5bbd8c612278"
+file = "crib/app.py"
+signature = "def resolve_project(self, project: str | None, cwd: Path | None = None) -> str:"
+description = ""
+line = 267
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "resolve_project [crib/config.py]",
+]
+called_by = [
+  "(lambda) [crib/server.py]",
+  "_generate_index [crib/app.py]",
+  "_write_project [crib/server.py]",
+  "append_note [crib/app.py]",
+  "apropos [crib/app.py]",
+  "code_append [crib/app.py]",
+  "code_dossier [crib/app.py]",
+  "code_edit [crib/app.py]",
+  "code_forget [crib/app.py]",
+  "code_graph [crib/app.py]",
+  "code_learnings [crib/app.py]",
+  "code_lookup [crib/app.py]",
+  "code_read [crib/app.py]",
+  "code_reaffirm [crib/app.py]",
+  "code_rehome [crib/app.py]",
+  "code_xref [crib/app.py]",
+  "distill [crib/app.py]",
+  "edit_note [crib/app.py]",
+  "forget [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "list_versions [crib/app.py]",
+  "locate [crib/app.py]",
+  "lookup [crib/app.py]",
+  "move_note [crib/app.py]",
+  "project_forget [crib/app.py]",
+  "project_status [crib/app.py]",
+  "read_note [crib/app.py]",
+  "reindex [crib/app.py]",
+  "restore [crib/app.py]",
+  "store_note [crib/app.py]",
+]
+references = [
+  "_generate_index [crib/app.py]",
+  "_resolve [crib/server.py]",
+  "_write_project [crib/server.py]",
+  "append_note [crib/app.py]",
+  "apropos [crib/app.py]",
+  "code_append [crib/app.py]",
+  "code_dossier [crib/app.py]",
+  "code_edit [crib/app.py]",
+  "code_forget [crib/app.py]",
+  "code_graph [crib/app.py]",
+  "code_learnings [crib/app.py]",
+  "code_lookup [crib/app.py]",
+  "code_read [crib/app.py]",
+  "code_reaffirm [crib/app.py]",
+  "code_rehome [crib/app.py]",
+  "code_xref [crib/app.py]",
+  "distill [crib/app.py]",
+  "edit_note [crib/app.py]",
+  "forget [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "list_versions [crib/app.py]",
+  "locate [crib/app.py]",
+  "lookup [crib/app.py]",
+  "move_note [crib/app.py]",
+  "project_forget [crib/app.py]",
+  "project_status [crib/app.py]",
+  "read_note [crib/app.py]",
+  "reindex [crib/app.py]",
+  "restore [crib/app.py]",
+  "store_note [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.resolve_project",
+  "project",
+  "resolve",
+  "resolve_project",
+]

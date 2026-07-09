@@ -1,0 +1,44 @@
+fqname = "tests.test_sync._machine"
+name = "_machine"
+kind = "function"
+lang = "python"
+module = "tests.test_sync"
+parent = ""
+content_hash = "ccf639da6da9f668"
+file = "tests/test_sync.py"
+signature = "def _machine(tmp_path: Path, name: str, remote: Path) -> GitBacking:"
+description = ""
+line = 27
+mtime = 1783446057000000000
+container = []
+calls = [
+  "GitBacking [crib/gitbacking.py]",
+  "git [tests/test_sync.py]",
+  "init [crib/gitbacking.py]",
+]
+called_by = [
+  "test_body_conflict_surfaces_but_header_is_healed [tests/test_sync.py]",
+  "test_frontmatter_only_conflict_auto_resolves [tests/test_sync.py]",
+  "test_init_writes_gitignore_and_remote [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_memory_bindings_is_gitignored [tests/test_sync.py]",
+  "test_pull_reports_conflicts_without_pushing [tests/test_sync.py]",
+  "test_sync_round_trips_between_two_machines [tests/test_sync.py]",
+]
+references = [
+  "test_body_conflict_surfaces_but_header_is_healed [tests/test_sync.py]",
+  "test_frontmatter_only_conflict_auto_resolves [tests/test_sync.py]",
+  "test_init_writes_gitignore_and_remote [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_memory_bindings_is_gitignored [tests/test_sync.py]",
+  "test_pull_reports_conflicts_without_pushing [tests/test_sync.py]",
+  "test_sync_round_trips_between_two_machines [tests/test_sync.py]",
+]
+name_terms = [
+  "_machine",
+  "machine",
+  "sync",
+  "test",
+  "tests",
+  "tests.test_sync._machine",
+]

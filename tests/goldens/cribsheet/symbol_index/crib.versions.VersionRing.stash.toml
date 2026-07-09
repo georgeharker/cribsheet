@@ -1,0 +1,38 @@
+fqname = "crib.versions.VersionRing.stash"
+name = "stash"
+kind = "method"
+lang = "python"
+module = "crib.versions"
+parent = "crib.versions.VersionRing"
+content_hash = "e15425b2827c6fea"
+file = "crib/versions.py"
+signature = "def stash(self, note_id: str, content: str) -> VersionEntry | None:"
+description = ""
+line = 30
+mtime = 1782609751000000000
+container = [
+  "VersionRing",
+]
+calls = [
+  "VersionEntry [crib/versions.py]",
+  "_next_seq [crib/versions.py]",
+  "_note_dir [crib/versions.py]",
+  "_prune [crib/versions.py]",
+  "short_hash [crib/util.py]",
+]
+called_by = [
+  "delete [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+references = [
+  "delete [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.versions.VersionRing.stash",
+  "ring",
+  "stash",
+  "version",
+  "versions",
+]

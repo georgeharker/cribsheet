@@ -1,0 +1,30 @@
+fqname = "tests.test_chunk_config.test_overlap_clamped_below_window"
+name = "test_overlap_clamped_below_window"
+kind = "function"
+lang = "python"
+module = "tests.test_chunk_config"
+parent = ""
+content_hash = "2a06ded8044fc422"
+file = "tests/test_chunk_config.py"
+signature = "def test_overlap_clamped_below_window():"
+description = ""
+line = 13
+mtime = 1782690118000000000
+container = []
+calls = [
+  "ChunkConfig [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "below",
+  "chunk",
+  "clamped",
+  "config",
+  "overlap",
+  "test",
+  "test_overlap_clamped_below_window",
+  "tests",
+  "tests.test_chunk_config.test_overlap_clamped_below_window",
+  "window",
+]

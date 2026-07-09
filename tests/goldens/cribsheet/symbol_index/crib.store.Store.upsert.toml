@@ -1,0 +1,28 @@
+fqname = "crib.store.Store.upsert"
+name = "upsert"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Store"
+content_hash = "db03f06c5760c4f0"
+file = "crib/store.py"
+signature = "def upsert(self, records: list[Record]) -> None: ..."
+description = ""
+line = 34
+mtime = 1783446057000000000
+container = [
+  "Store",
+]
+calls = []
+called_by = [
+  "_index_locked [crib/indexer.py]",
+]
+references = [
+  "_index_locked [crib/indexer.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Store.upsert",
+  "store",
+  "upsert",
+]

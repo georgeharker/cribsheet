@@ -137,31 +137,37 @@ hash. No tagging, no shared mutable set, no feedback loop with `distill`.
 
 ## 5. Tool surface
 
-`edit` is intentionally split into distinct verbs so the LLM selects correctly.
-Every write tool ends by calling the locked `index_file`.
+The interface is **noun-verb**: on the CLI, `crib <noun> <verb>` (`note`/`code`/
+`learning`/`project`); as MCP tools, the flat noun-prefixed name (`note_lookup`,
+`code_xref`, `learning_add`, `project_list`). Below is the **note** facet — the
+original memory surface; the code-index, learnings, and project facets are in
+[docs/code-symbol-index.md](docs/code-symbol-index.md), and the complete
+CLI⇄MCP reference is [docs/surface.md](docs/surface.md). The write verbs are kept
+distinct (`store`/`append`/`edit`) so the LLM selects correctly; every write ends
+by calling the locked `index_file`.
 
-| Tool | Purpose | Writes? | Indexes? |
+| MCP tool (CLI: `crib note …`) | Purpose | Writes? | Indexes? |
 |---|---|---|---|
-| `lookup(query, project?, k?, tags?)` | semantic search; ranked chunks w/ relpath, heading, snippet; optional dedupe-by-file | no | reads |
-| `read(relpath, project?)` | fetch raw note for the LLM to reason over / rewrite | no | no |
-| `locate(relpath, project?) → abs_path` | return the real on-disk path so the LLM edits with its own file tools | no | no |
-| `store(content, title?, project?, tags?)` | create a new note; assign `id`; write; index | yes | sync |
-| `append(relpath, content, heading?)` | add to an existing note / under a heading | yes | sync |
-| `edit(relpath, new_content)` | replace raw file content (LLM-driven rewrite) | yes | sync |
-| `reindex(relpath | project | --all)` | re-run hash-gated `index_file`; safe to call redundantly | no | sync |
-| `distill(project?, relpath?)` | re-digest via MCP sampling: compress, merge dups, normalize frontmatter | yes | sync |
-| `versions(relpath, project?)` | list per-write versions (timestamps) held in the ring | no | no |
-| `restore(relpath, version, project?)` | restore a prior version (itself a write → new ring entry) | yes | sync |
-| `import(project?, cwd?)` | ingest local docs referenced by a code repo's `.crib` into the project | yes | sync |
-| `snapshot(message?)` | explicit git checkpoint of the data tree (no-op if not a git repo) | (git) | no |
-| `history(relpath)` | surface a note's commit log | no | no |
-| `projects()` / `resolve_project(cwd)` | list projects; map a code dir → crib project via `.crib` | no | no |
+| `note_lookup(query, project?, k?, tags?)` | semantic search; ranked chunks w/ relpath, heading, snippet; optional dedupe-by-file | no | reads |
+| `note_read(relpath, project?)` | fetch raw note for the LLM to reason over / rewrite | no | no |
+| `note_locate(relpath, project?) → abs_path` | return the real on-disk path so the LLM edits with its own file tools | no | no |
+| `note_store(content, title?, project?, tags?)` | create a new note; assign `id`; write; index | yes | sync |
+| `note_append(relpath, content, heading?)` | add to an existing note / under a heading | yes | sync |
+| `note_edit(relpath, new_content)` | replace raw file content (LLM-driven rewrite) | yes | sync |
+| `note_reindex(relpath | project | --all)` | re-run hash-gated `index_file`; safe to call redundantly | no | sync |
+| `note_distill(project?, relpath?)` | re-digest via the generation layer: compress, merge dups, normalize frontmatter | yes | sync |
+| `note_versions(relpath, project?)` | list per-write versions (timestamps) held in the ring | no | no |
+| `note_restore(relpath, version, project?)` | restore a prior version (itself a write → new ring entry) | yes | sync |
+| `note_import(project?, cwd?)` | ingest local docs referenced by a code repo's `.crib` into the project | yes | sync |
+| `note_snapshot(message?)` | explicit git checkpoint of the data tree (no-op if not a git repo) | (git) | no |
+| `note_history(relpath)` | surface a note's commit log | no | no |
+| `project_list()` | list projects (each a separate memory namespace) | no | no |
 
 ### Retrieval loop
 
-`lookup` (find) → `read` or `locate` (pull full context) → `edit` or native edit
-→ (`reindex`, optional). `lookup` returns sections, not whole files, so the LLM
-sees precisely the relevant chunk.
+`note_lookup` (find) → `note_read` or `note_locate` (pull full context) → `note_edit`
+or native edit → (`note_reindex`, optional). `note_lookup` returns sections, not
+whole files, so the LLM sees precisely the relevant chunk.
 
 ### Direct-edit pattern
 
@@ -222,7 +228,7 @@ imported: 2026-06-27
 ```
 
 Imported notes index and behave like any other note. Editing an imported copy in
-the crib store is allowed, but a later `import` re-pull overwrites it — provenance
+the crib store is allowed, but a later `note import` re-pull overwrites it — provenance
 makes that visible so the LLM can warn before clobbering local edits. (Whether to
 ever push edits *back* to the source repo is deliberately out of scope — see §11.)
 
@@ -370,7 +376,7 @@ tames the writer⇄watcher race tames multi-process writers for free.
 `Crib.open()` pays a cold start every call: import chromadb, load the embedder
 weights (fastembed ONNX / torch), open the Chroma client. Shared mode (§10.1)
 keeps *Chroma* warm but reloads the *embedder* on every CLI invocation — so a
-bare `crib lookup` still takes seconds. The fix is to not open Crib at all from
+bare `crib note lookup` still takes seconds. The fix is to not open Crib at all from
 the CLI.
 
 **One warm process per machine, shared by Claude and the CLI.** The long-lived
@@ -409,6 +415,10 @@ successor to the old vendored `crib/render`, carried as the `vendor/llmkit` git
 submodule) when stdout is a tty, and falls back to raw bytes when piped.
 
 ### 10.3 Retrieval — hybrid dense ⊕ BM25, fused by RRF
+
+![Note & doc retrieval — three recall signals fused by RRF, optional rerank](docs/images/note-retrieval-pipeline.png)
+
+<sub>Source: [`note-retrieval-pipeline.svg`](docs/images/note-retrieval-pipeline.svg).</sub>
 
 Dense (vector) retrieval nails paraphrase but underweights *exact terms*, so a
 terse keyword query ("restart server") can rank vaguely-on-topic prose above the
@@ -727,13 +737,13 @@ fall back to a shared default state, so the path degrades to plain cwd seeding.
 
 So behavior is unchanged for a stateless caller (the CLI opens a fresh connection
 per verb and seeds from its `cwd` each time), while a long-lived client (Claude's
-chat) seeds once and reuses it across the whole session. `use_project(name)`
-switches the session deliberately; `current_project()` reports it. Only note
-operations are session-scoped; `import`/`import_memory` stay cwd/repo-driven
+chat) seeds once and reuses it across the whole session. `project_use(name)`
+switches the session deliberately; `project_current()` reports it. Only note
+operations are session-scoped; `note_import`/`note_import_memory` stay cwd/repo-driven
 (they're about a specific source, not the ambient project).
 
 **Sticky-seed tradeoff.** If a session `cd`s into a different repo mid-chat, the
-project does not auto-follow — the explicit `project` arg or `use_project` covers
+project does not auto-follow — the explicit `project` arg or `project_use` covers
 that intentional switch. A chat is usually one project, so sticky is the right
 default.
 
@@ -743,7 +753,7 @@ default.
   creates a *new* project sets the session current to it (you're working there
   now); a one-off `project` arg referencing an *existing* project does not. Every
   write result carries `created: bool`, and the server switches the session on it.
-- **No phantom namespace.** `use_project(name)` eagerly creates the notes dir, so
+- **No phantom namespace.** `project_use(name)` eagerly creates the notes dir, so
   the project is immediately real and listed by `projects()` — you're never "in" a
   namespace that doesn't exist yet. It returns `created` (was it new).
 - **Predictable relpaths.** New notes are `<title-slug>.md`, with a numeric suffix

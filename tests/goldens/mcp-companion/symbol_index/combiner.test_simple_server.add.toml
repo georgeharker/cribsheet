@@ -1,0 +1,24 @@
+fqname = "combiner.test_simple_server.add"
+name = "add"
+kind = "function"
+lang = "python"
+module = "combiner.test_simple_server"
+parent = ""
+content_hash = "0a61d2196a65dfe6"
+file = "combiner/test_simple_server.py"
+signature = "@combiner.tool()"
+description = ""
+line = 22
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "add",
+  "combiner",
+  "combiner.test_simple_server.add",
+  "server",
+  "simple",
+  "test",
+]

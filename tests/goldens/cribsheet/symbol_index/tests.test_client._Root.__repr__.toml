@@ -1,0 +1,27 @@
+fqname = "tests.test_client._Root.__repr__"
+name = "__repr__"
+kind = "method"
+lang = "python"
+module = "tests.test_client"
+parent = "tests.test_client._Root"
+content_hash = "aee4f38d22bc98a7"
+file = "tests/test_client.py"
+signature = "def __repr__(self) -> str:  # pragma: no cover - clarity only"
+description = ""
+line = 21
+mtime = 1782958917000000000
+container = [
+  "_Root",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "__repr__",
+  "client",
+  "repr",
+  "root",
+  "test",
+  "tests",
+  "tests.test_client._Root.__repr__",
+]

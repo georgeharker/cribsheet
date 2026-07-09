@@ -1,0 +1,31 @@
+fqname = "crib.watch._FSWatcher._decode"
+name = "_decode"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch._FSWatcher"
+content_hash = "269bfeb98bbbde1f"
+file = "crib/watch.py"
+signature = "def _decode(self, raw_path: str, deleted: bool) -> tuple[Any, ...] | None:"
+description = ""
+line = 69
+mtime = 1783476730000000000
+container = [
+  "_FSWatcher",
+]
+calls = []
+called_by = [
+  "_emit [crib/watch.py]",
+]
+references = [
+  "_emit [crib/watch.py]",
+]
+name_terms = [
+  "_decode",
+  "crib",
+  "crib.watch._FSWatcher._decode",
+  "decode",
+  "fs",
+  "watch",
+  "watcher",
+]

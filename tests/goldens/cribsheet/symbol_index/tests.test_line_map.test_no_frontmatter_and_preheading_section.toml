@@ -1,0 +1,31 @@
+fqname = "tests.test_line_map.test_no_frontmatter_and_preheading_section"
+name = "test_no_frontmatter_and_preheading_section"
+kind = "function"
+lang = "python"
+module = "tests.test_line_map"
+parent = ""
+content_hash = "c9b25ced17fcc298"
+file = "tests/test_line_map.py"
+signature = "def test_no_frontmatter_and_preheading_section():"
+description = ""
+line = 61
+mtime = 1782631409000000000
+container = []
+calls = [
+  "section_line_map [crib/chunk.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "frontmatter",
+  "line",
+  "map",
+  "no",
+  "preheading",
+  "section",
+  "test",
+  "test_no_frontmatter_and_preheading_section",
+  "tests",
+  "tests.test_line_map.test_no_frontmatter_and_preheading_section",
+]

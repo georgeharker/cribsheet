@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_nvim_e2e._REPO_ROOT"
+name = "_REPO_ROOT"
+kind = "constant"
+lang = "python"
+module = "combiner.tests.test_nvim_e2e"
+parent = ""
+content_hash = "71474678b08519b9"
+file = "combiner/tests/test_nvim_e2e.py"
+signature = "_REPO_ROOT = Path(__file__).resolve().parents[2]"
+description = ""
+line = 31
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_COMBINER_DIR [combiner/tests/test_nvim_e2e.py]",
+  "_PLUGIN_ROOT [combiner/tests/test_nvim_e2e.py]",
+]
+name_terms = [
+  "2",
+  "_REPO_ROOT",
+  "combiner",
+  "combiner.tests.test_nvim_e2e._REPO_ROOT",
+  "e",
+  "nvim",
+  "repo",
+  "root",
+  "test",
+  "tests",
+]

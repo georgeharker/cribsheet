@@ -1,0 +1,27 @@
+fqname = "crib.versions.VersionEntry"
+name = "VersionEntry"
+kind = "class"
+lang = "python"
+module = "crib.versions"
+parent = ""
+content_hash = "7b1c351b4d17a031"
+file = "crib/versions.py"
+signature = "@dataclass"
+description = ""
+line = 14
+mtime = 1782609751000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "list [crib/versions.py]",
+  "stash [crib/versions.py]",
+]
+name_terms = [
+  "VersionEntry",
+  "crib",
+  "crib.versions.VersionEntry",
+  "entry",
+  "version",
+  "versions",
+]

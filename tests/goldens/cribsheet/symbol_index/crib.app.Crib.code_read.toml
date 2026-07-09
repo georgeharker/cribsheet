@@ -1,0 +1,33 @@
+fqname = "crib.app.Crib.code_read"
+name = "code_read"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "1275d77fccced9a4"
+file = "crib/app.py"
+signature = "def code_read(self, symbol: str, project: str | None = None,"
+description = ""
+line = 1073
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "read [crib/learnings.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "code_read [crib/server.py]",
+]
+references = [
+  "code_read [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "code",
+  "code_read",
+  "crib",
+  "crib.app.Crib.code_read",
+  "read",
+]

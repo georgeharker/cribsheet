@@ -1,0 +1,28 @@
+fqname = "crib.store.InMemoryStore.recreate"
+name = "recreate"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.InMemoryStore"
+content_hash = "b8f053854de4c4b5"
+file = "crib/store.py"
+signature = "def recreate(self) -> None:"
+description = ""
+line = 109
+mtime = 1783446057000000000
+container = [
+  "InMemoryStore",
+]
+calls = []
+called_by = [
+  "recreate [crib/store.py]",
+]
+references = []
+name_terms = [
+  "crib",
+  "crib.store.InMemoryStore.recreate",
+  "in",
+  "memory",
+  "recreate",
+  "store",
+]

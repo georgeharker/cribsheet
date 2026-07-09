@@ -1,0 +1,29 @@
+fqname = "mcp_companion.native.neovim.buffers.CURSOR_OUT.required"
+name = "required"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.native.neovim.buffers"
+parent = "mcp_companion.native.neovim.buffers.CURSOR_OUT"
+content_hash = "20a12fd84eb1ce0d"
+file = "lua/mcp_companion/native/neovim/buffers.lua"
+signature = "required = { \"buffer\", \"line\", \"col\" },"
+description = ""
+line = 22
+mtime = 1783022818000000000
+container = [
+  "CURSOR_OUT",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "buffers",
+  "companion",
+  "cursor",
+  "mcp",
+  "mcp_companion.native.neovim.buffers.CURSOR_OUT.required",
+  "native",
+  "neovim",
+  "out",
+  "required",
+]

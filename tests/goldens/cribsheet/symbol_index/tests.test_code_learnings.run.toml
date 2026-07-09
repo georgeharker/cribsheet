@@ -1,0 +1,44 @@
+fqname = "tests.test_code_learnings.run"
+name = "run"
+kind = "function"
+lang = "python"
+module = "tests.test_code_learnings"
+parent = ""
+content_hash = "44052857cf112194"
+file = "tests/test_code_learnings.py"
+signature = "def run(coro):"
+description = ""
+line = 26
+mtime = 1783494048000000000
+container = []
+calls = []
+called_by = [
+  "test_append_creates_then_appends_dated_entries [tests/test_code_learnings.py]",
+  "test_code_graph_marks_nodes_with_learnings [tests/test_code_learnings.py]",
+  "test_forget_removes_an_orphan [tests/test_code_learnings.py]",
+  "test_forget_removes_learning [tests/test_code_learnings.py]",
+  "test_join_surfaces_learning_and_flags_staleness [tests/test_code_learnings.py]",
+  "test_learnings_report_and_orphan_lifecycle [tests/test_code_learnings.py]",
+  "test_project_forget_clears_index_but_keeps_learnings [tests/test_code_learnings.py]",
+  "test_reaffirm_clears_stale_without_touching_body [tests/test_code_learnings.py]",
+  "test_unknown_and_ambiguous_symbols_raise [tests/test_code_learnings.py]",
+]
+references = [
+  "test_append_creates_then_appends_dated_entries [tests/test_code_learnings.py]",
+  "test_code_graph_marks_nodes_with_learnings [tests/test_code_learnings.py]",
+  "test_forget_removes_an_orphan [tests/test_code_learnings.py]",
+  "test_forget_removes_learning [tests/test_code_learnings.py]",
+  "test_join_surfaces_learning_and_flags_staleness [tests/test_code_learnings.py]",
+  "test_learnings_report_and_orphan_lifecycle [tests/test_code_learnings.py]",
+  "test_project_forget_clears_index_but_keeps_learnings [tests/test_code_learnings.py]",
+  "test_reaffirm_clears_stale_without_touching_body [tests/test_code_learnings.py]",
+  "test_unknown_and_ambiguous_symbols_raise [tests/test_code_learnings.py]",
+]
+name_terms = [
+  "code",
+  "learnings",
+  "run",
+  "test",
+  "tests",
+  "tests.test_code_learnings.run",
+]

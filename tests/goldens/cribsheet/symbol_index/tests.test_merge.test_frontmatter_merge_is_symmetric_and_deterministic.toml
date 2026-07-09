@@ -1,0 +1,30 @@
+fqname = "tests.test_merge.test_frontmatter_merge_is_symmetric_and_deterministic"
+name = "test_frontmatter_merge_is_symmetric_and_deterministic"
+kind = "function"
+lang = "python"
+module = "tests.test_merge"
+parent = ""
+content_hash = "643a7d65870a0160"
+file = "tests/test_merge.py"
+signature = "def test_frontmatter_merge_is_symmetric_and_deterministic():"
+description = ""
+line = 17
+mtime = 1783446057000000000
+container = []
+calls = [
+  "merge_frontmatter [crib/merge.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "deterministic",
+  "frontmatter",
+  "is",
+  "merge",
+  "symmetric",
+  "test",
+  "test_frontmatter_merge_is_symmetric_and_deterministic",
+  "tests",
+  "tests.test_merge.test_frontmatter_merge_is_symmetric_and_deterministic",
+]

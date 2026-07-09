@@ -1,0 +1,32 @@
+fqname = "tests.test_code_cache.test_code_watcher_coalesces_burst_into_one_batch"
+name = "test_code_watcher_coalesces_burst_into_one_batch"
+kind = "function"
+lang = "python"
+module = "tests.test_code_cache"
+parent = ""
+content_hash = "c4399eb5fbe6f698"
+file = "tests/test_code_cache.py"
+signature = "def test_code_watcher_coalesces_burst_into_one_batch(tmp_path):"
+description = ""
+line = 195
+mtime = 1783489700000000000
+container = []
+calls = [
+  "scenario [tests/test_code_cache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "batch",
+  "burst",
+  "cache",
+  "coalesces",
+  "code",
+  "into",
+  "one",
+  "test",
+  "test_code_watcher_coalesces_burst_into_one_batch",
+  "tests",
+  "tests.test_code_cache.test_code_watcher_coalesces_burst_into_one_batch",
+  "watcher",
+]

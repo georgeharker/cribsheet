@@ -1,0 +1,29 @@
+fqname = "mcp_companion.ui.icons.resource"
+name = "resource"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.ui"
+parent = "mcp_companion.ui.icons"
+content_hash = "1ad6eee6f708ff02"
+file = "lua/mcp_companion/ui/init.lua"
+signature = "resource = \"📄\","
+description = ""
+line = 34
+mtime = 1783473333000000000
+container = [
+  "icons",
+]
+calls = []
+called_by = []
+references = [
+  "else [lua/mcp_companion/ui/init.lua]",
+  "if [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "companion",
+  "icons",
+  "mcp",
+  "mcp_companion.ui.icons.resource",
+  "resource",
+  "ui",
+]

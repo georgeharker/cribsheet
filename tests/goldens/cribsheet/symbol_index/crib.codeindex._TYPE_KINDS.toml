@@ -1,0 +1,27 @@
+fqname = "crib.codeindex._TYPE_KINDS"
+name = "_TYPE_KINDS"
+kind = "constant"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "f255ff6e8d8e6778"
+file = "crib/codeindex.py"
+signature = "_TYPE_KINDS = {5, 10, 11, 23}"
+description = ""
+line = 297
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_CONTAINER_KINDS [crib/codeindex.py]",
+  "_INDEX_KINDS [crib/codeindex.py]",
+]
+name_terms = [
+  "_TYPE_KINDS",
+  "codeindex",
+  "crib",
+  "crib.codeindex._TYPE_KINDS",
+  "kinds",
+  "type",
+]

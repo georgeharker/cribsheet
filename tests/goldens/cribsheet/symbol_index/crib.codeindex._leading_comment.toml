@@ -1,0 +1,38 @@
+fqname = "crib.codeindex._leading_comment"
+name = "_leading_comment"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "f7fc3dc0f74f4970"
+file = "crib/codeindex.py"
+signature = "def _leading_comment(lines: list[str], start: int, lang: str) -> str:"
+description = ""
+line = 955
+mtime = 1783544236000000000
+container = []
+calls = [
+  "_strip_comment_markers [crib/codeindex.py]",
+]
+called_by = [
+  "_symbol_entry [crib/codeindex.py]",
+  "test_leading_comment_one_blank_glues_two_severs [tests/test_codeindex.py]",
+  "test_leading_comment_python_skips_decorators_and_globs_hash_block [tests/test_codeindex.py]",
+  "test_leading_comment_rust_doc_over_attribute_and_go_block [tests/test_codeindex.py]",
+  "test_leading_comment_stops_at_real_code_and_unknown_lang [tests/test_codeindex.py]",
+]
+references = [
+  "_symbol_entry [crib/codeindex.py]",
+  "test_leading_comment_one_blank_glues_two_severs [tests/test_codeindex.py]",
+  "test_leading_comment_python_skips_decorators_and_globs_hash_block [tests/test_codeindex.py]",
+  "test_leading_comment_rust_doc_over_attribute_and_go_block [tests/test_codeindex.py]",
+  "test_leading_comment_stops_at_real_code_and_unknown_lang [tests/test_codeindex.py]",
+]
+name_terms = [
+  "_leading_comment",
+  "codeindex",
+  "comment",
+  "crib",
+  "crib.codeindex._leading_comment",
+  "leading",
+]

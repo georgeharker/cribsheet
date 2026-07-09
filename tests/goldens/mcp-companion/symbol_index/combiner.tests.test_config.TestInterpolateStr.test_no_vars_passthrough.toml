@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_config.TestInterpolateStr.test_no_vars_passthrough"
+name = "test_no_vars_passthrough"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestInterpolateStr"
+content_hash = "c236d565d5a14480"
+file = "combiner/tests/test_config.py"
+signature = "def test_no_vars_passthrough(self) -> None:"
+description = ""
+line = 281
+mtime = 1782852601000000000
+container = [
+  "TestInterpolateStr",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateStr.test_no_vars_passthrough",
+  "config",
+  "interpolate",
+  "no",
+  "passthrough",
+  "str",
+  "test",
+  "test_no_vars_passthrough",
+  "tests",
+  "vars",
+]

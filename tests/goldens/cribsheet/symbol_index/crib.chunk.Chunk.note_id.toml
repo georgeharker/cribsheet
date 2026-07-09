@@ -1,0 +1,28 @@
+fqname = "crib.chunk.Chunk.note_id"
+name = "note_id"
+kind = "field"
+lang = "python"
+module = "crib.chunk"
+parent = "crib.chunk.Chunk"
+content_hash = "cce4f5aae08ef546"
+file = "crib/chunk.py"
+signature = "note_id: str"
+description = ""
+line = 28
+mtime = 1782930371000000000
+container = [
+  "Chunk",
+]
+calls = []
+called_by = []
+references = [
+  "metadata [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.note_id",
+  "id",
+  "note",
+  "note_id",
+]

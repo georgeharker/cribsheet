@@ -1,0 +1,31 @@
+fqname = "tests.test_project_resolution.test_write_project_requires_explicit_target"
+name = "test_write_project_requires_explicit_target"
+kind = "function"
+lang = "python"
+module = "tests.test_project_resolution"
+parent = ""
+content_hash = "ddb467b5b7a29811"
+file = "tests/test_project_resolution.py"
+signature = "def test_write_project_requires_explicit_target(crib):"
+description = ""
+line = 88
+mtime = 1783378845000000000
+container = []
+calls = [
+  "_write_project [crib/server.py]",
+  "session_state [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "explicit",
+  "project",
+  "requires",
+  "resolution",
+  "target",
+  "test",
+  "test_write_project_requires_explicit_target",
+  "tests",
+  "tests.test_project_resolution.test_write_project_requires_explicit_target",
+  "write",
+]

@@ -1,0 +1,31 @@
+fqname = "tests.test_refs.test_lookup_fans_out_and_tags_projects"
+name = "test_lookup_fans_out_and_tags_projects"
+kind = "function"
+lang = "python"
+module = "tests.test_refs"
+parent = ""
+content_hash = "4fcee5ad3b1d231e"
+file = "tests/test_refs.py"
+signature = "def test_lookup_fans_out_and_tags_projects(crib, tmp_path):"
+description = ""
+line = 79
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_two_projects [tests/test_refs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "fans",
+  "lookup",
+  "out",
+  "projects",
+  "refs",
+  "tags",
+  "test",
+  "test_lookup_fans_out_and_tags_projects",
+  "tests",
+  "tests.test_refs.test_lookup_fans_out_and_tags_projects",
+]

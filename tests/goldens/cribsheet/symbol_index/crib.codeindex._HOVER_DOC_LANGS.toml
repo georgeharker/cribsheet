@@ -1,0 +1,27 @@
+fqname = "crib.codeindex._HOVER_DOC_LANGS"
+name = "_HOVER_DOC_LANGS"
+kind = "constant"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "149cc9286f6c45b0"
+file = "crib/codeindex.py"
+signature = "_HOVER_DOC_LANGS = frozenset({\"rust\", \"go\", \"c\", \"cpp\", \"lua\"})"
+description = ""
+line = 932
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_symbol_entry [crib/codeindex.py]",
+]
+name_terms = [
+  "_HOVER_DOC_LANGS",
+  "codeindex",
+  "crib",
+  "crib.codeindex._HOVER_DOC_LANGS",
+  "doc",
+  "hover",
+  "langs",
+]

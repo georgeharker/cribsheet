@@ -1,0 +1,39 @@
+fqname = "mcp_companion.native.manifest"
+name = "manifest"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.native"
+parent = ""
+content_hash = "d6fea11b62fbe301"
+file = "lua/mcp_companion/native/init.lua"
+signature = "function M.manifest()"
+description = ""
+line = 189
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = [
+  "M.setup [lua/mcp_companion/init.lua]",
+  "_make_native_cmd [lua/mcp_companion/cc/tools.lua]",
+  "init.lua [lua/mcp_companion/init.lua]",
+  "init.lua [lua/mcp_companion/native/init.lua]",
+]
+references = [
+  "M [lua/mcp_companion/native/init.lua]",
+  "_make_native_cmd [lua/mcp_companion/cc/tools.lua]",
+  "config [lua/mcp_companion/native/init.lua]",
+  "for in [lua/mcp_companion/native/init.lua]",
+  "get_servers [lua/mcp_companion/native/init.lua]",
+  "name [lua/mcp_companion/native/init.lua]",
+  "native [lua/mcp_companion/init.lua]",
+  "server_name [lua/mcp_companion/native/init.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+  "uri [lua/mcp_companion/native/init.lua]",
+]
+name_terms = [
+  "companion",
+  "manifest",
+  "mcp",
+  "mcp_companion.native.manifest",
+  "native",
+]

@@ -1,0 +1,29 @@
+fqname = "crib.config.RetrieveConfig.summary_labels"
+name = "summary_labels"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.RetrieveConfig"
+content_hash = "182533625be05f7e"
+file = "crib/config.py"
+signature = "summary_labels: list[str] = field(default_factory=list)"
+description = ""
+line = 92
+mtime = 1783455339000000000
+container = [
+  "RetrieveConfig",
+]
+calls = []
+called_by = []
+references = [
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.RetrieveConfig.summary_labels",
+  "labels",
+  "retrieve",
+  "summary",
+  "summary_labels",
+]

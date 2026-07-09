@@ -1,0 +1,37 @@
+fqname = "combiner.tests.test_session_filter.TestLocalToolsReady.test_prime_timeout_no_store_no_invalidate"
+name = "test_prime_timeout_no_store_no_invalidate"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestLocalToolsReady"
+content_hash = "277370a5276ccce0"
+file = "combiner/tests/test_session_filter.py"
+signature = "async def test_prime_timeout_no_store_no_invalidate(self):"
+description = ""
+line = 563
+mtime = 1783452495000000000
+container = [
+  "TestLocalToolsReady",
+]
+calls = [
+  "_combiner_with_provider [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestLocalToolsReady.test_prime_timeout_no_store_no_invalidate",
+  "filter",
+  "invalidate",
+  "local",
+  "no",
+  "prime",
+  "ready",
+  "session",
+  "store",
+  "test",
+  "test_prime_timeout_no_store_no_invalidate",
+  "tests",
+  "timeout",
+  "tools",
+]

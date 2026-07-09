@@ -1,0 +1,37 @@
+fqname = "mcp_companion.combiner.client._update_server_state.ui_status"
+name = "ui_status"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.combiner.client"
+parent = "mcp_companion.combiner.client._update_server_state"
+content_hash = "e7201a8886bd6882"
+file = "lua/mcp_companion/combiner/client.lua"
+signature = "local function ui_status(info)"
+description = ""
+line = 879
+mtime = 1783473333000000000
+container = [
+  "Client:_update_server_state",
+]
+calls = []
+called_by = [
+  "Client._update_server_state [lua/mcp_companion/combiner/client.lua]",
+]
+references = [
+  "if [lua/mcp_companion/combiner/client.lua]",
+  "info [lua/mcp_companion/combiner/client.lua]",
+  "ui [lua/mcp_companion/combiner/client.lua]",
+]
+name_terms = [
+  "client",
+  "combiner",
+  "companion",
+  "mcp",
+  "mcp_companion.combiner.client._update_server_state.ui_status",
+  "server",
+  "state",
+  "status",
+  "ui",
+  "ui_status",
+  "update",
+]

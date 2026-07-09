@@ -1,0 +1,39 @@
+fqname = "mcp_companion.native.channel.combiner_base"
+name = "combiner_base"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.native.channel"
+parent = ""
+content_hash = "78b61e4a0874b74f"
+file = "lua/mcp_companion/native/channel.lua"
+signature = "local function combiner_base()"
+description = ""
+line = 39
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.deregister [lua/mcp_companion/native/channel.lua]",
+  "M.start [lua/mcp_companion/native/channel.lua]",
+  "M.sync [lua/mcp_companion/native/channel.lua]",
+  "M.unbind [lua/mcp_companion/native/channel.lua]",
+  "channel.lua [lua/mcp_companion/native/channel.lua]",
+  "post_bind [lua/mcp_companion/native/channel.lua]",
+]
+references = [
+  "deregister [lua/mcp_companion/native/channel.lua]",
+  "post_bind [lua/mcp_companion/native/channel.lua]",
+  "start [lua/mcp_companion/native/channel.lua]",
+  "sync [lua/mcp_companion/native/channel.lua]",
+  "unbind [lua/mcp_companion/native/channel.lua]",
+]
+name_terms = [
+  "base",
+  "channel",
+  "combiner",
+  "combiner_base",
+  "companion",
+  "mcp",
+  "mcp_companion.native.channel.combiner_base",
+  "native",
+]

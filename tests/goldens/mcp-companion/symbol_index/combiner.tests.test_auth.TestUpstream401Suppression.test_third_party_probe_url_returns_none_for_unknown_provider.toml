@@ -1,0 +1,41 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression.test_third_party_probe_url_returns_none_for_unknown_provider"
+name = "test_third_party_probe_url_returns_none_for_unknown_provider"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression"
+content_hash = "a79e14b9b56881cd"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 1091
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed_valid_tokens [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression.test_third_party_probe_url_returns_none_for_unknown_provider",
+  "for",
+  "none",
+  "party",
+  "probe",
+  "provider",
+  "returns",
+  "suppression",
+  "test",
+  "test_third_party_probe_url_returns_none_for_unknown_provider",
+  "tests",
+  "third",
+  "unknown",
+  "upstream",
+  "url",
+]

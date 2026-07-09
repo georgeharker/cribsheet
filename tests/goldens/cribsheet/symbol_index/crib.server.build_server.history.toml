@@ -1,0 +1,27 @@
+fqname = "crib.server.build_server.history"
+name = "history"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "9eb7313215d00a17"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 540
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "history [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.history",
+  "history",
+  "server",
+]

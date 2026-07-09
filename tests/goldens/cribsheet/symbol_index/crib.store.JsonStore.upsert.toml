@@ -1,0 +1,28 @@
+fqname = "crib.store.JsonStore.upsert"
+name = "upsert"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.JsonStore"
+content_hash = "cb7c30b01ce8a84a"
+file = "crib/store.py"
+signature = "def upsert(self, records: list[Record]) -> None:"
+description = ""
+line = 140
+mtime = 1783446057000000000
+container = [
+  "JsonStore",
+]
+calls = [
+  "_save [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.store.JsonStore.upsert",
+  "json",
+  "store",
+  "upsert",
+]

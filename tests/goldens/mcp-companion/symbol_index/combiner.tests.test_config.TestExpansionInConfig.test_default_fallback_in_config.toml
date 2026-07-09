@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_config.TestExpansionInConfig.test_default_fallback_in_config"
+name = "test_default_fallback_in_config"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestExpansionInConfig"
+content_hash = "5f574164df879d7d"
+file = "combiner/tests/test_config.py"
+signature = "def test_default_fallback_in_config(self) -> None:"
+description = ""
+line = 383
+mtime = 1782852601000000000
+container = [
+  "TestExpansionInConfig",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.TestExpansionInConfig.test_default_fallback_in_config",
+  "config",
+  "default",
+  "expansion",
+  "fallback",
+  "in",
+  "test",
+  "test_default_fallback_in_config",
+  "tests",
+]

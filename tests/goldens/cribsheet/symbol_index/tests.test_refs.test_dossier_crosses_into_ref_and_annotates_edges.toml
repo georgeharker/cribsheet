@@ -1,0 +1,32 @@
+fqname = "tests.test_refs.test_dossier_crosses_into_ref_and_annotates_edges"
+name = "test_dossier_crosses_into_ref_and_annotates_edges"
+kind = "function"
+lang = "python"
+module = "tests.test_refs"
+parent = ""
+content_hash = "243f5ffa53bc4f82"
+file = "tests/test_refs.py"
+signature = "def test_dossier_crosses_into_ref_and_annotates_edges(crib, tmp_path):"
+description = ""
+line = 86
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_two_projects [tests/test_refs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "annotates",
+  "crosses",
+  "dossier",
+  "edges",
+  "into",
+  "ref",
+  "refs",
+  "test",
+  "test_dossier_crosses_into_ref_and_annotates_edges",
+  "tests",
+  "tests.test_refs.test_dossier_crosses_into_ref_and_annotates_edges",
+]

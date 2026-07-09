@@ -1,0 +1,26 @@
+fqname = "crib.codeindex._SLUG_UNSAFE"
+name = "_SLUG_UNSAFE"
+kind = "constant"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "8c616af5f833ab30"
+file = "crib/codeindex.py"
+signature = "_SLUG_UNSAFE = re.compile(r\"[^A-Za-z0-9._-]+\")"
+description = ""
+line = 1293
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "learning_slug [crib/codeindex.py]",
+]
+name_terms = [
+  "_SLUG_UNSAFE",
+  "codeindex",
+  "crib",
+  "crib.codeindex._SLUG_UNSAFE",
+  "slug",
+  "unsafe",
+]

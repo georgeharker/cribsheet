@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.server._coerce_object_schemas"
+name = "_coerce_object_schemas"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "065b93ca3947d568"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _coerce_object_schemas(tools: Sequence[Tool]) -> list[Tool]:"
+description = ""
+line = 801
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "_finalize_schemas [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_finalize_schemas [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_coerce_object_schemas",
+  "coerce",
+  "combiner",
+  "combiner.mcp_combiner.server._coerce_object_schemas",
+  "mcp",
+  "object",
+  "schemas",
+  "server",
+]

@@ -1,0 +1,36 @@
+fqname = "crib.paths.Paths.projects_dir"
+name = "projects_dir"
+kind = "method"
+lang = "python"
+module = "crib.paths"
+parent = "crib.paths.Paths"
+content_hash = "25ae04f3a892e806"
+file = "crib/paths.py"
+signature = "@property"
+description = ""
+line = 43
+mtime = 1783533619000000000
+container = [
+  "Paths",
+]
+calls = []
+called_by = [
+  "ensure [crib/paths.py]",
+  "project_dir [crib/paths.py]",
+  "projects [crib/app.py]",
+  "start_watchers [crib/app.py]",
+]
+references = [
+  "ensure [crib/paths.py]",
+  "project_dir [crib/paths.py]",
+  "projects [crib/app.py]",
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.Paths.projects_dir",
+  "dir",
+  "paths",
+  "projects",
+  "projects_dir",
+]

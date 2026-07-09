@@ -1,0 +1,36 @@
+fqname = "crib.codeindex._local_name"
+name = "_local_name"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "a803e809b81f1a6d"
+file = "crib/codeindex.py"
+signature = "def _local_name(raw: str, lang: str) -> str:"
+description = ""
+line = 776
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = [
+  "_qualify [crib/codeindex.py]",
+  "_symbol_entry [crib/codeindex.py]",
+  "_symbol_ranges [crib/codeindex.py]",
+  "test_local_name_reduces_rust_impl_to_type [tests/test_codeindex.py]",
+  "test_local_name_strips_lua_table_prefix [tests/test_codeindex.py]",
+]
+references = [
+  "_qualify [crib/codeindex.py]",
+  "_symbol_entry [crib/codeindex.py]",
+  "_symbol_ranges [crib/codeindex.py]",
+  "test_local_name_reduces_rust_impl_to_type [tests/test_codeindex.py]",
+  "test_local_name_strips_lua_table_prefix [tests/test_codeindex.py]",
+]
+name_terms = [
+  "_local_name",
+  "codeindex",
+  "crib",
+  "crib.codeindex._local_name",
+  "local",
+  "name",
+]

@@ -1,0 +1,25 @@
+fqname = "crib.gitbacking._GITIGNORE"
+name = "_GITIGNORE"
+kind = "constant"
+lang = "python"
+module = "crib.gitbacking"
+parent = ""
+content_hash = "a310f3047a9543c8"
+file = "crib/gitbacking.py"
+signature = "_GITIGNORE = \"\"\"\\"
+description = ""
+line = 23
+mtime = 1783451795000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_ensure_gitignore [crib/gitbacking.py]",
+]
+name_terms = [
+  "_GITIGNORE",
+  "crib",
+  "crib.gitbacking._GITIGNORE",
+  "gitbacking",
+  "gitignore",
+]

@@ -1,0 +1,33 @@
+fqname = "tests.test_code_learnings.test_dossier_annotates_neighbours_with_their_descriptions"
+name = "test_dossier_annotates_neighbours_with_their_descriptions"
+kind = "function"
+lang = "python"
+module = "tests.test_code_learnings"
+parent = ""
+content_hash = "294e57fa3dc8879e"
+file = "tests/test_code_learnings.py"
+signature = "def test_dossier_annotates_neighbours_with_their_descriptions(crib):"
+description = ""
+line = 136
+mtime = 1783494048000000000
+container = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "annotates",
+  "code",
+  "descriptions",
+  "dossier",
+  "learnings",
+  "neighbours",
+  "test",
+  "test_dossier_annotates_neighbours_with_their_descriptions",
+  "tests",
+  "tests.test_code_learnings.test_dossier_annotates_neighbours_with_their_descriptions",
+  "their",
+  "with",
+]

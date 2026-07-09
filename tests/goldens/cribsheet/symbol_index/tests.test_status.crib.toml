@@ -1,0 +1,29 @@
+fqname = "tests.test_status.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+module = "tests.test_status"
+parent = ""
+content_hash = "843661f7d5a24b5e"
+file = "tests/test_status.py"
+signature = "@pytest.fixture()"
+description = ""
+line = 17
+mtime = 1783496808000000000
+container = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "status",
+  "test",
+  "tests",
+  "tests.test_status.crib",
+]

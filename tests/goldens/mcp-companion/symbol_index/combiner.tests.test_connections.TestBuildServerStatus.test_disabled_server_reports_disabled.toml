@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_connections.TestBuildServerStatus.test_disabled_server_reports_disabled"
+name = "test_disabled_server_reports_disabled"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestBuildServerStatus"
+content_hash = "f3293f32e0a96bf3"
+file = "combiner/tests/test_connections.py"
+signature = "def test_disabled_server_reports_disabled(self):"
+description = ""
+line = 379
+mtime = 1783473323000000000
+container = [
+  "TestBuildServerStatus",
+]
+calls = [
+  "_config [combiner/tests/test_connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "combiner",
+  "combiner.tests.test_connections.TestBuildServerStatus.test_disabled_server_reports_disabled",
+  "connections",
+  "disabled",
+  "reports",
+  "server",
+  "status",
+  "test",
+  "test_disabled_server_reports_disabled",
+  "tests",
+]

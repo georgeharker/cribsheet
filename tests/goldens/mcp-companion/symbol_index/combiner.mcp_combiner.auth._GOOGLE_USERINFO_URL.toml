@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.auth._GOOGLE_USERINFO_URL"
+name = "_GOOGLE_USERINFO_URL"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "074a266f036c2225"
+file = "combiner/mcp_combiner/auth.py"
+signature = "_GOOGLE_USERINFO_URL = \"https://www.googleapis.com/oauth2/v3/userinfo\""
+description = ""
+line = 81
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_third_party_probe_url [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_GOOGLE_USERINFO_URL",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._GOOGLE_USERINFO_URL",
+  "google",
+  "mcp",
+  "url",
+  "userinfo",
+]

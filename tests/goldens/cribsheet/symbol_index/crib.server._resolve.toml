@@ -1,0 +1,41 @@
+fqname = "crib.server._resolve"
+name = "_resolve"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = ""
+content_hash = "5d3ad06e12fc04c3"
+file = "crib/server.py"
+signature = "def _resolve(crib: Crib, project: str | None,"
+description = ""
+line = 38
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_cwd [crib/server.py]",
+  "resolve_session_project [crib/session.py]",
+  "session_state [crib/session.py]",
+]
+called_by = [
+  "_project [crib/server.py]",
+  "code_dossier [crib/server.py]",
+  "code_graph [crib/server.py]",
+  "code_lookup [crib/server.py]",
+  "code_xref [crib/server.py]",
+  "current_project [crib/server.py]",
+]
+references = [
+  "_project [crib/server.py]",
+  "code_dossier [crib/server.py]",
+  "code_graph [crib/server.py]",
+  "code_lookup [crib/server.py]",
+  "code_xref [crib/server.py]",
+  "current_project [crib/server.py]",
+]
+name_terms = [
+  "_resolve",
+  "crib",
+  "crib.server._resolve",
+  "resolve",
+  "server",
+]

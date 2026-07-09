@@ -1,0 +1,28 @@
+fqname = "tests.test_status.test_status_inventories_projects"
+name = "test_status_inventories_projects"
+kind = "function"
+lang = "python"
+module = "tests.test_status"
+parent = ""
+content_hash = "e76c68ac5d3ee3f7"
+file = "tests/test_status.py"
+signature = "def test_status_inventories_projects(crib):"
+description = ""
+line = 25
+mtime = 1783496808000000000
+container = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "inventories",
+  "projects",
+  "status",
+  "test",
+  "test_status_inventories_projects",
+  "tests",
+  "tests.test_status.test_status_inventories_projects",
+]

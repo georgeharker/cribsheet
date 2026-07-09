@@ -1,0 +1,29 @@
+fqname = "crib.embed._BGE_EN_QUERY_INSTRUCTION"
+name = "_BGE_EN_QUERY_INSTRUCTION"
+kind = "constant"
+lang = "python"
+module = "crib.embed"
+parent = ""
+content_hash = "75cb5792918f9651"
+file = "crib/embed.py"
+signature = "_BGE_EN_QUERY_INSTRUCTION = \"Represent this sentence for searching relevant passages: \""
+description = ""
+line = 141
+mtime = 1782690118000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_resolve_query_prefix [crib/embed.py]",
+  "test_bge_en_gets_query_instruction_by_default [tests/test_embed.py]",
+]
+name_terms = [
+  "_BGE_EN_QUERY_INSTRUCTION",
+  "bge",
+  "crib",
+  "crib.embed._BGE_EN_QUERY_INSTRUCTION",
+  "embed",
+  "en",
+  "instruction",
+  "query",
+]

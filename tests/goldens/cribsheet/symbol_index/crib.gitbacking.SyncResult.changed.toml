@@ -1,0 +1,32 @@
+fqname = "crib.gitbacking.SyncResult.changed"
+name = "changed"
+kind = "field"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.SyncResult"
+content_hash = "bc8f4532a82b6022"
+file = "crib/gitbacking.py"
+signature = "changed: bool = False   # did a pull change files (→ caller should reconcile)"
+description = ""
+line = 54
+mtime = 1783451795000000000
+container = [
+  "SyncResult",
+]
+calls = []
+called_by = []
+references = [
+  "_run_git [crib/cli.py]",
+  "pull [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+  "sync [crib/gitbacking.py]",
+  "test_sync_round_trips_between_two_machines [tests/test_sync.py]",
+]
+name_terms = [
+  "changed",
+  "crib",
+  "crib.gitbacking.SyncResult.changed",
+  "gitbacking",
+  "result",
+  "sync",
+]

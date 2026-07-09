@@ -1,0 +1,26 @@
+fqname = "tests.test_native.if.of"
+name = "of"
+kind = "variable"
+lang = "lua"
+module = "tests.test_native"
+parent = "tests.test_native.if"
+content_hash = "a4576b8a51438a3e"
+file = "tests/test_native.lua"
+signature = "local of = rjson(native.dispatch(\"open_file\", { path = target, line = 2 }))"
+description = ""
+line = 253
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "native",
+  "of",
+  "test",
+  "tests",
+  "tests.test_native.if.of",
+]

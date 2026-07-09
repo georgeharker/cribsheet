@@ -1,0 +1,25 @@
+fqname = "crib.util._CROCKFORD"
+name = "_CROCKFORD"
+kind = "constant"
+lang = "python"
+module = "crib.util"
+parent = ""
+content_hash = "30684c7cc53ccf67"
+file = "crib/util.py"
+signature = "_CROCKFORD = \"0123456789ABCDEFGHJKMNPQRSTVWXYZ\""
+description = ""
+line = 9
+mtime = 1782755212000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_b32 [crib/util.py]",
+]
+name_terms = [
+  "_CROCKFORD",
+  "crib",
+  "crib.util._CROCKFORD",
+  "crockford",
+  "util",
+]

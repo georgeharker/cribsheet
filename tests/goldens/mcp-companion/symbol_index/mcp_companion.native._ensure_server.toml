@@ -1,0 +1,35 @@
+fqname = "mcp_companion.native._ensure_server"
+name = "_ensure_server"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.native"
+parent = ""
+content_hash = "39bfd946658a799e"
+file = "lua/mcp_companion/native/init.lua"
+signature = "local function _ensure_server(name)"
+description = ""
+line = 48
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = [
+  "M.add_prompt [lua/mcp_companion/native/init.lua]",
+  "M.add_resource [lua/mcp_companion/native/init.lua]",
+  "M.add_resource_template [lua/mcp_companion/native/init.lua]",
+  "M.add_server [lua/mcp_companion/native/init.lua]",
+  "M.add_tool [lua/mcp_companion/native/init.lua]",
+  "init.lua [lua/mcp_companion/native/init.lua]",
+]
+references = [
+  "name [lua/mcp_companion/native/init.lua]",
+  "srv [lua/mcp_companion/native/init.lua]",
+]
+name_terms = [
+  "_ensure_server",
+  "companion",
+  "ensure",
+  "mcp",
+  "mcp_companion.native._ensure_server",
+  "native",
+  "server",
+]

@@ -1,0 +1,27 @@
+fqname = "tests.test_corpus_goldens.test_corpus_golden_structurally_identical"
+name = "test_corpus_golden_structurally_identical"
+kind = "function"
+lang = "python"
+module = "tests.test_corpus_goldens"
+parent = ""
+content_hash = "3d34ab36694c6b15"
+file = "tests/test_corpus_goldens.py"
+signature = "@pytest.mark.parametrize(\"project\", [\"cribsheet\", \"mcp-companion\"])"
+description = ""
+line = 39
+mtime = 1783536830000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "corpus",
+  "golden",
+  "goldens",
+  "identical",
+  "structurally",
+  "test",
+  "test_corpus_golden_structurally_identical",
+  "tests",
+  "tests.test_corpus_goldens.test_corpus_golden_structurally_identical",
+]

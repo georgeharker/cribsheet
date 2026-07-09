@@ -1,0 +1,30 @@
+fqname = "crib.server.build_server.current_project"
+name = "current_project"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "9dfe49509174e702"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 610
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_resolve [crib/server.py]",
+  "projects [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.current_project",
+  "current",
+  "current_project",
+  "project",
+  "server",
+]

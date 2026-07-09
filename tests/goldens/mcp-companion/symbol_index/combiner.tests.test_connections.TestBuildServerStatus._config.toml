@@ -1,0 +1,42 @@
+fqname = "combiner.tests.test_connections.TestBuildServerStatus._config"
+name = "_config"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestBuildServerStatus"
+content_hash = "5d3f98ba97b4b7ce"
+file = "combiner/tests/test_connections.py"
+signature = "def _config(self):"
+description = ""
+line = 372
+mtime = 1783473323000000000
+container = [
+  "TestBuildServerStatus",
+]
+calls = []
+called_by = [
+  "test_call_failure_overrides_optimistic_http_ready [combiner/tests/test_connections.py]",
+  "test_disabled_server_reports_disabled [combiner/tests/test_connections.py]",
+  "test_http_server_reflects_connection_lifecycle [combiner/tests/test_connections.py]",
+  "test_stdio_crash_reports_disconnected [combiner/tests/test_connections.py]",
+  "test_stdio_server_tristate [combiner/tests/test_connections.py]",
+]
+references = [
+  "test_call_failure_overrides_optimistic_http_ready [combiner/tests/test_connections.py]",
+  "test_disabled_server_reports_disabled [combiner/tests/test_connections.py]",
+  "test_http_server_reflects_connection_lifecycle [combiner/tests/test_connections.py]",
+  "test_stdio_crash_reports_disconnected [combiner/tests/test_connections.py]",
+  "test_stdio_server_tristate [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "_config",
+  "build",
+  "combiner",
+  "combiner.tests.test_connections.TestBuildServerStatus._config",
+  "config",
+  "connections",
+  "server",
+  "status",
+  "test",
+  "tests",
+]

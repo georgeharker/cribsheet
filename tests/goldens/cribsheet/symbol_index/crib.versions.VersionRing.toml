@@ -1,0 +1,27 @@
+fqname = "crib.versions.VersionRing"
+name = "VersionRing"
+kind = "class"
+lang = "python"
+module = "crib.versions"
+parent = ""
+content_hash = "a46c7049dfba3d62"
+file = "crib/versions.py"
+signature = "class VersionRing:"
+description = ""
+line = 22
+mtime = 1782609751000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/notestore.py]",
+]
+name_terms = [
+  "VersionRing",
+  "crib",
+  "crib.versions.VersionRing",
+  "ring",
+  "version",
+  "versions",
+]

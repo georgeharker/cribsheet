@@ -1,0 +1,32 @@
+fqname = "crib.session.ProjectResolution.echo"
+name = "echo"
+kind = "method"
+lang = "python"
+module = "crib.session"
+parent = "crib.session.ProjectResolution"
+content_hash = "c303b4adea38afd2"
+file = "crib/session.py"
+signature = "def echo(self) -> dict[str, str]:"
+description = ""
+line = 41
+mtime = 1783476730000000000
+container = [
+  "ProjectResolution",
+]
+calls = []
+called_by = [
+  "_echo_dict [crib/server.py]",
+  "_echo_list [crib/server.py]",
+]
+references = [
+  "_echo_dict [crib/server.py]",
+  "_echo_list [crib/server.py]",
+]
+name_terms = [
+  "crib",
+  "crib.session.ProjectResolution.echo",
+  "echo",
+  "project",
+  "resolution",
+  "session",
+]

@@ -1,0 +1,27 @@
+fqname = "combiner.tests.test_session_filter.TestFinalizeSchemas"
+name = "TestFinalizeSchemas"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = ""
+content_hash = "97f5900c75eb39de"
+file = "combiner/tests/test_session_filter.py"
+signature = "class TestFinalizeSchemas:"
+description = ""
+line = 675
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestFinalizeSchemas",
+  "combiner",
+  "combiner.tests.test_session_filter.TestFinalizeSchemas",
+  "filter",
+  "finalize",
+  "schemas",
+  "session",
+  "test",
+  "tests",
+]

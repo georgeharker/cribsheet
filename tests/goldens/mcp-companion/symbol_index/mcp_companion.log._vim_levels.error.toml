@@ -1,0 +1,27 @@
+fqname = "mcp_companion.log._vim_levels.error"
+name = "error"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.log"
+parent = "mcp_companion.log._vim_levels"
+content_hash = "2a984bc2559a1c95"
+file = "lua/mcp_companion/log.lua"
+signature = "error = vim.log.levels.ERROR,"
+description = ""
+line = 14
+mtime = 1782852601000000000
+container = [
+  "_vim_levels",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "companion",
+  "error",
+  "levels",
+  "log",
+  "mcp",
+  "mcp_companion.log._vim_levels.error",
+  "vim",
+]

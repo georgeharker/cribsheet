@@ -1,0 +1,34 @@
+fqname = "crib.session.SessionState"
+name = "SessionState"
+kind = "class"
+lang = "python"
+module = "crib.session"
+parent = ""
+content_hash = "45a78875a1c6e06d"
+file = "crib/session.py"
+signature = "class SessionState:"
+description = ""
+line = 45
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_DEFAULT [crib/session.py]",
+  "_SESSIONS [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+  "session_state [crib/session.py]",
+  "test_a_real_seed_still_sticks_against_a_later_cwd [tests/test_session.py]",
+  "test_bare_default_seed_is_upgraded_by_a_later_cwd [tests/test_session.py]",
+  "test_explicit_arg_overrides_without_touching_session [tests/test_session.py]",
+  "test_seeds_lazily_and_sticks [tests/test_session.py]",
+  "test_session_current_used_over_seed [tests/test_session.py]",
+  "test_session_state_falls_back_to_default_without_context [tests/test_session.py]",
+]
+name_terms = [
+  "SessionState",
+  "crib",
+  "crib.session.SessionState",
+  "session",
+  "state",
+]

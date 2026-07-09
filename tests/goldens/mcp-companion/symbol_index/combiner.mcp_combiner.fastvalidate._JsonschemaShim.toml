@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.fastvalidate._JsonschemaShim"
+name = "_JsonschemaShim"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.fastvalidate"
+parent = ""
+content_hash = "d561109a44ecfb66"
+file = "combiner/mcp_combiner/fastvalidate.py"
+signature = "class _JsonschemaShim:"
+description = ""
+line = 117
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "install [combiner/mcp_combiner/fastvalidate.py]",
+]
+name_terms = [
+  "_JsonschemaShim",
+  "combiner",
+  "combiner.mcp_combiner.fastvalidate._JsonschemaShim",
+  "fastvalidate",
+  "jsonschema",
+  "mcp",
+  "shim",
+]

@@ -1,0 +1,28 @@
+fqname = "crib.cli._E_note"
+name = "_E_note"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "d4196f9544cb6fba"
+file = "crib/cli.py"
+signature = "def _E_note(d, a): _print_note(d, a.json)"
+description = ""
+line = 694
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_print_note [crib/cli.py]",
+]
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_E_note",
+  "cli",
+  "crib",
+  "crib.cli._E_note",
+  "e",
+  "note",
+]

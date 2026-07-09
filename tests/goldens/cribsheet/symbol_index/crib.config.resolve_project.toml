@@ -1,0 +1,31 @@
+fqname = "crib.config.resolve_project"
+name = "resolve_project"
+kind = "function"
+lang = "python"
+module = "crib.config"
+parent = ""
+content_hash = "6b791640411a43a2"
+file = "crib/config.py"
+signature = "def resolve_project("
+description = ""
+line = 344
+mtime = 1783455339000000000
+container = []
+calls = [
+  "find [crib/config.py]",
+]
+called_by = [
+  "resolve_project [crib/app.py]",
+  "resolve_project [crib/project_services.py]",
+]
+references = [
+  "resolve_project [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.resolve_project",
+  "project",
+  "resolve",
+  "resolve_project",
+]

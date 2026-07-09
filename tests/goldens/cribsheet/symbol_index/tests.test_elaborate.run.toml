@@ -1,0 +1,37 @@
+fqname = "tests.test_elaborate.run"
+name = "run"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "44052857cf112194"
+file = "tests/test_elaborate.py"
+signature = "def run(coro):"
+description = ""
+line = 19
+mtime = 1782958917000000000
+container = []
+calls = []
+called_by = [
+  "test_distill_revises_and_thrash_guards [tests/test_elaborate.py]",
+  "test_elaborate_bulk_miss_falls_back_to_mopup [tests/test_elaborate.py]",
+  "test_elaborate_bulk_path_covers_all_sections [tests/test_elaborate.py]",
+  "test_elaborate_unknown_label_errors [tests/test_elaborate.py]",
+  "test_elaborate_writes_store_and_skips_existing [tests/test_elaborate.py]",
+  "test_summarize_writes_summary_index [tests/test_elaborate.py]",
+]
+references = [
+  "test_distill_revises_and_thrash_guards [tests/test_elaborate.py]",
+  "test_elaborate_bulk_miss_falls_back_to_mopup [tests/test_elaborate.py]",
+  "test_elaborate_bulk_path_covers_all_sections [tests/test_elaborate.py]",
+  "test_elaborate_unknown_label_errors [tests/test_elaborate.py]",
+  "test_elaborate_writes_store_and_skips_existing [tests/test_elaborate.py]",
+  "test_summarize_writes_summary_index [tests/test_elaborate.py]",
+]
+name_terms = [
+  "elaborate",
+  "run",
+  "test",
+  "tests",
+  "tests.test_elaborate.run",
+]

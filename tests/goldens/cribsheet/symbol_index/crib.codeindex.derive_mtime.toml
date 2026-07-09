@@ -1,0 +1,30 @@
+fqname = "crib.codeindex.derive_mtime"
+name = "derive_mtime"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "7b0b2b15d7813f90"
+file = "crib/codeindex.py"
+signature = "def derive_mtime(root: Path, relpath: str) -> int:"
+description = ""
+line = 244
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = [
+  "_extract [crib/codeindex.py]",
+  "test_derive_mtime_git_date_for_committed_disk_for_modified [tests/test_codeindex.py]",
+]
+references = [
+  "_extract [crib/codeindex.py]",
+  "test_derive_mtime_git_date_for_committed_disk_for_modified [tests/test_codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.derive_mtime",
+  "derive",
+  "derive_mtime",
+  "mtime",
+]

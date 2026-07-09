@@ -1,0 +1,29 @@
+fqname = "crib.retrieve.QwenReranker._SUFFIX"
+name = "_SUFFIX"
+kind = "constant"
+lang = "python"
+module = "crib.retrieve"
+parent = "crib.retrieve.QwenReranker"
+content_hash = "c0ff9dadea3bd9c8"
+file = "crib/retrieve.py"
+signature = "_SUFFIX = \"<|im_end|>\\n<|im_start|>assistant\\n<think>\\n\\n</think>\\n\\n\""
+description = ""
+line = 193
+mtime = 1782930371000000000
+container = [
+  "QwenReranker",
+]
+calls = []
+called_by = []
+references = [
+  "scores [crib/retrieve.py]",
+]
+name_terms = [
+  "_SUFFIX",
+  "crib",
+  "crib.retrieve.QwenReranker._SUFFIX",
+  "qwen",
+  "reranker",
+  "retrieve",
+  "suffix",
+]

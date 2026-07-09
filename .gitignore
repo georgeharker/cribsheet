@@ -11,3 +11,9 @@ build/
 # crib runtime state, if a data dir ever lives in-tree
 .versions/
 /.DS_Store
+
+# Quarto docs site (generated)
+/_site/
+/.quarto/
+
+**/*.quarto_ipynb

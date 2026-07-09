@@ -1,0 +1,28 @@
+fqname = "crib.cli._read_content"
+name = "_read_content"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "3fbe176731ee32c5"
+file = "crib/cli.py"
+signature = "def _read_content(value: str) -> str:"
+description = ""
+line = 23
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = [
+  "(lambda) [crib/cli.py]",
+]
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_read_content",
+  "cli",
+  "content",
+  "crib",
+  "crib.cli._read_content",
+  "read",
+]

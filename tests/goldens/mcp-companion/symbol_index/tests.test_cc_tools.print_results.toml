@@ -1,0 +1,28 @@
+fqname = "tests.test_cc_tools.print_results"
+name = "print_results"
+kind = "function"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = ""
+content_hash = "ade2251a37cfd42a"
+file = "tests/test_cc_tools.lua"
+signature = "local function print_results()"
+description = ""
+line = 33
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_cc_tools.lua [tests/test_cc_tools.lua]",
+]
+references = []
+name_terms = [
+  "cc",
+  "print",
+  "print_results",
+  "results",
+  "test",
+  "tests",
+  "tests.test_cc_tools.print_results",
+  "tools",
+]

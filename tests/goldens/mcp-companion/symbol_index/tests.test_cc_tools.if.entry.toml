@@ -1,0 +1,27 @@
+fqname = "tests.test_cc_tools.if.entry"
+name = "entry"
+kind = "variable"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = "tests.test_cc_tools.if"
+content_hash = "275187f433c27595"
+file = "tests/test_cc_tools.lua"
+signature = "local entry = tools_tbl[test_key]"
+description = ""
+line = 400
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cc",
+  "entry",
+  "if",
+  "test",
+  "tests",
+  "tests.test_cc_tools.if.entry",
+  "tools",
+]

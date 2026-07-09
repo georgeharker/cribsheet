@@ -1,0 +1,26 @@
+fqname = "crib.memmirror.MemoryMirror.stop"
+name = "stop"
+kind = "method"
+lang = "python"
+module = "crib.memmirror"
+parent = "crib.memmirror.MemoryMirror"
+content_hash = "0fa17557b9f2d043"
+file = "crib/memmirror.py"
+signature = "def stop(self) -> None:"
+description = ""
+line = 109
+mtime = 1782755761000000000
+container = [
+  "MemoryMirror",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.memmirror.MemoryMirror.stop",
+  "memmirror",
+  "memory",
+  "mirror",
+  "stop",
+]

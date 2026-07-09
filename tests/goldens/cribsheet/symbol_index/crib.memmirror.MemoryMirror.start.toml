@@ -1,0 +1,33 @@
+fqname = "crib.memmirror.MemoryMirror.start"
+name = "start"
+kind = "method"
+lang = "python"
+module = "crib.memmirror"
+parent = "crib.memmirror.MemoryMirror"
+content_hash = "348012e7c05b96e8"
+file = "crib/memmirror.py"
+signature = "def start(self) -> None:"
+description = ""
+line = 46
+mtime = 1782755761000000000
+container = [
+  "MemoryMirror",
+]
+calls = [
+  "_Handler [crib/memmirror.py]",
+  "_resolve_dirs [crib/memmirror.py]",
+]
+called_by = [
+  "start_memory_mirror [crib/app.py]",
+]
+references = [
+  "start_memory_mirror [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.memmirror.MemoryMirror.start",
+  "memmirror",
+  "memory",
+  "mirror",
+  "start",
+]

@@ -1,0 +1,31 @@
+fqname = "tests.test_elaborate.test_summarize_writes_summary_index"
+name = "test_summarize_writes_summary_index"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "4a2e5db8e4122fce"
+file = "tests/test_elaborate.py"
+signature = "def test_summarize_writes_summary_index(crib, monkeypatch):"
+description = ""
+line = 189
+mtime = 1782958917000000000
+container = []
+calls = [
+  "SectionIndex [crib/section_index.py]",
+  "labels [crib/section_index.py]",
+  "run [tests/test_elaborate.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "elaborate",
+  "index",
+  "summarize",
+  "summary",
+  "test",
+  "test_summarize_writes_summary_index",
+  "tests",
+  "tests.test_elaborate.test_summarize_writes_summary_index",
+  "writes",
+]

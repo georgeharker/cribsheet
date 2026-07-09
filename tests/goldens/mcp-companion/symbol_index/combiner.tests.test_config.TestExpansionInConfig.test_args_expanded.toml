@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_config.TestExpansionInConfig.test_args_expanded"
+name = "test_args_expanded"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestExpansionInConfig"
+content_hash = "270f95e6ba610b7b"
+file = "combiner/tests/test_config.py"
+signature = "def test_args_expanded(self) -> None:"
+description = ""
+line = 342
+mtime = 1782852601000000000
+container = [
+  "TestExpansionInConfig",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "args",
+  "combiner",
+  "combiner.tests.test_config.TestExpansionInConfig.test_args_expanded",
+  "config",
+  "expanded",
+  "expansion",
+  "in",
+  "test",
+  "test_args_expanded",
+  "tests",
+]

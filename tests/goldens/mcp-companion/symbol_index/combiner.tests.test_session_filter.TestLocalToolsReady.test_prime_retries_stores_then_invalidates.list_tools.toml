@@ -1,0 +1,41 @@
+fqname = "combiner.tests.test_session_filter.TestLocalToolsReady.test_prime_retries_stores_then_invalidates.list_tools"
+name = "list_tools"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestLocalToolsReady.test_prime_retries_stores_then_invalidates"
+content_hash = "59f389d6c1c2ad8d"
+file = "combiner/tests/test_session_filter.py"
+signature = "async def list_tools():"
+description = ""
+line = 541
+mtime = 1783452495000000000
+container = [
+  "TestLocalToolsReady",
+  "test_prime_retries_stores_then_invalidates",
+]
+calls = [
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = [
+  "test_prime_retries_stores_then_invalidates [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestLocalToolsReady.test_prime_retries_stores_then_invalidates.list_tools",
+  "filter",
+  "invalidates",
+  "list",
+  "list_tools",
+  "local",
+  "prime",
+  "ready",
+  "retries",
+  "session",
+  "stores",
+  "test",
+  "tests",
+  "then",
+  "tools",
+]

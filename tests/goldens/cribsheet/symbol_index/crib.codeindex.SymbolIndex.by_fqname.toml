@@ -1,0 +1,50 @@
+fqname = "crib.codeindex.SymbolIndex.by_fqname"
+name = "by_fqname"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.SymbolIndex"
+content_hash = "393d4a73c065b62a"
+file = "crib/codeindex.py"
+signature = "def by_fqname(self, name: str) -> list[dict]:"
+description = ""
+line = 1335
+mtime = 1783544236000000000
+container = [
+  "SymbolIndex",
+]
+calls = [
+  "_parse [crib/codeindex.py]",
+]
+called_by = [
+  "resolve_symbol [crib/refs.py]",
+  "test_drop_file_bumps_epoch_and_invalidates [tests/test_code_cache.py]",
+  "test_drop_file_removes_symbols_and_edges [tests/test_code_learnings.py]",
+  "test_genuinely_empty_file_still_prunes [tests/test_grammar_enum.py]",
+  "test_keep_prior_on_empty_extraction [tests/test_grammar_enum.py]",
+  "test_partial_extract_reconfirms_before_trusting_shrink [tests/test_code_cache.py]",
+  "test_patch_called_by_keeps_cross_file_graph_consistent [tests/test_code_learnings.py]",
+  "test_revalidate_reindexes_merge_dirtied_file [tests/test_code_cache.py]",
+  "test_symbol_index_uses_legible_slug_filenames [tests/test_codeindex.py]",
+]
+references = [
+  "resolve_symbol [crib/refs.py]",
+  "test_drop_file_bumps_epoch_and_invalidates [tests/test_code_cache.py]",
+  "test_drop_file_removes_symbols_and_edges [tests/test_code_learnings.py]",
+  "test_genuinely_empty_file_still_prunes [tests/test_grammar_enum.py]",
+  "test_keep_prior_on_empty_extraction [tests/test_grammar_enum.py]",
+  "test_partial_extract_reconfirms_before_trusting_shrink [tests/test_code_cache.py]",
+  "test_patch_called_by_keeps_cross_file_graph_consistent [tests/test_code_learnings.py]",
+  "test_revalidate_reindexes_merge_dirtied_file [tests/test_code_cache.py]",
+  "test_symbol_index_uses_legible_slug_filenames [tests/test_codeindex.py]",
+]
+name_terms = [
+  "by",
+  "by_fqname",
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex.by_fqname",
+  "fqname",
+  "index",
+  "symbol",
+]

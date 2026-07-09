@@ -1,0 +1,38 @@
+fqname = "crib.app.Crib.append_note"
+name = "append_note"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "f6865bb20eb0d52e"
+file = "crib/app.py"
+signature = "async def append_note(self, relpath: str, content: str,"
+description = ""
+line = 360
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "Note [crib/notes.py]",
+  "_write_note [crib/app.py]",
+  "abspath [crib/app.py]",
+  "load [crib/notes.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "_scenario [tests/test_notestore_snapshot.py]",
+  "append [crib/server.py]",
+]
+references = [
+  "_scenario [tests/test_notestore_snapshot.py]",
+  "append [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "append",
+  "append_note",
+  "crib",
+  "crib.app.Crib.append_note",
+  "note",
+]

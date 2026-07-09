@@ -1,0 +1,29 @@
+fqname = "tests.test_elaborate.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "65387a609655e14a"
+file = "tests/test_elaborate.py"
+signature = "@pytest.fixture()"
+description = ""
+line = 23
+mtime = 1782958917000000000
+container = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "elaborate",
+  "test",
+  "tests",
+  "tests.test_elaborate.crib",
+]

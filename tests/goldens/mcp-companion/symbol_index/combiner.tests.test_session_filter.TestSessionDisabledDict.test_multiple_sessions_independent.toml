@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_session_filter.TestSessionDisabledDict.test_multiple_sessions_independent"
+name = "test_multiple_sessions_independent"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestSessionDisabledDict"
+content_hash = "1bf72c2f9610f8f9"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_multiple_sessions_independent(self):"
+description = ""
+line = 84
+mtime = 1783452495000000000
+container = [
+  "TestSessionDisabledDict",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestSessionDisabledDict.test_multiple_sessions_independent",
+  "dict",
+  "disabled",
+  "filter",
+  "independent",
+  "multiple",
+  "session",
+  "sessions",
+  "test",
+  "test_multiple_sessions_independent",
+  "tests",
+]

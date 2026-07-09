@@ -1,0 +1,40 @@
+fqname = "crib.app.Crib.projects"
+name = "projects"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "47b57d735951c208"
+file = "crib/app.py"
+signature = "def projects(self) -> list[str]:"
+description = ""
+line = 1473
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = []
+called_by = [
+  "_reindex_dirty_code [crib/app.py]",
+  "code_indexed_projects [crib/app.py]",
+  "current_project [crib/server.py]",
+  "projects [crib/server.py]",
+  "reconcile_all [crib/app.py]",
+  "start_watchers [crib/app.py]",
+  "status [crib/app.py]",
+]
+references = [
+  "_reindex_dirty_code [crib/app.py]",
+  "code_indexed_projects [crib/app.py]",
+  "current_project [crib/server.py]",
+  "projects [crib/server.py]",
+  "reconcile_all [crib/app.py]",
+  "start_watchers [crib/app.py]",
+  "status [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.projects",
+  "projects",
+]

@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.auth._ProbeOutcome.INVALID"
+name = "INVALID"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._ProbeOutcome"
+content_hash = "85b0629afdd2e4ae"
+file = "combiner/mcp_combiner/auth.py"
+signature = "INVALID = \"invalid\"  # Google rejects our token — real auth failure"
+description = ""
+line = 74
+mtime = 1782852601000000000
+container = [
+  "_ProbeOutcome",
+]
+calls = []
+called_by = []
+references = [
+  "_probe_token_at [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "INVALID",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._ProbeOutcome.INVALID",
+  "invalid",
+  "mcp",
+  "outcome",
+  "probe",
+]

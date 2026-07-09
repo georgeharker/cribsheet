@@ -1,0 +1,25 @@
+fqname = "crib.codeindex._ARRAYS"
+name = "_ARRAYS"
+kind = "constant"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "f1433bc040f3be17"
+file = "crib/codeindex.py"
+signature = "_ARRAYS = (\"container\", \"calls\", \"called_by\", \"references\", \"name_terms\")"
+description = ""
+line = 1265
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_render [crib/codeindex.py]",
+]
+name_terms = [
+  "_ARRAYS",
+  "arrays",
+  "codeindex",
+  "crib",
+  "crib.codeindex._ARRAYS",
+]

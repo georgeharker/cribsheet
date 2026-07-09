@@ -1,0 +1,33 @@
+fqname = "crib.embed.build_embedder"
+name = "build_embedder"
+kind = "function"
+lang = "python"
+module = "crib.embed"
+parent = ""
+content_hash = "706473e5833109db"
+file = "crib/embed.py"
+signature = "def build_embedder(cfg: EmbedConfig) -> Embedder:"
+description = ""
+line = 159
+mtime = 1782690118000000000
+container = []
+calls = [
+  "FastEmbedEmbedder [crib/embed.py]",
+  "HashEmbedder [crib/embed.py]",
+  "SentenceTransformerEmbedder [crib/embed.py]",
+  "_resolve_query_prefix [crib/embed.py]",
+]
+called_by = [
+  "__init__ [crib/app.py]",
+]
+references = [
+  "__init__ [crib/app.py]",
+]
+name_terms = [
+  "build",
+  "build_embedder",
+  "crib",
+  "crib.embed.build_embedder",
+  "embed",
+  "embedder",
+]

@@ -1,0 +1,27 @@
+fqname = "crib.client.DaemonClient"
+name = "DaemonClient"
+kind = "class"
+lang = "python"
+module = "crib.client"
+parent = ""
+content_hash = "6c3aff83d9aecb67"
+file = "crib/client.py"
+signature = "class DaemonClient:"
+description = ""
+line = 50
+mtime = 1782958917000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__enter__ [crib/client.py]",
+  "_reconcile [crib/cli.py]",
+  "_run_daemon [crib/cli.py]",
+]
+name_terms = [
+  "DaemonClient",
+  "client",
+  "crib",
+  "crib.client.DaemonClient",
+  "daemon",
+]

@@ -1,0 +1,28 @@
+fqname = "crib.store.InMemoryStore.delete"
+name = "delete"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.InMemoryStore"
+content_hash = "06846bceec1b46a6"
+file = "crib/store.py"
+signature = "def delete(self, ids: list[str]) -> None:"
+description = ""
+line = 77
+mtime = 1783446057000000000
+container = [
+  "InMemoryStore",
+]
+calls = []
+called_by = [
+  "delete [crib/store.py]",
+]
+references = []
+name_terms = [
+  "crib",
+  "crib.store.InMemoryStore.delete",
+  "delete",
+  "in",
+  "memory",
+  "store",
+]

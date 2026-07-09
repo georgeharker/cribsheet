@@ -1,0 +1,27 @@
+fqname = "tests.test_session._seed"
+name = "_seed"
+kind = "function"
+lang = "python"
+module = "tests.test_session"
+parent = ""
+content_hash = "5d1a7ff6fa46104f"
+file = "tests/test_session.py"
+signature = "def _seed(_cwd):"
+description = ""
+line = 6
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "test_explicit_arg_overrides_without_touching_session [tests/test_session.py]",
+  "test_seeds_lazily_and_sticks [tests/test_session.py]",
+]
+name_terms = [
+  "_seed",
+  "seed",
+  "session",
+  "test",
+  "tests",
+  "tests.test_session._seed",
+]

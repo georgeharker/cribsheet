@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_auth.TestBuildAuth.test_cache_tokens_true_creates_directory"
+name = "test_cache_tokens_true_creates_directory"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestBuildAuth"
+content_hash = "00d90e6aa6d2f35a"
+file = "combiner/tests/test_auth.py"
+signature = "def test_cache_tokens_true_creates_directory(self, tmp_path: Path) -> None:"
+description = ""
+line = 200
+mtime = 1782852601000000000
+container = [
+  "TestBuildAuth",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "build",
+  "cache",
+  "combiner",
+  "combiner.tests.test_auth.TestBuildAuth.test_cache_tokens_true_creates_directory",
+  "creates",
+  "directory",
+  "test",
+  "test_cache_tokens_true_creates_directory",
+  "tests",
+  "tokens",
+  "true",
+]

@@ -1,0 +1,27 @@
+fqname = "crib.indexer.IndexEngine"
+name = "IndexEngine"
+kind = "class"
+lang = "python"
+module = "crib.indexer"
+parent = ""
+content_hash = "59415bb1590e3b82"
+file = "crib/indexer.py"
+signature = "class IndexEngine:"
+description = ""
+line = 40
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/notestore.py]",
+]
+name_terms = [
+  "IndexEngine",
+  "crib",
+  "crib.indexer.IndexEngine",
+  "engine",
+  "index",
+  "indexer",
+]

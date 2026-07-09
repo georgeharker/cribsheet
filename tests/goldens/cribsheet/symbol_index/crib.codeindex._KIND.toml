@@ -1,0 +1,26 @@
+fqname = "crib.codeindex._KIND"
+name = "_KIND"
+kind = "constant"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "5c189d5da24b6923"
+file = "crib/codeindex.py"
+signature = "_KIND = {5: \"class\", 6: \"method\", 12: \"function\", 10: \"enum\", 11: \"interface\","
+description = ""
+line = 708
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_symbol_entry [crib/codeindex.py]",
+  "test_type_kinds_indexed_and_descended [tests/test_codeindex.py]",
+]
+name_terms = [
+  "_KIND",
+  "codeindex",
+  "crib",
+  "crib.codeindex._KIND",
+  "kind",
+]

@@ -1,0 +1,32 @@
+fqname = "crib.app.Crib._summary_terms"
+name = "_summary_terms"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "69dbd77b87a4c882"
+file = "crib/app.py"
+signature = "def _summary_terms(self, project: str, section_hash: str,"
+description = ""
+line = 283
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "SectionIndex [crib/section_index.py]",
+  "project_dir [crib/paths.py]",
+  "terms_for [crib/section_index.py]",
+]
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+]
+name_terms = [
+  "_summary_terms",
+  "app",
+  "crib",
+  "crib.app.Crib._summary_terms",
+  "summary",
+  "terms",
+]

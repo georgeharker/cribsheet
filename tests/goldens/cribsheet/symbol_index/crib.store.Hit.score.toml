@@ -1,0 +1,27 @@
+fqname = "crib.store.Hit.score"
+name = "score"
+kind = "field"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Hit"
+content_hash = "f753b0030cc1d08f"
+file = "crib/store.py"
+signature = "score: float  # cosine similarity, higher = closer"
+description = ""
+line = 30
+mtime = 1783446057000000000
+container = [
+  "Hit",
+]
+calls = []
+called_by = []
+references = [
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Hit.score",
+  "hit",
+  "score",
+  "store",
+]

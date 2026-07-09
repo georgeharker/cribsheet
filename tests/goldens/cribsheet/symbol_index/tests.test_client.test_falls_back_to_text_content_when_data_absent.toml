@@ -1,0 +1,34 @@
+fqname = "tests.test_client.test_falls_back_to_text_content_when_data_absent"
+name = "test_falls_back_to_text_content_when_data_absent"
+kind = "function"
+lang = "python"
+module = "tests.test_client"
+parent = ""
+content_hash = "fab8ee567ee78d70"
+file = "tests/test_client.py"
+signature = "def test_falls_back_to_text_content_when_data_absent():"
+description = ""
+line = 64
+mtime = 1782958917000000000
+container = []
+calls = [
+  "_data [crib/client.py]",
+  "_res [tests/test_client.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "absent",
+  "back",
+  "client",
+  "content",
+  "data",
+  "falls",
+  "test",
+  "test_falls_back_to_text_content_when_data_absent",
+  "tests",
+  "tests.test_client.test_falls_back_to_text_content_when_data_absent",
+  "text",
+  "to",
+  "when",
+]

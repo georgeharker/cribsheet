@@ -1,0 +1,35 @@
+fqname = "crib.app.Crib.start_memory_mirror"
+name = "start_memory_mirror"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "00c57330f0460dcc"
+file = "crib/app.py"
+signature = "async def start_memory_mirror(self, loop: asyncio.AbstractEventLoop) -> None:"
+description = ""
+line = 231
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "MemoryMirror [crib/memmirror.py]",
+  "catch_up [crib/memmirror.py]",
+  "start [crib/memmirror.py]",
+]
+called_by = [
+  "_serve_async [crib/server.py]",
+]
+references = [
+  "_serve_async [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.start_memory_mirror",
+  "memory",
+  "mirror",
+  "start",
+  "start_memory_mirror",
+]

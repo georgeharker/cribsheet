@@ -1,0 +1,29 @@
+fqname = "tests.test_cli_labels.test_labels_parse_and_trim"
+name = "test_labels_parse_and_trim"
+kind = "function"
+lang = "python"
+module = "tests.test_cli_labels"
+parent = ""
+content_hash = "06f6abfdf18e3d38"
+file = "tests/test_cli_labels.py"
+signature = "def test_labels_parse_and_trim():"
+description = ""
+line = 24
+mtime = 1782958917000000000
+container = []
+calls = [
+  "_split_labels [crib/cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "cli",
+  "labels",
+  "parse",
+  "test",
+  "test_labels_parse_and_trim",
+  "tests",
+  "tests.test_cli_labels.test_labels_parse_and_trim",
+  "trim",
+]

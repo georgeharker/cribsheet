@@ -1,0 +1,34 @@
+fqname = "crib.app.Crib._require_code_index"
+name = "_require_code_index"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "3b930d910f0032a9"
+file = "crib/app.py"
+signature = "def _require_code_index(self, proj: str) -> None:"
+description = ""
+line = 773
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "code_indexed_projects [crib/app.py]",
+  "is_populated [crib/codeindex.py]",
+  "project_dir [crib/paths.py]",
+]
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+]
+name_terms = [
+  "_require_code_index",
+  "app",
+  "code",
+  "crib",
+  "crib.app.Crib._require_code_index",
+  "index",
+  "require",
+]

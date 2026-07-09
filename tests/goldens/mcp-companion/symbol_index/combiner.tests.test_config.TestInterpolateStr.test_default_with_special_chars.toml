@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_config.TestInterpolateStr.test_default_with_special_chars"
+name = "test_default_with_special_chars"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestInterpolateStr"
+content_hash = "fe56f214da8fe662"
+file = "combiner/tests/test_config.py"
+signature = "def test_default_with_special_chars(self) -> None:"
+description = ""
+line = 287
+mtime = 1782852601000000000
+container = [
+  "TestInterpolateStr",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "chars",
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateStr.test_default_with_special_chars",
+  "config",
+  "default",
+  "interpolate",
+  "special",
+  "str",
+  "test",
+  "test_default_with_special_chars",
+  "tests",
+  "with",
+]

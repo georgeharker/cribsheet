@@ -1,0 +1,29 @@
+fqname = "crib.app.LookupHit.project"
+name = "project"
+kind = "field"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.LookupHit"
+content_hash = "72bf42a4f223d84d"
+file = "crib/app.py"
+signature = "project: str"
+description = ""
+line = 61
+mtime = 1783530649000000000
+container = [
+  "LookupHit",
+]
+calls = []
+called_by = []
+references = [
+  "_emit_human_one [crib/cli.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.LookupHit.project",
+  "hit",
+  "lookup",
+  "project",
+]

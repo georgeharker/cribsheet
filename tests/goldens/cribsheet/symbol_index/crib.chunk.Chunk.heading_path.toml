@@ -1,0 +1,31 @@
+fqname = "crib.chunk.Chunk.heading_path"
+name = "heading_path"
+kind = "field"
+lang = "python"
+module = "crib.chunk"
+parent = "crib.chunk.Chunk"
+content_hash = "f85787585f35cd8b"
+file = "crib/chunk.py"
+signature = "heading_path: list[str]"
+description = ""
+line = 29
+mtime = 1782930371000000000
+container = [
+  "Chunk",
+]
+calls = []
+called_by = []
+references = [
+  "chunk_id [crib/chunk.py]",
+  "index_text [crib/chunk.py]",
+  "metadata [crib/chunk.py]",
+  "section_hash [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.heading_path",
+  "heading",
+  "heading_path",
+  "path",
+]

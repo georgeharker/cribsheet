@@ -1,0 +1,41 @@
+fqname = "crib.chunk.section_line_map"
+name = "section_line_map"
+kind = "function"
+lang = "python"
+module = "crib.chunk"
+parent = ""
+content_hash = "66d3797c46adbe2b"
+file = "crib/chunk.py"
+signature = "def section_line_map(text: str) -> dict[str, tuple[int, int]]:"
+description = ""
+line = 160
+mtime = 1782930371000000000
+container = []
+calls = [
+  "close [crib/chunk.py]",
+]
+called_by = [
+  "_section_text [crib/app.py]",
+  "lookup [crib/app.py]",
+  "test_code_fence_comments_are_not_headings [tests/test_elaborate.py]",
+  "test_frontmatter_offset_and_nesting [tests/test_line_map.py]",
+  "test_missing_heading_is_absent [tests/test_line_map.py]",
+  "test_no_frontmatter_and_preheading_section [tests/test_line_map.py]",
+]
+references = [
+  "_section_text [crib/app.py]",
+  "lookup [crib/app.py]",
+  "test_code_fence_comments_are_not_headings [tests/test_elaborate.py]",
+  "test_frontmatter_offset_and_nesting [tests/test_line_map.py]",
+  "test_missing_heading_is_absent [tests/test_line_map.py]",
+  "test_no_frontmatter_and_preheading_section [tests/test_line_map.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.section_line_map",
+  "line",
+  "map",
+  "section",
+  "section_line_map",
+]

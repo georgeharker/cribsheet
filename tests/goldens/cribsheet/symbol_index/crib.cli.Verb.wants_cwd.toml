@@ -1,0 +1,31 @@
+fqname = "crib.cli.Verb.wants_cwd"
+name = "wants_cwd"
+kind = "field"
+lang = "python"
+module = "crib.cli"
+parent = "crib.cli.Verb"
+content_hash = "357e84ab50e3aafe"
+file = "crib/cli.py"
+signature = "wants_cwd: bool = True                       # append project_path / cwd"
+description = ""
+line = 685
+mtime = 1783476730000000000
+container = [
+  "Verb",
+]
+calls = []
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+  "_run_daemon [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+]
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli.Verb.wants_cwd",
+  "cwd",
+  "verb",
+  "wants",
+  "wants_cwd",
+]

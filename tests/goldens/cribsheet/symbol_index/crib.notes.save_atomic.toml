@@ -1,0 +1,38 @@
+fqname = "crib.notes.save_atomic"
+name = "save_atomic"
+kind = "function"
+lang = "python"
+module = "crib.notes"
+parent = ""
+content_hash = "026b5068254e740e"
+file = "crib/notes.py"
+signature = "def save_atomic(note: Note) -> None:"
+description = ""
+line = 142
+mtime = 1782755212000000000
+container = []
+calls = [
+  "serialize [crib/notes.py]",
+]
+called_by = [
+  "_index_locked [crib/indexer.py]",
+  "import_claude_memory [crib/app.py]",
+  "move [crib/notestore.py]",
+  "test_import_pins_first_import_date [tests/test_import.py]",
+  "write [crib/notestore.py]",
+]
+references = [
+  "_index_locked [crib/indexer.py]",
+  "import_claude_memory [crib/app.py]",
+  "move [crib/notestore.py]",
+  "test_import_pins_first_import_date [tests/test_import.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "atomic",
+  "crib",
+  "crib.notes.save_atomic",
+  "notes",
+  "save",
+  "save_atomic",
+]

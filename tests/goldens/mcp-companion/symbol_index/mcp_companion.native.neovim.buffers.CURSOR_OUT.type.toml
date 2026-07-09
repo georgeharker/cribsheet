@@ -1,0 +1,29 @@
+fqname = "mcp_companion.native.neovim.buffers.CURSOR_OUT.type"
+name = "type"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.native.neovim.buffers"
+parent = "mcp_companion.native.neovim.buffers.CURSOR_OUT"
+content_hash = "5da5787350814821"
+file = "lua/mcp_companion/native/neovim/buffers.lua"
+signature = "type = \"object\","
+description = ""
+line = 16
+mtime = 1783022818000000000
+container = [
+  "CURSOR_OUT",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "buffers",
+  "companion",
+  "cursor",
+  "mcp",
+  "mcp_companion.native.neovim.buffers.CURSOR_OUT.type",
+  "native",
+  "neovim",
+  "out",
+  "type",
+]

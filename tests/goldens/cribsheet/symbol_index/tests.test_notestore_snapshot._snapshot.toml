@@ -1,0 +1,30 @@
+fqname = "tests.test_notestore_snapshot._snapshot"
+name = "_snapshot"
+kind = "function"
+lang = "python"
+module = "tests.test_notestore_snapshot"
+parent = ""
+content_hash = "ee39d05b175ad641"
+file = "tests/test_notestore_snapshot.py"
+signature = "def _snapshot(crib: Crib, project: str) -> list[dict]:"
+description = ""
+line = 39
+mtime = 1783525700000000000
+container = []
+calls = [
+  "get_meta [crib/store.py]",
+]
+called_by = [
+  "test_notestore_scenario_snapshot [tests/test_notestore_snapshot.py]",
+]
+references = [
+  "test_notestore_scenario_snapshot [tests/test_notestore_snapshot.py]",
+]
+name_terms = [
+  "_snapshot",
+  "notestore",
+  "snapshot",
+  "test",
+  "tests",
+  "tests.test_notestore_snapshot._snapshot",
+]

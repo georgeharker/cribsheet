@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_connections.TestReconnectBackingRestart.test_no_restart_without_shared_server.failing_open"
+name = "failing_open"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestReconnectBackingRestart.test_no_restart_without_shared_server"
+content_hash = "88d079c42a0bc0f5"
+file = "combiner/tests/test_connections.py"
+signature = "async def failing_open(conn):"
+description = ""
+line = 234
+mtime = 1783473323000000000
+container = [
+  "TestReconnectBackingRestart",
+  "test_no_restart_without_shared_server",
+]
+calls = []
+called_by = []
+references = [
+  "test_no_restart_without_shared_server [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "backing",
+  "combiner",
+  "combiner.tests.test_connections.TestReconnectBackingRestart.test_no_restart_without_shared_server.failing_open",
+  "connections",
+  "failing",
+  "failing_open",
+  "no",
+  "open",
+  "reconnect",
+  "restart",
+  "server",
+  "shared",
+  "test",
+  "tests",
+  "without",
+]

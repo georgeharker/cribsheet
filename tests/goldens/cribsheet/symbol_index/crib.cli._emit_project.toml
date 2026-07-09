@@ -1,0 +1,28 @@
+fqname = "crib.cli._emit_project"
+name = "_emit_project"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "18a48a672a854cb7"
+file = "crib/cli.py"
+signature = "def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:"
+description = ""
+line = 226
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = [
+  "(lambda) [crib/cli.py]",
+]
+references = [
+  "_project_verb [crib/cli.py]",
+]
+name_terms = [
+  "_emit_project",
+  "cli",
+  "crib",
+  "crib.cli._emit_project",
+  "emit",
+  "project",
+]

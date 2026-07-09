@@ -1,0 +1,36 @@
+fqname = "combiner.tests.test_session_filter.TestOutputSchemaPlumbing.test_dispatch_text_only_has_no_structured"
+name = "test_dispatch_text_only_has_no_structured"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestOutputSchemaPlumbing"
+content_hash = "458c5889b593d8c2"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_dispatch_text_only_has_no_structured(self):"
+description = ""
+line = 875
+mtime = 1783452495000000000
+container = [
+  "TestOutputSchemaPlumbing",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestOutputSchemaPlumbing.test_dispatch_text_only_has_no_structured",
+  "dispatch",
+  "filter",
+  "has",
+  "no",
+  "only",
+  "output",
+  "plumbing",
+  "schema",
+  "session",
+  "structured",
+  "test",
+  "test_dispatch_text_only_has_no_structured",
+  "tests",
+  "text",
+]

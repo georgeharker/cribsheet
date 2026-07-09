@@ -1,0 +1,23 @@
+fqname = "combiner.mcp_combiner.__version__"
+name = "__version__"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner"
+parent = ""
+content_hash = "76a4a9ef935145a9"
+file = "combiner/mcp_combiner/__init__.py"
+signature = "__version__ = \"0.6.0\""
+description = ""
+line = 3
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "__version__",
+  "combiner",
+  "combiner.mcp_combiner.__version__",
+  "mcp",
+  "version",
+]

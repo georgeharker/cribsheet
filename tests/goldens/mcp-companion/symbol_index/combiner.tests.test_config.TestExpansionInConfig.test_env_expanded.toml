@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_config.TestExpansionInConfig.test_env_expanded"
+name = "test_env_expanded"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestExpansionInConfig"
+content_hash = "f9adfb8217710155"
+file = "combiner/tests/test_config.py"
+signature = "def test_env_expanded(self) -> None:"
+description = ""
+line = 350
+mtime = 1782852601000000000
+container = [
+  "TestExpansionInConfig",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.TestExpansionInConfig.test_env_expanded",
+  "config",
+  "env",
+  "expanded",
+  "expansion",
+  "in",
+  "test",
+  "test_env_expanded",
+  "tests",
+]

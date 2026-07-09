@@ -1,0 +1,33 @@
+fqname = "crib.client.DaemonClient.call"
+name = "call"
+kind = "method"
+lang = "python"
+module = "crib.client"
+parent = "crib.client.DaemonClient"
+content_hash = "e4555eb98104be32"
+file = "crib/client.py"
+signature = "def call(self, tool: str, arguments: dict[str, Any]) -> Any:"
+description = ""
+line = 77
+mtime = 1782958917000000000
+container = [
+  "DaemonClient",
+]
+calls = [
+  "_call [crib/client.py]",
+]
+called_by = [
+  "_reconcile [crib/cli.py]",
+  "_run_daemon [crib/cli.py]",
+]
+references = [
+  "_reconcile [crib/cli.py]",
+  "_run_daemon [crib/cli.py]",
+]
+name_terms = [
+  "call",
+  "client",
+  "crib",
+  "crib.client.DaemonClient.call",
+  "daemon",
+]

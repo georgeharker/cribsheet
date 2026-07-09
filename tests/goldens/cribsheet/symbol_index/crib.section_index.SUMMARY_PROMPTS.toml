@@ -1,0 +1,27 @@
+fqname = "crib.section_index.SUMMARY_PROMPTS"
+name = "SUMMARY_PROMPTS"
+kind = "constant"
+lang = "python"
+module = "crib.section_index"
+parent = ""
+content_hash = "1f950a0caa1232ea"
+file = "crib/section_index.py"
+signature = "SUMMARY_PROMPTS: dict[str, str] = {"
+description = ""
+line = 49
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "summarize [crib/app.py]",
+]
+name_terms = [
+  "SUMMARY_PROMPTS",
+  "crib",
+  "crib.section_index.SUMMARY_PROMPTS",
+  "index",
+  "prompts",
+  "section",
+  "summary",
+]

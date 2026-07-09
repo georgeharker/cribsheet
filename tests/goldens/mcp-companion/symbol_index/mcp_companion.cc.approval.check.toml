@@ -1,0 +1,33 @@
+fqname = "mcp_companion.cc.approval.check"
+name = "check"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.approval"
+parent = ""
+content_hash = "8e564de4803cdb91"
+file = "lua/mcp_companion/cc/approval.lua"
+signature = "function M.check(server_name, tool_name, tool_ctx, callback)"
+description = ""
+line = 100
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "_make_combiner_cmd [lua/mcp_companion/cc/tools.lua]",
+  "_make_native_cmd [lua/mcp_companion/cc/tools.lua]",
+  "approval.lua [lua/mcp_companion/cc/approval.lua]",
+]
+references = [
+  "M [lua/mcp_companion/cc/approval.lua]",
+  "_make_combiner_cmd [lua/mcp_companion/cc/tools.lua]",
+  "_make_native_cmd [lua/mcp_companion/cc/tools.lua]",
+  "server_name [lua/mcp_companion/cc/approval.lua]",
+]
+name_terms = [
+  "approval",
+  "cc",
+  "check",
+  "companion",
+  "mcp",
+  "mcp_companion.cc.approval.check",
+]

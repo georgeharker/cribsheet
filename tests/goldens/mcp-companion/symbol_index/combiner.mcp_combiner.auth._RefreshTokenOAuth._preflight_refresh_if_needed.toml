@@ -1,0 +1,38 @@
+fqname = "combiner.mcp_combiner.auth._RefreshTokenOAuth._preflight_refresh_if_needed"
+name = "_preflight_refresh_if_needed"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._RefreshTokenOAuth"
+content_hash = "a7c756f6e7c3b00a"
+file = "combiner/mcp_combiner/auth.py"
+signature = "async def _preflight_refresh_if_needed(self) -> None:"
+description = ""
+line = 703
+mtime = 1782852601000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+calls = [
+  "_apply_network_grace_window [combiner/mcp_combiner/auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+]
+called_by = [
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+references = [
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_preflight_refresh_if_needed",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth._preflight_refresh_if_needed",
+  "if",
+  "mcp",
+  "needed",
+  "o",
+  "preflight",
+  "refresh",
+  "token",
+]

@@ -1,0 +1,38 @@
+fqname = "crib.claudemem.harness_memory_dir"
+name = "harness_memory_dir"
+kind = "function"
+lang = "python"
+module = "crib.claudemem"
+parent = ""
+content_hash = "d4156f2064d7d880"
+file = "crib/claudemem.py"
+signature = "def harness_memory_dir(root: Path) -> Path:"
+description = ""
+line = 59
+mtime = 1782762348000000000
+container = []
+calls = [
+  "claude_config_dir [crib/claudemem.py]",
+  "munge [crib/claudemem.py]",
+]
+called_by = [
+  "_resolve_dirs [crib/memmirror.py]",
+  "env [tests/test_claude_memory.py]",
+  "find_harness_root [crib/claudemem.py]",
+  "import_claude_memory [crib/app.py]",
+]
+references = [
+  "_resolve_dirs [crib/memmirror.py]",
+  "env [tests/test_claude_memory.py]",
+  "find_harness_root [crib/claudemem.py]",
+  "import_claude_memory [crib/app.py]",
+]
+name_terms = [
+  "claudemem",
+  "crib",
+  "crib.claudemem.harness_memory_dir",
+  "dir",
+  "harness",
+  "harness_memory_dir",
+  "memory",
+]

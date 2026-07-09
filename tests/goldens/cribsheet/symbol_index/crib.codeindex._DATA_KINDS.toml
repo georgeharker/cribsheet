@@ -1,0 +1,27 @@
+fqname = "crib.codeindex._DATA_KINDS"
+name = "_DATA_KINDS"
+kind = "constant"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "3d0bad7fafc3ab7f"
+file = "crib/codeindex.py"
+signature = "_DATA_KINDS = {13, 14, 8, 7}   # Variable, Constant, Field, Property"
+description = ""
+line = 306
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_INDEX_KINDS [crib/codeindex.py]",
+  "_symbol_entry [crib/codeindex.py]",
+]
+name_terms = [
+  "_DATA_KINDS",
+  "codeindex",
+  "crib",
+  "crib.codeindex._DATA_KINDS",
+  "data",
+  "kinds",
+]

@@ -1,0 +1,26 @@
+fqname = "tests.test_cc_tools.sample_key"
+name = "sample_key"
+kind = "global"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = ""
+content_hash = "a46bc82948f2662a"
+file = "tests/test_cc_tools.lua"
+signature = "local sample_key = registered_names[1]"
+description = ""
+line = 328
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cc",
+  "key",
+  "sample",
+  "sample_key",
+  "test",
+  "tests",
+  "tests.test_cc_tools.sample_key",
+  "tools",
+]

@@ -1,0 +1,40 @@
+fqname = "crib.codeindex.learning_slug"
+name = "learning_slug"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "914f7338150a887e"
+file = "crib/codeindex.py"
+signature = "def learning_slug(fqn: str) -> str:"
+description = ""
+line = 1296
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = [
+  "_relname [crib/codeindex.py]",
+  "attach [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+  "test_learning_slug_clean_fqn_verbatim [tests/test_codeindex.py]",
+  "test_learning_slug_munges_unsafe_and_disambiguates [tests/test_codeindex.py]",
+]
+references = [
+  "_relname [crib/codeindex.py]",
+  "attach [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+  "test_learning_slug_clean_fqn_verbatim [tests/test_codeindex.py]",
+  "test_learning_slug_munges_unsafe_and_disambiguates [tests/test_codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.learning_slug",
+  "learning",
+  "learning_slug",
+  "slug",
+]

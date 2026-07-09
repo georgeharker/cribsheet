@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.config.ServerConfig.auth"
+name = "auth"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.ServerConfig"
+content_hash = "c48de086b3dae4c9"
+file = "combiner/mcp_combiner/config.py"
+signature = "auth: dict[str, Any] | str | None = None"
+description = ""
+line = 138
+mtime = 1782954213000000000
+container = [
+  "ServerConfig",
+]
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "get_server_status [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.auth",
+  "config",
+  "mcp",
+  "server",
+]

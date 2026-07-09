@@ -1,0 +1,37 @@
+fqname = "combiner.tests.test_session_filter.TestCoerceObjectSchemas.test_dispatch_fn_preserved_on_rebuild"
+name = "test_dispatch_fn_preserved_on_rebuild"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestCoerceObjectSchemas"
+content_hash = "ee378bd683b77833"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_dispatch_fn_preserved_on_rebuild(self):"
+description = ""
+line = 641
+mtime = 1783452495000000000
+container = [
+  "TestCoerceObjectSchemas",
+]
+calls = [
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "coerce",
+  "combiner",
+  "combiner.tests.test_session_filter.TestCoerceObjectSchemas.test_dispatch_fn_preserved_on_rebuild",
+  "dispatch",
+  "filter",
+  "fn",
+  "object",
+  "on",
+  "preserved",
+  "rebuild",
+  "schemas",
+  "session",
+  "test",
+  "test_dispatch_fn_preserved_on_rebuild",
+  "tests",
+]

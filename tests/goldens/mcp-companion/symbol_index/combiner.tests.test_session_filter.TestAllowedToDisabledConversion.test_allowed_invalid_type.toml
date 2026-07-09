@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_session_filter.TestAllowedToDisabledConversion.test_allowed_invalid_type"
+name = "test_allowed_invalid_type"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestAllowedToDisabledConversion"
+content_hash = "c6b641571f2c2250"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_allowed_invalid_type(self, client):"
+description = ""
+line = 1188
+mtime = 1783452495000000000
+container = [
+  "TestAllowedToDisabledConversion",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "allowed",
+  "combiner",
+  "combiner.tests.test_session_filter.TestAllowedToDisabledConversion.test_allowed_invalid_type",
+  "conversion",
+  "disabled",
+  "filter",
+  "invalid",
+  "session",
+  "test",
+  "test_allowed_invalid_type",
+  "tests",
+  "to",
+  "type",
+]

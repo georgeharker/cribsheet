@@ -1,0 +1,27 @@
+fqname = "crib.config.EmbedConfig.dim"
+name = "dim"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.EmbedConfig"
+content_hash = "aac5e89445911691"
+file = "crib/config.py"
+signature = "dim: int = 256  # only used by the hash embedder"
+description = ""
+line = 18
+mtime = 1783455339000000000
+container = [
+  "EmbedConfig",
+]
+calls = []
+called_by = []
+references = [
+  "build_embedder [crib/embed.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.EmbedConfig.dim",
+  "dim",
+  "embed",
+]

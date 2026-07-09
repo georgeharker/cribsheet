@@ -1,0 +1,29 @@
+fqname = "scripts.analyze_consult._in_window"
+name = "_in_window"
+kind = "function"
+lang = "python"
+module = "scripts.analyze_consult"
+parent = ""
+content_hash = "44770f780972be84"
+file = "scripts/analyze_consult.py"
+signature = "def _in_window(ts: str | None, since: str | None, until: str | None) -> bool:"
+description = ""
+line = 149
+mtime = 1783033314000000000
+container = []
+calls = []
+called_by = [
+  "main [scripts/analyze_consult.py]",
+]
+references = [
+  "main [scripts/analyze_consult.py]",
+]
+name_terms = [
+  "_in_window",
+  "analyze",
+  "consult",
+  "in",
+  "scripts",
+  "scripts.analyze_consult._in_window",
+  "window",
+]

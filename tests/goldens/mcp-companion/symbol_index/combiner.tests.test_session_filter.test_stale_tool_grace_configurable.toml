@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_session_filter.test_stale_tool_grace_configurable"
+name = "test_stale_tool_grace_configurable"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = ""
+content_hash = "7a9a8565b1027385"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_stale_tool_grace_configurable():"
+description = ""
+line = 587
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.test_stale_tool_grace_configurable",
+  "configurable",
+  "filter",
+  "grace",
+  "session",
+  "stale",
+  "test",
+  "test_stale_tool_grace_configurable",
+  "tests",
+  "tool",
+]

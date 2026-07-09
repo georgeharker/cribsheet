@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.config.HealthResponse.servers"
+name = "servers"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.HealthResponse"
+content_hash = "d826fd95e2266255"
+file = "combiner/mcp_combiner/config.py"
+signature = "servers: dict[str, ServerStatusInfo] = Field(default_factory=dict)"
+description = ""
+line = 282
+mtime = 1782954213000000000
+container = [
+  "HealthResponse",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.HealthResponse.servers",
+  "config",
+  "health",
+  "mcp",
+  "response",
+  "servers",
+]

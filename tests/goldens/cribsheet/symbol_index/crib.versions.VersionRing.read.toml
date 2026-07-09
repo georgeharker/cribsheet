@@ -1,0 +1,32 @@
+fqname = "crib.versions.VersionRing.read"
+name = "read"
+kind = "method"
+lang = "python"
+module = "crib.versions"
+parent = "crib.versions.VersionRing"
+content_hash = "f6cac19bb02887dd"
+file = "crib/versions.py"
+signature = "def read(self, note_id: str, name: str) -> str:"
+description = ""
+line = 55
+mtime = 1782609751000000000
+container = [
+  "VersionRing",
+]
+calls = [
+  "_note_dir [crib/versions.py]",
+]
+called_by = [
+  "version_content [crib/notestore.py]",
+]
+references = [
+  "version_content [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.versions.VersionRing.read",
+  "read",
+  "ring",
+  "version",
+  "versions",
+]

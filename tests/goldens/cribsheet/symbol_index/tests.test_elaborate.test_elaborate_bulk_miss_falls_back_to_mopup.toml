@@ -1,0 +1,31 @@
+fqname = "tests.test_elaborate.test_elaborate_bulk_miss_falls_back_to_mopup"
+name = "test_elaborate_bulk_miss_falls_back_to_mopup"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "5e3fcc5907ff3a49"
+file = "tests/test_elaborate.py"
+signature = "def test_elaborate_bulk_miss_falls_back_to_mopup(crib, monkeypatch):"
+description = ""
+line = 238
+mtime = 1782958917000000000
+container = []
+calls = [
+  "run [tests/test_elaborate.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "back",
+  "bulk",
+  "elaborate",
+  "falls",
+  "miss",
+  "mopup",
+  "test",
+  "test_elaborate_bulk_miss_falls_back_to_mopup",
+  "tests",
+  "tests.test_elaborate.test_elaborate_bulk_miss_falls_back_to_mopup",
+  "to",
+]

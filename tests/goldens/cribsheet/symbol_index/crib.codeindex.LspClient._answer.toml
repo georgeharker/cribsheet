@@ -1,0 +1,34 @@
+fqname = "crib.codeindex.LspClient._answer"
+name = "_answer"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.LspClient"
+content_hash = "39c572348a6c35ed"
+file = "crib/codeindex.py"
+signature = "def _answer(self, msg: dict) -> None:"
+description = ""
+line = 370
+mtime = 1783544236000000000
+container = [
+  "LspClient",
+]
+calls = [
+  "_section [crib/codeindex.py]",
+  "_send [crib/codeindex.py]",
+]
+called_by = [
+  "_reader [crib/codeindex.py]",
+]
+references = [
+  "_reader [crib/codeindex.py]",
+]
+name_terms = [
+  "_answer",
+  "answer",
+  "client",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspClient._answer",
+  "lsp",
+]

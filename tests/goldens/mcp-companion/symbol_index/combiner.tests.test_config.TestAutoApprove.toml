@@ -1,0 +1,26 @@
+fqname = "combiner.tests.test_config.TestAutoApprove"
+name = "TestAutoApprove"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = ""
+content_hash = "667df02f81ef96bb"
+file = "combiner/tests/test_config.py"
+signature = "class TestAutoApprove:"
+description = ""
+line = 188
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestAutoApprove",
+  "approve",
+  "auto",
+  "combiner",
+  "combiner.tests.test_config.TestAutoApprove",
+  "config",
+  "test",
+  "tests",
+]

@@ -1,0 +1,42 @@
+fqname = "combiner.mcp_combiner.sharedserver.SharedServerManager._start_one"
+name = "_start_one"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.sharedserver"
+parent = "combiner.mcp_combiner.sharedserver.SharedServerManager"
+content_hash = "a037a35349a34a64"
+file = "combiner/mcp_combiner/sharedserver.py"
+signature = "async def _start_one("
+description = ""
+line = 192
+mtime = 1782539642000000000
+container = [
+  "SharedServerManager",
+]
+calls = [
+  "_build_use_cmd [combiner/mcp_combiner/sharedserver.py]",
+  "_get_binary [combiner/mcp_combiner/sharedserver.py]",
+  "_poll_url [combiner/mcp_combiner/sharedserver.py]",
+]
+called_by = [
+  "ensure_started [combiner/mcp_combiner/sharedserver.py]",
+  "restart [combiner/mcp_combiner/sharedserver.py]",
+  "start_all [combiner/mcp_combiner/sharedserver.py]",
+]
+references = [
+  "ensure_started [combiner/mcp_combiner/sharedserver.py]",
+  "restart [combiner/mcp_combiner/sharedserver.py]",
+  "start_all [combiner/mcp_combiner/sharedserver.py]",
+]
+name_terms = [
+  "_start_one",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.SharedServerManager._start_one",
+  "manager",
+  "mcp",
+  "one",
+  "server",
+  "shared",
+  "sharedserver",
+  "start",
+]

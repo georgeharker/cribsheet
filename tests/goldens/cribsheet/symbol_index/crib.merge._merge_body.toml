@@ -1,0 +1,27 @@
+fqname = "crib.merge._merge_body"
+name = "_merge_body"
+kind = "function"
+lang = "python"
+module = "crib.merge"
+parent = ""
+content_hash = "c287939ae0c4e69f"
+file = "crib/merge.py"
+signature = "def _merge_body(base: str, ours: str, theirs: str) -> tuple[str, bool]:"
+description = ""
+line = 72
+mtime = 1783446057000000000
+container = []
+calls = []
+called_by = [
+  "merge_note_texts [crib/merge.py]",
+]
+references = [
+  "merge_note_texts [crib/merge.py]",
+]
+name_terms = [
+  "_merge_body",
+  "body",
+  "crib",
+  "crib.merge._merge_body",
+  "merge",
+]

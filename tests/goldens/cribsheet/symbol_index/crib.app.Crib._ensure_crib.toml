@@ -1,0 +1,34 @@
+fqname = "crib.app.Crib._ensure_crib"
+name = "_ensure_crib"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "aedcfeb5a43408bd"
+file = "crib/app.py"
+signature = "def _ensure_crib(self, cwd: Path | None, project: str | None,"
+description = ""
+line = 869
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "_detect_code_globs [crib/app.py]",
+  "find [crib/config.py]",
+]
+called_by = [
+  "project_index [crib/app.py]",
+  "project_setup [crib/app.py]",
+]
+references = [
+  "project_index [crib/app.py]",
+  "project_setup [crib/app.py]",
+]
+name_terms = [
+  "_ensure_crib",
+  "app",
+  "crib",
+  "crib.app.Crib._ensure_crib",
+  "ensure",
+]

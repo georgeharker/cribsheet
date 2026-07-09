@@ -1,0 +1,26 @@
+fqname = "tests.test_project.test"
+name = "test"
+kind = "function"
+lang = "lua"
+module = "tests.test_project"
+parent = ""
+content_hash = "125ad4dc73df2494"
+file = "tests/test_project.lua"
+signature = "local function test(name, fn)"
+description = ""
+line = 32
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_project.lua [tests/test_project.lua]",
+]
+references = [
+  "name [tests/test_project.lua]",
+]
+name_terms = [
+  "project",
+  "test",
+  "tests",
+  "tests.test_project.test",
+]

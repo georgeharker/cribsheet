@@ -1,0 +1,26 @@
+fqname = "crib.cli._CODE_SUBVERBS"
+name = "_CODE_SUBVERBS"
+kind = "constant"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "abc05c59033d57cb"
+file = "crib/cli.py"
+signature = "_CODE_SUBVERBS = {\"lookup\", \"dossier\", \"xref\", \"graph\", \"index\", \"append\", \"edit\","
+description = ""
+line = 950
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_normalize_argv [crib/cli.py]",
+]
+name_terms = [
+  "_CODE_SUBVERBS",
+  "cli",
+  "code",
+  "crib",
+  "crib.cli._CODE_SUBVERBS",
+  "subverbs",
+]

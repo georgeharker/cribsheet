@@ -1,0 +1,39 @@
+fqname = "combiner.mcp_combiner.auth._RefreshTokenOAuth._discover_oauth_metadata"
+name = "_discover_oauth_metadata"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._RefreshTokenOAuth"
+content_hash = "0a068d7aa5ab3429"
+file = "combiner/mcp_combiner/auth.py"
+signature = "async def _discover_oauth_metadata(self) -> None:"
+description = ""
+line = 971
+mtime = 1782852601000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+calls = [
+  "_is_network_error [combiner/mcp_combiner/auth.py]",
+]
+called_by = [
+  "_initialize [combiner/mcp_combiner/auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+]
+references = [
+  "_initialize [combiner/mcp_combiner/auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_discover_oauth_metadata",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth._discover_oauth_metadata",
+  "discover",
+  "mcp",
+  "metadata",
+  "o",
+  "oauth",
+  "refresh",
+  "token",
+]

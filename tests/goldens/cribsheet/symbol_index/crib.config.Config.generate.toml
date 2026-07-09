@@ -1,0 +1,32 @@
+fqname = "crib.config.Config.generate"
+name = "generate"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.Config"
+content_hash = "448b7b6b20c55985"
+file = "crib/config.py"
+signature = "generate: GenerateConfig = field(default_factory=GenerateConfig)"
+description = ""
+line = 193
+mtime = 1783455339000000000
+container = [
+  "Config",
+]
+calls = []
+called_by = []
+references = [
+  "_generate_index [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_index_project_code [crib/codeindexer.py]",
+  "_reindex_dirty_code [crib/app.py]",
+  "_resolve_embed_config [crib/app.py]",
+  "distill [crib/app.py]",
+  "load [crib/config.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.generate",
+  "generate",
+]

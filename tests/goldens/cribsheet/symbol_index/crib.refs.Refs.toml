@@ -1,0 +1,27 @@
+fqname = "crib.refs.Refs"
+name = "Refs"
+kind = "class"
+lang = "python"
+module = "crib.refs"
+parent = ""
+content_hash = "04b0ee023a7cc657"
+file = "crib/refs.py"
+signature = "class Refs:"
+description = ""
+line = 25
+mtime = 1783522850000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/codequery.py]",
+  "__init__ [crib/learnings.py]",
+  "__init__ [crib/project_services.py]",
+]
+name_terms = [
+  "Refs",
+  "crib",
+  "crib.refs.Refs",
+  "refs",
+]

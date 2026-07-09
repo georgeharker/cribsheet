@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.nvim_proxy.register_routes.manage_nvim_bind"
+name = "manage_nvim_bind"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_proxy"
+parent = "combiner.mcp_combiner.nvim_proxy.register_routes"
+content_hash = "6f1a29bc560cbf3d"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+signature = "@combiner.custom_route(\"/neovim/bind\", methods=[\"POST\", \"DELETE\"])"
+description = ""
+line = 360
+mtime = 1783022631000000000
+container = [
+  "register_routes",
+]
+calls = [
+  "get_nvim_channel [combiner/mcp_combiner/nvim_proxy.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "bind",
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy.register_routes.manage_nvim_bind",
+  "manage",
+  "manage_nvim_bind",
+  "mcp",
+  "nvim",
+  "proxy",
+  "register",
+  "routes",
+]

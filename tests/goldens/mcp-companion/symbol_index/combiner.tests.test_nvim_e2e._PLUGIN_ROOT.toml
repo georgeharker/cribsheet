@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_nvim_e2e._PLUGIN_ROOT"
+name = "_PLUGIN_ROOT"
+kind = "constant"
+lang = "python"
+module = "combiner.tests.test_nvim_e2e"
+parent = ""
+content_hash = "cc238246209c9b56"
+file = "combiner/tests/test_nvim_e2e.py"
+signature = "_PLUGIN_ROOT = _REPO_ROOT  # rtp root (contains lua/)"
+description = ""
+line = 32
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "combiner_and_nvim [combiner/tests/test_nvim_e2e.py]",
+  "test_tokenless_client_must_name_instance [combiner/tests/test_nvim_e2e.py]",
+]
+name_terms = [
+  "2",
+  "_PLUGIN_ROOT",
+  "combiner",
+  "combiner.tests.test_nvim_e2e._PLUGIN_ROOT",
+  "e",
+  "nvim",
+  "plugin",
+  "root",
+  "test",
+  "tests",
+]

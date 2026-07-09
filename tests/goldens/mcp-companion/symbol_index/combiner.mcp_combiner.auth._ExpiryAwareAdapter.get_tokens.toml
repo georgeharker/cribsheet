@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.auth._ExpiryAwareAdapter.get_tokens"
+name = "get_tokens"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._ExpiryAwareAdapter"
+content_hash = "b6ce2e34b0c13b87"
+file = "combiner/mcp_combiner/auth.py"
+signature = "async def get_tokens(self) -> OAuthToken | None:"
+description = ""
+line = 246
+mtime = 1782852601000000000
+container = [
+  "_ExpiryAwareAdapter",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "adapter",
+  "auth",
+  "aware",
+  "combiner",
+  "combiner.mcp_combiner.auth._ExpiryAwareAdapter.get_tokens",
+  "expiry",
+  "get",
+  "get_tokens",
+  "mcp",
+  "tokens",
+]

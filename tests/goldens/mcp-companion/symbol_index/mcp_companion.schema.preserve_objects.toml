@@ -1,0 +1,32 @@
+fqname = "mcp_companion.schema.preserve_objects"
+name = "preserve_objects"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.schema"
+parent = ""
+content_hash = "f942f453f8349d1b"
+file = "lua/mcp_companion/schema.lua"
+signature = "local function preserve_objects(value)"
+description = ""
+line = 34
+mtime = 1783013405000000000
+container = []
+calls = []
+called_by = [
+  "M.normalize [lua/mcp_companion/schema.lua]",
+  "schema.lua [lua/mcp_companion/schema.lua]",
+]
+references = [
+  "for in [lua/mcp_companion/schema.lua]",
+  "normalize [lua/mcp_companion/schema.lua]",
+  "value [lua/mcp_companion/schema.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.schema.preserve_objects",
+  "objects",
+  "preserve",
+  "preserve_objects",
+  "schema",
+]

@@ -1,0 +1,31 @@
+fqname = "tests.test_client.test_write_dict_passthrough_not_unwrapped"
+name = "test_write_dict_passthrough_not_unwrapped"
+kind = "function"
+lang = "python"
+module = "tests.test_client"
+parent = ""
+content_hash = "2b54f3c9189917bf"
+file = "tests/test_client.py"
+signature = "def test_write_dict_passthrough_not_unwrapped():"
+description = ""
+line = 51
+mtime = 1782958917000000000
+container = []
+calls = [
+  "_data [crib/client.py]",
+  "_res [tests/test_client.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "dict",
+  "not",
+  "passthrough",
+  "test",
+  "test_write_dict_passthrough_not_unwrapped",
+  "tests",
+  "tests.test_client.test_write_dict_passthrough_not_unwrapped",
+  "unwrapped",
+  "write",
+]

@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.config.SharedServerConfig"
+name = "SharedServerConfig"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = ""
+content_hash = "d35d069add3a49c9"
+file = "combiner/mcp_combiner/config.py"
+signature = "class SharedServerConfig(BaseModel):"
+description = ""
+line = 43
+mtime = 1782954213000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "load [combiner/mcp_combiner/config.py]",
+  "resolve_shared_server [combiner/mcp_combiner/config.py]",
+  "shared_servers [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "SharedServerConfig",
+  "combiner",
+  "combiner.mcp_combiner.config.SharedServerConfig",
+  "config",
+  "mcp",
+  "server",
+  "shared",
+]

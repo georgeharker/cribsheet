@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_auth.TestEncryptedStore.test_roundtrip"
+name = "test_roundtrip"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestEncryptedStore"
+content_hash = "59c447381a081660"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 37
+mtime = 1782852601000000000
+container = [
+  "TestEncryptedStore",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestEncryptedStore.test_roundtrip",
+  "encrypted",
+  "roundtrip",
+  "store",
+  "test",
+  "test_roundtrip",
+  "tests",
+]

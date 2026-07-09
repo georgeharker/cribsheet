@@ -1,0 +1,29 @@
+fqname = "tests.test_refs.test_project_refs_resolve_local_roots"
+name = "test_project_refs_resolve_local_roots"
+kind = "function"
+lang = "python"
+module = "tests.test_refs"
+parent = ""
+content_hash = "681a7f3ce61cfb87"
+file = "tests/test_refs.py"
+signature = "def test_project_refs_resolve_local_roots(crib, tmp_path):"
+description = ""
+line = 64
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_two_projects [tests/test_refs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "local",
+  "project",
+  "refs",
+  "resolve",
+  "roots",
+  "test",
+  "test_project_refs_resolve_local_roots",
+  "tests",
+  "tests.test_refs.test_project_refs_resolve_local_roots",
+]

@@ -1,0 +1,41 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression.test_invalid_probe_with_refresh_success_retry_still_401_propagates"
+name = "test_invalid_probe_with_refresh_success_retry_still_401_propagates"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression"
+content_hash = "28717f4cf23ef33e"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 793
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+]
+calls = [
+  "_drive_401 [combiner/tests/test_auth.py]",
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed_valid_tokens [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression.test_invalid_probe_with_refresh_success_retry_still_401_propagates",
+  "invalid",
+  "probe",
+  "propagates",
+  "refresh",
+  "retry",
+  "still",
+  "success",
+  "suppression",
+  "test",
+  "test_invalid_probe_with_refresh_success_retry_still_401_propagates",
+  "tests",
+  "upstream",
+  "with",
+]

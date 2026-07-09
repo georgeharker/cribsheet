@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.auth._NETWORK_ERROR_GRACE_SECONDS"
+name = "_NETWORK_ERROR_GRACE_SECONDS"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "1904d73a4a17b867"
+file = "combiner/mcp_combiner/auth.py"
+signature = "_NETWORK_ERROR_GRACE_SECONDS = 300.0  # 5 minutes"
+description = ""
+line = 106
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_apply_network_grace_window [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_NETWORK_ERROR_GRACE_SECONDS",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._NETWORK_ERROR_GRACE_SECONDS",
+  "error",
+  "grace",
+  "mcp",
+  "network",
+  "seconds",
+]

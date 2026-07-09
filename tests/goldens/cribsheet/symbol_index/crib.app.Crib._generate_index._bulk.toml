@@ -1,0 +1,36 @@
+fqname = "crib.app.Crib._generate_index._bulk"
+name = "_bulk"
+kind = "function"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib._generate_index"
+content_hash = "0a706b5c977f66de"
+file = "crib/app.py"
+signature = "async def _bulk(batch: list[tuple]) -> None:"
+description = ""
+line = 1234
+mtime = 1783530649000000000
+container = [
+  "Crib",
+  "_generate_index",
+]
+calls = [
+  "_match [crib/app.py]",
+  "_record [crib/app.py]",
+  "agenerate_structured [crib/generate.py]",
+]
+called_by = [
+  "_generate_index [crib/app.py]",
+]
+references = [
+  "_generate_index [crib/app.py]",
+]
+name_terms = [
+  "_bulk",
+  "app",
+  "bulk",
+  "crib",
+  "crib.app.Crib._generate_index._bulk",
+  "generate",
+  "index",
+]

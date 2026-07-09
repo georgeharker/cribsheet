@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_session_filter.TestCoerceObjectSchemas.test_missing_properties_filled"
+name = "test_missing_properties_filled"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestCoerceObjectSchemas"
+content_hash = "417acd309ab79d8c"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_missing_properties_filled(self):"
+description = ""
+line = 628
+mtime = 1783452495000000000
+container = [
+  "TestCoerceObjectSchemas",
+]
+calls = [
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "coerce",
+  "combiner",
+  "combiner.tests.test_session_filter.TestCoerceObjectSchemas.test_missing_properties_filled",
+  "filled",
+  "filter",
+  "missing",
+  "object",
+  "properties",
+  "schemas",
+  "session",
+  "test",
+  "test_missing_properties_filled",
+  "tests",
+]

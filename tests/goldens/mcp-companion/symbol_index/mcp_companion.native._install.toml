@@ -1,0 +1,29 @@
+fqname = "mcp_companion.native._install"
+name = "_install"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.native"
+parent = ""
+content_hash = "0a7aa6c4d396e189"
+file = "lua/mcp_companion/native/init.lua"
+signature = "local function _install(def)"
+description = ""
+line = 35
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/native/init.lua]",
+]
+references = [
+  "def [lua/mcp_companion/native/init.lua]",
+  "if [lua/mcp_companion/native/init.lua]",
+]
+name_terms = [
+  "_install",
+  "companion",
+  "install",
+  "mcp",
+  "mcp_companion.native._install",
+  "native",
+]

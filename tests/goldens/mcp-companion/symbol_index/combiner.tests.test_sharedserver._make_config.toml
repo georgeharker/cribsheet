@@ -1,0 +1,40 @@
+fqname = "combiner.tests.test_sharedserver._make_config"
+name = "_make_config"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_sharedserver"
+parent = ""
+content_hash = "78b9745da250b207"
+file = "combiner/tests/test_sharedserver.py"
+signature = "def _make_config(*, sharedserver_data: dict[str, Any] | None = None) -> CombinerConfig:"
+description = ""
+line = 117
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = [
+  "test_health_poll_timeout_warns_but_continues [combiner/tests/test_sharedserver.py]",
+  "test_start_all_calls_sharedserver_use [combiner/tests/test_sharedserver.py]",
+  "test_start_all_skips_on_nonzero_exit [combiner/tests/test_sharedserver.py]",
+  "test_start_all_skips_when_binary_missing [combiner/tests/test_sharedserver.py]",
+  "test_stop_all_calls_unuse [combiner/tests/test_sharedserver.py]",
+  "test_stop_all_noop_when_nothing_started [combiner/tests/test_sharedserver.py]",
+]
+references = [
+  "test_health_poll_timeout_warns_but_continues [combiner/tests/test_sharedserver.py]",
+  "test_start_all_calls_sharedserver_use [combiner/tests/test_sharedserver.py]",
+  "test_start_all_skips_on_nonzero_exit [combiner/tests/test_sharedserver.py]",
+  "test_start_all_skips_when_binary_missing [combiner/tests/test_sharedserver.py]",
+  "test_stop_all_calls_unuse [combiner/tests/test_sharedserver.py]",
+  "test_stop_all_noop_when_nothing_started [combiner/tests/test_sharedserver.py]",
+]
+name_terms = [
+  "_make_config",
+  "combiner",
+  "combiner.tests.test_sharedserver._make_config",
+  "config",
+  "make",
+  "sharedserver",
+  "test",
+  "tests",
+]

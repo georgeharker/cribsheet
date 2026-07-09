@@ -1,0 +1,26 @@
+fqname = "crib.config.Config.watch"
+name = "watch"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.Config"
+content_hash = "af376b333882dace"
+file = "crib/config.py"
+signature = "watch: bool = True"
+description = ""
+line = 201
+mtime = 1783455339000000000
+container = [
+  "Config",
+]
+calls = []
+called_by = []
+references = [
+  "_serve_async [crib/server.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.watch",
+  "watch",
+]

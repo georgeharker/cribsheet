@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_reload_config.test_restart_stdio_primes_before_broadcast"
+name = "test_restart_stdio_primes_before_broadcast"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "6c717b0ee190b88d"
+file = "combiner/tests/test_reload_config.py"
+signature = "async def test_restart_stdio_primes_before_broadcast("
+description = ""
+line = 315
+mtime = 1783452495000000000
+container = []
+calls = [
+  "_FakeCombiner [combiner/tests/test_reload_config.py]",
+  "_FakeConnManager [combiner/tests/test_reload_config.py]",
+  "_FakeSSManager [combiner/tests/test_reload_config.py]",
+  "_write [combiner/tests/test_reload_config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "before",
+  "broadcast",
+  "combiner",
+  "combiner.tests.test_reload_config.test_restart_stdio_primes_before_broadcast",
+  "config",
+  "primes",
+  "reload",
+  "restart",
+  "stdio",
+  "test",
+  "test_restart_stdio_primes_before_broadcast",
+  "tests",
+]

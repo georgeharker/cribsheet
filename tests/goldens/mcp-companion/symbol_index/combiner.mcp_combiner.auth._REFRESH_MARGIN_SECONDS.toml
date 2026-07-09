@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.auth._REFRESH_MARGIN_SECONDS"
+name = "_REFRESH_MARGIN_SECONDS"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "2b7589fa3ecbcc18"
+file = "combiner/mcp_combiner/auth.py"
+signature = "_REFRESH_MARGIN_SECONDS = 120.0"
+description = ""
+line = 114
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_REFRESH_MARGIN_SECONDS",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._REFRESH_MARGIN_SECONDS",
+  "margin",
+  "mcp",
+  "refresh",
+  "seconds",
+]

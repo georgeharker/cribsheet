@@ -1,0 +1,30 @@
+fqname = "tests.test_lexical_cache.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+module = "tests.test_lexical_cache"
+parent = ""
+content_hash = "843661f7d5a24b5e"
+file = "tests/test_lexical_cache.py"
+signature = "@pytest.fixture()"
+description = ""
+line = 15
+mtime = 1782697902000000000
+container = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "crib",
+  "lexical",
+  "test",
+  "tests",
+  "tests.test_lexical_cache.crib",
+]

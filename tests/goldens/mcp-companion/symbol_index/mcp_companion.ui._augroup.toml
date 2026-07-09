@@ -1,0 +1,24 @@
+fqname = "mcp_companion.ui._augroup"
+name = "_augroup"
+kind = "global"
+lang = "lua"
+module = "mcp_companion.ui"
+parent = ""
+content_hash = "3c6f341047aa25cf"
+file = "lua/mcp_companion/ui/init.lua"
+signature = "local _augroup = nil"
+description = ""
+line = 18
+mtime = 1783473333000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_augroup",
+  "augroup",
+  "companion",
+  "mcp",
+  "mcp_companion.ui._augroup",
+  "ui",
+]

@@ -1,0 +1,32 @@
+fqname = "mcp_companion.project.read_and_parse"
+name = "read_and_parse"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.project"
+parent = ""
+content_hash = "db7f79b5a7abd19e"
+file = "lua/mcp_companion/project.lua"
+signature = "local function read_and_parse(file_path)"
+description = ""
+line = 58
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.resolve [lua/mcp_companion/project.lua]",
+  "project.lua [lua/mcp_companion/project.lua]",
+]
+references = [
+  "file_path [lua/mcp_companion/project.lua]",
+  "raw [lua/mcp_companion/project.lua]",
+]
+name_terms = [
+  "and",
+  "companion",
+  "mcp",
+  "mcp_companion.project.read_and_parse",
+  "parse",
+  "project",
+  "read",
+  "read_and_parse",
+]

@@ -1,0 +1,34 @@
+fqname = "combiner.tests.test_config.FIXTURES"
+name = "FIXTURES"
+kind = "constant"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = ""
+content_hash = "5d2121d319c78fc2"
+file = "combiner/tests/test_config.py"
+signature = "FIXTURES = Path(__file__).parent / \"fixtures\""
+description = ""
+line = 21
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "test_combiner_config_oauth_defaults [combiner/tests/test_config.py]",
+  "test_enabled_servers [combiner/tests/test_config.py]",
+  "test_load_config [combiner/tests/test_config.py]",
+  "test_load_config_sharedserver_parsed [combiner/tests/test_config.py]",
+  "test_server_status_no_sharedserver [combiner/tests/test_config.py]",
+  "test_server_status_sharedserver_name [combiner/tests/test_config.py]",
+  "test_to_fastmcp_config_http [combiner/tests/test_config.py]",
+  "test_to_fastmcp_config_stdio [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "FIXTURES",
+  "combiner",
+  "combiner.tests.test_config.FIXTURES",
+  "config",
+  "fixtures",
+  "test",
+  "tests",
+]

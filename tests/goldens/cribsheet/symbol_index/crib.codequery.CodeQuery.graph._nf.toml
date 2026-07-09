@@ -1,0 +1,35 @@
+fqname = "crib.codequery.CodeQuery.graph._nf"
+name = "_nf"
+kind = "function"
+lang = "python"
+module = "crib.codequery"
+parent = "crib.codequery.CodeQuery.graph"
+content_hash = "896a1c0d6eb0ffb2"
+file = "crib/codequery.py"
+signature = "def _nf(p: str) -> dict[tuple[str, str], dict]:"
+description = ""
+line = 197
+mtime = 1783529969000000000
+container = [
+  "CodeQuery",
+  "graph",
+]
+calls = []
+called_by = [
+  "build [crib/codequery.py]",
+  "graph [crib/codequery.py]",
+]
+references = [
+  "build [crib/codequery.py]",
+  "graph [crib/codequery.py]",
+]
+name_terms = [
+  "_nf",
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery.graph._nf",
+  "graph",
+  "nf",
+  "query",
+]

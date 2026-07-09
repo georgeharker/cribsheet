@@ -1,0 +1,31 @@
+fqname = "crib.section_index.resolve_prompt"
+name = "resolve_prompt"
+kind = "function"
+lang = "python"
+module = "crib.section_index"
+parent = ""
+content_hash = "7437b760e5e7de30"
+file = "crib/section_index.py"
+signature = "def resolve_prompt(label: str, config_table: dict, builtins: dict[str, str]"
+description = ""
+line = 81
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = [
+  "elaborate [crib/app.py]",
+  "summarize [crib/app.py]",
+]
+references = [
+  "elaborate [crib/app.py]",
+  "summarize [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.section_index.resolve_prompt",
+  "index",
+  "prompt",
+  "resolve",
+  "resolve_prompt",
+  "section",
+]

@@ -1,0 +1,28 @@
+fqname = "crib.cli._E_apropos"
+name = "_E_apropos"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "bf7175fcf38aa4c1"
+file = "crib/cli.py"
+signature = "def _E_apropos(d, a): _emit_apropos(d, a.json)"
+description = ""
+line = 695
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_emit_apropos [crib/cli.py]",
+]
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_E_apropos",
+  "apropos",
+  "cli",
+  "crib",
+  "crib.cli._E_apropos",
+  "e",
+]

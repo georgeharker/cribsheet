@@ -1,0 +1,32 @@
+fqname = "tests.test_elaborate.test_resolve_provider_by_profile_and_purpose"
+name = "test_resolve_provider_by_profile_and_purpose"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "c188d23a164c7b91"
+file = "tests/test_elaborate.py"
+signature = "def test_resolve_provider_by_profile_and_purpose(tmp_path):"
+description = ""
+line = 298
+mtime = 1782958917000000000
+container = []
+calls = [
+  "GenerateConfig [crib/config.py]",
+  "resolve_provider [crib/generate.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "by",
+  "elaborate",
+  "profile",
+  "provider",
+  "purpose",
+  "resolve",
+  "test",
+  "test_resolve_provider_by_profile_and_purpose",
+  "tests",
+  "tests.test_elaborate.test_resolve_provider_by_profile_and_purpose",
+]

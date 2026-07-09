@@ -1,0 +1,24 @@
+fqname = "mcp_companion.ui._buf"
+name = "_buf"
+kind = "global"
+lang = "lua"
+module = "mcp_companion.ui"
+parent = ""
+content_hash = "acf38bc56378ca4f"
+file = "lua/mcp_companion/ui/init.lua"
+signature = "local _buf = nil"
+description = ""
+line = 8
+mtime = 1783473333000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_buf",
+  "buf",
+  "companion",
+  "mcp",
+  "mcp_companion.ui._buf",
+  "ui",
+]

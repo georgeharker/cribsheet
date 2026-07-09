@@ -1,0 +1,30 @@
+fqname = "tests.test_refs.test_graph_hops_across_qualified_edges"
+name = "test_graph_hops_across_qualified_edges"
+kind = "function"
+lang = "python"
+module = "tests.test_refs"
+parent = ""
+content_hash = "f7c728d7fe73d002"
+file = "tests/test_refs.py"
+signature = "def test_graph_hops_across_qualified_edges(crib, tmp_path):"
+description = ""
+line = 99
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_two_projects [tests/test_refs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "across",
+  "edges",
+  "graph",
+  "hops",
+  "qualified",
+  "refs",
+  "test",
+  "test_graph_hops_across_qualified_edges",
+  "tests",
+  "tests.test_refs.test_graph_hops_across_qualified_edges",
+]

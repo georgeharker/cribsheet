@@ -1,0 +1,29 @@
+fqname = "crib.server.build_server.store"
+name = "store"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "99faa156688077c0"
+file = "crib/server.py"
+signature = "@write_tool"
+description = ""
+line = 252
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_write_project_elicit [crib/server.py]",
+  "store_note [crib/app.py]",
+  "write_tool [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.store",
+  "server",
+  "store",
+]

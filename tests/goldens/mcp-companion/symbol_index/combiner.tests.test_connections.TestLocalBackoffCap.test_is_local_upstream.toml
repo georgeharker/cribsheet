@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_connections.TestLocalBackoffCap.test_is_local_upstream"
+name = "test_is_local_upstream"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestLocalBackoffCap"
+content_hash = "4ac1802377828465"
+file = "combiner/tests/test_connections.py"
+signature = "def test_is_local_upstream(self):"
+description = ""
+line = 275
+mtime = 1783473323000000000
+container = [
+  "TestLocalBackoffCap",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "backoff",
+  "cap",
+  "combiner",
+  "combiner.tests.test_connections.TestLocalBackoffCap.test_is_local_upstream",
+  "connections",
+  "is",
+  "local",
+  "test",
+  "test_is_local_upstream",
+  "tests",
+  "upstream",
+]

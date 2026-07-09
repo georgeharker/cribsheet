@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_schema_fixes.test_empty_object_fills_missing_type_and_properties"
+name = "test_empty_object_fills_missing_type_and_properties"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_schema_fixes"
+parent = ""
+content_hash = "cc2dd8a8b262957b"
+file = "combiner/tests/test_schema_fixes.py"
+signature = "def test_empty_object_fills_missing_type_and_properties():"
+description = ""
+line = 18
+mtime = 1782861732000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "combiner",
+  "combiner.tests.test_schema_fixes.test_empty_object_fills_missing_type_and_properties",
+  "empty",
+  "fills",
+  "fixes",
+  "missing",
+  "object",
+  "properties",
+  "schema",
+  "test",
+  "test_empty_object_fills_missing_type_and_properties",
+  "tests",
+  "type",
+]

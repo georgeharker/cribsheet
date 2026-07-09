@@ -1,0 +1,25 @@
+fqname = "crib.session._SESSIONS"
+name = "_SESSIONS"
+kind = "constant"
+lang = "python"
+module = "crib.session"
+parent = ""
+content_hash = "98d913cbd62207db"
+file = "crib/session.py"
+signature = "_SESSIONS: \"WeakKeyDictionary[Any, SessionState]\" = WeakKeyDictionary()"
+description = ""
+line = 52
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "session_state [crib/session.py]",
+]
+name_terms = [
+  "_SESSIONS",
+  "crib",
+  "crib.session._SESSIONS",
+  "session",
+  "sessions",
+]

@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_config.TestInterpolateStr.test_multiple_vars"
+name = "test_multiple_vars"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestInterpolateStr"
+content_hash = "0c323a5cb2112c90"
+file = "combiner/tests/test_config.py"
+signature = "def test_multiple_vars(self) -> None:"
+description = ""
+line = 277
+mtime = 1782852601000000000
+container = [
+  "TestInterpolateStr",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateStr.test_multiple_vars",
+  "config",
+  "interpolate",
+  "multiple",
+  "str",
+  "test",
+  "test_multiple_vars",
+  "tests",
+  "vars",
+]

@@ -1,0 +1,32 @@
+fqname = "crib.app.Crib._indexed_projects"
+name = "_indexed_projects"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "6c4ebadac7ade041"
+file = "crib/app.py"
+signature = "def _indexed_projects(self) -> set[str]:"
+description = ""
+line = 467
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "get_meta [crib/store.py]",
+]
+called_by = [
+  "reconcile_all [crib/app.py]",
+]
+references = [
+  "reconcile_all [crib/app.py]",
+]
+name_terms = [
+  "_indexed_projects",
+  "app",
+  "crib",
+  "crib.app.Crib._indexed_projects",
+  "indexed",
+  "projects",
+]

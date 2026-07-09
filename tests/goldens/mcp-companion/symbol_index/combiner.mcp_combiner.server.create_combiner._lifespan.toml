@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.server.create_combiner._lifespan"
+name = "_lifespan"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server.create_combiner"
+content_hash = "9f3a6d92f605928b"
+file = "combiner/mcp_combiner/server.py"
+signature = "@asynccontextmanager"
+description = ""
+line = 1489
+mtime = 1783473323000000000
+container = [
+  "create_combiner",
+]
+calls = [
+  "_create_server_proxy [combiner/mcp_combiner/server.py]",
+  "spawn_prime [combiner/mcp_combiner/server.py]",
+]
+called_by = []
+references = [
+  "create_combiner [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_lifespan",
+  "combiner",
+  "combiner.mcp_combiner.server.create_combiner._lifespan",
+  "create",
+  "lifespan",
+  "mcp",
+  "server",
+]

@@ -1,0 +1,30 @@
+fqname = "crib.embed.SentenceTransformerEmbedder.embed"
+name = "embed"
+kind = "method"
+lang = "python"
+module = "crib.embed"
+parent = "crib.embed.SentenceTransformerEmbedder"
+content_hash = "6359f147c5ebe0f1"
+file = "crib/embed.py"
+signature = "def embed(self, texts: list[str]) -> list[list[float]]:"
+description = ""
+line = 128
+mtime = 1782690118000000000
+container = [
+  "SentenceTransformerEmbedder",
+]
+calls = []
+called_by = [
+  "embed_query [crib/embed.py]",
+]
+references = [
+  "embed_query [crib/embed.py]",
+]
+name_terms = [
+  "crib",
+  "crib.embed.SentenceTransformerEmbedder.embed",
+  "embed",
+  "embedder",
+  "sentence",
+  "transformer",
+]

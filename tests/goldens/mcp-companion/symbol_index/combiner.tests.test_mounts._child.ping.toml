@@ -1,0 +1,27 @@
+fqname = "combiner.tests.test_mounts._child.ping"
+name = "ping"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_mounts"
+parent = "combiner.tests.test_mounts._child"
+content_hash = "97d77710b844c4c7"
+file = "combiner/tests/test_mounts.py"
+signature = "@srv.tool()"
+description = ""
+line = 30
+mtime = 1783452495000000000
+container = [
+  "_child",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "child",
+  "combiner",
+  "combiner.tests.test_mounts._child.ping",
+  "mounts",
+  "ping",
+  "test",
+  "tests",
+]
