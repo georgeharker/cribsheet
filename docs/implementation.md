@@ -295,7 +295,7 @@ Found while writing this map; none are bugs, all are friction.
    = must-name). This also fixed the real bug behind it — the combiner-global sticky
    leak (config `isolate: true`, matching svg-mcp) — with the read code tools now
    *echoing* an implicit resolution so a wrong one is visible. See
-   [todos.md](../todos.md) "Resolved → Sticky session project".
+   [todos.md](https://github.com/georgeharker/cribsheet/blob/main/todos.md) "Resolved → Sticky session project".
 8. **~~`_RAW_PRINT` + per-verb emitter if-chain in `cli.py`.~~ ✓ Resolved
    (2026-07-07).** Folded into #2: each `Verb` carries its own `emit` callback,
    so the emitter switch and the `_RAW_PRINT` set are gone (raw-print verbs just
