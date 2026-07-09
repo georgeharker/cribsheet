@@ -304,11 +304,11 @@ Found while writing this map; none are bugs, all are friction.
    code-index pair renamed to `_index_code_file_tracked` (the tracked wrapper)
    and `_index_code_file` (the work), so neither collides with the notes
    pipeline's `IndexEngine.index_file`.
-10. **Git sync/sharing has no home collaborator.** `setup`/`sync`/`push`/`pull`/
-    `snapshot` are app-level plumbing over `GitBacking` (`crib/gitbacking.py`),
-    not a first-class subsystem — the one area the noun-verb interface cleanup
-    (2026-07-08) could *not* map cleanly to a collaborator (it folded them under
-    the `note` noun as `crib note sync`/`push`/`pull`/… since they operate on the
-    note repo). Candidate seam: a `NoteRepo`/`Sync` collaborator owning the git
-    lifecycle, so the interface and the factoring line up. Low priority — the
-    surface reads fine as-is.
+10. **The git lifecycle has no home collaborator.** `setup`/`sync`/`push`/`pull`/
+    `snapshot`/`history` are app-level plumbing over `GitBacking`
+    (`crib/gitbacking.py`) that act on the *whole* data tree — every project's
+    notes + learnings — not a note or a project. The interface now names them
+    honestly under their own top-level noun (`crib memory <verb>` / MCP
+    `memory_*`), but the code has no matching subsystem. Candidate seam: a
+    `MemoryRepo`/`Sync` collaborator owning the git lifecycle, so the `memory`
+    noun and the factoring line up. Low priority — the surface reads fine as-is.

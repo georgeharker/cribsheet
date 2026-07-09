@@ -130,12 +130,12 @@ Notes live in a git repo, so they sync with plain git plus a merge driver that k
 provenance from ever conflicting:
 
 ```bash
-crib note sync --remote git@host:notes.git   # first machine: create + push
-crib note setup --remote git@host:notes.git  # every other machine: init + pull
-crib note sync                               # thereafter: commit + pull + push
+crib memory sync --remote git@host:notes.git   # first machine: create + push
+crib memory setup --remote git@host:notes.git  # every other machine: init + pull
+crib memory sync                               # thereafter: commit + pull + push
 ```
 
-`crib note push` and `crib note pull` are the halves of `sync` (pull reindexes after).
+`crib memory push` and `crib memory pull` are the halves of `sync` (pull reindexes after).
 The code index and other derived data are regenerable, so they aren't synced — you
 rebuild them locally with `crib project reconcile` (sweeps every project for changes).
 A full new-machine runbook is in

@@ -122,7 +122,7 @@ Every capability, its CLI form, its MCP tool, and a one-liner lives in
 | **find** | `note lookup` / `note apropos` (full sections) | `code lookup` (concept ⊕ name), `code dossier`, `code graph`/`xref` |
 | **write** | `note store`, `note append`, `note edit`, `note forget`, `note move` | `learning add`/`edit`/`forget` |
 | **onboard** | `note import` (files → memory), `note import-memory` | `project setup` / `index` / `status` |
-| **housekeeping** | `note reindex`, `project reconcile`, `note versions`, `note restore`, `note history` | `learning report`, `learning rehome` |
+| **housekeeping** | `note reindex`, `project reconcile`, `note versions`, `note restore`, `memory history` | `learning report`, `learning rehome` |
 
 Notes and code share one store, so `lookup` surfaces a repo's docs alongside your
 stored knowledge. A repo's `.crib` file ties it to a project and declares which
@@ -143,9 +143,9 @@ runs), so it's fast; `--no-daemon` runs in-process, `--json` gives machine outpu
 - **Share across machines** — the data dir is a git repo; notes sync via plain git
   with a frontmatter-aware merge driver so provenance never conflicts:
   ```bash
-  crib note sync --remote git@host:notes.git   # first machine: create + push
-  crib note setup --remote git@host:notes.git  # every other: init + merge driver + pull
-  crib note sync                               # thereafter: commit + pull + push
+  crib memory sync --remote git@host:notes.git   # first machine: create + push
+  crib memory setup --remote git@host:notes.git  # every other: init + merge driver + pull
+  crib memory sync                               # thereafter: commit + pull + push
   ```
   Full walkthrough: [docs/resume-on-new-machine.md](docs/resume-on-new-machine.md).
 - **Mirror Claude's own memory** — `crib note import-memory` (MCP: `note_import_memory`,

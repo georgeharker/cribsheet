@@ -533,13 +533,13 @@ def build_server(crib: Crib | None = None):
         return await crib.code_rehome(old_fqn, new_fqn, _project(crib, project, project_path))
 
     @mcp.tool()
-    def note_snapshot(message: str | None = None) -> str:
-        """Create a git checkpoint of the data tree (if git is set up)."""
+    def memory_snapshot(message: str | None = None) -> str:
+        """Create a git checkpoint of the whole memory store's data tree (if git is set up)."""
         return crib.snapshot(message)
 
     @mcp.tool()
-    def note_history(relpath: str | None = None) -> list[str]:
-        """Show git commit history for a note or the whole tree."""
+    def memory_history(relpath: str | None = None) -> list[str]:
+        """Show git commit history for the whole tree (or a single note)."""
         return crib.history(relpath)
 
     @mcp.tool(name="note_import")
