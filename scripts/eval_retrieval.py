@@ -42,7 +42,7 @@ def run_lookup(query: str, project: str, k: int, crib: str,
     ``keywords``/``keyword_weight`` drive BM25 keyword_index; ``summaries``/
     ``summary_weight`` the dense summary_index aliases — the lift knobs (§3)."""
     cmd = [crib, *(["--no-daemon"] if no_daemon else []),
-           "--json", "lookup", query, "-p", project, "-k", str(k)]
+           "--json", "note", "lookup", query, "-p", project, "-k", str(k)]
     if keywords is not None:
         cmd += ["--keywords", keywords]
     if keyword_weight is not None:

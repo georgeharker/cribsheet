@@ -51,9 +51,9 @@ def test_write_tools_carry_project_or_path_anyof(crib):
         return (await mcp.get_tool(name)).to_mcp_tool().inputSchema
 
     want = [{"required": ["project"]}, {"required": ["project_path"]}]
-    for w in ("store", "append", "edit", "forget", "move"):
+    for w in ("note_store", "note_append", "note_edit", "note_forget", "note_move"):
         assert asyncio.run(schema(w)).get("anyOf") == want, w
-    for r in ("lookup", "read", "code_lookup"):        # reads are unconstrained
+    for r in ("note_lookup", "note_read", "code_lookup"):   # reads are unconstrained
         assert asyncio.run(schema(r)).get("anyOf") is None, r
 
 
