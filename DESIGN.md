@@ -416,6 +416,10 @@ submodule) when stdout is a tty, and falls back to raw bytes when piped.
 
 ### 10.3 Retrieval — hybrid dense ⊕ BM25, fused by RRF
 
+![Note & doc retrieval — three recall signals fused by RRF, optional rerank](docs/images/note-retrieval-pipeline.png)
+
+<sub>Source: [`note-retrieval-pipeline.svg`](docs/images/note-retrieval-pipeline.svg).</sub>
+
 Dense (vector) retrieval nails paraphrase but underweights *exact terms*, so a
 terse keyword query ("restart server") can rank vaguely-on-topic prose above the
 section that literally documents the command. Measured on real imported docs:
