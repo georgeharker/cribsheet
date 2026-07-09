@@ -2,134 +2,121 @@
 
 The complete surface: every capability, its CLI form, its MCP tool, and a one-line
 description, grouped by facet. (For an intro and quickstart, start at the
-[README](../README.md).)
+[README](../README.md); for a walkthrough, see the [guide](guide.md).)
 
-Noun-verb is canonical on the CLI (`crib code lookup`); the hyphenated form
-(`crib code-lookup`) still parses. `-p/--project` (by name) or `-P/--project-path`
-(by a path in the repo) on the CLI, and `project`/`project_path` on MCP, select the
-project — code tools act on ONE *current* project (set via `use_project` or inferred
-from `project_path` on first use); name a different one with
-`project=`/`project_path=`. **Writes** (`store`/`append`/`edit`/`forget`/`move`)
-require an explicit `project=`/`project_path=` — they never inherit the current one,
-so a fact can't land in the wrong project. Global flags go before the verb:
-`--json` for machine output, `--no-daemon` to run in-process (see
-[Server & daemon](#server--daemon--one-warm-process-behind-cli-and-mcp)).
-Content-taking verbs (`store`/`append`/`edit`/`code append`/`code edit`) accept
-`-` to read stdin.
+The CLI is **noun-verb**: `crib <noun> <verb>` — `crib note lookup`, `crib code xref`,
+`crib learning add`, `crib project setup`. That is the only form; there is no
+hyphenated fallback (`crib code-lookup` is rejected). The nouns are `note`, `code`,
+`learning`, and `project`, plus a few top-level system verbs.
+
+**Selecting a project.** `-p/--project` (by name) or `-P/--project-path` (by a path
+inside the repo) on the CLI — `project`/`project_path` on MCP — pick which project a
+command acts on. Code and learning commands act on ONE *current* project (set with
+`crib project use`, or inferred from a path on first use); name a different one to
+override. **Writes** (`store`/`append`/`edit`/`forget`/`move`, and learnings) require
+an explicit project — they never silently inherit the current one, so a fact can't
+land in the wrong place.
+
+**Global flags** go before the noun: `--json` for machine-readable output, `--no-daemon`
+to run in-process instead of attaching to the warm daemon (see [Server & daemon](#server--daemon)).
+Content-taking verbs (`note store`/`append`/`edit`, `learning add`/`edit`) accept `-`
+to read the content from stdin.
 
 ## Memory — notes
 
-Two note classes share one index (both surface via `lookup`/`apropos`):
-**crib-owned** notes (`store`/`append`/`edit`, code learnings, explicit `import`
-copies) live under the crib tree, are editable + git-synced, and are watched for
-external edits; **source-owned** docs (a repo's `.crib`-declared docs) are indexed
-**in-situ** — the source tree is master, crib holds only the index, `read`/`locate`
-return the repo path, and a source watcher reindexes them on save. Every note —
-including code learnings — exposes its on-disk `path`.
+Two note classes share one index (both surface via `lookup`/`apropos`): **crib-owned**
+notes (`store`/`append`/`edit`, imported copies, and code learnings) live in the crib
+tree, are editable + git-synced, and are watched for external edits; **source-owned**
+docs (a repo's `.crib`-declared docs) are indexed **in-situ** — the source tree stays
+master, crib holds only the index, and `read`/`locate` return the repo path. Every
+note exposes its on-disk `path`.
 
 | CLI | MCP | Description |
 |---|---|---|
-| `crib lookup` / `search` | `lookup` | Semantic search over notes; returns ranked locator lines (hybrid dense ⊕ BM25). |
-| `crib apropos` / `search -a` | `apropos` | Like lookup, but each hit carries the full matching section's markdown, not a snippet. |
-| `crib read <rel>` | `read` | Print a note's full raw markdown (frontmatter + body). |
-| `crib locate <rel>` | `locate` | Print a note's on-disk path (to edit with your own tools). |
-| `crib store <text>` | `store` | Persist a durable fact as a new note (assigns id, indexes it). |
-| `crib append <rel> <text>` | `append` | Append content to an existing note (optional heading). |
-| `crib edit <rel>` | `edit` | Replace a note's content wholesale (frontmatter preserved). |
-| `crib forget <rel>` | `forget` | Delete a note; recoverable via the version ring. |
-| `crib move <rel> --to-project/--to-relpath` | `move` | Move/rename a note across projects, preserving its id + history. |
-| `crib reindex <rel>` | `reindex` | Re-index a note (or the whole project) after external edits. |
-| `crib reconcile` | `reconcile` | Sweep all projects for offline changes (add/change/delete). |
-| `crib versions <rel>` | `versions` | List a note's recoverable prior versions (the write ring). |
-| `crib restore <rel> <v>` | `restore` | Restore a prior version of a note. |
-| `crib history [rel]` | `history` | Git history for a note or the whole data tree. |
-| `crib snapshot [-m msg]` | `snapshot` | Git checkpoint of the data tree. |
-| `crib distill <rel>` | `distill` | LLM-revise a note in place (compress/dedupe/normalize) via MCP sampling or the bridge. |
-| `crib elaborate <label> [rel]` | `elaborate` | Generate per-section *keyword search terms* (synonyms + phrases a searcher would type, esp. words not in the text) → BM25 `keyword_index`. Not prose expansion. |
-| `crib summarize <label> [rel]` | `summarize` | Generate per-section *rephrasings* embedded as dense alias vectors → `summary_index` (so differently-worded queries still match). |
-| `crib import <path>…` | `import` | Copy NAMED files into memory as crib-owned notes (a snapshot you own: git-synced, editable, versioned). Distinct from in-situ docs. |
-| `crib import-memory` | `import_memory` | Mirror Claude Code's harness `memory/*.md` into a crib project (host-namespaced). One-way + idempotent; binds the repo into the daemon's live mirror so future edits sync on their own. |
-| `crib projects` | `projects` | List projects. |
-| — | `use_project` | Set the session's current project (sticky; creates the namespace immediately). |
-| — | `current_project` | Report the session's current project (+ available projects). |
+| `crib note lookup <query>` (alias `search`) | `note_lookup` | Semantic search over notes; returns ranked locator lines (hybrid dense ⊕ BM25). `-a/--render` renders full sections. |
+| `crib note apropos <query>` (alias `a`) | `note_apropos` | Like lookup, but each hit carries the full matching section's markdown, not a snippet. |
+| `crib note read <rel>` | `note_read` | Print a note's full raw markdown (frontmatter + body). |
+| `crib note locate <rel>` | `note_locate` | Print a note's on-disk path (to edit with your own tools). |
+| `crib note store <text>` | `note_store` | Persist a durable fact as a new note (assigns an id, indexes it). |
+| `crib note append <rel> <text>` | `note_append` | Append content to an existing note (optional heading). |
+| `crib note edit <rel>` | `note_edit` | Replace a note's content wholesale (frontmatter preserved). |
+| `crib note forget <rel>` | `note_forget` | Delete a note; recoverable via the version ring. |
+| `crib note move <rel> --to-project/--to-relpath` | `note_move` | Move/rename a note across projects, preserving its id + history. |
+| `crib note reindex [rel]` | `note_reindex` | Re-index a note (or the whole project) after external edits. |
+| `crib note versions <rel>` | `note_versions` | List a note's recoverable prior versions (the write ring). |
+| `crib note restore <rel> <v>` | `note_restore` | Restore a prior version of a note. |
+| `crib note history [rel]` | `note_history` | Git history for a note or the whole data tree. |
+| `crib note snapshot [-m msg]` | `note_snapshot` | Git checkpoint of the data tree. |
+| `crib note distill <rel>` | `note_distill` | LLM-revise a note in place (compress/dedupe/normalize). |
+| `crib note elaborate <label> [rel]` | `note_elaborate` | Generate per-section *keyword search terms* (synonyms + phrases a searcher would type) to strengthen BM25 matching. Not prose expansion. |
+| `crib note summarize <label> [rel]` | `note_summarize` | Generate per-section *rephrasings* embedded as dense aliases, so differently-worded queries still match. |
+| `crib note import <path>…` | `note_import` | Copy NAMED files into memory as crib-owned notes (a snapshot you own: git-synced, editable, versioned). |
+| `crib note import-memory` | `note_import_memory` | Mirror an AI harness's `memory/*.md` into a crib project (host-namespaced). One-way, idempotent, and live-synced thereafter. |
 
-`lookup` also takes retrieval-tuning overrides — `-k`, `--tag`, and
+`note lookup` also takes retrieval-tuning overrides — `-k`, `--tag`, and
 `--keywords`/`--keyword-weight`/`--summaries`/`--summary-weight` (MCP:
-`keyword_labels`/`keyword_weight`/`summary_labels`/`summary_weight`) to override
-which `elaborate`/`summarize` index sets feed retrieval — mainly for eval sweeps.
+`keyword_labels`/`keyword_weight`/`summary_labels`/`summary_weight`) — to override which
+`elaborate`/`summarize` index sets feed retrieval, mainly for eval sweeps.
 
-## Code index — query (reach for these before grep/Read)
+## Code index — search & navigate (reach for these before grep)
 
-**Cross-project refs**: a repo's `.crib` may name other projects under `refs:`
-(names, never paths — each machine resolves them to its own checkouts via the
-refs' `.source_root`). Queries then FAN OUT: a symbol missing locally resolves
-from the refs, `code lookup` merges ranked hits (every hit carries `project`),
-and dossier/graph follow qualified `name [proj:rel]` edges across. Indexing
-attributes out-of-root LSP resolutions to the refs (local checkout, in-tree
-vendored copy with its own `.crib`, or a site-packages install) — and a nested
-`.crib` bounds the parent's index: vendored code belongs to ITS project.
+A repo's `.crib` may name other projects under `refs:`, and queries then fan out: a
+symbol missing locally is resolved from the refs, `code lookup` merges the ranked
+hits (each hit carries its `project`), and `dossier`/`graph` follow edges across
+projects.
 
 | CLI | MCP | Description |
 |---|---|---|
 | `crib code lookup <query>` | `code_lookup` | Find a symbol by CONCEPT or name — hybrid dense (LLM descriptions) ⊕ name/subtoken. The entry point; self-diagnoses an unindexed project. |
-| `crib code dossier <sym>` | `code_dossier` | Everything about ONE symbol in a call: signature, description, callers/callees/references (each neighbour annotated), + any learning. |
+| `crib code dossier <sym>` | `code_dossier` | Everything about ONE symbol in one call: signature, description, callers/callees/references (each neighbour annotated), plus any attached learning. |
 | `crib code xref <sym>` | `code_xref` | A symbol's callers (←), callees (→), references (⇐), and any pinned learning. |
-| `crib code graph <sym>` | `code_graph` | Call-graph TREE — `callees` / `callers` / `references`, recursive; pstree-rendered; learning-bearing nodes flagged. |
-| `crib code index <file>` | `code_index` | (Re)index ONE source file: symbols + call graph + references + descriptions. Usually you want `project` (whole repo). |
+| `crib code graph <sym>` | `code_graph` | Call-graph TREE — callees / callers / references, recursive, pstree-rendered; learning-bearing nodes flagged. |
+| `crib code index <file>` | `code_index` | (Re)index ONE source file. Usually you want `crib project index` (whole repo) instead. |
 
-## Code learnings — durable human notes attached to a symbol
-
-| CLI | MCP | Description |
-|---|---|---|
-| `crib code append <sym> <text>` | `code_append` | Pin a durable learning (the "now I get it") to a symbol; survives re-indexing, resurfaces via lookup/xref/dossier. |
-| `crib code edit <sym> <text>` | `code_edit` | Rewrite a symbol's learning body wholesale. |
-| `crib code forget <sym>` | `code_forget` | Remove a symbol's learning (recoverable via the ring). |
-| `crib code read <sym>` | `code_read` | Print a symbol's attached learning. |
-| `crib code reaffirm <sym>` | `code_reaffirm` | Clear a learning's ⚠ stale flag without a rewrite (you re-checked; it still holds). |
-| `crib code learnings` | `code_learnings` | Health report: each learning `ok` / `moved` / `orphan`. |
-| `crib code rehome <old> [new]` | `code_rehome` | Re-point an orphaned learning (no target → ranked candidates; target → move it). |
-
-## Project lifecycle — onboard a whole repo (superset of code + notes)
+## Learnings — durable notes attached to a code symbol
 
 | CLI | MCP | Description |
 |---|---|---|
-| `crib project setup` | `project_setup` | Onboard: ensure `.crib` (auto-created), index docs IN-SITU + all source. The one-call "get me going." |
-| `crib project index` | `project_index` | (Re)index the repo's code AND in-situ docs from `.crib` (cheap re-run via the content-hash gate). |
-| `crib project status` | `project_status` | Indexed? symbol/file counts, kind breakdown, `.crib` paths, doc sources/chunks. |
+| `crib learning add <sym> <text>` | `learning_add` | Pin a durable learning (the "now I get it") to a symbol; survives re-indexing, resurfaces via lookup/xref/dossier. |
+| `crib learning edit <sym> <text>` | `learning_edit` | Rewrite a symbol's learning body wholesale. |
+| `crib learning forget <sym>` | `learning_forget` | Remove a symbol's learning (recoverable via the ring; works on orphans). |
+| `crib learning read <sym>` | `learning_read` | Print a symbol's attached learning. |
+| `crib learning reaffirm <sym>` | `learning_reaffirm` | Clear a learning's ⚠ stale flag without a rewrite (you re-checked; it still holds). |
+| `crib learning report` | `learning_report` | Health report: each learning `ok` / `moved` / `orphan` (`--orphans` to filter). |
+| `crib learning rehome <old> [new]` | `learning_rehome` | Re-point an orphaned learning (no target → ranked candidates; target → move it). |
+
+## Project lifecycle — onboard & manage a whole repo
+
+| CLI | MCP | Description |
+|---|---|---|
+| `crib project setup` | `project_setup` | Onboard a repo: ensure `.crib` (auto-created), import its docs in-situ, and index all source. The one-call "get me going." |
+| `crib project index` | `project_index` | (Re)index the repo's code AND in-situ docs from `.crib` (cheap re-run via the content-hash gate). The code-only onboard. |
+| `crib project status` | `project_status` | Is it indexed? symbol/file counts, kind breakdown, `.crib` paths, doc sources. |
 | `crib project forget` | `project_forget` | Clear the code index (keeps learnings/notes/`.crib`; `--with-learnings` to drop those too). |
-| `crib code setup` / `code status` | — | The code facet only (no doc import) — sugar over `project index` / `project status`. |
+| `crib project reconcile` | `project_reconcile` | Sweep ALL projects for offline changes (add/change/delete). Idempotent. |
+| `crib project list` | `project_list` | List projects (separate memory namespaces). |
+| `crib project use <name>` | `project_use` | Set this session's current project (sticky; creates the namespace). |
+| `crib project current` | `project_current` | Show this session's current project (+ available projects). |
 
-## Server & daemon — one warm process behind CLI and MCP
+## Server & daemon
+
+One warm process serves both the CLI and MCP.
 
 | CLI | MCP | Description |
 |---|---|---|
-| `crib status` | `status` | One-call health summary: per-project inventory (notes/docs/symbols/learnings), git-sync state, attached LSP sessions (alive/busy/idle), in-flight indexing. |
-| `crib serve` / `crib --mcp` | — | Run the MCP server: stdio by default, `--http --host --port` for HTTP (explicit flags win over config `[daemon]`). |
-| `crib info` | — | Resolved paths, backends, daemon/chunk/retrieve config. |
+| `crib status` | `status` | One-call health summary: per-project inventory (notes/docs/symbols/learnings), git-sync state, attached language-server sessions, in-flight indexing. |
+| `crib serve` / `crib --mcp` | — | Run the MCP server: stdio by default, `--http --host --port` for HTTP. |
+| `crib info` | — | Resolved paths, backends, and daemon/chunk/retrieve config. |
 | `--no-daemon` (global) | — | Run the verb in-process instead of attaching to the warm daemon — e.g. to exercise freshly edited code without a daemon restart. |
 | `--json` (global) | — | Machine-readable output for any verb. |
 
-## Git sync — share notes across machines (CLI-only; pushing is outward-facing)
+## Git sync — share notes across machines (CLI-only)
+
+Pushing publishes to a remote, so these stay CLI-only (not agent-callable).
 
 | CLI | Description |
 |---|---|
-| `crib setup --remote <url>` | Join a shared notes repo on a new machine (init + merge driver + pull). |
-| `crib sync` | Commit + pull + push notes via git (`--remote` bootstraps: init + set origin). |
-| `crib push` / `crib pull` | The halves of sync (`pull` reindexes after). |
-| `crib merge-driver` | The `merge=cribnote` git driver (invoked by git during a merge; hidden from `--help`). |
-
----
-
-### Notes on the shape (open questions for review)
-
-- **`code` vs `project` overlap.** `code setup`/`code index` are the code-only facet;
-  `project setup`/`index` are the superset (+ docs). Is the `code` facet worth its own
-  verbs, or should `project` + a `--no-docs` flag cover it?
-- **`code forget <sym>` (a learning) vs `project forget` (the index).** Two different
-  "forgets" at two levels — is that clear, or should one be renamed?
-- **Notes verbs are top-level; code verbs are namespaced.** `crib store`/`lookup` vs
-  `crib code lookup`. A `crib notes <verb>` namespace would make it symmetric — worth it?
-- **MCP exposure.** Lifecycle setup/index/status/forget, `import`, and
-  `import_memory` are all agent-callable (so an agent can self-onboard a repo and
-  self-mirror harness memory). Git sync (`setup --remote`/`sync`/`push`/`pull`)
-  stays CLI-only (outward-facing: it publishes to a remote). Right split?
+| `crib note setup --remote <url>` | Join a shared notes repo on a new machine (init + frontmatter merge driver + pull). |
+| `crib note sync` | Commit + pull + push notes via git, then reindex. |
+| `crib note push` / `crib note pull` | The halves of sync (`pull` reindexes after). |
+| `crib merge-driver` | The frontmatter-aware git merge driver (invoked by git during a merge; hidden from `--help`). |
