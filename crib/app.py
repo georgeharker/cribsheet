@@ -1476,6 +1476,26 @@ class Crib:
             return []
         return sorted(p.name for p in pd.iterdir() if p.is_dir())
 
+    def use_project(self, project: str) -> dict[str, Any]:
+        """Set the session's current project (mirrors the project_use MCP tool for
+        the in-process CLI; session state is process-local here)."""
+        from .session import session_state
+        created = self.project_is_new(project)
+        self.notes_dir(project)                     # eager mkdir — no phantom namespace
+        session_state().current_project = project
+        return {"current_project": project, "created": created}
+
+    def current_project(self, cwd: Path | None = None) -> dict[str, Any]:
+        """Show the session's current project + how it resolved (mirrors the
+        project_current MCP tool), seeding from cwd/.crib if unset."""
+        from .session import resolve_session_project, session_state
+        res = resolve_session_project(
+            session_state(), None, cwd,
+            lambda c: self.resolve_project(None, c),
+            default=self.config.default_project)
+        return {"current_project": res.project, "resolved_via": res.via,
+                "projects": self.projects()}
+
     def project_config(self, project: str) -> ProjectConfig:
         return ProjectConfig.load(
             self.paths.project_dir(project) / ".cribproject", project)
