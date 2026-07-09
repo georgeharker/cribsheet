@@ -96,6 +96,10 @@ fold in via config or per-call overrides.
 
 ## 4. Code indexing pipeline
 
+![Code-index pipeline — structural (LSP) ⊕ semantic (LLM) facets into a symbol index](images/code-index-pipeline.png)
+
+<sub>Source: [`code-index-pipeline.svg`](images/code-index-pipeline.svg).</sub>
+
 `crib project setup` / `crib project index` → `CodeIndexer._index_project_code`
 (`crib/codeindexer.py`, driven by `ProjectServices`):
 
