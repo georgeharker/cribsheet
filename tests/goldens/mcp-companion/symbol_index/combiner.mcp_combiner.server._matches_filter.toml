@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.server._matches_filter"
+name = "_matches_filter"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "6bec6d7623b36562"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _matches_filter(tool_name: str, patterns: list[str]) -> bool:"
+description = ""
+line = 209
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "_filter_tools [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_filter_tools [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_matches_filter",
+  "combiner",
+  "combiner.mcp_combiner.server._matches_filter",
+  "filter",
+  "matches",
+  "mcp",
+  "server",
+]

@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_session_filter.FIXTURES"
+name = "FIXTURES"
+kind = "constant"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = ""
+content_hash = "5d2121d319c78fc2"
+file = "combiner/tests/test_session_filter.py"
+signature = "FIXTURES = Path(__file__).parent / \"fixtures\""
+description = ""
+line = 18
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_make_combiner_app [combiner/tests/test_session_filter.py]",
+  "test_stale_tool_grace_configurable [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "FIXTURES",
+  "combiner",
+  "combiner.tests.test_session_filter.FIXTURES",
+  "filter",
+  "fixtures",
+  "session",
+  "test",
+  "tests",
+]

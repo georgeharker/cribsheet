@@ -1,0 +1,26 @@
+fqname = "combiner.tests.test_auth.TestPreflightRefresh"
+name = "TestPreflightRefresh"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = ""
+content_hash = "17e7e1d46b88db46"
+file = "combiner/tests/test_auth.py"
+signature = "class TestPreflightRefresh:"
+description = ""
+line = 376
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestPreflightRefresh",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestPreflightRefresh",
+  "preflight",
+  "refresh",
+  "test",
+  "tests",
+]

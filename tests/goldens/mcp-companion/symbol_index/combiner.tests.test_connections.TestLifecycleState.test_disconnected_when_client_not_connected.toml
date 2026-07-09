@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_connections.TestLifecycleState.test_disconnected_when_client_not_connected"
+name = "test_disconnected_when_client_not_connected"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestLifecycleState"
+content_hash = "d48dcd23a6aebf26"
+file = "combiner/tests/test_connections.py"
+signature = "def test_disconnected_when_client_not_connected(self):"
+description = ""
+line = 348
+mtime = 1783473323000000000
+container = [
+  "TestLifecycleState",
+]
+calls = [
+  "_inject_conn [combiner/tests/test_connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "combiner",
+  "combiner.tests.test_connections.TestLifecycleState.test_disconnected_when_client_not_connected",
+  "connected",
+  "connections",
+  "disconnected",
+  "lifecycle",
+  "not",
+  "state",
+  "test",
+  "test_disconnected_when_client_not_connected",
+  "tests",
+  "when",
+]

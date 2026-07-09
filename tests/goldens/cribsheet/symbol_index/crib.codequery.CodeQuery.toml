@@ -1,0 +1,26 @@
+fqname = "crib.codequery.CodeQuery"
+name = "CodeQuery"
+kind = "class"
+lang = "python"
+module = "crib.codequery"
+parent = ""
+content_hash = "0c0bb4f65cb24674"
+file = "crib/codequery.py"
+signature = "class CodeQuery:"
+description = ""
+line = 22
+mtime = 1783529969000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+]
+name_terms = [
+  "CodeQuery",
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery",
+  "query",
+]

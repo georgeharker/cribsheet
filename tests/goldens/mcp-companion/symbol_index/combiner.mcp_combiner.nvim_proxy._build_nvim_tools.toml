@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.nvim_proxy._build_nvim_tools"
+name = "_build_nvim_tools"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_proxy"
+parent = ""
+content_hash = "02493a8e55f2157c"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+signature = "def _build_nvim_tools(manifest: dict[str, Any]) -> list[Tool]:"
+description = ""
+line = 117
+mtime = 1783022631000000000
+container = []
+calls = [
+  "_inject_instance_arg [combiner/mcp_combiner/nvim_proxy.py]",
+]
+called_by = [
+  "append_nvim_tools [combiner/mcp_combiner/nvim_proxy.py]",
+]
+references = [
+  "append_nvim_tools [combiner/mcp_combiner/nvim_proxy.py]",
+]
+name_terms = [
+  "_build_nvim_tools",
+  "build",
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy._build_nvim_tools",
+  "mcp",
+  "nvim",
+  "proxy",
+  "tools",
+]

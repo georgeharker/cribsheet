@@ -1,0 +1,30 @@
+fqname = "scripts.snapshot_harness.compare"
+name = "compare"
+kind = "function"
+lang = "python"
+module = "scripts.snapshot_harness"
+parent = ""
+content_hash = "f29c16545e64769d"
+file = "scripts/snapshot_harness.py"
+signature = "def compare(golden: Path) -> int:"
+description = ""
+line = 147
+mtime = 1783498271000000000
+container = []
+calls = [
+  "_load [scripts/snapshot_harness.py]",
+  "checkout [scripts/snapshot_harness.py]",
+  "diff_indexes [scripts/snapshot_harness.py]",
+  "index [scripts/snapshot_harness.py]",
+]
+called_by = [
+  "snapshot_harness [scripts/snapshot_harness.py]",
+]
+references = []
+name_terms = [
+  "compare",
+  "harness",
+  "scripts",
+  "scripts.snapshot_harness.compare",
+  "snapshot",
+]

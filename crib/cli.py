@@ -13,7 +13,7 @@ import argparse
 import asyncio
 import json
 import sys
-from dataclasses import asdict, dataclass, is_dataclass
+from dataclasses import asdict, dataclass, is_dataclass, replace
 from pathlib import Path
 from typing import Any, Callable
 
@@ -408,7 +408,6 @@ def build_parser() -> argparse.ArgumentParser:
     sv.add_argument("--http", action="store_true")
     sv.add_argument("--host", default=None)
     sv.add_argument("--port", type=int, default=None)
-    sub.add_parser("projects", help="list projects")
     sub.add_parser("info", help="show resolved paths and available backends")
     sub.add_parser("status", help="health summary: projects (notes/docs/code/"
                                   "learnings), git sync, LSP sessions, indexing")
@@ -426,8 +425,23 @@ def build_parser() -> argparse.ArgumentParser:
     proj(_pf)
     _pf.add_argument("--with-learnings", action="store_true",
                      help="also drop attached learnings (default: keep them)")
+    pjsub.add_parser("list", help="list projects (separate memory namespaces)")
+    _pu = pjsub.add_parser("use", help="set this session's current project")
+    _pu.add_argument("project")
+    _pc = pjsub.add_parser("current", help="show this session's current project")
+    proj(_pc)
+    pjsub.add_parser("reconcile", help="sweep all projects for offline changes")
 
-    s = sub.add_parser("lookup", aliases=["search"], help="semantic search")
+    # noun groups mirroring `project`: note / code / learning (verbs nest under them)
+    n_note = sub.add_parser("note", help="memory notes: search, read, write, share")
+    notesub = n_note.add_subparsers(dest="note_verb", required=True)
+    n_code = sub.add_parser("code", help="code symbol index: search + navigate")
+    codesub = n_code.add_subparsers(dest="code_verb", required=True)
+    n_learn = sub.add_parser("learning",
+                             help="durable learnings attached to code symbols")
+    learnsub = n_learn.add_subparsers(dest="learning_verb", required=True)
+
+    s = notesub.add_parser("lookup", aliases=["search"], help="semantic search")
     s.add_argument("query"); proj(s)
     s.add_argument("-k", type=int, default=8)
     s.add_argument("--tag", action="append", dest="tags")
@@ -447,27 +461,27 @@ def build_parser() -> argparse.ArgumentParser:
                    help="render each matched section as markdown (like `apropos`) "
                         "instead of compact locator lines")
 
-    s = sub.add_parser("apropos", aliases=["a"],
+    s = notesub.add_parser("apropos", aliases=["a"],
                        help="semantic search, rendering each full matched section "
                             "(alias for `search --render`, fewer hits)")
     s.add_argument("query"); proj(s)
     s.add_argument("-k", type=int, default=5)
     s.add_argument("--tag", action="append", dest="tags")
 
-    s = sub.add_parser("code-lookup",
+    s = codesub.add_parser("lookup",
                        help="find a code symbol by concept OR name (hybrid dense+kw)")
     s.add_argument("query"); proj(s)
     s.add_argument("-k", type=int, default=8)
 
-    s = sub.add_parser("code-xref",
+    s = codesub.add_parser("xref",
                        help="a symbol's callers/callees/references from the symbol_index")
     s.add_argument("symbol"); proj(s)
 
-    s = sub.add_parser("code-dossier",
+    s = codesub.add_parser("dossier",
                        help="everything about one symbol (+ neighbour descriptions)")
     s.add_argument("symbol"); proj(s)
 
-    s = sub.add_parser("code-graph",
+    s = codesub.add_parser("graph",
                        help="pstree-style call graph around a symbol (recursive)")
     s.add_argument("symbol"); proj(s)
     s.add_argument("--callers", action="store_true",
@@ -477,86 +491,85 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--depth", type=int, default=6)
     s.add_argument("--ascii", action="store_true", help="ASCII glyphs, no box-drawing")
 
-    s = sub.add_parser("code-index",
+    s = codesub.add_parser("index",
                        help="index a source file: symbols + call graph + descriptions")
     s.add_argument("path"); proj(s)
 
-    s = sub.add_parser("code-append",
+    s = learnsub.add_parser("add",
                        help="attach a durable learning to a code symbol ('-' reads stdin)")
     s.add_argument("symbol"); s.add_argument("text"); proj(s)
 
-    s = sub.add_parser("code-edit",
+    s = learnsub.add_parser("edit",
                        help="rewrite a symbol's learning body ('-' reads stdin)")
     s.add_argument("symbol"); s.add_argument("text"); proj(s)
 
-    s = sub.add_parser("code-forget",
+    s = learnsub.add_parser("forget",
                        help="remove a symbol's learning (recoverable; works on orphans)")
     s.add_argument("symbol"); proj(s)
 
-    s = sub.add_parser("code-read", help="print a symbol's attached learning")
+    s = learnsub.add_parser("read", help="print a symbol's attached learning")
     s.add_argument("symbol"); proj(s)
 
-    s = sub.add_parser("code-reaffirm",
+    s = learnsub.add_parser("reaffirm",
                        help="clear a learning's ⚠ stale flag without rewriting it")
     s.add_argument("symbol"); proj(s)
 
-    s = sub.add_parser("code-learnings",
+    s = learnsub.add_parser("report",
                        help="health report for attached learnings (ok/moved/orphan)")
     proj(s)
     s.add_argument("--orphans", action="store_true",
                    help="only the actionable ones (moved/orphan)")
 
-    s = sub.add_parser("code-rehome",
+    s = learnsub.add_parser("rehome",
                        help="re-point an orphaned learning (no target = ranked suggestions)")
     s.add_argument("old"); s.add_argument("new", nargs="?"); proj(s)
 
-    s = sub.add_parser("read", help="print a note's raw markdown")
+    s = notesub.add_parser("read", help="print a note's raw markdown")
     s.add_argument("relpath"); proj(s)
 
-    s = sub.add_parser("locate", help="print a note's on-disk path")
+    s = notesub.add_parser("locate", help="print a note's on-disk path")
     s.add_argument("relpath"); proj(s)
 
-    s = sub.add_parser("store", help="create a new note ('-' reads stdin)")
+    s = notesub.add_parser("store", help="create a new note ('-' reads stdin)")
     s.add_argument("content"); proj(s)
     s.add_argument("--title")
     s.add_argument("--tag", action="append", dest="tags")
 
-    s = sub.add_parser("append", help="append to a note ('-' reads stdin)")
+    s = notesub.add_parser("append", help="append to a note ('-' reads stdin)")
     s.add_argument("relpath"); s.add_argument("content"); proj(s)
     s.add_argument("--heading")
 
-    s = sub.add_parser("edit", help="replace a note's content (stdin by default)")
+    s = notesub.add_parser("edit", help="replace a note's content (stdin by default)")
     s.add_argument("relpath"); s.add_argument("content", nargs="?", default="-"); proj(s)
 
-    s = sub.add_parser("forget", help="delete a note (recoverable via the ring)")
+    s = notesub.add_parser("forget", help="delete a note (recoverable via the ring)")
     s.add_argument("relpath"); proj(s)
 
-    s = sub.add_parser("move", help="move/rename a note across projects (keeps id)")
+    s = notesub.add_parser("move", help="move/rename a note across projects (keeps id)")
     s.add_argument("relpath"); proj(s)
     s.add_argument("--to-project", dest="to_project")
     s.add_argument("--to-relpath", dest="to_relpath")
 
-    s = sub.add_parser("reindex", help="reindex a note or whole project")
+    s = notesub.add_parser("reindex", help="reindex a note or whole project")
     s.add_argument("relpath", nargs="?"); proj(s)
 
-    sub.add_parser("reconcile", help="sweep all projects for offline changes")
 
-    s = sub.add_parser("versions", help="list recoverable versions of a note")
+    s = notesub.add_parser("versions", help="list recoverable versions of a note")
     s.add_argument("relpath"); proj(s)
 
-    s = sub.add_parser("restore", help="restore a prior version of a note")
+    s = notesub.add_parser("restore", help="restore a prior version of a note")
     s.add_argument("relpath"); s.add_argument("version"); proj(s)
 
-    s = sub.add_parser("import",
+    s = notesub.add_parser("import",
                        help="copy explicit files into memory as crib-owned notes")
     s.add_argument("paths", nargs="+", help="files to copy into memory")
     proj(s)
 
-    s = sub.add_parser("import-memory",
+    s = notesub.add_parser("import-memory",
                        help="mirror Claude Code's harness memory into a crib project")
     proj(s)
 
-    s = sub.add_parser("distill",
+    s = notesub.add_parser("distill",
                        help="LLM-revise a note in place (compress/dedupe/normalize)")
     s.add_argument("relpath"); proj(s)
 
@@ -568,28 +581,28 @@ def build_parser() -> argparse.ArgumentParser:
                       "(keywords/questions/phrase/…) for a note or project"),
         ("summarize", "summary_index: generate dense alias rephrasings per "
                       "section for a note or project")):
-        _s = sub.add_parser(_v, help=_h)
+        _s = notesub.add_parser(_v, help=_h)
         _s.add_argument("label")
         _s.add_argument("relpath", nargs="?"); proj(_s)
         _s.add_argument("--overwrite", action="store_true",
                         help="regenerate even if it already exists")
 
-    s = sub.add_parser("snapshot", help="git checkpoint of the data tree")
+    s = notesub.add_parser("snapshot", help="git checkpoint of the data tree")
     s.add_argument("-m", "--message")
 
-    s = sub.add_parser("setup",
+    s = notesub.add_parser("setup",
                        help="join the shared note repo on this machine "
                             "(set remote + frontmatter merge driver, then pull)")
     s.add_argument("--remote", help="git remote URL to join (prompted if omitted)")
 
-    s = sub.add_parser("sync",
+    s = notesub.add_parser("sync",
                        help="share notes via git: commit + pull + push, then reindex")
     s.add_argument("-m", "--message")
     s.add_argument("--remote", help="bootstrap: git init + set origin to this URL")
-    sub.add_parser("push", help="push local note commits to the remote")
-    sub.add_parser("pull", help="pull notes from the remote, then reindex")
+    notesub.add_parser("push", help="push local note commits to the remote")
+    notesub.add_parser("pull", help="pull notes from the remote, then reindex")
 
-    s = sub.add_parser("history", help="git history for a note or the tree")
+    s = notesub.add_parser("history", help="git history for a note or the tree")
     s.add_argument("relpath", nargs="?")
 
     # internal: invoked by git as the cribnote merge driver (DESIGN §14). No
@@ -719,97 +732,112 @@ def _b_lookup(a: Any) -> dict[str, Any]:
 
 VERBS: dict[str, Verb] = {
     # notes: search / read
-    "lookup": Verb("lookup", _b_lookup, _E),
-    "apropos": Verb("apropos", lambda a: {"query": a.query, "project": a.project,
+    "note lookup": Verb("lookup", _b_lookup, _E),
+    "note apropos": Verb("apropos", lambda a: {"query": a.query, "project": a.project,
                                           "k": a.k, "tags": a.tags}, _E_apropos),
-    "read": Verb("read", lambda a: {"relpath": a.relpath, "project": a.project},
+    "note read": Verb("read", lambda a: {"relpath": a.relpath, "project": a.project},
                  _E_note, method="read_note"),
-    "locate": Verb("locate", lambda a: {"relpath": a.relpath, "project": a.project},
+    "note locate": Verb("locate", lambda a: {"relpath": a.relpath, "project": a.project},
                    _E_raw),
     # notes: write
-    "store": Verb("store", lambda a: {"content": _read_content(a.content),
+    "note store": Verb("store", lambda a: {"content": _read_content(a.content),
                                       "title": a.title, "project": a.project,
                                       "tags": a.tags}, _E, method="store_note",
                   is_async=True),
-    "append": Verb("append", lambda a: {"relpath": a.relpath,
+    "note append": Verb("append", lambda a: {"relpath": a.relpath,
                                         "content": _read_content(a.content),
                                         "heading": a.heading, "project": a.project},
                    _E, method="append_note", is_async=True),
-    "edit": Verb("edit", lambda a: {"relpath": a.relpath,
+    "note edit": Verb("edit", lambda a: {"relpath": a.relpath,
                                     "new_content": _read_content(a.content),
                                     "project": a.project}, _E,
                  method="edit_note", is_async=True),
-    "forget": Verb("forget", lambda a: {"relpath": a.relpath, "project": a.project},
+    "note forget": Verb("forget", lambda a: {"relpath": a.relpath, "project": a.project},
                    _E, is_async=True),
-    "move": Verb("move", lambda a: {"relpath": a.relpath, "to_project": a.to_project,
+    "note move": Verb("move", lambda a: {"relpath": a.relpath, "to_project": a.to_project,
                                     "to_relpath": a.to_relpath, "project": a.project},
                  _E, method="move_note", is_async=True),
-    "reindex": Verb("reindex", lambda a: {"relpath": a.relpath, "project": a.project},
+    "note reindex": Verb("reindex", lambda a: {"relpath": a.relpath, "project": a.project},
                     _E, is_async=True),
-    "reconcile": Verb("reconcile", lambda a: {}, _E, method="reconcile_all",
+    "project reconcile": Verb("reconcile", lambda a: {}, _E, method="reconcile_all",
                       is_async=True, wants_cwd=False),
-    "versions": Verb("versions", lambda a: {"relpath": a.relpath, "project": a.project},
+    "note versions": Verb("versions", lambda a: {"relpath": a.relpath, "project": a.project},
                      _E, method="list_versions"),
-    "restore": Verb("restore", lambda a: {"relpath": a.relpath, "version": a.version,
+    "note restore": Verb("restore", lambda a: {"relpath": a.relpath, "version": a.version,
                                           "project": a.project}, _E, is_async=True),
-    "import": Verb("import", lambda a: {"paths": a.paths, "project": a.project},
+    "note import": Verb("import", lambda a: {"paths": a.paths, "project": a.project},
                    _E, method="import_files", is_async=True),
-    "import-memory": Verb("import_memory", lambda a: {"project": a.project}, _E,
+    "note import-memory": Verb("import_memory", lambda a: {"project": a.project}, _E,
                           method="import_claude_memory", is_async=True),
-    "distill": Verb("distill", lambda a: {"relpath": a.relpath, "project": a.project},
+    "note distill": Verb("distill", lambda a: {"relpath": a.relpath, "project": a.project},
                     _E, is_async=True),
-    "elaborate": Verb("elaborate", lambda a: {"label": a.label, "relpath": a.relpath,
+    "note elaborate": Verb("elaborate", lambda a: {"label": a.label, "relpath": a.relpath,
                                               "project": a.project,
                                               "overwrite": a.overwrite}, _E,
                       is_async=True),
-    "summarize": Verb("summarize", lambda a: {"label": a.label, "relpath": a.relpath,
+    "note summarize": Verb("summarize", lambda a: {"label": a.label, "relpath": a.relpath,
                                               "project": a.project,
                                               "overwrite": a.overwrite}, _E,
                       is_async=True),
-    "snapshot": Verb("snapshot", lambda a: {"message": a.message}, _E_raw,
+    "note snapshot": Verb("snapshot", lambda a: {"message": a.message}, _E_raw,
                      wants_cwd=False),
-    "history": Verb("history", lambda a: {"relpath": a.relpath}, _E, wants_cwd=False),
-    "projects": Verb("projects", lambda a: {}, _E, wants_cwd=False),
+    "note history": Verb("history", lambda a: {"relpath": a.relpath}, _E, wants_cwd=False),
+    "project list": Verb("projects", lambda a: {}, _E, wants_cwd=False),
+    "project use": Verb("use_project", lambda a: {"project": a.project}, _E,
+                        method="use_project", wants_cwd=False),
+    "project current": Verb("current_project", lambda a: {}, _E,
+                            method="current_project"),
     "status": Verb("status", lambda a: {}, _E_status, wants_cwd=False),
     # code index
-    "code-lookup": Verb("code_lookup", lambda a: {"query": a.query,
+    "code lookup": Verb("code_lookup", lambda a: {"query": a.query,
                                                  "project": a.project, "k": a.k},
                         _E_code("code-lookup")),
-    "code-xref": Verb("code_xref", lambda a: {"symbol": a.symbol, "project": a.project},
+    "code xref": Verb("code_xref", lambda a: {"symbol": a.symbol, "project": a.project},
                       _E_code("code-xref")),
-    "code-dossier": Verb("code_dossier", lambda a: {"symbol": a.symbol,
+    "code dossier": Verb("code_dossier", lambda a: {"symbol": a.symbol,
                                                    "project": a.project}, _E_dossier),
-    "code-graph": Verb("code_graph", lambda a: {"symbol": a.symbol,
+    "code graph": Verb("code_graph", lambda a: {"symbol": a.symbol,
                                                "direction": _graph_direction(a),
                                                "depth": a.depth, "project": a.project},
                        _E_graph),
-    "code-index": Verb("code_index",
+    "code index": Verb("code_index",
                        lambda a: {"path": str(Path(a.path).expanduser().resolve()),
                                   "project": a.project},
                        _E_code("code-index"), is_async=True),
     # code learnings
-    "code-append": Verb("code_append", lambda a: {"symbol": a.symbol,
+    "learning add": Verb("code_append", lambda a: {"symbol": a.symbol,
                                                  "text": _read_content(a.text),
                                                  "project": a.project},
                         _E_learning("code-append"), is_async=True),
-    "code-edit": Verb("code_edit", lambda a: {"symbol": a.symbol,
+    "learning edit": Verb("code_edit", lambda a: {"symbol": a.symbol,
                                              "new_content": _read_content(a.text),
                                              "project": a.project},
                       _E_learning("code-edit"), is_async=True),
-    "code-forget": Verb("code_forget", lambda a: {"symbol": a.symbol,
+    "learning forget": Verb("code_forget", lambda a: {"symbol": a.symbol,
                                                  "project": a.project},
                         _E_learning("code-forget"), is_async=True),
-    "code-read": Verb("code_read", lambda a: {"symbol": a.symbol, "project": a.project},
+    "learning read": Verb("code_read", lambda a: {"symbol": a.symbol, "project": a.project},
                       _E_learning("code-read")),
-    "code-reaffirm": Verb("code_reaffirm", lambda a: {"symbol": a.symbol,
+    "learning reaffirm": Verb("code_reaffirm", lambda a: {"symbol": a.symbol,
                                                      "project": a.project},
                           _E_learning("code-reaffirm"), is_async=True),
-    "code-learnings": Verb("code_learnings", lambda a: {"project": a.project,
+    "learning report": Verb("code_learnings", lambda a: {"project": a.project,
                                                        "orphans_only": a.orphans},
                            _E_report),
-    "code-rehome": Verb("code_rehome", lambda a: {"old_fqn": a.old, "new_fqn": a.new,
+    "learning rehome": Verb("code_rehome", lambda a: {"old_fqn": a.old, "new_fqn": a.new,
                                                  "project": a.project}, _E_rehome,
                         is_async=True),
+}
+
+
+# Verb.tool historically doubled as BOTH the MCP tool name and the Crib method (they
+# matched). After the noun-verb rename they diverge: the MCP tool is the nested key
+# underscored (`note lookup` → `note_lookup`), the Crib method stays the old tool name
+# (or the explicit `method=`). Split them here so no row needs editing (Verb is frozen).
+VERBS = {
+    _key: replace(_v, method=_v.method or _v.tool,
+                  tool=_key.replace(" ", "_").replace("-", "_"))
+    for _key, _v in VERBS.items()
 }
 
 
@@ -820,14 +848,30 @@ def _cwd_of(args: Any) -> Path:
 
 
 def _resolve_verb(args: Any) -> tuple[Verb, dict[str, Any]]:
-    """Map parsed args to a (Verb, call-params) pair. Normalizes the aliases
-    (`search`→lookup, `a`→apropos) and routes `lookup --render` to the apropos
-    section-rendering path (same tool + emitter as `apropos`)."""
-    v = {"search": "lookup", "a": "apropos"}.get(args.cmd, args.cmd)
-    if v == "lookup" and getattr(args, "render", False):
-        v = "apropos"
-    entry = VERBS[v]
+    """Map parsed args to a (Verb, call-params) pair. `crib <noun> <verb>` keys the
+    registry by "<noun> <verb>"; a bare top-level verb (status) keys by its name.
+    Normalizes the note aliases (`search`→lookup, `a`→apropos) and routes
+    `note lookup --render` to the apropos section-rendering path."""
+    noun = args.cmd
+    sub = getattr(args, f"{noun}_verb", None)
+    if sub is None:                                    # flat top-level verb (status)
+        entry = VERBS[noun]
+        return entry, entry.build(args)
+    sub = {"search": "lookup", "a": "apropos"}.get(sub, sub)
+    if noun == "note" and sub == "lookup" and getattr(args, "render", False):
+        sub = "apropos"
+    entry = VERBS[f"{noun} {sub}"]
     return entry, entry.build(args)
+
+
+def _dispatch(args: Any) -> tuple[Verb, dict[str, Any]]:
+    """Route `project setup/index/status/forget` (and bare `project`) through the
+    synthetic _project_verb; everything else — incl. `project list`/`reconcile` —
+    through the registry."""
+    if args.cmd == "project" and getattr(args, "project_verb", None) in (
+            None, "setup", "index", "status", "forget"):
+        return _project_verb(args)
+    return _resolve_verb(args)
 
 
 def _project_verb(args: Any) -> tuple[Verb, dict[str, Any]]:
@@ -857,8 +901,7 @@ def _run_daemon(args: Any, cfg: Any) -> None:
     `project_path`, call the MCP tool, and emit — all off one registry row."""
     from .client import DaemonClient
 
-    entry, call = (_project_verb(args) if args.cmd == "project"
-                   else _resolve_verb(args))
+    entry, call = _dispatch(args)
     if entry.wants_cwd:
         call["project_path"] = str(_cwd_of(args))
     with DaemonClient(cfg.daemon) as client:
@@ -873,22 +916,23 @@ def _run_git(args: Any, cfg: Any) -> int:
     from .gitbacking import GitBacking
     from .paths import Paths
 
+    verb = getattr(args, "note_verb", None)          # `crib note setup/sync/push/pull`
     # setup runs on a fresh machine where the data dir may not exist yet
-    paths = Paths.resolve().ensure() if args.cmd == "setup" else Paths.resolve()
+    paths = Paths.resolve().ensure() if verb == "setup" else Paths.resolve()
     git = GitBacking(paths.data_dir)
 
-    if args.cmd == "setup":
+    if verb == "setup":
         remote = getattr(args, "remote", None) or git.current_remote() or _prompt_remote()
         if not remote:
-            print("crib setup: no remote given (pass --remote <url>)", file=sys.stderr)
+            print("crib note setup: no remote given (pass --remote <url>)", file=sys.stderr)
             return 1
         print(f"joining {remote} …")
         res = git.setup(remote)
-    elif args.cmd == "sync":
+    elif verb == "sync":
         if getattr(args, "remote", None):
             print(git.init(args.remote))
         res = git.sync(args.message)
-    elif args.cmd == "push":
+    elif verb == "push":
         res = git.push()
     else:
         res = git.pull()
@@ -931,8 +975,7 @@ def _run_inprocess(args: Any) -> None:
     """Run a verb in-process against a Crib instance: same registry row as the
     daemon path, but call the Crib `method` with `cwd=<Path>` and wrap async ones
     in `asyncio.run` (the daemon does this awaiting server-side)."""
-    entry, call = (_project_verb(args) if args.cmd == "project"
-                   else _resolve_verb(args))
+    entry, call = _dispatch(args)
     if entry.wants_cwd:
         call["cwd"] = _cwd_of(args)
     crib = Crib.open()
@@ -944,38 +987,10 @@ def _run_inprocess(args: Any) -> None:
         crib.close()
 
 
-# Noun-verb interface: `crib code <verb>` is canonical (not `crib code-<verb>`).
-# A thin argv rewrite keeps one set of parsers/dispatch while accepting the
-# namespaced spelling. The hyphenated forms still parse (back-compat / muscle memory).
-_CODE_SUBVERBS = {"lookup", "dossier", "xref", "graph", "index", "append", "edit",
-                  "forget", "read", "reaffirm", "learnings", "rehome"}
-_CODE_LIFECYCLE = {"setup": ["project", "index"],    # code-only onboard (no docs)
-                   "status": ["project", "status"]}
-
-
-_GLOBAL_VALUE_OPTS = {"--host", "--port"}   # global flags that consume the next token
-
-
-def _normalize_argv(argv: list[str]) -> list[str]:
-    """Rewrite `code <verb> …` → the canonical verb, skipping any leading global
-    flags (`--no-daemon`, `--json`, `--host X`, …). `code lookup` → `code-lookup`;
-    `code setup`/`code status` → the code facet of the project lifecycle."""
-    i = 0
-    while i < len(argv) and argv[i].startswith("-"):
-        i += 2 if argv[i] in _GLOBAL_VALUE_OPTS else 1
-    if i + 1 < len(argv) and argv[i] == "code":
-        v, rest = argv[i + 1], argv[i + 2:]
-        if v in _CODE_SUBVERBS:
-            return [*argv[:i], f"code-{v}", *rest]
-        if v in _CODE_LIFECYCLE:
-            return [*argv[:i], *_CODE_LIFECYCLE[v], *rest]
-    return argv
-
-
 def main(argv: list[str] | None = None) -> int:
     import sys as _sys
-    argv = _normalize_argv(list(argv if argv is not None else _sys.argv[1:]))
-    args = build_parser().parse_args(argv)
+    args = build_parser().parse_args(
+        list(argv if argv is not None else _sys.argv[1:]))
 
     if args.mcp or args.cmd == "serve":
         host, port = _resolve_serve_endpoint(args)
@@ -993,12 +1008,19 @@ def main(argv: list[str] | None = None) -> int:
         # git invokes this per-file during a merge — stay light, no config/daemon
         from .merge import run_driver
         return run_driver(args.base, args.current, args.other)
+    # a noun with no verb (`crib note`) → point at its subcommands
+    if args.cmd in ("note", "code", "learning") and \
+            getattr(args, f"{args.cmd}_verb", None) is None:
+        print(f"crib {args.cmd}: choose a subcommand (try `crib {args.cmd} --help`)",
+              file=sys.stderr)
+        return 2
 
     from .config import Config
     from .paths import Paths
 
     cfg = Config.load(Paths.resolve().config_file)
-    if args.cmd in ("setup", "sync", "push", "pull"):
+    if args.cmd == "note" and getattr(args, "note_verb", None) in (
+            "setup", "sync", "push", "pull"):
         return _run_git(args, cfg)
     if cfg.daemon.enabled and not args.no_daemon:
         from . import sharedserver

@@ -1,0 +1,37 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression.test_delegated_validator_host_detects_different_host"
+name = "test_delegated_validator_host_detects_different_host"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression"
+content_hash = "d85923e124d0340a"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 1035
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed_valid_tokens [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression.test_delegated_validator_host_detects_different_host",
+  "delegated",
+  "detects",
+  "different",
+  "host",
+  "suppression",
+  "test",
+  "test_delegated_validator_host_detects_different_host",
+  "tests",
+  "upstream",
+  "validator",
+]

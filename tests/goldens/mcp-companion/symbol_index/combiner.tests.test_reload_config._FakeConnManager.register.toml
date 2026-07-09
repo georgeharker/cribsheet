@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_reload_config._FakeConnManager.register"
+name = "register"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = "combiner.tests.test_reload_config._FakeConnManager"
+content_hash = "d323bbc091f990b5"
+file = "combiner/tests/test_reload_config.py"
+signature = "def register(self, _config: CombinerConfig, name: str, _srv: ServerConfig) -> None:"
+description = ""
+line = 72
+mtime = 1783452495000000000
+container = [
+  "_FakeConnManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_reload_config._FakeConnManager.register",
+  "config",
+  "conn",
+  "fake",
+  "manager",
+  "register",
+  "reload",
+  "test",
+  "tests",
+]

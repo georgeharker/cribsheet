@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_auth.TestPreflightRefresh.test_token_within_margin_triggers_refresh"
+name = "test_token_within_margin_triggers_refresh"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestPreflightRefresh"
+content_hash = "75d5163a039fe3a8"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 433
+mtime = 1782852601000000000
+container = [
+  "TestPreflightRefresh",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestPreflightRefresh.test_token_within_margin_triggers_refresh",
+  "margin",
+  "preflight",
+  "refresh",
+  "test",
+  "test_token_within_margin_triggers_refresh",
+  "tests",
+  "token",
+  "triggers",
+  "within",
+]

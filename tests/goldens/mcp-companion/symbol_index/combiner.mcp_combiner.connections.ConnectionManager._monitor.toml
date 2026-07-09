@@ -1,0 +1,35 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager._monitor"
+name = "_monitor"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections.ConnectionManager"
+content_hash = "72cd8d6c107daca2"
+file = "combiner/mcp_combiner/connections.py"
+signature = "async def _monitor(self, conn: _ManagedConnection) -> None:"
+description = ""
+line = 622
+mtime = 1783473323000000000
+container = [
+  "ConnectionManager",
+]
+calls = [
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+  "_signal_tools_ready [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "connect [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "connect [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_monitor",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager._monitor",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+  "monitor",
+]

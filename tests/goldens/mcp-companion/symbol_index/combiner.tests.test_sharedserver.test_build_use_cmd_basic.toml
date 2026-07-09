@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_sharedserver.test_build_use_cmd_basic"
+name = "test_build_use_cmd_basic"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_sharedserver"
+parent = ""
+content_hash = "0aad837d0bed1d31"
+file = "combiner/tests/test_sharedserver.py"
+signature = "def test_build_use_cmd_basic() -> None:"
+description = ""
+line = 56
+mtime = 1782420032000000000
+container = []
+calls = [
+  "_make_ss [combiner/tests/test_sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "basic",
+  "build",
+  "cmd",
+  "combiner",
+  "combiner.tests.test_sharedserver.test_build_use_cmd_basic",
+  "sharedserver",
+  "test",
+  "test_build_use_cmd_basic",
+  "tests",
+  "use",
+]

@@ -1,0 +1,27 @@
+fqname = "crib.config.EmbedConfig.device"
+name = "device"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.EmbedConfig"
+content_hash = "36a5eb28170ac46d"
+file = "crib/config.py"
+signature = "device: str = \"auto\""
+description = ""
+line = 21
+mtime = 1783455339000000000
+container = [
+  "EmbedConfig",
+]
+calls = []
+called_by = []
+references = [
+  "build_embedder [crib/embed.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.EmbedConfig.device",
+  "device",
+  "embed",
+]

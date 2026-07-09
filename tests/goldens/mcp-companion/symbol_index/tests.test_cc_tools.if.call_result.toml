@@ -1,0 +1,29 @@
+fqname = "tests.test_cc_tools.if.call_result"
+name = "call_result"
+kind = "variable"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = "tests.test_cc_tools.if"
+content_hash = "c56be1c2376a4625"
+file = "tests/test_cc_tools.lua"
+signature = "local call_result = nil"
+description = ""
+line = 404
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "call",
+  "call_result",
+  "cc",
+  "if",
+  "result",
+  "test",
+  "tests",
+  "tests.test_cc_tools.if.call_result",
+  "tools",
+]

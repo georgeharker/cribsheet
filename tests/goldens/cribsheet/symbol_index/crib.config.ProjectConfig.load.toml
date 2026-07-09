@@ -1,0 +1,29 @@
+fqname = "crib.config.ProjectConfig.load"
+name = "load"
+kind = "method"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.ProjectConfig"
+content_hash = "389018ab0a6cb1e5"
+file = "crib/config.py"
+signature = "@classmethod"
+description = ""
+line = 253
+mtime = 1783455339000000000
+container = [
+  "ProjectConfig",
+]
+calls = []
+called_by = [
+  "project_config [crib/app.py]",
+]
+references = [
+  "project_config [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.ProjectConfig.load",
+  "load",
+  "project",
+]

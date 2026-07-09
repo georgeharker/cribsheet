@@ -1,0 +1,33 @@
+fqname = "mcp_companion.cc.session_commands._call_session_tool"
+name = "_call_session_tool"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.session_commands"
+parent = ""
+content_hash = "325c7095870a66ef"
+file = "lua/mcp_companion/cc/session_commands.lua"
+signature = "local function _call_session_tool(chat, tool_name, server_name, callback)"
+description = ""
+line = 98
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.toggle_server_for_session [lua/mcp_companion/cc/session_commands.lua]",
+  "session_commands.lua [lua/mcp_companion/cc/session_commands.lua]",
+]
+references = [
+  "chat [lua/mcp_companion/cc/session_commands.lua]",
+  "toggle_server_for_session [lua/mcp_companion/cc/session_commands.lua]",
+]
+name_terms = [
+  "_call_session_tool",
+  "call",
+  "cc",
+  "commands",
+  "companion",
+  "mcp",
+  "mcp_companion.cc.session_commands._call_session_tool",
+  "session",
+  "tool",
+]

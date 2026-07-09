@@ -1,0 +1,43 @@
+fqname = "combiner.mcp_combiner.server.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/server.py"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+line = 52
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_apply_session_filter [combiner/mcp_combiner/server.py]",
+  "_create_isolated_proxy [combiner/mcp_combiner/server.py]",
+  "_do_fetch [combiner/mcp_combiner/server.py]",
+  "_fetch_or_join [combiner/mcp_combiner/server.py]",
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/server.py]",
+  "_notify_session_by_id [combiner/mcp_combiner/server.py]",
+  "_notify_tool_list_changed [combiner/mcp_combiner/server.py]",
+  "_sanitize_tools [combiner/mcp_combiner/server.py]",
+  "_to_clean_tool [combiner/mcp_combiner/server.py]",
+  "clear_tool_cache [combiner/mcp_combiner/server.py]",
+  "create_combiner [combiner/mcp_combiner/server.py]",
+  "lookup_session_token [combiner/mcp_combiner/server.py]",
+  "manage_session_filter [combiner/mcp_combiner/server.py]",
+  "manage_token_filter [combiner/mcp_combiner/server.py]",
+  "on_call_tool [combiner/mcp_combiner/server.py]",
+  "on_list_tools [combiner/mcp_combiner/server.py]",
+  "on_request [combiner/mcp_combiner/server.py]",
+  "prime_server_tools [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.server.logger",
+  "logger",
+  "mcp",
+  "server",
+]

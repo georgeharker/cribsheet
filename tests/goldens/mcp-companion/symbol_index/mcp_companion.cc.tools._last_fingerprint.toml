@@ -1,0 +1,26 @@
+fqname = "mcp_companion.cc.tools._last_fingerprint"
+name = "_last_fingerprint"
+kind = "global"
+lang = "lua"
+module = "mcp_companion.cc.tools"
+parent = ""
+content_hash = "ed71db9f5c9d0e8c"
+file = "lua/mcp_companion/cc/tools.lua"
+signature = "local _last_fingerprint = nil"
+description = ""
+line = 18
+mtime = 1783013405000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_last_fingerprint",
+  "cc",
+  "companion",
+  "fingerprint",
+  "last",
+  "mcp",
+  "mcp_companion.cc.tools._last_fingerprint",
+  "tools",
+]

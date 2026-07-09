@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.nvim_channel.NoInstanceError"
+name = "NoInstanceError"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = ""
+content_hash = "36838a3317407796"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "class NoInstanceError(RuntimeError):"
+description = ""
+line = 46
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_enqueue [combiner/mcp_combiner/nvim_channel.py]",
+  "deregister [combiner/mcp_combiner/nvim_channel.py]",
+]
+name_terms = [
+  "NoInstanceError",
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NoInstanceError",
+  "error",
+  "instance",
+  "mcp",
+  "no",
+  "nvim",
+]

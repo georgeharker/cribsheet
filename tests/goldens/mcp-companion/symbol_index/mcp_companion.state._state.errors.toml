@@ -1,0 +1,25 @@
+fqname = "mcp_companion.state._state.errors"
+name = "errors"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.state"
+parent = "mcp_companion.state._state"
+content_hash = "05d9bec7541c96fe"
+file = "lua/mcp_companion/state.lua"
+signature = "errors = {}, -- Recent errors (max 50)"
+description = ""
+line = 35
+mtime = 1782852601000000000
+container = [
+  "_state",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "companion",
+  "errors",
+  "mcp",
+  "mcp_companion.state._state.errors",
+  "state",
+]

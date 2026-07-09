@@ -1,0 +1,24 @@
+fqname = "crib.chunk.Chunk"
+name = "Chunk"
+kind = "class"
+lang = "python"
+module = "crib.chunk"
+parent = ""
+content_hash = "c78b32f1fd11d8fe"
+file = "crib/chunk.py"
+signature = "@dataclass"
+description = ""
+line = 24
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "chunk_note [crib/chunk.py]",
+]
+name_terms = [
+  "Chunk",
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk",
+]

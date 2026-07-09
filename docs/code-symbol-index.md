@@ -311,14 +311,14 @@ The BM25 cache is keyed by project+corpus-hash; I misread it as global for a whi
   can't collide (`core::cache::Store::get` → `core-cache-Store-get-132ab1a5`). Clean
   dotted fqns pass through verbatim. The `symbol:` frontmatter is authoritative, so
   the filename never has to round-trip. (`crib/codeindex.py: learning_slug`.)
-- **Same primitives as notes, `code_`-scoped** — `code_append` (attach a dated entry,
-  creating the running note on first use), `code_edit` (rewrite the body), `code_forget`
-  (remove, recoverable via the ring — works on orphans too), `code_read`, plus
-  `code_reaffirm` (clear a ⚠ stale flag without a rewrite) and the maintenance pair
-  `code_learnings` (health report) / `code_rehome` (re-point an orphan). Each resolves
+- **Same primitives as notes, under the `learning` noun** — `learning_add` (attach a dated entry,
+  creating the running note on first use), `learning_edit` (rewrite the body), `learning_forget`
+  (remove, recoverable via the ring — works on orphans too), `learning_read`, plus
+  `learning_reaffirm` (clear a ⚠ stale flag without a rewrite) and the maintenance pair
+  `learning_report` (health report) / `learning_rehome` (re-point an orphan). Each resolves
   the symbol against the index (exact fqn wins; a bare name only if unique — never
-  silently pick, so a learning can't land on the wrong symbol) and reuses
-  `_write_note`/`forget`. MCP + CLI (`crib code-append <symbol> "…"`).
+  silently pick, so a learning can't land on the wrong symbol) and reuse the note write/delete path (`NoteStore`). MCP (`learning_add`, …)
+  + CLI (`crib learning add <symbol> "…"`).
 - **Attach to code you can't edit.** A learning is external, so it pins understanding to
   vendored deps and read-only explorations — where a comment structurally can't go. The
   comment-vs-learning line: a comment is for the next reader and ships in the repo; a
@@ -345,26 +345,26 @@ the symbol is gone.
 surfaced (via `code_lookup`/`code_xref`), if the symbol's current `content_hash` differs
 it's marked `⚠ written against an older body` — not auto-invalidated (the subtlety often
 still holds), just honestly flagged. When you've re-checked a flagged note and it still
-holds, **`code_reaffirm` clears the flag without a rewrite** — it re-snapshots
+holds, **`learning_reaffirm` clears the flag without a rewrite** — it re-snapshots
 `content_hash`/`file`/`signature` and stamps `reaffirmed`, so the body stays untouched.
 
 Build order:
-1. `code_append`/`edit`/`forget`/`read` + the `code-learnings/` subtree ✓
+1. `learning_add`/`edit`/`forget`/`read` + the `code-learnings/` subtree ✓
 2. Query-time join — 📌 block in `code_lookup`/`code_xref` + staleness ⚠ ✓ (keyed
    O(1) by `learning_slug(fqn)`; only symbols that carry a note pay a read)
 3. `code_graph` glyph (📌) marking nodes that carry a learning ✓ — the call tree
    becomes a treasure map. fqn→slug membership against the subtree (never filename→fqn,
    since the munge is lossy)
-4. `code_learnings` report ✓ — true orphans (fqn unresolved) *and* moved learnings (fqn
+4. `learning_report` report ✓ — true orphans (fqn unresolved) *and* moved learnings (fqn
    resolves, snapshot `file:` drifted); report-only, never gates indexing
-5. `code_rehome` ✓ — suggestion-ranked (no target → candidates by name/signature/file;
-   confirm with a target → move, id/history preserved), human/LLM-confirmed; `code_forget`
+5. `learning_rehome` ✓ — suggestion-ranked (no target → candidates by name/signature/file;
+   confirm with a target → move, id/history preserved), human/LLM-confirmed; `learning_forget`
    removes a dead orphan without needing it to resolve
 
-**git-history rehoming is a prompt pattern, not more code.** `code_rehome`'s built-in
+**git-history rehoming is a prompt pattern, not more code.** `learning_rehome`'s built-in
 ranking is structural (name / signature / file). Richer rename evidence — `git log
 --follow`, usage pointers — is something the *agent* consults at the prompt (read the
-rename from history, then call `code_rehome <old> <new>`), not a ranker we hardwire. The
+rename from history, then call `crib learning rehome <old> <new>`), not a ranker we hardwire. The
 tool stays a confirmed move; the LLM brings the git context.
 
 One thing stays genuinely parked, to keep the human layer clean of the machine layer:

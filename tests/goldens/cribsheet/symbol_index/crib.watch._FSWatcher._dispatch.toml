@@ -1,0 +1,31 @@
+fqname = "crib.watch._FSWatcher._dispatch"
+name = "_dispatch"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch._FSWatcher"
+content_hash = "3d95f5284e81f603"
+file = "crib/watch.py"
+signature = "async def _dispatch(self, *key: Any) -> None:"
+description = ""
+line = 72
+mtime = 1783476730000000000
+container = [
+  "_FSWatcher",
+]
+calls = []
+called_by = [
+  "_fire [crib/watch.py]",
+]
+references = [
+  "_fire [crib/watch.py]",
+]
+name_terms = [
+  "_dispatch",
+  "crib",
+  "crib.watch._FSWatcher._dispatch",
+  "dispatch",
+  "fs",
+  "watch",
+  "watcher",
+]

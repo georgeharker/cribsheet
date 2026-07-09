@@ -1,0 +1,28 @@
+fqname = "combiner.tests.test_nvim_channel.nvim_instance"
+name = "nvim_instance"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_nvim_channel"
+parent = ""
+content_hash = "b2816d708fc2c554"
+file = "combiner/tests/test_nvim_channel.py"
+signature = "@pytest.fixture"
+description = ""
+line = 40
+mtime = 1783022631000000000
+container = []
+calls = [
+  "_wait_for_socket [combiner/tests/test_nvim_channel.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.tests.test_nvim_channel.nvim_instance",
+  "instance",
+  "nvim",
+  "nvim_instance",
+  "test",
+  "tests",
+]

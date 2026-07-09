@@ -1,0 +1,36 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager._signal_tools_ready"
+name = "_signal_tools_ready"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections.ConnectionManager"
+content_hash = "9a54a9eef12dd028"
+file = "combiner/mcp_combiner/connections.py"
+signature = "async def _signal_tools_ready(self, conn: _ManagedConnection) -> None:"
+description = ""
+line = 515
+mtime = 1783473323000000000
+container = [
+  "ConnectionManager",
+]
+calls = []
+called_by = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_signal_tools_ready",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager._signal_tools_ready",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+  "ready",
+  "signal",
+  "tools",
+]

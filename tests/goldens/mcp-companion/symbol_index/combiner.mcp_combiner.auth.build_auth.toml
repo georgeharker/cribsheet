@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.auth.build_auth"
+name = "build_auth"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "7d89aa246300ac7a"
+file = "combiner/mcp_combiner/auth.py"
+signature = "def build_auth("
+description = ""
+line = 1057
+mtime = 1782852601000000000
+container = []
+calls = [
+  "_BearerAuth [combiner/mcp_combiner/auth.py]",
+  "_build_oauth [combiner/mcp_combiner/auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "build",
+  "build_auth",
+  "combiner",
+  "combiner.mcp_combiner.auth.build_auth",
+  "mcp",
+]

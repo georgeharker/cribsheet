@@ -1,0 +1,34 @@
+fqname = "crib.codeindex._locate"
+name = "_locate"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "38e9edb2990b7a05"
+file = "crib/codeindex.py"
+signature = "def _locate(uri: str, root: Path, ref_projects: RefProjects | None) -> str | None:"
+description = ""
+line = 646
+mtime = 1783544236000000000
+container = []
+calls = [
+  "_in_workspace [crib/codeindex.py]",
+  "_rel [crib/codeindex.py]",
+]
+called_by = [
+  "_hierarchy_edges [crib/codeindex.py]",
+  "_reference_edges [crib/codeindex.py]",
+  "test_locate_attributes_out_of_root_uris [tests/test_refs.py]",
+]
+references = [
+  "_hierarchy_edges [crib/codeindex.py]",
+  "_reference_edges [crib/codeindex.py]",
+  "test_locate_attributes_out_of_root_uris [tests/test_refs.py]",
+]
+name_terms = [
+  "_locate",
+  "codeindex",
+  "crib",
+  "crib.codeindex._locate",
+  "locate",
+]

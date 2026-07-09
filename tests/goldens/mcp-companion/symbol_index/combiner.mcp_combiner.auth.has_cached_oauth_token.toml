@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.auth.has_cached_oauth_token"
+name = "has_cached_oauth_token"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "8ba566533591ce2a"
+file = "combiner/mcp_combiner/auth.py"
+signature = "def has_cached_oauth_token("
+description = ""
+line = 1206
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "cached",
+  "combiner",
+  "combiner.mcp_combiner.auth.has_cached_oauth_token",
+  "has",
+  "has_cached_oauth_token",
+  "mcp",
+  "oauth",
+  "token",
+]

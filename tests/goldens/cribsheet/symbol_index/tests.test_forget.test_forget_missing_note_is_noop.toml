@@ -1,0 +1,29 @@
+fqname = "tests.test_forget.test_forget_missing_note_is_noop"
+name = "test_forget_missing_note_is_noop"
+kind = "function"
+lang = "python"
+module = "tests.test_forget"
+parent = ""
+content_hash = "f63013bd51badb0f"
+file = "tests/test_forget.py"
+signature = "def test_forget_missing_note_is_noop(crib):"
+description = ""
+line = 48
+mtime = 1782609751000000000
+container = []
+calls = [
+  "run [tests/test_forget.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "forget",
+  "is",
+  "missing",
+  "noop",
+  "note",
+  "test",
+  "test_forget_missing_note_is_noop",
+  "tests",
+  "tests.test_forget.test_forget_missing_note_is_noop",
+]

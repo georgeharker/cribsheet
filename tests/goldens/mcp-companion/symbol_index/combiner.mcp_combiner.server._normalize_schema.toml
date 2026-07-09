@@ -1,0 +1,34 @@
+fqname = "combiner.mcp_combiner.server._normalize_schema"
+name = "_normalize_schema"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "13083dee900aa54e"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _normalize_schema(schema: object) -> object:"
+description = ""
+line = 692
+mtime = 1783473323000000000
+container = []
+calls = [
+  "_normalize_schema [combiner/mcp_combiner/server.py]",
+]
+called_by = [
+  "_apply_schema_fixes [combiner/mcp_combiner/server.py]",
+  "_normalize_schema [combiner/mcp_combiner/server.py]",
+  "_to_clean_tool [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_apply_schema_fixes [combiner/mcp_combiner/server.py]",
+  "_to_clean_tool [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_normalize_schema",
+  "combiner",
+  "combiner.mcp_combiner.server._normalize_schema",
+  "mcp",
+  "normalize",
+  "schema",
+  "server",
+]

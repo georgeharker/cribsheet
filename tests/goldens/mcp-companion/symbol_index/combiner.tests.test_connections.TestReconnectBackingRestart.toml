@@ -1,0 +1,27 @@
+fqname = "combiner.tests.test_connections.TestReconnectBackingRestart"
+name = "TestReconnectBackingRestart"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = ""
+content_hash = "46eee6c0ca61c467"
+file = "combiner/tests/test_connections.py"
+signature = "class TestReconnectBackingRestart:"
+description = ""
+line = 194
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestReconnectBackingRestart",
+  "backing",
+  "combiner",
+  "combiner.tests.test_connections.TestReconnectBackingRestart",
+  "connections",
+  "reconnect",
+  "restart",
+  "test",
+  "tests",
+]

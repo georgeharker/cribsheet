@@ -1,0 +1,32 @@
+fqname = "crib.app.Crib._indexed_relpaths"
+name = "_indexed_relpaths"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "ab465ca5213b1d74"
+file = "crib/app.py"
+signature = "def _indexed_relpaths(self, project: str, prefix: str) -> set[str]:"
+description = ""
+line = 1322
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "get_meta [crib/store.py]",
+]
+called_by = [
+  "index_docs_insitu [crib/app.py]",
+]
+references = [
+  "index_docs_insitu [crib/app.py]",
+]
+name_terms = [
+  "_indexed_relpaths",
+  "app",
+  "crib",
+  "crib.app.Crib._indexed_relpaths",
+  "indexed",
+  "relpaths",
+]

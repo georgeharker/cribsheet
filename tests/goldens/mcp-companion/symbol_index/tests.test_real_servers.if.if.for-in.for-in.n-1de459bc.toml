@@ -1,0 +1,32 @@
+fqname = "tests.test_real_servers.if.if.for in.for in.n"
+name = "n"
+kind = "variable"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = "tests.test_real_servers.if.if.for in.for in"
+content_hash = "08e7a60175f699be"
+file = "tests/test_real_servers.lua"
+signature = "local n = (t._namespaced or t.name):lower()"
+description = ""
+line = 457
+mtime = 1782853510000000000
+container = [
+  "if",
+  "if",
+  "for in",
+  "for in",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "for",
+  "if",
+  "in",
+  "n",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.if.for in.for in.n",
+]

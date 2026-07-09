@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.auth._ExpiryAwareAdapter._EXPIRY_COLLECTION"
+name = "_EXPIRY_COLLECTION"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = "combiner.mcp_combiner.auth._ExpiryAwareAdapter"
+content_hash = "9c899bc7295d2762"
+file = "combiner/mcp_combiner/auth.py"
+signature = "_EXPIRY_COLLECTION = \"mcp-oauth-token-expiry\""
+description = ""
+line = 222
+mtime = 1782852601000000000
+container = [
+  "_ExpiryAwareAdapter",
+]
+calls = []
+called_by = []
+references = [
+  "get_tokens [combiner/mcp_combiner/auth.py]",
+  "set_tokens [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_EXPIRY_COLLECTION",
+  "adapter",
+  "auth",
+  "aware",
+  "collection",
+  "combiner",
+  "combiner.mcp_combiner.auth._ExpiryAwareAdapter._EXPIRY_COLLECTION",
+  "expiry",
+  "mcp",
+]

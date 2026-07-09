@@ -1,0 +1,34 @@
+fqname = "crib.learnings.Learnings.reaffirm"
+name = "reaffirm"
+kind = "method"
+lang = "python"
+module = "crib.learnings"
+parent = "crib.learnings.Learnings"
+content_hash = "c55a98cb5a359fe5"
+file = "crib/learnings.py"
+signature = "async def reaffirm(self, proj: str, symbol: str) -> dict[str, Any]:"
+description = ""
+line = 132
+mtime = 1783529664000000000
+container = [
+  "Learnings",
+]
+calls = [
+  "abspath [crib/notestore.py]",
+  "load [crib/notes.py]",
+  "relpath [crib/learnings.py]",
+  "resolve_symbol [crib/refs.py]",
+  "write [crib/notestore.py]",
+]
+called_by = [
+  "code_reaffirm [crib/app.py]",
+]
+references = [
+  "code_reaffirm [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.learnings.Learnings.reaffirm",
+  "learnings",
+  "reaffirm",
+]

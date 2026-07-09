@@ -1,0 +1,37 @@
+fqname = "combiner.mcp_combiner.sharedserver.SharedServerManager.stop_all"
+name = "stop_all"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.sharedserver"
+parent = "combiner.mcp_combiner.sharedserver.SharedServerManager"
+content_hash = "f9457d21760d548e"
+file = "combiner/mcp_combiner/sharedserver.py"
+signature = "async def stop_all(self) -> None:"
+description = ""
+line = 344
+mtime = 1782539642000000000
+container = [
+  "SharedServerManager",
+]
+calls = [
+  "_get_binary [combiner/mcp_combiner/sharedserver.py]",
+  "_stop_one [combiner/mcp_combiner/sharedserver.py]",
+]
+called_by = [
+  "cleanup [combiner/mcp_combiner/sharedserver.py]",
+]
+references = [
+  "cleanup [combiner/mcp_combiner/sharedserver.py]",
+]
+name_terms = [
+  "all",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.SharedServerManager.stop_all",
+  "manager",
+  "mcp",
+  "server",
+  "shared",
+  "sharedserver",
+  "stop",
+  "stop_all",
+]

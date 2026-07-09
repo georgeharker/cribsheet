@@ -1,0 +1,29 @@
+fqname = "crib.generate.GenerationError"
+name = "GenerationError"
+kind = "class"
+lang = "python"
+module = "crib.generate"
+parent = ""
+content_hash = "2cde4490872d6571"
+file = "crib/generate.py"
+signature = "class GenerationError(RuntimeError):"
+description = ""
+line = 21
+mtime = 1782958917000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "generate [crib/generate.py]",
+  "generate_structured [crib/generate.py]",
+  "resolve_provider [crib/generate.py]",
+  "test_resolve_provider_missing_selection_errors [tests/test_elaborate.py]",
+]
+name_terms = [
+  "GenerationError",
+  "crib",
+  "crib.generate.GenerationError",
+  "error",
+  "generate",
+  "generation",
+]

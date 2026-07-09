@@ -1,0 +1,42 @@
+fqname = "crib.gitbacking.GitBacking.pull"
+name = "pull"
+kind = "method"
+lang = "python"
+module = "crib.gitbacking"
+parent = "crib.gitbacking.GitBacking"
+content_hash = "9be67def7cbe2434"
+file = "crib/gitbacking.py"
+signature = "def pull(self) -> SyncResult:"
+description = ""
+line = 242
+mtime = 1783451795000000000
+container = [
+  "GitBacking",
+]
+calls = [
+  "SyncResult [crib/gitbacking.py]",
+  "_branch [crib/gitbacking.py]",
+  "_conflicts [crib/gitbacking.py]",
+  "_ensure_gitattributes [crib/gitbacking.py]",
+  "_ensure_gitignore [crib/gitbacking.py]",
+  "_ensure_repo_config [crib/gitbacking.py]",
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "_run_git [crib/cli.py]",
+  "setup [crib/gitbacking.py]",
+  "sync [crib/gitbacking.py]",
+]
+references = [
+  "_run_git [crib/cli.py]",
+  "setup [crib/gitbacking.py]",
+  "sync [crib/gitbacking.py]",
+]
+name_terms = [
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking.pull",
+  "git",
+  "gitbacking",
+  "pull",
+]

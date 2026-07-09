@@ -1,0 +1,30 @@
+fqname = "tests.test_line_map.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+module = "tests.test_line_map"
+parent = ""
+content_hash = "65387a609655e14a"
+file = "tests/test_line_map.py"
+signature = "@pytest.fixture()"
+description = ""
+line = 23
+mtime = 1782631409000000000
+container = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "line",
+  "map",
+  "test",
+  "tests",
+  "tests.test_line_map.crib",
+]

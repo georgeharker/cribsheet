@@ -1,0 +1,36 @@
+fqname = "crib.app.Crib._generate_index._record"
+name = "_record"
+kind = "function"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib._generate_index"
+content_hash = "0e253e50393fed3b"
+file = "crib/app.py"
+signature = "def _record(sh: str, rp: str, heading: str, terms: list[str]) -> None:"
+description = ""
+line = 1162
+mtime = 1783530649000000000
+container = [
+  "Crib",
+  "_generate_index",
+]
+calls = [
+  "write [crib/section_index.py]",
+]
+called_by = [
+  "_bulk [crib/app.py]",
+  "_one [crib/app.py]",
+]
+references = [
+  "_bulk [crib/app.py]",
+  "_one [crib/app.py]",
+]
+name_terms = [
+  "_record",
+  "app",
+  "crib",
+  "crib.app.Crib._generate_index._record",
+  "generate",
+  "index",
+  "record",
+]

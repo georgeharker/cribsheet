@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.server._active_sessions"
+name = "_active_sessions"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "334d0f1496df9949"
+file = "combiner/mcp_combiner/server.py"
+signature = "_active_sessions: weakref.WeakSet[ServerSession] = weakref.WeakSet()"
+description = ""
+line = 124
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_notify_session_by_id [combiner/mcp_combiner/server.py]",
+  "_notify_tool_list_changed [combiner/mcp_combiner/server.py]",
+  "list_sessions [combiner/mcp_combiner/server.py]",
+  "on_request [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_active_sessions",
+  "active",
+  "combiner",
+  "combiner.mcp_combiner.server._active_sessions",
+  "mcp",
+  "server",
+  "sessions",
+]

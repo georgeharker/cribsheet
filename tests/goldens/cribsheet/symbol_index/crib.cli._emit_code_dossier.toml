@@ -1,0 +1,31 @@
+fqname = "crib.cli._emit_code_dossier"
+name = "_emit_code_dossier"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "eb20bd66a31247bc"
+file = "crib/cli.py"
+signature = "def _emit_code_dossier(d: Any, as_json: bool) -> None:"
+description = ""
+line = 257
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_print_learning [crib/cli.py]",
+]
+called_by = [
+  "_E_dossier [crib/cli.py]",
+]
+references = [
+  "_E_dossier [crib/cli.py]",
+]
+name_terms = [
+  "_emit_code_dossier",
+  "cli",
+  "code",
+  "crib",
+  "crib.cli._emit_code_dossier",
+  "dossier",
+  "emit",
+]

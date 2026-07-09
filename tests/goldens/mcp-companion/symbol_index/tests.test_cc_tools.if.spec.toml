@@ -1,0 +1,27 @@
+fqname = "tests.test_cc_tools.if.spec"
+name = "spec"
+kind = "variable"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = "tests.test_cc_tools.if"
+content_hash = "f7fc43c107d88f2d"
+file = "tests/test_cc_tools.lua"
+signature = "local spec = entry.callback()"
+description = ""
+line = 401
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cc",
+  "if",
+  "spec",
+  "test",
+  "tests",
+  "tests.test_cc_tools.if.spec",
+  "tools",
+]

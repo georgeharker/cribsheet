@@ -1,0 +1,27 @@
+fqname = "combiner.tests.test_connections.TestSignalToolsReady"
+name = "TestSignalToolsReady"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = ""
+content_hash = "b46ac48567b586fa"
+file = "combiner/tests/test_connections.py"
+signature = "class TestSignalToolsReady:"
+description = ""
+line = 30
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestSignalToolsReady",
+  "combiner",
+  "combiner.tests.test_connections.TestSignalToolsReady",
+  "connections",
+  "ready",
+  "signal",
+  "test",
+  "tests",
+  "tools",
+]

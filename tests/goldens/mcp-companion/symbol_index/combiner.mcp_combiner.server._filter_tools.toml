@@ -1,0 +1,34 @@
+fqname = "combiner.mcp_combiner.server._filter_tools"
+name = "_filter_tools"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "8323669e11054c80"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _filter_tools(tools: list[Tool]) -> list[Tool]:"
+description = ""
+line = 297
+mtime = 1783473323000000000
+container = []
+calls = [
+  "_find_server_for_tool [combiner/mcp_combiner/server.py]",
+  "_matches_filter [combiner/mcp_combiner/server.py]",
+]
+called_by = [
+  "_do_fetch [combiner/mcp_combiner/server.py]",
+  "prime_server_tools [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_do_fetch [combiner/mcp_combiner/server.py]",
+  "prime_server_tools [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_filter_tools",
+  "combiner",
+  "combiner.mcp_combiner.server._filter_tools",
+  "filter",
+  "mcp",
+  "server",
+  "tools",
+]

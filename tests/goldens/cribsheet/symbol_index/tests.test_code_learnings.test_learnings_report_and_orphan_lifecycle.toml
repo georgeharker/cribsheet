@@ -1,0 +1,31 @@
+fqname = "tests.test_code_learnings.test_learnings_report_and_orphan_lifecycle"
+name = "test_learnings_report_and_orphan_lifecycle"
+kind = "function"
+lang = "python"
+module = "tests.test_code_learnings"
+parent = ""
+content_hash = "69c1dc7e392af41d"
+file = "tests/test_code_learnings.py"
+signature = "def test_learnings_report_and_orphan_lifecycle(crib):"
+description = ""
+line = 115
+mtime = 1783494048000000000
+container = []
+calls = [
+  "_seed_symbol [tests/test_code_learnings.py]",
+  "run [tests/test_code_learnings.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "code",
+  "learnings",
+  "lifecycle",
+  "orphan",
+  "report",
+  "test",
+  "test_learnings_report_and_orphan_lifecycle",
+  "tests",
+  "tests.test_code_learnings.test_learnings_report_and_orphan_lifecycle",
+]

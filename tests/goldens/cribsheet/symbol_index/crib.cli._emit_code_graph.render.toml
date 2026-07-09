@@ -1,0 +1,34 @@
+fqname = "crib.cli._emit_code_graph.render"
+name = "render"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = "crib.cli._emit_code_graph"
+content_hash = "456f1609a9b3bce1"
+file = "crib/cli.py"
+signature = "def render(node: dict, prefix: str) -> None:"
+description = ""
+line = 369
+mtime = 1783476730000000000
+container = [
+  "_emit_code_graph",
+]
+calls = [
+  "render [crib/cli.py]",
+]
+called_by = [
+  "_emit_code_graph [crib/cli.py]",
+  "render [crib/cli.py]",
+]
+references = [
+  "_emit_code_graph [crib/cli.py]",
+]
+name_terms = [
+  "cli",
+  "code",
+  "crib",
+  "crib.cli._emit_code_graph.render",
+  "emit",
+  "graph",
+  "render",
+]

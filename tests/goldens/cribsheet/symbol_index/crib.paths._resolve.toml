@@ -1,0 +1,27 @@
+fqname = "crib.paths._resolve"
+name = "_resolve"
+kind = "function"
+lang = "python"
+module = "crib.paths"
+parent = ""
+content_hash = "eb2de9c49b370b9b"
+file = "crib/paths.py"
+signature = "def _resolve(env_override: str, xdg_var: str, xdg_default: str) -> Path:"
+description = ""
+line = 16
+mtime = 1783533619000000000
+container = []
+calls = []
+called_by = [
+  "resolve [crib/paths.py]",
+]
+references = [
+  "resolve [crib/paths.py]",
+]
+name_terms = [
+  "_resolve",
+  "crib",
+  "crib.paths._resolve",
+  "paths",
+  "resolve",
+]

@@ -1,0 +1,26 @@
+fqname = "combiner.mcp_combiner.sharedserver.register_for_cleanup"
+name = "register_for_cleanup"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.sharedserver"
+parent = ""
+content_hash = "c8211232fea27f08"
+file = "combiner/mcp_combiner/sharedserver.py"
+signature = "def register_for_cleanup(manager: SharedServerManager) -> None:"
+description = ""
+line = 388
+mtime = 1782539642000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cleanup",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.register_for_cleanup",
+  "for",
+  "mcp",
+  "register",
+  "register_for_cleanup",
+  "sharedserver",
+]

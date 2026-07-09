@@ -1,0 +1,34 @@
+fqname = "crib.session.ProjectResolution.implicit"
+name = "implicit"
+kind = "method"
+lang = "python"
+module = "crib.session"
+parent = "crib.session.ProjectResolution"
+content_hash = "3af58a718136d58d"
+file = "crib/session.py"
+signature = "@property"
+description = ""
+line = 37
+mtime = 1783476730000000000
+container = [
+  "ProjectResolution",
+]
+calls = []
+called_by = [
+  "_echo_dict [crib/server.py]",
+  "_echo_list [crib/server.py]",
+  "test_explicit_arg_overrides_without_touching_session [tests/test_session.py]",
+]
+references = [
+  "_echo_dict [crib/server.py]",
+  "_echo_list [crib/server.py]",
+  "test_explicit_arg_overrides_without_touching_session [tests/test_session.py]",
+]
+name_terms = [
+  "crib",
+  "crib.session.ProjectResolution.implicit",
+  "implicit",
+  "project",
+  "resolution",
+  "session",
+]

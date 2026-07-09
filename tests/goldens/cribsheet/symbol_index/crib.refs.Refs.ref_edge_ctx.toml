@@ -1,0 +1,34 @@
+fqname = "crib.refs.Refs.ref_edge_ctx"
+name = "ref_edge_ctx"
+kind = "method"
+lang = "python"
+module = "crib.refs"
+parent = "crib.refs.Refs"
+content_hash = "590a6f1312e43be5"
+file = "crib/refs.py"
+signature = "def ref_edge_ctx(self, proj: str, root: Path | None = None) -> RefProjects:"
+description = ""
+line = 54
+mtime = 1783522850000000000
+container = [
+  "Refs",
+]
+calls = [
+  "find [crib/config.py]",
+  "project_refs [crib/refs.py]",
+]
+called_by = [
+  "ref_edge_ctx [crib/project_services.py]",
+]
+references = [
+  "ref_edge_ctx [crib/project_services.py]",
+]
+name_terms = [
+  "crib",
+  "crib.refs.Refs.ref_edge_ctx",
+  "ctx",
+  "edge",
+  "ref",
+  "ref_edge_ctx",
+  "refs",
+]

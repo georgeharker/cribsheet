@@ -1,0 +1,27 @@
+fqname = "crib.store.ChromaStore.current_dim"
+name = "current_dim"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.ChromaStore"
+content_hash = "412d79206b1b8846"
+file = "crib/store.py"
+signature = "def current_dim(self) -> int | None:"
+description = ""
+line = 168
+mtime = 1783446057000000000
+container = [
+  "ChromaStore",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore.current_dim",
+  "current",
+  "current_dim",
+  "dim",
+  "store",
+]

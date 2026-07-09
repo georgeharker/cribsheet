@@ -1,0 +1,31 @@
+fqname = "crib.server.build_server.code_index"
+name = "code_index"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "85ade1a55e9c6552"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 367
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_cwd [crib/server.py]",
+  "_project [crib/server.py]",
+  "code_index [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "code",
+  "code_index",
+  "crib",
+  "crib.server.build_server.code_index",
+  "index",
+  "server",
+]

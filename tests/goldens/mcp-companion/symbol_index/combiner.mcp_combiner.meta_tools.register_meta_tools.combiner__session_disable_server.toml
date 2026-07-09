@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__session_disable_server"
+name = "combiner__session_disable_server"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.meta_tools"
+parent = "combiner.mcp_combiner.meta_tools.register_meta_tools"
+content_hash = "7bd518849f55e65c"
+file = "combiner/mcp_combiner/meta_tools.py"
+signature = "@combiner.tool()"
+description = ""
+line = 385
+mtime = 1783452495000000000
+container = [
+  "register_meta_tools",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__session_disable_server",
+  "combiner__session_disable_server",
+  "disable",
+  "mcp",
+  "meta",
+  "register",
+  "server",
+  "session",
+  "tools",
+]

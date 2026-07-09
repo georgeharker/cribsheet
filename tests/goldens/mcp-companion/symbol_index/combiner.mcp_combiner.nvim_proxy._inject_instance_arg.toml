@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.nvim_proxy._inject_instance_arg"
+name = "_inject_instance_arg"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_proxy"
+parent = ""
+content_hash = "9304f3cc047e01ec"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+signature = "def _inject_instance_arg(params: dict[str, Any]) -> dict[str, Any]:"
+description = ""
+line = 107
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = [
+  "_build_nvim_tools [combiner/mcp_combiner/nvim_proxy.py]",
+]
+references = [
+  "_build_nvim_tools [combiner/mcp_combiner/nvim_proxy.py]",
+]
+name_terms = [
+  "_inject_instance_arg",
+  "arg",
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy._inject_instance_arg",
+  "inject",
+  "instance",
+  "mcp",
+  "nvim",
+  "proxy",
+]

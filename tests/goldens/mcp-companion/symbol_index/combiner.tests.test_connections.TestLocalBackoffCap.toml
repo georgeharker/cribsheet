@@ -1,0 +1,27 @@
+fqname = "combiner.tests.test_connections.TestLocalBackoffCap"
+name = "TestLocalBackoffCap"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = ""
+content_hash = "1a5bf23a805ff48d"
+file = "combiner/tests/test_connections.py"
+signature = "class TestLocalBackoffCap:"
+description = ""
+line = 274
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestLocalBackoffCap",
+  "backoff",
+  "cap",
+  "combiner",
+  "combiner.tests.test_connections.TestLocalBackoffCap",
+  "connections",
+  "local",
+  "test",
+  "tests",
+]

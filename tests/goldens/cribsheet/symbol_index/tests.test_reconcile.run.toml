@@ -1,0 +1,29 @@
+fqname = "tests.test_reconcile.run"
+name = "run"
+kind = "function"
+lang = "python"
+module = "tests.test_reconcile"
+parent = ""
+content_hash = "44052857cf112194"
+file = "tests/test_reconcile.py"
+signature = "def run(coro):"
+description = ""
+line = 24
+mtime = 1782609751000000000
+container = []
+calls = []
+called_by = [
+  "test_reconcile_is_noop_when_nothing_changed [tests/test_reconcile.py]",
+  "test_reconcile_picks_up_offline_edit_and_delete [tests/test_reconcile.py]",
+]
+references = [
+  "test_reconcile_is_noop_when_nothing_changed [tests/test_reconcile.py]",
+  "test_reconcile_picks_up_offline_edit_and_delete [tests/test_reconcile.py]",
+]
+name_terms = [
+  "reconcile",
+  "run",
+  "test",
+  "tests",
+  "tests.test_reconcile.run",
+]

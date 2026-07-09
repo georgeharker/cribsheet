@@ -1,0 +1,28 @@
+fqname = "crib.config.GenerateConfig.provider"
+name = "provider"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.GenerateConfig"
+content_hash = "e24d77075b161c5a"
+file = "crib/config.py"
+signature = "provider: str | None = None      # force a named provider (wins over profile)"
+description = ""
+line = 129
+mtime = 1783455339000000000
+container = [
+  "GenerateConfig",
+]
+calls = []
+called_by = []
+references = [
+  "resolve_provider [crib/generate.py]",
+  "test_resolve_provider_by_profile_and_purpose [tests/test_elaborate.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.GenerateConfig.provider",
+  "generate",
+  "provider",
+]

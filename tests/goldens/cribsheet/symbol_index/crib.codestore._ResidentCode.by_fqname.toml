@@ -1,0 +1,34 @@
+fqname = "crib.codestore._ResidentCode.by_fqname"
+name = "by_fqname"
+kind = "method"
+lang = "python"
+module = "crib.codestore"
+parent = "crib.codestore._ResidentCode"
+content_hash = "33ac42affebc0942"
+file = "crib/codestore.py"
+signature = "def by_fqname(self, name: str) -> list[dict[str, Any]]:"
+description = ""
+line = 39
+mtime = 1783494290000000000
+container = [
+  "_ResidentCode",
+]
+calls = []
+called_by = [
+  "resolve_symbol [crib/refs.py]",
+  "xref [crib/codequery.py]",
+]
+references = [
+  "resolve_symbol [crib/refs.py]",
+  "xref [crib/codequery.py]",
+]
+name_terms = [
+  "by",
+  "by_fqname",
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore._ResidentCode.by_fqname",
+  "fqname",
+  "resident",
+]

@@ -1,0 +1,31 @@
+fqname = "crib.server.build_server.import_files"
+name = "import_files"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "914b477a77682358"
+file = "crib/server.py"
+signature = "@mcp.tool(name=\"import\")"
+description = ""
+line = 545
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_cwd [crib/server.py]",
+  "_switch_if_created [crib/server.py]",
+  "import_files [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.import_files",
+  "files",
+  "import",
+  "import_files",
+  "server",
+]

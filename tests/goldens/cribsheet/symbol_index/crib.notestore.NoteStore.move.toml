@@ -1,0 +1,38 @@
+fqname = "crib.notestore.NoteStore.move"
+name = "move"
+kind = "method"
+lang = "python"
+module = "crib.notestore"
+parent = "crib.notestore.NoteStore"
+content_hash = "4db8cf1916e2b6be"
+file = "crib/notestore.py"
+signature = "async def move(self, project: str, relpath: str, dst_proj: str,"
+description = ""
+line = 87
+mtime = 1783525700000000000
+container = [
+  "NoteStore",
+]
+calls = [
+  "Note [crib/notes.py]",
+  "abspath [crib/notestore.py]",
+  "dir [crib/notestore.py]",
+  "index_file [crib/indexer.py]",
+  "load [crib/notes.py]",
+  "notes_dir [crib/paths.py]",
+  "save_atomic [crib/notes.py]",
+]
+called_by = [
+  "move_note [crib/app.py]",
+]
+references = [
+  "move_note [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.NoteStore.move",
+  "move",
+  "note",
+  "notestore",
+  "store",
+]

@@ -1,0 +1,26 @@
+fqname = "crib.config.Config.elaborate"
+name = "elaborate"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.Config"
+content_hash = "fd8472451ce93cc7"
+file = "crib/config.py"
+signature = "elaborate: dict[str, dict[str, Any]] = field(default_factory=dict)"
+description = ""
+line = 198
+mtime = 1783455339000000000
+container = [
+  "Config",
+]
+calls = []
+called_by = []
+references = [
+  "elaborate [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.elaborate",
+  "elaborate",
+]

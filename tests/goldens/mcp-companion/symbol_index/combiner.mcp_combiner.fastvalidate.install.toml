@@ -1,0 +1,25 @@
+fqname = "combiner.mcp_combiner.fastvalidate.install"
+name = "install"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.fastvalidate"
+parent = ""
+content_hash = "cdaf9b9c12ee7382"
+file = "combiner/mcp_combiner/fastvalidate.py"
+signature = "def install() -> None:"
+description = ""
+line = 134
+mtime = 1782420032000000000
+container = []
+calls = [
+  "_JsonschemaShim [combiner/mcp_combiner/fastvalidate.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.fastvalidate.install",
+  "fastvalidate",
+  "install",
+  "mcp",
+]

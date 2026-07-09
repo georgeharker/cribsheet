@@ -1,0 +1,32 @@
+fqname = "tests.test_codeindex.test_render_parse_roundtrip_including_empty_arrays"
+name = "test_render_parse_roundtrip_including_empty_arrays"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "dbce470c222697e1"
+file = "tests/test_codeindex.py"
+signature = "def test_render_parse_roundtrip_including_empty_arrays():"
+description = ""
+line = 298
+mtime = 1783544236000000000
+container = []
+calls = [
+  "_parse [crib/codeindex.py]",
+  "_render [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "arrays",
+  "codeindex",
+  "empty",
+  "including",
+  "parse",
+  "render",
+  "roundtrip",
+  "test",
+  "test_render_parse_roundtrip_including_empty_arrays",
+  "tests",
+  "tests.test_codeindex.test_render_parse_roundtrip_including_empty_arrays",
+]

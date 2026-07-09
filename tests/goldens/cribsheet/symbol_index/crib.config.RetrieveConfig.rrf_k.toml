@@ -1,0 +1,31 @@
+fqname = "crib.config.RetrieveConfig.rrf_k"
+name = "rrf_k"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.RetrieveConfig"
+content_hash = "8af86c7aee029a8a"
+file = "crib/config.py"
+signature = "rrf_k: int = 60"
+description = ""
+line = 66
+mtime = 1783455339000000000
+container = [
+  "RetrieveConfig",
+]
+calls = []
+called_by = []
+references = [
+  "_rerank [crib/app.py]",
+  "_retrieve [crib/app.py]",
+  "cmd_info [crib/cli.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.RetrieveConfig.rrf_k",
+  "k",
+  "retrieve",
+  "rrf",
+  "rrf_k",
+]

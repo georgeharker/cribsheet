@@ -1,0 +1,38 @@
+fqname = "crib.codeindex.server_for"
+name = "server_for"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "9065a1893e7c78a2"
+file = "crib/codeindex.py"
+signature = "def server_for(relpath: str, specs: dict | None = None,"
+description = ""
+line = 205
+mtime = 1783544236000000000
+container = []
+calls = [
+  "content_lang [crib/codeindex.py]",
+  "load_specs [crib/codeindex.py]",
+  "resolve_command [crib/codeindex.py]",
+]
+called_by = [
+  "_index_project_code [crib/codeindexer.py]",
+  "extract_file [crib/codeindex.py]",
+  "test_extract_call_graph_anchor_edges [tests/test_codeindex.py]",
+  "test_server_for_shebang_fallback [tests/test_codeindex.py]",
+]
+references = [
+  "_index_project_code [crib/codeindexer.py]",
+  "extract_file [crib/codeindex.py]",
+  "test_extract_call_graph_anchor_edges [tests/test_codeindex.py]",
+  "test_server_for_shebang_fallback [tests/test_codeindex.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.server_for",
+  "for",
+  "server",
+  "server_for",
+]

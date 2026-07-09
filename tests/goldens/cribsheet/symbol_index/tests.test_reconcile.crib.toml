@@ -1,0 +1,29 @@
+fqname = "tests.test_reconcile.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+module = "tests.test_reconcile"
+parent = ""
+content_hash = "65387a609655e14a"
+file = "tests/test_reconcile.py"
+signature = "@pytest.fixture()"
+description = ""
+line = 15
+mtime = 1782609751000000000
+container = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "reconcile",
+  "test",
+  "tests",
+  "tests.test_reconcile.crib",
+]

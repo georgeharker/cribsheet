@@ -1,0 +1,25 @@
+fqname = "crib.codeindex._SUBTOK"
+name = "_SUBTOK"
+kind = "constant"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "4b46308d4e565764"
+file = "crib/codeindex.py"
+signature = "_SUBTOK = re.compile(r\"[A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z]+|[A-Z]+|[0-9]+\")"
+description = ""
+line = 802
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_name_terms [crib/codeindex.py]",
+]
+name_terms = [
+  "_SUBTOK",
+  "codeindex",
+  "crib",
+  "crib.codeindex._SUBTOK",
+  "subtok",
+]

@@ -1,0 +1,26 @@
+fqname = "tests.test_native.if.lb"
+name = "lb"
+kind = "variable"
+lang = "lua"
+module = "tests.test_native"
+parent = "tests.test_native.if"
+content_hash = "83587a23372bb330"
+file = "tests/test_native.lua"
+signature = "local lb = rjson(native.dispatch(\"list_buffers\", {}))"
+description = ""
+line = 102
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "lb",
+  "native",
+  "test",
+  "tests",
+  "tests.test_native.if.lb",
+]

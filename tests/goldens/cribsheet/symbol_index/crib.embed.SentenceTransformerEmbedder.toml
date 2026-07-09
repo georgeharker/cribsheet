@@ -1,0 +1,27 @@
+fqname = "crib.embed.SentenceTransformerEmbedder"
+name = "SentenceTransformerEmbedder"
+kind = "class"
+lang = "python"
+module = "crib.embed"
+parent = ""
+content_hash = "24665a91dbf8dc3a"
+file = "crib/embed.py"
+signature = "class SentenceTransformerEmbedder:"
+description = ""
+line = 108
+mtime = 1782690118000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "build_embedder [crib/embed.py]",
+]
+name_terms = [
+  "SentenceTransformerEmbedder",
+  "crib",
+  "crib.embed.SentenceTransformerEmbedder",
+  "embed",
+  "embedder",
+  "sentence",
+  "transformer",
+]

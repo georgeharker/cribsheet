@@ -1,0 +1,42 @@
+fqname = "mcp_companion.native.add_prompt"
+name = "add_prompt"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.native"
+parent = ""
+content_hash = "46bfc1920bbbe4ea"
+file = "lua/mcp_companion/native/init.lua"
+signature = "function M.add_prompt(server_name, prompt)"
+description = ""
+line = 300
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = [
+  "M.setup [lua/mcp_companion/init.lua]",
+  "_make_native_cmd [lua/mcp_companion/cc/tools.lua]",
+  "init.lua [lua/mcp_companion/init.lua]",
+  "init.lua [lua/mcp_companion/native/init.lua]",
+]
+references = [
+  "M [lua/mcp_companion/native/init.lua]",
+  "_make_native_cmd [lua/mcp_companion/cc/tools.lua]",
+  "config [lua/mcp_companion/native/init.lua]",
+  "for in [lua/mcp_companion/native/init.lua]",
+  "get_servers [lua/mcp_companion/native/init.lua]",
+  "manifest [lua/mcp_companion/native/init.lua]",
+  "name [lua/mcp_companion/native/init.lua]",
+  "native [lua/mcp_companion/init.lua]",
+  "server_name [lua/mcp_companion/native/init.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+  "uri [lua/mcp_companion/native/init.lua]",
+]
+name_terms = [
+  "add",
+  "add_prompt",
+  "companion",
+  "mcp",
+  "mcp_companion.native.add_prompt",
+  "native",
+  "prompt",
+]

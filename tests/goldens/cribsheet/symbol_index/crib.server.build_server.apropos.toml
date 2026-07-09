@@ -1,0 +1,28 @@
+fqname = "crib.server.build_server.apropos"
+name = "apropos"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "2ba835143a60340d"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 228
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_project [crib/server.py]",
+  "apropos [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "apropos",
+  "build",
+  "crib",
+  "crib.server.build_server.apropos",
+  "server",
+]

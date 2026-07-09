@@ -1,0 +1,79 @@
+fqname = "crib.notes.load"
+name = "load"
+kind = "function"
+lang = "python"
+module = "crib.notes"
+parent = ""
+content_hash = "951222a93a3f0ad3"
+file = "crib/notes.py"
+signature = "def load(path: Path) -> Note:"
+description = ""
+line = 137
+mtime = 1782755212000000000
+container = []
+calls = [
+  "Note [crib/notes.py]",
+  "parse [crib/notes.py]",
+]
+called_by = [
+  "_id_of [tests/test_import.py]",
+  "_index_locked [crib/indexer.py]",
+  "_note_id [tests/test_claude_memory.py]",
+  "append [crib/learnings.py]",
+  "append_note [crib/app.py]",
+  "attach [crib/learnings.py]",
+  "delete [crib/notestore.py]",
+  "distill [crib/app.py]",
+  "edit [crib/learnings.py]",
+  "edit_note [crib/app.py]",
+  "fqns [crib/learnings.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "list_versions [crib/notestore.py]",
+  "move [crib/notestore.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "report [crib/learnings.py]",
+  "test_distill_revises_and_thrash_guards [tests/test_elaborate.py]",
+  "test_forget_removes_file_and_index_but_stashes_version [tests/test_forget.py]",
+  "test_heal_file_rewrites_only_when_dirty [tests/test_normalize.py]",
+  "test_import_pins_first_import_date [tests/test_import.py]",
+  "test_move_across_projects_preserves_id [tests/test_curation.py]",
+  "version_content [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+references = [
+  "_id_of [tests/test_import.py]",
+  "_index_locked [crib/indexer.py]",
+  "_note_id [tests/test_claude_memory.py]",
+  "append [crib/learnings.py]",
+  "append_note [crib/app.py]",
+  "attach [crib/learnings.py]",
+  "delete [crib/notestore.py]",
+  "distill [crib/app.py]",
+  "edit [crib/learnings.py]",
+  "edit_note [crib/app.py]",
+  "fqns [crib/learnings.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "list_versions [crib/notestore.py]",
+  "move [crib/notestore.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "report [crib/learnings.py]",
+  "test_distill_revises_and_thrash_guards [tests/test_elaborate.py]",
+  "test_forget_removes_file_and_index_but_stashes_version [tests/test_forget.py]",
+  "test_heal_file_rewrites_only_when_dirty [tests/test_normalize.py]",
+  "test_import_pins_first_import_date [tests/test_import.py]",
+  "test_move_across_projects_preserves_id [tests/test_curation.py]",
+  "version_content [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notes.load",
+  "load",
+  "notes",
+]

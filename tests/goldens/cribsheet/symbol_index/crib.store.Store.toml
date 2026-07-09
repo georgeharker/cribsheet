@@ -1,0 +1,30 @@
+fqname = "crib.store.Store"
+name = "Store"
+kind = "class"
+lang = "python"
+module = "crib.store"
+parent = ""
+content_hash = "0e698ab8b4933214"
+file = "crib/store.py"
+signature = "class Store(Protocol):"
+description = ""
+line = 33
+mtime = 1783446057000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/indexer.py]",
+  "__init__ [crib/notestore.py]",
+  "__init__ [crib/retrieve.py]",
+  "_build_shared_chroma [crib/app.py]",
+  "_build_store [crib/app.py]",
+  "open [crib/app.py]",
+]
+name_terms = [
+  "Store",
+  "crib",
+  "crib.store.Store",
+  "store",
+]

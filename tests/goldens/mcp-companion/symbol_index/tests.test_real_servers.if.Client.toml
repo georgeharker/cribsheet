@@ -1,0 +1,28 @@
+fqname = "tests.test_real_servers.if.Client"
+name = "Client"
+kind = "variable"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = "tests.test_real_servers.if"
+content_hash = "c6002ca8acc83923"
+file = "tests/test_real_servers.lua"
+signature = "local Client = require(\"mcp_companion.combiner.client\")"
+description = ""
+line = 254
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "Client",
+  "client",
+  "if",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.Client",
+]

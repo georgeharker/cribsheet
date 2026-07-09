@@ -1,0 +1,26 @@
+fqname = "combiner.mcp_combiner.auth._BearerAuth"
+name = "_BearerAuth"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "c4336897d591626e"
+file = "combiner/mcp_combiner/auth.py"
+signature = "class _BearerAuth(httpx.Auth):"
+description = ""
+line = 1046
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "build_auth [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_BearerAuth",
+  "auth",
+  "bearer",
+  "combiner",
+  "combiner.mcp_combiner.auth._BearerAuth",
+  "mcp",
+]

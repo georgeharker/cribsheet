@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.__main__.create_app"
+name = "create_app"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.__main__"
+parent = ""
+content_hash = "88f533a789801cd2"
+file = "combiner/mcp_combiner/__main__.py"
+signature = "def create_app() -> Starlette:"
+description = ""
+line = 209
+mtime = 1783185942000000000
+container = []
+calls = [
+  "_tristate [combiner/mcp_combiner/__main__.py]",
+]
+called_by = [
+  "main [combiner/mcp_combiner/__main__.py]",
+]
+references = [
+  "main [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "app",
+  "combiner",
+  "combiner.mcp_combiner.__main__.create_app",
+  "create",
+  "create_app",
+  "main",
+  "mcp",
+]

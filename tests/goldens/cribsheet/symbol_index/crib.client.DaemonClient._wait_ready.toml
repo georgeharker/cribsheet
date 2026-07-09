@@ -1,0 +1,33 @@
+fqname = "crib.client.DaemonClient._wait_ready"
+name = "_wait_ready"
+kind = "method"
+lang = "python"
+module = "crib.client"
+parent = "crib.client.DaemonClient"
+content_hash = "fc55f8246aea35d5"
+file = "crib/client.py"
+signature = "async def _wait_ready(self, Client: Any) -> None:"
+description = ""
+line = 89
+mtime = 1782958917000000000
+container = [
+  "DaemonClient",
+]
+calls = [
+  "DaemonError [crib/client.py]",
+]
+called_by = [
+  "_call [crib/client.py]",
+]
+references = [
+  "_call [crib/client.py]",
+]
+name_terms = [
+  "_wait_ready",
+  "client",
+  "crib",
+  "crib.client.DaemonClient._wait_ready",
+  "daemon",
+  "ready",
+  "wait",
+]

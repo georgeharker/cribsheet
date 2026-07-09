@@ -1,0 +1,30 @@
+fqname = "crib.embed.Embedder.embed"
+name = "embed"
+kind = "method"
+lang = "python"
+module = "crib.embed"
+parent = "crib.embed.Embedder"
+content_hash = "7173dfb05729a4c3"
+file = "crib/embed.py"
+signature = "def embed(self, texts: list[str]) -> list[list[float]]:"
+description = ""
+line = 21
+mtime = 1782690118000000000
+container = [
+  "Embedder",
+]
+calls = []
+called_by = [
+  "_index_locked [crib/indexer.py]",
+  "_retrieve [crib/app.py]",
+]
+references = [
+  "_index_locked [crib/indexer.py]",
+  "_retrieve [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.embed.Embedder.embed",
+  "embed",
+  "embedder",
+]

@@ -1,0 +1,61 @@
+fqname = "mcp_companion.combiner.client._schedule_sse_reconnect"
+name = "_schedule_sse_reconnect"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.combiner.client"
+parent = ""
+content_hash = "f0c03dfbfd143130"
+file = "lua/mcp_companion/combiner/client.lua"
+signature = "function Client:_schedule_sse_reconnect()"
+description = ""
+line = 1385
+mtime = 1783473333000000000
+container = []
+calls = []
+called_by = [
+  "Client.new [lua/mcp_companion/combiner/client.lua]",
+  "M._create_client [lua/mcp_companion/combiner/init.lua]",
+  "M.new_per_chat_client [lua/mcp_companion/combiner/init.lua]",
+  "client.lua [lua/mcp_companion/combiner/client.lua]",
+  "test_multi_session.lua [tests/test_multi_session.lua]",
+  "test_session [tests/test_multi_session.lua]",
+]
+references = [
+  "Client [lua/mcp_companion/combiner/client.lua]",
+  "Client [lua/mcp_companion/combiner/init.lua]",
+  "Client [tests/test_cc_tools.lua]",
+  "Client [tests/test_multi_session.lua]",
+  "Client [tests/test_real_servers.lua]",
+  "_cleanup_sse [lua/mcp_companion/combiner/client.lua]",
+  "_process_sse_buffer [lua/mcp_companion/combiner/client.lua]",
+  "_start_sse [lua/mcp_companion/combiner/client.lua]",
+  "_stop_polling [lua/mcp_companion/combiner/client.lua]",
+  "_stop_sse [lua/mcp_companion/combiner/client.lua]",
+  "_update_server_state [lua/mcp_companion/combiner/client.lua]",
+  "callback [lua/mcp_companion/combiner/client.lua]",
+  "client [lua/mcp_companion/combiner/init.lua]",
+  "client [tests/test_multi_session.lua]",
+  "config [lua/mcp_companion/combiner/client.lua]",
+  "disconnect [lua/mcp_companion/combiner/client.lua]",
+  "if [tests/test_cc_tools.lua]",
+  "if [tests/test_real_servers.lua]",
+  "interval_ms [lua/mcp_companion/combiner/client.lua]",
+  "method [lua/mcp_companion/combiner/client.lua]",
+  "msg [lua/mcp_companion/combiner/client.lua]",
+  "name [lua/mcp_companion/combiner/client.lua]",
+  "new [lua/mcp_companion/combiner/client.lua]",
+  "new_per_chat_client [lua/mcp_companion/combiner/init.lua]",
+  "server_name [lua/mcp_companion/combiner/client.lua]",
+  "uri [lua/mcp_companion/combiner/client.lua]",
+]
+name_terms = [
+  "_schedule_sse_reconnect",
+  "client",
+  "combiner",
+  "companion",
+  "mcp",
+  "mcp_companion.combiner.client._schedule_sse_reconnect",
+  "reconnect",
+  "schedule",
+  "sse",
+]

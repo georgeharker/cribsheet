@@ -65,25 +65,26 @@ First time on this machine — join the shared note repo (sets remote + the
 frontmatter merge driver, then pulls):
 
 ```sh
-crib setup --remote git@github.com:georgeharker/.crib.git
+crib note setup --remote git@github.com:georgeharker/.crib.git
 ```
 
 Already joined — just pull (notes only; indexes are gitignored/regenerable):
 
 ```sh
-crib pull                                          # fetches notes, then reindexes
+crib note pull                                     # fetches notes, then reindexes
 ```
 
 ## 3. Ingest all `.crib`-tagged repos (creates/fills each project)
 
-`crib import` reads the `.crib` in (or above) the cwd, so run it from each repo.
-This copies the declared docs into that repo's crib project.
+`crib project setup` reads the `.crib` in (or above) the cwd, so run it from each
+repo. This imports the declared docs into that repo's crib project and indexes its
+source.
 
 ```sh
 for r in ~/Development/cribsheet ~/Development/zsh/zsh-ai ~/Development/zsh/zdot \
          ~/Development/zsh/dotfiler ~/Development/neovim-plugins/sharedserver \
          ~/Development/svg-mcp ~/Development/neovim-plugins/mcp-companion; do
-  echo "== import $(basename "$r") =="; ( cd "$r" && crib import )
+  echo "== setup $(basename "$r") =="; ( cd "$r" && crib project setup )
 done
 ```
 
@@ -93,7 +94,7 @@ done
 changes. Idempotent (hash-gated).
 
 ```sh
-crib reconcile
+crib project reconcile
 ```
 
 ## 5. Build the LLM indexes per project
@@ -108,14 +109,14 @@ PROJECTS="cribsheet zsh-ai zdot dotfiler sharedserver svg-mcp mcp-companion"
 
 for p in $PROJECTS; do
   echo "== keyword_index: $p =="
-  crib elaborate keywords -p "$p"                  # one zen call per section
+  crib note elaborate keywords -p "$p"             # one zen call per section
 done
 
 # optional — dense summary aliases (off by default; activate via
 # [retrieve].summary_labels once measured to help on the bigger corpora)
 for p in $PROJECTS; do
   echo "== summary_index: $p =="
-  crib summarize summary -p "$p"
+  crib note summarize summary -p "$p"
 done
 ```
 
@@ -131,8 +132,8 @@ timeout = 90            # per-call seconds
 ## 6. Verify
 
 ```sh
-crib projects                                      # all 7 present
-crib --json lookup "reciprocal rank fusion" -p cribsheet -k 3
+crib project list                                  # all 7 present
+crib --json note lookup "reciprocal rank fusion" -p cribsheet -k 3
 # retrieval-quality harness (baseline + per-index lift):
 python scripts/eval_retrieval.py                         # default config bars
 python scripts/eval_retrieval.py --lift keywords --elab-weight 0.3
@@ -142,7 +143,7 @@ python scripts/eval_retrieval.py --lift-summaries summary --summary-weight 0.1
 ## Notes / gotchas
 
 - **Indexes are gitignored** in the data repo (regenerable, churn while tuning),
-  so they do **not** come down with `crib pull` — §5 rebuilds them locally.
+  so they do **not** come down with `crib note pull` — §5 rebuilds them locally.
 - **Provenance:** freshly generated index TOMLs record the resolved provider
   (e.g. `qwen3.6-plus`), so you can tell them apart across machines/models.
 - **The summary finding to retest here:** dense aliases were net-negative on

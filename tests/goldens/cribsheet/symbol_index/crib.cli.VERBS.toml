@@ -1,0 +1,25 @@
+fqname = "crib.cli.VERBS"
+name = "VERBS"
+kind = "constant"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "2db1df452e440548"
+file = "crib/cli.py"
+signature = "VERBS: dict[str, Verb] = {"
+description = ""
+line = 720
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_resolve_verb [crib/cli.py]",
+]
+name_terms = [
+  "VERBS",
+  "cli",
+  "crib",
+  "crib.cli.VERBS",
+  "verbs",
+]

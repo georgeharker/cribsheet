@@ -1,0 +1,31 @@
+fqname = "crib.server.build_server.code_lookup"
+name = "code_lookup"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "dfefc21f7fa799b7"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 430
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_echo_list [crib/server.py]",
+  "_resolve [crib/server.py]",
+  "code_lookup [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "code",
+  "code_lookup",
+  "crib",
+  "crib.server.build_server.code_lookup",
+  "lookup",
+  "server",
+]

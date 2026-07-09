@@ -1,0 +1,31 @@
+fqname = "crib.app.Crib._rerank"
+name = "_rerank"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "dbcc122fc07bbf1f"
+file = "crib/app.py"
+signature = "def _rerank(self, query: str, hits: list[Hit]) -> list[Hit]:"
+description = ""
+line = 482
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "reciprocal_rank_fusion [crib/retrieve.py]",
+]
+called_by = [
+  "_retrieve [crib/app.py]",
+]
+references = [
+  "_retrieve [crib/app.py]",
+]
+name_terms = [
+  "_rerank",
+  "app",
+  "crib",
+  "crib.app.Crib._rerank",
+  "rerank",
+]

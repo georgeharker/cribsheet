@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.nvim_channel.NvimChannelManager.ensure_manifest"
+name = "ensure_manifest"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = "combiner.mcp_combiner.nvim_channel.NvimChannelManager"
+content_hash = "0721c40998317fd9"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "async def ensure_manifest(self) -> dict[str, Any] | None:"
+description = ""
+line = 168
+mtime = 1782852601000000000
+container = [
+  "NvimChannelManager",
+]
+calls = [
+  "_enqueue [combiner/mcp_combiner/nvim_channel.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager.ensure_manifest",
+  "ensure",
+  "ensure_manifest",
+  "manager",
+  "manifest",
+  "mcp",
+  "nvim",
+]

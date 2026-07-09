@@ -1,0 +1,25 @@
+fqname = "combiner.mcp_combiner.config.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = ""
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/config.py"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+line = 15
+mtime = 1782954213000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_warn_unknown_keys [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.logger",
+  "config",
+  "logger",
+  "mcp",
+]

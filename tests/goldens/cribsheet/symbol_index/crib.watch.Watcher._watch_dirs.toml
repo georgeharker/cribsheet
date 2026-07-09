@@ -1,0 +1,26 @@
+fqname = "crib.watch.Watcher._watch_dirs"
+name = "_watch_dirs"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch.Watcher"
+content_hash = "8003ee2a6a151817"
+file = "crib/watch.py"
+signature = "def _watch_dirs(self) -> list[str]:"
+description = ""
+line = 140
+mtime = 1783476730000000000
+container = [
+  "Watcher",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_watch_dirs",
+  "crib",
+  "crib.watch.Watcher._watch_dirs",
+  "dirs",
+  "watch",
+  "watcher",
+]

@@ -1,0 +1,33 @@
+fqname = "crib.app.Crib.list_versions"
+name = "list_versions"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "e8e1c8109b12faef"
+file = "crib/app.py"
+signature = "def list_versions(self, relpath: str, project: str | None = None,"
+description = ""
+line = 1456
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "list_versions [crib/notestore.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "versions [crib/server.py]",
+]
+references = [
+  "versions [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.list_versions",
+  "list",
+  "list_versions",
+  "versions",
+]

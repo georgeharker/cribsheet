@@ -1,0 +1,36 @@
+fqname = "tests.test_code_cache.test_partial_extract_reconfirms_before_trusting_shrink.entry"
+name = "entry"
+kind = "function"
+lang = "python"
+module = "tests.test_code_cache"
+parent = "tests.test_code_cache.test_partial_extract_reconfirms_before_trusting_shrink"
+content_hash = "8a7181773a7cb4c8"
+file = "tests/test_code_cache.py"
+signature = "def entry(fq):"
+description = ""
+line = 247
+mtime = 1783489700000000000
+container = [
+  "test_partial_extract_reconfirms_before_trusting_shrink",
+]
+calls = []
+called_by = [
+  "fake_extract [tests/test_code_cache.py]",
+]
+references = [
+  "fake_extract [tests/test_code_cache.py]",
+]
+name_terms = [
+  "before",
+  "cache",
+  "code",
+  "entry",
+  "extract",
+  "partial",
+  "reconfirms",
+  "shrink",
+  "test",
+  "tests",
+  "tests.test_code_cache.test_partial_extract_reconfirms_before_trusting_shrink.entry",
+  "trusting",
+]

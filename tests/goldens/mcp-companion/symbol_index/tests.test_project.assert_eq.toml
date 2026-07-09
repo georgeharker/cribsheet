@@ -1,0 +1,31 @@
+fqname = "tests.test_project.assert_eq"
+name = "assert_eq"
+kind = "function"
+lang = "lua"
+module = "tests.test_project"
+parent = ""
+content_hash = "e320dcf3175679e6"
+file = "tests/test_project.lua"
+signature = "local function assert_eq(a, b, msg)"
+description = ""
+line = 44
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "assert_list_eq [tests/test_project.lua]",
+  "test_project.lua [tests/test_project.lua]",
+]
+references = [
+  "a [tests/test_project.lua]",
+  "assert_list_eq [tests/test_project.lua]",
+]
+name_terms = [
+  "assert",
+  "assert_eq",
+  "eq",
+  "project",
+  "test",
+  "tests",
+  "tests.test_project.assert_eq",
+]

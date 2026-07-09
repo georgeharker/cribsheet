@@ -1,0 +1,32 @@
+fqname = "crib.store.JsonStore._load"
+name = "_load"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.JsonStore"
+content_hash = "a1acbc0f5265f0c3"
+file = "crib/store.py"
+signature = "def _load(self) -> None:"
+description = ""
+line = 126
+mtime = 1783446057000000000
+container = [
+  "JsonStore",
+]
+calls = [
+  "Record [crib/store.py]",
+]
+called_by = [
+  "__init__ [crib/store.py]",
+]
+references = [
+  "__init__ [crib/store.py]",
+]
+name_terms = [
+  "_load",
+  "crib",
+  "crib.store.JsonStore._load",
+  "json",
+  "load",
+  "store",
+]

@@ -1,0 +1,33 @@
+fqname = "crib.section_index.SectionIndex.has"
+name = "has"
+kind = "method"
+lang = "python"
+module = "crib.section_index"
+parent = "crib.section_index.SectionIndex"
+content_hash = "e53eab50c0d17cdb"
+file = "crib/section_index.py"
+signature = "def has(self, label: str, section_hash: str) -> bool:"
+description = ""
+line = 126
+mtime = 1782930371000000000
+container = [
+  "SectionIndex",
+]
+calls = [
+  "path [crib/section_index.py]",
+]
+called_by = [
+  "_generate_index [crib/app.py]",
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+]
+references = [
+  "_generate_index [crib/app.py]",
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+]
+name_terms = [
+  "crib",
+  "crib.section_index.SectionIndex.has",
+  "has",
+  "index",
+  "section",
+]

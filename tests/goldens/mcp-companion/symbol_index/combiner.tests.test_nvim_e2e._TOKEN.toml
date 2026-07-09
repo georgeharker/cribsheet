@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_nvim_e2e._TOKEN"
+name = "_TOKEN"
+kind = "constant"
+lang = "python"
+module = "combiner.tests.test_nvim_e2e"
+parent = ""
+content_hash = "975748da854260cd"
+file = "combiner/tests/test_nvim_e2e.py"
+signature = "_TOKEN = \"abcdef01-2345-6789-abcd-ef0123456789\""
+description = ""
+line = 35
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "combiner_and_nvim [combiner/tests/test_nvim_e2e.py]",
+  "test_agent_calls_neovim_tool_through_combiner [combiner/tests/test_nvim_e2e.py]",
+]
+name_terms = [
+  "2",
+  "_TOKEN",
+  "combiner",
+  "combiner.tests.test_nvim_e2e._TOKEN",
+  "e",
+  "nvim",
+  "test",
+  "tests",
+  "token",
+]

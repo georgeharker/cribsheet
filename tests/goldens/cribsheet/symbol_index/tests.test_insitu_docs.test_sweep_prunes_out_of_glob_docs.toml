@@ -1,0 +1,32 @@
+fqname = "tests.test_insitu_docs.test_sweep_prunes_out_of_glob_docs"
+name = "test_sweep_prunes_out_of_glob_docs"
+kind = "function"
+lang = "python"
+module = "tests.test_insitu_docs"
+parent = ""
+content_hash = "e02f87f7bde88dd2"
+file = "tests/test_insitu_docs.py"
+signature = "def test_sweep_prunes_out_of_glob_docs(crib, tmp_path):"
+description = ""
+line = 93
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_repo [tests/test_insitu_docs.py]",
+  "run [tests/test_insitu_docs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "docs",
+  "glob",
+  "insitu",
+  "of",
+  "out",
+  "prunes",
+  "sweep",
+  "test",
+  "test_sweep_prunes_out_of_glob_docs",
+  "tests",
+  "tests.test_insitu_docs.test_sweep_prunes_out_of_glob_docs",
+]

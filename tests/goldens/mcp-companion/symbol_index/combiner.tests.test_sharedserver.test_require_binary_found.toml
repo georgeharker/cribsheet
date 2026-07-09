@@ -1,0 +1,27 @@
+fqname = "combiner.tests.test_sharedserver.test_require_binary_found"
+name = "test_require_binary_found"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_sharedserver"
+parent = ""
+content_hash = "5024afbe5fdb5ad2"
+file = "combiner/tests/test_sharedserver.py"
+signature = "def test_require_binary_found() -> None:"
+description = ""
+line = 30
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "binary",
+  "combiner",
+  "combiner.tests.test_sharedserver.test_require_binary_found",
+  "found",
+  "require",
+  "sharedserver",
+  "test",
+  "test_require_binary_found",
+  "tests",
+]

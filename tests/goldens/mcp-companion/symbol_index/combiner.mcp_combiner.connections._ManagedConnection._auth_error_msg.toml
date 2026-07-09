@@ -1,0 +1,33 @@
+fqname = "combiner.mcp_combiner.connections._ManagedConnection._auth_error_msg"
+name = "_auth_error_msg"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections._ManagedConnection"
+content_hash = "fd47101f7bfacaf5"
+file = "combiner/mcp_combiner/connections.py"
+signature = "_auth_error_msg: str = field(default=\"\", repr=False)"
+description = ""
+line = 118
+mtime = 1783473323000000000
+container = [
+  "_ManagedConnection",
+]
+calls = []
+called_by = []
+references = [
+  "_factory [combiner/mcp_combiner/connections.py]",
+  "auth_error [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_auth_error_msg",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection._auth_error_msg",
+  "connection",
+  "connections",
+  "error",
+  "managed",
+  "mcp",
+  "msg",
+]

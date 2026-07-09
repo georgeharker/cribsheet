@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.server.build_server_status"
+name = "build_server_status"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "8f4daf09cc1a9a52"
+file = "combiner/mcp_combiner/server.py"
+signature = "def build_server_status("
+description = ""
+line = 238
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "health_check [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "health_check [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "build",
+  "build_server_status",
+  "combiner",
+  "combiner.mcp_combiner.server.build_server_status",
+  "mcp",
+  "server",
+  "status",
+]

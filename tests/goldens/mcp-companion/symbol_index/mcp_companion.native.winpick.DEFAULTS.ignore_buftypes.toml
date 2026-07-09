@@ -1,0 +1,29 @@
+fqname = "mcp_companion.native.winpick.DEFAULTS.ignore_buftypes"
+name = "ignore_buftypes"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.native.winpick"
+parent = "mcp_companion.native.winpick.DEFAULTS"
+content_hash = "fdb54bbbf437218b"
+file = "lua/mcp_companion/native/winpick.lua"
+signature = "ignore_buftypes = { \"nofile\", \"prompt\", \"terminal\", \"quickfix\", \"help\" },"
+description = ""
+line = 36
+mtime = 1782852601000000000
+container = [
+  "DEFAULTS",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "buftypes",
+  "companion",
+  "defaults",
+  "ignore",
+  "ignore_buftypes",
+  "mcp",
+  "mcp_companion.native.winpick.DEFAULTS.ignore_buftypes",
+  "native",
+  "winpick",
+]

@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_reload_config.test_add_server"
+name = "test_add_server"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "ee9bd710f95bc565"
+file = "combiner/tests/test_reload_config.py"
+signature = "async def test_add_server(harness: dict[str, Any]) -> None:"
+description = ""
+line = 170
+mtime = 1783452495000000000
+container = []
+calls = [
+  "_http [combiner/tests/test_reload_config.py]",
+  "_namespaces [combiner/tests/test_reload_config.py]",
+  "_write [combiner/tests/test_reload_config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "add",
+  "combiner",
+  "combiner.tests.test_reload_config.test_add_server",
+  "config",
+  "reload",
+  "server",
+  "test",
+  "test_add_server",
+  "tests",
+]

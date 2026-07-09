@@ -1,0 +1,34 @@
+fqname = "tests.test_session.test_a_real_seed_still_sticks_against_a_later_cwd"
+name = "test_a_real_seed_still_sticks_against_a_later_cwd"
+kind = "function"
+lang = "python"
+module = "tests.test_session"
+parent = ""
+content_hash = "2c8fa82e15a98358"
+file = "tests/test_session.py"
+signature = "def test_a_real_seed_still_sticks_against_a_later_cwd():"
+description = ""
+line = 54
+mtime = 1783476730000000000
+container = []
+calls = [
+  "SessionState [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "against",
+  "cwd",
+  "later",
+  "real",
+  "seed",
+  "session",
+  "sticks",
+  "still",
+  "test",
+  "test_a_real_seed_still_sticks_against_a_later_cwd",
+  "tests",
+  "tests.test_session.test_a_real_seed_still_sticks_against_a_later_cwd",
+]

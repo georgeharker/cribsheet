@@ -1,0 +1,34 @@
+fqname = "tests.test_elaborate.test_lexical_cache_folds_elaboration_terms"
+name = "test_lexical_cache_folds_elaboration_terms"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "17fc402ebfac6b8d"
+file = "tests/test_elaborate.py"
+signature = "def test_lexical_cache_folds_elaboration_terms():"
+description = ""
+line = 61
+mtime = 1782958917000000000
+container = []
+calls = [
+  "FakeStore [tests/test_elaborate.py]",
+  "LexicalCache [crib/retrieve.py]",
+  "get [crib/retrieve.py]",
+  "scores [crib/retrieve.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "elaborate",
+  "elaboration",
+  "folds",
+  "lexical",
+  "terms",
+  "test",
+  "test_lexical_cache_folds_elaboration_terms",
+  "tests",
+  "tests.test_elaborate.test_lexical_cache_folds_elaboration_terms",
+]

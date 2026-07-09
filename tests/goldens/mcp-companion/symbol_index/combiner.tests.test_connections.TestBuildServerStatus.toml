@@ -1,0 +1,27 @@
+fqname = "combiner.tests.test_connections.TestBuildServerStatus"
+name = "TestBuildServerStatus"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = ""
+content_hash = "323e830771183e59"
+file = "combiner/tests/test_connections.py"
+signature = "class TestBuildServerStatus:"
+description = ""
+line = 369
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestBuildServerStatus",
+  "build",
+  "combiner",
+  "combiner.tests.test_connections.TestBuildServerStatus",
+  "connections",
+  "server",
+  "status",
+  "test",
+  "tests",
+]

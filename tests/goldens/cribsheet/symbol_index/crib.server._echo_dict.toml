@@ -1,0 +1,32 @@
+fqname = "crib.server._echo_dict"
+name = "_echo_dict"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = ""
+content_hash = "7ff9a10ab3f023a3"
+file = "crib/server.py"
+signature = "def _echo_dict(out: Any, res: ProjectResolution) -> Any:"
+description = ""
+line = 52
+mtime = 1783476730000000000
+container = []
+calls = [
+  "echo [crib/session.py]",
+]
+called_by = [
+  "code_dossier [crib/server.py]",
+  "code_graph [crib/server.py]",
+]
+references = [
+  "code_dossier [crib/server.py]",
+  "code_graph [crib/server.py]",
+]
+name_terms = [
+  "_echo_dict",
+  "crib",
+  "crib.server._echo_dict",
+  "dict",
+  "echo",
+  "server",
+]

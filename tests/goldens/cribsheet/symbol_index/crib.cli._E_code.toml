@@ -1,0 +1,28 @@
+fqname = "crib.cli._E_code"
+name = "_E_code"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "310296d440db31c2"
+file = "crib/cli.py"
+signature = "def _E_code(verb): return lambda d, a: _emit_code(d, verb, a.json)"
+description = ""
+line = 701
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = [
+  "cli [crib/cli.py]",
+]
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_E_code",
+  "cli",
+  "code",
+  "crib",
+  "crib.cli._E_code",
+  "e",
+]

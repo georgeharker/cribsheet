@@ -1,0 +1,27 @@
+fqname = "tests.test_eval_retrieval.SCRIPT"
+name = "SCRIPT"
+kind = "constant"
+lang = "python"
+module = "tests.test_eval_retrieval"
+parent = ""
+content_hash = "3244f79eb72a44f3"
+file = "tests/test_eval_retrieval.py"
+signature = "SCRIPT = ROOT / \"scripts\" / \"eval_retrieval.py\""
+description = ""
+line = 16
+mtime = 1782843962000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "test_retrieval_quality_bars [tests/test_eval_retrieval.py]",
+]
+name_terms = [
+  "SCRIPT",
+  "eval",
+  "retrieval",
+  "script",
+  "test",
+  "tests",
+  "tests.test_eval_retrieval.SCRIPT",
+]

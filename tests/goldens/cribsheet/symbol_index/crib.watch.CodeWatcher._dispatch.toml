@@ -1,0 +1,31 @@
+fqname = "crib.watch.CodeWatcher._dispatch"
+name = "_dispatch"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch.CodeWatcher"
+content_hash = "c5b542a7d738f186"
+file = "crib/watch.py"
+signature = "async def _dispatch(self, *key: Any) -> None:  # (project, changes)"
+description = ""
+line = 273
+mtime = 1783476730000000000
+container = [
+  "CodeWatcher",
+]
+calls = []
+called_by = [
+  "_flush [crib/watch.py]",
+]
+references = [
+  "_flush [crib/watch.py]",
+]
+name_terms = [
+  "_dispatch",
+  "code",
+  "crib",
+  "crib.watch.CodeWatcher._dispatch",
+  "dispatch",
+  "watch",
+  "watcher",
+]

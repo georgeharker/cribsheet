@@ -1,0 +1,31 @@
+fqname = "tests.test_real_servers.combiner_healthy"
+name = "combiner_healthy"
+kind = "function"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "7e9714ef5262bc9e"
+file = "tests/test_real_servers.lua"
+signature = "local function combiner_healthy()"
+description = ""
+line = 115
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_real_servers.lua [tests/test_real_servers.lua]",
+]
+references = [
+  "combiner_was_running [tests/test_real_servers.lua]",
+  "if [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "combiner",
+  "combiner_healthy",
+  "healthy",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.combiner_healthy",
+]

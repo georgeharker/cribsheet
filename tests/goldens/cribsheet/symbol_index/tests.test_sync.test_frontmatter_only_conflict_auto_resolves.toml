@@ -1,0 +1,32 @@
+fqname = "tests.test_sync.test_frontmatter_only_conflict_auto_resolves"
+name = "test_frontmatter_only_conflict_auto_resolves"
+kind = "function"
+lang = "python"
+module = "tests.test_sync"
+parent = ""
+content_hash = "fcf7e8bc0f7b3be1"
+file = "tests/test_sync.py"
+signature = "def test_frontmatter_only_conflict_auto_resolves(tmp_path, remote):"
+description = ""
+line = 119
+mtime = 1783446057000000000
+container = []
+calls = [
+  "_imported_note [tests/test_sync.py]",
+  "_machine [tests/test_sync.py]",
+  "sync [crib/gitbacking.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auto",
+  "conflict",
+  "frontmatter",
+  "only",
+  "resolves",
+  "sync",
+  "test",
+  "test_frontmatter_only_conflict_auto_resolves",
+  "tests",
+  "tests.test_sync.test_frontmatter_only_conflict_auto_resolves",
+]

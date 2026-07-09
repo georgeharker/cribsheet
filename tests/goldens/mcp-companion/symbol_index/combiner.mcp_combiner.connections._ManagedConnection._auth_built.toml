@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.connections._ManagedConnection._auth_built"
+name = "_auth_built"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections._ManagedConnection"
+content_hash = "d5f812026adc5096"
+file = "combiner/mcp_combiner/connections.py"
+signature = "_auth_built: bool = field(default=False, repr=False)"
+description = ""
+line = 106
+mtime = 1783473323000000000
+container = [
+  "_ManagedConnection",
+]
+calls = []
+called_by = []
+references = [
+  "get_auth [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_auth_built",
+  "auth",
+  "built",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection._auth_built",
+  "connection",
+  "connections",
+  "managed",
+  "mcp",
+]

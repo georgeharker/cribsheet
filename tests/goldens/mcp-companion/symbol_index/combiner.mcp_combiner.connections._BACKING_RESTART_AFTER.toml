@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.connections._BACKING_RESTART_AFTER"
+name = "_BACKING_RESTART_AFTER"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = ""
+content_hash = "324a5a7529c965b4"
+file = "combiner/mcp_combiner/connections.py"
+signature = "_BACKING_RESTART_AFTER = 3"
+description = ""
+line = 72
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_BACKING_RESTART_AFTER",
+  "after",
+  "backing",
+  "combiner",
+  "combiner.mcp_combiner.connections._BACKING_RESTART_AFTER",
+  "connections",
+  "mcp",
+  "restart",
+]

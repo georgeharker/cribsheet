@@ -1,0 +1,34 @@
+fqname = "combiner.tests.test_auth.TestPreflightRefresh.test_first_request_forces_refresh"
+name = "test_first_request_forces_refresh"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestPreflightRefresh"
+content_hash = "593629d9816bcfe3"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 464
+mtime = 1782852601000000000
+container = [
+  "TestPreflightRefresh",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestPreflightRefresh.test_first_request_forces_refresh",
+  "first",
+  "forces",
+  "preflight",
+  "refresh",
+  "request",
+  "test",
+  "test_first_request_forces_refresh",
+  "tests",
+]

@@ -1,0 +1,48 @@
+fqname = "crib.indexer.IndexEngine._index_locked"
+name = "_index_locked"
+kind = "method"
+lang = "python"
+module = "crib.indexer"
+parent = "crib.indexer.IndexEngine"
+content_hash = "f9da5157ac518e66"
+file = "crib/indexer.py"
+signature = "def _index_locked(self, project: str, notes_dir: Path, relpath: str,"
+description = ""
+line = 87
+mtime = 1783476730000000000
+container = [
+  "IndexEngine",
+]
+calls = [
+  "IndexResult [crib/indexer.py]",
+  "Record [crib/store.py]",
+  "_meta_stable [crib/indexer.py]",
+  "chunk_note [crib/chunk.py]",
+  "delete [crib/store.py]",
+  "derived_ulid [crib/util.py]",
+  "embed [crib/embed.py]",
+  "ensure_id [crib/notes.py]",
+  "get_meta [crib/store.py]",
+  "heal_file [crib/notes.py]",
+  "invalidate_caches [crib/indexer.py]",
+  "load [crib/notes.py]",
+  "metadata [crib/chunk.py]",
+  "save_atomic [crib/notes.py]",
+  "set_meta [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+called_by = [
+  "index_file [crib/indexer.py]",
+]
+references = [
+  "index_file [crib/indexer.py]",
+]
+name_terms = [
+  "_index_locked",
+  "crib",
+  "crib.indexer.IndexEngine._index_locked",
+  "engine",
+  "index",
+  "indexer",
+  "locked",
+]

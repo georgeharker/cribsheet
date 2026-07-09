@@ -1,0 +1,37 @@
+fqname = "combiner.tests.test_session_filter.TestCoerceObjectSchemas.test_missing_type_and_properties_coerced"
+name = "test_missing_type_and_properties_coerced"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestCoerceObjectSchemas"
+content_hash = "1b5c5cc84079edac"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_missing_type_and_properties_coerced(self):"
+description = ""
+line = 622
+mtime = 1783452495000000000
+container = [
+  "TestCoerceObjectSchemas",
+]
+calls = [
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "coerce",
+  "coerced",
+  "combiner",
+  "combiner.tests.test_session_filter.TestCoerceObjectSchemas.test_missing_type_and_properties_coerced",
+  "filter",
+  "missing",
+  "object",
+  "properties",
+  "schemas",
+  "session",
+  "test",
+  "test_missing_type_and_properties_coerced",
+  "tests",
+  "type",
+]

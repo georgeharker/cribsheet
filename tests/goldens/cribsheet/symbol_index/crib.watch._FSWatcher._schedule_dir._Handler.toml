@@ -1,0 +1,32 @@
+fqname = "crib.watch._FSWatcher._schedule_dir._Handler"
+name = "_Handler"
+kind = "class"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch._FSWatcher._schedule_dir"
+content_hash = "bf8823d08475a5d7"
+file = "crib/watch.py"
+signature = "class _Handler(FileSystemEventHandler):"
+description = ""
+line = 89
+mtime = 1783476730000000000
+container = [
+  "_FSWatcher",
+  "_schedule_dir",
+]
+calls = []
+called_by = []
+references = [
+  "_schedule_dir [crib/watch.py]",
+]
+name_terms = [
+  "_Handler",
+  "crib",
+  "crib.watch._FSWatcher._schedule_dir._Handler",
+  "dir",
+  "fs",
+  "handler",
+  "schedule",
+  "watch",
+  "watcher",
+]

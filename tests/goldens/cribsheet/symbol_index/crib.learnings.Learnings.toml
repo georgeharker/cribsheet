@@ -1,0 +1,25 @@
+fqname = "crib.learnings.Learnings"
+name = "Learnings"
+kind = "class"
+lang = "python"
+module = "crib.learnings"
+parent = ""
+content_hash = "a415d655a9aa6184"
+file = "crib/learnings.py"
+signature = "class Learnings:"
+description = ""
+line = 27
+mtime = 1783529664000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/codequery.py]",
+]
+name_terms = [
+  "Learnings",
+  "crib",
+  "crib.learnings.Learnings",
+  "learnings",
+]

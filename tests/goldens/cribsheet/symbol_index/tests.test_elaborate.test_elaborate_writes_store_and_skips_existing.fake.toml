@@ -1,0 +1,32 @@
+fqname = "tests.test_elaborate.test_elaborate_writes_store_and_skips_existing.fake"
+name = "fake"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = "tests.test_elaborate.test_elaborate_writes_store_and_skips_existing"
+content_hash = "b2fd87e507db851d"
+file = "tests/test_elaborate.py"
+signature = "async def fake(cfg, system, user, purpose=\"elaborate\", timeout=None):"
+description = ""
+line = 138
+mtime = 1782958917000000000
+container = [
+  "test_elaborate_writes_store_and_skips_existing",
+]
+calls = []
+called_by = []
+references = [
+  "test_elaborate_writes_store_and_skips_existing [tests/test_elaborate.py]",
+]
+name_terms = [
+  "and",
+  "elaborate",
+  "existing",
+  "fake",
+  "skips",
+  "store",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_elaborate_writes_store_and_skips_existing.fake",
+  "writes",
+]

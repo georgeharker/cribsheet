@@ -1,0 +1,36 @@
+fqname = "crib.store.JsonStore._save"
+name = "_save"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.JsonStore"
+content_hash = "557e08a386712011"
+file = "crib/store.py"
+signature = "def _save(self) -> None:"
+description = ""
+line = 133
+mtime = 1783446057000000000
+container = [
+  "JsonStore",
+]
+calls = []
+called_by = [
+  "delete [crib/store.py]",
+  "recreate [crib/store.py]",
+  "set_meta [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+references = [
+  "delete [crib/store.py]",
+  "recreate [crib/store.py]",
+  "set_meta [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+name_terms = [
+  "_save",
+  "crib",
+  "crib.store.JsonStore._save",
+  "json",
+  "save",
+  "store",
+]

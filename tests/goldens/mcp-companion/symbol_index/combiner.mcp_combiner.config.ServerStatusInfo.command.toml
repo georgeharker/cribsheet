@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.config.ServerStatusInfo.command"
+name = "command"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.ServerStatusInfo"
+content_hash = "0780e80e0f959162"
+file = "combiner/mcp_combiner/config.py"
+signature = "command: str | None = None"
+description = ""
+line = 264
+mtime = 1782954213000000000
+container = [
+  "ServerStatusInfo",
+]
+calls = []
+called_by = []
+references = [
+  "get_server_status [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerStatusInfo.command",
+  "command",
+  "config",
+  "info",
+  "mcp",
+  "server",
+  "status",
+]

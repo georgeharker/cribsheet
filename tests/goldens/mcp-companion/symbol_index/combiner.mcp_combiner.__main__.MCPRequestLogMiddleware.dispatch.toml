@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.__main__.MCPRequestLogMiddleware.dispatch"
+name = "dispatch"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.__main__"
+parent = "combiner.mcp_combiner.__main__.MCPRequestLogMiddleware"
+content_hash = "f1fbcbe463781e5f"
+file = "combiner/mcp_combiner/__main__.py"
+signature = "async def dispatch("
+description = ""
+line = 158
+mtime = 1783185942000000000
+container = [
+  "MCPRequestLogMiddleware",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.__main__.MCPRequestLogMiddleware.dispatch",
+  "dispatch",
+  "log",
+  "main",
+  "mcp",
+  "middleware",
+  "request",
+]

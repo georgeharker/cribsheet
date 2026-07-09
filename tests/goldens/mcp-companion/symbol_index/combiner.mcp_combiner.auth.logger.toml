@@ -1,0 +1,38 @@
+fqname = "combiner.mcp_combiner.auth.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/auth.py"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+line = 53
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_apply_network_grace_window [combiner/mcp_combiner/auth.py]",
+  "_build_oauth [combiner/mcp_combiner/auth.py]",
+  "_discover_oauth_metadata [combiner/mcp_combiner/auth.py]",
+  "_get_or_create_encryption_key [combiner/mcp_combiner/auth.py]",
+  "_initialize [combiner/mcp_combiner/auth.py]",
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "_probe_token_at [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+  "callback_handler [combiner/mcp_combiner/auth.py]",
+  "clear_oauth_cache [combiner/mcp_combiner/auth.py]",
+  "get_tokens [combiner/mcp_combiner/auth.py]",
+  "redirect_handler [combiner/mcp_combiner/auth.py]",
+  "set_tokens [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth.logger",
+  "logger",
+  "mcp",
+]

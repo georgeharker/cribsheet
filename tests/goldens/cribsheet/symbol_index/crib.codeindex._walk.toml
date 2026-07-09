@@ -1,0 +1,36 @@
+fqname = "crib.codeindex._walk"
+name = "_walk"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "53642b529a19d330"
+file = "crib/codeindex.py"
+signature = "def _walk(syms: list, parents: tuple[str, ...] = (),"
+description = ""
+line = 694
+mtime = 1783544236000000000
+container = []
+calls = [
+  "_walk [crib/codeindex.py]",
+]
+called_by = [
+  "_extract [crib/codeindex.py]",
+  "_symbol_ranges [crib/codeindex.py]",
+  "_walk [crib/codeindex.py]",
+  "test_walk_descends_containers [tests/test_codeindex.py]",
+  "test_walk_tracks_container_kinds_for_scope_guard [tests/test_codeindex.py]",
+]
+references = [
+  "_extract [crib/codeindex.py]",
+  "_symbol_ranges [crib/codeindex.py]",
+  "test_walk_descends_containers [tests/test_codeindex.py]",
+  "test_walk_tracks_container_kinds_for_scope_guard [tests/test_codeindex.py]",
+]
+name_terms = [
+  "_walk",
+  "codeindex",
+  "crib",
+  "crib.codeindex._walk",
+  "walk",
+]

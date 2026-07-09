@@ -1,0 +1,26 @@
+fqname = "crib.versions.VersionEntry.path"
+name = "path"
+kind = "field"
+lang = "python"
+module = "crib.versions"
+parent = "crib.versions.VersionEntry"
+content_hash = "847e53703f96abe4"
+file = "crib/versions.py"
+signature = "path: Path"
+description = ""
+line = 18
+mtime = 1782609751000000000
+container = [
+  "VersionEntry",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.versions.VersionEntry.path",
+  "entry",
+  "path",
+  "version",
+  "versions",
+]

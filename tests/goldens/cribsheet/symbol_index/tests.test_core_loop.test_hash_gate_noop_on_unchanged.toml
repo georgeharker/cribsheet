@@ -1,0 +1,31 @@
+fqname = "tests.test_core_loop.test_hash_gate_noop_on_unchanged"
+name = "test_hash_gate_noop_on_unchanged"
+kind = "function"
+lang = "python"
+module = "tests.test_core_loop"
+parent = ""
+content_hash = "5b3f4026f7649a1c"
+file = "tests/test_core_loop.py"
+signature = "def test_hash_gate_noop_on_unchanged(crib):"
+description = ""
+line = 43
+mtime = 1782930371000000000
+container = []
+calls = [
+  "run [tests/test_core_loop.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "core",
+  "gate",
+  "hash",
+  "loop",
+  "noop",
+  "on",
+  "test",
+  "test_hash_gate_noop_on_unchanged",
+  "tests",
+  "tests.test_core_loop.test_hash_gate_noop_on_unchanged",
+  "unchanged",
+]

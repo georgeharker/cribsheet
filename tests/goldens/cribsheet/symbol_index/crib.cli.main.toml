@@ -1,0 +1,38 @@
+fqname = "crib.cli.main"
+name = "main"
+kind = "function"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "73dbbc585f5b337c"
+file = "crib/cli.py"
+signature = "def main(argv: list[str] | None = None) -> int:"
+description = ""
+line = 975
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_normalize_argv [crib/cli.py]",
+  "_resolve_serve_endpoint [crib/cli.py]",
+  "_run_daemon [crib/cli.py]",
+  "_run_git [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+  "available [crib/sharedserver.py]",
+  "build_parser [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+  "load [crib/config.py]",
+  "main [crib/server.py]",
+  "resolve [crib/paths.py]",
+  "run_driver [crib/merge.py]",
+]
+called_by = [
+  "__main__ [crib/__main__.py]",
+  "cli [crib/cli.py]",
+]
+references = []
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli.main",
+  "main",
+]

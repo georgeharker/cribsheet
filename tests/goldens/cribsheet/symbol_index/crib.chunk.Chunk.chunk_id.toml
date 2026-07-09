@@ -1,0 +1,31 @@
+fqname = "crib.chunk.Chunk.chunk_id"
+name = "chunk_id"
+kind = "method"
+lang = "python"
+module = "crib.chunk"
+parent = "crib.chunk.Chunk"
+content_hash = "3c3d0d05d27cf627"
+file = "crib/chunk.py"
+signature = "@property"
+description = ""
+line = 38
+mtime = 1782930371000000000
+container = [
+  "Chunk",
+]
+calls = [
+  "sha1_hex [crib/util.py]",
+]
+called_by = [
+  "_index_locked [crib/indexer.py]",
+]
+references = [
+  "_index_locked [crib/indexer.py]",
+]
+name_terms = [
+  "chunk",
+  "chunk_id",
+  "crib",
+  "crib.chunk.Chunk.chunk_id",
+  "id",
+]

@@ -1,0 +1,34 @@
+fqname = "scripts.codeindex.lsp_probe.main"
+name = "main"
+kind = "function"
+lang = "python"
+module = "scripts.codeindex.lsp_probe"
+parent = ""
+content_hash = "e3dec846fe05e098"
+file = "scripts/codeindex/lsp_probe.py"
+signature = "def main(argv: list[str]) -> int:"
+description = ""
+line = 150
+mtime = 1783033292000000000
+container = []
+calls = [
+  "Client [scripts/codeindex/lsp_probe.py]",
+  "_find_symbol [scripts/codeindex/lsp_probe.py]",
+  "_fmt [scripts/codeindex/lsp_probe.py]",
+  "did_open [scripts/codeindex/lsp_probe.py]",
+  "initialize [scripts/codeindex/lsp_probe.py]",
+  "request [scripts/codeindex/lsp_probe.py]",
+  "shutdown [scripts/codeindex/lsp_probe.py]",
+]
+called_by = [
+  "lsp_probe [scripts/codeindex/lsp_probe.py]",
+]
+references = []
+name_terms = [
+  "codeindex",
+  "lsp",
+  "main",
+  "probe",
+  "scripts",
+  "scripts.codeindex.lsp_probe.main",
+]

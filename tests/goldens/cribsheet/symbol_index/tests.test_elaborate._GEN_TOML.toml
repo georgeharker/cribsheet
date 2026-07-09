@@ -1,0 +1,28 @@
+fqname = "tests.test_elaborate._GEN_TOML"
+name = "_GEN_TOML"
+kind = "constant"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "515cdedcd188ca11"
+file = "tests/test_elaborate.py"
+signature = "_GEN_TOML = ("
+description = ""
+line = 287
+mtime = 1782958917000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "test_resolve_provider_by_profile_and_purpose [tests/test_elaborate.py]",
+  "test_resolve_provider_missing_selection_errors [tests/test_elaborate.py]",
+]
+name_terms = [
+  "_GEN_TOML",
+  "elaborate",
+  "gen",
+  "test",
+  "tests",
+  "tests.test_elaborate._GEN_TOML",
+  "toml",
+]

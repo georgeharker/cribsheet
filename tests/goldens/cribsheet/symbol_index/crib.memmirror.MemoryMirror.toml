@@ -1,0 +1,26 @@
+fqname = "crib.memmirror.MemoryMirror"
+name = "MemoryMirror"
+kind = "class"
+lang = "python"
+module = "crib.memmirror"
+parent = ""
+content_hash = "c4c18d9b548ae0f8"
+file = "crib/memmirror.py"
+signature = "class MemoryMirror:"
+description = ""
+line = 24
+mtime = 1782755761000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "start_memory_mirror [crib/app.py]",
+]
+name_terms = [
+  "MemoryMirror",
+  "crib",
+  "crib.memmirror.MemoryMirror",
+  "memmirror",
+  "memory",
+  "mirror",
+]

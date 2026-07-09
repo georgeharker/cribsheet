@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.auth._GOOGLE_ACCOUNTS_HOST"
+name = "_GOOGLE_ACCOUNTS_HOST"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "8cdd010f9467dca9"
+file = "combiner/mcp_combiner/auth.py"
+signature = "_GOOGLE_ACCOUNTS_HOST = \"accounts.google.com\""
+description = ""
+line = 198
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "redirect_handler [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_GOOGLE_ACCOUNTS_HOST",
+  "accounts",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._GOOGLE_ACCOUNTS_HOST",
+  "google",
+  "host",
+  "mcp",
+]

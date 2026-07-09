@@ -1,0 +1,31 @@
+fqname = "tests.test_sync.test_init_writes_gitignore_and_remote"
+name = "test_init_writes_gitignore_and_remote"
+kind = "function"
+lang = "python"
+module = "tests.test_sync"
+parent = ""
+content_hash = "ac7d633861dbefb3"
+file = "tests/test_sync.py"
+signature = "def test_init_writes_gitignore_and_remote(tmp_path, remote):"
+description = ""
+line = 43
+mtime = 1783446057000000000
+container = []
+calls = [
+  "_machine [tests/test_sync.py]",
+  "git [tests/test_sync.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "gitignore",
+  "init",
+  "remote",
+  "sync",
+  "test",
+  "test_init_writes_gitignore_and_remote",
+  "tests",
+  "tests.test_sync.test_init_writes_gitignore_and_remote",
+  "writes",
+]

@@ -1,0 +1,30 @@
+fqname = "crib.store.Record.id"
+name = "id"
+kind = "field"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Record"
+content_hash = "815fab59afaac4c9"
+file = "crib/store.py"
+signature = "id: str"
+description = ""
+line = 19
+mtime = 1783446057000000000
+container = [
+  "Record",
+]
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "_load [crib/store.py]",
+  "query [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Record.id",
+  "id",
+  "record",
+  "store",
+]

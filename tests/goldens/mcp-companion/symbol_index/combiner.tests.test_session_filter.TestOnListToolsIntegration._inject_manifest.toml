@@ -1,0 +1,39 @@
+fqname = "combiner.tests.test_session_filter.TestOnListToolsIntegration._inject_manifest"
+name = "_inject_manifest"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestOnListToolsIntegration"
+content_hash = "22fc49235f97de5b"
+file = "combiner/tests/test_session_filter.py"
+signature = "@staticmethod"
+description = ""
+line = 781
+mtime = 1783452495000000000
+container = [
+  "TestOnListToolsIntegration",
+]
+calls = []
+called_by = [
+  "test_neovim_list_schema_becomes_object_on_the_wire [combiner/tests/test_session_filter.py]",
+  "test_neovim_string_required_wrapped_on_the_wire [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "test_neovim_list_schema_becomes_object_on_the_wire [combiner/tests/test_session_filter.py]",
+  "test_neovim_string_required_wrapped_on_the_wire [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_inject_manifest",
+  "combiner",
+  "combiner.tests.test_session_filter.TestOnListToolsIntegration._inject_manifest",
+  "filter",
+  "inject",
+  "integration",
+  "list",
+  "manifest",
+  "on",
+  "session",
+  "test",
+  "tests",
+  "tools",
+]

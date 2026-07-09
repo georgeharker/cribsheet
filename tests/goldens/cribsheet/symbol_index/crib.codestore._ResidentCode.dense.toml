@@ -1,0 +1,30 @@
+fqname = "crib.codestore._ResidentCode.dense"
+name = "dense"
+kind = "method"
+lang = "python"
+module = "crib.codestore"
+parent = "crib.codestore._ResidentCode"
+content_hash = "b43830dc70f52603"
+file = "crib/codestore.py"
+signature = "def dense(self, embedder: Any) -> list[list[float] | None]:"
+description = ""
+line = 56
+mtime = 1783494290000000000
+container = [
+  "_ResidentCode",
+]
+calls = []
+called_by = [
+  "_lookup_one [crib/codequery.py]",
+]
+references = [
+  "_lookup_one [crib/codequery.py]",
+]
+name_terms = [
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore._ResidentCode.dense",
+  "dense",
+  "resident",
+]

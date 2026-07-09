@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.fastvalidate._get_validator"
+name = "_get_validator"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.fastvalidate"
+parent = ""
+content_hash = "66aba89c34452ab9"
+file = "combiner/mcp_combiner/fastvalidate.py"
+signature = "def _get_validator(schema: object) -> Any:"
+description = ""
+line = 74
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = [
+  "validate [combiner/mcp_combiner/fastvalidate.py]",
+]
+references = [
+  "validate [combiner/mcp_combiner/fastvalidate.py]",
+]
+name_terms = [
+  "_get_validator",
+  "combiner",
+  "combiner.mcp_combiner.fastvalidate._get_validator",
+  "fastvalidate",
+  "get",
+  "mcp",
+  "validator",
+]

@@ -1,0 +1,26 @@
+fqname = "tests.test_native.if.rf"
+name = "rf"
+kind = "variable"
+lang = "lua"
+module = "tests.test_native"
+parent = "tests.test_native.if"
+content_hash = "e8ac66785b990702"
+file = "tests/test_native.lua"
+signature = "local rf = native.dispatch(\"read_file\", { path = tmp .. \".out\", start_line = 2, end_line = 2 })"
+description = ""
+line = 173
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "native",
+  "rf",
+  "test",
+  "tests",
+  "tests.test_native.if.rf",
+]

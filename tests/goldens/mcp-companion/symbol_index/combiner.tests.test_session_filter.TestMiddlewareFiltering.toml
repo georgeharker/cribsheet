@@ -1,0 +1,27 @@
+fqname = "combiner.tests.test_session_filter.TestMiddlewareFiltering"
+name = "TestMiddlewareFiltering"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = ""
+content_hash = "5be1add5a5c41124"
+file = "combiner/tests/test_session_filter.py"
+signature = "class TestMiddlewareFiltering:"
+description = ""
+line = 250
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestMiddlewareFiltering",
+  "combiner",
+  "combiner.tests.test_session_filter.TestMiddlewareFiltering",
+  "filter",
+  "filtering",
+  "middleware",
+  "session",
+  "test",
+  "tests",
+]

@@ -1,0 +1,31 @@
+fqname = "mcp_companion.combiner._combiner_env"
+name = "_combiner_env"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.combiner"
+parent = ""
+content_hash = "991e448fd5a2cff4"
+file = "lua/mcp_companion/combiner/init.lua"
+signature = "local function _combiner_env()"
+description = ""
+line = 154
+mtime = 1783452478000000000
+container = []
+calls = []
+called_by = [
+  "M._register_with_sharedserver [lua/mcp_companion/combiner/init.lua]",
+  "M._start_direct [lua/mcp_companion/combiner/init.lua]",
+  "init.lua [lua/mcp_companion/combiner/init.lua]",
+]
+references = [
+  "_start_direct [lua/mcp_companion/combiner/init.lua]",
+  "env [lua/mcp_companion/combiner/init.lua]",
+]
+name_terms = [
+  "_combiner_env",
+  "combiner",
+  "companion",
+  "env",
+  "mcp",
+  "mcp_companion.combiner._combiner_env",
+]

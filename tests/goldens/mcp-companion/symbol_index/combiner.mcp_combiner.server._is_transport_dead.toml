@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.server._is_transport_dead"
+name = "_is_transport_dead"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "f1df59ece12608ab"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _is_transport_dead(exc: BaseException) -> bool:"
+description = ""
+line = 279
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "on_call_tool [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "on_call_tool [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_is_transport_dead",
+  "combiner",
+  "combiner.mcp_combiner.server._is_transport_dead",
+  "dead",
+  "is",
+  "mcp",
+  "server",
+  "transport",
+]

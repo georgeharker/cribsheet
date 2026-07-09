@@ -1,0 +1,35 @@
+fqname = "combiner.mcp_combiner.server.ToolProcessingMiddleware.on_list_tools"
+name = "on_list_tools"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server.ToolProcessingMiddleware"
+content_hash = "431df48db90f8133"
+file = "combiner/mcp_combiner/server.py"
+signature = "async def on_list_tools("
+description = ""
+line = 917
+mtime = 1783473323000000000
+container = [
+  "ToolProcessingMiddleware",
+]
+calls = [
+  "_apply_session_filter [combiner/mcp_combiner/server.py]",
+  "_fetch_or_join [combiner/mcp_combiner/server.py]",
+  "_finalize_schemas [combiner/mcp_combiner/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.server.ToolProcessingMiddleware.on_list_tools",
+  "list",
+  "mcp",
+  "middleware",
+  "on",
+  "on_list_tools",
+  "processing",
+  "server",
+  "tool",
+  "tools",
+]

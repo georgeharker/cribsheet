@@ -1,0 +1,35 @@
+fqname = "combiner.mcp_combiner.meta_tools.register_meta_tools._mount_server"
+name = "_mount_server"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.meta_tools"
+parent = "combiner.mcp_combiner.meta_tools.register_meta_tools"
+content_hash = "46abf57792e3db1b"
+file = "combiner/mcp_combiner/meta_tools.py"
+signature = "async def _mount_server(server_name: str, srv: ServerConfig) -> FastMCP:"
+description = ""
+line = 162
+mtime = 1783452495000000000
+container = [
+  "register_meta_tools",
+]
+calls = []
+called_by = [
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+]
+references = [
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+]
+name_terms = [
+  "_mount_server",
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools._mount_server",
+  "mcp",
+  "meta",
+  "mount",
+  "register",
+  "server",
+  "tools",
+]

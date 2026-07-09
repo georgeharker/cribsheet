@@ -1,0 +1,31 @@
+fqname = "scripts.eval_retrieval._rel_match"
+name = "_rel_match"
+kind = "function"
+lang = "python"
+module = "scripts.eval_retrieval"
+parent = ""
+content_hash = "025f0222582013a1"
+file = "scripts/eval_retrieval.py"
+signature = "def _rel_match(relpath: str, expect: str | list[str]) -> bool:"
+description = ""
+line = 63
+mtime = 1783541603000000000
+container = []
+calls = []
+called_by = [
+  "evaluate [scripts/eval_retrieval.py]",
+  "rank_of [scripts/eval_retrieval.py]",
+]
+references = [
+  "evaluate [scripts/eval_retrieval.py]",
+  "rank_of [scripts/eval_retrieval.py]",
+]
+name_terms = [
+  "_rel_match",
+  "eval",
+  "match",
+  "rel",
+  "retrieval",
+  "scripts",
+  "scripts.eval_retrieval._rel_match",
+]

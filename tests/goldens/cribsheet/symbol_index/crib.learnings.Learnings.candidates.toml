@@ -1,0 +1,28 @@
+fqname = "crib.learnings.Learnings.candidates"
+name = "candidates"
+kind = "method"
+lang = "python"
+module = "crib.learnings"
+parent = "crib.learnings.Learnings"
+content_hash = "1ada6747b4b99128"
+file = "crib/learnings.py"
+signature = "def candidates(self, fm: dict[str, Any], entries: list[dict[str, Any]],"
+description = ""
+line = 178
+mtime = 1783529664000000000
+container = [
+  "Learnings",
+]
+calls = []
+called_by = [
+  "rehome [crib/learnings.py]",
+]
+references = [
+  "rehome [crib/learnings.py]",
+]
+name_terms = [
+  "candidates",
+  "crib",
+  "crib.learnings.Learnings.candidates",
+  "learnings",
+]

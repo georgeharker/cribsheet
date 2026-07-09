@@ -1,0 +1,31 @@
+fqname = "crib.learnings.Learnings.fqns"
+name = "fqns"
+kind = "method"
+lang = "python"
+module = "crib.learnings"
+parent = "crib.learnings.Learnings"
+content_hash = "8d31d794d84b45ba"
+file = "crib/learnings.py"
+signature = "def fqns(self, proj: str) -> set[str]:"
+description = ""
+line = 63
+mtime = 1783529664000000000
+container = [
+  "Learnings",
+]
+calls = [
+  "dir [crib/notestore.py]",
+  "load [crib/notes.py]",
+]
+called_by = [
+  "graph [crib/codequery.py]",
+]
+references = [
+  "graph [crib/codequery.py]",
+]
+name_terms = [
+  "crib",
+  "crib.learnings.Learnings.fqns",
+  "fqns",
+  "learnings",
+]

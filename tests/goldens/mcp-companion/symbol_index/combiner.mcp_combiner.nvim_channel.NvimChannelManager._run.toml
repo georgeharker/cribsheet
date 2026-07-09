@@ -1,0 +1,35 @@
+fqname = "combiner.mcp_combiner.nvim_channel.NvimChannelManager._run"
+name = "_run"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = "combiner.mcp_combiner.nvim_channel.NvimChannelManager"
+content_hash = "7c4d80f32660e8bd"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "async def _run(self, inst: _Instance) -> None:"
+description = ""
+line = 217
+mtime = 1782852601000000000
+container = [
+  "NvimChannelManager",
+]
+calls = [
+  "_close [combiner/mcp_combiner/nvim_channel.py]",
+  "_exec [combiner/mcp_combiner/nvim_channel.py]",
+]
+called_by = [
+  "register [combiner/mcp_combiner/nvim_channel.py]",
+]
+references = [
+  "register [combiner/mcp_combiner/nvim_channel.py]",
+]
+name_terms = [
+  "_run",
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager._run",
+  "manager",
+  "mcp",
+  "nvim",
+  "run",
+]

@@ -1,0 +1,37 @@
+fqname = "crib.server._switch_if_created"
+name = "_switch_if_created"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = ""
+content_hash = "963dc7a31d665e30"
+file = "crib/server.py"
+signature = "def _switch_if_created(result: dict) -> dict:"
+description = ""
+line = 129
+mtime = 1783476730000000000
+container = []
+calls = [
+  "session_state [crib/session.py]",
+]
+called_by = [
+  "import_files [crib/server.py]",
+  "import_memory [crib/server.py]",
+  "project_index [crib/server.py]",
+  "project_setup [crib/server.py]",
+]
+references = [
+  "import_files [crib/server.py]",
+  "import_memory [crib/server.py]",
+  "project_index [crib/server.py]",
+  "project_setup [crib/server.py]",
+]
+name_terms = [
+  "_switch_if_created",
+  "created",
+  "crib",
+  "crib.server._switch_if_created",
+  "if",
+  "server",
+  "switch",
+]

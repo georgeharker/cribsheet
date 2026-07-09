@@ -1,0 +1,31 @@
+fqname = "crib.server.build_server.code_xref"
+name = "code_xref"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "14d4ef3ee71c9c32"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 420
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_echo_list [crib/server.py]",
+  "_resolve [crib/server.py]",
+  "code_xref [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "code",
+  "code_xref",
+  "crib",
+  "crib.server.build_server.code_xref",
+  "server",
+  "xref",
+]

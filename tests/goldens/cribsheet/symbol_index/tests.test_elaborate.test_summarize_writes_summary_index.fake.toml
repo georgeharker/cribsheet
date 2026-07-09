@@ -1,0 +1,31 @@
+fqname = "tests.test_elaborate.test_summarize_writes_summary_index.fake"
+name = "fake"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = "tests.test_elaborate.test_summarize_writes_summary_index"
+content_hash = "82fef4fdd28909ab"
+file = "tests/test_elaborate.py"
+signature = "async def fake(cfg, system, user, purpose=\"summarize\", timeout=None):"
+description = ""
+line = 194
+mtime = 1782958917000000000
+container = [
+  "test_summarize_writes_summary_index",
+]
+calls = []
+called_by = []
+references = [
+  "test_summarize_writes_summary_index [tests/test_elaborate.py]",
+]
+name_terms = [
+  "elaborate",
+  "fake",
+  "index",
+  "summarize",
+  "summary",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_summarize_writes_summary_index.fake",
+  "writes",
+]

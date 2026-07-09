@@ -1,0 +1,51 @@
+fqname = "mcp_companion.native.util.err"
+name = "err"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.native.util"
+parent = ""
+content_hash = "bab7d2e0f6e23cf5"
+file = "lua/mcp_companion/native/util.lua"
+signature = "function M.err(msg)"
+description = ""
+line = 38
+mtime = 1783022631000000000
+container = []
+calls = []
+called_by = [
+  "M.resolve_buf [lua/mcp_companion/native/util.lua]",
+  "_resolve_context [lua/mcp_companion/native/init.lua]",
+  "buffers.lua [lua/mcp_companion/native/neovim/buffers.lua]",
+  "diagnostics.lua [lua/mcp_companion/native/neovim/diagnostics.lua]",
+  "files.lua [lua/mcp_companion/native/neovim/files.lua]",
+  "init.lua [lua/mcp_companion/native/init.lua]",
+  "resources.lua [lua/mcp_companion/native/neovim/resources.lua]",
+  "util.lua [lua/mcp_companion/native/util.lua]",
+]
+references = [
+  "M [lua/mcp_companion/native/util.lua]",
+  "args [lua/mcp_companion/native/util.lua]",
+  "buf [lua/mcp_companion/native/init.lua]",
+  "buf [lua/mcp_companion/native/util.lua]",
+  "current_file_buf [lua/mcp_companion/native/util.lua]",
+  "if [lua/mcp_companion/native/init.lua]",
+  "if [lua/mcp_companion/native/util.lua]",
+  "msg [lua/mcp_companion/native/util.lua]",
+  "resolve_buf [lua/mcp_companion/native/util.lua]",
+  "text [lua/mcp_companion/native/util.lua]",
+  "util [lua/mcp_companion/native/init.lua]",
+  "util [lua/mcp_companion/native/neovim/buffers.lua]",
+  "util [lua/mcp_companion/native/neovim/diagnostics.lua]",
+  "util [lua/mcp_companion/native/neovim/files.lua]",
+  "util [lua/mcp_companion/native/neovim/resources.lua]",
+  "value [lua/mcp_companion/native/util.lua]",
+  "win [lua/mcp_companion/native/init.lua]",
+]
+name_terms = [
+  "companion",
+  "err",
+  "mcp",
+  "mcp_companion.native.util.err",
+  "native",
+  "util",
+]

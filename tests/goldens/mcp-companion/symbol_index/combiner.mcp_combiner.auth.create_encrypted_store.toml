@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.auth.create_encrypted_store"
+name = "create_encrypted_store"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "0689702bc76ce47e"
+file = "combiner/mcp_combiner/auth.py"
+signature = "def create_encrypted_store(storage_dir: Path) -> AsyncKeyValue:"
+description = ""
+line = 167
+mtime = 1782852601000000000
+container = []
+calls = [
+  "_get_or_create_encryption_key [combiner/mcp_combiner/auth.py]",
+]
+called_by = [
+  "_build_oauth [combiner/mcp_combiner/auth.py]",
+]
+references = [
+  "_build_oauth [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth.create_encrypted_store",
+  "create",
+  "create_encrypted_store",
+  "encrypted",
+  "mcp",
+  "store",
+]

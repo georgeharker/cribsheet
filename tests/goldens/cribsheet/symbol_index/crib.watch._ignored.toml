@@ -1,0 +1,27 @@
+fqname = "crib.watch._ignored"
+name = "_ignored"
+kind = "function"
+lang = "python"
+module = "crib.watch"
+parent = ""
+content_hash = "982ae975bba8caee"
+file = "crib/watch.py"
+signature = "def _ignored(path: Path) -> bool:"
+description = ""
+line = 29
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = [
+  "decode [crib/watch.py]",
+]
+references = [
+  "decode [crib/watch.py]",
+]
+name_terms = [
+  "_ignored",
+  "crib",
+  "crib.watch._ignored",
+  "ignored",
+  "watch",
+]

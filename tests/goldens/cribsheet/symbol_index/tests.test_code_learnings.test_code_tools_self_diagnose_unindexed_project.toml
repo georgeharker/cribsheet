@@ -1,0 +1,31 @@
+fqname = "tests.test_code_learnings.test_code_tools_self_diagnose_unindexed_project"
+name = "test_code_tools_self_diagnose_unindexed_project"
+kind = "function"
+lang = "python"
+module = "tests.test_code_learnings"
+parent = ""
+content_hash = "1fc63f71951dd0ba"
+file = "tests/test_code_learnings.py"
+signature = "def test_code_tools_self_diagnose_unindexed_project(crib):"
+description = ""
+line = 152
+mtime = 1783494048000000000
+container = []
+calls = [
+  "_seed_symbol [tests/test_code_learnings.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "diagnose",
+  "learnings",
+  "project",
+  "self",
+  "test",
+  "test_code_tools_self_diagnose_unindexed_project",
+  "tests",
+  "tests.test_code_learnings.test_code_tools_self_diagnose_unindexed_project",
+  "tools",
+  "unindexed",
+]

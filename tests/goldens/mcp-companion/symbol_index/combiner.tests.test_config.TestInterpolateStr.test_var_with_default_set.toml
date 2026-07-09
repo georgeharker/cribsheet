@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_config.TestInterpolateStr.test_var_with_default_set"
+name = "test_var_with_default_set"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestInterpolateStr"
+content_hash = "121c4fe595e80b1b"
+file = "combiner/tests/test_config.py"
+signature = "def test_var_with_default_set(self) -> None:"
+description = ""
+line = 251
+mtime = 1782852601000000000
+container = [
+  "TestInterpolateStr",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateStr.test_var_with_default_set",
+  "config",
+  "default",
+  "interpolate",
+  "set",
+  "str",
+  "test",
+  "test_var_with_default_set",
+  "tests",
+  "var",
+  "with",
+]

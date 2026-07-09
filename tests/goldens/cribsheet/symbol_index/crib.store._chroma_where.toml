@@ -1,0 +1,32 @@
+fqname = "crib.store._chroma_where"
+name = "_chroma_where"
+kind = "function"
+lang = "python"
+module = "crib.store"
+parent = ""
+content_hash = "fcbab7cf7eded612"
+file = "crib/store.py"
+signature = "def _chroma_where(where: dict[str, Any] | None) -> dict[str, Any] | None:"
+description = ""
+line = 251
+mtime = 1783446057000000000
+container = []
+calls = []
+called_by = [
+  "get_docs [crib/store.py]",
+  "get_meta [crib/store.py]",
+  "query [crib/store.py]",
+]
+references = [
+  "get_docs [crib/store.py]",
+  "get_meta [crib/store.py]",
+  "query [crib/store.py]",
+]
+name_terms = [
+  "_chroma_where",
+  "chroma",
+  "crib",
+  "crib.store._chroma_where",
+  "store",
+  "where",
+]

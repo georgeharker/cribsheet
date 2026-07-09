@@ -1,0 +1,39 @@
+fqname = "tests.test_code_cache.test_code_watcher_coalesces_burst_into_one_batch.scenario"
+name = "scenario"
+kind = "function"
+lang = "python"
+module = "tests.test_code_cache"
+parent = "tests.test_code_cache.test_code_watcher_coalesces_burst_into_one_batch"
+content_hash = "a3de0e4d165f42e7"
+file = "tests/test_code_cache.py"
+signature = "async def scenario():"
+description = ""
+line = 198
+mtime = 1783489700000000000
+container = [
+  "test_code_watcher_coalesces_burst_into_one_batch",
+]
+calls = [
+  "CodeWatcher [crib/watch.py]",
+  "_schedule [crib/watch.py]",
+]
+called_by = [
+  "test_code_watcher_coalesces_burst_into_one_batch [tests/test_code_cache.py]",
+]
+references = [
+  "test_code_watcher_coalesces_burst_into_one_batch [tests/test_code_cache.py]",
+]
+name_terms = [
+  "batch",
+  "burst",
+  "cache",
+  "coalesces",
+  "code",
+  "into",
+  "one",
+  "scenario",
+  "test",
+  "tests",
+  "tests.test_code_cache.test_code_watcher_coalesces_burst_into_one_batch.scenario",
+  "watcher",
+]

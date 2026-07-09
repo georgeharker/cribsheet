@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_auth.TestBearerAuth.test_injects_header"
+name = "test_injects_header"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestBearerAuth"
+content_hash = "be7763d2f582e8e6"
+file = "combiner/tests/test_auth.py"
+signature = "def test_injects_header(self) -> None:"
+description = ""
+line = 86
+mtime = 1782852601000000000
+container = [
+  "TestBearerAuth",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "bearer",
+  "combiner",
+  "combiner.tests.test_auth.TestBearerAuth.test_injects_header",
+  "header",
+  "injects",
+  "test",
+  "test_injects_header",
+  "tests",
+]

@@ -1,0 +1,34 @@
+fqname = "crib.config.GenerateConfig"
+name = "GenerateConfig"
+kind = "class"
+lang = "python"
+module = "crib.config"
+parent = ""
+content_hash = "69879571f3126d05"
+file = "crib/config.py"
+signature = "@dataclass"
+description = ""
+line = 111
+mtime = 1783455339000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "agenerate [crib/generate.py]",
+  "agenerate_structured [crib/generate.py]",
+  "generate [crib/config.py]",
+  "generate [crib/generate.py]",
+  "generate_structured [crib/generate.py]",
+  "load [crib/config.py]",
+  "resolve_provider [crib/generate.py]",
+  "test_resolve_provider_by_profile_and_purpose [tests/test_elaborate.py]",
+  "test_resolve_provider_inline_fallback [tests/test_elaborate.py]",
+  "test_resolve_provider_missing_selection_errors [tests/test_elaborate.py]",
+]
+name_terms = [
+  "GenerateConfig",
+  "config",
+  "crib",
+  "crib.config.GenerateConfig",
+  "generate",
+]

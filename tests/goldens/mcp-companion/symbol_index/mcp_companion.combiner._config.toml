@@ -1,0 +1,24 @@
+fqname = "mcp_companion.combiner._config"
+name = "_config"
+kind = "global"
+lang = "lua"
+module = "mcp_companion.combiner"
+parent = ""
+content_hash = "0d681452148d569d"
+file = "lua/mcp_companion/combiner/init.lua"
+signature = "local _config ---@diagnostic disable-line: missing-fields"
+description = ""
+line = 10
+mtime = 1783452478000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_config",
+  "combiner",
+  "companion",
+  "config",
+  "mcp",
+  "mcp_companion.combiner._config",
+]

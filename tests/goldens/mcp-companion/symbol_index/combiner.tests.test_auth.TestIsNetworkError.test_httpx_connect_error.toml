@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_auth.TestIsNetworkError.test_httpx_connect_error"
+name = "test_httpx_connect_error"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestIsNetworkError"
+content_hash = "1884ea99f2d3a4df"
+file = "combiner/tests/test_auth.py"
+signature = "def test_httpx_connect_error(self) -> None:"
+description = ""
+line = 218
+mtime = 1782852601000000000
+container = [
+  "TestIsNetworkError",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestIsNetworkError.test_httpx_connect_error",
+  "connect",
+  "error",
+  "httpx",
+  "is",
+  "network",
+  "test",
+  "test_httpx_connect_error",
+  "tests",
+]

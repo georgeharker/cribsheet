@@ -1,0 +1,27 @@
+fqname = "combiner.tests.test_schema_fixes.test_all_fixes_combine"
+name = "test_all_fixes_combine"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_schema_fixes"
+parent = ""
+content_hash = "4e6eaa955a40433c"
+file = "combiner/tests/test_schema_fixes.py"
+signature = "def test_all_fixes_combine():"
+description = ""
+line = 72
+mtime = 1782861732000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "all",
+  "combine",
+  "combiner",
+  "combiner.tests.test_schema_fixes.test_all_fixes_combine",
+  "fixes",
+  "schema",
+  "test",
+  "test_all_fixes_combine",
+  "tests",
+]

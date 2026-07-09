@@ -1,0 +1,32 @@
+fqname = "mcp_companion.cc.approval._spec_approves"
+name = "_spec_approves"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.approval"
+parent = ""
+content_hash = "e79002c4994a2470"
+file = "lua/mcp_companion/cc/approval.lua"
+signature = "local function _spec_approves(spec, server_name, tool_name)"
+description = ""
+line = 34
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.check [lua/mcp_companion/cc/approval.lua]",
+  "approval.lua [lua/mcp_companion/cc/approval.lua]",
+]
+references = [
+  "if [lua/mcp_companion/cc/approval.lua]",
+  "spec [lua/mcp_companion/cc/approval.lua]",
+]
+name_terms = [
+  "_spec_approves",
+  "approval",
+  "approves",
+  "cc",
+  "companion",
+  "mcp",
+  "mcp_companion.cc.approval._spec_approves",
+  "spec",
+]

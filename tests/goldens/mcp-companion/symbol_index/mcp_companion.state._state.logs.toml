@@ -1,0 +1,25 @@
+fqname = "mcp_companion.state._state.logs"
+name = "logs"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.state"
+parent = "mcp_companion.state._state"
+content_hash = "45008fb0df91f5c2"
+file = "lua/mcp_companion/state.lua"
+signature = "logs = {}, -- Recent log entries (max 500)"
+description = ""
+line = 36
+mtime = 1782852601000000000
+container = [
+  "_state",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "companion",
+  "logs",
+  "mcp",
+  "mcp_companion.state._state.logs",
+  "state",
+]

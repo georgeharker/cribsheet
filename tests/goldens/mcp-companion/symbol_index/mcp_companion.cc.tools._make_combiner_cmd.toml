@@ -1,0 +1,32 @@
+fqname = "mcp_companion.cc.tools._make_combiner_cmd"
+name = "_make_combiner_cmd"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.tools"
+parent = ""
+content_hash = "854d7d6d598c923b"
+file = "lua/mcp_companion/cc/tools.lua"
+signature = "local function _make_combiner_cmd(singleton_client, namespaced_name, display_name, server_name)"
+description = ""
+line = 43
+mtime = 1783013405000000000
+container = []
+calls = []
+called_by = [
+  "tools.lua [lua/mcp_companion/cc/tools.lua]",
+]
+references = [
+  "for in [lua/mcp_companion/cc/tools.lua]",
+  "singleton_client [lua/mcp_companion/cc/tools.lua]",
+]
+name_terms = [
+  "_make_combiner_cmd",
+  "cc",
+  "cmd",
+  "combiner",
+  "companion",
+  "make",
+  "mcp",
+  "mcp_companion.cc.tools._make_combiner_cmd",
+  "tools",
+]

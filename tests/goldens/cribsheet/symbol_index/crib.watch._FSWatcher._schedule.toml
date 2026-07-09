@@ -1,0 +1,29 @@
+fqname = "crib.watch._FSWatcher._schedule"
+name = "_schedule"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch._FSWatcher"
+content_hash = "0c81f9bf1dad1996"
+file = "crib/watch.py"
+signature = "def _schedule(self, key: tuple[Any, ...]) -> None:"
+description = ""
+line = 113
+mtime = 1783476730000000000
+container = [
+  "_FSWatcher",
+]
+calls = []
+called_by = []
+references = [
+  "_emit [crib/watch.py]",
+]
+name_terms = [
+  "_schedule",
+  "crib",
+  "crib.watch._FSWatcher._schedule",
+  "fs",
+  "schedule",
+  "watch",
+  "watcher",
+]

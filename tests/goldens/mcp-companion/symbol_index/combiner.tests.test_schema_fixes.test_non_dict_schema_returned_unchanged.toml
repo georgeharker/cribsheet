@@ -1,0 +1,29 @@
+fqname = "combiner.tests.test_schema_fixes.test_non_dict_schema_returned_unchanged"
+name = "test_non_dict_schema_returned_unchanged"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_schema_fixes"
+parent = ""
+content_hash = "399f4c99700f715d"
+file = "combiner/tests/test_schema_fixes.py"
+signature = "def test_non_dict_schema_returned_unchanged():"
+description = ""
+line = 81
+mtime = 1782861732000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_schema_fixes.test_non_dict_schema_returned_unchanged",
+  "dict",
+  "fixes",
+  "non",
+  "returned",
+  "schema",
+  "test",
+  "test_non_dict_schema_returned_unchanged",
+  "tests",
+  "unchanged",
+]

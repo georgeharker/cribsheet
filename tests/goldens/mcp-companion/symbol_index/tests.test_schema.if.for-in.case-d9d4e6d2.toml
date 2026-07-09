@@ -1,0 +1,34 @@
+fqname = "tests.test_schema.if.for in.case"
+name = "case"
+kind = "variable"
+lang = "lua"
+module = "tests.test_schema"
+parent = "tests.test_schema.if.for in"
+content_hash = "d191ba0b5d6867f3"
+file = "tests/test_schema.lua"
+signature = "for _, case in ipairs({ { name = \"nil\", v = nil }, { name = \"empty table\", v = {} } }) do"
+description = ""
+line = 45
+mtime = 1783013405000000000
+container = [
+  "if",
+  "for in",
+]
+calls = []
+called_by = []
+references = [
+  "_ [tests/test_schema.lua]",
+  "else [tests/test_schema.lua]",
+  "if [tests/test_schema.lua]",
+  "out [tests/test_schema.lua]",
+]
+name_terms = [
+  "case",
+  "for",
+  "if",
+  "in",
+  "schema",
+  "test",
+  "tests",
+  "tests.test_schema.if.for in.case",
+]

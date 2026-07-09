@@ -1,0 +1,29 @@
+fqname = "crib.chunk.Chunk.section_text"
+name = "section_text"
+kind = "field"
+lang = "python"
+module = "crib.chunk"
+parent = "crib.chunk.Chunk"
+content_hash = "5d47c530bfd5ff51"
+file = "crib/chunk.py"
+signature = "section_text: str = \"\""
+description = ""
+line = 36
+mtime = 1782930371000000000
+container = [
+  "Chunk",
+]
+calls = []
+called_by = []
+references = [
+  "chunk_note [crib/chunk.py]",
+  "section_hash [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.section_text",
+  "section",
+  "section_text",
+  "text",
+]

@@ -1,0 +1,26 @@
+fqname = "scripts.analyze_consult.TRANSCRIPTS"
+name = "TRANSCRIPTS"
+kind = "constant"
+lang = "python"
+module = "scripts.analyze_consult"
+parent = ""
+content_hash = "acbb824be92d0602"
+file = "scripts/analyze_consult.py"
+signature = "TRANSCRIPTS = Path(os.path.expanduser(\"~/.config/claude/projects\"))"
+description = ""
+line = 43
+mtime = 1783033314000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "main [scripts/analyze_consult.py]",
+]
+name_terms = [
+  "TRANSCRIPTS",
+  "analyze",
+  "consult",
+  "scripts",
+  "scripts.analyze_consult.TRANSCRIPTS",
+  "transcripts",
+]

@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.server._needs_oauth"
+name = "_needs_oauth"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "13cd822f265b8dc3"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _needs_oauth(srv: ServerConfig) -> bool:"
+description = ""
+line = 1338
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "_create_isolated_proxy [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_create_isolated_proxy [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_needs_oauth",
+  "combiner",
+  "combiner.mcp_combiner.server._needs_oauth",
+  "mcp",
+  "needs",
+  "oauth",
+  "server",
+]

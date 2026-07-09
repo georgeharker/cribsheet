@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.__main__._ACP_TOKEN_HEADER"
+name = "_ACP_TOKEN_HEADER"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.__main__"
+parent = ""
+content_hash = "9d2d3cf83dd32180"
+file = "combiner/mcp_combiner/__main__.py"
+signature = "_ACP_TOKEN_HEADER = \"x-mcp-combiner-session\""
+description = ""
+line = 32
+mtime = 1783185942000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "dispatch [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "_ACP_TOKEN_HEADER",
+  "acp",
+  "combiner",
+  "combiner.mcp_combiner.__main__._ACP_TOKEN_HEADER",
+  "header",
+  "main",
+  "mcp",
+  "token",
+]

@@ -1,0 +1,46 @@
+fqname = "tests.test_code_cache._write"
+name = "_write"
+kind = "function"
+lang = "python"
+module = "tests.test_code_cache"
+parent = ""
+content_hash = "9b8baa0b2968abd9"
+file = "tests/test_code_cache.py"
+signature = "def _write(crib, project, fqname, description, content_hash):"
+description = ""
+line = 35
+mtime = 1783489700000000000
+container = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = [
+  "test_drop_file_bumps_epoch_and_invalidates [tests/test_code_cache.py]",
+  "test_lookup_builds_resident_cache_and_reuses_it [tests/test_code_cache.py]",
+  "test_partial_extract_reconfirms_before_trusting_shrink [tests/test_code_cache.py]",
+  "test_reconcile_rebuilds_merge_dirtied_files [tests/test_code_cache.py]",
+  "test_reload_reuses_unchanged_embedding_vectors [tests/test_code_cache.py]",
+  "test_revalidate_reindexes_merge_dirtied_file [tests/test_code_cache.py]",
+  "test_scan_mode_sees_on_disk_writes [tests/test_code_cache.py]",
+  "test_trust_mode_ignores_writes_until_epoch_bump [tests/test_code_cache.py]",
+]
+references = [
+  "test_drop_file_bumps_epoch_and_invalidates [tests/test_code_cache.py]",
+  "test_lookup_builds_resident_cache_and_reuses_it [tests/test_code_cache.py]",
+  "test_partial_extract_reconfirms_before_trusting_shrink [tests/test_code_cache.py]",
+  "test_reconcile_rebuilds_merge_dirtied_files [tests/test_code_cache.py]",
+  "test_reload_reuses_unchanged_embedding_vectors [tests/test_code_cache.py]",
+  "test_revalidate_reindexes_merge_dirtied_file [tests/test_code_cache.py]",
+  "test_scan_mode_sees_on_disk_writes [tests/test_code_cache.py]",
+  "test_trust_mode_ignores_writes_until_epoch_bump [tests/test_code_cache.py]",
+]
+name_terms = [
+  "_write",
+  "cache",
+  "code",
+  "test",
+  "tests",
+  "tests.test_code_cache._write",
+  "write",
+]

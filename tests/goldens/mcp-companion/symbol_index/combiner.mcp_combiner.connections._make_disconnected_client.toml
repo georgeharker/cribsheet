@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.connections._make_disconnected_client"
+name = "_make_disconnected_client"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = ""
+content_hash = "24f4648c013f34b6"
+file = "combiner/mcp_combiner/connections.py"
+signature = "def _make_disconnected_client("
+description = ""
+line = 766
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_make_disconnected_client",
+  "client",
+  "combiner",
+  "combiner.mcp_combiner.connections._make_disconnected_client",
+  "connections",
+  "disconnected",
+  "make",
+  "mcp",
+]

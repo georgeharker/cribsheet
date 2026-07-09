@@ -1,0 +1,23 @@
+fqname = "scripts.snapshot_harness.a"
+name = "a"
+kind = "global"
+lang = "python"
+module = "scripts.snapshot_harness"
+parent = ""
+content_hash = "0ba3cb1adbdf18fb"
+file = "scripts/snapshot_harness.py"
+signature = "a = sys.argv[1:]"
+description = ""
+line = 178
+mtime = 1783498271000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "harness",
+  "scripts",
+  "scripts.snapshot_harness.a",
+  "snapshot",
+]

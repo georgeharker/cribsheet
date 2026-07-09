@@ -1,0 +1,27 @@
+fqname = "crib.notes._FENCE"
+name = "_FENCE"
+kind = "constant"
+lang = "python"
+module = "crib.notes"
+parent = ""
+content_hash = "1035cd20d259f30f"
+file = "crib/notes.py"
+signature = "_FENCE = \"---\""
+description = ""
+line = 15
+mtime = 1782755212000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "normalize_text [crib/notes.py]",
+  "parse [crib/notes.py]",
+  "serialize [crib/notes.py]",
+]
+name_terms = [
+  "_FENCE",
+  "crib",
+  "crib.notes._FENCE",
+  "fence",
+  "notes",
+]

@@ -1,0 +1,36 @@
+fqname = "combiner.tests.test_session_filter.TestStaleServerTools.test_evicted_server_loses_ready"
+name = "test_evicted_server_loses_ready"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestStaleServerTools"
+content_hash = "d1e4a88e3e6c9fd8"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_evicted_server_loses_ready(self):"
+description = ""
+line = 501
+mtime = 1783452495000000000
+container = [
+  "TestStaleServerTools",
+]
+calls = [
+  "_config [combiner/tests/test_session_filter.py]",
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools.test_evicted_server_loses_ready",
+  "evicted",
+  "filter",
+  "loses",
+  "ready",
+  "server",
+  "session",
+  "stale",
+  "test",
+  "test_evicted_server_loses_ready",
+  "tests",
+  "tools",
+]

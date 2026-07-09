@@ -1,0 +1,37 @@
+fqname = "crib.embed._resolve_query_prefix"
+name = "_resolve_query_prefix"
+kind = "function"
+lang = "python"
+module = "crib.embed"
+parent = ""
+content_hash = "c4de0a71f554901b"
+file = "crib/embed.py"
+signature = "def _resolve_query_prefix(cfg: EmbedConfig, model_name: str) -> str:"
+description = ""
+line = 148
+mtime = 1782690118000000000
+container = []
+calls = []
+called_by = [
+  "build_embedder [crib/embed.py]",
+  "test_bge_en_gets_query_instruction_by_default [tests/test_embed.py]",
+  "test_custom_prefix_wins [tests/test_embed.py]",
+  "test_explicit_empty_prefix_disables_instruction [tests/test_embed.py]",
+  "test_non_bge_models_get_no_instruction [tests/test_embed.py]",
+]
+references = [
+  "build_embedder [crib/embed.py]",
+  "test_bge_en_gets_query_instruction_by_default [tests/test_embed.py]",
+  "test_custom_prefix_wins [tests/test_embed.py]",
+  "test_explicit_empty_prefix_disables_instruction [tests/test_embed.py]",
+  "test_non_bge_models_get_no_instruction [tests/test_embed.py]",
+]
+name_terms = [
+  "_resolve_query_prefix",
+  "crib",
+  "crib.embed._resolve_query_prefix",
+  "embed",
+  "prefix",
+  "query",
+  "resolve",
+]

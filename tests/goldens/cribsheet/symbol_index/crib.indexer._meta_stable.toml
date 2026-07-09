@@ -1,0 +1,28 @@
+fqname = "crib.indexer._meta_stable"
+name = "_meta_stable"
+kind = "function"
+lang = "python"
+module = "crib.indexer"
+parent = ""
+content_hash = "c761bda0395d4548"
+file = "crib/indexer.py"
+signature = "def _meta_stable(meta: dict) -> dict:"
+description = ""
+line = 25
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = [
+  "_index_locked [crib/indexer.py]",
+]
+references = [
+  "_index_locked [crib/indexer.py]",
+]
+name_terms = [
+  "_meta_stable",
+  "crib",
+  "crib.indexer._meta_stable",
+  "indexer",
+  "meta",
+  "stable",
+]

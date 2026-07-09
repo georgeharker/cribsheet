@@ -20,7 +20,7 @@ It remembers two kinds of things:
   this by concept*, *what calls this*, *what does this do* — across files.
 
 Disk is the source of truth; the vector index is a derived, rebuildable cache. One
-warm process serves your editor (over MCP) and your terminal (`crib <verb>`) alike.
+warm process serves your editor (over MCP) and your terminal (`crib <noun> <verb>`) alike.
 
 > `crib` = the command. `cribsheet` = the project. See **[DESIGN.md](DESIGN.md)**
 > for the full architecture.
@@ -49,11 +49,10 @@ git clone https://github.com/georgeharker/cribsheet && cd cribsheet
 pipx install -e .            # everything: crib + chroma, embeddings, fastmcp, watcher, llmkit
 ```
 
-The default install is complete — no extras needed (`[st]`, the torch embedder,
-is the one genuine extra; torch wheels are host-specific). llmkit isn't on PyPI —
-it installs from its git head, so no submodule dance is needed; the
-`vendor/llmkit` submodule is only for hacking on llmkit itself or indexing it
-in-tree (`git submodule update --init` when you want it).
+That's the complete product — store, ONNX embedder (no torch), MCP server +
+warm daemon, watcher, and generation. The one genuine extra is `[st]`, the torch
+embedder (host-specific wheels). llmkit installs from its git head (not PyPI), so
+there's no submodule dance — `vendor/llmkit` is only for hacking on llmkit itself.
 
 <details><summary>Dev install (editable venv / uv)</summary>
 
@@ -90,9 +89,9 @@ do too:
 
 ```bash
 # notes
-crib store "Chroma is refcounted by sharedserver." -p notes   # remember a fact
-crib lookup "how is chroma managed" -p notes                  # find it by meaning
-crib search -a "how is chroma managed" -p notes               # -a: full sections
+crib note store "Chroma is refcounted by sharedserver." -p notes  # remember a fact
+crib note lookup "how is chroma managed" -p notes                 # find it by meaning
+crib note apropos "how is chroma managed" -p notes                # hits as full sections
 
 # code — onboard a repo, then ask it questions grep can't answer
 cd ~/Development/myrepo
@@ -100,7 +99,7 @@ crib project setup                                # index code + docs (one call)
 crib code lookup "combine ranked lists"           # find a symbol by CONCEPT
 crib code dossier LexicalCache.get                # everything about one symbol
 crib code graph reciprocal_rank_fusion            # walk the call graph (pstree)
-crib code append reciprocal_rank_fusion \
+crib learning add reciprocal_rank_fusion \
      "fuses by RANK, not score — robust to scale differences"   # pin a learning to it
 ```
 
@@ -110,15 +109,20 @@ toward `project setup`, runs it, and carries on.
 
 ## The surface
 
+Every command reads as **`crib <noun> <verb>`** (and the matching MCP tool
+`<noun>_<verb>`) — four nouns for the four facets:
+
+![The command surface — note / code / learning / project and their verbs](docs/images/command-surface.png)
+
 Every capability, its CLI form, its MCP tool, and a one-liner lives in
-**[docs/surface.md](docs/surface.md)** — the full reference. The essentials:
+**[docs/surface.md](docs/surface.md)** — the full reference. Grouped by task:
 
 | | notes | code |
 |---|---|---|
-| **find** | `lookup` / `apropos` (full sections) | `code lookup` (concept ⊕ name), `code dossier`, `code graph`/`xref` |
-| **write** | `store`, `append`, `edit`, `forget`, `move` | `code append`/`edit`/`forget` (learnings) |
-| **onboard** | `import` (files → memory), `import-memory` | `project setup` / `index` / `status` |
-| **housekeeping** | `reindex`, `reconcile`, `versions`, `restore`, `history` | `code learnings`, `code rehome` |
+| **find** | `note lookup` / `note apropos` (full sections) | `code lookup` (concept ⊕ name), `code dossier`, `code graph`/`xref` |
+| **write** | `note store`, `note append`, `note edit`, `note forget`, `note move` | `learning add`/`edit`/`forget` |
+| **onboard** | `note import` (files → memory), `note import-memory` | `project setup` / `index` / `status` |
+| **housekeeping** | `note reindex`, `project reconcile`, `note versions`, `note restore`, `note history` | `learning report`, `learning rehome` |
 
 Notes and code share one store, so `lookup` surfaces a repo's docs alongside your
 stored knowledge. A repo's `.crib` file ties it to a project and declares which
@@ -139,13 +143,13 @@ runs), so it's fast; `--no-daemon` runs in-process, `--json` gives machine outpu
 - **Share across machines** — the data dir is a git repo; notes sync via plain git
   with a frontmatter-aware merge driver so provenance never conflicts:
   ```bash
-  crib sync --remote git@host:notes.git   # first machine: create + push
-  crib setup --remote git@host:notes.git  # every other: init + merge driver + pull
-  crib sync                               # thereafter: commit + pull + push
+  crib note sync --remote git@host:notes.git   # first machine: create + push
+  crib note setup --remote git@host:notes.git  # every other: init + merge driver + pull
+  crib note sync                               # thereafter: commit + pull + push
   ```
   Full walkthrough: [docs/resume-on-new-machine.md](docs/resume-on-new-machine.md).
-- **Mirror Claude's own memory** — `crib import-memory` (MCP: `import_memory`, so
-  an agent can do it too) mirrors Claude Code's harness `memory/*.md` into crib
+- **Mirror Claude's own memory** — `crib note import-memory` (MCP: `note_import_memory`,
+  so an agent can do it too) mirrors Claude Code's harness `memory/*.md` into crib
   (host-namespaced) and live-syncs it, so it's searchable alongside everything else.
 - **Configure** — `$XDG_CONFIG_HOME/crib/config.toml` picks the embedder, retrieval
   mode, daemon, and backends; `crib info` prints the resolved paths. The defaults are
@@ -174,33 +178,39 @@ index. Retrieval fuses a dense vector ranking with a warm BM25 lexical ranking
 servers (`.lsp.json` specs — ty/pyright, rust-analyzer, gopls, clangd, shuck, …) for
 the structural facet and an LLM for the "what it does" descriptions.
 
-The full picture lives in separate docs, not this README — pick by what you want:
+The deep dives live in the docs — see **[Documentation](#documentation)** below.
 
+## Documentation
+
+**Using cribsheet**
+
+- **[docs/guide.md](docs/guide.md)** — the user guide: the four facets, the
+  noun-verb interface, and five runnable workflows. *Start here.*
+- **[docs/surface.md](docs/surface.md)** — the complete CLI ⇄ MCP reference: every
+  noun, every verb, one line each.
+- **[docs/resume-on-new-machine.md](docs/resume-on-new-machine.md)** — share your
+  memory across machines over plain git.
+
+**Under the hood**
+
+- **[DESIGN.md](DESIGN.md)** — the architecture and the *why*, end to end (with the
+  hybrid-retrieval pipeline diagram).
 - **[docs/implementation.md](docs/implementation.md)** — *how it works today*: a
-  subsystem-by-subsystem map (ingestion, indexing, watchers, warm LSP sessions,
-  cross-project refs, sync/merge), anchored to files and symbols. Start here to
-  work on the code.
-- **[DESIGN.md](DESIGN.md)** — the architecture and the *why* behind the
-  decisions, end to end.
-- **[docs/surface.md](docs/surface.md)** — the complete CLI + MCP reference.
+  subsystem-by-subsystem map anchored to files and symbols (with the
+  collaborator-architecture and code-index diagrams). *Start here to work on the code.*
 - **[docs/code-symbol-index.md](docs/code-symbol-index.md)** — how the code↔note
   index is built, and the learnings model.
 - **[docs/retrieval-and-adoption.md](docs/retrieval-and-adoption.md)** — retrieval
-  quality, and why delivery (not capability) is what makes a memory tool get used.
+  quality, and why *delivery* (not capability) makes a memory tool get used.
 - **[docs/knowledge-capture.md](docs/knowledge-capture.md)** — `distill` /
   `elaborate` / `summarize`, the generation layer over notes.
 
 ## Status & tests
 
-The default install is the complete product: chromadb (store), **fastembed** (the
-recommended embedder — ONNX, no torch), **fastmcp** (serves MCP *and* the
-warm-daemon path the CLI uses by default), **watchdog** (external-edit watchers),
-and **llmkit** from its git head (rendering + generation). The only real extra is
-`[st]`, the torch embedder — torch wheels are host-specific. The dependency-free
-fallbacks (hash embedder, JSON store, `--no-daemon`) exist as *code properties*
-that tests and CI exercise, not install profiles. The store → index → lookup path,
-the version ring, the file watcher, git sync, the code index, and the CLI + MCP
-surface are all working.
+The store → index → lookup path, the version ring, the file watcher, git sync, the
+code index, and the full CLI + MCP surface all work. The dependency-free fallbacks
+(hash embedder, JSON store, `--no-daemon`) are *code properties* that tests and CI
+exercise, not install profiles.
 
 ```bash
 pip install pytest && pytest -q

@@ -1,0 +1,27 @@
+fqname = "crib.codeindex.NoServer"
+name = "NoServer"
+kind = "class"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "8c6aea68f798bea2"
+file = "crib/codeindex.py"
+signature = "class NoServer(RuntimeError):"
+description = ""
+line = 817
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+  "extract_file [crib/codeindex.py]",
+]
+name_terms = [
+  "NoServer",
+  "codeindex",
+  "crib",
+  "crib.codeindex.NoServer",
+  "no",
+  "server",
+]

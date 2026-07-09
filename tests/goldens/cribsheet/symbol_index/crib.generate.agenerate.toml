@@ -1,0 +1,28 @@
+fqname = "crib.generate.agenerate"
+name = "agenerate"
+kind = "function"
+lang = "python"
+module = "crib.generate"
+parent = ""
+content_hash = "4f7e983715c74bfd"
+file = "crib/generate.py"
+signature = "async def agenerate(cfg: GenerateConfig, system: str, user: str,"
+description = ""
+line = 110
+mtime = 1782958917000000000
+container = []
+calls = []
+called_by = [
+  "_one [crib/app.py]",
+  "distill [crib/app.py]",
+]
+references = [
+  "_one [crib/app.py]",
+  "distill [crib/app.py]",
+]
+name_terms = [
+  "agenerate",
+  "crib",
+  "crib.generate.agenerate",
+  "generate",
+]

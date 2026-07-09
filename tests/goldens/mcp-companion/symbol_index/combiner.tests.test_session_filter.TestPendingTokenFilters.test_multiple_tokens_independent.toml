@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_session_filter.TestPendingTokenFilters.test_multiple_tokens_independent"
+name = "test_multiple_tokens_independent"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestPendingTokenFilters"
+content_hash = "9001b76c7da68620"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_multiple_tokens_independent(self):"
+description = ""
+line = 943
+mtime = 1783452495000000000
+container = [
+  "TestPendingTokenFilters",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestPendingTokenFilters.test_multiple_tokens_independent",
+  "filter",
+  "filters",
+  "independent",
+  "multiple",
+  "pending",
+  "session",
+  "test",
+  "test_multiple_tokens_independent",
+  "tests",
+  "token",
+  "tokens",
+]

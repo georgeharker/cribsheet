@@ -1,0 +1,28 @@
+fqname = "crib.store.Store.query"
+name = "query"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Store"
+content_hash = "9c4503c684e58646"
+file = "crib/store.py"
+signature = "def query(self, embedding: list[float], k: int,"
+description = ""
+line = 48
+mtime = 1783446057000000000
+container = [
+  "Store",
+]
+calls = []
+called_by = [
+  "_retrieve [crib/app.py]",
+]
+references = [
+  "_retrieve [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Store.query",
+  "query",
+  "store",
+]

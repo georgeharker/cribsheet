@@ -1,0 +1,89 @@
+fqname = "mcp_companion.combiner.ensure_started"
+name = "ensure_started"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.combiner"
+parent = ""
+content_hash = "17112b57e45ad94e"
+file = "lua/mcp_companion/combiner/init.lua"
+signature = "function M.ensure_started()"
+description = ""
+line = 354
+mtime = 1783452478000000000
+container = []
+calls = []
+called_by = [
+  "M._cli_inject_combiner_env [lua/mcp_companion/cc/init.lua]",
+  "M._create_client [lua/mcp_companion/combiner/init.lua]",
+  "M._fetch_and_render [lua/mcp_companion/ui/init.lua]",
+  "M._setup_http_per_chat [lua/mcp_companion/cc/init.lua]",
+  "M._setup_system_prompt_injection [lua/mcp_companion/cc/editor_context.lua]",
+  "M._start_combiner_async [lua/mcp_companion/cc/init.lua]",
+  "M._start_direct [lua/mcp_companion/combiner/init.lua]",
+  "M._start_with_sharedserver [lua/mcp_companion/combiner/init.lua]",
+  "M.ensure_started [lua/mcp_companion/combiner/init.lua]",
+  "M.fetch_session_status [lua/mcp_companion/cc/session_commands.lua]",
+  "M.get_combiner [lua/mcp_companion/init.lua]",
+  "M.get_hub_instance [lua/mcp_companion/init.lua]",
+  "M.open [lua/mcp_companion/ui/init.lua]",
+  "M.register [lua/mcp_companion/cc/editor_context.lua]",
+  "M.register [lua/mcp_companion/cc/slash_commands.lua]",
+  "M.register [lua/mcp_companion/cc/tools.lua]",
+  "M.restart [lua/mcp_companion/combiner/init.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "M.start [lua/mcp_companion/combiner/init.lua]",
+  "M.status [lua/mcp_companion/combiner/init.lua]",
+  "M.stop [lua/mcp_companion/combiner/init.lua]",
+  "_call_session_tool [lua/mcp_companion/cc/session_commands.lua]",
+  "init.lua [lua/mcp_companion/cc/init.lua]",
+  "init.lua [lua/mcp_companion/combiner/init.lua]",
+]
+references = [
+  "M [lua/mcp_companion/combiner/init.lua]",
+  "_call_session_tool [lua/mcp_companion/cc/session_commands.lua]",
+  "_create_client [lua/mcp_companion/combiner/init.lua]",
+  "_setup_system_prompt_injection [lua/mcp_companion/cc/editor_context.lua]",
+  "_start_direct [lua/mcp_companion/combiner/init.lua]",
+  "_start_with_sharedserver [lua/mcp_companion/combiner/init.lua]",
+  "_wait_and_connect [lua/mcp_companion/combiner/init.lua]",
+  "callback [lua/mcp_companion/combiner/init.lua]",
+  "client [lua/mcp_companion/cc/tools.lua]",
+  "client [lua/mcp_companion/combiner/init.lua]",
+  "combiner [lua/mcp_companion/cc/editor_context.lua]",
+  "combiner [lua/mcp_companion/cc/init.lua]",
+  "combiner [lua/mcp_companion/cc/session_commands.lua]",
+  "combiner [lua/mcp_companion/cc/slash_commands.lua]",
+  "combiner [lua/mcp_companion/cc/tools.lua]",
+  "combiner [lua/mcp_companion/init.lua]",
+  "config [lua/mcp_companion/combiner/init.lua]",
+  "fetch_session_status [lua/mcp_companion/cc/session_commands.lua]",
+  "for in [lua/mcp_companion/cc/editor_context.lua]",
+  "for in [lua/mcp_companion/cc/slash_commands.lua]",
+  "get_combiner [lua/mcp_companion/init.lua]",
+  "get_hub_instance [lua/mcp_companion/init.lua]",
+  "if [lua/mcp_companion/cc/editor_context.lua]",
+  "if [lua/mcp_companion/cc/init.lua]",
+  "if [lua/mcp_companion/cc/session_commands.lua]",
+  "if [lua/mcp_companion/cc/slash_commands.lua]",
+  "if [lua/mcp_companion/combiner/init.lua]",
+  "open [lua/mcp_companion/ui/init.lua]",
+  "opts [lua/mcp_companion/combiner/init.lua]",
+  "per_chat_client [lua/mcp_companion/cc/init.lua]",
+  "prompts [lua/mcp_companion/cc/slash_commands.lua]",
+  "restart [lua/mcp_companion/combiner/init.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+  "ss [lua/mcp_companion/combiner/init.lua]",
+  "start [lua/mcp_companion/combiner/init.lua]",
+  "status [lua/mcp_companion/combiner/init.lua]",
+  "stop [lua/mcp_companion/combiner/init.lua]",
+  "token [lua/mcp_companion/combiner/init.lua]",
+]
+name_terms = [
+  "combiner",
+  "companion",
+  "ensure",
+  "ensure_started",
+  "mcp",
+  "mcp_companion.combiner.ensure_started",
+  "started",
+]

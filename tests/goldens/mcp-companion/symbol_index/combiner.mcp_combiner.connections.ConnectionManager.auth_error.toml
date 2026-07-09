@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager.auth_error"
+name = "auth_error"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections.ConnectionManager"
+content_hash = "d44e6bad1d77be9a"
+file = "combiner/mcp_combiner/connections.py"
+signature = "def auth_error(self, name: str) -> str:"
+description = ""
+line = 285
+mtime = 1783473323000000000
+container = [
+  "ConnectionManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "auth_error",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.auth_error",
+  "connection",
+  "connections",
+  "error",
+  "manager",
+  "mcp",
+]

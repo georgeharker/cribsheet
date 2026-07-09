@@ -1,0 +1,28 @@
+fqname = "tests.test_cc_resolve_session.test"
+name = "test"
+kind = "function"
+lang = "lua"
+module = "tests.test_cc_resolve_session"
+parent = ""
+content_hash = "099b1817b7bfdb5e"
+file = "tests/test_cc_resolve_session.lua"
+signature = "local function test(name, fn)"
+description = ""
+line = 55
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_cc_resolve_session.lua [tests/test_cc_resolve_session.lua]",
+]
+references = [
+  "name [tests/test_cc_resolve_session.lua]",
+]
+name_terms = [
+  "cc",
+  "resolve",
+  "session",
+  "test",
+  "tests",
+  "tests.test_cc_resolve_session.test",
+]

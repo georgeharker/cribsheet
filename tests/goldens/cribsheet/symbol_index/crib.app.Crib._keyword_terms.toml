@@ -1,0 +1,32 @@
+fqname = "crib.app.Crib._keyword_terms"
+name = "_keyword_terms"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "8bd4861d3d45aed2"
+file = "crib/app.py"
+signature = "def _keyword_terms(self, project: str, section_hash: str,"
+description = ""
+line = 273
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "SectionIndex [crib/section_index.py]",
+  "project_dir [crib/paths.py]",
+  "terms_for [crib/section_index.py]",
+]
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+]
+name_terms = [
+  "_keyword_terms",
+  "app",
+  "crib",
+  "crib.app.Crib._keyword_terms",
+  "keyword",
+  "terms",
+]

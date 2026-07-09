@@ -1,0 +1,42 @@
+fqname = "combiner.mcp_combiner.sharedserver.SharedServerManager._get_binary"
+name = "_get_binary"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.sharedserver"
+parent = "combiner.mcp_combiner.sharedserver.SharedServerManager"
+content_hash = "49743f129b3f932b"
+file = "combiner/mcp_combiner/sharedserver.py"
+signature = "def _get_binary(self) -> str:"
+description = ""
+line = 139
+mtime = 1782539642000000000
+container = [
+  "SharedServerManager",
+]
+calls = [
+  "_require_binary [combiner/mcp_combiner/sharedserver.py]",
+]
+called_by = [
+  "_start_one [combiner/mcp_combiner/sharedserver.py]",
+  "ensure_stopped [combiner/mcp_combiner/sharedserver.py]",
+  "restart [combiner/mcp_combiner/sharedserver.py]",
+  "stop_all [combiner/mcp_combiner/sharedserver.py]",
+]
+references = [
+  "_start_one [combiner/mcp_combiner/sharedserver.py]",
+  "ensure_stopped [combiner/mcp_combiner/sharedserver.py]",
+  "restart [combiner/mcp_combiner/sharedserver.py]",
+  "stop_all [combiner/mcp_combiner/sharedserver.py]",
+]
+name_terms = [
+  "_get_binary",
+  "binary",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.SharedServerManager._get_binary",
+  "get",
+  "manager",
+  "mcp",
+  "server",
+  "shared",
+  "sharedserver",
+]

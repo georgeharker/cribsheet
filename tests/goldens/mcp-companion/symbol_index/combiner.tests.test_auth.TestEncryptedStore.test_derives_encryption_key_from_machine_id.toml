@@ -1,0 +1,34 @@
+fqname = "combiner.tests.test_auth.TestEncryptedStore.test_derives_encryption_key_from_machine_id"
+name = "test_derives_encryption_key_from_machine_id"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestEncryptedStore"
+content_hash = "9661b9130c0e196a"
+file = "combiner/tests/test_auth.py"
+signature = "def test_derives_encryption_key_from_machine_id(self, tmp_path: Path) -> None:"
+description = ""
+line = 70
+mtime = 1782852601000000000
+container = [
+  "TestEncryptedStore",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestEncryptedStore.test_derives_encryption_key_from_machine_id",
+  "derives",
+  "encrypted",
+  "encryption",
+  "from",
+  "id",
+  "key",
+  "machine",
+  "store",
+  "test",
+  "test_derives_encryption_key_from_machine_id",
+  "tests",
+]

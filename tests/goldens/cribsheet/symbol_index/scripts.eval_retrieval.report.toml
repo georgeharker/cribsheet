@@ -1,0 +1,27 @@
+fqname = "scripts.eval_retrieval.report"
+name = "report"
+kind = "function"
+lang = "python"
+module = "scripts.eval_retrieval"
+parent = ""
+content_hash = "6c5d5f9bdeb2f4e9"
+file = "scripts/eval_retrieval.py"
+signature = "def report(rows: list[dict[str, Any]], recall_k: int) -> tuple[float, float]:"
+description = ""
+line = 140
+mtime = 1783541603000000000
+container = []
+calls = []
+called_by = [
+  "main [scripts/eval_retrieval.py]",
+]
+references = [
+  "main [scripts/eval_retrieval.py]",
+]
+name_terms = [
+  "eval",
+  "report",
+  "retrieval",
+  "scripts",
+  "scripts.eval_retrieval.report",
+]

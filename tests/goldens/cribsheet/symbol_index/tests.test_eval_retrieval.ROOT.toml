@@ -1,0 +1,28 @@
+fqname = "tests.test_eval_retrieval.ROOT"
+name = "ROOT"
+kind = "constant"
+lang = "python"
+module = "tests.test_eval_retrieval"
+parent = ""
+content_hash = "ccf98307102c6636"
+file = "tests/test_eval_retrieval.py"
+signature = "ROOT = Path(__file__).resolve().parent.parent"
+description = ""
+line = 15
+mtime = 1782843962000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "SCRIPT [tests/test_eval_retrieval.py]",
+  "test_retrieval_quality_bars [tests/test_eval_retrieval.py]",
+]
+name_terms = [
+  "ROOT",
+  "eval",
+  "retrieval",
+  "root",
+  "test",
+  "tests",
+  "tests.test_eval_retrieval.ROOT",
+]

@@ -1,0 +1,31 @@
+fqname = "mcp_companion.state._shallow_eq"
+name = "_shallow_eq"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.state"
+parent = ""
+content_hash = "07fac1ab87228d5d"
+file = "lua/mcp_companion/state.lua"
+signature = "local function _shallow_eq(a, b)"
+description = ""
+line = 65
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.update [lua/mcp_companion/state.lua]",
+  "state.lua [lua/mcp_companion/state.lua]",
+]
+references = [
+  "a [lua/mcp_companion/state.lua]",
+  "if [lua/mcp_companion/state.lua]",
+]
+name_terms = [
+  "_shallow_eq",
+  "companion",
+  "eq",
+  "mcp",
+  "mcp_companion.state._shallow_eq",
+  "shallow",
+  "state",
+]

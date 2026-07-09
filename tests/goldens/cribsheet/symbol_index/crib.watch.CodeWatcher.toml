@@ -1,0 +1,30 @@
+fqname = "crib.watch.CodeWatcher"
+name = "CodeWatcher"
+kind = "class"
+lang = "python"
+module = "crib.watch"
+parent = ""
+content_hash = "ed8041fd73e1988b"
+file = "crib/watch.py"
+signature = "class CodeWatcher(_FSWatcher):"
+description = ""
+line = 173
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "scenario [tests/test_code_cache.py]",
+  "start_watchers [crib/app.py]",
+  "test_code_watcher_decode_filters [tests/test_watcher.py]",
+  "test_code_watcher_decode_routes_new_extensionless_files [tests/test_watcher.py]",
+]
+name_terms = [
+  "CodeWatcher",
+  "code",
+  "crib",
+  "crib.watch.CodeWatcher",
+  "watch",
+  "watcher",
+]

@@ -1,0 +1,30 @@
+fqname = "crib.server.build_server.code_learnings"
+name = "code_learnings"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "4048dc7bd58fba5c"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 515
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_project [crib/server.py]",
+  "code_learnings [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "code",
+  "code_learnings",
+  "crib",
+  "crib.server.build_server.code_learnings",
+  "learnings",
+  "server",
+]

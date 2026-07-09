@@ -1,0 +1,28 @@
+fqname = "crib.config.DaemonConfig.enabled"
+name = "enabled"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.DaemonConfig"
+content_hash = "39bc353b35c4c464"
+file = "crib/config.py"
+signature = "enabled: bool = True"
+description = ""
+line = 177
+mtime = 1783455339000000000
+container = [
+  "DaemonConfig",
+]
+calls = []
+called_by = []
+references = [
+  "cmd_info [crib/cli.py]",
+  "main [crib/cli.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.DaemonConfig.enabled",
+  "daemon",
+  "enabled",
+]

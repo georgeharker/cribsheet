@@ -1,0 +1,33 @@
+fqname = "crib.retrieve._subtokens"
+name = "_subtokens"
+kind = "function"
+lang = "python"
+module = "crib.retrieve"
+parent = ""
+content_hash = "9ee1fd4746898ac0"
+file = "crib/retrieve.py"
+signature = "def _subtokens(text: str) -> list[str]:"
+description = ""
+line = 94
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = [
+  "_lexical_tf [crib/retrieve.py]",
+  "_lexical_tokens [crib/retrieve.py]",
+  "_lookup_one [crib/codequery.py]",
+  "test_subtokens_split_compound_identifiers [tests/test_retrieve.py]",
+]
+references = [
+  "_lexical_tf [crib/retrieve.py]",
+  "_lexical_tokens [crib/retrieve.py]",
+  "_lookup_one [crib/codequery.py]",
+  "test_subtokens_split_compound_identifiers [tests/test_retrieve.py]",
+]
+name_terms = [
+  "_subtokens",
+  "crib",
+  "crib.retrieve._subtokens",
+  "retrieve",
+  "subtokens",
+]

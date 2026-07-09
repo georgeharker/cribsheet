@@ -1,0 +1,31 @@
+fqname = "crib.server.build_server.code_dossier"
+name = "code_dossier"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "da4e5c236ba328e8"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 446
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_echo_dict [crib/server.py]",
+  "_resolve [crib/server.py]",
+  "code_dossier [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "code",
+  "code_dossier",
+  "crib",
+  "crib.server.build_server.code_dossier",
+  "dossier",
+  "server",
+]

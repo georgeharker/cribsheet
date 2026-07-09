@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.fastvalidate._nulled_tool_cache"
+name = "_nulled_tool_cache"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.fastvalidate"
+parent = ""
+content_hash = "536b07566d89d971"
+file = "combiner/mcp_combiner/fastvalidate.py"
+signature = "_nulled_tool_cache: dict[int, tuple[object, Any]] = {}"
+description = ""
+line = 61
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_get_cached_tool_definition [combiner/mcp_combiner/fastvalidate.py]",
+  "clear_cache [combiner/mcp_combiner/fastvalidate.py]",
+  "set_output_validation [combiner/mcp_combiner/fastvalidate.py]",
+]
+name_terms = [
+  "_nulled_tool_cache",
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.fastvalidate._nulled_tool_cache",
+  "fastvalidate",
+  "mcp",
+  "nulled",
+  "tool",
+]

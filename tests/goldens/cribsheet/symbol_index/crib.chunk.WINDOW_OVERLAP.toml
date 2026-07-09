@@ -1,0 +1,28 @@
+fqname = "crib.chunk.WINDOW_OVERLAP"
+name = "WINDOW_OVERLAP"
+kind = "constant"
+lang = "python"
+module = "crib.chunk"
+parent = ""
+content_hash = "e6fe48236035e946"
+file = "crib/chunk.py"
+signature = "WINDOW_OVERLAP = 64"
+description = ""
+line = 21
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/indexer.py]",
+  "_window [crib/chunk.py]",
+  "chunk_note [crib/chunk.py]",
+]
+name_terms = [
+  "WINDOW_OVERLAP",
+  "chunk",
+  "crib",
+  "crib.chunk.WINDOW_OVERLAP",
+  "overlap",
+  "window",
+]

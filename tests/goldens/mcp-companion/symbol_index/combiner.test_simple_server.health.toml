@@ -1,0 +1,24 @@
+fqname = "combiner.test_simple_server.health"
+name = "health"
+kind = "function"
+lang = "python"
+module = "combiner.test_simple_server"
+parent = ""
+content_hash = "08d5033712b32d4d"
+file = "combiner/test_simple_server.py"
+signature = "@combiner.custom_route(\"/health\", methods=[\"GET\"])"
+description = ""
+line = 28
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.test_simple_server.health",
+  "health",
+  "server",
+  "simple",
+  "test",
+]

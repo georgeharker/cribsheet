@@ -1,0 +1,29 @@
+fqname = "crib.notes._top_level_entries"
+name = "_top_level_entries"
+kind = "function"
+lang = "python"
+module = "crib.notes"
+parent = ""
+content_hash = "8440ba7f57de2c81"
+file = "crib/notes.py"
+signature = "def _top_level_entries(fm_text: str) -> list[tuple[str, list[str]]]:"
+description = ""
+line = 61
+mtime = 1782755212000000000
+container = []
+calls = []
+called_by = [
+  "normalize_text [crib/notes.py]",
+]
+references = [
+  "normalize_text [crib/notes.py]",
+]
+name_terms = [
+  "_top_level_entries",
+  "crib",
+  "crib.notes._top_level_entries",
+  "entries",
+  "level",
+  "notes",
+  "top",
+]

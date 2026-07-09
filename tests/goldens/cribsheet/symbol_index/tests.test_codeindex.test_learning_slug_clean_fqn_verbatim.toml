@@ -1,0 +1,30 @@
+fqname = "tests.test_codeindex.test_learning_slug_clean_fqn_verbatim"
+name = "test_learning_slug_clean_fqn_verbatim"
+kind = "function"
+lang = "python"
+module = "tests.test_codeindex"
+parent = ""
+content_hash = "47ff35673a58cc94"
+file = "tests/test_codeindex.py"
+signature = "def test_learning_slug_clean_fqn_verbatim():"
+description = ""
+line = 215
+mtime = 1783544236000000000
+container = []
+calls = [
+  "learning_slug [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "clean",
+  "codeindex",
+  "fqn",
+  "learning",
+  "slug",
+  "test",
+  "test_learning_slug_clean_fqn_verbatim",
+  "tests",
+  "tests.test_codeindex.test_learning_slug_clean_fqn_verbatim",
+  "verbatim",
+]

@@ -1,0 +1,45 @@
+fqname = "crib.codeindex.LspSessionPool.acquire"
+name = "acquire"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.LspSessionPool"
+content_hash = "933f1f5ae64f9d80"
+file = "crib/codeindex.py"
+signature = "def acquire(self, root: Path, label: str, argv: list[str], spec: dict,"
+description = ""
+line = 498
+mtime = 1783544236000000000
+container = [
+  "LspSessionPool",
+]
+calls = [
+  "LspClient [crib/codeindex.py]",
+  "_Session [crib/codeindex.py]",
+  "_reap [crib/codeindex.py]",
+  "close [crib/codeindex.py]",
+  "initialize [crib/codeindex.py]",
+]
+called_by = [
+  "_extract [crib/codeindex.py]",
+  "pin_docs [crib/codeindex.py]",
+  "test_extra_roots_ride_as_workspace_folders [tests/test_codeindex.py]",
+  "test_progress_tracked_and_wait_quiescent_honors_it [tests/test_codeindex.py]",
+  "test_session_pool_respawns_after_crash [tests/test_codeindex.py]",
+]
+references = [
+  "_extract [crib/codeindex.py]",
+  "pin_docs [crib/codeindex.py]",
+  "test_extra_roots_ride_as_workspace_folders [tests/test_codeindex.py]",
+  "test_progress_tracked_and_wait_quiescent_honors_it [tests/test_codeindex.py]",
+  "test_session_pool_respawns_after_crash [tests/test_codeindex.py]",
+]
+name_terms = [
+  "acquire",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspSessionPool.acquire",
+  "lsp",
+  "pool",
+  "session",
+]

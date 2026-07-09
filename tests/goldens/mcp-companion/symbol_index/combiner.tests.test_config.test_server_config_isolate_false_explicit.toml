@@ -1,0 +1,28 @@
+fqname = "combiner.tests.test_config.test_server_config_isolate_false_explicit"
+name = "test_server_config_isolate_false_explicit"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = ""
+content_hash = "fcc679d3ae8db198"
+file = "combiner/tests/test_config.py"
+signature = "def test_server_config_isolate_false_explicit() -> None:"
+description = ""
+line = 142
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.test_server_config_isolate_false_explicit",
+  "config",
+  "explicit",
+  "false",
+  "isolate",
+  "server",
+  "test",
+  "test_server_config_isolate_false_explicit",
+  "tests",
+]

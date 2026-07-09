@@ -1,0 +1,36 @@
+fqname = "tests.test_insitu_docs.test_index_insitu_no_copy_and_resolves_to_source"
+name = "test_index_insitu_no_copy_and_resolves_to_source"
+kind = "function"
+lang = "python"
+module = "tests.test_insitu_docs"
+parent = ""
+content_hash = "0c4f8ede84d3e2b5"
+file = "tests/test_insitu_docs.py"
+signature = "def test_index_insitu_no_copy_and_resolves_to_source(crib, tmp_path):"
+description = ""
+line = 45
+mtime = 1783476730000000000
+container = []
+calls = [
+  "SourceRoots [crib/sources.py]",
+  "_repo [tests/test_insitu_docs.py]",
+  "all [crib/sources.py]",
+  "run [tests/test_insitu_docs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "copy",
+  "docs",
+  "index",
+  "insitu",
+  "no",
+  "resolves",
+  "source",
+  "test",
+  "test_index_insitu_no_copy_and_resolves_to_source",
+  "tests",
+  "tests.test_insitu_docs.test_index_insitu_no_copy_and_resolves_to_source",
+  "to",
+]

@@ -1,0 +1,26 @@
+fqname = "crib.watch.DEBOUNCE_SEC"
+name = "DEBOUNCE_SEC"
+kind = "constant"
+lang = "python"
+module = "crib.watch"
+parent = ""
+content_hash = "0d0550dfde11bc3e"
+file = "crib/watch.py"
+signature = "DEBOUNCE_SEC = 0.2"
+description = ""
+line = 19
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_schedule [crib/watch.py]",
+]
+name_terms = [
+  "DEBOUNCE_SEC",
+  "crib",
+  "crib.watch.DEBOUNCE_SEC",
+  "debounce",
+  "sec",
+  "watch",
+]

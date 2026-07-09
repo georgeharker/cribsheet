@@ -1,0 +1,33 @@
+fqname = "tests.test_import._id_of"
+name = "_id_of"
+kind = "function"
+lang = "python"
+module = "tests.test_import"
+parent = ""
+content_hash = "0ffcd2a0e2afabec"
+file = "tests/test_import.py"
+signature = "def _id_of(crib, relpath):"
+description = ""
+line = 97
+mtime = 1783450349000000000
+container = []
+calls = [
+  "load [crib/notes.py]",
+]
+called_by = [
+  "test_import_id_is_deterministic_across_machines [tests/test_import.py]",
+  "test_reimport_preserves_note_id [tests/test_import.py]",
+]
+references = [
+  "test_import_id_is_deterministic_across_machines [tests/test_import.py]",
+  "test_reimport_preserves_note_id [tests/test_import.py]",
+]
+name_terms = [
+  "_id_of",
+  "id",
+  "import",
+  "of",
+  "test",
+  "tests",
+  "tests.test_import._id_of",
+]

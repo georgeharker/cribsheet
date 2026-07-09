@@ -1,0 +1,27 @@
+fqname = "crib.config.MemoryConfig.watch"
+name = "watch"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.MemoryConfig"
+content_hash = "af376b333882dace"
+file = "crib/config.py"
+signature = "watch: bool = True"
+description = ""
+line = 51
+mtime = 1783455339000000000
+container = [
+  "MemoryConfig",
+]
+calls = []
+called_by = []
+references = [
+  "start_memory_mirror [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.MemoryConfig.watch",
+  "memory",
+  "watch",
+]

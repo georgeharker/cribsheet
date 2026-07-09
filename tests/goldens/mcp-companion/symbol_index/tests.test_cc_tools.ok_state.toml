@@ -1,0 +1,28 @@
+fqname = "tests.test_cc_tools.ok_state"
+name = "ok_state"
+kind = "global"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = ""
+content_hash = "b3b78f512bb8cb2e"
+file = "tests/test_cc_tools.lua"
+signature = "local ok_state, state = pcall(require, \"mcp_companion.state\")"
+description = ""
+line = 153
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "ok",
+  "ok_state",
+  "state",
+  "test",
+  "tests",
+  "tests.test_cc_tools.ok_state",
+  "tools",
+]

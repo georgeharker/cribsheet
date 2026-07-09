@@ -1,0 +1,26 @@
+fqname = "combiner.tests.test_nvim_e2e.pytestmark"
+name = "pytestmark"
+kind = "global"
+lang = "python"
+module = "combiner.tests.test_nvim_e2e"
+parent = ""
+content_hash = "da4a4774c8229895"
+file = "combiner/tests/test_nvim_e2e.py"
+signature = "pytestmark = pytest.mark.skipif(shutil.which(\"nvim\") is None, reason=\"nvim not installed\")"
+description = ""
+line = 37
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "2",
+  "combiner",
+  "combiner.tests.test_nvim_e2e.pytestmark",
+  "e",
+  "nvim",
+  "pytestmark",
+  "test",
+  "tests",
+]

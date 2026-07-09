@@ -1,0 +1,43 @@
+fqname = "crib.app.Crib.index_docs_insitu"
+name = "index_docs_insitu"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "f0fc45b93ebc693a"
+file = "crib/app.py"
+signature = "async def index_docs_insitu(self, project: str | None = None,"
+description = ""
+line = 1282
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "_indexed_relpaths [crib/app.py]",
+  "_register_code_root [crib/app.py]",
+  "_source_roots [crib/app.py]",
+  "find [crib/config.py]",
+  "forget [crib/indexer.py]",
+  "index_file [crib/indexer.py]",
+  "notes_dir [crib/app.py]",
+  "src_relpath [crib/sources.py]",
+  "upsert [crib/sources.py]",
+]
+called_by = [
+  "project_index [crib/app.py]",
+  "project_setup [crib/app.py]",
+]
+references = [
+  "project_index [crib/app.py]",
+  "project_setup [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.index_docs_insitu",
+  "docs",
+  "index",
+  "index_docs_insitu",
+  "insitu",
+]

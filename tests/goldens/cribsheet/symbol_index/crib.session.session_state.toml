@@ -1,0 +1,41 @@
+fqname = "crib.session.session_state"
+name = "session_state"
+kind = "function"
+lang = "python"
+module = "crib.session"
+parent = ""
+content_hash = "6a4e561390ca9104"
+file = "crib/session.py"
+signature = "def session_state() -> SessionState:"
+description = ""
+line = 56
+mtime = 1783476730000000000
+container = []
+calls = [
+  "SessionState [crib/session.py]",
+]
+called_by = [
+  "_resolve [crib/server.py]",
+  "_switch_if_created [crib/server.py]",
+  "test_no_path_falls_back_to_session [tests/test_project_resolution.py]",
+  "test_project_path_defers_to_crib_not_sticky [tests/test_project_resolution.py]",
+  "test_session_state_falls_back_to_default_without_context [tests/test_session.py]",
+  "test_write_project_requires_explicit_target [tests/test_project_resolution.py]",
+  "use_project [crib/server.py]",
+]
+references = [
+  "_resolve [crib/server.py]",
+  "_switch_if_created [crib/server.py]",
+  "test_no_path_falls_back_to_session [tests/test_project_resolution.py]",
+  "test_project_path_defers_to_crib_not_sticky [tests/test_project_resolution.py]",
+  "test_session_state_falls_back_to_default_without_context [tests/test_session.py]",
+  "test_write_project_requires_explicit_target [tests/test_project_resolution.py]",
+  "use_project [crib/server.py]",
+]
+name_terms = [
+  "crib",
+  "crib.session.session_state",
+  "session",
+  "session_state",
+  "state",
+]

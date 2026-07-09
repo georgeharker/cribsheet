@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.server._create_isolated_proxy._gated_factory"
+name = "_gated_factory"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server._create_isolated_proxy"
+content_hash = "3b7ea9ca67e26768"
+file = "combiner/mcp_combiner/server.py"
+signature = "async def _gated_factory() -> Any:"
+description = ""
+line = 1296
+mtime = 1783473323000000000
+container = [
+  "_create_isolated_proxy",
+]
+calls = []
+called_by = []
+references = [
+  "_create_isolated_proxy [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_gated_factory",
+  "combiner",
+  "combiner.mcp_combiner.server._create_isolated_proxy._gated_factory",
+  "create",
+  "factory",
+  "gated",
+  "isolated",
+  "mcp",
+  "proxy",
+  "server",
+]

@@ -1,0 +1,31 @@
+fqname = "crib.retrieve.SummaryVectorCache.invalidate"
+name = "invalidate"
+kind = "method"
+lang = "python"
+module = "crib.retrieve"
+parent = "crib.retrieve.SummaryVectorCache"
+content_hash = "f95a2b8541eaac60"
+file = "crib/retrieve.py"
+signature = "def invalidate(self, project: str) -> None:"
+description = ""
+line = 317
+mtime = 1782930371000000000
+container = [
+  "SummaryVectorCache",
+]
+calls = []
+called_by = [
+  "invalidate_caches [crib/indexer.py]",
+]
+references = [
+  "invalidate_caches [crib/indexer.py]",
+]
+name_terms = [
+  "cache",
+  "crib",
+  "crib.retrieve.SummaryVectorCache.invalidate",
+  "invalidate",
+  "retrieve",
+  "summary",
+  "vector",
+]

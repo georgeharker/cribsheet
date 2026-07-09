@@ -1,0 +1,35 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager.get_client_factory._factory"
+name = "_factory"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections.ConnectionManager.get_client_factory"
+content_hash = "7a7a46b70ad0cfde"
+file = "combiner/mcp_combiner/connections.py"
+signature = "def _factory() -> HttpClient:"
+description = ""
+line = 221
+mtime = 1783473323000000000
+container = [
+  "ConnectionManager",
+  "get_client_factory",
+]
+calls = [
+  "AuthenticationError [combiner/mcp_combiner/connections.py]",
+]
+called_by = []
+references = [
+  "get_client_factory [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_factory",
+  "client",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.get_client_factory._factory",
+  "connection",
+  "connections",
+  "factory",
+  "get",
+  "manager",
+  "mcp",
+]

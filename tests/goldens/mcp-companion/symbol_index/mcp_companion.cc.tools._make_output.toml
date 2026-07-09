@@ -1,0 +1,31 @@
+fqname = "mcp_companion.cc.tools._make_output"
+name = "_make_output"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.tools"
+parent = ""
+content_hash = "2784f3adc4200bc8"
+file = "lua/mcp_companion/cc/tools.lua"
+signature = "local function _make_output(display_name)"
+description = ""
+line = 148
+mtime = 1783013405000000000
+container = []
+calls = []
+called_by = [
+  "tools.lua [lua/mcp_companion/cc/tools.lua]",
+]
+references = [
+  "display_name [lua/mcp_companion/cc/tools.lua]",
+  "for in [lua/mcp_companion/cc/tools.lua]",
+]
+name_terms = [
+  "_make_output",
+  "cc",
+  "companion",
+  "make",
+  "mcp",
+  "mcp_companion.cc.tools._make_output",
+  "output",
+  "tools",
+]

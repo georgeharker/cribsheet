@@ -1,0 +1,37 @@
+fqname = "crib.codeindex._symbol_entry"
+name = "_symbol_entry"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "79386356203010ce"
+file = "crib/codeindex.py"
+signature = "def _symbol_entry(ctx: _ExtractCtx, s: dict, parents: tuple[str, ...],"
+description = ""
+line = 1034
+mtime = 1783544236000000000
+container = []
+calls = [
+  "_hierarchy_edges [crib/codeindex.py]",
+  "_hover_doc [crib/codeindex.py]",
+  "_leading_comment [crib/codeindex.py]",
+  "_local_name [crib/codeindex.py]",
+  "_name_terms [crib/codeindex.py]",
+  "_qualify [crib/codeindex.py]",
+  "_reference_edges [crib/codeindex.py]",
+  "request [crib/codeindex.py]",
+]
+called_by = [
+  "_extract [crib/codeindex.py]",
+]
+references = [
+  "_extract [crib/codeindex.py]",
+]
+name_terms = [
+  "_symbol_entry",
+  "codeindex",
+  "crib",
+  "crib.codeindex._symbol_entry",
+  "entry",
+  "symbol",
+]

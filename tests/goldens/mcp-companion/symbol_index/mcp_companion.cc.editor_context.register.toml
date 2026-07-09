@@ -1,0 +1,32 @@
+fqname = "mcp_companion.cc.editor_context.register"
+name = "register"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.editor_context"
+parent = ""
+content_hash = "de82909560b3a4ac"
+file = "lua/mcp_companion/cc/editor_context.lua"
+signature = "function M.register()"
+description = ""
+line = 61
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M.register [lua/mcp_companion/cc/editor_context.lua]",
+  "editor_context.lua [lua/mcp_companion/cc/editor_context.lua]",
+]
+references = [
+  "M [lua/mcp_companion/cc/editor_context.lua]",
+  "_setup_system_prompt_injection [lua/mcp_companion/cc/editor_context.lua]",
+  "teardown [lua/mcp_companion/cc/editor_context.lua]",
+]
+name_terms = [
+  "cc",
+  "companion",
+  "context",
+  "editor",
+  "mcp",
+  "mcp_companion.cc.editor_context.register",
+  "register",
+]

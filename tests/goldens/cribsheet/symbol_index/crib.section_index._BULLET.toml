@@ -1,0 +1,26 @@
+fqname = "crib.section_index._BULLET"
+name = "_BULLET"
+kind = "constant"
+lang = "python"
+module = "crib.section_index"
+parent = ""
+content_hash = "c7bec80e0607d9c3"
+file = "crib/section_index.py"
+signature = "_BULLET = re.compile(r\"^\\s*(?:[-*•]|\\d+[.)])\\s*\")"
+description = ""
+line = 61
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "parse_terms [crib/section_index.py]",
+]
+name_terms = [
+  "_BULLET",
+  "bullet",
+  "crib",
+  "crib.section_index._BULLET",
+  "index",
+  "section",
+]

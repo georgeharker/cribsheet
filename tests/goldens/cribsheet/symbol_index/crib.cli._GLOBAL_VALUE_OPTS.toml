@@ -1,0 +1,27 @@
+fqname = "crib.cli._GLOBAL_VALUE_OPTS"
+name = "_GLOBAL_VALUE_OPTS"
+kind = "constant"
+lang = "python"
+module = "crib.cli"
+parent = ""
+content_hash = "772603622e347106"
+file = "crib/cli.py"
+signature = "_GLOBAL_VALUE_OPTS = {\"--host\", \"--port\"}   # global flags that consume the next token"
+description = ""
+line = 956
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_normalize_argv [crib/cli.py]",
+]
+name_terms = [
+  "_GLOBAL_VALUE_OPTS",
+  "cli",
+  "crib",
+  "crib.cli._GLOBAL_VALUE_OPTS",
+  "global",
+  "opts",
+  "value",
+]

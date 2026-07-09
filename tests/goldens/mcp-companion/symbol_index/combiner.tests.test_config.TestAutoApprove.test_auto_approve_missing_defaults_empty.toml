@@ -1,0 +1,31 @@
+fqname = "combiner.tests.test_config.TestAutoApprove.test_auto_approve_missing_defaults_empty"
+name = "test_auto_approve_missing_defaults_empty"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestAutoApprove"
+content_hash = "f6c0c77f78cb000d"
+file = "combiner/tests/test_config.py"
+signature = "def test_auto_approve_missing_defaults_empty(self) -> None:"
+description = ""
+line = 203
+mtime = 1782852601000000000
+container = [
+  "TestAutoApprove",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "approve",
+  "auto",
+  "combiner",
+  "combiner.tests.test_config.TestAutoApprove.test_auto_approve_missing_defaults_empty",
+  "config",
+  "defaults",
+  "empty",
+  "missing",
+  "test",
+  "test_auto_approve_missing_defaults_empty",
+  "tests",
+]

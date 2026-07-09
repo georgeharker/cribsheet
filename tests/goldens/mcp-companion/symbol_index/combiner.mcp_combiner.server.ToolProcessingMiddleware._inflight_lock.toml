@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.server.ToolProcessingMiddleware._inflight_lock"
+name = "_inflight_lock"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server.ToolProcessingMiddleware"
+content_hash = "dbe16aceebe09d56"
+file = "combiner/mcp_combiner/server.py"
+signature = "_inflight_lock: ClassVar[asyncio.Lock] = asyncio.Lock()"
+description = ""
+line = 879
+mtime = 1783473323000000000
+container = [
+  "ToolProcessingMiddleware",
+]
+calls = []
+called_by = []
+references = [
+  "_fetch_or_join [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_inflight_lock",
+  "combiner",
+  "combiner.mcp_combiner.server.ToolProcessingMiddleware._inflight_lock",
+  "inflight",
+  "lock",
+  "mcp",
+  "middleware",
+  "processing",
+  "server",
+  "tool",
+]

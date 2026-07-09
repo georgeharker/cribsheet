@@ -1,0 +1,41 @@
+fqname = "combiner.tests.test_sharedserver._mock_async_process"
+name = "_mock_async_process"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_sharedserver"
+parent = ""
+content_hash = "6aaf844b660c6177"
+file = "combiner/tests/test_sharedserver.py"
+signature = "def _mock_async_process(returncode: int = 0, stdout: bytes = b\"\", stderr: bytes = b\"\") -> AsyncMock:"
+description = ""
+line = 17
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = [
+  "test_health_poll_timeout_warns_but_continues [combiner/tests/test_sharedserver.py]",
+  "test_start_all_calls_sharedserver_use [combiner/tests/test_sharedserver.py]",
+  "test_start_all_no_sharedserver_config [combiner/tests/test_sharedserver.py]",
+  "test_start_all_skips_on_nonzero_exit [combiner/tests/test_sharedserver.py]",
+  "test_stop_all_calls_unuse [combiner/tests/test_sharedserver.py]",
+  "test_stop_all_noop_when_nothing_started [combiner/tests/test_sharedserver.py]",
+]
+references = [
+  "test_health_poll_timeout_warns_but_continues [combiner/tests/test_sharedserver.py]",
+  "test_start_all_calls_sharedserver_use [combiner/tests/test_sharedserver.py]",
+  "test_start_all_no_sharedserver_config [combiner/tests/test_sharedserver.py]",
+  "test_start_all_skips_on_nonzero_exit [combiner/tests/test_sharedserver.py]",
+  "test_stop_all_calls_unuse [combiner/tests/test_sharedserver.py]",
+  "test_stop_all_noop_when_nothing_started [combiner/tests/test_sharedserver.py]",
+]
+name_terms = [
+  "_mock_async_process",
+  "async",
+  "combiner",
+  "combiner.tests.test_sharedserver._mock_async_process",
+  "mock",
+  "process",
+  "sharedserver",
+  "test",
+  "tests",
+]

@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.connections._is_auth_error"
+name = "_is_auth_error"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = ""
+content_hash = "27200426832ad03f"
+file = "combiner/mcp_combiner/connections.py"
+signature = "def _is_auth_error(exc: BaseException) -> bool:"
+description = ""
+line = 745
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_is_auth_error",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.connections._is_auth_error",
+  "connections",
+  "error",
+  "is",
+  "mcp",
+]

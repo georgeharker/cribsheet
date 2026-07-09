@@ -1,0 +1,36 @@
+fqname = "tests.test_elaborate.test_summary_alias_cache_ranks_section_by_rephrasing.FakeStore"
+name = "FakeStore"
+kind = "class"
+lang = "python"
+module = "tests.test_elaborate"
+parent = "tests.test_elaborate.test_summary_alias_cache_ranks_section_by_rephrasing"
+content_hash = "161b9d101cf9d32e"
+file = "tests/test_elaborate.py"
+signature = "class FakeStore:"
+description = ""
+line = 173
+mtime = 1782958917000000000
+container = [
+  "test_summary_alias_cache_ranks_section_by_rephrasing",
+]
+calls = []
+called_by = []
+references = [
+  "test_summary_alias_cache_ranks_section_by_rephrasing [tests/test_elaborate.py]",
+]
+name_terms = [
+  "FakeStore",
+  "alias",
+  "by",
+  "cache",
+  "elaborate",
+  "fake",
+  "ranks",
+  "rephrasing",
+  "section",
+  "store",
+  "summary",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_summary_alias_cache_ranks_section_by_rephrasing.FakeStore",
+]

@@ -1,0 +1,46 @@
+fqname = "crib.store.Store.get_meta"
+name = "get_meta"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Store"
+content_hash = "f6adcebf148b7161"
+file = "crib/store.py"
+signature = "def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:"
+description = ""
+line = 40
+mtime = 1783446057000000000
+container = [
+  "Store",
+]
+calls = []
+called_by = [
+  "_index_locked [crib/indexer.py]",
+  "_indexed_projects [crib/app.py]",
+  "_indexed_relpaths [crib/app.py]",
+  "_snapshot [tests/test_notestore_snapshot.py]",
+  "forget [crib/indexer.py]",
+  "project_forget [crib/app.py]",
+  "project_status [crib/app.py]",
+  "reindex [crib/notestore.py]",
+  "status [crib/app.py]",
+]
+references = [
+  "_index_locked [crib/indexer.py]",
+  "_indexed_projects [crib/app.py]",
+  "_indexed_relpaths [crib/app.py]",
+  "_snapshot [tests/test_notestore_snapshot.py]",
+  "forget [crib/indexer.py]",
+  "project_forget [crib/app.py]",
+  "project_status [crib/app.py]",
+  "reindex [crib/notestore.py]",
+  "status [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Store.get_meta",
+  "get",
+  "get_meta",
+  "meta",
+  "store",
+]

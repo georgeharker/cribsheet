@@ -1,0 +1,30 @@
+fqname = "tests.test_real_servers.stop_combiner"
+name = "stop_combiner"
+kind = "function"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "69a8376360f31c63"
+file = "tests/test_real_servers.lua"
+signature = "local function stop_combiner()"
+description = ""
+line = 168
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_real_servers.lua [tests/test_real_servers.lua]",
+]
+references = [
+  "if [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "combiner",
+  "real",
+  "servers",
+  "stop",
+  "stop_combiner",
+  "test",
+  "tests",
+  "tests.test_real_servers.stop_combiner",
+]

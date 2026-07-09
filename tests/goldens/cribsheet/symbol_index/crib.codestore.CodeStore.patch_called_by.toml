@@ -1,0 +1,33 @@
+fqname = "crib.codestore.CodeStore.patch_called_by"
+name = "patch_called_by"
+kind = "method"
+lang = "python"
+module = "crib.codestore"
+parent = "crib.codestore.CodeStore"
+content_hash = "48f9f9fa2f9e7dd5"
+file = "crib/codestore.py"
+signature = "@staticmethod"
+description = ""
+line = 240
+mtime = 1783494290000000000
+container = [
+  "CodeStore",
+]
+calls = []
+called_by = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+name_terms = [
+  "by",
+  "called",
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore.CodeStore.patch_called_by",
+  "patch",
+  "patch_called_by",
+  "store",
+]

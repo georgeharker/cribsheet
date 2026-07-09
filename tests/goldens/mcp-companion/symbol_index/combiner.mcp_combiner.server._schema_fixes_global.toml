@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.server._schema_fixes_global"
+name = "_schema_fixes_global"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "297eabeba482ff7d"
+file = "combiner/mcp_combiner/server.py"
+signature = "_schema_fixes_global: frozenset[str] = frozenset()"
+description = ""
+line = 167
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_finalize_schemas [combiner/mcp_combiner/server.py]",
+  "create_combiner [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_schema_fixes_global",
+  "combiner",
+  "combiner.mcp_combiner.server._schema_fixes_global",
+  "fixes",
+  "global",
+  "mcp",
+  "schema",
+  "server",
+]

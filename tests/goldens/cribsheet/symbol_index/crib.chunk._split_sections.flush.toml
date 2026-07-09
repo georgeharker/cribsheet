@@ -1,0 +1,30 @@
+fqname = "crib.chunk._split_sections.flush"
+name = "flush"
+kind = "function"
+lang = "python"
+module = "crib.chunk"
+parent = "crib.chunk._split_sections"
+content_hash = "19a28a44f67f324d"
+file = "crib/chunk.py"
+signature = "def flush():"
+description = ""
+line = 92
+mtime = 1782930371000000000
+container = [
+  "_split_sections",
+]
+calls = []
+called_by = [
+  "_split_sections [crib/chunk.py]",
+]
+references = [
+  "_split_sections [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk._split_sections.flush",
+  "flush",
+  "sections",
+  "split",
+]

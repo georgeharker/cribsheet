@@ -1,0 +1,34 @@
+fqname = "combiner.tests.test_reload_config.test_disabling_server_unmounts_without_remount"
+name = "test_disabling_server_unmounts_without_remount"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "6333d2db5327aa20"
+file = "combiner/tests/test_reload_config.py"
+signature = "async def test_disabling_server_unmounts_without_remount(harness: dict[str, Any]) -> None:"
+description = ""
+line = 208
+mtime = 1783452495000000000
+container = []
+calls = [
+  "_http [combiner/tests/test_reload_config.py]",
+  "_namespaces [combiner/tests/test_reload_config.py]",
+  "_write [combiner/tests/test_reload_config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_reload_config.test_disabling_server_unmounts_without_remount",
+  "config",
+  "disabling",
+  "reload",
+  "remount",
+  "server",
+  "test",
+  "test_disabling_server_unmounts_without_remount",
+  "tests",
+  "unmounts",
+  "without",
+]

@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.server.create_combiner.manage_session_filter"
+name = "manage_session_filter"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = "combiner.mcp_combiner.server.create_combiner"
+content_hash = "9be32dba1081fb3f"
+file = "combiner/mcp_combiner/server.py"
+signature = "@combiner.custom_route(\"/sessions/{session_id}/filter\", methods=[\"GET\", \"POST\", \"DELETE\"])"
+description = ""
+line = 1649
+mtime = 1783473323000000000
+container = [
+  "create_combiner",
+]
+calls = [
+  "_notify_session_by_id [combiner/mcp_combiner/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.server.create_combiner.manage_session_filter",
+  "create",
+  "filter",
+  "manage",
+  "manage_session_filter",
+  "mcp",
+  "server",
+  "session",
+]

@@ -1,0 +1,27 @@
+fqname = "tests.test_rerank._PromoteLast.scores"
+name = "scores"
+kind = "method"
+lang = "python"
+module = "tests.test_rerank"
+parent = "tests.test_rerank._PromoteLast"
+content_hash = "6e76db6e4fd64bc7"
+file = "tests/test_rerank.py"
+signature = "def scores(self, query, documents):"
+description = ""
+line = 22
+mtime = 1782704221000000000
+container = [
+  "_PromoteLast",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "last",
+  "promote",
+  "rerank",
+  "scores",
+  "test",
+  "tests",
+  "tests.test_rerank._PromoteLast.scores",
+]

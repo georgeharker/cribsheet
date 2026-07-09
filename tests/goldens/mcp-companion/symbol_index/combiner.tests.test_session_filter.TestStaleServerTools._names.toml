@@ -1,0 +1,43 @@
+fqname = "combiner.tests.test_session_filter.TestStaleServerTools._names"
+name = "_names"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestStaleServerTools"
+content_hash = "e2e9dcf468e7fc8a"
+file = "combiner/tests/test_session_filter.py"
+signature = "def _names(self, tools):"
+description = ""
+line = 411
+mtime = 1783452495000000000
+container = [
+  "TestStaleServerTools",
+]
+calls = []
+called_by = [
+  "test_auth_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_disabled_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_grace_window_expiry_drops_tools [combiner/tests/test_session_filter.py]",
+  "test_reconnecting_peer_tools_survive [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "test_auth_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_disabled_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_grace_window_expiry_drops_tools [combiner/tests/test_session_filter.py]",
+  "test_reconnecting_peer_tools_survive [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_names",
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools._names",
+  "filter",
+  "names",
+  "server",
+  "session",
+  "stale",
+  "test",
+  "tests",
+  "tools",
+]

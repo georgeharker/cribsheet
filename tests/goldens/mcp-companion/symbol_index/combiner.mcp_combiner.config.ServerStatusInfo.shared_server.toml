@@ -1,0 +1,31 @@
+fqname = "combiner.mcp_combiner.config.ServerStatusInfo.shared_server"
+name = "shared_server"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.ServerStatusInfo"
+content_hash = "dead4689f508ed5d"
+file = "combiner/mcp_combiner/config.py"
+signature = "shared_server: str | None = None"
+description = ""
+line = 269
+mtime = 1782954213000000000
+container = [
+  "ServerStatusInfo",
+]
+calls = []
+called_by = []
+references = [
+  "get_server_status [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerStatusInfo.shared_server",
+  "config",
+  "info",
+  "mcp",
+  "server",
+  "shared",
+  "shared_server",
+  "status",
+]

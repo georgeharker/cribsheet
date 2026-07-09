@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.auth._ExpiryAwareAdapter"
+name = "_ExpiryAwareAdapter"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.auth"
+parent = ""
+content_hash = "95927b58f235c0cd"
+file = "combiner/mcp_combiner/auth.py"
+signature = "class _ExpiryAwareAdapter(TokenStorageAdapter):"
+description = ""
+line = 201
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_ExpiryAwareAdapter",
+  "adapter",
+  "auth",
+  "aware",
+  "combiner",
+  "combiner.mcp_combiner.auth._ExpiryAwareAdapter",
+  "expiry",
+  "mcp",
+]

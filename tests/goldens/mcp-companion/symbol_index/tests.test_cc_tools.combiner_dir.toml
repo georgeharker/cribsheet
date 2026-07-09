@@ -1,0 +1,26 @@
+fqname = "tests.test_cc_tools.combiner_dir"
+name = "combiner_dir"
+kind = "global"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = ""
+content_hash = "381b1aa8c8f409a6"
+file = "tests/test_cc_tools.lua"
+signature = "local combiner_dir = find_combiner_dir()"
+description = ""
+line = 195
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cc",
+  "combiner",
+  "combiner_dir",
+  "dir",
+  "test",
+  "tests",
+  "tests.test_cc_tools.combiner_dir",
+  "tools",
+]

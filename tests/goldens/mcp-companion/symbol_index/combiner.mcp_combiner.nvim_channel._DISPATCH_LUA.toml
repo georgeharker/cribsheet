@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.nvim_channel._DISPATCH_LUA"
+name = "_DISPATCH_LUA"
+kind = "constant"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = ""
+content_hash = "2cb1f9be0d11816f"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "_DISPATCH_LUA = \"return require('mcp_companion.native').dispatch(...)\""
+description = ""
+line = 35
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "call [combiner/mcp_combiner/nvim_channel.py]",
+]
+name_terms = [
+  "_DISPATCH_LUA",
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel._DISPATCH_LUA",
+  "dispatch",
+  "lua",
+  "mcp",
+  "nvim",
+]

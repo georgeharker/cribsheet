@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_schema_fixes.test_empty_object_coerces_list_properties_to_dict"
+name = "test_empty_object_coerces_list_properties_to_dict"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_schema_fixes"
+parent = ""
+content_hash = "ce223823a4fe22b1"
+file = "combiner/tests/test_schema_fixes.py"
+signature = "def test_empty_object_coerces_list_properties_to_dict():"
+description = ""
+line = 28
+mtime = 1782861732000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "coerces",
+  "combiner",
+  "combiner.tests.test_schema_fixes.test_empty_object_coerces_list_properties_to_dict",
+  "dict",
+  "empty",
+  "fixes",
+  "list",
+  "object",
+  "properties",
+  "schema",
+  "test",
+  "test_empty_object_coerces_list_properties_to_dict",
+  "tests",
+  "to",
+]

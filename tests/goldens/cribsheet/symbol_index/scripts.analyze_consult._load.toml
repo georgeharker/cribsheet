@@ -1,0 +1,31 @@
+fqname = "scripts.analyze_consult._load"
+name = "_load"
+kind = "function"
+lang = "python"
+module = "scripts.analyze_consult"
+parent = ""
+content_hash = "311c82d7f5c65297"
+file = "scripts/analyze_consult.py"
+signature = "def _load(path: Path) -> dict:"
+description = ""
+line = 115
+mtime = 1783033314000000000
+container = []
+calls = [
+  "_cache_key [scripts/analyze_consult.py]",
+  "_parse_transcript [scripts/analyze_consult.py]",
+]
+called_by = [
+  "main [scripts/analyze_consult.py]",
+]
+references = [
+  "main [scripts/analyze_consult.py]",
+]
+name_terms = [
+  "_load",
+  "analyze",
+  "consult",
+  "load",
+  "scripts",
+  "scripts.analyze_consult._load",
+]

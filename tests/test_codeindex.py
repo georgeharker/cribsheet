@@ -145,6 +145,35 @@ def test_name_terms_split_compound_identifiers():
     assert "SharedServerManager" in terms                          # unqualified name
 
 
+# --- leading-comment capture (reverse upward-scan) ---------------------------
+def test_leading_comment_python_skips_decorators_and_globs_hash_block():
+    lines = ["# build the store from paths",
+             "# returns a Crib",
+             "@classmethod",
+             "def open(cls):", "    pass"]
+    assert ci._leading_comment(lines, 3, "python") == (
+        "build the store from paths\nreturns a Crib")
+
+
+def test_leading_comment_one_blank_glues_two_severs():
+    glued = ["# attached", "", "def f():"]
+    severed = ["# unrelated", "", "", "def f():"]
+    assert ci._leading_comment(glued, 2, "python") == "attached"
+    assert ci._leading_comment(severed, 3, "python") == ""
+
+
+def test_leading_comment_rust_doc_over_attribute_and_go_block():
+    rust = ["/// reindex a project", "#[inline]", "pub fn reindex() {}"]
+    go = ["/* fetch the widget", "   from the store */", "func Fetch() {}"]
+    assert ci._leading_comment(rust, 2, "rust") == "reindex a project"
+    assert ci._leading_comment(go, 2, "go") == "fetch the widget\nfrom the store"
+
+
+def test_leading_comment_stops_at_real_code_and_unknown_lang():
+    assert ci._leading_comment(["x = 1", "def f():"], 1, "python") == ""
+    assert ci._leading_comment(["# c", "def f():"], 1, "haskell") == ""
+
+
 # --- shebang routing for extension-less scripts ------------------------------
 def test_shebang_lang_maps_interpreters(tmp_path):
     cases = {
@@ -470,3 +499,33 @@ def test_extra_roots_ride_as_workspace_folders(tmp_path, monkeypatch):
         assert "folders=2" in log.read_text()     # root + the ref checkout
     finally:
         pool.close_all()
+
+
+def test_symbol_toml_roundtrip_is_stable():
+    """A symbol whose signature/description contains quotes or backslashes must survive
+    render → parse → render UNCHANGED. Without an un-escape in _parse, each read-modify-
+    write cycle re-escaped and DOUBLED the backslashes — a heavily-rewritten symbol grew
+    1→3→7→…→64GB (the crib.paths.Paths.ensure.toml runaway)."""
+    from crib.codeindex import _parse, _render
+    entry = {
+        "fqname": "m.C.f", "name": "f", "kind": "method", "lang": "python",
+        "module": "m", "parent": "m.C", "content_hash": "abc",
+        "file": "m.py", "line": 1, "mtime": 0,
+        "signature": r'def f(self) -> "C": x == "q" and re.match(r"\d+", s)',
+        "description": r'has a "quoted" word and a \ backslash',
+        "container": [], "calls": ['g [x.py]'], "called_by": [],
+        "references": ['"quoted" [t.py]'], "name_terms": ["f"],
+    }
+    text1 = _render(entry)
+    parsed = _parse(text1)
+    assert parsed["signature"] == entry["signature"]        # exact round-trip
+    assert parsed["description"] == entry["description"]
+    assert parsed["references"] == entry["references"]
+    # STABILITY: re-rendering the parsed entry yields identical bytes (no growth) —
+    # and stays identical across many cycles (the doubling bug would explode here).
+    e = parsed
+    for _ in range(6):
+        assert _render(e) == text1
+        e = _parse(_render(e))
+    assert e["signature"] == entry["signature"]
+    assert len(_render(e)) == len(text1)

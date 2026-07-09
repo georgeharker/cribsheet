@@ -1,0 +1,27 @@
+fqname = "mcp_companion.http.request_curl.callback"
+name = "callback"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.http"
+parent = "mcp_companion.http.request_curl"
+content_hash = "cba7bc1a4cdd0ba8"
+file = "lua/mcp_companion/http.lua"
+signature = "local callback = opts.callback"
+description = ""
+line = 95
+mtime = 1782852601000000000
+container = [
+  "request_curl",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "callback",
+  "companion",
+  "curl",
+  "http",
+  "mcp",
+  "mcp_companion.http.request_curl.callback",
+  "request",
+]

@@ -1,0 +1,30 @@
+fqname = "crib.app.Crib.history"
+name = "history"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "c214cdb524e63d14"
+file = "crib/app.py"
+signature = "def history(self, relpath: str | None = None) -> list[str]:"
+description = ""
+line = 1470
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "history [crib/gitbacking.py]",
+]
+called_by = [
+  "history [crib/server.py]",
+]
+references = [
+  "history [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.history",
+  "history",
+]

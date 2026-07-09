@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.mounts.mount_server_provider"
+name = "mount_server_provider"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.mounts"
+parent = ""
+content_hash = "b2e9300440772d49"
+file = "combiner/mcp_combiner/mounts.py"
+signature = "def mount_server_provider(combiner: FastMCP, proxy: Any, server_name: str) -> None:"
+description = ""
+line = 51
+mtime = 1783452495000000000
+container = []
+calls = [
+  "_registry [combiner/mcp_combiner/mounts.py]",
+  "drop_server_providers [combiner/mcp_combiner/mounts.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mounts.mount_server_provider",
+  "mcp",
+  "mount",
+  "mount_server_provider",
+  "mounts",
+  "provider",
+  "server",
+]

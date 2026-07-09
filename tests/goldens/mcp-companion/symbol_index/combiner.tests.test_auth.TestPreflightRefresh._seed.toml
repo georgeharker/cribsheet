@@ -1,0 +1,49 @@
+fqname = "combiner.tests.test_auth.TestPreflightRefresh._seed"
+name = "_seed"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestPreflightRefresh"
+content_hash = "7e78b9f1ceddaee1"
+file = "combiner/tests/test_auth.py"
+signature = "def _seed(self, oauth, *, expires_in: float = 3600.0):"
+description = ""
+line = 396
+mtime = 1782852601000000000
+container = [
+  "TestPreflightRefresh",
+]
+calls = []
+called_by = [
+  "test_auth_error_leaves_tokens_for_sdk_to_handle [combiner/tests/test_auth.py]",
+  "test_first_request_forces_refresh [combiner/tests/test_auth.py]",
+  "test_network_error_applies_grace_window [combiner/tests/test_auth.py]",
+  "test_network_error_does_not_shorten_distant_expiry [combiner/tests/test_auth.py]",
+  "test_network_error_extends_short_or_expired_token [combiner/tests/test_auth.py]",
+  "test_no_refresh_capability_skips_preflight [combiner/tests/test_auth.py]",
+  "test_token_well_inside_margin_is_left_alone [combiner/tests/test_auth.py]",
+  "test_token_within_margin_triggers_refresh [combiner/tests/test_auth.py]",
+  "test_wake_up_forces_refresh_even_with_time_left [combiner/tests/test_auth.py]",
+]
+references = [
+  "test_auth_error_leaves_tokens_for_sdk_to_handle [combiner/tests/test_auth.py]",
+  "test_first_request_forces_refresh [combiner/tests/test_auth.py]",
+  "test_network_error_applies_grace_window [combiner/tests/test_auth.py]",
+  "test_network_error_does_not_shorten_distant_expiry [combiner/tests/test_auth.py]",
+  "test_network_error_extends_short_or_expired_token [combiner/tests/test_auth.py]",
+  "test_no_refresh_capability_skips_preflight [combiner/tests/test_auth.py]",
+  "test_token_well_inside_margin_is_left_alone [combiner/tests/test_auth.py]",
+  "test_token_within_margin_triggers_refresh [combiner/tests/test_auth.py]",
+  "test_wake_up_forces_refresh_even_with_time_left [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "_seed",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestPreflightRefresh._seed",
+  "preflight",
+  "refresh",
+  "seed",
+  "test",
+  "tests",
+]

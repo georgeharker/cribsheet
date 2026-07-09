@@ -1,0 +1,27 @@
+fqname = "combiner.mcp_combiner.nvim_channel.NvimChannelManager.manifest"
+name = "manifest"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = "combiner.mcp_combiner.nvim_channel.NvimChannelManager"
+content_hash = "e0011d47ec095c65"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "def manifest(self) -> dict[str, Any] | None:"
+description = ""
+line = 194
+mtime = 1782852601000000000
+container = [
+  "NvimChannelManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager.manifest",
+  "manager",
+  "manifest",
+  "mcp",
+  "nvim",
+]

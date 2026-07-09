@@ -1,0 +1,29 @@
+fqname = "crib.config.ChromaConfig.server_name"
+name = "server_name"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.ChromaConfig"
+content_hash = "3995dd4615d94d6b"
+file = "crib/config.py"
+signature = "server_name: str = \"crib-chroma\""
+description = ""
+line = 160
+mtime = 1783455339000000000
+container = [
+  "ChromaConfig",
+]
+calls = []
+called_by = []
+references = [
+  "_build_shared_chroma [crib/app.py]",
+]
+name_terms = [
+  "chroma",
+  "config",
+  "crib",
+  "crib.config.ChromaConfig.server_name",
+  "name",
+  "server",
+  "server_name",
+]

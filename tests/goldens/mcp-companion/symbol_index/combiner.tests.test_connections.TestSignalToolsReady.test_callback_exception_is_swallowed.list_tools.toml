@@ -1,0 +1,37 @@
+fqname = "combiner.tests.test_connections.TestSignalToolsReady.test_callback_exception_is_swallowed.list_tools"
+name = "list_tools"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestSignalToolsReady.test_callback_exception_is_swallowed"
+content_hash = "580fd73773162b8f"
+file = "combiner/tests/test_connections.py"
+signature = "async def list_tools():"
+description = ""
+line = 80
+mtime = 1783473323000000000
+container = [
+  "TestSignalToolsReady",
+  "test_callback_exception_is_swallowed",
+]
+calls = []
+called_by = []
+references = [
+  "test_callback_exception_is_swallowed [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "callback",
+  "combiner",
+  "combiner.tests.test_connections.TestSignalToolsReady.test_callback_exception_is_swallowed.list_tools",
+  "connections",
+  "exception",
+  "is",
+  "list",
+  "list_tools",
+  "ready",
+  "signal",
+  "swallowed",
+  "test",
+  "tests",
+  "tools",
+]

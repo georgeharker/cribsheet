@@ -1,0 +1,26 @@
+fqname = "tests.test_native.if.er"
+name = "er"
+kind = "variable"
+lang = "lua"
+module = "tests.test_native"
+parent = "tests.test_native.if"
+content_hash = "37b2e64f397a4c56"
+file = "tests/test_native.lua"
+signature = "local er = rjson(native.dispatch(\"edit_buffer\", { buffer = buf, diff = diff }))"
+description = ""
+line = 144
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "er",
+  "if",
+  "native",
+  "test",
+  "tests",
+  "tests.test_native.if.er",
+]

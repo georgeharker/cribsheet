@@ -1,0 +1,35 @@
+fqname = "crib.merge.run_driver"
+name = "run_driver"
+kind = "function"
+lang = "python"
+module = "crib.merge"
+parent = ""
+content_hash = "aa4876346a03761a"
+file = "crib/merge.py"
+signature = "def run_driver(base_path: str, current_path: str, other_path: str) -> int:"
+description = ""
+line = 123
+mtime = 1783446057000000000
+container = []
+calls = [
+  "merge_note_texts [crib/merge.py]",
+  "merge_symbol_texts [crib/merge.py]",
+]
+called_by = [
+  "main [crib/cli.py]",
+  "test_run_driver_routes_toml_clean [tests/test_merge.py]",
+  "test_run_driver_writes_and_signals [tests/test_merge.py]",
+]
+references = [
+  "main [crib/cli.py]",
+  "test_run_driver_routes_toml_clean [tests/test_merge.py]",
+  "test_run_driver_writes_and_signals [tests/test_merge.py]",
+]
+name_terms = [
+  "crib",
+  "crib.merge.run_driver",
+  "driver",
+  "merge",
+  "run",
+  "run_driver",
+]

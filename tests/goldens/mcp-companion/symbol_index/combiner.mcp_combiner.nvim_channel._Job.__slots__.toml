@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.nvim_channel._Job.__slots__"
+name = "__slots__"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = "combiner.mcp_combiner.nvim_channel._Job"
+content_hash = "b78a6b4269aa8464"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "__slots__ = (\"label\", \"lua\", \"lua_args\", \"timeout\", \"future\")"
+description = ""
+line = 70
+mtime = 1782852601000000000
+container = [
+  "_Job",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "__slots__",
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel._Job.__slots__",
+  "job",
+  "mcp",
+  "nvim",
+  "slots",
+]

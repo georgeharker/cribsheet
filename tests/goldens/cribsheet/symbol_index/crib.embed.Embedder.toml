@@ -1,0 +1,27 @@
+fqname = "crib.embed.Embedder"
+name = "Embedder"
+kind = "class"
+lang = "python"
+module = "crib.embed"
+parent = ""
+content_hash = "dd49c1b5b7f603c7"
+file = "crib/embed.py"
+signature = "@runtime_checkable"
+description = ""
+line = 17
+mtime = 1782690118000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/codequery.py]",
+  "__init__ [crib/indexer.py]",
+  "build_embedder [crib/embed.py]",
+]
+name_terms = [
+  "Embedder",
+  "crib",
+  "crib.embed.Embedder",
+  "embed",
+  "embedder",
+]

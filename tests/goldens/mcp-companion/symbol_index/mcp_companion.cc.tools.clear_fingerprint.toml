@@ -1,0 +1,35 @@
+fqname = "mcp_companion.cc.tools.clear_fingerprint"
+name = "clear_fingerprint"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.cc.tools"
+parent = ""
+content_hash = "e831bf499432f056"
+file = "lua/mcp_companion/cc/tools.lua"
+signature = "function M.clear_fingerprint()"
+description = ""
+line = 325
+mtime = 1783013405000000000
+container = []
+calls = []
+called_by = [
+  "M._auto_native_tools [lua/mcp_companion/cc/init.lua]",
+  "tools.lua [lua/mcp_companion/cc/tools.lua]",
+]
+references = [
+  "M [lua/mcp_companion/cc/tools.lua]",
+  "_auto_native_tools [lua/mcp_companion/cc/init.lua]",
+  "register [lua/mcp_companion/cc/tools.lua]",
+  "register_native [lua/mcp_companion/cc/tools.lua]",
+  "unregister [lua/mcp_companion/cc/tools.lua]",
+]
+name_terms = [
+  "cc",
+  "clear",
+  "clear_fingerprint",
+  "companion",
+  "fingerprint",
+  "mcp",
+  "mcp_companion.cc.tools.clear_fingerprint",
+  "tools",
+]

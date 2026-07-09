@@ -1,0 +1,100 @@
+fqname = "mcp_companion.state.reset"
+name = "reset"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.state"
+parent = ""
+content_hash = "e83f318dc20e2ff3"
+file = "lua/mcp_companion/state.lua"
+signature = "function M.reset()"
+description = ""
+line = 48
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "Client._handle_sse_notification [lua/mcp_companion/combiner/client.lua]",
+  "Client._update_server_state [lua/mcp_companion/combiner/client.lua]",
+  "Client.refresh_capabilities [lua/mcp_companion/combiner/client.lua]",
+  "M._auto_http_tools [lua/mcp_companion/cc/init.lua]",
+  "M._create_client [lua/mcp_companion/combiner/init.lua]",
+  "M._register_with_sharedserver [lua/mcp_companion/combiner/init.lua]",
+  "M._save_project_config [lua/mcp_companion/cc/init.lua]",
+  "M._setup_system_prompt_injection [lua/mcp_companion/cc/editor_context.lua]",
+  "M._start_direct [lua/mcp_companion/combiner/init.lua]",
+  "M._wait_and_connect [lua/mcp_companion/combiner/init.lua]",
+  "M._wait_for_combiner [lua/mcp_companion/cc/init.lua]",
+  "M.add_error [lua/mcp_companion/state.lua]",
+  "M.ensure_started [lua/mcp_companion/combiner/init.lua]",
+  "M.get_state [lua/mcp_companion/init.lua]",
+  "M.off [lua/mcp_companion/init.lua]",
+  "M.on [lua/mcp_companion/init.lua]",
+  "M.on [lua/mcp_companion/state.lua]",
+  "M.open [lua/mcp_companion/ui/init.lua]",
+  "M.register [lua/mcp_companion/cc/editor_context.lua]",
+  "M.register [lua/mcp_companion/cc/session_commands.lua]",
+  "M.register [lua/mcp_companion/cc/tools.lua]",
+  "M.register_native [lua/mcp_companion/cc/tools.lua]",
+  "M.render [lua/mcp_companion/ui/init.lua]",
+  "M.setup [lua/mcp_companion/cc/init.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "M.start [lua/mcp_companion/combiner/init.lua]",
+  "M.stop [lua/mcp_companion/combiner/init.lua]",
+  "M.subscribe [lua/mcp_companion/state.lua]",
+  "M.unregister [lua/mcp_companion/cc/tools.lua]",
+  "_publish [lua/mcp_companion/native/init.lua]",
+  "_server_auto_approve [lua/mcp_companion/cc/approval.lua]",
+  "init.lua [lua/mcp_companion/cc/init.lua]",
+  "is_connected [lua/mcp_companion/cc/init.lua]",
+  "state.lua [lua/mcp_companion/state.lua]",
+]
+references = [
+  "M [lua/mcp_companion/state.lua]",
+  "_ [lua/mcp_companion/cc/approval.lua]",
+  "_create_client [lua/mcp_companion/combiner/init.lua]",
+  "_register_with_sharedserver [lua/mcp_companion/combiner/init.lua]",
+  "_save_project_config [lua/mcp_companion/cc/init.lua]",
+  "_start_direct [lua/mcp_companion/combiner/init.lua]",
+  "_start_sse [lua/mcp_companion/combiner/client.lua]",
+  "_update_server_state [lua/mcp_companion/combiner/client.lua]",
+  "_wait_and_connect [lua/mcp_companion/combiner/init.lua]",
+  "add_error [lua/mcp_companion/state.lua]",
+  "channel [lua/mcp_companion/state.lua]",
+  "connect [lua/mcp_companion/combiner/client.lua]",
+  "elseif [lua/mcp_companion/combiner/client.lua]",
+  "entry [lua/mcp_companion/state.lua]",
+  "err [lua/mcp_companion/state.lua]",
+  "event [lua/mcp_companion/state.lua]",
+  "get [lua/mcp_companion/state.lua]",
+  "get_state [lua/mcp_companion/init.lua]",
+  "if [lua/mcp_companion/cc/init.lua]",
+  "if [lua/mcp_companion/combiner/client.lua]",
+  "if [lua/mcp_companion/combiner/init.lua]",
+  "is_connected [lua/mcp_companion/cc/init.lua]",
+  "key [lua/mcp_companion/state.lua]",
+  "native_servers [lua/mcp_companion/cc/tools.lua]",
+  "off [lua/mcp_companion/init.lua]",
+  "on [lua/mcp_companion/init.lua]",
+  "on [lua/mcp_companion/state.lua]",
+  "register [lua/mcp_companion/cc/session_commands.lua]",
+  "s [lua/mcp_companion/cc/init.lua]",
+  "servers [lua/mcp_companion/cc/editor_context.lua]",
+  "servers [lua/mcp_companion/cc/tools.lua]",
+  "setup [lua/mcp_companion/cc/init.lua]",
+  "state [lua/mcp_companion/cc/approval.lua]",
+  "state [lua/mcp_companion/cc/editor_context.lua]",
+  "state [lua/mcp_companion/cc/init.lua]",
+  "state [lua/mcp_companion/cc/tools.lua]",
+  "state [lua/mcp_companion/combiner/client.lua]",
+  "state [lua/mcp_companion/combiner/init.lua]",
+  "status [lua/mcp_companion/combiner/init.lua]",
+  "stop [lua/mcp_companion/combiner/init.lua]",
+  "subscribe [lua/mcp_companion/state.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.state.reset",
+  "reset",
+  "state",
+]

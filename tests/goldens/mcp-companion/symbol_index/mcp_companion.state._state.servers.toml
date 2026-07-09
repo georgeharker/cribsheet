@@ -1,0 +1,25 @@
+fqname = "mcp_companion.state._state.servers"
+name = "servers"
+kind = "field"
+lang = "lua"
+module = "mcp_companion.state"
+parent = "mcp_companion.state._state"
+content_hash = "5d2c12047c5f4f7f"
+file = "lua/mcp_companion/state.lua"
+signature = "servers = {}, --- @type MCPCompanion.ServerInfo[]"
+description = ""
+line = 33
+mtime = 1782852601000000000
+container = [
+  "_state",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.state._state.servers",
+  "servers",
+  "state",
+]

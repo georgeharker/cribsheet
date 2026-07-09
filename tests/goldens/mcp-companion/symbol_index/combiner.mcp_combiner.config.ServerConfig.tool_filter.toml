@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.config.ServerConfig.tool_filter"
+name = "tool_filter"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.ServerConfig"
+content_hash = "7fa41298721eaa13"
+file = "combiner/mcp_combiner/config.py"
+signature = "tool_filter: list[str] = Field(default_factory=list)"
+description = ""
+line = 151
+mtime = 1782954213000000000
+container = [
+  "ServerConfig",
+]
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.tool_filter",
+  "config",
+  "filter",
+  "mcp",
+  "server",
+  "tool",
+  "tool_filter",
+]

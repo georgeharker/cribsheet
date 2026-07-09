@@ -1,0 +1,33 @@
+fqname = "crib.codeindex.LEARNINGS_DIR"
+name = "LEARNINGS_DIR"
+kind = "constant"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "d2abd1ee756b49fe"
+file = "crib/codeindex.py"
+signature = "LEARNINGS_DIR = \"code-learnings\""
+description = ""
+line = 1292
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "attach [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "fqns [crib/learnings.py]",
+  "project_forget [crib/app.py]",
+  "rehome [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+  "report [crib/learnings.py]",
+  "status [crib/app.py]",
+]
+name_terms = [
+  "LEARNINGS_DIR",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LEARNINGS_DIR",
+  "dir",
+  "learnings",
+]

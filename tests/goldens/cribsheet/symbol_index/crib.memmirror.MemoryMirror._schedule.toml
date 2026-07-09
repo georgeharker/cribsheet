@@ -1,0 +1,29 @@
+fqname = "crib.memmirror.MemoryMirror._schedule"
+name = "_schedule"
+kind = "method"
+lang = "python"
+module = "crib.memmirror"
+parent = "crib.memmirror.MemoryMirror"
+content_hash = "d9f411ea8146ade8"
+file = "crib/memmirror.py"
+signature = "def _schedule(self, binding: tuple[Path, str]) -> None:"
+description = ""
+line = 99
+mtime = 1782755761000000000
+container = [
+  "MemoryMirror",
+]
+calls = []
+called_by = []
+references = [
+  "_emit [crib/memmirror.py]",
+]
+name_terms = [
+  "_schedule",
+  "crib",
+  "crib.memmirror.MemoryMirror._schedule",
+  "memmirror",
+  "memory",
+  "mirror",
+  "schedule",
+]

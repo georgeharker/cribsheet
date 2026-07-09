@@ -1,0 +1,32 @@
+fqname = "crib.codeindex._module_of"
+name = "_module_of"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "f8b3b25e82211413"
+file = "crib/codeindex.py"
+signature = "def _module_of(relpath: str, lang: str) -> str:"
+description = ""
+line = 758
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = [
+  "_extract [crib/codeindex.py]",
+  "test_module_of_python_strips_roots_and_init [tests/test_codeindex.py]",
+  "test_module_of_rust_uses_colons [tests/test_codeindex.py]",
+]
+references = [
+  "_extract [crib/codeindex.py]",
+  "test_module_of_python_strips_roots_and_init [tests/test_codeindex.py]",
+  "test_module_of_rust_uses_colons [tests/test_codeindex.py]",
+]
+name_terms = [
+  "_module_of",
+  "codeindex",
+  "crib",
+  "crib.codeindex._module_of",
+  "module",
+  "of",
+]

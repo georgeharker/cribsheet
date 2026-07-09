@@ -1,0 +1,32 @@
+fqname = "tests.test_cc_tools.if.reg_err"
+name = "reg_err"
+kind = "variable"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = "tests.test_cc_tools.if"
+content_hash = "03b981eef15467c5"
+file = "tests/test_cc_tools.lua"
+signature = "local reg_ok, reg_err = pcall(tools.register)"
+description = ""
+line = 280
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = [
+  "else [tests/test_cc_tools.lua]",
+  "reg_ok [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "err",
+  "if",
+  "reg",
+  "reg_err",
+  "test",
+  "tests",
+  "tests.test_cc_tools.if.reg_err",
+  "tools",
+]

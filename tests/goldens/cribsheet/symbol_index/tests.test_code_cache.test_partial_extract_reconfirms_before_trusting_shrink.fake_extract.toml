@@ -1,0 +1,37 @@
+fqname = "tests.test_code_cache.test_partial_extract_reconfirms_before_trusting_shrink.fake_extract"
+name = "fake_extract"
+kind = "function"
+lang = "python"
+module = "tests.test_code_cache"
+parent = "tests.test_code_cache.test_partial_extract_reconfirms_before_trusting_shrink"
+content_hash = "f0e80b380618c76e"
+file = "tests/test_code_cache.py"
+signature = "def fake_extract(r, rel, settle=1.5, pool=None, ref_projects=None):"
+description = ""
+line = 263
+mtime = 1783489700000000000
+container = [
+  "test_partial_extract_reconfirms_before_trusting_shrink",
+]
+calls = [
+  "entry [tests/test_code_cache.py]",
+]
+called_by = []
+references = [
+  "test_partial_extract_reconfirms_before_trusting_shrink [tests/test_code_cache.py]",
+]
+name_terms = [
+  "before",
+  "cache",
+  "code",
+  "extract",
+  "fake",
+  "fake_extract",
+  "partial",
+  "reconfirms",
+  "shrink",
+  "test",
+  "tests",
+  "tests.test_code_cache.test_partial_extract_reconfirms_before_trusting_shrink.fake_extract",
+  "trusting",
+]

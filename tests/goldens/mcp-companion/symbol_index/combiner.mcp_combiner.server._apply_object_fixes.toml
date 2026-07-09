@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.server._apply_object_fixes"
+name = "_apply_object_fixes"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "a291a133e0211978"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _apply_object_fixes(params: dict[str, Any], fixes: frozenset[str]) -> dict[str, Any]:"
+description = ""
+line = 731
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "_apply_schema_fixes [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_apply_schema_fixes [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_apply_object_fixes",
+  "apply",
+  "combiner",
+  "combiner.mcp_combiner.server._apply_object_fixes",
+  "fixes",
+  "mcp",
+  "object",
+  "server",
+]

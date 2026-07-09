@@ -1,0 +1,28 @@
+fqname = "crib.config.Config.versions_keep"
+name = "versions_keep"
+kind = "field"
+lang = "python"
+module = "crib.config"
+parent = "crib.config.Config"
+content_hash = "8556d9ca34ad9dc9"
+file = "crib/config.py"
+signature = "versions_keep: int = 20"
+description = ""
+line = 200
+mtime = 1783455339000000000
+container = [
+  "Config",
+]
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.versions_keep",
+  "keep",
+  "versions",
+  "versions_keep",
+]

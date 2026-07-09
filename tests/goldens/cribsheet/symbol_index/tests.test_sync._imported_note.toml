@@ -1,0 +1,33 @@
+fqname = "tests.test_sync._imported_note"
+name = "_imported_note"
+kind = "function"
+lang = "python"
+module = "tests.test_sync"
+parent = ""
+content_hash = "c8ab945794f94e71"
+file = "tests/test_sync.py"
+signature = "def _imported_note(g: GitBacking, name: str, repo: str, date: str, body: str) -> None:"
+description = ""
+line = 113
+mtime = 1783446057000000000
+container = []
+calls = [
+  "_note [tests/test_sync.py]",
+]
+called_by = [
+  "test_body_conflict_surfaces_but_header_is_healed [tests/test_sync.py]",
+  "test_frontmatter_only_conflict_auto_resolves [tests/test_sync.py]",
+]
+references = [
+  "test_body_conflict_surfaces_but_header_is_healed [tests/test_sync.py]",
+  "test_frontmatter_only_conflict_auto_resolves [tests/test_sync.py]",
+]
+name_terms = [
+  "_imported_note",
+  "imported",
+  "note",
+  "sync",
+  "test",
+  "tests",
+  "tests.test_sync._imported_note",
+]

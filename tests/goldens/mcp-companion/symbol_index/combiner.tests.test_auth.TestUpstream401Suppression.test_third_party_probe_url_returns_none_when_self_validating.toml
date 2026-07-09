@@ -1,0 +1,41 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression.test_third_party_probe_url_returns_none_when_self_validating"
+name = "test_third_party_probe_url_returns_none_when_self_validating"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression"
+content_hash = "55ccf170513d9eaf"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 1105
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed_valid_tokens [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression.test_third_party_probe_url_returns_none_when_self_validating",
+  "none",
+  "party",
+  "probe",
+  "returns",
+  "self",
+  "suppression",
+  "test",
+  "test_third_party_probe_url_returns_none_when_self_validating",
+  "tests",
+  "third",
+  "upstream",
+  "url",
+  "validating",
+  "when",
+]

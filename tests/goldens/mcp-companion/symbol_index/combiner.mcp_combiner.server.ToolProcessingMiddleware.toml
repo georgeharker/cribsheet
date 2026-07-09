@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.server.ToolProcessingMiddleware"
+name = "ToolProcessingMiddleware"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "8808fd449101457f"
+file = "combiner/mcp_combiner/server.py"
+signature = "class ToolProcessingMiddleware(Middleware):"
+description = ""
+line = 852
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "create_combiner [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "ToolProcessingMiddleware",
+  "combiner",
+  "combiner.mcp_combiner.server.ToolProcessingMiddleware",
+  "mcp",
+  "middleware",
+  "processing",
+  "server",
+  "tool",
+]

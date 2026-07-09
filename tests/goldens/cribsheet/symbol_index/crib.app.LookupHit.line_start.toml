@@ -1,0 +1,32 @@
+fqname = "crib.app.LookupHit.line_start"
+name = "line_start"
+kind = "field"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.LookupHit"
+content_hash = "54b94752746fca4a"
+file = "crib/app.py"
+signature = "line_start: int | None = None   # 1-based span of the section in the file,"
+description = ""
+line = 67
+mtime = 1783530649000000000
+container = [
+  "LookupHit",
+]
+calls = []
+called_by = []
+references = [
+  "_emit_human_one [crib/cli.py]",
+  "apropos [crib/app.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.LookupHit.line_start",
+  "hit",
+  "line",
+  "line_start",
+  "lookup",
+  "start",
+]

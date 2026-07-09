@@ -1,0 +1,31 @@
+fqname = "tests.test_session.test_explicit_arg_overrides_without_touching_session"
+name = "test_explicit_arg_overrides_without_touching_session"
+kind = "function"
+lang = "python"
+module = "tests.test_session"
+parent = ""
+content_hash = "773913da8af6fc5e"
+file = "tests/test_session.py"
+signature = "def test_explicit_arg_overrides_without_touching_session():"
+description = ""
+line = 10
+mtime = 1783476730000000000
+container = []
+calls = [
+  "SessionState [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "arg",
+  "explicit",
+  "overrides",
+  "session",
+  "test",
+  "test_explicit_arg_overrides_without_touching_session",
+  "tests",
+  "tests.test_session.test_explicit_arg_overrides_without_touching_session",
+  "touching",
+  "without",
+]

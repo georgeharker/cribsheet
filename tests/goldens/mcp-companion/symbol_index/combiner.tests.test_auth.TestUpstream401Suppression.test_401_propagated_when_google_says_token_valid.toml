@@ -1,0 +1,39 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression.test_401_propagated_when_google_says_token_valid"
+name = "test_401_propagated_when_google_says_token_valid"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression"
+content_hash = "be87f02917b2318c"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 743
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+]
+calls = [
+  "_drive_401 [combiner/tests/test_auth.py]",
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed_valid_tokens [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression.test_401_propagated_when_google_says_token_valid",
+  "google",
+  "propagated",
+  "says",
+  "suppression",
+  "test",
+  "test_401_propagated_when_google_says_token_valid",
+  "tests",
+  "token",
+  "upstream",
+  "valid",
+  "when",
+]

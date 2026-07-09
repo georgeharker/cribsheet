@@ -1,0 +1,31 @@
+fqname = "mcp_companion.ui.build_status_view"
+name = "build_status_view"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.ui"
+parent = ""
+content_hash = "03127e794afd8fa1"
+file = "lua/mcp_companion/ui/init.lua"
+signature = "local function build_status_view(state)"
+description = ""
+line = 231
+mtime = 1783473333000000000
+container = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/ui/init.lua]",
+]
+references = [
+  "else [lua/mcp_companion/ui/init.lua]",
+  "state [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "build",
+  "build_status_view",
+  "companion",
+  "mcp",
+  "mcp_companion.ui.build_status_view",
+  "status",
+  "ui",
+  "view",
+]

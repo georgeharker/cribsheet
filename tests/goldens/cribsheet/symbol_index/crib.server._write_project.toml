@@ -1,0 +1,41 @@
+fqname = "crib.server._write_project"
+name = "_write_project"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = ""
+content_hash = "9353665780a8f64c"
+file = "crib/server.py"
+signature = "def _write_project(crib: Crib, project: str | None, project_path: str | None) -> str:"
+description = ""
+line = 90
+mtime = 1783476730000000000
+container = []
+calls = [
+  "_cwd [crib/server.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "_write_project_elicit [crib/server.py]",
+  "append [crib/server.py]",
+  "edit [crib/server.py]",
+  "forget [crib/server.py]",
+  "move [crib/server.py]",
+  "test_write_project_requires_explicit_target [tests/test_project_resolution.py]",
+]
+references = [
+  "_write_project_elicit [crib/server.py]",
+  "append [crib/server.py]",
+  "edit [crib/server.py]",
+  "forget [crib/server.py]",
+  "move [crib/server.py]",
+  "test_write_project_requires_explicit_target [tests/test_project_resolution.py]",
+]
+name_terms = [
+  "_write_project",
+  "crib",
+  "crib.server._write_project",
+  "project",
+  "server",
+  "write",
+]

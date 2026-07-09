@@ -1,0 +1,38 @@
+fqname = "crib.claudemem.resolve_path"
+name = "resolve_path"
+kind = "function"
+lang = "python"
+module = "crib.claudemem"
+parent = ""
+content_hash = "52ed0e4583687c1e"
+file = "crib/claudemem.py"
+signature = "def resolve_path(path: Path) -> Path:"
+description = ""
+line = 33
+mtime = 1782762348000000000
+container = []
+calls = []
+called_by = [
+  "_match [crib/memmirror.py]",
+  "_resolve_dirs [crib/memmirror.py]",
+  "find_harness_root [crib/claudemem.py]",
+  "munge [crib/claudemem.py]",
+  "test_resolve_follows_symlinks [tests/test_claude_memory.py]",
+  "upsert [crib/claudemem.py]",
+]
+references = [
+  "_match [crib/memmirror.py]",
+  "_resolve_dirs [crib/memmirror.py]",
+  "find_harness_root [crib/claudemem.py]",
+  "munge [crib/claudemem.py]",
+  "test_resolve_follows_symlinks [tests/test_claude_memory.py]",
+  "upsert [crib/claudemem.py]",
+]
+name_terms = [
+  "claudemem",
+  "crib",
+  "crib.claudemem.resolve_path",
+  "path",
+  "resolve",
+  "resolve_path",
+]

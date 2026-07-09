@@ -1,0 +1,37 @@
+fqname = "crib.codeindex.SymbolIndex._relname"
+name = "_relname"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.SymbolIndex"
+content_hash = "0970ebbbd4204acc"
+file = "crib/codeindex.py"
+signature = "def _relname(self, fqname: str) -> str:"
+description = ""
+line = 1319
+mtime = 1783544236000000000
+container = [
+  "SymbolIndex",
+]
+calls = [
+  "learning_slug [crib/codeindex.py]",
+]
+called_by = [
+  "delete [crib/codeindex.py]",
+  "test_symbol_index_uses_legible_slug_filenames [tests/test_codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+references = [
+  "delete [crib/codeindex.py]",
+  "test_symbol_index_uses_legible_slug_filenames [tests/test_codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+name_terms = [
+  "_relname",
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex._relname",
+  "index",
+  "relname",
+  "symbol",
+]

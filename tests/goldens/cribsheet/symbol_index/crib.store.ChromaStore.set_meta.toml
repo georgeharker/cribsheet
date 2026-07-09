@@ -1,0 +1,27 @@
+fqname = "crib.store.ChromaStore.set_meta"
+name = "set_meta"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.ChromaStore"
+content_hash = "026adeab83b01670"
+file = "crib/store.py"
+signature = "def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:"
+description = ""
+line = 212
+mtime = 1783446057000000000
+container = [
+  "ChromaStore",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore.set_meta",
+  "meta",
+  "set",
+  "set_meta",
+  "store",
+]

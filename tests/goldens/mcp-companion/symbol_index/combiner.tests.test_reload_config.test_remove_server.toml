@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_reload_config.test_remove_server"
+name = "test_remove_server"
+kind = "function"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "4a08c7c2ef956e30"
+file = "combiner/tests/test_reload_config.py"
+signature = "async def test_remove_server(harness: dict[str, Any]) -> None:"
+description = ""
+line = 185
+mtime = 1783452495000000000
+container = []
+calls = [
+  "_namespaces [combiner/tests/test_reload_config.py]",
+  "_write [combiner/tests/test_reload_config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_reload_config.test_remove_server",
+  "config",
+  "reload",
+  "remove",
+  "server",
+  "test",
+  "test_remove_server",
+  "tests",
+]

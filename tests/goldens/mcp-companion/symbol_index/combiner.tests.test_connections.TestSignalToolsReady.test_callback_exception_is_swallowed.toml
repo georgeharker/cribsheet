@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_connections.TestSignalToolsReady.test_callback_exception_is_swallowed"
+name = "test_callback_exception_is_swallowed"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestSignalToolsReady"
+content_hash = "e624152f4839e850"
+file = "combiner/tests/test_connections.py"
+signature = "async def test_callback_exception_is_swallowed(self):"
+description = ""
+line = 77
+mtime = 1783473323000000000
+container = [
+  "TestSignalToolsReady",
+]
+calls = [
+  "_fake_conn [combiner/tests/test_connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "callback",
+  "combiner",
+  "combiner.tests.test_connections.TestSignalToolsReady.test_callback_exception_is_swallowed",
+  "connections",
+  "exception",
+  "is",
+  "ready",
+  "signal",
+  "swallowed",
+  "test",
+  "test_callback_exception_is_swallowed",
+  "tests",
+  "tools",
+]

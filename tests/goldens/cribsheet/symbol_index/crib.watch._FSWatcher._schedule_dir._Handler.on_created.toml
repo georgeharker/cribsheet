@@ -1,0 +1,35 @@
+fqname = "crib.watch._FSWatcher._schedule_dir._Handler.on_created"
+name = "on_created"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch._FSWatcher._schedule_dir._Handler"
+content_hash = "d1a3e1518cb64a90"
+file = "crib/watch.py"
+signature = "def on_created(self, e):  # noqa: ANN001"
+description = ""
+line = 95
+mtime = 1783476730000000000
+container = [
+  "_FSWatcher",
+  "_schedule_dir",
+  "_Handler",
+]
+calls = [
+  "_emit [crib/watch.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "created",
+  "crib",
+  "crib.watch._FSWatcher._schedule_dir._Handler.on_created",
+  "dir",
+  "fs",
+  "handler",
+  "on",
+  "on_created",
+  "schedule",
+  "watch",
+  "watcher",
+]

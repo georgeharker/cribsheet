@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_connections.TestLifecycleState.test_unknown_when_not_managed"
+name = "test_unknown_when_not_managed"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestLifecycleState"
+content_hash = "89148c86aeeebc66"
+file = "combiner/tests/test_connections.py"
+signature = "def test_unknown_when_not_managed(self):"
+description = ""
+line = 330
+mtime = 1783473323000000000
+container = [
+  "TestLifecycleState",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_connections.TestLifecycleState.test_unknown_when_not_managed",
+  "connections",
+  "lifecycle",
+  "managed",
+  "not",
+  "state",
+  "test",
+  "test_unknown_when_not_managed",
+  "tests",
+  "unknown",
+  "when",
+]

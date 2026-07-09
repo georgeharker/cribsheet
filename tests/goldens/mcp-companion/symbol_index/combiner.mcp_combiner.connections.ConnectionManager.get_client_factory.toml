@@ -1,0 +1,30 @@
+fqname = "combiner.mcp_combiner.connections.ConnectionManager.get_client_factory"
+name = "get_client_factory"
+kind = "method"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections.ConnectionManager"
+content_hash = "64c4688d0bb1f6fd"
+file = "combiner/mcp_combiner/connections.py"
+signature = "def get_client_factory(self, name: str) -> Callable[[], HttpClient]:"
+description = ""
+line = 206
+mtime = 1783473323000000000
+container = [
+  "ConnectionManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.get_client_factory",
+  "connection",
+  "connections",
+  "factory",
+  "get",
+  "get_client_factory",
+  "manager",
+  "mcp",
+]

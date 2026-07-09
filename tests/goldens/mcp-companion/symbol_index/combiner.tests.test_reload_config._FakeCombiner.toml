@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_reload_config._FakeCombiner"
+name = "_FakeCombiner"
+kind = "class"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = ""
+content_hash = "91c5139306c61d64"
+file = "combiner/tests/test_reload_config.py"
+signature = "class _FakeCombiner:"
+description = ""
+line = 33
+mtime = 1783452495000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_namespaces [combiner/tests/test_reload_config.py]",
+  "harness [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "_FakeCombiner",
+  "combiner",
+  "combiner.tests.test_reload_config._FakeCombiner",
+  "config",
+  "fake",
+  "reload",
+  "test",
+  "tests",
+]

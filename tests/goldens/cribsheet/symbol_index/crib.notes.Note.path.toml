@@ -1,0 +1,35 @@
+fqname = "crib.notes.Note.path"
+name = "path"
+kind = "field"
+lang = "python"
+module = "crib.notes"
+parent = "crib.notes.Note"
+content_hash = "847e53703f96abe4"
+file = "crib/notes.py"
+signature = "path: Path"
+description = ""
+line = 21
+mtime = 1782755212000000000
+container = [
+  "Note",
+]
+calls = []
+called_by = []
+references = [
+  "append [crib/learnings.py]",
+  "append_note [crib/app.py]",
+  "edit_note [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "load [crib/notes.py]",
+  "move [crib/notestore.py]",
+  "save_atomic [crib/notes.py]",
+  "store_note [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notes.Note.path",
+  "note",
+  "notes",
+  "path",
+]

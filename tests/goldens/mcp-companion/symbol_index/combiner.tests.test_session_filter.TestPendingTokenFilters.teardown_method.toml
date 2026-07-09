@@ -1,0 +1,34 @@
+fqname = "combiner.tests.test_session_filter.TestPendingTokenFilters.teardown_method"
+name = "teardown_method"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestPendingTokenFilters"
+content_hash = "77e829d609efb7c3"
+file = "combiner/tests/test_session_filter.py"
+signature = "def teardown_method(self):"
+description = ""
+line = 917
+mtime = 1783452495000000000
+container = [
+  "TestPendingTokenFilters",
+]
+calls = [
+  "_reset_session_state [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestPendingTokenFilters.teardown_method",
+  "filter",
+  "filters",
+  "method",
+  "pending",
+  "session",
+  "teardown",
+  "teardown_method",
+  "test",
+  "tests",
+  "token",
+]

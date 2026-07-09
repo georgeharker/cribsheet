@@ -1,0 +1,30 @@
+fqname = "crib.codeindex._enclosing_symbol"
+name = "_enclosing_symbol"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "37618c22411b105d"
+file = "crib/codeindex.py"
+signature = "def _enclosing_symbol(c: LspClient, uri: str, line: int, language_id: str,"
+description = ""
+line = 748
+mtime = 1783544236000000000
+container = []
+calls = [
+  "_symbol_ranges [crib/codeindex.py]",
+]
+called_by = [
+  "_reference_edges [crib/codeindex.py]",
+]
+references = [
+  "_reference_edges [crib/codeindex.py]",
+]
+name_terms = [
+  "_enclosing_symbol",
+  "codeindex",
+  "crib",
+  "crib.codeindex._enclosing_symbol",
+  "enclosing",
+  "symbol",
+]

@@ -1,0 +1,23 @@
+fqname = "mcp_companion.config._config"
+name = "_config"
+kind = "global"
+lang = "lua"
+module = "mcp_companion.config"
+parent = ""
+content_hash = "2d271e354d15cd3d"
+file = "lua/mcp_companion/config.lua"
+signature = "local _config = nil"
+description = ""
+line = 244
+mtime = 1783185942000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_config",
+  "companion",
+  "config",
+  "mcp",
+  "mcp_companion.config._config",
+]

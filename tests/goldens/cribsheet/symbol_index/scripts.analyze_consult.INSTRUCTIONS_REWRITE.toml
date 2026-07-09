@@ -1,0 +1,27 @@
+fqname = "scripts.analyze_consult.INSTRUCTIONS_REWRITE"
+name = "INSTRUCTIONS_REWRITE"
+kind = "constant"
+lang = "python"
+module = "scripts.analyze_consult"
+parent = ""
+content_hash = "46d6b6b7dd9fbd17"
+file = "scripts/analyze_consult.py"
+signature = "INSTRUCTIONS_REWRITE = \"2026-06-28\""
+description = ""
+line = 53
+mtime = 1783033314000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_bucket [scripts/analyze_consult.py]",
+]
+name_terms = [
+  "INSTRUCTIONS_REWRITE",
+  "analyze",
+  "consult",
+  "instructions",
+  "rewrite",
+  "scripts",
+  "scripts.analyze_consult.INSTRUCTIONS_REWRITE",
+]

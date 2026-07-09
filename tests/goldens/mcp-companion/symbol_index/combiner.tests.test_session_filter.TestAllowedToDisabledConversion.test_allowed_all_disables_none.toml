@@ -1,0 +1,34 @@
+fqname = "combiner.tests.test_session_filter.TestAllowedToDisabledConversion.test_allowed_all_disables_none"
+name = "test_allowed_all_disables_none"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestAllowedToDisabledConversion"
+content_hash = "16716813a88c7992"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_allowed_all_disables_none(self, client):"
+description = ""
+line = 1177
+mtime = 1783452495000000000
+container = [
+  "TestAllowedToDisabledConversion",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "all",
+  "allowed",
+  "combiner",
+  "combiner.tests.test_session_filter.TestAllowedToDisabledConversion.test_allowed_all_disables_none",
+  "conversion",
+  "disabled",
+  "disables",
+  "filter",
+  "none",
+  "session",
+  "test",
+  "test_allowed_all_disables_none",
+  "tests",
+  "to",
+]

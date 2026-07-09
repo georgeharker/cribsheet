@@ -1,0 +1,31 @@
+fqname = "crib.watch.CodeWatcher._flush"
+name = "_flush"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch.CodeWatcher"
+content_hash = "0cfd4df87fd5fd4b"
+file = "crib/watch.py"
+signature = "def _flush(self, project: str) -> None:"
+description = ""
+line = 267
+mtime = 1783476730000000000
+container = [
+  "CodeWatcher",
+]
+calls = [
+  "_dispatch [crib/watch.py]",
+]
+called_by = []
+references = [
+  "_schedule [crib/watch.py]",
+]
+name_terms = [
+  "_flush",
+  "code",
+  "crib",
+  "crib.watch.CodeWatcher._flush",
+  "flush",
+  "watch",
+  "watcher",
+]

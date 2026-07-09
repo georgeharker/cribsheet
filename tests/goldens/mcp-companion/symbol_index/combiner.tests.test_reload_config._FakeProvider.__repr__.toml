@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_reload_config._FakeProvider.__repr__"
+name = "__repr__"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = "combiner.tests.test_reload_config._FakeProvider"
+content_hash = "74160559e688ee2b"
+file = "combiner/tests/test_reload_config.py"
+signature = "def __repr__(self) -> str:  # pragma: no cover - trivial"
+description = ""
+line = 29
+mtime = 1783452495000000000
+container = [
+  "_FakeProvider",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "__repr__",
+  "combiner",
+  "combiner.tests.test_reload_config._FakeProvider.__repr__",
+  "config",
+  "fake",
+  "provider",
+  "reload",
+  "repr",
+  "test",
+  "tests",
+]

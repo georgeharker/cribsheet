@@ -1,0 +1,39 @@
+fqname = "tests.test_insitu_docs._repo"
+name = "_repo"
+kind = "function"
+lang = "python"
+module = "tests.test_insitu_docs"
+parent = ""
+content_hash = "c2650dc6c629f7dd"
+file = "tests/test_insitu_docs.py"
+signature = "def _repo(tmp_path, project=\"proj\", docs=(\"README.md\",)):"
+description = ""
+line = 30
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = [
+  "test_delete_source_prunes [tests/test_insitu_docs.py]",
+  "test_edit_source_reindexes [tests/test_insitu_docs.py]",
+  "test_index_insitu_no_copy_and_resolves_to_source [tests/test_insitu_docs.py]",
+  "test_read_returns_repo_bytes [tests/test_insitu_docs.py]",
+  "test_sweep_prunes_out_of_glob_docs [tests/test_insitu_docs.py]",
+  "test_watcher_dispatch_reindexes_doc [tests/test_insitu_docs.py]",
+]
+references = [
+  "test_delete_source_prunes [tests/test_insitu_docs.py]",
+  "test_edit_source_reindexes [tests/test_insitu_docs.py]",
+  "test_index_insitu_no_copy_and_resolves_to_source [tests/test_insitu_docs.py]",
+  "test_read_returns_repo_bytes [tests/test_insitu_docs.py]",
+  "test_sweep_prunes_out_of_glob_docs [tests/test_insitu_docs.py]",
+  "test_watcher_dispatch_reindexes_doc [tests/test_insitu_docs.py]",
+]
+name_terms = [
+  "_repo",
+  "docs",
+  "insitu",
+  "repo",
+  "test",
+  "tests",
+  "tests.test_insitu_docs._repo",
+]

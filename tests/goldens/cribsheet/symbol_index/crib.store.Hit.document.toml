@@ -1,0 +1,28 @@
+fqname = "crib.store.Hit.document"
+name = "document"
+kind = "field"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Hit"
+content_hash = "d42dd8d5f5d6426c"
+file = "crib/store.py"
+signature = "document: str"
+description = ""
+line = 28
+mtime = 1783446057000000000
+container = [
+  "Hit",
+]
+calls = []
+called_by = []
+references = [
+  "_rerank [crib/app.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Hit.document",
+  "document",
+  "hit",
+  "store",
+]

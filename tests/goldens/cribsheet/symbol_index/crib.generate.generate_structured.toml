@@ -1,0 +1,33 @@
+fqname = "crib.generate.generate_structured"
+name = "generate_structured"
+kind = "function"
+lang = "python"
+module = "crib.generate"
+parent = ""
+content_hash = "640638d28b994dd7"
+file = "crib/generate.py"
+signature = "def generate_structured(cfg: GenerateConfig, system: str, user: str,"
+description = ""
+line = 83
+mtime = 1782958917000000000
+container = []
+calls = [
+  "GenerationError [crib/generate.py]",
+  "resolve_provider [crib/generate.py]",
+]
+called_by = [
+  "describe_file [crib/codeindex.py]",
+  "describe_symbols [crib/codeindex.py]",
+]
+references = [
+  "agenerate_structured [crib/generate.py]",
+  "describe_file [crib/codeindex.py]",
+  "describe_symbols [crib/codeindex.py]",
+]
+name_terms = [
+  "crib",
+  "crib.generate.generate_structured",
+  "generate",
+  "generate_structured",
+  "structured",
+]

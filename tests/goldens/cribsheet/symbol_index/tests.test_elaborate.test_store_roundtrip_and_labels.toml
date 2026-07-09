@@ -1,0 +1,34 @@
+fqname = "tests.test_elaborate.test_store_roundtrip_and_labels"
+name = "test_store_roundtrip_and_labels"
+kind = "function"
+lang = "python"
+module = "tests.test_elaborate"
+parent = ""
+content_hash = "43fd358b20c05a3e"
+file = "tests/test_elaborate.py"
+signature = "def test_store_roundtrip_and_labels(tmp_path):"
+description = ""
+line = 43
+mtime = 1782958917000000000
+container = []
+calls = [
+  "SectionIndex [crib/section_index.py]",
+  "has [crib/section_index.py]",
+  "labels [crib/section_index.py]",
+  "read_terms [crib/section_index.py]",
+  "terms_for [crib/section_index.py]",
+  "write [crib/section_index.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "elaborate",
+  "labels",
+  "roundtrip",
+  "store",
+  "test",
+  "test_store_roundtrip_and_labels",
+  "tests",
+  "tests.test_elaborate.test_store_roundtrip_and_labels",
+]

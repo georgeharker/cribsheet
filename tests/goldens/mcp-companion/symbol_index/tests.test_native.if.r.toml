@@ -1,0 +1,26 @@
+fqname = "tests.test_native.if.r"
+name = "r"
+kind = "variable"
+lang = "lua"
+module = "tests.test_native"
+parent = "tests.test_native.if"
+content_hash = "6b7c2ebde1f35fe2"
+file = "tests/test_native.lua"
+signature = "local r = native.dispatch(\"read_buffer\", { buffer = buf })"
+description = ""
+line = 95
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "native",
+  "r",
+  "test",
+  "tests",
+  "tests.test_native.if.r",
+]

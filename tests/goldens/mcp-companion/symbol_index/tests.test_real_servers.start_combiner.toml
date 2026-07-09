@@ -1,0 +1,31 @@
+fqname = "tests.test_real_servers.start_combiner"
+name = "start_combiner"
+kind = "function"
+lang = "lua"
+module = "tests.test_real_servers"
+parent = ""
+content_hash = "50901ea91e00f526"
+file = "tests/test_real_servers.lua"
+signature = "local function start_combiner(plugin_root, config_path)"
+description = ""
+line = 123
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_real_servers.lua [tests/test_real_servers.lua]",
+]
+references = [
+  "plugin_root [tests/test_real_servers.lua]",
+  "started [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "combiner",
+  "real",
+  "servers",
+  "start",
+  "start_combiner",
+  "test",
+  "tests",
+  "tests.test_real_servers.start_combiner",
+]

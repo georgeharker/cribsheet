@@ -1,0 +1,59 @@
+fqname = "mcp_companion.native.channel.unbind"
+name = "unbind"
+kind = "function"
+lang = "lua"
+module = "mcp_companion.native.channel"
+parent = ""
+content_hash = "0ec9df27cb276310"
+file = "lua/mcp_companion/native/channel.lua"
+signature = "function M.unbind(token)"
+description = ""
+line = 226
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = [
+  "M._apply_token_filter [lua/mcp_companion/cc/init.lua]",
+  "M._cleanup_session_filter [lua/mcp_companion/cc/init.lua]",
+  "M._cli_inject_combiner_env [lua/mcp_companion/cc/init.lua]",
+  "M.bind [lua/mcp_companion/native/channel.lua]",
+  "M.deregister [lua/mcp_companion/native/channel.lua]",
+  "M.reassert [lua/mcp_companion/native/channel.lua]",
+  "M.setup [lua/mcp_companion/cc/init.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "M.start [lua/mcp_companion/native/channel.lua]",
+  "M.sync [lua/mcp_companion/native/channel.lua]",
+  "M.unbind [lua/mcp_companion/native/channel.lua]",
+  "channel.lua [lua/mcp_companion/native/channel.lua]",
+  "post_bind [lua/mcp_companion/native/channel.lua]",
+]
+references = [
+  "M [lua/mcp_companion/native/channel.lua]",
+  "_apply_token_filter [lua/mcp_companion/cc/init.lua]",
+  "_cleanup_session_filter [lua/mcp_companion/cc/init.lua]",
+  "_cli_inject_combiner_env [lua/mcp_companion/cc/init.lua]",
+  "channel [lua/mcp_companion/init.lua]",
+  "deregister [lua/mcp_companion/native/channel.lua]",
+  "else [lua/mcp_companion/native/channel.lua]",
+  "enabled [lua/mcp_companion/native/channel.lua]",
+  "if [lua/mcp_companion/init.lua]",
+  "if [lua/mcp_companion/native/channel.lua]",
+  "instance_id [lua/mcp_companion/native/channel.lua]",
+  "path [lua/mcp_companion/native/channel.lua]",
+  "post_bind [lua/mcp_companion/native/channel.lua]",
+  "reassert [lua/mcp_companion/native/channel.lua]",
+  "setup [lua/mcp_companion/cc/init.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+  "socket_path [lua/mcp_companion/native/channel.lua]",
+  "start [lua/mcp_companion/native/channel.lua]",
+  "sync [lua/mcp_companion/native/channel.lua]",
+  "token [lua/mcp_companion/native/channel.lua]",
+]
+name_terms = [
+  "channel",
+  "companion",
+  "mcp",
+  "mcp_companion.native.channel.unbind",
+  "native",
+  "unbind",
+]

@@ -1,0 +1,28 @@
+fqname = "combiner.mcp_combiner.config.HealthResponse.config_path"
+name = "config_path"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.HealthResponse"
+content_hash = "ca0fe3931f3c2463"
+file = "combiner/mcp_combiner/config.py"
+signature = "config_path: str = \"\""
+description = ""
+line = 283
+mtime = 1782954213000000000
+container = [
+  "HealthResponse",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.HealthResponse.config_path",
+  "config",
+  "config_path",
+  "health",
+  "mcp",
+  "path",
+  "response",
+]

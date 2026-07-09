@@ -1,0 +1,32 @@
+fqname = "crib.server._echo_list"
+name = "_echo_list"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = ""
+content_hash = "c6e10c8ed0656bc4"
+file = "crib/server.py"
+signature = "def _echo_list(hits: Any, res: ProjectResolution) -> Any:"
+description = ""
+line = 60
+mtime = 1783476730000000000
+container = []
+calls = [
+  "echo [crib/session.py]",
+]
+called_by = [
+  "code_lookup [crib/server.py]",
+  "code_xref [crib/server.py]",
+]
+references = [
+  "code_lookup [crib/server.py]",
+  "code_xref [crib/server.py]",
+]
+name_terms = [
+  "_echo_list",
+  "crib",
+  "crib.server._echo_list",
+  "echo",
+  "list",
+  "server",
+]

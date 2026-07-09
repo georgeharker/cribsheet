@@ -1,0 +1,36 @@
+fqname = "crib.codestore.CodeStore.revalidate"
+name = "revalidate"
+kind = "method"
+lang = "python"
+module = "crib.codestore"
+parent = "crib.codestore.CodeStore"
+content_hash = "e4d904709a81f284"
+file = "crib/codestore.py"
+signature = "def revalidate(self, proj: str, reindex: Callable[..., Any]) -> None:"
+description = ""
+line = 179
+mtime = 1783494290000000000
+container = [
+  "CodeStore",
+]
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_parse [crib/codeindex.py]",
+  "drop_file [crib/codestore.py]",
+  "project_dir [crib/paths.py]",
+  "source_root [crib/codeindex.py]",
+]
+called_by = [
+  "_revalidate [crib/app.py]",
+]
+references = [
+  "_revalidate [crib/app.py]",
+]
+name_terms = [
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore.CodeStore.revalidate",
+  "revalidate",
+  "store",
+]

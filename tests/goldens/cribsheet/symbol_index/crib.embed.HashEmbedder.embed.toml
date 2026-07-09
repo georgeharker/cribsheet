@@ -1,0 +1,33 @@
+fqname = "crib.embed.HashEmbedder.embed"
+name = "embed"
+kind = "method"
+lang = "python"
+module = "crib.embed"
+parent = "crib.embed.HashEmbedder"
+content_hash = "5058da72c24447e1"
+file = "crib/embed.py"
+signature = "def embed(self, texts: list[str]) -> list[list[float]]:"
+description = ""
+line = 54
+mtime = 1782690118000000000
+container = [
+  "HashEmbedder",
+]
+calls = [
+  "_vec [crib/embed.py]",
+]
+called_by = [
+  "embed_query [crib/embed.py]",
+  "test_hash_embedder_query_is_symmetric [tests/test_embed.py]",
+]
+references = [
+  "embed_query [crib/embed.py]",
+  "test_hash_embedder_query_is_symmetric [tests/test_embed.py]",
+]
+name_terms = [
+  "crib",
+  "crib.embed.HashEmbedder.embed",
+  "embed",
+  "embedder",
+  "hash",
+]

@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.config.ServerStatusInfo.auth_type"
+name = "auth_type"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.config"
+parent = "combiner.mcp_combiner.config.ServerStatusInfo"
+content_hash = "72f0dc47644e261c"
+file = "combiner/mcp_combiner/config.py"
+signature = "auth_type: str | None = None"
+description = ""
+line = 267
+mtime = 1782954213000000000
+container = [
+  "ServerStatusInfo",
+]
+calls = []
+called_by = []
+references = [
+  "get_server_status [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "auth",
+  "auth_type",
+  "combiner",
+  "combiner.mcp_combiner.config.ServerStatusInfo.auth_type",
+  "config",
+  "info",
+  "mcp",
+  "server",
+  "status",
+  "type",
+]

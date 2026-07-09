@@ -1,0 +1,25 @@
+fqname = "combiner.mcp_combiner.nvim_channel.NvimChannelManager"
+name = "NvimChannelManager"
+kind = "class"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = ""
+content_hash = "112c7e209bdd8f14"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "class NvimChannelManager:"
+description = ""
+line = 87
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "NvimChannelManager",
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager",
+  "manager",
+  "mcp",
+  "nvim",
+]

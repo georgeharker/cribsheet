@@ -1,0 +1,30 @@
+fqname = "crib.server.build_server.code_reaffirm"
+name = "code_reaffirm"
+kind = "function"
+lang = "python"
+module = "crib.server"
+parent = "crib.server.build_server"
+content_hash = "782093d7ab6affa1"
+file = "crib/server.py"
+signature = "@mcp.tool()"
+description = ""
+line = 506
+mtime = 1783476730000000000
+container = [
+  "build_server",
+]
+calls = [
+  "_project [crib/server.py]",
+  "code_reaffirm [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "code",
+  "code_reaffirm",
+  "crib",
+  "crib.server.build_server.code_reaffirm",
+  "reaffirm",
+  "server",
+]

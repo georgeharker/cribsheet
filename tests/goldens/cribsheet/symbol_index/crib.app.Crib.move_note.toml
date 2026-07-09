@@ -1,0 +1,35 @@
+fqname = "crib.app.Crib.move_note"
+name = "move_note"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "ee4a2b561efb58e6"
+file = "crib/app.py"
+signature = "async def move_note(self, relpath: str, to_project: str | None = None,"
+description = ""
+line = 351
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "move [crib/notestore.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "_scenario [tests/test_notestore_snapshot.py]",
+  "move [crib/server.py]",
+]
+references = [
+  "_scenario [tests/test_notestore_snapshot.py]",
+  "move [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.move_note",
+  "move",
+  "move_note",
+  "note",
+]

@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_auth.TestUpstream401Suppression.test_delegated_validator_picks_external_when_mixed"
+name = "test_delegated_validator_picks_external_when_mixed"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestUpstream401Suppression"
+content_hash = "625ea38cea12055e"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 1067
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed_valid_tokens [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression.test_delegated_validator_picks_external_when_mixed",
+  "delegated",
+  "external",
+  "mixed",
+  "picks",
+  "suppression",
+  "test",
+  "test_delegated_validator_picks_external_when_mixed",
+  "tests",
+  "upstream",
+  "validator",
+  "when",
+]

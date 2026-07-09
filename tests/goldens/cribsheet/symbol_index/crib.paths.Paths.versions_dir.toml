@@ -1,0 +1,32 @@
+fqname = "crib.paths.Paths.versions_dir"
+name = "versions_dir"
+kind = "method"
+lang = "python"
+module = "crib.paths"
+parent = "crib.paths.Paths"
+content_hash = "2959a18bc2988e2d"
+file = "crib/paths.py"
+signature = "@property"
+description = ""
+line = 47
+mtime = 1783533619000000000
+container = [
+  "Paths",
+]
+calls = []
+called_by = [
+  "__init__ [crib/app.py]",
+  "ensure [crib/paths.py]",
+]
+references = [
+  "__init__ [crib/app.py]",
+  "ensure [crib/paths.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.Paths.versions_dir",
+  "dir",
+  "paths",
+  "versions",
+  "versions_dir",
+]

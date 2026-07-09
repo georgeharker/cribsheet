@@ -1,0 +1,30 @@
+fqname = "combiner.tests.test_config.TestExpansionInConfig.test_headers_expanded"
+name = "test_headers_expanded"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestExpansionInConfig"
+content_hash = "0a7cf290c0a576dd"
+file = "combiner/tests/test_config.py"
+signature = "def test_headers_expanded(self) -> None:"
+description = ""
+line = 368
+mtime = 1782852601000000000
+container = [
+  "TestExpansionInConfig",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.TestExpansionInConfig.test_headers_expanded",
+  "config",
+  "expanded",
+  "expansion",
+  "headers",
+  "in",
+  "test",
+  "test_headers_expanded",
+  "tests",
+]

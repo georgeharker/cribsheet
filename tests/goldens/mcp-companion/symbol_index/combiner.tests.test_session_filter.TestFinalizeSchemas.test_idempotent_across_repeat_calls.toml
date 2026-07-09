@@ -1,0 +1,35 @@
+fqname = "combiner.tests.test_session_filter.TestFinalizeSchemas.test_idempotent_across_repeat_calls"
+name = "test_idempotent_across_repeat_calls"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestFinalizeSchemas"
+content_hash = "f799178da51b91ef"
+file = "combiner/tests/test_session_filter.py"
+signature = "def test_idempotent_across_repeat_calls(self):"
+description = ""
+line = 707
+mtime = 1783452495000000000
+container = [
+  "TestFinalizeSchemas",
+]
+calls = [
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "across",
+  "calls",
+  "combiner",
+  "combiner.tests.test_session_filter.TestFinalizeSchemas.test_idempotent_across_repeat_calls",
+  "filter",
+  "finalize",
+  "idempotent",
+  "repeat",
+  "schemas",
+  "session",
+  "test",
+  "test_idempotent_across_repeat_calls",
+  "tests",
+]

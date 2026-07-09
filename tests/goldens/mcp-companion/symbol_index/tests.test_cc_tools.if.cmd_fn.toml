@@ -1,0 +1,29 @@
+fqname = "tests.test_cc_tools.if.cmd_fn"
+name = "cmd_fn"
+kind = "variable"
+lang = "lua"
+module = "tests.test_cc_tools"
+parent = "tests.test_cc_tools.if"
+content_hash = "184a615ee33c4df6"
+file = "tests/test_cc_tools.lua"
+signature = "local cmd_fn = spec.cmds[1]"
+description = ""
+line = 402
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cc",
+  "cmd",
+  "cmd_fn",
+  "fn",
+  "if",
+  "test",
+  "tests",
+  "tests.test_cc_tools.if.cmd_fn",
+  "tools",
+]

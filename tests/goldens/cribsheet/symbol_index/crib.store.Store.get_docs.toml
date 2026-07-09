@@ -1,0 +1,34 @@
+fqname = "crib.store.Store.get_docs"
+name = "get_docs"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Store"
+content_hash = "b11e91b688dd925b"
+file = "crib/store.py"
+signature = "def get_docs(self, where: dict[str, Any]"
+description = ""
+line = 43
+mtime = 1783446057000000000
+container = [
+  "Store",
+]
+calls = []
+called_by = [
+  "_generate_index [crib/app.py]",
+  "_retrieve [crib/app.py]",
+  "get [crib/retrieve.py]",
+]
+references = [
+  "_generate_index [crib/app.py]",
+  "_retrieve [crib/app.py]",
+  "get [crib/retrieve.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Store.get_docs",
+  "docs",
+  "get",
+  "get_docs",
+  "store",
+]

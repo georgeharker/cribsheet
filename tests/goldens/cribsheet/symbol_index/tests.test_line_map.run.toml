@@ -1,0 +1,30 @@
+fqname = "tests.test_line_map.run"
+name = "run"
+kind = "function"
+lang = "python"
+module = "tests.test_line_map"
+parent = ""
+content_hash = "44052857cf112194"
+file = "tests/test_line_map.py"
+signature = "def run(coro):"
+description = ""
+line = 32
+mtime = 1782631409000000000
+container = []
+calls = []
+called_by = [
+  "test_long_section_span_covers_full_extent [tests/test_line_map.py]",
+  "test_lookup_reports_line_span [tests/test_line_map.py]",
+]
+references = [
+  "test_long_section_span_covers_full_extent [tests/test_line_map.py]",
+  "test_lookup_reports_line_span [tests/test_line_map.py]",
+]
+name_terms = [
+  "line",
+  "map",
+  "run",
+  "test",
+  "tests",
+  "tests.test_line_map.run",
+]

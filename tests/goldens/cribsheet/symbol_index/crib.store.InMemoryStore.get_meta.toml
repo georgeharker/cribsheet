@@ -1,0 +1,30 @@
+fqname = "crib.store.InMemoryStore.get_meta"
+name = "get_meta"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.InMemoryStore"
+content_hash = "03b79571a200b525"
+file = "crib/store.py"
+signature = "def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:"
+description = ""
+line = 86
+mtime = 1783446057000000000
+container = [
+  "InMemoryStore",
+]
+calls = [
+  "_matches [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.store.InMemoryStore.get_meta",
+  "get",
+  "get_meta",
+  "in",
+  "memory",
+  "meta",
+  "store",
+]

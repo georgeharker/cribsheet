@@ -10,15 +10,11 @@ from __future__ import annotations
 import asyncio
 import datetime
 import os
-import re
 import sys
 import threading
 from dataclasses import dataclass, replace
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
-
-if TYPE_CHECKING:
-    from .codeindex import RefProjects
+from typing import Any, Callable
 
 from . import claudemem, notes
 from .chunk import section_line_map
@@ -28,10 +24,14 @@ from .codestore import CodeStore, _ResidentCode
 from .config import (Config, CribLink, ProjectConfig, portable_path,
                      resolve_project)
 from .project_services import ProjectServices
+from .refs import Refs
 from .embed import build_embedder
 from .gitbacking import GitBacking
+from .codequery import CodeQuery
 from .indexer import IndexEngine, IndexResult
+from .learnings import Learnings
 from .notes import Note
+from .notestore import NoteStore
 from .paths import Paths
 from .sources import SRC_PREFIX, SourceRoots, src_relpath
 from .store import Hit, Store
@@ -103,6 +103,10 @@ class Crib:
                                  summary_terms=self._summary_terms)
         self.git = GitBacking(paths.data_dir)
         self.versions = VersionRing(paths.versions_dir, config.versions_keep)
+        # Note-file store: path resolution + the write path (stash→save→index) over the
+        # shared backends (store/index/versions stay Crib attrs — retrieval, docs,
+        # import, generation all use them). Crib keeps delegators (below).
+        self.notestore = NoteStore(paths, store, self.index, self.versions)
         self.memory_bindings = MemoryBindings(paths.data_dir / "memory-bindings.json")
         self._reranker: Any = None      # lazy cross-encoder, warm for the daemon
         self._watcher: Watcher | None = None
@@ -113,14 +117,28 @@ class Crib:
         # epoch, write locks, in-flight/sweep tracking) — owned by CodeStore; the
         # methods below reach through `self.code` (codestore.py).
         self.code = CodeStore(paths, config)
-        # The project-layer surface the indexing pipeline depends on (refs, enumerate,
-        # source-root registration, project resolution) — a seam that defers back here,
-        # so the pipeline can move to a CodeIndexer without reaching into Crib.
-        self.services = ProjectServices(self)
+        # Cross-project refs (.crib refs:) — resolution + edge attribution. Needs two
+        # Crib-owned callables it can't own: a ref's resident cache (carries the
+        # pipeline revalidate hook) and nested-.crib boundary detection (shared with
+        # code enumeration). Crib keeps delegators (below) for its many callers.
+        self.refs = Refs(paths, self._resident_code, self._nested_project_roots)
+        # The project-layer surface the indexing pipeline depends on — narrow deps
+        # (refs + code + config for resolution/ref-context, plus two injected callables
+        # for enumeration + watcher registration). No back-reference to Crib.
+        self.services = ProjectServices(self.refs, self.code, paths, config,
+                                        self._enumerate_code_files,
+                                        self._register_code_root)
         # The code-index pipeline (extract → describe → persist), over CodeStore +
         # ProjectServices. Crib keeps delegators (below) so the watcher, the resident
         # revalidate hook, and project setup/index call it unchanged.
         self.indexer = CodeIndexer(self.services)
+        # Durable symbol learnings (notes under code-learnings/), over refs + notestore.
+        # Crib keeps resolve_project + delegate public wrappers (code_append/…).
+        self.learnings = Learnings(paths, self.refs, self.notestore)
+        # Code-index queries (lookup/xref/dossier/graph) over refs + learnings + the
+        # resident cache. Crib keeps resolve_project + delegate public wrappers.
+        self.query = CodeQuery(self.refs, self.learnings, self.embedder,
+                               self._resident_code, self._require_code_index)
 
     # --- construction ------------------------------------------------------
     @classmethod
@@ -250,9 +268,7 @@ class Crib:
         return resolve_project(self.config, project, cwd)
 
     def notes_dir(self, project: str) -> Path:
-        d = self.paths.notes_dir(project)
-        d.mkdir(parents=True, exist_ok=True)
-        return d
+        return self.notestore.dir(project)
 
     def _keyword_terms(self, project: str, section_hash: str,
                        labels: tuple[str, ...]) -> list[str]:
@@ -275,31 +291,13 @@ class Crib:
 
     def _source_roots(self, project: str) -> "SourceRoots":
         """Per-project registry of docs indexed in-situ (prefix -> repo root)."""
-        from .sources import SourceRoots
-        return SourceRoots(self.paths.project_dir(project) / "doc-sources.json")
+        return self.notestore.source_roots(project)
 
     def abspath(self, project: str, relpath: str) -> Path:
-        """On-disk file for a note. Source-anchored docs (`sources/<repo>/…`)
-        resolve to the repo file via the registry; everything else lives under the
-        crib notes tree."""
-        if relpath.startswith(SRC_PREFIX):
-            src = self._source_roots(project).resolve(relpath)
-            if src is not None:
-                return src
-        return self.notes_dir(project) / relpath
+        return self.notestore.abspath(project, relpath)
 
     async def _write_note(self, project: str, relpath: str, note: Note) -> IndexResult:
-        """Stash prior content (ring), write atomically, then index."""
-        path = self.abspath(project, relpath)
-        if path.exists():
-            existing = notes.load(path)
-            if existing.id:
-                self.versions.stash(existing.id, notes.serialize(
-                    existing.frontmatter, existing.body))
-        notes.ensure_id(note)
-        note.path = path
-        notes.save_atomic(note)
-        return await self.index.index_file(project, self.notes_dir(project), relpath)
+        return await self.notestore.write(project, relpath, note)
 
     # --- tool verbs --------------------------------------------------------
     # near-duplicate nudge: a stored note whose probe matches an existing note
@@ -356,27 +354,8 @@ class Crib:
         """Relocate a note across projects and/or rename it, preserving its `id`
         (and thus version-ring history). One-way: write destination, drop source."""
         src_proj = self.resolve_project(project, cwd)
-        dst_proj = to_project or src_proj
-        dst_relpath = to_relpath or relpath
-        src = self.abspath(src_proj, relpath)
-        if not src.exists():
-            raise ValueError(f"no such note: {relpath} in project {src_proj!r}")
-        if src_proj == dst_proj and dst_relpath == relpath:
-            raise ValueError("source and destination are the same")
-        # capture BEFORE any abspath(dst_proj) call — abspath mkdir's the notes dir
-        created = self.project_is_new(dst_proj)
-        if self.abspath(dst_proj, dst_relpath).exists():
-            raise ValueError(f"destination exists: {dst_relpath} in {dst_proj!r}")
-        note = notes.load(src)              # carries the id in frontmatter
-        dst = Note(path=self.abspath(dst_proj, dst_relpath),
-                   frontmatter=note.frontmatter, body=note.body)
-        notes.save_atomic(dst)
-        await self.index.index_file(dst_proj, self.notes_dir(dst_proj), dst_relpath)
-        src.unlink()                        # drop source + its chunks
-        await self.index.index_file(src_proj, self.notes_dir(src_proj), relpath)
-        return {"from": {"project": src_proj, "relpath": relpath},
-                "to": {"project": dst_proj, "relpath": dst_relpath},
-                "id": note.id, "created": created}
+        return await self.notestore.move(src_proj, relpath,
+                                         to_project or src_proj, to_relpath or relpath)
 
     async def append_note(self, relpath: str, content: str,
                           heading: str | None = None, project: str | None = None,
@@ -411,23 +390,12 @@ class Crib:
         of the index entry happens through the same `index_file` — once the file
         is gone, it sees a missing path and drops all chunks for that relpath."""
         proj = self.resolve_project(project, cwd)
-        path = self.abspath(proj, relpath)
-        note_id = None
-        if path.exists():
-            note = notes.load(path)
-            note_id = note.id
-            if note_id:
-                self.versions.stash(
-                    note_id, notes.serialize(note.frontmatter, note.body))
-            path.unlink()
-        res = await self.index.index_file(proj, self.notes_dir(proj), relpath)
-        return {"project": proj, "relpath": relpath, "removed": res.deleted,
-                "recoverable_id": note_id}
+        return await self.notestore.delete(proj, relpath)
 
     def read_note(self, relpath: str, project: str | None = None,
                   cwd: Path | None = None) -> str:
         proj = self.resolve_project(project, cwd)
-        return self.abspath(proj, relpath).read_text()
+        return self.notestore.read(proj, relpath)
 
     def locate(self, relpath: str, project: str | None = None,
                cwd: Path | None = None) -> str:
@@ -442,36 +410,7 @@ class Crib:
         catches files added/edited while crib was down AND drops orphaned chunks
         for notes deleted off disk. All idempotent via the hash gate (§4)."""
         proj = self.resolve_project(project, cwd)
-        nd = self.notes_dir(proj)
-        if relpath:
-            targets = [relpath]
-        else:
-            # Full reindex is the one safe place to switch embedder: if the stored
-            # vectors' dim differs from the current embedder (e.g. a profile flip
-            # to a bigger model), recreate the collection so all chunks re-embed at
-            # the new dim. Chroma is shared across projects, so this wipes them all
-            # — hence full-reindex-only; a --all sweep re-embeds the rest.
-            cur = self.store.current_dim()
-            if cur is not None and cur != self.embedder.dim:
-                print(f"crib: embedder dim {cur}→{self.embedder.dim}; recreating "
-                      f"the vector collection (full re-embed)", file=sys.stderr)
-                self.store.recreate()
-            disk = {str(p.relative_to(nd)) for p in nd.rglob("*.md")}
-            # Source-anchored docs (`sources/<repo>/…`) live in the REPO, not under
-            # the notes tree — the notes reconcile's on-disk sweep must NOT treat them
-            # as deleted (that wiped in-situ doc chunks). They're owned by
-            # index_docs_insitu + the code watcher.
-            indexed = {m.get("relpath")
-                       for m in self.store.get_meta({"project": proj}).values()
-                       if not (m.get("relpath") or "").startswith(SRC_PREFIX)}
-            targets = sorted(disk | {r for r in indexed if r})
-        changed = removed = 0
-        for rp in targets:
-            res = await self.index.index_file(proj, nd, rp)
-            changed += int(res.changed)
-            removed += res.deleted
-        return {"project": proj, "files": len(targets),
-                "changed": changed, "removed": removed}
+        return await self.notestore.reindex(proj, relpath)
 
     async def reconcile_all(self) -> dict[str, Any]:
         """Startup/post-pull sweep across every project — catch up on offline
@@ -780,38 +719,6 @@ class Crib:
         resident-cache revalidate hook call it unchanged)."""
         return self.indexer._index_code_file_tracked(root, rel, proj, patch_edges, existing)
 
-    def _ref_edge_ctx(self, proj: str, root: Path | None = None) -> "RefProjects":
-        """`extract_file`'s cross-project attribution context: each `.crib` ref's
-        locally-resolved root (pre-resolved) + its indexed file set (for the
-        site-packages suffix match). When `root` is given, an IN-TREE checkout of
-        a ref'd project (nested `.crib` naming it — e.g. `vendor/llmkit`) is added
-        as an extra attribution root for that ref: same repo, same relative paths,
-        so edges into the vendored copy resolve to the ref project. Reads the
-        refs' resident caches — cheap after first touch."""
-        out: RefProjects = []
-        nested_by_proj: dict[str, Path] = {}
-        if root is not None:
-            for nd in self._nested_project_roots(root):
-                link = CribLink.find(nd)
-                if link is not None:
-                    nested_by_proj[link.project] = nd.resolve()
-            root = root.resolve()
-        for ref in self._project_refs(proj):
-            files: frozenset[str] = frozenset()
-            if ref["indexed"]:
-                try:
-                    files = frozenset(
-                        e.get("file", "")
-                        for e in self._resident_code(ref["project"]).entries)
-                except Exception:  # noqa: BLE001 — a broken ref never fails indexing
-                    pass
-            rroot = ref["root"].resolve() if ref["root"] else None
-            out.append((ref["project"], rroot, files))
-            nested = nested_by_proj.get(ref["project"])
-            if nested is not None and nested != rroot:
-                out.append((ref["project"], nested, files))
-        return out
-
     # ── Resident code cache: delegates to CodeStore (crib/codestore.py) ────────
     # Thin delegators so existing call sites are untouched; the state + its
     # invariants live in `self.code`. `_code_watched` (watcher, not code state) and
@@ -1022,25 +929,8 @@ class Crib:
                 "docs_indexed": docs.get("docs", 0), **code}
 
     def _project_refs(self, proj: str) -> list[dict[str, Any]]:
-        """The projects `proj`'s `.crib` names in `refs:` — cross-project xref
-        targets. Each ref resolves to its own LOCAL checkout via that project's
-        `.source_root` (machine-local, gitignored), so the committed `.crib`
-        carries NAMES only and survives differently-located clones. → [{project,
-        root (None when not locally present), indexed}]."""
-        from .codeindex import SymbolIndex
-        my_root = SymbolIndex(self.paths.project_dir(proj)).source_root()
-        link = (CribLink.find(my_root)
-                if my_root is not None and my_root.exists() else None)
-        out: list[dict[str, Any]] = []
-        for name in (link.refs if link else []):
-            if name == proj:
-                continue                     # self-reference is meaningless
-            si = SymbolIndex(self.paths.project_dir(name))
-            root = si.source_root()
-            out.append({"project": name,
-                        "root": root if root is not None and root.exists() else None,
-                        "indexed": si.is_populated()})
-        return out
+        """Delegate to Refs (crib/refs.py) — a project's `.crib` refs: targets."""
+        return self.refs.project_refs(proj)
 
     def project_status(self, project: str | None = None,
                        cwd: Path | None = None) -> dict[str, Any]:
@@ -1137,554 +1027,65 @@ class Crib:
 
     def code_xref(self, symbol: str, project: str | None = None,
                   cwd: Path | None = None) -> list[dict[str, Any]]:
-        """Callers/callees for a symbol from the persisted symbol_index — no live
-        LSP. A local miss falls through to the project's `.crib` `refs:` (cross-
-        project xref); every entry carries `project`."""
-        proj = self.resolve_project(project, cwd)
-        self._require_code_index(proj)
-        rc = self._resident_code(proj)       # resident; refreshes source per freshness mode
-        matches = rc.by_fqname(symbol)
-        owner = proj
-        if not matches:
-            for ref in self._project_refs(proj):
-                if not ref["indexed"]:
-                    continue
-                matches = self._resident_code(ref["project"]).by_fqname(symbol)
-                if matches:
-                    owner = ref["project"]
-                    break
-        for m in matches:
-            m["project"] = owner
-        return self._attach_learnings(owner, matches)
+        """A symbol's callers/callees/references from the persisted symbol_index."""
+        return self.query.xref(self.resolve_project(project, cwd), symbol)
 
     def code_dossier(self, symbol: str, project: str | None = None,
                      cwd: Path | None = None, edge_cap: int = 20) -> dict[str, Any]:
-        """Everything about ONE symbol in a single call: its signature + description,
-        its callers / callees / references — each annotated with the NEIGHBOUR'S own
-        description — and any attached learning. Built for agents: read a symbol and
-        understand its neighbourhood without a dozen follow-up lookups."""
-        proj = self.resolve_project(project, cwd)
-        self._require_code_index(proj)
-        rc = self._resident_code(proj)
-        # local first, then the `.crib` refs — the neighbourhood (edges, learnings)
-        # lives with the OWNING project, so everything below reads from there
-        owner, entry = self._resolve_symbol_or_ref(proj, symbol, rc)
-        if owner != proj:
-            rc = self._resident_code(owner)
-        self._attach_learnings(owner, [entry])
-        idx = rc.entries
-        desc = {e["fqname"]: e.get("description", "") for e in idx}
-        by_nf = {(e.get("name", ""), e.get("file", "")): e["fqname"] for e in idx}
+        """Everything about one symbol (+ neighbour descriptions + any learning)."""
+        return self.query.dossier(self.resolve_project(project, cwd), symbol, edge_cap)
 
-        ref_maps: dict[str, tuple[dict, dict]] = {}   # ref proj → (desc, by_nf)
-
-        def _maps(rp: str) -> tuple[dict, dict]:
-            if rp not in ref_maps:
-                try:
-                    rrc = self._resident_code(rp)
-                    ref_maps[rp] = (
-                        {e["fqname"]: e.get("description", "") for e in rrc.entries},
-                        {(e.get("name", ""), e.get("file", "")): e["fqname"]
-                         for e in rrc.entries})
-                except Exception:  # noqa: BLE001 — unindexed ref → unresolved edge
-                    ref_maps[rp] = ({}, {})
-            return ref_maps[rp]
-
-        def neigh(edges: list[str] | None) -> list[dict[str, Any]]:
-            out = []
-            for ref in (edges or [])[:edge_cap]:
-                name, _, rest = ref.partition(" [")
-                nm, fref = name.strip(), rest.rstrip("]")
-                if ":" in fref:            # QUALIFIED edge — lives in a ref'd project
-                    rp, _, rrel = fref.partition(":")
-                    rdesc, rnf = _maps(rp)
-                    fq = rnf.get((nm, rrel))
-                    out.append({"symbol": fq or nm, "file": rrel, "project": rp,
-                                "description": rdesc.get(fq or "", "")})
-                    continue
-                fq = by_nf.get((nm, fref))
-                out.append({"symbol": fq or nm, "file": fref,
-                            "description": desc.get(fq or "", "")})
-            extra = max(len(edges or []) - edge_cap, 0)
-            if extra:
-                out.append({"symbol": f"… +{extra} more", "file": "", "description": ""})
-            return out
-
-        return {
-            "fqname": entry["fqname"], "kind": entry.get("kind"),
-            "project": owner,
-            "file": entry.get("file"), "line": entry.get("line"),
-            "signature": entry.get("signature"), "description": entry.get("description"),
-            "learning": entry.get("learning"),
-            "calls": neigh(entry.get("calls")),
-            "called_by": neigh(entry.get("called_by")),
-            "references": neigh(entry.get("references")),
-        }
-
-    # ── Durable learnings attached to a symbol (docs/code-symbol-index.md) ─────
-    # Same primitives as notes — append / edit / forget / read — scoped to a code
-    # symbol. Each resolves the fqn to a note under <project>/code-learnings/ and
-    # reuses the standard note machinery, so learnings inherit versioning, git
-    # sync and the frontmatter merge driver. They are SEPARATE from the LLM
-    # description (a regenerable cache): re-indexing never disturbs them.
-    def _resolve_symbol(self, proj: str, symbol: str,
-                        rc: "_ResidentCode | None" = None) -> dict[str, Any]:
-        """Resolve a user-supplied symbol to exactly one indexed entry. Exact fqn
-        wins; a bare/partial name resolves only if unique — else raise, listing
-        candidates (never silently pick, so a learning can't land on the wrong one).
-        Resolves against a resident cache when one is passed (avoids a disk read)."""
-        from .codeindex import SymbolIndex
-        matches = (rc.by_fqname(symbol) if rc is not None
-                   else SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol))
-        if not matches:
-            raise ValueError(f"unknown symbol {symbol!r} in project {proj!r} — "
-                             f"code_lookup it, or code_index the file first")
-        exact = [m for m in matches if m.get("fqname") == symbol]
-        cands = exact or matches
-        if len(cands) > 1:
-            names = ", ".join(sorted(m.get("fqname", "") for m in cands)[:8])
-            raise ValueError(f"ambiguous symbol {symbol!r} → {names}; pass a full fqname")
-        return cands[0]
-
-    def _resolve_symbol_or_ref(self, proj: str, symbol: str,
-                               rc: "_ResidentCode | None" = None,
-                               ) -> tuple[str, dict[str, Any]]:
-        """Resolve locally first; on a LOCAL MISS, try the project's `.crib`
-        `refs:` (cross-project xref) → (owning_project, entry). Exactly one ref
-        matching wins; several → ambiguous error naming the projects; none →
-        the local unknown-symbol error. A local AMBIGUITY still raises (refs
-        never paper over it)."""
-        try:
-            return proj, self._resolve_symbol(proj, symbol, rc)
-        except ValueError as local_err:
-            if "unknown symbol" not in str(local_err):
-                raise
-            found: list[tuple[str, dict[str, Any]]] = []
-            for ref in self._project_refs(proj):
-                if not ref["indexed"]:
-                    continue
-                try:
-                    found.append((ref["project"],
-                                  self._resolve_symbol(ref["project"], symbol)))
-                except ValueError:
-                    continue
-            if len(found) == 1:
-                return found[0]
-            if len(found) > 1:
-                names = ", ".join(f"{p}:{e['fqname']}" for p, e in found)
-                raise ValueError(
-                    f"ambiguous symbol {symbol!r} across refs → {names}; "
-                    f"pass project= to disambiguate") from None
-            raise local_err
-
-    def _learning_relpath(self, entry: dict[str, Any]) -> str:
-        from .codeindex import LEARNINGS_DIR, learning_slug
-        return f"{LEARNINGS_DIR}/{learning_slug(entry['fqname'])}.md"
-
-    def _attach_learnings(self, proj: str,
-                          entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """Enrich symbol entries in place with any attached learning (📌) + a
-        staleness flag, so pinned understanding resurfaces exactly where you're
-        already looking (code_lookup / code_xref). Keyed O(1) by learning_slug(fqn)
-        — only symbols that actually carry a note pay a read. `stale` = the symbol's
-        body changed (content_hash) since the learning was written; a heads-up, not
-        an invalidation — the subtlety usually still holds."""
-        from .codeindex import LEARNINGS_DIR, learning_slug
-        ldir = self.notes_dir(proj) / LEARNINGS_DIR
-        if not ldir.exists():
-            return entries
-        for e in entries:
-            fq = e.get("fqname")
-            if not fq:
-                continue
-            relpath = f"{LEARNINGS_DIR}/{learning_slug(fq)}.md"
-            path = self.notes_dir(proj) / relpath
-            if not path.exists():
-                continue
-            note = notes.load(path)
-            wrote, cur = note.frontmatter.get("content_hash"), e.get("content_hash")
-            e["learning"] = {"relpath": relpath, "path": str(path),
-                             "stale": bool(wrote and cur and wrote != cur),
-                             "body": note.body.strip()}
-        return entries
-
+    # ── Durable learnings: delegate to Learnings (crib/learnings.py) ───────────
+    # Public code_* wrappers resolve_project then delegate; the internal helpers
+    # (_attach_learnings / _learning_relpath / _learning_fqns / _rehome_candidates,
+    # called by the code query methods) delegate directly.
     async def code_append(self, symbol: str, text: str, project: str | None = None,
                           cwd: Path | None = None) -> dict[str, Any]:
-        """Attach a durable learning to a symbol: append a dated entry to its
-        running note (create it, with symbol-keyed frontmatter, on first use)."""
-        proj = self.resolve_project(project, cwd)
-        entry = self._resolve_symbol(proj, symbol)
-        fqn = entry["fqname"]
-        relpath = self._learning_relpath(entry)
-        path = self.abspath(proj, relpath)
-        existed = path.exists()
-        if existed:
-            note = notes.load(path)
-            # refresh the drift/staleness snapshot to the most-recent authoring
-            note.frontmatter["content_hash"] = entry.get("content_hash", "")
-            note.frontmatter["file"] = entry.get("file", note.frontmatter.get("file", ""))
-            note.frontmatter["signature"] = entry.get("signature",
-                                                      note.frontmatter.get("signature", ""))
-        else:
-            note = Note(path=path, body="", frontmatter={
-                "title": fqn, "kind": "code-learning", "symbol": fqn,
-                "lang": entry.get("lang", ""), "file": entry.get("file", ""),
-                "signature": entry.get("signature", ""),
-                "content_hash": entry.get("content_hash", ""),
-                "source": "code-note"})
-        today = datetime.date.today().isoformat()
-        note.body = note.body.rstrip() + f"\n\n### {today}\n{text.strip()}\n"
-        res = await self._write_note(proj, relpath, note)
-        return {"project": proj, "symbol": fqn, "relpath": relpath,
-                "created": not existed, "indexed": res.upserted}
+        """Attach a durable learning to a code symbol (append a dated entry)."""
+        return await self.learnings.append(self.resolve_project(project, cwd), symbol, text)
 
     async def code_edit(self, symbol: str, new_content: str, project: str | None = None,
                         cwd: Path | None = None) -> dict[str, Any]:
-        """Replace a symbol's learning body wholesale (fix/rewrite), frontmatter
-        preserved. Errors if no learning exists yet — use code_append to create."""
-        proj = self.resolve_project(project, cwd)
-        entry = self._resolve_symbol(proj, symbol)
-        relpath = self._learning_relpath(entry)
-        path = self.abspath(proj, relpath)
-        if not path.exists():
-            raise ValueError(f"no learning for {entry['fqname']!r} yet — code_append first")
-        note = notes.load(path)
-        note.frontmatter["content_hash"] = entry.get("content_hash", "")
-        note.body = new_content.strip() + "\n"
-        res = await self._write_note(proj, relpath, note)
-        return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
-                "indexed": res.upserted}
+        """Rewrite a symbol's learning body wholesale."""
+        return await self.learnings.edit(self.resolve_project(project, cwd), symbol, new_content)
 
     async def code_forget(self, symbol: str, project: str | None = None,
                           cwd: Path | None = None) -> dict[str, Any]:
-        """Remove a symbol's learning (stashed to the version ring first, so it's
-        recoverable). Works on ORPHANS too: if the symbol no longer resolves, forget
-        by its recorded fqn — so cleanup never requires a live symbol."""
-        from .codeindex import LEARNINGS_DIR, learning_slug
-        proj = self.resolve_project(project, cwd)
-        try:
-            fqn = self._resolve_symbol(proj, symbol)["fqname"]
-        except ValueError:
-            fqn = symbol                      # orphan: gone from the index, note lingers
-        relpath = f"{LEARNINGS_DIR}/{learning_slug(fqn)}.md"
-        if not self.abspath(proj, relpath).exists():
-            raise ValueError(f"no learning for {symbol!r} in project {proj!r}")
-        res = await self.forget(relpath, proj)
-        return {**res, "symbol": fqn}
+        """Remove a symbol's learning (recoverable; works on orphans)."""
+        return await self.learnings.forget(self.resolve_project(project, cwd), symbol)
 
     async def code_reaffirm(self, symbol: str, project: str | None = None,
                             cwd: Path | None = None) -> dict[str, Any]:
-        """Clear a learning's ⚠ stale flag WITHOUT editing the body — you re-checked
-        it against the current code and it still holds. Re-snapshots content_hash /
-        file / signature to the symbol's current state and stamps `reaffirmed`."""
-        proj = self.resolve_project(project, cwd)
-        entry = self._resolve_symbol(proj, symbol)
-        relpath = self._learning_relpath(entry)
-        path = self.abspath(proj, relpath)
-        if not path.exists():
-            raise ValueError(f"no learning for {entry['fqname']!r} yet — code_append first")
-        note = notes.load(path)
-        note.frontmatter["content_hash"] = entry.get("content_hash", "")
-        note.frontmatter["file"] = entry.get("file", note.frontmatter.get("file", ""))
-        note.frontmatter["signature"] = entry.get("signature",
-                                                  note.frontmatter.get("signature", ""))
-        note.frontmatter["reaffirmed"] = datetime.date.today().isoformat()
-        res = await self._write_note(proj, relpath, note)
-        return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
-                "reaffirmed": note.frontmatter["reaffirmed"], "indexed": res.upserted}
-
-    def _learning_fqns(self, proj: str) -> set[str]:
-        """Set of fqns that carry a learning (read from `symbol:` frontmatter — the
-        authoritative fqn, so the lossy slug never has to be reversed)."""
-        from .codeindex import LEARNINGS_DIR
-        ldir = self.notes_dir(proj) / LEARNINGS_DIR
-        out: set[str] = set()
-        if ldir.exists():
-            for p in ldir.glob("*.md"):
-                fq = notes.load(p).frontmatter.get("symbol")
-                if fq:
-                    out.add(fq)
-        return out
+        """Clear a learning's stale flag without rewriting it."""
+        return await self.learnings.reaffirm(self.resolve_project(project, cwd), symbol)
 
     def code_learnings(self, project: str | None = None, cwd: Path | None = None,
                        orphans_only: bool = False) -> list[dict[str, Any]]:
-        """Health of every attached learning: `ok` | `moved` | `orphan`. `moved` =
-        the fqn still resolves but the symbol's file drifted from the snapshot;
-        `orphan` = the fqn no longer resolves (rename/move/delete). Report-only —
-        never gates indexing; drives cleanup (code_rehome / code_forget)."""
-        from .codeindex import LEARNINGS_DIR, SymbolIndex
-        proj = self.resolve_project(project, cwd)
-        ldir = self.notes_dir(proj) / LEARNINGS_DIR
-        by_fq = {e["fqname"]: e
-                 for e in SymbolIndex(self.paths.project_dir(proj)).all()}
-        out: list[dict[str, Any]] = []
-        if ldir.exists():
-            for p in sorted(ldir.glob("*.md")):
-                fm = notes.load(p).frontmatter
-                fq = fm.get("symbol", "")
-                cur = by_fq.get(fq)
-                if cur is None:
-                    status, new_file = "orphan", None
-                elif cur.get("file") != fm.get("file"):
-                    status, new_file = "moved", cur.get("file")
-                else:
-                    status, new_file = "ok", None
-                if orphans_only and status == "ok":
-                    continue
-                out.append({"symbol": fq, "status": status, "file": fm.get("file", ""),
-                            "new_file": new_file, "signature": fm.get("signature", ""),
-                            "relpath": f"{LEARNINGS_DIR}/{p.name}"})
-        return out
-
-    def _rehome_candidates(self, fm: dict[str, Any], entries: list[dict[str, Any]],
-                           top: int = 6) -> list[dict[str, Any]]:
-        """Rank index symbols as rehome targets for an orphaned learning from the
-        snapshot we kept — unqualified name (survives a container/module rename),
-        signature token overlap, same file. Structural only; the human/LLM confirms.
-        (git-history ranking is the documented next lever — see docs § step 5.)"""
-        oldname = fm.get("symbol", "").split(".")[-1]
-        oldfile = fm.get("file", "")
-        oldsig = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", fm.get("signature", "")))
-        scored: list[tuple[float, dict[str, Any]]] = []
-        for e in entries:
-            if e.get("fqname") == fm.get("symbol"):
-                continue                                    # itself, if it resolves
-            s = 0.0
-            if e.get("name") == oldname:
-                s += 3.0
-            if oldfile and e.get("file") == oldfile:
-                s += 2.0
-            sig = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", e.get("signature", "")))
-            if oldsig and sig:
-                s += 2.0 * len(oldsig & sig) / len(oldsig | sig)
-            if s > 0:
-                scored.append((s, e))
-        scored.sort(key=lambda t: t[0], reverse=True)
-        return [{"fqname": e["fqname"], "file": e.get("file", ""),
-                 "signature": e.get("signature", ""), "score": round(s, 2)}
-                for s, e in scored[:top]]
+        """Health report for attached learnings (ok/moved/orphan)."""
+        return self.learnings.report(self.resolve_project(project, cwd), orphans_only)
 
     async def code_rehome(self, old_fqn: str, new_fqn: str | None = None,
                           project: str | None = None,
                           cwd: Path | None = None) -> dict[str, Any]:
-        """Re-point an orphaned learning at the symbol it became. Without `new_fqn`:
-        return ranked candidates (never auto-move — a wrong attach is worse than a
-        dangling one). With `new_fqn`: move the note to the new symbol's slug,
-        re-snapshot its frontmatter, preserve the note id/history."""
-        from .codeindex import LEARNINGS_DIR, SymbolIndex, learning_slug
-        proj = self.resolve_project(project, cwd)
-        old_rel = f"{LEARNINGS_DIR}/{learning_slug(old_fqn)}.md"
-        old_path = self.abspath(proj, old_rel)
-        if not old_path.exists():
-            raise ValueError(f"no learning for {old_fqn!r} in project {proj!r}")
-        entries = SymbolIndex(self.paths.project_dir(proj)).all()
-        if new_fqn is None:
-            fm = notes.load(old_path).frontmatter
-            return {"old": old_fqn, "relpath": old_rel,
-                    "candidates": self._rehome_candidates(fm, entries)}
-        new_entry = next((e for e in entries if e.get("fqname") == new_fqn), None)
-        if new_entry is None:                               # allow a unique bare name
-            m = [e for e in entries if e["fqname"].endswith("." + new_fqn)
-                 or e.get("name") == new_fqn]
-            if len(m) != 1:
-                raise ValueError(f"target {new_fqn!r} not found or not unique in index")
-            new_entry = m[0]
-        new_rel = f"{LEARNINGS_DIR}/{learning_slug(new_entry['fqname'])}.md"
-        note = notes.load(old_path)
-        note.frontmatter.update({
-            "symbol": new_entry["fqname"], "title": new_entry["fqname"],
-            "lang": new_entry.get("lang", ""), "file": new_entry.get("file", ""),
-            "signature": new_entry.get("signature", ""),
-            "content_hash": new_entry.get("content_hash", ""), "rehomed_from": old_fqn})
-        res = await self._write_note(proj, new_rel, note)   # id preserved
-        if new_rel != old_rel:
-            old_path.unlink()
-            await self.index.index_file(proj, self.notes_dir(proj), old_rel)
-        return {"project": proj, "old": old_fqn, "new": new_entry["fqname"],
-                "relpath": new_rel, "indexed": res.upserted}
+        """Re-point an orphaned learning (no target = ranked suggestions)."""
+        return await self.learnings.rehome(self.resolve_project(project, cwd), old_fqn, new_fqn)
 
     def code_read(self, symbol: str, project: str | None = None,
                   cwd: Path | None = None) -> dict[str, Any]:
-        """Read a symbol's learning note (frontmatter + body), or None if unwritten."""
-        proj = self.resolve_project(project, cwd)
-        entry = self._resolve_symbol(proj, symbol)
-        relpath = self._learning_relpath(entry)
-        path = self.abspath(proj, relpath)
-        if not path.exists():
-            return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
-                    "path": str(path), "found": False, "body": None}
-        note = notes.load(path)
-        return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
-                "path": str(path), "found": True,
-                "frontmatter": note.frontmatter, "body": note.body}
+        """Read a symbol's learning note (frontmatter + body)."""
+        return self.learnings.read(self.resolve_project(project, cwd), symbol)
 
     def code_lookup(self, query: str, project: str | None = None, k: int = 8,
                     cwd: Path | None = None,
                     sparse_weight: float = 0.2) -> list[dict[str, Any]]:
-        """Find a symbol — HYBRID: dense concept search over LLM `description`s ⊕ BM25
-        over `name_terms` (unqualified/qualified/subtokens), RRF-fused. So a concept
-        query hits the dense side and a bare/partial *name* hits the sparse side. Served
-        from the content-addressed store at query time; no live LSP needed.
-
-        FANS OUT to the project's `.crib` `refs:` (cross-project xref): each indexed
-        ref is searched the same way and the per-project rankings RRF-fuse, the
-        queried project weighted above its refs. Every hit carries `project`."""
-        from .retrieve import reciprocal_rank_fusion
-        proj = self.resolve_project(project, cwd)
-        self._require_code_index(proj)
-        pools: dict[str, list[dict[str, Any]]] = {
-            proj: self._code_lookup_one(proj, query, k, sparse_weight)}
-        for ref in self._project_refs(proj):
-            if not ref["indexed"] or ref["project"] in pools:
-                continue
-            try:
-                pools[ref["project"]] = self._code_lookup_one(
-                    ref["project"], query, k, sparse_weight)
-            except Exception:  # noqa: BLE001 — a broken ref never fails the query
-                continue
-        if len(pools) == 1:
-            hits = pools[proj][:k]
-        else:
-            # EQUAL weights: rank decides (a ref's best hit must be able to beat a
-            # local mid-ranker — a damped weight buries refs below any full local
-            # top-k, since RRF is rank- not score-based). The queried project is
-            # the FIRST ranking, so exact rank ties break local-first.
-            by_key = {f"{p}:{h['fqname']}": h for p, hs in pools.items() for h in hs}
-            fused = reciprocal_rank_fusion(
-                [[f"{p}:{h['fqname']}" for h in hs] for p, hs in pools.items()])
-            hits = [by_key[key] for key in fused[:k]]
-        for i, h in enumerate(hits):
-            h["rank"] = i + 1
-        return hits
-
-    def _code_lookup_one(self, proj: str, query: str, k: int,
-                         sparse_weight: float) -> list[dict[str, Any]]:
-        """The single-project core of `code_lookup` (dense ⊕ sparse, RRF-fused),
-        project-tagged and learning-annotated. `rank` is per-pool; the caller
-        re-ranks after any cross-project fusion."""
-        from .retrieve import _subtokens, reciprocal_rank_fusion, tokenize
-        rc = self._resident_code(proj)                       # resident: no re-parse/re-embed
-        entries = rc.lk
-        if not entries:
-            return []
-        ids = rc.lk_ids
-        by_id = rc.by_fq
-        rankings: list[list[str]] = []
-        weights: list[float] = []
-        # dense: cosine over the resident description embeddings (only the query embeds)
-        dense = rc.dense(self.embedder)
-        if any(v for v in dense):
-            qv = self.embedder.embed_query([query])[0]
-            ds = [sum(a * b for a, b in zip(qv, v)) if v else -2.0 for v in dense]
-            rankings.append([ids[i] for i in sorted(range(len(ids)),
-                                                    key=lambda i: ds[i], reverse=True)])
-            weights.append(1.0)
-        # sparse: BM25 over the name terms (the unqualified name is the load-bearing one)
-        ss = rc.bm25.scores(tokenize(query) + _subtokens(query))
-        sparse = [ids[i] for i in sorted(range(len(ids)), key=lambda i: ss[i],
-                                         reverse=True) if ss[i] > 0]
-        if sparse:
-            rankings.append(sparse)
-            # Sparse damped below dense so a stray name-token match ("result" →
-            # IndexResult) can't outrank a concept hit — but a strong exact-name
-            # match still surfaces when dense is weak (a bare-name query). Mirrors
-            # the keyword_weight=0.3 damping on the note side (retrieve.py); the
-            # default is tuned on scripts/eval_code.py.
-            weights.append(sparse_weight)
-        if not rankings:
-            return []
-        fused = reciprocal_rank_fusion(rankings, weights=weights)
-        keys = ("fqname", "name", "kind", "file", "line", "signature", "description",
-                "parent", "calls", "called_by", "references", "content_hash")
-        # echo the resolved project on each hit — cheap orientation so the agent
-        # always sees which project answered (esp. useful across related codebases)
-        hits = [{**{key: by_id[fid].get(key) for key in keys},
-                 "project": proj, "rank": i + 1}
-                for i, fid in enumerate(fused[:k])]
-        return self._attach_learnings(proj, hits)
+        """Find a code symbol by concept OR name (hybrid dense+kw), fanning out to refs."""
+        return self.query.lookup(self.resolve_project(project, cwd), query, k, sparse_weight)
 
     def code_graph(self, symbol: str, direction: str = "callees", depth: int = 6,
                    project: str | None = None,
                    cwd: Path | None = None) -> dict[str, Any]:
-        """Build a call-graph TREE around `symbol` from the persisted symbol_index —
-        `callees` follows `calls`, `callers` follows `called_by`. Returns a nested
-        {fqname, kind, file, line, children[]} with DAG-repeats marked `repeat` and
-        unresolved edges `external`. Rendered pstree-style by the CLI. No LSP/LLM."""
-        proj = self.resolve_project(project, cwd)
-        self._require_code_index(proj)
-        rc = self._resident_code(proj)
-        entries = rc.entries
-        # per-project (name, file) maps — the tree can cross into ref'd projects
-        # via QUALIFIED edges ("name [proj:rel]") and keeps walking there
-        nf_maps: dict[str, dict[tuple[str, str], dict]] = {}
-
-        def _nf(p: str) -> dict[tuple[str, str], dict]:
-            if p not in nf_maps:
-                try:
-                    m: dict[tuple[str, str], dict] = {}
-                    for e in self._resident_code(p).entries:
-                        m.setdefault((e.get("name", ""), e.get("file", "")), e)
-                    nf_maps[p] = m
-                except Exception:  # noqa: BLE001 — unindexed ref → external leaf
-                    nf_maps[p] = {}
-            return nf_maps[p]
-
-        _nf(proj)
-        root = (rc.by_fq.get(symbol)
-                or next((e for e in entries if e.get("name") == symbol
-                         or e["fqname"].endswith("." + symbol)), None))
-        root_proj = proj
-        if not root:                          # local miss → the `.crib` refs
-            try:
-                root_proj, root = self._resolve_symbol_or_ref(proj, symbol, rc)
-            except ValueError:
-                return {}
-        edge = {"callees": "calls", "callers": "called_by",
-                "references": "references"}.get(direction, "calls")
-        seen: set[str] = set()
-
-        def build(e: dict, p: str, d: int) -> dict:
-            node = {"fqname": e["fqname"], "kind": e.get("kind", ""),
-                    "file": e.get("file", ""), "line": e.get("line"), "children": []}
-            if p != proj:
-                node["project"] = p
-            key = f"{p}:{e['fqname']}"
-            if key in seen:
-                node["repeat"] = True
-                return node
-            seen.add(key)
-            if d <= 0:
-                return node
-            for ref in e.get(edge) or []:
-                name, _, rest = ref.partition(" [")
-                fref = rest.rstrip("]")
-                if ":" in fref:               # qualified → hop into the ref project
-                    tp, _, trel = fref.partition(":")
-                else:
-                    tp, trel = p, fref
-                child = _nf(tp).get((name.strip(), trel))
-                if child:
-                    node["children"].append(build(child, tp, d - 1))
-                else:
-                    node["children"].append({"fqname": name.strip(), "kind": "?",
-                                             "file": fref, "external": True,
-                                             "children": []})
-            return node
-
-        tree = build(root, root_proj, depth)
-        # glyph carriers, per owning project (a cross-project node's learning
-        # lives with ITS project, and same-named local fqns must not false-mark)
-        marks: dict[str, set[str]] = {}
-        stack = [tree]
-        while stack:
-            n = stack.pop()
-            p = n.get("project") or proj
-            if p not in marks:
-                marks[p] = self._learning_fqns(p)
-            if n.get("fqname") in marks[p]:
-                n["has_learning"] = True
-            stack.extend(n.get("children") or [])
-        return tree
+        """pstree-style call graph around a symbol (recursive), crossing into refs."""
+        return self.query.graph(self.resolve_project(project, cwd), symbol, direction, depth)
 
     async def _generate_index(self, root_name: str, purpose: str, label: str,
                               prompt: str | None, relpath: str | None,
@@ -2055,19 +1456,12 @@ class Crib:
     def list_versions(self, relpath: str, project: str | None = None,
                       cwd: Path | None = None) -> list[dict[str, Any]]:
         proj = self.resolve_project(project, cwd)
-        note = notes.load(self.abspath(proj, relpath))
-        if not note.id:
-            return []
-        return [{"version": e.name, "seq": e.seq, "mtime": e.mtime}
-                for e in self.versions.list(note.id)]
+        return self.notestore.list_versions(proj, relpath)
 
     async def restore(self, relpath: str, version: str, project: str | None = None,
                       cwd: Path | None = None) -> dict[str, Any]:
         proj = self.resolve_project(project, cwd)
-        note = notes.load(self.abspath(proj, relpath))
-        if not note.id:
-            raise ValueError("note has no id; nothing to restore")
-        content = self.versions.read(note.id, version)
+        content = self.notestore.version_content(proj, relpath, version)
         return await self.edit_note(relpath, content, project=proj)
 
     def snapshot(self, message: str | None = None) -> str:
@@ -2081,6 +1475,26 @@ class Crib:
         if not pd.is_dir():
             return []
         return sorted(p.name for p in pd.iterdir() if p.is_dir())
+
+    def use_project(self, project: str) -> dict[str, Any]:
+        """Set the session's current project (mirrors the project_use MCP tool for
+        the in-process CLI; session state is process-local here)."""
+        from .session import session_state
+        created = self.project_is_new(project)
+        self.notes_dir(project)                     # eager mkdir — no phantom namespace
+        session_state().current_project = project
+        return {"current_project": project, "created": created}
+
+    def current_project(self, cwd: Path | None = None) -> dict[str, Any]:
+        """Show the session's current project + how it resolved (mirrors the
+        project_current MCP tool), seeding from cwd/.crib if unset."""
+        from .session import resolve_session_project, session_state
+        res = resolve_session_project(
+            session_state(), None, cwd,
+            lambda c: self.resolve_project(None, c),
+            default=self.config.default_project)
+        return {"current_project": res.project, "resolved_via": res.via,
+                "projects": self.projects()}
 
     def project_config(self, project: str) -> ProjectConfig:
         return ProjectConfig.load(

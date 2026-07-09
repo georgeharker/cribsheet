@@ -1,0 +1,27 @@
+fqname = "crib.codeindex._unesc"
+name = "_unesc"
+kind = "function"
+lang = "python"
+module = "crib.codeindex"
+parent = ""
+content_hash = "ab1175a4acc2e583"
+file = "crib/codeindex.py"
+signature = "def _unesc(s: str) -> str:"
+description = ""
+line = 1246
+mtime = 1783544236000000000
+container = []
+calls = []
+called_by = [
+  "_unquote [crib/codeindex.py]",
+]
+references = [
+  "_unquote [crib/codeindex.py]",
+]
+name_terms = [
+  "_unesc",
+  "codeindex",
+  "crib",
+  "crib.codeindex._unesc",
+  "unesc",
+]

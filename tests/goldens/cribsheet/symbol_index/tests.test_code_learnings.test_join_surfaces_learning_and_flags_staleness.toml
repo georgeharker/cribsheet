@@ -1,0 +1,33 @@
+fqname = "tests.test_code_learnings.test_join_surfaces_learning_and_flags_staleness"
+name = "test_join_surfaces_learning_and_flags_staleness"
+kind = "function"
+lang = "python"
+module = "tests.test_code_learnings"
+parent = ""
+content_hash = "ee4935df52f84de9"
+file = "tests/test_code_learnings.py"
+signature = "def test_join_surfaces_learning_and_flags_staleness(crib):"
+description = ""
+line = 67
+mtime = 1783494048000000000
+container = []
+calls = [
+  "_seed_symbol [tests/test_code_learnings.py]",
+  "run [tests/test_code_learnings.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "code",
+  "flags",
+  "join",
+  "learning",
+  "learnings",
+  "staleness",
+  "surfaces",
+  "test",
+  "test_join_surfaces_learning_and_flags_staleness",
+  "tests",
+  "tests.test_code_learnings.test_join_surfaces_learning_and_flags_staleness",
+]

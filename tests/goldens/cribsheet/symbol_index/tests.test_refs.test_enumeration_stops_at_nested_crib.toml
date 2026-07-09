@@ -1,0 +1,28 @@
+fqname = "tests.test_refs.test_enumeration_stops_at_nested_crib"
+name = "test_enumeration_stops_at_nested_crib"
+kind = "function"
+lang = "python"
+module = "tests.test_refs"
+parent = ""
+content_hash = "259ac5559286a611"
+file = "tests/test_refs.py"
+signature = "def test_enumeration_stops_at_nested_crib(crib, tmp_path):"
+description = ""
+line = 134
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "at",
+  "crib",
+  "enumeration",
+  "nested",
+  "refs",
+  "stops",
+  "test",
+  "test_enumeration_stops_at_nested_crib",
+  "tests",
+  "tests.test_refs.test_enumeration_stops_at_nested_crib",
+]

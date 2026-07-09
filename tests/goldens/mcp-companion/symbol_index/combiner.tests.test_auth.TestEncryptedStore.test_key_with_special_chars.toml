@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_auth.TestEncryptedStore.test_key_with_special_chars"
+name = "test_key_with_special_chars"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestEncryptedStore"
+content_hash = "16950c09a9da921c"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 62
+mtime = 1782852601000000000
+container = [
+  "TestEncryptedStore",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "chars",
+  "combiner",
+  "combiner.tests.test_auth.TestEncryptedStore.test_key_with_special_chars",
+  "encrypted",
+  "key",
+  "special",
+  "store",
+  "test",
+  "test_key_with_special_chars",
+  "tests",
+  "with",
+]

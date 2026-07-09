@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_connections.TestBuildServerStatus.test_stdio_server_tristate"
+name = "test_stdio_server_tristate"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_connections"
+parent = "combiner.tests.test_connections.TestBuildServerStatus"
+content_hash = "8bf2e85f0e157550"
+file = "combiner/tests/test_connections.py"
+signature = "def test_stdio_server_tristate(self):"
+description = ""
+line = 385
+mtime = 1783473323000000000
+container = [
+  "TestBuildServerStatus",
+]
+calls = [
+  "_config [combiner/tests/test_connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "combiner",
+  "combiner.tests.test_connections.TestBuildServerStatus.test_stdio_server_tristate",
+  "connections",
+  "server",
+  "status",
+  "stdio",
+  "test",
+  "test_stdio_server_tristate",
+  "tests",
+  "tristate",
+]

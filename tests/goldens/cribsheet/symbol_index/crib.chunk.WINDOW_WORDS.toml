@@ -1,0 +1,28 @@
+fqname = "crib.chunk.WINDOW_WORDS"
+name = "WINDOW_WORDS"
+kind = "constant"
+lang = "python"
+module = "crib.chunk"
+parent = ""
+content_hash = "2293917dfee1b602"
+file = "crib/chunk.py"
+signature = "WINDOW_WORDS = 320"
+description = ""
+line = 20
+mtime = 1782930371000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/indexer.py]",
+  "_window [crib/chunk.py]",
+  "chunk_note [crib/chunk.py]",
+]
+name_terms = [
+  "WINDOW_WORDS",
+  "chunk",
+  "crib",
+  "crib.chunk.WINDOW_WORDS",
+  "window",
+  "words",
+]

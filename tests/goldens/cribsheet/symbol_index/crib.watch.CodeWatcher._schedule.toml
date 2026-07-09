@@ -1,0 +1,31 @@
+fqname = "crib.watch.CodeWatcher._schedule"
+name = "_schedule"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch.CodeWatcher"
+content_hash = "e0920aec3ce8cac7"
+file = "crib/watch.py"
+signature = "def _schedule(self, key: tuple[Any, ...]) -> None:"
+description = ""
+line = 259
+mtime = 1783476730000000000
+container = [
+  "CodeWatcher",
+]
+calls = []
+called_by = [
+  "scenario [tests/test_code_cache.py]",
+]
+references = [
+  "scenario [tests/test_code_cache.py]",
+]
+name_terms = [
+  "_schedule",
+  "code",
+  "crib",
+  "crib.watch.CodeWatcher._schedule",
+  "schedule",
+  "watch",
+  "watcher",
+]

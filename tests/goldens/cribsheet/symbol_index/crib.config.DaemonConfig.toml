@@ -1,0 +1,27 @@
+fqname = "crib.config.DaemonConfig"
+name = "DaemonConfig"
+kind = "class"
+lang = "python"
+module = "crib.config"
+parent = ""
+content_hash = "a734ffc1a90471a7"
+file = "crib/config.py"
+signature = "@dataclass"
+description = ""
+line = 168
+mtime = 1783455339000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/client.py]",
+  "daemon [crib/config.py]",
+  "load [crib/config.py]",
+]
+name_terms = [
+  "DaemonConfig",
+  "config",
+  "crib",
+  "crib.config.DaemonConfig",
+  "daemon",
+]

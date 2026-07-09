@@ -1,0 +1,31 @@
+fqname = "crib.watch._FSWatcher.stop"
+name = "stop"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch._FSWatcher"
+content_hash = "0fa17557b9f2d043"
+file = "crib/watch.py"
+signature = "def stop(self) -> None:"
+description = ""
+line = 123
+mtime = 1783476730000000000
+container = [
+  "_FSWatcher",
+]
+calls = []
+called_by = [
+  "stop [crib/watch.py]",
+  "stop_watchers [crib/app.py]",
+]
+references = [
+  "stop_watchers [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.watch._FSWatcher.stop",
+  "fs",
+  "stop",
+  "watch",
+  "watcher",
+]

@@ -1,0 +1,23 @@
+fqname = "tests.test_watcher.watchdog"
+name = "watchdog"
+kind = "global"
+lang = "python"
+module = "tests.test_watcher"
+parent = ""
+content_hash = "90ec3e2d2503486a"
+file = "tests/test_watcher.py"
+signature = "watchdog = pytest.importorskip(\"watchdog\")"
+description = ""
+line = 15
+mtime = 1783476730000000000
+container = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "test",
+  "tests",
+  "tests.test_watcher.watchdog",
+  "watchdog",
+  "watcher",
+]

@@ -1,0 +1,31 @@
+fqname = "tests.test_curation.test_relpath_is_predictable_then_collision_suffixed"
+name = "test_relpath_is_predictable_then_collision_suffixed"
+kind = "function"
+lang = "python"
+module = "tests.test_curation"
+parent = ""
+content_hash = "c5e7b4878832ac2e"
+file = "tests/test_curation.py"
+signature = "def test_relpath_is_predictable_then_collision_suffixed(crib):"
+description = ""
+line = 27
+mtime = 1782717497000000000
+container = []
+calls = [
+  "run [tests/test_curation.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "collision",
+  "curation",
+  "is",
+  "predictable",
+  "relpath",
+  "suffixed",
+  "test",
+  "test_relpath_is_predictable_then_collision_suffixed",
+  "tests",
+  "tests.test_curation.test_relpath_is_predictable_then_collision_suffixed",
+  "then",
+]

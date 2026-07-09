@@ -1,0 +1,29 @@
+fqname = "tests.test_project.with_tempdir"
+name = "with_tempdir"
+kind = "function"
+lang = "lua"
+module = "tests.test_project"
+parent = ""
+content_hash = "492b551d123a3fdc"
+file = "tests/test_project.lua"
+signature = "local function with_tempdir(fn)"
+description = ""
+line = 58
+mtime = 1782853510000000000
+container = []
+calls = []
+called_by = [
+  "test_project.lua [tests/test_project.lua]",
+]
+references = [
+  "fn [tests/test_project.lua]",
+]
+name_terms = [
+  "project",
+  "tempdir",
+  "test",
+  "tests",
+  "tests.test_project.with_tempdir",
+  "with",
+  "with_tempdir",
+]

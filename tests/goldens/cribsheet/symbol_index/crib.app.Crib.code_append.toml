@@ -1,0 +1,33 @@
+fqname = "crib.app.Crib.code_append"
+name = "code_append"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "32180fbde6d9484f"
+file = "crib/app.py"
+signature = "async def code_append(self, symbol: str, text: str, project: str | None = None,"
+description = ""
+line = 1042
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "append [crib/learnings.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "code_append [crib/server.py]",
+]
+references = [
+  "code_append [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "append",
+  "code",
+  "code_append",
+  "crib",
+  "crib.app.Crib.code_append",
+]

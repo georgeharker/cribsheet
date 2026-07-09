@@ -1,0 +1,32 @@
+fqname = "combiner.tests.test_config.TestEnvCoercion.test_string_value_passes_through"
+name = "test_string_value_passes_through"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_config"
+parent = "combiner.tests.test_config.TestEnvCoercion"
+content_hash = "273b486e01bc143d"
+file = "combiner/tests/test_config.py"
+signature = "def test_string_value_passes_through(self) -> None:"
+description = ""
+line = 179
+mtime = 1782852601000000000
+container = [
+  "TestEnvCoercion",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "coercion",
+  "combiner",
+  "combiner.tests.test_config.TestEnvCoercion.test_string_value_passes_through",
+  "config",
+  "env",
+  "passes",
+  "string",
+  "test",
+  "test_string_value_passes_through",
+  "tests",
+  "through",
+  "value",
+]

@@ -1,0 +1,32 @@
+fqname = "combiner.mcp_combiner.fastvalidate.install._get_cached_tool_definition"
+name = "_get_cached_tool_definition"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.fastvalidate"
+parent = "combiner.mcp_combiner.fastvalidate.install"
+content_hash = "4361ac4b22c3d802"
+file = "combiner/mcp_combiner/fastvalidate.py"
+signature = "async def _get_cached_tool_definition(self: Any, tool_name: str) -> Any:"
+description = ""
+line = 155
+mtime = 1782420032000000000
+container = [
+  "install",
+]
+calls = []
+called_by = []
+references = [
+  "install [combiner/mcp_combiner/fastvalidate.py]",
+]
+name_terms = [
+  "_get_cached_tool_definition",
+  "cached",
+  "combiner",
+  "combiner.mcp_combiner.fastvalidate.install._get_cached_tool_definition",
+  "definition",
+  "fastvalidate",
+  "get",
+  "install",
+  "mcp",
+  "tool",
+]

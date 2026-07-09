@@ -1,0 +1,26 @@
+fqname = "crib.retrieve.QwenReranker.scores"
+name = "scores"
+kind = "method"
+lang = "python"
+module = "crib.retrieve"
+parent = "crib.retrieve.QwenReranker"
+content_hash = "b71e6aed614864b9"
+file = "crib/retrieve.py"
+signature = "def scores(self, query: str, documents: list[str]) -> list[float]:"
+description = ""
+line = 206
+mtime = 1782930371000000000
+container = [
+  "QwenReranker",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.retrieve.QwenReranker.scores",
+  "qwen",
+  "reranker",
+  "retrieve",
+  "scores",
+]

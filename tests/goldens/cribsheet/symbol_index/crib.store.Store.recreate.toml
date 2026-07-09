@@ -1,0 +1,28 @@
+fqname = "crib.store.Store.recreate"
+name = "recreate"
+kind = "method"
+lang = "python"
+module = "crib.store"
+parent = "crib.store.Store"
+content_hash = "ed817d58a63f4a4f"
+file = "crib/store.py"
+signature = "def recreate(self) -> None:"
+description = ""
+line = 54
+mtime = 1783446057000000000
+container = [
+  "Store",
+]
+calls = []
+called_by = [
+  "reindex [crib/notestore.py]",
+]
+references = [
+  "reindex [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Store.recreate",
+  "recreate",
+  "store",
+]

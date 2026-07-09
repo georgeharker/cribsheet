@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_auth.TestIsNetworkError.test_http_status_error_401_not_network"
+name = "test_http_status_error_401_not_network"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestIsNetworkError"
+content_hash = "830f3c0b95defa81"
+file = "combiner/tests/test_auth.py"
+signature = "def test_http_status_error_401_not_network(self) -> None:"
+description = ""
+line = 239
+mtime = 1782852601000000000
+container = [
+  "TestIsNetworkError",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestIsNetworkError.test_http_status_error_401_not_network",
+  "error",
+  "http",
+  "is",
+  "network",
+  "not",
+  "status",
+  "test",
+  "test_http_status_error_401_not_network",
+  "tests",
+]

@@ -1,0 +1,34 @@
+fqname = "combiner.tests.test_session_filter.TestPendingTokenFilters.setup_method"
+name = "setup_method"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_session_filter"
+parent = "combiner.tests.test_session_filter.TestPendingTokenFilters"
+content_hash = "f79558d3c8ba1854"
+file = "combiner/tests/test_session_filter.py"
+signature = "def setup_method(self):"
+description = ""
+line = 914
+mtime = 1783452495000000000
+container = [
+  "TestPendingTokenFilters",
+]
+calls = [
+  "_reset_session_state [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestPendingTokenFilters.setup_method",
+  "filter",
+  "filters",
+  "method",
+  "pending",
+  "session",
+  "setup",
+  "setup_method",
+  "test",
+  "tests",
+  "token",
+]

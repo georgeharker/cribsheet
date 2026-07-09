@@ -1,0 +1,52 @@
+fqname = "crib.codeindex.SymbolIndex.all"
+name = "all"
+kind = "method"
+lang = "python"
+module = "crib.codeindex"
+parent = "crib.codeindex.SymbolIndex"
+content_hash = "7da44f9dcd075e8d"
+file = "crib/codeindex.py"
+signature = "def all(self) -> list[dict]:"
+description = ""
+line = 1345
+mtime = 1783544236000000000
+container = [
+  "SymbolIndex",
+]
+calls = [
+  "_parse [crib/codeindex.py]",
+]
+called_by = [
+  "_index_code_file [crib/codeindexer.py]",
+  "_index_project_code [crib/codeindexer.py]",
+  "_reindex_dirty_code [crib/app.py]",
+  "code_indexed_projects [crib/app.py]",
+  "drop_file [crib/codestore.py]",
+  "main [scripts/eval_code.py]",
+  "project_status [crib/app.py]",
+  "rehome [crib/learnings.py]",
+  "reload [crib/codestore.py]",
+  "report [crib/learnings.py]",
+  "test_partial_extract_reconfirms_before_trusting_shrink [tests/test_code_cache.py]",
+]
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+  "_index_project_code [crib/codeindexer.py]",
+  "_reindex_dirty_code [crib/app.py]",
+  "code_indexed_projects [crib/app.py]",
+  "drop_file [crib/codestore.py]",
+  "main [scripts/eval_code.py]",
+  "project_status [crib/app.py]",
+  "rehome [crib/learnings.py]",
+  "reload [crib/codestore.py]",
+  "report [crib/learnings.py]",
+  "test_partial_extract_reconfirms_before_trusting_shrink [tests/test_code_cache.py]",
+]
+name_terms = [
+  "all",
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex.all",
+  "index",
+  "symbol",
+]

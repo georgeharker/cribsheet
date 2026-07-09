@@ -1,0 +1,29 @@
+fqname = "combiner.mcp_combiner.nvim_channel.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+module = "combiner.mcp_combiner.nvim_channel"
+parent = ""
+content_hash = "c5b2d60bbb3e3df6"
+file = "combiner/mcp_combiner/nvim_channel.py"
+signature = "logger = logging.getLogger(\"mcp-combiner.nvim\")"
+description = ""
+line = 32
+mtime = 1782852601000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "_run [combiner/mcp_combiner/nvim_channel.py]",
+  "deregister [combiner/mcp_combiner/nvim_channel.py]",
+  "ensure_manifest [combiner/mcp_combiner/nvim_channel.py]",
+  "register [combiner/mcp_combiner/nvim_channel.py]",
+]
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.logger",
+  "logger",
+  "mcp",
+  "nvim",
+]

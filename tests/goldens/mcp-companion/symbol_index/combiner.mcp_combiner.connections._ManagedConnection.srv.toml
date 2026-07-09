@@ -1,0 +1,34 @@
+fqname = "combiner.mcp_combiner.connections._ManagedConnection.srv"
+name = "srv"
+kind = "field"
+lang = "python"
+module = "combiner.mcp_combiner.connections"
+parent = "combiner.mcp_combiner.connections._ManagedConnection"
+content_hash = "c88b382615ba7418"
+file = "combiner/mcp_combiner/connections.py"
+signature = "srv: ServerConfig"
+description = ""
+line = 99
+mtime = 1783473323000000000
+container = [
+  "_ManagedConnection",
+]
+calls = []
+called_by = []
+references = [
+  "_open [combiner/mcp_combiner/connections.py]",
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+  "connect [combiner/mcp_combiner/connections.py]",
+  "connect_all [combiner/mcp_combiner/connections.py]",
+  "get_auth [combiner/mcp_combiner/connections.py]",
+  "register [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection.srv",
+  "connection",
+  "connections",
+  "managed",
+  "mcp",
+  "srv",
+]

@@ -1,0 +1,33 @@
+fqname = "combiner.tests.test_reload_config._FakeConnManager.reset_auth_failure"
+name = "reset_auth_failure"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_reload_config"
+parent = "combiner.tests.test_reload_config._FakeConnManager"
+content_hash = "d11b2272e25f3864"
+file = "combiner/tests/test_reload_config.py"
+signature = "def reset_auth_failure(self, name: str) -> None:"
+description = ""
+line = 69
+mtime = 1783452495000000000
+container = [
+  "_FakeConnManager",
+]
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_reload_config._FakeConnManager.reset_auth_failure",
+  "config",
+  "conn",
+  "failure",
+  "fake",
+  "manager",
+  "reload",
+  "reset",
+  "reset_auth_failure",
+  "test",
+  "tests",
+]

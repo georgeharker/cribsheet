@@ -1,0 +1,36 @@
+fqname = "tests.test_retrieve.test_subtokens_let_spaced_query_match_a_solid_identifier"
+name = "test_subtokens_let_spaced_query_match_a_solid_identifier"
+kind = "function"
+lang = "python"
+module = "tests.test_retrieve"
+parent = ""
+content_hash = "4aff703e2a763cdb"
+file = "tests/test_retrieve.py"
+signature = "def test_subtokens_let_spaced_query_match_a_solid_identifier():"
+description = ""
+line = 38
+mtime = 1782843962000000000
+container = []
+calls = [
+  "BM25 [crib/retrieve.py]",
+  "_lexical_tokens [crib/retrieve.py]",
+  "scores [crib/retrieve.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "identifier",
+  "let",
+  "match",
+  "query",
+  "retrieve",
+  "solid",
+  "spaced",
+  "subtokens",
+  "test",
+  "test_subtokens_let_spaced_query_match_a_solid_identifier",
+  "tests",
+  "tests.test_retrieve.test_subtokens_let_spaced_query_match_a_solid_identifier",
+]

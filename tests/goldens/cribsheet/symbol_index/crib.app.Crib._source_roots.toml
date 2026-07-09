@@ -1,0 +1,36 @@
+fqname = "crib.app.Crib._source_roots"
+name = "_source_roots"
+kind = "method"
+lang = "python"
+module = "crib.app"
+parent = "crib.app.Crib"
+content_hash = "35e41c5cacfa5b63"
+file = "crib/app.py"
+signature = "def _source_roots(self, project: str) -> \"SourceRoots\":"
+description = ""
+line = 292
+mtime = 1783530649000000000
+container = [
+  "Crib",
+]
+calls = [
+  "source_roots [crib/notestore.py]",
+]
+called_by = [
+  "index_docs_insitu [crib/app.py]",
+  "project_forget [crib/app.py]",
+  "project_status [crib/app.py]",
+]
+references = [
+  "index_docs_insitu [crib/app.py]",
+  "project_forget [crib/app.py]",
+  "project_status [crib/app.py]",
+]
+name_terms = [
+  "_source_roots",
+  "app",
+  "crib",
+  "crib.app.Crib._source_roots",
+  "roots",
+  "source",
+]

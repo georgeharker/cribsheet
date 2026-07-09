@@ -1,0 +1,27 @@
+fqname = "combiner.test_simple_server.combiner"
+name = "combiner"
+kind = "global"
+lang = "python"
+module = "combiner.test_simple_server"
+parent = ""
+content_hash = "831c6b5766a37718"
+file = "combiner/test_simple_server.py"
+signature = "combiner = FastMCP(\"test-combiner\")"
+description = ""
+line = 13
+mtime = 1782420032000000000
+container = []
+calls = []
+called_by = []
+references = [
+  "add [combiner/test_simple_server.py]",
+  "echo [combiner/test_simple_server.py]",
+  "health [combiner/test_simple_server.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.test_simple_server.combiner",
+  "server",
+  "simple",
+  "test",
+]

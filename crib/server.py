@@ -149,14 +149,14 @@ def build_server(crib: Crib | None = None):
             "store of record. "
             "CONSULT IT any time you need information about this project or a "
             "topic — a past decision, convention, gotcha, API detail, or prior "
-            "investigation may already be stored. Call `lookup` to find it, or "
-            "`apropos` to read the full matching sections. Do this before "
+            "investigation may already be stored. Call `note_lookup` to find it, or "
+            "`note_apropos` to read the full matching sections. Do this before "
             "answering from memory alone; the stored answer may be more current. "
             "PERSIST what's worth keeping — whenever the user shares, or you "
             "establish, something durable (a decision, preference, convention, "
             "gotcha, or hard-won fact), also save it here so it outlives this "
-            "session and reaches other agents: `store` a new note, or "
-            "`append`/`edit` one found via `lookup`. Prefer updating an existing "
+            "session and reaches other agents: `note_store` a new note, or "
+            "`note_append`/`note_edit` one found via `note_lookup`. Prefer updating an existing "
             "note over creating near-duplicates. "
             "CODE: a project may carry a *code symbol index* — its functions, classes, "
             "globals and class members, each with an LLM 'what it does' description, a "
@@ -173,13 +173,13 @@ def build_server(crib: Crib | None = None):
             "call — then look up. Do NOT read files or grep instead; indexing first is "
             "how you explore effectively (there's no shortcut — the utility comes from "
             "the index). PROJECT MODEL: code tools act on ONE current project. Set it once "
-            "for the codebase you're working in — `use_project <name>`, or it's inferred "
+            "for the codebase you're working in — `project_use <name>`, or it's inferred "
             "from `project_path` on your first code call — then reads need no project args. "
             "To look up a DIFFERENT project (e.g. a related codebase you're referencing), "
             "you MUST name it: `project=<name>` or `project_path=<a path inside that repo>`. "
             "`project_path` is NOT your shell cwd — it just identifies which repo you mean. "
             "When you finally UNDERSTAND a symbol — a "
-            "subtlety, a gotcha, a 'now I get it' — `code_append <symbol> \"…\"` pins a "
+            "subtlety, a gotcha, a 'now I get it' — `learning_add <symbol> \"…\"` pins a "
             "durable learning to it (survives re-indexing, works even on code you can't "
             "edit); it surfaces back via `code_lookup`/`code_xref`/`code_dossier`. "
             "CROSS-MACHINE: some notes are mirrored from another machine's Claude "
@@ -203,7 +203,7 @@ def build_server(crib: Crib | None = None):
         return fn
 
     @mcp.tool()
-    def lookup(query: str, project: str | None = None, k: int = 8,
+    def note_lookup(query: str, project: str | None = None, k: int = 8,
                tags: list[str] | None = None,
                keyword_labels: list[str] | None = None,
                keyword_weight: float | None = None,
@@ -214,7 +214,7 @@ def build_server(crib: Crib | None = None):
         about this project — a prior decision, convention, or investigation
         may already be stored. Returns ranked note sections, each with its
         relpath and the line_start/line_end span of the matching section so
-        you can jump straight to it (pair with `locate` for the abspath).
+        you can jump straight to it (pair with `note_locate` for the abspath).
         `keyword_labels`/`keyword_weight` (BM25 keyword_index) and
         `summary_labels` (dense summary_index aliases) override which LLM index
         sets feed retrieval (default from config); mainly for eval sweeps."""
@@ -226,23 +226,23 @@ def build_server(crib: Crib | None = None):
                             summary_weight=summary_weight)]
 
     @mcp.tool()
-    def apropos(query: str, project: str | None = None, k: int = 8,
+    def note_apropos(query: str, project: str | None = None, k: int = 8,
                 tags: list[str] | None = None,
                 project_path: str | None = None) -> list[dict[str, Any]]:
-        """Like `lookup`, but each hit carries the full matching section's
+        """Like `note_lookup`, but each hit carries the full matching section's
         markdown (`section`) instead of a short snippet — for reading the
         matched sections in full, not just locating them."""
         return crib.apropos(query, _project(crib, project, project_path), k, tags)
 
     @mcp.tool()
-    def read(relpath: str, project: str | None = None,
+    def note_read(relpath: str, project: str | None = None,
              project_path: str | None = None) -> str:
         """Read a note's full raw markdown (frontmatter + body) — e.g. to see a
-        `lookup` hit in full context, or before rewriting the note with `edit`."""
+        `note_lookup` hit in full context, or before rewriting the note with `note_edit`."""
         return crib.read_note(relpath, _project(crib, project, project_path))
 
     @mcp.tool()
-    def locate(relpath: str, project: str | None = None,
+    def note_locate(relpath: str, project: str | None = None,
                project_path: str | None = None) -> str:
         """Get the real on-disk path of a note so you can edit it with your own
         file tools. After editing, call `reindex(relpath)` to make it searchable
@@ -250,7 +250,7 @@ def build_server(crib: Crib | None = None):
         return crib.locate(relpath, _project(crib, project, project_path))
 
     @write_tool
-    async def store(content: str, title: str | None = None,
+    async def note_store(content: str, title: str | None = None,
                     project: str | None = None,
                     tags: list[str] | None = None,
                     project_path: str | None = None,
@@ -258,7 +258,7 @@ def build_server(crib: Crib | None = None):
         """Persist a durable fact to memory — a decision, preference,
         convention, gotcha, or hard-won detail worth recalling in a future
         session. Assigns an id, writes markdown, indexes it. If a related
-        note already exists (check with `lookup`), prefer `append`/`edit`
+        note already exists (check with `note_lookup`), prefer `note_append`/`note_edit`
         over creating a near-duplicate.
 
         PICK THE RIGHT PROJECT — REQUIRED. A fact belongs to the project it is ABOUT,
@@ -279,17 +279,17 @@ def build_server(crib: Crib | None = None):
         return res
 
     @write_tool
-    async def append(relpath: str, content: str, heading: str | None = None,
+    async def note_append(relpath: str, content: str, heading: str | None = None,
                      project: str | None = None,
                      project_path: str | None = None) -> dict[str, Any]:
-        """Add to an existing note (found via `lookup`) — the right call when new
+        """Add to an existing note (found via `note_lookup`) — the right call when new
         information extends or continues something already remembered, rather than
-        `store`-ing a near-duplicate. Optionally files it under a new heading."""
+        `note_store`-ing a near-duplicate. Optionally files it under a new heading."""
         return await crib.append_note(relpath, content, heading,
                                       _write_project(crib, project, project_path))
 
     @write_tool
-    async def edit(relpath: str, new_content: str,
+    async def note_edit(relpath: str, new_content: str,
                    project: str | None = None,
                    project_path: str | None = None) -> dict[str, Any]:
         """Rewrite a note's full content — use when remembered information has
@@ -299,7 +299,7 @@ def build_server(crib: Crib | None = None):
                                     _write_project(crib, project, project_path))
 
     @write_tool
-    async def forget(relpath: str, project: str | None = None,
+    async def note_forget(relpath: str, project: str | None = None,
                      project_path: str | None = None) -> dict[str, Any]:
         """Delete a note when its information is obsolete or wrong. Removed from
         disk and the index, but stashed to the version ring first, so it stays
@@ -307,7 +307,7 @@ def build_server(crib: Crib | None = None):
         return await crib.forget(relpath, _write_project(crib, project, project_path))
 
     @mcp.tool()
-    async def reindex(relpath: str | None = None,
+    async def note_reindex(relpath: str | None = None,
                       project: str | None = None,
                       project_path: str | None = None) -> dict[str, Any]:
         """Reindex a note (or the whole project). Call after editing a note via
@@ -315,27 +315,27 @@ def build_server(crib: Crib | None = None):
         return await crib.reindex(relpath, _project(crib, project, project_path))
 
     @mcp.tool()
-    def versions(relpath: str, project: str | None = None,
+    def note_versions(relpath: str, project: str | None = None,
                  project_path: str | None = None) -> list[dict[str, Any]]:
         """List recoverable prior versions of a note."""
         return crib.list_versions(relpath, _project(crib, project, project_path))
 
     @mcp.tool()
-    async def restore(relpath: str, version: str,
+    async def note_restore(relpath: str, version: str,
                       project: str | None = None,
                       project_path: str | None = None) -> dict[str, Any]:
         """Restore a prior version of a note (itself undoable)."""
         return await crib.restore(relpath, version, _project(crib, project, project_path))
 
     @mcp.tool()
-    async def reconcile() -> dict[str, Any]:
+    async def project_reconcile() -> dict[str, Any]:
         """Sweep every project for changes made while crib was down and bring the
         index back in line. Safe to call anytime — the hash gate no-ops anything
         already current."""
         return await crib.reconcile_all()
 
     @mcp.tool()
-    async def distill(relpath: str, project: str | None = None,
+    async def note_distill(relpath: str, project: str | None = None,
                       project_path: str | None = None) -> dict[str, Any]:
         """LLM-revise a note in place: compress, dedupe, normalize — keeping
         facts/decisions, dropping deliberation, preserving code verbatim.
@@ -343,7 +343,7 @@ def build_server(crib: Crib | None = None):
         return await crib.distill(relpath, _project(crib, project, project_path))
 
     @mcp.tool()
-    async def elaborate(label: str, relpath: str | None = None,
+    async def note_elaborate(label: str, relpath: str | None = None,
                         project: str | None = None, overwrite: bool = False,
                         project_path: str | None = None) -> dict[str, Any]:
         """keyword_index: generate BM25 search terms per section (or whole
@@ -354,7 +354,7 @@ def build_server(crib: Crib | None = None):
                                     overwrite=overwrite)
 
     @mcp.tool()
-    async def summarize(label: str, relpath: str | None = None,
+    async def note_summarize(label: str, relpath: str | None = None,
                         project: str | None = None, overwrite: bool = False,
                         project_path: str | None = None) -> dict[str, Any]:
         """summary_index: generate LLM rephrasings per section (or whole project),
@@ -468,7 +468,7 @@ def build_server(crib: Crib | None = None):
         return _echo_dict(crib.code_graph(symbol, direction, depth, res.project), res)
 
     @mcp.tool()
-    async def code_append(symbol: str, text: str, project: str | None = None,
+    async def learning_add(symbol: str, text: str, project: str | None = None,
                           project_path: str | None = None) -> dict[str, Any]:
         """Pin a durable human learning to a code symbol — the 'now I get it',
         the subtlety, the gotcha you don't want to re-derive next session. Stored
@@ -482,7 +482,7 @@ def build_server(crib: Crib | None = None):
         return await crib.code_append(symbol, text, _project(crib, project, project_path))
 
     @mcp.tool()
-    async def code_edit(symbol: str, new_content: str, project: str | None = None,
+    async def learning_edit(symbol: str, new_content: str, project: str | None = None,
                         project_path: str | None = None) -> dict[str, Any]:
         """Rewrite a symbol's learning body wholesale (frontmatter preserved) —
         the standard edit, scoped to a symbol. Errors if none exists; code_append
@@ -490,21 +490,21 @@ def build_server(crib: Crib | None = None):
         return await crib.code_edit(symbol, new_content, _project(crib, project, project_path))
 
     @mcp.tool()
-    async def code_forget(symbol: str, project: str | None = None,
+    async def learning_forget(symbol: str, project: str | None = None,
                           project_path: str | None = None) -> dict[str, Any]:
         """Remove a symbol's learning (stashed to the version ring first, so it's
         recoverable) — the standard forget, scoped to a symbol."""
         return await crib.code_forget(symbol, _project(crib, project, project_path))
 
     @mcp.tool()
-    def code_read(symbol: str, project: str | None = None,
+    def learning_read(symbol: str, project: str | None = None,
                   project_path: str | None = None) -> dict[str, Any]:
         """Read a symbol's attached learning note (frontmatter + body), or found=
         False if none is written yet. `symbol` is a bare name or dotted fqname."""
         return crib.code_read(symbol, _project(crib, project, project_path))
 
     @mcp.tool()
-    async def code_reaffirm(symbol: str, project: str | None = None,
+    async def learning_reaffirm(symbol: str, project: str | None = None,
                             project_path: str | None = None) -> dict[str, Any]:
         """Clear a learning's ⚠ stale flag WITHOUT rewriting it — you re-checked the
         note against the current code and it still holds. Re-snapshots the symbol's
@@ -513,7 +513,7 @@ def build_server(crib: Crib | None = None):
         return await crib.code_reaffirm(symbol, _project(crib, project, project_path))
 
     @mcp.tool()
-    def code_learnings(project: str | None = None, orphans_only: bool = False,
+    def learning_report(project: str | None = None, orphans_only: bool = False,
                        project_path: str | None = None) -> list[dict[str, Any]]:
         """Health report for attached learnings: each is `ok` | `moved` (fqn resolves
         but the symbol's file drifted) | `orphan` (fqn no longer resolves — a rename/
@@ -522,7 +522,7 @@ def build_server(crib: Crib | None = None):
         return crib.code_learnings(_project(crib, project, project_path), orphans_only=orphans_only)
 
     @mcp.tool()
-    async def code_rehome(old_fqn: str, new_fqn: str | None = None,
+    async def learning_rehome(old_fqn: str, new_fqn: str | None = None,
                           project: str | None = None,
                           project_path: str | None = None) -> dict[str, Any]:
         """Re-point an orphaned learning at the symbol it became. Call with just
@@ -533,17 +533,17 @@ def build_server(crib: Crib | None = None):
         return await crib.code_rehome(old_fqn, new_fqn, _project(crib, project, project_path))
 
     @mcp.tool()
-    def snapshot(message: str | None = None) -> str:
+    def note_snapshot(message: str | None = None) -> str:
         """Create a git checkpoint of the data tree (if git is set up)."""
         return crib.snapshot(message)
 
     @mcp.tool()
-    def history(relpath: str | None = None) -> list[str]:
+    def note_history(relpath: str | None = None) -> list[str]:
         """Show git commit history for a note or the whole tree."""
         return crib.history(relpath)
 
-    @mcp.tool(name="import")
-    async def import_files(paths: list[str], project: str | None = None,
+    @mcp.tool(name="note_import")
+    async def note_import(paths: list[str], project: str | None = None,
                            project_path: str | None = None) -> dict[str, Any]:
         """Copy the NAMED files into memory as crib-owned notes (snapshot you own:
         git-synced, editable, versioned). Distinct from a repo's `.crib` docs, which
@@ -553,8 +553,8 @@ def build_server(crib: Crib | None = None):
         return _switch_if_created(
             await crib.import_files(paths, project, cwd=_cwd(project_path)))
 
-    @mcp.tool(name="import_memory")
-    async def import_memory(project: str | None = None,
+    @mcp.tool(name="note_import_memory")
+    async def note_import_memory(project: str | None = None,
                             project_path: str | None = None) -> dict[str, Any]:
         """Mirror Claude Code's own harness memory (the `memory/*.md` files it
         writes for this project) into a crib project, so those notes become
@@ -565,7 +565,7 @@ def build_server(crib: Crib | None = None):
             await crib.import_claude_memory(project, cwd=_cwd(project_path)))
 
     @write_tool
-    async def move(relpath: str, to_project: str | None = None,
+    async def note_move(relpath: str, to_project: str | None = None,
                    to_relpath: str | None = None, project: str | None = None,
                    project_path: str | None = None) -> dict[str, Any]:
         """Relocate a note to another project and/or rename it, preserving its id
@@ -589,14 +589,14 @@ def build_server(crib: Crib | None = None):
         return crib.status()
 
     @mcp.tool()
-    def projects() -> list[str]:
+    def project_list() -> list[str]:
         """List crib projects (separate memory namespaces). Use to discover
-        what's available before a `lookup`/`store` in a specific project."""
+        what's available before a `note_lookup`/`note_store` in a specific project."""
         return crib.projects()
 
     @mcp.tool()
-    def use_project(project: str) -> dict[str, Any]:
-        """Set THIS session's current project — subsequent `lookup`/`store`/etc.
+    def project_use(project: str) -> dict[str, Any]:
+        """Set THIS session's current project — subsequent `note_lookup`/`note_store`/etc.
         target it without passing `project` each time. Sticky for the connection;
         a per-call `project` arg still overrides for that one call. Seeded
         automatically from your working directory on first use, so call this only
@@ -608,7 +608,7 @@ def build_server(crib: Crib | None = None):
         return {"current_project": project, "created": created}
 
     @mcp.tool()
-    def current_project(project_path: str | None = None) -> dict[str, Any]:
+    def project_current(project_path: str | None = None) -> dict[str, Any]:
         """Show this session's current project (seeding it from `project_path`/.crib if not
         yet set), how it resolved, plus the available projects."""
         res = _resolve(crib, None, project_path)

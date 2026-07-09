@@ -1,0 +1,30 @@
+fqname = "tests.test_native.for in.line"
+name = "line"
+kind = "variable"
+lang = "lua"
+module = "tests.test_native"
+parent = "tests.test_native.for in"
+content_hash = "c569a253d6fae765"
+file = "tests/test_native.lua"
+signature = "for _, line in ipairs(results) do"
+description = ""
+line = 281
+mtime = 1783022631000000000
+container = [
+  "for in",
+]
+calls = []
+called_by = []
+references = [
+  "_ [tests/test_native.lua]",
+  "for in [tests/test_native.lua]",
+]
+name_terms = [
+  "for",
+  "in",
+  "line",
+  "native",
+  "test",
+  "tests",
+  "tests.test_native.for in.line",
+]

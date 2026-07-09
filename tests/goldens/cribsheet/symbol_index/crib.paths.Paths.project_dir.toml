@@ -1,0 +1,78 @@
+fqname = "crib.paths.Paths.project_dir"
+name = "project_dir"
+kind = "method"
+lang = "python"
+module = "crib.paths"
+parent = "crib.paths.Paths"
+content_hash = "d9901792ee31a297"
+file = "crib/paths.py"
+signature = "def project_dir(self, project: str) -> Path:"
+description = ""
+line = 55
+mtime = 1783533619000000000
+container = [
+  "Paths",
+]
+calls = []
+called_by = [
+  "_generate_index [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_index_project_code [crib/codeindexer.py]",
+  "_keyword_terms [crib/app.py]",
+  "_reindex_dirty_code [crib/app.py]",
+  "_require_code_index [crib/app.py]",
+  "_summary_terms [crib/app.py]",
+  "code_indexed_projects [crib/app.py]",
+  "dir_sig [crib/codestore.py]",
+  "drop_file [crib/codestore.py]",
+  "index [scripts/snapshot_harness.py]",
+  "main [scripts/eval_code.py]",
+  "notes_dir [crib/paths.py]",
+  "project_config [crib/app.py]",
+  "project_forget [crib/app.py]",
+  "project_refs [crib/refs.py]",
+  "project_status [crib/app.py]",
+  "rehome [crib/learnings.py]",
+  "reload [crib/codestore.py]",
+  "report [crib/learnings.py]",
+  "resolve_symbol [crib/refs.py]",
+  "revalidate [crib/codestore.py]",
+  "source_roots [crib/notestore.py]",
+  "start_watchers [crib/app.py]",
+  "status [crib/app.py]",
+]
+references = [
+  "_generate_index [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_index_project_code [crib/codeindexer.py]",
+  "_keyword_terms [crib/app.py]",
+  "_reindex_dirty_code [crib/app.py]",
+  "_require_code_index [crib/app.py]",
+  "_summary_terms [crib/app.py]",
+  "code_indexed_projects [crib/app.py]",
+  "dir_sig [crib/codestore.py]",
+  "drop_file [crib/codestore.py]",
+  "index [scripts/snapshot_harness.py]",
+  "main [scripts/eval_code.py]",
+  "notes_dir [crib/paths.py]",
+  "project_config [crib/app.py]",
+  "project_forget [crib/app.py]",
+  "project_refs [crib/refs.py]",
+  "project_status [crib/app.py]",
+  "rehome [crib/learnings.py]",
+  "reload [crib/codestore.py]",
+  "report [crib/learnings.py]",
+  "resolve_symbol [crib/refs.py]",
+  "revalidate [crib/codestore.py]",
+  "source_roots [crib/notestore.py]",
+  "start_watchers [crib/app.py]",
+  "status [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.Paths.project_dir",
+  "dir",
+  "paths",
+  "project",
+  "project_dir",
+]

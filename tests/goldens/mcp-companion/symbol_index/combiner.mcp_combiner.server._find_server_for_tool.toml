@@ -1,0 +1,36 @@
+fqname = "combiner.mcp_combiner.server._find_server_for_tool"
+name = "_find_server_for_tool"
+kind = "function"
+lang = "python"
+module = "combiner.mcp_combiner.server"
+parent = ""
+content_hash = "9f4577b0275fec92"
+file = "combiner/mcp_combiner/server.py"
+signature = "def _find_server_for_tool(tool_name: str) -> tuple[str | None, str]:"
+description = ""
+line = 219
+mtime = 1783473323000000000
+container = []
+calls = []
+called_by = [
+  "_apply_session_filter [combiner/mcp_combiner/server.py]",
+  "_filter_tools [combiner/mcp_combiner/server.py]",
+  "_partition_by_server [combiner/mcp_combiner/server.py]",
+  "on_call_tool [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_apply_session_filter [combiner/mcp_combiner/server.py]",
+  "_filter_tools [combiner/mcp_combiner/server.py]",
+  "_partition_by_server [combiner/mcp_combiner/server.py]",
+  "on_call_tool [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_find_server_for_tool",
+  "combiner",
+  "combiner.mcp_combiner.server._find_server_for_tool",
+  "find",
+  "for",
+  "mcp",
+  "server",
+  "tool",
+]

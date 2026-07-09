@@ -1,0 +1,44 @@
+fqname = "crib.watch._FSWatcher._schedule_dir._Handler._emit"
+name = "_emit"
+kind = "method"
+lang = "python"
+module = "crib.watch"
+parent = "crib.watch._FSWatcher._schedule_dir._Handler"
+content_hash = "f2915b609b55e56d"
+file = "crib/watch.py"
+signature = "def _emit(self, raw_path: str, deleted: bool = False) -> None:"
+description = ""
+line = 90
+mtime = 1783476730000000000
+container = [
+  "_FSWatcher",
+  "_schedule_dir",
+  "_Handler",
+]
+calls = [
+  "_decode [crib/watch.py]",
+]
+called_by = [
+  "on_created [crib/watch.py]",
+  "on_deleted [crib/watch.py]",
+  "on_modified [crib/watch.py]",
+  "on_moved [crib/watch.py]",
+]
+references = [
+  "on_created [crib/watch.py]",
+  "on_deleted [crib/watch.py]",
+  "on_modified [crib/watch.py]",
+  "on_moved [crib/watch.py]",
+]
+name_terms = [
+  "_emit",
+  "crib",
+  "crib.watch._FSWatcher._schedule_dir._Handler._emit",
+  "dir",
+  "emit",
+  "fs",
+  "handler",
+  "schedule",
+  "watch",
+  "watcher",
+]

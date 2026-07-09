@@ -1,0 +1,29 @@
+fqname = "crib.notes.Note.tags"
+name = "tags"
+kind = "method"
+lang = "python"
+module = "crib.notes"
+parent = "crib.notes.Note"
+content_hash = "7e5a3110c6ccd7db"
+file = "crib/notes.py"
+signature = "@property"
+description = ""
+line = 33
+mtime = 1782755212000000000
+container = [
+  "Note",
+]
+calls = []
+called_by = [
+  "_index_locked [crib/indexer.py]",
+]
+references = [
+  "_index_locked [crib/indexer.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notes.Note.tags",
+  "note",
+  "notes",
+  "tags",
+]

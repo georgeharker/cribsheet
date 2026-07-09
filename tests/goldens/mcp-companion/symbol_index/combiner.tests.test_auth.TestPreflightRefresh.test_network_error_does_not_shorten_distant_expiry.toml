@@ -1,0 +1,38 @@
+fqname = "combiner.tests.test_auth.TestPreflightRefresh.test_network_error_does_not_shorten_distant_expiry"
+name = "test_network_error_does_not_shorten_distant_expiry"
+kind = "method"
+lang = "python"
+module = "combiner.tests.test_auth"
+parent = "combiner.tests.test_auth.TestPreflightRefresh"
+content_hash = "e281c2f7087f84b2"
+file = "combiner/tests/test_auth.py"
+signature = "@pytest.mark.anyio"
+description = ""
+line = 552
+mtime = 1782852601000000000
+container = [
+  "TestPreflightRefresh",
+]
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "_seed [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestPreflightRefresh.test_network_error_does_not_shorten_distant_expiry",
+  "distant",
+  "does",
+  "error",
+  "expiry",
+  "network",
+  "not",
+  "preflight",
+  "refresh",
+  "shorten",
+  "test",
+  "test_network_error_does_not_shorten_distant_expiry",
+  "tests",
+]
