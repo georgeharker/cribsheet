@@ -90,9 +90,9 @@ do too:
 
 ```bash
 # notes
-crib store "Chroma is refcounted by sharedserver." -p notes   # remember a fact
-crib lookup "how is chroma managed" -p notes                  # find it by meaning
-crib search -a "how is chroma managed" -p notes               # -a: full sections
+crib note store "Chroma is refcounted by sharedserver." -p notes  # remember a fact
+crib note lookup "how is chroma managed" -p notes                 # find it by meaning
+crib note apropos "how is chroma managed" -p notes                # hits as full sections
 
 # code — onboard a repo, then ask it questions grep can't answer
 cd ~/Development/myrepo
@@ -100,7 +100,7 @@ crib project setup                                # index code + docs (one call)
 crib code lookup "combine ranked lists"           # find a symbol by CONCEPT
 crib code dossier LexicalCache.get                # everything about one symbol
 crib code graph reciprocal_rank_fusion            # walk the call graph (pstree)
-crib code append reciprocal_rank_fusion \
+crib learning add reciprocal_rank_fusion \
      "fuses by RANK, not score — robust to scale differences"   # pin a learning to it
 ```
 
@@ -115,10 +115,10 @@ Every capability, its CLI form, its MCP tool, and a one-liner lives in
 
 | | notes | code |
 |---|---|---|
-| **find** | `lookup` / `apropos` (full sections) | `code lookup` (concept ⊕ name), `code dossier`, `code graph`/`xref` |
-| **write** | `store`, `append`, `edit`, `forget`, `move` | `code append`/`edit`/`forget` (learnings) |
-| **onboard** | `import` (files → memory), `import-memory` | `project setup` / `index` / `status` |
-| **housekeeping** | `reindex`, `reconcile`, `versions`, `restore`, `history` | `code learnings`, `code rehome` |
+| **find** | `note lookup` / `note apropos` (full sections) | `code lookup` (concept ⊕ name), `code dossier`, `code graph`/`xref` |
+| **write** | `note store`, `note append`, `note edit`, `note forget`, `note move` | `learning add`/`edit`/`forget` |
+| **onboard** | `note import` (files → memory), `note import-memory` | `project setup` / `index` / `status` |
+| **housekeeping** | `note reindex`, `project reconcile`, `note versions`, `note restore`, `note history` | `learning report`, `learning rehome` |
 
 Notes and code share one store, so `lookup` surfaces a repo's docs alongside your
 stored knowledge. A repo's `.crib` file ties it to a project and declares which
@@ -139,13 +139,13 @@ runs), so it's fast; `--no-daemon` runs in-process, `--json` gives machine outpu
 - **Share across machines** — the data dir is a git repo; notes sync via plain git
   with a frontmatter-aware merge driver so provenance never conflicts:
   ```bash
-  crib sync --remote git@host:notes.git   # first machine: create + push
-  crib setup --remote git@host:notes.git  # every other: init + merge driver + pull
-  crib sync                               # thereafter: commit + pull + push
+  crib note sync --remote git@host:notes.git   # first machine: create + push
+  crib note setup --remote git@host:notes.git  # every other: init + merge driver + pull
+  crib note sync                               # thereafter: commit + pull + push
   ```
   Full walkthrough: [docs/resume-on-new-machine.md](docs/resume-on-new-machine.md).
-- **Mirror Claude's own memory** — `crib import-memory` (MCP: `import_memory`, so
-  an agent can do it too) mirrors Claude Code's harness `memory/*.md` into crib
+- **Mirror Claude's own memory** — `crib note import-memory` (MCP: `note_import_memory`,
+  so an agent can do it too) mirrors Claude Code's harness `memory/*.md` into crib
   (host-namespaced) and live-syncs it, so it's searchable alongside everything else.
 - **Configure** — `$XDG_CONFIG_HOME/crib/config.toml` picks the embedder, retrieval
   mode, daemon, and backends; `crib info` prints the resolved paths. The defaults are
