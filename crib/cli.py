@@ -587,22 +587,29 @@ def build_parser() -> argparse.ArgumentParser:
         _s.add_argument("--overwrite", action="store_true",
                         help="regenerate even if it already exists")
 
-    s = notesub.add_parser("snapshot", help="git checkpoint of the data tree")
+    # `crib memory <verb>` — the whole memory store's git lifecycle. These act on
+    # the entire data tree (every project's notes + learnings), not a note or a
+    # project, so they live under their own top-level noun, over `GitBacking`.
+    n_memory = sub.add_parser("memory",
+                              help="the memory store's git lifecycle: snapshot + sync")
+    memsub = n_memory.add_subparsers(dest="memory_verb", required=True)
+
+    s = memsub.add_parser("snapshot", help="git checkpoint of the whole data tree")
     s.add_argument("-m", "--message")
 
-    s = notesub.add_parser("setup",
-                       help="join the shared note repo on this machine "
+    s = memsub.add_parser("setup",
+                       help="join the shared memory repo on this machine "
                             "(set remote + frontmatter merge driver, then pull)")
     s.add_argument("--remote", help="git remote URL to join (prompted if omitted)")
 
-    s = notesub.add_parser("sync",
-                       help="share notes via git: commit + pull + push, then reindex")
+    s = memsub.add_parser("sync",
+                       help="share memory via git: commit + pull + push, then reindex")
     s.add_argument("-m", "--message")
     s.add_argument("--remote", help="bootstrap: git init + set origin to this URL")
-    notesub.add_parser("push", help="push local note commits to the remote")
-    notesub.add_parser("pull", help="pull notes from the remote, then reindex")
+    memsub.add_parser("push", help="push local commits to the remote")
+    memsub.add_parser("pull", help="pull from the remote, then reindex")
 
-    s = notesub.add_parser("history", help="git history for a note or the tree")
+    s = memsub.add_parser("history", help="git history for the tree (or a note)")
     s.add_argument("relpath", nargs="?")
 
     # internal: invoked by git as the cribnote merge driver (DESIGN §14). No
@@ -779,9 +786,9 @@ VERBS: dict[str, Verb] = {
                                               "project": a.project,
                                               "overwrite": a.overwrite}, _E,
                       is_async=True),
-    "note snapshot": Verb("snapshot", lambda a: {"message": a.message}, _E_raw,
+    "memory snapshot": Verb("snapshot", lambda a: {"message": a.message}, _E_raw,
                      wants_cwd=False),
-    "note history": Verb("history", lambda a: {"relpath": a.relpath}, _E, wants_cwd=False),
+    "memory history": Verb("history", lambda a: {"relpath": a.relpath}, _E, wants_cwd=False),
     "project list": Verb("projects", lambda a: {}, _E, wants_cwd=False),
     "project use": Verb("use_project", lambda a: {"project": a.project}, _E,
                         method="use_project", wants_cwd=False),
@@ -916,7 +923,7 @@ def _run_git(args: Any, cfg: Any) -> int:
     from .gitbacking import GitBacking
     from .paths import Paths
 
-    verb = getattr(args, "note_verb", None)          # `crib note setup/sync/push/pull`
+    verb = getattr(args, "memory_verb", None)        # `crib memory setup/sync/push/pull`
     # setup runs on a fresh machine where the data dir may not exist yet
     paths = Paths.resolve().ensure() if verb == "setup" else Paths.resolve()
     git = GitBacking(paths.data_dir)
@@ -1019,7 +1026,7 @@ def main(argv: list[str] | None = None) -> int:
     from .paths import Paths
 
     cfg = Config.load(Paths.resolve().config_file)
-    if args.cmd == "note" and getattr(args, "note_verb", None) in (
+    if args.cmd == "memory" and getattr(args, "memory_verb", None) in (
             "setup", "sync", "push", "pull"):
         return _run_git(args, cfg)
     if cfg.daemon.enabled and not args.no_daemon:

@@ -65,13 +65,13 @@ First time on this machine — join the shared note repo (sets remote + the
 frontmatter merge driver, then pulls):
 
 ```sh
-crib note setup --remote git@github.com:georgeharker/.crib.git
+crib memory setup --remote git@github.com:georgeharker/.crib.git
 ```
 
 Already joined — just pull (notes only; indexes are gitignored/regenerable):
 
 ```sh
-crib note pull                                     # fetches notes, then reindexes
+crib memory pull                                     # fetches notes, then reindexes
 ```
 
 ## 3. Ingest all `.crib`-tagged repos (creates/fills each project)
@@ -143,7 +143,7 @@ python scripts/eval_retrieval.py --lift-summaries summary --summary-weight 0.1
 ## Notes / gotchas
 
 - **Indexes are gitignored** in the data repo (regenerable, churn while tuning),
-  so they do **not** come down with `crib note pull` — §5 rebuilds them locally.
+  so they do **not** come down with `crib memory pull` — §5 rebuilds them locally.
 - **Provenance:** freshly generated index TOMLs record the resolved provider
   (e.g. `qwen3.6-plus`), so you can tell them apart across machines/models.
 - **The summary finding to retest here:** dense aliases were net-negative on

@@ -45,8 +45,8 @@ note exposes its on-disk `path`.
 | `crib note reindex [rel]` | `note_reindex` | Re-index a note (or the whole project) after external edits. |
 | `crib note versions <rel>` | `note_versions` | List a note's recoverable prior versions (the write ring). |
 | `crib note restore <rel> <v>` | `note_restore` | Restore a prior version of a note. |
-| `crib note history [rel]` | `note_history` | Git history for a note or the whole data tree. |
-| `crib note snapshot [-m msg]` | `note_snapshot` | Git checkpoint of the data tree. |
+| `crib memory history [rel]` | `memory_history` | Git history for a note or the whole data tree. |
+| `crib memory snapshot [-m msg]` | `memory_snapshot` | Git checkpoint of the data tree. |
 | `crib note distill <rel>` | `note_distill` | LLM-revise a note in place (compress/dedupe/normalize). |
 | `crib note elaborate <label> [rel]` | `note_elaborate` | Generate per-section *keyword search terms* (synonyms + phrases a searcher would type) to strengthen BM25 matching. Not prose expansion. |
 | `crib note summarize <label> [rel]` | `note_summarize` | Generate per-section *rephrasings* embedded as dense aliases, so differently-worded queries still match. |
@@ -116,7 +116,7 @@ Pushing publishes to a remote, so these stay CLI-only (not agent-callable).
 
 | CLI | Description |
 |---|---|
-| `crib note setup --remote <url>` | Join a shared notes repo on a new machine (init + frontmatter merge driver + pull). |
-| `crib note sync` | Commit + pull + push notes via git, then reindex. |
-| `crib note push` / `crib note pull` | The halves of sync (`pull` reindexes after). |
+| `crib memory setup --remote <url>` | Join a shared memory repo on a new machine (init + frontmatter merge driver + pull). |
+| `crib memory sync` | Commit + pull + push notes via git, then reindex. |
+| `crib memory push` / `crib memory pull` | The halves of sync (`pull` reindexes after). |
 | `crib merge-driver` | The frontmatter-aware git merge driver (invoked by git during a merge; hidden from `--help`). |
