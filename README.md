@@ -49,11 +49,10 @@ git clone https://github.com/georgeharker/cribsheet && cd cribsheet
 pipx install -e .            # everything: crib + chroma, embeddings, fastmcp, watcher, llmkit
 ```
 
-The default install is complete — no extras needed (`[st]`, the torch embedder,
-is the one genuine extra; torch wheels are host-specific). llmkit isn't on PyPI —
-it installs from its git head, so no submodule dance is needed; the
-`vendor/llmkit` submodule is only for hacking on llmkit itself or indexing it
-in-tree (`git submodule update --init` when you want it).
+That's the complete product — store, ONNX embedder (no torch), MCP server +
+warm daemon, watcher, and generation. The one genuine extra is `[st]`, the torch
+embedder (host-specific wheels). llmkit installs from its git head (not PyPI), so
+there's no submodule dance — `vendor/llmkit` is only for hacking on llmkit itself.
 
 <details><summary>Dev install (editable venv / uv)</summary>
 
@@ -179,33 +178,39 @@ index. Retrieval fuses a dense vector ranking with a warm BM25 lexical ranking
 servers (`.lsp.json` specs — ty/pyright, rust-analyzer, gopls, clangd, shuck, …) for
 the structural facet and an LLM for the "what it does" descriptions.
 
-The full picture lives in separate docs, not this README — pick by what you want:
+The deep dives live in the docs — see **[Documentation](#documentation)** below.
 
+## Documentation
+
+**Using cribsheet**
+
+- **[docs/guide.md](docs/guide.md)** — the user guide: the four facets, the
+  noun-verb interface, and five runnable workflows. *Start here.*
+- **[docs/surface.md](docs/surface.md)** — the complete CLI ⇄ MCP reference: every
+  noun, every verb, one line each.
+- **[docs/resume-on-new-machine.md](docs/resume-on-new-machine.md)** — share your
+  memory across machines over plain git.
+
+**Under the hood**
+
+- **[DESIGN.md](DESIGN.md)** — the architecture and the *why*, end to end (with the
+  hybrid-retrieval pipeline diagram).
 - **[docs/implementation.md](docs/implementation.md)** — *how it works today*: a
-  subsystem-by-subsystem map (ingestion, indexing, watchers, warm LSP sessions,
-  cross-project refs, sync/merge), anchored to files and symbols. Start here to
-  work on the code.
-- **[DESIGN.md](DESIGN.md)** — the architecture and the *why* behind the
-  decisions, end to end.
-- **[docs/surface.md](docs/surface.md)** — the complete CLI + MCP reference.
+  subsystem-by-subsystem map anchored to files and symbols (with the
+  collaborator-architecture and code-index diagrams). *Start here to work on the code.*
 - **[docs/code-symbol-index.md](docs/code-symbol-index.md)** — how the code↔note
   index is built, and the learnings model.
 - **[docs/retrieval-and-adoption.md](docs/retrieval-and-adoption.md)** — retrieval
-  quality, and why delivery (not capability) is what makes a memory tool get used.
+  quality, and why *delivery* (not capability) makes a memory tool get used.
 - **[docs/knowledge-capture.md](docs/knowledge-capture.md)** — `distill` /
   `elaborate` / `summarize`, the generation layer over notes.
 
 ## Status & tests
 
-The default install is the complete product: chromadb (store), **fastembed** (the
-recommended embedder — ONNX, no torch), **fastmcp** (serves MCP *and* the
-warm-daemon path the CLI uses by default), **watchdog** (external-edit watchers),
-and **llmkit** from its git head (rendering + generation). The only real extra is
-`[st]`, the torch embedder — torch wheels are host-specific. The dependency-free
-fallbacks (hash embedder, JSON store, `--no-daemon`) exist as *code properties*
-that tests and CI exercise, not install profiles. The store → index → lookup path,
-the version ring, the file watcher, git sync, the code index, and the CLI + MCP
-surface are all working.
+The store → index → lookup path, the version ring, the file watcher, git sync, the
+code index, and the full CLI + MCP surface all work. The dependency-free fallbacks
+(hash embedder, JSON store, `--no-daemon`) are *code properties* that tests and CI
+exercise, not install profiles.
 
 ```bash
 pip install pytest && pytest -q
