@@ -8,20 +8,20 @@ requires-python = ">=3.13"
 # code degrades gracefully without each, but that's a testing property, not an
 # install profile). fastembed: the recommended embedder, ONNX on the runtime
 # chromadb already pulls (no torch). fastmcp: serves MCP AND the warm-daemon
-# path the CLI attaches to by default. watchdog: the external-edit watchers.
-# llmkit (md: rich CLI rendering; bridge: LLM generation for distill/elaborate/
-# describe) is NOT on PyPI: it installs from its git HEAD — every consumer
-# (this repo, zsh-ai) floats on the same head, so per-repo pins can't drift.
-# The `vendor/llmkit` submodule remains as a READING copy (in-tree xref /
-# code-index; `git submodule update --remote` refreshes it) and the editable
-# dev source.
+# path the CLI attaches to by default; pinned to the v3 line to match mcp-combiner
+# so the two are co-installable. watchdog: the external-edit watchers.
+# polyllmkit (md: rich CLI rendering; bridge: LLM generation for distill/elaborate/
+# describe) is published on PyPI but imports as `llmkit` (dist name != import
+# name). The `vendor/llmkit` submodule remains as a READING copy (in-tree xref /
+# code-index; `git submodule update --remote` refreshes it) and the editable dev
+# source — `uv pip install -e ./vendor/llmkit` overlays it for a session.
 dependencies = [
     "pyyaml>=6.0",
     "chromadb>=0.5",   # default vector store (embedded PersistentClient)
     "fastembed>=0.3",
-    "fastmcp>=2.0",
+    "fastmcp>=3.4.2,<4",
     "watchdog>=4.0",
-    "llmkit[md,bridge] @ git+https://github.com/georgeharker/llmkit",
+    "polyllmkit[md,bridge]>=0.1",
 ]
 
 [project.optional-dependencies]
@@ -37,21 +37,9 @@ st = ["sentence-transformers>=2.2"]
 [project.scripts]
 crib = "crib.cli:main"
 
-# uv resolves llmkit from the same git head the direct references name (kept
-# explicit here so uv never needs the submodule). Hacking on llmkit itself?
-# `uv pip install -e ./vendor/llmkit` overlays the editable copy for the
-# session; the next `uv sync` restores the git version.
-[tool.uv.sources]
-llmkit = { git = "https://github.com/georgeharker/llmkit" }
-
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-# The llmkit extras are direct git references (not on PyPI) — hatchling
-# refuses those in metadata unless told they're intentional.
-[tool.hatch.metadata]
-allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["crib"]
