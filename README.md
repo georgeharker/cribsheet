@@ -42,28 +42,28 @@ warm process serves your editor (over MCP) and your terminal (`crib <noun> <verb
 
 ## Quickstart
 
-**1 — Install** (`pipx` keeps the heavy deps isolated and puts `crib` on your PATH):
+**1 — Install** — cribsheet is on PyPI; `uv` (or `pipx`) puts `crib` on your PATH
+with the heavy deps isolated:
 
 ```bash
-git clone https://github.com/georgeharker/cribsheet && cd cribsheet
-pipx install -e .            # everything: crib + chroma, embeddings, fastmcp, watcher, llmkit
+uv pip install cribsheet     # or: uv tool install cribsheet  ·  pipx install cribsheet
 ```
 
-That's the complete product — store, ONNX embedder (no torch), MCP server +
-warm daemon, watcher, and generation. The one genuine extra is `[st]`, the torch
-embedder (host-specific wheels). llmkit installs from its git head (not PyPI), so
-there's no submodule dance — `vendor/llmkit` is only for hacking on llmkit itself.
+That's the complete product — store, ONNX embedder (no torch), MCP server + warm
+daemon, watcher, and generation (polyllmkit, pulled from PyPI). The one genuine
+extra is `[st]`, the torch embedder (host-specific wheels). No submodule dance —
+`vendor/llmkit` is only for hacking on llmkit itself.
 
 <details><summary>Dev install (editable venv / uv)</summary>
 
 ```bash
 python -m venv .venv && . .venv/bin/activate
-pip install -e .                        # llmkit comes from its git head
+pip install -e .                        # deps (incl. polyllmkit) from PyPI
 
 uv sync                                 # or: uv pip install -e .
 
-# the torch embedder + llmkit's native LLM adapters:
-pip install -e '.[st]' 'llmkit[md,bridge,anthropic,google,claude] @ git+https://github.com/georgeharker/llmkit'
+# the torch embedder + llmkit's native LLM adapters (polyllmkit from PyPI):
+pip install -e '.[st]' 'polyllmkit[md,bridge,anthropic,google,claude]'
 
 # hacking on llmkit itself: overlay the submodule editable (uv sync restores git)
 git submodule update --init && pip install -e ./vendor/llmkit

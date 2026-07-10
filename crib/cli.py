@@ -972,7 +972,7 @@ def _reconcile(cfg: Any) -> Any:
         if sharedserver.available():
             from .client import DaemonClient
             with DaemonClient(cfg.daemon) as client:
-                return client.call("reconcile", {})
+                return client.call("project_reconcile", {})
     crib = Crib.open()
     try:
         return asyncio.run(crib.reconcile_all())
