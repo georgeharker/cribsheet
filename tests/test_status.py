@@ -48,7 +48,7 @@ def test_status_reports_in_flight_indexing(crib, monkeypatch):
     """While `_index_code_file_tracked` runs, status names the (project, file)."""
     seen: list[dict] = []
 
-    def fake_inner(root, rel, proj, patch_edges, existing=None):
+    def fake_inner(root, rel, proj, patch_edges, existing=None, describe_mode="inline"):
         seen.append(crib.status()["indexing"])
         return {"symbols": 0}
 

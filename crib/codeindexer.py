@@ -26,6 +26,13 @@ class CodeIndexer:
         self.code = services.code          # CodeStore: index state + invariants
         self.paths = services.paths
         self.config = services.config
+        # Set by Crib once the event loop exists (start_watchers). When present, the
+        # live watch path DEFERS the LLM describe here instead of running it inline;
+        # None → always describe inline (CLI/one-shot with no daemon, tests).
+        self._describe_q: Any = None
+
+    def set_describe_queue(self, q: Any) -> None:
+        self._describe_q = q
 
     async def code_index(self, path: str, project: str | None = None,
                          cwd: Path | None = None,
@@ -55,13 +62,15 @@ class CodeIndexer:
 
     def _index_code_file_tracked(self, root: Path, rel: str, proj: str,
                                  patch_edges: bool,
-                                 existing: dict[str, dict] | None = None) -> dict[str, Any]:
+                                 existing: dict[str, dict] | None = None,
+                                 describe_mode: str = "inline") -> dict[str, Any]:
         """Tracked entry point for one-file indexing: registers (proj, rel) as
         in-flight for `status`, then runs `_index_code_file`."""
         with self.code.indexing_lock:
             self.code.indexing.setdefault(proj, []).append(rel)
         try:
-            return self._index_code_file(root, rel, proj, patch_edges, existing)
+            return self._index_code_file(root, rel, proj, patch_edges, existing,
+                                         describe_mode)
         finally:
             with self.code.indexing_lock:
                 files = self.code.indexing.get(proj, [])
@@ -72,7 +81,8 @@ class CodeIndexer:
 
     def _index_code_file(self, root: Path, rel: str, proj: str,
                          patch_edges: bool,
-                         existing: dict[str, dict] | None = None) -> dict[str, Any]:
+                         existing: dict[str, dict] | None = None,
+                         describe_mode: str = "inline") -> dict[str, Any]:
         """The blocking core of code_index — extract + describe + persist one file. Sync
         so the lazy revalidation path (also sync) can reuse it directly; code_index runs
         it off the event loop via to_thread. `existing` is the by-fqname snapshot of the
@@ -147,30 +157,46 @@ class CodeIndexer:
                  if existing.get(e["fqname"], {}).get("content_hash") != e["content_hash"]
                  or not existing.get(e["fqname"], {}).get("description")]
         gen_error: str | None = None
-        descs: dict[str, str] = {}
-        if stale:
-            try:
-                descs = describe_file(self.config.generate, root, rel)
-            except Exception as exc:  # noqa: BLE001 — LLM down → structural-only
-                gen_error = str(exc)
-        for sym in entries:
-            ex = existing.get(sym["fqname"], {})
-            if ex.get("content_hash") == sym["content_hash"] and ex.get("description"):
-                sym["description"] = ex["description"]          # cached, unchanged body
-            else:
-                sym["description"] = match_description(sym["fqname"], descs)
-        # MOP-UP: symbols the whole-file bulk pass missed (low-yield / partial LLM
-        # response) get a focused describe over just their bodies — far higher hit
-        # rate on a small set. Best-effort; content_hash gate keeps future runs cheap.
-        missed = [e for e in stale if not e.get("description")]
-        if missed:
-            try:
-                mop = describe_symbols(self.config.generate, missed)
-                for e in missed:
-                    e["description"] = (mop.get(e["name"])
-                                        or match_description(e["fqname"], mop))
-            except Exception:  # noqa: BLE001 — mop-up is best-effort
-                pass
+        # DEFER (the live watch path): persist STRUCTURE now and hand the changed
+        # symbols to the backoff queue — the LLM pass is coalesced off the save path
+        # so an edit burst spends one focused describe, not one per keystroke-save.
+        # Carry a still-valid description forward; BLANK a changed/new one, so
+        # `content_hash present + empty description` is the durable "needs describing"
+        # signal the startup backlog scan reconciles after a crash (docs § Deferred
+        # describe). INLINE (cold onboard / explicit code_index): describe right here.
+        defer = describe_mode == "defer" and self._describe_q is not None
+        if defer:
+            for sym in entries:
+                ex = existing.get(sym["fqname"], {})
+                sym["description"] = (
+                    ex["description"]
+                    if ex.get("content_hash") == sym["content_hash"] and ex.get("description")
+                    else "")
+        else:
+            descs: dict[str, str] = {}
+            if stale:
+                try:
+                    descs = describe_file(self.config.generate, root, rel)
+                except Exception as exc:  # noqa: BLE001 — LLM down → structural-only
+                    gen_error = str(exc)
+            for sym in entries:
+                ex = existing.get(sym["fqname"], {})
+                if ex.get("content_hash") == sym["content_hash"] and ex.get("description"):
+                    sym["description"] = ex["description"]       # cached, unchanged body
+                else:
+                    sym["description"] = match_description(sym["fqname"], descs)
+            # MOP-UP: symbols the whole-file bulk pass missed (low-yield / partial LLM
+            # response) get a focused describe over just their bodies — far higher hit
+            # rate on a small set. Best-effort; content_hash gate keeps future runs cheap.
+            missed = [e for e in stale if not e.get("description")]
+            if missed:
+                try:
+                    mop = describe_symbols(self.config.generate, missed)
+                    for e in missed:
+                        e["description"] = (mop.get(e["name"])
+                                            or match_description(e["fqname"], mop))
+                except Exception:  # noqa: BLE001 — mop-up is best-effort
+                    pass
         # Serialize only the store read-modify-write (NOT the LSP/LLM work above),
         # so a concurrent reindex of another file — watcher vs query vs explicit
         # index — can't interleave writes and corrupt the cross-file call graph
@@ -186,14 +212,51 @@ class CodeIndexer:
                 self.code.patch_called_by(store, entries, rel)
         self.services.register_code_root(proj, root)        # live-watch this repo's source
         self.code.bump_epoch(proj)                          # invalidate the resident cache
+        if defer and stale:
+            # Structure is durable; schedule the description pass. Bodies ride along
+            # so the settle uses the focused describe_symbols over only what changed.
+            self._describe_q.enqueue(proj, root, rel, {
+                e["fqname"]: {"name": e["name"], "kind": e.get("kind", ""),
+                              "content_hash": e["content_hash"],
+                              "_body": e.get("_body", "")}
+                for e in stale})
         out: dict[str, Any] = {
             "project": proj, "root": str(root), "file": rel,
             "symbols": len(entries),
             "described": sum(1 for e in entries if e["description"]),
             "store": str(store.root)}
+        if defer and stale:
+            out["describe_deferred"] = len(stale)
         if gen_error:
             out["descriptions_error"] = gen_error
         return out
+
+    async def _describe_and_patch(self, proj: str, root: Path, rel: str,
+                                  pending: dict[str, dict]) -> dict[str, Any]:
+        """DescribeQueue callback: focused-describe the changed symbols of one settled
+        file and patch their descriptions in. RAISES on LLM failure so the queue re-arms
+        (backoff-as-retry). Clobber-guarded: re-reads each symbol and skips one whose
+        body moved again since it was queued (a newer edit already re-queued it)."""
+        from .codeindex import SymbolIndex, describe_symbols, match_description
+        syms = list(pending.values())
+        descs = await asyncio.to_thread(describe_symbols, self.config.generate, syms)
+        if not descs:
+            return {"described": 0, "file": rel}
+        store = SymbolIndex(self.paths.project_dir(proj))
+        patched = 0
+        with self.code.lock(proj):
+            for fq, sym in pending.items():
+                cur = store.read(fq)
+                if cur is None or cur.get("content_hash") != sym.get("content_hash"):
+                    continue                            # dropped / re-edited → skip
+                d = descs.get(sym.get("name", "")) or match_description(fq, descs)
+                if d:
+                    cur["description"] = d
+                    store.write(cur)
+                    patched += 1
+        if patched:
+            self.code.bump_epoch(proj)                  # queries now see fresh descriptions
+        return {"described": patched, "file": rel}
 
     async def _index_project_code(self, proj: str, root: Path,
                                   globs: list[str]) -> dict[str, Any]:

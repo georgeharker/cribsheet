@@ -152,6 +152,14 @@ class GenerateConfig:
     # legacy one-call-per-section path.
     bulk: bool = True
     bulk_max_sections: int = 10
+    # Deferred code-symbol describe (docs/code-symbol-index.md § Deferred describe):
+    # a live edit persists STRUCTURE (symbols + call graph) immediately and queues the
+    # per-symbol LLM description pass PER FILE with exponential backoff, so an edit
+    # burst coalesces to one focused describe once the file settles. `base` is the
+    # first delay; it doubles per re-edit up to `cap` (which also paces retries when
+    # the LLM is down). Cold onboard and explicit `code_index` still describe inline.
+    describe_backoff_base: float = 2.0
+    describe_backoff_cap: float = 240.0
 
 
 @dataclass
