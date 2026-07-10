@@ -1,6 +1,6 @@
 [project]
 name = "cribsheet"
-version = "0.2.1"
+version = "0.2.2"
 description = "Local MCP server: markdown memory with a Chroma embedding index"
 readme = "README.md"
 requires-python = ">=3.13"
