@@ -1332,6 +1332,16 @@ class SymbolIndex:
             self.write(e)
         return len(entries)
 
+    def read(self, fqname: str) -> dict | None:
+        """One symbol's entry by EXACT fqname — O(1) (filename is the fqn slug), for
+        the deferred-describe clobber guard: re-read at patch time and skip if the
+        body changed again since it was queued. None when absent (dropped/renamed)."""
+        p = self.root / self._relname(fqname)
+        try:
+            return _parse(p.read_text())
+        except OSError:
+            return None
+
     def by_fqname(self, name: str) -> list[dict]:
         """Read entries whose fqname ends with `name` (bare name or dotted path)."""
         out = []

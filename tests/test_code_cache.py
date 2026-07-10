@@ -146,7 +146,8 @@ def test_spurious_delete_reindexes_instead_of_dropping(crib, tmp_path, monkeypat
     indexed: list[str] = []
     monkeypatch.setattr(crib, "_drop_file", lambda p, r: dropped.append(r))
     monkeypatch.setattr(crib, "_index_code_file_tracked",
-                        lambda rt, rel, p, patch_edges: indexed.append(rel))
+                        lambda rt, rel, p, patch_edges, existing=None,
+                        describe_mode="inline": indexed.append(rel))
     run(crib._on_code_change("p", {"pkg/mod.py": (str(root), True),      # exists!
                                    "pkg/gone.py": (str(root), True)}))   # really gone
     assert indexed == ["pkg/mod.py"]      # spurious delete → reindexed
@@ -223,7 +224,8 @@ def test_on_code_change_falls_back_to_revalidate_on_large_burst(crib, monkeypatc
     per_file: list[str] = []
     monkeypatch.setattr(crib, "_revalidate", lambda proj: revalidated.append(proj))
     monkeypatch.setattr(crib, "_index_code_file_tracked",
-                        lambda root, rel, proj, patch: per_file.append(rel))
+                        lambda root, rel, proj, patch, existing=None,
+                        describe_mode="inline": per_file.append(rel))
     from crib.watch import CODE_BATCH_FALLBACK
 
     big = {f"f{i}.py": ("/root", False) for i in range(CODE_BATCH_FALLBACK + 1)}

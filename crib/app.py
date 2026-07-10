@@ -111,6 +111,7 @@ class Crib:
         self._reranker: Any = None      # lazy cross-encoder, warm for the daemon
         self._watcher: Watcher | None = None
         self._code_watcher: CodeWatcher | None = None
+        self._describe_q: Any = None    # DescribeQueue, started by the daemon
         self._mirror: Any = None        # MemoryMirror, started by the daemon
         self._on_close: Callable[[], None] | None = None
         # The code subsystem's shared per-project state (resident cache, freshness
@@ -170,6 +171,18 @@ class Crib:
             if root is not None:
                 self._code_watcher.watch_root(name, root)
         self._code_watcher.start()
+        # Deferred describe: the code-watcher persists STRUCTURE eagerly and hands the
+        # changed symbols to this per-file backoff queue, so an edit burst coalesces to
+        # one focused LLM describe once the file settles (docs § Deferred describe).
+        from .describe_queue import DescribeQueue
+        gen = self.config.generate
+        self._describe_q = DescribeQueue(loop, self.indexer._describe_and_patch,
+                                         base=gen.describe_backoff_base,
+                                         cap=gen.describe_backoff_cap)
+        self.indexer.set_describe_queue(self._describe_q)
+        # Self-heal: a crash (or clean stop) mid-window leaves symbols with structure
+        # but a blank description — re-drive them so nothing stays undescribed.
+        loop.create_task(self._describe_backlog())
 
     async def _on_fs_change(self, project: str, relpath: str) -> None:
         await self.index.index_file(project, self.notes_dir(project), relpath)
@@ -217,8 +230,12 @@ class Crib:
                     # and the batch's last-event-wins can land on the delete.
                     # Trusting it evicted whole files' symbols; the file's actual
                     # state at dispatch time (post-debounce) is the truth.
+                    # DEFER the LLM describe: persist structure now, queue the
+                    # description pass with per-file backoff (the live edit path is
+                    # exactly where rapid saves would otherwise slam the LLM).
                     await asyncio.to_thread(
-                        self._index_code_file_tracked, Path(root), relpath, project, True)
+                        self._index_code_file_tracked, Path(root), relpath, project,
+                        True, None, "defer")
             except Exception:  # noqa: BLE001 — one bad file never aborts the batch
                 pass
 
@@ -227,6 +244,32 @@ class Crib:
         onboard starts live-updating immediately)."""
         if self._code_watcher is not None:
             self._code_watcher.watch_root(project, root)
+
+    async def _describe_backlog(self) -> None:
+        """Re-drive symbols a stop/crash left undescribed. The deferred-describe path
+        blanks a changed symbol's description on the structural write, so `content_hash
+        present + empty description` is the durable "never got described" signal — one
+        inline reindex per affected file catches them up. A no-op in the common case
+        (nothing blank), so it's cheap to run on every start."""
+        from .codeindex import SymbolIndex
+        for p in self.projects():
+            name = p["project"] if isinstance(p, dict) else p
+            try:
+                si = SymbolIndex(self.paths.project_dir(name))
+                root = si.source_root()
+                if root is None:
+                    continue
+                files = sorted({e["file"] for e in si.all()
+                                if e.get("content_hash") and not e.get("description")
+                                and e.get("file")})
+                for rel in files:
+                    try:                                # inline: describe now, no queue
+                        await asyncio.to_thread(self._index_code_file_tracked,
+                                                root, rel, name, True)
+                    except Exception:  # noqa: BLE001 — one bad file never aborts catch-up
+                        pass
+            except Exception:  # noqa: BLE001 — best-effort; missing/odd index is fine
+                pass
 
     async def start_memory_mirror(self, loop: asyncio.AbstractEventLoop) -> None:
         """Catch up + live-mirror bound Claude harness memory dirs (DESIGN §13).
@@ -249,6 +292,9 @@ class Crib:
         if self._code_watcher is not None:
             self._code_watcher.stop()
             self._code_watcher = None
+        if self._describe_q is not None:
+            self._describe_q.stop()
+            self._describe_q = None
         if self._mirror is not None:
             self._mirror.stop()
             self._mirror = None
@@ -714,10 +760,12 @@ class Crib:
 
     def _index_code_file_tracked(self, root: Path, rel: str, proj: str,
                                  patch_edges: bool,
-                                 existing: dict[str, dict] | None = None) -> dict[str, Any]:
+                                 existing: dict[str, dict] | None = None,
+                                 describe_mode: str = "inline") -> dict[str, Any]:
         """Delegate to the CodeIndexer pipeline (kept on Crib so the watcher and the
         resident-cache revalidate hook call it unchanged)."""
-        return self.indexer._index_code_file_tracked(root, rel, proj, patch_edges, existing)
+        return self.indexer._index_code_file_tracked(root, rel, proj, patch_edges,
+                                                      existing, describe_mode)
 
     # ── Resident code cache: delegates to CodeStore (crib/codestore.py) ────────
     # Thin delegators so existing call sites are untouched; the state + its

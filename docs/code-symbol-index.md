@@ -221,6 +221,41 @@ a file with neither a known extension nor a recognized shebang is silently skipp
   shape) — a watcher edit regenerates *only* the changed symbols; the map travels with
   the notes via git sync, generated once per machine.
 
+### 4.1.1 Deferred describe — the two facets run on different clocks
+
+The structural facet (symbols + call graph, from the LSP) is cheap and wants to be
+**live on every save**; the semantic facet (the LLM description) is the expensive
+part and the least latency-sensitive. So the live watch path splits them
+(`crib/describe_queue.py`, `CodeIndexer._describe_and_patch`):
+
+1. **Structural pass persists immediately** — symbols, `content_hash`, and the
+   cross-file call graph are written on the 0.5 s code-watcher coalesce, so
+   navigation/xref is never stale. A changed symbol's description is **blanked** on
+   that write.
+2. **The describe pass is queued per file with exponential backoff** —
+   `delay = min(base·2^level, cap)`, re-armed on each further edit. A file edited
+   repeatedly keeps deferring, so an editing burst collapses to **one focused
+   `describe_symbols` call** (only the changed bodies) once it settles. The same
+   backoff is the retry policy: a describe that fails (LLM down) re-arms one round
+   later rather than hammering the endpoint.
+3. **Blank = a durable "needs describing" signal.** `content_hash present + empty
+   description` survives a crash, so on the next start `Crib._describe_backlog`
+   re-drives anything left blank — no in-memory queue to lose, no schema field to
+   add (the goldens don't churn).
+
+**Cold onboard and explicit `code_index` still describe inline** (a fresh index
+wants to finish fully described, not dribble). Only live edits defer. Config knobs
+(`[generate]`, read at daemon start):
+
+```toml
+[generate]
+describe_backoff_base = 2.0     # first delay after an edit
+describe_backoff_cap  = 240.0   # ceiling — a file under nonstop editing re-describes at most this often
+```
+
+The upshot: rapid saves cost **one** LLM call per settled file, not one per save —
+structure stays live, descriptions catch up a beat later.
+
 ### 4.2 doc2query — retest here
 
 Generate the *queries a developer would type* to find the symbol ("where do we
