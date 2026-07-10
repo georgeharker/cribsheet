@@ -382,8 +382,10 @@ def build_server(crib: Crib | None = None):
         indexed, do THIS, don't fall back to grep. Ensures a `.crib` (auto-created with
         sensible defaults if missing), imports the repo's docs into notes, AND indexes
         all its source code (functions/classes/globals/members + call graph +
-        references + descriptions). Pass `project_path=<the repo dir>`. Idempotent. Then
-        code_lookup/code_dossier work. Code-only variant: project_index."""
+        references + descriptions). Pass `project_path=<the repo dir>` (a bare
+        `project=<name>` works only for an already-indexed project — it resolves the
+        recorded root). Idempotent. Then code_lookup/code_dossier work. Code-only
+        variant: project_index."""
         return _switch_if_created(
             await crib.project_setup(_source_project(crib, project, project_path),
                                      cwd=_cwd(project_path)))
@@ -394,7 +396,9 @@ def build_server(crib: Crib | None = None):
         """(Re)index a project's SOURCE CODE from its `.crib` (code facet of
         project_setup — no doc import). Use to index a repo for code_lookup/code_dossier,
         or to refresh after edits (cheap: unchanged files are skipped). Pass
-        `project_path=<the repo dir>`; a `.crib` is auto-created if missing."""
+        `project_path=<the repo dir>` (a `.crib` is auto-created if missing); a bare
+        `project=<name>` re-indexes an ALREADY-INDEXED project from its recorded
+        root — an unknown name errors rather than guessing a directory."""
         return _switch_if_created(
             await crib.project_index(_source_project(crib, project, project_path),
                                      cwd=_cwd(project_path)))

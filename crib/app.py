@@ -914,14 +914,62 @@ class Crib:
                     seen.add(p)
         return sorted(seen)
 
+    def _registered_root(self, project: str | None) -> Path | None:
+        """Where `project` was last indexed from: the symbol_index's `.source_root`,
+        else a sole in-situ doc root. None when unrecorded — or when the recorded
+        dir is gone, so a moved checkout can be re-rooted from its new path."""
+        if not project:
+            return None
+        from .codeindex import SymbolIndex
+        root = SymbolIndex(self.paths.project_dir(project)).source_root()
+        if root is None:
+            doc_roots = {Path(r) for r in self._source_roots(project).all().values()}
+            if len(doc_roots) == 1:
+                root = doc_roots.pop()
+        return root.resolve() if root is not None and root.is_dir() else None
+
     def _ensure_crib(self, cwd: Path | None, project: str | None,
                      want_code: bool, want_docs: bool) -> tuple[Any, bool]:
         """Find the repo's `.crib`, or CREATE one with sensible defaults (project =
         repo dir name; auto-detected code `paths:` + doc `docs:` globs indexed
         in-situ). Returns (CribLink, created?). The one primitive both `project
-        setup` and the facet setups defer to."""
-        base = (Path(cwd) if cwd else Path.cwd()).resolve()
-        link = CribLink.find(base)
+        setup` and the facet setups defer to.
+
+        Root resolution NEVER falls back to the process cwd — in the daemon that's
+        just wherever sharedserver spawned it, and a `project_index(project=zdot)`
+        once re-rooted zdot into an unrelated checkout that way. An explicit `cwd`
+        (the caller's project_path) decides; a bare `project` resolves to the root
+        it was last indexed from (`_registered_root`); neither → error. A cwd whose
+        `.crib` names a DIFFERENT project than an explicit `project` is treated as
+        incidental (the CLI ships the shell cwd with every call), so the project's
+        registered root wins; with no registered root to prefer it's an error —
+        never index one project's repo into another."""
+        base = Path(cwd).resolve() if cwd else None
+        link = CribLink.find(base) if base is not None else None
+        if project and (link is None or link.project != project):
+            # `base` (if any) isn't visibly `project`'s repo — resolve the name to
+            # the root it was last indexed from before trusting an incidental cwd.
+            reg = self._registered_root(project)
+            if reg is not None:
+                base, link = reg, CribLink.find(reg)
+                if link is not None and link.project != project:
+                    raise ValueError(
+                        f"stale registration: {project!r} was last indexed from "
+                        f"{reg}, but the .crib there now names {link.project!r}. "
+                        "Pass project_path=<the repo dir> explicitly (or "
+                        "project_forget the stale project).")
+            elif link is not None:
+                raise ValueError(
+                    f"{base} belongs to project {link.project!r} (its .crib says "
+                    f"so), not {project!r} — refusing to index one project's repo "
+                    f"into another. Pass project_path=<{project}'s repo dir>.")
+            # else: no .crib and no registered root → first-time onboard of
+            # `project` at `base` (the create path below).
+        if base is None:
+            raise ValueError(
+                f"can't locate a repo for project {project!r}: it has no recorded "
+                "source root. Pass project_path=<the repo dir> — a repo-scoped op "
+                "never falls back to the server's own cwd.")
         if link and link.root:
             return link, False
         # Anchor at the nearest repo marker, else at `base` ITSELF — never escape to
@@ -934,6 +982,14 @@ class Crib:
                 root = d
                 break
         name = project or root.name.replace(" ", "-")
+        if not project and (reg := self._registered_root(name)) is not None \
+                and reg != root.resolve():
+            # dir-name collision with an existing project rooted elsewhere — a
+            # fresh .crib here would silently merge two repos under one project
+            raise ValueError(
+                f"a project named {name!r} already exists, rooted at {reg} — "
+                f"refusing to also bind {root} to it. Add a .crib here naming a "
+                "different project (or project_forget the old one to re-root).")
         lines = ["# Auto-created by `crib project setup` — ties this repo to a crib "
                  "project.", f"project: {name}"]
         # globs are quoted: a bare `- **/*.py` makes YAML read `*` as an alias anchor.
@@ -958,11 +1014,12 @@ class Crib:
         explicit verb.)"""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=True)
         proj = project or link.project
-        docs = await self.index_docs_insitu(proj, cwd) if link.doc_patterns else {}
+        new_project = proj not in self.projects()   # before indexing creates its dirs
+        docs = await self.index_docs_insitu(proj, link.root) if link.doc_patterns else {}
         globs = link.paths or self._detect_code_globs(link.root)
         code = await self._index_project_code(proj, link.root, globs)
         return {"project": proj, "root": str(link.root), "crib_created": created,
-                "docs_indexed": docs.get("docs", 0), **code}
+                "created": new_project, "docs_indexed": docs.get("docs", 0), **code}
 
     async def project_index(self, project: str | None = None,
                             cwd: Path | None = None) -> dict[str, Any]:
@@ -970,11 +1027,12 @@ class Crib:
         (ensuring a `.crib` first). Cheap re-run via the content-hash gate."""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
         proj = project or link.project
-        docs = await self.index_docs_insitu(proj, cwd) if link.doc_patterns else {}
+        new_project = proj not in self.projects()   # before indexing creates its dirs
+        docs = await self.index_docs_insitu(proj, link.root) if link.doc_patterns else {}
         globs = link.paths or self._detect_code_globs(link.root)
         code = await self._index_project_code(proj, link.root, globs)
         return {"project": proj, "root": str(link.root), "crib_created": created,
-                "docs_indexed": docs.get("docs", 0), **code}
+                "created": new_project, "docs_indexed": docs.get("docs", 0), **code}
 
     def _project_refs(self, proj: str) -> list[dict[str, Any]]:
         """Delegate to Refs (crib/refs.py) — a project's `.crib` refs: targets."""
@@ -1334,9 +1392,15 @@ class Crib:
         source-anchored note keyed `sources/<repo>/<rel>`; `read`/`locate` return
         the repo file, so an LLM that edits it edits the master. Re-runnable
         (hash-gated), and it prunes docs deleted from the source."""
-        link = CribLink.find(cwd or Path.cwd())
+        # No process-cwd fallback: in the daemon that's the spawn dir, not a repo.
+        base = Path(cwd) if cwd else self._registered_root(project)
+        if base is None:
+            raise ValueError(
+                "no repo dir to scan: pass project_path=<the repo dir> (or name an "
+                "already-indexed project)")
+        link = CribLink.find(base)
         if link is None or link.root is None:
-            raise ValueError("no .crib found from cwd upward")
+            raise ValueError(f"no .crib found from {base} upward")
         proj = project or link.project
         repo = link.root.name
         prefix = f"{SRC_PREFIX}{repo}/"
@@ -1439,7 +1503,12 @@ class Crib:
         history/identity survive; files removed upstream are dropped (reconcile,
         scoped to THIS host). Records a binding for the daemon's live mirror.
         """
-        start = root or cwd or Path.cwd()
+        # No process-cwd fallback: in the daemon that's the spawn dir, not a repo.
+        start = root or cwd
+        if start is None:
+            raise ValueError(
+                "no repo dir to anchor the memory lookup: pass project_path=<the "
+                "repo dir> (or root=<the harness project root>)")
         src_root = root or claudemem.find_harness_root(start)
         if src_root is None or not claudemem.harness_memory_dir(src_root).is_dir():
             raise ValueError(

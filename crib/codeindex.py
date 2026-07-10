@@ -58,6 +58,21 @@ DEFAULT_LSP_SPECS: dict[str, dict[str, Any]] = {
     "clangd": {"command": "clangd", "args": [],
                "extensionToLanguage": {".c": "c", ".h": "c", ".cc": "cpp",
                                        ".cpp": "cpp", ".hpp": "cpp", ".hh": "cpp"}},
+    # TypeScript/JavaScript: typescript-language-server (tsserver over LSP —
+    # documentSymbol + references + callHierarchy, all verified) first; vtsls
+    # (the VSCode-flavoured tsserver wrapper, same capabilities) as the fallback.
+    "typescript-language-server": {
+        "command": "typescript-language-server", "args": ["--stdio"],
+        "extensionToLanguage": {".ts": "typescript", ".tsx": "typescriptreact",
+                                ".mts": "typescript", ".cts": "typescript",
+                                ".js": "javascript", ".jsx": "javascriptreact",
+                                ".mjs": "javascript", ".cjs": "javascript"}},
+    "vtsls": {
+        "command": "vtsls", "args": ["--stdio"],
+        "extensionToLanguage": {".ts": "typescript", ".tsx": "typescriptreact",
+                                ".mts": "typescript", ".cts": "typescript",
+                                ".js": "javascript", ".jsx": "javascriptreact",
+                                ".mjs": "javascript", ".cjs": "javascript"}},
     # Lua: emmylua_ls (Rust rewrite, aims for full LSP incl. call hierarchy) first,
     # lua-language-server (LuaLS — references/definition but NO call hierarchy) as
     # the fallback. Even without call hierarchy, descriptions + callers-via-references
