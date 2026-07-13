@@ -12,6 +12,7 @@ import datetime
 import os
 import sys
 import threading
+import time
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Callable
@@ -113,6 +114,11 @@ class Crib:
         self._code_watcher: CodeWatcher | None = None
         self._describe_q: Any = None    # DescribeQueue, started by the daemon
         self._mirror: Any = None        # MemoryMirror, started by the daemon
+        # auto keyword_index refresh (daemon): per-note settle timers, plus strong
+        # refs for ALL fire-and-forget daemon tasks (backlogs, refreshes) — an
+        # unreferenced asyncio task is GC-collectable mid-flight
+        self._kw_timers: dict[tuple[str, str], asyncio.TimerHandle] = {}
+        self._bg_tasks: set[asyncio.Task] = set()
         self._on_close: Callable[[], None] | None = None
         # The code subsystem's shared per-project state (resident cache, freshness
         # epoch, write locks, in-flight/sweep tracking) — owned by CodeStore; the
@@ -181,8 +187,19 @@ class Crib:
                                          cap=gen.describe_backoff_cap)
         self.indexer.set_describe_queue(self._describe_q)
         # Self-heal: a crash (or clean stop) mid-window leaves symbols with structure
-        # but a blank description — re-drive them so nothing stays undescribed.
-        loop.create_task(self._describe_backlog())
+        # but a blank description — re-drive them so nothing stays undescribed. Ditto
+        # the notes keyword facet (refresh timers cancelled on stop): elaborate's
+        # content-hash gate is its durable signal, so the catch-up is a cheap no-op
+        # when nothing was lost.
+        self._spawn_bg(loop, self._describe_backlog())
+        self._spawn_bg(loop, self._keyword_backlog())
+
+    def _spawn_bg(self, loop: asyncio.AbstractEventLoop, coro: Any) -> None:
+        """Fire-and-forget on the daemon loop, with a strong reference held until done
+        (asyncio keeps only weak refs — an unreferenced task can be GC'd mid-flight)."""
+        t = loop.create_task(coro)
+        self._bg_tasks.add(t)
+        t.add_done_callback(self._bg_tasks.discard)
 
     async def _on_fs_change(self, project: str, relpath: str) -> None:
         await self.index.index_file(project, self.notes_dir(project), relpath)
@@ -271,6 +288,26 @@ class Crib:
             except Exception:  # noqa: BLE001 — best-effort; missing/odd index is fine
                 pass
 
+    async def _keyword_backlog(self) -> None:
+        """Notes counterpart of `_describe_backlog`: catch the keyword_index AND
+        summary_index facets up after a stop dropped pending write-path refreshes
+        (their settle timers are cancelled on shutdown, and unfired ones simply die).
+        Both verbs are content-hash-gated per section, so this is a no-op when nothing
+        was lost — but the first run over a corpus that predates the configured labels
+        generates for every never-enriched section (the same work the explicit
+        `crib elaborate`/`crib summarize` would do). The project-wide pass also runs
+        the orphan prune (`SectionIndex.prune`) for each label."""
+        if not (self.config.retrieve.keyword_labels
+                or self.config.retrieve.summary_labels):
+            return
+        for p in self.projects():
+            name = p["project"] if isinstance(p, dict) else p
+            try:
+                await self.enrich(project=name)      # one combined pass, all facets
+            except Exception as e:  # noqa: BLE001 — best-effort catch-up
+                print(f"[crib] enrichment catch-up failed ({name}): {e}",
+                      file=sys.stderr)
+
     async def start_memory_mirror(self, loop: asyncio.AbstractEventLoop) -> None:
         """Catch up + live-mirror bound Claude harness memory dirs (DESIGN §13).
         No-op without bindings (`crib import-memory` opts repos in)."""
@@ -298,6 +335,12 @@ class Crib:
         if self._mirror is not None:
             self._mirror.stop()
             self._mirror = None
+        for timer in self._kw_timers.values():
+            timer.cancel()
+        self._kw_timers.clear()
+        for task in self._bg_tasks:     # best-effort: unfinished work dies with us
+            task.cancel()
+        self._bg_tasks.clear()
 
     def close(self) -> None:
         """Stop watchers, shut warm LSP sessions down, and release the shared
@@ -343,7 +386,54 @@ class Crib:
         return self.notestore.abspath(project, relpath)
 
     async def _write_note(self, project: str, relpath: str, note: Note) -> IndexResult:
-        return await self.notestore.write(project, relpath, note)
+        res = await self.notestore.write(project, relpath, note)
+        self._schedule_keyword_refresh(project, relpath)   # keep the sparse facet fresh
+        return res
+
+    _KW_SETTLE_S = 1.0                  # per-note debounce before the refresh fires
+
+    def _schedule_keyword_refresh(self, project: str, relpath: str) -> None:
+        """AUTO enrichment: after a note write, (re)generate the terms for the active
+        `keyword_labels` (BM25 facet) AND `summary_labels` (dense alias facet) — OFF
+        the save path, content-hash-gated so unchanged sections skip. Without this the
+        body facet silently carries retrieval on freshly-written notes: the keyword arm
+        can't see un-elaborated sections, and the alias max-merge can't see
+        un-summarized ones. Mirrors how the code path folds keyword gen into its
+        mandatory describe pass. DEBOUNCED per note (a write burst — store then append
+        then edit — collapses to ONE refresh after `_KW_SETTLE_S`), and the fired task
+        is held in `_bg_tasks` (an unreferenced task can be GC'd mid-flight).
+        Daemon-only — a one-shot CLI has no persistent loop to drain the task; there
+        `crib elaborate`/`crib summarize` stay the explicit verbs."""
+        if not (self.config.retrieve.keyword_labels
+                or self.config.retrieve.summary_labels) or self._describe_q is None:
+            return                                   # describe queue present ⇒ daemon
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            return
+
+        async def _refresh() -> None:
+            try:
+                # ONE combined pass covers every configured facet (keyword + summary
+                # labels) in one generation per section. `_generate_enrichment`
+                # already drops the lexical/summary caches iff it generated anything,
+                # so the next query rebuilds — no extra invalidation needed here.
+                await self.enrich(relpath=relpath, project=project)
+            except Exception as e:  # noqa: BLE001 — best-effort background refresh
+                print(f"[crib] auto enrichment refresh failed: {e}", file=sys.stderr)
+
+        key = (project, relpath)
+
+        def _fire() -> None:
+            self._kw_timers.pop(key, None)
+            t = loop.create_task(_refresh())
+            self._bg_tasks.add(t)
+            t.add_done_callback(self._bg_tasks.discard)
+
+        old = self._kw_timers.pop(key, None)
+        if old is not None:
+            old.cancel()                # re-arm: newest write restarts the settle
+        self._kw_timers[key] = loop.call_later(self._KW_SETTLE_S, _fire)
 
     # --- tool verbs --------------------------------------------------------
     # near-duplicate nudge: a stored note whose probe matches an existing note
@@ -526,11 +616,11 @@ class Crib:
         return self._reranker
 
     def _rerank(self, query: str, hits: list[Hit]) -> list[Hit]:
-        """Blend the cross-encoder into the ranking by RRF-fusing its order with
-        the existing fused order, rather than letting it fully reorder — so the
-        reranker is a third voter that can *promote* a better match but can't
-        single-handedly *break* a strong hybrid result on one bad judgment. Only
-        the top `rerank_top_n` are scored. Degrades to input order if unavailable."""
+        """RANGE-MATCHED rerank: min-max the fusion score AND the cross-encoder score over
+        the top `rerank_top_n`, sum, re-order. The fusion below is score-based (dense-dominant),
+        so the reranker folds in as a bounded term that keeps the fusion's magnitude — the
+        rerank method must MATCH the fusion method (measured: RRF-rerank suits rank fusion,
+        range-matched suits score fusion). Degrades to input order if the reranker is down."""
         n = self.config.retrieve.rerank_top_n
         head = hits[:n]
         if not head:
@@ -540,79 +630,103 @@ class Crib:
         except Exception as e:  # noqa: BLE001 — reranker optional; degrade to fused order
             print(f"[crib] reranker disabled: {e}", file=sys.stderr)
             return hits
-        from .retrieve import reciprocal_rank_fusion
 
-        rerank_order = [head[i].id for i in sorted(
-            range(len(head)), key=lambda i: scores[i], reverse=True)]
-        fused_order = [h.id for h in hits]   # existing dense⊕BM25 RRF order
-        new_order = reciprocal_rank_fusion(
-            [fused_order, rerank_order], k=self.config.retrieve.rrf_k)
-        by_id = {h.id: h for h in hits}
-        return [by_id[i] for i in new_order]
+        def _mm(vals: list[float]) -> list[float]:
+            lo, hi = min(vals), max(vals)
+            rng = (hi - lo) or 1.0
+            return [(v - lo) / rng for v in vals]
+
+        bn = _mm([float(h.score) for h in head])   # fusion score (dense + gated sparse)
+        rn = _mm(list(scores))
+        order = sorted(range(len(head)), key=lambda i: bn[i] + rn[i], reverse=True)
+        return [head[i] for i in order] + hits[n:]
 
     def _retrieve(self, proj: str, query: str, vec: list[float], topn: int,
                   hybrid: bool, rerank: bool,
                   keyword_labels: tuple[str, ...] = (),
                   keyword_weight: float = 1.0,
                   summary_labels: tuple[str, ...] = (),
-                  summary_weight: float = 0.3) -> list[Hit]:
-        """Candidate Hits in rank order: dense retrieval, optionally RRF-fused with
-        a BM25 (keyword_index) ranking and/or a summary_index alias-vector ranking,
-        then optionally cross-encoder reranked.
-
-        Three independent recall signals, fused by rank: dense cosine (paraphrase),
-        BM25 (exact terms + keyword_index), and summary aliases (dense match on LLM
-        rephrasings — bridges the pure-paraphrase gap the section body misses).
-        Hits keep the cosine in `.score`; an id absent from the dense finalists has
-        its cosine filled by re-embedding just that handful."""
-        from .retrieve import reciprocal_rank_fusion, tokenize
+                  summary_weight: float = 1.0) -> list[Hit]:
+        """Candidate Hits in DENSE-DOMINANT SCORE order: raw cosine (dense, already
+        calibrated) + min-max'd keyword_index BM25, over the union candidate pool. Only
+        the uncalibrated sparse side is normalized; dense cosine stays RAW so a confident
+        dense match is never diluted — the score-based fusion the range-matched `_rerank`
+        is matched to. summary_index aliases are MULTI-VECTOR dense: each alias embedding
+        points at its section, and the section's dense score is the MAX over its vectors
+        (body ⊕ aliases × `summary_weight` trust scale) — an alias match IS a dense match,
+        never a rank bonus. A candidate that came from the sparse side and isn't in the
+        dense finalists has its cosine BACK-FILLED (re-embed just that handful) so every
+        pooled candidate has a real dense base to blend on. (No coverage gate — prose
+        sections already carry the vocabulary; the gate is a code-side answer to terse
+        identifiers.)"""
+        from .retrieve import tokenize
+        kw_blend = 0.5                          # fusion weight of the keyword_index term
 
         where = {"project": proj}
         dense = self.store.query(vec, k=topn, where=where)
-        rankings: list[list[str]] = [[h.id for h in dense]]
-        weights: list[float] = [1.0]            # dense list votes at full weight
+        cos: dict[str, float] = {h.id: h.score for h in dense}   # raw cosine per candidate
+        dense_by = {h.id: h for h in dense}
         docs: dict = {}
-
+        kw: dict[str, float] = {}
         if hybrid:
             ids, docs, bm25 = self.index.lexical.get(
                 proj, keyword_labels, keyword_weight)
             if ids:
-                sparse = bm25.scores(tokenize(query))
-                rankings.append([ids[j] for j in sorted(
-                    range(len(ids)), key=lambda j: sparse[j], reverse=True)
-                    if sparse[j] > 0][:topn])
-                weights.append(1.0)             # BM25 (keyword downweight is in-corpus)
+                qt = tokenize(query)
+                sparse = bm25.scores(qt)
+                if self.config.retrieve.keyword_coverage_gate:
+                    from .retrieve import STOPWORDS
+                    Q = {t for t in set(qt) if len(t) > 1 and t not in STOPWORDS}
+                    sparse = [c * s for c, s in zip(bm25.coverage(Q), sparse)]
+                top = sorted(range(len(ids)), key=lambda j: sparse[j], reverse=True)
+                kw = {ids[j]: sparse[j] for j in top[:topn] if sparse[j] > 0}
 
+        summ_hit = False
         if summary_labels:
-            summary_ranked = self.index.summaries.ranking(
-                proj, summary_labels, vec, topn)
-            if summary_ranked:
-                rankings.append(summary_ranked)
-                weights.append(summary_weight)  # broad aliases vote below primaries
+            for cid, ac in self.index.summaries.best_cosines(
+                    proj, summary_labels, vec).items():
+                ac *= summary_weight            # alias-trust scale (1.0 = full dense)
+                if ac > cos.get(cid, -1.0):
+                    cos[cid] = ac               # max over the section's vectors
+                    summ_hit = True
 
-        if len(rankings) == 1:          # dense only
+        if not kw and not summ_hit:             # dense only
             out = dense
         else:
-            fused = reciprocal_rank_fusion(
-                rankings, k=self.config.retrieve.rrf_k, weights=weights)[:topn]
-            dense_by = {h.id: h for h in dense}
-            if not docs:                # need doc text to fill non-dense cosines
+            pool = list(dict.fromkeys(list(cos) + list(kw)))
+            if not docs:                        # need doc text to back-fill cosines
                 docs = {i: (d, m) for i, (d, m)
                         in self.store.get_docs(where).items()
                         if not (m or {}).get("alias")}
-            missing = [cid for cid in fused if cid not in dense_by and cid in docs]
-            cos: dict[str, float] = {}
+            missing = [cid for cid in pool if cid not in cos and cid in docs]
             if missing:
                 for cid, dv in zip(missing, self.embedder.embed(
                         [docs[cid][0] for cid in missing])):
                     cos[cid] = sum(a * b for a, b in zip(vec, dv))  # L2-normalized
+            # drop any we couldn't score, and any alias rep whose chunk vanished
+            pool = [cid for cid in pool
+                    if cid in cos and (cid in dense_by or cid in docs)]
+
+            def _mm(d: dict[str, float]) -> dict[str, float]:
+                if not d:
+                    return {}
+                vals = [d.get(cid, 0.0) for cid in pool]
+                lo, hi = min(vals), max(vals)
+                rng = (hi - lo) or 1.0
+                return {cid: (d.get(cid, 0.0) - lo) / rng for cid in pool}
+
+            kn = _mm(kw)                         # min-max the sparse side over the pool
+            score = {cid: cos[cid] + kw_blend * kn.get(cid, 0.0) for cid in pool}
+            order = sorted(pool, key=lambda cid: score[cid], reverse=True)[:topn]
             out = []
-            for cid in fused:
+            for cid in order:
+                s = round(score[cid], 4)
                 if cid in dense_by:
-                    out.append(dense_by[cid])
-                elif cid in docs:
+                    h = dense_by[cid]
+                    out.append(Hit(cid, h.document, h.metadata, s))
+                else:
                     doc, meta = docs[cid]
-                    out.append(Hit(cid, doc, meta, round(cos.get(cid, 0.0), 4)))
+                    out.append(Hit(cid, doc, meta, s))
         if rerank:
             out = self._rerank(query, out)
         return out
@@ -1000,10 +1114,10 @@ class Crib:
         (root / ".crib").write_text("\n".join(lines) + "\n")
         return CribLink.find(root), True
 
-    async def _index_project_code(self, proj: str, root: Path,
-                                  globs: list[str]) -> dict[str, Any]:
+    async def _index_project_code(self, proj: str, root: Path, globs: list[str],
+                                  budget_s: float | None = None) -> dict[str, Any]:
         """Delegate to the CodeIndexer pipeline (project setup/index call this)."""
-        return await self.indexer._index_project_code(proj, root, globs)
+        return await self.indexer._index_project_code(proj, root, globs, budget_s)
 
     async def project_setup(self, project: str | None = None,
                             cwd: Path | None = None) -> dict[str, Any]:
@@ -1022,15 +1136,18 @@ class Crib:
                 "created": new_project, "docs_indexed": docs.get("docs", 0), **code}
 
     async def project_index(self, project: str | None = None,
-                            cwd: Path | None = None) -> dict[str, Any]:
+                            cwd: Path | None = None,
+                            budget_s: float | None = None) -> dict[str, Any]:
         """(Re)index the project's SOURCE CODE and in-situ docs from its `.crib`
-        (ensuring a `.crib` first). Cheap re-run via the content-hash gate."""
+        (ensuring a `.crib` first). Cheap re-run via the content-hash gate. `budget_s`
+        bounds the call and DEFERS the rest (`complete=False`, `remaining=N`) — re-invoke
+        to continue; poll `project_status` for live `{done,total}` progress meanwhile."""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
         proj = project or link.project
         new_project = proj not in self.projects()   # before indexing creates its dirs
         docs = await self.index_docs_insitu(proj, link.root) if link.doc_patterns else {}
         globs = link.paths or self._detect_code_globs(link.root)
-        code = await self._index_project_code(proj, link.root, globs)
+        code = await self._index_project_code(proj, link.root, globs, budget_s)
         return {"project": proj, "root": str(link.root), "crib_created": created,
                 "created": new_project, "docs_indexed": docs.get("docs", 0), **code}
 
@@ -1058,8 +1175,13 @@ class Crib:
                 "symbols": len(entries),
                 "files": len({e.get("file") for e in entries}),
                 "kinds": dict(Counter(e.get("kind", "?") for e in entries)),
+                "described": sum(1 for e in entries if e.get("description")),
+                "with_keywords": sum(1 for e in entries if e.get("keywords")),
                 "paths": (link.paths if link else []),
                 "refs": refs,
+                # live reindex progress ({done,total}) while a sweep runs — the poll signal
+                # for a budgeted project_index that returned complete=False
+                "indexing": self.code.sweeps.get(proj),
                 "doc_sources": srcs, "doc_chunks": doc_count,
                 "crib": (str(link.root / ".crib") if link and link.root else None)}
 
@@ -1182,10 +1304,42 @@ class Crib:
         return self.learnings.read(self.resolve_project(project, cwd), symbol)
 
     def code_lookup(self, query: str, project: str | None = None, k: int = 8,
-                    cwd: Path | None = None,
-                    sparse_weight: float = 0.2) -> list[dict[str, Any]]:
-        """Find a code symbol by concept OR name (hybrid dense+kw), fanning out to refs."""
-        return self.query.lookup(self.resolve_project(project, cwd), query, k, sparse_weight)
+                    cwd: Path | None = None) -> list[dict[str, Any]]:
+        """Find a code symbol by concept OR name. Coverage-gated expanded-BM25 ⊕ raw-dense
+        blend (in `_lookup_one`), then an optional cross-encoder rerank folded in as a
+        RANGE-MATCHED term (`[retrieve].rerank`). Fans out to refs."""
+        from .codequery import _RERANK_N
+        proj = self.resolve_project(project, cwd)
+        hits = self.query.lookup(proj, query, max(k, _RERANK_N))
+        if self.config.retrieve.rerank and len(hits) > 1:
+            hits = self._rerank_code(query, hits)
+        hits = hits[:k]
+        for r, h in enumerate(hits, 1):
+            h["rank"] = r
+            h.pop("_score", None)
+        return hits
+
+    def _rerank_code(self, query: str, hits: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Range-matched rerank: min-max the blend score AND the cross-encoder score over
+        the head, sum, re-order. Keeps the blend's magnitude (unlike RRF, which discards it
+        and let a noisier reranker reorder freely — measured to regress cross-domain)."""
+        from .codequery import _RERANK_N
+        head = hits[:_RERANK_N]
+        try:
+            rr = self.reranker.scores(query, [f"{h['fqname']}: {h.get('description','')}" for h in head])
+        except Exception as e:  # noqa: BLE001 — reranker optional; degrade to blend order
+            print(f"[crib] code reranker disabled: {e}", file=sys.stderr)
+            return hits
+
+        def _mm(vals: list[float]) -> list[float]:
+            lo, hi = min(vals), max(vals)
+            rng = (hi - lo) or 1.0
+            return [(v - lo) / rng for v in vals]
+
+        bn = _mm([float(h.get("_score", 0.0)) for h in head])
+        rn = _mm(list(rr))
+        order = sorted(range(len(head)), key=lambda j: bn[j] + rn[j], reverse=True)
+        return [head[j] for j in order] + list(hits[_RERANK_N:])
 
     def code_graph(self, symbol: str, direction: str = "callees", depth: int = 6,
                    project: str | None = None,
@@ -1193,22 +1347,69 @@ class Crib:
         """pstree-style call graph around a symbol (recursive), crossing into refs."""
         return self.query.graph(self.resolve_project(project, cwd), symbol, direction, depth)
 
+    async def enrich(self, relpath: str | None = None, project: str | None = None,
+                     cwd: Path | None = None, overwrite: bool = False) -> dict[str, Any]:
+        """ONE enrichment pass over every configured facet — the keyword labels (BM25
+        side) AND the summary labels (dense alias side) together, one bulk generation
+        per note batch emitting all facets' terms. The notes mirror of the code path's
+        single describe emitting {description, keywords}: half the LLM calls of running
+        `elaborate` + `summarize` back to back. This is what the write-path refresh and
+        the startup backlog run; the per-label verbs stay for explicit/eval use."""
+        from .section_index import (KEYWORD_PROMPTS, SUMMARY_PROMPTS, SectionIndex,
+                                    resolve_prompt)
+        proj = self.resolve_project(project, cwd)
+        facets: list[dict[str, Any]] = []
+        for table, builtins, root, labels in (
+                (self.config.elaborate, KEYWORD_PROMPTS, "keyword_index",
+                 self.config.retrieve.keyword_labels),
+                (self.config.summarize, SUMMARY_PROMPTS, "summary_index",
+                 self.config.retrieve.summary_labels)):
+            for lb in labels:
+                prompt = resolve_prompt(lb, table, builtins)
+                if prompt is None:
+                    raise ValueError(f"unknown enrichment label {lb!r}")
+                facets.append({"root": root, "label": lb, "prompt": prompt,
+                               "store": SectionIndex(self.paths.project_dir(proj), root)})
+        if not facets:
+            return {"project": proj, "labels": [], "written": {}, "total": 0}
+        return await self._generate_enrichment(proj, "elaborate", facets,
+                                               relpath, overwrite)
+
     async def _generate_index(self, root_name: str, purpose: str, label: str,
                               prompt: str | None, relpath: str | None,
                               project: str | None, cwd: Path | None,
                               overwrite: bool) -> dict[str, Any]:
-        """Shared section-level generation for keyword_index / summary_index: one
-        LLM call per **section** with the full section as context (windows share
-        one result), persisted section-addressed so it survives re-windowing.
-        Bounded-concurrent, per-call timeout, error-isolated; skips cached sections
-        unless `overwrite`. Off the write path."""
+        """Single-facet shim over `_generate_enrichment` (the `elaborate`/`summarize`
+        verbs) — legacy flat result shape preserved."""
         proj = self.resolve_project(project, cwd)
-        from .section_index import SectionIndex, parse_terms
+        from .section_index import SectionIndex
         if prompt is None:
             raise ValueError(
                 f"unknown {purpose} label {label!r}: no builtin and no "
                 f"[{purpose}.{label}].prompt in config")
-        store = SectionIndex(self.paths.project_dir(proj), root_name)
+        facet = {"root": root_name, "label": label, "prompt": prompt,
+                 "store": SectionIndex(self.paths.project_dir(proj), root_name)}
+        out = await self._generate_enrichment(proj, purpose, [facet],
+                                              relpath, overwrite)
+        return {"project": proj, "label": label,
+                "written": out["written"].get(label, 0), "skipped": out["skipped"],
+                "errors": out["errors"], "total": out["total"],
+                "pruned": out["pruned"].get(label, 0), "bulk_docs": out["bulk_docs"]}
+
+    async def _generate_enrichment(self, proj: str, purpose: str,
+                                   facets: list[dict[str, Any]], relpath: str | None,
+                                   overwrite: bool) -> dict[str, Any]:
+        """Shared MULTI-FACET section-level generation: one bulk call per note batch
+        emits terms for EVERY facet (a facet = one label of keyword_index or
+        summary_index, with its own prompt and store), with the full section as
+        context (windows share one result), persisted section-addressed so it
+        survives re-windowing. Per-facet hash gates stay independent — a section is
+        a target if ANY facet lacks its entry, and only the missing facets are
+        written, so a half-generated state heals without churning complete facets.
+        The per-section mop-up sweeps the bulk-missed tail per facet (plain-text
+        `parse_terms`, the proven path). Bounded-concurrent, per-call timeout,
+        error-isolated; off the write path."""
+        from .section_index import parse_terms
         from .generate import agenerate, agenerate_structured, resolve_provider
         try:                                    # record the resolved provider for provenance
             _p = resolve_provider(self.config.generate, purpose)
@@ -1237,8 +1438,10 @@ class Crib:
                     pass
             return fallback
 
+        pass_start = time.time()        # prune guard: spare entries written mid-pass
         seen_sections: set[str] = set()
-        targets: list[tuple[str, str, str, str]] = []   # (section_hash, relpath, heading, body)
+        # (section_hash, relpath, heading, body, missing-facets)
+        targets: list[tuple[str, str, str, str, list[dict]]] = []
         skipped = 0
         for _cid, (doc, meta) in self.store.get_docs({"project": proj}).items():
             if relpath and meta.get("relpath") != relpath:
@@ -1247,51 +1450,61 @@ class Crib:
             if not sh or sh in seen_sections:
                 continue
             seen_sections.add(sh)
-            if not overwrite and store.has(label, sh):
+            missing = [f for f in facets
+                       if overwrite or not f["store"].has(f["label"], sh)]
+            if not missing:
                 skipped += 1
                 continue
             rp = meta.get("relpath", "")
             heading = meta.get("heading_path", "")
-            targets.append((sh, rp, heading, _section_text(rp, heading, doc)))
+            targets.append((sh, rp, heading, _section_text(rp, heading, doc), missing))
 
         gen = self.config.generate
         total = len(targets)
         sem = asyncio.Semaphore(max(1, gen.concurrency))
-        counters = {"written": 0, "errors": 0, "done": 0, "bulk_docs": 0}
-        done_sh: set[str] = set()   # sections already written (bulk covered them)
-        tag = f"{purpose} {label}"
+        written: dict[str, int] = {f["label"]: 0 for f in facets}
+        counters = {"errors": 0, "done": 0, "bulk_docs": 0}
+        done: dict[str, set[str]] = {f["label"]: set() for f in facets}  # label → shs
+        tag = f"{purpose} {'+'.join(f['label'] for f in facets)}"
         mode = "bulk+mop-up" if gen.bulk else "per-section"
         print(f"[{tag}] {total} sections to generate ({mode}; skipped {skipped} "
               f"cached; concurrency {gen.concurrency}, timeout {gen.timeout:g}s)",
               file=sys.stderr, flush=True)
 
-        def _record(sh: str, rp: str, heading: str, terms: list[str]) -> None:
-            if terms and sh not in done_sh:
-                store.write(label, sh, terms, relpath=rp, heading=heading, model=model)
-                counters["written"] += 1
-                done_sh.add(sh)
+        def _record(facet: dict, sh: str, rp: str, heading: str,
+                    terms: list[str]) -> None:
+            lb = facet["label"]
+            if terms and sh not in done[lb]:
+                facet["store"].write(lb, sh, terms, relpath=rp, heading=heading,
+                                     model=model)
+                written[lb] += 1
+                done[lb].add(sh)
 
-        async def _one(sh: str, rp: str, heading: str, body: str) -> None:
-            # Per-section: bounded-concurrent, timeout-capped, error-isolated —
-            # one hung/failed section is skipped, never sinks the pass. Serves both
-            # the legacy path (bulk off) and the mop-up for bulk-missed sections.
+        async def _one_facet(facet: dict, sh: str, rp: str, heading: str,
+                             body: str) -> None:
+            # Per-section, per-facet: bounded-concurrent, timeout-capped, error-
+            # isolated — one hung/failed section is skipped, never sinks the pass.
+            # Serves both the legacy path (bulk off) and the bulk-missed mop-up;
+            # stays plain-text + parse_terms (the proven path) since it only sweeps
+            # the small tail.
             user = f"{heading}\n\n{body}" if heading else body
             try:
                 async with sem:
-                    text = await agenerate(gen, prompt, user, purpose=purpose,
+                    text = await agenerate(gen, facet["prompt"], user, purpose=purpose,
                                            timeout=gen.timeout)
                 terms = parse_terms(text)
             except Exception as e:  # noqa: BLE001 — timeout or generation failure
                 counters["errors"] += 1
                 counters["done"] += 1
-                print(f"[{tag}] {counters['done']}/{total} ERR  {rp} :: "
-                      f"{heading[-44:]} — {type(e).__name__}: {e}",
+                print(f"[{tag}] {counters['done']} ERR  {rp} :: "
+                      f"{heading[-44:]} ({facet['label']}) — {type(e).__name__}: {e}",
                       file=sys.stderr, flush=True)
                 return
-            _record(sh, rp, heading, terms)
+            _record(facet, sh, rp, heading, terms)
             counters["done"] += 1
-            print(f"[{tag}] {counters['done']}/{total} ok   {rp} :: "
-                  f"{heading[-44:]} ({len(terms)} terms)", file=sys.stderr, flush=True)
+            print(f"[{tag}] {counters['done']} ok   {rp} :: "
+                  f"{heading[-44:]} ({facet['label']}: {len(terms)} terms)",
+                  file=sys.stderr, flush=True)
 
         # Phase 1 — whole-doc bulk authoring (structured, one call per note/batch):
         # the model sees a note's sections together, so it can pick section-
@@ -1302,22 +1515,28 @@ class Crib:
         if gen.bulk and targets:
             from collections import defaultdict
 
+            # ONE structured call per batch emits EVERY facet: an object field per
+            # label, each with its own instruction — the {description, keywords}
+            # single-pass trick from the code path, generalized.
             bulk_schema = {
                 "type": "object",
                 "properties": {"sections": {"type": "array", "items": {
                     "type": "object",
                     "properties": {"heading": {"type": "string"},
-                                   "terms": {"type": "array",
-                                             "items": {"type": "string"}}},
-                    "required": ["heading", "terms"]}}},
+                                   **{f["label"]: {"type": "array",
+                                                   "items": {"type": "string"}}
+                                      for f in facets}},
+                    "required": ["heading"]}}},
                 "required": ["sections"],
             }
+            instr = "\n\n".join(f"For the `{f['label']}` field: {f['prompt']}"
+                                for f in facets)
             bulk_system = (
-                f"{prompt}\n\nYou are given a DOCUMENT of several sections, each "
-                "introduced by a line `<<< SECTION: <heading> >>>`. Apply the "
-                "instruction above to EACH section independently and return one "
-                "result per section, using that section's exact <heading> string. "
-                "Cover every section.")
+                f"{instr}\n\nYou are given a DOCUMENT of several sections, each "
+                "introduced by a line `<<< SECTION: <heading> >>>`. Apply EACH "
+                "field's instruction above to EACH section independently and return "
+                "one result per section, using that section's exact <heading> "
+                "string. Cover every section and every field.")
 
             def _match(h: str, by_head: dict[str, tuple]) -> tuple | None:
                 t = by_head.get(h)
@@ -1357,32 +1576,44 @@ class Crib:
                 for it in items:
                     if not isinstance(it, dict):
                         continue
-                    terms = [str(x).strip() for x in (it.get("terms") or [])
-                             if str(x).strip()]
                     tgt = _match(str(it.get("heading") or ""), by_head)
-                    if tgt and terms:
-                        _record(tgt[0], tgt[1], tgt[2], terms)
+                    if not tgt:
+                        continue
+                    for facet in tgt[4]:        # write ONLY the missing facets
+                        terms = [str(x).strip()
+                                 for x in (it.get(facet["label"]) or [])
+                                 if str(x).strip()]
+                        if terms:
+                            _record(facet, tgt[0], tgt[1], tgt[2], terms)
                 counters["bulk_docs"] += 1
-                got = sum(1 for t in batch if t[0] in done_sh)
-                print(f"[{tag}] bulk {rp}: {got}/{len(batch)} sections",
+                got = sum(1 for t in batch
+                          if all(t[0] in done[f["label"]] for f in t[4]))
+                print(f"[{tag}] bulk {rp}: {got}/{len(batch)} sections complete",
                       file=sys.stderr, flush=True)
 
             await asyncio.gather(*(_bulk(b) for b in batches))
 
-        # Phase 2 — per-section mop-up for anything Phase 1 didn't cover (or every
-        # section when bulk is off). Idempotent: `done_sh` gates re-writes.
-        mop = [t for t in targets if t[0] not in done_sh]
+        # Phase 2 — per-section, per-facet mop-up for anything Phase 1 didn't cover
+        # (or everything when bulk is off). Idempotent: `done` gates re-writes.
+        mop = [(f, t) for t in targets for f in t[4] if t[0] not in done[f["label"]]]
         if mop:
             if gen.bulk and counters["bulk_docs"]:
-                print(f"[{tag}] mop-up: {len(mop)} of {total} sections uncovered",
+                print(f"[{tag}] mop-up: {len(mop)} facet-sections uncovered",
                       file=sys.stderr, flush=True)
-            await asyncio.gather(*(_one(*t) for t in mop))
+            await asyncio.gather(*(_one_facet(f, t[0], t[1], t[2], t[3])
+                                   for f, t in mop))
 
         if targets:
             self.index.invalidate_caches(proj)   # feeds BM25 (keywords) + aliases (summaries)
-        return {"project": proj, "label": label, "written": counters["written"],
-                "skipped": skipped, "errors": counters["errors"], "total": total,
-                "bulk_docs": counters["bulk_docs"]}
+        # GC orphaned entries (edits re-key their section, note deletes drop it) — only
+        # a PROJECT-WIDE pass knows the full live set; a relpath-scoped one must not
+        # prune (it saw one note's sections). Runs on every startup via the backlog.
+        pruned = ({f["label"]: f["store"].prune(f["label"], seen_sections,
+                                                before=pass_start) for f in facets}
+                  if relpath is None else {f["label"]: 0 for f in facets})
+        return {"project": proj, "labels": [f["label"] for f in facets],
+                "written": written, "skipped": skipped, "errors": counters["errors"],
+                "total": total, "pruned": pruned, "bulk_docs": counters["bulk_docs"]}
 
     # --- in-situ docs (default: source is master, never copied) ------------
     async def index_docs_insitu(self, project: str | None = None,

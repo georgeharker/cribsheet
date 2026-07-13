@@ -90,7 +90,7 @@ class CodeIndexer:
         sweep parses it ONCE and passes it here so we don't re-`store.all()` per file
         (that made a cold onboard O(files × symbols)). None → parse it (standalone path)."""
         from .codeindex import (NoServer, SymbolIndex, describe_file,
-                                 describe_symbols, extract_file, match_description)
+                                 describe_symbols, extract_file, match_meta)
         ref_ctx = self.services.ref_edge_ctx(proj, root)
         abs_p = (root / rel).resolve()
         for rname, rroot, _files in ref_ctx:
@@ -155,7 +155,11 @@ class CodeIndexer:
                 pass
         stale = [e for e in entries
                  if existing.get(e["fqname"], {}).get("content_hash") != e["content_hash"]
-                 or not existing.get(e["fqname"], {}).get("description")]
+                 or not existing.get(e["fqname"], {}).get("description")
+                 # backfill kw facet: key PRESENCE is the "attempted" marker — a
+                 # rendered `keywords = []` means the pass ran and yielded none
+                 # (don't retry forever); a missing key means never attempted (legacy)
+                 or "keywords" not in existing.get(e["fqname"], {})]
         gen_error: str | None = None
         # DEFER (the live watch path): persist STRUCTURE now and hand the changed
         # symbols to the backoff queue — the LLM pass is coalesced off the save path
@@ -168,12 +172,14 @@ class CodeIndexer:
         if defer:
             for sym in entries:
                 ex = existing.get(sym["fqname"], {})
-                sym["description"] = (
-                    ex["description"]
-                    if ex.get("content_hash") == sym["content_hash"] and ex.get("description")
-                    else "")
+                if ex.get("content_hash") == sym["content_hash"] and ex.get("description"):
+                    sym["description"] = ex["description"]
+                    if "keywords" in ex:       # carry BOTH facets — write() replaces the
+                        sym["keywords"] = ex["keywords"]   # whole entry, so an omitted
+                else:                          # field is a clobber, not a no-op
+                    sym["description"] = ""
         else:
-            descs: dict[str, str] = {}
+            descs: dict[str, Any] = {}
             if stale:
                 try:
                     descs = describe_file(self.config.generate, root, rel)
@@ -183,18 +189,30 @@ class CodeIndexer:
                 ex = existing.get(sym["fqname"], {})
                 if ex.get("content_hash") == sym["content_hash"] and ex.get("description"):
                     sym["description"] = ex["description"]       # cached, unchanged body
+                    if "keywords" in ex:                         # attempted (even if [])
+                        sym["keywords"] = ex["keywords"]
+                    else:                       # keyword-only backfill: NEVER blank the
+                        d, kw = match_meta(sym["fqname"], descs)   # good description if
+                        if d:                   # the pass failed / missed this symbol
+                            sym["keywords"] = kw
                 else:
-                    sym["description"] = match_description(sym["fqname"], descs)
+                    desc, kw = match_meta(sym["fqname"], descs)
+                    sym["description"] = desc
+                    if desc:                    # covered by the pass → its keywords are
+                        sym["keywords"] = kw    # authoritative, [] included
             # MOP-UP: symbols the whole-file bulk pass missed (low-yield / partial LLM
             # response) get a focused describe over just their bodies — far higher hit
             # rate on a small set. Best-effort; content_hash gate keeps future runs cheap.
-            missed = [e for e in stale if not e.get("description")]
+            missed = [e for e in stale
+                      if not e.get("description") or "keywords" not in e]
             if missed:
                 try:
                     mop = describe_symbols(self.config.generate, missed)
                     for e in missed:
-                        e["description"] = (mop.get(e["name"])
-                                            or match_description(e["fqname"], mop))
+                        desc, kw = match_meta(e["fqname"], mop)
+                        if desc:
+                            e["description"] = desc
+                            e["keywords"] = kw
                 except Exception:  # noqa: BLE001 — mop-up is best-effort
                     pass
         # Serialize only the store read-modify-write (NOT the LSP/LLM work above),
@@ -237,7 +255,7 @@ class CodeIndexer:
         file and patch their descriptions in. RAISES on LLM failure so the queue re-arms
         (backoff-as-retry). Clobber-guarded: re-reads each symbol and skips one whose
         body moved again since it was queued (a newer edit already re-queued it)."""
-        from .codeindex import SymbolIndex, describe_symbols, match_description
+        from .codeindex import SymbolIndex, describe_symbols, match_meta
         syms = list(pending.values())
         descs = await asyncio.to_thread(describe_symbols, self.config.generate, syms)
         if not descs:
@@ -249,20 +267,31 @@ class CodeIndexer:
                 cur = store.read(fq)
                 if cur is None or cur.get("content_hash") != sym.get("content_hash"):
                     continue                            # dropped / re-edited → skip
-                d = descs.get(sym.get("name", "")) or match_description(fq, descs)
+                d, kw = match_meta(sym.get("name", ""), descs)
+                if not d:
+                    d, kw = match_meta(fq, descs)
                 if d:
                     cur["description"] = d
+                    cur["keywords"] = kw    # [] included — marks the attempt durable
                     store.write(cur)
                     patched += 1
         if patched:
             self.code.bump_epoch(proj)                  # queries now see fresh descriptions
         return {"described": patched, "file": rel}
 
-    async def _index_project_code(self, proj: str, root: Path,
-                                  globs: list[str]) -> dict[str, Any]:
-        """Index every source file under `globs`. Non-code files self-skip (NoServer)."""
+    async def _index_project_code(self, proj: str, root: Path, globs: list[str],
+                                  budget_s: float | None = None) -> dict[str, Any]:
+        """Index every source file under `globs`. Non-code files self-skip (NoServer).
+
+        `budget_s` makes the sweep RESUMABLE: files not reached before the soft deadline
+        are DEFERRED (not processed this call) and reported as `remaining` with
+        `complete=False`, so a long reindex fits inside a bounded (e.g. MCP) call and the
+        caller re-invokes to continue — the content-hash/keyword gate skips finished files."""
         from .codeindex import SymbolIndex
         files = self.services.enumerate_code_files(root, globs)
+        loop = asyncio.get_event_loop()
+        deadline = (loop.time() + budget_s) if budget_s else None
+        deferred = 0
         # Parse the prior index ONCE (by fqname) and share it across the whole sweep —
         # each file only needs its own prior entries (content_hash gate + vanished-drop),
         # so re-`store.all()` per file made a cold onboard O(files × symbols). Now O(N).
@@ -300,6 +329,10 @@ class CodeIndexer:
         async def _one(f: Path) -> tuple[Path, dict[str, Any] | None, str | None]:
             rel = str(f.resolve().relative_to(root.resolve()))
             async with sem:
+                # DEADLINE check after acquiring the slot: a file that queued past the
+                # budget is deferred to the next call, not processed now.
+                if deadline is not None and loop.time() > deadline:
+                    return f, {"deferred": True}, None
                 try:
                     r = await asyncio.to_thread(self._index_code_file_tracked, root, rel, proj,
                                                 False, existing)
@@ -317,7 +350,9 @@ class CodeIndexer:
             self.code.sweeps[proj] = {"done": 0, "total": len(files)}
         try:
             for f, r, err in await asyncio.gather(*(_one(f) for f in files)):
-                if err is not None:
+                if (r or {}).get("deferred"):
+                    deferred += 1
+                elif err is not None:
                     errors.append({"file": str(f), "error": err})
                 elif not (r or {}).get("skipped"):
                     indexed += 1
@@ -329,7 +364,8 @@ class CodeIndexer:
             if pins:
                 await asyncio.to_thread(_POOL.unpin, root)
         out: dict[str, Any] = {"files_indexed": indexed, "files_seen": len(files),
-                               "symbols": syms, "described": desc}
+                               "symbols": syms, "described": desc,
+                               "complete": deferred == 0, "remaining": deferred}
         if errors:
             out["errors"] = errors
         return out

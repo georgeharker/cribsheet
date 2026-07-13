@@ -210,7 +210,11 @@ a file with neither a known extension nor a recognized shebang is silently skipp
 
 - **Bulk-per-file** authoring (the whole-doc bulk path already built in
   `_generate_index`): one structured call per file emits `{fqname, description,
-  doc2query[]}` for every symbol, with a per-symbol mop-up backstop. Whole-file
+  keywords[]}` for every symbol, with a per-symbol mop-up backstop. Both facets in
+  ONE pass: the **description** feeds the dense arm; the **keywords** (behavioral
+  search phrases — the implemented form of the planned `doc2query`) feed the
+  *coverage-gated expanded BM25 field* (identifier subtokens ⊕ keywords), so a
+  behavioral query hits the sparse arm the terse name can't (DESIGN §10.3). Whole-file
   context lets the model see siblings and call relationships.
 - **Feed the structural facet into the prompt.** Put each symbol's `calls[]` /
   `called_by[]` in context so the model writes accurate intent ("orchestrates the
@@ -242,6 +246,13 @@ part and the least latency-sensitive. So the live watch path splits them
    description` survives a crash, so on the next start `Crib._describe_backlog`
    re-drives anything left blank — no in-memory queue to lose, no schema field to
    add (the goldens don't churn).
+4. **Keywords ride the same passes, with key-PRESENCE as their durable marker.**
+   An unchanged symbol's cached `keywords` are carried forward verbatim (the store
+   write replaces the whole entry, so omitting them would clobber). A rendered
+   `keywords = []` means "a describe pass ran and yielded none" — never retried;
+   a **missing** key means "never attempted" (a pre-keywords legacy entry) and
+   marks the symbol stale for backfill on the next explicit reindex or watch
+   touch. A failed backfill never blanks a good cached description.
 
 **Cold onboard and explicit `code_index` still describe inline** (a fresh index
 wants to finish fully described, not dribble). Only live edits defer. Config knobs
@@ -416,7 +427,7 @@ deferring to `_ensure_crib`:
 | CLI (noun-verb) | MCP | does |
 |---|---|---|
 | `crib project setup`  | `project_setup`  | ensure `.crib` + import docs + index all source (**superset**) |
-| `crib project index`  | `project_index`  | (re)index the source from `.crib` (cheap re-run via the content-hash gate) |
+| `crib project index`  | `project_index`  | (re)index the source from `.crib` (cheap re-run via the content-hash gate); the MCP tool streams `{done,total}` progress, and `budget_s=<s>` bounds a call — deferred files return `complete=false, remaining=N`, re-invoke to continue |
 | `crib project status` | `project_status` | indexed? symbol/file counts, kind breakdown, `.crib` paths |
 | `crib project forget` | `project_forget` | clear the `symbol_index` (KEEPS learnings/notes/`.crib` by default) |
 | `crib code setup` / `code status` | — | the **code facet** (code-only, no doc import) |

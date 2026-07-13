@@ -13,6 +13,10 @@ from typing import Any
 from .app import Crib
 from .session import ProjectResolution, resolve_session_project, session_state
 
+# How often project_index emits an MCP progress notification while a sweep runs — frequent
+# enough to keep the call alive (progress resets the client idle timeout) and feel live.
+_PROGRESS_EVERY_S = 2.0
+
 try:  # Context annotates the elicitation param; needed at runtime for injection AND
     from fastmcp import Context  # for the forward-ref eval of `ctx: Context`.
 except Exception:  # pragma: no cover — package stays importable without fastmcp
@@ -392,16 +396,42 @@ def build_server(crib: Crib | None = None):
 
     @mcp.tool()
     async def project_index(project: str | None = None,
-                            project_path: str | None = None) -> dict[str, Any]:
+                            project_path: str | None = None,
+                            budget_s: float | None = None,
+                            ctx: Context | None = None) -> dict[str, Any]:
         """(Re)index a project's SOURCE CODE from its `.crib` (code facet of
         project_setup — no doc import). Use to index a repo for code_lookup/code_dossier,
         or to refresh after edits (cheap: unchanged files are skipped). Pass
         `project_path=<the repo dir>` (a `.crib` is auto-created if missing); a bare
-        `project=<name>` re-indexes an ALREADY-INDEXED project from its recorded
-        root — an unknown name errors rather than guessing a directory."""
-        return _switch_if_created(
-            await crib.project_index(_source_project(crib, project, project_path),
-                                     cwd=_cwd(project_path)))
+        `project=<name>` re-indexes an ALREADY-INDEXED project from its recorded root.
+
+        Emits PROGRESS markers ({done,total} files) while the sweep runs, so a long index
+        streams live progress and doesn't idle-time-out — it runs to completion in one call.
+        (`project_status` also carries the live `indexing` counts.) If your client enforces
+        a hard call timeout anyway, pass `budget_s=<seconds>`: files not reached by the
+        soft deadline are deferred and the result says `complete=false, remaining=N` —
+        re-invoke to continue (finished files re-skip via the content-hash gate)."""
+        proj = _source_project(crib, project, project_path)
+        before = set(crib.code.sweeps)          # sweeps already running for OTHER calls
+        task = asyncio.create_task(
+            crib.project_index(proj, cwd=_cwd(project_path), budget_s=budget_s))
+        while not task.done():
+            # wait, don't sleep: a quick (all-cached) reindex returns immediately
+            # instead of eating a full progress interval
+            await asyncio.wait({task}, timeout=_PROGRESS_EVERY_S)
+            if ctx is None or task.done():
+                continue
+            # OUR sweep only: the named project's, else the one this call started
+            # (proj is None when the repo's .crib names it) — never other projects'.
+            sw = (crib.code.sweeps.get(proj) if proj else None) or next(
+                (v for p, v in crib.code.sweeps.items() if p not in before), None)
+            if sw and sw.get("total"):
+                try:
+                    await ctx.report_progress(progress=sw["done"], total=sw["total"],
+                                              message=f"{sw['done']}/{sw['total']} files")
+                except Exception:  # noqa: BLE001 — progress is best-effort
+                    pass
+        return _switch_if_created(await task)
 
     @mcp.tool()
     def project_status(project: str | None = None,

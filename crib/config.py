@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import tomllib
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -58,13 +58,15 @@ class RetrieveConfig:
     queries where exact-term sections lose to vaguely-on-topic prose. `rrf_k`
     is the RRF damping constant (60 is the canonical value).
 
-    `rerank` adds a cross-encoder pass over the top `rerank_top_n` fused
-    candidates — it reads (query, passage) jointly, fixing vocabulary-divergent
-    queries that both dense and BM25 miss. Off by default: it's a model inference
-    per candidate, so it costs latency (warm in the daemon, ONNX/CPU)."""
+    `rerank` folds a cross-encoder over the top `rerank_top_n` candidates into the
+    (score-based, dense-dominant) fusion as a RANGE-MATCHED term — it reads (query,
+    passage) jointly, fixing vocabulary-divergent queries that both dense and BM25 miss.
+    ON by default: measured a clear lift on both the code and notes paths (the biggest
+    single lever); costs one model inference per candidate (warm in the daemon, ONNX/CPU)
+    and degrades gracefully to the fused order if the model is unavailable."""
     hybrid: bool = True
     rrf_k: int = 60
-    rerank: bool = False
+    rerank: bool = True
     rerank_model: str = "Xenova/ms-marco-MiniLM-L-6-v2"  # small ONNX cross-encoder
     rerank_top_n: int = 20                               # candidate pool to rerank
     # keyword_index labels folded into the BM25 corpus (§3.1): each names a
@@ -86,14 +88,28 @@ class RetrieveConfig:
     # verdict): across every corpus measured it never lifted recall (recall was
     # already saturated) and moved MRR only marginally/inconsistently (0 to +0.025,
     # sometimes negative), while being the most expensive enrichment (an LLM call
-    # per section). The reranker below targets the same near-tie/vocabulary gap more
-    # directly and cheaply (no per-section generation). Reconsider only for a
-    # genuinely unsaturated corpus (recall well below 1.0) — untested at that scale.
+    # per section). UPDATE 2026-07-13: that verdict was measured against the RRF-era
+    # rank-bonus wiring. Under the multi-vector MAX-merge (an alias match IS a dense
+    # match) the aliases measure +0.013 MRR / +0.010 recall@3 over the shipped stack
+    # on the n=1876 harvested gold set — a real lift. Summary labels ride the same
+    # write-path debounce + startup backlog + prune GC as keyword_labels, so
+    # freshness is automatic once configured. Empty by default only because
+    # enrichment labels are an opt-in LLM cost (same convention as keyword_labels);
+    # the measured recommendation is `summary_labels = ["summary"]`.
     summary_labels: list[str] = field(default_factory=list)
-    # RRF fusion weight of the summary alias ranking vs the dense/BM25 lists
-    # (1.0 = equal vote). Broad summaries swamp retrieval at equal weight, so
-    # they should contribute below the primary signals; tune on the eval harness.
-    summary_weight: float = 0.3
+    # Alias-TRUST scale on the multi-vector merge: a section's dense score is
+    # max(body cosine, alias cosine × summary_weight) — 1.0 treats an alias match
+    # as a full dense match (the index-side design intent); below 1.0 discounts
+    # LLM aliases relative to real body matches. (The old meaning — RRF list
+    # weight — died with the rank-bonus port it parameterized.)
+    summary_weight: float = 1.0
+    # covpc-gate the notes BM25 arm (scale each doc's BM25 by the fraction of the
+    # query's informative tokens its field contains) — the code path's answer to
+    # diffuse sparse matches. MEASURED 2026-07-13 (n=1876): exactly neutral overall
+    # and a pure segment trade — exact-phrase queries +0.021 MRR, paraphrase
+    # queries −0.019 — so it stays OFF for notes, where paraphrase is the binding
+    # constraint (code keeps its gate: terse identifier fields are the case it wins).
+    keyword_coverage_gate: bool = False
     # How the resident code-index cache decides it's stale on a `code_*` query
     # (the cache keeps parsed symbols + description embeddings resident so a query
     # need not re-parse every TOML and re-embed every description):

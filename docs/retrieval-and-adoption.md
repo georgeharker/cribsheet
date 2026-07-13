@@ -1,5 +1,29 @@
 # Retrieval quality & tool adoption (the prerequisite layer)
 
+> **⚠ Superseded on the ranking mechanics (2026-07-13).** This is a dated
+> investigation log; its findings on *keyword_index / summary_index / adoption* stand,
+> but the **fusion and rerank** it describes (RRF-of-ranks, an "optional third RRF
+> list", rerank off) have been **replaced**: fusion is now a **dense-dominant score
+> blend** (raw cosine + min-max'd sparse) and rerank is **range-matched, on by
+> default** — see [DESIGN §10.3/§10.4](../DESIGN.md). Also: `keyword_index` now
+> **auto-refreshes on note write** (no manual `elaborate` for new notes) — debounced
+> per note (a write burst → one pass), healed at daemon start by a project-wide
+> hash-gated catch-up (a refresh lost to a quit is regenerated because the edited
+> section's NEW hash is a cache miss), and the same startup pass **GCs orphaned
+> entries** (an edit re-keys its section; the old hash's TOML is pruned once a
+> full-project pass knows the live set). And the **summary_index verdict flipped**
+> (2026-07-13): the old "never helped" was measured against the RRF rank-bonus
+> wiring; re-implemented as multi-vector dense (alias cosine MAX-merged into the
+> section's dense score) it measures **+0.013 MRR / +0.010 recall@3** over the
+> shipped stack on the n=1876 harvested gold set
+> (`scripts/gen_notes_gold.py` / `scripts/eval_data/notes_gold_large.json`).
+> Summary labels now ride the same write-path debounce + startup backlog + prune
+> GC as keyword labels, so `summary_labels = ["summary"]` is the measured
+> recommendation (repo default stays `[]` — enrichment labels are opt-in LLM
+> cost). Read "RRF"
+> below as "the fusion of the day"; the *signals* (dense ⊕ keyword_index ⊕
+> summary_index) are unchanged.
+
 > ## Build state & how to resume (2026-07-01)
 >
 > **Shipped & tested (88 unit tests pass):**

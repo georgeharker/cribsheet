@@ -60,8 +60,7 @@ def main(argv: list[str] | None = None) -> int:
         for w in weights:
             rows = []
             for c in cases:
-                hits = crib.code_lookup(c["q"], project=c["project"], k=args.k,
-                                        sparse_weight=w)
+                hits = crib.code_lookup(c["q"], project=c["project"], k=args.k)
                 rank = _hit_rank(hits, c["expect"])
                 rows.append({**c, "rank": rank,
                              "rr": (1.0 / rank) if rank else 0.0,

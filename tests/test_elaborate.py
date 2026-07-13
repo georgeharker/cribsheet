@@ -12,7 +12,7 @@ from crib.app import Crib
 from crib.config import Config
 from crib.section_index import SectionIndex, parse_terms
 from crib.paths import Paths
-from crib.retrieve import BM25, LexicalCache, tokenize
+from crib.retrieve import LexicalCache, tokenize
 from crib.store import InMemoryStore
 
 
@@ -48,6 +48,25 @@ def test_store_roundtrip_and_labels(tmp_path):
     assert store.read_terms("keywords", "h1") == ["alpha", "beta"]
     assert store.terms_for("h1", ["keywords", "missing"]) == ["alpha", "beta"]
     assert store.labels() == ["keywords"]
+
+
+def test_store_prune_drops_orphans_keeps_live_and_fresh(tmp_path):
+    import time
+
+    store = SectionIndex(tmp_path)
+    store.write("kw", "live", ["a"], relpath="n.md", heading="H")
+    store.write("kw", "orphan", ["b"], relpath="n.md", heading="H")   # edited away
+    cutoff = time.time() + 1                     # both entries predate the "pass"
+    store.write("kw", "mid-pass", ["c"], relpath="m.md", heading="H")
+    # mid-pass was written AFTER the live set was snapshotted → spared this round
+    (tmp_path / "keyword_index" / "kw" / "mid-pass.toml").touch()     # mtime ≥ cutoff bound
+    import os
+    os.utime(tmp_path / "keyword_index" / "kw" / "mid-pass.toml", (cutoff + 1, cutoff + 1))
+
+    assert store.prune("kw", {"live"}, before=cutoff) == 1
+    assert store.has("kw", "live")               # in the live set
+    assert not store.has("kw", "orphan")         # stale hash → GC'd
+    assert store.has("kw", "mid-pass")           # newer than the pass → spared
 
 
 def test_store_toml_is_deterministic(tmp_path):
@@ -182,8 +201,11 @@ def test_summary_alias_cache_ranks_section_by_rephrasing():
 
     cache = SummaryVectorCache(FakeStore(), emb, summaries)
     qv = emb.embed_query(["kubernetes orchestration platform"])[0]
-    ranked = cache.ranking("p", ("summary",), qv, topn=5)
-    assert ranked and ranked[0] == "c1"        # s1's rep chunk ranks first
+    best = cache.best_cosines("p", ("summary",), qv)
+    # s1's rep chunk carries the max alias cosine — a REAL dense score the caller
+    # max-merges into the dense arm (multi-vector), not a rank for a fused list
+    assert best["c1"] > best.get("c2", -2.0)
+    assert best["c1"] > 0.9                    # paraphrase-identical alias ≈ 1.0
 
 
 def test_summarize_writes_summary_index(crib, monkeypatch):
@@ -217,7 +239,8 @@ def test_elaborate_bulk_path_covers_all_sections(crib, monkeypatch):
                           schema_name="emit", schema_description="", timeout=None):
         struct_calls["n"] += 1
         heads = re.findall(r"<<< SECTION: (.*?) >>>", user)
-        return {"sections": [{"heading": h, "terms": ["kubernetes", "orchestration"]}
+        # the schema names each facet's field by its LABEL ("keywords" here)
+        return {"sections": [{"heading": h, "keywords": ["kubernetes", "orchestration"]}
                              for h in heads]}
 
     async def fake_mop(cfg, system, user, purpose="elaborate", timeout=None):
@@ -243,7 +266,7 @@ def test_elaborate_bulk_miss_falls_back_to_mopup(crib, monkeypatch):
 
     async def fake_struct(cfg, system, user, schema, purpose="elaborate",
                           schema_name="emit", schema_description="", timeout=None):
-        return {"sections": [{"heading": "Doc/Alpha", "terms": ["alpha-term"]}]}  # drops Beta
+        return {"sections": [{"heading": "Doc/Alpha", "keywords": ["alpha-term"]}]}  # drops Beta
 
     mop = {"headings": []}
 

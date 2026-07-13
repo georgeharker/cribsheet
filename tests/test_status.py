@@ -76,3 +76,33 @@ def test_status_sweeps_progress_signal(crib, tmp_path, monkeypatch):
     assert out["files_seen"] == 2
     assert seen and all(s.get("total") == 2 for s in seen)   # visible mid-sweep
     assert crib.status()["sweeps"] == {}                     # gone when finished
+
+
+def test_budgeted_sweep_defers_and_resumes(crib, tmp_path, monkeypatch):
+    """`budget_s` bounds a sweep: files not reached by the soft deadline are deferred
+    (`complete=False`, `remaining=N`), and a re-invoke picks them up."""
+    import time
+
+    root = tmp_path / "repo"
+    root.mkdir()
+    for name in ("a.py", "b.py", "c.py"):
+        (root / name).write_text(f"def {name[0]}(): pass\n")
+    processed: list[str] = []
+
+    def fake(rt, rel, proj, patch_edges, existing=None):
+        processed.append(rel)
+        time.sleep(0.15)                       # each file outlives the budget below
+        return {"symbols": 1, "described": 1}
+
+    monkeypatch.setattr(crib.indexer, "_index_code_file_tracked", fake)
+    crib.config.generate.concurrency = 1       # one slot → files queue past the deadline
+
+    out = asyncio.run(crib._index_project_code("p", root, ["**/*.py"], budget_s=0.05))
+    assert out["complete"] is False
+    assert out["files_indexed"] == 1           # only the file that started in budget
+    assert out["remaining"] == 2               # the queued ones were deferred, not run
+
+    out = asyncio.run(crib._index_project_code("p", root, ["**/*.py"]))  # resume
+    assert out["complete"] is True and out["remaining"] == 0
+    assert out["files_indexed"] == 3
+    assert crib.status()["sweeps"] == {}       # no stale progress left behind

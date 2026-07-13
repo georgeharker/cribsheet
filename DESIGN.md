@@ -414,53 +414,88 @@ note markdown through llmkit's rich pipeline (`llmkit.md.render`, the extracted
 successor to the old vendored `crib/render`, carried as the `vendor/llmkit` git
 submodule) when stdout is a tty, and falls back to raw bytes when piped.
 
-### 10.3 Retrieval — hybrid dense ⊕ BM25, fused by RRF
+### 10.3 Retrieval — hybrid dense ⊕ BM25, DENSE-DOMINANT SCORE fusion
 
-![Note & doc retrieval — three recall signals fused by RRF, optional rerank](docs/images/note-retrieval-pipeline.png)
+![Note & doc retrieval — recall signals blended dense-dominant, then reranked](docs/images/note-retrieval-pipeline.png)
 
 <sub>Source: [`note-retrieval-pipeline.svg`](docs/images/note-retrieval-pipeline.svg).</sub>
 
 Dense (vector) retrieval nails paraphrase but underweights *exact terms*, so a
 terse keyword query ("restart server") can rank vaguely-on-topic prose above the
-section that literally documents the command. Measured on real imported docs:
-dense-only put an unrelated "Step 6: Verify" section at rank 1 and the actual
-`:MCPRestartServer` command table at rank 3; hybrid promoted the command table to
-rank 1 and dropped the false positive to rank 5.
+section that literally documents the command. Hybrid dense⊕BM25 fixes that; the
+open question was always *how to combine* two signals on different scales.
 
-**Fusion = Reciprocal Rank Fusion** (`crib/retrieve.py`). Dense cosine (~0–1) and
-BM25 (unbounded, corpus-dependent) are not on comparable scales, so we fuse by
-*rank*, not score: `score(d) = Σ 1/(K + rank_d)` across the two ranked lists,
-`K = rrf_k` (canonical 60). Scale-free, parameter-light, and order-only — the
-alternative (normalize each list then weight-sum) needs per-query normalization
-and a tuned α, which RRF sidesteps.
+**Fusion = dense-dominant score blend** (was RRF). Dense cosine is already a
+calibrated [0,1] similarity; BM25 is unbounded and corpus-dependent. So we
+normalize **only the sparse side** (min-max over the union candidate pool) and add
+it to the **raw** cosine — *dense-dominant*, so a confident dense match is never
+diluted:  `score(d) = cos(d) + w · minmax(sparse(d))`. This **replaced RRF**: RRF is
+rank-only, discarding the dense ranking's *magnitude*, so a diffuse sparse list
+drowns a confident dense hit. Measured — swapping RRF→score-fusion **+ a matched
+reranker (§10.4)** lifted `code_lookup` MRR **+30%** (4-domain A/B, n=500); RRF
+underperformed in every code slice. On the **notes** path the redesign is
+**precision-neutral, recall-positive** (re-measured 2026-07-13 on the live daemon:
+MRR 0.710 ≈ the old pipeline's 0.714; rerank's isolated lift +0.012 MRR /
++0.033 recall@3; the recall@3 bar clears, and the MRR bar was re-baselined
+0.72 → 0.70 to track corpus drift — see `scripts/eval_retrieval.py`). `rrf_k`
+survives only for the code path's cross-project fan-out, which is still rank-fused.
 
-- **Dense list**: the existing vector query, widened to `max(k*3, 30)` candidates
-  so BM25 can promote items dense ranked low.
-- **Sparse list**: an in-process Okapi BM25 over the project's chunk documents
-  (`store.get_docs`), held in a per-project `LexicalCache` owned by the
-  `IndexEngine` — built lazily, kept warm for the daemon's life, and dropped
-  (dirty-flag) whenever the single write path mutates that project, so the next
-  query rebuilds. BM25 is a ranking aid over the authoritative vector store, so
-  brief staleness only delays a just-written chunk's lexical findability by one
-  query. One-shot callers (`--no-daemon`, tests) build a fresh Crib each run, so
-  the cache is simply cold — no benefit, no harm. Incremental add/remove (vs full
-  rebuild) is the next step once corpora are large enough to feel it; native
-  sparse vectors in Chroma's hybrid `search` (experimental, distributed/hosted
-  only in 1.5.x) are the eventual "BM25 in the store" endgame.
-- The fused order drives ranking, but each hit still shows its **cosine** (a
-  BM25-only finalist's cosine is filled by re-embedding just that handful), so the
-  displayed score is intentionally non-monotonic down the list — the visible
-  fingerprint of fusion.
+**Two paths, same ranking, different field construction** — a divergence that's
+*measured*, not accidental:
 
-Config `[retrieve]`: `hybrid` (default on) and `rrf_k`. `hybrid = false` restores
-pure dense. No reindex needed — this is read-path only.
+- **Code** (`crib/codequery.py::_lookup_one`): 2 signals — dense over the LLM
+  *description* ⊕ a **coverage-GATED** BM25 over an *expanded field* (identifier
+  subtokens ⊕ synth keyword phrases, generated with the description in one pass).
+  The gate — `cov = |Q ∩ field|/|Q|`, `gated = cov·bm25` — is a precision filter for
+  **terse** fields: a short identifier field lets one rare-token BM25 hit dominate
+  (IDF), and coverage demotes a match that only shares a stray token.
+- **Notes** (`crib/app.py::_retrieve`): up to 3 signals — dense over the section
+  *body* ⊕ BM25 over `body ⊕ heading ⊕ keyword_index` ⊕ (optional) summary_index
+  aliases as **multi-vector dense**: each alias embedding points at its section, and
+  the section's dense score is `max(body cos, alias cos × summary_weight)` — an
+  alias match IS a dense match, never a rank bonus (the rank-bonus port of the RRF
+  era measured strictly negative; the max-merge measured **+0.013 MRR / +0.010
+  recall@3 over the shipped stack on the n=1876 harvested gold set**, positive in
+  both query segments — `scripts/gen_notes_gold.py`, 2026-07-13).
+  **No coverage gate, body stays in the BM25 field.** Why diverge: a note
+  body is long and informative (unlike a terse name), so distilling it away to a
+  code-style keyword-only field *loses* the exact-term lexical signal the embedding
+  blurs (smoke-tested: code-style field construction regresses notes MRR
+  0.690→0.653). The gate itself was then measured properly (n=1876, 2026-07-13,
+  `[retrieve].keyword_coverage_gate`): **exactly neutral overall and a pure segment
+  trade** — exact-phrase queries +0.021 MRR, paraphrase queries −0.019 — so notes
+  keep it off (paraphrase is their binding constraint) while code keeps it on
+  (terse identifier fields are where it wins). The shared *ranking* transfers; the
+  *field construction and its gate* must not.
+- **Sparse source**: an in-process Okapi BM25 in a per-project `LexicalCache`
+  (`crib/retrieve.py`), built lazily, warm for the daemon's life, dropped on write
+  so the next query rebuilds. Code's equivalent is the resident symbol index's BM25.
+- **Missing-cosine fill**: code has a cosine for every symbol (resident dense over
+  all); notes' dense is a top-k vector query, so a *sparse-only* candidate has its
+  cosine back-filled (re-embed that handful) to give it a real dense base for the
+  blend — cosmetic under RRF, load-bearing under score fusion.
 
-### 10.4 Reranking — options, evidence, and open design
+Config `[retrieve]`: `hybrid` (default on), `rrf_k` (cross-project fan-out only).
+`hybrid = false` restores pure dense. Read-path only — no reindex needed.
 
-An optional precision stage after fusion: re-score the top `rerank_top_n`
-candidates and blend that order back in. Off by default (`[retrieve].rerank`).
+### 10.4 Reranking — range-matched, ON by default
 
-**Fuse, don't replace.** The reranker's order is RRF-fused with the existing
+A cross-encoder precision stage over the top `rerank_top_n` fused candidates,
+folded into the score as a **range-matched** term — `minmax(fusion_score) +
+minmax(rerank_score)`, re-ordered. **On by default** (`[retrieve].rerank`), degrading
+gracefully to the fused order if the model is unavailable. It is the single biggest
+lever (code: +0.09 MRR of the +0.16 total; notes: moves a below-bar state above it).
+
+**Match the rerank to the fusion.** The reranker blends by *score* (range-matched)
+because the fusion is score-based — not by RRF-of-orders (the old approach), which
+discards the fusion magnitude and lets a noisier reranker reorder freely. Measured:
+RRF-rerank **regressed** on svg-mcp while range-matched held; and on notes, RRF-rerank
+suited the old RRF fusion but range-matched suits the new score fusion. **Principle:
+rank-based fusion → RRF-rerank; score-based fusion → range-matched.**
+
+<details><summary>Historical note (pre-score-fusion reranking evidence)</summary>
+
+**Fuse, don't replace.** The reranker's order was RRF-fused with the existing
 dense⊕BM25 order rather than overriding it — so it acts as a *third voter* that
 can promote a better match but can't break a strong hybrid result on one bad
 judgment. Measured: full-replace was a wash (2 wins / 2 regressions on the
@@ -483,6 +518,8 @@ for a human reading the top hit, or any path that feeds only rank-1, the MRR lif
 from the target, e.g. credentials≠tokens) stay at rank-2 under any *small* model —
 those are what a stronger LLM judge is meant to crack (unproven as of writing).
 
+</details>
+
 **Backend options (a tier ladder, picked by host).** `build_reranker` dispatches
 by model name:
 
@@ -504,10 +541,14 @@ judge call (zsh-ai's own calls are streaming chat, no logprobs). (3) OpenAI-
 compatible covers Mac-local llama.cpp *and* Pi-remote with the fast logprob path,
 so it's the lead; Anthropic-as-judge is a secondary text-score adapter.
 
-**Open: machine-aware selection.** Default rerank `off` on plain CPU, `fast` on an
-accelerated host, `llm-judge@localhost` when a local OpenAI-compatible endpoint is
-reachable — probing via `_auto_device` (embed.py) + endpoint reachability. Not yet
-built.
+**Open: machine-aware selection.** Rerank now defaults ON (the ONNX MiniLM stage —
+~0.5s/query cold CPU, cheap warm; the measured net win). The open idea is picking the
+*stage* by host: MiniLM on plain CPU (a Pi may still want `rerank = false`), a heavier
+cross-encoder on an accelerated host, `llm-judge@localhost` when a local
+OpenAI-compatible endpoint is reachable — probing via `_auto_device` (embed.py) +
+endpoint reachability. Not yet built. (NB: the two heavier fastembed cross-encoders
+measured WORSE than MiniLM on the n=1876 notes gold set — any candidate stage must
+re-clear that bar.)
 
 ---
 
