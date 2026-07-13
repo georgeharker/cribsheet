@@ -151,6 +151,27 @@ class SectionIndex:
         p.write_text(_render_toml(section_hash, label, terms, relpath, heading, model))
         return p
 
+    def prune(self, label: str, live: set[str], before: float | None = None) -> int:
+        """GC entries whose section_hash is no longer live. The store is
+        content-addressed and never overwrites in place — an edited section gets a
+        NEW hash, orphaning the old entry — so orphans accumulate until a pass that
+        knows the FULL live set (a project-wide elaborate/summarize) prunes them.
+        `before` (epoch seconds) spares entries written after the caller snapshotted
+        `live`, so a note stored concurrently with the pass can't lose fresh terms."""
+        d = self.root / label
+        n = 0
+        for p in (d.glob("*.toml") if d.is_dir() else []):
+            if p.stem in live:
+                continue
+            try:
+                if before is not None and p.stat().st_mtime >= before:
+                    continue
+                p.unlink()
+                n += 1
+            except OSError:  # noqa: PERF203 — vanished/locked file: skip, next pass gets it
+                pass
+        return n
+
     def labels(self) -> list[str]:
         if not self.root.is_dir():
             return []

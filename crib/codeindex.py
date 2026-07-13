@@ -1181,34 +1181,48 @@ DESCRIBE_SCHEMA: dict[str, Any] = {
     "properties": {"symbols": {"type": "array", "items": {
         "type": "object",
         "properties": {"name": {"type": "string"}, "kind": {"type": "string"},
-                       "description": {"type": "string"}},
+                       "description": {"type": "string"},
+                       "keywords": {"type": "array", "items": {"type": "string"}}},
         "required": ["name", "description"]}}},
     "required": ["symbols"],
 }
+_KEYWORD_INSTR = (
+    "Also output `keywords`: 4-8 SEARCH KEYWORD PHRASES a developer would type to find "
+    "this symbol BY INTENT — behaviors, concepts, domain synonyms, the problem it solves. "
+    "NOT the identifier spelled out, NOT generic words like 'function'/'helper'; for a "
+    "test, describe what it verifies. These expand the symbol's searchable vocabulary. ")
 DESCRIBE_SYSTEM = (
     "You are given a source file. For EACH top-level definition — class, function, "
     "or method — IN ORDER, output its qualified name (Class.method), its kind "
     "(class|function|method), and ONE concise sentence describing what it does: the "
     "intent, not a restatement of the signature. A class description says what the "
-    "type represents or manages. Return every definition as JSON matching the schema. "
+    "type represents or manages. " + _KEYWORD_INSTR
+    + "Return every definition as JSON matching the schema. "
     # NB: the literal word 'json' is required here — Alibaba/qwen rejects a
     # response_format=json_object request whose messages never mention 'json'.
     )
 
 
-def describe_file(gen_cfg: Any, root: Path, relpath: str) -> dict[str, str]:
-    """LLM description per symbol (name → one-line intent). Independent of the LSP —
-    just the file text — so the semantic facet works even where no server exists.
-    Reuses the bulk structured generation built for the keyword/summary indexes."""
+def _rows_to_meta(data: Any) -> dict[str, dict[str, Any]]:
+    """Structured describe rows → name → {description, keywords}. ONE LLM pass yields
+    both facets (description feeds dense; keywords feed the expanded BM25 field)."""
+    out: dict[str, dict[str, Any]] = {}
+    for s in _describe_rows(data):
+        if isinstance(s, dict) and s.get("name") and s.get("description"):
+            out[s["name"]] = {"description": s["description"],
+                              "keywords": [str(k) for k in (s.get("keywords") or [])]}
+    return out
+
+
+def describe_file(gen_cfg: Any, root: Path, relpath: str) -> dict[str, dict[str, Any]]:
+    """LLM {description, keywords} per symbol (name → intent + search keywords) in ONE
+    pass. Independent of the LSP — just the file text — so the semantic facet works even
+    where no server exists. Reuses the bulk structured generation."""
     from .generate import generate_structured
     src = (root / relpath).read_text()
     data = generate_structured(gen_cfg, DESCRIBE_SYSTEM, src, DESCRIBE_SCHEMA,
                                purpose="elaborate", schema_name="describe_symbols")
-    out: dict[str, str] = {}
-    for s in _describe_rows(data):
-        if isinstance(s, dict) and s.get("name") and s.get("description"):
-            out[s["name"]] = s["description"]
-    return out
+    return _rows_to_meta(data)
 
 
 def _describe_rows(data: Any) -> list:
@@ -1220,36 +1234,42 @@ def _describe_rows(data: Any) -> list:
     return data if isinstance(data, list) else []
 
 
-def describe_symbols(gen_cfg: Any, symbols: list[dict]) -> dict[str, str]:
+def describe_symbols(gen_cfg: Any, symbols: list[dict]) -> dict[str, dict[str, Any]]:
     """MOP-UP describe: a focused structured call over ONLY the given symbols (their
     bodies), for ones the whole-file bulk pass missed. Keyed by the symbol's local
-    `name` (fewer symbols → higher hit rate; content_hash gate makes the retry cheap)."""
+    `name`. Returns name → {description, keywords} (both facets, one pass)."""
     if not symbols:
         return {}
     from .generate import generate_structured
     blob = "\n\n".join(f"# {s.get('kind','')} {s.get('name','')}\n{s.get('_body','')}"
                        for s in symbols)
     sysp = ("For EACH `# kind name`-delimited definition below, output its name and "
-            "ONE concise sentence on what it does (intent, not the signature). Cover "
-            "every one, as JSON matching the schema.")   # 'json' required for qwen
+            "ONE concise sentence on what it does (intent, not the signature). "
+            + _KEYWORD_INSTR + "Cover every one, as JSON matching the schema.")  # 'json' for qwen
     data = generate_structured(gen_cfg, sysp, blob, DESCRIBE_SCHEMA,
                                purpose="elaborate", schema_name="describe_symbols")
-    out: dict[str, str] = {}
-    for s in _describe_rows(data):
-        if isinstance(s, dict) and s.get("name") and s.get("description"):
-            out[s["name"]] = s["description"]
-    return out
+    return _rows_to_meta(data)
 
 
-def match_description(fqname: str, descs: dict[str, str]) -> str:
-    """Attach a description to a structural symbol: exact fqname else last segment."""
-    if fqname in descs:
-        return descs[fqname]
+def match_meta(fqname: str, metas: dict[str, Any]) -> tuple[str, list[str]]:
+    """(description, keywords) for a structural symbol: exact fqname else last segment.
+    Tolerates a bare-string value (legacy description-only rows)."""
+    def _split(v: Any) -> tuple[str, list[str]]:
+        if isinstance(v, dict):
+            return v.get("description", ""), list(v.get("keywords") or [])
+        return (v or ""), []
+    if fqname in metas:
+        return _split(metas[fqname])
     tail = fqname.split(".")[-1]
-    for name, d in descs.items():
+    for name, v in metas.items():
         if name == tail or name.split(".")[-1] == tail:
-            return d
-    return ""
+            return _split(v)
+    return "", []
+
+
+def match_description(fqname: str, descs: dict[str, Any]) -> str:
+    """Back-compat: just the description (see `match_meta` for keywords too)."""
+    return match_meta(fqname, descs)[0]
 
 
 # --- content-addressed store (separate location, like keyword_index) ----------
@@ -1277,7 +1297,7 @@ def _unquote(v: str) -> str:
 
 _SCALARS = ("fqname", "name", "kind", "lang", "module", "parent", "content_hash",
             "file", "signature", "description")
-_ARRAYS = ("container", "calls", "called_by", "references", "name_terms")
+_ARRAYS = ("container", "calls", "called_by", "references", "name_terms", "keywords")
 
 
 def _render(e: dict) -> str:
@@ -1289,6 +1309,12 @@ def _render(e: dict) -> str:
     # the toml file's own mtime (Crib._revalidate), so it never needs git at query time.
     lines.append(f'mtime = {e.get("mtime", 0)}')
     for key in _ARRAYS:
+        # `keywords` is OPTIONAL and its presence is meaningful: a rendered
+        # `keywords = []` means a describe pass ran and yielded none (don't retry
+        # forever); NO line means never attempted (the backfill-stale signal). The
+        # structural arrays are always set by extraction, so only keywords skips.
+        if key == "keywords" and key not in e:
+            continue
         vals = e.get(key) or []
         if vals:
             lines.append(f"{key} = [")

@@ -107,7 +107,12 @@ def test_failed_describe_reenqueues_as_retry():
 
         q = DescribeQueue(asyncio.get_running_loop(), describe, base=0.01, cap=0.04)
         q.enqueue("p", Path("/r"), "f.py", {"pkg.a": _sym("pkg.a", "ha", "a")})
-        await asyncio.sleep(0.2)
+        # base is clamped to 0.1s, so the retry fires ~0.2s in — poll to a generous
+        # deadline instead of racing it with a fixed sleep
+        for _ in range(100):
+            if n["c"] >= 2:
+                break
+            await asyncio.sleep(0.02)
 
     run(body())
     assert n["c"] >= 2                                    # backoff-as-retry ran again
@@ -133,8 +138,9 @@ def test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale(
     monkeypatch.setattr(ci, "extract_file", lambda r, rel, **k: [
         _entry("pkg.mod.a", "ha", "def a(): pass"),
         _entry("pkg.mod.b", "hb", "def b(): pass")])
-    monkeypatch.setattr(ci, "describe_file",
-                        lambda cfg, r, rel: {"a": "does A", "b": "does B"})
+    monkeypatch.setattr(ci, "describe_file", lambda cfg, r, rel: {
+        "a": {"description": "does A", "keywords": ["alpha behavior"]},
+        "b": {"description": "does B", "keywords": ["beta behavior"]}})
     crib._index_code_file_tracked(root, "pkg/mod.py", "p", True)  # inline
     si = SymbolIndex(crib.paths.project_dir("p"))
     assert {e["fqname"]: e["description"] for e in si.all()} == \
@@ -153,11 +159,70 @@ def test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale(
         _entry("pkg.mod.b", "hb2", "def b(): return 1")])
     crib._index_code_file_tracked(root, "pkg/mod.py", "p", True, None, "defer")
 
-    descs = {e["fqname"]: e["description"] for e in si.all()}
-    assert descs["pkg.mod.a"] == "does A"                 # unchanged → kept
-    assert descs["pkg.mod.b"] == ""                       # changed → blanked (durable signal)
+    by_fq = {e["fqname"]: e for e in si.all()}
+    assert by_fq["pkg.mod.a"]["description"] == "does A"  # unchanged → kept
+    # keywords carried too — write() replaces the whole entry, so dropping them here
+    # would clobber the stored facet and re-stale the symbol on every save
+    assert by_fq["pkg.mod.a"]["keywords"] == ["alpha behavior"]
+    assert by_fq["pkg.mod.b"]["description"] == ""        # changed → blanked (durable signal)
     assert len(enq) == 1
     assert list(enq[0][1]) == ["pkg.mod.b"]               # only the stale symbol queued
+
+
+def test_empty_keyword_attempt_is_durable_no_retry(crib, tmp_path, monkeypatch):
+    """A describe pass that yields NO keywords for a symbol must not re-stale it
+    forever: `keywords = []` on disk records the attempt; only a MISSING key
+    (legacy entry) means never-attempted."""
+    from crib import codeindex as ci
+    root = tmp_path / "src"
+    (root / "pkg").mkdir(parents=True)
+    (root / "pkg" / "mod.py").write_text("def a(): pass\n")
+    monkeypatch.setattr(ci, "extract_file", lambda r, rel, **k: [
+        _entry("pkg.mod.a", "ha", "def a(): pass")])
+    calls = {"n": 0}
+
+    def describe(cfg, r, rel):
+        calls["n"] += 1
+        return {"a": {"description": "does A", "keywords": []}}  # attempted, none found
+
+    monkeypatch.setattr(ci, "describe_file", describe)
+    monkeypatch.setattr(ci, "describe_symbols", lambda cfg, syms: {})
+    crib._index_code_file_tracked(root, "pkg/mod.py", "p", True)
+    assert calls["n"] == 1
+    crib._index_code_file_tracked(root, "pkg/mod.py", "p", True)  # unchanged re-run
+    assert calls["n"] == 1                     # [] was recorded → not stale, no retry
+
+
+def test_llm_down_backfill_preserves_description(crib, tmp_path, monkeypatch):
+    """LEGACY entry (description present, no keywords key) + a FAILED backfill pass:
+    the good description must survive the rewrite (the diff's first cut blanked it),
+    and the entry must stay backfill-stale for when the LLM returns."""
+    from crib import codeindex as ci
+    si = SymbolIndex(crib.paths.project_dir("p"))
+    legacy = _entry("pkg.mod.a", "ha", "def a(): pass")
+    legacy["description"] = "does A"           # legacy: described, never keyworded
+    si.write(legacy)                           # no keywords key → no keywords line
+    root = tmp_path / "src"
+    (root / "pkg").mkdir(parents=True)
+    (root / "pkg" / "mod.py").write_text("def a(): pass\n")
+    monkeypatch.setattr(ci, "extract_file", lambda r, rel, **k: [
+        _entry("pkg.mod.a", "ha", "def a(): pass")])
+
+    def boom(*a, **k):
+        raise RuntimeError("LLM down")
+
+    monkeypatch.setattr(ci, "describe_file", boom)
+    monkeypatch.setattr(ci, "describe_symbols", boom)
+    crib._index_code_file_tracked(root, "pkg/mod.py", "p", True)
+    cur = si.read("pkg.mod.a")
+    assert cur["description"] == "does A"      # NOT blanked by the failed backfill
+    assert "keywords" not in cur               # still marked never-attempted
+
+    monkeypatch.setattr(ci, "describe_file", lambda cfg, r, rel: {   # LLM back up
+        "a": {"description": "does A", "keywords": ["alpha behavior"]}})
+    monkeypatch.setattr(ci, "describe_symbols", lambda cfg, syms: {})
+    crib._index_code_file_tracked(root, "pkg/mod.py", "p", True)
+    assert si.read("pkg.mod.a")["keywords"] == ["alpha behavior"]
 
 
 def test_describe_and_patch_patches_then_clobber_guards(crib, tmp_path, monkeypatch):

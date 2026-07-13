@@ -18,6 +18,9 @@ if TYPE_CHECKING:
     from .learnings import Learnings
     from .refs import Refs
 
+_POOL_K = 50        # top-K per source for the union candidate pool (min-max support)
+_RERANK_N = 20      # candidates carried for the cross-encoder rerank stage
+
 
 class CodeQuery:
     def __init__(self, refs: Refs, learnings: Learnings, embedder: Embedder,
@@ -109,22 +112,20 @@ class CodeQuery:
             "references": neigh(entry.get("references")),
         }
 
-    def lookup(self, proj: str, query: str, k: int = 8,
-               sparse_weight: float = 0.2) -> list[dict[str, Any]]:
-        """Find a symbol — HYBRID: dense concept search over LLM `description`s ⊕ BM25
-        over `name_terms`, RRF-fused. FANS OUT to the project's `.crib` `refs:`; the
-        per-project rankings RRF-fuse (queried project weighted above its refs). Every
-        hit carries `project`."""
+    def lookup(self, proj: str, query: str, k: int = 8) -> list[dict[str, Any]]:
+        """Find a symbol — HYBRID: raw-cosine dense ⊕ coverage-gated BM25 over the
+        expanded field (name ⊕ synth keywords), range-matched blend (see `_lookup_one`).
+        FANS OUT to the project's `.crib` `refs:`; the per-project rankings RRF-fuse
+        (queried project weighted above its refs). Every hit carries `project`."""
         from .retrieve import reciprocal_rank_fusion
         self._require_index(proj)
         pools: dict[str, list[dict[str, Any]]] = {
-            proj: self._lookup_one(proj, query, k, sparse_weight)}
+            proj: self._lookup_one(proj, query, k)}
         for ref in self.refs.project_refs(proj):
             if not ref["indexed"] or ref["project"] in pools:
                 continue
             try:
-                pools[ref["project"]] = self._lookup_one(
-                    ref["project"], query, k, sparse_weight)
+                pools[ref["project"]] = self._lookup_one(ref["project"], query, k)
             except Exception:  # noqa: BLE001 — a broken ref never fails the query
                 continue
         if len(pools) == 1:
@@ -142,44 +143,51 @@ class CodeQuery:
             h["rank"] = i + 1
         return hits
 
-    def _lookup_one(self, proj: str, query: str, k: int,
-                    sparse_weight: float) -> list[dict[str, Any]]:
-        """The single-project core of lookup (dense ⊕ sparse, RRF-fused), project-tagged
-        and learning-annotated. `rank` is per-pool; the caller re-ranks after fusion."""
-        from .retrieve import _subtokens, reciprocal_rank_fusion, tokenize
+    def _lookup_one(self, proj: str, query: str, k: int) -> list[dict[str, Any]]:
+        """The single-project core of lookup. SPARSE = coverage-gated BM25 over the
+        EXPANDED field (name ⊕ synth keywords) — the keywords let a behavioral query hit
+        the sparse arm the terse name can't. DENSE = raw cosine over descriptions. Blended
+        DENSE-DOMINANT: only the (uncalibrated) BM25 side is min-max'd, over the union
+        candidate pool; raw cosine is already calibrated. `_score` carries the blend for
+        the range-matched rerank stage; `rank` is per-pool, re-ranked after fusion."""
+        from .retrieve import STOPWORDS, _subtokens, tokenize
         rc = self._resident(proj)                            # resident: no re-parse/re-embed
-        entries = rc.lk
-        if not entries:
+        if not rc.lk:
             return []
         ids = rc.lk_ids
         by_id = rc.by_fq
-        rankings: list[list[str]] = []
-        weights: list[float] = []
-        # dense: cosine over the resident description embeddings (only the query embeds)
-        dense = rc.dense(self.embedder)
-        if any(v for v in dense):
+        n = len(ids)
+        qt = tokenize(query) + _subtokens(query)
+        # dense: raw cosine over the resident description embeddings (only the query embeds)
+        dense_v = rc.dense(self.embedder)
+        if any(v for v in dense_v):
             qv = self.embedder.embed_query([query])[0]
-            ds = [sum(a * b for a, b in zip(qv, v)) if v else -2.0 for v in dense]
-            rankings.append([ids[i] for i in sorted(range(len(ids)),
-                                                    key=lambda i: ds[i], reverse=True)])
-            weights.append(1.0)
-        # sparse: BM25 over the name terms (the unqualified name is the load-bearing one)
-        ss = rc.bm25.scores(tokenize(query) + _subtokens(query))
-        sparse = [ids[i] for i in sorted(range(len(ids)), key=lambda i: ss[i],
-                                         reverse=True) if ss[i] > 0]
-        if sparse:
-            rankings.append(sparse)
-            weights.append(sparse_weight)
-        if not rankings:
-            return []
-        fused = reciprocal_rank_fusion(rankings, weights=weights)
+            dense = [sum(a * b for a, b in zip(qv, v)) if v else -1.0 for v in dense_v]
+        else:
+            dense = [0.0] * n
+        # sparse: coverage-gated BM25 over the expanded field (name ⊕ keywords)
+        Q = {t for t in set(qt) if len(t) > 1 and t not in STOPWORDS}
+        bmsc = rc.bm25.scores(qt)
+        cov = rc.coverage(Q)
+        gated = {i: cov[i] * bmsc[i] for i in range(n) if cov[i] * bmsc[i] > 0}
+        # union pool (top-K each) → min-max ONLY the gated side → dense-dominant blend
+        dtop = sorted(range(n), key=lambda i: dense[i], reverse=True)[:_POOL_K]
+        gtop = sorted(gated, key=lambda i: gated[i], reverse=True)[:_POOL_K]
+        pool = list(dict.fromkeys(dtop + gtop))
+        if gated:
+            gv = [gated.get(i, 0.0) for i in pool]
+            lo, hi = min(gv), max(gv)
+            rng = (hi - lo) or 1.0
+            gnorm = {i: (gated.get(i, 0.0) - lo) / rng for i in pool}
+        else:
+            gnorm = {i: 0.0 for i in pool}
+        score = {i: dense[i] + gnorm[i] for i in pool}       # alpha = beta = 1
+        order = sorted(pool, key=lambda i: score[i], reverse=True)[:max(k, _RERANK_N)]
         keys = ("fqname", "name", "kind", "file", "line", "signature", "description",
-                "parent", "calls", "called_by", "references", "content_hash")
-        # echo the resolved project on each hit — cheap orientation so the agent always
-        # sees which project answered (esp. useful across related codebases)
-        hits = [{**{key: by_id[fid].get(key) for key in keys},
-                 "project": proj, "rank": i + 1}
-                for i, fid in enumerate(fused[:k])]
+                "parent", "calls", "called_by", "references", "content_hash", "keywords")
+        hits = [{**{key: by_id[ids[i]].get(key) for key in keys},
+                 "project": proj, "rank": r + 1, "_score": score[i]}
+                for r, i in enumerate(order)]
         return self.learnings.attach(proj, hits)
 
     def graph(self, proj: str, symbol: str, direction: str = "callees",

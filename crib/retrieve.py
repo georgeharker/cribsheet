@@ -28,6 +28,15 @@ def tokenize(text: str) -> list[str]:
     return [t.lower() for t in _TOKEN.findall(text)]
 
 
+# Function words carried by natural-language queries that shouldn't count toward the
+# keyword-coverage gate (they match everything). Deliberately small — content words win.
+STOPWORDS = frozenset({
+    "the", "a", "an", "that", "to", "of", "for", "and", "or", "in", "on", "by", "its",
+    "it", "is", "then", "so", "with", "into", "which", "given", "this", "them", "only",
+    "before", "after", "up", "re", "back", "single", "one",
+})
+
+
 def _as_tf(doc) -> dict[str, float]:
     """A doc's term-frequency map. Accepts a token list (each token counts 1) or a
     pre-weighted mapping token→weight, so callers can down/up-weight sources —
@@ -60,6 +69,14 @@ class BM25:
         # BM25+ idf: always positive, so common terms still rank, never subtract.
         self.idf = {t: math.log(1 + (self.n - c + 0.5) / (c + 0.5))
                     for t, c in df.items()}
+
+    def coverage(self, qtokens: set[str]) -> list[float]:
+        """Fraction of the query's informative tokens present in each doc's field
+        (∈ [0,1]) — the covpc gate (same shape as the code path's
+        `_ResidentCode.coverage`): demotes a diffuse BM25 match that shares only a
+        stray rare token with the query."""
+        n = max(len(qtokens), 1)
+        return [sum(1 for t in qtokens if t in tf) / n for tf in self.tf]
 
     def scores(self, query: list[str]) -> list[float]:
         out = [0.0] * self.n
@@ -344,22 +361,26 @@ class SummaryVectorCache:
             self._entries[key] = entry
         return entry
 
-    def ranking(self, project: str, labels: tuple[str, ...],
-                query_vec: list[float], topn: int) -> list[str]:
-        """Sections ranked by best query↔summary cosine, mapped to a
-        representative chunk id each — a third ranked list for RRF fusion."""
+    def best_cosines(self, project: str, labels: tuple[str, ...],
+                     query_vec: list[float]) -> dict[str, float]:
+        """MAX query↔alias cosine per section, keyed by a representative chunk id.
+
+        The multi-vector semantics the index was built for: an alias embedding is
+        ANOTHER dense vector pointing at the same section, so a query matching an
+        alias IS a dense match for that section — the caller folds these into the
+        dense arm by max, not into a separate ranked list (the old RRF-era port
+        reduced aliases to a rank bonus on top of the BODY cosine, which under
+        dense-dominant score fusion could never express a strong alias match —
+        measured to only hurt, at any weight)."""
         reps, vecs = self.get(project, labels)
-        if not vecs:
-            return []
         best: dict[str, float] = {}
         for sh, v in vecs:
             c = sum(a * b for a, b in zip(query_vec, v))
             if c > best.get(sh, -2.0):
                 best[sh] = c
-        ranked = sorted(best, key=lambda s: best[s], reverse=True)[:topn]
-        out: list[str] = []
-        for sh in ranked:
+        out: dict[str, float] = {}
+        for sh, c in best.items():
             ids = reps.get(sh) or []
             if ids:
-                out.append(ids[0])   # section representative; dedupe collapses windows
+                out[ids[0]] = c      # section representative; dedupe collapses windows
         return out

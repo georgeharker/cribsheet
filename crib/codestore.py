@@ -44,14 +44,33 @@ class _ResidentCode:
                 or e["fqname"].split(".")[-1] == name]
 
     def _prepare(self) -> None:
-        from .retrieve import BM25, _as_tf
+        from .retrieve import BM25, _as_tf, _subtokens, tokenize
         # Only symbols with a description or name terms are query candidates.
         self.lk = [e for e in self.entries
                    if e.get("description") or e.get("name_terms")]
         self.lk_ids = [e["fqname"] for e in self.lk]
-        self.bm25 = BM25([_as_tf([t.lower() for t in (e.get("name_terms") or [])])
-                          for e in self.lk])
+        # EXPANDED lexical field per symbol = name_terms ⊕ synth-keyword tokens. The
+        # keywords are the query-independent vocabulary expansion, so a BEHAVIORAL query
+        # gets sparse hits the terse identifier alone can't offer. `field_sets` backs the
+        # coverage gate; the BM25 is over the same expanded field (no uniq — measured to
+        # slightly help via term-frequency of repeated behavioral terms).
+        self.field_terms: list[list[str]] = []
+        self.field_sets: list[set[str]] = []
+        for e in self.lk:
+            # local NAME (not the qualified name_terms — module/path subtokens spuriously
+            # inflate the coverage gate) ⊕ synth-keyword tokens.
+            text = e.get("name", "") + " " + " ".join(e.get("keywords") or [])
+            toks = [t.lower() for t in (tokenize(text) + _subtokens(text))]
+            self.field_terms.append(toks)
+            self.field_sets.append(set(toks))
+        self.bm25 = BM25([_as_tf(ft) for ft in self.field_terms])
         self._dense: list[list[float] | None] | None = None   # built lazily (code_lookup only)
+
+    def coverage(self, qtokens: set[str]) -> list[float]:
+        """Fraction of the query's informative tokens present in each symbol's expanded
+        field — the covpc gate that keeps a diffuse BM25 match from voting (∈ [0,1])."""
+        n = max(len(qtokens), 1)
+        return [len(qtokens & fs) / n for fs in self.field_sets]
 
     def dense(self, embedder: Any) -> list[list[float] | None]:
         """Dense vectors aligned to `lk` — embedding only the descriptions not already

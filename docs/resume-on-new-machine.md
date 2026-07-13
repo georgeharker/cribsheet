@@ -100,9 +100,11 @@ crib project reconcile
 ## 5. Build the LLM indexes per project
 
 Keyword index (BM25 side) for every project — this is the shipped default, so
-generate it everywhere. Summary index (dense aliases) is optional/experimental —
-generate it where you want to test the paraphrase hypothesis (the volume corpora
-are the interesting case, since cribsheet's own recall is saturated).
+generate it everywhere. New notes now **auto-refresh their `keyword_index` on write**
+(deferred, on the daemon), so this loop is the **one-time backfill** for the notes a
+new machine imports — not an ongoing chore. Summary index (dense aliases) is
+optional/experimental — generate it where you want to test the paraphrase hypothesis
+(the volume corpora are the interesting case, since cribsheet's own recall is saturated).
 
 ```sh
 PROJECTS="cribsheet zsh-ai zdot dotfiler sharedserver svg-mcp mcp-companion"
@@ -112,8 +114,11 @@ for p in $PROJECTS; do
   crib note elaborate keywords -p "$p"             # one zen call per section
 done
 
-# optional — dense summary aliases (off by default; activate via
-# [retrieve].summary_labels once measured to help on the bigger corpora)
+# dense summary aliases — measured +0.013 MRR / +0.010 recall@3 (n=1876,
+# 2026-07-13); activate via [retrieve].summary_labels = ["summary"]. With a
+# daemon, the startup backlog backfills these automatically (one combined
+# enrich pass with keywords); this manual loop is only for pre-warming
+# without a daemon.
 for p in $PROJECTS; do
   echo "== summary_index: $p =="
   crib note summarize summary -p "$p"

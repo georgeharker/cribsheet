@@ -33,7 +33,7 @@ note exposes its on-disk `path`.
 
 | CLI | MCP | Description |
 |---|---|---|
-| `crib note lookup <query>` (alias `search`) | `note_lookup` | Semantic search over notes; returns ranked locator lines (hybrid dense ⊕ BM25). `-a/--render` renders full sections. |
+| `crib note lookup <query>` (alias `search`) | `note_lookup` | Semantic search over notes; returns ranked locator lines (hybrid dense ⊕ BM25, dense-dominant blend + range-matched rerank). `-a/--render` renders full sections. |
 | `crib note apropos <query>` (alias `a`) | `note_apropos` | Like lookup, but each hit carries the full matching section's markdown, not a snippet. |
 | `crib note read <rel>` | `note_read` | Print a note's full raw markdown (frontmatter + body). |
 | `crib note locate <rel>` | `note_locate` | Print a note's on-disk path (to edit with your own tools). |

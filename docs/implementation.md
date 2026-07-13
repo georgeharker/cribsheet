@@ -88,11 +88,12 @@ docs (`index_docs_insitu`), the Claude-memory mirror (`import_claude_memory` /
 
 `Crib.lookup` (`crib/app.py` — note retrieval stays on `Crib`, §0) → `_retrieve`: dense cosine over chunk
 embeddings ⊕ BM25 (warm lexical cache, `crib/retrieve.py`) ⊕ optional
-summary-alias dense ranking, RRF-fused, optional cross-encoder rerank (a third
-*voter* fused in, never a unilateral reorderer). `apropos` is the same ranking
-returning full section markdown sliced from disk by line span. The
-`keyword_index`/`summary_index` label sets (built by `elaborate`/`summarize`)
-fold in via config or per-call overrides.
+summary-alias dense ranking, **dense-dominant score fusion** (raw cosine + min-max'd
+sparse — replaced RRF; DESIGN §10.3), then a **range-matched** cross-encoder rerank
+(on by default; DESIGN §10.4). `apropos` is the same ranking returning full section
+markdown sliced from disk by line span. The `keyword_index`/`summary_index` label
+sets (built by `elaborate`/`summarize`; `keyword_index` now **auto-refreshed on note
+write**) fold in via config or per-call overrides.
 
 ## 4. Code indexing pipeline
 
