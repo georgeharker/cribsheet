@@ -70,8 +70,8 @@ session.
 A plugin cannot set env for another plugin's manifest expansion — expansion reads
 the environment Claude Code was *launched with*. So "the combiner plugin turns off
 the backend plugins" is not a load-order problem to solve; it is impossible. The
-switch must be set **before Claude starts** (zshenv, or the ACP wrapper in
-`mcp-companion`'s `cc/init.lua`, which already wraps the agent as `env VAR=… cmd`).
+switch must be set **before Claude starts** — `zshenv` (§3.7), which every shell and
+everything it spawns inherits.
 
 ### 2.5 Writing MCP config mid-session forces a reload
 
@@ -198,13 +198,34 @@ Per §2.3, treat a write as applying to the **next** session. A flip (or first
 install) costs one session. Do not depend on the reload in §2.5 landing the change
 sooner — that is the same mechanism that drops other servers.
 
+### 3.7 A global toggle, not a per-session one
+
+**A design constraint, not an incidental property.** The switch says *how this
+machine gets its MCPs*, and is set once, machine-wide:
+
+```sh
+# ~/.zshenv — set once; every shell, and everything it spawns, inherits it
+export MCP_COMBINER=1
+```
+
+`zshenv` satisfies §2.4 (set before Claude starts) for every path — interactive
+shells, neovim, and the ACP/codecompanion agents neovim spawns all inherit it.
+**Nothing needs to inject it per session.**
+
+**Do not vary it per session.** The registry it drives (`claude mcp --scope user`)
+is global, so two concurrent sessions disagreeing about the mode would thrash, each
+hook converging the *shared* registry against its own env and undoing the other at
+every start. The switch and the state it controls are both global; keeping them at
+the same scope is what makes §3.4's convergence sound.
+
+A machine is therefore in exactly one mode. `MCP_COMBINER_SERVES_CRIBSHEET` is
+still a global statement about crib — not a per-session escape hatch.
+
 ## 4. Risks accepted
 
-- **Global state from a per-session signal.** `--scope user` is global; `MCP_COMBINER`
-  is per-session env. Two concurrent sessions in *different* modes would thrash,
-  each undoing the other at startup. Acceptable while a machine is consistently one
-  mode; it is the main reason not to promote this pattern blindly. Project scope
-  would avoid it but requires approval and pollutes repos.
+- **Global toggle only** (§3.7) — machine-wide by design; varying it per session is
+  unsupported and would thrash the shared user-scope registry. Project scope would
+  allow per-repo modes but requires approval and pollutes repos, so it is not offered.
 - **A plugin writing global MCP config** is unusual, surprising behaviour. It must
   be documented prominently in the plugin README.
 - **Uninstall leaves a stray entry.** Removing the plugin does not unregister
@@ -220,9 +241,9 @@ convention, not a crib special case:
 - Each plugin's SessionStart hook manages **only its own** entry, resolving the
   switch with the shared `combiner_serves <name>` logic (§3.1) — global
   `MCP_COMBINER`, overridden per backend by `MCP_COMBINER_SERVES_<NAME>`.
-- The switch is set once, outside the session — `zshenv` for interactive use, and
-  the ACP wrapper (`cc/init.lua`) for neovim/codecompanion, which already injects
-  env into the spawned agent (§2.4).
+- The switch is set once, machine-wide, outside the session — `zshenv` (§3.7).
+  Interactive shells, neovim, and the ACP/codecompanion agents it spawns all
+  inherit it; nothing injects it per session.
 
 A partial-proxy setup is then expressible, which is the common real case:
 
