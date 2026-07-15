@@ -1,5 +1,6 @@
 {
   "name": "cribsheet",
+  "description": "crib — persistent cross-session markdown memory + a code symbol index for your AI. Ships the `/crib` recall command; register the MCP server via sharedserver or run instructions-only when crib reaches you via mcp-combiner.",
   "owner": {
     "name": "George Harker",
     "email": "george@georgeharker.com"
