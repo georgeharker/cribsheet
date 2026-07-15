@@ -279,7 +279,8 @@ switch set directly from that config, so the two cannot drift.
 
 1. Fold `commands/` + `instructions.txt` + hooks into the single `cribsheet` plugin;
    drop its `mcpServers` block.
-2. Retire `cribsheet-instructions` from the marketplace.
+2. Retire `cribsheet-instructions` from the marketplace. **Done** — the unified plugin
+   serves both modes, so the instructions-only variant has no remaining role.
 3. Combiner machines: `export MCP_COMBINER=1` in `zshenv` **before** the switch, so
    the first session after upgrade does not register crib alongside the combiner.
 4. Standalone machines: nothing to do.
