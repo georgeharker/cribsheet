@@ -12,6 +12,7 @@
   "keywords": ["memory", "code-index", "mcp", "sharedserver", "fastmcp"],
   "mcpServers": {
     "cribsheet": {
+      "type": "http",
       "url": "http://127.0.0.1:7732/mcp"
     }
   },
