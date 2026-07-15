@@ -67,7 +67,9 @@ def generate(cfg: GenerateConfig, system: str, user: str,
     request = ChatRequest(user=user, system=system)
     try:
         code, text = chat_to_str(provider, request, thinking="none")
-    except Exception as e:  # noqa: BLE001 — adapter import / call failures
+    # SystemExit too: a misconfigured adapter must never escape as a BaseException
+    # and tear down the daemon's event loop — see agenerate_structured's callers.
+    except (Exception, SystemExit) as e:  # noqa: BLE001 — adapter import / call failures
         raise GenerationError(
             f"llmkit generation failed for adapter {provider.adapter!r}: {e}. "
             f"Is the provider configured and its extra installed "
@@ -96,7 +98,9 @@ def generate_structured(cfg: GenerateConfig, system: str, user: str,
                           schema_description=schema_description)
     try:
         code, data = chat_structured(provider, request)
-    except Exception as e:  # noqa: BLE001 — adapter import / call failures
+    # SystemExit too: keep a misbehaving adapter from crashing the daemon (a stray
+    # SystemExit is a BaseException and would escape a bare `except Exception`).
+    except (Exception, SystemExit) as e:  # noqa: BLE001 — adapter import / call failures
         raise GenerationError(
             f"llmkit structured generation failed for adapter "
             f"{provider.adapter!r}: {e}.") from e

@@ -21,7 +21,11 @@ dependencies = [
     "fastembed>=0.3",
     "fastmcp>=3.4.2,<4",
     "watchdog>=4.0",
-    "polyllmkit[md,bridge]>=0.1",
+    # [all] pulls every LLM backend (openai/claude/anthropic/google): the daemon
+    # resolves its generation adapter at runtime from config (default: claude_code),
+    # so all backends must be present — a missing one crashes lifespan startup.
+    # >=0.1.1: adapters raise catchable ImportError, never SystemExit.
+    "polyllmkit[md,all]>=0.1.1",
 ]
 
 [project.optional-dependencies]
