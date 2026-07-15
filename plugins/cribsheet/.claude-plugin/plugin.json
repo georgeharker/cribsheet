@@ -1,7 +1,7 @@
 {
   "name": "cribsheet",
-  "version": "0.1.0",
-  "description": "Persistent markdown memory + a code symbol index (concept/name lookup, call graph, references, durable learnings) for your AI. Registers the crib MCP server over a sharedserver-managed HTTP backend (one warm crib shared across sessions; respects a globally-installed `crib`), and injects the reach-for-crib instructions.",
+  "version": "0.2.0",
+  "description": "Persistent markdown memory + a code symbol index (concept/name lookup, call graph, references, durable learnings) for your AI. Registers the crib MCP server over a sharedserver-managed HTTP backend (one warm crib shared across sessions; respects a globally-installed `crib`), injects the reach-for-crib instructions, and ships the `/crib` command (recall memory + code index for a topic).",
   "author": {
     "name": "George Harker",
     "email": "george@georgeharker.com"
