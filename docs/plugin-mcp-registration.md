@@ -187,10 +187,22 @@ registry.
 
 ### 3.5 Idempotency is load-bearing
 
-The `claude mcp get` guards are **not** an optimisation. Per §2.5 a write forces an
-MCP reload that can disconnect live servers; an unguarded hook would inflict that
-on **every session start**. Steady state must perform **zero writes**. Only a first
-run or a genuine mode flip may write.
+The guards are **not** an optimisation. Per §2.5 a write forces an MCP reload that
+can disconnect live servers; an unguarded hook would inflict that on **every session
+start**. Steady state must perform **zero writes**. Only a first run or a genuine
+mode flip may write.
+
+**The check must be cheap too.** Measured: `claude mcp get` costs **~1.7s**, against
+**~35ms** to read the config JSON directly — and the check runs on every session
+start, where it is pure overhead. So the hook reads `$CLAUDE_CONFIG_DIR/.claude.json`
+(falling back to `~/.claude.json`) for the *check*, while every *mutation* still goes
+through the supported `claude mcp add|remove`.
+
+That read couples us to a config path we do not own, so it fails safe rather than
+silently: it exits 2 for "can't tell" (path moved, unparseable, no python) and the
+hook falls back to the slow-but-authoritative `claude mcp get`. Guessing "absent"
+instead would re-add and reload MCP on **every** session — precisely the failure the
+guard exists to prevent. Measured steady-state cost of the whole hook: **~45ms**.
 
 ### 3.6 Timing
 
