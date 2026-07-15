@@ -70,15 +70,39 @@ git submodule update --init && pip install -e ./vendor/llmkit
 ```
 </details>
 
-**2 — Wire it into Claude Code.** The simplest path installs the MCP server *and* the
-"reach for memory" directive as a plugin:
+**2 — Wire it into Claude Code.** One plugin installs the MCP server, the `/crib`
+command, and the "reach for memory" directive:
 
 ```bash
 claude plugin marketplace add georgeharker/cribsheet
-claude plugin install cribsheet                 # MCP tools + instructions
-# already have crib served another way? use the instructions only:
-claude plugin install cribsheet-instructions
+claude plugin install cribsheet
 ```
+
+It needs [`sharedserver`](https://github.com/georgeharker/claude-sharedserver) on
+`PATH` (`cargo install sharedserver`) — it keeps **one warm crib** serving every
+session, and it's the same process the CLI attaches to. If it's missing the plugin
+still loads and says so; nothing else breaks.
+
+**The plugin writes to your user-scope MCP config** (`claude mcp add|remove`) rather
+than declaring a server in its manifest — that is what lets one plugin serve both
+deployments, and it means crib appears in `claude mcp list` as a user server you can
+inspect or remove.
+
+**Already have crib served another way?** If an aggregator such as
+[mcp-companion](https://github.com/georgeharker/mcp-companion) already proxies
+crib's tools, a second registration would mount every tool twice. Set the switch
+**once**, machine-wide, and the plugin registers nothing — you still get `/crib` and
+the directive:
+
+```sh
+# ~/.zshenv — must be set before Claude Code starts
+export MCP_COMBINER=1                    # a combiner serves my MCPs…
+export MCP_COMBINER_SERVES_CRIBSHEET=0   # …except crib — per-backend override, wins
+```
+
+It's a **global toggle, not per-session**, and it converges both ways: setting it
+removes crib's registration, unsetting it restores it. A change lands in the *next*
+session. Details: [docs/plugin-mcp-registration.md](docs/plugin-mcp-registration.md).
 
 Prefer to wire it by hand? Copy [`CLAUDE.md.example`](CLAUDE.md.example) into your
 global `$CLAUDE_CONFIG_DIR/CLAUDE.md` — that one-line directive is what keeps the
@@ -134,12 +158,14 @@ runs), so it's fast; `--no-daemon` runs in-process, `--json` gives machine outpu
 
 ## Going further
 
-- **Run the MCP server** — the plugin (Quickstart) is the easy path. To run it
-  yourself: `crib --mcp` (stdio) or `crib serve --http --port 7732`, registered as a
+- **Run the MCP server** — the plugin (Quickstart) is the easy path: it registers
+  crib and keeps it warm for you. To run it yourself instead: `crib --mcp` (stdio) or
+  `crib serve --http --port 7732`, registered as a
   [`sharedserver`](https://github.com/georgeharker/claude-sharedserver)-backed HTTP
   MCP so one warm crib serves every client (and the same process the CLI attaches
-  to). If a combiner already proxies crib's tools to you, install
-  `cribsheet-instructions` (directive only, no second MCP).
+  to). Set `MCP_COMBINER=1` (or `MCP_COMBINER_SERVES_CRIBSHEET=1`) when something
+  else already serves crib — a combiner, or your own external process — and the
+  plugin will stand down rather than register a second copy.
 - **Share across machines** — the data dir is a git repo; notes sync via plain git
   with a frontmatter-aware merge driver so provenance never conflicts:
   ```bash

@@ -1,6 +1,6 @@
 {
   "name": "cribsheet",
-  "description": "crib — persistent cross-session markdown memory + a code symbol index for your AI. Ships the `/crib` recall command; register the MCP server via sharedserver or run instructions-only when crib reaches you via mcp-combiner.",
+  "description": "crib — persistent cross-session markdown memory + a code symbol index for your AI. Ships the `/crib` recall command and registers the crib MCP server via sharedserver; set MCP_COMBINER=1 and it stands down when a combiner already serves crib.",
   "owner": {
     "name": "George Harker",
     "email": "george@georgeharker.com"
@@ -9,12 +9,7 @@
     {
       "name": "cribsheet",
       "source": "./plugins/cribsheet",
-      "description": "Persistent markdown memory + a code symbol index (concept/name lookup, call graph, references, learnings) for your AI. Registers the crib MCP server via sharedserver (respects a global install; skip with CRIB_EXTERNAL), carries the reach-for-crib instructions, and ships the `/crib` command."
-    },
-    {
-      "name": "cribsheet-instructions",
-      "source": "./plugins/cribsheet-instructions",
-      "description": "Instructions + the `/crib` command — the 'prefer the code index over grep, consult/store memory' directives injected each session, plus `/crib` for on-demand recall. No MCP registration. For when crib's tools already reach you another way (e.g. via mcp-combiner)."
+      "description": "Persistent markdown memory + a code symbol index (concept/name lookup, call graph, references, learnings) for your AI. Registers the crib MCP server via sharedserver and keeps one warm crib shared across sessions, carries the reach-for-crib instructions, and ships the `/crib` command. Set MCP_COMBINER=1 (or MCP_COMBINER_SERVES_CRIBSHEET) when a combiner already serves crib and it will not register a second copy."
     }
   ]
 }
