@@ -78,10 +78,22 @@ claude plugin marketplace add georgeharker/cribsheet
 claude plugin install cribsheet
 ```
 
-It needs [`sharedserver`](https://github.com/georgeharker/claude-sharedserver) on
+It needs [`sharedserver`](https://github.com/georgeharker/sharedserver) on
 `PATH` (`cargo install sharedserver`) — it keeps **one warm crib** serving every
 session, and it's the same process the CLI attaches to. If it's missing the plugin
 still loads and says so; nothing else breaks.
+
+**On OpenCode?** The counterpart plugin lives in
+[`plugins/opencode-cribsheet`](plugins/opencode-cribsheet) and does the same three
+things (MCP server on `:7732`, `/crib` command, reach-for-crib directive). Add it to
+your `opencode.json`:
+
+```json
+{ "plugin": ["@geohar/opencode-cribsheet@latest"] }
+```
+
+Full options are in the plugin's [README](plugins/opencode-cribsheet/README.md); the
+`MCP_COMBINER` switch below applies to it too.
 
 **The plugin writes to your user-scope MCP config** (`claude mcp add|remove`) rather
 than declaring a server in its manifest — that is what lets one plugin serve both
