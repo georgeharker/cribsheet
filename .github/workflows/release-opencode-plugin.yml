@@ -1,9 +1,11 @@
 name: Release (opencode-cribsheet)
 
-# Publishes the @geohar/opencode-cribsheet npm plugin when a version tag is pushed —
-# the SAME `v*` tag that release.yml uses for PyPI, because the plugin version tracks
-# the cribsheet release. The version-match check enforces that lockstep: bump
-# plugins/opencode-cribsheet/package.json in the release commit or this job fails.
+# Publishes the @geohar/opencode-cribsheet npm plugin on its OWN scoped tag
+# (opencode-cribsheet-v*), decoupled from the cribsheet PyPI release so shipping the
+# plugin never forces a Python release. The plugin version should equal the cribsheet
+# version it serves; the version-match check enforces package.json == tag. Release:
+# bump plugins/opencode-cribsheet/package.json, then
+#   git tag opencode-cribsheet-v<version> && git push origin opencode-cribsheet-v<version>
 #
 # Mirrors release.yml's shape: tag-triggered, trusted publishing (OIDC, no secrets),
 # an environment gate. npm equivalent of PyPI Trusted Publishing:
@@ -20,7 +22,7 @@ name: Release (opencode-cribsheet)
 
 on:
   push:
-    tags: ["v*"]
+    tags: ["opencode-cribsheet-v*"]
 
 jobs:
   publish:
@@ -44,9 +46,9 @@ jobs:
       - name: Verify tag matches package version
         run: |
           pkg="$(node -p "require('./package.json').version")"
-          tag="${GITHUB_REF_NAME#v}"
+          tag="${GITHUB_REF_NAME#opencode-cribsheet-v}"
           if [ "$pkg" != "$tag" ]; then
-            echo "::error::tag v$tag does not match plugin version $pkg — bump plugins/opencode-cribsheet/package.json to match the cribsheet release"
+            echo "::error::tag opencode-cribsheet-v$tag does not match plugin version $pkg — bump plugins/opencode-cribsheet/package.json"
             exit 1
           fi
       - run: npm install --no-audit --no-fund
