@@ -1,0 +1,57 @@
+name: Release (opencode-cribsheet)
+
+# Publishes the @geohar/opencode-cribsheet npm plugin on its OWN scoped tag
+# (opencode-cribsheet-v*), decoupled from the cribsheet PyPI release so shipping the
+# plugin never forces a Python release. The plugin version should equal the cribsheet
+# version it serves; the version-match check enforces package.json == tag. Release:
+# bump plugins/opencode-cribsheet/package.json, then
+#   git tag opencode-cribsheet-v<version> && git push origin opencode-cribsheet-v<version>
+#
+# Mirrors release.yml's shape: tag-triggered, trusted publishing (OIDC, no secrets),
+# an environment gate. npm equivalent of PyPI Trusted Publishing:
+#
+#   One-time setup at https://www.npmjs.com/ → the package → Settings → Trusted
+#   Publisher (create the publisher first if the package is new), with:
+#       repository:   georgeharker/cribsheet
+#       workflow:     release-opencode-plugin.yml
+#       environment:  npm
+#   Then create a GitHub environment named "npm" (repo Settings → Environments).
+#
+# No NPM_TOKEN needed once the trusted publisher is configured — OIDC authenticates
+# the publish and generates provenance.
+
+on:
+  push:
+    tags: ["opencode-cribsheet-v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      id-token: write          # OIDC: trusted publishing + provenance
+      contents: read
+    defaults:
+      run:
+        working-directory: plugins/opencode-cribsheet
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          # NB: no registry-url — it writes an .npmrc expecting NODE_AUTH_TOKEN,
+          # which shadows OIDC trusted publishing and makes `npm publish` 404.
+      - name: Upgrade npm (OIDC trusted publishing needs >= 11.5.1)
+        run: npm install -g npm@latest
+      - name: Verify tag matches package version
+        run: |
+          pkg="$(node -p "require('./package.json').version")"
+          tag="${GITHUB_REF_NAME#opencode-cribsheet-v}"
+          if [ "$pkg" != "$tag" ]; then
+            echo "::error::tag opencode-cribsheet-v$tag does not match plugin version $pkg — bump plugins/opencode-cribsheet/package.json"
+            exit 1
+          fi
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+      - name: Publish to npm (trusted publishing + provenance)
+        run: npm publish --provenance --access public
