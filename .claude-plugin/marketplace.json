@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "cribsheet",
-      "source": "./plugins/cribsheet",
+      "source": "./plugins/claude",
       "description": "Persistent markdown memory + a code symbol index (concept/name lookup, call graph, references, learnings) for your AI. Registers the crib MCP server via sharedserver and keeps one warm crib shared across sessions, carries the reach-for-crib instructions, and ships the `/crib` command. Set MCP_COMBINER=1 (or MCP_COMBINER_SERVES_CRIBSHEET) when a combiner already serves crib and it will not register a second copy."
     }
   ]

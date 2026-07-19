@@ -84,7 +84,7 @@ session, and it's the same process the CLI attaches to. If it's missing the plug
 still loads and says so; nothing else breaks.
 
 **On OpenCode?** The counterpart plugin lives in
-[`plugins/opencode-cribsheet`](https://github.com/georgeharker/cribsheet/tree/main/plugins/opencode-cribsheet) and does the same three
+[`plugins/opencode`](https://github.com/georgeharker/cribsheet/tree/main/plugins/opencode) and does the same three
 things (MCP server on `:7732`, `/crib` command, reach-for-crib directive). Add it to
 your `opencode.json`:
 
@@ -92,7 +92,7 @@ your `opencode.json`:
 { "plugin": ["@geohar/opencode-cribsheet@latest"] }
 ```
 
-Full options are in the plugin's [README](https://github.com/georgeharker/cribsheet/blob/main/plugins/opencode-cribsheet/README.md); the
+Full options are in the plugin's [README](https://github.com/georgeharker/cribsheet/blob/main/plugins/opencode/README.md); the
 `MCP_COMBINER` switch below applies to it too.
 
 **The plugin writes to your user-scope MCP config** (`claude mcp add|remove`) rather

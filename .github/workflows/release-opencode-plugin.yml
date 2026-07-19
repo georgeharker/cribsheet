@@ -1,11 +1,10 @@
 name: Release (opencode-cribsheet)
 
-# Publishes the @geohar/opencode-cribsheet npm plugin on its OWN scoped tag
-# (opencode-cribsheet-v*), decoupled from the cribsheet PyPI release so shipping the
-# plugin never forces a Python release. The plugin version should equal the cribsheet
-# version it serves; the version-match check enforces package.json == tag. Release:
-# bump plugins/opencode-cribsheet/package.json, then
-#   git tag opencode-cribsheet-v<version> && git push origin opencode-cribsheet-v<version>
+# Publishes the @geohar/opencode-cribsheet npm plugin on the unified release tag
+# (v*), in lockstep with the whole repo — one vX.Y.Z tag releases pyproject, the
+# Claude Code plugin, and this npm package together. The version-match check enforces
+# package.json == tag. Release: bump every manifest with scripts/bump-version.sh
+# <version>, then push the vX.Y.Z tag.
 #
 # Mirrors release.yml's shape: tag-triggered, trusted publishing (OIDC, no secrets),
 # an environment gate. npm equivalent of PyPI Trusted Publishing:
@@ -22,7 +21,7 @@ name: Release (opencode-cribsheet)
 
 on:
   push:
-    tags: ["opencode-cribsheet-v*"]
+    tags: ["v*"]
 
 jobs:
   publish:
@@ -33,7 +32,7 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: plugins/opencode-cribsheet
+        working-directory: plugins/opencode
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -46,9 +45,9 @@ jobs:
       - name: Verify tag matches package version
         run: |
           pkg="$(node -p "require('./package.json').version")"
-          tag="${GITHUB_REF_NAME#opencode-cribsheet-v}"
+          tag="${GITHUB_REF_NAME#v}"
           if [ "$pkg" != "$tag" ]; then
-            echo "::error::tag opencode-cribsheet-v$tag does not match plugin version $pkg — bump plugins/opencode-cribsheet/package.json"
+            echo "::error::tag v$tag does not match plugin version $pkg — bump plugins/opencode/package.json"
             exit 1
           fi
       - run: npm install --no-audit --no-fund
