@@ -1,6 +1,6 @@
 {
   "name": "cribsheet",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "description": "Persistent markdown memory + a code symbol index (concept/name lookup, call graph, references, durable learnings) for your AI. Registers the crib MCP server over a sharedserver-managed HTTP backend (one warm crib shared across sessions) and keeps it warm, injects the reach-for-crib instructions, and ships the `/crib` command (recall memory + code index for a topic). Set MCP_COMBINER=1 when a combiner already serves crib and the plugin will not register it — see docs/plugin-mcp-registration.md.",
   "author": {
     "name": "George Harker",
