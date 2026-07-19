@@ -22,9 +22,10 @@
 //   5. /crib command — register an OpenCode command mirroring commands/crib.md.
 
 import { spawnSync } from "node:child_process"
-import { existsSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import { homedir } from "node:os"
-import { join } from "node:path"
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
 import type { Plugin } from "@opencode-ai/plugin"
 
 type Options = {
@@ -80,33 +81,22 @@ const DEFAULT_NAME = "cribsheet"
 const DEFAULT_GRACE = "1h"
 
 // ── the reach-for-crib directive ───────────────────────────────────
-// Canonical source: cribsheet's CLAUDE.md.example (plugins/cribsheet/instructions.txt
-// symlinks it). Bundled here so the published npm package is self-contained; keep in
-// sync with that file.
-const CRIB_DIRECTIVE = `# Memory (cribsheet)
-
-- **Consult memory first.** Before answering about a project, topic, or past decision
-  — or exploring a codebase cold — \`lookup\`/\`apropos\` cribsheet first; the answer may
-  already be stored, and more current than reasoning from scratch.
-- **Prefer the code index over grep/Read for understanding code.** The reflex to
-  \`grep\`/\`rg\`/\`Glob\` for a symbol — or to open a file to see what it does — is the cue
-  to reach for the index first; grep is the fallback when it misses, not the default.
-    - *find code by concept or name* → \`code_lookup "…in your own words"\`, **not**
-      \`grep -r\` (answers by intent + cross-file).
-    - *understand a symbol + who uses it* → \`code_dossier <symbol>\`, **not** reading
-      the whole file (one call: signature, description, callers/callees/references).
-    - *trace calls* → \`code_xref\` / \`code_graph\`, **not** chains of greps.
-    - *repo not indexed?* → that's the expected first step, not a dead end: **index it**
-      — \`project_index\` (indexes the source in one call), then look up.
-    - *which project?* → code tools act on ONE **current project**. Set it once
-      (\`use_project <name>\`, or it's inferred from \`project_path\` on your first code
-      call); to look up a **different** project, name it: \`project=<name>\` or
-      \`project_path=<a path in that repo>\`.
-- **Persist durably.** When a durable fact emerges (a decision, convention, gotcha,
-  contract), \`store\` it — \`lookup\` first, \`append\`/\`edit\` over duplicating. **Name the
-  project it's ABOUT** (writes require an explicit \`project=\`/\`project_path=\`): a fact
-  about the repo you're in goes there, but cross-cutting/tooling knowledge belongs in
-  \`default\` or that tool's own project. Say which project it landed in.`
+// Appended to the system prompt so the agent reaches for crib's tools (the analogue
+// of the Claude Code plugin's SessionStart additionalContext). Canonical source:
+// CLAUDE.md.example at the repo root (plugins/claude/instructions.txt symlinks it). A
+// release-time `prepack` copies that file to this package's root as instructions.txt
+// (see package.json `prepack`/`files`); we read the copy ONCE here so the published
+// npm package is self-contained without duplicating the text in source. A dev/unbuilt
+// run (no copy present) falls back to an empty string and simply injects nothing.
+const CRIB_DIRECTIVE: string = (() => {
+    try {
+        // dist/index.js lives in dist/; the packed copy ships at the package root.
+        const here = dirname(fileURLToPath(import.meta.url))
+        return readFileSync(join(here, "..", "instructions.txt"), "utf8")
+    } catch {
+        return ""
+    }
+})()
 
 // ── the /crib command template (mirrors commands/crib.md) ──────────
 const CRIB_COMMAND_TEMPLATE = `Consult crib first — recall memory + the code index for "$ARGUMENTS" before reasoning from scratch.
@@ -380,7 +370,7 @@ const CribsheetPlugin: Plugin = async ({ client }, options) => {
     // The directive: appended to the system prompt each session (analogue of the CC
     // plugin's SessionStart additionalContext). Injected regardless of `served`.
     const systemHook = async (_input: unknown, output: { system: string[] }) => {
-        if (!wantInstructions) return
+        if (!wantInstructions || !CRIB_DIRECTIVE) return
         output.system.push(CRIB_DIRECTIVE)
     }
 
