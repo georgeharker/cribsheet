@@ -1,6 +1,6 @@
 {
     "name": "@geohar/opencode-cribsheet",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "description": "OpenCode plugin: run the crib (cribsheet) memory + code-index MCP server via sharedserver, register its endpoint, inject the reach-for-crib directive, and ship the /crib command. Stands down when a combiner already serves crib.",
     "type": "module",
     "main": "dist/index.js",
