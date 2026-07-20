@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# Resolve the `crib` CLI, fetching it if absent.
+#   1. $CRIB_BIN
+#   2. PATH (skipping ourselves to avoid recursion), when new enough
+#   3. uv run --project $CRIBSHEET_DEV, for a checkout
+#   4. uvx cribsheet@<this plugin's version>
+#
+# Used by BOTH the SessionStart hook (to serve the MCP backend) and the /crib command
+# (which shells out to the CLI, not MCP — so a uvx-only install would otherwise leave
+# slash commands broken while the tools worked).
+#
+# Unlike bin/sharedserver this pins to the plugin's own version: the cribsheet plugin
+# ships cribsheet, so the two move in lockstep and the floor IS the pin.
+
+set -eu
+
+_plugin_root="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
+
+_plugin_version() {
+  local pj="$_plugin_root/.claude-plugin/plugin.json"
+  [ -f "$pj" ] || return 1
+  if command -v jq >/dev/null 2>&1; then
+    jq -r '.version // empty' <"$pj"
+  else
+    sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$pj" | head -1
+  fi
+}
+
+_version_ge() {
+  local a b i x y
+  local IFS=.
+  read -r -a a <<<"${1%%[!0-9.]*}"
+  read -r -a b <<<"${2%%[!0-9.]*}"
+  for i in 0 1 2; do
+    x="${a[i]:-0}"; y="${b[i]:-0}"
+    ((10#${x:-0} > 10#${y:-0})) && return 0
+    ((10#${x:-0} < 10#${y:-0})) && return 1
+  done
+  return 0
+}
+
+_ver="$(_plugin_version || true)"
+
+# Explicit override is never second-guessed.
+if [ -n "${CRIB_BIN:-}" ] && [ -x "$CRIB_BIN" ]; then
+  exec "$CRIB_BIN" "$@"
+fi
+
+# A crib on PATH wins when it is at least the version this plugin ships against — the
+# user's own `uv tool install cribsheet`, and no fetch. Too old and we fall through to
+# the pinned release rather than limp.
+if _real="$(command -v crib 2>/dev/null)" && [ -x "$_real" ] && [ "$_real" != "$0" ]; then
+  _pv="$("$_real" --version 2>/dev/null | awk '{print $NF}')"
+  if [ -z "$_ver" ] || { [ -n "$_pv" ] && _version_ge "$_pv" "$_ver"; }; then
+    exec "$_real" "$@"
+  fi
+fi
+
+# A checkout, when explicitly pointed at one.
+if [ -n "${CRIBSHEET_DEV:-}" ] && [ -d "${CRIBSHEET_DEV}" ] && command -v uv >/dev/null 2>&1; then
+  exec uv run --project "$CRIBSHEET_DEV" crib "$@"
+fi
+
+if ! command -v uvx >/dev/null 2>&1; then
+  echo "cribsheet: no usable 'crib' found, and uvx is unavailable to fetch it." >&2
+  echo "  Install uv (https://docs.astral.sh/uv/) — the plugin then needs nothing else —" >&2
+  echo "  or install crib directly: uv tool install cribsheet" >&2
+  exit 127
+fi
+
+# `--from` is required, not optional: uvx defaults to running an executable named after
+# the package, and this package is `cribsheet` while its binary is `crib`. Without it
+# uvx fails with "An executable named `cribsheet` is not provided by package
+# `cribsheet`" — which looks like a missing release rather than a wrong invocation.
+#
+# uvx caches, so this is one fetch and a cache hit thereafter. Pinned to this plugin's
+# version; if that exact release is missing, fall back to latest rather than fail.
+if [ -n "$_ver" ] && uvx --from "cribsheet@${_ver}" crib --version >/dev/null 2>&1; then
+  exec uvx --from "cribsheet@${_ver}" crib "$@"
+fi
+exec uvx --from cribsheet crib "$@"

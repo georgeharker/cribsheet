@@ -78,10 +78,16 @@ claude plugin marketplace add georgeharker/cribsheet
 claude plugin install cribsheet
 ```
 
-It needs [`sharedserver`](https://github.com/georgeharker/sharedserver) on
-`PATH` (`cargo install sharedserver`) — it keeps **one warm crib** serving every
-session, and it's the same process the CLI attaches to. If it's missing the plugin
-still loads and says so; nothing else breaks.
+**The plugin needs nothing installed by hand.** It fetches
+[`sharedserver`](https://github.com/georgeharker/sharedserver) (prebuilt — no Rust
+toolchain) and `crib` itself on first use if they aren't already present; `curl` and
+[`uv`](https://docs.astral.sh/uv/) are the only prerequisites. sharedserver keeps
+**one warm crib** serving every session, and it's the same process the CLI attaches to.
+
+Anything you've installed yourself wins: a `crib` or `sharedserver` already on `PATH`
+is used as-is, and `$CRIB_BIN` / `$SHAREDSERVER_BIN` are honoured without being
+second-guessed. `/crib` goes through the same resolution as the backend, so the CLI and
+the MCP server can never disagree about which `crib` they mean.
 
 **On OpenCode?** The counterpart plugin lives in
 [`plugins/opencode`](https://github.com/georgeharker/cribsheet/tree/main/plugins/opencode) and does the same three

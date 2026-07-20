@@ -123,18 +123,17 @@ else
   if ! _registered; then
     claude mcp add --transport http "$NAME" "$URL" --scope user >/dev/null 2>&1 || true
   fi
-  # bin/sharedserver resolves $SHAREDSERVER_BIN -> PATH -> standard dirs, and fetches
-  # a release if none is usable, so there is nothing to install by hand.
+  # Both wrappers resolve their tool and fetch it when absent, so nothing needs
+  # installing by hand: bin/sharedserver (PATH -> standard dirs -> release download),
+  # bin/crib (PATH -> checkout -> uvx). /crib uses bin/crib too, so the CLI and the
+  # MCP backend can never disagree about which crib they mean.
   ss="$dir/bin/sharedserver"
-  if [[ ! -x "$ss" ]]; then
-    warn 'cribsheet: the bundled bin/sharedserver wrapper is missing or not executable — the crib MCP backend will not start.'
-  elif ! command -v crib >/dev/null 2>&1; then
-    # Previously this combination fell through both branches and did nothing at all —
-    # no backend, no message. A missing crib is the likelier of the two in practice.
-    warn 'cribsheet: `crib` not on PATH — the MCP backend will not start. Install it (uv tool install cribsheet), or set MCP_COMBINER=1 if a combiner already serves it.'
+  cribbin="$dir/bin/crib"
+  if [[ ! -x "$ss" || ! -x "$cribbin" ]]; then
+    warn 'cribsheet: a bundled wrapper under bin/ is missing or not executable — the crib MCP backend will not start.'
   else
     "$ss" use "$NAME" --pid "$PPID" --grace-period 1h -- \
-      crib --mcp --http --host 127.0.0.1 --port 7732 >/dev/null 2>&1 || true
+      "$cribbin" --mcp --http --host 127.0.0.1 --port 7732 >/dev/null 2>&1 || true
   fi
 fi
 

@@ -91,9 +91,13 @@ With options (all optional — defaults shown):
 
 ## Requirements
 
-- [`sharedserver`](https://github.com/georgeharker/sharedserver) on `PATH`
-  (`cargo install sharedserver`) — unless `manage: false`.
-- `crib` on `PATH` (install cribsheet), or a `checkout` + `uv`.
+- `curl` and [`uv`](https://docs.astral.sh/uv/) — **nothing else**. The plugin fetches
+  [`sharedserver`](https://github.com/georgeharker/sharedserver) and `crib` itself on
+  first use if they are not already present, so no Rust toolchain is needed and
+  cribsheet need not be installed by hand.
+- To supply your own instead: anything on `PATH`, the `binary` option, or
+  `$SHAREDSERVER_BIN` / `$CRIB_BIN` is used as-is and never silently replaced. A
+  `checkout` + `uv` also works for a dev tree.
 
 ## Relationship to the other plugins
 
