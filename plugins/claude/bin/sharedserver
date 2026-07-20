@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+# Resolve the sharedserver binary, fetching it if absent.
+#   1. $SHAREDSERVER_BIN
+#   2. PATH (skipping ourselves to avoid recursion)
+#   3. ~/.cargo/bin, ~/.local/bin, /opt/homebrew/bin, /usr/local/bin
+#   4. download the latest release via sharedserver's cargo-dist installer
+#
+# CONSUMER variant. cribsheet uses sharedserver, it does not ship it, so unlike
+# sharedserver's own shim this fetches `latest` rather than pinning: there is no
+# lockstep between cribsheet's version and sharedserver's, and hardcoding one here
+# would be a number to hand-bump in every consuming repo forever.
+#
+# Kept behaviourally identical to plugins/opencode/src/index.ts. Change them together.
+
+set -eu
+
+# The supported baseline, not a capability boundary — nothing in the `use`/`unuse`
+# surface changed between 0.5.0 and here. 0.6.4 is simply what cribsheet is tested
+# against, and the first release with prebuilt binaries, so it is also the oldest
+# version the fetch path below can coherently land you on.
+#
+# Raise this when cribsheet starts depending on newer behaviour, or to retire a
+# version you no longer want to support. Anything older gets warned about and
+# upgraded; an explicit SHAREDSERVER_BIN is still honoured regardless.
+MIN_SHAREDSERVER_VERSION="0.6.4"
+INSTALLER_URL="https://github.com/georgeharker/sharedserver/releases/latest/download/sharedserver-installer.sh"
+
+version_ge() { # version_ge A B -> success when dotted-numeric prefix of A >= B
+  local a b i x y
+  local IFS=.
+  read -r -a a <<<"${1%%[!0-9.]*}"
+  read -r -a b <<<"${2%%[!0-9.]*}"
+  for i in 0 1 2; do
+    x="${a[i]:-0}"; y="${b[i]:-0}"
+    ((10#${x:-0} > 10#${y:-0})) && return 0
+    ((10#${x:-0} < 10#${y:-0})) && return 1
+  done
+  return 0
+}
+
+_version_of() { "$1" --version 2>/dev/null | awk '{print $2}'; }
+
+_probe() { # first sharedserver found at ANY version, or nothing
+  if [ -n "${SHAREDSERVER_BIN:-}" ] && [ -x "$SHAREDSERVER_BIN" ]; then
+    printf '%s' "$SHAREDSERVER_BIN"; return 0
+  fi
+  local real candidate
+  if real="$(command -v sharedserver 2>/dev/null)" && [ -x "$real" ] && [ "$real" != "$0" ]; then
+    printf '%s' "$real"; return 0
+  fi
+  for candidate in \
+    "$HOME/.cargo/bin/sharedserver" "$HOME/.local/bin/sharedserver" \
+    "/opt/homebrew/bin/sharedserver" "/usr/local/bin/sharedserver"; do
+    [ -x "$candidate" ] && { printf '%s' "$candidate"; return 0; }
+  done
+  return 1
+}
+
+# An explicit SHAREDSERVER_BIN is never second-guessed — warn if old, honour it.
+if [ -n "${SHAREDSERVER_BIN:-}" ] && [ -x "$SHAREDSERVER_BIN" ]; then
+  _v="$(_version_of "$SHAREDSERVER_BIN")"
+  if [ -n "$_v" ] && ! version_ge "$_v" "$MIN_SHAREDSERVER_VERSION"; then
+    echo "cribsheet: SHAREDSERVER_BIN is sharedserver $_v; cribsheet needs >= ${MIN_SHAREDSERVER_VERSION}." >&2
+    echo "  Using it anyway because you set it explicitly." >&2
+  fi
+  exec "$SHAREDSERVER_BIN" "$@"
+fi
+
+_stale=""
+if _found="$(_probe)"; then
+  _v="$(_version_of "$_found")"
+  if [ -n "$_v" ] && version_ge "$_v" "$MIN_SHAREDSERVER_VERSION"; then
+    exec "$_found" "$@"
+  fi
+  # Too old. Fetch a current one, but remember this: if the download fails we would
+  # rather run the old binary than nothing.
+  _stale="$_found"
+  echo "cribsheet: found sharedserver ${_v:-unknown} at ${_found}; cribsheet needs >= ${MIN_SHAREDSERVER_VERSION}." >&2
+  echo "  Fetching the latest release. To keep your own build, set SHAREDSERVER_BIN=${_found}" >&2
+fi
+
+# Locked because this runs from SessionStart and people open several sessions at once;
+# the installer is not safe to run concurrently against one target path. Shared with
+# the sharedserver and svg-mcp plugins, so all of them coordinate rather than race.
+_lockdir="${TMPDIR:-/tmp}/.sharedserver-install.lock"
+_have_lock=0
+_cleanup() { [ "$_have_lock" = 1 ] && rm -rf "$_lockdir" 2>/dev/null || true; }
+trap _cleanup EXIT INT TERM
+
+# `exec` replaces the process so the EXIT trap never runs; a bare exec while holding
+# the lock leaks it, and every later run then burns its full wait on phantom contention.
+_exec() { _cleanup; exec "$@"; }
+
+_fallback_or_die() {
+  if [ -n "$_stale" ]; then
+    echo "  Continuing with the existing ${_stale} despite its version." >&2
+    _exec "$_stale" "$@"
+  fi
+  _cleanup; exit 127
+}
+
+if mkdir "$_lockdir" 2>/dev/null; then
+  _have_lock=1
+  printf '%s' "$$" >"$_lockdir/pid" 2>/dev/null || true
+else
+  _waited=0
+  while [ -d "$_lockdir" ] && [ "$_waited" -lt 20 ]; do sleep 1; _waited=$((_waited + 1)); done
+  if _found="$(_probe)"; then
+    _v="$(_version_of "$_found")"
+    [ -n "$_v" ] && version_ge "$_v" "$MIN_SHAREDSERVER_VERSION" && _exec "$_found" "$@"
+  fi
+  if ! mkdir "$_lockdir" 2>/dev/null; then
+    echo "cribsheet: another process is installing sharedserver and did not finish." >&2
+    echo "  If this persists, remove the stale lock: rm -rf $_lockdir" >&2
+    _fallback_or_die "$@"
+  fi
+  _have_lock=1
+fi
+
+# Re-probe under the lock: the winner may have finished while we waited.
+if _found="$(_probe)"; then
+  _v="$(_version_of "$_found")"
+  [ -n "$_v" ] && version_ge "$_v" "$MIN_SHAREDSERVER_VERSION" && _exec "$_found" "$@"
+fi
+
+if ! command -v curl >/dev/null 2>&1; then
+  echo "cribsheet: sharedserver not found, and curl is unavailable to fetch it." >&2
+  echo "  Install it: cargo install sharedserver" >&2
+  _fallback_or_die "$@"
+fi
+
+if [ -z "$_stale" ]; then
+  echo "cribsheet: sharedserver not found; fetching the latest release (one time)." >&2
+  echo "  This needs no Rust toolchain. To use your own build, set SHAREDSERVER_BIN." >&2
+fi
+
+# Download to a file, then run it — NOT `curl … | sh`, whose exit status is sh's, so a
+# 404 reads as success (curl fails, emits nothing, sh exits 0 on empty input).
+_script="$_lockdir/installer.sh"
+if ! curl --proto '=https' --tlsv1.2 -LsSf "$INSTALLER_URL" -o "$_script" 2>/dev/null; then
+  echo "cribsheet: could not download the sharedserver installer." >&2
+  _fallback_or_die "$@"
+fi
+[ -s "$_script" ] || { echo "cribsheet: the downloaded installer was empty." >&2; _fallback_or_die "$@"; }
+
+# cargo-dist embeds the expected sha256 but looks up only `sha256sum` and SKIPS
+# verification when it is missing — i.e. always, on macOS, which ships `shasum -a 256`.
+# Give it a sha256sum (identical output) rather than execute an unverified binary.
+if ! command -v sha256sum >/dev/null 2>&1; then
+  if command -v shasum >/dev/null 2>&1; then
+    printf '#!/bin/sh\nexec shasum -a 256 "$@"\n' >"$_lockdir/sha256sum"
+    chmod +x "$_lockdir/sha256sum"
+    PATH="$_lockdir:$PATH"; export PATH
+  else
+    echo "cribsheet: refusing to install sharedserver — no sha256sum or shasum to verify the download." >&2
+    _fallback_or_die "$@"
+  fi
+fi
+
+if ! sh "$_script" >&2; then
+  echo "cribsheet: the sharedserver installer ran but failed." >&2
+  _fallback_or_die "$@"
+fi
+
+if _found="$(_probe)"; then _exec "$_found" "$@"; fi
+
+echo "cribsheet: sharedserver install reported success but no binary was found." >&2
+_fallback_or_die "$@"
