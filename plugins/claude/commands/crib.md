@@ -13,12 +13,12 @@ daemon; no cold start):
 
 Memory — semantic recall, full matched sections:
 
-!`crib note apropos "$ARGUMENTS"`
+!`"${CLAUDE_PLUGIN_ROOT}/bin/crib" note apropos "$ARGUMENTS"`
 
 Code index — symbols by concept or name (skip if the topic is clearly not about
 code; a "project not indexed" reply just means there's nothing to add here):
 
-!`crib code lookup "$ARGUMENTS"`
+!`"${CLAUDE_PLUGIN_ROOT}/bin/crib" code lookup "$ARGUMENTS"`
 
 Then summarize what crib already knows about "$ARGUMENTS": lead with the notes'
 answer, fold in any relevant code symbols, and cite note/symbol names so the
