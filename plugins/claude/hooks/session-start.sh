@@ -23,6 +23,45 @@ dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 NAME=cribsheet
 URL=http://127.0.0.1:7732/mcp
 
+# stdout IS the SessionStart payload, so it must carry exactly ONE JSON object.
+# Warnings are collected and emitted inside that object as `systemMessage`; printing
+# them separately produced two concatenated objects and one was silently dropped.
+# (SessionStart stderr is invisible at exit 0, so stderr alone would not be seen.)
+_warnings=""
+warn() {
+  _warnings="${_warnings}${_warnings:+ }$1"
+  echo "$1" >&2
+}
+
+_emit() {
+  local txt="$dir/instructions.txt" ctx=""
+  [[ -f "$txt" ]] && ctx="$(cat "$txt")"
+  [[ -z "$ctx" && -z "$_warnings" ]] && return 0
+  if command -v jq >/dev/null 2>&1; then
+    jq -n --arg ctx "$ctx" --arg sys "$_warnings" \
+      '{hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:$ctx}}
+       + (if $sys == "" then {} else {systemMessage:$sys} end)'
+  else
+    # Pure-bash JSON escaping. Backslash first (it escapes everything after), newline
+    # last (so the \n it introduces is not re-escaped), then delete raw C0 controls —
+    # JSON forbids all of U+0000–U+001F, and one stray byte from a colourising shim
+    # would invalidate the envelope and lose the instructions AND the warnings.
+    local ctx_e="$ctx" sys_e="$_warnings" f
+    for f in ctx_e sys_e; do
+      local s="${!f}"
+      s=${s//\\/\\\\}; s=${s//\"/\\\"}
+      s=${s//$'\t'/\\t}; s=${s//$'\r'/\\r}; s=${s//$'\n'/\\n}
+      s=${s//[$'\x01'-$'\x1f']/}
+      printf -v "$f" '%s' "$s"
+    done
+    if [[ -n "$_warnings" ]]; then
+      printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"},"systemMessage":"%s"}\n' "$ctx_e" "$sys_e"
+    else
+      printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$ctx_e"
+    fi
+  fi
+}
+
 _truthy() {
   case "$(printf '%s' "${1:-}" | tr '[:upper:]' '[:lower:]')" in
     ''|0|false|no|off) return 1 ;;
@@ -84,18 +123,19 @@ else
   if ! _registered; then
     claude mcp add --transport http "$NAME" "$URL" --scope user >/dev/null 2>&1 || true
   fi
-  ss="${SHAREDSERVER_BIN:-$(command -v sharedserver || true)}"
-  if [[ -n "$ss" ]] && command -v crib >/dev/null 2>&1; then
+  # bin/sharedserver resolves $SHAREDSERVER_BIN -> PATH -> standard dirs, and fetches
+  # a release if none is usable, so there is nothing to install by hand.
+  ss="$dir/bin/sharedserver"
+  if [[ ! -x "$ss" ]]; then
+    warn 'cribsheet: the bundled bin/sharedserver wrapper is missing or not executable — the crib MCP backend will not start.'
+  elif ! command -v crib >/dev/null 2>&1; then
+    # Previously this combination fell through both branches and did nothing at all —
+    # no backend, no message. A missing crib is the likelier of the two in practice.
+    warn 'cribsheet: `crib` not on PATH — the MCP backend will not start. Install it (uv tool install cribsheet), or set MCP_COMBINER=1 if a combiner already serves it.'
+  else
     "$ss" use "$NAME" --pid "$PPID" --grace-period 1h -- \
       crib --mcp --http --host 127.0.0.1 --port 7732 >/dev/null 2>&1 || true
-  elif [[ -z "$ss" ]]; then
-    echo '{"systemMessage":"cribsheet: `sharedserver` not on PATH — the crib MCP backend will not start. Install it (cargo install sharedserver), serve crib yourself, or set MCP_COMBINER=1 if a combiner already serves it."}'
   fi
 fi
 
-txt="$dir/instructions.txt"
-if [[ -f "$txt" ]] && command -v jq >/dev/null 2>&1; then
-  jq -Rs '{hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:.}}' <"$txt"
-elif [[ -f "$txt" ]]; then
-  cat "$txt"
-fi
+_emit
