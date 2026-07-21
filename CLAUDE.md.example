@@ -5,32 +5,48 @@
      (the plugins symlink this file). It directs *approach*; the MCP tool
      descriptions carry the mechanics. -->
 
-- **Consult memory first.** Before answering about a project, topic, or past decision
-  — or exploring a codebase cold — `lookup`/`apropos` cribsheet first; the answer may
-  already be stored, and more current than reasoning from scratch.
-- **Prefer the code index over grep/Read for understanding code.** The reflex to
-  `grep`/`rg`/`Glob` for a symbol — or to open a file to see what it does — is the cue
-  to reach for the index first; grep is the fallback when it misses, not the default.
-    - *find code by concept or name* → `code_lookup "…in your own words"`, **not**
-      `grep -r` (answers by intent + cross-file).
-    - *understand a symbol + who uses it* → `code_dossier <symbol>`, **not** reading
-      the whole file (one call: signature, description, callers/callees/references).
-    - *trace calls* → `code_xref` / `code_graph`, **not** chains of greps.
-    - *repo not indexed?* → that's the expected first step, not a dead end: **index it**
-      — `project_index` (indexes the source in one call), then look up. Do NOT read
-      files or grep instead; there's no shortcut, the utility comes from the index.
-    - *which project?* → code tools act on ONE **current project**. Set it once for the
-      codebase you're in (`use_project <name>`, or it's inferred from `project_path` on
-      your first code call); reads then need no project args. To look up a **different**
-      project (a related codebase you're referencing), you MUST name it: `project=<name>`
-      or `project_path=<a path in that repo>`. (`project_path` ≠ your shell cwd — it just
-      says which repo you mean.)
-  E.g. not `grep -rn "def boolean"` then reading the file — `code_lookup "boolean path
-  union/difference"` → `code_dossier` the top hit. (When you finally *get* a tricky
-  symbol, `code_append <symbol> "…"` pins that understanding for next time.)
-- **Persist durably.** When a durable fact emerges (a decision, convention, gotcha,
-  contract), `store` it — `lookup` first, `append`/`edit` over duplicating. **Name the
-  project it's ABOUT** (writes require an explicit `project=`/`project_path=` — they
-  won't inherit your current one): a fact about the repo you're in goes there, but
-  cross-cutting/tooling knowledge (a CLI, an editor, a shared convention) belongs in
-  `default` or that tool's own project. Say which project it landed in.
+Three rules. Each fires on a **cue you can catch yourself in the middle of**, not on
+a topic you have to remember to think about. That's deliberate: you will not remember
+to "consult memory" — but you can notice your own hand reaching for `grep`.
+
+### 1. About to grep? That's the cue.
+
+`grep` / `rg` / `Glob`, or opening a file to see what it does, is a **stop sign, not
+an action**. At that exact moment:
+
+| your next move was | do this instead |
+|---|---|
+| grep for a symbol — by name, or by hunch | `code_lookup "what it does, in your own words"` — answers by intent, across files |
+| open the file to understand a symbol | `code_dossier <symbol>` — signature, description, callers, callees, references, in one call |
+| chain greps to trace a caller | `code_xref` / `code_graph` |
+| *(repo isn't indexed)* | `project_index` — one call, and the **expected first step**, not a dead end |
+
+grep is the **fallback for when the index misses**. It is never the opening move.
+There is no shortcut around indexing; the utility *is* the index.
+
+**Catch yourself:** if you've read three files to answer one question, this rule
+already fired and you walked past it. Stop where you are, `code_lookup`, redo it.
+
+### 2. About to answer from your own knowledge? Look it up first.
+
+Cue: you're about to explain a project, a past decision, or a convention — or open a
+codebase cold. `lookup` / `apropos` **before** you answer, not after. What's stored may
+be more current than what you'd reconstruct, and *you can't tell which from the inside*:
+a confident reconstruction feels exactly like a correct one.
+
+### 3. Just understood something? Store it before you move on.
+
+Cue: the "ah, *that's* why" moment — a decision, convention, gotcha, or contract. The
+moment passes; the note has to be written inside it. `lookup` first, then `append`/`edit`
+over creating a near-duplicate.
+
+Writes need an explicit `project=` — they do **not** inherit your current project. Name
+the project the fact is *about*: the repo you're in, or `default` (or that tool's own
+project) for cross-cutting knowledge like a CLI or editor convention. Say where it landed.
+To pin a hard-won insight about a symbol: `code_append <symbol> "…"`.
+
+<!-- Project selection for *reads*: code tools act on ONE current project — set it once
+     with `use_project <name>`, or it's inferred from `project_path` on your first code
+     call; reads then need no project args. To read a *different* project you must name it
+     (`project=` / `project_path=`). `project_path` means "which repo I mean" — it is not
+     your shell cwd. -->

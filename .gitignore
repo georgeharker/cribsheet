@@ -17,3 +17,7 @@ build/
 /.quarto/
 
 **/*.quarto_ipynb
+
+# MCP / tooling scratch output
+/.playwright-mcp/
+/figma-form-review.png
