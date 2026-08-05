@@ -113,19 +113,39 @@ Taint is **coarse by design**: it means *a dep moved*, not *this is wrong*. The
 normal ending for a tainted decision is `reaffirm` — cheap, expected, not error
 recovery — and `supersede` is the exception.
 
+**Two edge families.** `deps` are graph edges: body-hash checked, and they **gate**
+`plan_next`. `sources` are attribution edges — where an entry was drawn from —
+**section**-hash checked, and they never gate. Both check; a changed cited section
+taints the entry with change kind `source-changed` (a renamed/removed heading:
+`source-missing`), naming the doc and heading in the chain. A source cites a
+**section**, never a whole doc: `--source "DESIGN.md#10.3 Fusion"` matches a unique
+heading-path suffix, and a bare doc reference is refused with the doc's headings
+listed (the sole exception is a doc with no headings, whose body *is* its one
+section). Whole-file attribution would re-check every entry drawn from a DESIGN.md
+on any edit anywhere in it.
+
+**`proposed` — the import tier.** The status enum is `proposed | active |
+superseded`. Entries the LLM extracted from a doc land `proposed`: they taint
+nothing (quarantine that spreads authority isn't quarantine) and they **gate** any
+plan item that depends on them (unpromoted ground is unstable ground). `design
+promote` is the human act that makes one active, seeding its dep and source hashes
+fresh. Hand-authored decisions still land `active` — only extraction quarantines.
+
 | CLI | MCP | Description |
 |---|---|---|
 | `crib design` (bare) | — | `design list` — the orienting read, as bare `crib project` means `status`. |
-| `crib design add <title> [body]` | `design_add` | Record a decision (`--dep` repeatable, by id/relpath/title); `checked` is seeded, so a new decision is born verified. Body required, and via `--file`/`-`/`$EDITOR` as well as inline. Returns `similar` — a near-duplicate decision forks the graph. |
-| `crib design read <ref>` | `design_read` | **Dossier**: body + status + every dep and dependent annotated (title, status, tainted?) + this decision's own taint with chains. The one-call orientation before touching anything. |
-| `crib design edit <ref> [body]` | `design_edit` | Rewrite a decision through the facet; the result carries `newly_tainted` — what the change just put out of date, with chains, computed against the pre-edit state. |
+| `crib design add <title> [body]` | `design_add` | Record a decision (`--dep` repeatable, by id/relpath/title); `checked` is seeded, so a new decision is born verified. Body required, and via `--file`/`-`/`$EDITOR` as well as inline. `--source "<doc>#<heading>"` (repeatable) records where it came from; `--proposed` lands it in the import tier. Returns `similar` — a near-duplicate decision forks the graph. |
+| `crib design read <ref>` | `design_read` | **Dossier**: body + status + every dep and dependent annotated (title, status, tainted?) + its citations with their state (`ok`/`changed`/`missing`) + this decision's own taint with chains. The one-call orientation before touching anything. |
+| `crib design edit <ref> [body]` | `design_edit` | Rewrite a decision through the facet; the result carries `newly_tainted` — what the change just put out of date, with chains, computed against the pre-edit state. `--source` replaces its citations. |
 | `crib design append <ref> [text]` | `design_append` | Extend a decision, same edge-aware answer. Prefer over adding a near-duplicate. |
 | `crib design lookup <query>` | `design_lookup` | Semantic search scoped to decisions; hits annotated with `status`, `tainted`, dep/dependent counts. |
 | `crib design list [--tainted]` | `design_list` | Every decision as a flat table: title, ref, status, taint, edge counts. `--tainted` is the re-read queue. |
 | `crib design dep-add <ref> <dep>` | `design_dep_add` | Declare that a decision builds on another (cycle-checked; the new edge starts UNVERIFIED, so it shows up in `check`). |
 | `crib design dep-remove <ref> <dep>` | `design_dep_remove` | Drop a dependency edge — and the checking it carried. |
-| `crib design check [ref]` | `design_check` | Which decisions are now stale. Each entry: ref + title, the `X → Y` chain, the **change kind** (`dep-edited` / `dep-superseded` / `dep-deleted` / `new-unverified-edge`), the dep's `updated` date, and `next` — the verb to run. Run before and after changing a design. |
-| `crib design reaffirm <ref>` | `design_reaffirm` | Re-record a decision's dep hashes — "I re-read it and it still holds". The only thing that clears taint. |
+| `crib design check [ref]` | `design_check` | Which decisions are now stale. Each entry: ref + title, the `X → Y` chain, the **change kind** (`dep-edited` / `dep-superseded` / `dep-deleted` / `new-unverified-edge` / `source-changed` / `source-missing`), the dep's `updated` date, and `next` — the verb to run. Also lists `proposed` entries as their own queue (they aren't stale, they're unblessed). Run before and after changing a design. |
+| `crib design reaffirm <ref>` | `design_reaffirm` | Re-record a decision's dep **and source** hashes — "I re-read it and it still holds". The only thing that clears taint; a citation whose section vanished is reported (`missing_sources`) rather than blessed. |
+| `crib design promote <ref>` | `design_promote` | `proposed` → `active`: the human act that turns an extracted decision into ground others may build on. Seeds `checked` + source hashes fresh. |
+| `crib design import <doc>` | `design_import` | Prepare a doc for extraction: its sections (each with `heading_path`, current `section_hash` and a verbatim-citable `source` string), the entries already citing it, and **the extraction procedure as the result's `instruction`**. Runs no model and writes nothing — the session LLM reads and judges; this supplies the exact citations it can't derive. |
 | `crib design tree [ref]` | `design_tree` | Dependency tree, pstree-rendered and taint-flagged: what it builds on, or `--dependents` for what would be affected by changing it. |
 | `crib design supersede <ref> [by]` | `design_supersede` | Soft-delete a replaced decision: keeps it readable, taints everything that built on it (they come back as `dep-superseded`). |
 | `crib design forget <ref>` | `design_forget` | Delete a decision. Refuses while dependents exist; `--force` deletes and leaves them tainted. |
@@ -144,24 +164,26 @@ dependencies, and a lexorank order that never renumbers neighbours. Order is
 preference. `blocked` is derived from deps and never stored.
 
 **Mixed deps.** A plan item may depend on three things, and each gates differently:
-a **plan** dep blocks until it is done/verified; a **design** dep blocks only while
-it is *tainted* (an untainted decision is stable ground; a tainted one means the
-ground moved); a plain **note** dep never blocks — it is a reference, not a gate. A
-dep id that resolves to nothing is reported as `missing_deps`: visible, never
-blocking.
+a **plan** dep blocks until it is done/verified; a **design** dep blocks while it is
+*tainted* or *proposed* (an untainted, promoted decision is stable ground; a tainted
+one means the ground moved, an unpromoted one that nobody has agreed to it yet); a
+plain **note** dep never blocks — it is a reference, not a gate. A dep id that
+resolves to nothing is reported as `missing_deps`: visible, never blocking. A
+changed **source** never blocks anything.
 
 | CLI | MCP | Description |
 |---|---|---|
 | `crib plan` (bare) | — | `plan list` — the orienting read. |
-| `crib plan add <title> [body]` | `plan_add` | Add an item — **body optional** (a title is a whole item). `--dep` repeatable, `--after`/`--before` to place it (default end). Batch: `--item <title>` repeatably on the CLI, `items=[{title, content?, deps?}, …]` on MCP, where a batch dep may name an earlier item by position (`"#1"`). |
-| `crib plan status <ref> <status>` | `plan_status` | `todo` / `in-progress` / `done` / `verified`. Completing an item answers with `unblocked` — the items its completion just freed (the plan-side mirror of `design_edit`'s `newly_tainted`). `in-progress` is a CLAIM: it takes the item out of everyone's `plan_next`. Marking done with unfinished deps warns, doesn't block. |
-| `crib plan list [--all]` | `plan_list` | The plan as a **working set**: in-progress first, then ready, then blocked (each naming what it waits on inline), finished hidden unless `--all`. Topo+rank order holds within each group. |
+| `crib plan add <title> [body]` | `plan_add` | Add an item — **body optional** (a title is a whole item). `--dep` repeatable, `--source` repeatable, `--after`/`--before` to place it (default end). Batch: `--item <title>` repeatably on the CLI, `items=[{title, content?, deps?, sources?}, …]` on MCP, where a batch dep may name an earlier item by position (`"#1"`). |
+| `crib plan status <ref> <status>` | `plan_status` | `todo` / `in-progress` / `done` / `verified`. Completing an item answers with `unblocked` — the items its completion just freed (the plan-side mirror of `design_edit`'s `newly_tainted`). `in-progress` is a CLAIM: it takes the item out of everyone's `plan_next`. Marking done with unfinished deps warns, doesn't block. Also re-records the item's source hashes — re-running it is what clears a `revisit`. |
+| `crib plan list [--all]` | `plan_list` | The plan as a **working set**: in-progress first, then ready, then blocked (each naming what it waits on inline), finished hidden unless `--all`. Topo+rank order holds within each group. A done/verified item whose cited source has since changed carries `revisit` — the graph reports, it never re-opens a status. |
 | `crib plan next [-k]` | `plan_next` | What's actionable now: `todo` items nothing blocks, in order. **Excludes in-progress** (claimed); each item carries the loop to run. |
 | `crib plan lookup <query>` | `plan_lookup` | Semantic search scoped to plan items, hits annotated as `design_lookup`'s are. |
 | `crib plan dep-add <ref> <dep>` | `plan_dep_add` | Declare that an item must follow another (cycle-checked). |
 | `crib plan dep-remove <ref> <dep>` | `plan_dep_remove` | Drop a must-precede edge. |
 | `crib plan move <ref> --after/--before` | `plan_move` | Re-order an item — rank only, deps untouched, so it can't break the plan. |
 | `crib plan forget <ref>` | `plan_forget` | Delete an item. Refuses while dependents exist; `--force` as above. |
+| `crib plan import <doc>` | `plan_import` | As `design_import`, for actionable work: sections + hashes + existing citations + a procedure ending in ONE batch `plan_add` whose items carry intra-batch deps and `sources`. |
 
 Both facets follow the learnings exception: `add` is a **write** (it creates a
 durable fact, so it must name the project); every other verb is keyed by a `ref`

@@ -45,6 +45,8 @@ website:
             href: docs/guide.md
           - text: "CLI / MCP reference"
             href: docs/surface.md
+          - text: "Where things live (store types)"
+            href: docs/storage.md
           - text: "Sync across machines"
             href: docs/resume-on-new-machine.md
       - section: "Plans & reviews"

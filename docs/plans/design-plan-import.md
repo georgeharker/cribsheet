@@ -1,8 +1,31 @@
 # Plan: doc import & source attribution for the design/plan graph
 
-Status: approved 2026-08-05, queued behind the ergonomics batch (it extends
-`designs.py`'s data model — sequential). Prereqs from that batch: batch add
-with intra-batch dep refs; the description-layer conventions.
+Status: **EXECUTED 2026-08-05** (approved 2026-08-05, after the ergonomics
+batch it extends). All six checklist items landed, with two maintainer
+addenda taken during the build:
+
+- **A source cites a SECTION, never a whole doc** (supersedes "heading …
+  optional (whole doc)" below). A bare doc reference is refused, listing the
+  doc's heading paths; the sole exception is a doc with NO headings, whose body
+  is its one section. Whole-file attribution would re-check every entry drawn
+  from a DESIGN.md on any edit anywhere in it.
+- **Import is host-LLM driven; the verb is tooling and instruction only.**
+  `design_import`/`plan_import` do three mechanical things — enumerate sections
+  (heading paths + `section_hash`, server-side so the hash matches what taint
+  checking computes), list the entries already citing the doc, and return the
+  extraction procedure. No content interpretation of any kind.
+
+Decided during the build and documented at the verb: a **proposed design dep
+BLOCKS** a plan item (like a tainted one — unpromoted ground is unstable
+ground), while a proposed entry taints nothing. `design_add` takes
+`proposed=True` rather than a `status` argument (the flag is the whole enum
+opening a caller may use; `active`/`superseded` have their own verbs).
+
+Dogfooded on DESIGN.md §4 and §10.3 — three decisions extracted as `proposed`,
+each citing its exact section, then promoted:
+`design/content-hash-gating-is-the-only-writewatcher-coordination.md`,
+`design/retrieval-fusion-is-a-dense-dominant-score-blend-not-rrf.md`,
+`design/code-and-notes-retrieval-share-the-ranking-not-the-field-construction.md`.
 
 Governing intents (maintainer, 2026-08-05):
 - The graph's real corpus already exists in docs (DESIGN.md, plan.md,

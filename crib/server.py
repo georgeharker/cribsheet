@@ -214,6 +214,11 @@ def build_server(crib: Crib | None = None):
             "the items (one call takes a batch) and `plan_status` them as you go; "
             "`plan_next` is the 'where was I' at the start of a session, and completing "
             "an item names what it unblocked. "
+            "Asked to capture a design doc or a plan file INTO the graph? "
+            "`design_import`/`plan_import` that doc and follow the procedure they "
+            "return — they run no model, they hand you the doc's exact citable "
+            "sections and the steps; extracted decisions land `proposed` until "
+            "`design_promote`. "
             "CODE: a project may carry a *code symbol index* — its functions, classes, "
             "globals and class members, each with an LLM 'what it does' description, a "
             "real cross-file call graph (callers/callees) and references. For ANY code "
@@ -748,6 +753,7 @@ def build_server(crib: Crib | None = None):
     @crib_tool("write")
     async def design_add(title: str, content: str, deps: list[str] | None = None,
                          project: str | None = None,
+                         sources: list[str] | None = None, proposed: bool = False,
                          project_path: str | None = None) -> dict[str, Any]:
         """Record a DESIGN DECISION — the choice, why, and what was rejected — as a
         note under `design/`, declaring the decisions it builds on (`deps`: ids,
@@ -765,8 +771,19 @@ def build_server(crib: Crib | None = None):
         Body required (the rationale is the artifact). The result carries
         `similar` — near-duplicate decisions FORK THE GRAPH, so if one comes back,
         prefer `design_append`/`design_edit` on it. Like any write it must NAME its
-        project (`project=`/`project_path=`)."""
-        return await crib.design_add(title, content, deps, project)
+        project (`project=`/`project_path=`).
+
+        `sources` cites where the decision came FROM — `["docs/DESIGN.md#4.
+        Coordination"]`, a doc path plus a unique heading-path suffix. It names a
+        SECTION, never a whole doc (that is refused, listing the doc's headings —
+        whole-file attribution would re-check this on any edit anywhere in the
+        file); the only exception is a doc with no headings at all. Attribution
+        edges check like deps (a changed section taints this) but never gate work;
+        the citation records that section's hash now. `proposed=True` is the
+        EXTRACTION tier and belongs to `design_import`'s procedure — hand-authored
+        decisions land `active`, because you already made the judgement."""
+        return await crib.design_add(title, content, deps, project, sources,
+                                     proposed)
 
     @crib_tool("read")
     def design_read(ref: str, project: str | None = None,
@@ -788,6 +805,7 @@ def build_server(crib: Crib | None = None):
 
     @crib_tool("read")
     async def design_edit(ref: str, new_content: str, project: str | None = None,
+                          sources: list[str] | None = None,
                           project_path: str | None = None) -> dict[str, Any]:
         """Rewrite a decision's body THROUGH THE FACET, and get back the causal
         consequences: `newly_tainted` lists every decision your change just put out
@@ -801,9 +819,11 @@ def build_server(crib: Crib | None = None):
 
         CONTRACT: hash-taint is the safety net for edits made by any other route,
         so nothing is lost by editing a decision as a raw file — but only this path
-        can name the consequences in the same breath as the change. Resolves its
-        project like a read, as `design_dep_add` does."""
-        return await crib.design_edit(ref, new_content, project)
+        can name the consequences in the same breath as the change. `sources`, when
+        given, REPLACES the decision's citations (re-captured at their current
+        section hashes); omitted, they are left alone. Resolves its project like a
+        read, as `design_dep_add` does."""
+        return await crib.design_edit(ref, new_content, project, sources)
 
     @crib_tool("read")
     async def design_append(ref: str, content: str, project: str | None = None,
@@ -910,8 +930,63 @@ def build_server(crib: Crib | None = None):
         the NORMAL, cheap ending for most tainted decisions; a trivial change to a
         dep should end here, not in soul-searching. When it no longer holds, that's
         `design_supersede`. Resolves its project like a read, as `design_dep_add`
-        does."""
+        does. Re-records the decision's SOURCE hashes alongside its dep hashes —
+        both are what "I re-read this and it still holds" is a statement about."""
         return await crib.design_reaffirm(ref, project)
+
+    @crib_tool("read")
+    async def design_promote(ref: str, project: str | None = None,
+                             project_path: str | None = None) -> dict[str, Any]:
+        """Promote an EXTRACTED decision: `proposed` → `active`. The human act
+        that turns something an import proposed into settled ground.
+
+        CUE: you (or the maintainer) have read a `proposed` entry against its
+        sources and it is right. Until then a proposed decision taints nothing —
+        so nothing inherits authority it hasn't earned — and it GATES any plan item
+        that depends on it, because unpromoted ground is unstable ground.
+
+        Seeds `checked` and the source hashes FRESH, so the entry becomes
+        authoritative as of the graph and docs as they read at the moment it was
+        confirmed. Resolves its project like a read, as `design_dep_add` does."""
+        return await crib.design_promote(ref, project)
+
+    @crib_tool("read")
+    def design_import(relpath: str, project: str | None = None,
+                      project_path: str | None = None) -> dict[str, Any]:
+        """Capture a DESIGN DOC into the decision graph — the doc split into
+        sections (each with its current `section_hash`, ready to cite verbatim),
+        the entries that already cite it, and THE EXTRACTION PROCEDURE to follow,
+        returned as this result's `instruction`.
+
+        CUE: asked to capture a design doc, spec or architecture note into the
+        graph ("get DESIGN.md into crib", "record the decisions in this doc").
+
+        IT RUNS NO MODEL, WRITES NOTHING, AND INTERPRETS NOTHING — no guess at
+        which passages are decisions, no summarizing. YOU do the reading and all
+        the judgement; this hands you the one thing you can't compute yourself
+        (the section hashes taint checking compares against, so a citation is
+        correct by construction) and then the steps. Follow `instruction`:
+        extracted decisions
+        land `proposed` (quarantine tier) with `sources` citing the exact section,
+        and `design_promote` is what makes each one real. `relpath` may be a note
+        relpath or the repo-relative path of a doc indexed in situ (`DESIGN.md`).
+        Resolves its project like a read."""
+        return crib.design_import(relpath, project)
+
+    @crib_tool("read")
+    def plan_import(relpath: str, project: str | None = None,
+                    project_path: str | None = None) -> dict[str, Any]:
+        """Capture a PLAN DOC into the plan facet — the same shape as
+        `design_import` (sections + hashes + existing citations + procedure), for
+        turning a doc's actionable passages into plan items that cite them.
+
+        CUE: asked to put a plan file, a spec's work list, or a TODO doc into the
+        graph. Runs no model and writes nothing: follow the returned
+        `instruction`, which ends in ONE batch `plan_add` whose items carry
+        intra-batch deps and `sources`. A finished item whose cited passage later
+        changes shows `revisit` in `plan_list --all` — the graph reports, it never
+        re-opens a status. Resolves its project like a read."""
+        return crib.plan_import(relpath, project)
 
     @crib_tool("read")
     def design_tree(ref: str | None = None, direction: str = "deps", depth: int = 6,
@@ -944,6 +1019,7 @@ def build_server(crib: Crib | None = None):
                        before: str | None = None,
                        items: list[dict[str, Any]] | None = None,
                        project: str | None = None,
+                       sources: list[str] | None = None,
                        project_path: str | None = None) -> dict[str, Any]:
         """Add durable PLAN ITEMS so multi-session work survives a context reset.
 
@@ -961,9 +1037,13 @@ def build_server(crib: Crib | None = None):
 
         `deps` are must-precede refs (plan or design); `after`/`before` place the
         batch in the order (default: end). Order is preference, deps are
-        correctness. Like any write it must NAME its project."""
+        correctness. `sources` cites the doc SECTION an item came from
+        (`["docs/plans/x.md#Tier 2"]`, also settable per batch item; a bare doc is
+        refused) — a finished item whose cited passage later changes flags
+        `revisit` rather than re-opening itself. Like any write it must NAME its
+        project."""
         return await crib.plan_add(title, content, deps, after, before, items,
-                                   project)
+                                   project, sources)
 
     @crib_tool("read")
     async def plan_status(ref: str, status: str, project: str | None = None,
@@ -980,7 +1060,11 @@ def build_server(crib: Crib | None = None):
         this. `in-progress` is a CLAIM: it takes the item out of everyone else's
         `plan_next`. (`blocked` is DERIVED from deps and never set here.) Marking
         done with unfinished deps warns rather than blocks. Keyed by a ref inside
-        one project, so it resolves that project like a read."""
+        one project, so it resolves that project like a read.
+
+        A status write also re-records the item's SOURCE hashes — a status is a
+        statement about the work as of now, so re-running it after re-reading a
+        changed source is what clears a `revisit` flag."""
         return await crib.plan_status(ref, status, project)
 
     @crib_tool("read")

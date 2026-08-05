@@ -453,6 +453,15 @@ def _emit_code_rehome(data: Any, as_json: bool) -> None:
 
 
 _TAINT = "⚠"
+# The import tier reads as a QUESTION, not a warning: a proposed entry isn't
+# stale, it is un-blessed — a different thing to do about it (`design promote`).
+_PROPOSED = "?"
+
+
+def _facet_flags(row: Any) -> str:
+    """The glyphs a design row carries — stale, and/or awaiting promotion."""
+    return ((f" {_TAINT}" if row.get("tainted") else "")
+            + (f" {_PROPOSED}" if row.get("status") == "proposed" else ""))
 
 
 def _tree_glyphs(ascii_mode: bool) -> tuple[str, str, str, str]:
@@ -479,9 +488,12 @@ def _emit_design_tree(data: Any, args: Any) -> None:
     def label(n: dict) -> str:
         if n.get("missing"):
             return f"{n.get('title', '')}  (dangling id)"
-        flags = (f" {taint}" if n.get("tainted") else "") + (" ↑" if n.get("repeat") else "")
-        sup = "  [superseded]" if n.get("status") == "superseded" else ""
-        return f"{n.get('title', '')}{sup}{flags}   {n.get('relpath', '')}"
+        flags = ((f" {taint}" if n.get("tainted") else "")
+                 + (f" {_PROPOSED}" if n.get("status") == "proposed" else "")
+                 + (" ↑" if n.get("repeat") else ""))
+        state = ("  [superseded]" if n.get("status") == "superseded"
+                 else "  [proposed]" if n.get("status") == "proposed" else "")
+        return f"{n.get('title', '')}{state}{flags}   {n.get('relpath', '')}"
 
     def render(node: dict, prefix: str) -> None:
         kids = node.get("children") or []
@@ -501,8 +513,12 @@ def _emit_design_check(data: Any, args: Any) -> None:
     if getattr(args, "json", False):
         print(json.dumps(data, indent=2, default=str)); return
     rows = (data or {}).get("tainted") or []
+    proposed = (data or {}).get("proposed") or []
     for cyc in (data or {}).get("cycles") or []:
         print(f"✗ dependency CYCLE: {' → '.join(cyc)}")
+    for p in proposed:
+        print(f"{_PROPOSED} {p.get('title', '')}   {p.get('relpath', '')}")
+        print(f"    → {p.get('next', '')}")
     if not rows:
         print(f"✓ {data.get('designs', 0)} decision(s), none stale"); return
     for r in rows:
@@ -555,9 +571,11 @@ def _emit_design_read(data: Any, args: Any) -> None:
         print(json.dumps(data, indent=2, default=str)); return
     if not isinstance(data, dict):
         print(data); return
-    sup = "  [superseded]" if data.get("status") == "superseded" else ""
+    state = ("  [superseded]" if data.get("status") == "superseded"
+             else f"  [proposed {_PROPOSED}]" if data.get("status") == "proposed"
+             else "")
     flag = f"  {_TAINT} STALE" if data.get("tainted") else ""
-    print(f"{data.get('title', '')}{sup}{flag}   {data.get('relpath', '')}"
+    print(f"{data.get('title', '')}{state}{flag}   {data.get('relpath', '')}"
           f"   (updated {data.get('updated', '?')})")
     for c in data.get("causes") or []:
         print(f"  • [{c.get('change_kind', '?')}] {c.get('reason', '')}")
@@ -574,9 +592,17 @@ def _emit_design_read(data: Any, args: Any) -> None:
             continue
         print(f"  {arrow}")
         for r in rows:
-            mark = f" {_TAINT}" if r.get("tainted") else ""
             st = f"  [{r['status']}]" if r.get("status") else ""
-            print(f"     {r.get('title', '')}{st}{mark}   {r.get('relpath', '')}")
+            print(f"     {r.get('title', '')}{st}{_facet_flags(r)}"
+                  f"   {r.get('relpath', '')}")
+    # attribution: where this came FROM, and whether that passage still reads
+    # the way it did (`changed`/`missing` are what taints it)
+    sources = data.get("sources") or []
+    if sources and isinstance(sources[0], dict):
+        print("  § drawn from")
+        for s in sources:
+            mark = {"changed": _TAINT, "missing": "✗"}.get(s.get("state", ""), " ")
+            print(f"    {mark} {s.get('label', '')}  [{s.get('state', '')}]")
 
 
 def _emit_design_list(data: Any, args: Any) -> None:
@@ -592,15 +618,20 @@ def _emit_design_list(data: Any, args: Any) -> None:
                  else " — `crib design add <title>`)"))
         return
     for r in rows:
-        mark = _TAINT if r.get("tainted") else " "
+        mark = (_TAINT if r.get("tainted")
+                else _PROPOSED if r.get("status") == "proposed" else " ")
         sup = "  [superseded]" if r.get("status") == "superseded" else ""
+        cited = f"   §{r['sources']}" if r.get("sources") else ""
         print(f"{mark} {r.get('title', '')}{sup}"
-              f"   {r.get('deps', 0)}▸/{r.get('dependents', 0)}◂"
+              f"   {r.get('deps', 0)}▸/{r.get('dependents', 0)}◂{cited}"
               f"   {r.get('relpath', '')}")
-    stale = data.get("tainted", 0)
-    print(f"\n{len(rows)} of {data.get('total', 0)} decision(s)"
-          + (f", {stale} stale — `crib design check`" if stale and not data.get("filtered")
-             else ""))
+    stale, proposed = data.get("tainted", 0), data.get("proposed", 0)
+    tail = ""
+    if not data.get("filtered"):
+        tail = ((f", {stale} stale — `crib design check`" if stale else "")
+                + (f", {proposed} proposed {_PROPOSED} — `crib design promote <ref>`"
+                   if proposed else ""))
+    print(f"\n{len(rows)} of {data.get('total', 0)} decision(s){tail}")
 
 
 _PLAN_GLYPH = {"todo": "·", "in-progress": "▶", "done": "✓", "verified": "✓✓"}
@@ -637,12 +668,41 @@ def _emit_plan_list(data: Any, args: Any) -> None:
             print(f"     ← waiting on {ref}{st}")
         if it.get("missing_deps"):
             print(f"     ✗ missing dep(s): {', '.join(it['missing_deps'])}")
+        # a finished item whose source moved: reported, never re-opened
+        for why in it.get("revisit") or []:
+            print(f"     {_TAINT} revisit: {why}")
     for it in items:                      # the per-item loop the ready ones carry
         if it.get("next"):
             print(f"\n→ {it['next']}")
             break
     if data.get("hidden"):
         print(f"\n({data['hidden']} finished item(s) hidden — --all to show)")
+
+
+def _emit_design_import(data: Any, args: Any) -> None:
+    """A doc prepared for extraction: the PROCEDURE first (it is the payload —
+    the verb wrote nothing and ran no model), then the citable sections and
+    whatever already draws on this doc."""
+    if getattr(args, "json", False):
+        print(json.dumps(data, indent=2, default=str)); return
+    if not isinstance(data, dict):
+        print(data); return
+    print(f"{data.get('relpath', '')}   ({data.get('path', '')})\n")
+    print(data.get("instruction", "").rstrip())
+    existing = data.get("existing") or []
+    if existing:
+        print(f"\nalready drawing on this doc ({len(existing)}) — extend these "
+              f"rather than forking:")
+        for e in existing:
+            print(f"  · {e.get('title', '')}   {e.get('relpath', '')}")
+            for c in e.get("cites") or []:
+                print(f"      § {c}")
+    sections = data.get("sections") or []
+    print(f"\nsections ({len(sections)}) — cite the `source` string verbatim:")
+    for s in sections:
+        print(f"  {s.get('words', 0):5}w  {s.get('source', '')}")
+        if s.get("preview"):
+            print(f"         {s['preview'][:96]}")
 
 
 def _emit_design_write(data: Any, args: Any) -> None:
@@ -899,12 +959,24 @@ def build_parser() -> argparse.ArgumentParser:
                         help=f"{what} ('-' reads stdin; omitted opens $EDITOR)")
         sp.add_argument("--file", dest="file", help=f"read the {what} from a file")
 
+    # `--source doc#heading` — where a decision/item came FROM. Attribution edges
+    # check (a changed section taints) but never gate, so they hang off the same
+    # authoring verbs rather than getting a facet of their own. A source names a
+    # SECTION: a bare doc is refused (unless the doc has no headings at all).
+    def source_arg(sp) -> None:
+        sp.add_argument("--source", action="append", dest="sources",
+                        metavar="DOC#HEADING",
+                        help="doc SECTION this was drawn from (repeatable)")
+
     s = designsub.add_parser("add",
                        help="record a design decision (body: arg, '-', --file or $EDITOR)")
     s.add_argument("title"); body_args(s, "the decision, why, what was rejected")
     proj(s)
     s.add_argument("--dep", action="append", dest="deps",
                    help="a decision this one builds on (repeatable)")
+    source_arg(s)
+    s.add_argument("--proposed", action="store_true",
+                   help="land it in the import tier (taints nothing until promoted)")
 
     s = designsub.add_parser("read",
                        help="a decision's dossier: body + annotated edges + taint")
@@ -912,7 +984,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = designsub.add_parser("edit",
                        help="rewrite a decision; lists what the change tainted")
-    s.add_argument("ref"); body_args(s, "the new body"); proj(s)
+    s.add_argument("ref"); body_args(s, "the new body"); proj(s); source_arg(s)
 
     s = designsub.add_parser("append",
                        help="extend a decision; lists what the change tainted")
@@ -960,11 +1032,22 @@ def build_parser() -> argparse.ArgumentParser:
                        help="mark a decision superseded + taint its dependents")
     s.add_argument("ref"); s.add_argument("by", nargs="?"); proj(s)
 
+    s = designsub.add_parser("promote",
+                       help="proposed → active (an extracted decision, confirmed)")
+    s.add_argument("ref"); proj(s)
+
+    for _sub, _what in ((designsub, "decisions"), (plansub, "actionable work")):
+        _s = _sub.add_parser("import",
+                       help=f"prepare a doc for extraction into {_what} (writes nothing)")
+        _s.add_argument("doc", help="note relpath, or a repo path indexed in situ")
+        proj(_s)
+
     s = plansub.add_parser("add",
                        help="add plan item(s) — body optional, `--item` adds more")
     s.add_argument("title"); body_args(s, "the item's detail (optional)"); proj(s)
     s.add_argument("--dep", action="append", dest="deps",
                    help="an item this one must follow (repeatable)")
+    source_arg(s)
     s.add_argument("--item", action="append", dest="extra_items", metavar="TITLE",
                    help="another title-only item, added after this one (repeatable)")
     s.add_argument("--after"); s.add_argument("--before")
@@ -1219,6 +1302,7 @@ def _E_dlist(d, a): _emit_design_list(d, a)
 def _E_facet(d, a): _emit_facet_hits(d, a)
 def _E_plans(d, a): _emit_plan_list(d, a)
 def _E_dwrite(d, a): _emit_design_write(d, a)
+def _E_dimport(d, a): _emit_design_import(d, a)
 def _E_projects(d, a): _emit_projects(d, a.json)
 def _E_code(verb): return lambda d, a: _emit_code(d, verb, a.json)
 def _E_learning(verb): return lambda d, a: _emit_code_learning(d, verb, a.json)
@@ -1255,7 +1339,8 @@ def _plan_items(a: Any) -> list[dict[str, Any]] | None:
     if not extra:
         return None
     first = {"title": a.title, "deps": a.deps,
-             "content": _body(a.content, a.file, default="")}
+             "content": _body(a.content, a.file, default=""),
+             "sources": getattr(a, "sources", None)}
     return [first, *({"title": t} for t in extra)]
 
 
@@ -1424,9 +1509,12 @@ VERBS: dict[str, Verb] = {
                                                 "content": _body(
                                                     a.content, a.file,
                                                     what="the decision + rationale"),
-                                                "deps": a.deps, "project": a.project},
+                                                "deps": a.deps, "project": a.project,
+                                                "sources": a.sources,
+                                                "proposed": a.proposed},
                        _E_dwrite, is_async=True, policy="write",
-                       mcp=f"title content {_PROJ} deps=None"),
+                       mcp=f"title content deps=None {_PROJ} sources=None "
+                           "proposed=False"),
     "design read": Verb("design_read", lambda a: {"ref": a.ref,
                                                   "project": a.project},
                         _E_dread, policy="read", mcp=f"ref {_PROJ}"),
@@ -1434,9 +1522,9 @@ VERBS: dict[str, Verb] = {
                         lambda a: {"ref": a.ref,
                                    "new_content": _body(a.content, a.file,
                                                         what="the new body"),
-                                   "project": a.project},
+                                   "project": a.project, "sources": a.sources},
                         _E_dwrite, is_async=True, policy="read",
-                        mcp=f"ref new_content {_PROJ}"),
+                        mcp=f"ref new_content {_PROJ} sources=None"),
     "design append": Verb("design_append",
                           lambda a: {"ref": a.ref,
                                      "content": _body(a.content, a.file,
@@ -1482,6 +1570,19 @@ VERBS: dict[str, Verb] = {
                                                             "project": a.project},
                              _E_dwrite, is_async=True, policy="read",
                              mcp=f"ref {_PROJ} by_ref=None"),
+    # source attribution + the import tier: `import` prepares a doc (and writes
+    # nothing), `promote` is the human act that ends the quarantine. Both are
+    # keyed inside one project, so both take the `read` policy like the rest.
+    "design promote": Verb("design_promote", lambda a: {"ref": a.ref,
+                                                        "project": a.project},
+                           _E_dwrite, is_async=True, policy="read",
+                           mcp=f"ref {_PROJ}"),
+    "design import": Verb("design_import", lambda a: {"relpath": a.doc,
+                                                      "project": a.project},
+                          _E_dimport, policy="read", mcp=f"relpath {_PROJ}"),
+    "plan import": Verb("plan_import", lambda a: {"relpath": a.doc,
+                                                  "project": a.project},
+                        _E_dimport, policy="read", mcp=f"relpath {_PROJ}"),
     "plan add": Verb("plan_add", lambda a: {"title": a.title,
                                             # a plan item's body is OPTIONAL —
                                             # title-only is a normal whole item, so
@@ -1491,10 +1592,11 @@ VERBS: dict[str, Verb] = {
                                             "deps": a.deps, "after": a.after,
                                             "before": a.before,
                                             "items": _plan_items(a),
-                                            "project": a.project},
+                                            "project": a.project,
+                                            "sources": a.sources},
                      _E_dwrite, is_async=True, policy="write",
                      mcp=f"title=None content='' {_PROJ} deps=None after=None "
-                         "before=None items=None"),
+                         "before=None items=None sources=None"),
     "plan lookup": Verb("plan_lookup", lambda a: {"query": a.query, "k": a.k,
                                                   "project": a.project},
                         _E_facet, policy="read", mcp=f"query {_PROJ} k=8"),

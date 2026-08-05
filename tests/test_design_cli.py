@@ -101,6 +101,42 @@ def test_repeated_item_flags_build_a_batch():
     assert call["items"][0]["content"] == "the body"
 
 
+# ── source attribution + the import tier ──────────────────────────────────────
+
+@pytest.mark.parametrize("argv", [
+    ["design", "add", "T", "body"],
+    ["design", "edit", "ref", "body"],
+    ["plan", "add", "T"],
+])
+def test_source_flags_reach_the_call_repeatably(argv):
+    _, call = _call(*argv, "--source", "DESIGN.md#4. Coordination",
+                    "--source", "DESIGN.md#10.3 Fusion")
+    assert call["sources"] == ["DESIGN.md#4. Coordination", "DESIGN.md#10.3 Fusion"]
+
+
+def test_a_source_survives_the_batch_form():
+    """`--item` switches `plan add` to the batch shape — the first item must keep
+    the citation it was given rather than dropping it on the way."""
+    _, call = _call("plan", "add", "first", "body", "--source", "doc.md#Bit",
+                    "--item", "second")
+    assert call["items"][0]["sources"] == ["doc.md#Bit"]
+
+
+def test_the_import_tier_is_opt_in_on_the_cli():
+    assert _call("design", "add", "T", "body")[1]["proposed"] is False
+    assert _call("design", "add", "T", "body", "--proposed")[1]["proposed"] is True
+
+
+@pytest.mark.parametrize("argv, tool, call", [
+    (["design", "import", "DESIGN.md"], "design_import", {"relpath": "DESIGN.md"}),
+    (["plan", "import", "plan.md"], "plan_import", {"relpath": "plan.md"}),
+    (["design", "promote", "ref"], "design_promote", {"ref": "ref"}),
+])
+def test_the_new_verbs_dispatch(argv, tool, call):
+    entry, got = _call(*argv)
+    assert entry.tool == tool and {k: got[k] for k in call} == call
+
+
 # ── the rename left nothing behind ────────────────────────────────────────────
 
 def test_reaffirm_replaced_verify_outright():

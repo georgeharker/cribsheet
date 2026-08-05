@@ -58,6 +58,7 @@ what your change just invalidated. That last part is the whole point.
 | search for why it's built this way | `design_lookup "<query>"` — hits flag stale decisions |
 | change a decision | `design_edit` / `design_append` — the result lists what you just tainted |
 | about to write a todo list (file, chat, or your head) | `plan_add` — it survives the session, and `plan_next` resumes it |
+| asked to capture a design doc or plan file into the graph | `design_import` / `plan_import` that doc, then follow the procedure they return |
 
 - **A dep is a promise**: *if that changes, reconsider this.* A plain note can't
   make that promise; the graph can. Every edge checks — there is no "just for
@@ -75,6 +76,13 @@ what your change just invalidated. That last part is the whole point.
   `plan_status` as you go — `in-progress` is a *claim* other agents see, and
   marking one `done` tells you what it just unblocked. `plan_next` tells any
   future session (yours or another agent's) exactly what's actionable now.
+- **Importing a doc** (DESIGN.md, a spec, a plan file): the import verbs run no
+  model and write nothing — they hand you the doc's exact citable sections, what
+  already draws on it, and the steps. *You* read and judge. Each entry cites the
+  **section** it came from (`--source "DESIGN.md#10.3 Fusion"`, never the whole
+  file), so a later edit to that passage re-checks exactly what was drawn from it.
+  Extracted decisions land `proposed`: they gate work and taint nothing until a
+  human confirms them with `design_promote`.
 
 `design_tree` renders what a decision rests on (or `--dependents`: what rests on
 it) — read it before proposing architecture changes, the same way rule 1 says to

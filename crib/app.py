@@ -1818,15 +1818,18 @@ class Crib:
     # decisions are notes in a directory (they are; that's backend).
     async def design_add(self, title: str, content: str,
                          deps: list[str] | None = None, project: str | None = None,
+                         sources: list[Any] | None = None, proposed: bool = False,
                          cwd: Path | None = None) -> dict[str, Any]:
-        """Record a design decision (deps validated + `checked` seeded), with the
-        same near-duplicate probe `note_store` runs.
+        """Record a design decision (deps validated + `checked` seeded, `sources`
+        captured at their current section hashes), with the same near-duplicate
+        probe `note_store` runs.
 
         A near-duplicate DECISION is worse than a near-duplicate note: it forks
         the graph, so two half-authoritative decisions each collect their own
         dependents and neither taints the other's."""
         proj = self.resolve_project(project, cwd)
-        out = await self.designs.design_add(proj, title, content, deps)
+        out = await self.designs.design_add(proj, title, content, deps, sources,
+                                            proposed)
         similar = await asyncio.to_thread(self._similar, proj, content,
                                           out["relpath"])
         return {**out, "similar": similar}
@@ -1838,10 +1841,12 @@ class Crib:
 
     async def design_edit(self, ref: str, new_content: str,
                           project: str | None = None,
+                          sources: list[Any] | None = None,
                           cwd: Path | None = None) -> dict[str, Any]:
-        """Rewrite a decision through the facet; result names what it tainted."""
+        """Rewrite a decision through the facet; result names what it tainted.
+        `sources`, when given, replaces its citations."""
         return await self.designs.design_edit(self.resolve_project(project, cwd),
-                                              ref, new_content)
+                                              ref, new_content, sources)
 
     async def design_append(self, ref: str, content: str,
                             project: str | None = None,
@@ -1906,6 +1911,24 @@ class Crib:
         return await self.designs.design_reaffirm(self.resolve_project(project, cwd),
                                                   ref)
 
+    async def design_promote(self, ref: str, project: str | None = None,
+                             cwd: Path | None = None) -> dict[str, Any]:
+        """Promote an extracted decision: proposed → active, hashes seeded fresh."""
+        return await self.designs.design_promote(self.resolve_project(project, cwd),
+                                                 ref)
+
+    def design_import(self, relpath: str, project: str | None = None,
+                      cwd: Path | None = None) -> dict[str, Any]:
+        """A doc's sections + hashes + existing citations + the extraction
+        procedure — the read that precedes an LLM-driven design import."""
+        return self.designs.design_import(self.resolve_project(project, cwd),
+                                          relpath)
+
+    def plan_import(self, relpath: str, project: str | None = None,
+                    cwd: Path | None = None) -> dict[str, Any]:
+        """The same for the plan facet (actionable work rather than decisions)."""
+        return self.designs.plan_import(self.resolve_project(project, cwd), relpath)
+
     def design_tree(self, ref: str | None = None, direction: str = "deps",
                     depth: int = 6, project: str | None = None,
                     cwd: Path | None = None) -> dict[str, Any]:
@@ -1925,12 +1948,13 @@ class Crib:
                        before: str | None = None,
                        items: list[dict[str, Any]] | None = None,
                        project: str | None = None,
+                       sources: list[Any] | None = None,
                        cwd: Path | None = None) -> dict[str, Any]:
         """Add one plan item, or a whole batch (`items`), ranked at the end unless
         after/before place them."""
         return await self.designs.plan_add(self.resolve_project(project, cwd),
                                            title, content, deps, after, before,
-                                           items)
+                                           items, sources)
 
     async def plan_status(self, ref: str, status: str, project: str | None = None,
                           cwd: Path | None = None) -> dict[str, Any]:

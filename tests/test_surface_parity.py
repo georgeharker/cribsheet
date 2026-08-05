@@ -124,6 +124,12 @@ _CLI_INVOCATIONS = {
     "design list": ["design"],
     "design check": ["design", "check"],
     "design tree": ["design", "tree"],
+    # the import tier + attribution: `--proposed` defaults must agree on both
+    # faces, and the import/promote verbs must exist on both at all
+    "design add": ["design", "add", "T", "body"],
+    "design promote": ["design", "promote", "ref"],
+    "design import": ["design", "import", "DESIGN.md"],
+    "plan import": ["plan", "import", "plan.md"],
     "plan lookup": ["plan", "lookup", "q"],
     "plan list": ["plan"],
     "plan next": ["plan", "next"],
