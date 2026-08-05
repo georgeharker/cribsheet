@@ -35,8 +35,21 @@ class NoteStore:
         self.index = index
         self.versions = versions
 
+    def notes_root(self, project: str) -> Path:
+        """The project's notes dir as a PATH — resolved, never created.
+
+        The read side of the split: a lookup naming a project that doesn't exist
+        (a typo, a stale session pointer) must not CREATE it. `dir()` below is the
+        write side. Before the split every `abspath()` — including `read`,
+        `locate`, `version_content` and the learnings audit — mkdir'd on the way
+        through, so one mistyped `project=` planted a permanent phantom namespace
+        in `project_list`."""
+        return self.paths.notes_dir(project)
+
     def dir(self, project: str) -> Path:
-        d = self.paths.notes_dir(project)
+        """The project's notes dir, CREATED — the WRITE-side resolver (see
+        `notes_root`). Call this only where a file is about to be written."""
+        d = self.notes_root(project)
         d.mkdir(parents=True, exist_ok=True)
         return d
 
@@ -50,13 +63,16 @@ class NoteStore:
 
         Every relpath here is a tool argument, so it is screened before either join:
         an absolute one would replace the base outright, `..` would walk out of the
-        tree (or out of the source repo)."""
-        check_relpath(relpath, self.paths.notes_dir(project))
+        tree (or out of the source repo).
+
+        Pure resolution — it does NOT create the notes dir (see `notes_root`);
+        writers get the directory from `save_atomic`/`dir()`."""
+        check_relpath(relpath, self.notes_root(project))
         if relpath.startswith(SRC_PREFIX):
             src = self.source_roots(project).resolve(relpath)
             if src is not None:
                 return src
-        return confine(self.dir(project), relpath)
+        return confine(self.notes_root(project), relpath)
 
     def _refuse_source(self, relpath: str, verb: str) -> None:
         """Source-anchored docs are indexed IN PLACE — their bytes belong to the
@@ -70,34 +86,46 @@ class NoteStore:
                 "gives the path); the watcher reindexes on save")
 
     def _stash_existing(self, project: str, relpath: str, path: Path,
-                        fallback_id: str | None = None) -> str | None:
+                        fallback_id: str | None = None) -> str:
         """Stash a note's current bytes to the version ring before it is overwritten
-        or unlinked; returns the id they landed under (None if the note has no id).
+        or unlinked; returns the id they landed under.
+
+        EVERY note stashes — an id-less one included. Its bytes are keyed by the
+        id the incoming write is about to stamp (`fallback_id`), else by a
+        DERIVED id over (project, relpath): deterministic, so successive
+        overwrites of the same path accumulate in one ring dir instead of
+        scattering, and `delete`'s `recoverable_id` names a directory that really
+        holds the content. Before this, a note with no `id:` in its frontmatter
+        silently skipped the ring while `forget` still advertised the delete as
+        recoverable — the one case where the promise was a lie.
 
         A note whose frontmatter no longer parses is stashed RAW — keyed by the
-        `id:` still legible in the broken header, else a path-derived id — rather
+        `id:` still legible in the broken header, else the same fallbacks — rather
         than refused: otherwise a corrupt note could never be repaired by a write,
         and `forget` would drop its only copy."""
         raw = path.read_text()
+        fallback = fallback_id or derived_ulid(project, relpath)
         try:
             fm, body = notes.parse(raw, path)
         except NoteParseError:
-            note_id = (notes.scan_id(raw) or fallback_id
-                       or derived_ulid(project, relpath))
+            note_id = notes.scan_id(raw) or fallback
             self.versions.stash(note_id, raw)
             return note_id
-        note_id = fm.get("id")
-        if note_id:
-            self.versions.stash(note_id, notes.serialize(fm, body))
+        note_id = fm.get("id") or fallback
+        self.versions.stash(note_id, notes.serialize(fm, body))
         return note_id
 
     async def write(self, project: str, relpath: str, note: Note) -> IndexResult:
         """Stash prior content (ring), write atomically, then index."""
         self._refuse_source(relpath, "write")
         path = self.abspath(project, relpath)
+        # id FIRST, then stash: the incoming note's id is what the prior bytes should
+        # be filed under, so overwriting a note that had no `id:` still leaves its
+        # history where `note_versions`/`note_restore` will look for it. (ensure_id
+        # only touches the in-memory frontmatter; `save_atomic` below persists it.)
+        notes.ensure_id(note)
         if path.exists():
             self._stash_existing(project, relpath, path, note.id)
-        notes.ensure_id(note)
         note.path = path
         notes.save_atomic(note)
         return await self.index.index_file(project, self.dir(project), relpath)
@@ -111,7 +139,7 @@ class NoteStore:
         path."""
         self._refuse_source(relpath, "delete")
         path = self.abspath(project, relpath)
-        note_id = None
+        note_id: str | None = None
         if path.exists():
             note_id = self._stash_existing(project, relpath, path)
             path.unlink()
@@ -122,21 +150,31 @@ class NoteStore:
     async def move(self, project: str, relpath: str, dst_proj: str,
                    dst_relpath: str) -> dict[str, Any]:
         """Relocate a note across projects and/or rename it, preserving its `id` (and
-        thus version-ring history). One-way: write destination, drop source."""
+        thus version-ring history). One-way: write destination, drop source.
+
+        Crash-window note: destination is written BEFORE the source is unlinked, so
+        an interrupted move leaves TWO notes carrying one id (the alternative —
+        unlink first — loses the note outright, which is worse). `reindex`'s
+        full-project sweep reports any such `duplicate_ids` so the survivor is
+        visible rather than silent."""
         self._refuse_source(relpath, "move")            # would unlink the repo's file
         self._refuse_source(dst_relpath, "move into")   # would write into the repo
         src = self.abspath(project, relpath)
         if not src.exists():
             raise ValueError(f"no such note: {relpath} in project {project!r}")
-        if project == dst_proj and dst_relpath == relpath:
+        # capture BEFORE the write — save_atomic mkdirs the destination notes dir
+        created = not self.notes_root(dst_proj).exists()
+        dst_path = self.abspath(dst_proj, dst_relpath)
+        # Compare RESOLVED paths, not the (project, relpath) strings: `a/../b.md`,
+        # a differently-spelled prefix, or a symlinked project dir all name the same
+        # file, and a "move" onto itself would write the destination and then unlink
+        # it — deleting the note it was asked to preserve.
+        if src.resolve() == dst_path.resolve():
             raise ValueError("source and destination are the same")
-        # capture BEFORE any abspath(dst_proj) call — dir()/abspath mkdir the notes dir
-        created = not self.paths.notes_dir(dst_proj).exists()
-        if self.abspath(dst_proj, dst_relpath).exists():
+        if dst_path.exists():
             raise ValueError(f"destination exists: {dst_relpath} in {dst_proj!r}")
         note = notes.load(src)              # carries the id in frontmatter
-        dst = Note(path=self.abspath(dst_proj, dst_relpath),
-                   frontmatter=note.frontmatter, body=note.body)
+        dst = Note(path=dst_path, frontmatter=note.frontmatter, body=note.body)
         notes.save_atomic(dst)
         await self.index.index_file(dst_proj, self.dir(dst_proj), dst_relpath)
         src.unlink()                        # drop source + its chunks
@@ -166,6 +204,12 @@ class NoteStore:
                 print(f"crib: embedder dim {cur}→{self.index.embedder.dim}; recreating "
                       f"the vector collection (full re-embed)", file=sys.stderr)
                 self.store.recreate()
+                # The derived retrieval caches (BM25 corpus + summary alias
+                # vectors) are built from the store and keyed per project — a wipe
+                # invalidates ALL of them at once, not just this project's.
+                # Without this a warm daemon kept serving BM25 hits for chunks
+                # that no longer exist (and whose ids the dense side can't score).
+                self.index.invalidate_all_caches()
                 recreated = True
             disk = {str(p.relative_to(nd)) for p in nd.rglob("*.md")}
             # Source-anchored docs (`sources/<repo>/…`) live in the REPO, not the notes
@@ -177,6 +221,7 @@ class NoteStore:
             targets = sorted(disk | {r for r in indexed if r})
         changed = removed = 0
         skipped: list[dict[str, str]] = []
+        by_id: dict[str, list[str]] = {}
         for rp in targets:
             # One unreadable note (bad frontmatter from a hand edit or conflict
             # markers, bad encoding, a permission problem) must never abort the
@@ -187,24 +232,66 @@ class NoteStore:
             except (NoteParseError, UnicodeDecodeError, OSError) as e:
                 skipped.append({"relpath": rp, "error": str(e)})
                 continue
+            if res.note_id:
+                by_id.setdefault(res.note_id, []).append(rp)
             changed += int(res.changed)
             removed += res.deleted
         out: dict[str, Any] = {"project": project, "files": len(targets),
                                "changed": changed, "removed": removed,
                                "skipped": skipped}
+        # A `move` interrupted between writing the destination and unlinking the
+        # source leaves two notes sharing one id — and a shared id means a shared
+        # version ring, so the two histories interleave silently. The sweep already
+        # knows every note's id (index_file returns it), so detecting it is free:
+        # REPORT it and let a human pick which copy survives (crib must never
+        # delete a note on a heuristic).
+        dupes = [{"id": nid, "relpaths": sorted(rps)}
+                 for nid, rps in sorted(by_id.items()) if len(rps) > 1]
+        if dupes:
+            out["duplicate_ids"] = dupes
+            print(f"[crib] {project}: {len(dupes)} duplicate note id(s) — an "
+                  f"interrupted move? " + "; ".join(
+                      f"{d['id']}: {', '.join(d['relpaths'])}" for d in dupes),
+                  file=sys.stderr)
         if recreated:
             out["recreated"] = True     # the whole store was wiped — see above
         return out
 
+    def _ring_id(self, project: str, relpath: str) -> str | None:
+        """The version-ring key for a note on disk.
+
+        Deliberately does NOT go through `notes.load`: a note whose frontmatter
+        stopped parsing is EXACTLY the one whose history you need, and loading it
+        would raise `NoteParseError` before you could list — let alone restore —
+        the good bytes sitting in the ring. So parse if we can, and otherwise scan
+        the still-legible `id:` out of the broken header (the same salvage
+        `_stash_existing` uses on the way in), falling back to the derived id an
+        id-less note's stashes are keyed by."""
+        raw = self.abspath(project, relpath).read_text()
+        try:
+            fm, _body = notes.parse(raw, relpath)
+        except NoteParseError:
+            return notes.scan_id(raw) or derived_ulid(project, relpath)
+        return fm.get("id") or derived_ulid(project, relpath)
+
     def list_versions(self, project: str, relpath: str) -> list[dict[str, Any]]:
-        note = notes.load(self.abspath(project, relpath))
-        if not note.id:
+        note_id = self._ring_id(project, relpath)
+        if not note_id:
             return []
         return [{"version": e.name, "seq": e.seq, "mtime": e.mtime}
-                for e in self.versions.list(note.id)]
+                for e in self.versions.list(note_id)]
 
     def version_content(self, project: str, relpath: str, version: str) -> str:
-        note = notes.load(self.abspath(project, relpath))
-        if not note.id:
+        note_id = self._ring_id(project, relpath)
+        if not note_id:
             raise ValueError("note has no id; nothing to restore")
-        return self.versions.read(note.id, version)
+        try:
+            return self.versions.read(note_id, version)
+        except OSError as e:
+            # A name that isn't in the ring is a CALLER error, not an I/O surprise:
+            # answer in the same currency as every other bad argument (ValueError,
+            # naming what to do), so a wrong `version=` doesn't surface as a raw
+            # FileNotFoundError from deep inside the ring.
+            raise ValueError(
+                f"no such version {version!r} for {relpath} in {project!r} — "
+                f"`note_versions` lists what is recoverable") from e

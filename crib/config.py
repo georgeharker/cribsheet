@@ -2,14 +2,38 @@
 
 from __future__ import annotations
 
+import sys
 import tomllib
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import Any
 
 import yaml
 
 from .paths import check_project_name
+
+
+def _warn(msg: str) -> None:
+    print(f"[crib] {msg}", file=sys.stderr)
+
+
+def _warn_unknown(config_file: Path, table: str, data: dict,
+                  known: set[str]) -> None:
+    """One line naming the file, the table and every key we're ignoring — the
+    only way a typo is ever noticed once it stops being fatal."""
+    if unknown := sorted(k for k in data if k not in known):
+        _warn(f"{config_file}: unknown key(s) in [{table}]: "
+              f"{', '.join(unknown)} — ignored")
+
+
+def _table(kind: type, current: Any, data: dict, config_file: Path,
+           table: str) -> Any:
+    """Overlay a config table onto the defaults, keeping only keys `kind`
+    actually declares (see `Config.load`)."""
+    known = {f.name for f in fields(kind)}
+    _warn_unknown(config_file, table, data, known)
+    return kind(**{**vars(current), **{k: v for k, v in data.items()
+                                       if k in known}})
 
 
 @dataclass
@@ -233,37 +257,49 @@ class Config:
 
     @classmethod
     def load(cls, config_file: Path) -> "Config":
+        """Read `config.toml`, tolerating keys this version doesn't know.
+
+        A typo'd (or newer-version) key must never be fatal: config is read by
+        EVERY command, so a `TypeError` out of a dataclass constructor takes the
+        whole tool down over one misspelling. Unknown keys are dropped with a
+        warning that names file, table and key."""
         cfg = cls()
         if not config_file.exists():
             return cfg
-        data = tomllib.loads(config_file.read_text())
+        try:
+            data = tomllib.loads(config_file.read_text())
+        except tomllib.TOMLDecodeError as e:
+            raise ValueError(f"{config_file}: invalid TOML — {e}") from e
+        sub = {"embed": EmbedConfig, "chunk": ChunkConfig,
+               "retrieve": RetrieveConfig, "memory": MemoryConfig,
+               "chroma": ChromaConfig, "daemon": DaemonConfig,
+               "generate": GenerateConfig}
+        _warn_unknown(config_file, "top level", data,
+                      {f.name for f in fields(cls)})
         if "default_project" in data:
-            cfg.default_project = data["default_project"]
+            cfg.default_project = str(data["default_project"])
         if "versions_keep" in data:
-            cfg.versions_keep = int(data["versions_keep"])
+            try:
+                cfg.versions_keep = int(data["versions_keep"])
+            except (TypeError, ValueError):
+                _warn(f"{config_file}: versions_keep must be a number, got "
+                      f"{data['versions_keep']!r} — using {cfg.versions_keep}")
         if "watch" in data:
             cfg.watch = bool(data["watch"])
-        if e := data.get("embed"):
-            cfg.embed = EmbedConfig(**{**vars(cfg.embed), **e})
-        if ck := data.get("chunk"):
-            cfg.chunk = ChunkConfig(**{**vars(cfg.chunk), **ck})
-        if r := data.get("retrieve"):
-            cfg.retrieve = RetrieveConfig(**{**vars(cfg.retrieve), **r})
-        if m := data.get("memory"):
-            cfg.memory = MemoryConfig(**{**vars(cfg.memory), **m})
-        if c := data.get("chroma"):
-            cfg.chroma = ChromaConfig(**{**vars(cfg.chroma), **c})
-        if d := data.get("daemon"):
-            cfg.daemon = DaemonConfig(**{**vars(cfg.daemon), **d})
-        if g := data.get("generate"):
-            cfg.generate = GenerateConfig(**{**vars(cfg.generate), **g})
-        if el := data.get("elaborate"):
+        for name, kind in sub.items():
+            if t := data.get(name):
+                if not isinstance(t, dict):
+                    _warn(f"{config_file}: [{name}] must be a table — ignored")
+                    continue
+                setattr(cfg, name, _table(kind, getattr(cfg, name), t,
+                                          config_file, name))
+        if isinstance(el := data.get("elaborate"), dict):
             cfg.elaborate = {str(k): dict(v) for k, v in el.items()
                              if isinstance(v, dict)}
-        if sm := data.get("summarize"):
+        if isinstance(sm := data.get("summarize"), dict):
             cfg.summarize = {str(k): dict(v) for k, v in sm.items()
                              if isinstance(v, dict)}
-        if loc := data.get("locations"):
+        if isinstance(loc := data.get("locations"), dict):
             cfg.locations = {str(k): str(v) for k, v in loc.items()}
         return cfg
 
@@ -312,29 +348,86 @@ class CribLink:
 
     @classmethod
     def find(cls, start: Path) -> "CribLink | None":
-        """Walk up from `start` looking for a `.crib` file."""
+        """Walk up from `start` looking for a usable `.crib` file.
+
+        A `.crib` is a hand-edited file that can sit above ANY directory, so a
+        malformed one must not raise: it would break every crib command run
+        anywhere below it. A bad file is warned about and treated as absent —
+        the walk continues upward."""
         start = start.resolve()
         for d in (start, *start.parents):
             f = d / ".crib"
-            if f.is_file():
-                data = yaml.safe_load(f.read_text()) or {}
-                return cls(
-                    project=data["project"],
-                    paths=data.get("paths", []),
-                    docs=data.get("docs", []),
-                    imports=data.get("import", []),
-                    import_into=data.get("import_into"),
-                    root=d,
-                    refs=data.get("refs", []),
-                )
+            if f.is_file() and (link := cls._parse(f, d)) is not None:
+                return link
         return None
+
+    @classmethod
+    def _parse(cls, f: Path, d: Path) -> "CribLink | None":
+        """One `.crib` → a link, or None (with a warning) if it can't be read,
+        isn't a mapping, or names no project."""
+        try:
+            data = yaml.safe_load(f.read_text())
+        except (yaml.YAMLError, OSError, UnicodeDecodeError) as e:
+            _warn(f"ignoring malformed {f}: {e}")
+            return None
+        if data is None:
+            data = {}
+        if not isinstance(data, dict):
+            _warn(f"ignoring {f}: expected a YAML mapping, got "
+                  f"{type(data).__name__}")
+            return None
+        project = data.get("project")
+        if not isinstance(project, str) or not project.strip():
+            _warn(f"ignoring {f}: no `project:` name")
+            return None
+        return cls(
+            project=project.strip(),
+            paths=_as_list(data.get("paths")),
+            docs=_as_list(data.get("docs")),
+            imports=_as_list(data.get("import")),
+            import_into=data.get("import_into"),
+            root=d,
+            refs=_as_list(data.get("refs")),
+        )
+
+
+def _as_list(v: Any) -> list[str]:
+    """A `.crib` list field, forgiving of the single-string spelling."""
+    if v is None:
+        return []
+    if isinstance(v, str):
+        return [v]
+    if isinstance(v, list):
+        return [str(x) for x in v]
+    return []
+
+
+def _resolved(p: Path) -> Path:
+    """`resolve()` that never raises (a broken symlink, a vanished parent)."""
+    try:
+        return p.resolve()
+    except OSError:
+        return p
 
 
 def _location_roots(locations: dict[str, str]) -> list[tuple[str, Path]]:
-    """Configured roots plus the built-in HOME, longest path first so a nested
-    named root (`$DEV` under `$HOME`) wins the greedy match."""
-    pairs = [(name, Path(p).expanduser()) for name, p in locations.items()]
-    pairs.append(("HOME", Path.home()))
+    """Configured roots plus the built-in HOME, each in BOTH its raw and
+    symlink-resolved form, longest path first so a nested named root (`$DEV`
+    under `$HOME`) wins the greedy match.
+
+    Both forms matter because the two sides of the comparison come from
+    different places: `~/Development` may be a symlink while a provenance path
+    arrives already resolved (or the reverse — macOS hands out `/tmp` for
+    `/private/tmp`). Matching only the literal spelling silently drops the path
+    out of its own root, which is exactly the conflict `$LOCATION` prevents."""
+    pairs: list[tuple[str, Path]] = []
+    seen: set[tuple[str, Path]] = set()
+    for name, p in (*locations.items(), ("HOME", str(Path.home()))):
+        root = Path(p).expanduser()
+        for form in (root, _resolved(root)):
+            if (name, form) not in seen:
+                seen.add((name, form))
+                pairs.append((name, form))
     return sorted(pairs, key=lambda kp: len(str(kp[1])), reverse=True)
 
 
@@ -344,12 +437,17 @@ def portable_path(p: str | Path, locations: dict[str, str]) -> str:
     back to the plain string when nothing matches — better a stable, if
     non-portable, value than a crash."""
     ap = Path(p).expanduser()
+    rp = _resolved(ap)
+    # raw first: when both forms sit under the root, the literal one is the
+    # spelling the caller meant (an inner symlink shouldn't rewrite the tail).
+    candidates = [ap] if rp == ap else [ap, rp]
     for name, root in _location_roots(locations):
-        try:
-            rel = ap.relative_to(root)
-        except ValueError:
-            continue
-        return f"${name}" if rel == Path(".") else f"${name}/{rel.as_posix()}"
+        for cand in candidates:
+            try:
+                rel = cand.relative_to(root)
+            except ValueError:
+                continue
+            return f"${name}" if rel == Path(".") else f"${name}/{rel.as_posix()}"
     return str(ap)
 
 

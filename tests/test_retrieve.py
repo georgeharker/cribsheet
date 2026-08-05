@@ -2,7 +2,7 @@
 
 from crib.retrieve import (
     BM25,
-    _lexical_tokens,
+    _lexical_tf,
     _subtokens,
     reciprocal_rank_fusion,
     tokenize,
@@ -43,8 +43,8 @@ def test_subtokens_let_spaced_query_match_a_solid_identifier():
              tokenize("an unrelated note about cats")]
     assert BM25(plain).scores(tokenize("index file"))[0] == 0.0   # before: miss
 
-    enriched = [_lexical_tokens("call the index_file routine", None),
-                _lexical_tokens("an unrelated note about cats", None)]
+    enriched = [_lexical_tf("call the index_file routine", None),
+                _lexical_tf("an unrelated note about cats", None)]
     scores = BM25(enriched).scores(tokenize("index file"))
     assert scores[0] > 0.0                       # after: hit
     assert scores[0] > scores[1]

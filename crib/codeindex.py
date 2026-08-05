@@ -27,6 +27,7 @@ import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import IO, Any
+from urllib.request import url2pathname
 
 from . import tomlrec
 
@@ -692,8 +693,29 @@ _POOL = LspSessionPool()
 atexit.register(_POOL.close_all)
 
 
+def uri_path(uri: str) -> str | None:
+    """Filesystem path for a `file://` URI, PERCENT-DECODED; None for anything else.
+
+    LSP servers hand back RFC-8089 URIs, so a workspace under `~/My Repos/` or any
+    non-ASCII path arrives as `file:///Users/x/My%20Repos/a.py`. Slicing the scheme
+    off without decoding leaves the literal `%20` in the path, so `relative_to`
+    misses, `Path.exists()` is False, and EVERY cross-file edge in that workspace
+    was silently dropped (attribution fell through to `None`) — the symbol index
+    looked fine, just edgeless."""
+    if not uri.startswith("file://"):
+        return None
+    return url2pathname(uri[len("file://"):])
+
+
 def _in_workspace(uri: str, root: Path) -> bool:
-    return uri.startswith(root.as_uri()) and not uri.endswith(".pyi")
+    """Is `uri` a file inside `root`? Anchored at a path BOUNDARY, so a sibling
+    checkout (`/src/crib-old` next to `/src/crib`) no longer reads as in-workspace
+    the way a bare string prefix made it."""
+    p = uri_path(uri)
+    if p is None or p.endswith(".pyi"):
+        return False
+    base = str(root).rstrip("/")
+    return p == base or p.startswith(base + "/")
 
 
 # (project, locally-resolved root or None, the ref index's file set)
@@ -716,10 +738,11 @@ def _locate(uri: str, root: Path, ref_projects: RefProjects | None) -> str | Non
     so the relative path matches the ref's own index either way."""
     if not ref_projects:
         return _rel(uri, root) if _in_workspace(uri, root) else None
-    if not uri.startswith("file://") or uri.endswith(".pyi"):
+    raw = uri_path(uri)
+    if raw is None or raw.endswith(".pyi"):
         return None
     try:
-        p = Path(uri[len("file://"):]).resolve()
+        p = Path(raw).resolve()
     except OSError:
         return None
     for proj, rroot, _files in ref_projects:
@@ -735,13 +758,23 @@ def _locate(uri: str, root: Path, ref_projects: RefProjects | None) -> str | Non
         tail = m.group(1)
         for proj, _rroot, files in ref_projects:
             for f in files:
-                if f and (f.endswith(tail) or tail.endswith(f)):
+                if f and _path_suffix_match(f, tail):
                     return f"{proj}:{f}"
     return None
 
 
+def _path_suffix_match(a: str, b: str) -> bool:
+    """True when one path is a trailing SEGMENT-aligned suffix of the other.
+
+    Anchored at `/` on purpose: a bare `endswith` matched `…/parser.py` against
+    `…/xmlparser.py` and `llmkit/cli.py` against `mycli.py`, attributing an edge to
+    whichever unrelated file happened to share a name ending — a wrong xref, which
+    is worse than a missing one."""
+    return a == b or a.endswith("/" + b) or b.endswith("/" + a)
+
+
 def _rel(uri: str, root: Path) -> str:
-    p = uri[len("file://"):]
+    p = uri_path(uri) or uri
     try:
         return str(Path(p).resolve().relative_to(root))
     except ValueError:
@@ -782,7 +815,7 @@ def _symbol_ranges(c: LspClient, uri: str, language_id: str,
         return cache[uri]
     if uri not in opened:
         opened.add(uri)
-        path = uri[len("file://"):] if uri.startswith("file://") else ""
+        path = uri_path(uri) or ""      # percent-decoded (spaces / non-ASCII roots)
         try:
             text = Path(path).read_text() if path else ""
         except OSError:
@@ -1405,11 +1438,6 @@ def match_meta(fqname: str, metas: dict[str, Any]) -> tuple[str, list[str]]:
     return "", []
 
 
-def match_description(fqname: str, descs: dict[str, Any]) -> str:
-    """Back-compat: just the description (see `match_meta` for keywords too)."""
-    return match_meta(fqname, descs)[0]
-
-
 # --- content-addressed store (separate location, like keyword_index) ----------
 
 # ONE escape codec, shared with section_index (crib/tomlrec.py). It escapes `\n`,
@@ -1467,10 +1495,32 @@ _SLUG_UNSAFE = re.compile(r"[^A-Za-z0-9._-]+")
 def learning_slug(fqn: str) -> str:
     """fqn → a filesystem- and git-sync-safe basename (no extension). Whitelist
     `[A-Za-z0-9._-]`; everything else (`::` `/` `<>` `*` `&` spaces `~` operators
-    …) collapses to `-`. When the munge is lossy, append a short fqn hash so
-    distinct symbols can't collide and the exact name is recoverable — the note's
-    `symbol:` frontmatter stays authoritative regardless. Clean dotted fqns pass
-    through verbatim: `crib.retrieve.LexicalCache.get`."""
+    …) collapses to `-`.
+
+    A short fqn hash is appended whenever the basename alone can't identify the
+    symbol — the exact name stays recoverable from the note's `symbol:`
+    frontmatter, which is authoritative regardless:
+
+      • the munge was LOSSY (`core::cache::Store::get` and `core-cache-Store-get`
+        would otherwise be one file);
+      • the slug contains UPPERCASE. macOS (APFS/HFS+) and Windows are
+        case-INSENSITIVE, so `mod.Chunk` and `mod.chunk` are the SAME path there:
+        one symbol's record silently overwrote the other's, and the loser's
+        learning went with it. The hash is over the case-SENSITIVE fqn, so the two
+        land in different files on every platform.
+
+    A clean all-lowercase fqn still passes through verbatim: `crib.notes.load`."""
+    safe = _SLUG_UNSAFE.sub("-", fqn).strip("-")
+    if safe != fqn or safe != safe.lower():
+        safe = f"{safe}-{hashlib.sha1(fqn.encode()).hexdigest()[:8]}"
+    return safe
+
+
+def legacy_learning_slug(fqn: str) -> str:
+    """The pre-case-hash slug (`learning_slug` before the APFS fix), so records and
+    learning notes ALREADY on disk under the old name are still found. Nothing
+    writes this name any more; `SymbolIndex.write` migrates one to the new name as
+    it rewrites, and the learnings verbs read through to it in place."""
     safe = _SLUG_UNSAFE.sub("-", fqn).strip("-")
     if safe != fqn:
         safe = f"{safe}-{hashlib.sha1(fqn.encode()).hexdigest()[:8]}"
@@ -1490,12 +1540,29 @@ class SymbolIndex:
     def _relname(self, fqname: str) -> str:
         return f"{learning_slug(fqname)}.toml"
 
+    def _path(self, fqname: str) -> Path:
+        """Where this symbol's record lives NOW — the current name, or the
+        pre-case-hash one if that is what's still on disk (see
+        `legacy_learning_slug`). Reads/deletes go through here so an index written
+        by an older crib keeps working without a forced full reindex."""
+        p = self.root / self._relname(fqname)
+        if p.exists():
+            return p
+        old = self.root / f"{legacy_learning_slug(fqname)}.toml"
+        return old if old.exists() else p
+
     def write(self, entry: dict) -> Path:
         self.root.mkdir(parents=True, exist_ok=True)
         # Filename keyed by the FQN (identity), so a body edit UPDATES the same file
         # (clean git diff) instead of orphaning it — content_hash is a field inside.
         p = self.root / self._relname(entry["fqname"])
         write_atomic(p, _render(entry))
+        # Migrate in place: an entry previously stored under the legacy slug would
+        # otherwise linger and be read a SECOND time by `all()` (one symbol, two
+        # records). Rewriting is the migration; no separate pass.
+        old = self.root / f"{legacy_learning_slug(entry['fqname'])}.toml"
+        if old != p and old.exists():
+            old.unlink(missing_ok=True)
         return p
 
     def write_all(self, entries: list[dict]) -> int:
@@ -1507,7 +1574,7 @@ class SymbolIndex:
         """One symbol's entry by EXACT fqname — O(1) (filename is the fqn slug), for
         the deferred-describe clobber guard: re-read at patch time and skip if the
         body changed again since it was queued. None when absent (dropped/renamed)."""
-        p = self.root / self._relname(fqname)
+        p = self._path(fqname)
         try:
             return _parse(p.read_text())
         except OSError:
@@ -1538,7 +1605,7 @@ class SymbolIndex:
 
     def delete(self, fqname: str) -> bool:
         """Drop one symbol's entry by exact fqname (rename/removal). Returns hit."""
-        p = self.root / self._relname(fqname)
+        p = self._path(fqname)
         if p.exists():
             p.unlink()
             return True

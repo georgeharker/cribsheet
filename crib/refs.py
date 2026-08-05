@@ -22,6 +22,23 @@ if TYPE_CHECKING:
     from .paths import Paths
 
 
+class UnknownSymbol(ValueError):
+    """No indexed symbol matches the name the caller gave.
+
+    A distinct TYPE because `resolve_symbol_or_ref` has to tell "not here, try the
+    refs" apart from "here but ambiguous" — and it used to do that by matching the
+    substring `"unknown symbol"` in the error text. That made a user-facing message
+    a load-bearing contract: rewording it (or a project name that happened to
+    contain the phrase) silently turned an ambiguity into a cross-project search.
+    Still a ValueError, so every existing `except ValueError` caller is unchanged."""
+
+
+class AmbiguousSymbol(ValueError):
+    """The name matches several indexed symbols — the caller must qualify it. Never
+    resolved by guessing: a learning pinned to the wrong symbol is worse than one
+    that failed to attach."""
+
+
 class Refs:
     def __init__(self, paths: Paths,
                  resident: Callable[[str], _ResidentCode],
@@ -90,16 +107,19 @@ class Refs:
         candidates (never silently pick, so a learning can't land on the wrong one).
         Resolves against a resident cache when one is passed (avoids a disk read)."""
         from .codeindex import SymbolIndex
+        from .codequery import check_query    # lazy: one message for one boundary
+        check_query(symbol, "symbol")
         matches = (rc.by_fqname(symbol) if rc is not None
                    else SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol))
         if not matches:
-            raise ValueError(f"unknown symbol {symbol!r} in project {proj!r} — "
-                             f"code_lookup it, or code_index the file first")
+            raise UnknownSymbol(f"unknown symbol {symbol!r} in project {proj!r} — "
+                                f"code_lookup it, or code_index the file first")
         exact = [m for m in matches if m.get("fqname") == symbol]
         cands = exact or matches
         if len(cands) > 1:
             names = ", ".join(sorted(m.get("fqname", "") for m in cands)[:8])
-            raise ValueError(f"ambiguous symbol {symbol!r} → {names}; pass a full fqname")
+            raise AmbiguousSymbol(
+                f"ambiguous symbol {symbol!r} → {names}; pass a full fqname")
         return cands[0]
 
     def resolve_symbol_or_ref(self, proj: str, symbol: str,
@@ -109,12 +129,11 @@ class Refs:
         `refs:` (cross-project xref) → (owning_project, entry). Exactly one ref
         matching wins; several → ambiguous error naming the projects; none →
         the local unknown-symbol error. A local AMBIGUITY still raises (refs
-        never paper over it)."""
+        never paper over it) — which is why the miss is caught by TYPE
+        (`UnknownSymbol`) and not by matching the message text."""
         try:
             return proj, self.resolve_symbol(proj, symbol, rc)
-        except ValueError as local_err:
-            if "unknown symbol" not in str(local_err):
-                raise
+        except UnknownSymbol as local_err:
             found: list[tuple[str, dict[str, Any]]] = []
             for ref in self.project_refs(proj):
                 if not ref["indexed"]:
@@ -128,7 +147,7 @@ class Refs:
                 return found[0]
             if len(found) > 1:
                 names = ", ".join(f"{p}:{e['fqname']}" for p, e in found)
-                raise ValueError(
+                raise AmbiguousSymbol(
                     f"ambiguous symbol {symbol!r} across refs → {names}; "
                     f"pass project= to disambiguate") from None
             raise local_err

@@ -33,3 +33,29 @@ def test_non_bge_models_get_no_instruction():
 def test_hash_embedder_query_is_symmetric():
     emb = HashEmbedder(dim=64)
     assert emb.embed_query(["hello world"]) == emb.embed(["hello world"])
+
+
+# ── The hash fallback must not silently answer over real-model vectors ────────
+
+def _uninstalled(monkeypatch):
+    """Make every real backend look uninstalled (the ImportError path)."""
+    import crib.embed as e
+    for name in ("SentenceTransformerEmbedder", "FastEmbedEmbedder"):
+        monkeypatch.setattr(e, name, lambda *a, **k: (_ for _ in ()).throw(
+            ImportError("no backend here")))
+
+
+def test_hash_fallback_still_applies_to_an_empty_store(monkeypatch):
+    import pytest
+
+    from crib.embed import build_embedder
+    _uninstalled(monkeypatch)
+    cfg = EmbedConfig(model="fe:BAAI/bge-small-en-v1.5")
+    # nothing stored yet → degrade (a missing optional dep can't brick the server)
+    assert isinstance(build_embedder(cfg, stored_dim=None), HashEmbedder)
+    # …and a store that already holds hash vectors at the same dim is compatible
+    assert isinstance(build_embedder(cfg, stored_dim=cfg.dim), HashEmbedder)
+    # but real-model vectors are NOT: hash queries against them rank by a
+    # meaningless dot product, at full confidence, with nothing saying so.
+    with pytest.raises(RuntimeError, match="not installed"):
+        build_embedder(cfg, stored_dim=384)

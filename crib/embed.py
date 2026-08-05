@@ -177,7 +177,7 @@ def _resolve_query_prefix(cfg: EmbedConfig, model_name: str) -> str:
     return ""
 
 
-def build_embedder(cfg: EmbedConfig) -> Embedder:
+def build_embedder(cfg: EmbedConfig, stored_dim: int | None = None) -> Embedder:
     """Resolve `cfg.model` to an embedder.
 
       hash                  -> HashEmbedder (dependency-free)
@@ -187,6 +187,14 @@ def build_embedder(cfg: EmbedConfig) -> Embedder:
     Falls back to the hash embedder (with a warning) if the chosen backend isn't
     installed, so a config naming a real model can't crash the server — it
     degrades, the same way the store falls back to JSON without chromadb.
+
+    …but ONLY into an EMPTY-or-compatible store. `stored_dim` (the dimension of the
+    vectors already held, None when the store is empty) is the check: a store full
+    of real-model vectors queried by hash vectors returns nonsense at full
+    confidence — every lookup ranked by a meaningless dot product, with nothing in
+    the output to say so. That is worse than not starting, so it REFUSES instead
+    (the operator either installs the backend or switches the config to `hash` and
+    reindexes).
     """
     model = cfg.model
     if model == "hash":
@@ -201,8 +209,16 @@ def build_embedder(cfg: EmbedConfig) -> Embedder:
             return FastEmbedEmbedder(name, query_prefix=_resolve_query_prefix(cfg, name))
         # bare model name -> fastembed
         return FastEmbedEmbedder(model, query_prefix=_resolve_query_prefix(cfg, model))
-    except ImportError:
+    except ImportError as e:
         import sys
+        if stored_dim is not None and stored_dim != cfg.dim:
+            raise RuntimeError(
+                f"the embedding backend for {cfg.model!r} is not installed, and the "
+                f"store already holds {stored_dim}-dim vectors from a real model — "
+                f"falling back to the {cfg.dim}-dim hash embedder would make every "
+                f"lookup return garbage. Install it (pip install 'cribsheet[embed]'), "
+                f"or set [embed].model = \"hash\" and run `crib project reconcile` to "
+                f"re-embed.") from e
         print(f"[crib] embedding backend for {cfg.model!r} not installed; "
               f"falling back to the hash embedder. Install the recommended "
               f"ONNX backend with: pip install 'cribsheet[embed]'", file=sys.stderr)

@@ -205,10 +205,10 @@ def test_code_watcher_coalesces_burst_into_one_batch(tmp_path):
         cw = CodeWatcher(on_change, asyncio.get_running_loop())
         root = str((tmp_path / "repo").resolve())
         # three edits + one delete-then-recreate, all within the debounce window
-        cw._schedule(("proj", root, "a.py", False))
-        cw._schedule(("proj", root, "b.py", False))
-        cw._schedule(("proj", root, "c.py", True))
-        cw._schedule(("proj", root, "c.py", False))       # last event wins for c.py
+        cw._schedule(("proj", root, "a.py", False, "code"))
+        cw._schedule(("proj", root, "b.py", False, "code"))
+        cw._schedule(("proj", root, "c.py", True, "code"))
+        cw._schedule(("proj", root, "c.py", False, "code"))  # last event wins for c.py
         await asyncio.sleep(0.7)                           # > CODE_DEBOUNCE_SEC
         return got
 

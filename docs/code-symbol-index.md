@@ -427,10 +427,10 @@ deferring to `_ensure_crib`:
 | CLI (noun-verb) | MCP | does |
 |---|---|---|
 | `crib project setup`  | `project_setup`  | ensure `.crib` + import docs + index all source (**superset**) |
-| `crib project index`  | `project_index`  | (re)index the source from `.crib` (cheap re-run via the content-hash gate); the MCP tool streams `{done,total}` progress, and `budget_s=<s>` bounds a call — deferred files return `complete=false, remaining=N`, re-invoke to continue |
+| `crib project index`  | `project_index`  | (re)index the source AND the `docs:` prose (in-situ; no copy into notes) from `.crib` (cheap re-run via the content-hash gate); the MCP tool streams `{done,total}` progress, and `budget_s=<s>` bounds a call — deferred files return `complete=false, remaining=N`, re-invoke to continue |
 | `crib project status` | `project_status` | indexed? symbol/file counts, kind breakdown, `.crib` paths |
 | `crib project forget` | `project_forget` | clear the `symbol_index` (KEEPS learnings/notes/`.crib` by default) |
-| `crib code setup` / `code status` | — | the **code facet** (code-only, no doc import) |
+| `crib code setup` / `code status` | — | the **code facet** (code-only; no doc COPY-import, and no in-situ doc sweep either) |
 
 - **`_ensure_crib` — sensible defaults, one primitive.** Finds the repo's `.crib`, or
   writes one: `project` = repo dir name; `paths:` = the LSP-supported extensions that

@@ -89,7 +89,13 @@ def resolve_session_project(state: SessionState, project_arg: str | None,
     if state.current_project is None or (
             state.current_project == default and cwd is not None):
         state.current_project = seed(cwd)
-        # a seed with a path in hand is caller-directed (`path`); cwd-less is `seed`
-        return ProjectResolution(state.current_project,
-                                 "path" if cwd is not None else "seed")
+        # A seed with a path in hand is caller-directed (`path`) — but ONLY if the
+        # path actually decided anything. When there's no `.crib` under it the seed
+        # falls through to the bare `default`, which is not what the caller asked
+        # for: tagging that `path` marks it explicit and MUTES the wrong-project
+        # echo built for exactly this case (a lookup answering from `default` while
+        # the agent believes it named a repo). Landing on `default` is a `seed`.
+        via = ("path" if cwd is not None and state.current_project != default
+               else "seed")
+        return ProjectResolution(state.current_project, via)
     return ProjectResolution(state.current_project, "session")

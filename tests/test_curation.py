@@ -63,6 +63,47 @@ def test_move_rejects_clobber_and_noop(crib):
         run(crib.move_note(a["relpath"], to_relpath=b["relpath"], project="p"))
 
 
+def test_move_onto_itself_is_refused_by_RESOLVED_path(crib):
+    # `a.md` and `./a.md` are the same file spelled two ways — comparing the
+    # (project, relpath) STRINGS let the second through, and the move then wrote
+    # the destination and unlinked it: the note it was asked to preserve, deleted.
+    a = run(crib.store_note("aaa", title="A", project="p"))
+    with pytest.raises(ValueError, match="same"):
+        run(crib.move_note(a["relpath"], to_relpath="./" + a["relpath"], project="p"))
+    assert crib.abspath("p", a["relpath"]).exists()      # still there
+
+
+def test_reconcile_reports_duplicate_ids_from_an_interrupted_move(crib):
+    # a crash between "write destination" and "unlink source" leaves two notes with
+    # one id — and one version ring between them. The sweep must SAY so.
+    a = run(crib.store_note("aaa", title="A", project="p"))
+    raw = crib.read_note(a["relpath"], project="p")
+    (crib.notes_dir("p") / "copy.md").write_text(raw)     # the half-finished move
+    out = run(crib.reindex(project="p"))
+    dupes = out["duplicate_ids"]
+    assert len(dupes) == 1 and set(dupes[0]["relpaths"]) == {a["relpath"], "copy.md"}
+
+
+def test_an_id_less_note_still_reaches_the_version_ring(crib):
+    # `forget` advertises the delete as recoverable; a note with no `id:` used to
+    # skip the ring entirely, so the promise was a lie for exactly those notes.
+    (crib.notes_dir("p") / "raw.md").write_text("no frontmatter at all, just prose\n")
+    out = run(crib.forget("raw.md", project="p"))
+    rid = out["recoverable_id"]
+    assert rid
+    entries = crib.versions.list(rid)
+    assert entries and "just prose" in crib.versions.read(rid, entries[0].name)
+
+
+def test_a_read_for_a_typod_project_does_not_create_it(crib):
+    run(crib.store_note("aaa", title="A", project="real"))
+    crib.locate("a.md", project="typo")       # a resolve-only path…
+    crib.abspath("typo", "a.md")
+    with pytest.raises(OSError):              # …and a read that simply isn't there
+        crib.read_note("a.md", project="typo")
+    assert crib.projects() == ["real"]        # no phantom namespace planted
+
+
 def test_similar_field_present_and_excludes_self(crib):
     res = run(crib.store_note("alpha beta gamma", title="First", project="p"))
     # the just-written note must never appear in its own similar list

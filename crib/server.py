@@ -513,9 +513,12 @@ def build_server(crib: Crib | None = None):
                             project_path: str | None = None,
                             budget_s: float | None = None,
                             ctx: Context | None = None) -> dict[str, Any]:
-        """(Re)index a project's SOURCE CODE from its `.crib` (code facet of
-        project_setup — no doc import). Use to index a repo for code_lookup/code_dossier,
-        or to refresh after edits (cheap: unchanged files are skipped). Pass
+        """(Re)index a project's SOURCE CODE from its `.crib`, PLUS the prose it
+        declares under `docs:` — those are indexed IN-SITU (searchable via note_lookup;
+        the repo keeps the only copy). It differs from project_setup only in not
+        COPYING files into crib-owned notes. Use to index a repo for
+        code_lookup/code_dossier, or to refresh after edits (cheap: unchanged files
+        are skipped). Pass
         `project_path=<the repo dir>` (a `.crib` is auto-created if missing); a bare
         `project=<name>` re-indexes an ALREADY-INDEXED project from its recorded root.
 

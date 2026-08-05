@@ -66,7 +66,19 @@ class Store(Protocol):
 
 
 def _cosine(a: list[float], b: list[float]) -> float:
-    return sum(x * y for x, y in zip(a, b))  # vectors are pre-normalized
+    """Dot product of two PRE-NORMALIZED vectors — cosine similarity.
+
+    Dimensions must match: `zip` would otherwise truncate to the shorter one and
+    return a plausible-looking score for vectors from two different embedders, so
+    a profile flip (bge-small→bge-large) would silently degrade every ranking
+    instead of failing. Chroma refuses a dim mismatch outright; the in-process
+    stores have to say so themselves."""
+    if len(a) != len(b):
+        raise ValueError(
+            f"embedding dimension mismatch: query has {len(a)}, stored vector has "
+            f"{len(b)} — the store holds vectors from a different embedder; run "
+            "`crib project reconcile` to re-embed at the current dimension")
+    return sum(x * y for x, y in zip(a, b))
 
 
 def _matches(meta: dict[str, Any], where: dict[str, Any] | None) -> bool:

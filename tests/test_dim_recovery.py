@@ -128,3 +128,30 @@ def test_no_dim_change_no_recovery(crib):
     res = run(crib.reindex(project="p1"))
     assert "recreated" not in res and not crib._resweep_pending
     assert not crib.lookup("turbines", project="p1")[0].index_rebuilding
+
+
+def test_a_dim_mismatch_raises_instead_of_scoring_a_truncated_vector():
+    """`zip` silently truncates to the shorter vector, so a 256-dim query against
+    384-dim stored vectors returned a plausible score computed over the first 256
+    components — every ranking quietly degraded, nothing said so. Chroma refuses
+    outright; the in-process stores have to say it themselves."""
+    from crib.store import InMemoryStore as _S, Record
+    s = _S()
+    s.upsert([Record("a", [0.1] * 384, "doc", {"project": "p"})])
+    with pytest.raises(ValueError, match="dimension mismatch"):
+        s.query([0.1] * 256, k=1)
+
+
+def test_a_reindex_that_wipes_the_store_drops_the_derived_caches(crib):
+    """The wipe takes EVERY project's chunks; the BM25/alias caches are built from
+    the store, so they have to go with it (a warm daemon otherwise keeps answering
+    BM25 from a corpus that no longer exists)."""
+    run(crib.store_note("alpha widget config", title="a", project="p"))
+    crib.lookup("widget", project="p")                     # warm the cache
+    assert crib.index.lexical.get("p")[0]
+    _flip_embedder(crib, dim=64)
+    out = run(crib.reindex(project="p"))
+    assert out.get("recreated")
+    # p was re-swept by the reindex itself; the point is nothing stale survived
+    assert all(len(v) == 64 for v in
+               (r.embedding for r in crib.store._snapshot()))

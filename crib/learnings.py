@@ -30,9 +30,24 @@ class Learnings:
         self.refs = refs
         self.notestore = notestore
 
-    def relpath(self, entry: dict[str, Any]) -> str:
-        from .codeindex import LEARNINGS_DIR, learning_slug
-        return f"{LEARNINGS_DIR}/{learning_slug(entry['fqname'])}.md"
+    def rel_for_fqn(self, proj: str, fqn: str) -> str:
+        """A symbol's learning-note relpath — the current slug, or the
+        pre-case-hash one when THAT file is the one on disk.
+
+        `learning_slug` gained a case-hash (macOS is case-insensitive, so
+        `mod.Chunk` and `mod.chunk` were one file); notes written before that live
+        under the old name. They are NOT migrated — a learning is hand-written
+        content whose path a human may have in hand — so every verb resolves
+        through here and keeps using the existing file."""
+        from .codeindex import LEARNINGS_DIR, learning_slug, legacy_learning_slug
+        rel = f"{LEARNINGS_DIR}/{learning_slug(fqn)}.md"
+        if self.notestore.abspath(proj, rel).exists():
+            return rel
+        old = f"{LEARNINGS_DIR}/{legacy_learning_slug(fqn)}.md"
+        return old if self.notestore.abspath(proj, old).exists() else rel
+
+    def relpath(self, proj: str, entry: dict[str, Any]) -> str:
+        return self.rel_for_fqn(proj, entry["fqname"])
 
     def attach(self, proj: str,
                entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -41,16 +56,16 @@ class Learnings:
         (code_lookup / code_xref). Keyed O(1) by learning_slug(fqn). `stale` = the
         symbol's body changed (content_hash) since the learning was written — a heads-up,
         not an invalidation."""
-        from .codeindex import LEARNINGS_DIR, learning_slug
-        ldir = self.notestore.dir(proj) / LEARNINGS_DIR
+        from .codeindex import LEARNINGS_DIR
+        ldir = self.notestore.notes_root(proj) / LEARNINGS_DIR
         if not ldir.exists():
             return entries
         for e in entries:
             fq = e.get("fqname")
             if not fq:
                 continue
-            relpath = f"{LEARNINGS_DIR}/{learning_slug(fq)}.md"
-            path = self.notestore.dir(proj) / relpath
+            relpath = self.rel_for_fqn(proj, fq)
+            path = self.notestore.notes_root(proj) / relpath
             if not path.exists():
                 continue
             note = notes.load(path)
@@ -64,7 +79,7 @@ class Learnings:
         """Set of fqns that carry a learning (read from `symbol:` frontmatter — the
         authoritative fqn, so the lossy slug never has to be reversed)."""
         from .codeindex import LEARNINGS_DIR
-        ldir = self.notestore.dir(proj) / LEARNINGS_DIR
+        ldir = self.notestore.notes_root(proj) / LEARNINGS_DIR
         out: set[str] = set()
         if ldir.exists():
             for p in ldir.glob("*.md"):
@@ -78,7 +93,7 @@ class Learnings:
         note (create it, with symbol-keyed frontmatter, on first use)."""
         entry = self.refs.resolve_symbol(proj, symbol)
         fqn = entry["fqname"]
-        relpath = self.relpath(entry)
+        relpath = self.relpath(proj, entry)
         path = self.notestore.abspath(proj, relpath)
         existed = path.exists()
         if existed:
@@ -104,7 +119,7 @@ class Learnings:
         """Replace a symbol's learning body wholesale (fix/rewrite), frontmatter
         preserved. Errors if no learning exists yet — use append to create."""
         entry = self.refs.resolve_symbol(proj, symbol)
-        relpath = self.relpath(entry)
+        relpath = self.relpath(proj, entry)
         path = self.notestore.abspath(proj, relpath)
         if not path.exists():
             raise ValueError(f"no learning for {entry['fqname']!r} yet — learning_add first")
@@ -118,12 +133,11 @@ class Learnings:
     async def forget(self, proj: str, symbol: str) -> dict[str, Any]:
         """Remove a symbol's learning (stashed to the version ring first, recoverable).
         Works on ORPHANS: if the symbol no longer resolves, forget by its recorded fqn."""
-        from .codeindex import LEARNINGS_DIR, learning_slug
         try:
             fqn = self.refs.resolve_symbol(proj, symbol)["fqname"]
         except ValueError:
             fqn = symbol                      # orphan: gone from the index, note lingers
-        relpath = f"{LEARNINGS_DIR}/{learning_slug(fqn)}.md"
+        relpath = self.rel_for_fqn(proj, fqn)
         if not self.notestore.abspath(proj, relpath).exists():
             raise ValueError(f"no learning for {symbol!r} in project {proj!r}")
         res = await self.notestore.delete(proj, relpath)
@@ -134,7 +148,7 @@ class Learnings:
         and it still holds. Re-snapshots content_hash/file/signature and stamps
         `reaffirmed`."""
         entry = self.refs.resolve_symbol(proj, symbol)
-        relpath = self.relpath(entry)
+        relpath = self.relpath(proj, entry)
         path = self.notestore.abspath(proj, relpath)
         if not path.exists():
             raise ValueError(f"no learning for {entry['fqname']!r} yet — learning_add first")
@@ -153,7 +167,7 @@ class Learnings:
         fqn still resolves but the symbol's file drifted from the snapshot; `orphan` =
         the fqn no longer resolves. Report-only — drives cleanup (rehome / forget)."""
         from .codeindex import LEARNINGS_DIR, SymbolIndex
-        ldir = self.notestore.dir(proj) / LEARNINGS_DIR
+        ldir = self.notestore.notes_root(proj) / LEARNINGS_DIR
         by_fq = {e["fqname"]: e
                  for e in SymbolIndex(self.paths.project_dir(proj)).all()}
         out: list[dict[str, Any]] = []
@@ -207,8 +221,8 @@ class Learnings:
         """Re-point an orphaned learning at the symbol it became. Without `new_fqn`:
         ranked candidates (never auto-move). With `new_fqn`: move the note to the new
         symbol's slug, re-snapshot frontmatter, preserve the note id/history."""
-        from .codeindex import LEARNINGS_DIR, SymbolIndex, learning_slug
-        old_rel = f"{LEARNINGS_DIR}/{learning_slug(old_fqn)}.md"
+        from .codeindex import SymbolIndex
+        old_rel = self.rel_for_fqn(proj, old_fqn)
         old_path = self.notestore.abspath(proj, old_rel)
         if not old_path.exists():
             raise ValueError(f"no learning for {old_fqn!r} in project {proj!r}")
@@ -224,7 +238,16 @@ class Learnings:
             if len(m) != 1:
                 raise ValueError(f"target {new_fqn!r} not found or not unique in index")
             new_entry = m[0]
-        new_rel = f"{LEARNINGS_DIR}/{learning_slug(new_entry['fqname'])}.md"
+        new_rel = self.rel_for_fqn(proj, new_entry["fqname"])
+        # A rehome must never CLOBBER: the target symbol may already carry its own
+        # learning, and writing over it would destroy hand-written understanding
+        # with no prompt (the ring keeps the bytes, but nothing would say so).
+        # Refuse like `NoteStore.move` does and let the human merge or forget one.
+        if new_rel != old_rel and self.notestore.abspath(proj, new_rel).exists():
+            raise ValueError(
+                f"{new_entry['fqname']!r} already has a learning ({new_rel}) — "
+                f"read both and merge with learning_edit, or learning_forget one "
+                f"first; rehome refuses to overwrite")
         note = notes.load(old_path)
         note.frontmatter.update({
             "symbol": new_entry["fqname"], "title": new_entry["fqname"],
@@ -241,7 +264,7 @@ class Learnings:
     def read(self, proj: str, symbol: str) -> dict[str, Any]:
         """Read a symbol's learning note (frontmatter + body), or found=False if unwritten."""
         entry = self.refs.resolve_symbol(proj, symbol)
-        relpath = self.relpath(entry)
+        relpath = self.relpath(proj, entry)
         path = self.notestore.abspath(proj, relpath)
         if not path.exists():
             return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,

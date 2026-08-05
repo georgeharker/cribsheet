@@ -40,7 +40,8 @@ def _seed_symbol(crib, project, fqname="pkg.Mod.foo", content_hash="aaaa1111"):
 def test_append_creates_then_appends_dated_entries(crib):
     _seed_symbol(crib, "p")
     a = run(crib.learning_add("pkg.Mod.foo", "first insight", project="p"))
-    assert a["created"] and a["relpath"] == "code-learnings/pkg.Mod.foo.md"
+    # `pkg.Mod.foo` carries uppercase → slug gets a case-hash (macOS folds case)
+    assert a["created"] and a["relpath"].startswith("code-learnings/pkg.Mod.foo-")
     b = run(crib.learning_add("pkg.Mod.foo", "second insight", project="p"))
     assert not b["created"]                                   # same running note
     body = crib.learning_read("pkg.Mod.foo", project="p")["body"]
@@ -131,6 +132,32 @@ def test_learnings_report_and_orphan_lifecycle(crib):
     assert moved["new"] == "a.bar"
     assert crib.learning_read("a.bar", project="p")["found"] is True
     assert crib.learning_report(project="p", orphans_only=True) == []   # resolved
+
+
+def test_rehome_refuses_to_overwrite_an_existing_learning(crib):
+    # both symbols carry hand-written understanding; rehoming one ONTO the other
+    # used to write straight over it — destroying a note with no prompt.
+    _seed_symbol(crib, "p", fqname="a.foo", content_hash="h")
+    _seed_symbol(crib, "p", fqname="a.bar", content_hash="h")
+    run(crib.learning_add("a.foo", "about foo", project="p"))
+    run(crib.learning_add("a.bar", "about bar", project="p"))
+    with pytest.raises(ValueError, match="already has a learning"):
+        run(crib.learning_rehome("a.foo", "a.bar", project="p"))
+    assert "about bar" in crib.learning_read("a.bar", project="p")["body"]
+    assert "about foo" in crib.learning_read("a.foo", project="p")["body"]
+
+
+def test_graph_validates_its_boundaries(crib):
+    _seed_symbol(crib, "p", fqname="a.foo", content_hash="h")
+    with pytest.raises(ValueError, match="unknown direction"):
+        crib.code_graph("a.foo", direction="calls", project="p")   # meant `callees`
+    with pytest.raises(ValueError, match="depth"):
+        crib.code_graph("a.foo", depth=0, project="p")
+    with pytest.raises(ValueError, match="depth"):
+        crib.code_graph("a.foo", depth=1000, project="p")
+    with pytest.raises(ValueError, match="empty symbol"):
+        crib.code_graph("  ", project="p")
+    assert crib.code_graph("a.foo", project="p")["fqname"] == "a.foo"
 
 
 def test_dossier_annotates_neighbours_with_their_descriptions(crib):

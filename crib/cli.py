@@ -442,7 +442,7 @@ def build_parser() -> argparse.ArgumentParser:
                                         "status/forget)")
     pjsub = pj.add_subparsers(dest="project_verb")
     for _v, _h in (("setup", "ensure .crib + import docs + index all code"),
-                   ("index", "(re)index the repo's code from its .crib"),
+                   ("index", "(re)index the repo's code + in-situ docs from its .crib"),
                    ("status", "is it indexed? counts, kinds, .crib paths")):
         _sp = pjsub.add_parser(_v, help=_h)
         proj(_sp)

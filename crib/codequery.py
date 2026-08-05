@@ -21,6 +21,30 @@ if TYPE_CHECKING:
 _POOL_K = 50        # top-K per source for the union candidate pool (min-max support)
 _RERANK_N = 20      # candidates carried for the cross-encoder rerank stage
 
+# Arguments that reach here come straight off an agent's tool call, so the bounds
+# are stated once and enforced — an out-of-range or misspelled value gets an error
+# that says what IS accepted, instead of a silent default (a typo'd
+# `direction="calls"` used to mean `callees`, so the graph answered a question
+# nobody asked) or a walk deep enough to be an outage.
+GRAPH_DIRECTIONS = {"callees": "calls", "callers": "called_by",
+                    "references": "references"}
+MAX_K = 200
+MAX_DEPTH = 25
+
+
+def check_k(k: int, name: str = "k") -> int:
+    if not isinstance(k, int) or isinstance(k, bool) or not 1 <= k <= MAX_K:
+        raise ValueError(f"{name} must be an integer in 1..{MAX_K}, got {k!r}")
+    return k
+
+
+def check_query(query: str, name: str = "query") -> str:
+    if not (query or "").strip():
+        raise ValueError(
+            f"empty {name}: describe what you're looking for — a concept "
+            '("where do we fuse ranked lists") or a symbol name')
+    return query
+
 
 class CodeQuery:
     def __init__(self, refs: Refs, learnings: Learnings, embedder: Embedder,
@@ -36,6 +60,7 @@ class CodeQuery:
         """Callers/callees for a symbol from the persisted symbol_index — no live LSP.
         A local miss falls through to the project's `.crib` `refs:`; every entry carries
         `project`."""
+        check_query(symbol, "symbol")
         self._require_index(proj)
         rc = self._resident(proj)
         matches = rc.by_fqname(symbol)
@@ -55,6 +80,7 @@ class CodeQuery:
     def dossier(self, proj: str, symbol: str, edge_cap: int = 20) -> dict[str, Any]:
         """Everything about ONE symbol: signature + description, its callers/callees/
         references each annotated with the NEIGHBOUR'S description, and any learning."""
+        check_query(symbol, "symbol")
         self._require_index(proj)
         rc = self._resident(proj)
         # local first, then the `.crib` refs — the neighbourhood (edges, learnings)
@@ -118,6 +144,8 @@ class CodeQuery:
         FANS OUT to the project's `.crib` `refs:`; the per-project rankings RRF-fuse
         (queried project weighted above its refs). Every hit carries `project`."""
         from .retrieve import reciprocal_rank_fusion
+        check_query(query)
+        check_k(k)
         self._require_index(proj)
         pools: dict[str, list[dict[str, Any]]] = {
             proj: self._lookup_one(proj, query, k)}
@@ -195,6 +223,14 @@ class CodeQuery:
         """Call-graph TREE around `symbol` from the persisted symbol_index — `callees`
         follows `calls`, `callers` follows `called_by`. Nested {fqname, kind, file, line,
         children[]} with DAG-repeats marked `repeat` and unresolved edges `external`."""
+        if direction not in GRAPH_DIRECTIONS:
+            raise ValueError(
+                f"unknown direction {direction!r}: use one of "
+                f"{', '.join(sorted(GRAPH_DIRECTIONS))}")
+        check_k(depth, "depth")
+        if depth > MAX_DEPTH:
+            raise ValueError(f"depth must be 1..{MAX_DEPTH}, got {depth!r}")
+        check_query(symbol, "symbol")
         self._require_index(proj)
         rc = self._resident(proj)
         entries = rc.entries
@@ -223,8 +259,7 @@ class CodeQuery:
                 root_proj, root = self.refs.resolve_symbol_or_ref(proj, symbol, rc)
             except ValueError:
                 return {}
-        edge = {"callees": "calls", "callers": "called_by",
-                "references": "references"}.get(direction, "calls")
+        edge = GRAPH_DIRECTIONS[direction]      # validated above
         seen: set[str] = set()
 
         def build(e: dict, p: str, d: int) -> dict:

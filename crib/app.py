@@ -94,18 +94,44 @@ def _resolve_embed_config(config: Config) -> Any:
     return config.embed
 
 
+def _stored_dim(store: Store) -> int | None:
+    """Dimension of the vectors the store already holds (None when empty or the
+    backend can't say). Feeds `build_embedder`'s refusal to degrade to the hash
+    embedder over real-model vectors — best-effort, so a store that can't be
+    probed at construction never blocks startup."""
+    try:
+        return store.current_dim()
+    except Exception:  # noqa: BLE001 — an unreachable store fails later, loudly
+        return None
+
+
+def _min_max(vals: list[float]) -> list[float]:
+    """Scale `vals` into [0,1] over their own range (a flat list maps to 0).
+
+    The shared half of both range-matched rerank stages (`Crib._rerank` for notes,
+    `Crib._rerank_code` for code): normalize the fusion score AND the cross-encoder
+    score over the same head, then SUM — which keeps the fusion's magnitude instead
+    of discarding it the way RRF does (measured to regress cross-domain)."""
+    lo, hi = min(vals), max(vals)
+    rng = (hi - lo) or 1.0
+    return [(v - lo) / rng for v in vals]
+
+
 class Crib:
     def __init__(self, paths: Paths, config: Config, store: Store) -> None:
         self.paths = paths
         self.config = config
         self.store = store
-        self.embedder = build_embedder(_resolve_embed_config(config))
+        self.embedder = build_embedder(_resolve_embed_config(config),
+                                       stored_dim=_stored_dim(store))
         self.index = IndexEngine(store, self.embedder,
                                  config.chunk.window_words,
                                  config.chunk.overlap_words,
                                  keyword_terms=self._keyword_terms,
                                  summary_terms=self._summary_terms)
-        self.git = GitBacking(paths.data_dir)
+        # DESIGN §14: network git is CLI-side (the terminal owns auth) — the
+        # daemon only ever snapshots/reads history locally.
+        self.git = GitBacking(paths.data_dir, allow_network=False)
         self.versions = VersionRing(paths.versions_dir, config.versions_keep)
         # Note-file store: path resolution + the write path (stash→save→index) over the
         # shared backends (store/index/versions stay Crib attrs — retrieval, docs,
@@ -186,8 +212,7 @@ class Crib:
         # code-watcher reindexes code). Seed it with every code-indexed project's root.
         self._code_watcher = CodeWatcher(self._on_code_change, loop)
         from .codeindex import SymbolIndex
-        for p in self.projects():
-            name = p["project"] if isinstance(p, dict) else p
+        for name in self.projects():           # `projects()` returns plain names
             root = SymbolIndex(self.paths.project_dir(name)).source_root()
             if root is not None:
                 self._code_watcher.watch_root(name, root)
@@ -284,8 +309,7 @@ class Crib:
         inline reindex per affected file catches them up. A no-op in the common case
         (nothing blank), so it's cheap to run on every start."""
         from .codeindex import SymbolIndex
-        for p in self.projects():
-            name = p["project"] if isinstance(p, dict) else p
+        for name in self.projects():
             try:
                 si = SymbolIndex(self.paths.project_dir(name))
                 root = si.source_root()
@@ -315,8 +339,7 @@ class Crib:
         if not (self.config.retrieve.keyword_labels
                 or self.config.retrieve.summary_labels):
             return
-        for p in self.projects():
-            name = p["project"] if isinstance(p, dict) else p
+        for name in self.projects():
             try:
                 await self.enrich(project=name)      # one combined pass, all facets
             except Exception as e:  # noqa: BLE001 — best-effort catch-up
@@ -492,7 +515,11 @@ class Crib:
                          cwd: Path | None = None) -> dict[str, Any]:
         proj = self.resolve_project(project, cwd)
         created = self.project_is_new(proj)
-        title = title or content.strip().splitlines()[0][:60] if content.strip() else "note"
+        # Parenthesized deliberately: `a or b if c else d` binds as `(a or b) if c
+        # else d`, which threw away an EXPLICIT title whenever the content was
+        # blank/whitespace and filed the note as "note".
+        title = title or (content.strip().splitlines()[0][:60]
+                          if content.strip() else "note")
         relpath = self._unique_relpath(proj, _slug(title))
         fm: dict[str, Any] = {"title": title, "source": "manual"}
         if tags:
@@ -777,14 +804,8 @@ class Crib:
         except Exception as e:  # noqa: BLE001 — reranker optional; degrade to fused order
             print(f"[crib] reranker disabled: {e}", file=sys.stderr)
             return hits
-
-        def _mm(vals: list[float]) -> list[float]:
-            lo, hi = min(vals), max(vals)
-            rng = (hi - lo) or 1.0
-            return [(v - lo) / rng for v in vals]
-
-        bn = _mm([float(h.score) for h in head])   # fusion score (dense + gated sparse)
-        rn = _mm(list(scores))
+        bn = _min_max([float(h.score) for h in head])  # fusion (dense + gated sparse)
+        rn = _min_max(list(scores))
         order = sorted(range(len(head)), key=lambda i: bn[i] + rn[i], reverse=True)
         return [head[i] for i in order] + hits[n:]
 
@@ -896,6 +917,16 @@ class Crib:
         keeps every chunk. Section is right for retrieval; file suits a
         what-notes-are-relevant overview.
         """
+        from .codequery import check_k, check_query
+        # Both come straight off a tool call: an empty query embeds to a
+        # meaningless vector and returns whatever is nearest to nothing, and a k of
+        # 0/-1/10_000 either silently returns nothing or drags the whole corpus
+        # through the reranker. Say what's accepted instead.
+        check_query(query)
+        check_k(k)
+        if dedupe not in ("section", "file", "none"):
+            raise ValueError(
+                f"unknown dedupe {dedupe!r}: use 'section' (default), 'file' or 'none'")
         proj = self.resolve_project(project, cwd)
         vec = embed_query_batch(self.embedder, [query])[0]
         use_hybrid = self.config.retrieve.hybrid if hybrid is None else hybrid
@@ -1484,7 +1515,11 @@ class Crib:
         """Find a code symbol by concept OR name. Coverage-gated expanded-BM25 ⊕ raw-dense
         blend (in `_lookup_one`), then an optional cross-encoder rerank folded in as a
         RANGE-MATCHED term (`[retrieve].rerank`). Fans out to refs."""
-        from .codequery import _RERANK_N
+        from .codequery import _RERANK_N, check_k, check_query
+        # validated HERE too: the widened pool below (`max(k, _RERANK_N)`) would
+        # otherwise launder a k of 0/-1 into a legal 20 before the core saw it
+        check_query(query)
+        check_k(k)
         proj = self.resolve_project(project, cwd)
         hits = self.query.lookup(proj, query, max(k, _RERANK_N))
         if self.config.retrieve.rerank and len(hits) > 1:
@@ -1506,14 +1541,8 @@ class Crib:
         except Exception as e:  # noqa: BLE001 — reranker optional; degrade to blend order
             print(f"[crib] code reranker disabled: {e}", file=sys.stderr)
             return hits
-
-        def _mm(vals: list[float]) -> list[float]:
-            lo, hi = min(vals), max(vals)
-            rng = (hi - lo) or 1.0
-            return [(v - lo) / rng for v in vals]
-
-        bn = _mm([float(h.get("_score", 0.0)) for h in head])
-        rn = _mm(list(rr))
+        bn = _min_max([float(h.get("_score", 0.0)) for h in head])
+        rn = _min_max(list(rr))
         order = sorted(range(len(head)), key=lambda j: bn[j] + rn[j], reverse=True)
         return [head[j] for j in order] + list(hits[_RERANK_N:])
 

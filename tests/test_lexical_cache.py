@@ -54,3 +54,20 @@ def test_cache_is_per_project(crib):
     one_ids = cache.get("one")[0]
     two_ids = cache.get("two")[0]
     assert one_ids and two_ids and set(one_ids).isdisjoint(two_ids)
+
+
+def test_a_store_wipe_invalidates_every_projects_cache(crib):
+    # A dim change recreates the collection — every project's chunks go, not just
+    # the reindexed one's. The derived caches are built FROM the store, so a warm
+    # daemon kept serving BM25 hits for chunks that no longer exist (ids the dense
+    # side can't even score).
+    run(crib.store_note("alpha widget config", title="a", project="p"))
+    run(crib.store_note("beta gadget reference", title="b", project="q"))
+    for proj in ("p", "q"):
+        crib.lookup("widget gadget", project=proj)        # warm both
+    assert crib.index.lexical.get("p")[0] and crib.index.lexical.get("q")[0]
+
+    crib.store.recreate()
+    crib.index.invalidate_all_caches()
+    assert crib.index.lexical.get("p")[0] == []           # rebuilt from an empty store
+    assert crib.index.lexical.get("q")[0] == []

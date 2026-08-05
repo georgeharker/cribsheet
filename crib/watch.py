@@ -11,11 +11,14 @@ from __future__ import annotations
 
 import asyncio
 import fnmatch
+import sys
 from pathlib import Path, PurePosixPath
 from typing import Any, Awaitable, Callable
 
 from .util import spawn
 
+# `*.tmp` covers the dotted temp form too (fnmatch on the basename), so there is
+# one pattern list, not a pattern list plus a special case for `.foo.tmp`.
 _IGNORE = ["*~", ".*.swp", "*.tmp", "4913", ".#*", "*.orig"]
 _IGNORE_DIRS = {".git", ".versions"}
 DEBOUNCE_SEC = 0.2
@@ -32,8 +35,6 @@ def _ignored(path: Path) -> bool:
     if any(part in _IGNORE_DIRS for part in path.parts):
         return True
     name = path.name
-    if name.startswith(".") and name.endswith(".tmp"):
-        return True
     return any(fnmatch.fnmatch(name, pat) for pat in _IGNORE) or path.suffix != ".md"
 
 
@@ -63,6 +64,9 @@ class _FSWatcher:
         self._loop = loop
         self._pending: dict[str, asyncio.TimerHandle] = {}
         self._observer: Any = None
+        # dir -> watchdog ObservedWatch, so a superseded root can be unscheduled
+        self._watches: dict[str, Any] = {}
+        self._missing: set[str] = set()     # dirs warned about once (see _schedule_dir)
         # strong refs to in-flight dispatches (asyncio holds only weak ones, so an
         # unreferenced task can be GC'd mid-flight — a save's reindex silently lost)
         self._tasks: set[asyncio.Task] = set()
@@ -85,10 +89,25 @@ class _FSWatcher:
             self._schedule_dir(d)
         self._observer.start()
 
-    def _schedule_dir(self, d: str) -> None:
+    def _schedule_dir(self, d: str) -> bool:
+        """Watch `d` (idempotent), returning whether it is now watched.
+
+        A directory that doesn't exist yet can't be scheduled — but it used to be
+        skipped SILENTLY and never retried, so a project whose checkout was
+        missing at registration simply never live-updated for the rest of the
+        session with nothing said. Say it once, and let a later `watch_root` (or a
+        restart) pick it up."""
         from watchdog.events import FileSystemEventHandler
+        if d in self._watches:
+            return True
         if not Path(d).exists():
-            return
+            if d not in self._missing:
+                self._missing.add(d)
+                print(f"[crib] not watching {d}: no such directory — edits there "
+                      f"won't reindex until it exists and the root is re-registered "
+                      f"(or crib restarts)", file=sys.stderr)
+            return False
+        self._missing.discard(d)
         watcher = self
 
         class _Handler(FileSystemEventHandler):
@@ -113,7 +132,17 @@ class _FSWatcher:
                 if not e.is_directory:
                     self._emit(e.src_path, deleted=True)
 
-        self._observer.schedule(_Handler(), str(d), recursive=True)
+        self._watches[d] = self._observer.schedule(_Handler(), str(d), recursive=True)
+        return True
+
+    def _unschedule_dir(self, d: str) -> None:
+        """Stop watching `d` — for a root that has been superseded."""
+        watch = self._watches.pop(d, None)
+        if watch is not None and self._observer is not None:
+            try:
+                self._observer.unschedule(watch)
+            except Exception:  # noqa: BLE001 — already gone is the goal state
+                pass
 
     def _schedule(self, key: tuple[Any, ...]) -> None:
         sk = "\x00".join(str(x) for x in key)
@@ -127,10 +156,19 @@ class _FSWatcher:
               f"watch dispatch {key}")
 
     def stop(self) -> None:
+        # Cancel pending debounce timers FIRST (as CodeWatcher.stop does for its
+        # batch timers): a timer that fires after shutdown spawns a dispatch onto a
+        # loop that is closing, so the reindex either dies in a dead task or raises
+        # from call_soon on a closed loop. Nothing useful can come of it — the
+        # watcher is gone, and the startup reconcile catches the edit next run.
+        for h in self._pending.values():
+            h.cancel()
+        self._pending.clear()
         if self._observer is not None:
             self._observer.stop()
             self._observer.join(timeout=2)
             self._observer = None
+        self._watches.clear()
 
 
 class Watcher(_FSWatcher):
@@ -152,7 +190,15 @@ class Watcher(_FSWatcher):
         return decode(self.projects_dir, raw_path)
 
     async def _dispatch(self, project: str, relpath: str) -> None:
-        await self._on_change(project, relpath)
+        # Guarded like the code watcher's batch dispatch: one note that won't parse
+        # (a hand edit, conflict markers) or a file that vanished between event and
+        # dispatch must not take the reindex down as an unhandled task exception —
+        # `spawn` would only print it, and the next save/reconcile fixes it anyway.
+        try:
+            await self._on_change(project, relpath)
+        except Exception as e:  # noqa: BLE001 — one bad note never kills the watcher
+            print(f"[crib] watch reindex failed ({project}/{relpath}): {e}",
+                  file=sys.stderr)
 
 
 _CODE_IGNORE_DIRS = {".git", ".versions", "node_modules", ".venv", "venv",
@@ -190,7 +236,7 @@ class CodeWatcher(_FSWatcher):
         self._roots: dict[str, str] = {}          # abs root → project
         self._exts: set[str] | None = None
         # per-project coalescing: {project: {relpath: (root, deleted)}} + one timer
-        self._batch: dict[str, dict[str, tuple[str, bool]]] = {}
+        self._batch: dict[str, dict[str, tuple[str, bool, str]]] = {}
         self._batch_timers: dict[str, asyncio.TimerHandle] = {}
 
     def _code_exts(self) -> set[str]:
@@ -201,12 +247,22 @@ class CodeWatcher(_FSWatcher):
         return self._exts
 
     def watch_root(self, project: str, root: str | Path) -> None:
-        """Register (or re-point) a source root for a project; idempotent."""
+        """Register (or RE-POINT) a source root for a project; idempotent.
+
+        Re-pointing drops the old root: a project whose `.crib` moved (a fresh
+        clone elsewhere, a submodule promoted out of tree) used to leave its
+        previous root scheduled forever — every save in the ABANDONED checkout
+        still decoded to this project and reindexed symbols from a tree the
+        project no longer describes, and the stale watch outlived the root's own
+        deletion."""
         key = str(Path(root).resolve())
-        new = key not in self._roots
+        superseded = [k for k, p in self._roots.items() if p == project and k != key]
         self._roots[key] = project
-        if new and self._observer is not None:
-            self._schedule_dir(key)
+        for old in superseded:
+            del self._roots[old]
+            self._unschedule_dir(old)
+        if self._observer is not None:
+            self._schedule_dir(key)         # idempotent; retries a formerly-missing dir
 
     def watches(self, project: str) -> bool:
         """Is this project's source root being watched (so its index refreshes
@@ -214,57 +270,57 @@ class CodeWatcher(_FSWatcher):
         return project in self._roots.values()
 
     def _watch_dirs(self) -> list[str]:
-        return list(self._roots)
+        self._code_exts()       # prime the spec table: it reads config files, and
+        return list(self._roots)    # `_decode` must never do that on the event thread
 
-    def _decode(self, raw_path: str, deleted: bool) -> tuple[str, str, str, bool] | None:
+    # Batch payload per file: (root, deleted, kind) where kind is how the path was
+    # CLASSIFIED cheaply and what still has to be confirmed with I/O later:
+    #   "code"  — a known code extension; nothing left to check
+    #   "doc"   — a prose extension; still needs the repo's `docs:` globs applied
+    #   "sniff" — extensionless; still needs a content sniff to route by language
+    def _decode(self, raw_path: str, deleted: bool) -> tuple[str, str, str, bool, str] | None:
+        """Classify an event by PATH ALONE — no filesystem access, no `.crib` parse.
+
+        This runs on the watchdog EVENT THREAD, which must return fast: it drains
+        the OS notification queue for every watched repo, and anything slow here
+        (a `stat`, a file read to sniff a shebang, a YAML `.crib` load per event)
+        applies to EVERY event in a burst — a `git checkout` touching a thousand
+        files paid a thousand YAML parses before the debounce had even started
+        coalescing them, and a slow drain drops events outright on some backends.
+        So the thread does only string work, and everything needing I/O is deferred
+        past the debounce boundary into `_resolve_batch` (a worker thread)."""
         p = Path(raw_path)
         if any(part in _CODE_IGNORE_DIRS for part in p.parts):
             return None
         suffix = p.suffix.lower()
-        is_doc_ext = suffix in DOC_EXTS
-        if suffix not in self._code_exts() and not is_doc_ext:
+        if suffix in DOC_EXTS:
+            kind = "doc"
+        elif suffix in self._code_exts():
+            kind = "code"
+        elif suffix:
+            return None
+        else:
             # extensionless files route by CONTENT (name/shebang/#compdef marker),
             # the same grammar the sweep enumeration uses — a NEW autoload file
             # must reach the index without waiting for the next full sweep. (A
             # DELETED one can't be sniffed; its entry falls to the lazy
             # revalidation gate, which drops symbols of missing sources.)
-            if suffix or not p.is_file():
-                return None
-            from .codeindex import content_lang
-            if content_lang(p) is None:
-                return None
-        # A delete event for a file that exists is FSEvents/watchdog coalescing
-        # noise from a rename-style save — record it as a change, not a delete
-        # (the dispatch handler re-verifies against the final state anyway).
-        exists = p.exists()
-        deleted = deleted and not exists
-        rp = p.resolve() if exists else p
-        best: tuple[str, str, str, bool] | None = None
+            kind = "sniff"
+        best: tuple[str, str, str, bool, str] | None = None
         for key, proj in self._roots.items():
             try:
-                rel = rp.relative_to(key)
+                rel = p.relative_to(key)        # pure path arithmetic, no syscall
             except ValueError:
                 continue
-            # A doc-EXTENSION file counts as a doc ONLY if it matches this project's
-            # declared `docs:` globs — the same scoping the sweep honors, so which
-            # docs get indexed no longer depends on how the change arrived. A `.md`
-            # outside the globs is not ours to index (falls through like any other
-            # non-indexable file); code files are unaffected.
-            is_doc = is_doc_ext and _matches_doc_globs(Path(key), rel)
-            if is_doc_ext and not is_doc:
-                continue
             if best is None or len(key) > len(best[1]):
-                # relpath prefixed so the handler routes doc vs code; the batch key
-                # stays unique per file either way.
-                tag = f"\x00doc\x00{rel}" if is_doc else str(rel)
-                best = (proj, key, tag, deleted)
+                best = (proj, key, str(rel), deleted, kind)
         return best
 
     # Coalesce: instead of the base's per-file debounce, accumulate every changed
     # file for a project and (re)arm ONE timer, so a burst becomes a single dispatch.
     def _schedule(self, key: tuple[Any, ...]) -> None:
-        project, root, relpath, deleted = key
-        self._batch.setdefault(project, {})[relpath] = (root, deleted)  # last event wins
+        project, root, relpath, deleted, kind = key
+        self._batch.setdefault(project, {})[relpath] = (root, deleted, kind)  # last wins
         if (h := self._batch_timers.pop(project, None)) is not None:
             h.cancel()
         self._batch_timers[project] = self._loop.call_later(
@@ -277,8 +333,50 @@ class CodeWatcher(_FSWatcher):
             spawn(self._loop, self._dispatch(project, changes), self._tasks,
                   f"code watch dispatch {project}")
 
-    async def _dispatch(self, *key: Any) -> None:  # (project, changes)
-        await self._on_change(*key)
+    @staticmethod
+    def _resolve_batch(changes: dict[str, tuple[str, bool, str]]
+                       ) -> dict[str, tuple[str, bool]]:
+        """Apply the I/O-bound half of the decode to a whole coalesced batch —
+        existence, the `docs:` globs, the extensionless content sniff — and return
+        the `{relpath: (root, deleted)}` the change handler consumes. Runs ONCE per
+        burst on a worker thread, not once per event on the watchdog thread, and
+        the `.crib` is parsed once per root instead of once per file."""
+        from .codeindex import content_lang
+        doc_globs: dict[str, Any] = {}          # root -> CribLink (parsed once)
+        out: dict[str, tuple[str, bool]] = {}
+        for relpath, (root, deleted, kind) in changes.items():
+            path = Path(root) / relpath
+            exists = path.exists()
+            # A delete event for a file that exists is FSEvents/watchdog coalescing
+            # noise from a rename-style save — record it as a change, not a delete
+            # (the change handler re-verifies against the final state anyway).
+            deleted = deleted and not exists
+            if kind == "sniff":
+                if not exists or not path.is_file() or content_lang(path) is None:
+                    continue
+            elif kind == "doc":
+                # A doc-EXTENSION file counts as a doc ONLY if it matches this
+                # project's declared `docs:` globs — the same scoping the sweep
+                # honors, so which docs get indexed no longer depends on how the
+                # change arrived. A `.md` outside the globs is not ours to index.
+                if root not in doc_globs:
+                    from .config import CribLink
+                    doc_globs[root] = CribLink.find(Path(root))
+                link = doc_globs[root]
+                rp = PurePosixPath(Path(relpath).as_posix())
+                if link is None or not any(rp.full_match(pat)
+                                           for pat in link.doc_patterns):
+                    continue
+                # relpath prefixed so the handler routes doc vs code
+                relpath = f"\x00doc\x00{relpath}"
+            out[relpath] = (root, deleted)
+        return out
+
+    async def _dispatch(self, project: str,
+                        changes: dict[str, tuple[str, bool, str]]) -> None:
+        resolved = await asyncio.to_thread(self._resolve_batch, changes)
+        if resolved:
+            await self._on_change(project, resolved)
 
     def stop(self) -> None:
         for h in self._batch_timers.values():

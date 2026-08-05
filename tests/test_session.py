@@ -51,6 +51,18 @@ def test_bare_default_seed_is_upgraded_by_a_later_cwd():
     assert st.current_project == "real-project"
 
 
+def test_a_path_that_resolves_to_the_bare_default_is_not_tagged_path():
+    # project_path pointing somewhere with no `.crib` falls through to `default`.
+    # That is NOT caller-directed: tagging it `path` made it non-implicit and muted
+    # the wrong-project echo built for exactly this (the agent thinks it named a
+    # repo; the answer came from `default`).
+    st = SessionState()
+    res = resolve_session_project(st, None, "/no/crib/here",
+                                  lambda _c: "default", default="default")
+    assert (res.project, res.via) == ("default", "seed")
+    assert res.implicit                              # so the echo fires
+
+
 def test_a_real_seed_still_sticks_against_a_later_cwd():
     # only the bare default is re-seeded; a real project stays sticky
     st = SessionState()

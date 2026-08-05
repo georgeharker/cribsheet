@@ -82,6 +82,14 @@ class IndexEngine:
         self.lexical.invalidate(project)
         self.summaries.invalidate(project)
 
+    def invalidate_all_caches(self) -> None:
+        """Drop the derived retrieval caches for EVERY project — after a store-wide
+        event (`Store.recreate()` on an embedder-dim change) that no per-project
+        invalidation covers. Both caches are built from the store, so a wipe leaves
+        every warm entry describing chunks that no longer exist."""
+        self.lexical.invalidate_all()
+        self.summaries.invalidate_all()
+
     async def index_file(self, project: str, notes_dir: Path, relpath: str,
                          content_path: Path | None = None) -> IndexResult:
         """Reindex one note. Idempotent + hash-gated under a per-path lock.

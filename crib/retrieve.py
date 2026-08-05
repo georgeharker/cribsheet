@@ -140,26 +140,14 @@ def _subtokens(text: str) -> list[str]:
     return extra
 
 
-def _lexical_tokens(document: str, meta: dict | None,
-                    extra_terms: list[str] | None = None) -> list[str]:
-    """Body BM25 tokens for one chunk: heading-enriched body plus the split
-    components of any compound identifiers. `extra_terms` (elaboration terms) are
-    appended at full weight — for the weighted path use `_lexical_tf` instead."""
-    text = _lexical_text(document, meta)
-    toks = tokenize(text) + _subtokens(text)
-    if extra_terms:
-        blob = " ".join(extra_terms)
-        toks += tokenize(blob) + _subtokens(blob)
-    return toks
-
-
 def _lexical_tf(document: str, meta: dict | None,
                 extra_terms: list[str] | None = None,
                 extra_weight: float = 1.0) -> dict[str, float]:
     """Weighted term-frequency for one chunk: body+heading+subtokens at weight
     1.0, plus `extra_terms` (LLM elaborations) at `extra_weight` — so elaboration
-    tokens can be scored below body tokens (§3.1). At weight 1.0 this is
-    equivalent to counting `_lexical_tokens`."""
+    tokens can be scored below body tokens (§3.1). The ONE corpus builder: BM25
+    accepts a weighted mapping, so the unweighted token-list variant this replaced
+    was a second spelling of the same thing that no caller used."""
     text = _lexical_text(document, meta)
     tf: dict[str, float] = {}
     for tok in tokenize(text) + _subtokens(text):
@@ -308,6 +296,14 @@ class LexicalCache:
             for key in [k for k in self._entries if k[0] == project]:
                 del self._entries[key]
 
+    def invalidate_all(self) -> None:
+        """Drop every project's entry — for a store-wide wipe (`recreate()`), which
+        no per-project call covers."""
+        with self._lock:
+            for project in {k[0] for k in self._entries} | set(self._gen):
+                self._gen[project] = self._gen.get(project, 0) + 1
+            self._entries.clear()
+
     def get(self, project: str, labels: tuple[str, ...] = (),
             weight: float = 1.0) -> tuple[list[str], dict, BM25]:
         labels = tuple(labels)
@@ -372,6 +368,14 @@ class SummaryVectorCache:
             self._gen[project] = self._gen.get(project, 0) + 1
             for key in [k for k in self._entries if k[0] == project]:
                 del self._entries[key]
+
+    def invalidate_all(self) -> None:
+        """Drop every project's alias vectors — the store-wide counterpart of
+        `invalidate` (see `LexicalCache.invalidate_all`)."""
+        with self._lock:
+            for project in {k[0] for k in self._entries} | set(self._gen):
+                self._gen[project] = self._gen.get(project, 0) + 1
+            self._entries.clear()
 
     def get(self, project: str, labels: tuple[str, ...]
             ) -> tuple[dict[str, list[str]], list[tuple[str, list[float]]]]:

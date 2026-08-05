@@ -42,6 +42,37 @@ _GITATTRIBUTES = "*.md merge=cribnote\n**/symbol_index/*.toml merge=cribnote\n"
 # `_ensure_merge_driver`.
 _MERGE_DRIVER_NAME = "crib frontmatter-aware note merge"
 
+# Every git invocation is bounded and gets no stdin: a credential/passphrase
+# prompt would otherwise block forever on a read that never completes, wedging
+# whichever thread ran it (DESIGN §14 keeps network git CLI-side, but a snapshot
+# still shells out from the daemon). Local plumbing is fast; anything that talks
+# to a remote gets the generous budget.
+_LOCAL_TIMEOUT = 15.0
+_NET_TIMEOUT = 120.0
+_NET_VERBS = frozenset({"fetch", "pull", "push", "clone", "ls-remote"})
+_TIMEOUT_RC = 124                       # coreutils' convention, and never git's
+
+# DESIGN §14: the network side of sync is the USER's terminal — that's where
+# credentials, key agents and prompts live. A GitBacking constructed with
+# `allow_network=False` (the daemon's) refuses those verbs outright rather than
+# discovering the problem as a 120s stall.
+_NO_NETWORK = ("network git is CLI-side only (DESIGN §14) — run `crib memory "
+               "sync` in your terminal, where git auth lives")
+
+
+def _msg(r: subprocess.CompletedProcess) -> str:
+    """git's diagnosis: stderr when it said something, else stdout (a failing
+    `commit` explains itself on stdout when the tree is clean)."""
+    return r.stderr.strip() or r.stdout.strip() or f"git exited {r.returncode}"
+
+
+def _text(out: str | bytes | None) -> str:
+    """`TimeoutExpired` carries whatever was captured before the kill — str under
+    `text=True`, but bytes on some platforms/versions, or None."""
+    if out is None:
+        return ""
+    return out if isinstance(out, str) else out.decode("utf-8", "replace")
+
 
 @dataclass
 class SyncResult:
@@ -54,24 +85,55 @@ class SyncResult:
     changed: bool = False   # did a pull change files (→ caller should reconcile)
 
 
+@dataclass
+class SnapshotResult:
+    """Outcome of a local checkpoint. `committed` is answered by git's exit
+    status, never by reading its prose: a commit that FAILED (no `user.name`,
+    a rejecting hook) must not read as "committed" to `sync`, which would then
+    pull onto a dirty tree."""
+    ok: bool
+    committed: bool
+    message: str
+
+
 class GitBacking:
-    def __init__(self, data_dir: Path) -> None:
+    def __init__(self, data_dir: Path, allow_network: bool = True) -> None:
         self.data_dir = data_dir
+        self.allow_network = allow_network
+        self._unborn_branch: str | None = None   # memo for the remote-HEAD probe
 
     @property
     def enabled(self) -> bool:
         return (self.data_dir / ".git").is_dir()
 
-    def _run(self, *args: str) -> subprocess.CompletedProcess:
-        return subprocess.run(
-            ["git", *args], cwd=self.data_dir,
-            capture_output=True, text=True,
-        )
+    def _run(self, *args: str, timeout: float | None = None
+             ) -> subprocess.CompletedProcess:
+        """Run git in the data dir. Never interactive, never unbounded — a
+        timeout or a refused network verb comes back as a failing
+        CompletedProcess so every existing returncode check still holds."""
+        verb = args[0] if args else ""
+        if verb in _NET_VERBS and not self.allow_network:
+            return subprocess.CompletedProcess(
+                ["git", *args], 1, "", f"refusing `git {verb}`: {_NO_NETWORK}")
+        if timeout is None:
+            timeout = _NET_TIMEOUT if verb in _NET_VERBS else _LOCAL_TIMEOUT
+        try:
+            return subprocess.run(
+                ["git", *args], cwd=self.data_dir,
+                capture_output=True, text=True,
+                stdin=subprocess.DEVNULL, timeout=timeout,
+            )
+        except subprocess.TimeoutExpired as e:
+            return subprocess.CompletedProcess(
+                ["git", *args], _TIMEOUT_RC, _text(e.stdout),
+                _text(e.stderr) + f"git {verb} timed out after {timeout:.0f}s "
+                "(a credential prompt or an unreachable remote?)")
 
     def _pending_join(self) -> bool:
         """True when `origin/<branch>` has been fetched but isn't part of local
-        history yet — a join (first merge) is imminent. Cheap and local: reads
-        only refs already fetched, never the network."""
+        history yet — a join (first merge) is imminent. Reads only refs already
+        fetched; the sole network touch it can trigger is `_branch`'s one-off
+        remote-HEAD probe on an unborn HEAD (memoized)."""
         branch = self._branch()
         if self._run("rev-parse", "--verify", "-q", f"origin/{branch}").returncode != 0:
             return False
@@ -150,16 +212,33 @@ class GitBacking:
         return out
 
     # --- local checkpoints -------------------------------------------------
-    def snapshot(self, message: str | None = None) -> str:
+    def snapshot_result(self, message: str | None = None) -> SnapshotResult:
+        """Stage everything and commit, reporting what actually happened.
+
+        The structured form exists for `sync`, which must tell "nothing to
+        commit" (fine, carry on) from "the commit failed" (stop — pulling onto
+        a dirty tree is how a conflict becomes a mess)."""
         if not self.enabled:
-            return ("git not enabled (data dir is not a repo; run "
-                    "`crib memory setup --remote <url>`)")
+            return SnapshotResult(
+                False, False,
+                "git not enabled (data dir is not a repo; run "
+                "`crib memory setup --remote <url>`)")
         self._ensure_repo_config()
-        self._run("add", "-A")
+        add = self._run("add", "-A")
+        if add.returncode != 0:
+            return SnapshotResult(False, False,
+                                  f"git add failed: {_msg(add)}")
         if not self._run("status", "--porcelain").stdout.strip():
-            return "nothing to snapshot"
+            return SnapshotResult(True, False, "nothing to snapshot")
         r = self._run("commit", "-m", message or "crib snapshot")
-        return r.stdout.strip() or r.stderr.strip()
+        if r.returncode != 0:
+            return SnapshotResult(False, False, f"commit failed: {_msg(r)}")
+        return SnapshotResult(True, True, r.stdout.strip() or r.stderr.strip()
+                              or "committed")
+
+    def snapshot(self, message: str | None = None) -> str:
+        """Prose form for the `memory_snapshot` surface."""
+        return self.snapshot_result(message).message
 
     def history(self, relpath: str | None = None, limit: int = 20) -> list[str]:
         if not self.enabled:
@@ -208,6 +287,8 @@ class GitBacking:
         exists, hard-adopt its tree (overwriting any stray untracked files);
         only then ensure the shared files (now no-ops the remote provided).
         Falls back to the plain init+pull path for a brand-new/empty remote."""
+        if not self.allow_network:
+            return SyncResult(False, False, False, False, [], _NO_NETWORK)
         if not self.enabled:
             self._run("init")
         if self._run("remote", "get-url", "origin").returncode == 0:
@@ -245,6 +326,8 @@ class GitBacking:
         the caller tells the user to resolve them manually, then re-run."""
         if not self.enabled:
             return SyncResult(False, False, False, False, [], "git not enabled")
+        if not self.allow_network:
+            return SyncResult(False, False, False, False, [], _NO_NETWORK)
         self._run("fetch", "origin")     # best-effort, pull refetches; makes a joinable
         self._ensure_repo_config()       # branch visible so the shared files defer to it
         before = self._run("rev-parse", "HEAD").stdout.strip()
@@ -277,6 +360,8 @@ class GitBacking:
     def push(self) -> SyncResult:
         if not self.enabled:
             return SyncResult(False, False, False, False, [], "git not enabled")
+        if not self.allow_network:
+            return SyncResult(False, False, False, False, [], _NO_NETWORK)
         r = self._run("push", "-u", "origin", self._branch())
         if r.returncode != 0:
             return SyncResult(False, False, False, False, [],
@@ -285,12 +370,21 @@ class GitBacking:
                           r.stderr.strip() or r.stdout.strip() or "pushed")
 
     def sync(self, message: str | None = None) -> SyncResult:
-        """commit → pull → push. Stops (without pushing) if the pull conflicts."""
+        """commit → pull → push. Stops (without pushing) if the commit failed or
+        the pull conflicts."""
         if not self.enabled:
             return SyncResult(False, False, False, False, [],
                               "git not enabled; run `crib memory sync --remote <url>` "
                               "first")
-        committed = "nothing to" not in self.snapshot(message)
+        if not self.allow_network:
+            return SyncResult(False, False, False, False, [], _NO_NETWORK)
+        snap = self.snapshot_result(message)
+        if not snap.ok:
+            # A failed commit leaves the tree dirty; pulling onto it is how a
+            # recoverable "set your user.name" becomes a merge to untangle.
+            return SyncResult(False, False, False, False, [],
+                              f"sync stopped: {snap.message}")
+        committed = snap.committed
         pulled = self.pull()
         if not pulled.ok:
             pulled.committed = committed
@@ -305,5 +399,43 @@ class GitBacking:
             changed=pulled.changed)
 
     def _branch(self) -> str:
+        """The branch this data repo syncs on.
+
+        With commits, that's simply the checked-out branch. On an UNBORN HEAD
+        (fresh `git init`, nothing committed yet) `rev-parse` can't answer, and
+        guessing our own default is how a machine joining a `master` remote
+        bootstraps a second, divergent branch nobody sees. So ask the remote
+        what its HEAD points at first; only then fall back to the local default
+        branch name, then `main`."""
         r = self._run("rev-parse", "--abbrev-ref", "HEAD")
-        return r.stdout.strip() or "main"
+        name = r.stdout.strip()
+        if r.returncode == 0 and name and name != "HEAD":
+            return name
+        if self._unborn_branch is None:
+            self._unborn_branch = (self._remote_head_branch()
+                                   or self._local_default_branch() or "main")
+        return self._unborn_branch
+
+    def _remote_head_branch(self) -> str | None:
+        """The branch `origin`'s HEAD points at, or None (no remote, an empty
+        remote, or unreachable). Prefers the remote-tracking symref a fetch
+        already recorded; older gits don't write it, hence the `ls-remote`
+        fallback — the only network call here, memoized by `_branch`."""
+        if not self.current_remote():
+            return None
+        r = self._run("symbolic-ref", "--short", "-q", "refs/remotes/origin/HEAD")
+        ref = r.stdout.strip()
+        if r.returncode == 0 and ref.startswith("origin/"):
+            return ref.removeprefix("origin/") or None
+        for ln in self._run("ls-remote", "--symref", "origin", "HEAD").stdout.splitlines():
+            # "ref: refs/heads/master\tHEAD"
+            if ln.startswith("ref: "):
+                head = ln[len("ref: "):].split()[0]
+                if head.startswith("refs/heads/"):
+                    return head.removeprefix("refs/heads/") or None
+        return None
+
+    def _local_default_branch(self) -> str | None:
+        """The name HEAD is symbolically on even with no commits — i.e. this
+        machine's `init.defaultBranch`, or whatever the user checked out."""
+        return self._run("symbolic-ref", "--short", "-q", "HEAD").stdout.strip() or None

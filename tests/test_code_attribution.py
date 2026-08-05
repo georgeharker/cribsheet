@@ -202,3 +202,41 @@ def test_same_named_sources_in_one_file_patch_independently(crib):
     ], "b.py")
     assert store.read("a.first")["called_by"] == ["run [b.py]"]
     assert store.read("c.second")["called_by"] == ["run [b.py]"]
+
+
+# ── Edge attribution: URI decoding + path-boundary anchoring (robustness 4.6) ──
+
+def test_uri_path_percent_decodes(tmp_path):
+    root = tmp_path / "My Repos" / "crib"
+    (root / "src").mkdir(parents=True)
+    f = root / "src" / "a.py"
+    f.write_text("x = 1\n")
+    uri = f.as_uri()
+    assert "%20" in uri                              # the space really is encoded
+    # Slicing the scheme off without decoding left a literal `%20` in the path, so
+    # relative_to missed and EVERY cross-file edge in such a workspace was dropped.
+    assert ci.uri_path(uri) == str(f)
+    assert ci._in_workspace(uri, root)
+    assert ci._rel(uri, root) == "src/a.py"
+
+
+def test_in_workspace_is_anchored_at_a_path_boundary(tmp_path):
+    root = tmp_path / "crib"
+    root.mkdir()
+    sibling = tmp_path / "crib-old"
+    sibling.mkdir()
+    f = sibling / "a.py"
+    f.write_text("x = 1\n")
+    # a bare string prefix read `/…/crib-old/a.py` as inside `/…/crib`
+    assert not ci._in_workspace(f.as_uri(), root)
+    assert ci._in_workspace((root / "a.py").as_uri(), root)
+
+
+def test_site_packages_suffix_match_aligns_on_segments():
+    # `…/parser.py` must not attribute to `…/xmlparser.py` — a WRONG xref is worse
+    # than a missing one.
+    assert ci._path_suffix_match("src/llmkit/cli.py", "llmkit/cli.py")
+    assert ci._path_suffix_match("llmkit/cli.py", "src/llmkit/cli.py")
+    assert ci._path_suffix_match("a/parser.py", "a/parser.py")
+    assert not ci._path_suffix_match("src/xmlparser.py", "parser.py")
+    assert not ci._path_suffix_match("mycli.py", "cli.py")

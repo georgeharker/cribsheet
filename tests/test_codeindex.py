@@ -48,8 +48,11 @@ def test_local_name_reduces_rust_impl_to_type():
 
 def test_symbol_index_uses_legible_slug_filenames(tmp_path):
     si = ci.SymbolIndex(tmp_path)
-    # clean dotted fqn → verbatim; lossy (rust ::) → munged + hash suffix
-    assert si._relname("crib.retrieve.LexicalCache.get") == "crib.retrieve.LexicalCache.get.toml"
+    # clean, all-lowercase fqn → verbatim; anything with uppercase carries a
+    # case-hash (macOS is case-insensitive); lossy (rust ::) → munged + hash suffix
+    assert si._relname("crib.notes.load") == "crib.notes.load.toml"
+    assert si._relname("crib.retrieve.LexicalCache.get").startswith(
+        "crib.retrieve.LexicalCache.get-")
     p = si.write({"fqname": "a::b::C", "name": "C", "kind": "struct",
                   "content_hash": "h", "file": "a.rs", "line": 1, "mtime": 1,
                   "signature": "", "description": "d", "container": [], "calls": [],
@@ -213,9 +216,19 @@ def test_server_for_shebang_fallback(tmp_path):
 
 # --- learning_slug: fqn → filesystem/git-safe basename ----------------------
 def test_learning_slug_clean_fqn_verbatim():
-    # a pure dotted fqn is already filesystem-clean → passes through unchanged
-    assert ci.learning_slug("crib.retrieve.LexicalCache.get") == \
-        "crib.retrieve.LexicalCache.get"
+    # a pure dotted, all-lowercase fqn is already filesystem-clean AND unambiguous
+    # on a case-insensitive filesystem → passes through unchanged
+    assert ci.learning_slug("crib.notes.load") == "crib.notes.load"
+
+
+def test_learning_slug_disambiguates_case_on_case_insensitive_filesystems():
+    # APFS/HFS+/NTFS fold case, so `mod.Chunk` and `mod.chunk` are ONE path there —
+    # one symbol's record (and learning) silently overwrote the other's.
+    a, b = ci.learning_slug("mod.Chunk"), ci.learning_slug("mod.chunk")
+    assert a.lower() != b.lower() and a.startswith("mod.Chunk-")
+    assert b == "mod.chunk"                      # lowercase stays verbatim
+    # …and the pre-fix name is still derivable, so notes already on disk are found
+    assert ci.legacy_learning_slug("mod.Chunk") == "mod.Chunk"
 
 
 def test_learning_slug_munges_unsafe_and_disambiguates():
