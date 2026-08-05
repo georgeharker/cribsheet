@@ -24,6 +24,18 @@
 > below as "the fusion of the day"; the *signals* (dense ⊕ keyword_index ⊕
 > summary_index) are unchanged.
 
+**Current flow, one picture:** both halves as they stand today — index side (section
+split → windowing → the one LLM pass → the two derived caches) and lookup side (the
+three arms, the alias MAX-merge, back-fill, the dense-dominant blend, range-matched
+rerank), with the actual constants and formulae on the boxes. Read it before the dated
+log below; where the two disagree, the diagram is current. For the one-glance version
+of the *lookup* path alone, see
+[`note-retrieval-pipeline`](images/note-retrieval-pipeline.png) in DESIGN.md §10.
+
+![cribsheet retrieval — index side and lookup side](images/retrieval-flow.png)
+
+<sub>Source: [`retrieval-flow.svg`](images/retrieval-flow.svg).</sub>
+
 > ## Build state & how to resume (2026-07-01)
 >
 > **Shipped & tested (88 unit tests pass):**
