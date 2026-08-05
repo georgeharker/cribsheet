@@ -7,7 +7,7 @@ description, grouped by facet. (For an intro and quickstart, start at the
 The CLI is **noun-verb**: `crib <noun> <verb>` — `crib note lookup`, `crib code xref`,
 `crib learning add`, `crib project setup`. That is the only form; there is no
 hyphenated fallback (`crib code-lookup` is rejected). The nouns are `note`, `code`,
-`learning`, and `project`, plus a few top-level system verbs.
+`learning`, `design`, `plan`, and `project`, plus a few top-level system verbs.
 
 **Selecting a project.** `-p/--project` (by name) or `-P/--project-path` (by a path
 inside the repo) on the CLI — `project`/`project_path` on MCP — pick which project a
@@ -92,6 +92,49 @@ projects.
 | `crib learning reaffirm <sym>` | `learning_reaffirm` | Clear a learning's ⚠ stale flag without a rewrite (you re-checked; it still holds). |
 | `crib learning report` | `learning_report` | Health report: each learning `ok` / `moved` / `orphan` (`--orphans` to filter). |
 | `crib learning rehome <old> [new]` | `learning_rehome` | Re-point an orphaned learning (no target → ranked candidates; target → move it). |
+
+## Design decisions — what was settled, and what rests on it
+
+Decisions are notes under `design/` (frontmatter `type: design`) with typed
+dependencies on other decisions. Staleness is **computed on read**: each decision
+records the body hash of every dep at its last verify, so editing a decision by ANY
+route — `note_edit`, your own editor, a git pull — taints its dependents, and
+`check` says so with the chain that explains it. Nothing propagates on write.
+`note_lookup --tag design` searches the facet; read/edit are the ordinary `note`
+verbs.
+
+| CLI | MCP | Description |
+|---|---|---|
+| `crib design add <title> <body>` | `design_add` | Record a decision (`--dep` repeatable, by id/relpath/title); `checked` is seeded, so a new decision is born verified. |
+| `crib design dep-add <ref> <dep>` | `design_dep_add` | Declare that a decision builds on another (cycle-checked; the new edge starts UNVERIFIED, so it shows up in `check`). |
+| `crib design dep-remove <ref> <dep>` | `design_dep_remove` | Drop a dependency edge. |
+| `crib design check [ref]` | `design_check` | Which decisions are now stale, each with the `X → Y` chain naming what changed. Run before and after changing a design. |
+| `crib design verify <ref>` | `design_verify` | Re-record a decision's dep hashes — "I re-read it and it still holds". The only thing that clears taint. |
+| `crib design tree [ref]` | `design_tree` | Dependency tree, pstree-rendered and taint-flagged: what it builds on, or `--dependents` for what would be affected by changing it. |
+| `crib design supersede <ref> [by]` | `design_supersede` | Soft-delete a replaced decision: keeps it readable, taints everything that built on it. |
+| `crib design forget <ref>` | `design_forget` | Delete a decision. Refuses while dependents exist; `--force` deletes and leaves them tainted. |
+
+## Plans — persistent, resumable work items
+
+Plan items are notes under `plans/` (`type: plan`) with a status, must-precede
+dependencies, and a lexorank order that never renumbers neighbours. Rendered order
+is **topological by deps, rank breaking ties**: deps are correctness, rank is
+preference. `blocked` is derived from deps and never stored.
+
+| CLI | MCP | Description |
+|---|---|---|
+| `crib plan add <title> <body>` | `plan_add` | Add an item (`--dep` repeatable, `--after`/`--before` to place it; default end). |
+| `crib plan status <ref> <status>` | `plan_status` | `todo` / `in-progress` / `done` / `verified`. Marking done with unfinished deps warns, doesn't block. |
+| `crib plan list [--all]` | `plan_list` | The plan in execution order, `blocked` flagged; finished items hidden unless `--all`. |
+| `crib plan next [-k]` | `plan_next` | What's actionable now: `todo` items whose deps are satisfied, in order. |
+| `crib plan dep-add <ref> <dep>` | `plan_dep_add` | Declare that an item must follow another (cycle-checked). |
+| `crib plan dep-remove <ref> <dep>` | `plan_dep_remove` | Drop a must-precede edge. |
+| `crib plan move <ref> --after/--before` | `plan_move` | Re-order an item — rank only, deps untouched, so it can't break the plan. |
+| `crib plan forget <ref>` | `plan_forget` | Delete an item. Refuses while dependents exist; `--force` as above. |
+
+Both facets follow the learnings exception: `add` is a **write** (it creates a
+durable fact, so it must name the project); every other verb is keyed by a `ref`
+that only resolves inside one project, so it uses the **read** policy.
 
 ## Project lifecycle — onboard & manage a whole repo
 

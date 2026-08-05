@@ -95,13 +95,19 @@ class Chunk:
         return sha1_hex(self.index_text)
 
     def metadata(self, title: str | None, tags: list[str], source: str,
-                 mtime: float) -> dict:
+                 mtime: float, note_type: str = "") -> dict:
         return {
             "project": self.project,
             "relpath": self.relpath,
             "note_id": self.note_id,
             "title": title or "",
             "tags": ",".join(tags),
+            # The note's frontmatter `type` (e.g. design/plan), so a facet's notes
+            # are filterable at query time (`note_lookup(tags=["design"])` matches
+            # it like a tag). Metadata only — `chunk_id` is (project, relpath,
+            # section_key, window_idx), so adding a field re-stamps metadata on the
+            # next reindex without changing an id: no CHUNK_SCHEMA_VERSION bump.
+            "type": note_type or "",
             # Display/lookup key stays the clean breadcrumb; `occurrence` carries
             # the disambiguator so a consumer can rebuild the identity key with
             # `section_key(heading_path, occurrence)` (e.g. to hit the right span

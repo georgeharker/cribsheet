@@ -29,6 +29,7 @@ from .refs import Refs
 from .embed import build_embedder, embed_batch, embed_query_batch
 from .gitbacking import GitBacking
 from .codequery import CodeQuery
+from .designs import Designs
 from .indexer import IndexEngine, IndexResult
 from .learnings import Learnings
 from .notes import Note, NoteParseError
@@ -182,6 +183,9 @@ class Crib:
         # Durable symbol learnings (notes under code-learnings/), over refs + notestore.
         # Crib keeps resolve_project + delegate public wrappers (learning_add/…).
         self.learnings = Learnings(paths, self.refs, self.notestore)
+        # Design decisions + plan items (notes under design/ and plans/) and the
+        # dependency graph over them. Same shape: Crib resolves, Designs executes.
+        self.designs = Designs(paths, self.notestore)
         # Code-index queries (lookup/xref/dossier/graph) over refs + learnings + the
         # resident cache. Crib keeps resolve_project + delegate public wrappers.
         self.query = CodeQuery(self.refs, self.learnings, self.embedder,
@@ -952,9 +956,14 @@ class Crib:
         for h in raw:
             if h.score <= min_score:        # drop orthogonal / irrelevant matches
                 continue
-            if tags and not (set(tags) & set(
-                    filter(None, (h.metadata.get("tags") or "").split(",")))):
-                continue
+            if tags:
+                # A note's frontmatter `type` (design/plan) filters like a tag —
+                # those facets are identified by type, not by a hand-added tag, so
+                # `tags=["design"]` is how you scope a lookup to them.
+                have = set(filter(None, (h.metadata.get("tags") or "").split(",")))
+                have |= set(filter(None, [h.metadata.get("type") or ""]))
+                if not (set(tags) & have):
+                    continue
             rp = h.metadata.get("relpath", "")
             heading = h.metadata.get("heading_path", "")
             key = rp if dedupe == "file" else (rp, heading)
@@ -1509,6 +1518,111 @@ class Crib:
                   cwd: Path | None = None) -> dict[str, Any]:
         """Read a symbol's learning note (frontmatter + body)."""
         return self.learnings.read(self.resolve_project(project, cwd), symbol)
+
+    # ── Design decisions & plan items: delegate to Designs (crib/designs.py) ───
+    # Same shape as the learnings block: resolve the project, then delegate to a
+    # core that takes it explicitly. Both facets are notes, so read/edit stay
+    # `note_read`/`note_edit` — only the graph verbs live here.
+    async def design_add(self, title: str, content: str,
+                         deps: list[str] | None = None, project: str | None = None,
+                         cwd: Path | None = None) -> dict[str, Any]:
+        """Record a design decision (deps validated + `checked` seeded)."""
+        return await self.designs.design_add(
+            self.resolve_project(project, cwd), title, content, deps)
+
+    async def design_dep_add(self, ref: str, dep_ref: str, project: str | None = None,
+                             cwd: Path | None = None) -> dict[str, Any]:
+        """Declare that a decision builds on another (cycle-checked)."""
+        return await self.designs.design_dep_add(
+            self.resolve_project(project, cwd), ref, dep_ref)
+
+    async def design_dep_remove(self, ref: str, dep_ref: str,
+                                project: str | None = None,
+                                cwd: Path | None = None) -> dict[str, Any]:
+        """Drop a dependency edge between two decisions."""
+        return await self.designs.design_dep_remove(
+            self.resolve_project(project, cwd), ref, dep_ref)
+
+    async def design_forget(self, ref: str, force: bool = False,
+                            project: str | None = None,
+                            cwd: Path | None = None) -> dict[str, Any]:
+        """Delete a decision; blocks on dependents unless forced."""
+        return await self.designs.design_forget(
+            self.resolve_project(project, cwd), ref, force)
+
+    def design_check(self, ref: str | None = None, project: str | None = None,
+                     cwd: Path | None = None) -> dict[str, Any]:
+        """Which decisions are stale with respect to what they build on."""
+        return self.designs.design_check(self.resolve_project(project, cwd), ref)
+
+    async def design_verify(self, ref: str, project: str | None = None,
+                            cwd: Path | None = None) -> dict[str, Any]:
+        """Re-record a decision's dep hashes after re-reading it."""
+        return await self.designs.design_verify(self.resolve_project(project, cwd), ref)
+
+    def design_tree(self, ref: str | None = None, direction: str = "deps",
+                    depth: int = 6, project: str | None = None,
+                    cwd: Path | None = None) -> dict[str, Any]:
+        """The dependency tree around a decision, taint-flagged."""
+        return self.designs.design_tree(self.resolve_project(project, cwd), ref,
+                                        direction, depth)
+
+    async def design_supersede(self, ref: str, by_ref: str | None = None,
+                               project: str | None = None,
+                               cwd: Path | None = None) -> dict[str, Any]:
+        """Soft-delete a decision and taint its dependents."""
+        return await self.designs.design_supersede(
+            self.resolve_project(project, cwd), ref, by_ref)
+
+    async def plan_add(self, title: str, content: str, deps: list[str] | None = None,
+                       after: str | None = None, before: str | None = None,
+                       project: str | None = None,
+                       cwd: Path | None = None) -> dict[str, Any]:
+        """Add a plan item (ranked at the end unless after/before place it)."""
+        return await self.designs.plan_add(self.resolve_project(project, cwd),
+                                           title, content, deps, after, before)
+
+    async def plan_status(self, ref: str, status: str, project: str | None = None,
+                          cwd: Path | None = None) -> dict[str, Any]:
+        """Set a plan item's status (todo/in-progress/done/verified)."""
+        return await self.designs.plan_status(self.resolve_project(project, cwd),
+                                              ref, status)
+
+    async def plan_dep_add(self, ref: str, dep_ref: str, project: str | None = None,
+                           cwd: Path | None = None) -> dict[str, Any]:
+        """Declare that a plan item must follow another (cycle-checked)."""
+        return await self.designs.plan_dep_add(self.resolve_project(project, cwd),
+                                               ref, dep_ref)
+
+    async def plan_dep_remove(self, ref: str, dep_ref: str, project: str | None = None,
+                              cwd: Path | None = None) -> dict[str, Any]:
+        """Drop a must-precede edge between plan items."""
+        return await self.designs.plan_dep_remove(self.resolve_project(project, cwd),
+                                                  ref, dep_ref)
+
+    async def plan_forget(self, ref: str, force: bool = False,
+                          project: str | None = None,
+                          cwd: Path | None = None) -> dict[str, Any]:
+        """Delete a plan item; blocks on dependents unless forced."""
+        return await self.designs.plan_forget(self.resolve_project(project, cwd),
+                                              ref, force)
+
+    async def plan_move(self, ref: str, after: str | None = None,
+                        before: str | None = None, project: str | None = None,
+                        cwd: Path | None = None) -> dict[str, Any]:
+        """Re-rank a plan item (deps untouched)."""
+        return await self.designs.plan_move(self.resolve_project(project, cwd),
+                                            ref, after, before)
+
+    def plan_list(self, all: bool = False, project: str | None = None,
+                  cwd: Path | None = None) -> dict[str, Any]:
+        """The plan in topological, rank-tie-broken order."""
+        return self.designs.plan_list(self.resolve_project(project, cwd), all)
+
+    def plan_next(self, k: int = 5, project: str | None = None,
+                  cwd: Path | None = None) -> dict[str, Any]:
+        """The actionable plan items right now (todo, deps satisfied)."""
+        return self.designs.plan_next(self.resolve_project(project, cwd), k)
 
     def code_lookup(self, query: str, project: str | None = None, k: int = 8,
                     cwd: Path | None = None) -> list[dict[str, Any]]:

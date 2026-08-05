@@ -1,6 +1,18 @@
 # Plan: design-decision & plan tracking (dependency graphs)
 
-Status: planned, not started. Written for execution by an agent with no prior
+Status: **IN TREE** — implemented in `crib/designs.py` (both facets), registered
+on both surfaces (`crib/server.py` tools + `crib/cli.py` `design`/`plan` noun
+subparsers, parity-checked), tested in `tests/test_designs.py`, documented in
+DESIGN.md §5 and docs/surface.md. This doc is kept as the rationale record: the
+Decisions section below is what the code implements.
+
+Two implementation choices worth knowing, both inside the spec's decisions:
+`design_supersede` appends the supersession to the decision's BODY, so dependents
+taint through the ordinary body-hash path (decision 3's "no write fan-out" holds);
+and `design_tree` takes `direction=deps|dependents` — the spec called for both
+directions but named no parameter.
+
+Written for execution by an agent with no prior
 context — read DESIGN.md §3 (note model), §5 (tool surface / noun-verb
 convention), §15.1 (relpath slugs, `created` semantics) first, and skim
 `crib/learnings.py` — it is the **structural template** for adding a noun

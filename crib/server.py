@@ -198,6 +198,12 @@ def build_server(crib: Crib | None = None):
             "session and reaches other agents: `note_store` a new note, or "
             "`note_append`/`note_edit` one found via `note_lookup`. Prefer updating an existing "
             "note over creating near-duplicates. "
+            "DESIGN + PLANS: when a design question gets SETTLED, `design_add` it "
+            "(with `deps` naming the decisions it builds on) — and before you change "
+            "an existing decision, `design_tree`/`design_check` show what rests on it "
+            "and what has gone stale, so design drift surfaces instead of surprising "
+            "you. For work spanning sessions, `plan_add` the items and `plan_status` "
+            "them as you go; `plan_next` is the 'where was I' at the start of a session. "
             "CODE: a project may carry a *code symbol index* — its functions, classes, "
             "globals and class members, each with an LLM 'what it does' description, a "
             "real cross-file call graph (callers/callees) and references. For ANY code "
@@ -333,6 +339,9 @@ def build_server(crib: Crib | None = None):
         may already be stored. Returns ranked note sections, each with its
         relpath and the line_start/line_end span of the matching section so
         you can jump straight to it (pair with `note_locate` for the abspath).
+        `tags` filters by frontmatter tag — and a note's frontmatter `type`
+        counts as one, so `tags=["design"]` (or `["plan"]`) scopes the search to
+        the design-decision / plan facets.
         `keyword_labels`/`keyword_weight` (BM25 keyword_index) and
         `summary_labels` (dense summary_index aliases) override which LLM index
         sets feed retrieval (default from config); mainly for eval sweeps.
@@ -681,6 +690,166 @@ def build_server(crib: Crib | None = None):
         preserved, frontmatter re-snapshotted). Never auto-moves — you pick, because a
         wrong attach is worse than a dangling one."""
         return await crib.learning_rehome(old_fqn, new_fqn, project)
+
+    # ── design decisions & plan items (crib/designs.py) ───────────────────────
+    # Policy split, declared per verb: the two `*_add` verbs CREATE a durable fact,
+    # so they must NAME their project like any other write. Every other verb is
+    # keyed by a `ref` that only resolves INSIDE one project — naming the wrong
+    # project fails to resolve rather than misfiling anything — so they take the
+    # READ policy, the same documented exception the `learning_*` verbs carry, and
+    # each says so in its own docstring.
+
+    @crib_tool("write")
+    async def design_add(title: str, content: str, deps: list[str] | None = None,
+                         project: str | None = None,
+                         project_path: str | None = None) -> dict[str, Any]:
+        """Record a DESIGN DECISION — the choice, why, and what was rejected — as a
+        note under `design/`, declaring the decisions it builds on (`deps`: ids,
+        relpaths or titles). Reach for this when a design question gets settled, so
+        the next session can see not just what the code does but what it must keep
+        doing. `checked` is seeded from the deps as they read now, so a new decision
+        starts verified; if one of them later changes, `design_check` says so. Like
+        any write it must NAME its project (`project=`/`project_path=`)."""
+        return await crib.design_add(title, content, deps, project)
+
+    @crib_tool("read")
+    async def design_dep_add(ref: str, dep_ref: str, project: str | None = None,
+                             project_path: str | None = None) -> dict[str, Any]:
+        """Declare that one decision BUILDS ON another (cycle-checked, refused if it
+        would create one). The new edge is deliberately left unverified, so `ref`
+        shows up in `design_check` until you re-read it against its new dep. Keyed
+        by a ref inside one project, so it resolves that project like a read."""
+        return await crib.design_dep_add(ref, dep_ref, project)
+
+    @crib_tool("read")
+    async def design_dep_remove(ref: str, dep_ref: str, project: str | None = None,
+                                project_path: str | None = None) -> dict[str, Any]:
+        """Drop a dependency edge between two decisions (the edge was wrong, or the
+        decision no longer rests on it). Resolves its project like a read, as
+        `design_dep_add` does."""
+        return await crib.design_dep_remove(ref, dep_ref, project)
+
+    @crib_tool("read")
+    async def design_forget(ref: str, force: bool = False,
+                            project: str | None = None,
+                            project_path: str | None = None) -> dict[str, Any]:
+        """Delete a decision (recoverable via the version ring). REFUSES while other
+        decisions depend on it, listing them — `force=True` deletes anyway and
+        leaves those dependents tainted, pointing at a missing dep. Prefer
+        `design_supersede` when the decision was replaced rather than mistaken.
+        Resolves its project like a read, as `design_dep_add` does."""
+        return await crib.design_forget(ref, force, project)
+
+    @crib_tool("read")
+    def design_check(ref: str | None = None, project: str | None = None,
+                     project_path: str | None = None) -> dict[str, Any]:
+        """WHICH DECISIONS ARE NOW OUT OF DATE — run this before changing a design,
+        and after changing one. Each tainted decision comes with the chain that
+        explains it (`X → Y`, Y being what actually changed), computed live from the
+        deps' current bodies, so an edit made by ANY route (note_edit, your own
+        editor, a git pull) is caught. `design_verify` clears it once you've
+        re-read the decision and it still holds."""
+        return crib.design_check(ref, project)
+
+    @crib_tool("read")
+    async def design_verify(ref: str, project: str | None = None,
+                            project_path: str | None = None) -> dict[str, Any]:
+        """Re-record a decision's dep hashes — 'I re-read this against what changed
+        and it still holds'. The only thing that clears taint short of rewriting the
+        decision, so only call it after actually re-reading. Resolves its project
+        like a read, as `design_dep_add` does."""
+        return await crib.design_verify(ref, project)
+
+    @crib_tool("read")
+    def design_tree(ref: str | None = None, direction: str = "deps", depth: int = 6,
+                    project: str | None = None,
+                    project_path: str | None = None) -> dict[str, Any]:
+        """The dependency TREE around a decision: `deps` (what it builds on) or
+        `dependents` (what would be affected if you changed it) — the read to do
+        BEFORE touching a decision. Every node is taint-flagged. Without `ref`,
+        renders every root."""
+        return crib.design_tree(ref, direction, depth, project)
+
+    @crib_tool("read")
+    async def design_supersede(ref: str, by_ref: str | None = None,
+                               project: str | None = None,
+                               project_path: str | None = None) -> dict[str, Any]:
+        """Soft-delete a decision that was REPLACED (name the replacement with
+        `by_ref`): marks it superseded, keeps it readable as history, and taints
+        everything that built on it so those get re-checked. Resolves its project
+        like a read, as `design_dep_add` does."""
+        return await crib.design_supersede(ref, by_ref, project)
+
+    @crib_tool("write")
+    async def plan_add(title: str, content: str, deps: list[str] | None = None,
+                       after: str | None = None, before: str | None = None,
+                       project: str | None = None,
+                       project_path: str | None = None) -> dict[str, Any]:
+        """Add a durable PLAN ITEM — what to do plus its acceptance criteria — so
+        multi-session work survives a context reset. `deps` are must-precede items
+        (plan or design refs); `after`/`before` place it in the order (default:
+        end). Order is preference, deps are correctness. Like any write it must NAME
+        its project."""
+        return await crib.plan_add(title, content, deps, after, before, project)
+
+    @crib_tool("read")
+    async def plan_status(ref: str, status: str, project: str | None = None,
+                          project_path: str | None = None) -> dict[str, Any]:
+        """Move an item along: `todo` | `in-progress` | `done` | `verified`. Call it
+        as you go, not at the end — a resumed session reads this. (`blocked` is
+        DERIVED from deps and never set here.) Marking done with unfinished deps
+        warns rather than blocks. Keyed by a ref inside one project, so it resolves
+        that project like a read."""
+        return await crib.plan_status(ref, status, project)
+
+    @crib_tool("read")
+    async def plan_dep_add(ref: str, dep_ref: str, project: str | None = None,
+                           project_path: str | None = None) -> dict[str, Any]:
+        """Declare that one plan item MUST FOLLOW another (cycle-checked). This is
+        what makes `plan_next` trustworthy. Resolves its project like a read, as
+        `plan_status` does."""
+        return await crib.plan_dep_add(ref, dep_ref, project)
+
+    @crib_tool("read")
+    async def plan_dep_remove(ref: str, dep_ref: str, project: str | None = None,
+                              project_path: str | None = None) -> dict[str, Any]:
+        """Drop a must-precede edge between plan items. Resolves its project like a
+        read, as `plan_status` does."""
+        return await crib.plan_dep_remove(ref, dep_ref, project)
+
+    @crib_tool("read")
+    async def plan_forget(ref: str, force: bool = False, project: str | None = None,
+                          project_path: str | None = None) -> dict[str, Any]:
+        """Delete a plan item that is no longer wanted (recoverable via the ring).
+        REFUSES while other items depend on it, listing them; `force=True` deletes
+        anyway. Prefer `plan_status(done)` for work that actually happened.
+        Resolves its project like a read, as `plan_status` does."""
+        return await crib.plan_forget(ref, force, project)
+
+    @crib_tool("read")
+    async def plan_move(ref: str, after: str | None = None, before: str | None = None,
+                        project: str | None = None,
+                        project_path: str | None = None) -> dict[str, Any]:
+        """Re-order a plan item (rank only — deps are untouched, so a move can never
+        break correctness). Use `plan_dep_add` when the order is a real constraint,
+        this when it's just preference. Resolves its project like a read."""
+        return await crib.plan_move(ref, after, before, project)
+
+    @crib_tool("read")
+    def plan_list(all: bool = False, project: str | None = None,
+                  project_path: str | None = None) -> dict[str, Any]:
+        """THE PLAN, in execution order (topological by deps, rank breaking ties),
+        each item flagged `blocked` when a dep isn't done. Read this when picking up
+        work — it's the persistent, resumable version of a todo list. Finished items
+        are hidden unless `all`."""
+        return crib.plan_list(all, project)
+
+    @crib_tool("read")
+    def plan_next(k: int = 5, project: str | None = None,
+                  project_path: str | None = None) -> dict[str, Any]:
+        """What to do NEXT: `todo` items whose deps are all satisfied, in order.
+        The one-call 'where was I' at the start of a session."""
+        return crib.plan_next(k, project)
 
     @crib_tool("none")
     def memory_snapshot(message: str | None = None) -> str:

@@ -102,8 +102,11 @@ chunk_id     = sha1(project + relpath + section_key + window_idx)
                # section_key = heading_path, + "#n" for the nth repeat of an
                # identical heading path within one note (chunk.section_key)
 content_hash = sha1(chunk_text)        # the coordination gate
-metadata     = {project, relpath, note_id, title, tags,
+metadata     = {project, relpath, note_id, title, tags, type,
                 heading_path, window_idx, file_mtime, source}
+               # `type` = the frontmatter type (design/plan/…), so a facet's
+               # notes are filterable at query time. Metadata only — it is not
+               # part of chunk_id, so adding it needed no schema-version bump.
 ```
 
 Incremental reindex of a file: recompute its chunk set → upsert chunks whose
@@ -140,9 +143,10 @@ hash. No tagging, no shared mutable set, no feedback loop with `distill`.
 ## 5. Tool surface
 
 The interface is **noun-verb**: on the CLI, `crib <noun> <verb>` (`note`/`code`/
-`learning`/`project`); as MCP tools, the flat noun-prefixed name (`note_lookup`,
-`code_xref`, `learning_add`, `project_list`). Below is the **note** facet — the
-original memory surface; the code-index, learnings, and project facets are in
+`learning`/`design`/`plan`/`project`); as MCP tools, the flat noun-prefixed name
+(`note_lookup`, `code_xref`, `learning_add`, `project_list`). Below is the
+**note** facet — the original memory surface; the code-index, learnings, and
+project facets are in
 [docs/code-symbol-index.md](docs/code-symbol-index.md), and the complete
 CLI⇄MCP reference is [docs/surface.md](docs/surface.md). The write verbs are kept
 distinct (`store`/`append`/`edit`) so the LLM selects correctly; every write ends
@@ -164,6 +168,19 @@ by calling the locked `index_file`.
 | `note_snapshot(message?)` | explicit git checkpoint of the data tree (no-op if not a git repo) | (git) | no |
 | `note_history(relpath)` | surface a note's commit log | no | no |
 | `project_list()` | list projects (each a separate memory namespace) | no | no |
+
+### Design & plan facets
+
+`design_*` and `plan_*` (`crib/designs.py`, reference in
+[docs/surface.md](docs/surface.md)) add a **dependency graph over notes**: design
+decisions under `design/` declaring what they build on, plan items under `plans/`
+with a status and a must-precede order. Both are ordinary notes (`type: design` /
+`type: plan` in frontmatter, which reaches chunk metadata so `note_lookup(tags=…)`
+filters them), so they inherit search, the version ring, git sync and the merge
+driver; only the graph layer is new. Staleness is computed on read from the deps'
+body hashes and recorded on `design_verify` — nothing propagates on write, which
+is precisely why a decision edited through `note_edit`, an external editor or a
+git pull still taints its dependents. Read/edit stay the `note` verbs.
 
 ### Retrieval loop
 

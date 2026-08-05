@@ -363,6 +363,122 @@ def _emit_code_rehome(data: Any, as_json: bool) -> None:
     print(f"rehomed {data.get('old', '')} → {data.get('new', '')}  ({data.get('relpath', '')})")
 
 
+_TAINT = "⚠"
+
+
+def _tree_glyphs(ascii_mode: bool) -> tuple[str, str, str, str]:
+    """(branch, last, vertical, blank) connectors — shared by the code-graph and
+    design-tree renderers so the two trees read identically."""
+    if ascii_mode:
+        return "|-", "`-", "|  ", "   "
+    return "├─", "└─", "│  ", "   "
+
+
+def _emit_design_tree(data: Any, args: Any) -> None:
+    """Design dependency tree, in the `code graph` pstree style. `↑` marks a DAG
+    node already shown, `⚠` a tainted one, `✗` a dangling dep id."""
+    if getattr(args, "json", False):
+        print(json.dumps(data, indent=2, default=str)); return
+    roots = (data or {}).get("roots") or []
+    if not roots:
+        print("(no design decisions — `crib design add <title> <body>`)"); return
+    ascii_mode = getattr(args, "ascii", False)
+    branch, last, vert, blank = _tree_glyphs(ascii_mode)
+    arrow = ">" if ascii_mode else ("▸" if data.get("direction") == "deps" else "◂")
+    taint = "!" if ascii_mode else _TAINT
+
+    def label(n: dict) -> str:
+        if n.get("missing"):
+            return f"{n.get('title', '')}  (dangling id)"
+        flags = (f" {taint}" if n.get("tainted") else "") + (" ↑" if n.get("repeat") else "")
+        sup = "  [superseded]" if n.get("status") == "superseded" else ""
+        return f"{n.get('title', '')}{sup}{flags}   {n.get('relpath', '')}"
+
+    def render(node: dict, prefix: str) -> None:
+        kids = node.get("children") or []
+        for i, c in enumerate(kids):
+            islast = i == len(kids) - 1
+            print(f"{prefix}{last if islast else branch}{arrow} {label(c)}")
+            render(c, prefix + (blank if islast else vert))
+
+    for root in roots:
+        print(f"{label(root)}   [{data.get('direction', '')}]")
+        render(root, "")
+
+
+def _emit_design_check(data: Any, args: Any) -> None:
+    """Tainted decisions with the chain that explains each one."""
+    if getattr(args, "json", False):
+        print(json.dumps(data, indent=2, default=str)); return
+    rows = (data or {}).get("tainted") or []
+    for cyc in (data or {}).get("cycles") or []:
+        print(f"✗ dependency CYCLE: {' → '.join(cyc)}")
+    if not rows:
+        print(f"✓ {data.get('designs', 0)} decision(s), none stale"); return
+    for r in rows:
+        print(f"{_TAINT} {r.get('title', '')}   {r.get('relpath', '')}")
+        for reason in r.get("reasons") or []:
+            print(f"    • {reason}")
+        for p in r.get("paths") or []:
+            chain = " → ".join(p.get("chain") or [])
+            if len(p.get("chain") or []) > 1:
+                print(f"      via {chain}")
+    print(f"\n{len(rows)} of {data.get('designs', 0)} decision(s) need re-checking — "
+          f"read one, then `crib design verify <ref>`")
+
+
+_PLAN_GLYPH = {"todo": "·", "in-progress": "▶", "done": "✓", "verified": "✓✓"}
+
+
+def _emit_plan_list(data: Any, args: Any) -> None:
+    """The plan in execution order; `⛔` marks a derived-blocked item."""
+    if getattr(args, "json", False):
+        print(json.dumps(data, indent=2, default=str)); return
+    for cyc in (data or {}).get("cycles") or []:
+        print(f"✗ dependency CYCLE: {' → '.join(cyc)}")
+    items = (data or {}).get("items") or []
+    if not items:
+        print("(nothing to do — `crib plan add <title> <body>`"
+              + (", `--all` shows finished items)" if data.get("hidden") else ")"))
+        return
+    for it in items:
+        mark = "⛔" if it.get("blocked") else _PLAN_GLYPH.get(it.get("status", ""), "·")
+        print(f"{mark:2} {it.get('status', ''):12} {it.get('title', '')}"
+              f"   {it.get('relpath', '')}")
+        if it.get("blocked_by"):
+            print(f"     waiting on: {', '.join(it['blocked_by'])}")
+        if it.get("missing_deps"):
+            print(f"     ✗ missing dep(s): {', '.join(it['missing_deps'])}")
+    if data.get("hidden"):
+        print(f"\n({data['hidden']} finished item(s) hidden — --all to show)")
+
+
+def _emit_design_write(data: Any, args: Any) -> None:
+    """One-line confirmation for the design/plan write verbs."""
+    if getattr(args, "json", False):
+        print(json.dumps(data, indent=2, default=str)); return
+    if not isinstance(data, dict):
+        print(data); return
+    if data.get("removed") is not None:          # forget
+        print(f"removed  {data.get('project', '')}/{data.get('relpath', '')}")
+        for d in data.get("dependents") or []:
+            print(f"  {_TAINT} now tainted: {d.get('title', '')}  ({d.get('relpath', '')})")
+        return
+    print(f"→ {data.get('project', '')}/{data.get('relpath', '')}  "
+          f"{data.get('title', '')}")
+    for key in ("status", "rank", "dep_title", "superseded_by"):
+        if data.get(key):
+            print(f"  {key}: {data[key]}")
+    if data.get("deps"):
+        print(f"  deps: {len(data['deps'])}")
+    for w in data.get("warnings") or []:
+        print(f"  {_TAINT} {w}")
+    for d in data.get("tainted_dependents") or []:
+        print(f"  {_TAINT} now tainted: {d.get('title', '')}  ({d.get('relpath', '')})")
+    if data.get("missing"):
+        print(f"  ✗ missing dep(s): {', '.join(data['missing'])}")
+
+
 def _graph_direction(args: Any) -> str:
     """--references > --callers > default callees."""
     if getattr(args, "references", False):
@@ -381,10 +497,7 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
     ascii_mode = getattr(args, "ascii", False)
     arrows = {"callees": (">", "▸"), "callers": ("<", "◂"), "references": ("=", "⇐")}
     arrow = arrows[direction][0 if ascii_mode else 1]
-    if ascii_mode:
-        branch, last, vert, blank = "|-", "`-", "|  ", "   "
-    else:
-        branch, last, vert, blank = "├─", "└─", "│  ", "   "
+    branch, last, vert, blank = _tree_glyphs(ascii_mode)
     pin = " *" if ascii_mode else " 📌"          # step 3: node carries a learning
     print(f"{tree['fqname']}  ({tree.get('kind', '')})   [{direction}]"
           f"{pin if tree.get('has_learning') else ''}")
@@ -551,6 +664,84 @@ def build_parser() -> argparse.ArgumentParser:
     s = learnsub.add_parser("rehome",
                        help="re-point an orphaned learning (no target = ranked suggestions)")
     s.add_argument("old"); s.add_argument("new", nargs="?"); proj(s)
+
+    # `crib design <verb>` / `crib plan <verb>` — decisions and work items, both
+    # notes with a dependency graph (crib/designs.py). Read/edit stay `crib note`.
+    n_design = sub.add_parser("design",
+                              help="design decisions + their dependency graph")
+    designsub = n_design.add_subparsers(dest="design_verb", required=True)
+    n_plan = sub.add_parser("plan", help="persistent, resumable plan items")
+    plansub = n_plan.add_subparsers(dest="plan_verb", required=True)
+
+    s = designsub.add_parser("add",
+                       help="record a design decision ('-' reads stdin for the body)")
+    s.add_argument("title"); s.add_argument("content"); proj(s)
+    s.add_argument("--dep", action="append", dest="deps",
+                   help="a decision this one builds on (repeatable)")
+
+    for _v, _h in (("dep-add", "declare that a decision builds on another"),
+                   ("dep-remove", "drop a dependency edge between decisions")):
+        _s = designsub.add_parser(_v, help=_h)
+        _s.add_argument("ref"); _s.add_argument("dep_ref", metavar="dep"); proj(_s)
+
+    s = designsub.add_parser("forget",
+                       help="delete a decision (refuses while dependents exist)")
+    s.add_argument("ref"); proj(s)
+    s.add_argument("--force", action="store_true",
+                   help="delete anyway, leaving dependents tainted")
+
+    s = designsub.add_parser("check",
+                       help="which decisions are stale w.r.t. what they build on")
+    s.add_argument("ref", nargs="?"); proj(s)
+
+    s = designsub.add_parser("verify",
+                       help="re-record a decision's dep hashes (you re-read it)")
+    s.add_argument("ref"); proj(s)
+
+    s = designsub.add_parser("tree",
+                       help="dependency tree around a decision (taint-flagged)")
+    s.add_argument("ref", nargs="?"); proj(s)
+    s.add_argument("--dependents", action="store_true",
+                   help="what builds ON this (default: what this builds on)")
+    s.add_argument("--depth", type=int, default=6)
+    s.add_argument("--ascii", action="store_true", help="ASCII glyphs, no box-drawing")
+
+    s = designsub.add_parser("supersede",
+                       help="mark a decision superseded + taint its dependents")
+    s.add_argument("ref"); s.add_argument("by", nargs="?"); proj(s)
+
+    s = plansub.add_parser("add", help="add a plan item ('-' reads stdin for the body)")
+    s.add_argument("title"); s.add_argument("content"); proj(s)
+    s.add_argument("--dep", action="append", dest="deps",
+                   help="an item this one must follow (repeatable)")
+    s.add_argument("--after"); s.add_argument("--before")
+
+    s = plansub.add_parser("status",
+                       help="set an item's status (todo/in-progress/done/verified)")
+    s.add_argument("ref"); s.add_argument("status"); proj(s)
+
+    for _v, _h in (("dep-add", "declare that an item must follow another"),
+                   ("dep-remove", "drop a must-precede edge between items")):
+        _s = plansub.add_parser(_v, help=_h)
+        _s.add_argument("ref"); _s.add_argument("dep_ref", metavar="dep"); proj(_s)
+
+    s = plansub.add_parser("forget",
+                       help="delete a plan item (refuses while dependents exist)")
+    s.add_argument("ref"); proj(s)
+    s.add_argument("--force", action="store_true",
+                   help="delete anyway, leaving dependents tainted")
+
+    s = plansub.add_parser("move", help="re-order an item (rank only; deps untouched)")
+    s.add_argument("ref"); proj(s)
+    s.add_argument("--after"); s.add_argument("--before")
+
+    s = plansub.add_parser("list", help="the plan in execution order (topo + rank)")
+    proj(s)
+    s.add_argument("--all", action="store_true", help="include done/verified items")
+
+    s = plansub.add_parser("next", help="actionable items now (todo, deps satisfied)")
+    proj(s)
+    s.add_argument("-k", type=int, default=5)
 
     s = notesub.add_parser("read", help="print a note's raw markdown")
     s.add_argument("relpath"); proj(s)
@@ -763,6 +954,10 @@ def _E_dossier(d, a): _emit_code_dossier(d, a.json)
 def _E_report(d, a): _emit_code_report(d, a.json)
 def _E_rehome(d, a): _emit_code_rehome(d, a.json)
 def _E_graph(d, a): _emit_code_graph(d, a)
+def _E_dtree(d, a): _emit_design_tree(d, a)
+def _E_dcheck(d, a): _emit_design_check(d, a)
+def _E_plans(d, a): _emit_plan_list(d, a)
+def _E_dwrite(d, a): _emit_design_write(d, a)
 def _E_code(verb): return lambda d, a: _emit_code(d, verb, a.json)
 def _E_learning(verb): return lambda d, a: _emit_code_learning(d, verb, a.json)
 def _E_project(verb): return lambda d, a: _emit_project(d, verb, a.json)
@@ -936,6 +1131,77 @@ VERBS: dict[str, Verb] = {
                                                  "project": a.project}, _E_rehome,
                         is_async=True, policy="read",
                         mcp=f"old_fqn {_PROJ} new_fqn=None"),
+    # design decisions + plan items (crib/designs.py). The two `add` verbs CREATE a
+    # durable fact → `write` policy (name the project); every other verb is keyed by
+    # a ref that only resolves inside one project → `read`, the learnings exception.
+    "design add": Verb("design_add", lambda a: {"title": a.title,
+                                                "content": _read_content(a.content),
+                                                "deps": a.deps, "project": a.project},
+                       _E_dwrite, is_async=True, policy="write",
+                       mcp=f"title content {_PROJ} deps=None"),
+    "design dep-add": Verb("design_dep_add", lambda a: {"ref": a.ref,
+                                                        "dep_ref": a.dep_ref,
+                                                        "project": a.project},
+                           _E_dwrite, is_async=True, policy="read",
+                           mcp=f"ref dep_ref {_PROJ}"),
+    "design dep-remove": Verb("design_dep_remove", lambda a: {"ref": a.ref,
+                                                              "dep_ref": a.dep_ref,
+                                                              "project": a.project},
+                              _E_dwrite, is_async=True, policy="read",
+                              mcp=f"ref dep_ref {_PROJ}"),
+    "design forget": Verb("design_forget", lambda a: {"ref": a.ref, "force": a.force,
+                                                      "project": a.project},
+                          _E_dwrite, is_async=True, policy="read",
+                          mcp=f"ref {_PROJ} force=False"),
+    "design check": Verb("design_check", lambda a: {"ref": a.ref, "project": a.project},
+                         _E_dcheck, policy="read", mcp=f"{_PROJ} ref=None"),
+    "design verify": Verb("design_verify", lambda a: {"ref": a.ref,
+                                                      "project": a.project},
+                          _E_dwrite, is_async=True, policy="read",
+                          mcp=f"ref {_PROJ}"),
+    "design tree": Verb("design_tree",
+                        lambda a: {"ref": a.ref, "project": a.project,
+                                   "direction": ("dependents" if a.dependents
+                                                 else "deps"), "depth": a.depth},
+                        _E_dtree, policy="read",
+                        mcp=f"{_PROJ} ref=None direction='deps' depth=6"),
+    "design supersede": Verb("design_supersede", lambda a: {"ref": a.ref,
+                                                            "by_ref": a.by,
+                                                            "project": a.project},
+                             _E_dwrite, is_async=True, policy="read",
+                             mcp=f"ref {_PROJ} by_ref=None"),
+    "plan add": Verb("plan_add", lambda a: {"title": a.title,
+                                            "content": _read_content(a.content),
+                                            "deps": a.deps, "after": a.after,
+                                            "before": a.before, "project": a.project},
+                     _E_dwrite, is_async=True, policy="write",
+                     mcp=f"title content {_PROJ} deps=None after=None before=None"),
+    "plan status": Verb("plan_status", lambda a: {"ref": a.ref, "status": a.status,
+                                                  "project": a.project},
+                        _E_dwrite, is_async=True, policy="read",
+                        mcp=f"ref status {_PROJ}"),
+    "plan dep-add": Verb("plan_dep_add", lambda a: {"ref": a.ref, "dep_ref": a.dep_ref,
+                                                    "project": a.project},
+                         _E_dwrite, is_async=True, policy="read",
+                         mcp=f"ref dep_ref {_PROJ}"),
+    "plan dep-remove": Verb("plan_dep_remove", lambda a: {"ref": a.ref,
+                                                          "dep_ref": a.dep_ref,
+                                                          "project": a.project},
+                            _E_dwrite, is_async=True, policy="read",
+                            mcp=f"ref dep_ref {_PROJ}"),
+    "plan forget": Verb("plan_forget", lambda a: {"ref": a.ref, "force": a.force,
+                                                  "project": a.project},
+                        _E_dwrite, is_async=True, policy="read",
+                        mcp=f"ref {_PROJ} force=False"),
+    "plan move": Verb("plan_move", lambda a: {"ref": a.ref, "after": a.after,
+                                              "before": a.before,
+                                              "project": a.project},
+                      _E_dwrite, is_async=True, policy="read",
+                      mcp=f"ref {_PROJ} after=None before=None"),
+    "plan list": Verb("plan_list", lambda a: {"all": a.all, "project": a.project},
+                      _E_plans, policy="read", mcp=f"{_PROJ} all=False"),
+    "plan next": Verb("plan_next", lambda a: {"k": a.k, "project": a.project},
+                      _E_plans, policy="read", mcp=f"{_PROJ} k=5"),
 }
 
 
@@ -1104,7 +1370,7 @@ def main(argv: list[str] | None = None) -> int:
         from .merge import run_driver
         return run_driver(args.base, args.current, args.other)
     # a noun with no verb (`crib note`) → point at its subcommands
-    if args.cmd in ("note", "code", "learning") and \
+    if args.cmd in ("note", "code", "learning", "design", "plan") and \
             getattr(args, f"{args.cmd}_verb", None) is None:
         print(f"crib {args.cmd}: choose a subcommand (try `crib {args.cmd} --help`)",
               file=sys.stderr)

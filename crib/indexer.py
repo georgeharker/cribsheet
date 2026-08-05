@@ -180,6 +180,7 @@ class IndexEngine:
         new_by_id = {c.chunk_id: c for c in new_chunks}
         source = note.frontmatter.get("source",
                                       "doc-insitu" if read_only else "manual")
+        note_type = str(note.frontmatter.get("type") or "")   # design/plan facets
 
         existing = self.store.get_meta({"project": project, "relpath": relpath})
         existing_hash = {i: m.get("content_hash") for i, m in existing.items()}
@@ -196,7 +197,7 @@ class IndexEngine:
         meta_updates: dict[str, dict] = {}
         for cid, c in new_by_id.items():
             if existing_hash.get(cid) == c.content_hash:   # content unchanged
-                new_meta = c.metadata(note.title, note.tags, source, mtime)
+                new_meta = c.metadata(note.title, note.tags, source, mtime, note_type)
                 if _meta_stable(existing.get(cid, {})) != _meta_stable(new_meta):
                     meta_updates[cid] = new_meta
 
@@ -207,6 +208,6 @@ class IndexEngine:
 
         return _Plan(
             note_id=note_id,
-            to_embed=[(c, c.metadata(note.title, note.tags, source, mtime))
+            to_embed=[(c, c.metadata(note.title, note.tags, source, mtime, note_type))
                       for c in to_embed],
             stale_ids=stale_ids, meta_updates=meta_updates)
