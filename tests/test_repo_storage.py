@@ -40,11 +40,13 @@ def crib(paths, config):
     return Crib(paths, config, InMemoryStore())
 
 
-def repo_with_store(tmp_path, project="p", store=".crib-store"):
+def repo_with_store(tmp_path, project="p", store=".crib-store", docs=()):
     """A code repo whose `.crib` declares an in-repo store."""
     root = tmp_path / "repo"
     root.mkdir(exist_ok=True)
-    (root / ".crib").write_text(f"project: {project}\nstore: {store}\n")
+    (root / ".crib").write_text(f"project: {project}\nstore: {store}\n"
+                                + ("docs:\n" + "".join(f'  - "{d}"\n' for d in docs)
+                                   if docs else ""))
     return root
 
 
@@ -231,17 +233,93 @@ def test_adopt_needs_the_store_key(crib, tmp_path):
         run(crib.project_adopt(cwd=root))
 
 
+# ── the store is excluded from the repo's own globs (plan F1) ─────────────────
+# A `.crib` glob that reaches into the store would index the SAME bytes a second
+# time under a different identity (`sources/<repo>/…` vs the note's own relpath) —
+# real duplicates and retrieval decoys, not hash-gated no-ops. So every
+# enumeration point excludes the store; these pin that at each one.
+
+def relpaths(crib, project):
+    return {m["relpath"] for m in crib.store.get_meta({"project": project}).values()}
+
+
+def test_store_notes_are_not_also_indexed_as_in_situ_docs(crib, tmp_path):
+    root = repo_with_store(tmp_path, docs=["**/*.md"])
+    a = run(crib.store_note("turbine maintenance schedule", title="a", project="p"))
+    (root / "README.md").write_text("# readme\n\nthe repo's own prose\n")
+    run(crib.project_adopt(cwd=root))
+    assert (root / ".crib-store" / "notes" / a["relpath"]).exists()
+
+    res = run(crib.index_docs_insitu("p", root))
+    rels = relpaths(crib, "p")
+    assert "sources/repo/README.md" in rels     # the repo's own doc still indexes
+    assert res["docs"] == 1                     # …and is the ONLY thing the glob took
+    # the note is indexed exactly once, as a note — nothing under the store was
+    # taken as a doc, whatever `**/*.md` appears to say
+    assert a["relpath"] in rels
+    assert not [r for r in rels if r.startswith("sources/repo/.crib-store")]
+
+
+def test_store_files_are_not_swept_as_code(crib, tmp_path):
+    """Same rule at the code sweep's enumeration: the store is a boundary, like a
+    nested project's own `.crib` root."""
+    root = repo_with_store(tmp_path)
+    run(crib.store_note("a note", title="a", project="p"))
+    run(crib.project_adopt(cwd=root))
+    (root / "real.py").write_text("def f():\n    return 1\n")
+    (root / ".crib-store" / "notes" / "stray.py").write_text("def g():\n    return 2\n")
+    files = crib._enumerate_code_files(root, ["**/*.py"])
+    assert root / "real.py" in files
+    assert not [f for f in files if f.is_relative_to(root / ".crib-store")]
+
+
+def test_code_watcher_skips_saves_inside_the_store(tmp_path):
+    """The watcher gets the same treatment as the sweep — otherwise which path an
+    edit took (save vs sweep) would decide whether it got indexed twice."""
+    from crib.watch import CodeWatcher
+    root = repo_with_store(tmp_path, docs=["**/*.md"])
+    (root / ".crib-store" / "notes").mkdir(parents=True)
+    (root / ".crib-store" / "notes" / "n.md").write_text("---\ntitle: n\n---\nx\n")
+    (root / "README.md").write_text("# readme\n")
+    resolved = CodeWatcher._resolve_batch({
+        ".crib-store/notes/n.md": (str(root), False, "doc"),
+        "README.md": (str(root), False, "doc"),
+    })
+    assert resolved == {"\x00doc\x00README.md": (str(root), False)}
+
+
+def test_adopt_warns_when_the_repos_globs_reach_into_the_store(crib, tmp_path, capsys):
+    root = repo_with_store(tmp_path, docs=["**/*.md"])
+    run(crib.store_note("a note", title="a", project="p"))
+    run(crib.project_adopt(cwd=root))
+    err = capsys.readouterr().err
+    assert "**/*.md" in err and str(root / ".crib-store") in err
+
+
+def test_adopt_is_quiet_when_the_globs_stay_out_of_the_store(crib, tmp_path, capsys):
+    root = repo_with_store(tmp_path, docs=["docs/**/*.md"])
+    (root / "docs").mkdir()
+    (root / "docs" / "d.md").write_text("# d\n")
+    run(crib.store_note("a note", title="a", project="p"))
+    run(crib.project_adopt(cwd=root))
+    assert "reach into" not in capsys.readouterr().err
+
+
 # ── the watcher covers an in-repo store ───────────────────────────────────────
 
 def test_watcher_indexes_an_edit_inside_an_in_repo_store(crib, tmp_path):
     pytest.importorskip("watchdog")
-    root = repo_with_store(tmp_path)
+    root = repo_with_store(tmp_path, docs=["**/*.md"])
     run(crib.store_note("seed note", title="seed", project="p"))
     run(crib.project_adopt(cwd=root))
     notes_dir = root / ".crib-store" / "notes"
 
     async def scenario():
         crib.start_watchers(asyncio.get_running_loop())
+        # the repo's docs are indexed in-situ too, so the CODE watcher holds this
+        # root as well and sees the very same save — the store must reach the notes
+        # path and ONLY the notes path
+        await crib.index_docs_insitu("p", root)
         # an external editor writing straight into the repo's store
         (notes_dir / "external.md").write_text(
             "---\ntitle: ext\n---\nThe watcher should index this from the repo store.")
@@ -249,11 +327,13 @@ def test_watcher_indexes_an_edit_inside_an_in_repo_store(crib, tmp_path):
             await asyncio.sleep(0.1)
             if crib.lookup("watcher index from the repo store", project="p"):
                 break
+        await asyncio.sleep(0.8)                # > the code watcher's own debounce
         crib.stop_watchers()
         return crib.lookup("watcher index from the repo store", project="p")
 
     hits = asyncio.run(scenario())
     assert hits and hits[0].relpath == "external.md"
+    assert not [r for r in relpaths(crib, "p") if r.startswith("sources/")]
 
 
 def test_watch_roots_skip_an_unavailable_store(crib, paths, capsys):

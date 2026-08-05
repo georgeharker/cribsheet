@@ -382,6 +382,24 @@ class CribLink:
             return None
         return confine(self.root, self.store)
 
+    def in_store(self, path: Path) -> bool:
+        """Is `path` inside this repo's declared in-repo store?
+
+        THE rule behind every enumeration point (`docs:` sweep, code sweep, code
+        watcher): a path under the store never matches this `.crib`'s globs. The
+        store holds the project's own NOTES, which crib indexes as notes keyed by
+        their note relpath — so a `docs: ["**/*.md"]` reaching in would index each
+        of them a SECOND time under a `sources/<repo>/…` key. Different chunk
+        identity, so real duplicates and retrieval decoys, not hash-gated no-ops.
+        Same treatment `.git`/`.versions` get, just declared rather than hardcoded.
+        """
+        try:
+            store = self.store_dir
+            return (store is not None
+                    and Path(path).resolve().is_relative_to(store.resolve()))
+        except (ValueError, OSError):   # a `store:` that escapes the repo owns
+            return False                # nothing; an unresolvable path is not ours
+
     @property
     def doc_patterns(self) -> list[str]:
         """Globs for docs indexed IN-SITU. `docs:` is canonical; legacy `import:`

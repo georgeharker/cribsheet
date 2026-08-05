@@ -1268,6 +1268,11 @@ class Crib:
         from .codeindex import content_lang, load_grammar, load_specs, resolve_command
         junk, seen = self._code_ignore(), set()
         bounds = self._nested_project_roots(root)
+        # An in-repo store is a boundary too, for the same reason: what lives there
+        # is this project's NOTES (indexed as notes), never its source — a code glob
+        # reaching in would index the same bytes twice under two identities.
+        if (link := CribLink.find(root)) is not None and link.store_dir is not None:
+            bounds.append(link.store_dir)
         for g in globs:
             for p in root.glob(g):
                 if p.is_file() and not any(part in junk
@@ -1482,6 +1487,25 @@ class Crib:
     _STORE_GITIGNORE = ("# crib in-repo store — the notes ARE the repo's, the "
                         "version ring is not\n.versions/\n")
 
+    @staticmethod
+    def _warn_store_glob_overlap(link: CribLink, store: Path) -> list[str]:
+        """Say which of the repo's `.crib` globs now reach INTO the store.
+
+        Harmless — every enumeration point excludes the store (`CribLink.in_store`),
+        which is exactly why it is worth saying: a `docs: ["**/*.md"]` that reads as
+        "index everything, including these notes" does NOT, and adoption is the
+        moment that became true. Silently-ignored config is the kind that gets
+        rewritten to "fix" a problem it never had."""
+        hits = [p for p in (*link.doc_patterns, *link.paths)
+                if any(f.is_relative_to(store) for f in link.root.glob(p))]
+        if hits:
+            print(f"[crib] note: {link.root / '.crib'} globs ({', '.join(hits)}) "
+                  f"reach into {store} — files there are indexed as {link.project}'s "
+                  "notes and are excluded from those globs, so nothing is indexed "
+                  "twice; narrow the globs if you'd rather they said so.",
+                  file=sys.stderr)
+        return hits
+
     async def project_adopt(self, project: str | None = None,
                             cwd: Path | None = None) -> dict[str, Any]:
         """Move a project's notes (and their version ring) INTO the repo, at the
@@ -1545,6 +1569,10 @@ class Crib:
         (store / ".gitignore").write_text(self._STORE_GITIGNORE)
         with contextlib.suppress(OSError):
             src_notes.rmdir()               # only if the move emptied it
+        # Now that the notes are in the repo, the repo's own globs can see them —
+        # they don't (the store is excluded everywhere), but say so at the moment
+        # it became true rather than leaving it to be discovered.
+        self._warn_store_glob_overlap(link, store)
         pcfg = ProjectConfig.load(pp.config_file, proj)
         pcfg.store_root = portable_path(store, self.config.locations)
         pcfg.save(pp.config_file)
@@ -2286,7 +2314,11 @@ class Crib:
         skipped: list[dict[str, str]] = []
         for pattern in link.doc_patterns:
             for src in sorted(link.root.glob(pattern)):
-                if not src.is_file():
+                # The in-repo store is NOT part of the repo's docs: its files are
+                # this project's notes and are already indexed as such, so a glob
+                # reaching in (`docs: ["**/*.md"]` reaches everywhere) would index
+                # each one a second time under a `sources/…` key (CribLink.in_store).
+                if not src.is_file() or link.in_store(src):
                     continue
                 rel = src.relative_to(link.root)
                 relpath = src_relpath(repo, rel.as_posix())

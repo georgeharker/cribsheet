@@ -369,12 +369,22 @@ class CodeWatcher(_FSWatcher):
     def _resolve_batch(changes: dict[str, tuple[str, bool, str]]
                        ) -> dict[str, tuple[str, bool]]:
         """Apply the I/O-bound half of the decode to a whole coalesced batch —
-        existence, the `docs:` globs, the extensionless content sniff — and return
-        the `{relpath: (root, deleted)}` the change handler consumes. Runs ONCE per
-        burst on a worker thread, not once per event on the watchdog thread, and
-        the `.crib` is parsed once per root instead of once per file."""
+        existence, the in-repo store exclusion, the `docs:` globs, the extensionless
+        content sniff — and return the `{relpath: (root, deleted)}` the change
+        handler consumes. Runs ONCE per burst on a worker thread, not once per event
+        on the watchdog thread, and the `.crib` is parsed once per root instead of
+        once per file. (The store exclusion lands here rather than in `_decode` for
+        that reason: knowing where the store is means parsing the `.crib`, which the
+        event thread must never do.)"""
         from .codeindex import content_lang
-        doc_globs: dict[str, Any] = {}          # root -> CribLink (parsed once)
+        from .config import CribLink
+        links: dict[str, Any] = {}              # root -> CribLink (parsed once)
+
+        def _link(root: str) -> Any:
+            if root not in links:
+                links[root] = CribLink.find(Path(root))
+            return links[root]
+
         out: dict[str, tuple[str, bool]] = {}
         for relpath, (root, deleted, kind) in changes.items():
             path = Path(root) / relpath
@@ -383,6 +393,12 @@ class CodeWatcher(_FSWatcher):
             # noise from a rename-style save — record it as a change, not a delete
             # (the change handler re-verifies against the final state anyway).
             deleted = deleted and not exists
+            # A save inside the repo's own crib store is a NOTE edit — the notes
+            # watcher already has that root and reindexes it as a note. Indexing it
+            # here as well would give the same bytes a second chunk identity, so the
+            # store is skipped the way `.git`/`.versions` are (CribLink.in_store).
+            if (link := _link(root)) is not None and link.in_store(path):
+                continue
             if kind == "sniff":
                 if not exists or not path.is_file() or content_lang(path) is None:
                     continue
@@ -391,10 +407,6 @@ class CodeWatcher(_FSWatcher):
                 # project's declared `docs:` globs — the same scoping the sweep
                 # honors, so which docs get indexed no longer depends on how the
                 # change arrived. A `.md` outside the globs is not ours to index.
-                if root not in doc_globs:
-                    from .config import CribLink
-                    doc_globs[root] = CribLink.find(Path(root))
-                link = doc_globs[root]
                 rp = PurePosixPath(Path(relpath).as_posix())
                 if link is None or not any(rp.full_match(pat)
                                            for pat in link.doc_patterns):

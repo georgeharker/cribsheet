@@ -145,7 +145,15 @@ formatting. Update `docs/surface.md`.
 
 ## Follow-ups (approved 2026-08-05, not yet executed)
 
-### F1 — store exclusion from `.crib` globs (latent-bug fix; do promptly)
+### F1 — store exclusion from `.crib` globs (latent-bug fix) — EXECUTED 2026-08-05
+
+Landed as one named rule, `CribLink.in_store` (crib/config.py), applied at
+`index_docs_insitu`'s glob expansion, `_enumerate_code_files` (the store joins
+the nested-`.crib` *bounds*, so both the glob pass and the extensionless sniff
+walk honour it), and `CodeWatcher._resolve_batch` (in the worker thread, not
+`_decode` — locating the store means parsing the `.crib`, which the watchdog
+event thread must never do). `project adopt` warns, after the move, naming the
+globs that now reach in.
 
 A `.crib` with `docs: [**/*.md]` (or any glob reaching the store) matches the
 in-repo store's notes and indexes them a SECOND time as in-situ docs —
