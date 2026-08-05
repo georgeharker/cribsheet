@@ -665,7 +665,8 @@ def _emit_plan_list(data: Any, args: Any) -> None:
         for b in it.get("blocked_by") or []:
             ref = b.get("ref") or b.get("title", "") if isinstance(b, dict) else b
             st = f" ({b['status']})" if isinstance(b, dict) and b.get("status") else ""
-            print(f"     ← waiting on {ref}{st}")
+            kind = f"{b['kind']} " if isinstance(b, dict) and b.get("kind") else ""
+            print(f"     ← waiting on {kind}{ref}{st}")
         if it.get("missing_deps"):
             print(f"     ✗ missing dep(s): {', '.join(it['missing_deps'])}")
         # a finished item whose source moved: reported, never re-opened
