@@ -246,6 +246,23 @@ def _emit_status(d: Any, as_json: bool) -> None:
                   f"learnings {p['learnings']:3}")
 
 
+def _emit_projects(rows: Any, as_json: bool) -> None:
+    """`crib project list`: one project per line, annotated when its notes live in
+    a repo — and loudly when that repo isn't on this machine, since such a project
+    reads as empty everywhere else."""
+    if as_json:
+        print(json.dumps(rows, indent=2, default=str)); return
+    for r in rows or []:
+        if not isinstance(r, dict):
+            print(r); continue
+        line = r.get("project", "")
+        if r.get("store_root"):
+            line += f"   in-repo: {r['store_root']}"
+        if r.get("unavailable"):
+            line += "   ⚠ UNAVAILABLE (repo not on this machine)"
+        print(line)
+
+
 def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
     """Human summary for `crib project <verb>`."""
     if as_json:
@@ -253,6 +270,19 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
     if not isinstance(d, dict):
         print(d); return
     proj = d.get("project", "")
+    if verb in ("adopt", "release"):
+        if not d.get("changed"):
+            print(d.get("message") or f"{proj}: nothing to do"); return
+        where = ("→ " + d["store"]) if verb == "adopt" else "→ the global store"
+        print(f"{proj}: moved {d.get('notes_moved', 0)} note(s) + "
+              f"{d.get('versions_moved', 0)} version(s) {where}")
+        if verb == "adopt":
+            print(f"  recorded as {d.get('store_root', '')}  "
+                  f"(commit the notes with this repo)")
+        rec = d.get("reconciled") or {}
+        print(f"  reconcile: {rec.get('changed', 0)} changed, "
+              f"{rec.get('removed', 0)} removed  (0/0 = ids unchanged, as expected)")
+        return
     if verb == "status":
         state = "indexed" if d.get("indexed") else "NOT indexed"
         print(f"{proj}: {state} — {d.get('symbols', 0)} symbols "
@@ -557,6 +587,12 @@ def build_parser() -> argparse.ArgumentParser:
     for _v, _h in (("setup", "ensure .crib + import docs + index all code"),
                    ("index", "(re)index the repo's code + in-situ docs from its .crib"),
                    ("status", "is it indexed? counts, kinds, .crib paths")):
+        _sp = pjsub.add_parser(_v, help=_h)
+        proj(_sp)
+    for _v, _h in (("adopt", "move this project's notes INTO the repo "
+                             "(needs `store:` in its .crib)"),
+                   ("release", "move an adopted project's notes back to the "
+                               "global store")):
         _sp = pjsub.add_parser(_v, help=_h)
         proj(_sp)
     _pf = pjsub.add_parser("forget", help="clear the code index (keeps learnings/notes)")
@@ -958,6 +994,7 @@ def _E_dtree(d, a): _emit_design_tree(d, a)
 def _E_dcheck(d, a): _emit_design_check(d, a)
 def _E_plans(d, a): _emit_plan_list(d, a)
 def _E_dwrite(d, a): _emit_design_write(d, a)
+def _E_projects(d, a): _emit_projects(d, a.json)
 def _E_code(verb): return lambda d, a: _emit_code(d, verb, a.json)
 def _E_learning(verb): return lambda d, a: _emit_code_learning(d, verb, a.json)
 def _E_project(verb): return lambda d, a: _emit_project(d, verb, a.json)
@@ -1056,7 +1093,8 @@ VERBS: dict[str, Verb] = {
                      wants_cwd=False, policy="none", mcp="message=None"),
     "memory history": Verb("history", lambda a: {"relpath": a.relpath}, _E,
                      wants_cwd=False, policy="none", mcp="relpath=None"),
-    "project list": Verb("projects", lambda a: {}, _E, wants_cwd=False,
+    "project list": Verb("projects", lambda a: {}, _E_projects,
+                         method="project_list", wants_cwd=False,
                          policy="none", mcp=""),
     "project use": Verb("use_project", lambda a: {"project": a.project}, _E,
                         method="use_project", wants_cwd=False, policy="session",
@@ -1081,6 +1119,13 @@ VERBS: dict[str, Verb] = {
                                                                 False)},
                            _E_project("forget"), policy="source",
                            mcp=f"{_PROJ} with_learnings=False"),
+    # in-repo storage: move a project's notes into / out of the repo that owns them
+    "project adopt": Verb("project_adopt", lambda a: {"project": _proj_of(a)},
+                          _E_project("adopt"), is_async=True, policy="source",
+                          mcp=_PROJ),
+    "project release": Verb("project_release", lambda a: {"project": _proj_of(a)},
+                            _E_project("release"), is_async=True, policy="source",
+                            mcp=_PROJ),
     # code index
     "code lookup": Verb("code_lookup", lambda a: {"query": a.query,
                                                  "project": a.project, "k": a.k},
@@ -1269,6 +1314,30 @@ def _run_daemon(args: Any, cfg: Any) -> None:
     entry.emit(data, args)
 
 
+def _in_repo_guard(paths: Any, cfg: Any, cwd: Path) -> str | None:
+    """Refusal message when the project you're standing in keeps its notes in its
+    OWN repo, else None.
+
+    `crib memory setup/sync/push/pull` act on the whole global data tree, which by
+    construction no longer contains an adopted project's notes — so running them
+    here would look like it synced those notes and silently wouldn't. Worse, a
+    user who "fixed" that by also committing them from the repo would end up with
+    two git histories of one file. Refuse and name the owner."""
+    from .config import resolve_project
+    from .paths import resolve_project_paths
+    try:
+        proj = resolve_project(cfg, None, cwd)
+        pp = resolve_project_paths(paths, cfg, proj)
+    except ValueError:
+        return None                          # unresolvable project: not our error
+    if not pp.in_repo:
+        return None
+    return (f"crib memory: notes for {proj} live in {pp.store_root}; commit them "
+            f"with that repo's git. (The global memory store no longer carries "
+            f"them — `crib project release {proj}` moves them back if you want "
+            f"crib to sync them again.)")
+
+
 def _run_git(args: Any, cfg: Any) -> int:
     """Share notes via git. Runs git client-side (the user's terminal owns auth);
     a pull that changes files then triggers a reindex through the daemon (or
@@ -1279,6 +1348,9 @@ def _run_git(args: Any, cfg: Any) -> int:
     verb = getattr(args, "memory_verb", None)        # `crib memory setup/sync/push/pull`
     # setup runs on a fresh machine where the data dir may not exist yet
     paths = Paths.resolve().ensure() if verb == "setup" else Paths.resolve()
+    if (refusal := _in_repo_guard(paths, cfg, _cwd_of(args))) is not None:
+        print(refusal, file=sys.stderr)
+        return 1
     git = GitBacking(paths.data_dir)
 
     if verb == "setup":

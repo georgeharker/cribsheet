@@ -1,5 +1,8 @@
 # Plan: index-corruption fixes — exact specification
 
+Status: **EXECUTED 2026-08-05** — all four work packages ①–④ and 2.9 landed
+on dev (`fix: hardening sweep` commit); kept as the spec-of-record.
+
 Expands Tier 2 of `robustness-fixes.md` into execution-ready specs. Four work
 packages ①–④ plus 2.9. Line numbers from the 2026-08-05 tree — re-grep first;
 Tier 0 / stall-fix agents have been editing concurrently.

@@ -47,6 +47,20 @@ website:
             href: docs/surface.md
           - text: "Sync across machines"
             href: docs/resume-on-new-machine.md
+      - section: "Plans & reviews"
+        contents:
+          - text: "Robustness fixes (executed)"
+            href: docs/plans/robustness-fixes.md
+          - text: "Index-corruption fixes (executed)"
+            href: docs/plans/index-corruption-fixes.md
+          - text: "Surface parity (executed)"
+            href: docs/plans/surface-parity-fixes.md
+          - text: "Design/plan tracking (in tree)"
+            href: docs/plans/design-plan-tracking.md
+          - text: "Repo-local storage"
+            href: docs/plans/repo-local-storage.md
+          - text: "Retrieval quality"
+            href: docs/plans/retrieval-quality.md
       - section: "Under the hood"
         contents:
           - text: "Design & why"

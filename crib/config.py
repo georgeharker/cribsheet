@@ -10,7 +10,7 @@ from typing import Any
 
 import yaml
 
-from .paths import check_project_name
+from .paths import check_project_name, confine
 
 
 def _warn(msg: str) -> None:
@@ -311,18 +311,41 @@ class ProjectConfig:
     embed_model: str | None = None
     distill_prompt: str | None = None
     versions_keep: int | None = None
+    # Set ⇒ this project's DATA tier (notes + their version ring) lives in a code
+    # repo, at this portable `$LOCATION/rest` token (see `portable_path`). Written
+    # by `project adopt`, cleared by `project release`. Machine-LOCAL: it is the
+    # only way the daemon finds an adopted store without a cwd near the repo,
+    # which is why it is recorded here and not only in the repo's `.crib`.
+    store_root: str | None = None
 
     @classmethod
     def load(cls, path: Path, fallback_name: str) -> "ProjectConfig":
         if not path.exists():
             return cls(name=fallback_name)
         data = yaml.safe_load(path.read_text()) or {}
+        if not isinstance(data, dict):      # hand-edited into something else
+            _warn(f"ignoring {path}: expected a YAML mapping, got "
+                  f"{type(data).__name__}")
+            return cls(name=fallback_name)
         return cls(
             name=data.get("name", fallback_name),
             embed_model=data.get("embed_model"),
             distill_prompt=data.get("distill_prompt"),
             versions_keep=data.get("versions_keep"),
+            store_root=data.get("store_root"),
         )
+
+    def save(self, path: Path) -> None:
+        """Write the known keys back as YAML. `.cribproject` was read-only until
+        `project adopt` had to record a `store_root`, so this deliberately dumps
+        only the fields this dataclass declares — a hand-added key it doesn't know
+        would be dropped, which is why nothing but the migration verbs writes it."""
+        data = {"name": self.name}
+        for key in ("embed_model", "distill_prompt", "versions_keep", "store_root"):
+            if (value := getattr(self, key)) is not None:
+                data[key] = value
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(yaml.safe_dump(data, sort_keys=False))
 
 
 @dataclass
@@ -334,11 +357,30 @@ class CribLink:
     imports: list[str] = field(default_factory=list)
     import_into: str | None = None
     root: Path | None = None  # dir the .crib was found in
+    # Optional in-repo DATA store, repo-root-relative (e.g. `.crib/store`): this
+    # repo carries its project's notes itself, committed with the repo. Declared
+    # here (portable, travels with the checkout) and recorded per machine in the
+    # global stub by `project adopt`. Validated on parse — see `store_dir`.
+    store: str | None = None
     # Other crib projects this repo's code REFERENCES (cross-project xref):
     # project NAMES only, never paths — each machine resolves a ref to its own
     # local checkout via that project's `.source_root`, so the committed `.crib`
     # stays portable across differently-located clones.
     refs: list[str] = field(default_factory=list)
+
+    @property
+    def store_dir(self) -> Path | None:
+        """The absolute in-repo store dir, or None when `store:` is unset.
+
+        Raises `ValueError` naming the offending value if the declared path is
+        absolute or escapes the repo root — a `.crib` is hand-edited and travels
+        between machines, so `store: /etc` or `store: ../../elsewhere` must be
+        refused by NAME rather than silently planting a store outside the repo
+        it claims to be part of (the same rule `confine` enforces everywhere else
+        a caller-supplied relpath meets a store dir)."""
+        if not self.store or self.root is None:
+            return None
+        return confine(self.root, self.store)
 
     @property
     def doc_patterns(self) -> list[str]:
@@ -380,7 +422,7 @@ class CribLink:
         if not isinstance(project, str) or not project.strip():
             _warn(f"ignoring {f}: no `project:` name")
             return None
-        return cls(
+        link = cls(
             project=project.strip(),
             paths=_as_list(data.get("paths")),
             docs=_as_list(data.get("docs")),
@@ -388,7 +430,20 @@ class CribLink:
             import_into=data.get("import_into"),
             root=d,
             refs=_as_list(data.get("refs")),
+            store=(str(s).strip() or None
+                   if isinstance(s := data.get("store"), str) else None),
         )
+        try:
+            link.store_dir              # validate now, while we can name the file
+        except ValueError as e:
+            # Same contract as the rest of `.crib` parsing: a bad key is warned
+            # about and dropped, never fatal — this file sits above someone's
+            # whole tree, so raising would break every crib command run below it.
+            # Dropping `store:` falls back to the global store; `project adopt`
+            # then refuses with the reason rather than adopting a bogus path.
+            _warn(f"{f}: ignoring `store:` — {e}")
+            link.store = None
+        return link
 
 
 def _as_list(v: Any) -> list[str]:

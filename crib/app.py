@@ -8,6 +8,7 @@ through the one hash-gated `index_file`.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import datetime
 import os
 import sys
@@ -34,7 +35,8 @@ from .indexer import IndexEngine, IndexResult
 from .learnings import Learnings
 from .notes import Note, NoteParseError
 from .notestore import NoteStore
-from .paths import Paths
+from .paths import (Paths, ProjectPathResolver, ProjectPaths,
+                    check_project_name, confine)
 from .sources import SRC_PREFIX, SourceRoots, src_relpath
 from .store import Hit, Store
 from .util import derived_ulid
@@ -134,10 +136,17 @@ class Crib:
         # daemon only ever snapshots/reads history locally.
         self.git = GitBacking(paths.data_dir, allow_network=False)
         self.versions = VersionRing(paths.versions_dir, config.versions_keep)
+        # Where each project's DATA tier lives — the global store, or a repo
+        # subdir it was adopted into (docs/plans/repo-local-storage). Cached per
+        # project because every note read/write hits it; `project_adopt`/
+        # `project_release` invalidate. The INDEX tiers never move (see
+        # `Paths.project_dir`), so only notes + their ring resolve through here.
+        self.project_paths = ProjectPathResolver(paths, config)
         # Note-file store: path resolution + the write path (stash→save→index) over the
         # shared backends (store/index/versions stay Crib attrs — retrieval, docs,
         # import, generation all use them). Crib keeps delegators (below).
-        self.notestore = NoteStore(paths, store, self.index, self.versions)
+        self.notestore = NoteStore(paths, store, self.index, self.versions,
+                                   self.project_paths)
         self.memory_bindings = MemoryBindings(paths.data_dir / "memory-bindings.json")
         self._reranker: Any = None      # lazy cross-encoder, warm for the daemon
         self._watcher: Watcher | None = None
@@ -157,6 +166,9 @@ class Crib:
         # reached them yet — retrieval against one is THIN, so its hits say so
         # (`index_rebuilding`). Cleared per project as the recovery sweep finishes it.
         self._resweep_pending: set[str] = set()
+        # projects whose in-repo store isn't on this machine and that startup work
+        # has already warned about (one line each, not one per sweep/event)
+        self._warned_unavailable: set[str] = set()
         # the daemon's loop, set once it exists — the only place a background
         # recovery sweep can outlive the call that scheduled it
         self._daemon_loop: asyncio.AbstractEventLoop | None = None
@@ -210,7 +222,12 @@ class Crib:
         if self._watcher is not None:
             return
         self._daemon_loop = loop        # a loop that outlives a tool call exists now
-        self._watcher = Watcher(self.paths.projects_dir, self._on_fs_change, loop)
+        # Watch roots = the global `projects/` tree PLUS each AVAILABLE in-repo
+        # store's notes dir. Computed once at start, so a mid-life adoption takes
+        # effect on the next daemon start — the same accepted limitation as
+        # memory bindings (DESIGN §13).
+        self._watcher = Watcher(self.paths.projects_dir, self._on_fs_change, loop,
+                                self._in_repo_notes_roots())
         self._watcher.start()
         # Code watcher — reindexes source on edit (notes-watcher reloads notes,
         # code-watcher reindexes code). Seed it with every code-indexed project's root.
@@ -237,6 +254,35 @@ class Crib:
         # when nothing was lost.
         self._spawn_bg(loop, self._describe_backlog())
         self._spawn_bg(loop, self._keyword_backlog())
+
+    def _in_repo_notes_roots(self) -> dict[str, Path]:
+        """`{project: notes dir}` for every project adopted into a repo whose store
+        is actually here — the extra watcher roots. An unavailable one is skipped
+        with one warning rather than left to fail per event."""
+        roots: dict[str, Path] = {}
+        for name in self.projects():
+            pp = self.project_paths(name)
+            if not pp.in_repo:
+                continue
+            if self._skip_if_unavailable(pp, "not watching"):
+                continue
+            roots[name] = pp.notes_dir
+        return roots
+
+    def _skip_if_unavailable(self, pp: ProjectPaths, what: str) -> bool:
+        """True (with ONE warning per project per process) when this project's
+        in-repo store isn't on this machine. Startup work — the reconcile sweep,
+        the watcher roots — must skip such a project, never crash the daemon: a
+        repo that isn't cloned here is a normal state, not a fault."""
+        if pp.available:
+            return False
+        if pp.project not in self._warned_unavailable:
+            self._warned_unavailable.add(pp.project)
+            print(f"[crib] {what} {pp.project}: its notes live in a repo at "
+                  f"{pp.store_token}, which is not on this machine "
+                  f"(clone it, add a [locations] entry, or `crib project release "
+                  f"{pp.project}`)", file=sys.stderr)
+        return True
 
     def _spawn_bg(self, loop: asyncio.AbstractEventLoop, coro: Any) -> None:
         """Fire-and-forget on the daemon loop, with a strong reference held until done
@@ -344,6 +390,8 @@ class Crib:
                 or self.config.retrieve.summary_labels):
             return
         for name in self.projects():
+            if self._skip_if_unavailable(self.project_paths(name), "not enriching"):
+                continue
             try:
                 await self.enrich(project=name)      # one combined pass, all facets
             except Exception as e:  # noqa: BLE001 — best-effort catch-up
@@ -408,8 +456,8 @@ class Crib:
         has no keyword set for a label yet (graceful: BM25 falls back to
         body+heading)."""
         from .section_index import SectionIndex
-        return SectionIndex(self.paths.project_dir(project), "keyword_index") \
-            .terms_for(section_hash, list(labels))
+        return SectionIndex(self.project_paths(project).project_dir,
+                            "keyword_index").terms_for(section_hash, list(labels))
 
     def _summary_terms(self, project: str, section_hash: str,
                        labels: tuple[str, ...]) -> list[str]:
@@ -417,8 +465,8 @@ class Crib:
         alias feed (§3). Read from the section-addressed TOML store; empty when a
         section has no summary for a label yet."""
         from .section_index import SectionIndex
-        return SectionIndex(self.paths.project_dir(project), "summary_index") \
-            .terms_for(section_hash, list(labels))
+        return SectionIndex(self.project_paths(project).project_dir,
+                            "summary_index").terms_for(section_hash, list(labels))
 
     def _source_roots(self, project: str) -> "SourceRoots":
         """Per-project registry of docs indexed in-situ (prefix -> repo root)."""
@@ -485,7 +533,7 @@ class Crib:
 
     def project_is_new(self, proj: str) -> bool:
         """True if `proj` has no notes dir yet (a write would create it)."""
-        return not self.paths.notes_dir(proj).exists()
+        return not self.project_paths(proj).notes_dir.exists()
 
     def _unique_relpath(self, proj: str, slug: str) -> str:
         """`<slug>.md`, with a numeric suffix only on collision — predictable and
@@ -664,6 +712,14 @@ class Crib:
         self._reconcile_remaining = len(projects)
         try:
             for proj in projects:
+                # A project adopted into a repo that isn't cloned here has no
+                # notes to sweep — skip it (one warning) instead of failing the
+                # whole startup sweep on the first missing store.
+                if self._skip_if_unavailable(self.project_paths(proj),
+                                             "not reconciling"):
+                    total.setdefault("unavailable", []).append(proj)
+                    self._reconcile_remaining -= 1
+                    continue
                 r = await self.reindex(project=proj)
                 total["changed"] += r["changed"]
                 total["removed"] += r["removed"]
@@ -1346,6 +1402,182 @@ class Crib:
         return {"project": proj, "root": str(link.root), "crib_created": created,
                 "created": new_project, "docs_indexed": docs.get("docs", 0), **code}
 
+    # ── in-repo storage: adopt / release (docs/plans/repo-local-storage) ───────
+    # A project's data tier is EITHER global OR in a repo, never both, so these
+    # two verbs MOVE files rather than merge them. `chunk_id` is
+    # sha1(project + relpath + …) over PROJECT-relative relpaths, so a move
+    # changes no chunk id and no content hash: the reconcile each verb ends with
+    # is a hash-gated no-op that VERIFIES the move rather than reindexing it.
+
+    def _note_ring_ids(self, project: str, notes_root: Path) -> list[str]:
+        """The version-ring keys for every note under `notes_root`.
+
+        The ring is keyed by note id ALONE (ids survive renames), so migrating a
+        project's history means knowing which ids are its own — derived here the
+        same way `_stash_existing` derives them on the way in, including the
+        derived-ulid fallback for a note with no `id:`."""
+        ids: list[str] = []
+        for p in sorted(notes_root.rglob("*.md")):
+            rel = str(p.relative_to(notes_root))
+            try:
+                raw = p.read_text()
+            except OSError:
+                continue
+            note_id = notes.scan_id(raw) or derived_ulid(project, rel)
+            ids.append(note_id)
+        return ids
+
+    @staticmethod
+    def _move_tree(src: Path, dst: Path) -> int:
+        """Move every file under `src` to the same relpath under `dst`, returning
+        the count. Per-file (not one `shutil.move` of the dir) so a partially
+        populated destination is still a merge of trees rather than a refusal —
+        the "no merge" rule is enforced by the CALLERS, which refuse before any
+        file moves."""
+        import shutil
+        moved = 0
+        if not src.is_dir():
+            return 0
+        for p in sorted(src.rglob("*")):
+            if not p.is_file():
+                continue
+            target = dst / p.relative_to(src)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(p), str(target))
+            moved += 1
+        return moved
+
+    def _move_ring(self, ids: list[str], src: Path, dst: Path) -> int:
+        """Move the named notes' ring dirs between rings, returning the count."""
+        moved = 0
+        for note_id in ids:
+            try:
+                s = confine(src, note_id)
+                d = confine(dst, note_id)
+            except ValueError:              # an id that isn't a safe path segment
+                continue
+            if not s.is_dir():
+                continue
+            moved += self._move_tree(s, d)
+            with contextlib.suppress(OSError):
+                s.rmdir()
+        return moved
+
+    _STORE_GITIGNORE = ("# crib in-repo store — the notes ARE the repo's, the "
+                        "version ring is not\n.versions/\n")
+
+    async def project_adopt(self, project: str | None = None,
+                            cwd: Path | None = None) -> dict[str, Any]:
+        """Move a project's notes (and their version ring) INTO the repo, at the
+        dir its `.crib` declares as `store:`.
+
+        The repo's git then owns those notes — `crib memory sync` and friends
+        refuse for an adopted project, because committing them twice is how two
+        histories of one file appear. The stub `projects/<name>/.cribproject`
+        records the store as a portable `$LOCATION` token so the daemon can find
+        it with no cwd near the repo; the derived index tiers do NOT move.
+        Idempotent: adopting an already-adopted project at the same store is a
+        no-op."""
+        link = CribLink.find(cwd or Path.cwd())
+        if link is None:
+            raise ValueError(
+                "no `.crib` at or above this directory — an adopt needs the repo "
+                "that will carry the notes (add a `.crib` with `project:` and "
+                "`store:`, or run `crib project setup` first)")
+        proj = check_project_name(project or link.project)
+        if project and link.project != proj:
+            raise ValueError(
+                f"the `.crib` at {link.root} names project {link.project!r}, not "
+                f"{proj!r} — adopt is about THIS repo's project")
+        store = link.store_dir
+        if store is None:
+            raise ValueError(
+                f"{link.root / '.crib'} declares no `store:` — add e.g. "
+                "`store: .crib/store` (repo-root-relative) to say where in this "
+                "repo the notes should live")
+        pp = self.project_paths(proj)
+        if pp.in_repo:
+            if pp.store_root == store:
+                return {"project": proj, "store": str(store), "changed": False,
+                        "notes_moved": 0, "versions_moved": 0,
+                        "store_root": pp.store_token,
+                        "message": f"{proj} already lives in {store}"}
+            raise ValueError(
+                f"{proj} is already adopted into {pp.store_root} — `crib project "
+                f"release {proj}` first, then adopt here (a project's notes live "
+                "in exactly one place)")
+        if store.exists() and not store.is_dir():
+            # `.crib` is itself a FILE at the repo root, so `store: .crib/store`
+            # (an inviting-looking spelling) can never be created — say that here
+            # rather than surfacing a bare NotADirectoryError from mkdir.
+            raise ValueError(
+                f"`store: {link.store}` is not a directory ({store} exists as a "
+                "file) — point it at a directory path, e.g. `store: .crib-store`")
+        dest_notes = store / "notes"
+        if any(dest_notes.rglob("*.md")) if dest_notes.is_dir() else False:
+            raise ValueError(
+                f"{dest_notes} already holds notes — refusing to merge two note "
+                "trees. Move them aside (or pick a different `store:`) and re-run")
+        src_notes = pp.notes_dir
+        ring_ids = self._note_ring_ids(proj, src_notes) if src_notes.is_dir() else []
+        store.mkdir(parents=True, exist_ok=True)
+        notes_moved = self._move_tree(src_notes, dest_notes)
+        versions_moved = self._move_ring(ring_ids, self.paths.versions_dir,
+                                         store / ".versions")
+        # The ring is DERIVED history, not authored notes: the repo carries the
+        # notes, crib carries their undo stack.
+        (store / ".gitignore").write_text(self._STORE_GITIGNORE)
+        with contextlib.suppress(OSError):
+            src_notes.rmdir()               # only if the move emptied it
+        pcfg = ProjectConfig.load(pp.config_file, proj)
+        pcfg.store_root = portable_path(store, self.config.locations)
+        pcfg.save(pp.config_file)
+        self.project_paths.invalidate(proj)
+        rec = await self.reindex(project=proj)
+        return {"project": proj, "store": str(store), "changed": True,
+                "store_root": pcfg.store_root, "notes_moved": notes_moved,
+                "versions_moved": versions_moved, "reconciled": rec}
+
+    async def project_release(self, project: str | None = None,
+                              cwd: Path | None = None) -> dict[str, Any]:
+        """The inverse of `project_adopt`: move an in-repo project's notes (and
+        ring) back into the global store and clear the stub's `store_root`. Use it
+        when the repo is going away, or when the notes should stop travelling with
+        it. Idempotent: releasing an already-global project is a no-op."""
+        proj = self.resolve_project(project, cwd)
+        pp = self.project_paths(proj)
+        if not pp.in_repo:
+            return {"project": proj, "changed": False, "notes_moved": 0,
+                    "versions_moved": 0,
+                    "message": f"{proj} already lives in the global store"}
+        pp.require()            # can't move notes that aren't on this machine
+        store = pp.store_root
+        assert store is not None                        # in_repo ⇒ store_root set
+        dest_notes = self.paths.notes_dir(proj)
+        if any(dest_notes.rglob("*.md")) if dest_notes.is_dir() else False:
+            raise ValueError(
+                f"{dest_notes} already holds notes — refusing to merge two note "
+                "trees. Move them aside and re-run")
+        ring_ids = (self._note_ring_ids(proj, pp.notes_dir)
+                    if pp.notes_dir.is_dir() else [])
+        notes_moved = self._move_tree(pp.notes_dir, dest_notes)
+        versions_moved = self._move_ring(ring_ids, pp.versions_dir,
+                                         self.paths.versions_dir)
+        gi = store / ".gitignore"
+        if gi.is_file() and gi.read_text() == self._STORE_GITIGNORE:
+            gi.unlink()                     # ours, and now describing nothing
+        for d in (pp.notes_dir, pp.versions_dir, store):
+            with contextlib.suppress(OSError):
+                d.rmdir()                   # each only if the move emptied it
+        pcfg = ProjectConfig.load(pp.config_file, proj)
+        pcfg.store_root = None
+        pcfg.save(pp.config_file)
+        self.project_paths.invalidate(proj)
+        rec = await self.reindex(project=proj)
+        return {"project": proj, "changed": True, "store": str(store),
+                "notes_moved": notes_moved, "versions_moved": versions_moved,
+                "reconciled": rec}
+
     def _project_refs(self, proj: str) -> list[dict[str, Any]]:
         """Delegate to Refs (crib/refs.py) — a project's `.crib` refs: targets."""
         return self.refs.project_refs(proj)
@@ -1389,18 +1621,26 @@ class Crib:
         from .codeindex import _POOL, LEARNINGS_DIR
         projects = []
         for name in self.projects():
-            nd = self.paths.notes_dir(name)
+            pp = self.project_paths(name)
+            nd = pp.notes_dir
             ld = nd / LEARNINGS_DIR
-            sd = self.paths.project_dir(name) / "symbol_index"
+            sd = pp.project_dir / "symbol_index"
             doc_chunks = sum(1 for m in self.store.get_meta({"project": name}).values()
                              if m.get("relpath", "").startswith(SRC_PREFIX))
-            projects.append({
+            row = {
                 "project": name,
                 "notes": sum(1 for _ in nd.rglob("*.md")) if nd.exists() else 0,
                 "learnings": sum(1 for _ in ld.glob("*.md")) if ld.exists() else 0,
                 "symbols": sum(1 for _ in sd.glob("*.toml")) if sd.exists() else 0,
                 "doc_chunks": doc_chunks,
-            })
+            }
+            if pp.in_repo:
+                # notes counted above are 0 when the store isn't here — say WHY,
+                # rather than reading as an empty project
+                row["store_root"] = pp.store_token
+                if not pp.available:
+                    row["unavailable"] = True
+            projects.append(row)
         with self.code.indexing_lock:
             indexing = {p: list(v) for p, v in self.code.indexing.items() if v}
             sweeps = {p: dict(v) for p, v in self.code.sweeps.items()}
@@ -1444,7 +1684,7 @@ class Crib:
 
         from .codeindex import LEARNINGS_DIR, SymbolIndex
         proj = self.resolve_project(project, cwd)
-        si_root = SymbolIndex(self.paths.project_dir(proj)).root
+        si_root = SymbolIndex(self.project_paths(proj).project_dir).root
         removed = len(list(si_root.glob("*.toml"))) if si_root.exists() else 0
         if si_root.exists():
             shutil.rmtree(si_root)
@@ -2179,8 +2419,25 @@ class Crib:
                 "projects": self.projects()}
 
     def project_config(self, project: str) -> ProjectConfig:
-        return ProjectConfig.load(
-            self.paths.project_dir(project) / ".cribproject", project)
+        return ProjectConfig.load(self.project_paths(project).config_file, project)
+
+    def project_list(self) -> list[dict[str, Any]]:
+        """Every project as a row — the `project_list` surface.
+
+        A project whose notes live in a repo carries its `store_root` token, and
+        `unavailable: true` when that repo isn't on this machine. Listing it
+        anyway is the point: an invisible project reads as "gone" when the truth
+        is "clone the repo" (or `crib project release` it)."""
+        out: list[dict[str, Any]] = []
+        for name in self.projects():
+            pp = self.project_paths(name)
+            row: dict[str, Any] = {"project": name}
+            if pp.in_repo:
+                row["store_root"] = pp.store_token
+                if not pp.available:
+                    row["unavailable"] = True
+            out.append(row)
+        return out
 
 
 def _build_store(paths: Paths, config: Config) -> tuple[Store, Callable[[], None] | None]:

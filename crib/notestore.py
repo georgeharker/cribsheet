@@ -22,18 +22,31 @@ from .util import derived_ulid
 
 if TYPE_CHECKING:
     from .indexer import IndexEngine, IndexResult
-    from .paths import Paths
+    from .paths import Paths, ProjectPathResolver, ProjectPaths
     from .store import Store
     from .versions import VersionRing
 
 
 class NoteStore:
     def __init__(self, paths: Paths, store: Store, index: IndexEngine,
-                 versions: VersionRing) -> None:
+                 versions: VersionRing,
+                 project_paths: ProjectPathResolver) -> None:
         self.paths = paths
         self.store = store
         self.index = index
         self.versions = versions
+        # Where THIS project's data tier lives — global, or an adopted in-repo
+        # store (docs/plans/repo-local-storage). Every note path and every ring
+        # lookup below goes through it; nothing here derives a path from `paths`
+        # directly any more.
+        self.project_paths = project_paths
+        self._rings: dict[Path, VersionRing] = {}
+
+    def resolved(self, project: str) -> ProjectPaths:
+        """This project's storage locations, REQUIRING them to be reachable — an
+        adopted store whose repo isn't on this machine errors here (naming the
+        token and the fix) instead of half-working."""
+        return self.project_paths(project).require()
 
     def notes_root(self, project: str) -> Path:
         """The project's notes dir as a PATH — resolved, never created.
@@ -44,7 +57,7 @@ class NoteStore:
         `locate`, `version_content` and the learnings audit — mkdir'd on the way
         through, so one mistyped `project=` planted a permanent phantom namespace
         in `project_list`."""
-        return self.paths.notes_dir(project)
+        return self.resolved(project).notes_dir
 
     def dir(self, project: str) -> Path:
         """The project's notes dir, CREATED — the WRITE-side resolver (see
@@ -53,9 +66,28 @@ class NoteStore:
         d.mkdir(parents=True, exist_ok=True)
         return d
 
+    def versions_for(self, project: str) -> VersionRing:
+        """The version ring this project's notes stash into.
+
+        Global projects share one ring keyed by note id (`data_dir/.versions`,
+        DESIGN §8). A project adopted into a repo gets its own ring INSIDE the
+        store (`<store>/.versions`) so history travels with the notes — and is
+        gitignored there, since the repo owns the notes but not the ring."""
+        vd = self.project_paths(project).versions_dir
+        if vd == self.versions.dir:
+            return self.versions
+        ring = self._rings.get(vd)
+        if ring is None:
+            from .versions import VersionRing as _Ring
+            ring = self._rings[vd] = _Ring(vd, self.versions.keep)
+        return ring
+
     def source_roots(self, project: str) -> SourceRoots:
-        """Per-project registry of docs indexed in-situ (prefix -> repo root)."""
-        return SourceRoots(self.paths.project_dir(project) / "doc-sources.json")
+        """Per-project registry of docs indexed in-situ (prefix -> repo root).
+        Index tier — stays in the GLOBAL project dir even for an adopted project
+        (its entries are absolute local repo paths, machine-specific by nature)."""
+        return SourceRoots(self.project_paths(project).project_dir
+                           / "doc-sources.json")
 
     def abspath(self, project: str, relpath: str) -> Path:
         """On-disk file for a note. Source-anchored docs (`sources/<repo>/…`) resolve
@@ -105,14 +137,15 @@ class NoteStore:
         and `forget` would drop its only copy."""
         raw = path.read_text()
         fallback = fallback_id or derived_ulid(project, relpath)
+        ring = self.versions_for(project)
         try:
             fm, body = notes.parse(raw, path)
         except NoteParseError:
             note_id = notes.scan_id(raw) or fallback
-            self.versions.stash(note_id, raw)
+            ring.stash(note_id, raw)
             return note_id
         note_id = fm.get("id") or fallback
-        self.versions.stash(note_id, notes.serialize(fm, body))
+        ring.stash(note_id, notes.serialize(fm, body))
         return note_id
 
     async def write(self, project: str, relpath: str, note: Note) -> IndexResult:
@@ -279,14 +312,14 @@ class NoteStore:
         if not note_id:
             return []
         return [{"version": e.name, "seq": e.seq, "mtime": e.mtime}
-                for e in self.versions.list(note_id)]
+                for e in self.versions_for(project).list(note_id)]
 
     def version_content(self, project: str, relpath: str, version: str) -> str:
         note_id = self._ring_id(project, relpath)
         if not note_id:
             raise ValueError("note has no id; nothing to restore")
         try:
-            return self.versions.read(note_id, version)
+            return self.versions_for(project).read(note_id, version)
         except OSError as e:
             # A name that isn't in the ring is a CALLER error, not an I/O surprise:
             # answer in the same currency as every other bad argument (ValueError,

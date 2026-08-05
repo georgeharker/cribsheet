@@ -45,6 +45,28 @@ the project the fact is *about*: the repo you're in, or `default` (or that tool'
 project) for cross-cutting knowledge like a CLI or editor convention. Say where it landed.
 To pin a hard-won insight about a symbol: `code_append <symbol> "…"`.
 
+### 4. Deciding something — or about to change a decision? Use the graph.
+
+Three cues, one facet:
+
+- **A decision with consequences just got made** ("chunks are keyed by X", "writes
+  must name their project"): `design_add <title> <rationale>` with `--dep` on the
+  decisions it builds on. A dep is a promise: *if that changes, reconsider this.*
+  A plain note can't make that promise; the graph can.
+- **About to change code that implements a decision** — or edit the decision
+  itself: `design_check` first. It lists every dependent decision tainted by the
+  change, with the dependency path explaining *why* it's implicated. After
+  reconsidering each, `design_verify` marks it current again. This is how
+  unexpected consequences become expected ones.
+- **Multi-step work you might not finish this session**: `plan_add` items with
+  deps between them; `plan_status` as you go; `plan_next` tells any future
+  session (yours or another agent's) exactly what's actionable now. Prefer it
+  over an in-conversation todo list for anything that outlives the chat.
+
+`design_tree` renders what a decision rests on (or `--dependents`: what rests on
+it) — read it before proposing architecture changes, the same way rule 1 says to
+read the code index before grep.
+
 <!-- Project selection for *reads*: code tools act on ONE current project — set it once
      with `use_project <name>`, or it's inferred from `project_path` on your first code
      call; reads then need no project args. To read a *different* project you must name it

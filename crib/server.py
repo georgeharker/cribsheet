@@ -576,6 +576,30 @@ def build_server(crib: Crib | None = None):
         return crib.project_forget(project, with_learnings=with_learnings,
                                    cwd=_cwd(project_path))
 
+    @crib_tool("source")
+    async def project_adopt(project: str | None = None,
+                            project_path: str | None = None) -> dict[str, Any]:
+        """Move a project's NOTES into the repo that owns them, at the dir its
+        `.crib` declares as `store:` (repo-root-relative). After this the repo's own
+        git carries the notes — commit them with your code; crib's `memory
+        sync`/`snapshot` refuse for this project. The derived index (embeddings,
+        symbol index) stays machine-local, so nothing unshareable lands in the repo.
+        Note ids and search results are unchanged — this moves files, it doesn't
+        reindex. Pass `project_path=<the repo dir>`. Idempotent; `project_release`
+        undoes it."""
+        return await crib.project_adopt(project, cwd=_cwd(project_path))
+
+    @crib_tool("source")
+    async def project_release(project: str | None = None,
+                              project_path: str | None = None) -> dict[str, Any]:
+        """Move an adopted project's notes back OUT of its repo into the global
+        crib store (the inverse of `project_adopt`) — for when the repo is going
+        away, or the notes should stop travelling with it. Also the fix when a
+        project is listed `unavailable` because its repo isn't on this machine…
+        except that the notes have to BE here to move: clone the repo first.
+        Idempotent. Pass `project_path=<the repo dir>` or `project=<name>`."""
+        return await crib.project_release(project, cwd=_cwd(project_path))
+
     @crib_tool("read", echo=True)
     async def code_xref(symbol: str, project: str | None = None,
                         project_path: str | None = None) -> list[dict[str, Any]]:
@@ -911,10 +935,14 @@ def build_server(crib: Crib | None = None):
         return crib.status()
 
     @crib_tool("none")
-    def project_list() -> list[str]:
+    def project_list() -> list[dict[str, Any]]:
         """List crib projects (separate memory namespaces). Use to discover
-        what's available before a `note_lookup`/`note_store` in a specific project."""
-        return crib.projects()
+        what's available before a `note_lookup`/`note_store` in a specific project.
+        A project whose notes live in its own repo also carries `store_root`, and
+        `unavailable: true` when that repo isn't on this machine (clone it, or
+        `project_release` the project) — such a project can't be read or written
+        until then."""
+        return crib.project_list()
 
     @crib_tool("session")
     def project_use(project: str) -> dict[str, Any]:

@@ -53,6 +53,27 @@ def decode(projects_dir: Path, raw_path: str) -> tuple[str, str] | None:
     return parts[0], str(Path(*parts[2:]))
 
 
+def decode_store(stores: dict[str, Path], raw_path: str) -> tuple[str, str] | None:
+    """Same, for a project adopted into a repo: its notes dir IS the root, so the
+    project name comes from the root that matched rather than from a path segment.
+
+    Longest matching root wins, for the same reason the code watcher prefers it —
+    one store nested inside another's repo must not decode to the outer project."""
+    p = Path(raw_path)
+    if _ignored(p):
+        return None
+    rp = p.resolve()
+    best: tuple[int, str, str] | None = None
+    for project, notes_dir in stores.items():
+        try:
+            rel = rp.relative_to(notes_dir.resolve())
+        except ValueError:
+            continue
+        if best is None or len(str(notes_dir)) > best[0]:
+            best = (len(str(notes_dir)), project, str(rel))
+    return (best[1], best[2]) if best else None
+
+
 class _FSWatcher:
     """Shared watchdog plumbing for both watchers: observer lifecycle, a filesystem
     event handler, and per-key debounce. Subclasses provide `_watch_dirs()` (dirs to
@@ -172,22 +193,33 @@ class _FSWatcher:
 
 
 class Watcher(_FSWatcher):
-    """Watches `projects_dir`; reloads a note on change — `on_change(project, relpath)`."""
+    """Watches `projects_dir`; reloads a note on change — `on_change(project, relpath)`.
+
+    `stores` adds the notes dir of each project adopted into a repo
+    (docs/plans/repo-local-storage): those notes are edited in the checkout, so
+    the global tree alone would never see them. The ignore rules are the shared
+    ones and apply per root — including `.versions/`, which each in-repo store
+    keeps inside itself."""
 
     def __init__(self, projects_dir: Path,
                  on_change: Callable[[str, str], Awaitable[None]],
-                 loop: asyncio.AbstractEventLoop) -> None:
+                 loop: asyncio.AbstractEventLoop,
+                 stores: dict[str, Path] | None = None) -> None:
         super().__init__(loop)
         self.projects_dir = projects_dir
         self._on_change = on_change
+        self.stores = dict(stores or {})
 
     def _watch_dirs(self) -> list[str]:
         self.projects_dir.mkdir(parents=True, exist_ok=True)
-        return [str(self.projects_dir)]
+        # A store dir that doesn't exist yet is reported once by `_schedule_dir`
+        # rather than skipped silently.
+        return [str(self.projects_dir), *(str(d) for d in self.stores.values())]
 
     def _decode(self, raw_path: str, deleted: bool) -> tuple[str, str] | None:
         # index_file drops chunks once it sees the path is gone, so deletes flow too
-        return decode(self.projects_dir, raw_path)
+        key = decode(self.projects_dir, raw_path)
+        return key if key is not None else decode_store(self.stores, raw_path)
 
     async def _dispatch(self, project: str, relpath: str) -> None:
         # Guarded like the code watcher's batch dispatch: one note that won't parse

@@ -52,6 +52,16 @@ class VersionRing:
         self._dir = versions_dir
         self._keep = keep
 
+    @property
+    def dir(self) -> Path:
+        """The ring's root — `data_dir/.versions` for a global project, or
+        `<store>/.versions` for one whose notes live in a repo."""
+        return self._dir
+
+    @property
+    def keep(self) -> int:
+        return self._keep
+
     def _note_dir(self, note_id: str) -> Path:
         # id and version name are both caller-supplied (`note_restore(version=…)`)
         # — confined so a ring lookup can only ever read inside the ring.

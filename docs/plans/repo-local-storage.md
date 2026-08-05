@@ -1,6 +1,10 @@
 # Plan: optional in-repo project storage
 
-Status: planned, not started. Written for execution by an agent with no prior
+Status: **EXECUTED 2026-08-05** — landed on dev; kept as the spec-of-record.
+(One correction from execution: the example `store: .crib/store` was
+impossible — `.crib` is a file; use e.g. `store: .crib-store`, and the
+implementation errors explicitly on that case.)
+Written for execution by an agent with no prior
 context — read DESIGN.md §2 (three roots), §6 (`.crib`/`.cribproject`), §14
 (git sync, `$LOCATION` portable paths) first.
 

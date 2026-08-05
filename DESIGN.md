@@ -210,10 +210,24 @@ distill_prompt: |
 versions_keep: 20         # ring depth (see §8); 0 disables
 ```
 
-Projects always live under `$CRIB_DATA_DIR/projects/<name>/notes`; there is no
-arbitrary project path. Organization happens through arbitrary subdir trees
+Projects live under `$CRIB_DATA_DIR/projects/<name>/notes` by default; there is
+no arbitrary project path. Organization happens through arbitrary subdir trees
 *within* a project. Git is not configured here — it is auto-detected from the
 presence of `.git` in the data root (see §8).
+
+**In-repo storage (opt-in, data tier only).** A repo may carry its project's
+*data* tier in-tree: `.crib` declares `store: <relpath>` and `crib project
+adopt` moves `notes/` (+ that project's version ring, under
+`<store>/.versions/`, gitignored) into the repo; `crib project release`
+reverses it. The global `projects/<name>/` dir remains as a **stub** whose
+`.cribproject` records `store_root:` as a `$LOCATION` portable token — that's
+how the daemon resolves the store with no cwd near the repo (listing, watcher
+roots, reconcile). Exclusive per project, never an overlay. The derived index
+stays global regardless (embeddings can't be committed; `rm -rf
+$CRIB_INDEX_DIR` recovery is preserved), chunk ids are path-independent so
+migration needs no reindex, and the *repo's* git owns in-repo notes —
+`crib memory sync/push/pull/setup` refuse for such projects. A machine without
+the repo checkout sees the project listed `unavailable` with the token shown.
 
 **`.crib`** — tiny YAML at a *code repo* root. Two jobs: associate the repo with
 a crib project, and declare local docs to import into it.
@@ -331,6 +345,15 @@ changed/added offline and (b) drops orphaned chunks for notes deleted off disk.
 The watcher is started *first*, so edits landing during the sweep aren't missed;
 the hash gate makes any overlap a harmless no-op. Same routine is exposed as
 `reconcile` (all projects) and `reindex` (one project) for manual use.
+
+The sweep runs **in the background, after the transport opens** — a cold daemon
+with an offline backlog must not hold the port closed past a client's ready
+timeout. Serving during the sweep is safe by the same hash-gate argument;
+progress surfaces in `status` (`reconciling` / `reconcile_remaining`). The sweep
+also re-embeds each project's in-situ `sources/…` docs (they live outside the
+notes walk) and records the chunk-schema version on completion — so a store
+wipe, a chunking-scheme change, or an offline edit all recover through this one
+path with no bespoke migration code.
 
 ---
 
@@ -576,8 +599,11 @@ re-clear that bar.)
 **Resolved:**
 - Git: auto-detected from `.git` in the data root; manual `snapshot` only; no
   commit-on-write and no option for it.
-- Project location: all projects centralized under one data root; organization
+- Project location: centralized under one data root by default; organization
   via arbitrary subdir trees within a project; no arbitrary project path.
+  Amended 2026-08-05: a repo may opt in to carrying the *data tier* in-tree
+  (`.crib store:` + `project adopt`/`release`, §6) — exclusive per project,
+  index always global.
 - Versioning: two layers — automatic per-write ring (recover snafus, not
   indexed) + manual git snapshots.
 - Local docs reach a project via one-way `import` (pull from source) declared in

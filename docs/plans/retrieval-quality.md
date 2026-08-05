@@ -16,6 +16,19 @@ sets.
   `⚠ weak phrasing` on both — plus the standing observation that MRR has
   hovered at/below ideal for a while (maintainer, 2026-08-05).
 
+**Corpus-drift finding (later same day):** after `docs/plans/*.md` landed and
+were indexed in-situ, the eval moved to MRR 0.715 / recall@3 **0.774 (below
+bar)** with code unchanged (verified by stash). The plan docs discuss the
+same topics as the DESIGN.md sections the golds target (quarantine, version
+ring, …) — the corpus grew **adversarial near-duplicates** of the gold
+targets. Two implications: (a) the eval needs either corpus pinning or golds
+that accept any doc *section* stating the fact, else every planning doc
+regresses the number; (b) this is a real user-facing case — duplicated
+knowledge across docs dilutes ranking — which is exactly what lever 3's
+facet/dedupe machinery and the `similar:` nudges exist to counter. Treat the
+0.710/0.806 quiet-tree number as the code baseline and re-baseline after
+deciding (a).
+
 ## Levers, in promise order
 
 1. **Per-need failure analysis first (no code).** Re-run with the failing

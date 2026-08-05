@@ -1,7 +1,10 @@
 # Plan: robustness & correctness fixes
 
-Status: reviewed 2026-08-05 (three parallel deep reviews: storage/notes,
-code-index, server/session), fixes not started. Companion to
+Status: **EXECUTED 2026-08-05** — Tiers 0–4 all landed on dev (see the
+`fix: hardening sweep` and `fix: robustness Tiers 3-4` commits); this doc is
+now the record of what was found and why each fix took the shape it did.
+Reviewed 2026-08-05 (three parallel deep reviews: storage/notes,
+code-index, server/session). Companion to
 `surface-parity-fixes.md` (behavioral/naming drift lives there; `project_use`/
 `project_current` duplication is there, item P2.5). Line numbers from the
 2026-08-05 working tree — re-grep if drifted.

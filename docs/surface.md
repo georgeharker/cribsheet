@@ -145,9 +145,43 @@ that only resolves inside one project, so it uses the **read** policy.
 | `crib project status` | `project_status` | Is it indexed? symbol/file counts, kind breakdown, `.crib` paths, doc sources. |
 | `crib project forget` | `project_forget` | Clear the code index (keeps learnings/notes/`.crib`; `--with-learnings` to drop those too). |
 | `crib project reconcile` | `project_reconcile` | Sweep ALL projects for offline changes (add/change/delete). Idempotent. |
-| `crib project list` | `project_list` | List projects (separate memory namespaces). |
+| `crib project list` | `project_list` | List projects (separate memory namespaces); rows carry `store_root`/`unavailable` for in-repo ones. |
 | `crib project use <name>` | `project_use` | Set this session's current project (sticky; creates the namespace). |
 | `crib project current` | `project_current` | Show this session's current project (+ available projects). |
+| `crib project adopt` | `project_adopt` | Move this project's NOTES into the repo, at the dir its `.crib` declares as `store:`. Idempotent. |
+| `crib project release` | `project_release` | Move an adopted project's notes back to the global store (the inverse). Idempotent. |
+
+### In-repo storage (`store:`)
+
+A repo can carry its project's **data tier** — the notes and their version ring —
+instead of leaving it in the global store. Declare where in the repo's `.crib`:
+
+```yaml
+project: myproj
+store: .crib-store        # repo-root-relative; must not escape the repo
+```
+
+then `crib project adopt` (from inside the repo) moves the notes there and records
+the location machine-locally in `projects/<name>/.cribproject` as a portable
+`$LOCATION` token, so the daemon finds it with no cwd nearby. What this does and
+doesn't change:
+
+- **Data tier only.** The derived index (embeddings, `symbol_index/`,
+  `keyword_index/`, `summary_index/`) stays under the cache/data dirs keyed by
+  project name, so `rm -rf $CRIB_INDEX_DIR` + reindex remains the universal
+  recovery path and embeddings can never be committed to your repo.
+- **Exclusive, not overlay.** A project's notes live in exactly one place; adopt
+  refuses to merge two note trees, and `release` is how you go back.
+- **The repo's git owns those notes.** `crib memory setup/sync/push/pull` refuse
+  while you're in an adopted project — commit the notes with your code.
+  `<store>/.versions/` (the undo ring) is gitignored by a file crib writes there.
+- **Nothing is reindexed.** `chunk_id` is derived from *project-relative* paths, so
+  a migration moves files without changing a single chunk id; the hash-gated
+  reconcile each verb ends with is the verification, and should report 0 changes.
+- **Not on this machine?** A project whose repo isn't cloned here is still listed,
+  flagged `unavailable` with its token; verbs error naming the fix, and the startup
+  reconcile and watcher skip it with one warning. Watch roots are computed at daemon
+  start, so an adoption takes effect on the next restart.
 
 ## Server & daemon
 
