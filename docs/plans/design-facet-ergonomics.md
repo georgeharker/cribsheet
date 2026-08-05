@@ -1,7 +1,15 @@
 # Plan: design/plan facet ergonomics — first-class, edge-aware verbs
 
-Status: approved 2026-08-05, queued behind the repo-local-storage build
-(shares app.py/server.py/cli.py). Governing intent (maintainer): **the facet
+Status: **EXECUTED 2026-08-05** (approved 2026-08-05). All items landed, plus an
+approved mid-build addendum on the plan facet: edge-aware completion
+(`plan_status` → `unblocked`), working-set grouping in `plan_list`, batch
+`plan_add` with `#n` intra-batch deps and optional bodies, the in-progress =
+claimed contract in `plan_next`, and the todo-capture cue in rule 4. The governing
+intent below is recorded as a design note in the cribsheet project
+(`design/design-facet-is-first-class-and-edge-aware-notes-are-backend.md`), and
+the edge principle as `design/every-dependency-edge-propagates-checking.md`.
+
+Governing intent (maintainer): **the facet
 is the interface; notes-in-a-dir is backend only and must not leak into the
 workflow. The causal/dependency edges are the product — every design verb is
 a chance to speak edges.**

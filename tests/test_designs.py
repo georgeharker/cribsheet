@@ -14,6 +14,7 @@ import random
 
 import pytest
 
+from crib import notes
 from crib.app import Crib
 from crib.config import Config
 from crib.designs import Node, _cycles, _rank_between
@@ -31,6 +32,14 @@ def crib(tmp_path, monkeypatch):
 
 def run(coro):
     return asyncio.run(coro)
+
+
+def _set_deps(crib, ref: str, deps: list[str], kind: str = "plan") -> None:
+    """Plant raw dep ids on a node, bypassing `*_dep_add`'s ref resolution — how a
+    hand edit or a git pull introduces a dep the graph can't resolve to a node."""
+    graph = crib.designs._load_graph("p")
+    node = crib.designs._resolve_ref(graph, ref, kind)
+    run(crib.designs._save("p", node, {"deps": deps}))
 
 
 def _node(nid: str, deps: list[str], checked: dict[str, str] | None = None,
@@ -147,7 +156,7 @@ def test_taint_survives_a_plain_note_edit(crib):
     assert row["paths"][0]["chain"] == ["Policies per tool"]
     assert crib.design_check(ref=a["relpath"], project="p")["tainted"] == []
 
-    run(crib.design_verify(b["relpath"], project="p"))
+    run(crib.design_reaffirm(b["relpath"], project="p"))
     assert crib.design_check(project="p")["clean"]
 
 
@@ -157,7 +166,7 @@ def test_frontmatter_churn_does_not_taint(crib):
     run(crib.design_add("A", "body", project="p"))
     b = run(crib.design_add("B", "body", deps=["A"], project="p"))
     run(crib.design_dep_add(b["relpath"], "A", project="p"))   # no-op re-add
-    run(crib.design_verify("A", project="p"))                  # rewrites A's fm
+    run(crib.design_reaffirm("A", project="p"))                # rewrites A's fm
     assert crib.design_check(project="p")["clean"]
 
 
@@ -227,17 +236,26 @@ def test_plan_order_is_topological_with_rank_as_tie_breaker(crib):
     assert crib.plan_list(project="p")["hidden"] == 1
 
 
+def _by_rank(rows):
+    """Titles in RANK order. `plan_list` renders by working-set group (in-progress
+    → ready → blocked), so rank shows through only within a group; these tests are
+    about the rank arithmetic, hence the explicit re-sort."""
+    return [r["title"] for r in sorted(rows, key=lambda r: r["rank"])]
+
+
 def test_plan_move_reorders_without_touching_deps(crib):
     run(crib.plan_add("one", "x", project="p"))
     run(crib.plan_add("two", "x", project="p"))
     three = run(crib.plan_add("three", "x", deps=["one"], project="p"))
-    assert _titles(crib.plan_list(project="p")["items"]) == ["one", "two", "three"]
+    assert _by_rank(crib.plan_list(project="p")["items"]) == ["one", "two", "three"]
     moved = run(crib.plan_move("three", before="two", project="p"))
     assert moved["deps"] == three["deps"]                  # untouched
-    assert _titles(crib.plan_list(project="p")["items"]) == ["one", "three", "two"]
-    # …and a move can never break correctness: the dep still orders it
+    assert _by_rank(crib.plan_list(project="p")["items"]) == ["one", "three", "two"]
+    # …and a move can never break correctness: the dep still orders it. `three`
+    # ranks first now, but its dep keeps it BEHIND `one` in execution order.
     run(crib.plan_move("three", before="one", project="p"))
-    assert _titles(crib.plan_list(project="p")["items"]) == ["one", "three", "two"]
+    assert _by_rank(crib.plan_list(project="p")["items"]) == ["three", "one", "two"]
+    assert _titles(crib.plan_list(project="p")["items"])[0] == "one"
 
 
 def test_plan_add_places_relative_to_neighbours(crib):
@@ -256,6 +274,287 @@ def test_plan_status_validates_and_warns_on_open_deps(crib):
         run(crib.plan_status("one", "blocked", project="p"))
     out = run(crib.plan_status("two", "done", project="p"))   # warns, doesn't block
     assert out["status"] == "done" and out["warnings"]
+
+
+# ── the facet is the interface: dossier, edge-aware writes, facet retrieval ───
+
+def test_design_read_is_a_dossier_not_a_file_fetch(crib):
+    """`design_read` answers the question `note_read` can't: what does this rest
+    on, what rests on it, and has either moved under me."""
+    run(crib.design_add("Base", "the ground", project="p"))
+    run(crib.design_add("Middle", "on the ground", deps=["Base"], project="p"))
+    run(crib.design_add("Top", "on the middle", deps=["Middle"], project="p"))
+
+    d = crib.design_read("Middle", project="p")
+    assert d["title"] == "Middle" and "on the ground" in d["body"]
+    assert [x["title"] for x in d["deps"]] == ["Base"]
+    assert [x["title"] for x in d["dependents"]] == ["Top"]
+    assert d["tainted"] is False and "next" not in d
+    assert d["deps"][0]["status"] == "active" and d["deps"][0]["tainted"] is False
+
+    run(crib.edit_note("design/base.md", "the ground MOVED", project="p"))
+    d = crib.design_read("Middle", project="p")
+    assert d["tainted"] and d["causes"][0]["change_kind"] == "dep-edited"
+    assert d["causes"][0]["dep_title"] == "Base"
+    # the dep itself is CLEAN (it is what moved); the DEPENDENT is flagged in
+    # place, so the dossier shows the blast radius without a second call
+    assert d["deps"][0]["tainted"] is False
+    assert d["dependents"][0]["tainted"] is True
+    assert "design_reaffirm" in d["next"]           # never a flag with no verb
+
+
+def test_design_edit_reports_what_it_tainted(crib):
+    """The edge-aware write: the answer to "I changed this" is "…and here is what
+    that just put out of date", computed against the PRE-edit state."""
+    run(crib.design_add("Base", "the ground", project="p"))
+    run(crib.design_add("Middle", "on the ground", deps=["Base"], project="p"))
+    run(crib.design_add("Top", "on the middle", deps=["Middle"], project="p"))
+    assert crib.design_check(project="p")["clean"]
+
+    out = run(crib.design_edit("Base", "the ground, rewritten", project="p"))
+    # direct dependent AND the transitive one, each with its explaining chain
+    assert {n["title"] for n in out["newly_tainted"]} == {"Middle", "Top"}
+    middle = next(n for n in out["newly_tainted"] if n["title"] == "Middle")
+    assert middle["via"] == ["Middle"]
+    top = next(n for n in out["newly_tainted"] if n["title"] == "Top")
+    assert top["via"] == ["Top → Middle"]
+    assert "design_reaffirm" in out["next"]
+    assert crib.read_note("design/base.md", project="p").endswith(
+        "the ground, rewritten\n")
+
+    # already-tainted dependents are not re-reported as NEWLY tainted
+    again = run(crib.design_edit("Base", "rewritten twice", project="p"))
+    assert again["newly_tainted"] == [] and "next" not in again
+
+
+def test_design_append_extends_and_is_edge_aware(crib):
+    run(crib.design_add("Base", "first para", project="p"))
+    run(crib.design_add("Leaf", "builds on base", deps=["Base"], project="p"))
+    out = run(crib.design_append("Base", "second para", project="p"))
+    body = crib.read_note("design/base.md", project="p")
+    assert "first para" in body and "second para" in body
+    assert [n["title"] for n in out["newly_tainted"]] == ["Leaf"]
+
+
+def test_design_list_tables_and_filters_to_the_stale(crib):
+    run(crib.design_add("Base", "ground", project="p"))
+    run(crib.design_add("Leaf", "on base", deps=["Base"], project="p"))
+    listed = crib.design_list(project="p")
+    assert [r["title"] for r in listed["designs"]] == ["Base", "Leaf"]
+    assert listed["total"] == 2 and listed["tainted"] == 0
+    base = next(r for r in listed["designs"] if r["title"] == "Base")
+    assert base["deps"] == 0 and base["dependents"] == 1
+
+    run(crib.design_edit("Base", "ground moved", project="p"))
+    stale = crib.design_list(tainted=True, project="p")
+    assert [r["title"] for r in stale["designs"]] == ["Leaf"]
+    assert stale["total"] == 2 and stale["filtered"] is True
+
+
+def test_design_add_probes_for_near_duplicate_decisions(crib):
+    """A near-duplicate DECISION forks the graph, so `design_add` runs the same
+    dedupe probe `note_store` does."""
+    run(crib.design_add("Chroma is a cache",
+                        "the vector store is derived and rebuildable", project="p"))
+    out = run(crib.design_add("Chroma is a cache, restated",
+                              "the vector store is derived and rebuildable",
+                              project="p"))
+    assert [s["relpath"] for s in out["similar"]] == ["design/chroma-is-a-cache.md"]
+
+
+def test_a_decision_must_carry_its_rationale(crib):
+    with pytest.raises(ValueError, match="needs a body"):
+        run(crib.design_add("Bare", "   ", project="p"))
+    run(crib.plan_add("Bare item", project="p"))     # a plan item may be title-only
+    assert _titles(crib.plan_list(project="p")["items"]) == ["Bare item"]
+
+
+def test_facet_lookup_annotates_hits_with_status_and_taint(crib):
+    run(crib.design_add("Vector store", "chroma holds the vectors", project="p"))
+    run(crib.plan_add("Swap the vector store", "chroma holds the vectors",
+                      project="p"))
+
+    designs = crib.design_lookup("chroma vectors", project="p")
+    assert [h["relpath"] for h in designs] == ["design/vector-store.md"]
+    assert designs[0]["status"] == "active" and designs[0]["tainted"] is False
+    assert designs[0]["deps"] == 0 and designs[0]["kind"] == "design"
+
+    plans = crib.plan_lookup("chroma vectors", project="p")
+    assert [h["relpath"] for h in plans] == ["plans/swap-the-vector-store.md"]
+    assert plans[0]["status"] == "todo"
+
+
+def test_a_stale_decision_says_so_on_every_retrieval_hit(crib):
+    """The ambient marker: the agent retrieving a stale decision is told at the
+    moment it is reasoning from it — not only if it thinks to run `design_check`."""
+    run(crib.design_add("Ground", "chroma holds the vectors", project="p"))
+    run(crib.design_add("Built on it", "chroma holds the vectors, so we cache",
+                        deps=["Ground"], project="p"))
+    assert not any(h.tainted for h in crib.lookup("chroma vectors", project="p"))
+
+    run(crib.design_edit("Ground", "postgres holds the vectors now", project="p"))
+    hits = {h.relpath: h.tainted for h in crib.lookup("chroma vectors", project="p")}
+    assert hits["design/built-on-it.md"] is True     # its ground moved
+    assert hits["design/ground.md"] is False         # it IS the ground
+    # …and the same flag rides `apropos` and the facet-scoped lookup
+    assert any(h["tainted"] for h in crib.apropos("chroma vectors", project="p"))
+    assert any(h["tainted"] for h in crib.design_lookup("chroma vectors",
+                                                        project="p"))
+
+
+def test_status_counts_stale_decisions_per_project(crib):
+    run(crib.design_add("Ground", "ground", project="p"))
+    run(crib.design_add("Leaf", "on ground", deps=["Ground"], project="p"))
+    row = next(r for r in crib.status()["projects"] if r["project"] == "p")
+    assert "design_tainted" not in row               # silent when nothing is stale
+    run(crib.design_edit("Ground", "ground moved", project="p"))
+    row = next(r for r in crib.status()["projects"] if r["project"] == "p")
+    assert row["design_tainted"] == 1
+
+
+# ── check output prescribes its follow-up ─────────────────────────────────────
+
+def test_check_names_the_change_kind_the_date_and_the_next_verb(crib):
+    run(crib.design_add("Ground", "ground", project="p"))
+    run(crib.design_add("Leaf", "on ground", deps=["Ground"], project="p"))
+    run(crib.design_edit("Ground", "ground moved", project="p"))
+
+    row = crib.design_check(project="p")["tainted"][0]
+    cause = row["causes"][0]
+    assert cause["change_kind"] == "dep-edited"
+    assert cause["dep_title"] == "Ground" and cause["dep_updated"]
+    assert "design_reaffirm design/leaf.md" in row["next"]
+    assert "design_supersede" in row["next"]         # …and the other outcome
+
+    # a superseded dep and a deleted one are DIFFERENT kinds, not one "changed"
+    run(crib.design_reaffirm("Leaf", project="p"))
+    run(crib.design_supersede("Ground", project="p"))
+    assert crib.design_check(project="p")["tainted"][0]["causes"][0]["change_kind"] \
+        == "dep-superseded"
+    run(crib.design_forget("Ground", force=True, project="p"))
+    assert crib.design_check(project="p")["tainted"][0]["causes"][0]["change_kind"] \
+        == "dep-deleted"
+
+
+def test_a_new_edge_is_its_own_change_kind(crib):
+    run(crib.design_add("Ground", "ground", project="p"))
+    run(crib.design_add("Leaf", "standalone", project="p"))
+    run(crib.design_dep_add("Leaf", "Ground", project="p"))
+    cause = crib.design_check(project="p")["tainted"][0]["causes"][0]
+    assert cause["change_kind"] == "new-unverified-edge"
+
+
+# ── plan: mixed deps, batches, and edge-aware completion ──────────────────────
+
+def test_plan_next_mixed_dep_matrix(crib):
+    """The three dep kinds a plan item can carry, and what each does to it: a plan
+    dep gates until done, a design dep gates only while TAINTED, a plain note dep
+    never gates at all."""
+    run(crib.design_add("Ground", "stable ground", project="p"))
+    run(crib.design_add("Origin", "what ground rests on", project="p"))
+    note = run(crib.store_note("just a reference", title="Ref", project="p"))
+    note_id = notes.load(crib.abspath("p", note["relpath"])).frontmatter["id"]
+
+    run(crib.plan_add("earlier", "x", project="p"))
+    run(crib.plan_add("on a plan dep", "x", deps=["earlier"], project="p"))
+    run(crib.plan_add("on a design dep", "x", deps=["Ground"], project="p"))
+    run(crib.plan_add("on a note dep", "x", project="p"))
+    # a note dep can only arrive by hand (or a git pull): `plan_dep_add` resolves
+    # against the graph, and a plain note isn't in it. That it can arrive at all is
+    # exactly why the rule has to be stated.
+    _set_deps(crib, "on a note dep", [note_id])
+
+    # the design dep is UNTAINTED — stable ground, so it does not block
+    ready = _titles(crib.plan_next(project="p")["items"])
+    assert ready == ["earlier", "on a design dep", "on a note dep"]
+    row = next(r for r in crib.plan_list(project="p")["items"]
+               if r["title"] == "on a note dep")
+    assert row["note_deps"] == [note_id] and row["missing_deps"] == []
+
+    # …taint that decision and the item built on it stops being actionable
+    run(crib.design_dep_add("Ground", "Origin", project="p"))
+    ready = _titles(crib.plan_next(project="p")["items"])
+    assert ready == ["earlier", "on a note dep"]
+    blocked = next(r for r in crib.plan_list(project="p")["items"]
+                   if r["title"] == "on a design dep")
+    assert blocked["blocked"] and blocked["blocked_by"][0]["kind"] == "design"
+
+    # a plan dep gates until it is done, as it always did
+    run(crib.plan_status("earlier", "done", project="p"))
+    assert "on a plan dep" in _titles(crib.plan_next(project="p")["items"])
+
+
+def test_a_dangling_dep_is_visible_but_never_wedges_the_plan(crib):
+    run(crib.plan_add("item", "x", project="p"))
+    _set_deps(crib, "item", ["01GONEGONEGONEGONEGONEGONE"])
+    row = crib.plan_list(project="p")["items"][0]
+    assert row["missing_deps"] and not row["blocked"]
+
+
+def test_plan_next_excludes_claimed_items_and_prescribes_the_loop(crib):
+    run(crib.plan_add("one", "x", project="p"))
+    run(crib.plan_add("two", "x", project="p"))
+    run(crib.plan_status("one", "in-progress", project="p"))
+    nxt = crib.plan_next(project="p")
+    assert _titles(nxt["items"]) == ["two"]          # claimed items are taken
+    assert nxt["claimed"] == 1
+    assert "in-progress" in nxt["items"][0]["next"] and "done" in nxt["items"][0]["next"]
+
+
+def test_completing_an_item_names_what_it_unblocked(crib):
+    run(crib.plan_add("first", "x", project="p"))
+    run(crib.plan_add("second", "x", deps=["first"], project="p"))
+    run(crib.plan_add("third", "x", deps=["second"], project="p"))
+    out = run(crib.plan_status("first", "done", project="p"))
+    assert [u["title"] for u in out["unblocked"]] == ["second"]   # not "third"
+    assert out["unblocked"][0]["ref"] == "plans/second.md"
+    # a status that isn't a completion doesn't claim to have unblocked anything
+    assert run(crib.plan_status("second", "in-progress", project="p"))["unblocked"] == []
+
+
+def test_plan_list_groups_the_working_set(crib):
+    run(crib.plan_add("blocker", "x", project="p"))
+    run(crib.plan_add("blocked one", "x", deps=["blocker"], project="p"))
+    run(crib.plan_add("claimed", "x", project="p"))
+    run(crib.plan_add("done one", "x", project="p"))
+    run(crib.plan_status("claimed", "in-progress", project="p"))
+    run(crib.plan_status("done one", "done", project="p"))
+
+    listed = crib.plan_list(project="p")
+    assert [r["group"] for r in listed["items"]] == ["in-progress", "ready", "blocked"]
+    assert _titles(listed["items"]) == ["claimed", "blocker", "blocked one"]
+    assert listed["groups"] == {"in-progress": 1, "ready": 1, "blocked": 1}
+    blocked = listed["items"][-1]
+    assert blocked["blocked_by"][0]["title"] == "blocker"
+    assert blocked["blocked_by"][0]["status"] == "todo"      # named inline
+    assert crib.plan_list(all=True, project="p")["items"][-1]["group"] == "done"
+
+
+def test_plan_add_takes_a_batch_with_intra_batch_deps(crib):
+    out = run(crib.plan_add(items=[
+        {"title": "scaffold", "content": "x"},
+        {"title": "wire it up", "deps": ["#1"]},
+        {"title": "test it", "deps": ["#2"]}], project="p"))
+    assert out["added"] == 3
+    assert [r["title"] for r in out["items"]] == ["scaffold", "wire it up", "test it"]
+    # they land contiguously, in order, with the batch deps resolved to real ids
+    assert _by_rank(crib.plan_list(project="p")["items"]) == ["scaffold", "wire it up",
+                                                             "test it"]
+    assert _titles(crib.plan_next(project="p")["items"]) == ["scaffold"]
+    wired = crib.plan_list(project="p")["items"][1]
+    assert wired["deps"] == [out["items"][0]["id"]]
+
+
+def test_a_batch_dep_can_only_point_backwards(crib):
+    with pytest.raises(ValueError, match="not an EARLIER item"):
+        run(crib.plan_add(items=[{"title": "a", "deps": ["#2"]},
+                                 {"title": "b"}], project="p"))
+
+
+def test_a_single_item_add_keeps_its_shape(crib):
+    out = run(crib.plan_add("one", "body", project="p"))
+    assert out["title"] == "one" and out["relpath"] == "plans/one.md"
+    assert out["added"] == 1 and out["items"][0]["id"] == out["id"]
 
 
 # ── the notes are ordinary notes ──────────────────────────────────────────────

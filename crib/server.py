@@ -198,12 +198,22 @@ def build_server(crib: Crib | None = None):
             "session and reaches other agents: `note_store` a new note, or "
             "`note_append`/`note_edit` one found via `note_lookup`. Prefer updating an existing "
             "note over creating near-duplicates. "
-            "DESIGN + PLANS: when a design question gets SETTLED, `design_add` it "
-            "(with `deps` naming the decisions it builds on) — and before you change "
-            "an existing decision, `design_tree`/`design_check` show what rests on it "
-            "and what has gone stale, so design drift surfaces instead of surprising "
-            "you. For work spanning sessions, `plan_add` the items and `plan_status` "
-            "them as you go; `plan_next` is the 'where was I' at the start of a session. "
+            "DESIGN + PLANS: decisions live in their OWN facet, and its verbs — not "
+            "the note verbs — are the way in, because only they speak the dependency "
+            "EDGES. When a design question gets SETTLED, `design_add` it (with `deps` "
+            "naming the decisions it builds on); to read one, `design_read` (body + "
+            "what it rests on + what rests on it + whether either moved); to find one, "
+            "`design_lookup`; to change one, `design_edit`/`design_append`, which "
+            "answer with the decisions your change just put out of date. Before you "
+            "change a decision — or code implementing one — `design_check` lists what "
+            "has gone stale and why, and `design_reaffirm` clears each one you re-read "
+            "(taint means a dep MOVED, not that the decision is wrong, so reaffirming "
+            "is the cheap normal case). A hit carrying `tainted: true` is a decision "
+            "nobody has re-read since its ground shifted: don't quietly reason from it. "
+            "For work spanning sessions — anytime you'd write a todo list — `plan_add` "
+            "the items (one call takes a batch) and `plan_status` them as you go; "
+            "`plan_next` is the 'where was I' at the start of a session, and completing "
+            "an item names what it unblocked. "
             "CODE: a project may carry a *code symbol index* — its functions, classes, "
             "globals and class members, each with an LLM 'what it does' description, a "
             "real cross-file call graph (callers/callees) and references. For ANY code "
@@ -340,8 +350,10 @@ def build_server(crib: Crib | None = None):
         relpath and the line_start/line_end span of the matching section so
         you can jump straight to it (pair with `note_locate` for the abspath).
         `tags` filters by frontmatter tag — and a note's frontmatter `type`
-        counts as one, so `tags=["design"]` (or `["plan"]`) scopes the search to
-        the design-decision / plan facets.
+        counts as one; to search the design/plan facets prefer `design_lookup` /
+        `plan_lookup`, whose hits also carry the facet state.
+        A hit carrying `tainted: true` is a DESIGN DECISION whose ground moved and
+        that nobody has re-read since (`design_read` it before reasoning from it).
         `keyword_labels`/`keyword_weight` (BM25 keyword_index) and
         `summary_labels` (dense summary_index aliases) override which LLM index
         sets feed retrieval (default from config); mainly for eval sweeps.
@@ -716,6 +728,16 @@ def build_server(crib: Crib | None = None):
         return await crib.learning_rehome(old_fqn, new_fqn, project)
 
     # ── design decisions & plan items (crib/designs.py) ───────────────────────
+    # THE FACET IS THE INTERFACE. These verbs — not `note_read`/`note_edit` on a
+    # path under `design/` — are how decisions are read and written, because only
+    # they can speak the EDGES: what a decision rests on, what rests on it, and
+    # what a change just put out of date. Notes-in-a-directory is the backend.
+    #
+    # Every docstring below states the taint CONTRACT in one line and, where it
+    # applies, the CUE that should make an agent reach for that verb — a tool's
+    # description is its usage instruction (DESIGN §5), and the global rules are
+    # not in front of the model at the moment its hand is already on the tool.
+    #
     # Policy split, declared per verb: the two `*_add` verbs CREATE a durable fact,
     # so they must NAME their project like any other write. Every other verb is
     # keyed by a `ref` that only resolves INSIDE one project — naming the wrong
@@ -729,28 +751,118 @@ def build_server(crib: Crib | None = None):
                          project_path: str | None = None) -> dict[str, Any]:
         """Record a DESIGN DECISION — the choice, why, and what was rejected — as a
         note under `design/`, declaring the decisions it builds on (`deps`: ids,
-        relpaths or titles). Reach for this when a design question gets settled, so
-        the next session can see not just what the code does but what it must keep
-        doing. `checked` is seeded from the deps as they read now, so a new decision
-        starts verified; if one of them later changes, `design_check` says so. Like
-        any write it must NAME its project (`project=`/`project_path=`)."""
+        relpaths or titles).
+
+        CUE: a design question just got SETTLED ("chunks are keyed by X", "writes
+        must name their project"). Reach for this then, so the next session sees
+        not just what the code does but what it must keep doing. A dep is a
+        promise — *if that changes, reconsider this* — and a plain note cannot make
+        that promise.
+
+        CONTRACT: staleness is computed from dep body hashes, so `checked` is
+        seeded from the deps as they read right now and a new decision is born
+        verified; if a dep later changes by ANY path, `design_check` says so.
+        Body required (the rationale is the artifact). The result carries
+        `similar` — near-duplicate decisions FORK THE GRAPH, so if one comes back,
+        prefer `design_append`/`design_edit` on it. Like any write it must NAME its
+        project (`project=`/`project_path=`)."""
         return await crib.design_add(title, content, deps, project)
+
+    @crib_tool("read")
+    def design_read(ref: str, project: str | None = None,
+                    project_path: str | None = None) -> dict[str, Any]:
+        """A decision's DOSSIER in one call — body, status, every dep and dependent
+        annotated (title, status, tainted?), and this decision's own taint with the
+        chains explaining it. The `code_dossier` of the design facet.
+
+        CUE: about to read, cite, or change a decision. Do this INSTEAD of
+        `note_read` on a path under `design/` — same prose, plus what it rests on,
+        what rests on it, and whether either moved under you. The file cannot tell
+        you that; only the graph can.
+
+        CONTRACT: taint is computed live from dep body hashes — an edit by any path
+        (a facet verb, a raw file write, another agent, a git pull) is caught, so
+        never track staleness yourself. When this decision is tainted the result
+        ends with the verb to run next. Resolves its project like a read."""
+        return crib.design_read(ref, project)
+
+    @crib_tool("read")
+    async def design_edit(ref: str, new_content: str, project: str | None = None,
+                          project_path: str | None = None) -> dict[str, Any]:
+        """Rewrite a decision's body THROUGH THE FACET, and get back the causal
+        consequences: `newly_tainted` lists every decision your change just put out
+        of date, each with the chain that explains it — computed against the
+        pre-edit state.
+
+        CUE: changing a decision. PREFER THIS OVER `note_edit` for anything under
+        `design/` — `note_edit` writes the same bytes but tells you nothing, and
+        the whole point of recording a decision was to learn what a change to it
+        implicates. Read it first (`design_read`).
+
+        CONTRACT: hash-taint is the safety net for edits made by any other route,
+        so nothing is lost by editing a decision as a raw file — but only this path
+        can name the consequences in the same breath as the change. Resolves its
+        project like a read, as `design_dep_add` does."""
+        return await crib.design_edit(ref, new_content, project)
+
+    @crib_tool("read")
+    async def design_append(ref: str, content: str, project: str | None = None,
+                            project_path: str | None = None) -> dict[str, Any]:
+        """Extend a decision through the facet — the same edge-aware answer as
+        `design_edit` (`newly_tainted` + chains), for when new information EXTENDS
+        a decision rather than replacing it.
+
+        CUE: you were about to `design_add` a decision that qualifies or elaborates
+        one that already exists. Append to that one instead; a near-duplicate
+        decision forks the graph and splits its dependents between two records.
+        Resolves its project like a read."""
+        return await crib.design_append(ref, content, project)
+
+    @crib_tool("read")
+    def design_lookup(query: str, project: str | None = None, k: int = 8,
+                      project_path: str | None = None) -> list[dict[str, Any]]:
+        """Semantic search scoped to DECISIONS, each hit annotated with what
+        decides whether to trust it: `status`, `tainted`, and dep/dependent counts.
+
+        CUE: about to answer "why is it built this way", or to propose an
+        architecture change. Search the decisions before reconstructing them from
+        the code — and note the `tainted` flag: a stale decision is exactly the one
+        you must not quietly reason from. Follow a hit with `design_read <ref>`.
+
+        CONTRACT: taint is computed live from dep body hashes; `tainted: true` here
+        means a dep moved and nobody has re-read this since. Resolves its project
+        like a read."""
+        return crib.design_lookup(query, project, k)
+
+    @crib_tool("read")
+    def design_list(tainted: bool = False, project: str | None = None,
+                    project_path: str | None = None) -> dict[str, Any]:
+        """Every decision as a flat table — title, ref, status, taint flag, edge
+        counts. The inventory read (`design_tree` is the shape read); `tainted=True`
+        filters to the stale ones, i.e. your work queue of decisions to re-read.
+        Resolves its project like a read."""
+        return crib.design_list(tainted, project)
 
     @crib_tool("read")
     async def design_dep_add(ref: str, dep_ref: str, project: str | None = None,
                              project_path: str | None = None) -> dict[str, Any]:
         """Declare that one decision BUILDS ON another (cycle-checked, refused if it
-        would create one). The new edge is deliberately left unverified, so `ref`
-        shows up in `design_check` until you re-read it against its new dep. Keyed
-        by a ref inside one project, so it resolves that project like a read."""
+        would create one).
+
+        CONTRACT: EVERY dep edge propagates checking — there is no "informed-by"
+        edge that never taints, because that is precisely the hole through which an
+        origin changes silently. The new edge is deliberately left unverified, so
+        `ref` shows up in `design_check` until you re-read it against its new dep.
+        Keyed by a ref inside one project, so it resolves that project like a
+        read."""
         return await crib.design_dep_add(ref, dep_ref, project)
 
     @crib_tool("read")
     async def design_dep_remove(ref: str, dep_ref: str, project: str | None = None,
                                 project_path: str | None = None) -> dict[str, Any]:
         """Drop a dependency edge between two decisions (the edge was wrong, or the
-        decision no longer rests on it). Resolves its project like a read, as
-        `design_dep_add` does."""
+        decision no longer rests on it) — which also drops the checking that edge
+        carried. Resolves its project like a read, as `design_dep_add` does."""
         return await crib.design_dep_remove(ref, dep_ref, project)
 
     @crib_tool("read")
@@ -767,22 +879,39 @@ def build_server(crib: Crib | None = None):
     @crib_tool("read")
     def design_check(ref: str | None = None, project: str | None = None,
                      project_path: str | None = None) -> dict[str, Any]:
-        """WHICH DECISIONS ARE NOW OUT OF DATE — run this before changing a design,
-        and after changing one. Each tainted decision comes with the chain that
-        explains it (`X → Y`, Y being what actually changed), computed live from the
-        deps' current bodies, so an edit made by ANY route (note_edit, your own
-        editor, a git pull) is caught. `design_verify` clears it once you've
-        re-read the decision and it still holds."""
+        """WHICH DECISIONS ARE NOW OUT OF DATE, and what to do about each.
+
+        CUE: BEFORE you change a decision, or change code that implements one —
+        and again after. This is the call that turns an unexpected consequence
+        into an expected one.
+
+        Each tainted entry carries its ref + title, the chain that explains it
+        (`X → Y`, Y being what actually changed), the CHANGE KIND
+        (`dep-edited` | `dep-superseded` | `dep-deleted` | `new-unverified-edge`),
+        the dep's `updated` date, and ends with `next` — the verb to run.
+
+        CONTRACT: computed live from the deps' current bodies, so an edit by ANY
+        route (a facet verb, `note_edit`, your own editor, a git pull) is caught —
+        never track changes yourself, just call this. Taint is COARSE: it means a
+        dep moved, NOT that the decision is wrong. The normal outcome of reading a
+        tainted decision is `design_reaffirm`, which is cheap and expected — not
+        error recovery."""
         return crib.design_check(ref, project)
 
     @crib_tool("read")
-    async def design_verify(ref: str, project: str | None = None,
-                            project_path: str | None = None) -> dict[str, Any]:
+    async def design_reaffirm(ref: str, project: str | None = None,
+                              project_path: str | None = None) -> dict[str, Any]:
         """Re-record a decision's dep hashes — 'I re-read this against what changed
-        and it still holds'. The only thing that clears taint short of rewriting the
-        decision, so only call it after actually re-reading. Resolves its project
-        like a read, as `design_dep_add` does."""
-        return await crib.design_verify(ref, project)
+        and it still holds'. The only thing that clears taint short of rewriting
+        the decision, so only call it after actually re-reading (`design_read`).
+
+        Named as `learning_reaffirm` is, and meaning the same thing: a re-blessing
+        against drift, not a proof. Because taint is coarse — a dep moved — this is
+        the NORMAL, cheap ending for most tainted decisions; a trivial change to a
+        dep should end here, not in soul-searching. When it no longer holds, that's
+        `design_supersede`. Resolves its project like a read, as `design_dep_add`
+        does."""
+        return await crib.design_reaffirm(ref, project)
 
     @crib_tool("read")
     def design_tree(ref: str | None = None, direction: str = "deps", depth: int = 6,
@@ -790,8 +919,9 @@ def build_server(crib: Crib | None = None):
                     project_path: str | None = None) -> dict[str, Any]:
         """The dependency TREE around a decision: `deps` (what it builds on) or
         `dependents` (what would be affected if you changed it) — the read to do
-        BEFORE touching a decision. Every node is taint-flagged. Without `ref`,
-        renders every root."""
+        BEFORE touching a decision, or before proposing an architecture change.
+        Every node is taint-flagged. Without `ref`, renders every root.
+        (`design_read` is the same picture for ONE decision, plus its body.)"""
         return crib.design_tree(ref, direction, depth, project)
 
     @crib_tool("read")
@@ -800,31 +930,69 @@ def build_server(crib: Crib | None = None):
                                project_path: str | None = None) -> dict[str, Any]:
         """Soft-delete a decision that was REPLACED (name the replacement with
         `by_ref`): marks it superseded, keeps it readable as history, and taints
-        everything that built on it so those get re-checked. Resolves its project
+        everything that built on it so those get re-checked — those dependents come
+        back from `design_check` with change kind `dep-superseded`.
+
+        This is where a tainted decision goes when re-reading shows it NO LONGER
+        HOLDS; when it still holds, that's `design_reaffirm`. Resolves its project
         like a read, as `design_dep_add` does."""
         return await crib.design_supersede(ref, by_ref, project)
 
     @crib_tool("write")
-    async def plan_add(title: str, content: str, deps: list[str] | None = None,
-                       after: str | None = None, before: str | None = None,
+    async def plan_add(title: str | None = None, content: str = "",
+                       deps: list[str] | None = None, after: str | None = None,
+                       before: str | None = None,
+                       items: list[dict[str, Any]] | None = None,
                        project: str | None = None,
                        project_path: str | None = None) -> dict[str, Any]:
-        """Add a durable PLAN ITEM — what to do plus its acceptance criteria — so
-        multi-session work survives a context reset. `deps` are must-precede items
-        (plan or design refs); `after`/`before` place it in the order (default:
-        end). Order is preference, deps are correctness. Like any write it must NAME
-        its project."""
-        return await crib.plan_add(title, content, deps, after, before, project)
+        """Add durable PLAN ITEMS so multi-session work survives a context reset.
+
+        CUE: you are about to write a todo list — into a file, into the chat, or
+        into your own head. Put it here instead: `plan_next` resumes it in any
+        later session, yours or another agent's, and an in-chat list dies with the
+        chat.
+
+        One item (`title`, optional `content`) or a BATCH: `items=[{title,
+        content?, deps?}, …]`, added contiguously in order. A batch item may depend
+        on an EARLIER item of the same batch by position (`deps=["#1"]`) as well as
+        on any existing ref — which is what you usually mean, since the item you
+        just wrote has no id yet. A plan item's body is OPTIONAL (a title is a
+        legitimate whole item); a design decision's is not.
+
+        `deps` are must-precede refs (plan or design); `after`/`before` place the
+        batch in the order (default: end). Order is preference, deps are
+        correctness. Like any write it must NAME its project."""
+        return await crib.plan_add(title, content, deps, after, before, items,
+                                   project)
 
     @crib_tool("read")
     async def plan_status(ref: str, status: str, project: str | None = None,
                           project_path: str | None = None) -> dict[str, Any]:
-        """Move an item along: `todo` | `in-progress` | `done` | `verified`. Call it
-        as you go, not at the end — a resumed session reads this. (`blocked` is
-        DERIVED from deps and never set here.) Marking done with unfinished deps
-        warns rather than blocks. Keyed by a ref inside one project, so it resolves
-        that project like a read."""
+        """Move an item along: `todo` | `in-progress` | `done` | `verified` — and
+        find out what that just freed.
+
+        Completing an item answers with `unblocked`: the items whose deps are now
+        all satisfied. That is the plan-side mirror of `design_edit`'s
+        `newly_tainted` — finishing work is an edge event, so the next actionable
+        step arrives with the completion instead of waiting to be asked for.
+
+        CUE: as you go, not at the end — a resumed session (or another agent) reads
+        this. `in-progress` is a CLAIM: it takes the item out of everyone else's
+        `plan_next`. (`blocked` is DERIVED from deps and never set here.) Marking
+        done with unfinished deps warns rather than blocks. Keyed by a ref inside
+        one project, so it resolves that project like a read."""
         return await crib.plan_status(ref, status, project)
+
+    @crib_tool("read")
+    def plan_lookup(query: str, project: str | None = None, k: int = 8,
+                    project_path: str | None = None) -> list[dict[str, Any]]:
+        """Semantic search scoped to PLAN ITEMS, each hit annotated with `status`,
+        `tainted` and dep/dependent counts.
+
+        CUE: "was this already planned?" — before adding an item, and when picking
+        up work described in prose rather than by ref. Resolves its project like a
+        read."""
+        return crib.plan_lookup(query, project, k)
 
     @crib_tool("read")
     async def plan_dep_add(ref: str, dep_ref: str, project: str | None = None,
@@ -862,17 +1030,32 @@ def build_server(crib: Crib | None = None):
     @crib_tool("read")
     def plan_list(all: bool = False, project: str | None = None,
                   project_path: str | None = None) -> dict[str, Any]:
-        """THE PLAN, in execution order (topological by deps, rank breaking ties),
-        each item flagged `blocked` when a dep isn't done. Read this when picking up
-        work — it's the persistent, resumable version of a todo list. Finished items
-        are hidden unless `all`."""
+        """THE PLAN as a working set: in-progress items first, then ready, then
+        blocked (each naming what it waits on), finished hidden unless `all`.
+        Topological + rank order holds within each group.
+
+        Read this when picking up work — it's the persistent, resumable version of
+        a todo list.
+
+        CONTRACT (mixed deps): a **plan** dep blocks until it is done/verified; a
+        **design** dep blocks only while it is TAINTED (an untainted decision is
+        stable ground; a tainted one means the ground moved); a plain **note** dep
+        never blocks — it is a reference, not a gate."""
         return crib.plan_list(all, project)
 
     @crib_tool("read")
     def plan_next(k: int = 5, project: str | None = None,
                   project_path: str | None = None) -> dict[str, Any]:
-        """What to do NEXT: `todo` items whose deps are all satisfied, in order.
-        The one-call 'where was I' at the start of a session."""
+        """What to do NEXT: `todo` items nothing blocks, in order. The one-call
+        'where was I' at the start of a session.
+
+        EXCLUDES `in-progress` items by design — in-progress means CLAIMED, and
+        several agents may read one plan. Each returned item carries the loop to
+        run: mark it `in-progress` when you take it (that is how the claim becomes
+        visible), `done` when you finish (the result names what you unblocked).
+
+        CONTRACT (mixed deps): plan deps block until done; design deps block while
+        tainted; note deps never block."""
         return crib.plan_next(k, project)
 
     @crib_tool("none")
@@ -926,7 +1109,9 @@ def build_server(crib: Crib | None = None):
     @crib_tool("none")
     def status() -> dict[str, Any]:
         """One-call health summary: every project's inventory (notes, in-situ doc
-        chunks, code symbols, learnings), git-sync state (dirty/ahead/behind),
+        chunks, code symbols, learnings), how many of its design decisions have
+        gone stale (`design_tainted` — `design_check` says which and why),
+        git-sync state (dirty/ahead/behind),
         which warm LSP sessions are attached (alive/busy/idle), and any indexing
         currently in flight. `sweeps` is the RELIABLE wait signal for a background
         `project_index`: {project: {done, total}} while it runs, absent when done —

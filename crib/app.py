@@ -30,7 +30,7 @@ from .refs import Refs
 from .embed import build_embedder, embed_batch, embed_query_batch
 from .gitbacking import GitBacking
 from .codequery import CodeQuery
-from .designs import Designs
+from .designs import DESIGN_DIR, Designs
 from .indexer import IndexEngine, IndexResult
 from .learnings import Learnings
 from .notes import Note, NoteParseError
@@ -73,6 +73,11 @@ class LookupHit:
     # True while this project's vectors are still being rebuilt after a store wipe
     # (embedder profile change): the result set is INCOMPLETE, not authoritative
     index_rebuilding: bool = False
+    # True when this hit IS a design decision that a dep change has tainted — the
+    # ambient marker, on the same footing as `index_rebuilding`: the moment an
+    # agent retrieves a stale decision is the only moment the warning can change
+    # what it does with it.
+    tainted: bool = False
 
 
 def _resolve_embed_config(config: Config) -> Any:
@@ -1007,6 +1012,10 @@ class Crib:
         # incomplete, so every hit says so rather than thin results reading as "all
         # there is" (cleared per project by the recovery sweep)
         rebuilding = proj in self._resweep_pending
+        # Tainted design notes, loaded LAZILY and at most once per lookup — a
+        # frontmatter-only graph scan, and only when a hit actually lands under
+        # `design/`, so the ambient marker costs nothing on the common query.
+        stale_designs: set[str] | None = None
         hits, seen = [], set()
         line_maps: dict[str, dict[str, tuple[int, int]]] = {}
         for h in raw:
@@ -1035,6 +1044,12 @@ class Crib:
             # `heading#n`; the bare breadcrumb is occurrence 1 (chunk.section_key).
             span = line_maps[rp].get(
                 section_key(heading, int(h.metadata.get("occurrence", 1) or 1)))
+            if rp.startswith(f"{DESIGN_DIR}/"):
+                if stale_designs is None:
+                    stale_designs = self.designs.tainted_designs(proj)
+                stale = rp in stale_designs
+            else:
+                stale = False
             hits.append(LookupHit(
                 project=proj, relpath=rp,
                 heading=heading,
@@ -1044,6 +1059,7 @@ class Crib:
                 line_start=span[0] if span else None,
                 line_end=span[1] if span else None,
                 index_rebuilding=rebuilding,
+                tainted=stale,
             ))
             if len(hits) >= k:
                 break
@@ -1615,9 +1631,10 @@ class Crib:
     def status(self) -> dict[str, Any]:
         """One-call health summary (the `status` CLI verb / MCP tool): every
         project's inventory (notes, in-situ doc chunks, code symbols, learnings),
-        git-sync state, the warm LSP sessions (which servers are attached,
-        alive/busy/idle), and any in-flight indexing. Counts are cheap file
-        counts (1 toml = 1 symbol), never full parses."""
+        any stale design decisions (`design_tainted`), git-sync state, the warm LSP
+        sessions (which servers are attached, alive/busy/idle), and any in-flight
+        indexing. Counts are cheap file counts (1 toml = 1 symbol), never full
+        parses."""
         from .codeindex import _POOL, LEARNINGS_DIR
         projects = []
         for name in self.projects():
@@ -1634,6 +1651,13 @@ class Crib:
                 "symbols": sum(1 for _ in sd.glob("*.toml")) if sd.exists() else 0,
                 "doc_chunks": doc_chunks,
             }
+            # Stale decisions, on the same footing as `reconciling`/
+            # `index_rebuilding`: an ambient count nobody has to think to ask for.
+            # A frontmatter-only graph scan, and reported only when non-zero, so a
+            # project with nothing stale stays silent.
+            stale = len(self.designs.tainted_designs(name))
+            if stale:
+                row["design_tainted"] = stale
             if pp.in_repo:
                 # notes counted above are 0 when the store isn't here — say WHY,
                 # rather than reading as an empty project
@@ -1761,14 +1785,66 @@ class Crib:
 
     # ── Design decisions & plan items: delegate to Designs (crib/designs.py) ───
     # Same shape as the learnings block: resolve the project, then delegate to a
-    # core that takes it explicitly. Both facets are notes, so read/edit stay
-    # `note_read`/`note_edit` — only the graph verbs live here.
+    # core that takes it explicitly. The FACET is the interface — reads, writes and
+    # retrieval all have their own verbs here, so a caller never has to know the
+    # decisions are notes in a directory (they are; that's backend).
     async def design_add(self, title: str, content: str,
                          deps: list[str] | None = None, project: str | None = None,
                          cwd: Path | None = None) -> dict[str, Any]:
-        """Record a design decision (deps validated + `checked` seeded)."""
-        return await self.designs.design_add(
-            self.resolve_project(project, cwd), title, content, deps)
+        """Record a design decision (deps validated + `checked` seeded), with the
+        same near-duplicate probe `note_store` runs.
+
+        A near-duplicate DECISION is worse than a near-duplicate note: it forks
+        the graph, so two half-authoritative decisions each collect their own
+        dependents and neither taints the other's."""
+        proj = self.resolve_project(project, cwd)
+        out = await self.designs.design_add(proj, title, content, deps)
+        similar = await asyncio.to_thread(self._similar, proj, content,
+                                          out["relpath"])
+        return {**out, "similar": similar}
+
+    def design_read(self, ref: str, project: str | None = None,
+                    cwd: Path | None = None) -> dict[str, Any]:
+        """A decision's dossier: body, status, annotated edges, taint + chains."""
+        return self.designs.design_read(self.resolve_project(project, cwd), ref)
+
+    async def design_edit(self, ref: str, new_content: str,
+                          project: str | None = None,
+                          cwd: Path | None = None) -> dict[str, Any]:
+        """Rewrite a decision through the facet; result names what it tainted."""
+        return await self.designs.design_edit(self.resolve_project(project, cwd),
+                                              ref, new_content)
+
+    async def design_append(self, ref: str, content: str,
+                            project: str | None = None,
+                            cwd: Path | None = None) -> dict[str, Any]:
+        """Extend a decision through the facet; result names what it tainted."""
+        return await self.designs.design_append(self.resolve_project(project, cwd),
+                                                ref, content)
+
+    def design_list(self, tainted: bool = False, project: str | None = None,
+                    cwd: Path | None = None) -> dict[str, Any]:
+        """Every decision as a flat table (`tainted` filters to the stale ones)."""
+        return self.designs.design_list(self.resolve_project(project, cwd), tainted)
+
+    def design_lookup(self, query: str, project: str | None = None, k: int = 8,
+                      cwd: Path | None = None) -> list[dict[str, Any]]:
+        """Retrieval scoped to the DESIGN facet, each hit annotated with the facet
+        state that decides whether to trust it (`status`, `tainted`, edge counts).
+
+        The type-as-tag plumbing underneath (`tags=["design"]`) stays; it stops
+        being the interface."""
+        return self.designs.annotate_hits(
+            self.resolve_project(project, cwd),
+            [vars(h) for h in self.lookup(query, project, k, ["design"], cwd=cwd)])
+
+    def plan_lookup(self, query: str, project: str | None = None, k: int = 8,
+                    cwd: Path | None = None) -> list[dict[str, Any]]:
+        """Retrieval scoped to the PLAN facet, hits annotated as `design_lookup`
+        annotates its own."""
+        return self.designs.annotate_hits(
+            self.resolve_project(project, cwd),
+            [vars(h) for h in self.lookup(query, project, k, ["plan"], cwd=cwd)])
 
     async def design_dep_add(self, ref: str, dep_ref: str, project: str | None = None,
                              cwd: Path | None = None) -> dict[str, Any]:
@@ -1795,10 +1871,12 @@ class Crib:
         """Which decisions are stale with respect to what they build on."""
         return self.designs.design_check(self.resolve_project(project, cwd), ref)
 
-    async def design_verify(self, ref: str, project: str | None = None,
-                            cwd: Path | None = None) -> dict[str, Any]:
-        """Re-record a decision's dep hashes after re-reading it."""
-        return await self.designs.design_verify(self.resolve_project(project, cwd), ref)
+    async def design_reaffirm(self, ref: str, project: str | None = None,
+                              cwd: Path | None = None) -> dict[str, Any]:
+        """Re-record a decision's dep hashes after re-reading it (the cheap,
+        normal outcome of a taint — not error recovery)."""
+        return await self.designs.design_reaffirm(self.resolve_project(project, cwd),
+                                                  ref)
 
     def design_tree(self, ref: str | None = None, direction: str = "deps",
                     depth: int = 6, project: str | None = None,
@@ -1814,13 +1892,17 @@ class Crib:
         return await self.designs.design_supersede(
             self.resolve_project(project, cwd), ref, by_ref)
 
-    async def plan_add(self, title: str, content: str, deps: list[str] | None = None,
-                       after: str | None = None, before: str | None = None,
+    async def plan_add(self, title: str | None = None, content: str = "",
+                       deps: list[str] | None = None, after: str | None = None,
+                       before: str | None = None,
+                       items: list[dict[str, Any]] | None = None,
                        project: str | None = None,
                        cwd: Path | None = None) -> dict[str, Any]:
-        """Add a plan item (ranked at the end unless after/before place it)."""
+        """Add one plan item, or a whole batch (`items`), ranked at the end unless
+        after/before place them."""
         return await self.designs.plan_add(self.resolve_project(project, cwd),
-                                           title, content, deps, after, before)
+                                           title, content, deps, after, before,
+                                           items)
 
     async def plan_status(self, ref: str, status: str, project: str | None = None,
                           cwd: Path | None = None) -> dict[str, Any]:

@@ -47,21 +47,34 @@ To pin a hard-won insight about a symbol: `code_append <symbol> "…"`.
 
 ### 4. Deciding something — or about to change a decision? Use the graph.
 
-Three cues, one facet:
+Decisions and plans have their **own verbs**. Use those, not `note_*`: a note holds
+the prose, but only the facet knows what a decision rests on, what rests on it, and
+what your change just invalidated. That last part is the whole point.
 
-- **A decision with consequences just got made** ("chunks are keyed by X", "writes
-  must name their project"): `design_add <title> <rationale>` with `--dep` on the
-  decisions it builds on. A dep is a promise: *if that changes, reconsider this.*
-  A plain note can't make that promise; the graph can.
-- **About to change code that implements a decision** — or edit the decision
-  itself: `design_check` first. It lists every dependent decision tainted by the
-  change, with the dependency path explaining *why* it's implicated. After
-  reconsidering each, `design_verify` marks it current again. This is how
-  unexpected consequences become expected ones.
-- **Multi-step work you might not finish this session**: `plan_add` items with
-  deps between them; `plan_status` as you go; `plan_next` tells any future
-  session (yours or another agent's) exactly what's actionable now. Prefer it
-  over an in-conversation todo list for anything that outlives the chat.
+| your next move was | do this instead |
+|---|---|
+| a decision with consequences just got made | `design_add <title> <rationale>` with `--dep` on what it builds on |
+| read / cite a decision | `design_read <ref>` — body **plus** deps, dependents, and whether either moved |
+| search for why it's built this way | `design_lookup "<query>"` — hits flag stale decisions |
+| change a decision | `design_edit` / `design_append` — the result lists what you just tainted |
+| about to write a todo list (file, chat, or your head) | `plan_add` — it survives the session, and `plan_next` resumes it |
+
+- **A dep is a promise**: *if that changes, reconsider this.* A plain note can't
+  make that promise; the graph can. Every edge checks — there is no "just for
+  reference" edge that lets an origin change silently.
+- **About to change code that implements a decision** — or the decision itself:
+  `design_check` first. Each stale decision comes back with the chain explaining
+  *why*, what kind of change did it, when, and the verb to run. After
+  reconsidering, `design_reaffirm` marks it current. Taint means *a dep moved*,
+  not *you were wrong* — reaffirming is the cheap, normal ending, so don't treat
+  it as a crisis. When it genuinely no longer holds, `design_supersede`.
+- **A hit marked `tainted`** is a decision whose ground shifted and nobody
+  re-read. Don't quietly reason from it — `design_read` it first.
+- **Multi-step work you might not finish this session**: `plan_add` the items
+  (one call takes a whole batch, and deps can point at earlier items in it);
+  `plan_status` as you go — `in-progress` is a *claim* other agents see, and
+  marking one `done` tells you what it just unblocked. `plan_next` tells any
+  future session (yours or another agent's) exactly what's actionable now.
 
 `design_tree` renders what a decision rests on (or `--dependents`: what rests on
 it) — read it before proposing architecture changes, the same way rule 1 says to

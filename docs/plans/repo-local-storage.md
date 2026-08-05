@@ -143,8 +143,38 @@ defaults, both calling the *same* function in `project_services.py` /
 `app.py` — no logic in `server.py` or `cli.py` beyond arg plumbing and
 formatting. Update `docs/surface.md`.
 
+## Follow-ups (approved 2026-08-05, not yet executed)
+
+### F1 — store exclusion from `.crib` globs (latent-bug fix; do promptly)
+
+A `.crib` with `docs: [**/*.md]` (or any glob reaching the store) matches the
+in-repo store's notes and indexes them a SECOND time as in-situ docs —
+different chunk identities (`<relpath>` as note vs `sources/<repo>/…` as
+doc), so real duplicates and retrieval decoys, not hash-gated no-ops. Fix as
+one rule at every enumeration point: **paths under the declared store dir
+never match `.crib` globs** — `index_docs_insitu` expansion, code sweep glob
+expansion, and the code/doc watcher decode (same treatment `.git`/
+`.versions` get). `project adopt` additionally warns when existing globs
+would overlap the store. Tests: adopted project + `**/*.md` docs glob →
+store notes indexed once (as notes only); watcher edit in store fires the
+notes path only.
+
+### F2 — optional annotation-tier flip (`store_index: true`) — parity, not default
+
+For mechanism parity, allow (never default) moving the annotation tier —
+`symbol_index/*.toml` (LLM descriptions, keywords, learning pins) + section
+facets — into the store: `.crib` gains `store_index: true`, adopt/release
+honor it. The deliberately-unrouted call sites are enumerated in this doc's
+execution report (codeindexer/codestore/refs/learnings/app SymbolIndex+
+SectionIndex construction) — route them through ProjectPaths. Repo-noise
+guidance: mark the dir `linguist-generated` via .gitattributes; merge safety
+already exists (tomllib-or-merge-dirty parsing, content-addressed facets).
+Chroma, machine-local registries and the stub NEVER move. Maintainer stance:
+"probably could be, not convinced it's optimal — possible for parity";
+global stays default and recommended.
+
 ## Out of scope
 
 - Overlay/split storage (some notes global, some in-repo).
-- Moving config or index tiers in-repo.
+- Moving the config tier or Chroma in-repo (F2 covers only annotations).
 - Live rebinding of watcher roots without daemon restart.

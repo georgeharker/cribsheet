@@ -25,6 +25,56 @@ def _read_content(value: str) -> str:
     return sys.stdin.read() if value == "-" else value
 
 
+_EDITOR_HINT = (
+    "# Write the body below. Lines starting with '#' are ignored, and an empty\n"
+    "# file aborts.\n")
+
+
+def _from_editor(what: str) -> str:
+    """Open `$EDITOR` on a scratch file and return what came back.
+
+    The escape hatch for the worst friction in this surface: a design decision is
+    a paragraph or five, and shell-quoting prose is miserable enough that it
+    quietly pushes people toward one-line decisions. Only ever reached on a tty
+    with the body omitted — a pipeline reads stdin instead."""
+    import os
+    import subprocess
+    import tempfile
+    editor = os.environ.get("EDITOR") or os.environ.get("VISUAL") or "vi"
+    with tempfile.NamedTemporaryFile("w+", suffix=".md", delete=False) as fh:
+        fh.write(f"\n{_EDITOR_HINT}# ({what})\n")
+        path = Path(fh.name)
+    try:
+        subprocess.run([*editor.split(), str(path)], check=True)
+        text = path.read_text()
+    finally:
+        path.unlink(missing_ok=True)
+    body = "\n".join(ln for ln in text.splitlines()
+                     if not ln.startswith("#")).strip()
+    if not body:
+        raise SystemExit(f"crib: empty body — {what} aborted")
+    return body
+
+
+def _body(value: str | None, file: str | None = None, *,
+          what: str = "body", default: str | None = None) -> str:
+    """Body text for a write verb, from whichever way the caller wants to give it:
+    `--file <path>`, `-` (stdin), the positional argument, or — when it's omitted
+    at a terminal — `$EDITOR`. Omitted with stdin NOT a tty means a pipeline: read
+    stdin, don't try to open an editor into a pipe."""
+    if file:
+        return Path(file).expanduser().read_text()
+    if value == "-":
+        return sys.stdin.read()
+    if value is not None:
+        return value
+    if default is not None:
+        return default              # optional body (a plan item may be title-only)
+    if sys.stdin.isatty() and sys.stdout.isatty():
+        return _from_editor(what)
+    return sys.stdin.read()
+
+
 def _split_labels(spec: str | None) -> list[str] | None:
     """Parse a `--keywords a,b,c` spec into a label list.
 
@@ -66,7 +116,8 @@ def _emit_apropos(hits: Any, as_json: bool) -> None:
         loc = (f":{h.get('line_start')}-{h.get('line_end')}"
                if h.get("line_start") else "")
         head = f" — {h['heading']}" if h.get("heading") else ""
-        print(f"\n[{h.get('score', 0.0):.3f}] {h.get('relpath', '')}{loc}{head}")
+        stale = "  ⚠ stale decision (a dep moved)" if h.get("tainted") else ""
+        print(f"\n[{h.get('score', 0.0):.3f}] {h.get('relpath', '')}{loc}{head}{stale}")
         _render_markdown(h.get("section") or "")
     _emit_rebuilding_note(hits)
 
@@ -122,12 +173,16 @@ def _emit_human_one(item: Any) -> None:
             heading=item.get("heading", ""), title=item.get("title", ""),
             snippet=item.get("snippet", ""), score=item.get("score", 0.0),
             line_start=item.get("line_start"), line_end=item.get("line_end"),
-            index_rebuilding=bool(item.get("index_rebuilding")))
+            index_rebuilding=bool(item.get("index_rebuilding")),
+            tainted=bool(item.get("tainted")))
     if isinstance(item, LookupHit):
         loc = f":{item.line_start}-{item.line_end}" if item.line_start else ""
         head = f"  {item.heading}" if item.heading else ""
         first = item.snippet.splitlines()[0][:100] if item.snippet else ""
-        print(f"[{item.score:.3f}] {item.relpath}{loc}{head}\n    {first}")
+        # a stale DECISION says so on the hit itself: the moment you retrieve it is
+        # the moment the warning can still change what you do with it
+        stale = f"  {_TAINT} stale (a dep moved — `crib design read`)" if item.tainted else ""
+        print(f"[{item.score:.3f}] {item.relpath}{loc}{head}{stale}\n    {first}")
     elif isinstance(item, dict) and ("relpath" in item or "from" in item):
         _emit_write_result(item)
     elif isinstance(item, dict):
@@ -241,9 +296,13 @@ def _emit_status(d: Any, as_json: bool) -> None:
     if projs:
         w = max(len(p["project"]) for p in projs)
         for p in projs:
+            # stale decisions ride along on the inventory line: an ambient count
+            # nobody has to think to ask for (`crib design check` says which)
+            stale = (f"  ⚠ {p['design_tainted']} stale decision(s)"
+                     if p.get("design_tainted") else "")
             print(f"  {p['project']:{w}}  notes {p['notes']:4}  "
                   f"docs {p['doc_chunks']:4}  symbols {p['symbols']:5}  "
-                  f"learnings {p['learnings']:3}")
+                  f"learnings {p['learnings']:3}{stale}")
 
 
 def _emit_projects(rows: Any, as_json: bool) -> None:
@@ -437,7 +496,8 @@ def _emit_design_tree(data: Any, args: Any) -> None:
 
 
 def _emit_design_check(data: Any, args: Any) -> None:
-    """Tainted decisions with the chain that explains each one."""
+    """Tainted decisions: the chain that explains each, WHAT changed and when, and
+    the verb to run next — a flag with no prescribed follow-up is a dead end."""
     if getattr(args, "json", False):
         print(json.dumps(data, indent=2, default=str)); return
     rows = (data or {}).get("tainted") or []
@@ -447,44 +507,147 @@ def _emit_design_check(data: Any, args: Any) -> None:
         print(f"✓ {data.get('designs', 0)} decision(s), none stale"); return
     for r in rows:
         print(f"{_TAINT} {r.get('title', '')}   {r.get('relpath', '')}")
-        for reason in r.get("reasons") or []:
-            print(f"    • {reason}")
+        for c in r.get("causes") or []:
+            # the date is already inside `reason` when there is one — the bracket
+            # carries only the kind, so the line doesn't say it twice
+            print(f"    • [{c.get('change_kind', '?')}] {c.get('reason', '')}")
+        if not (r.get("causes") or []):
+            for reason in r.get("reasons") or []:
+                print(f"    • {reason}")
         for p in r.get("paths") or []:
             chain = " → ".join(p.get("chain") or [])
             if len(p.get("chain") or []) > 1:
                 print(f"      via {chain}")
-    print(f"\n{len(rows)} of {data.get('designs', 0)} decision(s) need re-checking — "
-          f"read one, then `crib design verify <ref>`")
+        print(f"    → {r.get('next', '')}")
+    print(f"\n{len(rows)} of {data.get('designs', 0)} decision(s) need re-reading — "
+          f"`crib design read <ref>`, then `crib design reaffirm <ref>` "
+          f"(taint means a dep moved, not that the decision is wrong)")
+
+
+def _emit_facet_hits(hits: Any, args: Any) -> None:
+    """`design lookup` / `plan lookup`: a locator line per hit carrying the facet
+    state that decides whether to trust it — status, taint, edge counts."""
+    if getattr(args, "json", False):
+        print(json.dumps(hits, indent=2, default=str)); return
+    if not hits:
+        print("(no matches)"); return
+    for h in hits:
+        loc = (f":{h.get('line_start')}-{h.get('line_end')}"
+               if h.get("line_start") else "")
+        st = f"  [{h['status']}]" if h.get("status") else ""
+        edges = (f"  {h.get('deps', 0)}▸/{h.get('dependents', 0)}◂"
+                 if "deps" in h else "")
+        stale = f"  {_TAINT} stale" if h.get("tainted") else ""
+        print(f"[{h.get('score', 0.0):.3f}] {h.get('title', '')}{st}{edges}{stale}"
+              f"   {h.get('relpath', '')}{loc}")
+        first = (h.get("snippet") or "").splitlines()
+        if first:
+            print(f"    {first[0][:100]}")
+    if any(h.get("tainted") for h in hits):
+        print(f"\n{_TAINT} a stale decision is one whose ground moved and nobody "
+              f"re-read — `crib design read <ref>` before relying on it")
+
+
+def _emit_design_read(data: Any, args: Any) -> None:
+    """A decision's dossier: header, taint, body, then the annotated edges — the
+    `code dossier` layout, so the two read the same way."""
+    if getattr(args, "json", False):
+        print(json.dumps(data, indent=2, default=str)); return
+    if not isinstance(data, dict):
+        print(data); return
+    sup = "  [superseded]" if data.get("status") == "superseded" else ""
+    flag = f"  {_TAINT} STALE" if data.get("tainted") else ""
+    print(f"{data.get('title', '')}{sup}{flag}   {data.get('relpath', '')}"
+          f"   (updated {data.get('updated', '?')})")
+    for c in data.get("causes") or []:
+        print(f"  • [{c.get('change_kind', '?')}] {c.get('reason', '')}")
+    for p in data.get("paths") or []:
+        if len(p.get("chain") or []) > 1:
+            print(f"    via {' → '.join(p['chain'])}")
+    if data.get("next"):
+        print(f"  → {data['next']}")
+    print()
+    _render_markdown((data.get("body") or "").strip() + "\n")
+    for label, arrow in (("deps", "▸ builds on"), ("dependents", "◂ built on by")):
+        rows = data.get(label) or []
+        if not rows:
+            continue
+        print(f"  {arrow}")
+        for r in rows:
+            mark = f" {_TAINT}" if r.get("tainted") else ""
+            st = f"  [{r['status']}]" if r.get("status") else ""
+            print(f"     {r.get('title', '')}{st}{mark}   {r.get('relpath', '')}")
+
+
+def _emit_design_list(data: Any, args: Any) -> None:
+    """Flat decision table: taint, title, edge counts, relpath."""
+    if getattr(args, "json", False):
+        print(json.dumps(data, indent=2, default=str)); return
+    for cyc in (data or {}).get("cycles") or []:
+        print(f"✗ dependency CYCLE: {' → '.join(cyc)}")
+    rows = (data or {}).get("designs") or []
+    if not rows:
+        print("(no decisions"
+              + (" are stale — ✓)" if data.get("filtered")
+                 else " — `crib design add <title>`)"))
+        return
+    for r in rows:
+        mark = _TAINT if r.get("tainted") else " "
+        sup = "  [superseded]" if r.get("status") == "superseded" else ""
+        print(f"{mark} {r.get('title', '')}{sup}"
+              f"   {r.get('deps', 0)}▸/{r.get('dependents', 0)}◂"
+              f"   {r.get('relpath', '')}")
+    stale = data.get("tainted", 0)
+    print(f"\n{len(rows)} of {data.get('total', 0)} decision(s)"
+          + (f", {stale} stale — `crib design check`" if stale and not data.get("filtered")
+             else ""))
 
 
 _PLAN_GLYPH = {"todo": "·", "in-progress": "▶", "done": "✓", "verified": "✓✓"}
 
 
+_GROUP_HEADS = {"in-progress": "in progress", "ready": "ready",
+                "blocked": "blocked", "done": "done"}
+
+
 def _emit_plan_list(data: Any, args: Any) -> None:
-    """The plan in execution order; `⛔` marks a derived-blocked item."""
+    """The plan as a WORKING SET: in-progress, then ready, then blocked (each
+    naming what it waits on), then done — not a graph dump. `⛔` marks a
+    derived-blocked item."""
     if getattr(args, "json", False):
         print(json.dumps(data, indent=2, default=str)); return
     for cyc in (data or {}).get("cycles") or []:
         print(f"✗ dependency CYCLE: {' → '.join(cyc)}")
     items = (data or {}).get("items") or []
     if not items:
-        print("(nothing to do — `crib plan add <title> <body>`"
+        print("(nothing to do — `crib plan add <title>`"
               + (", `--all` shows finished items)" if data.get("hidden") else ")"))
         return
+    group = None
     for it in items:
+        if it.get("group") and it["group"] != group:
+            group = it["group"]
+            print(f"\n{_GROUP_HEADS.get(group, group)}:")
         mark = "⛔" if it.get("blocked") else _PLAN_GLYPH.get(it.get("status", ""), "·")
         print(f"{mark:2} {it.get('status', ''):12} {it.get('title', '')}"
               f"   {it.get('relpath', '')}")
-        if it.get("blocked_by"):
-            print(f"     waiting on: {', '.join(it['blocked_by'])}")
+        for b in it.get("blocked_by") or []:
+            ref = b.get("ref") or b.get("title", "") if isinstance(b, dict) else b
+            st = f" ({b['status']})" if isinstance(b, dict) and b.get("status") else ""
+            print(f"     ← waiting on {ref}{st}")
         if it.get("missing_deps"):
             print(f"     ✗ missing dep(s): {', '.join(it['missing_deps'])}")
+    for it in items:                      # the per-item loop the ready ones carry
+        if it.get("next"):
+            print(f"\n→ {it['next']}")
+            break
     if data.get("hidden"):
         print(f"\n({data['hidden']} finished item(s) hidden — --all to show)")
 
 
 def _emit_design_write(data: Any, args: Any) -> None:
-    """One-line confirmation for the design/plan write verbs."""
+    """Confirmation for the design/plan write verbs — and, crucially, the CAUSAL
+    CONSEQUENCES the verb reports: what the write just tainted, or unblocked."""
     if getattr(args, "json", False):
         print(json.dumps(data, indent=2, default=str)); return
     if not isinstance(data, dict):
@@ -493,6 +656,11 @@ def _emit_design_write(data: Any, args: Any) -> None:
         print(f"removed  {data.get('project', '')}/{data.get('relpath', '')}")
         for d in data.get("dependents") or []:
             print(f"  {_TAINT} now tainted: {d.get('title', '')}  ({d.get('relpath', '')})")
+        return
+    if data.get("added", 0) > 1:                 # a plan batch
+        print(f"→ {data.get('project', '')}: added {data['added']} item(s)")
+        for it in data.get("items") or []:
+            print(f"   · {it.get('title', '')}   {it.get('relpath', '')}")
         return
     print(f"→ {data.get('project', '')}/{data.get('relpath', '')}  "
           f"{data.get('title', '')}")
@@ -505,8 +673,20 @@ def _emit_design_write(data: Any, args: Any) -> None:
         print(f"  {_TAINT} {w}")
     for d in data.get("tainted_dependents") or []:
         print(f"  {_TAINT} now tainted: {d.get('title', '')}  ({d.get('relpath', '')})")
+    for d in data.get("newly_tainted") or []:
+        print(f"  {_TAINT} now tainted: {d.get('title', '')}  ({d.get('relpath', '')})")
+        for via in d.get("via") or []:
+            print(f"      via {via}")
+    for u in data.get("unblocked") or []:
+        print(f"  ✔ unblocked: {u.get('title', '')}  ({u.get('ref', '')})")
+    for s in data.get("similar") or []:
+        print(f"  {_TAINT} similar decision [{s['score']:.3f}]: {s['relpath']}"
+              + (f" — {s['heading']}" if s.get("heading") else "")
+              + "  (append to it rather than forking the graph?)")
     if data.get("missing"):
         print(f"  ✗ missing dep(s): {', '.join(data['missing'])}")
+    if data.get("next"):
+        print(f"  → {data['next']}")
 
 
 def _graph_direction(args: Any) -> str:
@@ -702,18 +882,52 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("old"); s.add_argument("new", nargs="?"); proj(s)
 
     # `crib design <verb>` / `crib plan <verb>` — decisions and work items, both
-    # notes with a dependency graph (crib/designs.py). Read/edit stay `crib note`.
+    # notes with a dependency graph (crib/designs.py). The FACET is the interface:
+    # read/edit/lookup have their own verbs here, because only they speak edges.
+    # Bare `crib design` / `crib plan` mean `list`, as bare `crib project` means
+    # `status` — the orienting read is what you want when you type just the noun.
     n_design = sub.add_parser("design",
                               help="design decisions + their dependency graph")
-    designsub = n_design.add_subparsers(dest="design_verb", required=True)
+    designsub = n_design.add_subparsers(dest="design_verb")
     n_plan = sub.add_parser("plan", help="persistent, resumable plan items")
-    plansub = n_plan.add_subparsers(dest="plan_verb", required=True)
+    plansub = n_plan.add_subparsers(dest="plan_verb")
+
+    # the three ways to give a body: positional, `-` for stdin, `--file`; omitted
+    # at a terminal opens $EDITOR (shell-quoting prose is the worst friction here)
+    def body_args(sp, what: str) -> None:
+        sp.add_argument("content", nargs="?",
+                        help=f"{what} ('-' reads stdin; omitted opens $EDITOR)")
+        sp.add_argument("--file", dest="file", help=f"read the {what} from a file")
 
     s = designsub.add_parser("add",
-                       help="record a design decision ('-' reads stdin for the body)")
-    s.add_argument("title"); s.add_argument("content"); proj(s)
+                       help="record a design decision (body: arg, '-', --file or $EDITOR)")
+    s.add_argument("title"); body_args(s, "the decision, why, what was rejected")
+    proj(s)
     s.add_argument("--dep", action="append", dest="deps",
                    help="a decision this one builds on (repeatable)")
+
+    s = designsub.add_parser("read",
+                       help="a decision's dossier: body + annotated edges + taint")
+    s.add_argument("ref"); proj(s)
+
+    s = designsub.add_parser("edit",
+                       help="rewrite a decision; lists what the change tainted")
+    s.add_argument("ref"); body_args(s, "the new body"); proj(s)
+
+    s = designsub.add_parser("append",
+                       help="extend a decision; lists what the change tainted")
+    s.add_argument("ref"); body_args(s, "the text to append"); proj(s)
+
+    s = designsub.add_parser("lookup", aliases=["search"],
+                       help="semantic search over DECISIONS (hits flag stale ones)")
+    s.add_argument("query"); proj(s)
+    s.add_argument("-k", type=int, default=8)
+
+    s = designsub.add_parser("list",
+                       help="every decision as a table (--tainted filters to stale)")
+    proj(s)
+    s.add_argument("--tainted", action="store_true",
+                   help="only decisions that need re-reading")
 
     for _v, _h in (("dep-add", "declare that a decision builds on another"),
                    ("dep-remove", "drop a dependency edge between decisions")):
@@ -730,7 +944,7 @@ def build_parser() -> argparse.ArgumentParser:
                        help="which decisions are stale w.r.t. what they build on")
     s.add_argument("ref", nargs="?"); proj(s)
 
-    s = designsub.add_parser("verify",
+    s = designsub.add_parser("reaffirm",
                        help="re-record a decision's dep hashes (you re-read it)")
     s.add_argument("ref"); proj(s)
 
@@ -746,11 +960,19 @@ def build_parser() -> argparse.ArgumentParser:
                        help="mark a decision superseded + taint its dependents")
     s.add_argument("ref"); s.add_argument("by", nargs="?"); proj(s)
 
-    s = plansub.add_parser("add", help="add a plan item ('-' reads stdin for the body)")
-    s.add_argument("title"); s.add_argument("content"); proj(s)
+    s = plansub.add_parser("add",
+                       help="add plan item(s) — body optional, `--item` adds more")
+    s.add_argument("title"); body_args(s, "the item's detail (optional)"); proj(s)
     s.add_argument("--dep", action="append", dest="deps",
                    help="an item this one must follow (repeatable)")
+    s.add_argument("--item", action="append", dest="extra_items", metavar="TITLE",
+                   help="another title-only item, added after this one (repeatable)")
     s.add_argument("--after"); s.add_argument("--before")
+
+    s = plansub.add_parser("lookup", aliases=["search"],
+                       help="semantic search over PLAN ITEMS")
+    s.add_argument("query"); proj(s)
+    s.add_argument("-k", type=int, default=8)
 
     s = plansub.add_parser("status",
                        help="set an item's status (todo/in-progress/done/verified)")
@@ -992,6 +1214,9 @@ def _E_rehome(d, a): _emit_code_rehome(d, a.json)
 def _E_graph(d, a): _emit_code_graph(d, a)
 def _E_dtree(d, a): _emit_design_tree(d, a)
 def _E_dcheck(d, a): _emit_design_check(d, a)
+def _E_dread(d, a): _emit_design_read(d, a)
+def _E_dlist(d, a): _emit_design_list(d, a)
+def _E_facet(d, a): _emit_facet_hits(d, a)
 def _E_plans(d, a): _emit_plan_list(d, a)
 def _E_dwrite(d, a): _emit_design_write(d, a)
 def _E_projects(d, a): _emit_projects(d, a.json)
@@ -1018,6 +1243,20 @@ def _b_lookup(a: Any) -> dict[str, Any]:
     if getattr(a, "summary_weight", None) is not None:
         call["summary_weight"] = a.summary_weight
     return call
+
+
+def _plan_items(a: Any) -> list[dict[str, Any]] | None:
+    """`crib plan add <title> [body] --item T --item T` → the batch form.
+
+    Only built when `--item` is actually used; otherwise the call stays the plain
+    single-item shape (so nothing about the common case changes). The extra items
+    are title-only, which is the normal shape for a plan item anyway."""
+    extra = getattr(a, "extra_items", None)
+    if not extra:
+        return None
+    first = {"title": a.title, "deps": a.deps,
+             "content": _body(a.content, a.file, default="")}
+    return [first, *({"title": t} for t in extra)]
 
 
 def _proj_of(a: Any) -> str | None:
@@ -1179,11 +1418,39 @@ VERBS: dict[str, Verb] = {
     # design decisions + plan items (crib/designs.py). The two `add` verbs CREATE a
     # durable fact → `write` policy (name the project); every other verb is keyed by
     # a ref that only resolves inside one project → `read`, the learnings exception.
+    # The FACET carries its own read/write/search verbs (`design read/edit/append/
+    # lookup/list`) — the note verbs can't speak edges, so they aren't the way in.
     "design add": Verb("design_add", lambda a: {"title": a.title,
-                                                "content": _read_content(a.content),
+                                                "content": _body(
+                                                    a.content, a.file,
+                                                    what="the decision + rationale"),
                                                 "deps": a.deps, "project": a.project},
                        _E_dwrite, is_async=True, policy="write",
                        mcp=f"title content {_PROJ} deps=None"),
+    "design read": Verb("design_read", lambda a: {"ref": a.ref,
+                                                  "project": a.project},
+                        _E_dread, policy="read", mcp=f"ref {_PROJ}"),
+    "design edit": Verb("design_edit",
+                        lambda a: {"ref": a.ref,
+                                   "new_content": _body(a.content, a.file,
+                                                        what="the new body"),
+                                   "project": a.project},
+                        _E_dwrite, is_async=True, policy="read",
+                        mcp=f"ref new_content {_PROJ}"),
+    "design append": Verb("design_append",
+                          lambda a: {"ref": a.ref,
+                                     "content": _body(a.content, a.file,
+                                                      what="the text to append"),
+                                     "project": a.project},
+                          _E_dwrite, is_async=True, policy="read",
+                          mcp=f"ref content {_PROJ}"),
+    "design lookup": Verb("design_lookup", lambda a: {"query": a.query, "k": a.k,
+                                                      "project": a.project},
+                          _E_facet, policy="read", mcp=f"query {_PROJ} k=8"),
+    "design list": Verb("design_list",
+                        lambda a: {"tainted": getattr(a, "tainted", False),
+                                   "project": _proj_of(a)},
+                        _E_dlist, policy="read", mcp=f"{_PROJ} tainted=False"),
     "design dep-add": Verb("design_dep_add", lambda a: {"ref": a.ref,
                                                         "dep_ref": a.dep_ref,
                                                         "project": a.project},
@@ -1200,10 +1467,10 @@ VERBS: dict[str, Verb] = {
                           mcp=f"ref {_PROJ} force=False"),
     "design check": Verb("design_check", lambda a: {"ref": a.ref, "project": a.project},
                          _E_dcheck, policy="read", mcp=f"{_PROJ} ref=None"),
-    "design verify": Verb("design_verify", lambda a: {"ref": a.ref,
-                                                      "project": a.project},
-                          _E_dwrite, is_async=True, policy="read",
-                          mcp=f"ref {_PROJ}"),
+    "design reaffirm": Verb("design_reaffirm", lambda a: {"ref": a.ref,
+                                                          "project": a.project},
+                            _E_dwrite, is_async=True, policy="read",
+                            mcp=f"ref {_PROJ}"),
     "design tree": Verb("design_tree",
                         lambda a: {"ref": a.ref, "project": a.project,
                                    "direction": ("dependents" if a.dependents
@@ -1216,11 +1483,21 @@ VERBS: dict[str, Verb] = {
                              _E_dwrite, is_async=True, policy="read",
                              mcp=f"ref {_PROJ} by_ref=None"),
     "plan add": Verb("plan_add", lambda a: {"title": a.title,
-                                            "content": _read_content(a.content),
+                                            # a plan item's body is OPTIONAL —
+                                            # title-only is a normal whole item, so
+                                            # an omitted body must not open $EDITOR
+                                            "content": _body(a.content, a.file,
+                                                             default=""),
                                             "deps": a.deps, "after": a.after,
-                                            "before": a.before, "project": a.project},
+                                            "before": a.before,
+                                            "items": _plan_items(a),
+                                            "project": a.project},
                      _E_dwrite, is_async=True, policy="write",
-                     mcp=f"title content {_PROJ} deps=None after=None before=None"),
+                     mcp=f"title=None content='' {_PROJ} deps=None after=None "
+                         "before=None items=None"),
+    "plan lookup": Verb("plan_lookup", lambda a: {"query": a.query, "k": a.k,
+                                                  "project": a.project},
+                        _E_facet, policy="read", mcp=f"query {_PROJ} k=8"),
     "plan status": Verb("plan_status", lambda a: {"ref": a.ref, "status": a.status,
                                                   "project": a.project},
                         _E_dwrite, is_async=True, policy="read",
@@ -1243,7 +1520,8 @@ VERBS: dict[str, Verb] = {
                                               "project": a.project},
                       _E_dwrite, is_async=True, policy="read",
                       mcp=f"ref {_PROJ} after=None before=None"),
-    "plan list": Verb("plan_list", lambda a: {"all": a.all, "project": a.project},
+    "plan list": Verb("plan_list", lambda a: {"all": getattr(a, "all", False),
+                                              "project": _proj_of(a)},
                       _E_plans, policy="read", mcp=f"{_PROJ} all=False"),
     "plan next": Verb("plan_next", lambda a: {"k": a.k, "project": a.project},
                       _E_plans, policy="read", mcp=f"{_PROJ} k=5"),
@@ -1284,11 +1562,17 @@ def _resolve_verb(args: Any) -> tuple[Verb, dict[str, Any]]:
     return entry, entry.build(args)
 
 
+# A bare noun means its ORIENTING READ — what you wanted when you typed just the
+# noun. `crib project` → status (the precedent); `crib design`/`crib plan` → list.
+_BARE_NOUN_DEFAULT = {"project": "status", "design": "list", "plan": "list"}
+
+
 def _dispatch(args: Any) -> tuple[Verb, dict[str, Any]]:
-    """Everything goes through the registry. The one special case: bare `crib
-    project` (no sub-verb) means `project status` — the orienting read."""
-    if args.cmd == "project" and getattr(args, "project_verb", None) is None:
-        args.project_verb = "status"
+    """Everything goes through the registry, with bare nouns defaulted per
+    `_BARE_NOUN_DEFAULT` (`crib design` = `crib design list`)."""
+    default = _BARE_NOUN_DEFAULT.get(args.cmd)
+    if default and getattr(args, f"{args.cmd}_verb", None) is None:
+        setattr(args, f"{args.cmd}_verb", default)
     return _resolve_verb(args)
 
 
@@ -1441,8 +1725,9 @@ def main(argv: list[str] | None = None) -> int:
         # git invokes this per-file during a merge — stay light, no config/daemon
         from .merge import run_driver
         return run_driver(args.base, args.current, args.other)
-    # a noun with no verb (`crib note`) → point at its subcommands
-    if args.cmd in ("note", "code", "learning", "design", "plan") and \
+    # a noun with no verb (`crib note`) → point at its subcommands. `design`/`plan`
+    # are NOT here: a bare one is a real command (`list`), per _BARE_NOUN_DEFAULT.
+    if args.cmd in ("note", "code", "learning") and \
             getattr(args, f"{args.cmd}_verb", None) is None:
         print(f"crib {args.cmd}: choose a subcommand (try `crib {args.cmd} --help`)",
               file=sys.stderr)

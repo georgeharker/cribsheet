@@ -118,6 +118,15 @@ _CLI_INVOCATIONS = {
     "note elaborate": ["note", "elaborate", "keywords"],
     "learning report": ["learning", "report"],
     "project forget": ["project", "forget"],
+    # the design/plan facet, including the two bare-noun defaults (`crib design`
+    # → list) — a default that drifts on one face is the same bug class
+    "design lookup": ["design", "lookup", "q"],
+    "design list": ["design"],
+    "design check": ["design", "check"],
+    "design tree": ["design", "tree"],
+    "plan lookup": ["plan", "lookup", "q"],
+    "plan list": ["plan"],
+    "plan next": ["plan", "next"],
 }
 
 
@@ -163,6 +172,7 @@ _RETIRED_COMMANDS = {                       # in ANY user-facing string in crib/
     "crib note setup": "`crib memory setup`",
     "crib setup": "`crib memory setup`",
     "crib sync": "`crib memory sync`",
+    "crib design verify": "`crib design reaffirm`",
     # not "crib snapshot": `GitBacking` uses that exact text as its default git
     # COMMIT MESSAGE, which is not a command reference.
 }
@@ -172,6 +182,11 @@ _RETIRED_TOOLS = {                          # anywhere an agent or reader can se
     "code_learnings": "learning_report", "code_reaffirm": "learning_reaffirm",
     "code_read": "learning_read", "code-append": "learning-add",
     "code-forget": "learning-forget", "reindex(": "note_reindex(",
+    # the design facet renamed `verify` → `reaffirm` (one vocabulary with
+    # `learning_reaffirm`, and no collision with plan's `verified` STATUS).
+    # Surface was a day old: renamed outright, no alias, so the old spelling must
+    # not survive in a docstring or an error message either.
+    "design_verify": "design_reaffirm",
 }
 
 
