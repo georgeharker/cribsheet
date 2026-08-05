@@ -79,6 +79,73 @@ def test_backoff_delays_double_then_cap():
     assert loop.delays == [1.0, 2.0, 4.0, 8.0, 8.0, 8.0]  # doubles, then pinned at cap
 
 
+class _DrivingLoop(_FakeLoop):
+    """`create_task` drives the coroutine to completion inline (the stubs below never
+    really suspend), so a failed describe's RE-ARM lands in `delays` deterministically
+    — the backoff schedule under repeated failure, with no wall-clock in the test."""
+
+    class _Task:
+        def add_done_callback(self, cb):
+            pass
+
+    def create_task(self, coro):
+        try:
+            coro.send(None)
+        except StopIteration:
+            pass
+        return self._Task()
+
+
+def test_failed_describe_backs_off_instead_of_restarting_at_zero():
+    # the bug: _fire popped the entry (dropping its level), so every retry re-armed
+    # at level 0 — one failing LLM call per file per `base`, forever
+    loop = _DrivingLoop()
+
+    async def boom(*a):
+        raise RuntimeError("LLM down")
+
+    q = DescribeQueue(loop, boom, base=1.0, cap=8.0)
+    sym = {"pkg.f": _sym("pkg.f", "h", "b")}
+    q.enqueue("p", Path("/r"), "f.py", sym)
+    for _ in range(5):                                   # each fire fails → re-arms
+        q._fire(("p", "f.py"))
+    assert loop.delays == [1.0, 2.0, 4.0, 8.0, 8.0, 8.0]  # doubles, then pinned at cap
+    assert q.pending_symbols() == 1                       # still queued for retry
+
+
+def test_successful_describe_clears_the_entry():
+    loop = _DrivingLoop()
+
+    async def ok(*a):
+        return None
+
+    q = DescribeQueue(loop, ok, base=1.0, cap=8.0)
+    q.enqueue("p", Path("/r"), "f.py", {"pkg.f": _sym("pkg.f", "h", "b")})
+    q._fire(("p", "f.py"))
+    assert q.pending_files() == 0 and loop.delays == [1.0]   # nothing re-armed
+    q.enqueue("p", Path("/r"), "f.py", {"pkg.f": _sym("pkg.f", "h2", "b2")})
+    assert loop.delays == [1.0, 1.0]                         # level reset naturally
+
+
+def test_inflight_describe_task_is_strongly_referenced():
+    # asyncio holds only weak refs: an unheld task can be GC'd mid-LLM-call
+    async def body():
+        started = asyncio.Event()
+
+        async def slow(*a):
+            started.set()
+            await asyncio.sleep(0.05)
+
+        q = DescribeQueue(asyncio.get_running_loop(), slow, base=0.01, cap=0.05)
+        q.enqueue("p", Path("/r"), "f.py", {"pkg.a": _sym("pkg.a", "ha", "a")})
+        await started.wait()
+        assert q._tasks                                   # held while in flight
+        await asyncio.sleep(0.1)
+        assert not q._tasks                               # released when done
+
+    run(body())
+
+
 def test_burst_coalesces_to_one_focused_describe():
     calls: list[dict] = []
 

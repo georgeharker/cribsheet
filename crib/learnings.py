@@ -107,7 +107,7 @@ class Learnings:
         relpath = self.relpath(entry)
         path = self.notestore.abspath(proj, relpath)
         if not path.exists():
-            raise ValueError(f"no learning for {entry['fqname']!r} yet — code_append first")
+            raise ValueError(f"no learning for {entry['fqname']!r} yet — learning_add first")
         note = notes.load(path)
         note.frontmatter["content_hash"] = entry.get("content_hash", "")
         note.body = new_content.strip() + "\n"
@@ -137,7 +137,7 @@ class Learnings:
         relpath = self.relpath(entry)
         path = self.notestore.abspath(proj, relpath)
         if not path.exists():
-            raise ValueError(f"no learning for {entry['fqname']!r} yet — code_append first")
+            raise ValueError(f"no learning for {entry['fqname']!r} yet — learning_add first")
         note = notes.load(path)
         note.frontmatter["content_hash"] = entry.get("content_hash", "")
         note.frontmatter["file"] = entry.get("file", note.frontmatter.get("file", ""))

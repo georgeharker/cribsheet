@@ -11,12 +11,14 @@ funnel through the same idempotent sync, so events are safe to coalesce.
 from __future__ import annotations
 
 import asyncio
+import sys
 from collections.abc import Coroutine
 from pathlib import Path
 from typing import Any, Callable
 
 from . import claudemem
 from .claudemem import MemoryBindings
+from .util import spawn
 
 DEBOUNCE_SEC = 0.5  # a memory write is one file; coalesce its create/modify burst
 
@@ -34,14 +36,19 @@ class MemoryMirror:
         self._observer: Any = None
         # munged-memory-dir -> (root, project), built from the registry at start
         self._watched: dict[str, tuple[Path, str]] = {}
+        # strong refs to in-flight syncs (asyncio holds only weak ones)
+        self._tasks: set[asyncio.Task] = set()
 
     async def catch_up(self) -> None:
         """Sync every binding once at startup (like the notes reconcile)."""
         for b in self._bindings.all():
             try:
                 await self._sync(Path(b["root"]), b["project"])
-            except Exception:  # noqa: BLE001 — a stale/removed root must not abort the rest
-                pass
+            except Exception as e:  # noqa: BLE001 — one stale root can't abort the rest
+                # …but it must not be invisible either: a binding that never syncs
+                # is memory the user believes is mirrored and isn't.
+                print(f"[crib] memory sync failed for {b['project']} "
+                      f"({b['root']}): {e}", file=sys.stderr)
 
     def start(self) -> None:
         from watchdog.events import FileSystemEventHandler  # lazy
@@ -104,7 +111,8 @@ class MemoryMirror:
 
     def _fire(self, binding: tuple[Path, str]) -> None:
         self._pending.pop(str(binding[0]), None)
-        self._loop.create_task(self._sync(binding[0], binding[1]))
+        spawn(self._loop, self._sync(binding[0], binding[1]), self._tasks,
+              f"memory sync {binding[1]}")
 
     def stop(self) -> None:
         if self._observer is not None:

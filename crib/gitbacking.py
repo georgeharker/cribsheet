@@ -152,7 +152,8 @@ class GitBacking:
     # --- local checkpoints -------------------------------------------------
     def snapshot(self, message: str | None = None) -> str:
         if not self.enabled:
-            return "git not enabled (data dir is not a repo; run `crib setup --remote <url>`)"
+            return ("git not enabled (data dir is not a repo; run "
+                    "`crib memory setup --remote <url>`)")
         self._ensure_repo_config()
         self._run("add", "-A")
         if not self._run("status", "--porcelain").stdout.strip():
@@ -287,7 +288,8 @@ class GitBacking:
         """commit → pull → push. Stops (without pushing) if the pull conflicts."""
         if not self.enabled:
             return SyncResult(False, False, False, False, [],
-                              "git not enabled; run `crib sync --remote <url>` first")
+                              "git not enabled; run `crib memory sync --remote <url>` "
+                              "first")
         committed = "nothing to" not in self.snapshot(message)
         pulled = self.pull()
         if not pulled.ok:

@@ -28,7 +28,7 @@ def test_status_inventories_projects(crib):
         "fqname": "m.f", "name": "f", "kind": "function", "content_hash": "h",
         "file": "m.py", "line": 1, "container": [], "calls": [], "called_by": [],
         "references": [], "name_terms": ["f"]})
-    asyncio.run(crib.code_append("m.f", "insight", project="alpha"))
+    asyncio.run(crib.learning_add("m.f", "insight", project="alpha"))
 
     d = crib.status()
     alpha = next(p for p in d["projects"] if p["project"] == "alpha")

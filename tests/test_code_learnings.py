@@ -39,11 +39,11 @@ def _seed_symbol(crib, project, fqname="pkg.Mod.foo", content_hash="aaaa1111"):
 
 def test_append_creates_then_appends_dated_entries(crib):
     _seed_symbol(crib, "p")
-    a = run(crib.code_append("pkg.Mod.foo", "first insight", project="p"))
+    a = run(crib.learning_add("pkg.Mod.foo", "first insight", project="p"))
     assert a["created"] and a["relpath"] == "code-learnings/pkg.Mod.foo.md"
-    b = run(crib.code_append("pkg.Mod.foo", "second insight", project="p"))
+    b = run(crib.learning_add("pkg.Mod.foo", "second insight", project="p"))
     assert not b["created"]                                   # same running note
-    body = crib.code_read("pkg.Mod.foo", project="p")["body"]
+    body = crib.learning_read("pkg.Mod.foo", project="p")["body"]
     assert "first insight" in body and "second insight" in body
 
 
@@ -51,22 +51,22 @@ def test_unknown_and_ambiguous_symbols_raise(crib):
     _seed_symbol(crib, "p", fqname="a.foo")
     _seed_symbol(crib, "p", fqname="b.foo")
     with pytest.raises(ValueError, match="unknown symbol"):
-        run(crib.code_append("nope.nope", "x", project="p"))
+        run(crib.learning_add("nope.nope", "x", project="p"))
     with pytest.raises(ValueError, match="ambiguous"):          # bare name, two hits
-        run(crib.code_append("foo", "x", project="p"))
-    run(crib.code_append("a.foo", "exact wins", project="p"))   # exact fqn is fine
+        run(crib.learning_add("foo", "x", project="p"))
+    run(crib.learning_add("a.foo", "exact wins", project="p"))   # exact fqn is fine
 
 
 def test_forget_removes_learning(crib):
     _seed_symbol(crib, "p")
-    run(crib.code_append("pkg.Mod.foo", "x", project="p"))
-    run(crib.code_forget("pkg.Mod.foo", project="p"))
-    assert crib.code_read("pkg.Mod.foo", project="p")["found"] is False
+    run(crib.learning_add("pkg.Mod.foo", "x", project="p"))
+    run(crib.learning_forget("pkg.Mod.foo", project="p"))
+    assert crib.learning_read("pkg.Mod.foo", project="p")["found"] is False
 
 
 def test_join_surfaces_learning_and_flags_staleness(crib):
     _seed_symbol(crib, "p", content_hash="aaaa1111")
-    run(crib.code_append("pkg.Mod.foo", "the subtle bit", project="p"))
+    run(crib.learning_add("pkg.Mod.foo", "the subtle bit", project="p"))
 
     # fresh: learning attaches to the xref hit, not stale
     hit = crib.code_xref("pkg.Mod.foo", project="p")[0]
@@ -86,11 +86,11 @@ def test_join_surfaces_learning_and_flags_staleness(crib):
 
 def test_reaffirm_clears_stale_without_touching_body(crib):
     _seed_symbol(crib, "p", content_hash="aaaa1111")
-    run(crib.code_append("pkg.Mod.foo", "still true", project="p"))
+    run(crib.learning_add("pkg.Mod.foo", "still true", project="p"))
     _seed_symbol(crib, "p", content_hash="bbbb2222")          # body moved on
     assert crib.code_xref("pkg.Mod.foo", project="p")[0]["learning"]["stale"] is True
 
-    out = run(crib.code_reaffirm("pkg.Mod.foo", project="p"))
+    out = run(crib.learning_reaffirm("pkg.Mod.foo", project="p"))
     assert out["reaffirmed"]
     hit = crib.code_xref("pkg.Mod.foo", project="p")[0]
     assert hit["learning"]["stale"] is False                  # cleared
@@ -105,7 +105,7 @@ def test_code_graph_marks_nodes_with_learnings(crib):
         "line": 1, "signature": "def foo():", "description": "", "container": [],
         "calls": ["bar [pkg/mod.py]"], "called_by": [], "name_terms": ["foo"]})
     _seed_symbol(crib, "p", fqname="pkg.Mod.bar")
-    run(crib.code_append("pkg.Mod.bar", "gotcha", project="p"))
+    run(crib.learning_add("pkg.Mod.bar", "gotcha", project="p"))
     tree = crib.code_graph("pkg.Mod.foo", project="p")
     assert not tree.get("has_learning")                       # foo has none
     assert tree["children"][0]["fqname"].endswith("bar")
@@ -114,23 +114,23 @@ def test_code_graph_marks_nodes_with_learnings(crib):
 
 def test_learnings_report_and_orphan_lifecycle(crib):
     _seed_symbol(crib, "p", fqname="a.foo", content_hash="h")
-    run(crib.code_append("a.foo", "note", project="p"))
-    assert crib.code_learnings(project="p")[0]["status"] == "ok"
+    run(crib.learning_add("a.foo", "note", project="p"))
+    assert crib.learning_report(project="p")[0]["status"] == "ok"
 
     # the symbol is renamed away → the learning orphans; report flags it
     import shutil
     shutil.rmtree(crib.paths.project_dir("p") / "symbol_index")
     _seed_symbol(crib, "p", fqname="a.bar", content_hash="h")     # renamed foo→bar
-    rows = crib.code_learnings(project="p", orphans_only=True)
+    rows = crib.learning_report(project="p", orphans_only=True)
     assert rows and rows[0]["symbol"] == "a.foo" and rows[0]["status"] == "orphan"
 
     # rehome suggestions surface the rename target; then confirm the move
-    sugg = run(crib.code_rehome("a.foo", project="p"))
+    sugg = run(crib.learning_rehome("a.foo", project="p"))
     assert any(c["fqname"] == "a.bar" for c in sugg["candidates"])
-    moved = run(crib.code_rehome("a.foo", "a.bar", project="p"))
+    moved = run(crib.learning_rehome("a.foo", "a.bar", project="p"))
     assert moved["new"] == "a.bar"
-    assert crib.code_read("a.bar", project="p")["found"] is True
-    assert crib.code_learnings(project="p", orphans_only=True) == []   # resolved
+    assert crib.learning_read("a.bar", project="p")["found"] is True
+    assert crib.learning_report(project="p", orphans_only=True) == []   # resolved
 
 
 def test_dossier_annotates_neighbours_with_their_descriptions(crib):
@@ -180,17 +180,17 @@ def test_ensure_crib_creates_sensible_defaults_and_anchors_in_repo(crib, tmp_pat
 
 def test_project_forget_clears_index_but_keeps_learnings(crib):
     _seed_symbol(crib, "p", fqname="m.foo")
-    run(crib.code_append("m.foo", "keep me", project="p"))
+    run(crib.learning_add("m.foo", "keep me", project="p"))
     assert crib.project_status(project="p")["indexed"]
     out = crib.project_forget(project="p")        # default: keep learnings
     assert out["symbols_removed"] == 1 and out["learnings_removed"] == 0
     assert not crib.project_status(project="p")["indexed"]
     # the learning survived the index wipe (durable human source-of-truth)
     _seed_symbol(crib, "p", fqname="m.foo")       # re-index the symbol
-    assert crib.code_read("m.foo", project="p")["found"]
+    assert crib.learning_read("m.foo", project="p")["found"]
 
 
-def test_patch_called_by_keeps_cross_file_graph_consistent(crib):
+def test_patch_edges_keeps_cross_file_graph_consistent(crib):
     from crib.codeindex import SymbolIndex
     store = SymbolIndex(crib.paths.project_dir("p"))
     # target lives in a.py; caller (b.py) already calls it
@@ -203,12 +203,12 @@ def test_patch_called_by_keeps_cross_file_graph_consistent(crib):
         {"name": "caller", "file": "b.py", "calls": ["target [a.py]"]},
         {"name": "caller2", "file": "b.py", "calls": ["target [a.py]"]},
     ]
-    crib.code.patch_called_by(store, new_b, "b.py")
+    crib.code.patch_edges(store, new_b, "b.py")
     cb = store.by_fqname("a.target")[0]["called_by"]
     assert cb == ["caller [b.py]", "caller2 [b.py]"]     # both, no dup, no stale
 
     # a removed call (caller2 no longer calls target) is stripped on the next reindex
-    crib.code.patch_called_by(store, [{"name": "caller", "file": "b.py",
+    crib.code.patch_edges(store, [{"name": "caller", "file": "b.py",
                                    "calls": ["target [a.py]"]}], "b.py")
     assert store.by_fqname("a.target")[0]["called_by"] == ["caller [b.py]"]
 
@@ -233,8 +233,8 @@ def test_drop_file_removes_symbols_and_edges(crib):
 
 def test_forget_removes_an_orphan(crib):
     _seed_symbol(crib, "p", fqname="a.foo")
-    run(crib.code_append("a.foo", "note", project="p"))
+    run(crib.learning_add("a.foo", "note", project="p"))
     import shutil
     shutil.rmtree(crib.paths.project_dir("p") / "symbol_index")        # foo is gone
-    out = run(crib.code_forget("a.foo", project="p"))                 # still removable
+    out = run(crib.learning_forget("a.foo", project="p"))                 # still removable
     assert out["symbol"] == "a.foo" and out["removed"] >= 1

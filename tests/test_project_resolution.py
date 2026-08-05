@@ -202,3 +202,30 @@ def test_switch_if_created_fires_on_project_creation(crib, tmp_path):
     session_state().current_project = None
     _switch_if_created(out)
     assert session_state().current_project == "fresh"
+
+
+def test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project(
+        crib, tmp_path, monkeypatch):
+    """P1.1: `code_index` is REPO-SCOPED like its project_* siblings. With a sticky
+    session on A, indexing a file in repo B (project_path=B) must file B's symbols
+    under B — resolving via `_project` filed them under A."""
+    import asyncio
+
+    from crib.server import build_server
+    beta = _crib_repo(tmp_path, "beta")
+    (beta / "b.py").write_text("def b(): pass\n")
+    session_state().current_project = "alpha"          # sticky elsewhere
+
+    indexed: list[tuple[str, str]] = []
+    monkeypatch.setattr(crib.indexer, "_index_code_file_tracked",
+                        lambda root, rel, proj, patch, existing=None,
+                        describe_mode="inline": indexed.append((proj, rel)))
+    mcp = build_server(crib)
+
+    async def call():
+        tool = await mcp.get_tool("code_index")
+        return await tool.run({"path": str(beta / "b.py"),
+                               "project_path": str(beta)})
+
+    asyncio.run(call())
+    assert indexed == [("beta", "b.py")]               # B's repo, not the sticky A

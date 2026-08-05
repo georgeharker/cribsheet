@@ -98,7 +98,9 @@ without losing the logical identity.
 Single collection `crib_chunks`, filtered by `project` metadata.
 
 ```
-chunk_id     = sha1(project + relpath + heading_path + window_idx)
+chunk_id     = sha1(project + relpath + section_key + window_idx)
+               # section_key = heading_path, + "#n" for the nth repeat of an
+               # identical heading path within one note (chunk.section_key)
 content_hash = sha1(chunk_text)        # the coordination gate
 metadata     = {project, relpath, note_id, title, tags,
                 heading_path, window_idx, file_mtime, source}
@@ -782,6 +784,16 @@ chat) seeds once and reuses it across the whole session. `project_use(name)`
 switches the session deliberately; `project_current()` reports it. Only note
 operations are session-scoped; `note_import`/`note_import_memory` stay cwd/repo-driven
 (they're about a specific source, not the ambient project).
+
+**The policy is declared, not chosen in the body.** Precedence (1)-(3) is the *read*
+policy; writes must name their target (`_write_project`) and repo-scoped ops let the
+named repo's `.crib` decide (`_source_project`, never sticky). Which one a tool uses
+is stated at its registration — `@crib_tool("read"|"write"|"source"|"session"|"none")`
+— and the decorator wires the resolver, so no tool body picks one. That is not
+cosmetic: `code_index` shipped on the read policy for a release (one wrong helper
+call, invisible in review) and filed another repo's symbols under the sticky session
+project. The declarations are recorded in `server.TOOL_POLICY` and checked against
+the CLI's `VERBS` registry by `tests/test_surface_parity.py`.
 
 **Sticky-seed tradeoff.** If a session `cd`s into a different repo mid-chat, the
 project does not auto-follow — the explicit `project` arg or `project_use` covers

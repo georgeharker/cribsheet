@@ -14,6 +14,20 @@ from .util import new_ulid
 
 _FENCE = "---"
 _KEY_RE = re.compile(r"^([A-Za-z0-9_][\w-]*):")
+_ID_RE = re.compile(r"^id:\s*(\S+)\s*$", re.MULTILINE)
+
+
+class NoteParseError(ValueError):
+    """A note's frontmatter isn't parseable YAML — a hand edit, or conflict markers
+    left by a merge. Distinguished from any other failure (and carrying the file it
+    came from) so a reconcile sweep can skip that ONE note and name it, instead of
+    dying on the whole project."""
+
+    def __init__(self, path: str | Path | None, cause: Exception) -> None:
+        self.path = str(path) if path is not None else None
+        self.cause = cause
+        where = f" in {self.path}" if self.path else ""
+        super().__init__(f"malformed frontmatter{where}: {cause}")
 
 
 @dataclass
@@ -36,19 +50,34 @@ class Note:
         return list(t) if isinstance(t, (list, tuple)) else [t]
 
 
-def parse(text: str) -> tuple[dict[str, Any], str]:
-    """Split a markdown string into (frontmatter dict, body)."""
+def parse(text: str, source: str | Path | None = None) -> tuple[dict[str, Any], str]:
+    """Split a markdown string into (frontmatter dict, body). Raises
+    `NoteParseError` (naming `source`, when given) if the frontmatter is not YAML."""
     if text.startswith(_FENCE + "\n") or text.startswith(_FENCE + "\r\n"):
         lines = text.splitlines(keepends=True)
         for i in range(1, len(lines)):
             if lines[i].strip() == _FENCE:
                 fm_text = "".join(lines[1:i])
                 body = "".join(lines[i + 1:])
-                fm = yaml.safe_load(fm_text) or {}
+                try:
+                    fm = yaml.safe_load(fm_text) or {}
+                except yaml.YAMLError as e:
+                    raise NoteParseError(source, e) from e
                 if not isinstance(fm, dict):
                     fm = {}
                 return fm, body.lstrip("\n")
     return {}, text
+
+
+def scan_id(text: str) -> str | None:
+    """The `id:` value lifted straight out of a note's frontmatter block by regex —
+    for notes whose YAML no longer parses, so a repair write can still stash the
+    corrupt bytes under the note's real identity."""
+    if not text.startswith(_FENCE):
+        return None
+    end = text.find(f"\n{_FENCE}", len(_FENCE))
+    m = _ID_RE.search(text[:end] if end > 0 else text)
+    return m.group(1).strip("'\"") if m else None
 
 
 def serialize(frontmatter: dict[str, Any], body: str) -> str:
@@ -135,7 +164,7 @@ def heal_file(path: Path) -> bool:
 
 
 def load(path: Path) -> Note:
-    fm, body = parse(path.read_text())
+    fm, body = parse(path.read_text(), path)
     return Note(path=path, frontmatter=fm, body=body)
 
 

@@ -11,11 +11,19 @@ hyphenated fallback (`crib code-lookup` is rejected). The nouns are `note`, `cod
 
 **Selecting a project.** `-p/--project` (by name) or `-P/--project-path` (by a path
 inside the repo) on the CLI — `project`/`project_path` on MCP — pick which project a
-command acts on. Code and learning commands act on ONE *current* project (set with
-`crib project use`, or inferred from a path on first use); name a different one to
-override. **Writes** (`store`/`append`/`edit`/`forget`/`move`, and learnings) require
-an explicit project — they never silently inherit the current one, so a fact can't
-land in the wrong place.
+command acts on. Every command resolves that choice by one of three declared
+policies, and each MCP tool states which one it uses:
+
+| policy | used by | how the project is decided |
+|---|---|---|
+| **read** | `lookup`/`apropos`/`read`/… and the `code`+`learning` verbs | explicit `project` → the sticky *current* project → seeded from a path's `.crib` |
+| **write** | `note store`/`append`/`edit`/`forget`/`move` | must NAME the target (`project` or `project_path`); never inherits the current project, so a fact can't land in the wrong place. MCP `note_store` ASKS (elicitation) when you omit both |
+| **source** | `project setup/index/status/forget`, `code index`, `note import`/`import-memory` | the repo you named decides, via its `.crib` — the sticky project never wins, so indexing (or importing from) another repo can't file into the one you're sitting in |
+
+Two deliberate exceptions, documented at the tools themselves: **learnings** use the
+*read* policy (a learning is about a symbol in the code project you're in), and the
+two **imports** use *source* and REQUIRE a `project`/`project_path` — an import is
+about a repo, so it errors rather than quietly filing into the default project.
 
 **Global flags** go before the noun: `--json` for machine-readable output, `--no-daemon`
 to run in-process instead of attaching to the warm daemon (see [Server & daemon](#server--daemon)).
@@ -34,7 +42,7 @@ note exposes its on-disk `path`.
 | CLI | MCP | Description |
 |---|---|---|
 | `crib note lookup <query>` (alias `search`) | `note_lookup` | Semantic search over notes; returns ranked locator lines (hybrid dense ⊕ BM25, dense-dominant blend + range-matched rerank). `-a/--render` renders full sections. |
-| `crib note apropos <query>` (alias `a`) | `note_apropos` | Like lookup, but each hit carries the full matching section's markdown, not a snippet. |
+| `crib note apropos <query>` (alias `a`) | `note_apropos` | Like lookup, but each hit carries the full matching section's markdown, not a snippet. Same `-k` default as lookup (8) — `note lookup --render` routes here, so the two spellings return the same view. |
 | `crib note read <rel>` | `note_read` | Print a note's full raw markdown (frontmatter + body). |
 | `crib note locate <rel>` | `note_locate` | Print a note's on-disk path (to edit with your own tools). |
 | `crib note store <text>` | `note_store` | Persist a durable fact as a new note (assigns an id, indexes it). |
@@ -50,8 +58,8 @@ note exposes its on-disk `path`.
 | `crib note distill <rel>` | `note_distill` | LLM-revise a note in place (compress/dedupe/normalize). |
 | `crib note elaborate <label> [rel]` | `note_elaborate` | Generate per-section *keyword search terms* (synonyms + phrases a searcher would type) to strengthen BM25 matching. Not prose expansion. |
 | `crib note summarize <label> [rel]` | `note_summarize` | Generate per-section *rephrasings* embedded as dense aliases, so differently-worded queries still match. |
-| `crib note import <path>…` | `note_import` | Copy NAMED files into memory as crib-owned notes (a snapshot you own: git-synced, editable, versioned). |
-| `crib note import-memory` | `note_import_memory` | Mirror an AI harness's `memory/*.md` into a crib project (host-namespaced). One-way, idempotent, and live-synced thereafter. |
+| `crib note import <path>…` | `note_import` | Copy NAMED files into memory as crib-owned notes (a snapshot you own: git-synced, editable, versioned). Needs a source: `-P/--project-path` (MCP `project_path`) or `-p/--project`. |
+| `crib note import-memory` | `note_import_memory` | Mirror an AI harness's `memory/*.md` into a crib project (host-namespaced). One-way, idempotent, and live-synced thereafter. Needs a source, as `note import` does. |
 
 `note lookup` also takes retrieval-tuning overrides — `-k`, `--tag`, and
 `--keywords`/`--keyword-weight`/`--summaries`/`--summary-weight` (MCP:
@@ -120,3 +128,12 @@ Pushing publishes to a remote, so these stay CLI-only (not agent-callable).
 | `crib memory sync` | Commit + pull + push notes via git, then reindex. |
 | `crib memory push` / `crib memory pull` | The halves of sync (`pull` reindexes after). |
 | `crib merge-driver` | The frontmatter-aware git merge driver (invoked by git during a merge; hidden from `--help`). |
+
+## Keeping the two faces in step
+
+`crib/cli.py`'s `VERBS` registry is the single source of truth for this table: each
+row carries its CLI wiring, its MCP tool's parameter signature and defaults, and the
+resolution policy the tool must declare. `tests/test_surface_parity.py` walks the
+registry against FastMCP's introspected schemas and against `server.TOOL_POLICY`, so
+a verb that exists on one face only, a renamed parameter, a default that drifted (the
+`apropos -k` 5-vs-8 split) or a policy swapped inside a tool body fails the suite.

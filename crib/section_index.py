@@ -21,6 +21,9 @@ import re
 import tomllib
 from pathlib import Path
 
+from . import tomlrec
+from .tomlrec import write_atomic
+
 # Built-in keyword_index prompts (`crib elaborate`). A `[elaborate.<label>].prompt`
 # config entry overrides one of these, or defines a new label.
 KEYWORD_PROMPTS: dict[str, str] = {
@@ -88,8 +91,11 @@ def resolve_prompt(label: str, config_table: dict, builtins: dict[str, str]
     return builtins.get(label)
 
 
-def _esc(s: str) -> str:
-    return s.replace("\\", "\\\\").replace('"', '\\"')
+# The SHARED escape codec (crib/tomlrec.py), same one the symbol_index renders
+# with: it escapes `\n`/`\r`/`\t` and the control characters too, so an LLM term
+# that came back with an embedded newline can't split its own array entry and
+# derail the rest of the file's parse. `tomllib` reads these back.
+_esc = tomlrec.esc
 
 
 def _render_toml(section_hash: str, label: str, terms: list[str],
@@ -148,7 +154,8 @@ class SectionIndex:
               relpath: str = "", heading: str = "", model: str = "") -> Path:
         p = self.path(label, section_hash)
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(_render_toml(section_hash, label, terms, relpath, heading, model))
+        write_atomic(p,
+                     _render_toml(section_hash, label, terms, relpath, heading, model))
         return p
 
     def prune(self, label: str, live: set[str], before: float | None = None) -> int:

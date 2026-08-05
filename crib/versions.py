@@ -10,6 +10,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from .paths import confine
+
 
 @dataclass
 class VersionEntry:
@@ -25,7 +27,9 @@ class VersionRing:
         self._keep = keep
 
     def _note_dir(self, note_id: str) -> Path:
-        return self._dir / note_id
+        # id and version name are both caller-supplied (`note_restore(version=…)`)
+        # — confined so a ring lookup can only ever read inside the ring.
+        return confine(self._dir, note_id)
 
     def stash(self, note_id: str, content: str) -> VersionEntry | None:
         """Save `content` as the newest version; prune to `keep`."""
@@ -53,7 +57,7 @@ class VersionRing:
         return sorted(entries, key=lambda e: e.seq, reverse=True)
 
     def read(self, note_id: str, name: str) -> str:
-        return (self._note_dir(note_id) / name).read_text()
+        return confine(self._note_dir(note_id), name).read_text()
 
     def _next_seq(self, d: Path) -> int:
         seqs = [int(p.name.split("-", 1)[0]) for p in d.glob("*.md")]

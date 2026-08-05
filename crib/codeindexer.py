@@ -11,6 +11,7 @@ object. Crib keeps thin delegators so the notes watcher, the resident-cache
 from __future__ import annotations
 
 import asyncio
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -89,7 +90,7 @@ class CodeIndexer:
         prior index (for the content_hash gate + vanished-symbol drop); a full-project
         sweep parses it ONCE and passes it here so we don't re-`store.all()` per file
         (that made a cold onboard O(files × symbols)). None → parse it (standalone path)."""
-        from .codeindex import (NoServer, SymbolIndex, describe_file,
+        from .codeindex import (FileReadError, NoServer, SymbolIndex, describe_file,
                                  describe_symbols, extract_file, match_meta)
         ref_ctx = self.services.ref_edge_ctx(proj, root)
         abs_p = (root / rel).resolve()
@@ -116,6 +117,13 @@ class CodeIndexer:
         except NoServer as exc:
             return {"project": proj, "root": str(root), "file": rel,
                     "symbols": 0, "skipped": str(exc)}
+        except FileReadError as exc:
+            # The FILE is unreadable, not the server: skip this one and report it
+            # (the sweep collects these into `skipped` and warns once). The warm
+            # session is untouched — a single undecodable file used to cold-start
+            # the whole language server, over and over.
+            return {"project": proj, "root": str(root), "file": rel, "symbols": 0,
+                    "skipped": str(exc), "skipped_kind": "unreadable"}
         # Semantic facet: LLM one-line descriptions, merged by fqname (§4).
         # content_hash GATE: reuse a cached description when the symbol's body is
         # unchanged; only call the LLM when something is stale/new. BEST-EFFORT: a
@@ -139,13 +147,14 @@ class CodeIndexer:
             if len(codeish) > 3:
                 return {"project": proj, "root": str(root), "file": rel,
                         "symbols": len(old_in_file), "skipped": "empty-extract-kept-prior"}
-        # PARTIAL-extract guard — the empty guard's unguarded cousin. Deleting a
-        # symbol from the index on the LSP's say-so is only safe if the listing is
-        # complete; a server answering mid-settle (esp. on the short warm-session
-        # settle) can return a partial documentSymbol. Signature of partial:
-        # strictly FEWER symbols and NOTHING new — a genuine edit that removes a
-        # symbol virtually always also changes another (hash/line churn). Confirm
-        # with one slow re-extract before trusting the shrink.
+        # PARTIAL-extract guard — the empty guard's unguarded cousin. A server
+        # answering mid-settle (esp. on the short warm-session settle) can return a
+        # partial documentSymbol. Signature of partial: strictly FEWER symbols and
+        # NOTHING new — a genuine edit that removes a symbol virtually always also
+        # changes another (hash/line churn). One slow re-extract (settle=3.0, now
+        # actually honored — it used to be clamped to 0.3s) recovers the full
+        # listing, so the *reindex* is right rather than merely non-destructive;
+        # `_deletion_allowed` is the hard guarantee behind it.
         fresh_fqns = {e["fqname"] for e in entries}
         if entries and old_in_file and len(fresh_fqns) < len(old_in_file) \
                 and not (fresh_fqns - old_in_file):
@@ -218,23 +227,31 @@ class CodeIndexer:
         # Serialize only the store read-modify-write (NOT the LSP/LLM work above),
         # so a concurrent reindex of another file — watcher vs query vs explicit
         # index — can't interleave writes and corrupt the cross-file call graph
-        # (`CodeStore.patch_called_by`). Kept off the slow describe path so the loop-thread
+        # (`CodeStore.patch_edges`). Kept off the slow describe path so the loop-thread
         # revalidation never blocks on a worker's LLM call.
+        withheld: set[str] = set()
         with self.code.lock(proj):
             store.write_all(entries)
             store.set_source_root(root)                     # for query-time revalidation
-            # drop symbols that vanished from this file (renamed/removed) — else orphan
-            for fq in old_in_file - {e["fqname"] for e in entries}:
-                store.delete(fq)
+            # Drop symbols that vanished from this file (renamed/removed) — but ONLY
+            # on evidence that the file actually changed. See `_deletion_allowed`.
+            vanished = old_in_file - {e["fqname"] for e in entries}
+            if vanished and self._deletion_allowed(existing, entries, rel):
+                for fq in vanished:
+                    store.delete(fq)
+            elif vanished:
+                withheld = self._withhold_deletions(store, vanished)
             if patch_edges:
-                self.code.patch_called_by(store, entries, rel)
+                self.code.patch_edges(store, entries, rel)
         self.services.register_code_root(proj, root)        # live-watch this repo's source
         self.code.bump_epoch(proj)                          # invalidate the resident cache
         if defer and stale:
             # Structure is durable; schedule the description pass. Bodies ride along
             # so the settle uses the focused describe_symbols over only what changed.
             self._describe_q.enqueue(proj, root, rel, {
-                e["fqname"]: {"name": e["name"], "kind": e.get("kind", ""),
+                e["fqname"]: {"fqname": e["fqname"],   # the describe blob labels by
+                              "name": e["name"],      # fqname → results key by it
+                              "kind": e.get("kind", ""),
                               "content_hash": e["content_hash"],
                               "_body": e.get("_body", "")}
                 for e in stale})
@@ -245,9 +262,50 @@ class CodeIndexer:
             "store": str(store.root)}
         if defer and stale:
             out["describe_deferred"] = len(stale)
+        if withheld:
+            out["deletions_withheld"] = sorted(withheld)
         if gen_error:
             out["descriptions_error"] = gen_error
         return out
+
+    @staticmethod
+    def _deletion_allowed(existing: dict[str, dict], entries: list[dict],
+                          rel: str) -> bool:
+        """May this reindex DELETE the symbols that disappeared from `rel`?
+
+        Only if the file's bytes changed since it was last indexed. The reasoning is
+        arithmetic, not heuristic: identical content cannot have lost a symbol, so a
+        shrinking extract over an unchanged `file_hash` is an extraction anomaly (a
+        server answering mid-settle, a wedged session) — never an edit. Gating on
+        that makes wrongful deletion STRUCTURALLY impossible instead of
+        timing-dependent; the settle/confirm machinery then only affects how quickly
+        a legitimate removal lands, not whether live symbols survive.
+
+        Unknown either way (an index written before `file_hash` existed, or an
+        extract that produced no entries to carry one) → allowed, i.e. the older
+        confirm-based behavior. We only ever ADD a reason not to delete."""
+        prior = next((e.get("file_hash") for e in existing.values()
+                      if e.get("file") == rel and e.get("file_hash")), "")
+        fresh = next((e.get("file_hash") for e in entries if e.get("file_hash")), "")
+        return not (prior and fresh and prior == fresh)
+
+    @staticmethod
+    def _withhold_deletions(store: Any, vanished: set[str]) -> set[str]:
+        """Keep the symbols the extract lost and mark them MERGE-DIRTY (blank
+        `content_hash`) instead. That is the store's existing "this record can't be
+        trusted, rebuild it from the code" marker: `CodeStore.revalidate` and the
+        post-pull reconcile both sweep for it, so the file is re-extracted and the
+        symbols re-described on the next pass — self-healing, and visible in the
+        result as `deletions_withheld` rather than a silent disappearance."""
+        marked: set[str] = set()
+        for fq in vanished:
+            cur = store.read(fq)
+            if cur is None or not cur.get("fqname"):
+                continue            # gone, or too broken to rewrite — leave it be
+            cur["content_hash"] = ""
+            store.write(cur)
+            marked.add(fq)
+        return marked
 
     async def _describe_and_patch(self, proj: str, root: Path, rel: str,
                                   pending: dict[str, dict]) -> dict[str, Any]:
@@ -267,9 +325,10 @@ class CodeIndexer:
                 cur = store.read(fq)
                 if cur is None or cur.get("content_hash") != sym.get("content_hash"):
                     continue                            # dropped / re-edited → skip
-                d, kw = match_meta(sym.get("name", ""), descs)
-                if not d:
-                    d, kw = match_meta(fq, descs)
+                # by FQNAME only: the blob labelled each block with it, so an exact
+                # hit is expected. Matching on the bare `name` first is what let two
+                # same-named methods in one file overwrite each other's description.
+                d, kw = match_meta(fq, descs)
                 if d:
                     cur["description"] = d
                     cur["keywords"] = kw    # [] included — marks the attempt durable
@@ -346,6 +405,10 @@ class CodeIndexer:
 
         syms = desc = indexed = 0
         errors: list[dict[str, str]] = []
+        # Files the sweep could not READ (undecodable/vanished). Distinct from the
+        # ordinary self-skip of a non-code file (no LSP server), which is expected
+        # and silent — these are reported so a hole in the index is never invisible.
+        skipped: list[dict[str, str]] = []
         with self.code.indexing_lock:
             self.code.sweeps[proj] = {"done": 0, "total": len(files)}
         try:
@@ -354,7 +417,10 @@ class CodeIndexer:
                     deferred += 1
                 elif err is not None:
                     errors.append({"file": str(f), "error": err})
-                elif not (r or {}).get("skipped"):
+                elif (r or {}).get("skipped"):
+                    if (r or {}).get("skipped_kind") == "unreadable":
+                        skipped.append({"file": str(f), "error": r["skipped"]})
+                else:
                     indexed += 1
                     syms += (r or {}).get("symbols", 0)
                     desc += (r or {}).get("described", 0)
@@ -368,4 +434,8 @@ class CodeIndexer:
                                "complete": deferred == 0, "remaining": deferred}
         if errors:
             out["errors"] = errors
+        if skipped:
+            out["skipped"] = skipped
+            print(f"[crib] code index {proj}: {len(skipped)} unreadable file(s) "
+                  f"skipped (first: {skipped[0]['file']})", file=sys.stderr)
         return out

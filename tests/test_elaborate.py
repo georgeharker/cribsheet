@@ -111,7 +111,7 @@ def test_code_fence_comments_are_not_headings():
     from crib.chunk import _split_sections, section_line_map
     body = ("# Real\ntext\n```toml\n# not a heading\nk = 1\n```\nmore\n"
             "## Second\nbody\n")
-    heads = [hp for hp, _ in _split_sections(body)]
+    heads = [s.heading_path for s in _split_sections(body)]
     assert heads == [["Real"], ["Real", "Second"]]      # fence comment ignored
     assert list(section_line_map(body).keys()) == ["Real", "Real/Second"]
 

@@ -6,6 +6,8 @@ Lazy-imports fastmcp so the package stays importable without it.
 from __future__ import annotations
 
 import asyncio
+import functools
+import inspect
 import sys
 from pathlib import Path
 from typing import Any
@@ -78,6 +80,8 @@ def _source_project(crib: Crib, project: str | None,
                     project_path: str | None) -> str | None:
     """Project selector for REPO-SCOPED ops (project_setup/index/status/forget).
 
+    Also `code_index` — a single-file index is the same op at file granularity.
+
     These act on a specific repo, so an explicit `project_path` must decide WHICH
     project via that repo's `.crib` — never the sticky session project (a call with
     project_path=/other/repo but no project once indexed the OTHER repo INTO the
@@ -91,6 +95,18 @@ def _source_project(crib: Crib, project: str | None,
     return _project(crib, None, None)   # neither given → sticky session project
 
 
+# Documented exceptions to "a write NAMES its target" — both are declared at the
+# tool (see `crib_tool`) and repeated in the tool's own docstring, so the exception
+# is visible where it applies, not just here:
+#   • learning_add / learning_edit / learning_forget (and reaffirm/rehome) use the
+#     READ policy BY INTENT. A learning is about a SYMBOL in the code project you
+#     are working in — it can't belong anywhere else — so the sticky/inferred
+#     project is the right answer, and forcing `project=` on every pin would tax
+#     the one write we most want to be frictionless.
+#   • note_import / note_import_memory use the SOURCE policy: an import is about a
+#     REPO, so the repo's `.crib` decides (never the sticky session). They also
+#     declare `needs_target`, because with no source they used to fall through to
+#     the config default project silently — the very thing `_write_project` forbids.
 def _write_project(crib: Crib, project: str | None, project_path: str | None) -> str:
     """Project for a WRITE op (store/append/edit/forget/move). Writes must NAME their
     target — they do NOT inherit the sticky session project, because a durable fact
@@ -128,6 +144,26 @@ async def _write_project_elicit(crib: Crib, project: str | None,
     except Exception:  # noqa: BLE001 — no elicitation support → fall back to the error
         pass
     return _write_project(crib, None, None)             # raises the explicit-target error
+
+
+# ── The policy is DECLARED, not chosen in the body ────────────────────────────
+# Which of the resolvers above a tool uses is stated once, at its registration
+# (`@crib_tool("read"|"write"|"source"|"session"|"none")`); the decorator wires the
+# resolver and hands the body an ALREADY-RESOLVED `project`. No tool body calls a
+# resolver, because that is exactly how the policy drifts invisibly: `code_index`
+# spent a release on the READ policy — one wrong helper call in one body — and
+# filed another repo's symbols under the sticky session project. Declaring it makes
+# the choice reviewable in the diff and checkable by a test.
+#   read    — explicit > sticky session > seed-from-path (`_resolve`)
+#   write   — must NAME the target (`_write_project`)
+#   source  — the repo at `project_path` decides; sticky never wins (`_source_project`)
+#   session — the tool IS the session pointer (project_use/project_current): it sets
+#             or reports the current project rather than resolving one for an op
+#   none    — no project args at all (whole-store / cross-project ops)
+# `TOOL_POLICY` records every registration so a table test can assert the surface is
+# fully declared (and the CLI's VERBS registry can be checked against it).
+TOOL_POLICY: dict[str, str] = {}
+_POLICIES = ("read", "write", "source", "session", "none")
 
 
 def _switch_if_created(result: dict) -> dict:
@@ -195,18 +231,96 @@ def build_server(crib: Crib | None = None):
         ),
     )
 
-    def write_tool(fn):
-        """Register a notes-WRITE tool with a wire-schema constraint that `project`
-        OR `project_path` must be supplied (a top-level JSON-Schema `anyOf` on
-        `required`), so a validating client sees the requirement up front — not just
-        the runtime `_write_project` guard. `add_tool` returns the FunctionTool, whose
-        `.parameters` dict is the served input schema."""
-        tool = mcp.add_tool(FunctionTool.from_function(fn))
-        tool.parameters.setdefault(
-            "anyOf", [{"required": ["project"]}, {"required": ["project_path"]}])
-        return fn
+    def _wire(fn, resolution: str, echo: bool, elicit: bool, needs_target: bool):
+        """Apply the DECLARED policy around a tool body: resolve the caller's
+        `project`/`project_path` and pass the body the resolved project as `project`.
 
-    @mcp.tool()
+        The wrapper binds against the body's OWN signature (which `functools.wraps`
+        keeps visible to FastMCP/pydantic), so it is transparent on the wire — same
+        params, same schema, same Context injection."""
+        sig = inspect.signature(fn)
+
+        def prepare(args, kwargs):
+            bound = sig.bind(*args, **kwargs)
+            bound.apply_defaults()
+            a = bound.arguments
+            project, path = a.get("project"), a.get("project_path")
+            if needs_target and not (project or path):
+                raise ValueError(
+                    f"{fn.__name__} needs a SOURCE: pass project_path=<a path in that "
+                    "repo> (or project=<name>). It acts on a specific repo, so it must "
+                    "not fall through to whatever project happens to be current.")
+            return a, project, path
+
+        def resolve(project, path):
+            """(resolved project, ProjectResolution|None) for the non-eliciting policies."""
+            if resolution == "read":
+                res = _resolve(crib, project, path)
+                return res.project, res
+            if resolution == "source":
+                return _source_project(crib, project, path), None
+            return _write_project(crib, project, path), None
+
+        def finish(out, res, project, path):
+            if echo:                            # surface an IMPLICIT resolution
+                out = (_echo_list(out, res) if isinstance(out, list)
+                       else _echo_dict(out, res))
+            if elicit and isinstance(out, dict):
+                out["project_source"] = ("explicit" if project else
+                                         "project_path" if path else "elicited")
+            return out
+
+        if inspect.iscoroutinefunction(fn):
+            @functools.wraps(fn)
+            async def run(*args, **kwargs):
+                a, project, path = prepare(args, kwargs)
+                res = None
+                if elicit:                      # ask the human rather than erroring
+                    a["project"] = await _write_project_elicit(crib, project, path,
+                                                               a.get("ctx"))
+                else:
+                    a["project"], res = resolve(project, path)
+                return finish(await fn(**a), res, project, path)
+            return run
+
+        @functools.wraps(fn)
+        def run_sync(*args, **kwargs):
+            a, project, path = prepare(args, kwargs)
+            a["project"], res = resolve(project, path)
+            return finish(fn(**a), res, project, path)
+        return run_sync
+
+    def crib_tool(resolution: str, *, echo: bool = False, elicit: bool = False,
+                  needs_target: bool = False):
+        """Register an MCP tool AND declare its project-resolution policy (see the
+        block above `_switch_if_created`). The declaration is the only place a policy
+        is chosen; the body just uses the `project` it is handed.
+
+        Refinements: `echo` — a read that surfaces an implicit resolution on its
+        result; `elicit` — a write that ASKS for the target when it's omitted (and
+        stamps `project_source`); `needs_target` — a repo-scoped tool that is
+        meaningless without a source, so refuse the silent fall-through.
+
+        `write` (and any `needs_target` tool) also gets a wire-schema constraint that
+        `project` OR `project_path` must be supplied (a top-level JSON-Schema `anyOf`
+        on `required`), so a validating client sees the requirement up front — not
+        just the runtime guard. `add_tool` returns the FunctionTool, whose
+        `.parameters` dict is the served input schema."""
+        if resolution not in _POLICIES:
+            raise ValueError(f"unknown resolution policy {resolution!r}")
+
+        def register(fn):
+            TOOL_POLICY[fn.__name__] = resolution
+            impl = (fn if resolution in ("session", "none")
+                    else _wire(fn, resolution, echo, elicit, needs_target))
+            tool = mcp.add_tool(FunctionTool.from_function(impl))
+            if resolution == "write" or needs_target:
+                tool.parameters.setdefault(
+                    "anyOf", [{"required": ["project"]}, {"required": ["project_path"]}])
+            return fn
+        return register
+
+    @crib_tool("read")
     def note_lookup(query: str, project: str | None = None, k: int = 8,
                tags: list[str] | None = None,
                keyword_labels: list[str] | None = None,
@@ -221,39 +335,43 @@ def build_server(crib: Crib | None = None):
         you can jump straight to it (pair with `note_locate` for the abspath).
         `keyword_labels`/`keyword_weight` (BM25 keyword_index) and
         `summary_labels` (dense summary_index aliases) override which LLM index
-        sets feed retrieval (default from config); mainly for eval sweeps."""
+        sets feed retrieval (default from config); mainly for eval sweeps.
+        A hit carrying `index_rebuilding: true` means this project is still being
+        re-embedded after a store wipe (`status` shows the sweep) — the result set
+        is INCOMPLETE, so retry once it clears rather than concluding nothing exists."""
         return [vars(h) for h in
-                crib.lookup(query, _project(crib, project, project_path), k, tags,
+                crib.lookup(query, project, k, tags,
                             keyword_labels=keyword_labels,
                             keyword_weight=keyword_weight,
                             summary_labels=summary_labels,
                             summary_weight=summary_weight)]
 
-    @mcp.tool()
+    @crib_tool("read")
     def note_apropos(query: str, project: str | None = None, k: int = 8,
                 tags: list[str] | None = None,
                 project_path: str | None = None) -> list[dict[str, Any]]:
         """Like `note_lookup`, but each hit carries the full matching section's
         markdown (`section`) instead of a short snippet — for reading the
-        matched sections in full, not just locating them."""
-        return crib.apropos(query, _project(crib, project, project_path), k, tags)
+        matched sections in full, not just locating them. Carries the same
+        `index_rebuilding` incompleteness flag."""
+        return crib.apropos(query, project, k, tags)
 
-    @mcp.tool()
+    @crib_tool("read")
     def note_read(relpath: str, project: str | None = None,
              project_path: str | None = None) -> str:
         """Read a note's full raw markdown (frontmatter + body) — e.g. to see a
         `note_lookup` hit in full context, or before rewriting the note with `note_edit`."""
-        return crib.read_note(relpath, _project(crib, project, project_path))
+        return crib.read_note(relpath, project)
 
-    @mcp.tool()
+    @crib_tool("read")
     def note_locate(relpath: str, project: str | None = None,
                project_path: str | None = None) -> str:
         """Get the real on-disk path of a note so you can edit it with your own
-        file tools. After editing, call `reindex(relpath)` to make it searchable
+        file tools. After editing, call `note_reindex(relpath)` to make it searchable
         now (the watcher would catch it shortly regardless)."""
-        return crib.locate(relpath, _project(crib, project, project_path))
+        return crib.locate(relpath, project)
 
-    @write_tool
+    @crib_tool("write", elicit=True)
     async def note_store(content: str, title: str | None = None,
                     project: str | None = None,
                     tags: list[str] | None = None,
@@ -273,80 +391,75 @@ def build_server(crib: Crib | None = None):
         project (elicitation). Then tell the user which project it landed in."""
         # A write is a ONE-OFF at an explicitly-named target — it must NOT flip the
         # session's current project (no _switch_if_created): storing a cross-cutting
-        # fact shouldn't hijack the repo you're working in. When the target is omitted,
-        # elicit it from the client rather than erroring outright.
-        proj = await _write_project_elicit(crib, project, project_path, ctx)
-        res = await crib.store_note(content, title, proj, tags)
-        if isinstance(res, dict):
-            res["project_source"] = ("explicit" if project else
-                                     "project_path" if project_path else "elicited")
-        return res
+        # fact shouldn't hijack the repo you're working in. `elicit=True` on the
+        # declaration asks the client for the target when it's omitted (rather than
+        # erroring) and stamps the answer's `project_source`; `ctx` is declared here
+        # only so FastMCP injects it for that.
+        return await crib.store_note(content, title, project, tags)
 
-    @write_tool
+    @crib_tool("write")
     async def note_append(relpath: str, content: str, heading: str | None = None,
                      project: str | None = None,
                      project_path: str | None = None) -> dict[str, Any]:
         """Add to an existing note (found via `note_lookup`) — the right call when new
         information extends or continues something already remembered, rather than
         `note_store`-ing a near-duplicate. Optionally files it under a new heading."""
-        return await crib.append_note(relpath, content, heading,
-                                      _write_project(crib, project, project_path))
+        return await crib.append_note(relpath, content, heading, project)
 
-    @write_tool
+    @crib_tool("write")
     async def note_edit(relpath: str, new_content: str,
                    project: str | None = None,
                    project_path: str | None = None) -> dict[str, Any]:
         """Rewrite a note's full content — use when remembered information has
         changed, needs correcting, or several notes should be consolidated (read
         it first). Frontmatter (and the note's id/history) is preserved."""
-        return await crib.edit_note(relpath, new_content,
-                                    _write_project(crib, project, project_path))
+        return await crib.edit_note(relpath, new_content, project)
 
-    @write_tool
+    @crib_tool("write")
     async def note_forget(relpath: str, project: str | None = None,
                      project_path: str | None = None) -> dict[str, Any]:
         """Delete a note when its information is obsolete or wrong. Removed from
         disk and the index, but stashed to the version ring first, so it stays
         recoverable by id."""
-        return await crib.forget(relpath, _write_project(crib, project, project_path))
+        return await crib.forget(relpath, project)
 
-    @mcp.tool()
+    @crib_tool("read")
     async def note_reindex(relpath: str | None = None,
                       project: str | None = None,
                       project_path: str | None = None) -> dict[str, Any]:
         """Reindex a note (or the whole project). Call after editing a note via
         its raw path. Safe to call redundantly — it no-ops if already current."""
-        return await crib.reindex(relpath, _project(crib, project, project_path))
+        return await crib.reindex(relpath, project)
 
-    @mcp.tool()
+    @crib_tool("read")
     def note_versions(relpath: str, project: str | None = None,
                  project_path: str | None = None) -> list[dict[str, Any]]:
         """List recoverable prior versions of a note."""
-        return crib.list_versions(relpath, _project(crib, project, project_path))
+        return crib.list_versions(relpath, project)
 
-    @mcp.tool()
+    @crib_tool("read")
     async def note_restore(relpath: str, version: str,
                       project: str | None = None,
                       project_path: str | None = None) -> dict[str, Any]:
         """Restore a prior version of a note (itself undoable)."""
-        return await crib.restore(relpath, version, _project(crib, project, project_path))
+        return await crib.restore(relpath, version, project)
 
-    @mcp.tool()
+    @crib_tool("none")
     async def project_reconcile() -> dict[str, Any]:
         """Sweep every project for changes made while crib was down and bring the
         index back in line. Safe to call anytime — the hash gate no-ops anything
         already current."""
         return await crib.reconcile_all()
 
-    @mcp.tool()
+    @crib_tool("read")
     async def note_distill(relpath: str, project: str | None = None,
                       project_path: str | None = None) -> dict[str, Any]:
         """LLM-revise a note in place: compress, dedupe, normalize — keeping
         facts/decisions, dropping deliberation, preserving code verbatim.
         Thrash-guarded (no-op if unchanged); the prior version is recoverable."""
-        return await crib.distill(relpath, _project(crib, project, project_path))
+        return await crib.distill(relpath, project)
 
-    @mcp.tool()
+    @crib_tool("read")
     async def note_elaborate(label: str, relpath: str | None = None,
                         project: str | None = None, overwrite: bool = False,
                         project_path: str | None = None) -> dict[str, Any]:
@@ -354,10 +467,9 @@ def build_server(crib: Crib | None = None):
         project), section-addressed under `label` (e.g. `keywords`, `questions`,
         `phrase`). Skips cached sections unless `overwrite`. Activate via
         [retrieve].keyword_labels."""
-        return await crib.elaborate(label, relpath, _project(crib, project, project_path),
-                                    overwrite=overwrite)
+        return await crib.elaborate(label, relpath, project, overwrite=overwrite)
 
-    @mcp.tool()
+    @crib_tool("read")
     async def note_summarize(label: str, relpath: str | None = None,
                         project: str | None = None, overwrite: bool = False,
                         project_path: str | None = None) -> dict[str, Any]:
@@ -365,10 +477,9 @@ def build_server(crib: Crib | None = None):
         embedded as dense alias vectors so paraphrased queries match a section
         with zero shared tokens. Skips cached sections unless `overwrite`.
         Activate via [retrieve].summary_labels."""
-        return await crib.summarize(label, relpath, _project(crib, project, project_path),
-                                    overwrite=overwrite)
+        return await crib.summarize(label, relpath, project, overwrite=overwrite)
 
-    @mcp.tool()
+    @crib_tool("source")
     async def code_index(path: str, project: str | None = None,
                          project_path: str | None = None) -> dict[str, Any]:
         """Populate the code index for a source file: extract its symbols (functions,
@@ -376,10 +487,14 @@ def build_server(crib: Crib | None = None):
         describe them, persist under `<project>/symbol_index/`. Use when code_lookup
         says a project isn't indexed yet. `path` MUST be ABSOLUTE — a relative path
         resolves against the daemon's cwd (not yours) and fails; also pass
-        `project_path=<your working dir>` so the project resolves via .crib."""
-        return await crib.code_index(path, _project(crib, project, project_path), cwd=_cwd(project_path))
+        `project_path=<your working dir>` so the project resolves via .crib (which
+        WINS over the sticky session project — indexing a repo files its symbols
+        under that repo's project, never the one you happen to be sitting in)."""
+        # Declared REPO-SCOPED (`source`) like its project_* siblings, not `read`:
+        # a sticky session must never capture another repo's symbols.
+        return await crib.code_index(path, project, cwd=_cwd(project_path))
 
-    @mcp.tool()
+    @crib_tool("source")
     async def project_setup(project: str | None = None,
                             project_path: str | None = None) -> dict[str, Any]:
         """ONBOARD a repo for crib in one call — when code_lookup says a project isn't
@@ -391,10 +506,9 @@ def build_server(crib: Crib | None = None):
         recorded root). Idempotent. Then code_lookup/code_dossier work. Code-only
         variant: project_index."""
         return _switch_if_created(
-            await crib.project_setup(_source_project(crib, project, project_path),
-                                     cwd=_cwd(project_path)))
+            await crib.project_setup(project, cwd=_cwd(project_path)))
 
-    @mcp.tool()
+    @crib_tool("source")
     async def project_index(project: str | None = None,
                             project_path: str | None = None,
                             budget_s: float | None = None,
@@ -411,7 +525,7 @@ def build_server(crib: Crib | None = None):
         a hard call timeout anyway, pass `budget_s=<seconds>`: files not reached by the
         soft deadline are deferred and the result says `complete=false, remaining=N` —
         re-invoke to continue (finished files re-skip via the content-hash gate)."""
-        proj = _source_project(crib, project, project_path)
+        proj = project                          # resolved by the `source` policy
         before = set(crib.code.sweeps)          # sweeps already running for OTHER calls
         task = asyncio.create_task(
             crib.project_index(proj, cwd=_cwd(project_path), budget_s=budget_s))
@@ -433,35 +547,33 @@ def build_server(crib: Crib | None = None):
                     pass
         return _switch_if_created(await task)
 
-    @mcp.tool()
+    @crib_tool("source")
     def project_status(project: str | None = None,
                        project_path: str | None = None) -> dict[str, Any]:
         """Is this repo code-indexed? Returns symbol/file counts, a kind breakdown, and
         the `.crib` source paths — to orient before project_setup / a code_lookup. Pass
         `project_path=<the repo dir>`."""
-        return crib.project_status(_source_project(crib, project, project_path),
-                                   cwd=_cwd(project_path))
+        return crib.project_status(project, cwd=_cwd(project_path))
 
-    @mcp.tool()
+    @crib_tool("source")
     def project_forget(project: str | None = None, with_learnings: bool = False,
                        project_path: str | None = None) -> dict[str, Any]:
         """Clear a project's CODE INDEX (symbol_index). Keeps attached learnings, notes
         and `.crib` by default (learnings are durable — pass with_learnings=True to drop
         them too). Recoverable by re-running project_index. Pass `project_path=<the repo dir>`."""
-        return crib.project_forget(_source_project(crib, project, project_path),
-                                   with_learnings=with_learnings, cwd=_cwd(project_path))
+        return crib.project_forget(project, with_learnings=with_learnings,
+                                   cwd=_cwd(project_path))
 
-    @mcp.tool()
+    @crib_tool("read", echo=True)
     async def code_xref(symbol: str, project: str | None = None,
                         project_path: str | None = None) -> list[dict[str, Any]]:
         """A symbol's callers (←), callees (→) and references (⇐ — broader than calls),
         plus any human learning pinned to it — from the persisted index, no live LSP.
         `symbol` is a bare name or dotted fqname. Pass `project_path=<your working dir>` on first
         use so the right project resolves (via .crib)."""
-        res = _resolve(crib, project, project_path)
-        return _echo_list(crib.code_xref(symbol, res.project), res)
+        return crib.code_xref(symbol, project)
 
-    @mcp.tool()
+    @crib_tool("read", echo=True)
     async def code_lookup(query: str, project: str | None = None, k: int = 8,
                           project_path: str | None = None) -> list[dict[str, Any]]:
         """FIND A SYMBOL BY CONCEPT OR NAME — reach for this FIRST, before grep/Read,
@@ -474,10 +586,9 @@ def build_server(crib: Crib | None = None):
         (project_path=<the repo dir>), then retry the lookup — do NOT read files or grep instead.
         Pass `project_path=<your working dir>` so the project resolves via .crib. Then `code_dossier`
         a hit to go deep, or `code_graph` to walk the tree."""
-        res = _resolve(crib, project, project_path)
-        return _echo_list(crib.code_lookup(query, res.project, k), res)
+        return crib.code_lookup(query, project, k)
 
-    @mcp.tool()
+    @crib_tool("read", echo=True)
     def code_dossier(symbol: str, project: str | None = None,
                      project_path: str | None = None) -> dict[str, Any]:
         """EVERYTHING about one symbol in a single call: signature + description, and its
@@ -486,10 +597,9 @@ def build_server(crib: Crib | None = None):
         code_lookup which *finds* it) — read a symbol and its whole neighbourhood without
         follow-up lookups. `symbol` is a bare name or dotted fqname; pass `project_path=`/`project=` to target a DIFFERENT project than your current
         project resolution."""
-        res = _resolve(crib, project, project_path)
-        return _echo_dict(crib.code_dossier(symbol, res.project), res)
+        return crib.code_dossier(symbol, project)
 
-    @mcp.tool()
+    @crib_tool("read", echo=True)
     async def code_graph(symbol: str, direction: str = "callees", depth: int = 6,
                          project: str | None = None,
                          project_path: str | None = None) -> dict[str, Any]:
@@ -498,10 +608,9 @@ def build_server(crib: Crib | None = None):
         calls, and the only relation for symbols-only servers like zsh's shuck),
         recursive to `depth`. Nested {fqname, kind, file, line, children[]}; nodes with a
         pinned learning are flagged. Pass `project_path=<a path in the repo>` (or `project=<name>`) only to target a DIFFERENT project than your current one."""
-        res = _resolve(crib, project, project_path)
-        return _echo_dict(crib.code_graph(symbol, direction, depth, res.project), res)
+        return crib.code_graph(symbol, direction, depth, project)
 
-    @mcp.tool()
+    @crib_tool("read")
     async def learning_add(symbol: str, text: str, project: str | None = None,
                           project_path: str | None = None) -> dict[str, Any]:
         """Pin a durable human learning to a code symbol — the 'now I get it',
@@ -512,50 +621,54 @@ def build_server(crib: Crib | None = None):
         deps, read-only explorations — where a comment can't go). Appends a dated
         entry to the symbol's running note. `symbol` is a bare name or dotted
         fqname already in the symbol_index (code_index the file first). Surfaces
-        back via code_lookup/code_xref."""
-        return await crib.code_append(symbol, text, _project(crib, project, project_path))
+        back via code_lookup/code_xref. A learning is ABOUT a symbol in the code
+        project you're in, so — unlike a note write — it resolves that project the
+        way the read tools do (a documented exception; pass `project=`/`project_path=`
+        to pin one elsewhere)."""
+        return await crib.learning_add(symbol, text, project)
 
-    @mcp.tool()
+    @crib_tool("read")
     async def learning_edit(symbol: str, new_content: str, project: str | None = None,
                         project_path: str | None = None) -> dict[str, Any]:
         """Rewrite a symbol's learning body wholesale (frontmatter preserved) —
-        the standard edit, scoped to a symbol. Errors if none exists; code_append
-        creates."""
-        return await crib.code_edit(symbol, new_content, _project(crib, project, project_path))
+        the standard edit, scoped to a symbol. Errors if none exists; `learning_add`
+        creates. Resolves its project like a read, as `learning_add` does."""
+        return await crib.learning_edit(symbol, new_content, project)
 
-    @mcp.tool()
+    @crib_tool("read")
     async def learning_forget(symbol: str, project: str | None = None,
                           project_path: str | None = None) -> dict[str, Any]:
         """Remove a symbol's learning (stashed to the version ring first, so it's
-        recoverable) — the standard forget, scoped to a symbol."""
-        return await crib.code_forget(symbol, _project(crib, project, project_path))
+        recoverable) — the standard forget, scoped to a symbol. Resolves its project
+        like a read, as `learning_add` does."""
+        return await crib.learning_forget(symbol, project)
 
-    @mcp.tool()
+    @crib_tool("read")
     def learning_read(symbol: str, project: str | None = None,
                   project_path: str | None = None) -> dict[str, Any]:
         """Read a symbol's attached learning note (frontmatter + body), or found=
         False if none is written yet. `symbol` is a bare name or dotted fqname."""
-        return crib.code_read(symbol, _project(crib, project, project_path))
+        return crib.learning_read(symbol, project)
 
-    @mcp.tool()
+    @crib_tool("read")
     async def learning_reaffirm(symbol: str, project: str | None = None,
                             project_path: str | None = None) -> dict[str, Any]:
         """Clear a learning's ⚠ stale flag WITHOUT rewriting it — you re-checked the
         note against the current code and it still holds. Re-snapshots the symbol's
         content_hash so it reads as fresh again. Use when code_lookup shows a 📌 note
         flagged stale but the understanding is still correct."""
-        return await crib.code_reaffirm(symbol, _project(crib, project, project_path))
+        return await crib.learning_reaffirm(symbol, project)
 
-    @mcp.tool()
+    @crib_tool("read")
     def learning_report(project: str | None = None, orphans_only: bool = False,
                        project_path: str | None = None) -> list[dict[str, Any]]:
         """Health report for attached learnings: each is `ok` | `moved` (fqn resolves
         but the symbol's file drifted) | `orphan` (fqn no longer resolves — a rename/
         move/delete left the note dangling). `orphans_only` filters to the actionable
-        ones. Report-only; drives cleanup via code_rehome / code_forget."""
-        return crib.code_learnings(_project(crib, project, project_path), orphans_only=orphans_only)
+        ones. Report-only; drives cleanup via `learning_rehome` / `learning_forget`."""
+        return crib.learning_report(project, orphans_only=orphans_only)
 
-    @mcp.tool()
+    @crib_tool("read")
     async def learning_rehome(old_fqn: str, new_fqn: str | None = None,
                           project: str | None = None,
                           project_path: str | None = None) -> dict[str, Any]:
@@ -564,41 +677,46 @@ def build_server(crib: Crib | None = None):
         then call again with the chosen `new_fqn` to move the note (id/history
         preserved, frontmatter re-snapshotted). Never auto-moves — you pick, because a
         wrong attach is worse than a dangling one."""
-        return await crib.code_rehome(old_fqn, new_fqn, _project(crib, project, project_path))
+        return await crib.learning_rehome(old_fqn, new_fqn, project)
 
-    @mcp.tool()
+    @crib_tool("none")
     def memory_snapshot(message: str | None = None) -> str:
         """Create a git checkpoint of the whole memory store's data tree (if git is set up)."""
         return crib.snapshot(message)
 
-    @mcp.tool()
+    @crib_tool("none")
     def memory_history(relpath: str | None = None) -> list[str]:
         """Show git commit history for the whole tree (or a single note)."""
         return crib.history(relpath)
 
-    @mcp.tool(name="note_import")
+    @crib_tool("source", needs_target=True)
     async def note_import(paths: list[str], project: str | None = None,
                            project_path: str | None = None) -> dict[str, Any]:
         """Copy the NAMED files into memory as crib-owned notes (snapshot you own:
         git-synced, editable, versioned). Distinct from a repo's `.crib` docs, which
         are indexed IN-SITU (source is master, never copied) by `project index`.
         `paths` must be absolute, or relative to `project_path` (there is no shell
-        cwd here for them to be relative to)."""
+        cwd here for them to be relative to). An import is ABOUT a repo, so — unlike
+        a note write — it resolves like the repo-scoped `project_*` tools and REQUIRES
+        a source: name `project_path=<the repo dir>` (or `project=`), else it errors
+        rather than quietly filing the copies in the default project."""
         return _switch_if_created(
             await crib.import_files(paths, project, cwd=_cwd(project_path)))
 
-    @mcp.tool(name="note_import_memory")
+    @crib_tool("source", needs_target=True)
     async def note_import_memory(project: str | None = None,
                             project_path: str | None = None) -> dict[str, Any]:
         """Mirror Claude Code's own harness memory (the `memory/*.md` files it
         writes for this project) into a crib project, so those notes become
         searchable here alongside everything else. One-way + idempotent; opts the
         repo into the daemon's live mirror so future memory edits sync on their
-        own."""
+        own. REQUIRES a source repo — pass `project_path=<the repo dir>` (or
+        `project=`); like `note_import` it resolves repo-scoped, never from the
+        sticky session or the default project."""
         return _switch_if_created(
             await crib.import_claude_memory(project, cwd=_cwd(project_path)))
 
-    @write_tool
+    @crib_tool("write")
     async def note_move(relpath: str, to_project: str | None = None,
                    to_relpath: str | None = None, project: str | None = None,
                    project_path: str | None = None) -> dict[str, Any]:
@@ -607,11 +725,9 @@ def build_server(crib: Crib | None = None):
         `to_project` moves it across namespaces; `to_relpath` renames it."""
         # a move is a one-off curation op — it must not flip the session project
         # onto the source or destination (no _switch_if_created).
-        return await crib.move_note(
-            relpath, to_project, to_relpath,
-            _write_project(crib, project, project_path))
+        return await crib.move_note(relpath, to_project, to_relpath, project)
 
-    @mcp.tool()
+    @crib_tool("none")
     def status() -> dict[str, Any]:
         """One-call health summary: every project's inventory (notes, in-situ doc
         chunks, code symbols, learnings), git-sync state (dirty/ahead/behind),
@@ -622,13 +738,13 @@ def build_server(crib: Crib | None = None):
         projects; `project_status` goes deep on one."""
         return crib.status()
 
-    @mcp.tool()
+    @crib_tool("none")
     def project_list() -> list[str]:
         """List crib projects (separate memory namespaces). Use to discover
         what's available before a `note_lookup`/`note_store` in a specific project."""
         return crib.projects()
 
-    @mcp.tool()
+    @crib_tool("session")
     def project_use(project: str) -> dict[str, Any]:
         """Set THIS session's current project — subsequent `note_lookup`/`note_store`/etc.
         target it without passing `project` each time. Sticky for the connection;
@@ -636,18 +752,20 @@ def build_server(crib: Crib | None = None):
         automatically from your working directory on first use, so call this only
         to switch. The namespace is created immediately (so it's real and listed,
         not a phantom you're 'in' until the first write)."""
-        created = crib.project_is_new(project)
-        crib.notes_dir(project)          # eager mkdir — no phantom namespace
-        session_state().current_project = project
-        return {"current_project": project, "created": created}
+        # One implementation, shared with the in-process CLI: `Crib.use_project`
+        # validates the name (before the eager mkdir — `../x` would otherwise plant a
+        # namespace outside the projects tree), creates the namespace, and sets the
+        # session pointer. A second copy here would only drift.
+        return crib.use_project(project)
 
-    @mcp.tool()
+    @crib_tool("session")
     def project_current(project_path: str | None = None) -> dict[str, Any]:
         """Show this session's current project (seeding it from `project_path`/.crib if not
         yet set), how it resolved, plus the available projects."""
-        res = _resolve(crib, None, project_path)
-        return {"current_project": res.project, "resolved_via": res.via,
-                "projects": crib.projects()}
+        # Shared with the in-process CLI (see `project_use`): `Crib.current_project`
+        # applies the READ policy itself — this tool reports the session pointer
+        # rather than resolving a project for an op, hence the `session` declaration.
+        return crib.current_project(cwd=_cwd(project_path))
 
     return mcp
 
@@ -663,14 +781,12 @@ async def _serve_async(transport: str = "stdio", host: str = "127.0.0.1",
             crib.start_watchers(asyncio.get_running_loop())
         except Exception as e:  # noqa: BLE001 — watchdog optional; degrade quietly
             print(f"[crib] watcher disabled: {e}", file=sys.stderr)
-    # Catch up on anything changed while crib (and its watcher) were down.
-    # Start the watcher first so edits during the sweep aren't missed; the hash
-    # gate makes any overlap a harmless no-op (DESIGN §4).
-    rec = await crib.reconcile_all()
-    if rec["changed"] or rec["removed"]:
-        print(f"[crib] startup reconcile: {rec['changed']} updated, "
-              f"{rec['removed']} chunk(s) removed across {rec['projects']} project(s)",
-              file=sys.stderr)
+    # Catch up on anything changed while crib (and its watcher) were down — in the
+    # BACKGROUND, so a cold daemon with an offline backlog can't hold the port
+    # closed past the client's ready timeout. Watcher first so edits during the
+    # sweep aren't missed; the hash gate makes overlap a no-op (DESIGN §4/§9).
+    # Progress and the skip list surface via `status` / stderr.
+    crib.reconcile_in_background(asyncio.get_running_loop())
     # Catch up + live-mirror any bound Claude harness memory dirs (DESIGN §13).
     try:
         await crib.start_memory_mirror(asyncio.get_running_loop())

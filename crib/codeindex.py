@@ -23,9 +23,12 @@ import shutil
 import subprocess
 import threading
 import time
+import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import IO, Any
+
+from . import tomlrec
 
 
 # ── LSP server specs — Claude Code `.lsp.json` schema (docs §3.3) ─────────────
@@ -341,6 +344,7 @@ class LspClient:
         self.r: IO[bytes] = self.proc.stdout
         self._id = 0
         self._resp: dict[int, dict] = {}
+        self._dead: str | None = None    # why the reader stopped; set once, never cleared
         self._lock = threading.Lock()
         self._wlock = threading.Lock()   # frames must not interleave: the watcher
         threading.Thread(target=self._reader, daemon=True).start()  # pump notifies
@@ -353,6 +357,27 @@ class LspClient:
             self.w.flush()
 
     def _reader(self) -> None:
+        """Pump frames until EOF, and NEVER die quietly: one malformed frame used to
+        kill this thread with nothing else noticing, after which every request burned
+        its full 30s timeout (a sweep serialized 30s stalls with no diagnosis). Any
+        exit — clean EOF or exception — marks the session dead so waiters fail fast
+        and the pool's discard/retry replaces it once."""
+        try:
+            self._pump()
+            self._mark_dead("server closed the connection")
+        except Exception as e:  # noqa: BLE001 — malformed frame / decode error / dead pipe
+            self._mark_dead(repr(e))
+
+    def _mark_dead(self, why: str) -> None:
+        """Record the cause and drop every pending response slot, so the requests
+        blocked on them raise `SessionError` on their next poll instead of waiting
+        out a timeout for an answer that can no longer arrive."""
+        with self._lock:
+            if self._dead is None:
+                self._dead = why
+            self._resp.clear()
+
+    def _pump(self) -> None:
         while True:
             headers: dict[str, str] = {}
             while True:
@@ -403,17 +428,34 @@ class LspClient:
         return s
 
     def request(self, method: str, params: dict, timeout: float = 30.0) -> Any:
+        """Send a request and wait for its reply. Raises `SessionError` — never a
+        bare TimeoutError — so the caller's discard/retry path is driven by ONE
+        exception type, and immediately (no 30s wait) once the reader has died."""
+        with self._lock:
+            dead = self._dead
+        if dead:
+            raise SessionError(f"{method}: LSP session already dead ({dead})")
         with self._lock:
             self._id += 1
             rid = self._id
-        self._send({"jsonrpc": "2.0", "id": rid, "method": method, "params": params})
+        try:
+            self._send({"jsonrpc": "2.0", "id": rid, "method": method,
+                        "params": params})
+        except OSError as e:
+            self._mark_dead(repr(e))
+            raise SessionError(f"{method}: write to LSP server failed ({e})") from e
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             with self._lock:
                 if rid in self._resp:
                     return self._resp.pop(rid).get("result")
+                dead = self._dead
+            if dead:
+                raise SessionError(f"{method}: LSP session died awaiting reply ({dead})")
             time.sleep(0.02)
-        raise TimeoutError(method)
+        with self._lock:
+            self._resp.pop(rid, None)   # nobody will collect it — don't leak the slot
+        raise SessionError(f"{method}: no reply from the LSP server in {timeout}s")
 
     def notify(self, method: str, params: dict) -> None:
         self._send({"jsonrpc": "2.0", "method": method, "params": params})
@@ -833,9 +875,30 @@ class NoServer(RuntimeError):
     """No LSP server for a file's extension is available on this machine."""
 
 
+class ExtractError(RuntimeError):
+    """An extraction failed. The two subclasses split the two very different
+    recoveries — read them as "whose fault, and what do we throw away"."""
+
+
+class FileReadError(ExtractError):
+    """The SOURCE FILE could not be read (missing, unreadable, undecodable). The
+    warm LSP session was never used and is perfectly healthy: skip this one file
+    and keep the server. Discarding the pool here cold-started rust-analyzer
+    (minutes) for every latin-1 file in a repo."""
+
+
+class SessionError(ExtractError):
+    """The LSP SESSION is unusable — request timeout, dead reader thread, broken
+    pipe. The pool discards it and the extraction retries once on a fresh one."""
+
+
 # Post-didOpen settle on a WARM session: the workspace index already exists, only
 # this one file's analysis is pending — a fraction of the fresh-session settle.
 _REUSE_SETTLE = 0.3
+# Cold-session settle: a fresh server may still be building its workspace index,
+# so give it a beat before the first documentSymbol. Both are POLICY defaults —
+# an explicit `settle=` from the caller overrides them exactly (see `extract_file`).
+_FRESH_SETTLE = 1.5
 
 
 def _hierarchy_edges(c: LspClient, method: str, item: dict, key: str,
@@ -851,17 +914,26 @@ def _hierarchy_edges(c: LspClient, method: str, item: dict, key: str,
     return out
 
 
-def extract_file(root: Path, relpath: str, settle: float = 1.5,
+def extract_file(root: Path, relpath: str, settle: float | None = None,
                  pool: LspSessionPool | None = None,
                  ref_projects: RefProjects | None = None) -> list[dict]:
     """Symbols + workspace-resolved call edges for one file, via the LSP server the
-    specs select for its extension (docs §3.3). Raises NoServer if none resolves.
-    The session comes WARM from the pool (docs §3.1) — spawn + `initialize` (the
-    whole-workspace index, the expensive part) is paid once per (root, server),
-    not per file. A wedged/dead server is discarded and the extraction retried
-    once on a fresh one. Edges resolving OUTSIDE the root attribute to
-    `ref_projects` (the `.crib` `refs:`) as qualified `name [proj:rel]` edges
-    instead of being dropped."""
+    specs select for its extension (docs §3.3). Raises NoServer if none resolves,
+    FileReadError if the file itself can't be read. The session comes WARM from the
+    pool (docs §3.1) — spawn + `initialize` (the whole-workspace index, the
+    expensive part) is paid once per (root, server), not per file. Edges resolving
+    OUTSIDE the root attribute to `ref_projects` (the `.crib` `refs:`) as qualified
+    `name [proj:rel]` edges instead of being dropped.
+
+    `settle` is the post-didOpen wait before documentSymbol. None = POLICY (the
+    short `_REUSE_SETTLE` on a warm session, the full `_FRESH_SETTLE` on a cold
+    one); an explicit float is honored EXACTLY, warm or cold — the partial-extract
+    confirm pass asks for a real 3s and used to be silently clamped to 0.3s, so it
+    re-read the same partial listing it was meant to disprove.
+
+    Only a SESSION fault (`SessionError`: timeout, dead reader, broken pipe)
+    discards the warm server and retries once; an unreadable file never touches
+    the pool."""
     path = (root / relpath).resolve()
     sel = server_for(relpath, abspath=path)
     if sel is None:
@@ -872,7 +944,9 @@ def extract_file(root: Path, relpath: str, settle: float = 1.5,
     try:
         return _extract(pool, root, relpath, path, settle, label, argv,
                         language_id, spec, ref_projects)
-    except (TimeoutError, OSError, ValueError):
+    except FileReadError:
+        raise                            # the FILE is bad — the warm session is fine
+    except (SessionError, TimeoutError, OSError, ValueError):
         pool.discard(root, label)        # crash supervision: respawn once and retry
         return _extract(pool, root, relpath, path, settle, label, argv,
                         language_id, spec, ref_projects)
@@ -892,6 +966,7 @@ class _ExtractCtx:
     language_id: str
     relpath: str
     lines: list[str]
+    file_hash: str
     mtime: Any
     has_refs: bool
     sym_cache: dict[str, list]
@@ -1023,9 +1098,9 @@ def _hover_doc(ctx: "_ExtractCtx", pos: dict) -> str:
     try:
         res = ctx.c.request("textDocument/hover",
                             {"textDocument": {"uri": ctx.uri}, "position": pos})
-    except (TimeoutError, OSError, ValueError):
-        return ""
-    if not res:
+    except (SessionError, TimeoutError, OSError, ValueError):
+        return ""                    # best-effort enrichment; a dead session
+    if not res:                      # re-raises on the very next request anyway
         return ""
     contents = res.get("contents")
     parts: list[str] = []
@@ -1104,7 +1179,8 @@ def _symbol_entry(ctx: _ExtractCtx, s: dict, parents: tuple[str, ...],
         "kind": kind_label,
         "lang": ctx.language_id, "module": ctx.module, "container": list(container),
         "parent": parent, "content_hash": content_hash,
-        "file": ctx.relpath, "line": start + 1, "mtime": ctx.mtime, "signature": sig,
+        "file": ctx.relpath, "file_hash": ctx.file_hash,
+        "line": start + 1, "mtime": ctx.mtime, "signature": sig,
         "calls": sorted(set(calls)), "called_by": sorted(set(called_by)),
         "references": sorted(set(references)),
         "name_terms": _name_terms(local, fqname),
@@ -1113,12 +1189,24 @@ def _symbol_entry(ctx: _ExtractCtx, s: dict, parents: tuple[str, ...],
 
 
 def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
-             settle: float, label: str, argv: list[str], language_id: str,
+             settle: float | None, label: str, argv: list[str], language_id: str,
              spec: dict, ref_projects: RefProjects | None = None) -> list[dict]:
     """Session/doc lifecycle skeleton: acquire a warm session, open (or sync a pinned)
     doc, wait for quiescence, then walk documentSymbol into `_symbol_entry` records —
     closing only what THIS call opened (pins stay) in the finally."""
-    lines = path.read_text().splitlines()
+    # errors="replace": a latin-1 / binary-ish source is INDEXABLE, just lossily. The
+    # server is didOpen'd with the SAME replaced text below, so every LSP position we
+    # send and every body we slice agree with each other. Only a genuinely unreadable
+    # file raises — and as FileReadError, which never costs the warm session.
+    try:
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError as e:
+        raise FileReadError(f"{relpath}: {e}") from e
+    text = "\n".join(lines)
+    # FILE-level hash of exactly the text we analyze — the deletion gate's evidence
+    # (codeindexer): identical bytes cannot have lost symbols, so a shrinking extract
+    # over an unchanged file is an extraction anomaly, not an edit.
+    file_hash = hashlib.sha1(text.encode()).hexdigest()[:16]
     # ref checkouts OUTSIDE the workspace ride along as extra workspaceFolders
     # (multi-root xref); in-tree ones are already inside the root
     extra = list(dict.fromkeys(
@@ -1139,23 +1227,26 @@ def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
                 sess.pinned[uri] += 1
                 c.notify("textDocument/didChange", {
                     "textDocument": {"uri": uri, "version": sess.pinned[uri]},
-                    "contentChanges": [{"text": "\n".join(lines)}]})
+                    "contentChanges": [{"text": text}]})
             else:
                 opened.add(uri)
                 c.notify("textDocument/didOpen", {"textDocument": {
                     "uri": uri, "languageId": language_id, "version": 1,
-                    "text": "\n".join(lines)}})
+                    "text": text}})
             # readiness: honor the server's own $/progress over a blind sleep —
-            # fresh sessions may be mid-workspace-index (minutes on big repos)
+            # fresh sessions may be mid-workspace-index (minutes on big repos).
+            # settle=None is policy (short warm / full cold); an explicit value is
+            # the caller's considered choice and is obeyed as given.
             c.wait_quiescent(
-                initial=settle if fresh else min(settle, _REUSE_SETTLE),
+                initial=(settle if settle is not None
+                         else (_FRESH_SETTLE if fresh else _REUSE_SETTLE)),
                 timeout=60.0 if fresh else 10.0)
             syms = c.request("textDocument/documentSymbol",
                              {"textDocument": {"uri": uri}})
             ctx = _ExtractCtx(
                 c=c, uri=uri, root=root, ref_projects=ref_projects,
                 module=_module_of(relpath, language_id), language_id=language_id,
-                relpath=relpath, lines=lines,
+                relpath=relpath, lines=lines, file_hash=file_hash,
                 mtime=derive_mtime(root, relpath),   # portable index timestamp
                 has_refs=bool(c.capabilities.get("referencesProvider")),
                 sym_cache={}, opened=opened)         # uri → ranges; didOpen'd docs
@@ -1193,10 +1284,13 @@ _KEYWORD_INSTR = (
     "test, describe what it verifies. These expand the symbol's searchable vocabulary. ")
 DESCRIBE_SYSTEM = (
     "You are given a source file. For EACH top-level definition — class, function, "
-    "or method — IN ORDER, output its qualified name (Class.method), its kind "
+    "or method — IN ORDER, output its QUALIFIED name, its kind "
     "(class|function|method), and ONE concise sentence describing what it does: the "
     "intent, not a restatement of the signature. A class description says what the "
-    "type represents or manages. " + _KEYWORD_INSTR
+    "type represents or manages. The name MUST be qualified by every enclosing "
+    "class/impl/module exactly as the file spells it (`Class.method`, Rust "
+    "`Type::method`) — a bare `run` for two different classes' `run` methods is "
+    "unusable, and such a row is discarded. " + _KEYWORD_INSTR
     + "Return every definition as JSON matching the schema. "
     # NB: the literal word 'json' is required here — Alibaba/qwen rejects a
     # response_format=json_object request whose messages never mention 'json'.
@@ -1204,13 +1298,19 @@ DESCRIBE_SYSTEM = (
 
 
 def _rows_to_meta(data: Any) -> dict[str, dict[str, Any]]:
-    """Structured describe rows → name → {description, keywords}. ONE LLM pass yields
-    both facets (description feeds dense; keywords feed the expanded BM25 field)."""
+    """Structured describe rows → QUALIFIED name → {description, keywords}. ONE LLM
+    pass yields both facets (description feeds dense; keywords feed the expanded BM25
+    field). The key is whatever qualified name the row echoes back (the prompt and the
+    mop-up blob both demand one); `match_meta` is what reconciles it with the index's
+    own fqname. A repeated key is the model contradicting itself about one symbol —
+    FIRST wins, so the row order the file was read in decides, deterministically,
+    instead of the last row silently clobbering the rest."""
     out: dict[str, dict[str, Any]] = {}
     for s in _describe_rows(data):
         if isinstance(s, dict) and s.get("name") and s.get("description"):
-            out[s["name"]] = {"description": s["description"],
-                              "keywords": [str(k) for k in (s.get("keywords") or [])]}
+            out.setdefault(str(s["name"]), {
+                "description": s["description"],
+                "keywords": [str(k) for k in (s.get("keywords") or [])]})
     return out
 
 
@@ -1236,23 +1336,55 @@ def _describe_rows(data: Any) -> list:
 
 def describe_symbols(gen_cfg: Any, symbols: list[dict]) -> dict[str, dict[str, Any]]:
     """MOP-UP describe: a focused structured call over ONLY the given symbols (their
-    bodies), for ones the whole-file bulk pass missed. Keyed by the symbol's local
-    `name`. Returns name → {description, keywords} (both facets, one pass)."""
+    bodies), for ones the whole-file bulk pass missed. Each block is labelled with the
+    symbol's FQNAME and the prompt demands it back verbatim, so the result keys are
+    the index's own identities — two `run` methods in one file can't be handed each
+    other's description. Returns fqname → {description, keywords} (both facets, one
+    pass)."""
     if not symbols:
         return {}
     from .generate import generate_structured
-    blob = "\n\n".join(f"# {s.get('kind','')} {s.get('name','')}\n{s.get('_body','')}"
-                       for s in symbols)
-    sysp = ("For EACH `# kind name`-delimited definition below, output its name and "
-            "ONE concise sentence on what it does (intent, not the signature). "
+    blob = "\n\n".join(
+        f"# {s.get('kind','')} {s.get('fqname') or s.get('name','')}\n{s.get('_body','')}"
+        for s in symbols)
+    sysp = ("For EACH `# kind name`-delimited definition below, output its name — "
+            "COPIED VERBATIM from its `#` header, qualifiers and all — and ONE "
+            "concise sentence on what it does (intent, not the signature). "
             + _KEYWORD_INSTR + "Cover every one, as JSON matching the schema.")  # 'json' for qwen
     data = generate_structured(gen_cfg, sysp, blob, DESCRIBE_SCHEMA,
                                purpose="elaborate", schema_name="describe_symbols")
     return _rows_to_meta(data)
 
 
+_QUAL_SEP = re.compile(r"::|\.")
+
+
+def _tail(name: str) -> str:
+    """The bare last segment of a qualified name, splitting on BOTH separators —
+    `.` and Rust's `::`. Splitting on `.` alone left every Rust fqname as one
+    unsplittable token, so no Rust symbol ever matched a describe row."""
+    return _QUAL_SEP.split(name)[-1]
+
+
 def match_meta(fqname: str, metas: dict[str, Any]) -> tuple[str, list[str]]:
-    """(description, keywords) for a structural symbol: exact fqname else last segment.
+    """(description, keywords) for a structural symbol, matched by NAME IDENTITY.
+
+    The index keys symbols by the full fqname (`crib.retrieve.LexicalCache.get`); a
+    describe row can only echo what the source file shows (`LexicalCache.get`), so:
+
+      1. exact fqname — the mop-up path, which labels blocks with the fqname itself;
+      2. else the LONGEST row key that is a qualified SUFFIX of the fqname (on a
+         `.`/`::` boundary) — `A.run` for `pkg.mod.A.run`, and `A.f` rather than a
+         bare `f` when the file holds both a module function and a method `f`;
+      3. else the rows whose bare last segment matches.
+
+    Each fallback applies only when EXACTLY ONE row wins it. `A.run` and `B.run` in
+    one file share a last segment, so step 3 is ambiguous for both and yields
+    nothing — step 2 is what resolves them. An ambiguous or missing match returns
+    ("", []) and the symbol simply stays undescribed: the backlog re-describes it,
+    which is recoverable. Guessing writes the wrong description onto a symbol that
+    then passes the content_hash gate forever, which is not.
+
     Tolerates a bare-string value (legacy description-only rows)."""
     def _split(v: Any) -> tuple[str, list[str]]:
         if isinstance(v, dict):
@@ -1260,10 +1392,16 @@ def match_meta(fqname: str, metas: dict[str, Any]) -> tuple[str, list[str]]:
         return (v or ""), []
     if fqname in metas:
         return _split(metas[fqname])
-    tail = fqname.split(".")[-1]
-    for name, v in metas.items():
-        if name == tail or name.split(".")[-1] == tail:
-            return _split(v)
+    suffixes = [(k, v) for k, v in metas.items()
+                if k and (fqname.endswith("." + k) or fqname.endswith("::" + k))]
+    if suffixes:
+        longest = max(len(k) for k, _v in suffixes)
+        best = [v for k, v in suffixes if len(k) == longest]
+        if len(best) == 1:
+            return _split(best[0])
+    tails = [v for k, v in metas.items() if _tail(k) == _tail(fqname)]
+    if len(tails) == 1:
+        return _split(tails[0])
     return "", []
 
 
@@ -1274,29 +1412,21 @@ def match_description(fqname: str, descs: dict[str, Any]) -> str:
 
 # --- content-addressed store (separate location, like keyword_index) ----------
 
-def _esc(s: str) -> str:
-    return s.replace("\\", "\\\\").replace('"', '\\"')
-
-
-def _unesc(s: str) -> str:
-    """Exact inverse of `_esc` — undoes the quote-escape then the backslash-escape (the
-    REVERSE order of `_esc`). Without this, `_parse` returned still-escaped strings, so a
-    read-modify-write cycle (e.g. `_patch_called_by` rewriting a heavily-called symbol on
-    every reindex) re-escaped each time and DOUBLED the backslashes — a signature with a
-    quote grew 1→3→7→…→64GB over a session of repeated reindexes."""
-    return s.replace('\\"', '"').replace("\\\\", "\\")
-
-
-def _unquote(v: str) -> str:
-    """Strip exactly one pair of delimiter quotes (not `.strip('"')`, which over-eats a
-    trailing escaped quote) and un-escape the contents."""
-    if len(v) >= 2 and v[0] == '"' and v[-1] == '"':
-        v = v[1:-1]
-    return _unesc(v)
+# ONE escape codec, shared with section_index (crib/tomlrec.py). It escapes `\n`,
+# `\r`, `\t` and the control characters too, so a description the LLM returned with
+# an embedded newline can no longer truncate its own record and make the following
+# lines parse as garbage keys — and so everything we render is valid TOML for the
+# `tomllib` reader below. `_unesc` is its exact inverse (round-trip property test),
+# which is what stops a read-modify-write cycle from re-escaping and DOUBLING the
+# backslashes each pass (the 64GB `crib.paths.Paths.ensure.toml` runaway).
+_esc = tomlrec.esc
+_unesc = tomlrec.unesc
+_unquote = tomlrec.unquote
+write_atomic = tomlrec.write_atomic
 
 
 _SCALARS = ("fqname", "name", "kind", "lang", "module", "parent", "content_hash",
-            "file", "signature", "description")
+            "file", "file_hash", "signature", "description")
 _ARRAYS = ("container", "calls", "called_by", "references", "name_terms", "keywords")
 
 
@@ -1365,7 +1495,7 @@ class SymbolIndex:
         # Filename keyed by the FQN (identity), so a body edit UPDATES the same file
         # (clean git diff) instead of orphaning it — content_hash is a field inside.
         p = self.root / self._relname(entry["fqname"])
-        p.write_text(_render(entry))
+        write_atomic(p, _render(entry))
         return p
 
     def write_all(self, entries: list[dict]) -> int:
@@ -1386,17 +1516,21 @@ class SymbolIndex:
     def by_fqname(self, name: str) -> list[dict]:
         """Read entries whose fqname ends with `name` (bare name or dotted path)."""
         out = []
-        for p in self.root.glob("*.toml") if self.root.exists() else []:
-            e = _parse(p.read_text())
+        for e in self.all():
             fq = e.get("fqname", "")
             if fq == name or fq.endswith("." + name) or fq.split(".")[-1] == name:
                 out.append(e)
         return out
 
     def all(self) -> list[dict]:
-        """Every persisted symbol entry (for concept search over descriptions)."""
-        return [_parse(p.read_text()) for p in self.root.glob("*.toml")] \
-            if self.root.exists() else []
+        """Every persisted symbol entry (for concept search over descriptions).
+        A record so broken that not even its fqname survived (`_parse_dirty`) is
+        dropped here — it has no identity to key, and nothing downstream could
+        route it anywhere; the file is re-created by the next sweep of its source."""
+        if not self.root.exists():
+            return []
+        return [e for e in (_parse(p.read_text()) for p in self.root.glob("*.toml"))
+                if e.get("fqname")]
 
     def is_populated(self) -> bool:
         """Cheap check (no parse) — does this project have any indexed symbols?"""
@@ -1416,7 +1550,7 @@ class SymbolIndex:
         """Persist the source repo root, so staleness revalidation can stat the source
         files later (at query time) without needing the caller's cwd/.crib."""
         self.root.mkdir(parents=True, exist_ok=True)
-        (self.root / self._ROOT_META).write_text(str(root))
+        write_atomic(self.root / self._ROOT_META, str(root))
 
     def source_root(self) -> Path | None:
         f = self.root / self._ROOT_META
@@ -1426,27 +1560,35 @@ class SymbolIndex:
             return None
 
 
-def _parse(text: str) -> dict:
-    """Tiny reader for the flat TOML we write (no external toml dep on the hot path)."""
-    e: dict[str, Any] = {}
-    key = None
-    arr: list[str] = []
-    for line in text.splitlines():
-        s = line.strip()
-        if key:
-            if s == "]":
-                e[key] = arr
-                key, arr = None, []
-            elif s:
-                arr.append(_unquote(s.rstrip(",").strip()))
-            continue
-        if s.endswith("= []"):                 # empty array on one line
-            e[s.split(" = ")[0].strip()] = []
-        elif s.endswith("= ["):                # multi-line array start
-            key = s.split(" = ")[0].strip()
-            arr = []
-        elif " = " in s:
-            k, _, v = s.partition(" = ")
-            v = v.strip()
-            e[k] = int(v) if v.isdigit() else _unquote(v)
+# Identity fields salvaged from a record whose TOML no longer parses — just enough
+# to route it back through a re-extract. Deliberately NOT the payload fields.
+_SALVAGE = re.compile(r'^\s*(fqname|file|name)\s*=\s*("[^"]*")\s*$', re.M)
+
+
+def _parse_dirty(text: str) -> dict:
+    """A record whose TOML is broken (truncated write, botched merge, a pre-fix
+    embedded newline). We do NOT partially parse it — half a record read as whole is
+    exactly the "plausibly wrong" state this store must never hold. Salvage only the
+    identity (`fqname`/`file`) that says WHICH file to re-extract, blank
+    `content_hash` — the store-wide MERGE-DIRTY marker `revalidate`/`reconcile`
+    already sweep — and drop description/keywords so the symbol re-enters the
+    describe backlog. Structure comes back from the re-extract; the record self-heals
+    and is rewritten valid."""
+    e: dict[str, Any] = {"content_hash": ""}
+    for k, v in _SALVAGE.findall(text):
+        e.setdefault(k, _unquote(v))
     return e
+
+
+def _parse(text: str) -> dict:
+    """Read one symbol record. What we WRITE is valid TOML (`_render` + `_esc`), so
+    stdlib `tomllib` is the reader — it has the real string-escape rules, so a
+    description containing quotes/newlines comes back exactly as written instead of
+    truncating at the first line break the old line-oriented reader saw. A file that
+    doesn't parse is not guessed at: see `_parse_dirty`."""
+    try:
+        data = tomllib.loads(text)
+    except tomllib.TOMLDecodeError:
+        return _parse_dirty(text)
+    return {k: ([str(x) for x in v] if isinstance(v, list) else v)
+            for k, v in data.items()}

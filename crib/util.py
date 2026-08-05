@@ -1,12 +1,38 @@
-"""Small dependency-free helpers: hashing and ULID generation."""
+"""Small dependency-free helpers: hashing, ULID generation, task spawning."""
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import os
+import sys
 import time
+from typing import Any, Coroutine
 
 _CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+
+
+def spawn(loop: asyncio.AbstractEventLoop, coro: Coroutine[Any, Any, Any],
+          holder: set[asyncio.Task], label: str) -> asyncio.Task:
+    """Fire-and-forget `coro` on `loop`, holding a STRONG reference in `holder`
+    until it finishes — asyncio keeps only weak refs, so an unreferenced task can
+    be garbage-collected mid-flight and the work silently vanishes (a save's
+    reindex, a describe pass, a memory sync). The done-callback drops the ref and
+    reports an exception instead of letting it die inside a dead task.
+
+    Crib has its own `_spawn_bg` over `self._bg_tasks`; this is the same contract
+    for the collaborators that hold no Crib reference (the watchers, the describe
+    queue, the memory mirror)."""
+    task = loop.create_task(coro)
+    holder.add(task)
+
+    def _done(t: asyncio.Task) -> None:
+        holder.discard(t)
+        if not t.cancelled() and (exc := t.exception()) is not None:
+            print(f"[crib] {label} failed: {exc!r}", file=sys.stderr)
+
+    task.add_done_callback(_done)
+    return task
 
 
 def sha1_hex(*parts: str) -> str:

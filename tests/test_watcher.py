@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from pathlib import Path
 
 import pytest
 
@@ -103,3 +104,27 @@ def test_code_watcher_decode_routes_new_extensionless_files(tmp_path, monkeypatc
     g = root / "notes"                              # extensionless NON-code → ignored
     g.write_text("plain text\n")
     assert cw._decode(str(g), False) is None
+
+
+def test_dispatch_tasks_are_held_and_failures_logged(capsys):
+    """asyncio holds tasks only weakly, so a dispatch nobody references can be
+    GC'd mid-flight (a save's reindex silently lost) — and a dispatch that raises
+    must say so instead of dying inside an unobserved task."""
+    from crib.watch import Watcher
+
+    async def scenario():
+        started = asyncio.Event()
+
+        async def on_change(project, relpath):
+            started.set()
+            await asyncio.sleep(0.02)
+            raise RuntimeError("index blew up")
+
+        w = Watcher(Path("/nowhere"), on_change, asyncio.get_running_loop())
+        w._fire(("p", "a.md"))
+        await started.wait()
+        assert w._tasks                       # strong ref held while in flight
+        await asyncio.sleep(0.1)
+        assert not w._tasks                   # released on completion
+    asyncio.run(scenario())
+    assert "index blew up" in capsys.readouterr().err

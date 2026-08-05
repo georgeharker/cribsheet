@@ -109,3 +109,28 @@ def test_resync_is_idempotent_and_reconciles_deletes(env):
 def _note_id(crib: Crib, relpath: str) -> str:
     from crib import notes
     return notes.load(crib.abspath("p", relpath)).id or ""
+
+
+def test_mirror_catch_up_names_a_binding_that_failed(env, capsys):
+    """A binding whose sync raises (root gone, unreadable memory file) must not
+    abort the others — and must not be silent either: memory the user believes is
+    mirrored isn't."""
+    from crib.memmirror import MemoryMirror
+    crib, repo, _ = env
+    crib.memory_bindings.upsert(str(repo.resolve()), "p")
+    crib.memory_bindings.upsert(str((repo.parent / "gone").resolve()), "q")
+    synced: list[str] = []
+
+    async def sync(root, project):
+        if project == "q":
+            raise RuntimeError("no such memory dir")
+        synced.append(project)
+
+    async def scenario():
+        m = MemoryMirror(crib.memory_bindings, sync, asyncio.get_running_loop())
+        await m.catch_up()
+
+    run(scenario())
+    assert synced == ["p"]                          # the good binding still synced
+    err = capsys.readouterr().err
+    assert "no such memory dir" in err and "q" in err

@@ -5,18 +5,34 @@ so terse keyword queries ("restart server") can rank generic-but-on-topic prose
 above the section that literally documents the command. BM25 is the opposite —
 it rewards exact terms. Fusing the two rankings recovers both.
 
-We fuse with **Reciprocal Rank Fusion** (DESIGN §10.3): score by position in each
-list, not by raw score, so the incomparable cosine and BM25 magnitudes never have
-to be reconciled. `K` damps the contribution of low ranks (the standard value 60
-means rank 1 ≈ 1/61, rank 10 ≈ 1/71 — a gentle, long-tailed weighting).
+**The primary fusion is DENSE-DOMINANT SCORE FUSION, not RRF.** Both query paths
+blend `raw_cosine + beta * minmax(bm25)` over the union candidate pool, min-maxing
+only the uncalibrated sparse side so a confident dense match is never diluted:
+`app.py:_retrieve` (notes, beta=0.5) and `codequery.py:_lookup_one` (code, beta=1.0,
+coverage-gated). `reciprocal_rank_fusion` below is used ONLY for CROSS-PROJECT
+fusion in `CodeQuery.lookup`, where the per-project lists really are on incomparable
+scales and equal-weight rank voting is what we want.
+
+RRF scores by position, not raw score, so incomparable magnitudes never have to be
+reconciled; `k` damps low ranks (at 60, rank 1 = 1/61 ~= 0.0164, rank 10 = 1/70
+~= 0.0143 - a gentle, long-tailed weighting). That flatness is exactly why it lost
+the intra-project job: ~13% of dynamic range across the whole top-10 cannot move a
+raw cosine of ~0.7, and scaling it up amplifies rank quantisation noise rather than
+recovering signal. Rank-space and score-space signals do not combine additively at
+any weight - see `SummaryVectorCache.best_cosines` for the measured case that forced
+the change, and the fix, which was to move the signal into the dense arm by max
+rather than to reweight it.
 """
 
 from __future__ import annotations
 
 import math
 import re
+import threading
 from collections import Counter
 from typing import TYPE_CHECKING, Callable
+
+from .embed import embed_batch
 
 if TYPE_CHECKING:
     from .store import Store
@@ -267,6 +283,12 @@ class LexicalCache:
     supplies the per-**section** keyword terms (section-identified, so they
     survive re-windowing; None/no-labels → plain body+heading BM25). Alias
     (summary_index) records are skipped — those feed the dense side, not BM25.
+
+    Thread-safe: writers invalidate from worker threads while FastMCP's sync
+    tools read from its threadpool. The entry table is guarded by a lock, but the
+    (slow) build runs OUTSIDE it — a per-project generation counter, bumped by
+    `invalidate`, discards a build whose corpus a write raced past. Entries are
+    never mutated once published, so a caller holding one keeps a consistent view.
     """
 
     def __init__(self, store: "Store",
@@ -277,34 +299,43 @@ class LexicalCache:
         # (project, labels, weight) -> (ids, {id:(doc,meta)}, BM25)
         self._entries: dict[tuple[str, tuple[str, ...], float],
                             tuple[list[str], dict, BM25]] = {}
+        self._lock = threading.Lock()
+        self._gen: dict[str, int] = {}
 
     def invalidate(self, project: str) -> None:
-        for key in [k for k in self._entries if k[0] == project]:
-            del self._entries[key]
+        with self._lock:
+            self._gen[project] = self._gen.get(project, 0) + 1
+            for key in [k for k in self._entries if k[0] == project]:
+                del self._entries[key]
 
     def get(self, project: str, labels: tuple[str, ...] = (),
             weight: float = 1.0) -> tuple[list[str], dict, BM25]:
         labels = tuple(labels)
         key = (project, labels, weight)
-        entry = self._entries.get(key)
-        if entry is None:
-            docs = {i: (d, m) for i, (d, m)
-                    in self._store.get_docs({"project": project}).items()
-                    if not (m or {}).get("alias")}   # dense-only summary aliases
-            ids = list(docs)
-            corpus: list[dict[str, float]] = []
-            for i in ids:
-                doc, meta = docs[i]
-                extra: list[str] | None = None
-                if labels and self._elab is not None:
-                    # section-identified; fall back to content_hash pre-reindex
-                    sh = (meta or {}).get("section_hash") \
-                        or (meta or {}).get("content_hash", "")
-                    if sh:
-                        extra = self._elab(project, sh, labels)
-                corpus.append(_lexical_tf(doc, meta, extra, weight))
-            entry = (ids, docs, BM25(corpus))
-            self._entries[key] = entry
+        with self._lock:
+            entry = self._entries.get(key)
+            gen = self._gen.get(project, 0)
+        if entry is not None:
+            return entry
+        docs = {i: (d, m) for i, (d, m)
+                in self._store.get_docs({"project": project}).items()
+                if not (m or {}).get("alias")}   # dense-only summary aliases
+        ids = list(docs)
+        corpus: list[dict[str, float]] = []
+        for i in ids:
+            doc, meta = docs[i]
+            extra: list[str] | None = None
+            if labels and self._elab is not None:
+                # section-identified; fall back to content_hash pre-reindex
+                sh = (meta or {}).get("section_hash") \
+                    or (meta or {}).get("content_hash", "")
+                if sh:
+                    extra = self._elab(project, sh, labels)
+            corpus.append(_lexical_tf(doc, meta, extra, weight))
+        entry = (ids, docs, BM25(corpus))
+        with self._lock:
+            if self._gen.get(project, 0) == gen:   # no write raced this build
+                self._entries[key] = entry
         return entry
 
 
@@ -319,6 +350,9 @@ class SummaryVectorCache:
     Not persisted: the summaries (text) are the git-tracked asset; these vectors
     are derived and rebuilt on demand (like BM25 tokens). `summary_terms(project,
     section_hash, labels)` supplies the per-section rephrasings.
+
+    Thread-safe on the same generation-counter scheme as `LexicalCache` — the
+    build here also embeds, so it especially must not run under the lock.
     """
 
     def __init__(self, store: "Store", embedder,
@@ -330,35 +364,44 @@ class SummaryVectorCache:
         # (project, labels) -> (section_hash -> [chunk_id], [(section_hash, vec)])
         self._entries: dict[tuple[str, tuple[str, ...]],
                             tuple[dict[str, list[str]], list[tuple[str, list[float]]]]] = {}
+        self._lock = threading.Lock()
+        self._gen: dict[str, int] = {}
 
     def invalidate(self, project: str) -> None:
-        for key in [k for k in self._entries if k[0] == project]:
-            del self._entries[key]
+        with self._lock:
+            self._gen[project] = self._gen.get(project, 0) + 1
+            for key in [k for k in self._entries if k[0] == project]:
+                del self._entries[key]
 
     def get(self, project: str, labels: tuple[str, ...]
             ) -> tuple[dict[str, list[str]], list[tuple[str, list[float]]]]:
         key = (project, tuple(labels))
-        entry = self._entries.get(key)
-        if entry is None:
-            reps: dict[str, list[str]] = {}
-            docs = self._store.get_docs({"project": project})
-            for cid, (_doc, meta) in docs.items():
-                if (meta or {}).get("alias"):
-                    continue
-                sh = (meta or {}).get("section_hash") or (meta or {}).get("content_hash")
-                if sh:
-                    reps.setdefault(sh, []).append(cid)
-            pairs: list[tuple[str, str]] = []
-            if labels and self._sum is not None:
-                for sh in reps:
-                    for t in self._sum(project, sh, labels):
-                        pairs.append((sh, t))
-            vecs: list[tuple[str, list[float]]] = []
-            if pairs:
-                embs = self._embed.embed([t for _, t in pairs])
-                vecs = [(pairs[j][0], embs[j]) for j in range(len(pairs))]
-            entry = (reps, vecs)
-            self._entries[key] = entry
+        with self._lock:
+            entry = self._entries.get(key)
+            gen = self._gen.get(project, 0)
+        if entry is not None:
+            return entry
+        reps: dict[str, list[str]] = {}
+        docs = self._store.get_docs({"project": project})
+        for cid, (_doc, meta) in docs.items():
+            if (meta or {}).get("alias"):
+                continue
+            sh = (meta or {}).get("section_hash") or (meta or {}).get("content_hash")
+            if sh:
+                reps.setdefault(sh, []).append(cid)
+        pairs: list[tuple[str, str]] = []
+        if labels and self._sum is not None:
+            for sh in reps:
+                for t in self._sum(project, sh, labels):
+                    pairs.append((sh, t))
+        vecs: list[tuple[str, list[float]]] = []
+        if pairs:
+            embs = embed_batch(self._embed, [t for _, t in pairs])
+            vecs = [(pairs[j][0], embs[j]) for j in range(len(pairs))]
+        entry = (reps, vecs)
+        with self._lock:
+            if self._gen.get(project, 0) == gen:   # no write raced this build
+                self._entries[key] = entry
         return entry
 
     def best_cosines(self, project: str, labels: tuple[str, ...],

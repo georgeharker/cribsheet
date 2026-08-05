@@ -257,33 +257,65 @@ class CodeStore:
         self.bump_epoch(proj)
 
     @staticmethod
-    def patch_called_by(store: Any, new_entries: list[dict[str, Any]],
-                        relpath: str) -> None:
-        """Keep the cross-file call graph consistent after a single-file reindex: every
-        `A→B` in the reindexed file A's fresh outbound `calls` must show as `A` in B's
-        `called_by`. Strip stale edges originating from A (`… [A]`), then re-add the
-        current ones. Cheap (in-memory from A's calls; no extra LSP)."""
+    def patch_edges(store: Any, new_entries: list[dict[str, Any]],
+                    relpath: str) -> None:
+        """Keep the cross-file graph consistent after a single-file reindex of A.
+
+        BOTH reverse relations are patched, symmetrically: every `A→B` in A's fresh
+        outbound `calls` must show up as `A` in B's `called_by` AND in B's
+        `references` (a call site is also a mention — it is exactly what B's own
+        extraction would have recorded). Stale edges originating from A (`… [A]`) are
+        stripped from both first, so a removed call removes both reverse edges.
+        Patching `called_by` alone left every `references` list stale until B's own
+        file happened to be reindexed, and dossier/graph lied under watcher operation.
+
+        Known bound: a NON-call mention from A (a type annotation, an import) isn't
+        observable from A's side — the LSP only answers "who references B?" when B is
+        the one being extracted — so such an edge is dropped here and restored the
+        next time B itself is extracted. Bounded staleness, never a wrong edge.
+
+        Targets resolve by FQNAME. The stored edge string carries only `name [file]`,
+        so name+file has to identify the target: an exact fqname match wins outright,
+        otherwise the pair must be UNIQUE in that file. The old `(name, file)` dict
+        kept whichever same-named symbol was parsed last and patched the wrong one;
+        now an ambiguous pair is skipped rather than guessed. Cheap — in-memory from
+        A's own fresh edges; no extra LSP."""
         tag = f"[{relpath}]"
         entries = store.all()
-        by_key = {(e.get("name", ""), e.get("file", "")): e for e in entries}
+        by_fq: dict[str, dict] = {}
+        by_key: dict[tuple[str, str], list[dict]] = {}
+        for e in entries:
+            by_fq[e["fqname"]] = e
+            by_key.setdefault((e.get("name", ""), e.get("file", "")), []).append(e)
+
+        def target(name: str, file: str) -> dict | None:
+            e = by_fq.get(name)
+            if e is not None and e.get("file") == file:
+                return e                       # server handed us a qualified name
+            hits = by_key.get((name, file)) or []
+            return hits[0] if len(hits) == 1 else None
+
         changed: dict[str, dict] = {}
-        for e in entries:                                   # 1) strip edges from A
+        for e in entries:                       # 1) strip every edge originating in A
             if e.get("file") == relpath:
                 continue
-            cb = [x for x in (e.get("called_by") or []) if not x.endswith(tag)]
-            if cb != (e.get("called_by") or []):
-                e["called_by"] = cb
-                changed[e["fqname"]] = e
-        for s in new_entries:                               # 2) re-add A's current edges
+            for rel_key in ("called_by", "references"):
+                cur = e.get(rel_key) or []
+                kept = [x for x in cur if not x.endswith(tag)]
+                if kept != cur:
+                    e[rel_key] = kept
+                    changed[e["fqname"]] = e
+        for s in new_entries:                   # 2) re-add A's current edges
+            edge = f"{s['name']} [{relpath}]"
             for call in s.get("calls") or []:
                 name, _, rest = call.partition(" [")
-                tgt = by_key.get((name.strip(), rest.rstrip("]")))
+                tgt = target(name.strip(), rest.rstrip("]"))
                 if tgt is None or tgt.get("file") == relpath:
                     continue
                 e = changed.get(tgt["fqname"], tgt)
-                edge = f"{s['name']} [{relpath}]"
-                if edge not in (e.get("called_by") or []):
-                    e["called_by"] = sorted(set((e.get("called_by") or []) + [edge]))
-                    changed[e["fqname"]] = e
+                for rel_key in ("called_by", "references"):
+                    if edge not in (e.get(rel_key) or []):
+                        e[rel_key] = sorted(set((e.get(rel_key) or []) + [edge]))
+                        changed[e["fqname"]] = e
         for e in changed.values():
             store.write(e)

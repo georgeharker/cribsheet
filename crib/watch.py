@@ -14,6 +14,8 @@ import fnmatch
 from pathlib import Path, PurePosixPath
 from typing import Any, Awaitable, Callable
 
+from .util import spawn
+
 _IGNORE = ["*~", ".*.swp", "*.tmp", "4913", ".#*", "*.orig"]
 _IGNORE_DIRS = {".git", ".versions"}
 DEBOUNCE_SEC = 0.2
@@ -61,6 +63,9 @@ class _FSWatcher:
         self._loop = loop
         self._pending: dict[str, asyncio.TimerHandle] = {}
         self._observer: Any = None
+        # strong refs to in-flight dispatches (asyncio holds only weak ones, so an
+        # unreferenced task can be GC'd mid-flight — a save's reindex silently lost)
+        self._tasks: set[asyncio.Task] = set()
 
     # --- subclass hooks ---
     def _watch_dirs(self) -> list[str]:
@@ -118,7 +123,8 @@ class _FSWatcher:
 
     def _fire(self, key: tuple[Any, ...]) -> None:
         self._pending.pop("\x00".join(str(x) for x in key), None)
-        self._loop.create_task(self._dispatch(*key))
+        spawn(self._loop, self._dispatch(*key), self._tasks,
+              f"watch dispatch {key}")
 
     def stop(self) -> None:
         if self._observer is not None:
@@ -268,7 +274,8 @@ class CodeWatcher(_FSWatcher):
         self._batch_timers.pop(project, None)
         changes = self._batch.pop(project, None)
         if changes:
-            self._loop.create_task(self._dispatch(project, changes))
+            spawn(self._loop, self._dispatch(project, changes), self._tasks,
+                  f"code watch dispatch {project}")
 
     async def _dispatch(self, *key: Any) -> None:  # (project, changes)
         await self._on_change(*key)

@@ -5,19 +5,24 @@ writer — tools, the watcher, direct LLM edits — funnels through. It is wrapp
 in a per-path async lock. The hash gate makes it a no-op when content is
 unchanged, so racing writers and noisy filesystem events degrade to redundant
 work, never a wrong index.
+
+Everything blocking inside that lock — the file read + chunking, the embed, the
+store write — runs in a worker thread. The lock is deliberately held across
+those awaits: it still serializes writers per path, but a 100-chunk embed no
+longer freezes the event loop (and with it every other MCP client).
 """
 
 from __future__ import annotations
 
 import asyncio
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from . import notes
-from .chunk import WINDOW_OVERLAP, WINDOW_WORDS, chunk_note
+from .chunk import Chunk, WINDOW_OVERLAP, WINDOW_WORDS, chunk_note
 from .util import derived_ulid as _derive_id
-from .embed import Embedder
+from .embed import Embedder, embed_batch
 from .retrieve import LexicalCache, SummaryVectorCache
 from .store import Record, Store
 
@@ -35,6 +40,21 @@ class IndexResult:
     upserted: int
     deleted: int
     note_id: str | None = None
+
+
+@dataclass
+class _Plan:
+    """What the read+diff stage decided, handed from its worker thread to the
+    async orchestrator: chunks needing an embed (paired with the metadata to
+    store), ids to drop, cheap metadata-only refreshes. `result` set means the
+    decision was terminal (file gone, or the hash gate said no-op) — no embed and
+    no store write follow."""
+    note_id: str | None = None
+    to_embed: list[tuple[Chunk, dict]] = field(default_factory=list)
+    stale_ids: list[str] = field(default_factory=list)
+    meta_updates: dict[str, dict] = field(default_factory=dict)
+    result: IndexResult | None = None
+    invalidate: bool = False
 
 
 class IndexEngine:
@@ -70,7 +90,7 @@ class IndexEngine:
         KEYED: source-anchored docs are read from the repo (`content_path`) but
         keyed by their `sources/<repo>/…` relpath. Default reads `notes_dir/relpath`."""
         async with self._locks[self._key(project, relpath)]:
-            return self._index_locked(project, notes_dir, relpath, content_path)
+            return await self._index_locked(project, notes_dir, relpath, content_path)
 
     async def forget(self, project: str, relpath: str) -> int:
         """Drop a note's index entry (all its chunks) REGARDLESS of disk state, under
@@ -78,24 +98,59 @@ class IndexEngine:
         disk. For pruning an in-situ doc that no longer matches the `.crib` `docs:`
         globs (the source file stays; crib never owned it). Returns chunks removed."""
         async with self._locks[self._key(project, relpath)]:
-            existing = self.store.get_meta({"project": project, "relpath": relpath})
-            self.store.delete(list(existing))
+            existing = await asyncio.to_thread(
+                self.store.get_meta, {"project": project, "relpath": relpath})
+            await asyncio.to_thread(self.store.delete, list(existing))
             if existing:
                 self.invalidate_caches(project)
             return len(existing)
 
-    def _index_locked(self, project: str, notes_dir: Path, relpath: str,
-                      content_path: Path | None = None) -> IndexResult:
+    async def _index_locked(self, project: str, notes_dir: Path, relpath: str,
+                            content_path: Path | None = None) -> IndexResult:
+        """The locked body: read+diff, embed, write — each stage offloaded, the
+        lock held across them (see the module docstring)."""
+        plan = await asyncio.to_thread(
+            self._plan, project, notes_dir, relpath, content_path)
+        if plan.result is not None:
+            if plan.invalidate:
+                self.invalidate_caches(project)
+            return plan.result
+
+        records: list[Record] = []
+        if plan.to_embed:
+            vectors = await asyncio.to_thread(
+                embed_batch, self.embedder, [c.index_text for c, _ in plan.to_embed])
+            records = [Record(id=c.chunk_id, embedding=vec, document=c.text,
+                              metadata=meta)
+                       for (c, meta), vec in zip(plan.to_embed, vectors)]
+        await asyncio.to_thread(self._commit, records, plan.stale_ids,
+                                plan.meta_updates)
+        self.invalidate_caches(project)   # corpus + aliases changed -> rebuild lazily
+        return IndexResult(relpath, changed=True, upserted=len(records),
+                           deleted=len(plan.stale_ids), note_id=plan.note_id)
+
+    def _commit(self, records: list[Record], stale_ids: list[str],
+                meta_updates: dict[str, dict]) -> None:
+        """The store writes as one worker-thread job (the stores are thread-safe)."""
+        self.store.upsert(records)
+        self.store.delete(stale_ids)
+        if meta_updates:
+            self.store.set_meta(meta_updates)
+
+    def _plan(self, project: str, notes_dir: Path, relpath: str,
+              content_path: Path | None = None) -> _Plan:
+        """Read the file, chunk it, diff against the index — all blocking, so this
+        runs in a worker thread. Decides what (if anything) needs embedding."""
         path = content_path if content_path is not None else notes_dir / relpath
 
         # Deleted on disk -> drop all its chunks.
         if not path.exists():
             existing = self.store.get_meta({"project": project, "relpath": relpath})
             self.store.delete(list(existing))
-            if existing:
-                self.invalidate_caches(project)
-            return IndexResult(relpath, changed=bool(existing), upserted=0,
-                               deleted=len(existing))
+            return _Plan(
+                invalidate=bool(existing),
+                result=IndexResult(relpath, changed=bool(existing), upserted=0,
+                                   deleted=len(existing)))
 
         # A source-anchored doc (content_path given) is READ-ONLY: the repo owns
         # it, so never heal/rewrite it or stamp an id into it — derive a stable id
@@ -138,21 +193,12 @@ class IndexEngine:
                     meta_updates[cid] = new_meta
 
         if not to_embed and not stale_ids and not meta_updates:
-            return IndexResult(relpath, changed=False, upserted=0, deleted=0,
-                               note_id=note_id)
+            return _Plan(note_id=note_id,
+                         result=IndexResult(relpath, changed=False, upserted=0,
+                                            deleted=0, note_id=note_id))
 
-        records: list[Record] = []
-        if to_embed:
-            vectors = self.embedder.embed([c.index_text for c in to_embed])
-            for c, vec in zip(to_embed, vectors):
-                records.append(Record(
-                    id=c.chunk_id, embedding=vec, document=c.text,
-                    metadata=c.metadata(note.title, note.tags, source, mtime),
-                ))
-        self.store.upsert(records)
-        self.store.delete(stale_ids)
-        if meta_updates:
-            self.store.set_meta(meta_updates)
-        self.invalidate_caches(project)   # corpus + aliases changed -> rebuild lazily
-        return IndexResult(relpath, changed=True, upserted=len(records),
-                           deleted=len(stale_ids), note_id=note_id)
+        return _Plan(
+            note_id=note_id,
+            to_embed=[(c, c.metadata(note.title, note.tags, source, mtime))
+                      for c in to_embed],
+            stale_ids=stale_ids, meta_updates=meta_updates)

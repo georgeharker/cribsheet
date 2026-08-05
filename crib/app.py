@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from . import claudemem, notes
-from .chunk import section_line_map
+from .chunk import CHUNK_SCHEMA_VERSION, section_key, section_line_map
 from .claudemem import MemoryBindings
 from .codeindexer import CodeIndexer
 from .codestore import CodeStore, _ResidentCode
@@ -26,12 +26,12 @@ from .config import (Config, CribLink, ProjectConfig, portable_path,
                      resolve_project)
 from .project_services import ProjectServices
 from .refs import Refs
-from .embed import build_embedder
+from .embed import build_embedder, embed_batch, embed_query_batch
 from .gitbacking import GitBacking
 from .codequery import CodeQuery
 from .indexer import IndexEngine, IndexResult
 from .learnings import Learnings
-from .notes import Note
+from .notes import Note, NoteParseError
 from .notestore import NoteStore
 from .paths import Paths
 from .sources import SRC_PREFIX, SourceRoots, src_relpath
@@ -67,6 +67,9 @@ class LookupHit:
     score: float
     line_start: int | None = None   # 1-based span of the section in the file,
     line_end: int | None = None     # resolved against current disk (None if gone)
+    # True while this project's vectors are still being rebuilt after a store wipe
+    # (embedder profile change): the result set is INCOMPLETE, not authoritative
+    index_rebuilding: bool = False
 
 
 def _resolve_embed_config(config: Config) -> Any:
@@ -119,6 +122,17 @@ class Crib:
         # unreferenced asyncio task is GC-collectable mid-flight
         self._kw_timers: dict[tuple[str, str], asyncio.TimerHandle] = {}
         self._bg_tasks: set[asyncio.Task] = set()
+        # projects left in an in-flight reconcile sweep (None = not reconciling);
+        # the `status` progress signal for the backgrounded startup reconcile
+        self._reconcile_remaining: int | None = None
+        self._reconcile_reason: str | None = None   # why (e.g. an embedder change)
+        # Projects whose chunks a store wipe took and whose re-embed sweep hasn't
+        # reached them yet — retrieval against one is THIN, so its hits say so
+        # (`index_rebuilding`). Cleared per project as the recovery sweep finishes it.
+        self._resweep_pending: set[str] = set()
+        # the daemon's loop, set once it exists — the only place a background
+        # recovery sweep can outlive the call that scheduled it
+        self._daemon_loop: asyncio.AbstractEventLoop | None = None
         self._on_close: Callable[[], None] | None = None
         # The code subsystem's shared per-project state (resident cache, freshness
         # epoch, write locks, in-flight/sweep tracking) — owned by CodeStore; the
@@ -140,7 +154,7 @@ class Crib:
         # revalidate hook, and project setup/index call it unchanged.
         self.indexer = CodeIndexer(self.services)
         # Durable symbol learnings (notes under code-learnings/), over refs + notestore.
-        # Crib keeps resolve_project + delegate public wrappers (code_append/…).
+        # Crib keeps resolve_project + delegate public wrappers (learning_add/…).
         self.learnings = Learnings(paths, self.refs, self.notestore)
         # Code-index queries (lookup/xref/dossier/graph) over refs + learnings + the
         # resident cache. Crib keeps resolve_project + delegate public wrappers.
@@ -165,6 +179,7 @@ class Crib:
         the per-path index locks coordinate writers and watcher (DESIGN §4)."""
         if self._watcher is not None:
             return
+        self._daemon_loop = loop        # a loop that outlives a tool call exists now
         self._watcher = Watcher(self.paths.projects_dir, self._on_fs_change, loop)
         self._watcher.start()
         # Code watcher — reindexes source on edit (notes-watcher reloads notes,
@@ -457,7 +472,10 @@ class Crib:
         return f"{slug}-{i}.md"
 
     def _similar(self, proj: str, content: str, exclude: str) -> list[dict[str, Any]]:
-        """Near-duplicate hints for a just-stored note (excludes the note itself)."""
+        """Near-duplicate hints for a just-stored note (excludes the note itself).
+
+        Blocking (a query embed + a retrieval pass) — callers on the event loop
+        must `to_thread` it."""
         probe = content.strip().splitlines()[0][:200] if content.strip() else ""
         if not probe:
             return []
@@ -481,8 +499,9 @@ class Crib:
             fm["tags"] = tags
         note = Note(path=self.abspath(proj, relpath), frontmatter=fm, body=content)
         res = await self._write_note(proj, relpath, note)
+        similar = await asyncio.to_thread(self._similar, proj, content, relpath)
         return {"project": proj, "relpath": relpath, "indexed": res.upserted,
-                "created": created, "similar": self._similar(proj, content, relpath)}
+                "created": created, "similar": similar}
 
     async def move_note(self, relpath: str, to_project: str | None = None,
                         to_relpath: str | None = None, project: str | None = None,
@@ -512,7 +531,11 @@ class Crib:
         fm, body = notes.parse(new_content)
         path = self.abspath(proj, relpath)
         if not fm and path.exists():
-            fm = notes.load(path).frontmatter   # keep existing frontmatter
+            try:
+                fm = notes.load(path).frontmatter   # keep existing frontmatter
+            except NoteParseError:
+                fm = {}     # unparseable header: this edit REPAIRS it (the old
+                            # bytes go to the version ring on the way through)
         note = Note(path=path, frontmatter=fm, body=body)
         res = await self._write_note(proj, relpath, note)
         return {"project": proj, "relpath": relpath, "indexed": res.upserted}
@@ -544,9 +567,60 @@ class Crib:
 
         Full reconcile walks the UNION of on-disk notes and indexed paths, so it
         catches files added/edited while crib was down AND drops orphaned chunks
-        for notes deleted off disk. All idempotent via the hash gate (§4)."""
+        for notes deleted off disk. All idempotent via the hash gate (§4).
+
+        A full reindex is also where an embedder change is detected, and that WIPES
+        the shared store — every project's chunks, not just this one's. When it
+        happens, schedule the full recovery re-embed (below) so the wipe is a
+        visible, self-healing event instead of every other project silently
+        returning nothing."""
         proj = self.resolve_project(project, cwd)
-        return await self.notestore.reindex(proj, relpath)
+        res = await self.notestore.reindex(proj, relpath)
+        if res.get("recreated"):
+            self._recover_from_wipe("embedder profile change")
+        return res
+
+    def _recover_from_wipe(self, reason: str) -> None:
+        """The vector store was recreated: mark EVERY project as awaiting a re-embed
+        (their hits carry `index_rebuilding` until swept) and drive one full sweep —
+        notes plus in-situ `sources/…` docs, which the per-project notes reconcile
+        doesn't walk. Only the daemon can carry that in the background; in-process
+        (`--no-daemon`, a one-shot CLI) there's no loop that outlives the call, so
+        say what's needed instead of stranding a task that would never run."""
+        self._resweep_pending |= set(self.projects()) | self._indexed_projects()
+        if self._daemon_loop is None:
+            print(f"[crib] vector store recreated ({reason}); other projects are "
+                  f"un-embedded until you run `crib project reconcile`",
+                  file=sys.stderr)
+            return
+        if self._reconcile_remaining is not None:
+            print(f"[crib] vector store recreated ({reason}); the in-flight "
+                  f"reconcile will re-embed what's left", file=sys.stderr)
+            return
+        self.reconcile_in_background(self._daemon_loop, reason=reason)
+
+    # --- chunk-schema migration ------------------------------------------
+    # `chunk_id` is derived from the chunking scheme (chunk.py). When that scheme
+    # changes, live chunks keep stale ids and the content-hash gate never revisits
+    # them. The recorded version says whether a full sweep is owed; the sweep IS
+    # the migration (index_file re-embeds under the new ids and deletes the ones
+    # no longer produced), so there is no bespoke migration code.
+    @property
+    def _schema_marker(self) -> Path:
+        return self.paths.index_dir / "chunk_schema"
+
+    def stored_chunk_schema(self) -> int:
+        try:
+            return int(self._schema_marker.read_text().strip())
+        except (OSError, ValueError):
+            return 0            # never recorded → pre-v2 store, sweep owed
+
+    def _record_chunk_schema(self) -> None:
+        try:
+            self._schema_marker.write_text(f"{CHUNK_SCHEMA_VERSION}\n")
+        except OSError as e:    # marker only — a lost write costs one extra sweep
+            print(f"[crib] could not record chunk schema version: {e}",
+                  file=sys.stderr)
 
     async def reconcile_all(self) -> dict[str, Any]:
         """Startup/post-pull sweep across every project — catch up on offline
@@ -554,15 +628,88 @@ class Crib:
         that merged divergent symbol records lands here via the CLI's
         post-pull reconcile)."""
         projects = sorted(set(self.projects()) | self._indexed_projects())
-        total: dict[str, Any] = {"projects": len(projects), "changed": 0, "removed": 0}
-        for proj in projects:
-            r = await self.reindex(project=proj)
-            total["changed"] += r["changed"]
-            total["removed"] += r["removed"]
-        dirty = await self._reindex_dirty_code()
-        if dirty:
-            total["code_files_rebuilt"] = dirty
+        total: dict[str, Any] = {"projects": len(projects), "changed": 0,
+                                 "removed": 0, "skipped": []}
+        self._reconcile_remaining = len(projects)
+        try:
+            for proj in projects:
+                r = await self.reindex(project=proj)
+                total["changed"] += r["changed"]
+                total["removed"] += r["removed"]
+                # notes crib couldn't read — carried up so a sweep that skipped
+                # something says so instead of quietly under-indexing
+                total["skipped"] += [{"project": proj, **s}
+                                     for s in r.get("skipped", [])]
+                if self._registered_root(proj) is not None:
+                    # In-situ `sources/…` docs live outside the notes tree, so the
+                    # walk above never revisits them — and the wipe-recovery
+                    # obligation (`_resweep_pending`) is in-memory only, so a
+                    # restart between a store wipe and its resweep would otherwise
+                    # lose the docs for good. Always sweep them here: hash-gated,
+                    # a no-op whenever they're already current.
+                    total["insitu_reindexed"] = (total.get("insitu_reindexed", 0)
+                                                 + await self._resweep_insitu(proj))
+                self._resweep_pending.discard(proj)
+                self._reconcile_remaining -= 1
+                await asyncio.sleep(0)   # yield: a backlog must not starve clients
+            dirty = await self._reindex_dirty_code()
+            if dirty:
+                total["code_files_rebuilt"] = dirty
+            # Every project has now been re-chunked under the current scheme and
+            # stale-id chunks dropped, so the marker is honest. Only here — a
+            # single-project reindex proves nothing about the others.
+            self._record_chunk_schema()
+        finally:
+            self._reconcile_remaining = None
+            self._reconcile_reason = None
         return total
+
+    async def _resweep_insitu(self, project: str) -> int:
+        """Re-embed a project's in-situ `sources/…` docs after a store wipe. Doc
+        chunks live under the notes namespace but their FILES live in the repo, so
+        the notes reconcile never walks them — only this sweep does. Best-effort:
+        a project with no registered repo (or a root that's since moved) simply has
+        no in-situ docs to recover."""
+        try:
+            res = await self.index_docs_insitu(project=project)
+        except Exception as e:  # noqa: BLE001 — no repo / moved root / unreadable doc
+            print(f"[crib] in-situ doc re-embed skipped for {project}: {e}",
+                  file=sys.stderr)
+            return 0
+        return int(res.get("changed", 0))
+
+    def reconcile_in_background(self, loop: asyncio.AbstractEventLoop,
+                                reason: str | None = None) -> None:
+        """Run the startup reconcile as a background task instead of before the
+        transport opens. A cold daemon with an offline backlog would otherwise
+        hold the port closed past the client's ready timeout; serving *during*
+        the sweep is safe by design — the hash gate makes any overlap a no-op
+        (DESIGN §9). Progress shows up in `status` as `reconciling` /
+        `reconcile_remaining`, and `reconcile_reason` when the sweep was triggered
+        by something other than startup (an embedder change wiping the store)."""
+        self._daemon_loop = loop
+        self._reconcile_reason = reason
+        stored = self.stored_chunk_schema()
+        if stored != CHUNK_SCHEMA_VERSION:
+            print(f"[crib] chunk schema {stored}→{CHUNK_SCHEMA_VERSION}; the startup "
+                  f"reconcile re-chunks every project (repeated headings get "
+                  f"distinct ids)", file=sys.stderr)
+        self._spawn_bg(loop, self._reconcile_background(reason))
+
+    async def _reconcile_background(self, reason: str | None = None) -> None:
+        try:
+            rec = await self.reconcile_all()
+        except Exception as e:  # noqa: BLE001 — a failed sweep must not kill the daemon
+            print(f"[crib] {reason or 'startup'} reconcile failed: {e}",
+                  file=sys.stderr)
+            return
+        if rec["changed"] or rec["removed"]:
+            print(f"[crib] startup reconcile: {rec['changed']} updated, "
+                  f"{rec['removed']} chunk(s) removed across "
+                  f"{rec['projects']} project(s)", file=sys.stderr)
+        for s in rec.get("skipped", []):
+            print(f"[crib] skipped {s['project']}/{s['relpath']}: {s['error']}",
+                  file=sys.stderr)
 
     async def _reindex_dirty_code(self) -> dict[str, int]:
         """Rebuild every code file carrying a merge-dirtied symbol (blank
@@ -700,8 +847,8 @@ class Crib:
                         if not (m or {}).get("alias")}
             missing = [cid for cid in pool if cid not in cos and cid in docs]
             if missing:
-                for cid, dv in zip(missing, self.embedder.embed(
-                        [docs[cid][0] for cid in missing])):
+                for cid, dv in zip(missing, embed_batch(
+                        self.embedder, [docs[cid][0] for cid in missing])):
                     cos[cid] = sum(a * b for a, b in zip(vec, dv))  # L2-normalized
             # drop any we couldn't score, and any alias rep whose chunk vanished
             pool = [cid for cid in pool
@@ -750,7 +897,7 @@ class Crib:
         what-notes-are-relevant overview.
         """
         proj = self.resolve_project(project, cwd)
-        vec = self.embedder.embed_query([query])[0]
+        vec = embed_query_batch(self.embedder, [query])[0]
         use_hybrid = self.config.retrieve.hybrid if hybrid is None else hybrid
         use_rerank = self.config.retrieve.rerank if rerank is None else rerank
         kw_labels = tuple(self.config.retrieve.keyword_labels
@@ -765,6 +912,10 @@ class Crib:
         topn = max(k * 3, 30) if use_hybrid else (k if dedupe == "none" else k * 3)
         raw = self._retrieve(proj, query, vec, topn, use_hybrid, use_rerank,
                              kw_labels, kw_weight, sum_labels, sum_weight)
+        # a store wipe this project hasn't been re-swept after: what comes back is
+        # incomplete, so every hit says so rather than thin results reading as "all
+        # there is" (cleared per project by the recovery sweep)
+        rebuilding = proj in self._resweep_pending
         hits, seen = [], set()
         line_maps: dict[str, dict[str, tuple[int, int]]] = {}
         for h in raw:
@@ -784,7 +935,10 @@ class Crib:
                     line_maps[rp] = section_line_map(self.abspath(proj, rp).read_text())
                 except OSError:
                     line_maps[rp] = {}
-            span = line_maps[rp].get(heading)
+            # A repeated heading path's 2nd+ section has its own span under
+            # `heading#n`; the bare breadcrumb is occurrence 1 (chunk.section_key).
+            span = line_maps[rp].get(
+                section_key(heading, int(h.metadata.get("occurrence", 1) or 1)))
             hits.append(LookupHit(
                 project=proj, relpath=rp,
                 heading=heading,
@@ -793,6 +947,7 @@ class Crib:
                 score=round(h.score, 4),
                 line_start=span[0] if span else None,
                 line_end=span[1] if span else None,
+                index_rebuilding=rebuilding,
             ))
             if len(hits) >= k:
                 break
@@ -1209,15 +1364,36 @@ class Crib:
         with self.code.indexing_lock:
             indexing = {p: list(v) for p, v in self.code.indexing.items() if v}
             sweeps = {p: dict(v) for p, v in self.code.sweeps.items()}
-        return {"projects": projects,
-                "git": self.git.state(),
-                "lsp_sessions": _POOL.stats(),
-                "indexing": indexing,
-                # sweep progress: {proj: {done, total}} while a project index runs,
-                # ABSENT when finished — poll this to wait on a background index
-                "sweeps": sweeps,
-                "store": type(self.store).__name__,
-                "embed_model": self.config.embed.model}
+        remaining = self._reconcile_remaining
+        out: dict[str, Any] = {
+            "projects": projects,
+            "git": self.git.state(),
+            "lsp_sessions": _POOL.stats(),
+            "indexing": indexing,
+            # sweep progress: {proj: {done, total}} while a project index runs,
+            # ABSENT when finished — poll this to wait on a background index
+            "sweeps": sweeps,
+            # the note reconcile started at daemon boot runs in the background;
+            # its per-project countdown is here while it's in flight
+            "reconciling": remaining is not None,
+            "store": type(self.store).__name__,
+            "embed_model": self.config.embed.model,
+            # pending until a full sweep has re-chunked under the current scheme;
+            # a daemonless user clears it with `crib reindex` per project
+            "chunk_schema": CHUNK_SCHEMA_VERSION,
+            "chunk_schema_pending":
+                self.stored_chunk_schema() != CHUNK_SCHEMA_VERSION}
+        if remaining is not None:
+            out["reconcile_remaining"] = remaining
+            if self._reconcile_reason:
+                # why this sweep is running when it isn't the startup one — an
+                # embedder change wiped the store and everything is re-embedding
+                out["reconcile_reason"] = self._reconcile_reason
+        if self._resweep_pending:
+            # projects still un-embedded after a wipe: their lookups are THIN and
+            # say so per hit (`index_rebuilding`)
+            out["index_rebuilding"] = sorted(self._resweep_pending)
+        return out
 
     def project_forget(self, project: str | None = None, cwd: Path | None = None,
                        with_learnings: bool = False) -> dict[str, Any]:
@@ -1267,38 +1443,38 @@ class Crib:
     # Public code_* wrappers resolve_project then delegate; the internal helpers
     # (_attach_learnings / _learning_relpath / _learning_fqns / _rehome_candidates,
     # called by the code query methods) delegate directly.
-    async def code_append(self, symbol: str, text: str, project: str | None = None,
+    async def learning_add(self, symbol: str, text: str, project: str | None = None,
                           cwd: Path | None = None) -> dict[str, Any]:
         """Attach a durable learning to a code symbol (append a dated entry)."""
         return await self.learnings.append(self.resolve_project(project, cwd), symbol, text)
 
-    async def code_edit(self, symbol: str, new_content: str, project: str | None = None,
+    async def learning_edit(self, symbol: str, new_content: str, project: str | None = None,
                         cwd: Path | None = None) -> dict[str, Any]:
         """Rewrite a symbol's learning body wholesale."""
         return await self.learnings.edit(self.resolve_project(project, cwd), symbol, new_content)
 
-    async def code_forget(self, symbol: str, project: str | None = None,
+    async def learning_forget(self, symbol: str, project: str | None = None,
                           cwd: Path | None = None) -> dict[str, Any]:
         """Remove a symbol's learning (recoverable; works on orphans)."""
         return await self.learnings.forget(self.resolve_project(project, cwd), symbol)
 
-    async def code_reaffirm(self, symbol: str, project: str | None = None,
+    async def learning_reaffirm(self, symbol: str, project: str | None = None,
                             cwd: Path | None = None) -> dict[str, Any]:
         """Clear a learning's stale flag without rewriting it."""
         return await self.learnings.reaffirm(self.resolve_project(project, cwd), symbol)
 
-    def code_learnings(self, project: str | None = None, cwd: Path | None = None,
+    def learning_report(self, project: str | None = None, cwd: Path | None = None,
                        orphans_only: bool = False) -> list[dict[str, Any]]:
         """Health report for attached learnings (ok/moved/orphan)."""
         return self.learnings.report(self.resolve_project(project, cwd), orphans_only)
 
-    async def code_rehome(self, old_fqn: str, new_fqn: str | None = None,
+    async def learning_rehome(self, old_fqn: str, new_fqn: str | None = None,
                           project: str | None = None,
                           cwd: Path | None = None) -> dict[str, Any]:
         """Re-point an orphaned learning (no target = ranked suggestions)."""
         return await self.learnings.rehome(self.resolve_project(project, cwd), old_fqn, new_fqn)
 
-    def code_read(self, symbol: str, project: str | None = None,
+    def learning_read(self, symbol: str, project: str | None = None,
                   cwd: Path | None = None) -> dict[str, Any]:
         """Read a symbol's learning note (frontmatter + body)."""
         return self.learnings.read(self.resolve_project(project, cwd), symbol)
@@ -1457,7 +1633,8 @@ class Crib:
                 continue
             rp = meta.get("relpath", "")
             heading = meta.get("heading_path", "")
-            targets.append((sh, rp, heading, _section_text(rp, heading, doc), missing))
+            key = section_key(heading, int(meta.get("occurrence", 1) or 1))
+            targets.append((sh, rp, heading, _section_text(rp, key, doc), missing))
 
         gen = self.config.generate
         total = len(targets)
@@ -1641,6 +1818,7 @@ class Crib:
         nd = self.notes_dir(proj)
         seen: set[str] = set()
         indexed: list[str] = []
+        skipped: list[dict[str, str]] = []
         for pattern in link.doc_patterns:
             for src in sorted(link.root.glob(pattern)):
                 if not src.is_file():
@@ -1648,7 +1826,14 @@ class Crib:
                 rel = src.relative_to(link.root)
                 relpath = src_relpath(repo, rel.as_posix())
                 seen.add(relpath)
-                res = await self.index.index_file(proj, nd, relpath, content_path=src)
+                # A repo's docs are NOT crib-shaped notes — one with a `---` header
+                # that isn't YAML (or a non-UTF8 byte) must skip, not kill the sweep.
+                try:
+                    res = await self.index.index_file(proj, nd, relpath,
+                                                      content_path=src)
+                except (NoteParseError, UnicodeDecodeError, OSError) as e:
+                    skipped.append({"relpath": relpath, "error": str(e)})
+                    continue
                 if res.changed:
                     indexed.append(relpath)
         # Prune so the `docs:` globs are AUTHORITATIVE: anything indexed under this
@@ -1660,7 +1845,8 @@ class Crib:
         for rp in self._indexed_relpaths(proj, prefix) - seen:
             removed += await self.index.forget(proj, rp)
         return {"project": proj, "root": str(link.root), "prefix": prefix,
-                "docs": len(seen), "changed": len(indexed), "removed": removed}
+                "docs": len(seen), "changed": len(indexed), "removed": removed,
+                "skipped": skipped}
 
     def _indexed_relpaths(self, project: str, prefix: str) -> set[str]:
         """Relpaths currently indexed under `prefix` (one meta scan)."""
@@ -1825,9 +2011,14 @@ class Crib:
         return sorted(p.name for p in pd.iterdir() if p.is_dir())
 
     def use_project(self, project: str) -> dict[str, Any]:
-        """Set the session's current project (mirrors the project_use MCP tool for
-        the in-process CLI; session state is process-local here)."""
+        """Set the session's current project — the one implementation behind both the
+        `project_use` MCP tool and the in-process CLI verb (session state is
+        process-local here)."""
+        from .paths import check_project_name
         from .session import session_state
+        # Validated BEFORE the eager mkdir — otherwise `../x` would create a
+        # namespace outside the projects tree on the way in.
+        check_project_name(project)
         created = self.project_is_new(project)
         self.notes_dir(project)                     # eager mkdir — no phantom namespace
         session_state().current_project = project

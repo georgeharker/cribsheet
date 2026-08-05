@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+import threading
 from typing import Protocol, runtime_checkable
 
 from .config import EmbedConfig
@@ -26,6 +27,26 @@ class Embedder(Protocol):
         """Embed search queries. Same as `embed` unless the backend uses an
         asymmetric query instruction (see `query_prefix`)."""
         ...
+
+
+# One model forward at a time, process-wide. Indexing offloads its embeds to
+# worker threads so the daemon loop keeps ticking (DESIGN §4); without this gate
+# concurrent index jobs would run parallel forwards and oversubscribe the CPU the
+# daemon shares with every other client. Batching *inside* one call is what buys
+# throughput, so the gate costs nothing the batch was already giving.
+_EMBED_GATE = threading.Semaphore(1)
+
+
+def embed_batch(embedder: Embedder, texts: list[str]) -> list[list[float]]:
+    """`embedder.embed` under the shared gate. Call from a worker thread."""
+    with _EMBED_GATE:
+        return embedder.embed(texts)
+
+
+def embed_query_batch(embedder: Embedder, texts: list[str]) -> list[list[float]]:
+    """`embedder.embed_query` under the shared gate. Call from a worker thread."""
+    with _EMBED_GATE:
+        return embedder.embed_query(texts)
 
 
 class HashEmbedder:

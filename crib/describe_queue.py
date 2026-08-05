@@ -25,6 +25,8 @@ import asyncio
 from pathlib import Path
 from typing import Any, Awaitable, Callable
 
+from .util import spawn
+
 
 class _Entry:
     """One pending file: the changed symbols (fqname → body-carrying dict), how many
@@ -53,6 +55,8 @@ class DescribeQueue:
         self._base = max(0.1, base)
         self._cap = max(self._base, cap)
         self._q: dict[tuple[str, str], _Entry] = {}
+        # strong refs to the in-flight describe tasks (asyncio holds only weak ones)
+        self._tasks: set[asyncio.Task] = set()
 
     def enqueue(self, project: str, root: Path, relpath: str,
                 symbols: dict[str, dict]) -> None:
@@ -64,11 +68,19 @@ class DescribeQueue:
 
     # --- on the loop thread from here down -----------------------------------
     def _arm(self, project: str, root: Path, relpath: str,
-             symbols: dict[str, dict]) -> None:
+             symbols: dict[str, dict], level: int = 0) -> None:
+        """(Re)arm a file's window. `level` seeds the backoff exponent for an entry
+        that isn't already queued — a retry passes the failed attempt's level so the
+        delay keeps DOUBLING instead of restarting at `base` (a down LLM endpoint
+        would otherwise be hit once per file per `base` forever). A live entry keeps
+        the higher of the two: a fresh edit must not undo a retry's backoff."""
         key = (project, relpath)
         e = self._q.get(key)
         if e is None:
             e = self._q[key] = _Entry(root)
+            e.level = level
+        else:
+            e.level = max(e.level, level)
         e.root = root
         e.pending.update(symbols)                   # newest body per fqname wins
         if e.timer is not None:
@@ -82,14 +94,17 @@ class DescribeQueue:
         if e is None or not e.pending:
             return
         project, relpath = key
-        self._loop.create_task(self._run(project, e.root, relpath, e.pending))
+        # strong ref + exception logging: a multi-second LLM call must not be GC'd
+        # mid-flight, and a raise inside _run's own handler must not vanish
+        spawn(self._loop, self._run(project, e.root, relpath, e.pending, e.level),
+              self._tasks, f"describe {project}/{relpath}")
 
     async def _run(self, project: str, root: Path, relpath: str,
-                   pending: dict[str, dict]) -> None:
+                   pending: dict[str, dict], level: int = 0) -> None:
         try:
             await self._describe(project, root, relpath, pending)
         except Exception:  # noqa: BLE001 — backoff-as-retry: re-arm one round later
-            self._arm(project, root, relpath, pending)
+            self._arm(project, root, relpath, pending, level=level)
 
     # --- introspection / teardown --------------------------------------------
     def pending_files(self) -> int:

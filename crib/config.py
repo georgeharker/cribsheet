@@ -9,6 +9,8 @@ from typing import Any
 
 import yaml
 
+from .paths import check_project_name
+
 
 @dataclass
 class EmbedConfig:
@@ -370,9 +372,12 @@ def resolve_project(
     explicit: str | None,
     cwd: Path | None = None,
 ) -> str:
-    """Project precedence (DESIGN §6): explicit arg -> .crib -> default."""
+    """Project precedence (DESIGN §6): explicit arg -> .crib -> default.
+
+    Whichever source wins, the name is validated here — it becomes a directory
+    under `projects/`, and it comes from a tool argument or someone's `.crib`."""
     if explicit:
-        return explicit
+        return check_project_name(explicit)
     if cwd is not None and (link := CribLink.find(cwd)):
-        return link.project
-    return cfg.default_project
+        return check_project_name(link.project)
+    return check_project_name(cfg.default_project)

@@ -13,6 +13,7 @@ import argparse
 import asyncio
 import json
 import sys
+from ast import literal_eval
 from dataclasses import asdict, dataclass, is_dataclass, replace
 from pathlib import Path
 from typing import Any, Callable
@@ -67,6 +68,7 @@ def _emit_apropos(hits: Any, as_json: bool) -> None:
         head = f" — {h['heading']}" if h.get("heading") else ""
         print(f"\n[{h.get('score', 0.0):.3f}] {h.get('relpath', '')}{loc}{head}")
         _render_markdown(h.get("section") or "")
+    _emit_rebuilding_note(hits)
 
 
 def _print_note(text: str, as_json: bool) -> None:
@@ -93,8 +95,21 @@ def _emit_human(obj: Any) -> None:
     if isinstance(obj, list):
         for item in obj:
             _emit_human_one(item)
+        _emit_rebuilding_note(obj)
     else:
         _emit_human_one(obj)
+
+
+def _emit_rebuilding_note(hits: Any) -> None:
+    """One line when a hit says its project is still being re-embedded after a store
+    wipe (embedder change) — otherwise a short result set reads as "that's all there
+    is" instead of "the index isn't back yet"."""
+    def _flag(h: Any) -> bool:
+        return bool(h.get("index_rebuilding") if isinstance(h, dict)
+                    else getattr(h, "index_rebuilding", False))
+    if isinstance(hits, list) and any(_flag(h) for h in hits):
+        print("⚠ index rebuilding: this project is still re-embedding "
+              "(see `crib status`) — results are incomplete")
 
 
 def _emit_human_one(item: Any) -> None:
@@ -106,7 +121,8 @@ def _emit_human_one(item: Any) -> None:
             project=item.get("project", ""), relpath=item.get("relpath", ""),
             heading=item.get("heading", ""), title=item.get("title", ""),
             snippet=item.get("snippet", ""), score=item.get("score", 0.0),
-            line_start=item.get("line_start"), line_end=item.get("line_end"))
+            line_start=item.get("line_start"), line_end=item.get("line_end"),
+            index_rebuilding=bool(item.get("index_rebuilding")))
     if isinstance(item, LookupHit):
         loc = f":{item.line_start}-{item.line_end}" if item.line_start else ""
         head = f"  {item.heading}" if item.heading else ""
@@ -203,12 +219,19 @@ def _emit_status(d: Any, as_json: bool) -> None:
         if g.get("last_commit"):
             print(f"{'':10} last: {g['last_commit']}")
     else:
-        print(f"{'git':10} not enabled (crib setup --remote <url>)")
+        print(f"{'git':10} not enabled (crib memory setup --remote <url>)")
     for s in d.get("lsp_sessions") or []:
         state = "busy" if s.get("busy") else f"idle {s.get('idle_s', 0):.0f}s"
         alive = "" if s.get("alive") else "  DEAD"
         print(f"{'lsp':10} {s.get('server')}  {s.get('root')}  "
               f"pid {s.get('pid')}  {state}{alive}")
+    if d.get("reconciling"):
+        why = f" ({d['reconcile_reason']})" if d.get("reconcile_reason") else ""
+        print(f"{'reconcile':10} in progress{why}: "
+              f"{d.get('reconcile_remaining', '?')} project(s) to go")
+    if d.get("index_rebuilding"):
+        print(f"{'rebuilding':10} not re-embedded yet: "
+              f"{', '.join(d['index_rebuilding'])}")
     for proj, sw in (d.get("sweeps") or {}).items():
         print(f"{'sweep':10} {proj}: {sw.get('done', 0)}/{sw.get('total', 0)} files")
     for proj, files in (d.get("indexing") or {}).items():
@@ -289,18 +312,18 @@ def _emit_code_learning(data: Any, verb: str, as_json: bool) -> None:
     if as_json:
         print(json.dumps(data, indent=2, default=str)); return
     sym, rel = data.get("symbol", ""), data.get("relpath", "")
-    if verb == "code-read":
+    if verb == "learning-read":
         if not data.get("found"):
             print(f"(no learning for {sym})"); return
         print(f"# {sym}  [{rel}]\n{(data.get('body') or '').strip()}"); return
-    if verb == "code-forget":
+    if verb == "learning-forget":
         print(f"forgot {sym}  ({rel})"); return
-    if verb == "code-reaffirm":
+    if verb == "learning-reaffirm":
         print(f"reaffirmed {sym} (cleared ⚠ stale)  → {rel}"); return
-    if verb == "code-append":
+    if verb == "learning-add":
         print(f"{'created' if data.get('created') else 'appended'} learning: {sym}  → {rel}")
         return
-    print(f"edited learning: {sym}  → {rel}")   # code-edit
+    print(f"edited learning: {sym}  → {rel}")   # learning-edit
 
 
 def _emit_code_report(rows: Any, as_json: bool) -> None:
@@ -320,8 +343,8 @@ def _emit_code_report(rows: Any, as_json: bool) -> None:
         print(line)
     bad = sum(1 for r in rows if r.get("status") != "ok")
     if bad:
-        print(f"\n{bad} need attention — `crib code-rehome <fqn>` for suggestions, "
-              f"or `crib code-forget <fqn>`")
+        print(f"\n{bad} need attention — `crib learning rehome <fqn>` for suggestions, "
+              f"or `crib learning forget <fqn>`")
 
 
 def _emit_code_rehome(data: Any, as_json: bool) -> None:
@@ -332,10 +355,10 @@ def _emit_code_rehome(data: Any, as_json: bool) -> None:
         print(f"rehome {data.get('old', '')} → candidates:")
         cands = data.get("candidates") or []
         if not cands:
-            print("  (none — `crib code-forget` if it's truly gone)"); return
+            print("  (none — `crib learning forget` if it's truly gone)"); return
         for c in cands:
             print(f"  [{c.get('score', '')}] {c.get('fqname', '')}   {c.get('file', '')}")
-        print(f"\nconfirm: crib code-rehome {data.get('old', '')} <fqname>")
+        print(f"\nconfirm: crib learning rehome {data.get('old', '')} <fqname>")
         return
     print(f"rehomed {data.get('old', '')} → {data.get('new', '')}  ({data.get('relpath', '')})")
 
@@ -465,9 +488,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = notesub.add_parser("apropos", aliases=["a"],
                        help="semantic search, rendering each full matched section "
-                            "(alias for `search --render`, fewer hits)")
+                            "(alias for `search --render`)")
     s.add_argument("query"); proj(s)
-    s.add_argument("-k", type=int, default=5)
+    # k matches `lookup`/the MCP tool/the Crib default (8) — `note lookup --render`
+    # routes HERE, so a different default made the same rendered view return 5 or 8
+    # hits depending on how you spelled it.
+    s.add_argument("-k", type=int, default=8)
     s.add_argument("--tag", action="append", dest="tags")
 
     s = codesub.add_parser("lookup",
@@ -697,6 +723,12 @@ def cmd_info(as_json: bool) -> None:
 # `asyncio.run`. Content args read stdin here (client-side) via `build`, since the
 # daemon has none. Special verbs (git, project, serve/info/merge-driver) are handled
 # outside the registry; `search`/`a`/`lookup --render` normalize to a canonical verb.
+#
+# Each row also DECLARES its MCP twin's wire signature (`mcp`) and the server-side
+# project-resolution policy (`policy`) it must carry, making this table the single
+# source of truth for the whole surface: tests/test_surface_parity.py walks it
+# against FastMCP's introspected schemas, so a param, a default (the CLI/MCP
+# `apropos k` split was 5 vs 8) or a policy can't drift on one face only.
 @dataclass(frozen=True)
 class Verb:
     tool: str                                   # MCP tool name (daemon path)
@@ -705,9 +737,20 @@ class Verb:
     method: str = ""                            # Crib method (in-process); "" ⇒ tool
     is_async: bool = False                      # in-process wraps in asyncio.run
     wants_cwd: bool = True                       # append project_path / cwd
+    mcp: str | None = None                      # MCP params: "query k=8 …" ("" = none)
+    policy: str = ""                            # server.TOOL_POLICY declaration
 
     def crib_method(self) -> str:
         return self.method or self.tool
+
+    def mcp_params(self) -> dict[str, Any]:
+        """The declared `mcp` signature as {param: default}, `...` when required —
+        the shape `tests/test_surface_parity.py` compares against the tool schema."""
+        out: dict[str, Any] = {}
+        for token in (self.mcp or "").split():
+            name, eq, default = token.partition("=")
+            out[name] = literal_eval(default) if eq else ...
+        return out
 
 
 # emit adapters — normalize every emitter to the same (data, args) signature
@@ -722,120 +765,177 @@ def _E_rehome(d, a): _emit_code_rehome(d, a.json)
 def _E_graph(d, a): _emit_code_graph(d, a)
 def _E_code(verb): return lambda d, a: _emit_code(d, verb, a.json)
 def _E_learning(verb): return lambda d, a: _emit_code_learning(d, verb, a.json)
+def _E_project(verb): return lambda d, a: _emit_project(d, verb, a.json)
 
 
 def _b_lookup(a: Any) -> dict[str, Any]:
     """`lookup` call params — the keyword/summary label + weight overrides fold in
-    only when given (absent ⇒ the method/[retrieve] default applies)."""
+    only when given (absent ⇒ the method/[retrieve] default applies).
+
+    Gated on `is not None`, NOT truthiness: `--keywords ""` is an explicit "no
+    labels" that must reach `_split_labels` (→ `[]`) to turn a default-on index set
+    OFF. A truthiness gate dropped it, so the flag silently fell back to the config
+    default — the disable-semantics `_split_labels` documents were dead code."""
     call = {"query": a.query, "project": a.project, "k": a.k, "tags": a.tags}
-    if getattr(a, "keywords", None):
+    if getattr(a, "keywords", None) is not None:
         call["keyword_labels"] = _split_labels(a.keywords)
     if getattr(a, "keyword_weight", None) is not None:
         call["keyword_weight"] = a.keyword_weight
-    if getattr(a, "summaries", None):
+    if getattr(a, "summaries", None) is not None:
         call["summary_labels"] = _split_labels(a.summaries)
     if getattr(a, "summary_weight", None) is not None:
         call["summary_weight"] = a.summary_weight
     return call
 
 
+def _proj_of(a: Any) -> str | None:
+    """`-p/--project` when the sub-parser defines it — bare `crib project` selects no
+    sub-verb, so its Namespace carries neither selector."""
+    return getattr(a, "project", None)
+
+
+_PROJ = "project=None project_path=None"          # the two selectors, on most tools
+
 VERBS: dict[str, Verb] = {
     # notes: search / read
-    "note lookup": Verb("lookup", _b_lookup, _E),
+    "note lookup": Verb("lookup", _b_lookup, _E, policy="read",
+                        mcp=f"query {_PROJ} k=8 tags=None keyword_labels=None "
+                            "keyword_weight=None summary_labels=None summary_weight=None"),
     "note apropos": Verb("apropos", lambda a: {"query": a.query, "project": a.project,
-                                          "k": a.k, "tags": a.tags}, _E_apropos),
+                                          "k": a.k, "tags": a.tags}, _E_apropos,
+                    policy="read", mcp=f"query {_PROJ} k=8 tags=None"),
     "note read": Verb("read", lambda a: {"relpath": a.relpath, "project": a.project},
-                 _E_note, method="read_note"),
+                 _E_note, method="read_note", policy="read", mcp=f"relpath {_PROJ}"),
     "note locate": Verb("locate", lambda a: {"relpath": a.relpath, "project": a.project},
-                   _E_raw),
+                   _E_raw, policy="read", mcp=f"relpath {_PROJ}"),
     # notes: write
     "note store": Verb("store", lambda a: {"content": _read_content(a.content),
                                       "title": a.title, "project": a.project,
                                       "tags": a.tags}, _E, method="store_note",
-                  is_async=True),
+                  is_async=True, policy="write",
+                  mcp=f"content {_PROJ} title=None tags=None"),
     "note append": Verb("append", lambda a: {"relpath": a.relpath,
                                         "content": _read_content(a.content),
                                         "heading": a.heading, "project": a.project},
-                   _E, method="append_note", is_async=True),
+                   _E, method="append_note", is_async=True, policy="write",
+                   mcp=f"relpath content {_PROJ} heading=None"),
     "note edit": Verb("edit", lambda a: {"relpath": a.relpath,
                                     "new_content": _read_content(a.content),
                                     "project": a.project}, _E,
-                 method="edit_note", is_async=True),
+                 method="edit_note", is_async=True, policy="write",
+                 mcp=f"relpath new_content {_PROJ}"),
     "note forget": Verb("forget", lambda a: {"relpath": a.relpath, "project": a.project},
-                   _E, is_async=True),
+                   _E, is_async=True, policy="write", mcp=f"relpath {_PROJ}"),
     "note move": Verb("move", lambda a: {"relpath": a.relpath, "to_project": a.to_project,
                                     "to_relpath": a.to_relpath, "project": a.project},
-                 _E, method="move_note", is_async=True),
+                 _E, method="move_note", is_async=True, policy="write",
+                 mcp=f"relpath {_PROJ} to_project=None to_relpath=None"),
     "note reindex": Verb("reindex", lambda a: {"relpath": a.relpath, "project": a.project},
-                    _E, is_async=True),
+                    _E, is_async=True, policy="read", mcp=f"relpath=None {_PROJ}"),
     "project reconcile": Verb("reconcile", lambda a: {}, _E, method="reconcile_all",
-                      is_async=True, wants_cwd=False),
+                      is_async=True, wants_cwd=False, policy="none", mcp=""),
     "note versions": Verb("versions", lambda a: {"relpath": a.relpath, "project": a.project},
-                     _E, method="list_versions"),
+                     _E, method="list_versions", policy="read", mcp=f"relpath {_PROJ}"),
     "note restore": Verb("restore", lambda a: {"relpath": a.relpath, "version": a.version,
-                                          "project": a.project}, _E, is_async=True),
+                                          "project": a.project}, _E, is_async=True,
+                    policy="read", mcp=f"relpath version {_PROJ}"),
     "note import": Verb("import", lambda a: {"paths": a.paths, "project": a.project},
-                   _E, method="import_files", is_async=True),
+                   _E, method="import_files", is_async=True, policy="source",
+                   mcp=f"paths {_PROJ}"),
     "note import-memory": Verb("import_memory", lambda a: {"project": a.project}, _E,
-                          method="import_claude_memory", is_async=True),
+                          method="import_claude_memory", is_async=True,
+                          policy="source", mcp=_PROJ),
     "note distill": Verb("distill", lambda a: {"relpath": a.relpath, "project": a.project},
-                    _E, is_async=True),
+                    _E, is_async=True, policy="read", mcp=f"relpath {_PROJ}"),
     "note elaborate": Verb("elaborate", lambda a: {"label": a.label, "relpath": a.relpath,
                                               "project": a.project,
                                               "overwrite": a.overwrite}, _E,
-                      is_async=True),
+                      is_async=True, policy="read",
+                      mcp=f"label relpath=None {_PROJ} overwrite=False"),
     "note summarize": Verb("summarize", lambda a: {"label": a.label, "relpath": a.relpath,
                                               "project": a.project,
                                               "overwrite": a.overwrite}, _E,
-                      is_async=True),
+                      is_async=True, policy="read",
+                      mcp=f"label relpath=None {_PROJ} overwrite=False"),
     "memory snapshot": Verb("snapshot", lambda a: {"message": a.message}, _E_raw,
-                     wants_cwd=False),
-    "memory history": Verb("history", lambda a: {"relpath": a.relpath}, _E, wants_cwd=False),
-    "project list": Verb("projects", lambda a: {}, _E, wants_cwd=False),
+                     wants_cwd=False, policy="none", mcp="message=None"),
+    "memory history": Verb("history", lambda a: {"relpath": a.relpath}, _E,
+                     wants_cwd=False, policy="none", mcp="relpath=None"),
+    "project list": Verb("projects", lambda a: {}, _E, wants_cwd=False,
+                         policy="none", mcp=""),
     "project use": Verb("use_project", lambda a: {"project": a.project}, _E,
-                        method="use_project", wants_cwd=False),
+                        method="use_project", wants_cwd=False, policy="session",
+                        mcp="project"),
     "project current": Verb("current_project", lambda a: {}, _E,
-                            method="current_project"),
-    "status": Verb("status", lambda a: {}, _E_status, wants_cwd=False),
+                            method="current_project", policy="session",
+                            mcp="project_path=None"),
+    "status": Verb("status", lambda a: {}, _E_status, wants_cwd=False,
+                   policy="none", mcp=""),
+    # project lifecycle (whole repo) — repo-scoped, hence the `source` policy
+    "project setup": Verb("project_setup", lambda a: {"project": _proj_of(a)},
+                          _E_project("setup"), is_async=True, policy="source",
+                          mcp=_PROJ),
+    "project index": Verb("project_index", lambda a: {"project": _proj_of(a)},
+                          _E_project("index"), is_async=True, policy="source",
+                          mcp=f"{_PROJ} budget_s=None"),
+    "project status": Verb("project_status", lambda a: {"project": _proj_of(a)},
+                           _E_project("status"), policy="source", mcp=_PROJ),
+    "project forget": Verb("project_forget",
+                           lambda a: {"project": _proj_of(a),
+                                      "with_learnings": getattr(a, "with_learnings",
+                                                                False)},
+                           _E_project("forget"), policy="source",
+                           mcp=f"{_PROJ} with_learnings=False"),
     # code index
     "code lookup": Verb("code_lookup", lambda a: {"query": a.query,
                                                  "project": a.project, "k": a.k},
-                        _E_code("code-lookup")),
+                        _E_code("code-lookup"), policy="read",
+                        mcp=f"query {_PROJ} k=8"),
     "code xref": Verb("code_xref", lambda a: {"symbol": a.symbol, "project": a.project},
-                      _E_code("code-xref")),
+                      _E_code("code-xref"), policy="read", mcp=f"symbol {_PROJ}"),
     "code dossier": Verb("code_dossier", lambda a: {"symbol": a.symbol,
-                                                   "project": a.project}, _E_dossier),
+                                                   "project": a.project}, _E_dossier,
+                         policy="read", mcp=f"symbol {_PROJ}"),
     "code graph": Verb("code_graph", lambda a: {"symbol": a.symbol,
                                                "direction": _graph_direction(a),
                                                "depth": a.depth, "project": a.project},
-                       _E_graph),
+                       _E_graph, policy="read",
+                       mcp=f"symbol {_PROJ} direction='callees' depth=6"),
     "code index": Verb("code_index",
                        lambda a: {"path": str(Path(a.path).expanduser().resolve()),
                                   "project": a.project},
-                       _E_code("code-index"), is_async=True),
-    # code learnings
-    "learning add": Verb("code_append", lambda a: {"symbol": a.symbol,
+                       _E_code("code-index"), is_async=True, policy="source",
+                       mcp=f"path {_PROJ}"),
+    # code learnings — `read` policy BY INTENT (a learning is about a symbol in the
+    # project you're in); see the exception block above `_write_project` in server.py
+    "learning add": Verb("learning_add", lambda a: {"symbol": a.symbol,
                                                  "text": _read_content(a.text),
                                                  "project": a.project},
-                        _E_learning("code-append"), is_async=True),
-    "learning edit": Verb("code_edit", lambda a: {"symbol": a.symbol,
+                        _E_learning("learning-add"), is_async=True, policy="read",
+                        mcp=f"symbol text {_PROJ}"),
+    "learning edit": Verb("learning_edit", lambda a: {"symbol": a.symbol,
                                              "new_content": _read_content(a.text),
                                              "project": a.project},
-                      _E_learning("code-edit"), is_async=True),
-    "learning forget": Verb("code_forget", lambda a: {"symbol": a.symbol,
+                      _E_learning("learning-edit"), is_async=True, policy="read",
+                      mcp=f"symbol new_content {_PROJ}"),
+    "learning forget": Verb("learning_forget", lambda a: {"symbol": a.symbol,
                                                  "project": a.project},
-                        _E_learning("code-forget"), is_async=True),
-    "learning read": Verb("code_read", lambda a: {"symbol": a.symbol, "project": a.project},
-                      _E_learning("code-read")),
-    "learning reaffirm": Verb("code_reaffirm", lambda a: {"symbol": a.symbol,
+                        _E_learning("learning-forget"), is_async=True, policy="read",
+                        mcp=f"symbol {_PROJ}"),
+    "learning read": Verb("learning_read", lambda a: {"symbol": a.symbol, "project": a.project},
+                      _E_learning("learning-read"), policy="read", mcp=f"symbol {_PROJ}"),
+    "learning reaffirm": Verb("learning_reaffirm", lambda a: {"symbol": a.symbol,
                                                      "project": a.project},
-                          _E_learning("code-reaffirm"), is_async=True),
-    "learning report": Verb("code_learnings", lambda a: {"project": a.project,
+                          _E_learning("learning-reaffirm"), is_async=True, policy="read",
+                          mcp=f"symbol {_PROJ}"),
+    "learning report": Verb("learning_report", lambda a: {"project": a.project,
                                                        "orphans_only": a.orphans},
-                           _E_report),
-    "learning rehome": Verb("code_rehome", lambda a: {"old_fqn": a.old, "new_fqn": a.new,
+                           _E_report, policy="read",
+                           mcp=f"{_PROJ} orphans_only=False"),
+    "learning rehome": Verb("learning_rehome", lambda a: {"old_fqn": a.old, "new_fqn": a.new,
                                                  "project": a.project}, _E_rehome,
-                        is_async=True),
+                        is_async=True, policy="read",
+                        mcp=f"old_fqn {_PROJ} new_fqn=None"),
 }
 
 
@@ -874,26 +974,11 @@ def _resolve_verb(args: Any) -> tuple[Verb, dict[str, Any]]:
 
 
 def _dispatch(args: Any) -> tuple[Verb, dict[str, Any]]:
-    """Route `project setup/index/status/forget` (and bare `project`) through the
-    synthetic _project_verb; everything else — incl. `project list`/`reconcile` —
-    through the registry."""
-    if args.cmd == "project" and getattr(args, "project_verb", None) in (
-            None, "setup", "index", "status", "forget"):
-        return _project_verb(args)
+    """Everything goes through the registry. The one special case: bare `crib
+    project` (no sub-verb) means `project status` — the orienting read."""
+    if args.cmd == "project" and getattr(args, "project_verb", None) is None:
+        args.project_verb = "status"
     return _resolve_verb(args)
-
-
-def _project_verb(args: Any) -> tuple[Verb, dict[str, Any]]:
-    """`crib project <sub>` as a synthetic Verb — the four sub-verbs share one
-    shape (differing only in tool/async), and one emitter keyed by the sub-verb."""
-    pv = getattr(args, "project_verb", None) or "status"
-    tool = {"setup": "project_setup", "index": "project_index",
-            "status": "project_status", "forget": "project_forget"}[pv]
-    call: dict[str, Any] = {"project": args.project}
-    if pv == "forget":
-        call["with_learnings"] = getattr(args, "with_learnings", False)
-    emit = lambda d, a: _emit_project(d, pv, a.json)     # noqa: E731
-    return Verb(tool, lambda a: call, emit, is_async=pv in ("setup", "index")), call
 
 
 def _resolve_serve_endpoint(args: Any) -> tuple[str, int]:
@@ -933,7 +1018,8 @@ def _run_git(args: Any, cfg: Any) -> int:
     if verb == "setup":
         remote = getattr(args, "remote", None) or git.current_remote() or _prompt_remote()
         if not remote:
-            print("crib note setup: no remote given (pass --remote <url>)", file=sys.stderr)
+            print("crib memory setup: no remote given (pass --remote <url>)",
+                  file=sys.stderr)
             return 1
         print(f"joining {remote} …")
         res = git.setup(remote)

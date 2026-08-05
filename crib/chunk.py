@@ -3,11 +3,20 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
+from typing import NamedTuple
 
 from .util import sha1_hex
 
 _HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
+
+# Identity scheme of the chunks this module emits. Bump whenever a change here
+# alters `chunk_id` for unchanged text — the store compares its recorded version
+# against this and reconciles (re-embeds under the new ids, deletes the stale
+# ones) when they differ. v2: duplicate heading paths within one note get a
+# `#<n>` occurrence disambiguator in the id (v1 collided, later section winning).
+CHUNK_SCHEMA_VERSION = 2
 
 # Windowing is measured in whitespace words, but the cap is set so a window
 # stays under the embedding models' 512-*token* limit (bge et al.) — markdown
@@ -19,6 +28,22 @@ _HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
 # docs (new/edited notes pick it up automatically; the hash gate makes it safe).
 WINDOW_WORDS = 320
 WINDOW_OVERLAP = 64
+
+
+def section_key(heading_path: Sequence[str] | str, occurrence: int = 1) -> str:
+    """Identity key of a section: its heading breadcrumb, with a `#<n>` suffix
+    for the 2nd+ section in a note whose *effective* heading path is identical
+    (a repeated `### Notes`, or two nestings that flatten to the same stack).
+
+    Without it those sections share a `chunk_id` and the later one overwrites the
+    earlier (and `section_line_map` kept only the first span). Occurrence is
+    counted in document order, so the key is deterministic across reindexes.
+    First occurrence keeps the bare breadcrumb, so ids of the overwhelmingly
+    common (unique-heading) case are unchanged, as are all display paths — the
+    disambiguator lives in identity only, never in the visible `heading_path`.
+    """
+    key = heading_path if isinstance(heading_path, str) else "/".join(heading_path)
+    return key if occurrence <= 1 else f"{key}#{occurrence}"
 
 
 @dataclass
@@ -34,11 +59,15 @@ class Chunk:
     # invariant to re-windowing, so an expensive asset isn't regenerated when the
     # window size changes. Falls back to `text` for a one-window section.
     section_text: str = ""
+    # 1-based count of sections before this one (inclusive) sharing its heading
+    # path — see `section_key`. Set by `chunk_note`; 1 for a unique heading.
+    occurrence: int = 1
 
     @property
     def chunk_id(self) -> str:
         return sha1_hex(
-            self.project, self.relpath, "/".join(self.heading_path),
+            self.project, self.relpath,
+            section_key(self.heading_path, self.occurrence),
             str(self.window_idx),
         )
 
@@ -73,7 +102,12 @@ class Chunk:
             "note_id": self.note_id,
             "title": title or "",
             "tags": ",".join(tags),
+            # Display/lookup key stays the clean breadcrumb; `occurrence` carries
+            # the disambiguator so a consumer can rebuild the identity key with
+            # `section_key(heading_path, occurrence)` (e.g. to hit the right span
+            # in `section_line_map`).
             "heading_path": "/".join(self.heading_path),
+            "occurrence": self.occurrence,
             "window_idx": self.window_idx,
             "content_hash": self.content_hash,
             "section_hash": self.section_hash,
@@ -82,45 +116,83 @@ class Chunk:
         }
 
 
-def _split_sections(body: str) -> list[tuple[list[str], str]]:
-    """Split markdown into (heading_path, section_text) by heading lines."""
-    sections: list[tuple[list[str], str]] = []
-    stack: list[tuple[int, str]] = []   # (level, title)
-    cur: list[str] = []
-    heading_path: list[str] = []
+class _Line(NamedTuple):
+    """One scanned line. `heading_path` is None unless the line is a markdown
+    heading *outside* a fenced code block — i.e. one that opens a section."""
+    idx: int                            # 0-based index into the scanned lines
+    text: str
+    heading_path: list[str] | None
+    occurrence: int                     # 1-based, per heading_path key
 
-    def flush():
-        text = "\n".join(cur).strip()
-        if text:
-            sections.append((list(heading_path), text))
 
+def _scan(lines: Sequence[str], start: int = 0) -> Iterator[_Line]:
+    """Single pass over markdown lines, yielding every line and — for heading
+    lines — the heading stack it opens plus that path's occurrence count.
+
+    The one place fenced code blocks, heading nesting and the occurrence counter
+    are tracked, so `_split_sections` (chunk identity) and `section_line_map`
+    (line spans) cannot drift apart: they consumed hand-duplicated copies of this
+    state machine before, and a divergent counter would point a chunk at another
+    section's lines.
+    """
+    stack: list[tuple[int, str]] = []    # (level, title)
+    seen: dict[str, int] = {}
     in_fence = False
-    fence = ""                              # the ``` or ~~~ run that opened it
-    for line in body.splitlines():
+    fence = ""                           # the ``` or ~~~ run that opened it
+    for idx in range(start, len(lines)):
+        line = lines[idx]
         stripped = line.lstrip()
         # Track fenced code blocks so `#`-comments inside them aren't parsed as
         # markdown headings (config-heavy docs otherwise get bogus sections).
         if not in_fence and (stripped.startswith("```") or stripped.startswith("~~~")):
             in_fence, fence = True, stripped[:3]
-            cur.append(line)
+            yield _Line(idx, line, None, 0)
             continue
         if in_fence:
             if stripped.startswith(fence):
                 in_fence = False
-            cur.append(line)
+            yield _Line(idx, line, None, 0)
             continue
         m = _HEADING.match(line)
-        if m:
-            flush()
-            cur = []
-            level = len(m.group(1))
-            title = m.group(2).strip()
-            while stack and stack[-1][0] >= level:
-                stack.pop()
-            stack.append((level, title))
-            heading_path = [t for _, t in stack]
-        else:
-            cur.append(line)
+        if not m:
+            yield _Line(idx, line, None, 0)
+            continue
+        level = len(m.group(1))
+        while stack and stack[-1][0] >= level:
+            stack.pop()
+        stack.append((level, m.group(2).strip()))
+        path = [t for _, t in stack]
+        key = "/".join(path)
+        seen[key] = seen.get(key, 0) + 1
+        yield _Line(idx, line, path, seen[key])
+
+
+class Section(NamedTuple):
+    heading_path: list[str]
+    occurrence: int
+    text: str
+
+
+def _split_sections(body: str) -> list[Section]:
+    """Split markdown into (heading_path, occurrence, section_text) by heading
+    lines. `occurrence` disambiguates repeated heading paths — see `section_key`."""
+    sections: list[Section] = []
+    cur: list[str] = []
+    heading_path: list[str] = []
+    occurrence = 1
+
+    def flush():
+        text = "\n".join(cur).strip()
+        if text:
+            sections.append(Section(list(heading_path), occurrence, text))
+
+    for ln in _scan(body.splitlines()):
+        if ln.heading_path is None:
+            cur.append(ln.text)
+            continue
+        flush()
+        cur = []
+        heading_path, occurrence = ln.heading_path, ln.occurrence
     flush()
     return sections
 
@@ -145,15 +217,15 @@ def chunk_note(project: str, relpath: str, note_id: str, body: str,
     sections = _split_sections(body)
     if not sections:
         stripped = body.strip()
-        sections = [([], stripped)] if stripped else []
+        sections = [Section([], 1, stripped)] if stripped else []
 
     chunks: list[Chunk] = []
-    for heading_path, text in sections:
+    for heading_path, occurrence, text in sections:
         # `text` is the full section; each window carries it so `section_hash` is
         # window-invariant.
         for i, win in enumerate(_window(text, window_words, overlap)):
             chunks.append(Chunk(project, relpath, note_id, heading_path, i, win,
-                                section_text=text))
+                                section_text=text, occurrence=occurrence))
     return chunks
 
 
@@ -161,13 +233,19 @@ def section_line_map(text: str) -> dict[str, tuple[int, int]]:
     """Map each section's heading_path key -> (start_line, end_line) as 1-based
     file lines, computed from the raw file on disk (frontmatter skipped).
 
-    Keys are "/".join(heading_path) — the same value stored in chunk metadata —
-    so a lookup hit resolves to its span in the *current* file. Computed at query
-    time rather than indexed, so the lines never go stale when edits above a
-    section shift it (the hash gate leaves such chunks untouched). The start line
-    is the heading itself (or the first body line for the pre-heading section);
-    the end is the line before the next heading. A long, windowed section reports
-    one span for all its windows — its full extent.
+    Keys are `section_key(heading_path, occurrence)` — the same identity key the
+    `chunk_id` is built from, which for the usual unique heading is exactly the
+    "/".join(heading_path) stored in chunk metadata, so a lookup hit resolves to
+    its span in the *current* file. A note that repeats a heading path gets one
+    span per occurrence (`A/Notes`, `A/Notes#2`, …) rather than the first one
+    only; rebuild the key from metadata with
+    `section_key(meta["heading_path"], meta.get("occurrence", 1))`.
+
+    Computed at query time rather than indexed, so the lines never go stale when
+    edits above a section shift it (the hash gate leaves such chunks untouched).
+    The start line is the heading itself (or the first body line for the
+    pre-heading section); the end is the line before the next heading. A long,
+    windowed section reports one span for all its windows — its full extent.
     """
     lines = text.splitlines()
     start = 0
@@ -178,41 +256,27 @@ def section_line_map(text: str) -> dict[str, tuple[int, int]]:
                 break
 
     out: dict[str, tuple[int, int]] = {}
-    stack: list[tuple[int, str]] = []
     key = ""                       # the pre-heading section
     sec_start = start              # 0-based line where the current section opens
     has_content = False
 
     def close(end_idx: int) -> None:
+        # `key not in out`: keys are unique by construction (the occurrence
+        # counter), so this only bites the pathological case of a literal heading
+        # spelled like a disambiguator ("Notes#2" alongside a repeated "Notes").
         if has_content and key not in out and end_idx >= sec_start:
             out[key] = (sec_start + 1, end_idx + 1)
 
-    in_fence = False
-    fence = ""
-    for idx in range(start, len(lines)):
-        stripped = lines[idx].lstrip()
-        # Mirror _split_sections: ignore headings inside fenced code blocks, so
-        # the span keys match the chunk metadata keys exactly.
-        if not in_fence and (stripped.startswith("```") or stripped.startswith("~~~")):
-            in_fence, fence = True, stripped[:3]
-            has_content = True
+    # Same `_scan` as `_split_sections`, so headings inside fenced code blocks are
+    # ignored identically and the occurrence numbering matches the chunk ids.
+    for ln in _scan(lines, start):
+        if ln.heading_path is None:
+            if ln.text.strip():
+                has_content = True
             continue
-        if in_fence:
-            if stripped.startswith(fence):
-                in_fence = False
-            has_content = True
-            continue
-        m = _HEADING.match(lines[idx])
-        if m:
-            close(idx - 1)
-            level = len(m.group(1))
-            while stack and stack[-1][0] >= level:
-                stack.pop()
-            stack.append((level, m.group(2).strip()))
-            key = "/".join(t for _, t in stack)
-            sec_start = idx
-            has_content = True     # the heading line itself anchors the section
-        elif lines[idx].strip():
-            has_content = True
+        close(ln.idx - 1)
+        key = section_key(ln.heading_path, ln.occurrence)
+        sec_start = ln.idx
+        has_content = True         # the heading line itself anchors the section
     close(len(lines) - 1)
     return out

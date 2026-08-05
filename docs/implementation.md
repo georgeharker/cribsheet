@@ -68,7 +68,7 @@ Every write funnels through one path:
 Callers of `index_file` are the complete ingestion fan-in: note CRUD
 (`store/append/edit/forget/move`), the notes watcher (`_on_fs_change`), in-situ
 docs (`index_docs_insitu`), the Claude-memory mirror (`import_claude_memory` /
-`_reconcile_memory_dir`), learnings (`code_rehome`), and `reindex`/reconcile.
+`_reconcile_memory_dir`), learnings (`learning_rehome`), and `reindex`/reconcile.
 
 ## 2. Two note classes, one index
 
@@ -130,9 +130,11 @@ write**) fold in via config or per-call overrides.
      `describe_symbols` mop-up for bulk misses. Generation failure never loses
      the structural facet.
    - **write**: under the per-project lock — `SymbolIndex.write_all` (one
-     legible TOML per symbol, filename = slugged fqn), vanished-symbol drop,
-     `_patch_called_by` (single-file reindexes keep the cross-file graph
-     consistent; sweeps skip it, the LSP hands each file its edges), epoch bump.
+     legible TOML per symbol, filename = slugged fqn), hash-gated vanished-symbol
+     drop (unchanged `file_hash` + missing symbols = extraction anomaly → keep
+     them, mark merge-dirty), `CodeStore.patch_edges` (single-file reindexes keep
+     the cross-file `called_by` AND `references` consistent; sweeps skip it, the
+     LSP hands each file its edges), epoch bump.
 4. **Progress**: `_sweeps` {done,total} per project — the poll-able wait signal
    in `status`; gone when the sweep finishes.
 
