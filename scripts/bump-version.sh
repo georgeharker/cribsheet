@@ -206,6 +206,46 @@ for i in "${!MANIFESTS[@]}"; do
   LOCKS+=("$lock"); echo "  synced $(basename "$lock") ($cname -> $new)"
 done
 
+# Same treatment for a uv.lock beside a bumped pyproject.toml: it carries the
+# project's OWN [[package]] entry, so `uv sync --locked` / `uv build --locked`
+# fails against a stale one. (Missed until v0.6.0 — the release commit left it at
+# the previous version and it only moved later, as an unrelated-looking dirty file.)
+#
+# NB uv writes the PEP 440 NORMALIZED version (0.6.0a1) where pyproject keeps the
+# spelling as given (0.6.0-alpha.1), so the two strings differ for every
+# prerelease and the value must be normalized before it is written.
+normalize_pep440() {
+  python3 - "$1" <<'PY'
+import re, sys
+v = sys.argv[1]
+m = re.match(r'^(\d+(?:\.\d+)*)'                       # release segment
+             r'(?:[-_.]?(a|alpha|b|beta|c|pre|preview|rc)[-_.]?(\d*))?'
+             r'(?:[-_.]?(post|dev)[-_.]?(\d*))?$', v)
+if not m:
+    print(v); raise SystemExit           # unrecognised: pass through untouched
+rel, pre, pren, post, postn = m.groups()
+spell = {"alpha": "a", "beta": "b", "c": "rc", "pre": "rc", "preview": "rc"}
+out = rel
+if pre:
+    out += spell.get(pre, pre) + (pren or "0")
+if post:
+    out += f".{post}{postn or '0'}"
+print(out)
+PY
+}
+for i in "${!MANIFESTS[@]}"; do
+  [ "${TARGETS[$i]}" = "toml" ] || continue
+  m="${MANIFESTS[$i]}"; case "$m" in */pyproject.toml) : ;; *) continue ;; esac
+  lock="${m%/pyproject.toml}/uv.lock"; [ -f "$lock" ] || continue
+  pname="$(sed -n '/^\[project\]/,/^\[/p' "$m" | grep -E '^name *= *"' | head -1 \
+           | sed -E 's/.*"([^"]+)".*/\1/')"
+  [ -n "$pname" ] || continue
+  unew="$(normalize_pep440 "$new")"
+  sed -i.bak "/^name = \"$pname\"\$/{n;s/^version = \"[^\"]*\"\$/version = \"$unew\"/;}" "$lock"
+  rm -f "$lock.bak"
+  LOCKS+=("$lock"); echo "  synced $(basename "$lock") ($pname -> $unew)"
+done
+
 [ "$do_commit" = 0 ] && { echo "files updated; skipped commit (--no-commit)"; exit 0; }
 
 git -C "$ROOT" add "${MANIFESTS[@]}" ${LOCKS+"${LOCKS[@]}"}
