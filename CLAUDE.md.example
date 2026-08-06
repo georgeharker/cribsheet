@@ -66,11 +66,21 @@ change just invalidated. That last part is the whole point.
 | your next move was | do this instead |
 |---|---|
 | a question just got settled, and it has consequences | `design_add <title> <rationale>` with `--dep` on what it builds on |
+| the new decision *replaces* an existing one | `design_supersede` — a second `design_add` leaves both standing and both findable |
 | explain *why* it's built this way | `design_lookup "<query>"` **before** reconstructing it from the code — hits flag stale decisions |
 | read / cite a decision | `design_read <ref>` — body **plus** deps, dependents, and whether either moved |
 | change a decision, or code that implements one | `design_check` **first** — then `design_edit`/`design_append`, whose result lists what you just tainted |
 | propose an architecture change | `design_tree` (or `--dependents`) — see what rests on it before you move it |
 
+- **Adding is SILENT — so check what it lands next to.** `design_add` seeds its
+  `checked` state from its deps as they read right now, so a new decision is
+  born verified and nothing gains taint just because it appeared. The graph will
+  hold two decisions that flatly contradict each other and never say a word: it
+  tracks the edges you declared, not agreement. So `design_lookup` the area
+  first, and read the `similar` list the result hands back. Restates an existing
+  decision → `design_append`/`design_edit` **that one**. Replaces it →
+  `design_supersede`. Changes the ground under other work → `design_check`,
+  which is the only verb that answers "what did I just break".
 - **A dep is a promise**: *if that changes, reconsider this.* A plain note can't
   make that promise; the graph can. Every edge checks — there is no "just for
   reference" edge that lets an origin change silently.
@@ -92,6 +102,18 @@ graph. Same for "let's go with X" — that's a `design_add`, not a sentence.
 with the context window; a plan item outlives both. One call takes the whole batch,
 and deps can point at earlier items in the same batch.
 
+- **`plan_lookup` before you add — it may already be planned.** Another session,
+  or another agent, may have written the item you're about to write. An item
+  that duplicates a `done` one is louder than a duplicate: either the work
+  regressed or you've mis-scoped this, and both are worth knowing *before* a
+  second entry exists.
+- **`--dep` the DECISION an item rests on, not just the items before it.** Deps
+  mix, and they block differently: a **plan** dep blocks until it's done; a
+  **design** dep blocks while it's *tainted*; a **note** dep never blocks. So an
+  item that declares the decision it implements drops out of `plan_next` the
+  moment that decision's ground moves — the work stops looking actionable
+  exactly when it stops being safe to do. That is the plan facet's version of
+  "check it didn't break", and it is the only one that fires without you asking.
 - **`plan_status` as you go, not at the end** — `in-progress` is a *claim* other
   agents can see, and marking one `done` tells you what it just unblocked.
 - **`plan_next` is the "where was I" call** — run it when you pick work back up, and
