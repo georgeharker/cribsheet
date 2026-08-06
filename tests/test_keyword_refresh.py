@@ -130,7 +130,11 @@ def test_startup_backlog_noop_without_labels(crib, monkeypatch):
 
     async def body():
         _arm(crib, monkeypatch, calls)
+        # BOTH label kinds, not just keywords: summary_labels defaults to
+        # ["summary", "asks"], so clearing only one leaves real backlog work to do
+        # and the assertion below would be testing nothing.
         crib.config.retrieve.keyword_labels = []
+        crib.config.retrieve.summary_labels = []
         await crib.store_note("a fact", title="n", project="p")
         await crib._keyword_backlog()
 

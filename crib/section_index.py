@@ -59,6 +59,18 @@ SUMMARY_PROMPTS: dict[str, str] = {
         "phrases that would fit the whole project. Vary the wording across the four. "
         "One query per line, lowercase, no numbering, no preamble."
     ),
+    # doc2query: questions in the words a user reaches for BEFORE they have read the
+    # section, so a paraphrased query matches with zero shared tokens. Distinct from
+    # `summary`, which anchors on the section's own distinctive terms and so cannot
+    # bridge a vocabulary gap by construction. Measured on the n=1876 gold set
+    # (2026-08-06): adding this label to summary_labels moved MRR 0.6370 -> 0.7165 and
+    # recall@3 0.7004 -> 0.7830 — 160 queries into top-3 against 5 out.
+    "asks": (
+        "Write 4 to 6 distinct questions or requests a user might type that THIS "
+        "section answers. Use everyday words a person would actually use BEFORE "
+        "reading the section — do NOT reuse the section's own jargon or headings "
+        "where a plainer phrasing exists. One per line, no numbering, no preamble."
+    ),
 }
 
 _BULLET = re.compile(r"^\s*(?:[-*•]|\d+[.)])\s*")

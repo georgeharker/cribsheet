@@ -265,13 +265,20 @@ def main(argv: list[str] | None = None) -> int:
     #     summary + asks   MRR 0.7165   recall@3 0.7830   (+0.0795 / +0.0826)
     # and additive rather than a reshuffle — 160 queries INTO top-3 vs 5 out (all
     # 3 -> 4). On THIS hand set, daemon restarted so the config is live: MRR 0.716 /
-    # recall@3 0.839. Floors raised 0.70 -> 0.71 and 0.80 -> 0.83 so a silent revert
-    # to summary-only (which scores 0.707 / 0.774) FAILS instead of passing on MRR.
+    # recall@3 0.839.
+    # MRR floor raised 0.70 -> 0.71: that is the one that bites, because a silent
+    # revert to summary-only scores 0.705 / 0.774 and USED to pass the 0.70 MRR bar.
+    # recall stays at 0.80, NOT 0.83, deliberately. 0.839 is an idle-machine number:
+    # under the full pytest run it measures 0.806, and the entire 0.033 gap is one
+    # query (an `invocation` phrasing, 2/3 -> 1/3 = 1/31) flipping across the rank-3
+    # boundary as the time-budgeted reranker degrades under CPU contention. A 0.83
+    # floor would therefore fail in CI while passing locally — and 0.80 already
+    # catches the regression that matters, since summary-only's 0.774 is below it.
     # These floors track the hand set. The large gold set is harder and scores lower
     # in absolute terms (0.7830 recall@3 even with asks), so pass --bar-recall when
     # running --cases eval_data/notes_gold_large.json or it will fail spuriously.
     ap.add_argument("--bar-mrr", type=float, default=0.71, help="fail under this MRR")
-    ap.add_argument("--bar-recall", type=float, default=0.83, help="fail under this recall@k")
+    ap.add_argument("--bar-recall", type=float, default=0.80, help="fail under this recall@k")
     ap.add_argument("--crib", default="crib", help="crib executable")
     ap.add_argument("--no-daemon", action="store_true",
                     help="run each crib call in-process (fresh code, bypasses the warm daemon)")
