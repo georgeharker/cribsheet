@@ -6,9 +6,12 @@ title: "cribsheet"
 
 cribsheet gives your AI assistant a durable, searchable memory it keeps across
 sessions and shares across every agent and tool you run — as plain markdown you
-own, not a black box. It remembers **notes** (facts, decisions, gotchas, found by
-meaning) and **code** (a symbol index of your repos with concept search, a real
-call graph, and durable *learnings* you pin to symbols).
+own, not a black box. It remembers **notes** (facts, conventions, gotchas, found by
+meaning), **code** (a symbol index of your repos with concept search, a real
+call graph, and durable *learnings* you pin to symbols), and **decisions and plans**
+as a graph rather than prose — `grep` can't tell you what a change invalidates, but
+edges can: change a decision and you're told which others just went stale, and a
+plan item survives to tell a later session what's actionable.
 
 Start with the **[overview & quick start](README.md)**, then dive in:
 
@@ -16,8 +19,9 @@ Start with the **[overview & quick start](README.md)**, then dive in:
 
 | Document | What it covers |
 |---|---|
-| [User guide](docs/guide.md) | the four facets, the noun-verb interface, runnable workflows |
+| [User guide](docs/guide.md) | the six facets, the noun-verb interface, runnable workflows |
 | [CLI ⇄ MCP reference](docs/surface.md) | every noun, every verb, one line each |
+| [Where things live](docs/storage.md) | store types, who owns the bytes, which verbs may write them |
 | [Sync across machines](docs/resume-on-new-machine.md) | share your memory over plain git |
 
 ### Under the hood

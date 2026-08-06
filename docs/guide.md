@@ -11,9 +11,9 @@ This guide walks through the concepts and the everyday workflows. For the intro 
 install, see the [README](../README.md); for the exhaustive command list, see
 [surface.md](surface.md).
 
-## The four things cribsheet manages
+## The six things cribsheet manages
 
-- **Notes** — durable facts: decisions, conventions, gotchas, hard-won answers.
+- **Notes** — durable facts: conventions, gotchas, hard-won answers.
   You write them as short markdown; cribsheet indexes them so you (or your AI) can
   find them later by describing what you're after, even in different words.
 - **Code index** — a searchable map of a repo's code. Every function, class, and
@@ -23,21 +23,38 @@ install, see the [README](../README.md); for the exhaustive command list, see
 - **Learnings** — durable notes attached to a specific code symbol. When you finally
   understand a tricky function, you pin the insight to it; it resurfaces whenever
   anyone looks that symbol up, and survives re-indexing.
+- **Design decisions** — settled choices, each declaring the decisions it *rests on*.
+  A dep is a promise: *if that changes, reconsider this.* So editing one names the
+  decisions it just put out of date, `crib design check` explains why with the chain,
+  and `crib design reaffirm` records that you re-read it and it still holds. A
+  decision can also cite the doc **section** it came from, so an edit to that passage
+  re-checks exactly what was drawn from it.
+- **Plans** — work items that outlive the session that wrote them: a status, ordering,
+  and must-precede deps. `crib plan next` tells any later session (yours, or another
+  agent's) what's actionable right now, and finishing an item names what it unblocked.
 - **Projects** — separate memory namespaces. Each repo (or topic) has its own notes,
-  code index, and learnings, so nothing bleeds between contexts. A `default` project
-  holds cross-cutting knowledge.
+  code index, learnings, decisions, and plan, so nothing bleeds between contexts. A
+  `default` project holds cross-cutting knowledge.
+
+Decisions and plan items are stored as notes too (under `design/` and `plans/`), but
+the facet verbs are the way in: only they speak the dependency edges, so a raw
+`note edit` on one tells you nothing about what your change invalidated. Which store
+owns which bytes is [storage.md](storage.md).
 
 ## The interface
 
-![The command surface — four nouns (note, code, learning, project) and their verbs](images/command-surface.png)
+![The command surface — seven nouns (note, design, plan, code, learning, project, memory) and their verbs](images/command-surface.png)
 
 Every command reads as **`crib <noun> <verb>`** — a noun for the facet (`note`,
-`code`, `learning`, `project`) and a verb for the action:
+`code`, `learning`, `design`, `plan`, `project`, plus `memory` for the store's git
+lifecycle) and a verb for the action:
 
 ```bash
 crib note store "…"        crib note lookup "…"
 crib code lookup "…"       crib code xref some_symbol
 crib learning add sym "…"  crib learning read sym
+crib design add "…" "…"    crib design check
+crib plan add "…"          crib plan next
 crib project setup         crib project list
 ```
 
@@ -124,7 +141,79 @@ Learnings survive re-indexing and resurface automatically in `code lookup`, `cod
 xref`, and `code dossier`. If code moves and a learning is orphaned, `crib learning
 rehome <old> [new]` re-points it (with no target it suggests ranked candidates).
 
-### 4. Share memory across machines
+### 4. Record a decision and let the graph guard it
+
+When a design question gets settled, record it *with what it builds on*:
+
+```bash
+crib design add "Disk is truth, Chroma is a rebuildable cache" \
+  "Every write lands on disk first; the index is derived and safe to drop." -p myrepo
+
+crib design add "Content-hash gating is the only write/watcher coordination" \
+  "One idempotent, hash-gated index path under a per-path lock." \
+  --dep "Disk is truth, Chroma is a rebuildable cache" -p myrepo
+```
+
+That `--dep` is a promise: *if that changes, reconsider this.* So when the ground
+moves — an edit through the facet, a raw `note edit`, even a git pull —
+
+```bash
+crib design edit "Disk is truth, Chroma is a rebuildable cache" -p myrepo
+```
+
+— the edit answers with what it just tainted, and `check` says so again later, with
+the chain and the change kind that explain it:
+
+```bash
+crib design check -p myrepo                                   # the re-read queue
+crib design read "Content-hash gating is the only write/watcher coordination" -p myrepo
+crib design tree "Disk is truth, Chroma is a rebuildable cache" --dependents -p myrepo
+```
+
+`read` is the one-call orientation: body, what it builds on, what builds on it,
+citations, and its own taint. Re-reading and finding it still holds is the *normal*
+ending — taint means *a dep moved*, not *you were wrong*:
+
+```bash
+crib design reaffirm "Content-hash gating is the only write/watcher coordination" -p myrepo
+```
+
+You don't have to remember to check: `crib status` carries a per-project tainted
+count, and any lookup that lands on a stale decision says so on the hit. To pull
+decisions out of a doc you already have, `crib design import DESIGN.md` returns its
+citable sections and the extraction procedure — extracted entries land `proposed`
+until `crib design promote` blesses them. When a decision genuinely no longer holds,
+`crib design supersede` retires it and taints what built on it.
+
+### 5. Plan work that outlives the session
+
+Anywhere you'd write a todo list, write it into the plan instead — one call takes
+the batch:
+
+```bash
+crib plan add "Add the section-hash column" -p myrepo \
+  --item "Backfill hashes for existing citations" \
+  --item "Report changed sources in plan list"
+
+crib plan dep-add "Backfill hashes for existing citations" \
+                  "Add the section-hash column" -p myrepo   # must follow it
+```
+
+A later session — days later, or a different agent — picks it up cold:
+
+```bash
+crib plan next -p myrepo     # what's actionable NOW: nothing blocks these
+crib plan status "Add the section-hash column" in-progress -p myrepo
+crib plan status "Add the section-hash column" done -p myrepo   # answers: unblocked …
+crib plan list -p myrepo     # in-progress, then ready, then blocked (naming what it waits on)
+```
+
+Marking an item `done` reports the items its completion just freed. `in-progress` is a
+*claim* — it takes the item out of everyone else's `plan next`. Deps may also point at a
+design decision, which blocks while that decision is tainted or still `proposed`:
+unstable ground is not something to build on.
+
+### 6. Share memory across machines
 
 Notes live in a git repo, so they sync with plain git plus a merge driver that keeps
 provenance from ever conflicting:
@@ -141,11 +230,12 @@ rebuild them locally with `crib project reconcile` (sweeps every project for cha
 A full new-machine runbook is in
 [resume-on-new-machine.md](resume-on-new-machine.md).
 
-### 5. Reach the same memory from your AI
+### 7. Reach the same memory from your AI
 
 Everything above is available to an AI agent through cribsheet's MCP tools, whose
 names mirror the CLI: `note_lookup`, `note_store`, `code_lookup`, `code_dossier`,
-`learning_add`, `project_setup`, and so on. So when your agent looks something up or
+`learning_add`, `design_add`, `design_check`, `plan_add`, `plan_next`,
+`project_setup`, and so on. So when your agent looks something up or
 onboards a repo, it's reading and writing the *same* markdown tree you use from the
 terminal — one shared memory behind both. Wiring it into Claude Code is a plugin
 install; see the [README](../README.md#quickstart).
@@ -153,5 +243,8 @@ install; see the [README](../README.md#quickstart).
 ## Where to go next
 
 - [README](../README.md) — the intro, install, and quickstart.
-- [surface.md](surface.md) — the complete CLI + MCP reference (every verb and tool).
+- [surface.md](surface.md) — the complete CLI + MCP reference (every verb and tool),
+  including the full design/plan verb tables and how the two edge families check.
+- [storage.md](storage.md) — where each kind of content lives, who owns the bytes,
+  and which verbs may write them.
 - [resume-on-new-machine.md](resume-on-new-machine.md) — standing memory up on a new box.

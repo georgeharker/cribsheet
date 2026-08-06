@@ -57,8 +57,12 @@ website:
             href: docs/plans/index-corruption-fixes.md
           - text: "Surface parity (executed)"
             href: docs/plans/surface-parity-fixes.md
-          - text: "Design/plan tracking (in tree)"
+          - text: "Design/plan tracking (executed)"
             href: docs/plans/design-plan-tracking.md
+          - text: "Facet ergonomics (executed)"
+            href: docs/plans/design-facet-ergonomics.md
+          - text: "Doc import & attribution (executed)"
+            href: docs/plans/design-plan-import.md
           - text: "Repo-local storage"
             href: docs/plans/repo-local-storage.md
           - text: "Retrieval quality"

@@ -10,14 +10,17 @@ Your AI assistant forgets everything between sessions. **cribsheet** gives it a
 durable, searchable memory — as plain markdown files you own, not a black box —
 that persists across sessions and is shared across every agent and tool you run.
 
-It remembers two kinds of things:
+It remembers three kinds of things:
 
-- **Notes** — decisions, conventions, gotchas, hard-won facts. Written as markdown,
-  found by meaning (semantic + keyword search), not just exact words.
+- **Notes** — conventions, gotchas, hard-won facts. Written as markdown, found by
+  meaning (semantic + keyword search), not just exact words.
 - **Code** — a symbol index of your repos: every function/class/method with an LLM
   "what it does" description, a real call graph (who calls what), and any durable
   *learnings* you pin to a symbol. It answers the questions `grep` can't — *find
   this by concept*, *what calls this*, *what does this do* — across files.
+- **Decisions and plans** — settled design choices and work items as a *graph*, not
+  prose: each records what it rests on, so an edit anywhere names what it just put
+  out of date, and a plan outlives the session that wrote it.
 
 Disk is the source of truth; the vector index is a derived, rebuildable cache. One
 warm process serves your editor (over MCP) and your terminal (`crib <noun> <verb>`) alike.
@@ -33,6 +36,11 @@ warm process serves your editor (over MCP) and your terminal (`crib <noun> <verb
 - **`grep` can't answer "what does this do" or "what calls this."** The code index
   answers by *intent* and traces the real call graph, so an agent (or you) finds
   code by concept and understands its neighbourhood in one call.
+- **`grep` can't tell you what a change *invalidates*, either.** Design decisions and
+  plan items carry dependency edges, so a decision knows what it rests on and what
+  rests on it: change one and you're told, with the chain, which decisions just went
+  stale — and finishing a plan item names what it just unblocked. Prose in a file
+  can't make that promise; the graph can.
 - **It's plain markdown you own.** No proprietary store — edit notes in your own
   editor, diff them in git, sync them across machines. The index rebuilds itself.
 - **Built to actually get used.** The hard part of memory isn't storing — it's
@@ -143,33 +151,46 @@ crib code dossier LexicalCache.get                # everything about one symbol
 crib code graph reciprocal_rank_fusion            # walk the call graph (pstree)
 crib learning add reciprocal_rank_fusion \
      "fuses by RANK, not score — robust to scale differences"   # pin a learning to it
+
+# decisions & plans — what was settled, and the work that rests on it
+crib design add "Content-hash gating is the only write/watcher coordination" \
+     "One idempotent, hash-gated index path under a per-path lock." \
+     --dep "Disk is truth, Chroma is a rebuildable cache" -p cribsheet
+crib design check -p cribsheet          # what a change put out of date, and why
+crib plan add "Backfill section hashes for existing citations" -p cribsheet
+crib plan next -p cribsheet             # "where was I" — this session or a later one
 ```
 
 That's the loop: **store what's worth keeping, look it up by meaning, onboard a repo
-and explore it by concept.** An agent that hits an unindexed repo self-diagnoses
-toward `project setup`, runs it, and carries on.
+and explore it by concept, and settle a decision where the graph can tell you later
+what depends on it.** An agent that hits an unindexed repo self-diagnoses toward
+`project setup`, runs it, and carries on.
 
 ## The surface
 
 Every command reads as **`crib <noun> <verb>`** (and the matching MCP tool
-`<noun>_<verb>`) — four nouns for the four facets:
+`<noun>_<verb>`) — seven nouns, each with its own verbs:
 
-![The command surface — note / code / learning / project and their verbs](docs/images/command-surface.png)
+![The command surface — note / design / plan / code / learning / project / memory and their verbs](docs/images/command-surface.png)
 
 Every capability, its CLI form, its MCP tool, and a one-liner lives in
 **[docs/surface.md](docs/surface.md)** — the full reference. Grouped by task:
 
-| | notes | code |
-|---|---|---|
-| **find** | `note lookup` / `note apropos` (full sections) | `code lookup` (concept ⊕ name), `code dossier`, `code graph`/`xref` |
-| **write** | `note store`, `note append`, `note edit`, `note forget`, `note move` | `learning add`/`edit`/`forget` |
-| **onboard** | `note import` (files → memory), `note import-memory` | `project setup` / `index` / `status` |
-| **housekeeping** | `note reindex`, `project reconcile`, `note versions`, `note restore`, `memory history` | `learning report`, `learning rehome` |
+| | notes | code | decisions & plans |
+|---|---|---|---|
+| **find** | `note lookup` / `note apropos` (full sections) | `code lookup` (concept ⊕ name), `code dossier`, `code graph`/`xref` | `design lookup`/`read`/`tree`, `plan list`/`next` |
+| **write** | `note store`, `note append`, `note edit`, `note forget`, `note move` | `learning add`/`edit`/`forget` | `design add`/`edit`/`append` (`--dep`), `plan add`/`status` |
+| **onboard** | `note import` (files → memory), `note import-memory` | `project setup` / `index` / `status` | `design import` / `plan import` (extract from a doc) |
+| **housekeeping** | `note reindex`, `project reconcile`, `note versions`, `note restore`, `memory history` | `learning report`, `learning rehome` | `design check` / `reaffirm` / `promote` / `supersede` |
 
 Notes and code share one store, so `lookup` surfaces a repo's docs alongside your
 stored knowledge. A repo's `.crib` file ties it to a project and declares which
 source and docs to index (docs are indexed **in-situ** — the repo stays the master;
 crib holds only the index).
+
+Decisions and plan items are notes too — under `design/` and `plans/` — but the facet
+verbs are the way in, because only they speak the dependency edges. Who owns which
+bytes, and which verbs may write them, is [docs/storage.md](docs/storage.md).
 
 By default a verb attaches to the **warm daemon** (the same process the MCP server
 runs), so it's fast; `--no-daemon` runs in-process, `--json` gives machine output.
@@ -228,10 +249,12 @@ The deep dives live in the docs — see **[Documentation](#documentation)** belo
 
 **Using cribsheet**
 
-- **[docs/guide.md](docs/guide.md)** — the user guide: the four facets, the
-  noun-verb interface, and five runnable workflows. *Start here.*
+- **[docs/guide.md](docs/guide.md)** — the user guide: the six facets, the
+  noun-verb interface, and seven runnable workflows. *Start here.*
 - **[docs/surface.md](docs/surface.md)** — the complete CLI ⇄ MCP reference: every
   noun, every verb, one line each.
+- **[docs/storage.md](docs/storage.md)** — where each kind of content lives, who owns
+  the bytes, and which verbs may write them.
 - **[docs/resume-on-new-machine.md](docs/resume-on-new-machine.md)** — share your
   memory across machines over plain git.
 

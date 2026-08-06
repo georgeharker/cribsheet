@@ -6,8 +6,8 @@ description, grouped by facet. (For an intro and quickstart, start at the
 
 The CLI is **noun-verb**: `crib <noun> <verb>` — `crib note lookup`, `crib code xref`,
 `crib learning add`, `crib project setup`. That is the only form; there is no
-hyphenated fallback (`crib code-lookup` is rejected). The nouns are `note`, `code`,
-`learning`, `design`, `plan`, and `project`, plus a few top-level system verbs.
+hyphenated fallback (`crib code-lookup` is rejected). The nouns are `note`, `design`,
+`plan`, `code`, `learning`, `project`, and `memory`, plus a few top-level system verbs.
 
 **Selecting a project.** `-p/--project` (by name) or `-P/--project-path` (by a path
 inside the repo) on the CLI — `project`/`project_path` on MCP — pick which project a
