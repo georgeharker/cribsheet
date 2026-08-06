@@ -1,6 +1,6 @@
 # Retrieval quality & tool adoption (the prerequisite layer)
 
-> **⚠ Superseded on the ranking mechanics (2026-07-13).** This is a dated
+> **⚠︎ Superseded on the ranking mechanics (2026-07-13).** This is a dated
 > investigation log; its findings on *keyword_index / summary_index / adoption* stand,
 > but the **fusion and rerank** it describes (RRF-of-ranks, an "optional third RRF
 > list", rerank off) have been **replaced**: fusion is now a **dense-dominant score

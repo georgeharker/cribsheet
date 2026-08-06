@@ -50,9 +50,9 @@ Claude Code's `:-` is **not** bash's. Measured, with
 
 | `POLARITY_TEST` | result |
 | --- | --- |
-| unset | ✔ Connected (default used) |
+| unset | ✓ Connected (default used) |
 | set, empty | ✘ **Failed to connect** |
-| set to a URL | ✔ Connected (override) |
+| set to a URL | ✓ Connected (override) |
 
 So set-but-empty keeps the empty value (bash would fall back to the default) — but
 an env-emptied URL is a **red failed-server row**, not the quiet "not configured"

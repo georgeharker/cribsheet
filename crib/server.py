@@ -706,9 +706,9 @@ def build_server(crib: Crib | None = None):
     @crib_tool("read")
     async def learning_reaffirm(symbol: str, project: str | None = None,
                             project_path: str | None = None) -> dict[str, Any]:
-        """Clear a learning's ⚠ stale flag WITHOUT rewriting it — you re-checked the
+        """Clear a learning's ⚠︎ stale flag WITHOUT rewriting it — you re-checked the
         note against the current code and it still holds. Re-snapshots the symbol's
-        content_hash so it reads as fresh again. Use when code_lookup shows a 📌 note
+        content_hash so it reads as fresh again. Use when code_lookup shows a ※ note
         flagged stale but the understanding is still correct."""
         return await crib.learning_reaffirm(symbol, project)
 

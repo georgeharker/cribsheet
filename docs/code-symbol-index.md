@@ -360,7 +360,7 @@ The BM25 cache is keyed by project+corpus-hash; I misread it as global for a whi
 - **Same primitives as notes, under the `learning` noun** — `learning_add` (attach a dated entry,
   creating the running note on first use), `learning_edit` (rewrite the body), `learning_forget`
   (remove, recoverable via the ring — works on orphans too), `learning_read`, plus
-  `learning_reaffirm` (clear a ⚠ stale flag without a rewrite) and the maintenance pair
+  `learning_reaffirm` (clear a ⚠︎ stale flag without a rewrite) and the maintenance pair
   `learning_report` (health report) / `learning_rehome` (re-point an orphan). Each resolves
   the symbol against the index (exact fqn wins; a bare name only if unique — never
   silently pick, so a learning can't land on the wrong symbol) and reuse the note write/delete path (`NoteStore`). MCP (`learning_add`, …)
@@ -389,16 +389,16 @@ the symbol is gone.
 
 **Staleness for free.** The learning snapshots `content_hash` at authoring; when
 surfaced (via `code_lookup`/`code_xref`), if the symbol's current `content_hash` differs
-it's marked `⚠ written against an older body` — not auto-invalidated (the subtlety often
+it's marked `⚠︎ written against an older body` — not auto-invalidated (the subtlety often
 still holds), just honestly flagged. When you've re-checked a flagged note and it still
 holds, **`learning_reaffirm` clears the flag without a rewrite** — it re-snapshots
 `content_hash`/`file`/`signature` and stamps `reaffirmed`, so the body stays untouched.
 
 Build order:
 1. `learning_add`/`edit`/`forget`/`read` + the `code-learnings/` subtree ✓
-2. Query-time join — 📌 block in `code_lookup`/`code_xref` + staleness ⚠ ✓ (keyed
+2. Query-time join — ※ block in `code_lookup`/`code_xref` + staleness ⚠︎ ✓ (keyed
    O(1) by `learning_slug(fqn)`; only symbols that carry a note pay a read)
-3. `code_graph` glyph (📌) marking nodes that carry a learning ✓ — the call tree
+3. `code_graph` glyph (※) marking nodes that carry a learning ✓ — the call tree
    becomes a treasure map. fqn→slug membership against the subtree (never filename→fqn,
    since the munge is lossy)
 4. `learning_report` report ✓ — true orphans (fqn unresolved) *and* moved learnings (fqn

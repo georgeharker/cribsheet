@@ -89,7 +89,7 @@ projects.
 | `crib learning edit <sym> <text>` | `learning_edit` | Rewrite a symbol's learning body wholesale. |
 | `crib learning forget <sym>` | `learning_forget` | Remove a symbol's learning (recoverable via the ring; works on orphans). |
 | `crib learning read <sym>` | `learning_read` | Print a symbol's attached learning. |
-| `crib learning reaffirm <sym>` | `learning_reaffirm` | Clear a learning's ⚠ stale flag without a rewrite (you re-checked; it still holds). |
+| `crib learning reaffirm <sym>` | `learning_reaffirm` | Clear a learning's ⚠︎ stale flag without a rewrite (you re-checked; it still holds). |
 | `crib learning report` | `learning_report` | Health report: each learning `ok` / `moved` / `orphan` (`--orphans` to filter). |
 | `crib learning rehome <old> [new]` | `learning_rehome` | Re-point an orphaned learning (no target → ranked candidates; target → move it). |
 

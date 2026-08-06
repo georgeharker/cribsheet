@@ -13,7 +13,7 @@ sets.
 - **MRR 0.710, recall@3 0.806** (bars 0.7 / 0.8 — met, barely; historical
   bar was 0.72 before the corpus-drift re-baseline).
 - Soft spots by need group: `distill` 2/3, `id-index-file` 1/2 (worst=4),
-  `⚠ weak phrasing` on both — plus the standing observation that MRR has
+  `⚠︎ weak phrasing` on both — plus the standing observation that MRR has
   hovered at/below ideal for a while (maintainer, 2026-08-05).
 
 **Corpus-drift finding (later same day):** after `docs/plans/*.md` landed and

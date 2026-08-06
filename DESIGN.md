@@ -862,4 +862,4 @@ default.
   matches the new content above `DEDUPE_WARN_SCORE` (excluding the note itself) —
   so near-duplicates surface at write time, backing the "prefer append/edit"
   guidance with detection. The CLI echoes the target (`→ stored in <project>`),
-  the `created` flag, and any `⚠ similar` hits, so the destination is never silent.
+  the `created` flag, and any `⚠︎ similar` hits, so the destination is never silent.

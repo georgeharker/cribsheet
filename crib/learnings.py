@@ -51,7 +51,7 @@ class Learnings:
 
     def attach(self, proj: str,
                entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """Enrich symbol entries in place with any attached learning (📌) + a staleness
+        """Enrich symbol entries in place with any attached learning (※) + a staleness
         flag, so pinned understanding resurfaces exactly where you're already looking
         (code_lookup / code_xref). Keyed O(1) by learning_slug(fqn). `stale` = the
         symbol's body changed (content_hash) since the learning was written — a heads-up,
@@ -144,7 +144,7 @@ class Learnings:
         return {**res, "symbol": fqn}
 
     async def reaffirm(self, proj: str, symbol: str) -> dict[str, Any]:
-        """Clear a learning's ⚠ stale flag WITHOUT editing the body — you re-checked it
+        """Clear a learning's ⚠︎ stale flag WITHOUT editing the body — you re-checked it
         and it still holds. Re-snapshots content_hash/file/signature and stamps
         `reaffirmed`."""
         entry = self.refs.resolve_symbol(proj, symbol)

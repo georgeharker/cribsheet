@@ -166,7 +166,7 @@ def report(rows: list[dict[str, Any]], recall_k: int) -> tuple[float, float]:
         worst = max(ranks) if len(ranks) == len(rs) else "—"
         if all(x["rank"] == 1 for x in rs):
             fully_robust += 1
-        flag = "" if hit == len(rs) else "   ⚠ weak phrasing"
+        flag = "" if hit == len(rs) else "   ⚠︎ weak phrasing"
         print(f"  {need:<15} {hit}/{len(rs)}   worst={worst}{flag}")
     print("-" * 92)
     print(

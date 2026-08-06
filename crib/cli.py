@@ -116,7 +116,7 @@ def _emit_apropos(hits: Any, as_json: bool) -> None:
         loc = (f":{h.get('line_start')}-{h.get('line_end')}"
                if h.get("line_start") else "")
         head = f" — {h['heading']}" if h.get("heading") else ""
-        stale = "  ⚠ stale decision (a dep moved)" if h.get("tainted") else ""
+        stale = "  ⚠︎ stale decision (a dep moved)" if h.get("tainted") else ""
         print(f"\n[{h.get('score', 0.0):.3f}] {h.get('relpath', '')}{loc}{head}{stale}")
         _render_markdown(h.get("section") or "")
     _emit_rebuilding_note(hits)
@@ -159,7 +159,7 @@ def _emit_rebuilding_note(hits: Any) -> None:
         return bool(h.get("index_rebuilding") if isinstance(h, dict)
                     else getattr(h, "index_rebuilding", False))
     if isinstance(hits, list) and any(_flag(h) for h in hits):
-        print("⚠ index rebuilding: this project is still re-embedding "
+        print("⚠︎ index rebuilding: this project is still re-embedding "
               "(see `crib status`) — results are incomplete")
 
 
@@ -203,7 +203,7 @@ def _emit_write_result(item: dict) -> None:
     if item.get("created"):
         print(f"  (created project '{item.get('project') or item['to']['project']}')")
     for s in item.get("similar") or []:
-        print(f"  ⚠ similar [{s['score']:.3f}]: {s['relpath']}"
+        print(f"  ⚠︎ similar [{s['score']:.3f}]: {s['relpath']}"
               + (f" — {s['heading']}" if s.get("heading") else ""))
 
 
@@ -298,7 +298,7 @@ def _emit_status(d: Any, as_json: bool) -> None:
         for p in projs:
             # stale decisions ride along on the inventory line: an ambient count
             # nobody has to think to ask for (`crib design check` says which)
-            stale = (f"  ⚠ {p['design_tainted']} stale decision(s)"
+            stale = (f"  ⚠︎ {p['design_tainted']} stale decision(s)"
                      if p.get("design_tainted") else "")
             print(f"  {p['project']:{w}}  notes {p['notes']:4}  "
                   f"docs {p['doc_chunks']:4}  symbols {p['symbols']:5}  "
@@ -318,7 +318,7 @@ def _emit_projects(rows: Any, as_json: bool) -> None:
         if r.get("store_root"):
             line += f"   in-repo: {r['store_root']}"
         if r.get("unavailable"):
-            line += "   ⚠ UNAVAILABLE (repo not on this machine)"
+            line += "   ⚠︎ UNAVAILABLE (repo not on this machine)"
         print(line)
 
 
@@ -389,9 +389,9 @@ def _emit_code_dossier(d: Any, as_json: bool) -> None:
 
 
 def _print_learning(learning: dict, indent: str) -> None:
-    """Render an attached symbol learning (📌) under a code-lookup/xref hit."""
-    flag = "  ⚠ stale — body changed since written" if learning.get("stale") else ""
-    print(f"{indent}📌 note ({learning.get('relpath', '')}){flag}")
+    """Render an attached symbol learning (※) under a code-lookup/xref hit."""
+    flag = "  ⚠︎ stale — body changed since written" if learning.get("stale") else ""
+    print(f"{indent}※ note ({learning.get('relpath', '')}){flag}")
     for line in (learning.get("body") or "").splitlines():
         print(f"{indent}  {line}" if line.strip() else "")
 
@@ -408,7 +408,7 @@ def _emit_code_learning(data: Any, verb: str, as_json: bool) -> None:
     if verb == "learning-forget":
         print(f"forgot {sym}  ({rel})"); return
     if verb == "learning-reaffirm":
-        print(f"reaffirmed {sym} (cleared ⚠ stale)  → {rel}"); return
+        print(f"reaffirmed {sym} (cleared ⚠︎ stale)  → {rel}"); return
     if verb == "learning-add":
         print(f"{'created' if data.get('created') else 'appended'} learning: {sym}  → {rel}")
         return
@@ -452,7 +452,7 @@ def _emit_code_rehome(data: Any, as_json: bool) -> None:
     print(f"rehomed {data.get('old', '')} → {data.get('new', '')}  ({data.get('relpath', '')})")
 
 
-_TAINT = "⚠"
+_TAINT = "⚠︎"
 # The import tier reads as a QUESTION, not a warning: a proposed entry isn't
 # stale, it is un-blessed — a different thing to do about it (`design promote`).
 _PROPOSED = "?"
@@ -474,7 +474,7 @@ def _tree_glyphs(ascii_mode: bool) -> tuple[str, str, str, str]:
 
 def _emit_design_tree(data: Any, args: Any) -> None:
     """Design dependency tree, in the `code graph` pstree style. `↑` marks a DAG
-    node already shown, `⚠` a tainted one, `✗` a dangling dep id."""
+    node already shown, `⚠︎` a tainted one, `✗` a dangling dep id."""
     if getattr(args, "json", False):
         print(json.dumps(data, indent=2, default=str)); return
     roots = (data or {}).get("roots") or []
@@ -643,7 +643,7 @@ _GROUP_HEADS = {"in-progress": "in progress", "ready": "ready",
 
 def _emit_plan_list(data: Any, args: Any) -> None:
     """The plan as a WORKING SET: in-progress, then ready, then blocked (each
-    naming what it waits on), then done — not a graph dump. `⛔` marks a
+    naming what it waits on), then done — not a graph dump. `⊘` marks a
     derived-blocked item."""
     if getattr(args, "json", False):
         print(json.dumps(data, indent=2, default=str)); return
@@ -659,7 +659,7 @@ def _emit_plan_list(data: Any, args: Any) -> None:
         if it.get("group") and it["group"] != group:
             group = it["group"]
             print(f"\n{_GROUP_HEADS.get(group, group)}:")
-        mark = "⛔" if it.get("blocked") else _PLAN_GLYPH.get(it.get("status", ""), "·")
+        mark = "⊘" if it.get("blocked") else _PLAN_GLYPH.get(it.get("status", ""), "·")
         print(f"{mark:2} {it.get('status', ''):12} {it.get('title', '')}"
               f"   {it.get('relpath', '')}")
         for b in it.get("blocked_by") or []:
@@ -739,7 +739,7 @@ def _emit_design_write(data: Any, args: Any) -> None:
         for via in d.get("via") or []:
             print(f"      via {via}")
     for u in data.get("unblocked") or []:
-        print(f"  ✔ unblocked: {u.get('title', '')}  ({u.get('ref', '')})")
+        print(f"  ✓ unblocked: {u.get('title', '')}  ({u.get('ref', '')})")
     for s in data.get("similar") or []:
         print(f"  {_TAINT} similar decision [{s['score']:.3f}]: {s['relpath']}"
               + (f" — {s['heading']}" if s.get("heading") else "")
@@ -769,7 +769,7 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
     arrows = {"callees": (">", "▸"), "callers": ("<", "◂"), "references": ("=", "⇐")}
     arrow = arrows[direction][0 if ascii_mode else 1]
     branch, last, vert, blank = _tree_glyphs(ascii_mode)
-    pin = " *" if ascii_mode else " 📌"          # step 3: node carries a learning
+    pin = " *" if ascii_mode else " ※"          # step 3: node carries a learning
     print(f"{tree['fqname']}  ({tree.get('kind', '')})   [{direction}]"
           f"{pin if tree.get('has_learning') else ''}")
 
@@ -929,7 +929,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("symbol"); proj(s)
 
     s = learnsub.add_parser("reaffirm",
-                       help="clear a learning's ⚠ stale flag without rewriting it")
+                       help="clear a learning's ⚠︎ stale flag without rewriting it")
     s.add_argument("symbol"); proj(s)
 
     s = learnsub.add_parser("report",
