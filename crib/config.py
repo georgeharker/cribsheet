@@ -110,19 +110,33 @@ class RetrieveConfig:
     # <project>/summary_index/<label>/<section_hash>.toml. Generate with
     # `crib summarize <label>`.
     #
-    # OFF by default and a REMOVAL CANDIDATE (docs/retrieval-and-adoption.md §5.5
-    # verdict): across every corpus measured it never lifted recall (recall was
-    # already saturated) and moved MRR only marginally/inconsistently (0 to +0.025,
-    # sometimes negative), while being the most expensive enrichment (an LLM call
-    # per section). UPDATE 2026-07-13: that verdict was measured against the RRF-era
-    # rank-bonus wiring. Under the multi-vector MAX-merge (an alias match IS a dense
-    # match) the aliases measure +0.013 MRR / +0.010 recall@3 over the shipped stack
-    # on the n=1876 harvested gold set — a real lift. Summary labels ride the same
-    # write-path debounce + startup backlog + prune GC as keyword_labels, so
-    # freshness is automatic once configured. Empty by default only because
-    # enrichment labels are an opt-in LLM cost (same convention as keyword_labels);
-    # the measured recommendation is `summary_labels = ["summary"]`.
-    summary_labels: list[str] = field(default_factory=list)
+    # Once a REMOVAL CANDIDATE (docs/retrieval-and-adoption.md §5.5 verdict): against
+    # the RRF-era rank-bonus wiring it never lifted recall (already saturated) and
+    # moved MRR only marginally/inconsistently (0 to +0.025, sometimes negative),
+    # while being the most expensive enrichment (an LLM call per section).
+    # 2026-07-13: under the multi-vector MAX-merge (an alias match IS a dense match)
+    # `summary` measured +0.013 MRR / +0.010 recall@3 over the shipped stack on the
+    # n=1876 harvested gold set — a real but small lift.
+    #
+    # 2026-08-06: `asks` — doc2query-style QUESTIONS phrased in a user's words rather
+    # than the section's jargon — measures an order of magnitude more on that same
+    # n=1876 set, A/B'd with only this field varying:
+    #
+    #     summary          MRR 0.6370   recall@3 0.7004
+    #     summary + asks   MRR 0.7165   recall@3 0.7830   (+0.0795 / +0.0826)
+    #
+    # and the movement is additive, not a reshuffle: of 1876 queries, 160 crossed
+    # INTO top-3 against 5 that fell out (all 3 -> 4, i.e. at the cutoff), net +155.
+    # It closes the vocabulary gap the body/`summary` embeddings miss — paraphrased
+    # queries that share no tokens with the section they want.
+    #
+    # DEFAULTED ON because naming a label costs nothing on its own: retrieval over a
+    # label with no generated records is a no-op, so this only takes effect for users
+    # who have actually run `crib summarize`. GENERATION stays opt-in — that is where
+    # the LLM cost lives, and the keyword_labels convention still holds there. Summary
+    # labels ride the same write-path debounce + startup backlog + prune GC as
+    # keyword_labels, so freshness is automatic once generated.
+    summary_labels: list[str] = field(default_factory=lambda: ["summary", "asks"])
     # Alias-TRUST scale on the multi-vector merge: a section's dense score is
     # max(body cosine, alias cosine × summary_weight) — 1.0 treats an alias match
     # as a full dense match (the index-side design intent); below 1.0 discounts
