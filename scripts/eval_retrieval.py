@@ -258,8 +258,20 @@ def main(argv: list[str] | None = None) -> int:
     # recall@3 0.806 — storing ONE on-topic finding note displaced a top-3 phrasing
     # (this hand set is corpus-fragile by design; see eval_data/notes_gold_large.json
     # for the real instrument). recall floor re-baselined 0.83 -> 0.80.
-    ap.add_argument("--bar-mrr", type=float, default=0.70, help="fail under this MRR")
-    ap.add_argument("--bar-recall", type=float, default=0.80, help="fail under this recall@k")
+    # 2026-08-06 (`asks` added to the default summary_labels): the doc2query alias
+    # label was generated but not being retrieved over. Switching it on measured, on
+    # the n=1876 gold set with only summary_labels varying:
+    #     summary          MRR 0.6370   recall@3 0.7004
+    #     summary + asks   MRR 0.7165   recall@3 0.7830   (+0.0795 / +0.0826)
+    # and additive rather than a reshuffle — 160 queries INTO top-3 vs 5 out (all
+    # 3 -> 4). On THIS hand set, daemon restarted so the config is live: MRR 0.716 /
+    # recall@3 0.839. Floors raised 0.70 -> 0.71 and 0.80 -> 0.83 so a silent revert
+    # to summary-only (which scores 0.707 / 0.774) FAILS instead of passing on MRR.
+    # These floors track the hand set. The large gold set is harder and scores lower
+    # in absolute terms (0.7830 recall@3 even with asks), so pass --bar-recall when
+    # running --cases eval_data/notes_gold_large.json or it will fail spuriously.
+    ap.add_argument("--bar-mrr", type=float, default=0.71, help="fail under this MRR")
+    ap.add_argument("--bar-recall", type=float, default=0.83, help="fail under this recall@k")
     ap.add_argument("--crib", default="crib", help="crib executable")
     ap.add_argument("--no-daemon", action="store_true",
                     help="run each crib call in-process (fresh code, bypasses the warm daemon)")
