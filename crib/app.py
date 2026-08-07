@@ -212,9 +212,9 @@ class Crib:
         # ProjectServices. Crib keeps delegators (below) so the watcher, the resident
         # revalidate hook, and project setup/index call it unchanged.
         self.indexer = CodeIndexer(self.services)
-        # Durable symbol learnings (notes under code-learnings/), over refs + notestore.
+        # Durable symbol learnings, over refs + their own pillar store.
         # Crib keeps resolve_project + delegate public wrappers (learning_add/…).
-        self.learnings = Learnings(paths, self.refs, self.notestore)
+        self.learnings = Learnings(paths, self.refs, self.learningstore)
         # Design decisions + plan items (notes under design/ and plans/) and the
         # dependency graph over them. Same shape: Crib resolves, Designs executes.
         self.designs = Designs(paths, self.designstore, self.planstore,
@@ -1721,12 +1721,12 @@ class Crib:
         sessions (which servers are attached, alive/busy/idle), and any in-flight
         indexing. Counts are cheap file counts (1 toml = 1 symbol), never full
         parses."""
-        from .codeindex import _POOL, LEARNINGS_DIR
+        from .codeindex import _POOL
         projects = []
         for name in self.projects():
             pp = self.project_paths(name)
             nd = pp.notes_dir
-            ld = nd / LEARNINGS_DIR
+            ld = pp.pillar_dir("learnings")
             sd = pp.project_dir / "symbol_index"
             doc_chunks = sum(1 for m in self.store.get_meta({"project": name}).values()
                              if m.get("relpath", "").startswith(SRC_PREFIX))
@@ -1792,7 +1792,7 @@ class Crib:
         pass with_learnings=True to drop those too."""
         import shutil
 
-        from .codeindex import LEARNINGS_DIR, SymbolIndex
+        from .codeindex import SymbolIndex
         proj = self.resolve_project(project, cwd)
         si_root = SymbolIndex(self.project_paths(proj).project_dir).root
         removed = len(list(si_root.glob("*.toml"))) if si_root.exists() else 0
@@ -1812,7 +1812,7 @@ class Crib:
             reg.remove(prefix)
         learnings = 0
         if with_learnings:
-            ldir = self.notes_dir(proj) / LEARNINGS_DIR
+            ldir = self.learningstore.root(proj)
             if ldir.exists():
                 learnings = len(list(ldir.glob("*.md")))
                 shutil.rmtree(ldir)

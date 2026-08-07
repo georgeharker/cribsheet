@@ -34,7 +34,8 @@ def test_status_inventories_projects(crib):
     alpha = next(p for p in d["projects"] if p["project"] == "alpha")
     assert alpha["symbols"] == 1
     assert alpha["learnings"] == 1
-    assert alpha["notes"] >= 2                # the stored note + the learning note
+    # learnings live in their own pillar now, so the notes count is notes only
+    assert alpha["notes"] == 1
     assert d["git"] == {"enabled": False}     # data dir is not a repo here
     # the LSP pool is process-global (another test may have warmed a session):
     # assert the report SHAPE, not emptiness

@@ -1,11 +1,14 @@
 """Durable human learnings attached to code symbols, extracted from Crib.
 
-A learning is a first-class NOTE under `<project>/code-learnings/`, keyed by the
-symbol's slugged fqn — deliberately separate from the regenerable LLM description, so
-pinned understanding survives re-indexing and rides git sync. `Learnings` is the CRUD
-+ audit + rehome over those notes. It depends on three clean things: `paths` (to read
-the symbol index for audit/rehome), `refs` (to resolve a symbol, falling through to
-cross-project refs), and `notestore` (the note file ops — write/delete/read/reindex).
+A learning is a first-class note in the LEARNINGS pillar store
+(`projects/<p>/learnings/<slug>.md`), keyed by the symbol's slugged fqn —
+deliberately separate from the regenerable LLM description, so pinned
+understanding survives re-indexing and rides git sync, and deliberately NOT in
+the notes pillar, so it never surfaces in (or re-weights) note search.
+`Learnings` is the CRUD + audit + rehome over those notes. It depends on three
+clean things: `paths` (to read the symbol index for audit/rehome), `refs` (to
+resolve a symbol, falling through to cross-project refs), and `store` (the
+learnings pillar's note file ops — write/delete/read/reindex).
 Cores take an explicit resolved `project`; Crib keeps resolve_project + delegate.
 """
 
@@ -25,10 +28,12 @@ if TYPE_CHECKING:
 
 
 class Learnings:
-    def __init__(self, paths: Paths, refs: Refs, notestore: NoteStore) -> None:
+    def __init__(self, paths: Paths, refs: Refs, store: NoteStore) -> None:
         self.paths = paths
         self.refs = refs
-        self.notestore = notestore
+        # The learnings PILLAR store (`projects/<p>/learnings/`), not the notes
+        # one — learnings share the store implementation, never the notes tree.
+        self.store = store
 
     def rel_for_fqn(self, proj: str, fqn: str) -> str:
         """A symbol's learning-note relpath — the current slug, or the
@@ -39,12 +44,12 @@ class Learnings:
         under the old name. They are NOT migrated — a learning is hand-written
         content whose path a human may have in hand — so every verb resolves
         through here and keeps using the existing file."""
-        from .codeindex import LEARNINGS_DIR, learning_slug, legacy_learning_slug
-        rel = f"{LEARNINGS_DIR}/{learning_slug(fqn)}.md"
-        if self.notestore.abspath(proj, rel).exists():
+        from .codeindex import learning_slug, legacy_learning_slug
+        rel = f"{learning_slug(fqn)}.md"
+        if self.store.abspath(proj, rel).exists():
             return rel
-        old = f"{LEARNINGS_DIR}/{legacy_learning_slug(fqn)}.md"
-        return old if self.notestore.abspath(proj, old).exists() else rel
+        old = f"{legacy_learning_slug(fqn)}.md"
+        return old if self.store.abspath(proj, old).exists() else rel
 
     def relpath(self, proj: str, entry: dict[str, Any]) -> str:
         return self.rel_for_fqn(proj, entry["fqname"])
@@ -56,8 +61,7 @@ class Learnings:
         (code_lookup / code_xref). Keyed O(1) by learning_slug(fqn). `stale` = the
         symbol's body changed (content_hash) since the learning was written — a heads-up,
         not an invalidation."""
-        from .codeindex import LEARNINGS_DIR
-        ldir = self.notestore.notes_root(proj) / LEARNINGS_DIR
+        ldir = self.store.root(proj)
         if not ldir.exists():
             return entries
         for e in entries:
@@ -65,7 +69,7 @@ class Learnings:
             if not fq:
                 continue
             relpath = self.rel_for_fqn(proj, fq)
-            path = self.notestore.notes_root(proj) / relpath
+            path = ldir / relpath
             if not path.exists():
                 continue
             note = notes.load(path)
@@ -78,8 +82,7 @@ class Learnings:
     def fqns(self, proj: str) -> set[str]:
         """Set of fqns that carry a learning (read from `symbol:` frontmatter — the
         authoritative fqn, so the lossy slug never has to be reversed)."""
-        from .codeindex import LEARNINGS_DIR
-        ldir = self.notestore.notes_root(proj) / LEARNINGS_DIR
+        ldir = self.store.root(proj)
         out: set[str] = set()
         if ldir.exists():
             for p in ldir.glob("*.md"):
@@ -94,7 +97,7 @@ class Learnings:
         entry = self.refs.resolve_symbol(proj, symbol)
         fqn = entry["fqname"]
         relpath = self.relpath(proj, entry)
-        path = self.notestore.abspath(proj, relpath)
+        path = self.store.abspath(proj, relpath)
         existed = path.exists()
         if existed:
             note = notes.load(path)
@@ -111,7 +114,7 @@ class Learnings:
                 "source": "code-note"})
         today = datetime.date.today().isoformat()
         note.body = note.body.rstrip() + f"\n\n### {today}\n{text.strip()}\n"
-        res = await self.notestore.write(proj, relpath, note)
+        res = await self.store.write(proj, relpath, note)
         return {"project": proj, "symbol": fqn, "relpath": relpath,
                 "created": not existed, "indexed": res.upserted}
 
@@ -120,13 +123,13 @@ class Learnings:
         preserved. Errors if no learning exists yet — use append to create."""
         entry = self.refs.resolve_symbol(proj, symbol)
         relpath = self.relpath(proj, entry)
-        path = self.notestore.abspath(proj, relpath)
+        path = self.store.abspath(proj, relpath)
         if not path.exists():
             raise ValueError(f"no learning for {entry['fqname']!r} yet — learning_add first")
         note = notes.load(path)
         note.frontmatter["content_hash"] = entry.get("content_hash", "")
         note.body = new_content.strip() + "\n"
-        res = await self.notestore.write(proj, relpath, note)
+        res = await self.store.write(proj, relpath, note)
         return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
                 "indexed": res.upserted}
 
@@ -138,9 +141,9 @@ class Learnings:
         except ValueError:
             fqn = symbol                      # orphan: gone from the index, note lingers
         relpath = self.rel_for_fqn(proj, fqn)
-        if not self.notestore.abspath(proj, relpath).exists():
+        if not self.store.abspath(proj, relpath).exists():
             raise ValueError(f"no learning for {symbol!r} in project {proj!r}")
-        res = await self.notestore.delete(proj, relpath)
+        res = await self.store.delete(proj, relpath)
         return {**res, "symbol": fqn}
 
     async def reaffirm(self, proj: str, symbol: str) -> dict[str, Any]:
@@ -149,7 +152,7 @@ class Learnings:
         `reaffirmed`."""
         entry = self.refs.resolve_symbol(proj, symbol)
         relpath = self.relpath(proj, entry)
-        path = self.notestore.abspath(proj, relpath)
+        path = self.store.abspath(proj, relpath)
         if not path.exists():
             raise ValueError(f"no learning for {entry['fqname']!r} yet — learning_add first")
         note = notes.load(path)
@@ -158,7 +161,7 @@ class Learnings:
         note.frontmatter["signature"] = entry.get("signature",
                                                   note.frontmatter.get("signature", ""))
         note.frontmatter["reaffirmed"] = datetime.date.today().isoformat()
-        res = await self.notestore.write(proj, relpath, note)
+        res = await self.store.write(proj, relpath, note)
         return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
                 "reaffirmed": note.frontmatter["reaffirmed"], "indexed": res.upserted}
 
@@ -166,8 +169,8 @@ class Learnings:
         """Health of every attached learning: `ok` | `moved` | `orphan`. `moved` = the
         fqn still resolves but the symbol's file drifted from the snapshot; `orphan` =
         the fqn no longer resolves. Report-only — drives cleanup (rehome / forget)."""
-        from .codeindex import LEARNINGS_DIR, SymbolIndex
-        ldir = self.notestore.notes_root(proj) / LEARNINGS_DIR
+        from .codeindex import SymbolIndex
+        ldir = self.store.root(proj)
         by_fq = {e["fqname"]: e
                  for e in SymbolIndex(self.paths.project_dir(proj)).all()}
         out: list[dict[str, Any]] = []
@@ -186,7 +189,7 @@ class Learnings:
                     continue
                 out.append({"symbol": fq, "status": status, "file": fm.get("file", ""),
                             "new_file": new_file, "signature": fm.get("signature", ""),
-                            "relpath": f"{LEARNINGS_DIR}/{p.name}"})
+                            "relpath": p.name})
         return out
 
     def candidates(self, fm: dict[str, Any], entries: list[dict[str, Any]],
@@ -223,7 +226,7 @@ class Learnings:
         symbol's slug, re-snapshot frontmatter, preserve the note id/history."""
         from .codeindex import SymbolIndex
         old_rel = self.rel_for_fqn(proj, old_fqn)
-        old_path = self.notestore.abspath(proj, old_rel)
+        old_path = self.store.abspath(proj, old_rel)
         if not old_path.exists():
             raise ValueError(f"no learning for {old_fqn!r} in project {proj!r}")
         entries = SymbolIndex(self.paths.project_dir(proj)).all()
@@ -243,7 +246,7 @@ class Learnings:
         # learning, and writing over it would destroy hand-written understanding
         # with no prompt (the ring keeps the bytes, but nothing would say so).
         # Refuse like `NoteStore.move` does and let the human merge or forget one.
-        if new_rel != old_rel and self.notestore.abspath(proj, new_rel).exists():
+        if new_rel != old_rel and self.store.abspath(proj, new_rel).exists():
             raise ValueError(
                 f"{new_entry['fqname']!r} already has a learning ({new_rel}) — "
                 f"read both and merge with learning_edit, or learning_forget one "
@@ -254,10 +257,10 @@ class Learnings:
             "lang": new_entry.get("lang", ""), "file": new_entry.get("file", ""),
             "signature": new_entry.get("signature", ""),
             "content_hash": new_entry.get("content_hash", ""), "rehomed_from": old_fqn})
-        res = await self.notestore.write(proj, new_rel, note)   # id preserved
+        res = await self.store.write(proj, new_rel, note)   # id preserved
         if new_rel != old_rel:
             old_path.unlink()
-            await self.notestore.reindex(proj, old_rel)     # drop the old note's chunks
+            await self.store.reindex(proj, old_rel)     # drop the old note's chunks
         return {"project": proj, "old": old_fqn, "new": new_entry["fqname"],
                 "relpath": new_rel, "indexed": res.upserted}
 
@@ -265,7 +268,7 @@ class Learnings:
         """Read a symbol's learning note (frontmatter + body), or found=False if unwritten."""
         entry = self.refs.resolve_symbol(proj, symbol)
         relpath = self.relpath(proj, entry)
-        path = self.notestore.abspath(proj, relpath)
+        path = self.store.abspath(proj, relpath)
         if not path.exists():
             return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
                     "path": str(path), "found": False, "body": None}

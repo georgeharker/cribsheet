@@ -41,10 +41,12 @@ class StoreSpec:
     reserved: tuple[str, ...] = ()
 
 
-# `reserved` on notes grows as each facet moves to its own pillar (design/plans
-# done; code-learnings/learnings follow in the Learnings cut-over) — until then
-# the notes store must keep serving that facet's legacy in-tree layout.
-NOTES_SPEC = StoreSpec("notes", "notes", reserved=("design/", "plans/"))
+# Every facet pillar's content is refused on the note verbs — including the
+# legacy `code-learnings/` spelling, whose files the migration moves to the
+# `learnings/` sibling.
+NOTES_SPEC = StoreSpec("notes", "notes",
+                       reserved=("design/", "plans/",
+                                 "learnings/", "code-learnings/"))
 DESIGN_SPEC = StoreSpec("design", "design", facet="design")
 PLANS_SPEC = StoreSpec("plans", "plans", facet="plan")
 LEARNINGS_SPEC = StoreSpec("learnings", "learnings", facet="learning")

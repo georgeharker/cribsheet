@@ -41,7 +41,7 @@ def test_append_creates_then_appends_dated_entries(crib):
     _seed_symbol(crib, "p")
     a = run(crib.learning_add("pkg.Mod.foo", "first insight", project="p"))
     # `pkg.Mod.foo` carries uppercase → slug gets a case-hash (macOS folds case)
-    assert a["created"] and a["relpath"].startswith("code-learnings/pkg.Mod.foo-")
+    assert a["created"] and a["relpath"].startswith("pkg.Mod.foo-")
     b = run(crib.learning_add("pkg.Mod.foo", "second insight", project="p"))
     assert not b["created"]                                   # same running note
     body = crib.learning_read("pkg.Mod.foo", project="p")["body"]
