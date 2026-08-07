@@ -148,6 +148,9 @@ class ProjectPaths:
     project_dir: Path                   # global `projects/<name>` (stub or full)
     notes_dir: Path
     versions_dir: Path
+    data_root: Path                     # dir holding the pillar stores (notes/,
+                                        # design/, plans/, learnings/): the global
+                                        # project dir, or the adopted store root
     store_root: Path | None = None      # the in-repo store dir, when adopted
     store_token: str | None = None      # its portable `$LOCATION/...` spelling
     available: bool = True              # False ⇒ store_root isn't on this machine
@@ -155,6 +158,12 @@ class ProjectPaths:
     @property
     def in_repo(self) -> bool:
         return self.store_root is not None
+
+    def pillar_dir(self, segment: str) -> Path:
+        """A pillar store's directory: `data_root/<segment>`. Every pillar —
+        notes included (`pillar_dir("notes") == notes_dir`) — is a sibling under
+        the data root, in both layouts."""
+        return self.data_root / segment
 
     @property
     def config_file(self) -> Path:
@@ -192,9 +201,11 @@ def resolve_project_paths(paths: Paths, cfg: "Config", project: str) -> ProjectP
     if not token:
         # Global layout: the ring is the SHARED `data_dir/.versions`, keyed by
         # note id across every project (DESIGN §8) — unchanged for global projects.
-        return ProjectPaths(name, pdir, pdir / "notes", paths.versions_dir)
+        return ProjectPaths(name, pdir, pdir / "notes", paths.versions_dir,
+                            data_root=pdir)
     root = expand_location(token, cfg.locations)
     return ProjectPaths(name, pdir, root / "notes", root / ".versions",
+                        data_root=root,
                         store_root=root, store_token=token,
                         available=root.is_dir())
 

@@ -98,6 +98,10 @@ def test_resolves_to_the_global_layout_by_default(paths, config):
     assert pp.notes_dir == paths.projects_dir / "p" / "notes"
     # global projects keep the SHARED ring, keyed by note id across projects
     assert pp.versions_dir == paths.versions_dir
+    # pillar stores are siblings under the project dir; notes is one of them
+    assert pp.data_root == paths.projects_dir / "p"
+    assert pp.pillar_dir("notes") == pp.notes_dir
+    assert pp.pillar_dir("design") == paths.projects_dir / "p" / "design"
 
 
 def test_resolves_to_the_store_when_the_stub_points_at_one(paths, config, tmp_path):
@@ -110,6 +114,10 @@ def test_resolves_to_the_store_when_the_stub_points_at_one(paths, config, tmp_pa
     assert pp.notes_dir == store / "notes"
     assert pp.versions_dir == store / ".versions"   # ring travels with the notes
     assert pp.project_dir == paths.project_dir("p")  # index tier does NOT move
+    # pillar stores travel with the data tier, siblings under the store root
+    assert pp.data_root == store
+    assert pp.pillar_dir("notes") == pp.notes_dir
+    assert pp.pillar_dir("plans") == store / "plans"
 
 
 def test_a_store_that_is_not_on_this_machine_is_unavailable(paths, config):
