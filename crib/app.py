@@ -34,7 +34,7 @@ from .designs import DESIGN_DIR, Designs
 from .indexer import IndexEngine, IndexResult
 from .learnings import Learnings
 from .notes import Note, NoteParseError
-from .notestore import NoteStore
+from .notestore import (DESIGN_SPEC, LEARNINGS_SPEC, NoteStore, PLANS_SPEC)
 from .paths import (Paths, ProjectPathResolver, ProjectPaths,
                     check_project_name, confine)
 from .sources import SRC_PREFIX, SourceRoots, src_relpath
@@ -147,11 +147,23 @@ class Crib:
         # `project_release` invalidate. The INDEX tiers never move (see
         # `Paths.project_dir`), so only notes + their ring resolve through here.
         self.project_paths = ProjectPathResolver(paths, config)
-        # Note-file store: path resolution + the write path (stash→save→index) over the
-        # shared backends (store/index/versions stay Crib attrs — retrieval, docs,
-        # import, generation all use them). Crib keeps delegators (below).
+        # Pillar stores: one parameterized note-file store implementation (path
+        # resolution + the write path: stash→save→index), instantiated per pillar
+        # over the SAME shared backends (vector store / IndexEngine / ring /
+        # resolver) — the pillars differ only by their StoreSpec. Crib keeps
+        # delegators for the notes pillar (below); the facet layers own theirs.
         self.notestore = NoteStore(paths, store, self.index, self.versions,
                                    self.project_paths)
+        self.designstore = NoteStore(paths, store, self.index, self.versions,
+                                     self.project_paths, DESIGN_SPEC)
+        self.planstore = NoteStore(paths, store, self.index, self.versions,
+                                   self.project_paths, PLANS_SPEC)
+        self.learningstore = NoteStore(paths, store, self.index, self.versions,
+                                       self.project_paths, LEARNINGS_SPEC)
+        # Routing table for relpath-first entry points (the watcher, migration).
+        self.pillars: dict[str, NoteStore] = {
+            "notes": self.notestore, "design": self.designstore,
+            "plans": self.planstore, "learnings": self.learningstore}
         self.memory_bindings = MemoryBindings(paths.data_dir / "memory-bindings.json")
         self._reranker: Any = None      # lazy cross-encoder, warm for the daemon
         self._watcher: Watcher | None = None
@@ -659,10 +671,46 @@ class Crib:
         visible, self-healing event instead of every other project silently
         returning nothing."""
         proj = self.resolve_project(project, cwd)
-        res = await self.notestore.reindex(proj, relpath)
-        if res.get("recreated"):
+        if relpath:
+            return await self.notestore.reindex(proj, relpath)
+        recreated = self._maybe_recreate_for_dim()
+        res = await self.notestore.reindex(proj)
+        # Fan out over the sibling pillars — same union sweep, each scoped to its
+        # own tree and its own chunks. Empty pillars are cheap no-ops.
+        for pillar in (self.designstore, self.planstore, self.learningstore):
+            r = await pillar.reindex(proj)
+            for k in ("files", "changed", "removed"):
+                res[k] += r[k]
+            res["skipped"] += r["skipped"]
+            if r.get("duplicate_ids"):
+                res["duplicate_ids"] = (res.get("duplicate_ids", [])
+                                        + r["duplicate_ids"])
+        if recreated:
+            res["recreated"] = True
             self._recover_from_wipe("embedder profile change")
         return res
+
+    def _maybe_recreate_for_dim(self) -> bool:
+        """A full reindex is the one safe place to switch embedder: if the stored
+        vectors' dim differs from the current embedder (a profile flip to a bigger
+        model), recreate the collection so all chunks re-embed at the new dim.
+        Chroma is shared across projects AND pillars, so this wipes EVERY
+        project's chunks (and in-situ `sources/…` docs, which the notes sweep
+        doesn't walk) — hoisted out of the per-pillar store so the check runs once
+        per full reindex, not once per pillar."""
+        cur = self.store.current_dim()
+        if cur is None or cur == self.embedder.dim:
+            return False
+        print(f"crib: embedder dim {cur}→{self.embedder.dim}; recreating "
+              f"the vector collection (full re-embed)", file=sys.stderr)
+        self.store.recreate()
+        # The derived retrieval caches (BM25 corpus + summary alias vectors) are
+        # built from the store and keyed per project — a wipe invalidates ALL of
+        # them at once, not just one project's. Without this a warm daemon kept
+        # serving BM25 hits for chunks that no longer exist (and whose ids the
+        # dense side can't score).
+        self.index.invalidate_all_caches()
+        return True
 
     def _recover_from_wipe(self, reason: str) -> None:
         """The vector store was recreated: mark EVERY project as awaiting a re-embed

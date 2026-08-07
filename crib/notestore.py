@@ -11,6 +11,7 @@ note callers are unchanged. Read/delete/move/versions migrate here in later step
 from __future__ import annotations
 
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -27,14 +28,38 @@ if TYPE_CHECKING:
     from .versions import VersionRing
 
 
+@dataclass(frozen=True)
+class StoreSpec:
+    """What distinguishes one pillar store from another — everything else is the
+    shared `NoteStore` implementation. `name` is the index scope tag every chunk
+    carries; `segment` the sibling dir under the project's data root; `facet`
+    names the verbs a refusal error should point at; `reserved` the relpath
+    prefixes this store refuses because another pillar owns that content."""
+    name: str
+    segment: str
+    facet: str | None = None
+    reserved: tuple[str, ...] = ()
+
+
+# `reserved` on notes grows as each facet moves to its own pillar (design/plans
+# in the Designs cut-over, code-learnings/learnings in the Learnings one) — until
+# then the notes store must keep serving the legacy in-tree layout.
+NOTES_SPEC = StoreSpec("notes", "notes")
+DESIGN_SPEC = StoreSpec("design", "design", facet="design")
+PLANS_SPEC = StoreSpec("plans", "plans", facet="plan")
+LEARNINGS_SPEC = StoreSpec("learnings", "learnings", facet="learning")
+
+
 class NoteStore:
     def __init__(self, paths: Paths, store: Store, index: IndexEngine,
                  versions: VersionRing,
-                 project_paths: ProjectPathResolver) -> None:
+                 project_paths: ProjectPathResolver,
+                 spec: StoreSpec = NOTES_SPEC) -> None:
         self.paths = paths
         self.store = store
         self.index = index
         self.versions = versions
+        self.spec = spec
         # Where THIS project's data tier lives — global, or an adopted in-repo
         # store (docs/plans/repo-local-storage). Every note path and every ring
         # lookup below goes through it; nothing here derives a path from `paths`
@@ -48,8 +73,8 @@ class NoteStore:
         token and the fix) instead of half-working."""
         return self.project_paths(project).require()
 
-    def notes_root(self, project: str) -> Path:
-        """The project's notes dir as a PATH — resolved, never created.
+    def root(self, project: str) -> Path:
+        """The project's dir for THIS pillar as a PATH — resolved, never created.
 
         The read side of the split: a lookup naming a project that doesn't exist
         (a typo, a stale session pointer) must not CREATE it. `dir()` below is the
@@ -57,12 +82,17 @@ class NoteStore:
         `locate`, `version_content` and the learnings audit — mkdir'd on the way
         through, so one mistyped `project=` planted a permanent phantom namespace
         in `project_list`."""
-        return self.resolved(project).notes_dir
+        return self.resolved(project).pillar_dir(self.spec.segment)
+
+    def notes_root(self, project: str) -> Path:
+        """Alias for `root` — the pre-split name, kept for the many callers that
+        grew up when notes was the only pillar."""
+        return self.root(project)
 
     def dir(self, project: str) -> Path:
-        """The project's notes dir, CREATED — the WRITE-side resolver (see
-        `notes_root`). Call this only where a file is about to be written."""
-        d = self.notes_root(project)
+        """The project's pillar dir, CREATED — the WRITE-side resolver (see
+        `root`). Call this only where a file is about to be written."""
+        d = self.root(project)
         d.mkdir(parents=True, exist_ok=True)
         return d
 
@@ -90,28 +120,47 @@ class NoteStore:
                            / "doc-sources.json")
 
     def abspath(self, project: str, relpath: str) -> Path:
-        """On-disk file for a note. Source-anchored docs (`sources/<repo>/…`) resolve
-        to the repo file via the registry; everything else lives under the notes tree.
+        """On-disk file for a note. In the notes pillar, source-anchored docs
+        (`sources/<repo>/…`) resolve to the repo file via the registry; everything
+        else lives under this pillar's tree.
 
         Every relpath here is a tool argument, so it is screened before either join:
         an absolute one would replace the base outright, `..` would walk out of the
         tree (or out of the source repo).
 
-        Pure resolution — it does NOT create the notes dir (see `notes_root`);
+        Pure resolution — it does NOT create the pillar dir (see `root`);
         writers get the directory from `save_atomic`/`dir()`."""
-        check_relpath(relpath, self.notes_root(project))
-        if relpath.startswith(SRC_PREFIX):
+        check_relpath(relpath, self.root(project))
+        self._refuse_reserved(relpath)
+        if self.spec.name == "notes" and relpath.startswith(SRC_PREFIX):
             src = self.source_roots(project).resolve(relpath)
             if src is not None:
                 return src
-        return confine(self.notes_root(project), relpath)
+        return confine(self.root(project), relpath)
+
+    def _refuse_reserved(self, relpath: str) -> None:
+        """A relpath another pillar owns is refused on READS as well as writes —
+        after the split those files simply aren't in this tree, so resolving the
+        path would at best 404 and at worst recreate a legacy subtree. The error
+        names the facet verbs that are the way in, and the fact that direct file
+        edits still work (the watcher reindexes them)."""
+        hit = next((p for p in self.spec.reserved if relpath.startswith(p)), None)
+        if hit is not None:
+            facet = {"design/": "design", "plans/": "plan",
+                     "code-learnings/": "learning", "learnings/": "learning"} \
+                .get(hit, hit.rstrip("/"))
+            raise ValueError(
+                f"{relpath}: `{hit}` content lives in its own store, not under "
+                f"notes — use the {facet}_* verbs (e.g. {facet}_read "
+                f"{relpath[len(hit):]}), or edit the file in the `{hit.rstrip('/')}`"
+                f" sibling dir directly; the watcher reindexes on save")
 
     def _refuse_source(self, relpath: str, verb: str) -> None:
         """Source-anchored docs are indexed IN PLACE — their bytes belong to the
         repo, not to crib. Without this the note write verbs would stamp crib
         frontmatter into someone's README (`edit`) or delete it from their
         checkout (`forget`)."""
-        if relpath.startswith(SRC_PREFIX):
+        if self.spec.name == "notes" and relpath.startswith(SRC_PREFIX):
             raise ValueError(
                 f"cannot {verb} {relpath}: source files are indexed in place and "
                 "owned by their repo — edit them in the checkout (`note_locate` "
@@ -161,7 +210,8 @@ class NoteStore:
             self._stash_existing(project, relpath, path, note.id)
         note.path = path
         notes.save_atomic(note)
-        return await self.index.index_file(project, self.dir(project), relpath)
+        return await self.index.index_file(project, self.dir(project), relpath,
+                                           store=self.spec.name)
 
     def read(self, project: str, relpath: str) -> str:
         return self.abspath(project, relpath).read_text()
@@ -176,7 +226,8 @@ class NoteStore:
         if path.exists():
             note_id = self._stash_existing(project, relpath, path)
             path.unlink()
-        res = await self.index.index_file(project, self.dir(project), relpath)
+        res = await self.index.index_file(project, self.dir(project), relpath,
+                                          store=self.spec.name)
         return {"project": project, "relpath": relpath, "removed": res.deleted,
                 "recoverable_id": note_id}
 
@@ -209,9 +260,11 @@ class NoteStore:
         note = notes.load(src)              # carries the id in frontmatter
         dst = Note(path=dst_path, frontmatter=note.frontmatter, body=note.body)
         notes.save_atomic(dst)
-        await self.index.index_file(dst_proj, self.dir(dst_proj), dst_relpath)
+        await self.index.index_file(dst_proj, self.dir(dst_proj), dst_relpath,
+                                    store=self.spec.name)
         src.unlink()                        # drop source + its chunks
-        await self.index.index_file(project, self.dir(project), relpath)
+        await self.index.index_file(project, self.dir(project), relpath,
+                                    store=self.spec.name)
         return {"from": {"project": project, "relpath": relpath},
                 "to": {"project": dst_proj, "relpath": dst_relpath},
                 "id": note.id, "created": created}
@@ -221,36 +274,21 @@ class NoteStore:
         the UNION of on-disk notes and indexed paths — catches offline edits AND drops
         orphaned chunks). All idempotent via the hash gate."""
         nd = self.dir(project)
-        recreated = False
         if relpath:
             targets = [relpath]
         else:
-            # Full reindex is the one safe place to switch embedder: if the stored
-            # vectors' dim differs from the current embedder (a profile flip to a
-            # bigger model), recreate the collection so all chunks re-embed at the new
-            # dim. Chroma is shared across projects, so this wipes EVERY project's
-            # chunks (and this project's in-situ `sources/…` docs, which the sweep
-            # below doesn't walk) — reported as `recreated` so the caller can drive
-            # the full recovery re-embed (Crib.reindex → reconcile_in_background).
-            cur = self.store.current_dim()
-            if cur is not None and cur != self.index.embedder.dim:
-                print(f"crib: embedder dim {cur}→{self.index.embedder.dim}; recreating "
-                      f"the vector collection (full re-embed)", file=sys.stderr)
-                self.store.recreate()
-                # The derived retrieval caches (BM25 corpus + summary alias
-                # vectors) are built from the store and keyed per project — a wipe
-                # invalidates ALL of them at once, not just this project's.
-                # Without this a warm daemon kept serving BM25 hits for chunks
-                # that no longer exist (and whose ids the dense side can't score).
-                self.index.invalidate_all_caches()
-                recreated = True
             disk = {str(p.relative_to(nd)) for p in nd.rglob("*.md")}
-            # Source-anchored docs (`sources/<repo>/…`) live in the REPO, not the notes
-            # tree — the on-disk sweep must NOT treat them as deleted (owned by
-            # index_docs_insitu + the code watcher).
+            # The indexed side is scoped to THIS pillar (absence rule: a chunk
+            # indexed before the split has no `store` key and counts as notes) —
+            # without the scope, the notes sweep would see every facet chunk as
+            # "indexed but gone from disk" and drop it. Source-anchored docs
+            # (`sources/<repo>/…`) live in the REPO, not the notes tree — the
+            # sweep must NOT treat them as deleted (owned by index_docs_insitu +
+            # the code watcher).
             indexed = {m.get("relpath")
                        for m in self.store.get_meta({"project": project}).values()
-                       if not (m.get("relpath") or "").startswith(SRC_PREFIX)}
+                       if ((m.get("store") or "notes") == self.spec.name
+                           and not (m.get("relpath") or "").startswith(SRC_PREFIX))}
             targets = sorted(disk | {r for r in indexed if r})
         changed = removed = 0
         skipped: list[dict[str, str]] = []
@@ -261,7 +299,8 @@ class NoteStore:
             # sweep — the startup reconcile covers every note in the project.
             # Skip it, name it in the result, keep going.
             try:
-                res = await self.index.index_file(project, nd, rp)
+                res = await self.index.index_file(project, nd, rp,
+                                                  store=self.spec.name)
             except (NoteParseError, UnicodeDecodeError, OSError) as e:
                 skipped.append({"relpath": rp, "error": str(e)})
                 continue
@@ -286,8 +325,6 @@ class NoteStore:
                   f"interrupted move? " + "; ".join(
                       f"{d['id']}: {', '.join(d['relpaths'])}" for d in dupes),
                   file=sys.stderr)
-        if recreated:
-            out["recreated"] = True     # the whole store was wiped — see above
         return out
 
     def _ring_id(self, project: str, relpath: str) -> str | None:
