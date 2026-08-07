@@ -567,8 +567,12 @@ class Crib:
             i += 1
         return f"{slug}-{i}.md"
 
-    def _similar(self, proj: str, content: str, exclude: str) -> list[dict[str, Any]]:
-        """Near-duplicate hints for a just-stored note (excludes the note itself).
+    def _similar(self, proj: str, content: str, exclude: str,
+                 store: str = "notes") -> list[dict[str, Any]]:
+        """Near-duplicate hints for a just-stored note (excludes the note itself),
+        probing the SAME pillar it was stored into — a near-duplicate note is
+        redundancy, a near-duplicate decision forks the graph, and each is a
+        same-pillar question.
 
         Blocking (a query embed + a retrieval pass) — callers on the event loop
         must `to_thread` it."""
@@ -576,7 +580,7 @@ class Crib:
         if not probe:
             return []
         try:
-            hits = self.lookup(probe, project=proj, k=4)
+            hits = self.lookup(probe, project=proj, k=4, store=store)
         except Exception:  # noqa: BLE001 — a nudge must never fail the store
             return []
         return [{"relpath": h.relpath, "heading": h.heading, "score": h.score}
@@ -931,7 +935,8 @@ class Crib:
                   keyword_labels: tuple[str, ...] = (),
                   keyword_weight: float = 1.0,
                   summary_labels: tuple[str, ...] = (),
-                  summary_weight: float = 1.0) -> list[Hit]:
+                  summary_weight: float = 1.0, *,
+                  store: str = "notes") -> list[Hit]:
         """Candidate Hits in DENSE-DOMINANT SCORE order: raw cosine (dense, already
         calibrated) + min-max'd keyword_index BM25, over the union candidate pool. Only
         the uncalibrated sparse side is normalized; dense cosine stays RAW so a confident
@@ -947,15 +952,24 @@ class Crib:
         from .retrieve import tokenize
         kw_blend = 0.5                          # fusion weight of the keyword_index term
 
-        where = {"project": proj}
+        # Retrieval is scoped to ONE pillar store. The where-clause needs every
+        # chunk re-stamped with its `store` key (the v3 sweep); until the marker
+        # says that happened, query project-wide and apply the absence rule in
+        # Python so retrieval never goes dark between upgrade and sweep.
+        stamped = self.stored_chunk_schema() >= CHUNK_SCHEMA_VERSION
+        where = {"project": proj, "store": store} if stamped \
+            else {"project": proj}
         dense = self.store.query(vec, k=topn, where=where)
+        if not stamped:
+            dense = [h for h in dense
+                     if ((h.metadata or {}).get("store") or "notes") == store]
         cos: dict[str, float] = {h.id: h.score for h in dense}   # raw cosine per candidate
         dense_by = {h.id: h for h in dense}
         docs: dict = {}
         kw: dict[str, float] = {}
         if hybrid:
             ids, docs, bm25 = self.index.lexical.get(
-                proj, keyword_labels, keyword_weight)
+                proj, keyword_labels, keyword_weight, store=store)
             if ids:
                 qt = tokenize(query)
                 sparse = bm25.scores(qt)
@@ -969,7 +983,7 @@ class Crib:
         summ_hit = False
         if summary_labels:
             for cid, ac in self.index.summaries.best_cosines(
-                    proj, summary_labels, vec).items():
+                    proj, summary_labels, vec, store=store).items():
                 ac *= summary_weight            # alias-trust scale (1.0 = full dense)
                 if ac > cos.get(cid, -1.0):
                     cos[cid] = ac               # max over the section's vectors
@@ -982,7 +996,8 @@ class Crib:
             if not docs:                        # need doc text to back-fill cosines
                 docs = {i: (d, m) for i, (d, m)
                         in self.store.get_docs(where).items()
-                        if not (m or {}).get("alias")}
+                        if not (m or {}).get("alias")
+                        and ((m or {}).get("store") or "notes") == store}
             missing = [cid for cid in pool if cid not in cos and cid in docs]
             if missing:
                 for cid, dv in zip(missing, embed_batch(
@@ -1023,8 +1038,8 @@ class Crib:
                keyword_labels: list[str] | None = None,
                keyword_weight: float | None = None,
                summary_labels: list[str] | None = None,
-               summary_weight: float | None = None
-               ) -> list[LookupHit]:
+               summary_weight: float | None = None, *,
+               store: str = "notes") -> list[LookupHit]:
         """Ranked sections matching `query`.
 
         `dedupe` collapses duplicates: "section" (default) keeps one hit per
@@ -1059,7 +1074,8 @@ class Crib:
         # Hybrid pulls a wider candidate pool so BM25 can promote terms dense ranked low.
         topn = max(k * 3, 30) if use_hybrid else (k if dedupe == "none" else k * 3)
         raw = self._retrieve(proj, query, vec, topn, use_hybrid, use_rerank,
-                             kw_labels, kw_weight, sum_labels, sum_weight)
+                             kw_labels, kw_weight, sum_labels, sum_weight,
+                             store=store)
         # a store wipe this project hasn't been re-swept after: what comes back is
         # incomplete, so every hit says so rather than thin results reading as "all
         # there is" (cleared per project by the recovery sweep)
@@ -1889,7 +1905,7 @@ class Crib:
         out = await self.designs.design_add(proj, title, content, deps, sources,
                                             proposed)
         similar = await asyncio.to_thread(self._similar, proj, content,
-                                          out["relpath"])
+                                          out["relpath"], "design")
         return {**out, "similar": similar}
 
     def design_read(self, ref: str, project: str | None = None,
@@ -1923,11 +1939,12 @@ class Crib:
         """Retrieval scoped to the DESIGN facet, each hit annotated with the facet
         state that decides whether to trust it (`status`, `tainted`, edge counts).
 
-        The type-as-tag plumbing underneath (`tags=["design"]`) stays; it stops
-        being the interface."""
+        Scoped by the pillar store, not a post-filter: the whole candidate pool
+        is decisions, so a busy notes corpus can never crowd them out."""
         return self.designs.annotate_hits(
             self.resolve_project(project, cwd),
-            [vars(h) for h in self.lookup(query, project, k, ["design"], cwd=cwd)],
+            [vars(h) for h in self.lookup(query, project, k, cwd=cwd,
+                                          store="design")],
             kind="design")
 
     def plan_lookup(self, query: str, project: str | None = None, k: int = 8,
@@ -1936,7 +1953,8 @@ class Crib:
         annotates its own."""
         return self.designs.annotate_hits(
             self.resolve_project(project, cwd),
-            [vars(h) for h in self.lookup(query, project, k, ["plan"], cwd=cwd)],
+            [vars(h) for h in self.lookup(query, project, k, cwd=cwd,
+                                          store="plans")],
             kind="plan")
 
     async def design_dep_add(self, ref: str, dep_ref: str, project: str | None = None,

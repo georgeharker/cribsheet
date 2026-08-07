@@ -396,14 +396,15 @@ def test_a_stale_decision_says_so_on_every_retrieval_hit(crib):
     run(crib.design_add("Ground", "chroma holds the vectors", project="p"))
     run(crib.design_add("Built on it", "chroma holds the vectors, so we cache",
                         deps=["Ground"], project="p"))
-    assert not any(h.tainted for h in crib.lookup("chroma vectors", project="p"))
+    clean = crib.lookup("chroma vectors", project="p", store="design")
+    assert clean and not any(h.tainted for h in clean)
 
     run(crib.design_edit("Ground", "postgres holds the vectors now", project="p"))
-    hits = {h.relpath: h.tainted for h in crib.lookup("chroma vectors", project="p")}
+    hits = {h.relpath: h.tainted
+            for h in crib.lookup("chroma vectors", project="p", store="design")}
     assert hits["built-on-it.md"] is True            # its ground moved
     assert hits["ground.md"] is False                # it IS the ground
-    # …and the same flag rides `apropos` and the facet-scoped lookup
-    assert any(h["tainted"] for h in crib.apropos("chroma vectors", project="p"))
+    # …and the same flag rides the facet-scoped lookup verb
     assert any(h["tainted"] for h in crib.design_lookup("chroma vectors",
                                                         project="p"))
 
@@ -565,15 +566,24 @@ def test_a_single_item_add_keeps_its_shape(crib):
 
 # ── the backend is the shared store impl, in a sibling pillar ─────────────────
 
-def test_type_reaches_chunk_metadata_so_lookup_can_filter(crib):
+def test_store_reaches_chunk_metadata_and_scopes_retrieval(crib):
+    """No cross-pollution in either direction: identical text stored as a note
+    and as a decision, and each pillar's lookup sees only its own."""
     run(crib.design_add("Vector store", "chroma holds the vectors", project="p"))
     run(crib.store_note("chroma holds the vectors", title="Plain", project="p"))
     metas = crib.store.get_meta({"project": "p"}).values()
     assert {m.get("type") for m in metas} == {"design", ""}
     assert {m.get("store") for m in metas} == {"design", "notes"}
-    hits = crib.lookup("chroma vectors", project="p", tags=["design"])
-    assert [h.relpath for h in hits] == ["vector-store.md"]
-    assert hits[0].store == "design"
+
+    note_hits = crib.lookup("chroma vectors", project="p", k=1)
+    assert [h.store for h in note_hits] == ["notes"]     # even at k=1: no design
+    assert all(h.relpath == "plain.md" for h in note_hits)
+    design_hits = crib.lookup("chroma vectors", project="p", k=1, store="design")
+    assert [(h.store, h.relpath) for h in design_hits] == [("design",
+                                                            "vector-store.md")]
+    # apropos rides lookup, so it inherits the exclusion
+    assert all(h["store"] == "notes"
+               for h in crib.apropos("chroma vectors", project="p"))
 
 
 def test_note_verbs_refuse_facet_store_paths(crib):

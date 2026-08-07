@@ -93,6 +93,24 @@ def test_facet_sweep_drops_only_its_own_orphans(crib):
     assert stores == {"plans"}     # design orphan gone; same-relpath plan intact
 
 
+def test_retrieval_scoping_holds_before_and_after_the_schema_marker(crib):
+    # Before the v3 sweep marker lands, _retrieve queries project-wide and
+    # applies the absence rule in Python; after it, the where-clause itself is
+    # store-scoped. Same answers either way — this pins both paths.
+    run(crib.store_note("chroma holds the vectors", title="Plain", project="p"))
+    ds = crib.designstore
+    run(ds.write("p", "vec.md",
+                 _note(ds.abspath("p", "vec.md"),
+                       "# Vec\nchroma holds the vectors\n")))
+    for stamped in (False, True):
+        if stamped:
+            crib._record_chunk_schema()
+        note_hits = crib.lookup("chroma vectors", project="p")
+        assert {h.store for h in note_hits} == {"notes"}, f"stamped={stamped}"
+        design_hits = crib.lookup("chroma vectors", project="p", store="design")
+        assert {h.store for h in design_hits} == {"design"}, f"stamped={stamped}"
+
+
 def test_crib_reindex_fans_out_over_the_pillars(crib):
     run(crib.store_note("plain note body", title="n", project="p"))
     ds = crib.designstore
