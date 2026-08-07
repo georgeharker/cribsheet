@@ -301,6 +301,7 @@ def _emit_status(d: Any, as_json: bool) -> None:
             stale = (f"  ⚠︎ {p['design_tainted']} stale decision(s)"
                      if p.get("design_tainted") else "")
             print(f"  {p['project']:{w}}  notes {p['notes']:4}  "
+                  f"designs {p.get('designs', 0):3}  plans {p.get('plans', 0):3}  "
                   f"docs {p['doc_chunks']:4}  symbols {p['symbols']:5}  "
                   f"learnings {p['learnings']:3}{stale}")
 

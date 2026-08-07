@@ -348,7 +348,7 @@ def test_watch_roots_skip_an_unavailable_store(crib, paths, capsys):
     ProjectConfig(name="gone", store_root="$REPOS/never-cloned/store").save(
         paths.project_dir("gone") / ".cribproject")
     crib.project_paths.invalidate()
-    assert crib._in_repo_notes_roots() == {}
+    assert crib._in_repo_store_roots() == {}
     assert "not watching gone" in capsys.readouterr().err
 
 

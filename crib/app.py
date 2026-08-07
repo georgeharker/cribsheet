@@ -248,7 +248,7 @@ class Crib:
         # effect on the next daemon start — the same accepted limitation as
         # memory bindings (DESIGN §13).
         self._watcher = Watcher(self.paths.projects_dir, self._on_fs_change, loop,
-                                self._in_repo_notes_roots())
+                                self._in_repo_store_roots())
         self._watcher.start()
         # Code watcher — reindexes source on edit (notes-watcher reloads notes,
         # code-watcher reindexes code). Seed it with every code-indexed project's root.
@@ -276,10 +276,12 @@ class Crib:
         self._spawn_bg(loop, self._describe_backlog())
         self._spawn_bg(loop, self._keyword_backlog())
 
-    def _in_repo_notes_roots(self) -> dict[str, Path]:
-        """`{project: notes dir}` for every project adopted into a repo whose store
-        is actually here — the extra watcher roots. An unavailable one is skipped
-        with one warning rather than left to fail per event."""
+    def _in_repo_store_roots(self) -> dict[str, Path]:
+        """`{project: data root}` for every project adopted into a repo whose
+        store is actually here — the extra watcher roots. The DATA ROOT, not the
+        notes dir, so edits in every pillar sibling (design/, plans/, learnings/)
+        are seen. An unavailable one is skipped with one warning rather than left
+        to fail per event."""
         roots: dict[str, Path] = {}
         for name in self.projects():
             pp = self.project_paths(name)
@@ -287,7 +289,7 @@ class Crib:
                 continue
             if self._skip_if_unavailable(pp, "not watching"):
                 continue
-            roots[name] = pp.notes_dir
+            roots[name] = pp.data_root
         return roots
 
     def _skip_if_unavailable(self, pp: ProjectPaths, what: str) -> bool:
@@ -312,8 +314,10 @@ class Crib:
         self._bg_tasks.add(t)
         t.add_done_callback(self._bg_tasks.discard)
 
-    async def _on_fs_change(self, project: str, relpath: str) -> None:
-        await self.index.index_file(project, self.notes_dir(project), relpath)
+    async def _on_fs_change(self, project: str, store: str, relpath: str) -> None:
+        pillar = self.pillars.get(store, self.notestore)
+        await self.index.index_file(project, pillar.dir(project), relpath,
+                                    store=pillar.spec.name)
 
     async def _on_code_change(
             self, project: str, changes: dict[str, tuple[str, bool]]) -> None:
@@ -1627,22 +1631,29 @@ class Crib:
             raise ValueError(
                 f"`store: {link.store}` is not a directory ({store} exists as a "
                 "file) — point it at a directory path, e.g. `store: .crib-store`")
-        dest_notes = store / "notes"
-        if any(dest_notes.rglob("*.md")) if dest_notes.is_dir() else False:
-            raise ValueError(
-                f"{dest_notes} already holds notes — refusing to merge two note "
-                "trees. Move them aside (or pick a different `store:`) and re-run")
-        src_notes = pp.notes_dir
-        ring_ids = self._note_ring_ids(proj, src_notes) if src_notes.is_dir() else []
+        from .watch import PILLAR_SEGMENTS
+        for seg in PILLAR_SEGMENTS:
+            dest = store / seg
+            if any(dest.rglob("*.md")) if dest.is_dir() else False:
+                raise ValueError(
+                    f"{dest} already holds notes — refusing to merge two note "
+                    "trees. Move them aside (or pick a different `store:`) and "
+                    "re-run")
+        ring_ids = [nid for seg in PILLAR_SEGMENTS
+                    if (src := pp.pillar_dir(seg)).is_dir()
+                    for nid in self._note_ring_ids(proj, src)]
         store.mkdir(parents=True, exist_ok=True)
-        notes_moved = self._move_tree(src_notes, dest_notes)
+        notes_moved = 0
+        for seg in PILLAR_SEGMENTS:         # every pillar sibling travels together
+            src = pp.pillar_dir(seg)
+            notes_moved += self._move_tree(src, store / seg)
+            with contextlib.suppress(OSError):
+                src.rmdir()                 # only if the move emptied it
         versions_moved = self._move_ring(ring_ids, self.paths.versions_dir,
                                          store / ".versions")
         # The ring is DERIVED history, not authored notes: the repo carries the
         # notes, crib carries their undo stack.
         (store / ".gitignore").write_text(self._STORE_GITIGNORE)
-        with contextlib.suppress(OSError):
-            src_notes.rmdir()               # only if the move emptied it
         # Now that the notes are in the repo, the repo's own globs can see them —
         # they don't (the store is excluded everywhere), but say so at the moment
         # it became true rather than leaving it to be discovered.
@@ -1671,20 +1682,27 @@ class Crib:
         pp.require()            # can't move notes that aren't on this machine
         store = pp.store_root
         assert store is not None                        # in_repo ⇒ store_root set
-        dest_notes = self.paths.notes_dir(proj)
-        if any(dest_notes.rglob("*.md")) if dest_notes.is_dir() else False:
-            raise ValueError(
-                f"{dest_notes} already holds notes — refusing to merge two note "
-                "trees. Move them aside and re-run")
-        ring_ids = (self._note_ring_ids(proj, pp.notes_dir)
-                    if pp.notes_dir.is_dir() else [])
-        notes_moved = self._move_tree(pp.notes_dir, dest_notes)
+        from .watch import PILLAR_SEGMENTS
+        gdir = self.paths.project_dir(proj)
+        for seg in PILLAR_SEGMENTS:
+            dest = gdir / seg
+            if any(dest.rglob("*.md")) if dest.is_dir() else False:
+                raise ValueError(
+                    f"{dest} already holds notes — refusing to merge two note "
+                    "trees. Move them aside and re-run")
+        ring_ids = [nid for seg in PILLAR_SEGMENTS
+                    if (src := pp.pillar_dir(seg)).is_dir()
+                    for nid in self._note_ring_ids(proj, src)]
+        notes_moved = 0
+        for seg in PILLAR_SEGMENTS:
+            notes_moved += self._move_tree(pp.pillar_dir(seg), gdir / seg)
         versions_moved = self._move_ring(ring_ids, pp.versions_dir,
                                          self.paths.versions_dir)
         gi = store / ".gitignore"
         if gi.is_file() and gi.read_text() == self._STORE_GITIGNORE:
             gi.unlink()                     # ours, and now describing nothing
-        for d in (pp.notes_dir, pp.versions_dir, store):
+        for d in (*(pp.pillar_dir(seg) for seg in PILLAR_SEGMENTS),
+                  pp.versions_dir, store):
             with contextlib.suppress(OSError):
                 d.rmdir()                   # each only if the move emptied it
         pcfg = ProjectConfig.load(pp.config_file, proj)
@@ -1746,9 +1764,13 @@ class Crib:
             sd = pp.project_dir / "symbol_index"
             doc_chunks = sum(1 for m in self.store.get_meta({"project": name}).values()
                              if m.get("relpath", "").startswith(SRC_PREFIX))
+            dd = pp.pillar_dir("design")
+            pd = pp.pillar_dir("plans")
             row = {
                 "project": name,
                 "notes": sum(1 for _ in nd.rglob("*.md")) if nd.exists() else 0,
+                "designs": sum(1 for _ in dd.glob("*.md")) if dd.exists() else 0,
+                "plans": sum(1 for _ in pd.glob("*.md")) if pd.exists() else 0,
                 "learnings": sum(1 for _ in ld.glob("*.md")) if ld.exists() else 0,
                 "symbols": sum(1 for _ in sd.glob("*.toml")) if sd.exists() else 0,
                 "doc_chunks": doc_chunks,

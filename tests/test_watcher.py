@@ -21,11 +21,45 @@ def test_decode_path_to_project_relpath(tmp_path):
     p = projects / "notes" / "notes" / "sub" / "a.md"
     p.parent.mkdir(parents=True)
     p.write_text("x")
-    assert decode(projects, str(p)) == ("notes", "sub/a.md")
-    # not under <project>/notes/ -> ignored
+    assert decode(projects, str(p)) == ("notes", "notes", "sub/a.md")
+    # not under a pillar dir -> ignored
     other = projects / "notes" / ".cribproject"
     other.write_text("name: notes")
     assert decode(projects, str(other)) is None
+
+
+def test_decode_covers_every_pillar_sibling(tmp_path):
+    projects = tmp_path / "projects"
+    for seg, rel in (("design", "d.md"), ("plans", "p.md"), ("learnings", "l.md")):
+        f = projects / "proj" / seg / rel
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text("x")
+        assert decode(projects, str(f)) == ("proj", seg, rel), seg
+    # a legacy pre-migration path decodes through the notes branch, so
+    # stragglers pulled from an unmigrated machine keep indexing
+    legacy = projects / "proj" / "notes" / "design" / "old.md"
+    legacy.parent.mkdir(parents=True)
+    legacy.write_text("x")
+    assert decode(projects, str(legacy)) == ("proj", "notes", "design/old.md")
+    # a non-pillar top-level dir is not content
+    other = projects / "proj" / "symbol_index" / "x.md"
+    other.parent.mkdir(parents=True)
+    other.write_text("x")
+    assert decode(projects, str(other)) is None
+
+
+def test_decode_store_routes_by_data_root_and_pillar(tmp_path):
+    from crib.watch import decode_store
+    root = tmp_path / "repo" / ".crib-store"
+    for seg, rel in (("notes", "n.md"), ("design", "d.md")):
+        f = root / seg / rel
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text("x")
+        assert decode_store({"p": root}, str(f)) == ("p", seg, rel), seg
+    # store-root clutter (not under a pillar) is ignored
+    top = root / "stray.md"
+    top.write_text("x")
+    assert decode_store({"p": root}, str(top)) is None
 
 
 def test_code_watcher_decode_is_pure_path_work(tmp_path, monkeypatch):
@@ -140,6 +174,33 @@ def test_watcher_indexes_external_edit(tmp_path, monkeypatch):
     assert hits and hits[0].relpath == "external.md"
 
 
+def test_watcher_indexes_an_edit_in_a_pillar_sibling(tmp_path, monkeypatch):
+    """An external write into `projects/<p>/design/` lands in the DESIGN store —
+    the raw-edit half of the taint guarantee, post-split."""
+    monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "config"))
+    monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "data"))
+    monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
+    crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+
+    async def scenario():
+        crib.start_watchers(asyncio.get_running_loop())
+        dd = crib.designstore.dir("p")
+        (dd / "external.md").write_text(
+            "---\ntitle: ext\ntype: design\n---\nA quorum write is the rule.")
+        for _ in range(50):
+            await asyncio.sleep(0.1)
+            if crib.lookup("quorum write rule", project="p", store="design"):
+                break
+        crib.stop_watchers()
+        return (crib.lookup("quorum write rule", project="p", store="design"),
+                crib.lookup("quorum write rule", project="p"))
+
+    design_hits, note_hits = asyncio.run(scenario())
+    assert design_hits and design_hits[0].relpath == "external.md"
+    assert design_hits[0].store == "design"
+    assert not note_hits                    # never leaks into the notes pillar
+
+
 def test_dispatch_tasks_are_held_and_failures_logged(capsys):
     """asyncio holds tasks only weakly, so a dispatch nobody references can be
     GC'd mid-flight (a save's reindex silently lost) — and a dispatch that raises
@@ -149,13 +210,13 @@ def test_dispatch_tasks_are_held_and_failures_logged(capsys):
     async def scenario():
         started = asyncio.Event()
 
-        async def on_change(project, relpath):
+        async def on_change(project, store, relpath):
             started.set()
             await asyncio.sleep(0.02)
             raise RuntimeError("index blew up")
 
         w = Watcher(Path("/nowhere"), on_change, asyncio.get_running_loop())
-        w._fire(("p", "a.md"))
+        w._fire(("p", "notes", "a.md"))
         await started.wait()
         assert w._tasks                       # strong ref held while in flight
         await asyncio.sleep(0.1)
