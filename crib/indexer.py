@@ -73,8 +73,8 @@ class IndexEngine:
         self.summaries = SummaryVectorCache(store, embedder, summary_terms)
         self._locks: dict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
 
-    def _key(self, project: str, relpath: str) -> str:
-        return f"{project}\x00{relpath}"
+    def _key(self, project: str, store: str, relpath: str) -> str:
+        return f"{project}\x00{store}\x00{relpath}"
 
     def invalidate_caches(self, project: str) -> None:
         """Drop both derived retrieval caches for a project — BM25 corpus and
@@ -91,34 +91,49 @@ class IndexEngine:
         self.summaries.invalidate_all()
 
     async def index_file(self, project: str, notes_dir: Path, relpath: str,
-                         content_path: Path | None = None) -> IndexResult:
+                         content_path: Path | None = None, *,
+                         store: str = "notes") -> IndexResult:
         """Reindex one note. Idempotent + hash-gated under a per-path lock.
 
         `content_path` decouples where the bytes are READ from how the note is
         KEYED: source-anchored docs are read from the repo (`content_path`) but
-        keyed by their `sources/<repo>/…` relpath. Default reads `notes_dir/relpath`."""
-        async with self._locks[self._key(project, relpath)]:
-            return await self._index_locked(project, notes_dir, relpath, content_path)
+        keyed by their `sources/<repo>/…` relpath. Default reads `notes_dir/relpath`.
+        `store` is the pillar the note belongs to — it reaches chunk identity and
+        metadata, and scopes the per-path lock."""
+        async with self._locks[self._key(project, store, relpath)]:
+            return await self._index_locked(project, notes_dir, relpath,
+                                            content_path, store=store)
 
-    async def forget(self, project: str, relpath: str) -> int:
+    async def forget(self, project: str, relpath: str, *,
+                     store: str = "notes") -> int:
         """Drop a note's index entry (all its chunks) REGARDLESS of disk state, under
         the per-path lock — unlike `index_file`, which only deletes a note gone from
         disk. For pruning an in-situ doc that no longer matches the `.crib` `docs:`
         globs (the source file stays; crib never owned it). Returns chunks removed."""
-        async with self._locks[self._key(project, relpath)]:
+        async with self._locks[self._key(project, store, relpath)]:
             existing = await asyncio.to_thread(
-                self.store.get_meta, {"project": project, "relpath": relpath})
+                self._existing_meta, project, store, relpath)
             await asyncio.to_thread(self.store.delete, list(existing))
             if existing:
                 self.invalidate_caches(project)
             return len(existing)
 
+    def _existing_meta(self, project: str, store: str, relpath: str) -> dict:
+        """This note's indexed chunks — project + relpath narrowed to its pillar.
+        Store-relative relpaths repeat across pillars, so the relpath alone is
+        ambiguous; chunks indexed before the split lack the `store` key, hence
+        the absence rule rather than an equality where-clause."""
+        return {cid: m for cid, m in self.store.get_meta(
+                    {"project": project, "relpath": relpath}).items()
+                if ((m or {}).get("store") or "notes") == store}
+
     async def _index_locked(self, project: str, notes_dir: Path, relpath: str,
-                            content_path: Path | None = None) -> IndexResult:
+                            content_path: Path | None = None, *,
+                            store: str = "notes") -> IndexResult:
         """The locked body: read+diff, embed, write — each stage offloaded, the
         lock held across them (see the module docstring)."""
         plan = await asyncio.to_thread(
-            self._plan, project, notes_dir, relpath, content_path)
+            self._plan, project, notes_dir, relpath, content_path, store)
         if plan.result is not None:
             if plan.invalidate:
                 self.invalidate_caches(project)
@@ -146,14 +161,14 @@ class IndexEngine:
             self.store.set_meta(meta_updates)
 
     def _plan(self, project: str, notes_dir: Path, relpath: str,
-              content_path: Path | None = None) -> _Plan:
+              content_path: Path | None = None, store: str = "notes") -> _Plan:
         """Read the file, chunk it, diff against the index — all blocking, so this
         runs in a worker thread. Decides what (if anything) needs embedding."""
         path = content_path if content_path is not None else notes_dir / relpath
 
         # Deleted on disk -> drop all its chunks.
         if not path.exists():
-            existing = self.store.get_meta({"project": project, "relpath": relpath})
+            existing = self._existing_meta(project, store, relpath)
             self.store.delete(list(existing))
             return _Plan(
                 invalidate=bool(existing),
@@ -176,13 +191,13 @@ class IndexEngine:
         mtime = path.stat().st_mtime
 
         new_chunks = chunk_note(project, relpath, note_id, note.body,
-                                self.window_words, self.overlap)
+                                self.window_words, self.overlap, store=store)
         new_by_id = {c.chunk_id: c for c in new_chunks}
         source = note.frontmatter.get("source",
                                       "doc-insitu" if read_only else "manual")
         note_type = str(note.frontmatter.get("type") or "")   # design/plan facets
 
-        existing = self.store.get_meta({"project": project, "relpath": relpath})
+        existing = self._existing_meta(project, store, relpath)
         existing_hash = {i: m.get("content_hash") for i, m in existing.items()}
 
         # Hash gate: embed/upsert only chunks whose content changed.

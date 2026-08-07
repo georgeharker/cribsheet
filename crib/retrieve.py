@@ -284,8 +284,10 @@ class LexicalCache:
                                          list[str]] | None = None) -> None:
         self._store = store
         self._elab = keyword_terms
-        # (project, labels, weight) -> (ids, {id:(doc,meta)}, BM25)
-        self._entries: dict[tuple[str, tuple[str, ...], float],
+        # (project, store, labels, weight) -> (ids, {id:(doc,meta)}, BM25) — the
+        # pillar store is part of the key so each pillar ranks over its OWN
+        # corpus: facet text must not shape notes IDF/length norms, or vice versa.
+        self._entries: dict[tuple[str, str, tuple[str, ...], float],
                             tuple[list[str], dict, BM25]] = {}
         self._lock = threading.Lock()
         self._gen: dict[str, int] = {}
@@ -305,9 +307,10 @@ class LexicalCache:
             self._entries.clear()
 
     def get(self, project: str, labels: tuple[str, ...] = (),
-            weight: float = 1.0) -> tuple[list[str], dict, BM25]:
+            weight: float = 1.0, *,
+            store: str = "notes") -> tuple[list[str], dict, BM25]:
         labels = tuple(labels)
-        key = (project, labels, weight)
+        key = (project, store, labels, weight)
         with self._lock:
             entry = self._entries.get(key)
             gen = self._gen.get(project, 0)
@@ -315,7 +318,9 @@ class LexicalCache:
             return entry
         docs = {i: (d, m) for i, (d, m)
                 in self._store.get_docs({"project": project}).items()
-                if not (m or {}).get("alias")}   # dense-only summary aliases
+                if not (m or {}).get("alias")   # dense-only summary aliases
+                # pillar scope; pre-split chunks lack the key -> "notes"
+                and ((m or {}).get("store") or "notes") == store}
         ids = list(docs)
         corpus: list[dict[str, float]] = []
         for i in ids:
@@ -357,8 +362,9 @@ class SummaryVectorCache:
         self._store = store
         self._embed = embedder
         self._sum = summary_terms
-        # (project, labels) -> (section_hash -> [chunk_id], [(section_hash, vec)])
-        self._entries: dict[tuple[str, tuple[str, ...]],
+        # (project, store, labels)
+        #   -> (section_hash -> [chunk_id], [(section_hash, vec)])
+        self._entries: dict[tuple[str, str, tuple[str, ...]],
                             tuple[dict[str, list[str]], list[tuple[str, list[float]]]]] = {}
         self._lock = threading.Lock()
         self._gen: dict[str, int] = {}
@@ -377,9 +383,10 @@ class SummaryVectorCache:
                 self._gen[project] = self._gen.get(project, 0) + 1
             self._entries.clear()
 
-    def get(self, project: str, labels: tuple[str, ...]
+    def get(self, project: str, labels: tuple[str, ...], *,
+            store: str = "notes"
             ) -> tuple[dict[str, list[str]], list[tuple[str, list[float]]]]:
-        key = (project, tuple(labels))
+        key = (project, store, tuple(labels))
         with self._lock:
             entry = self._entries.get(key)
             gen = self._gen.get(project, 0)
@@ -389,6 +396,9 @@ class SummaryVectorCache:
         docs = self._store.get_docs({"project": project})
         for cid, (_doc, meta) in docs.items():
             if (meta or {}).get("alias"):
+                continue
+            # pillar scope; pre-split chunks lack the key -> "notes"
+            if ((meta or {}).get("store") or "notes") != store:
                 continue
             sh = (meta or {}).get("section_hash") or (meta or {}).get("content_hash")
             if sh:
@@ -409,7 +419,8 @@ class SummaryVectorCache:
         return entry
 
     def best_cosines(self, project: str, labels: tuple[str, ...],
-                     query_vec: list[float]) -> dict[str, float]:
+                     query_vec: list[float], *,
+                     store: str = "notes") -> dict[str, float]:
         """MAX query↔alias cosine per section, keyed by a representative chunk id.
 
         The multi-vector semantics the index was built for: an alias embedding is
@@ -419,7 +430,7 @@ class SummaryVectorCache:
         reduced aliases to a rank bonus on top of the BODY cosine, which under
         dense-dominant score fusion could never express a strong alias match —
         measured to only hurt, at any weight)."""
-        reps, vecs = self.get(project, labels)
+        reps, vecs = self.get(project, labels, store=store)
         best: dict[str, float] = {}
         for sh, v in vecs:
             c = sum(a * b for a, b in zip(query_vec, v))

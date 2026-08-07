@@ -67,6 +67,36 @@ def test_first_occurrence_id_unchanged_from_the_bare_breadcrumb():
     assert section_key(["Solo"], 2) == "Solo#2"
 
 
+# --- pillar store axis (v3) ------------------------------------------------
+
+def test_notes_store_ids_are_unchanged_by_the_store_axis():
+    # The notes spelling stays UNQUALIFIED, so every pre-split id survives the
+    # v3 bump as a metadata-only re-stamp — no re-embed of the notes corpus.
+    body = "# Solo\nbody\n"
+    assert (chunk_note("p", "n.md", "id", body)[0].chunk_id
+            == chunk_note("p", "n.md", "id", body, store="notes")[0].chunk_id
+            == sha1_hex("p", "n.md", "Solo", "0"))
+
+
+def test_same_relpath_in_two_stores_never_collides():
+    # Store-relative relpaths repeat across pillars in the ONE shared
+    # collection; the `store:` qualifier keeps their identities disjoint.
+    body = "# Solo\nbody\n"
+    ids = {chunk_note("p", "n.md", "id", body, store=s)[0].chunk_id
+           for s in ("notes", "design", "plans", "learnings")}
+    assert len(ids) == 4
+    c = chunk_note("p", "n.md", "id", body, store="design")[0]
+    assert c.chunk_id == sha1_hex("p", "design:n.md", "Solo", "0")
+
+
+def test_store_reaches_metadata():
+    m = chunk_note("p", "n.md", "id", "# S\nb\n", store="plans")[0] \
+        .metadata("t", [], "note", 0.0)
+    assert m["store"] == "plans"
+    assert chunk_note("p", "n.md", "id", "# S\nb\n")[0] \
+        .metadata("t", [], "note", 0.0)["store"] == "notes"
+
+
 def test_ids_are_deterministic_across_runs():
     runs = [[c.chunk_id for c in chunk_note("p", "n.md", "id", DUPES)]
             for _ in range(3)]

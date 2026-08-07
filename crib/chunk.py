@@ -16,7 +16,10 @@ _HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
 # against this and reconciles (re-embeds under the new ids, deletes the stale
 # ones) when they differ. v2: duplicate heading paths within one note get a
 # `#<n>` occurrence disambiguator in the id (v1 collided, later section winning).
-CHUNK_SCHEMA_VERSION = 2
+# v3: chunks carry a `store` (pillar) axis; non-notes stores qualify the relpath
+# in the id (`design:foo.md`) so store-relative relpaths can never collide across
+# pillars in the one shared collection. Notes ids are unchanged.
+CHUNK_SCHEMA_VERSION = 3
 
 # Windowing is measured in whitespace words, but the cap is set so a window
 # stays under the embedding models' 512-*token* limit (bge et al.) — markdown
@@ -62,11 +65,19 @@ class Chunk:
     # 1-based count of sections before this one (inclusive) sharing its heading
     # path — see `section_key`. Set by `chunk_note`; 1 for a unique heading.
     occurrence: int = 1
+    # Which pillar store the note lives in ("notes" | "design" | "plans" |
+    # "learnings"). Non-notes stores key their store-relative relpaths with a
+    # `store:` qualifier in `chunk_id`, so `foo.md` in two pillars never
+    # collides; the notes spelling is unqualified so every pre-split id is
+    # unchanged.
+    store: str = "notes"
 
     @property
     def chunk_id(self) -> str:
+        keyed = (self.relpath if self.store == "notes"
+                 else f"{self.store}:{self.relpath}")
         return sha1_hex(
-            self.project, self.relpath,
+            self.project, keyed,
             section_key(self.heading_path, self.occurrence),
             str(self.window_idx),
         )
@@ -99,6 +110,11 @@ class Chunk:
         return {
             "project": self.project,
             "relpath": self.relpath,
+            # The pillar store axis retrieval scopes on — an equality
+            # where-clause per surface keeps facet chunks out of note search
+            # (and vice versa). Chunks indexed before the split lack the key;
+            # consumers apply the absence rule `(meta.get("store") or "notes")`.
+            "store": self.store,
             "note_id": self.note_id,
             "title": title or "",
             "tags": ",".join(tags),
@@ -218,7 +234,8 @@ def _window(text: str, window_words: int = WINDOW_WORDS,
 
 def chunk_note(project: str, relpath: str, note_id: str, body: str,
                window_words: int = WINDOW_WORDS,
-               overlap: int = WINDOW_OVERLAP) -> list[Chunk]:
+               overlap: int = WINDOW_OVERLAP, *,
+               store: str = "notes") -> list[Chunk]:
     """Per-heading sections, windowed if long; whole-body fallback otherwise."""
     sections = _split_sections(body)
     if not sections:
@@ -231,7 +248,8 @@ def chunk_note(project: str, relpath: str, note_id: str, body: str,
         # window-invariant.
         for i, win in enumerate(_window(text, window_words, overlap)):
             chunks.append(Chunk(project, relpath, note_id, heading_path, i, win,
-                                section_text=text, occurrence=occurrence))
+                                section_text=text, occurrence=occurrence,
+                                store=store))
     return chunks
 
 
