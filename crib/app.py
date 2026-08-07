@@ -685,6 +685,10 @@ class Crib:
         proj = self.resolve_project(project, cwd)
         if relpath:
             return await self.notestore.reindex(proj, relpath)
+        # Self-heal the legacy facet layout FIRST, so this very sweep drops the
+        # old-path chunks and embeds the moved files — also what absorbs
+        # old-layout files a not-yet-upgraded machine pushed into the sync repo.
+        mig = self._migrate_legacy_layout(proj)
         recreated = self._maybe_recreate_for_dim()
         res = await self.notestore.reindex(proj)
         # Fan out over the sibling pillars — same union sweep, each scoped to its
@@ -697,6 +701,8 @@ class Crib:
             if r.get("duplicate_ids"):
                 res["duplicate_ids"] = (res.get("duplicate_ids", [])
                                         + r["duplicate_ids"])
+        if mig["moved"] or mig["skipped"] or mig["refs_rewritten"]:
+            res["migrated"] = mig
         if recreated:
             res["recreated"] = True
             self._recover_from_wipe("embedder profile change")
@@ -1713,6 +1719,108 @@ class Crib:
         return {"project": proj, "changed": True, "store": str(store),
                 "notes_moved": notes_moved, "versions_moved": versions_moved,
                 "reconciled": rec}
+
+    # ── layout migration: facet subdirs → sibling pillar stores ────────────────
+    # Pre-split layouts kept facet notes INSIDE the notes tree (`notes/design/`,
+    # `notes/plans/`, `notes/code-learnings/`). The migration moves them to the
+    # sibling pillar dirs and requalifies facet-note citations. It is idempotent
+    # and runs automatically from every full reindex (the sweep IS the migration,
+    # like the chunk-schema story) — which is also what heals old-layout files a
+    # lagging, not-yet-upgraded machine pushes into the synced data repo.
+
+    # legacy subdir under notes/ → the pillar store that owns it now
+    _LEGACY_FACET_DIRS = {"design": "design", "plans": "plans",
+                          "code-learnings": "learnings"}
+
+    def _migrate_legacy_layout(self, proj: str) -> dict[str, Any]:
+        """Move facet notes out of the notes tree and requalify their citations.
+        Pure file ops (no indexing) — the caller's reindex sweep does the rest:
+        the notes sweep drops the old-path chunks, each pillar sweep embeds its
+        moved files. Cheap no-op when no legacy dir exists."""
+        pp = self.project_paths(proj)
+        moved: list[str] = []
+        skipped: list[dict[str, str]] = []
+        nd = pp.notes_dir
+        for legacy_sub, store_name in self._LEGACY_FACET_DIRS.items():
+            src_dir = nd / legacy_sub
+            if not src_dir.is_dir():
+                continue
+            dst_root = pp.pillar_dir(store_name)
+            for src in sorted(src_dir.rglob("*.md")):
+                rel = src.relative_to(src_dir)
+                dst = dst_root / rel
+                if dst.exists():
+                    # Never clobber: both layouts hold this name (a divergent
+                    # pull). A human picks the survivor; re-running finishes.
+                    skipped.append({"from": str(src), "to": str(dst)})
+                    continue
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                src.rename(dst)
+                moved.append(f"{store_name}/{rel}")
+            # prune emptied legacy dirs (deepest first; each only if empty)
+            for d in sorted(src_dir.rglob("*"), reverse=True):
+                if d.is_dir():
+                    with contextlib.suppress(OSError):
+                        d.rmdir()
+            with contextlib.suppress(OSError):
+                src_dir.rmdir()
+        rewritten = self._requalify_facet_refs(proj)
+        if moved or skipped or rewritten:
+            note = f"; {len(skipped)} collision(s) left in place" if skipped else ""
+            print(f"[crib] {proj}: migrated {len(moved)} facet note(s) to sibling "
+                  f"pillar stores, requalified {len(rewritten)} citation(s){note}",
+                  file=sys.stderr)
+        return {"moved": moved, "skipped": skipped, "refs_rewritten": rewritten}
+
+    def _requalify_facet_refs(self, proj: str) -> list[str]:
+        """Rewrite `sources[].ref` values that still use the pre-split spelling
+        (`design/x.md` → `design:x.md`) in every design/plan note. Frontmatter
+        only — bodies are NEVER touched, so no dependent gains taint — and the
+        prior bytes are ring-stashed first. Idempotent: a qualified ref is left
+        alone."""
+        out: list[str] = []
+        for pillar in (self.designstore, self.planstore):
+            root = pillar.root(proj)
+            if not root.is_dir():
+                continue
+            for path in sorted(root.glob("*.md")):
+                try:
+                    note = notes.load(path)
+                except Exception:  # noqa: BLE001 — a broken note is not this sweep's job
+                    continue
+                srcs = note.frontmatter.get("sources")
+                if not isinstance(srcs, list):
+                    continue
+                changed = False
+                for src in srcs:
+                    if not isinstance(src, dict):
+                        continue
+                    ref = str(src.get("ref") or "")
+                    for legacy_sub, store_name in self._LEGACY_FACET_DIRS.items():
+                        if ref.startswith(legacy_sub + "/"):
+                            src["ref"] = (f"{store_name}:"
+                                          f"{ref[len(legacy_sub) + 1:]}")
+                            changed = True
+                if changed:
+                    rel = path.name
+                    pillar._stash_existing(proj, rel, path, note.id)
+                    notes.save_atomic(note)
+                    out.append(f"{pillar.spec.name}/{rel}")
+        return out
+
+    async def project_migrate(self, project: str | None = None,
+                              cwd: Path | None = None) -> dict[str, Any]:
+        """Run the legacy-layout migration for one project on demand, then
+        reconcile. The same routine every full reindex runs automatically —
+        this verb exists so the move can be driven (and its report read)
+        explicitly. Idempotent; collisions are skipped and reported, never
+        merged."""
+        proj = self.resolve_project(project, cwd)
+        self.project_paths(proj).require()
+        mig = self._migrate_legacy_layout(proj)
+        rec = await self.reindex(project=proj)
+        return {"project": proj, **mig, "reconciled": rec,
+                "changed": bool(mig["moved"] or mig["refs_rewritten"])}
 
     def _project_refs(self, proj: str) -> list[dict[str, Any]]:
         """Delegate to Refs (crib/refs.py) — a project's `.crib` refs: targets."""

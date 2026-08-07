@@ -330,6 +330,19 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
     if not isinstance(d, dict):
         print(d); return
     proj = d.get("project", "")
+    if verb == "migrate":
+        if not d.get("changed") and not d.get("skipped"):
+            print(f"{proj}: layout already current — nothing to migrate"); return
+        print(f"{proj}: moved {len(d.get('moved') or [])} facet note(s) to the "
+              f"sibling pillar stores; requalified "
+              f"{len(d.get('refs_rewritten') or [])} citation(s)")
+        for s in d.get("skipped") or []:
+            print(f"  ! collision left in place: {s['from']} → {s['to']} "
+                  f"(resolve by hand, re-run migrate)")
+        rec = d.get("reconciled") or {}
+        print(f"  reconcile: {rec.get('changed', 0)} changed, "
+              f"{rec.get('removed', 0)} removed")
+        return
     if verb in ("adopt", "release"):
         if not d.get("changed"):
             print(d.get("message") or f"{proj}: nothing to do"); return
@@ -834,7 +847,10 @@ def build_parser() -> argparse.ArgumentParser:
     for _v, _h in (("adopt", "move this project's notes INTO the repo "
                              "(needs `store:` in its .crib)"),
                    ("release", "move an adopted project's notes back to the "
-                               "global store")):
+                               "global store"),
+                   ("migrate", "move legacy notes/{design,plans,code-learnings} "
+                               "into the sibling pillar stores (idempotent; every "
+                               "full reindex also self-heals)")):
         _sp = pjsub.add_parser(_v, help=_h)
         proj(_sp)
     _pf = pjsub.add_parser("forget", help="clear the code index (keeps learnings/notes)")
@@ -1451,6 +1467,9 @@ VERBS: dict[str, Verb] = {
                           mcp=_PROJ),
     "project release": Verb("project_release", lambda a: {"project": _proj_of(a)},
                             _E_project("release"), is_async=True, policy="source",
+                            mcp=_PROJ),
+    "project migrate": Verb("project_migrate", lambda a: {"project": _proj_of(a)},
+                            _E_project("migrate"), is_async=True, policy="source",
                             mcp=_PROJ),
     # code index
     "code lookup": Verb("code_lookup", lambda a: {"query": a.query,

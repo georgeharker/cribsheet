@@ -617,6 +617,18 @@ def build_server(crib: Crib | None = None):
         Idempotent. Pass `project_path=<the repo dir>` or `project=<name>`."""
         return await crib.project_release(project, cwd=_cwd(project_path))
 
+    @crib_tool("source")
+    async def project_migrate(project: str | None = None,
+                              project_path: str | None = None) -> dict[str, Any]:
+        """Move a project's legacy facet notes (`notes/design/`, `notes/plans/`,
+        `notes/code-learnings/`) into their sibling pillar stores and requalify
+        their citations — the pre-split → split layout migration, on demand.
+        Every full reindex runs the same routine automatically, so this verb is
+        for driving the move (and reading its report) explicitly. Idempotent;
+        name collisions between the two layouts are skipped and reported, never
+        merged."""
+        return await crib.project_migrate(project, cwd=_cwd(project_path))
+
     @crib_tool("read", echo=True)
     async def code_xref(symbol: str, project: str | None = None,
                         project_path: str | None = None) -> list[dict[str, Any]]:
