@@ -188,9 +188,10 @@ stored knowledge. A repo's `.crib` file ties it to a project and declares which
 source and docs to index (docs are indexed **in-situ** — the repo stays the master;
 crib holds only the index).
 
-Decisions and plan items are notes too — under `design/` and `plans/` — but the facet
-verbs are the way in, because only they speak the dependency edges. Who owns which
-bytes, and which verbs may write them, is [docs/storage.md](docs/storage.md).
+Decisions and plan items live in their own pillar stores — sibling `design/` and
+`plans/` dirs sharing the note-store machinery but never the note search — and the
+facet verbs are the way in, because only they speak the dependency edges. Who owns
+which bytes, and which verbs may write them, is [docs/storage.md](docs/storage.md).
 
 By default a verb attaches to the **warm daemon** (the same process the MCP server
 runs), so it's fast; `--no-daemon` runs in-process, `--json` gives machine output.

@@ -39,6 +39,12 @@ The only genuinely new machinery is the graph layer and its invariants.
    `notes/design/<slug>.md`, plan items at `notes/plans/<slug>.md`, with
    frontmatter `type: design` / `type: plan`. They index like any note (the
    existing chunker/watcher path). Identity is the existing ULID `id`.
+   > **Revised by the pillar split** (design graph: "Four pillar stores…"):
+   > the shared store *implementation* remains the substrate, but design/plans
+   > became sibling pillar stores (`design/<slug>.md`, `plans/<slug>.md` under
+   > the data root) with their own retrieval scope — facet content no longer
+   > indexes "like any note", precisely so it cannot pollute note search or
+   > ranking. Everything else in this doc (ids, deps, taint) still holds.
 2. **Deps are id-lists in frontmatter.** `deps: [<ulid>, …]`. May reference
    design ids, plan ids, or plain note ids (one namespace). Dangling ids are a
    validation *warning*, not a crash.

@@ -354,11 +354,10 @@ def build_server(crib: Crib | None = None):
         may already be stored. Returns ranked note sections, each with its
         relpath and the line_start/line_end span of the matching section so
         you can jump straight to it (pair with `note_locate` for the abspath).
-        `tags` filters by frontmatter tag — and a note's frontmatter `type`
-        counts as one; to search the design/plan facets prefer `design_lookup` /
-        `plan_lookup`, whose hits also carry the facet state.
-        A hit carrying `tainted: true` is a DESIGN DECISION whose ground moved and
-        that nobody has re-read since (`design_read` it before reasoning from it).
+        `tags` filters by frontmatter tag. Notes only: design decisions, plan
+        items and learnings live in their own pillar stores and never appear
+        here — search them with `design_lookup` / `plan_lookup`, whose hits
+        also carry the facet state.
         `keyword_labels`/`keyword_weight` (BM25 keyword_index) and
         `summary_labels` (dense summary_index aliases) override which LLM index
         sets feed retrieval (default from config); mainly for eval sweeps.
@@ -680,7 +679,7 @@ def build_server(crib: Crib | None = None):
                           project_path: str | None = None) -> dict[str, Any]:
         """Pin a durable human learning to a code symbol — the 'now I get it',
         the subtlety, the gotcha you don't want to re-derive next session. Stored
-        as a first-class note under <project>/code-learnings/ keyed to the symbol's
+        as a first-class note in the learnings pillar store keyed to the symbol's
         fqn, SEPARATE from the regenerable LLM description, so it survives
         re-indexing and rides git sync (and works on code you can't edit — vendored
         deps, read-only explorations — where a comment can't go). Appends a dated

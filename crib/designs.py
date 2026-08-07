@@ -1,18 +1,23 @@
-"""Design decisions and plan items — notes with a dependency graph over them.
+"""Design decisions and plan items — facet notes with a dependency graph over them.
 
 Two facets, one module (docs/plans/design-plan-tracking.md):
 
-- **design** — durable decisions under `notes/design/`, each declaring the
-  decisions it builds on. Editing or deleting one *taints* its dependents so a
-  human re-checks them; the point is to make design drift visible instead of
+- **design** — durable decisions in the `design/` pillar store, each declaring
+  the decisions it builds on. Editing or deleting one *taints* its dependents so
+  a human re-checks them; the point is to make design drift visible instead of
   surprising.
-- **plan** — resumable work items under `notes/plans/`, with a status, the same
-  dependency edges, and a lexorank ordering that survives insert-between.
+- **plan** — resumable work items in the `plans/` pillar store, with a status,
+  the same dependency edges, and a lexorank ordering that survives
+  insert-between.
 
-Both are ordinary NOTES with structured frontmatter, so they inherit search,
-versioning, git sync and the merge driver for free (`type: design` / `type: plan`
-reaches chunk metadata, so `note_lookup(tags=["design"])` filters them). The only
-new machinery is here: the graph load, cycle detection, the body-hash taint, ref
+Each pillar is its OWN STORE — a sibling dir under the project's data root,
+sharing the note-store implementation (versioning, git sync, the merge driver)
+but never the notes search scope: chunks carry a `store` axis, retrieval and the
+ranking caches are per-pillar, so decisions never surface in (or re-weight)
+`note_lookup` and `design_lookup`/`plan_lookup` search pure facet pools.
+Relpaths are store-relative (`base.md`); a citation of a facet note from
+another store spells it qualified (`design:base.md`). The only machinery here is
+the graph layer: the graph load, cycle detection, the body-hash taint, ref
 resolution and the rank arithmetic.
 
 Staleness is COMPUTED ON READ and RECORDED ON REAFFIRM: each node keeps
@@ -50,9 +55,10 @@ only way in (hand-authored decisions are already a human judgement, so
 `design_add` still lands `active`).
 
 The FACET IS THE INTERFACE: `design_read`/`design_edit`/`design_append`/
-`design_lookup` are the way in, not `note_read`/`note_edit` on a path under
-`design/`. Notes-in-a-directory is the backend; every facet verb is a chance to
-speak the edges, which is what the raw note verbs cannot do.
+`design_lookup` are the way in — the note verbs refuse facet-store paths
+outright. The shared store impl is backend; every facet verb is a chance to
+speak the edges, which is what a raw file edit (still supported: the watcher
+reindexes, hash-taint catches drift) cannot do.
 """
 
 from __future__ import annotations

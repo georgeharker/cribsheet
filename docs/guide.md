@@ -36,10 +36,11 @@ install, see the [README](../README.md); for the exhaustive command list, see
   code index, learnings, decisions, and plan, so nothing bleeds between contexts. A
   `default` project holds cross-cutting knowledge.
 
-Decisions and plan items are stored as notes too (under `design/` and `plans/`), but
-the facet verbs are the way in: only they speak the dependency edges, so a raw
-`note edit` on one tells you nothing about what your change invalidated. Which store
-owns which bytes is [storage.md](storage.md).
+Decisions and plan items live in their own pillar stores (sibling `design/` and
+`plans/` dirs — same store machinery as notes, never the same search), and the
+facet verbs are the way in: only they speak the dependency edges, and the note
+verbs refuse facet paths outright. Which store owns which bytes is
+[storage.md](storage.md).
 
 ## The interface
 

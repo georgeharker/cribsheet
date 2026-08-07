@@ -95,12 +95,13 @@ projects.
 
 ## Design decisions — what was settled, and what rests on it
 
-Decisions are notes under `design/` (frontmatter `type: design`) with typed
-dependencies on other decisions. **The facet is the interface**: read, edit, search
-and list all have their own `design` verbs, because only those can speak the
-dependency EDGES — notes-in-a-directory is the backend, and `note_read`/`note_edit`
-on a path under `design/` still work but tell you nothing about what a decision
-rests on or what your change just invalidated.
+Decisions live in the `design/` pillar store — a sibling of `notes/`, sharing
+the store implementation but never the search scope — with typed dependencies on
+other decisions. **The facet is the interface**: read, edit, search and list all
+have their own `design` verbs, because only those can speak the dependency
+EDGES. The `note_*` verbs refuse facet paths outright; editing the file directly
+still works (the watcher reindexes, hash-taint catches drift) but tells you
+nothing about what a decision rests on or what your change just invalidated.
 
 Staleness is **computed on read**: each decision records the body hash of every dep
 at its last reaffirm, so editing a decision by ANY route — a facet verb, `note_edit`,
@@ -158,7 +159,7 @@ it is doing so, which is the only moment the warning can change the outcome.
 
 ## Plans — persistent, resumable work items
 
-Plan items are notes under `plans/` (`type: plan`) with a status, must-precede
+Plan items live in the `plans/` pillar store with a status, must-precede
 dependencies, and a lexorank order that never renumbers neighbours. Order is
 **topological by deps, rank breaking ties**: deps are correctness, rank is
 preference. `blocked` is derived from deps and never stored.

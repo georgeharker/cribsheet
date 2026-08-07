@@ -15,9 +15,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-# Reserved relpath prefix for source-anchored docs. Crib-owned notes are either
-# top-level `<slug>.md` or under `imported/` / `claude-memory/` / `code-learnings/`,
-# so a `sources/` subtree never collides with them.
+# Reserved relpath prefix for source-anchored docs, inside the NOTES pillar.
+# Crib-owned notes are top-level `<slug>.md` or under `imported/` /
+# `claude-memory/` (facet content lives in sibling pillar stores entirely), so a
+# `sources/` subtree never collides with them.
 SRC_PREFIX = "sources/"
 
 

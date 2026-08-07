@@ -53,7 +53,10 @@ $CRIB_DATA_DIR/
   projects/
     <project>/
       .cribproject            # project config (see §6)
-      notes/…/*.md            # arbitrary subdir tree for organization
+      notes/…/*.md            # the notes pillar (arbitrary subdir tree)
+      design/*.md             # design decisions — sibling pillar store
+      plans/*.md              # plan items — sibling pillar store
+      learnings/*.md          # symbol learnings — sibling pillar store
   .versions/                  # per-write version ring (see §8); git-ignored
   .git/                       # optional, auto-detected; backs the data tree only
 
@@ -172,15 +175,19 @@ by calling the locked `index_file`.
 ### Design & plan facets
 
 `design_*` and `plan_*` (`crib/designs.py`, reference in
-[docs/surface.md](docs/surface.md)) add a **dependency graph over notes**: design
-decisions under `design/` declaring what they build on, plan items under `plans/`
-with a status and a must-precede order. Both are ordinary notes (`type: design` /
-`type: plan` in frontmatter, which reaches chunk metadata so `note_lookup(tags=…)`
-filters them), so they inherit search, the version ring, git sync and the merge
-driver; only the graph layer is new. Staleness is computed on read from the deps'
-body hashes and recorded on `design_verify` — nothing propagates on write, which
-is precisely why a decision edited through `note_edit`, an external editor or a
-git pull still taints its dependents. Read/edit stay the `note` verbs.
+[docs/surface.md](docs/surface.md)) add a **dependency graph over facet notes**:
+design decisions in the `design/` pillar store declaring what they build on, plan
+items in `plans/` with a status and a must-precede order. Each pillar is its own
+store — one shared `NoteStore` implementation parameterized by a `StoreSpec`, a
+sibling dir on disk, and its own retrieval scope (chunks carry a `store` axis;
+BM25/summary caches are per-pillar) — so facet content never surfaces in, or
+re-weights, note search, and `design_lookup`/`plan_lookup` search pure facet
+candidate pools. The pillars still share the version ring, git sync and the
+merge driver. Staleness is computed on read from the deps' body hashes and
+recorded on `design_reaffirm` — nothing propagates on write, which is precisely
+why a decision edited through an external editor or a git pull still taints its
+dependents. The `note_*` verbs refuse facet paths; the facet verbs (or the file
+itself) are the way in.
 
 ### Retrieval loop
 

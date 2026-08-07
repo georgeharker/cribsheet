@@ -1,11 +1,15 @@
-"""The note-file store, extracted from Crib.
+"""The pillar note-file store — one implementation, one instance per pillar.
 
-NoteStore owns note-file orchestration — path resolution (including source-anchored
-in-situ docs), and the write path (stash the prior content to the version ring →
-atomic save → reindex). It *references* the backends it drives (the vector store, the
-IndexEngine, the VersionRing) rather than owning them, since retrieval, in-situ docs,
-import, and generation share the same objects. Crib keeps thin delegators so its many
-note callers are unchanged. Read/delete/move/versions migrate here in later steps.
+NoteStore owns note-file orchestration — path resolution (including, for the
+notes pillar, source-anchored in-situ docs), and the write path (stash the prior
+content to the version ring → atomic save → reindex). A `StoreSpec` is all that
+distinguishes the pillars (notes / design / plans / learnings): the sibling dir
+under the project's data root, the `store` tag every chunk carries, and which
+relpath prefixes the notes instance refuses because a facet owns that content.
+It *references* the backends it drives (the vector store, the IndexEngine, the
+VersionRing) rather than owning them — all four instances share the same
+objects. Crib keeps thin delegators for the notes pillar so its many note
+callers are unchanged; the facet layers hold their own instances.
 """
 
 from __future__ import annotations
