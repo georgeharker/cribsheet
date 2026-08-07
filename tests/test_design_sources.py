@@ -139,7 +139,7 @@ def test_a_source_checks_its_own_section_only(crib):
     # the chain ends at what actually moved — the section, not the decision
     assert row["paths"][0]["chain"] == ["Single writer",
                                         "spec.md#Spec/4. Coordination"]
-    assert "design_reaffirm design/single-writer.md" in row["next"]
+    assert "design_reaffirm single-writer.md" in row["next"]
     assert "never gates" in row["next"]
 
 
@@ -292,7 +292,7 @@ def test_a_finished_item_flags_revisit_rather_than_re_opening(crib):
     row = listed["items"][0]
     assert listed["revisit"] == 1 and row["status"] == "done"   # status untouched
     assert "changed since this was drawn from it" in row["revisit"][0]
-    assert "plan_status plans/wire-the-fusion.md todo" in row["next"]
+    assert "plan_status wire-the-fusion.md todo" in row["next"]
 
     # …and re-asserting the status is what clears it: a status write re-records
     # the sources, so "I looked, it's still done" needs no verb of its own

@@ -2,9 +2,12 @@
 
 The load-bearing claim is decision 3: staleness is COMPUTED from body hashes on
 read, never propagated on write — so a decision edited by ANY route (here: a
-plain `note_edit`, which knows nothing about designs) taints its dependents all
-the same. `test_taint_survives_a_plain_note_edit` is that end-to-end; the rest
-pins the graph machinery it rests on (cycles, transitive taint, ranks, refs).
+direct write to the FILE, which knows nothing about designs — an editor, a git
+pull) taints its dependents all the same. `test_taint_survives_a_plain_file_edit`
+is that end-to-end; the rest pins the graph machinery it rests on (cycles,
+transitive taint, ranks, refs). Design/plan notes live in their own pillar
+stores (`projects/<p>/design/`, `plans/`), so the note verbs refuse their paths
+— the facet verbs and the file itself are the two ways in.
 """
 
 from __future__ import annotations
@@ -44,7 +47,7 @@ def _set_deps(crib, ref: str, deps: list[str], kind: str = "plan") -> None:
 
 def _node(nid: str, deps: list[str], checked: dict[str, str] | None = None,
           body_hash: str = "h", kind: str = "design", status: str = "active") -> Node:
-    return Node(id=nid, kind=kind, relpath=f"{kind}/{nid}.md", title=nid,
+    return Node(id=nid, kind=kind, relpath=f"{nid}.md", title=nid,
                 status=status, deps=deps, checked=checked or {}, rank="",
                 body_hash=body_hash, frontmatter={})
 
@@ -138,16 +141,18 @@ def test_an_unverified_dep_edge_is_tainted(crib):
     assert "never verified" in t["B"]["reasons"][0]
 
 
-def test_taint_survives_a_plain_note_edit(crib):
+def test_taint_survives_a_plain_file_edit(crib):
     """The integration the whole design rests on: add A, add B-dep-A (clean) →
-    edit A by the ORDINARY note verb → B is tainted, with the chain → verify B →
-    clean again."""
+    edit A by writing the FILE directly (an editor, a git pull — no facet verb,
+    no crib at all) → B is tainted, with the chain → verify B → clean again."""
     a = run(crib.design_add("Disk is truth", "chroma is a cache", project="p"))
     b = run(crib.design_add("Policies per tool", "three policies",
                             deps=["Disk is truth"], project="p"))
     assert crib.design_check(project="p")["clean"]        # born verified
 
-    run(crib.edit_note(a["relpath"], "chroma is a REBUILDABLE cache", project="p"))
+    path = crib.designstore.abspath("p", a["relpath"])
+    path.write_text(path.read_text().replace(
+        "chroma is a cache", "chroma is a REBUILDABLE cache"))
 
     check = crib.design_check(project="p")
     assert not check["clean"] and len(check["tainted"]) == 1
@@ -292,7 +297,8 @@ def test_design_read_is_a_dossier_not_a_file_fetch(crib):
     assert d["tainted"] is False and "next" not in d
     assert d["deps"][0]["status"] == "active" and d["deps"][0]["tainted"] is False
 
-    run(crib.edit_note("design/base.md", "the ground MOVED", project="p"))
+    path = crib.designstore.abspath("p", "base.md")
+    path.write_text(path.read_text().replace("the ground", "the ground MOVED"))
     d = crib.design_read("Middle", project="p")
     assert d["tainted"] and d["causes"][0]["change_kind"] == "dep-edited"
     assert d["causes"][0]["dep_title"] == "Base"
@@ -319,7 +325,7 @@ def test_design_edit_reports_what_it_tainted(crib):
     top = next(n for n in out["newly_tainted"] if n["title"] == "Top")
     assert top["via"] == ["Top → Middle"]
     assert "design_reaffirm" in out["next"]
-    assert crib.read_note("design/base.md", project="p").endswith(
+    assert crib.designstore.read("p", "base.md").endswith(
         "the ground, rewritten\n")
 
     # already-tainted dependents are not re-reported as NEWLY tainted
@@ -331,7 +337,7 @@ def test_design_append_extends_and_is_edge_aware(crib):
     run(crib.design_add("Base", "first para", project="p"))
     run(crib.design_add("Leaf", "builds on base", deps=["Base"], project="p"))
     out = run(crib.design_append("Base", "second para", project="p"))
-    body = crib.read_note("design/base.md", project="p")
+    body = crib.designstore.read("p", "base.md")
     assert "first para" in body and "second para" in body
     assert [n["title"] for n in out["newly_tainted"]] == ["Leaf"]
 
@@ -359,7 +365,7 @@ def test_design_add_probes_for_near_duplicate_decisions(crib):
     out = run(crib.design_add("Chroma is a cache, restated",
                               "the vector store is derived and rebuildable",
                               project="p"))
-    assert [s["relpath"] for s in out["similar"]] == ["design/chroma-is-a-cache.md"]
+    assert [s["relpath"] for s in out["similar"]] == ["chroma-is-a-cache.md"]
 
 
 def test_a_decision_must_carry_its_rationale(crib):
@@ -375,12 +381,12 @@ def test_facet_lookup_annotates_hits_with_status_and_taint(crib):
                       project="p"))
 
     designs = crib.design_lookup("chroma vectors", project="p")
-    assert [h["relpath"] for h in designs] == ["design/vector-store.md"]
+    assert [h["relpath"] for h in designs] == ["vector-store.md"]
     assert designs[0]["status"] == "active" and designs[0]["tainted"] is False
     assert designs[0]["deps"] == 0 and designs[0]["kind"] == "design"
 
     plans = crib.plan_lookup("chroma vectors", project="p")
-    assert [h["relpath"] for h in plans] == ["plans/swap-the-vector-store.md"]
+    assert [h["relpath"] for h in plans] == ["swap-the-vector-store.md"]
     assert plans[0]["status"] == "todo"
 
 
@@ -394,8 +400,8 @@ def test_a_stale_decision_says_so_on_every_retrieval_hit(crib):
 
     run(crib.design_edit("Ground", "postgres holds the vectors now", project="p"))
     hits = {h.relpath: h.tainted for h in crib.lookup("chroma vectors", project="p")}
-    assert hits["design/built-on-it.md"] is True     # its ground moved
-    assert hits["design/ground.md"] is False         # it IS the ground
+    assert hits["built-on-it.md"] is True            # its ground moved
+    assert hits["ground.md"] is False                # it IS the ground
     # …and the same flag rides `apropos` and the facet-scoped lookup
     assert any(h["tainted"] for h in crib.apropos("chroma vectors", project="p"))
     assert any(h["tainted"] for h in crib.design_lookup("chroma vectors",
@@ -423,7 +429,7 @@ def test_check_names_the_change_kind_the_date_and_the_next_verb(crib):
     cause = row["causes"][0]
     assert cause["change_kind"] == "dep-edited"
     assert cause["dep_title"] == "Ground" and cause["dep_updated"]
-    assert "design_reaffirm design/leaf.md" in row["next"]
+    assert "design_reaffirm leaf.md" in row["next"]
     assert "design_supersede" in row["next"]         # …and the other outcome
 
     # a superseded dep and a deleted one are DIFFERENT kinds, not one "changed"
@@ -507,7 +513,7 @@ def test_completing_an_item_names_what_it_unblocked(crib):
     run(crib.plan_add("third", "x", deps=["second"], project="p"))
     out = run(crib.plan_status("first", "done", project="p"))
     assert [u["title"] for u in out["unblocked"]] == ["second"]   # not "third"
-    assert out["unblocked"][0]["ref"] == "plans/second.md"
+    assert out["unblocked"][0]["ref"] == "second.md"
     # a status that isn't a completion doesn't claim to have unblocked anything
     assert run(crib.plan_status("second", "in-progress", project="p"))["unblocked"] == []
 
@@ -553,16 +559,30 @@ def test_a_batch_dep_can_only_point_backwards(crib):
 
 def test_a_single_item_add_keeps_its_shape(crib):
     out = run(crib.plan_add("one", "body", project="p"))
-    assert out["title"] == "one" and out["relpath"] == "plans/one.md"
+    assert out["title"] == "one" and out["relpath"] == "one.md"
     assert out["added"] == 1 and out["items"][0]["id"] == out["id"]
 
 
-# ── the notes are ordinary notes ──────────────────────────────────────────────
+# ── the backend is the shared store impl, in a sibling pillar ─────────────────
 
 def test_type_reaches_chunk_metadata_so_lookup_can_filter(crib):
     run(crib.design_add("Vector store", "chroma holds the vectors", project="p"))
     run(crib.store_note("chroma holds the vectors", title="Plain", project="p"))
     metas = crib.store.get_meta({"project": "p"}).values()
     assert {m.get("type") for m in metas} == {"design", ""}
+    assert {m.get("store") for m in metas} == {"design", "notes"}
     hits = crib.lookup("chroma vectors", project="p", tags=["design"])
-    assert [h.relpath for h in hits] == ["design/vector-store.md"]
+    assert [h.relpath for h in hits] == ["vector-store.md"]
+    assert hits[0].store == "design"
+
+
+def test_note_verbs_refuse_facet_store_paths(crib):
+    """The pre-split spelling `design/x.md` no longer names a note — the refusal
+    points at the facet verbs instead of 404ing or recreating a legacy subtree."""
+    run(crib.design_add("Base", "the ground", project="p"))
+    with pytest.raises(ValueError, match="design_read"):
+        crib.read_note("design/base.md", project="p")
+    with pytest.raises(ValueError, match="own store"):
+        run(crib.edit_note("design/base.md", "sneaky", project="p"))
+    with pytest.raises(ValueError, match="plan"):
+        run(crib.forget("plans/anything.md", project="p"))

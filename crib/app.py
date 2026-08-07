@@ -30,7 +30,7 @@ from .refs import Refs
 from .embed import build_embedder, embed_batch, embed_query_batch
 from .gitbacking import GitBacking
 from .codequery import CodeQuery
-from .designs import DESIGN_DIR, Designs
+from .designs import Designs
 from .indexer import IndexEngine, IndexResult
 from .learnings import Learnings
 from .notes import Note, NoteParseError
@@ -78,6 +78,9 @@ class LookupHit:
     # agent retrieves a stale decision is the only moment the warning can change
     # what it does with it.
     tainted: bool = False
+    # Which pillar store the hit came from — relpaths are store-relative, so the
+    # pillar is part of resolving one back to a file.
+    store: str = "notes"
 
 
 def _resolve_embed_config(config: Config) -> Any:
@@ -214,7 +217,8 @@ class Crib:
         self.learnings = Learnings(paths, self.refs, self.notestore)
         # Design decisions + plan items (notes under design/ and plans/) and the
         # dependency graph over them. Same shape: Crib resolves, Designs executes.
-        self.designs = Designs(paths, self.notestore)
+        self.designs = Designs(paths, self.designstore, self.planstore,
+                               self.notestore)
         # Code-index queries (lookup/xref/dossier/graph) over refs + learnings + the
         # resident cache. Crib keeps resolve_project + delegate public wrappers.
         self.query = CodeQuery(self.refs, self.learnings, self.embedder,
@@ -1061,11 +1065,11 @@ class Crib:
         # there is" (cleared per project by the recovery sweep)
         rebuilding = proj in self._resweep_pending
         # Tainted design notes, loaded LAZILY and at most once per lookup — a
-        # frontmatter-only graph scan, and only when a hit actually lands under
-        # `design/`, so the ambient marker costs nothing on the common query.
+        # frontmatter-only graph scan, and only when a hit actually lands in the
+        # design store, so the ambient marker costs nothing on the common query.
         stale_designs: set[str] | None = None
         hits, seen = [], set()
-        line_maps: dict[str, dict[str, tuple[int, int]]] = {}
+        line_maps: dict[tuple[str, str], dict[str, tuple[int, int]]] = {}
         for h in raw:
             if h.score <= min_score:        # drop orthogonal / irrelevant matches
                 continue
@@ -1078,21 +1082,24 @@ class Crib:
                 if not (set(tags) & have):
                     continue
             rp = h.metadata.get("relpath", "")
+            pillar = str(h.metadata.get("store") or "notes")
             heading = h.metadata.get("heading_path", "")
-            key = rp if dedupe == "file" else (rp, heading)
+            key = (pillar, rp) if dedupe == "file" else (pillar, rp, heading)
             if dedupe != "none" and key in seen:
                 continue
             seen.add(key)
-            if rp not in line_maps:         # read each file once, current on disk
+            if (pillar, rp) not in line_maps:   # read each file once, current on disk
                 try:
-                    line_maps[rp] = section_line_map(self.abspath(proj, rp).read_text())
-                except OSError:
-                    line_maps[rp] = {}
+                    src = self.pillars.get(pillar, self.notestore) \
+                        .abspath(proj, rp)
+                    line_maps[(pillar, rp)] = section_line_map(src.read_text())
+                except (OSError, ValueError):
+                    line_maps[(pillar, rp)] = {}
             # A repeated heading path's 2nd+ section has its own span under
             # `heading#n`; the bare breadcrumb is occurrence 1 (chunk.section_key).
-            span = line_maps[rp].get(
+            span = line_maps[(pillar, rp)].get(
                 section_key(heading, int(h.metadata.get("occurrence", 1) or 1)))
-            if rp.startswith(f"{DESIGN_DIR}/"):
+            if pillar == "design":
                 if stale_designs is None:
                     stale_designs = self.designs.tainted_designs(proj)
                 stale = rp in stale_designs
@@ -1108,6 +1115,7 @@ class Crib:
                 line_end=span[1] if span else None,
                 index_rebuilding=rebuilding,
                 tainted=stale,
+                store=pillar,
             ))
             if len(hits) >= k:
                 break
@@ -1125,9 +1133,11 @@ class Crib:
             section = h.snippet
             if h.line_start and h.line_end:
                 try:
-                    lines = self.abspath(proj, h.relpath).read_text().splitlines()
+                    src = self.pillars.get(h.store, self.notestore) \
+                        .abspath(proj, h.relpath)
+                    lines = src.read_text().splitlines()
                     section = "\n".join(lines[h.line_start - 1:h.line_end])
-                except OSError:
+                except (OSError, ValueError):
                     pass
             out.append({**vars(h), "section": section})
         return out
@@ -1917,7 +1927,8 @@ class Crib:
         being the interface."""
         return self.designs.annotate_hits(
             self.resolve_project(project, cwd),
-            [vars(h) for h in self.lookup(query, project, k, ["design"], cwd=cwd)])
+            [vars(h) for h in self.lookup(query, project, k, ["design"], cwd=cwd)],
+            kind="design")
 
     def plan_lookup(self, query: str, project: str | None = None, k: int = 8,
                     cwd: Path | None = None) -> list[dict[str, Any]]:
@@ -1925,7 +1936,8 @@ class Crib:
         annotates its own."""
         return self.designs.annotate_hits(
             self.resolve_project(project, cwd),
-            [vars(h) for h in self.lookup(query, project, k, ["plan"], cwd=cwd)])
+            [vars(h) for h in self.lookup(query, project, k, ["plan"], cwd=cwd)],
+            kind="plan")
 
     async def design_dep_add(self, ref: str, dep_ref: str, project: str | None = None,
                              cwd: Path | None = None) -> dict[str, Any]:

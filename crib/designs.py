@@ -72,7 +72,26 @@ if TYPE_CHECKING:
 
 DESIGN_DIR = "design"
 PLANS_DIR = "plans"
+# kind → the pre-split subdir under notes/ — retained ONLY for legacy spellings:
+# ref aliases (`design/x.md` still resolves) and the migration's source dirs.
 _DIRS = {"design": DESIGN_DIR, "plan": PLANS_DIR}
+
+# Qualified DOC references: a citation names a doc in another pillar store as
+# `design:foo.md` / `plans:foo.md`; unqualified means the notes store (plain
+# notes and in-situ `sources/<repo>/…` docs alike).
+_DOCREF_STORES = ("design", "plans")
+
+
+def split_docref(ref: str) -> tuple[str, str]:
+    """`"design:foo.md"` → `("design", "foo.md")`; unqualified → `("notes", ref)`."""
+    for name in _DOCREF_STORES:
+        if ref.startswith(name + ":"):
+            return name, ref[len(name) + 1:]
+    return "notes", ref
+
+
+def format_docref(store: str, relpath: str) -> str:
+    return relpath if store == "notes" else f"{store}:{relpath}"
 
 # `proposed` is the IMPORT tier: extracted, not yet blessed (see the module
 # docstring). It is a first-class status rather than a tag because it changes
@@ -359,16 +378,29 @@ def _cycles(nodes: dict[str, Node]) -> list[list[str]]:
 
 
 class Designs:
-    def __init__(self, paths: Paths, notestore: NoteStore) -> None:
+    def __init__(self, paths: Paths, design_store: NoteStore,
+                 plan_store: NoteStore, notestore: NoteStore) -> None:
         self.paths = paths
+        # The two pillar stores this facet OWNS, by kind — plus the notes store,
+        # read-only here, for citation resolution (a decision cites plain notes
+        # and in-situ docs far more often than other decisions).
+        self._stores = {"design": design_store, "plan": plan_store}
         self.notestore = notestore
+        # docref store name → NoteStore (note the kind/store spelling difference:
+        # kind "plan" lives in the store named "plans")
+        self._doc_stores = {"notes": notestore, "design": design_store,
+                            "plans": plan_store}
+
+    def _store(self, kind: str) -> NoteStore:
+        return self._stores[kind]
 
     # ── loading ───────────────────────────────────────────────────────────────
 
     def _load_graph(self, proj: str) -> Graph:
-        """Scan `notes/design/` + `notes/plans/` into a graph. Frontmatter-only
-        parsing (no chunking, no embedding) — cheap enough to run on every verb,
-        which is what lets taint be computed live instead of stored.
+        """Scan the `design/` + `plans/` pillar stores into a graph.
+        Frontmatter-only parsing (no chunking, no embedding) — cheap enough to
+        run on every verb, which is what lets taint be computed live instead of
+        stored.
 
         The one exception is `sources`: each cited section is hashed as it reads
         NOW, so `_taint` can compare against the recorded hash without doing I/O
@@ -376,9 +408,11 @@ class Designs:
         split it once."""
         graph = Graph()
         docs: dict[str, dict[str, str]] = {}
-        root = self.notestore.notes_root(proj)
-        for kind, sub in _DIRS.items():
-            d = root / sub
+        for kind, store in self._stores.items():
+            try:
+                d = store.root(proj)
+            except Exception:  # noqa: BLE001 — an unavailable store blinds no read
+                continue
             if not d.exists():
                 continue
             for path in sorted(d.glob("*.md")):
@@ -395,7 +429,7 @@ class Designs:
                 for src in sources:
                     src["current"] = self._section_hash(proj, src, docs)
                 graph.nodes[nid] = Node(
-                    id=nid, kind=kind, relpath=f"{sub}/{path.name}",
+                    id=nid, kind=kind, relpath=path.name,
                     title=str(fm.get("title") or path.stem),
                     status=str(fm.get("status")
                                or ("active" if kind == "design" else "todo")),
@@ -408,35 +442,44 @@ class Designs:
         return graph
 
     def _note(self, proj: str, node: Node) -> Note:
-        return notes.load(self.notestore.abspath(proj, node.relpath))
+        return notes.load(self._store(node.kind).abspath(proj, node.relpath))
 
     # ── sources: the doc a decision was drawn from ────────────────────────────
     # Attribution edges live at SECTION granularity, hashed with the very chunker
     # the index uses (`chunk_note` → `section_hash`), so the two agree by
     # construction rather than by a second implementation that can drift.
 
+    def _doc_abspath(self, proj: str, ref: str):
+        """A (possibly qualified) doc reference → its on-disk path, routed
+        through the owning pillar store."""
+        store, rel = split_docref(ref)
+        return self._doc_stores[store].abspath(proj, rel)
+
     def _doc_exists(self, proj: str, relpath: str) -> bool:
         try:
-            return self.notestore.abspath(proj, relpath).exists()
+            return self._doc_abspath(proj, relpath).exists()
         except (OSError, ValueError):
             return False                    # escaping/unresolvable relpath
 
     def _known_docs(self, proj: str) -> set[str]:
-        """Every relpath crib can cite in this project: what the index holds
-        (including docs indexed in situ) plus the notes tree on disk."""
+        """Every doc reference crib can cite in this project: what the index
+        holds (including docs indexed in situ) plus each pillar tree on disk.
+        Non-notes docs read QUALIFIED (`design:foo.md`) — the docref spelling."""
         out: set[str] = set()
         try:
             for meta in self.notestore.store.get_meta({"project": proj}).values():
                 rp = str(meta.get("relpath") or "")
                 if rp:
-                    out.add(rp)
+                    out.add(format_docref(str(meta.get("store") or "notes"), rp))
         except Exception:  # noqa: BLE001 — an unreachable store narrows the search, not fails it
             pass
-        try:
-            root = self.notestore.notes_root(proj)
-            out |= {p.relative_to(root).as_posix() for p in root.rglob("*.md")}
-        except (OSError, ValueError):
-            pass
+        for name, store in self._doc_stores.items():
+            try:
+                root = store.root(proj)
+                out |= {format_docref(name, p.relative_to(root).as_posix())
+                        for p in root.rglob("*.md")}
+            except (OSError, ValueError):
+                pass
         return out
 
     def _resolve_doc(self, proj: str, ref: str) -> str:
@@ -449,14 +492,31 @@ class Designs:
         ref = (ref or "").strip().lstrip("./")
         if not ref:
             raise ValueError(
-                "name the doc: a note relpath, or a repo-relative path to a doc "
-                "indexed in situ (`DESIGN.md`, `docs/plans/foo.md`)")
+                "name the doc: a note relpath, a qualified facet ref "
+                "(`design:foo.md`), or a repo-relative path to a doc indexed in "
+                "situ (`DESIGN.md`, `docs/plans/foo.md`)")
         if self._doc_exists(proj, ref):
             return ref
+        # legacy alias: the pre-split spelling `design/x.md` names `design:x.md`
+        for name in _DOCREF_STORES:
+            if ref.startswith(name + "/"):
+                alias = f"{name}:{ref[len(name) + 1:]}"
+                if self._doc_exists(proj, alias):
+                    return alias
+        def _tail_match(rp: str) -> bool:
+            if rp == ref or rp.endswith("/" + ref):
+                return True
+            store, rel = split_docref(rp)
+            if store == "notes":
+                return False
+            # a facet doc also answers to its store-relative tail, and to the
+            # legacy `design/…` spelling of it
+            want = ref[len(store) + 1:] if ref.startswith(store + "/") else ref
+            return rel == want or rel.endswith("/" + want)
+
         matches = {prefix + ref for prefix in self.notestore.source_roots(proj).all()
                    if self._doc_exists(proj, prefix + ref)}
-        matches |= {rp for rp in self._known_docs(proj)
-                    if rp == ref or rp.endswith("/" + ref)}
+        matches |= {rp for rp in self._known_docs(proj) if _tail_match(rp)}
         if len(matches) == 1:
             return matches.pop()
         if not matches:
@@ -473,9 +533,11 @@ class Designs:
         Preferred over re-hashing the file, because the graph checks against the
         indexed corpus: an edit lands as taint when the reindex lands, so a
         source and a retrieval hit never disagree about what the doc says."""
+        store, rel = split_docref(relpath)
         try:
-            metas = self.notestore.store.get_meta({"project": proj,
-                                                   "relpath": relpath})
+            metas = {cid: m for cid, m in self.notestore.store.get_meta(
+                         {"project": proj, "relpath": rel}).items()
+                     if (str(m.get("store") or "notes")) == store}
         except Exception:  # noqa: BLE001 — fall back to hashing the text ourselves
             return {}
         out: dict[str, str] = {}
@@ -497,7 +559,7 @@ class Designs:
         indexed and nothing re-hashes when it later is."""
         indexed = self._indexed_sections(proj, relpath)
         try:
-            text = self.notestore.abspath(proj, relpath).read_text()
+            text = self._doc_abspath(proj, relpath).read_text()
         except (OSError, ValueError, UnicodeDecodeError):
             # unreadable (an in-situ doc whose repo isn't on this machine): the
             # index still knows the sections, just not their order
@@ -666,10 +728,17 @@ class Designs:
         exact = [n for n in pool if n.id == ref.upper()]
         if len(exact) == 1:
             return exact[0]
+
+        def _rel_match(n: Node) -> bool:
+            # store-relative spelling, plus the legacy pre-split `design/x.md`
+            w = want
+            legacy = f"{_DIRS[n.kind]}/"
+            if w.startswith(legacy):
+                w = w[len(legacy):]
+            return n.relpath.lower() in (w, f"{w}.md")
+
         matches = [n for n in pool
-                   if n.relpath.lower() in (want, f"{_DIRS[n.kind]}/{want}",
-                                            f"{_DIRS[n.kind]}/{want}.md")
-                   or n.relpath.rsplit("/", 1)[1].lower() in (want, f"{want}.md")
+                   if _rel_match(n)
                    or n.title.lower() == want
                    or _slug(n.title) == slug]
         if not matches:
@@ -849,20 +918,26 @@ class Designs:
         return {n.relpath for n in graph.nodes.values()
                 if n.kind == "design" and n.id in tainted}
 
-    def annotate_hits(self, proj: str, hits: list[dict[str, Any]]
-                      ) -> list[dict[str, Any]]:
+    def annotate_hits(self, proj: str, hits: list[dict[str, Any]],
+                      kind: str | None = None) -> list[dict[str, Any]]:
         """Stamp facet state onto retrieval hits that land on a design/plan note:
         `status`, `tainted`, and dep/dependent counts. The agent reasoning FROM a
         stale decision is told so at the moment it reads it, which is the only
-        moment the warning can change what it does."""
+        moment the warning can change what it does.
+
+        Relpaths are store-relative, so a design and a plan may share one name —
+        `kind` (what the facet lookup queried) disambiguates the join."""
         try:
             graph = self._load_graph(proj)
             tainted = self._taint(graph)
         except Exception:  # noqa: BLE001 — as `tainted_designs`: never break a read
             return hits
-        by_relpath = {n.relpath: n for n in graph.nodes.values()}
+        by_relpath = {(n.kind, n.relpath): n for n in graph.nodes.values()}
+        kinds = (kind,) if kind else ("design", "plan")
         for hit in hits:
-            node = by_relpath.get(str(hit.get("relpath") or ""))
+            rp = str(hit.get("relpath") or "")
+            node = next((by_relpath[k] for k in ((kd, rp) for kd in kinds)
+                         if k in by_relpath), None)
             if node is None:
                 continue
             hit.update(kind=node.kind, status=node.status,
@@ -872,27 +947,29 @@ class Designs:
 
     # ── writes ────────────────────────────────────────────────────────────────
 
-    def _unique_relpath(self, proj: str, sub: str, slug: str) -> str:
-        """`<dir>/<slug>.md`, numeric suffix only on collision (DESIGN §15.1)."""
-        base = self.notestore.notes_root(proj) / sub
+    def _unique_relpath(self, proj: str, kind: str, slug: str) -> str:
+        """`<slug>.md` in the kind's pillar store, numeric suffix only on
+        collision (DESIGN §15.1)."""
+        base = self._store(kind).root(proj)
         if not (base / f"{slug}.md").exists():
-            return f"{sub}/{slug}.md"
+            return f"{slug}.md"
         i = 2
         while (base / f"{slug}-{i}.md").exists():
             i += 1
-        return f"{sub}/{slug}-{i}.md"
+        return f"{slug}-{i}.md"
 
     async def _save(self, proj: str, node: Node, fm: dict[str, Any],
                     body: str | None = None) -> dict[str, Any]:
         """Rewrite a node's frontmatter (body untouched unless given), stamp
         `updated`, and funnel through the locked index_file write path."""
-        path = self.notestore.abspath(proj, node.relpath)
+        store = self._store(node.kind)
+        path = store.abspath(proj, node.relpath)
         note = notes.load(path)
         fm = {**note.frontmatter, **fm, "updated": _today()}
         note.frontmatter = fm
         if body is not None:
             note.body = body
-        res = await self.notestore.write(proj, node.relpath, note)
+        res = await store.write(proj, node.relpath, note)
         return {"project": proj, "id": node.id, "relpath": node.relpath,
                 "title": node.title, "indexed": res.upserted}
 
@@ -909,7 +986,7 @@ class Designs:
                 "the rationale is the thing a future reader comes back for.)")
         graph = self._load_graph(proj)
         dep_nodes = [self._resolve_ref(graph, r) for r in (deps or [])]
-        relpath = self._unique_relpath(proj, _DIRS[kind], _slug(title))
+        relpath = self._unique_relpath(proj, kind, _slug(title))
         # A new decision is born VERIFIED: it was written against the deps as they
         # read right now, so seeding `checked` says exactly that (a fresh note
         # showing up already tainted would be noise, not signal).
@@ -925,9 +1002,10 @@ class Designs:
             "deps": [n.id for n in dep_nodes], "links": [], **checked,
             **({"sources": _source_rows(cited)} if cited else {}),
             **extra, "created": _today(), "updated": _today()}
-        note = Note(path=self.notestore.abspath(proj, relpath), frontmatter=fm,
+        store = self._store(kind)
+        note = Note(path=store.abspath(proj, relpath), frontmatter=fm,
                     body=(content or "").strip() + "\n")
-        res = await self.notestore.write(proj, relpath, note)
+        res = await store.write(proj, relpath, note)
         return {"project": proj, "id": note.id, "relpath": relpath,
                 "title": fm["title"], "deps": fm["deps"], "status": fm["status"],
                 "sources": [source_label(s) for s in cited],
@@ -991,7 +1069,7 @@ class Designs:
                 f"{node.title!r} still has {len(dependents)} dependent(s): {listing}. "
                 f"Drop those edges ({kind}_dep_remove) or pass force=True — forcing "
                 f"leaves them tainted, pointing at a missing dep")
-        res = await self.notestore.delete(proj, node.relpath)
+        res = await self._store(node.kind).delete(proj, node.relpath)
         return {**res, "id": node.id, "title": node.title,
                 "dependents": dependents, "forced": bool(dependents)}
 
@@ -1666,7 +1744,7 @@ class Designs:
         existing = self._citing(proj, doc, kind)
         path = ""
         try:
-            path = str(self.notestore.abspath(proj, doc))
+            path = str(self._doc_abspath(proj, doc))
         except (OSError, ValueError):
             pass
         return {"project": proj, "kind": kind, "relpath": doc, "path": path,

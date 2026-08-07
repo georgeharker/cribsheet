@@ -42,9 +42,9 @@ class StoreSpec:
 
 
 # `reserved` on notes grows as each facet moves to its own pillar (design/plans
-# in the Designs cut-over, code-learnings/learnings in the Learnings one) — until
-# then the notes store must keep serving the legacy in-tree layout.
-NOTES_SPEC = StoreSpec("notes", "notes")
+# done; code-learnings/learnings follow in the Learnings cut-over) — until then
+# the notes store must keep serving that facet's legacy in-tree layout.
+NOTES_SPEC = StoreSpec("notes", "notes", reserved=("design/", "plans/"))
 DESIGN_SPEC = StoreSpec("design", "design", facet="design")
 PLANS_SPEC = StoreSpec("plans", "plans", facet="plan")
 LEARNINGS_SPEC = StoreSpec("learnings", "learnings", facet="learning")
