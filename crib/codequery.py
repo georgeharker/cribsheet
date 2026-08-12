@@ -13,6 +13,8 @@ from __future__ import annotations
 from collections import deque
 from typing import TYPE_CHECKING, Any, Callable
 
+from .errors import CribUserError
+
 if TYPE_CHECKING:
     from .codestore import _ResidentCode
     from .embed import Embedder
@@ -105,13 +107,13 @@ def _rollup_modules(sub: dict[str, Any], proj: str) -> dict[str, Any]:
 
 def check_k(k: int, name: str = "k") -> int:
     if not isinstance(k, int) or isinstance(k, bool) or not 1 <= k <= MAX_K:
-        raise ValueError(f"{name} must be an integer in 1..{MAX_K}, got {k!r}")
+        raise CribUserError(f"{name} must be an integer in 1..{MAX_K}, got {k!r}")
     return k
 
 
 def check_query(query: str, name: str = "query") -> str:
     if not (query or "").strip():
-        raise ValueError(
+        raise CribUserError(
             f"empty {name}: describe what you're looking for — a concept "
             '("where do we fuse ranked lists") or a symbol name')
     return query
@@ -319,31 +321,31 @@ class CodeQuery:
         (ranked by caller count) rather than picking one; every result carries
         `resolved` saying what the name became and which tier matched."""
         if direction not in GRAPH_DIRECTIONS:
-            raise ValueError(
+            raise CribUserError(
                 f"unknown direction {direction!r}: use one of "
                 f"{', '.join(sorted(GRAPH_DIRECTIONS))}")
         if shape is not None and shape not in GRAPH_SHAPES:
-            raise ValueError(f"unknown shape {shape!r}: use one of "
+            raise CribUserError(f"unknown shape {shape!r}: use one of "
                              f"{', '.join(GRAPH_SHAPES)}")
         if group_by is not None:
             if group_by not in GRAPH_GROUPINGS:
-                raise ValueError(f"unknown group_by {group_by!r}: use one of "
+                raise CribUserError(f"unknown group_by {group_by!r}: use one of "
                                  f"{', '.join(GRAPH_GROUPINGS)}")
             if shape == "tree":                 # explicit and contradictory
-                raise ValueError(
+                raise CribUserError(
                     "group_by rolls up an edge list, which a tree cannot carry: "
                     'drop shape="tree" (group_by implies shape="edges")')
             shape = "edges"                     # …otherwise group_by picks it
         if symbol is None:
             if shape == "tree":                 # explicit and impossible
-                raise ValueError(
+                raise CribUserError(
                     "a whole-project graph has no root to hang a tree from: "
                     'drop shape="tree", or pass a symbol')
             shape = "edges"
         shape = shape or "tree"
         check_k(depth, "depth")
         if depth > MAX_DEPTH:
-            raise ValueError(f"depth must be 1..{MAX_DEPTH}, got {depth!r}")
+            raise CribUserError(f"depth must be 1..{MAX_DEPTH}, got {depth!r}")
         if symbol is not None:
             check_query(symbol, "symbol")
         self._require_index(proj)
@@ -451,7 +453,7 @@ class CodeQuery:
         kind = "references" if direction == "references" else "calls"
         forward = direction == "callees"
         if capped and len(entries) > MAX_GRAPH_NODES:
-            raise ValueError(
+            raise CribUserError(
                 f"{len(entries)} symbols exceeds the {MAX_GRAPH_NODES}-node "
                 'whole-project cap: pass group_by="module" for the rolled-up '
                 "export (no cap), or give a symbol to walk from")

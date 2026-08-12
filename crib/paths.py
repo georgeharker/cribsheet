@@ -15,6 +15,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from .errors import CribUserError
+
 if TYPE_CHECKING:
     from .config import Config
 
@@ -29,7 +31,7 @@ def check_project_name(project: str) -> str:
     path) would otherwise plant a whole namespace outside the data dir. Returns
     the name so it can be used inline."""
     if project in (".", "..") or not _PROJECT_RE.match(project or ""):
-        raise ValueError(
+        raise CribUserError(
             f"invalid project name {project!r}: use letters, digits, '.', '_' or "
             "'-' only — a project is a name, not a path")
     return project
@@ -43,13 +45,13 @@ def check_relpath(relpath: str, base: Path | str = "the store") -> str:
     store's symlinks happen to point. Returns the relpath so it can be used
     inline."""
     if not relpath:
-        raise ValueError(f"empty path: expected a path relative to {base}")
+        raise CribUserError(f"empty path: expected a path relative to {base}")
     p = Path(relpath)
     if p.is_absolute():
-        raise ValueError(
+        raise CribUserError(
             f"absolute path not allowed: {relpath!r} — pass a path relative to {base}")
     if ".." in p.parts:
-        raise ValueError(f"path escapes {base}: {relpath!r} — no '..' segments")
+        raise CribUserError(f"path escapes {base}: {relpath!r} — no '..' segments")
     return relpath
 
 
@@ -64,7 +66,7 @@ def confine(base: Path, *parts: str) -> Path:
         check_relpath(part, base)
     out = base.joinpath(*parts)
     if not out.resolve().is_relative_to(base.resolve()):
-        raise ValueError(f"path escapes {base}: {'/'.join(parts)!r}")
+        raise CribUserError(f"path escapes {base}: {'/'.join(parts)!r}")
     return out
 
 
@@ -179,7 +181,7 @@ class ProjectPaths:
         from somewhere deep in the note path."""
         if self.available:
             return self
-        raise ValueError(
+        raise CribUserError(
             f"project {self.project!r} keeps its notes in a repo at "
             f"{self.store_token} ({self.store_root}), which is not on this "
             f"machine: clone the repo there, add a [locations] entry mapping "

@@ -19,6 +19,7 @@ import re
 from typing import TYPE_CHECKING, Any
 
 from . import notes
+from .errors import CribUserError
 from .notes import Note
 
 if TYPE_CHECKING:
@@ -125,7 +126,7 @@ class Learnings:
         relpath = self.relpath(proj, entry)
         path = self.store.abspath(proj, relpath)
         if not path.exists():
-            raise ValueError(f"no learning for {entry['fqname']!r} yet — learning_add first")
+            raise CribUserError(f"no learning for {entry['fqname']!r} yet — learning_add first")
         note = notes.load(path)
         note.frontmatter["content_hash"] = entry.get("content_hash", "")
         note.body = new_content.strip() + "\n"
@@ -142,7 +143,7 @@ class Learnings:
             fqn = symbol                      # orphan: gone from the index, note lingers
         relpath = self.rel_for_fqn(proj, fqn)
         if not self.store.abspath(proj, relpath).exists():
-            raise ValueError(f"no learning for {symbol!r} in project {proj!r}")
+            raise CribUserError(f"no learning for {symbol!r} in project {proj!r}")
         res = await self.store.delete(proj, relpath)
         return {**res, "symbol": fqn}
 
@@ -154,7 +155,7 @@ class Learnings:
         relpath = self.relpath(proj, entry)
         path = self.store.abspath(proj, relpath)
         if not path.exists():
-            raise ValueError(f"no learning for {entry['fqname']!r} yet — learning_add first")
+            raise CribUserError(f"no learning for {entry['fqname']!r} yet — learning_add first")
         note = notes.load(path)
         note.frontmatter["content_hash"] = entry.get("content_hash", "")
         note.frontmatter["file"] = entry.get("file", note.frontmatter.get("file", ""))
@@ -228,7 +229,7 @@ class Learnings:
         old_rel = self.rel_for_fqn(proj, old_fqn)
         old_path = self.store.abspath(proj, old_rel)
         if not old_path.exists():
-            raise ValueError(f"no learning for {old_fqn!r} in project {proj!r}")
+            raise CribUserError(f"no learning for {old_fqn!r} in project {proj!r}")
         entries = SymbolIndex(self.paths.project_dir(proj)).all()
         if new_fqn is None:
             fm = notes.load(old_path).frontmatter
@@ -239,7 +240,7 @@ class Learnings:
             m = [e for e in entries if e["fqname"].endswith("." + new_fqn)
                  or e.get("name") == new_fqn]
             if len(m) != 1:
-                raise ValueError(f"target {new_fqn!r} not found or not unique in index")
+                raise CribUserError(f"target {new_fqn!r} not found or not unique in index")
             new_entry = m[0]
         new_rel = self.rel_for_fqn(proj, new_entry["fqname"])
         # A rehome must never CLOBBER: the target symbol may already carry its own
@@ -247,7 +248,7 @@ class Learnings:
         # with no prompt (the ring keeps the bytes, but nothing would say so).
         # Refuse like `NoteStore.move` does and let the human merge or forget one.
         if new_rel != old_rel and self.store.abspath(proj, new_rel).exists():
-            raise ValueError(
+            raise CribUserError(
                 f"{new_entry['fqname']!r} already has a learning ({new_rel}) — "
                 f"read both and merge with learning_edit, or learning_forget one "
                 f"first; rehome refuses to overwrite")

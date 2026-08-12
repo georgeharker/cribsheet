@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from . import notes
+from .errors import CribUserError
 from .notes import Note, NoteParseError
 from .paths import check_relpath, confine
 from .sources import SRC_PREFIX, SourceRoots
@@ -155,7 +156,7 @@ class NoteStore:
             facet = {"design/": "design", "plans/": "plan",
                      "code-learnings/": "learning", "learnings/": "learning"} \
                 .get(hit, hit.rstrip("/"))
-            raise ValueError(
+            raise CribUserError(
                 f"{relpath}: `{hit}` content lives in its own store, not under "
                 f"notes — use the {facet}_* verbs (e.g. {facet}_read "
                 f"{relpath[len(hit):]}), or edit the file in the `{hit.rstrip('/')}`"
@@ -167,7 +168,7 @@ class NoteStore:
         frontmatter into someone's README (`edit`) or delete it from their
         checkout (`forget`)."""
         if self.spec.name == "notes" and relpath.startswith(SRC_PREFIX):
-            raise ValueError(
+            raise CribUserError(
                 f"cannot {verb} {relpath}: source files are indexed in place and "
                 "owned by their repo — edit them in the checkout (`note_locate` "
                 "gives the path); the watcher reindexes on save")
@@ -251,7 +252,7 @@ class NoteStore:
         self._refuse_source(dst_relpath, "move into")   # would write into the repo
         src = self.abspath(project, relpath)
         if not src.exists():
-            raise ValueError(f"no such note: {relpath} in project {project!r}")
+            raise CribUserError(f"no such note: {relpath} in project {project!r}")
         # capture BEFORE the write — save_atomic mkdirs the destination notes dir
         created = not self.notes_root(dst_proj).exists()
         dst_path = self.abspath(dst_proj, dst_relpath)
@@ -260,9 +261,9 @@ class NoteStore:
         # file, and a "move" onto itself would write the destination and then unlink
         # it — deleting the note it was asked to preserve.
         if src.resolve() == dst_path.resolve():
-            raise ValueError("source and destination are the same")
+            raise CribUserError("source and destination are the same")
         if dst_path.exists():
-            raise ValueError(f"destination exists: {dst_relpath} in {dst_proj!r}")
+            raise CribUserError(f"destination exists: {dst_relpath} in {dst_proj!r}")
         note = notes.load(src)              # carries the id in frontmatter
         dst = Note(path=dst_path, frontmatter=note.frontmatter, body=note.body)
         notes.save_atomic(dst)
@@ -360,7 +361,7 @@ class NoteStore:
     def version_content(self, project: str, relpath: str, version: str) -> str:
         note_id = self._ring_id(project, relpath)
         if not note_id:
-            raise ValueError("note has no id; nothing to restore")
+            raise CribUserError("note has no id; nothing to restore")
         try:
             return self.versions_for(project).read(note_id, version)
         except OSError as e:
@@ -368,6 +369,6 @@ class NoteStore:
             # answer in the same currency as every other bad argument (ValueError,
             # naming what to do), so a wrong `version=` doesn't surface as a raw
             # FileNotFoundError from deep inside the ring.
-            raise ValueError(
+            raise CribUserError(
                 f"no such version {version!r} for {relpath} in {project!r} — "
                 f"`note_versions` lists what is recoverable") from e

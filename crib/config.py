@@ -10,6 +10,7 @@ from typing import Any
 
 import yaml
 
+from .errors import CribUserError
 from .paths import check_project_name, confine
 
 
@@ -283,7 +284,7 @@ class Config:
         try:
             data = tomllib.loads(config_file.read_text())
         except tomllib.TOMLDecodeError as e:
-            raise ValueError(f"{config_file}: invalid TOML — {e}") from e
+            raise CribUserError(f"{config_file}: invalid TOML — {e}") from e
         sub = {"embed": EmbedConfig, "chunk": ChunkConfig,
                "retrieve": RetrieveConfig, "memory": MemoryConfig,
                "chroma": ChromaConfig, "daemon": DaemonConfig,

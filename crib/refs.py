@@ -18,8 +18,8 @@ from .config import CribLink
 from .errors import CribUserError
 
 if TYPE_CHECKING:
-    from .codestore import _ResidentCode
     from .codeindex import RefProjects
+    from .codestore import _ResidentCode
     from .paths import Paths
 
 
@@ -109,7 +109,7 @@ class Refs:
         candidates (never silently pick, so a learning can't land on the wrong one).
         Resolves against a resident cache when one is passed (avoids a disk read)."""
         from .codeindex import SymbolIndex
-        from .codequery import check_query    # lazy: one message for one boundary
+        from .codequery import check_query  # lazy: one message for one boundary
         check_query(symbol, "symbol")
         matches = (rc.by_fqname(symbol) if rc is not None
                    else SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol))

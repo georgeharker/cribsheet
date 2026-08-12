@@ -69,6 +69,7 @@ from typing import TYPE_CHECKING, Any
 
 from . import notes
 from .chunk import chunk_note, section_key
+from .errors import CribUserError
 from .notes import Note
 from .util import sha1_hex
 
@@ -238,7 +239,7 @@ def _rank_between(a: str | None = None, b: str | None = None) -> str:
             if c < hi[i]:
                 hi = ""                 # already strictly below: hi stops binding
             elif i + 1 == len(hi):      # matched hi exactly; anything deeper is >
-                raise ValueError(
+                raise CribUserError(
                     f"no rank fits between {a!r} and {b!r} — they are adjacent "
                     f"(a rank ending in 'a' leaves no gap below it)")
         i += 1
@@ -497,7 +498,7 @@ class Designs:
         with `_resolve_ref`, ambiguity lists the candidates rather than guessing."""
         ref = (ref or "").strip().lstrip("./")
         if not ref:
-            raise ValueError(
+            raise CribUserError(
                 "name the doc: a note relpath, a qualified facet ref "
                 "(`design:foo.md`), or a repo-relative path to a doc indexed in "
                 "situ (`DESIGN.md`, `docs/plans/foo.md`)")
@@ -526,12 +527,12 @@ class Designs:
         if len(matches) == 1:
             return matches.pop()
         if not matches:
-            raise ValueError(
+            raise CribUserError(
                 f"no doc matches {ref!r} — pass a note relpath, or a path under a "
                 f"repo whose docs are indexed in situ (those read "
                 f"`sources/<repo>/<path>`)")
         listing = ", ".join(sorted(matches)[:8])
-        raise ValueError(f"ambiguous doc {ref!r} — {len(matches)} match: {listing}")
+        raise CribUserError(f"ambiguous doc {ref!r} — {len(matches)} match: {listing}")
 
     def _indexed_sections(self, proj: str, relpath: str) -> dict[str, str]:
         """`{section_key: section_hash}` as the INDEX records them.
@@ -629,12 +630,12 @@ class Designs:
                 return hits[0]
             if len(hits) > 1:
                 listing = ", ".join(h["key"] for h in hits[:8])
-                raise ValueError(
+                raise CribUserError(
                     f"ambiguous source heading {suffix!r} in {relpath} — "
                     f"{len(hits)} sections match: {listing}. Cite more of the "
                     f"heading path (`--source \"{relpath}#<one of those>\"`)")
         listing = ", ".join(r["key"] for r in rows[:12]) or "(none — no headings)"
-        raise ValueError(
+        raise CribUserError(
             f"no section of {relpath} matches {suffix!r} — its headings are: "
             f"{listing}")
 
@@ -666,12 +667,12 @@ class Designs:
         headed = [r for r in rows if r["key"]]
         if headed:
             listing = ", ".join(r["key"] for r in headed[:12])
-            raise ValueError(
+            raise CribUserError(
                 f"{relpath} has headings, so cite the SECTION this was drawn from "
                 f"rather than the whole doc — `{relpath}#<heading>`. Its sections "
                 f"are: {listing}")
         if not rows:
-            raise ValueError(f"{relpath} has no content to cite")
+            raise CribUserError(f"{relpath} has no content to cite")
         return {"ref": relpath, "heading": None, "hash": rows[0]["section_hash"]}
 
     def _capture_sources(self, proj: str,
@@ -724,10 +725,10 @@ class Designs:
         from .app import _slug
         ref = (ref or "").strip()
         if not ref:
-            raise ValueError("empty ref — pass an id, relpath, or title")
+            raise CribUserError("empty ref — pass an id, relpath, or title")
         pool = [n for n in graph.nodes.values() if kind is None or n.kind == kind]
         if not pool:
-            raise ValueError(
+            raise CribUserError(
                 f"no {kind or 'design/plan'} notes yet — "
                 f"`{kind or 'design'}_add` creates the first one")
         want, slug = ref.lower(), _slug(ref)
@@ -752,12 +753,12 @@ class Designs:
         if len(matches) == 1:
             return matches[0]
         if not matches:
-            raise ValueError(
+            raise CribUserError(
                 f"no {kind or 'design/plan'} note matches {ref!r} — "
                 f"reference it by id, relpath or title "
                 f"(`{kind or 'design'}_check` / `plan_list` show what exists)")
         listing = ", ".join(f"{n.id[:8]}… {n.relpath}" for n in matches[:8])
-        raise ValueError(f"ambiguous ref {ref!r} — {len(matches)} matches: {listing}")
+        raise CribUserError(f"ambiguous ref {ref!r} — {len(matches)} matches: {listing}")
 
     # ── taint ─────────────────────────────────────────────────────────────────
 
@@ -984,9 +985,9 @@ class Designs:
                    sources: list[Any] | None = None) -> dict[str, Any]:
         from .app import _slug
         if not (title or "").strip():
-            raise ValueError("a design/plan note needs a title")
+            raise CribUserError("a design/plan note needs a title")
         if kind == "design" and not (content or "").strip():
-            raise ValueError(
+            raise CribUserError(
                 "a design decision needs a body — the choice, why, and what was "
                 "rejected. (A plan item may be title-only; a decision may not: "
                 "the rationale is the thing a future reader comes back for.)")
@@ -1023,7 +1024,7 @@ class Designs:
         node = self._resolve_ref(graph, ref, kind)
         dep = self._resolve_ref(graph, dep_ref)
         if dep.id == node.id:
-            raise ValueError(f"{node.title!r} cannot depend on itself")
+            raise CribUserError(f"{node.title!r} cannot depend on itself")
         if dep.id in node.deps:
             return {"project": proj, "id": node.id, "relpath": node.relpath,
                     "title": node.title, "dep": dep.id, "already": True,
@@ -1034,7 +1035,7 @@ class Designs:
         for cyc in _cycles(probe):
             if node.id in cyc:
                 path = " → ".join(probe[c].title for c in cyc)
-                raise ValueError(
+                raise CribUserError(
                     f"that dep would create a cycle: {path}. Dependencies must be "
                     f"a DAG — drop the opposite edge first")
         deps = [*node.deps, dep.id]
@@ -1053,7 +1054,7 @@ class Designs:
         except ValueError:
             dep_id = dep_ref.strip().upper()    # dangling dep: remove by raw id
         if dep_id not in node.deps:
-            raise ValueError(f"{node.title!r} does not depend on {dep_ref!r}")
+            raise CribUserError(f"{node.title!r} does not depend on {dep_ref!r}")
         deps = [d for d in node.deps if d != dep_id]
         checked = {k: v for k, v in node.checked.items() if k != dep_id}
         fm: dict[str, Any] = {"deps": deps}
@@ -1071,7 +1072,7 @@ class Designs:
         dependents = [graph.nodes[d].brief() for d in graph.dependents.get(node.id, [])]
         if dependents and not force:
             listing = ", ".join(f"{d['title']!r} ({d['relpath']})" for d in dependents)
-            raise ValueError(
+            raise CribUserError(
                 f"{node.title!r} still has {len(dependents)} dependent(s): {listing}. "
                 f"Drop those edges ({kind}_dep_remove) or pass force=True — forcing "
                 f"leaves them tainted, pointing at a missing dep")
@@ -1291,7 +1292,7 @@ class Designs:
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, "design")
         if node.status != "proposed":
-            raise ValueError(
+            raise CribUserError(
                 f"{node.title!r} is already {node.status} — promote applies to "
                 f"`proposed` entries (what `design_import`'s procedure creates); "
                 f"a decision that drifted is `design_reaffirm`, one that was "
@@ -1317,7 +1318,7 @@ class Designs:
         """The dependency tree around a decision — `deps` (what it builds on) or
         `dependents` (what builds on it) — every node taint-flagged."""
         if direction not in ("deps", "dependents"):
-            raise ValueError(
+            raise CribUserError(
                 f"unknown direction {direction!r}: use 'deps' (what this builds on) "
                 f"or 'dependents' (what builds on this)")
         graph = self._load_graph(proj)
@@ -1366,7 +1367,7 @@ class Designs:
         node = self._resolve_ref(graph, ref, "design")
         by = self._resolve_ref(graph, by_ref, "design") if by_ref else None
         if by and by.id == node.id:
-            raise ValueError("a decision cannot supersede itself")
+            raise CribUserError("a decision cannot supersede itself")
         note = self._note(proj, node)
         marker = (f"\n> **Superseded** {_today()}"
                   + (f" by {by.title!r} ({by.relpath})." if by else ".")
@@ -1426,7 +1427,7 @@ class Designs:
                  else [{"title": title, "content": content, "deps": deps,
                         "sources": sources}])
         if not batch:
-            raise ValueError("plan_add needs a title, or items=[…]")
+            raise CribUserError("plan_add needs a title, or items=[…]")
         rows: list[dict[str, Any]] = []
         by_index: dict[str, str] = {}       # "#1" → the id it created
         prev: str | None = None
@@ -1439,7 +1440,7 @@ class Designs:
             unknown = [d for d in raw_deps
                        if d.startswith("#") and d not in by_index]
             if unknown:
-                raise ValueError(
+                raise CribUserError(
                     f"item {i} depends on {unknown[0]!r}, which is not an EARLIER "
                     f"item in this batch (use #1…#{i - 1}, or an existing ref) — "
                     f"a batch dep can only point backwards")
@@ -1477,7 +1478,7 @@ class Designs:
         re-running `plan_status <ref> done` after re-reading a changed source is
         the plan-side `design_reaffirm`, and it needs no verb of its own."""
         if status not in PLAN_STATUSES:
-            raise ValueError(
+            raise CribUserError(
                 f"unknown status {status!r}: use one of {', '.join(PLAN_STATUSES)} "
                 f"('blocked' is derived from deps, never set)")
         graph = self._load_graph(proj)
@@ -1530,13 +1531,13 @@ class Designs:
         """Re-rank an item. Deps are NOT touched: order is preference, deps are
         correctness (decision 5), so moving can never break the plan."""
         if not (after or before):
-            raise ValueError("plan_move needs after=<ref> and/or before=<ref>")
+            raise CribUserError("plan_move needs after=<ref> and/or before=<ref>")
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, "plan")
         a = self._resolve_ref(graph, after, "plan") if after else None
         b = self._resolve_ref(graph, before, "plan") if before else None
         if node.id in {n.id for n in (a, b) if n}:
-            raise ValueError(f"{node.title!r} cannot be placed relative to itself")
+            raise CribUserError(f"{node.title!r} cannot be placed relative to itself")
         rank = self._rank_for(graph, a, b, exclude=node.id)
         out = await self._save(proj, node, {"rank": rank})
         return {**out, "rank": rank, "deps": list(node.deps)}

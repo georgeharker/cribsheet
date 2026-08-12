@@ -20,6 +20,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Protocol, TypeVar
 
+from .errors import CribUserError
+
 
 @dataclass
 class Record:
@@ -74,7 +76,7 @@ def _cosine(a: list[float], b: list[float]) -> float:
     instead of failing. Chroma refuses a dim mismatch outright; the in-process
     stores have to say so themselves."""
     if len(a) != len(b):
-        raise ValueError(
+        raise CribUserError(
             f"embedding dimension mismatch: query has {len(a)}, stored vector has "
             f"{len(b)} — the store holds vectors from a different embedder; run "
             "`crib project reconcile` to re-embed at the current dimension")

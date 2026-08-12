@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from .app import Crib
+from .errors import CribUserError
 from .session import ProjectResolution, resolve_session_project, session_state
 
 # How often project_index emits an MCP progress notification while a sweep runs — frequent
@@ -118,7 +119,7 @@ def _write_project(crib: Crib, project: str | None, project_path: str | None) ->
         return project
     if project_path:
         return crib.resolve_project(None, _cwd(project_path))
-    raise ValueError(
+    raise CribUserError(
         "a write needs an explicit target: pass project=<name> — the project this "
         "fact is ABOUT, which may differ from your current one (cross-cutting tooling "
         "knowledge often belongs in `default` or its own project) — or project_path="
@@ -267,7 +268,7 @@ def build_server(crib: Crib | None = None):
             a = bound.arguments
             project, path = a.get("project"), a.get("project_path")
             if needs_target and not (project or path):
-                raise ValueError(
+                raise CribUserError(
                     f"{fn.__name__} needs a SOURCE: pass project_path=<a path in that "
                     "repo> (or project=<name>). It acts on a specific repo, so it must "
                     "not fall through to whatever project happens to be current.")

@@ -22,21 +22,20 @@ from . import claudemem, notes
 from .chunk import CHUNK_SCHEMA_VERSION, section_key, section_line_map
 from .claudemem import MemoryBindings
 from .codeindexer import CodeIndexer
-from .codestore import CodeStore, _ResidentCode
-from .config import (Config, CribLink, ProjectConfig, portable_path,
-                     resolve_project)
-from .project_services import ProjectServices
-from .refs import Refs
-from .embed import build_embedder, embed_batch, embed_query_batch
-from .gitbacking import GitBacking
 from .codequery import CodeQuery
+from .codestore import CodeStore, _ResidentCode
+from .config import Config, CribLink, ProjectConfig, portable_path, resolve_project
 from .designs import Designs
+from .embed import build_embedder, embed_batch, embed_query_batch
+from .errors import CribUserError
+from .gitbacking import GitBacking
 from .indexer import IndexEngine, IndexResult
 from .learnings import Learnings
 from .notes import Note, NoteParseError
-from .notestore import (DESIGN_SPEC, LEARNINGS_SPEC, NoteStore, PLANS_SPEC)
-from .paths import (Paths, ProjectPathResolver, ProjectPaths,
-                    check_project_name, confine)
+from .notestore import DESIGN_SPEC, LEARNINGS_SPEC, PLANS_SPEC, NoteStore
+from .paths import Paths, ProjectPathResolver, ProjectPaths, check_project_name, confine
+from .project_services import ProjectServices
+from .refs import Refs
 from .sources import SRC_PREFIX, SourceRoots, src_relpath
 from .store import Hit, Store
 from .util import derived_ulid
@@ -1067,7 +1066,7 @@ class Crib:
         check_query(query)
         check_k(k)
         if dedupe not in ("section", "file", "none"):
-            raise ValueError(
+            raise CribUserError(
                 f"unknown dedupe {dedupe!r}: use 'section' (default), 'file' or 'none'")
         proj = self.resolve_project(project, cwd)
         vec = embed_query_batch(self.embedder, [query])[0]
@@ -1178,7 +1177,7 @@ class Crib:
         proj = self.resolve_project(project, cwd)
         path = self.abspath(proj, relpath)
         if not path.exists():
-            raise ValueError(f"no such note: {relpath} in project {proj!r}")
+            raise CribUserError(f"no such note: {relpath} in project {proj!r}")
         note = notes.load(path)
         prompt = self.project_config(proj).distill_prompt or DEFAULT_DISTILL_PROMPT
         from .generate import agenerate
@@ -1299,7 +1298,7 @@ class Crib:
                     f"use_project <name> to switch your current project).")
         else:
             hint = ""
-        raise ValueError(
+        raise CribUserError(
             f"project {proj!r} isn't code-indexed yet. If this is the repo you're working "
             f"in, INDEX IT NOW then retry: run project_index (project_path=<this repo dir>) "
             f"— it indexes the source so lookup/dossier/xref work; do NOT grep or read "
@@ -1423,20 +1422,20 @@ class Crib:
             if reg is not None:
                 base, link = reg, CribLink.find(reg)
                 if link is not None and link.project != project:
-                    raise ValueError(
+                    raise CribUserError(
                         f"stale registration: {project!r} was last indexed from "
                         f"{reg}, but the .crib there now names {link.project!r}. "
                         "Pass project_path=<the repo dir> explicitly (or "
                         "project_forget the stale project).")
             elif link is not None:
-                raise ValueError(
+                raise CribUserError(
                     f"{base} belongs to project {link.project!r} (its .crib says "
                     f"so), not {project!r} — refusing to index one project's repo "
                     f"into another. Pass project_path=<{project}'s repo dir>.")
             # else: no .crib and no registered root → first-time onboard of
             # `project` at `base` (the create path below).
         if base is None:
-            raise ValueError(
+            raise CribUserError(
                 f"can't locate a repo for project {project!r}: it has no recorded "
                 "source root. Pass project_path=<the repo dir> — a repo-scoped op "
                 "never falls back to the server's own cwd.")
@@ -1456,7 +1455,7 @@ class Crib:
                 and reg != root.resolve():
             # dir-name collision with an existing project rooted elsewhere — a
             # fresh .crib here would silently merge two repos under one project
-            raise ValueError(
+            raise CribUserError(
                 f"a project named {name!r} already exists, rooted at {reg} — "
                 f"refusing to also bind {root} to it. Add a .crib here naming a "
                 "different project (or project_forget the old one to re-root).")
@@ -1604,18 +1603,18 @@ class Crib:
         no-op."""
         link = CribLink.find(cwd or Path.cwd())
         if link is None:
-            raise ValueError(
+            raise CribUserError(
                 "no `.crib` at or above this directory — an adopt needs the repo "
                 "that will carry the notes (add a `.crib` with `project:` and "
                 "`store:`, or run `crib project setup` first)")
         proj = check_project_name(project or link.project)
         if project and link.project != proj:
-            raise ValueError(
+            raise CribUserError(
                 f"the `.crib` at {link.root} names project {link.project!r}, not "
                 f"{proj!r} — adopt is about THIS repo's project")
         store = link.store_dir
         if store is None:
-            raise ValueError(
+            raise CribUserError(
                 f"{link.root / '.crib'} declares no `store:` — add e.g. "
                 "`store: .crib/store` (repo-root-relative) to say where in this "
                 "repo the notes should live")
@@ -1626,7 +1625,7 @@ class Crib:
                         "notes_moved": 0, "versions_moved": 0,
                         "store_root": pp.store_token,
                         "message": f"{proj} already lives in {store}"}
-            raise ValueError(
+            raise CribUserError(
                 f"{proj} is already adopted into {pp.store_root} — `crib project "
                 f"release {proj}` first, then adopt here (a project's notes live "
                 "in exactly one place)")
@@ -1634,14 +1633,14 @@ class Crib:
             # `.crib` is itself a FILE at the repo root, so `store: .crib/store`
             # (an inviting-looking spelling) can never be created — say that here
             # rather than surfacing a bare NotADirectoryError from mkdir.
-            raise ValueError(
+            raise CribUserError(
                 f"`store: {link.store}` is not a directory ({store} exists as a "
                 "file) — point it at a directory path, e.g. `store: .crib-store`")
         from .watch import PILLAR_SEGMENTS
         for seg in PILLAR_SEGMENTS:
             dest = store / seg
             if any(dest.rglob("*.md")) if dest.is_dir() else False:
-                raise ValueError(
+                raise CribUserError(
                     f"{dest} already holds notes — refusing to merge two note "
                     "trees. Move them aside (or pick a different `store:`) and "
                     "re-run")
@@ -1693,7 +1692,7 @@ class Crib:
         for seg in PILLAR_SEGMENTS:
             dest = gdir / seg
             if any(dest.rglob("*.md")) if dest.is_dir() else False:
-                raise ValueError(
+                raise CribUserError(
                     f"{dest} already holds notes — refusing to merge two note "
                     "trees. Move them aside and re-run")
         ring_ids = [nid for seg in PILLAR_SEGMENTS
@@ -2259,8 +2258,12 @@ class Crib:
         single describe emitting {description, keywords}: half the LLM calls of running
         `elaborate` + `summarize` back to back. This is what the write-path refresh and
         the startup backlog run; the per-label verbs stay for explicit/eval use."""
-        from .section_index import (KEYWORD_PROMPTS, SUMMARY_PROMPTS, SectionIndex,
-                                    resolve_prompt)
+        from .section_index import (
+            KEYWORD_PROMPTS,
+            SUMMARY_PROMPTS,
+            SectionIndex,
+            resolve_prompt,
+        )
         proj = self.resolve_project(project, cwd)
         facets: list[dict[str, Any]] = []
         for table, builtins, root, labels in (
@@ -2271,7 +2274,7 @@ class Crib:
             for lb in labels:
                 prompt = resolve_prompt(lb, table, builtins)
                 if prompt is None:
-                    raise ValueError(f"unknown enrichment label {lb!r}")
+                    raise CribUserError(f"unknown enrichment label {lb!r}")
                 facets.append({"root": root, "label": lb, "prompt": prompt,
                                "store": SectionIndex(self.paths.project_dir(proj), root)})
         if not facets:
@@ -2288,7 +2291,7 @@ class Crib:
         proj = self.resolve_project(project, cwd)
         from .section_index import SectionIndex
         if prompt is None:
-            raise ValueError(
+            raise CribUserError(
                 f"unknown {purpose} label {label!r}: no builtin and no "
                 f"[{purpose}.{label}].prompt in config")
         facet = {"root": root_name, "label": label, "prompt": prompt,
@@ -2313,8 +2316,8 @@ class Crib:
         The per-section mop-up sweeps the bulk-missed tail per facet (plain-text
         `parse_terms`, the proven path). Bounded-concurrent, per-call timeout,
         error-isolated; off the write path."""
-        from .section_index import parse_terms
         from .generate import agenerate, agenerate_structured, resolve_provider
+        from .section_index import parse_terms
         try:                                    # record the resolved provider for provenance
             _p = resolve_provider(self.config.generate, purpose)
             model = _p.model or _p.adapter or ""
@@ -2531,12 +2534,12 @@ class Crib:
         # No process-cwd fallback: in the daemon that's the spawn dir, not a repo.
         base = Path(cwd) if cwd else self._registered_root(project)
         if base is None:
-            raise ValueError(
+            raise CribUserError(
                 "no repo dir to scan: pass project_path=<the repo dir> (or name an "
                 "already-indexed project)")
         link = CribLink.find(base)
         if link is None or link.root is None:
-            raise ValueError(f"no .crib found from {base} upward")
+            raise CribUserError(f"no .crib found from {base} upward")
         proj = project or link.project
         repo = link.root.name
         prefix = f"{SRC_PREFIX}{repo}/"
@@ -2613,13 +2616,13 @@ class Crib:
                 # error — resolving against the daemon's own cwd would be silent
                 # nonsense (and could even hit an unrelated same-named file).
                 if cwd is None:
-                    raise ValueError(
+                    raise CribUserError(
                         f"relative path {p!r} has no anchor: pass absolute paths, "
                         "or project_path=<repo dir> to resolve them against")
                 src = cwd / src
             src = src.resolve()
             if not src.is_file():
-                raise ValueError(f"not a file: {p}")
+                raise CribUserError(f"not a file: {p}")
             relpath = f"imported/{src.name}"
             sfm, sbody = notes.parse(src.read_text())
             tgt = self.abspath(proj, relpath)
@@ -2655,12 +2658,12 @@ class Crib:
         # No process-cwd fallback: in the daemon that's the spawn dir, not a repo.
         start = root or cwd
         if start is None:
-            raise ValueError(
+            raise CribUserError(
                 "no repo dir to anchor the memory lookup: pass project_path=<the "
                 "repo dir> (or root=<the harness project root>)")
         src_root = root or claudemem.find_harness_root(start)
         if src_root is None or not claudemem.harness_memory_dir(src_root).is_dir():
-            raise ValueError(
+            raise CribUserError(
                 f"no Claude memory dir found from {start} upward "
                 f"(looked under {claudemem.claude_config_dir() / 'projects'})")
         mem_dir = claudemem.harness_memory_dir(src_root)

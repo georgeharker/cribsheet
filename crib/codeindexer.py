@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from .config import CribLink
+from .errors import CribUserError
 
 if TYPE_CHECKING:
     from .project_services import ProjectServices
@@ -51,7 +52,7 @@ class CodeIndexer:
             if cwd:
                 p = Path(cwd) / p
             else:
-                raise ValueError(
+                raise CribUserError(
                     f"code_index needs an ABSOLUTE path (got relative {path!r}) — a "
                     f"relative path resolves against the daemon's cwd, not yours. Pass "
                     f"an absolute path, or cwd=<your working dir>.")
@@ -90,8 +91,15 @@ class CodeIndexer:
         prior index (for the content_hash gate + vanished-symbol drop); a full-project
         sweep parses it ONCE and passes it here so we don't re-`store.all()` per file
         (that made a cold onboard O(files × symbols)). None → parse it (standalone path)."""
-        from .codeindex import (FileReadError, NoServer, SymbolIndex, describe_file,
-                                 describe_symbols, extract_file, match_meta)
+        from .codeindex import (
+            FileReadError,
+            NoServer,
+            SymbolIndex,
+            describe_file,
+            describe_symbols,
+            extract_file,
+            match_meta,
+        )
         ref_ctx = self.services.ref_edge_ctx(proj, root)
         abs_p = (root / rel).resolve()
         for rname, rroot, _files in ref_ctx:
