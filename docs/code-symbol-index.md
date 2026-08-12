@@ -223,6 +223,24 @@ capped (`MAX_GRAPH_NODES`) and errors rather than truncating, because a graph
 silently missing nodes is worse than no graph; the module rollup is uncapped and is
 what large repos want anyway.
 
+**Resolving the symbol you asked for.** One rule (`fqname_match`), stated once and
+used by both the resident cache and the disk index, matching in three tiers: the full
+qualified name, a trailing run of its segments, or the bare local name taken from the
+entry's own `name` field. The tiers are **separator-neutral** — `_qualify` renders
+each language's own separator, so a dot-only rule is blind to any language that isn't
+dotted, and `ClientsLock` genuinely read as "unknown symbol" while
+`rust::src::core::lockfile::ClientsLock` sat in the index. The `name`-field tier is
+what makes a bare name work regardless, which matters most where the qualified
+spelling is one the caller could not have guessed.
+
+A name matching **several** symbols is refused, never resolved by guessing, with the
+candidates ranked by caller count — because the question a bare name usually precedes
+is "who calls this, can I delete it", and picking silently answers *nothing does* for
+a symbol with 92 callers. `code_graph` used to have its own first-match scan in front
+of this resolver, so the rule was unreachable for anything the scan could find. Every
+result carries `resolved` — the query, what it became, and which tier matched — so
+the choice is visible even when it was unambiguous.
+
 **Language routing.** Selection is by extension (§3.3); for **extension-less scripts**
 the `#!` shebang is read and mapped to a language (`_shebang_lang`: `env` and version
 suffixes handled — `#!/usr/bin/env zsh`→zsh, `#!/usr/bin/python3`→python), then the

@@ -863,6 +863,41 @@ def _module_of(relpath: str, lang: str) -> str:
     return sep.join(parts)
 
 
+def normalize_fqname(fq: str) -> str:
+    """The separator-neutral spelling, for MATCHING ONLY — never stored, never shown.
+
+    `_qualify` renders each language's OWN separator, so the qualified name is not
+    always dotted; a dot-only match rule is blind to every language that isn't.
+    That was not hypothetical: `ClientsLock` failed to resolve against the indexed
+    `rust::src::core::lockfile::ClientsLock`, so a symbol sitting in the index read
+    as "unknown symbol"."""
+    return fq.replace("::", ".")
+
+
+def fqname_match(entry_fq: str, entry_name: str, query: str) -> str | None:
+    """Which TIER `query` matches this entry on — most specific first — or None.
+
+    - `fqname` — the whole qualified name, modulo separator spelling
+    - `suffix` — a trailing run of its segments (`lockfile::ClientsLock`), so a
+      partial path disambiguates without typing the root
+    - `name`   — the bare local name, taken from the entry's OWN `name` field
+      rather than by splitting the fqname. That is what makes a bare name work in
+      every language whatever separator qualified it, and it matters most where
+      the qualified spelling is one the caller could not have guessed (crib
+      renders Rust paths from the file tree, not the crate path).
+    """
+    q, fq = normalize_fqname(query), normalize_fqname(entry_fq)
+    if entry_fq == query or fq == q:
+        return "fqname"
+    if entry_name and entry_name == query and "." not in q:
+        return "name"                 # a single token is a NAME, not a 1-segment path
+    if fq.endswith("." + q):
+        return "suffix"
+    if entry_name and entry_name == query:
+        return "name"
+    return None
+
+
 def _local_name(raw: str, lang: str) -> str:
     """The bare symbol name — strip a Lua module-table prefix (`M.setup`→`setup`,
     `T:method`→`method`) that documentSymbol folds into the name, and reduce a Rust
@@ -1581,13 +1616,10 @@ class SymbolIndex:
             return None
 
     def by_fqname(self, name: str) -> list[dict]:
-        """Read entries whose fqname ends with `name` (bare name or dotted path)."""
-        out = []
-        for e in self.all():
-            fq = e.get("fqname", "")
-            if fq == name or fq.endswith("." + name) or fq.split(".")[-1] == name:
-                out.append(e)
-        return out
+        """Read entries matching `name` — full qualified name, trailing path segments,
+        or the bare local name, in any language's separator (see `fqname_match`)."""
+        return [e for e in self.all()
+                if fqname_match(e.get("fqname", ""), e.get("name", ""), name)]
 
     def all(self) -> list[dict]:
         """Every persisted symbol entry (for concept search over descriptions).

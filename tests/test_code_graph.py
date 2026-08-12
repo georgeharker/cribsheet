@@ -9,12 +9,15 @@ states it as one node with two in-edges."""
 
 from __future__ import annotations
 
+import asyncio
+
 import pytest
 
 from crib import codequery
 from crib.app import Crib
 from crib.codeindex import SymbolIndex
 from crib.config import Config
+from crib.errors import CribUserError
 from crib.paths import Paths
 from crib.store import InMemoryStore
 
@@ -204,3 +207,123 @@ def test_unknown_shape_says_what_is_accepted(crib, tmp_path):
     _diamond(crib, tmp_path)
     with pytest.raises(ValueError, match="edges"):
         crib.code_graph("app.main", project="p", shape="dag")
+
+
+# --- symbol resolution: never guess, always disclose ---------------------------
+
+def _wrapper_and_op(crib, tmp_path):
+    """The shape that produced the original bug: an MCP-style wrapper and the op it
+    wraps share a bare name. The wrapper has NO callers, the op has two."""
+    root = tmp_path / "proj"
+    root.mkdir(parents=True)
+    (root / "server.py").write_text("def add_node(): pass\n")
+    (root / "ops.py").write_text("def add_node(): pass\n")
+    _sym(crib, "w", "server.add_node", "server.py", calls=["add_node [ops.py]"])
+    _sym(crib, "w", "ops.add_node", "ops.py",
+         called_by=["caller_a [ops.py]", "caller_b [ops.py]"])
+    _sym(crib, "w", "ops.caller_a", "ops.py", calls=["add_node [ops.py]"])
+    _sym(crib, "w", "ops.caller_b", "ops.py", calls=["add_node [ops.py]"])
+    SymbolIndex(crib.paths.project_dir("w")).set_source_root(root)
+    return root
+
+
+def test_an_ambiguous_bare_name_refuses_instead_of_picking(crib, tmp_path):
+    _wrapper_and_op(crib, tmp_path)
+    # the failure this replaces: silently answering "0 callers" for the wrapper
+    with pytest.raises(ValueError) as e:
+        crib.code_graph("add_node", project="w", direction="callers", shape="edges")
+    msg = str(e.value)
+    assert "2 symbols match" in msg and "NO result" in msg
+    assert "ops.add_node (2 callers)" in msg          # ranked, and the count is stated
+    assert msg.index("ops.add_node") < msg.index("server.add_node")
+
+
+def test_qualifying_the_name_resolves_and_answers(crib, tmp_path):
+    _wrapper_and_op(crib, tmp_path)
+    g = crib.code_graph("ops.add_node", project="w", direction="callers",
+                        shape="edges")
+    assert {n["id"] for n in g["nodes"]} == {"ops.add_node", "ops.caller_a",
+                                             "ops.caller_b"}
+    assert g["resolved"] == {"query": "ops.add_node", "fqname": "ops.add_node",
+                             "via": "fqname"}
+
+
+def test_every_result_says_what_the_name_became(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    tree = crib.code_graph("main", project="p")                  # bare, unique
+    assert tree["resolved"] == {"query": "main", "fqname": "app.main", "via": "name"}
+    edges = crib.code_graph("app.main", project="p", shape="edges")
+    assert edges["resolved"]["via"] == "fqname"
+    rolled = crib.code_graph("main", project="p", group_by="module")
+    assert rolled["resolved"]["fqname"] == "app.main"   # the rollup carries it through
+
+
+# --- languages whose qualified names are not dotted ----------------------------
+
+def _rust_ish(crib, tmp_path):
+    """crib renders a Rust qualified name with `::` (`_qualify`), so a dot-only
+    match rule cannot see it — the symbol is indexed and reads as unknown."""
+    root = tmp_path / "rs"
+    (root / "src").mkdir(parents=True)
+    (root / "src" / "lockfile.rs").write_text("pub struct ClientsLock;\n")
+    _sym(crib, "r", "rust::src::core::lockfile::ClientsLock", "src/lockfile.rs",
+         name="ClientsLock", lang="rust", kind="struct",
+         called_by=["acquire [src/lockfile.rs]"])
+    _sym(crib, "r", "rust::src::core::lockfile::acquire", "src/lockfile.rs",
+         name="acquire", lang="rust",
+         calls=["ClientsLock [src/lockfile.rs]"])
+    SymbolIndex(crib.paths.project_dir("r")).set_source_root(root)
+    return root
+
+
+def test_a_bare_name_resolves_under_a_non_dot_separator(crib, tmp_path):
+    _rust_ish(crib, tmp_path)
+    g = crib.code_graph("ClientsLock", project="r", direction="callers",
+                        shape="edges")
+    assert g["resolved"] == {"query": "ClientsLock",
+                             "fqname": "rust::src::core::lockfile::ClientsLock",
+                             "via": "name"}
+    assert ("rust::src::core::lockfile::acquire",
+            "rust::src::core::lockfile::ClientsLock") in _edge_set(g)
+
+
+@pytest.mark.parametrize("query", ["lockfile::ClientsLock", "lockfile.ClientsLock",
+                                   "rust::src::core::lockfile::ClientsLock"])
+def test_a_partial_path_matches_in_either_separator(crib, tmp_path, query):
+    _rust_ish(crib, tmp_path)
+    # the caller may not know which separator crib stored, and should not have to
+    g = crib.code_graph(query, project="r", shape="edges")
+    assert g["resolved"]["fqname"] == "rust::src::core::lockfile::ClientsLock"
+
+
+def test_an_unknown_symbol_is_still_an_empty_result_not_an_error(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    assert crib.code_graph("no_such_symbol", project="p") == {}
+
+
+# --- expected refusals are delivered, not dumped -------------------------------
+
+def test_symbol_errors_are_user_errors_and_still_value_errors(crib, tmp_path):
+    _wrapper_and_op(crib, tmp_path)
+    from crib.refs import AmbiguousSymbol, UnknownSymbol
+    assert issubclass(AmbiguousSymbol, CribUserError)
+    assert issubclass(UnknownSymbol, CribUserError)
+    assert issubclass(CribUserError, ValueError)     # every old handler still catches
+    with pytest.raises(CribUserError):
+        crib.code_graph("add_node", project="w")
+
+
+def test_the_mcp_face_delivers_the_message_verbatim(crib, tmp_path):
+    """The candidate list IS the answer, so it has to survive the tool boundary —
+    FastMCP renders a ToolError's text and may mask anything else."""
+    from fastmcp.exceptions import ToolError
+
+    from crib.server import build_server
+    _wrapper_and_op(crib, tmp_path)
+    mcp = build_server(crib)
+    tool = {t.name: t for t in asyncio.run(mcp.list_tools())}["code_graph"]
+    with pytest.raises(ToolError) as e:
+        asyncio.run(tool.run({"symbol": "add_node", "project": "w",
+                              "direction": "callers"}))
+    assert "2 symbols match" in str(e.value)
+    assert "ops.add_node (2 callers)" in str(e.value)

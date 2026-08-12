@@ -37,11 +37,12 @@ class _ResidentCode:
         self._prepare()
 
     def by_fqname(self, name: str) -> list[dict[str, Any]]:
-        """Entries whose fqname is, ends with `.name`, or has last segment `name` —
-        the resident mirror of SymbolIndex.by_fqname (no disk read)."""
+        """Entries matching `name` — the resident mirror of SymbolIndex.by_fqname (no
+        disk read). ONE match rule, imported rather than restated: the two copies of
+        it drifted apart from the writer's separator once already."""
+        from .codeindex import fqname_match     # lazy: keeps this module crib-free
         return [e for e in self.entries
-                if e["fqname"] == name or e["fqname"].endswith("." + name)
-                or e["fqname"].split(".")[-1] == name]
+                if fqname_match(e.get("fqname", ""), e.get("name", ""), name)]
 
     def _prepare(self) -> None:
         from .retrieve import BM25, _as_tf, _subtokens, tokenize

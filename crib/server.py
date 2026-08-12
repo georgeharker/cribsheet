@@ -311,6 +311,36 @@ def build_server(crib: Crib | None = None):
             return finish(fn(**a), res, project, path)
         return run_sync
 
+    def _user_facing(fn):
+        """Deliver an EXPECTED refusal as the message it is. FastMCP renders a
+        `ToolError` verbatim and is free to mask anything else, so a `CribUserError`
+        left as a plain ValueError can reach the model as a generic "error calling
+        tool" — dropping the part that was the answer (the candidate list, the
+        heading names, what to pass instead). Applied to every tool, so a new
+        `CribUserError` subclass is delivered correctly without touching this file.
+        Anything that is NOT a CribUserError falls through untouched: a real bug
+        should look like one."""
+        from fastmcp.exceptions import ToolError
+
+        from .errors import CribUserError
+
+        if inspect.iscoroutinefunction(fn):
+            @functools.wraps(fn)
+            async def run(*args, **kwargs):
+                try:
+                    return await fn(*args, **kwargs)
+                except CribUserError as e:
+                    raise ToolError(str(e)) from e
+            return run
+
+        @functools.wraps(fn)
+        def run_sync(*args, **kwargs):
+            try:
+                return fn(*args, **kwargs)
+            except CribUserError as e:
+                raise ToolError(str(e)) from e
+        return run_sync
+
     def crib_tool(resolution: str, *, echo: bool = False, elicit: bool = False,
                   needs_target: bool = False):
         """Register an MCP tool AND declare its project-resolution policy (see the
@@ -334,7 +364,7 @@ def build_server(crib: Crib | None = None):
             TOOL_POLICY[fn.__name__] = resolution
             impl = (fn if resolution in ("session", "none")
                     else _wire(fn, resolution, echo, elicit, needs_target))
-            tool = mcp.add_tool(FunctionTool.from_function(impl))
+            tool = mcp.add_tool(FunctionTool.from_function(_user_facing(impl)))
             if resolution == "write" or needs_target:
                 tool.parameters.setdefault(
                     "anyOf", [{"required": ["project"]}, {"required": ["project_path"]}])
@@ -690,8 +720,14 @@ def build_server(crib: Crib | None = None):
         OMIT `symbol` for the WHOLE PROJECT: every indexed symbol and every edge, no
         root, no depth bound — including symbols no walk reaches (entry points, dead
         code). Large repos: prefer `group_by="module"` (uncapped) over the raw symbol
-        export. Pass `project_path=<a path in the repo>` (or `project=<name>`) only to
-        target a DIFFERENT project than your current one."""
+        export.
+
+        `symbol` takes a full qualified name, a trailing run of its segments, or a
+        bare local name, in any language's separator. A bare name matching SEVERAL
+        symbols returns no graph and errors with the candidates ranked by caller
+        count — pick one and re-run. Every result carries `resolved` naming what the
+        symbol resolved to. Pass `project_path=<a path in the repo>` (or
+        `project=<name>`) only to target a DIFFERENT project than your current one."""
         return crib.code_graph(symbol, direction, depth, project,
                                shape=shape, group_by=group_by)
 

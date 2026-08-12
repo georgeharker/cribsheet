@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
 
 from .config import CribLink
+from .errors import CribUserError
 
 if TYPE_CHECKING:
     from .codestore import _ResidentCode
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
     from .paths import Paths
 
 
-class UnknownSymbol(ValueError):
+class UnknownSymbol(CribUserError):
     """No indexed symbol matches the name the caller gave.
 
     A distinct TYPE because `resolve_symbol_or_ref` has to tell "not here, try the
@@ -33,10 +34,11 @@ class UnknownSymbol(ValueError):
     Still a ValueError, so every existing `except ValueError` caller is unchanged."""
 
 
-class AmbiguousSymbol(ValueError):
+class AmbiguousSymbol(CribUserError):
     """The name matches several indexed symbols — the caller must qualify it. Never
     resolved by guessing: a learning pinned to the wrong symbol is worse than one
-    that failed to attach."""
+    that failed to attach, and a call graph rooted at the wrong one answers "nothing
+    calls this" about live code."""
 
 
 class Refs:
@@ -114,12 +116,24 @@ class Refs:
         if not matches:
             raise UnknownSymbol(f"unknown symbol {symbol!r} in project {proj!r} — "
                                 f"code_lookup it, or code_index the file first")
-        exact = [m for m in matches if m.get("fqname") == symbol]
+        from .codeindex import fqname_match
+        exact = [m for m in matches
+                 if fqname_match(m.get("fqname", ""), m.get("name", ""),
+                                 symbol) == "fqname"]
         cands = exact or matches
         if len(cands) > 1:
-            names = ", ".join(sorted(m.get("fqname", "") for m in cands)[:8])
+            # Ranked by caller count and STATED, because the question a bare name
+            # usually precedes is "who calls this, can I delete it" — where the
+            # difference between the 92-caller op and its 0-caller wrapper is the
+            # whole answer, and a bare list of names makes the reader go find it.
+            ranked = sorted(cands, key=lambda m: (-len(m.get("called_by") or []),
+                                                  m.get("fqname", "")))
+            shown = ", ".join(f"{m.get('fqname', '')} ({len(m.get('called_by') or [])}"
+                              f" callers)" for m in ranked[:8])
+            more = f", +{len(ranked) - 8} more" if len(ranked) > 8 else ""
             raise AmbiguousSymbol(
-                f"ambiguous symbol {symbol!r} → {names}; pass a full fqname")
+                f"ambiguous symbol {symbol!r} — {len(cands)} symbols match, NO result "
+                f"returned: {shown}{more}. Re-run with one of those qualified names.")
         return cands[0]
 
     def resolve_symbol_or_ref(self, proj: str, symbol: str,

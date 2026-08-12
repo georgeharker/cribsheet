@@ -311,7 +311,13 @@ class CodeQuery:
         of walk direction, so the output drops straight into a layout tool.
 
         `group_by="module"` rolls those symbol edges up into weighted file-to-file
-        edges — the architecture view — and implies `shape="edges"`."""
+        edges — the architecture view — and implies `shape="edges"`.
+
+        `symbol` may be a full qualified name, a trailing run of its segments, or a
+        bare local name in any language's separator. It resolves through the shared
+        resolver, so a bare name matching several symbols RAISES with the candidates
+        (ranked by caller count) rather than picking one; every result carries
+        `resolved` saying what the name became and which tier matched."""
         if direction not in GRAPH_DIRECTIONS:
             raise ValueError(
                 f"unknown direction {direction!r}: use one of "
@@ -364,17 +370,29 @@ class CodeQuery:
             sub = self._project_graph(proj, entries, edge, direction, _nf,
                                       capped=group_by is None)
             return _rollup_modules(sub, proj) if group_by else sub
-        root = (rc.by_fq.get(symbol)
-                or next((e for e in entries if e.get("name") == symbol
-                         or e["fqname"].endswith("." + symbol)), None))
-        root_proj = proj
-        if not root:                          # local miss → the `.crib` refs
-            try:
-                root_proj, root = self.refs.resolve_symbol_or_ref(proj, symbol, rc)
-            except ValueError:
-                return {}
+        # ONE resolver, the same one dossier and the learnings use. This used to be an
+        # ad-hoc first-match scan with the resolver as a fallback for its MISSES, so
+        # the resolver's unique-or-refuse rule was unreachable: a bare name matching
+        # two symbols silently took whichever came first in (unsorted) store order.
+        # `add_diagram_node` answered "0 callers" for the MCP wrapper while the op it
+        # wraps had 92 — a confident, well-formed, empty answer to the question you
+        # ask before deleting something. Catch the miss BY TYPE: an ambiguity is a
+        # ValueError too, and swallowing it here would restore the silence in the
+        # shape of "symbol not found".
+        from .codeindex import fqname_match
+        from .refs import UnknownSymbol
+        try:
+            root_proj, root = self.refs.resolve_symbol_or_ref(proj, symbol, rc)
+        except UnknownSymbol:
+            return {}
+        resolved: dict[str, Any] = {
+            "query": symbol, "fqname": root["fqname"],
+            "via": fqname_match(root["fqname"], root.get("name", ""), symbol)}
+        if root_proj != proj:
+            resolved["project"] = root_proj
         if shape == "edges":
             sub = self._subgraph(proj, root, root_proj, edge, direction, depth, _nf)
+            sub["resolved"] = resolved        # set before the rollup, which carries it
             return _rollup_modules(sub, proj) if group_by else sub
         seen: set[str] = set()
 
@@ -414,6 +432,7 @@ class CodeQuery:
             if n.get("fqname") in marks[p]:
                 n["has_learning"] = True
             stack.extend(n.get("children") or [])
+        tree["resolved"] = resolved       # additive on the root node; children unchanged
         return tree
 
     def _project_graph(self, proj: str, entries: list[dict], edge: str,

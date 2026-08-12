@@ -790,6 +790,16 @@ def _graph_shape(args: Any) -> str | None:
     return None
 
 
+def _emit_resolved(data: dict) -> None:
+    """State what a partial name became — only when it BECAME something, i.e. the
+    caller did not type the qualified name. Silence about a choice is the bug this
+    whole field exists to close."""
+    r = data.get("resolved") or {}
+    if r.get("fqname") and r.get("query") != r.get("fqname"):
+        proj = f" in {r['project']}" if r.get("project") else ""
+        print(f"  ({r['query']!r} → {r['fqname']}{proj}, matched on {r.get('via')})")
+
+
 def _emit_code_edges(data: dict, args: Any) -> None:
     """Node table + edge list, with the two facts the tree could not state: which
     symbols CONVERGE (in-degree > 1) and where the walk stopped."""
@@ -803,6 +813,7 @@ def _emit_code_edges(data: dict, args: Any) -> None:
     grouped = data.get("group_by") == "module"
     print(f"{scope}  {len(nodes)} {'modules' if grouped else 'nodes'}, "
           f"{len(edges)} edges")
+    _emit_resolved(data)
     indeg: dict[str, int] = {}
     for e in edges:
         if e["from"] != e["to"]:
@@ -844,6 +855,7 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
     pin = " *" if ascii_mode else " ※"          # step 3: node carries a learning
     print(f"{tree['fqname']}  ({tree.get('kind', '')})   [{direction}]"
           f"{pin if tree.get('has_learning') else ''}")
+    _emit_resolved(tree)
 
     def render(node: dict, prefix: str) -> None:
         kids = node.get("children") or []
@@ -1898,6 +1910,20 @@ def _run_inprocess(args: Any) -> None:
         crib.close()
 
 
+def _user_errors() -> tuple[type[BaseException], ...]:
+    """What to print as a message rather than a traceback: the `CribUserError` base
+    (in-process) and `ToolError` (the daemon path's wrapper for the very same
+    conditions — see `errors.py`). Two entries, one idea; a new user-error subclass
+    needs no change here."""
+    from .errors import CribUserError
+    out: tuple[type[BaseException], ...] = (CribUserError,)
+    try:
+        from fastmcp.exceptions import ToolError
+    except ImportError:                       # fastmcp absent ⇒ no daemon path
+        return out
+    return (*out, ToolError)
+
+
 def main(argv: list[str] | None = None) -> int:
     import sys as _sys
     args = build_parser().parse_args(
@@ -1934,16 +1960,26 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "memory" and getattr(args, "memory_verb", None) in (
             "setup", "sync", "push", "pull"):
         return _run_git(args, cfg)
-    if cfg.daemon.enabled and not args.no_daemon:
-        from . import sharedserver
-        if not sharedserver.available():
-            print("crib: daemon mode requires the 'sharedserver' binary on PATH "
-                  "(install it, set [daemon].enabled = false, or pass --no-daemon)",
-                  file=sys.stderr)
-            return 1
-        _run_daemon(args, cfg)
-    else:
-        _run_inprocess(args)
+    try:
+        if cfg.daemon.enabled and not args.no_daemon:
+            from . import sharedserver
+            if not sharedserver.available():
+                print("crib: daemon mode requires the 'sharedserver' binary on PATH "
+                      "(install it, set [daemon].enabled = false, or pass --no-daemon)",
+                      file=sys.stderr)
+                return 1
+            _run_daemon(args, cfg)
+        else:
+            _run_inprocess(args)
+    except _user_errors() as e:
+        # An ambiguous symbol is an ordinary, expected answer (≈12% of bare names),
+        # not a crash — a traceback buries the candidate list under stack frames.
+        # Safe to swallow on the daemon path too: those frames are fastmcp client
+        # plumbing, and the real stack is in the daemon's log, not here.
+        msg = str(e).split(": ", 1)[-1] if str(e).startswith("Error calling tool") \
+            else str(e)
+        print(f"crib: {msg}", file=sys.stderr)
+        return 2
     return 0
 
 
