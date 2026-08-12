@@ -21,6 +21,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import threading
 import time
 import tomllib
@@ -1664,6 +1665,18 @@ def legacy_learning_slug(fqn: str) -> str:
     return safe
 
 
+SYMBOL_SCHEMA_VERSION = 1
+"""Shape of a stored symbol entry — its field set, its id spelling, and the spelling
+of the edge refs inside `calls`/`called_by`/`references`.
+
+Bump it whenever any of those change. The stamp is what makes such a change safe:
+the store is DERIVED, so the fix is always a full reindex, but nothing else forces
+one — an incremental `code_index <file>` would otherwise write new-shape entries
+beside old-shape ones and leave the project half in each.
+
+Mirrors CHUNK_SCHEMA_VERSION for the note store."""
+
+
 class SymbolIndex:
     """Structural store: symbol_index/<slug(fqn)>.toml under the project data dir.
     Filename is the LEGIBLE munged fqn (same scheme as learnings) — deterministic
@@ -1673,6 +1686,43 @@ class SymbolIndex:
 
     def __init__(self, project_dir: Path) -> None:
         self.root = project_dir / "symbol_index"
+
+    @property
+    def _schema_marker(self) -> Path:
+        # inside the store, so it rides git sync with the entries it describes and a
+        # machine pulling an index written by a newer crib sees the version. `all()`
+        # globs *.toml, so the dotfile is invisible to it.
+        return self.root / ".schema"
+
+    def stored_schema(self) -> int:
+        """The version this store was written at; 0 when never stamped."""
+        try:
+            return int(self._schema_marker.read_text().strip())
+        except (OSError, ValueError):
+            return 0
+
+    def record_schema(self) -> None:
+        """Stamp the store. Called when a FULL sweep completes, never per file — a
+        partial pass leaves a mixed store, which is the state the stamp exists to
+        make visible."""
+        try:
+            self.root.mkdir(parents=True, exist_ok=True)
+            self._schema_marker.write_text(f"{SYMBOL_SCHEMA_VERSION}\n")
+        except OSError as e:      # marker only — a lost write costs one extra sweep
+            print(f"[crib] could not record symbol schema version: {e}",
+                  file=sys.stderr)
+
+    def schema_stale(self) -> bool:
+        """Whether this store holds entries of a DIFFERENT shape to the current one.
+
+        Two stores are never stale. An EMPTY one, because there is nothing in an old
+        shape for a new write to mix with. And an UNSTAMPED one (version 0), because
+        it predates stamping rather than disagreeing with it — treating "unknown" as
+        "wrong" would demand a full reindex of every existing project for a version
+        that changes no format at all. A single-file write stamps as it goes, so an
+        unstamped store converges to a known one from ordinary use."""
+        stored = self.stored_schema()
+        return self.is_populated() and stored not in (0, SYMBOL_SCHEMA_VERSION)
 
     def _relname(self, fqname: str) -> str:
         return f"{learning_slug(fqname)}.toml"

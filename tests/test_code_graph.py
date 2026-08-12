@@ -355,6 +355,50 @@ def test_a_verb_that_lists_every_match_discloses_nothing(crib, tmp_path):
     assert not any("resolved" in h for h in hits)
 
 
+# --- the schema stamp: a format change forces a whole rebuild ------------------
+
+def test_only_a_DIFFERENT_recorded_version_is_stale(crib, tmp_path):
+    from crib.codeindex import SYMBOL_SCHEMA_VERSION, SymbolIndex
+    _diamond(crib, tmp_path)
+    si = SymbolIndex(crib.paths.project_dir("p"))
+    # unstamped predates stamping; calling that stale would demand a full reindex of
+    # every existing project for a version that changes no format
+    assert si.is_populated() and si.stored_schema() == 0
+    assert not si.schema_stale()
+    si.record_schema()
+    assert si.stored_schema() == SYMBOL_SCHEMA_VERSION and not si.schema_stale()
+    si._schema_marker.write_text(f"{SYMBOL_SCHEMA_VERSION + 1}\n")
+    assert si.schema_stale()
+
+
+def test_an_empty_store_is_never_stale(crib, tmp_path):
+    from crib.codeindex import SYMBOL_SCHEMA_VERSION, SymbolIndex
+    si = SymbolIndex(crib.paths.project_dir("empty"))
+    # nothing written in the old shape means nothing for a new write to mix with
+    assert not si.is_populated() and not si.schema_stale()
+    si.root.mkdir(parents=True, exist_ok=True)
+    si._schema_marker.write_text(f"{SYMBOL_SCHEMA_VERSION + 1}\n")
+    assert not si.schema_stale()
+
+
+def test_the_stamp_is_invisible_to_the_entry_reader(crib, tmp_path):
+    from crib.codeindex import SymbolIndex
+    _diamond(crib, tmp_path)
+    si = SymbolIndex(crib.paths.project_dir("p"))
+    before = {e["fqname"] for e in si.all()}
+    si.record_schema()
+    assert {e["fqname"] for e in si.all()} == before
+
+
+def test_a_single_file_index_refuses_a_store_of_another_shape(crib, tmp_path):
+    from crib.codeindex import SYMBOL_SCHEMA_VERSION, SymbolIndex
+    root = _diamond(crib, tmp_path)
+    SymbolIndex(crib.paths.project_dir("p"))._schema_marker.write_text(
+        f"{SYMBOL_SCHEMA_VERSION + 1}\n")
+    with pytest.raises(CribUserError, match="reindex it whole"):
+        asyncio.run(crib.code_index(str(root / "app.py"), project="p"))
+
+
 # --- scope: the language's own qualified context ------------------------------
 
 @pytest.mark.parametrize("lang, file, container, scope", [

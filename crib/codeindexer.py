@@ -94,6 +94,7 @@ class CodeIndexer:
         from .codeindex import (
             FileReadError,
             NoServer,
+            SYMBOL_SCHEMA_VERSION,
             SymbolIndex,
             describe_file,
             describe_symbols,
@@ -137,7 +138,20 @@ class CodeIndexer:
         # unchanged; only call the LLM when something is stale/new. BEST-EFFORT: a
         # generation hiccup never loses the structural call graph (facets independent).
         store = SymbolIndex(self.paths.project_dir(proj))
+        # `existing` is the full-project sweep's shared snapshot, so its absence is
+        # what marks this call as a STANDALONE one — the watcher, the lazy
+        # revalidation, an explicit code_index. Only a whole sweep may write into a
+        # store holding another entry shape; one file into it would leave the project
+        # half in each, which is the state nothing downstream can reason about.
+        standalone = existing is None
         if existing is None:
+            if store.schema_stale():
+                raise CribUserError(
+                    f"project {proj!r} was indexed at symbol schema "
+                    f"{store.stored_schema()}, this crib writes "
+                    f"{SYMBOL_SCHEMA_VERSION} — reindex it whole "
+                    f"(`crib project index`, or project_index) before indexing a "
+                    f"single file into it")
             existing = {e["fqname"]: e for e in store.all()}
         old_in_file = {fq for fq, e in existing.items() if e.get("file") == rel}
         # KEEP-PRIOR-ON-EMPTY: a still-present, non-trivial file that extracts to ZERO
@@ -241,6 +255,12 @@ class CodeIndexer:
         with self.code.lock(proj):
             store.write_all(entries)
             store.set_source_root(root)                     # for query-time revalidation
+            if standalone:
+                # These entries are the current shape and the gate above proved the
+                # store was not another one, so record it: an unstamped store
+                # converges from ordinary use instead of waiting for a full sweep.
+                # The sweep stamps once at the end rather than once per file.
+                store.record_schema()
             # Drop symbols that vanished from this file (renamed/removed) — but ONLY
             # on evidence that the file actually changed. See `_deletion_allowed`.
             vanished = old_in_file - {e["fqname"] for e in entries}
@@ -440,6 +460,11 @@ class CodeIndexer:
         out: dict[str, Any] = {"files_indexed": indexed, "files_seen": len(files),
                                "symbols": syms, "described": desc,
                                "complete": deferred == 0, "remaining": deferred}
+        if deferred == 0:
+            # Stamp only a sweep that reached every file. A run cut short by the
+            # budget leaves part of the project at the old shape, and claiming
+            # otherwise is what would let an incremental write in on top of it.
+            SymbolIndex(self.paths.project_dir(proj)).record_schema()
         if errors:
             out["errors"] = errors
         if skipped:
