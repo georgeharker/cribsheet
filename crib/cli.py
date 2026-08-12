@@ -216,7 +216,7 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
     # implicit-resolution diagnostic (server echoes it on an empty sticky/seeded
     # result — see server._echo_list); render the note, not a blank hit row.
     if isinstance(data, list) and len(data) == 1 and isinstance(data[0], dict) \
-            and data[0].get("note") and "resolved" in data[0]:
+            and data[0].get("note") and "resolved_project" in data[0]:
         print(f"(0 matches) {data[0]['note']}"); return
     if verb == "code-index":
         if not isinstance(data, dict):

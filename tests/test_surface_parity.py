@@ -226,3 +226,34 @@ def test_no_retired_tool_names_in_strings(path):
             assert not re.search(rf"(?<![\w.]){re.escape(retired)}", text), (
                 f"{path.name}: retired name {retired!r} in a docstring — say "
                 f"{use!r}:\n    {text.strip()[:160]}")
+
+
+# ── The two surfaces must agree on the KEY, not just the shape ────────────────
+
+def test_the_empty_result_marker_is_the_key_the_cli_renders(capsys):
+    """`_echo_list` returns a diagnostic row instead of a bare `[]` and `_emit_code`
+    renders it; they agree on one key by nothing but spelling, so a rename of one
+    silently turns the row back into a blank hit. Pin the agreement."""
+    from crib.cli import _emit_code
+    from crib.server import _echo_list
+    from crib.session import ProjectResolution
+
+    marker = _echo_list([], ProjectResolution("someproj", "session"))
+    assert isinstance(marker, list) and len(marker) == 1
+    _emit_code(marker, "code-lookup", False)
+    assert "0 matches" in capsys.readouterr().out
+
+
+def test_an_adopting_call_reports_it(capsys):
+    """A call that adopts the session's project is echoed even though `path` is
+    caller-directed — it decides where every later selector-less call lands."""
+    from crib.server import _echo_dict
+    from crib.session import ProjectResolution
+
+    res = ProjectResolution("svg-mcp", "path", session_set=True)
+    assert res.worth_echoing
+    out = _echo_dict({"hits": []}, res)
+    assert out["resolved_project"]["session_project_set"] == "svg-mcp"
+    # …and a later path-bearing call, which adopts nothing, stays quiet
+    quiet = _echo_dict({"hits": []}, ProjectResolution("other", "path"))
+    assert "resolved_project" not in quiet

@@ -239,11 +239,15 @@ def build_server(crib: Crib | None = None):
             "call — then look up. Do NOT read files or grep instead; indexing first is "
             "how you explore effectively (there's no shortcut — the utility comes from "
             "the index). PROJECT MODEL: code tools act on ONE current project. Set it once "
-            "for the codebase you're working in — `project_use <name>`, or it's inferred "
-            "from `project_path` on your first code call — then reads need no project args. "
-            "To look up a DIFFERENT project (e.g. a related codebase you're referencing), "
-            "you MUST name it: `project=<name>` or `project_path=<a path inside that repo>`. "
-            "`project_path` is NOT your shell cwd — it just identifies which repo you mean. "
+            "for the codebase you're working in — `project_use <name>`, or your FIRST call "
+            "carrying `project_path` adopts that repo (the result says so when it does) — "
+            "then reads need no project args. To act on a DIFFERENT project (a related "
+            "codebase you're referencing), NAME it on that call: `project=<name>` or "
+            "`project_path=<a path inside that repo>`. Naming one always wins over the "
+            "current project and never changes it, so a cross-project lookup cannot "
+            "re-home the writes that follow it — but it only applies to the call you put "
+            "it on, so name it every time you mean elsewhere. `project_path` is NOT your "
+            "shell cwd — it just identifies which repo you mean. "
             "When you finally UNDERSTAND a symbol — a "
             "subtlety, a gotcha, a 'now I get it' — `learning_add <symbol> \"…\"` pins a "
             "durable learning to it (survives re-indexing, works even on code you can't "
@@ -668,8 +672,9 @@ def build_server(crib: Crib | None = None):
                         project_path: str | None = None) -> list[dict[str, Any]]:
         """A symbol's callers (←), callees (→) and references (⇐ — broader than calls),
         plus any human learning pinned to it — from the persisted index, no live LSP.
-        `symbol` is a bare name or dotted fqname. Pass `project_path=<your working dir>` on first
-        use so the right project resolves (via .crib)."""
+        `symbol` is a bare name or dotted fqname. Name the project on the call —
+        `project_path=<a path in that repo>` or `project=<name>` — whenever you mean
+        somewhere other than the current one; naming it always wins."""
         return crib.code_xref(symbol, project)
 
     @crib_tool("read", echo=True)
@@ -683,8 +688,10 @@ def build_server(crib: Crib | None = None):
         the project isn't indexed it SELF-DIAGNOSES — so just try it. If THIS repo has no
         index yet, that's the normal first step: INDEX IT with `project_index`
         (project_path=<the repo dir>), then retry the lookup — do NOT read files or grep instead.
-        Pass `project_path=<your working dir>` so the project resolves via .crib. Then `code_dossier`
-        a hit to go deep, or `code_graph` to walk the tree."""
+        Pass `project_path=<a path in that repo>` (or `project=<name>`) to search a
+        project other than the current one — it wins for that call and changes
+        nothing after it. Then `code_dossier` a hit to go deep, or `code_graph` to
+        walk the tree."""
         return crib.code_lookup(query, project, k)
 
     @crib_tool("read", echo=True)
@@ -1289,11 +1296,12 @@ def build_server(crib: Crib | None = None):
     @crib_tool("session")
     def project_use(project: str) -> dict[str, Any]:
         """Set THIS session's current project — subsequent `note_lookup`/`note_store`/etc.
-        target it without passing `project` each time. Sticky for the connection;
-        a per-call `project` arg still overrides for that one call. Seeded
-        automatically from your working directory on first use, so call this only
-        to switch. The namespace is created immediately (so it's real and listed,
-        not a phantom you're 'in' until the first write)."""
+        target it without passing `project` each time. Sticky for the connection; a
+        per-call `project`/`project_path` still wins for that one call and leaves this
+        unchanged. Your first call carrying `project_path` adopts that repo the same
+        way (and says so), so call this to SWITCH, or to be explicit up front. The
+        namespace is created immediately (so it's real and listed, not a phantom
+        you're 'in' until the first write)."""
         # One implementation, shared with the in-process CLI: `Crib.use_project`
         # validates the name (before the eager mkdir — `../x` would otherwise plant a
         # namespace outside the projects tree), creates the namespace, and sets the
