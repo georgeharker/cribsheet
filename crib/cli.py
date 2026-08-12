@@ -96,10 +96,9 @@ def _render_markdown(text: str) -> None:
     (llmkit[md]) isn't installed."""
     import os
     try:
+        from llmkit.md.render.cli import _load_theme
         from rich.console import Console
         from rich.markdown import Markdown
-
-        from llmkit.md.render.cli import _load_theme
     except Exception:  # noqa: BLE001 — render extra optional; degrade to raw
         sys.stdout.write(text)
         return

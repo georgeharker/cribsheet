@@ -20,11 +20,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from . import notes
-from .chunk import Chunk, WINDOW_OVERLAP, WINDOW_WORDS, chunk_note
-from .util import derived_ulid as _derive_id
+from .chunk import WINDOW_OVERLAP, WINDOW_WORDS, Chunk, chunk_note
 from .embed import Embedder, embed_batch
 from .retrieve import LexicalCache, SummaryVectorCache
 from .store import Record, Store
+from .util import derived_ulid as _derive_id
 
 
 def _meta_stable(meta: dict) -> dict:

@@ -14,6 +14,12 @@ from collections import deque
 from typing import TYPE_CHECKING, Any, Callable
 
 from .errors import CribUserError
+from .symbols import (
+    decode_edge,
+    encode_edge,
+    encode_loc,
+    qualified_symbol,
+)
 
 if TYPE_CHECKING:
     from .codestore import _ResidentCode
@@ -46,17 +52,6 @@ MAX_DEPTH = 25
 MAX_GRAPH_NODES = 5000
 
 
-def _edge_target(ref: str, p: str) -> tuple[str, str, str, str]:
-    """Split an index edge ref — `name`, `name [rel]` or `name [proj:rel]` — into
-    (project, name, file-rel, raw-ref); a QUALIFIED ref hops into that project."""
-    name, _, rest = ref.partition(" [")
-    fref = rest.rstrip("]")
-    if ":" in fref:
-        tp, _, trel = fref.partition(":")
-        return tp, name.strip(), trel, fref
-    return p, name.strip(), fref, fref
-
-
 def _rollup_modules(sub: dict[str, Any], proj: str) -> dict[str, Any]:
     """Collapse a symbol subgraph into MODULE-to-MODULE edges carrying the number of
     distinct symbol edges they stand for — the architecture view, where what matters
@@ -68,7 +63,8 @@ def _rollup_modules(sub: dict[str, Any], proj: str) -> dict[str, Any]:
     for n in sub["nodes"]:
         p = str(n.get("project") or proj)
         f = str(n.get("file") or "")
-        mid = (f or "(unresolved)") if (n.get("external") or p == proj) else f"{p}:{f}"
+        mid = ((f or "(unresolved)") if (n.get("external") or p == proj)
+               else encode_loc(p, f))
         member[str(n["id"])] = mid
         m = mods.get(mid)
         if m is None:
@@ -183,17 +179,15 @@ class CodeQuery:
         def neigh(edges: list[str] | None) -> list[dict[str, Any]]:
             out = []
             for ref in (edges or [])[:edge_cap]:
-                name, _, rest = ref.partition(" [")
-                nm, fref = name.strip(), rest.rstrip("]")
-                if ":" in fref:            # QUALIFIED edge — lives in a ref'd project
-                    rp, _, rrel = fref.partition(":")
+                rp, nm, rrel, _loc = decode_edge(ref, owner)
+                if rp != owner:            # QUALIFIED edge — lives in a ref'd project
                     rdesc, rnf = _maps(rp)
                     fq = rnf.get((nm, rrel))
                     out.append({"symbol": fq or nm, "file": rrel, "project": rp,
                                 "description": rdesc.get(fq or "", "")})
                     continue
-                fq = by_nf.get((nm, fref))
-                out.append({"symbol": fq or nm, "file": fref,
+                fq = by_nf.get((nm, rrel))
+                out.append({"symbol": fq or nm, "file": rrel,
                             "description": desc.get(fq or "", "")})
             extra = max(len(edges or []) - edge_cap, 0)
             if extra:
@@ -404,7 +398,7 @@ class CodeQuery:
             if d <= 0:
                 return node
             for ref in e.get(edge) or []:
-                tp, name, trel, fref = _edge_target(ref, p)
+                tp, name, trel, fref = decode_edge(ref, p)
                 child = _nf(tp).get((name, trel))
                 if child:
                     node["children"].append(build(child, tp, d - 1))
@@ -458,18 +452,18 @@ class CodeQuery:
                                   "line": e.get("line")}
         for e in entries:
             for ref in e.get(edge) or []:
-                tp, name, trel, fref = _edge_target(ref, proj)
+                tp, name, trel, fref = decode_edge(ref, proj)
                 target = nf(tp).get((name, trel))
                 if target and tp == proj:
                     ci = target["fqname"]
                 elif target:
-                    ci = f"{tp}:{target['fqname']}"
+                    ci = qualified_symbol(tp, target["fqname"])
                     nodes.setdefault(ci, {"id": ci, "fqname": target["fqname"],
                                           "kind": target.get("kind", ""),
                                           "file": target.get("file", ""),
                                           "line": target.get("line"), "project": tp})
                 else:
-                    ci = f"{name} [{fref}]" if fref else name
+                    ci = encode_edge(name, fref)
                     nodes.setdefault(ci, {"id": ci, "fqname": name, "kind": "?",
                                           "file": fref, "line": None,
                                           "external": True})
@@ -503,7 +497,7 @@ class CodeQuery:
         edges: dict[tuple[str, str], dict[str, Any]] = {}
 
         def nid(p: str, fq: str) -> str:
-            return fq if p == proj else f"{p}:{fq}"
+            return qualified_symbol(p if p != proj else None, fq)
 
         def put(p: str, e: dict, d: int) -> str:
             i = nid(p, e["fqname"])
@@ -519,7 +513,7 @@ class CodeQuery:
             return i
 
         def put_external(name: str, fref: str, d: int) -> str:
-            i = f"{name} [{fref}]" if fref else name    # unresolvable → its own raw ref
+            i = encode_edge(name, fref)   # unresolvable → its own raw ref
             nodes.setdefault(i, {"id": i, "fqname": name, "kind": "?", "file": fref,
                                  "line": None, "depth": d, "external": True})
             return i
@@ -538,7 +532,7 @@ class CodeQuery:
                 continue
             expanded.add(i)
             for ref in e.get(edge) or []:
-                tp, name, trel, fref = _edge_target(ref, p)
+                tp, name, trel, fref = decode_edge(ref, p)
                 child = nf(tp).get((name, trel))
                 if child:
                     ci = put(tp, child, d + 1)

@@ -10,9 +10,9 @@ import pytest
 
 from crib.app import Crib
 from crib.config import Config
-from crib.section_index import SectionIndex, parse_terms
 from crib.paths import Paths
 from crib.retrieve import LexicalCache, tokenize
+from crib.section_index import SectionIndex, parse_terms
 from crib.store import InMemoryStore
 
 

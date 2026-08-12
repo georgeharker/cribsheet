@@ -135,7 +135,8 @@ def test_a_dim_mismatch_raises_instead_of_scoring_a_truncated_vector():
     384-dim stored vectors returned a plausible score computed over the first 256
     components — every ranking quietly degraded, nothing said so. Chroma refuses
     outright; the in-process stores have to say it themselves."""
-    from crib.store import InMemoryStore as _S, Record
+    from crib.store import InMemoryStore as _S
+    from crib.store import Record
     s = _S()
     s.upsert([Record("a", [0.1] * 384, "doc", {"project": "p"})])
     with pytest.raises(ValueError, match="dimension mismatch"):

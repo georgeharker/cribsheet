@@ -15,6 +15,9 @@ import os
 import threading
 from typing import TYPE_CHECKING, Any, Callable
 
+from .symbols import decode_edge, edge_is_from, encode_edge
+from .symbols import match as fqname_match
+
 if TYPE_CHECKING:
     from .config import Config
     from .paths import Paths
@@ -40,7 +43,6 @@ class _ResidentCode:
         """Entries matching `name` — the resident mirror of SymbolIndex.by_fqname (no
         disk read). The match rule is imported rather than restated, so the two
         lookups cannot answer differently."""
-        from .codeindex import fqname_match     # lazy: keeps this module crib-free
         return [e for e in self.entries
                 if fqname_match(e.get("fqname", ""), e.get("name", ""), name,
                                 e.get("lang", ""))]
@@ -245,15 +247,16 @@ class CodeStore:
         concurrent reindex does), bumping the resident-cache epoch. Pure symbol_index
         mutation (no LSP), so its integrity invariants live with the state."""
         from .codeindex import SymbolIndex
-        tag = f"[{relpath}]"
         with self.lock(proj):
             store = SymbolIndex(self.paths.project_dir(proj))
             for e in store.all():
                 if e.get("file") == relpath:
                     store.delete(e["fqname"])
                     continue
-                cb = [x for x in (e.get("called_by") or []) if not x.endswith(tag)]
-                rf = [x for x in (e.get("references") or []) if not x.endswith(tag)]
+                cb = [x for x in (e.get("called_by") or [])
+                      if not edge_is_from(x, relpath)]
+                rf = [x for x in (e.get("references") or [])
+                      if not edge_is_from(x, relpath)]
                 if cb != (e.get("called_by") or []) or rf != (e.get("references") or []):
                     e["called_by"], e["references"] = cb, rf
                     store.write(e)
@@ -283,7 +286,6 @@ class CodeStore:
         kept whichever same-named symbol was parsed last and patched the wrong one;
         now an ambiguous pair is skipped rather than guessed. Cheap — in-memory from
         A's own fresh edges; no extra LSP."""
-        tag = f"[{relpath}]"
         entries = store.all()
         by_fq: dict[str, dict] = {}
         by_key: dict[tuple[str, str], list[dict]] = {}
@@ -304,15 +306,15 @@ class CodeStore:
                 continue
             for rel_key in ("called_by", "references"):
                 cur = e.get(rel_key) or []
-                kept = [x for x in cur if not x.endswith(tag)]
+                kept = [x for x in cur if not edge_is_from(x, relpath)]
                 if kept != cur:
                     e[rel_key] = kept
                     changed[e["fqname"]] = e
         for s in new_entries:                   # 2) re-add A's current edges
-            edge = f"{s['name']} [{relpath}]"
+            edge = encode_edge(s["name"], relpath)
             for call in s.get("calls") or []:
-                name, _, rest = call.partition(" [")
-                tgt = target(name.strip(), rest.rstrip("]"))
+                _proj, name, rel, _loc = decode_edge(call, "")
+                tgt = target(name, rel)
                 if tgt is None or tgt.get("file") == relpath:
                     continue
                 e = changed.get(tgt["fqname"], tgt)

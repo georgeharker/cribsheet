@@ -92,9 +92,9 @@ class CodeIndexer:
         sweep parses it ONCE and passes it here so we don't re-`store.all()` per file
         (that made a cold onboard O(files × symbols)). None → parse it (standalone path)."""
         from .codeindex import (
+            SYMBOL_SCHEMA_VERSION,
             FileReadError,
             NoServer,
-            SYMBOL_SCHEMA_VERSION,
             SymbolIndex,
             describe_file,
             describe_symbols,

@@ -11,7 +11,6 @@ import pytest
 from crib.config import Config, CribLink, expand_location, portable_path
 from crib.versions import VersionRing
 
-
 # ── 3.4 unknown config keys ──────────────────────────────────────────────────
 
 def _cfg(tmp_path: Path, body: str) -> Path:

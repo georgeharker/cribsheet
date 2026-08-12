@@ -34,7 +34,7 @@ from crib.app import Crib
 from crib.cli import VERBS, _dispatch, build_parser
 from crib.config import Config
 from crib.paths import Paths
-from crib.server import TOOL_POLICY, _POLICIES, build_server
+from crib.server import _POLICIES, TOOL_POLICY, build_server
 from crib.store import InMemoryStore
 
 _CRIB_PY = sorted((Path(__file__).resolve().parent.parent / "crib").glob("*.py"))

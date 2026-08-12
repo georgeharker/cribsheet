@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Any, Callable
 
 from .config import CribLink
 from .errors import CribUserError
+from .symbols import match as fqname_match
 
 if TYPE_CHECKING:
     from .codeindex import RefProjects
@@ -55,7 +56,6 @@ def resolution(entry: dict[str, Any], query: str,
     narrow nothing, so the list is already the disclosure and there is no choice to
     report. That is the rule — not an inconsistency to be tidied away by wrapping the
     list in an envelope."""
-    from .codeindex import fqname_match
     out: dict[str, Any] = {
         "query": query, "fqname": entry.get("fqname", ""),
         "via": fqname_match(entry.get("fqname", ""), entry.get("name", ""), query,
@@ -140,7 +140,6 @@ class Refs:
         if not matches:
             raise UnknownSymbol(f"unknown symbol {symbol!r} in project {proj!r} — "
                                 f"code_lookup it, or code_index the file first")
-        from .codeindex import fqname_match
         exact = [m for m in matches
                  if fqname_match(m.get("fqname", ""), m.get("name", ""), symbol,
                                  m.get("lang", "")) == "fqname"]

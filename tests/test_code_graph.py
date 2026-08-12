@@ -304,11 +304,11 @@ def test_an_unknown_symbol_is_still_an_empty_result_not_an_error(crib, tmp_path)
 # --- the match rule itself: segments, in the entry's own language --------------
 
 def test_the_reader_and_the_writer_share_one_separator():
-    from crib.codeindex import _qualify, fqname_sep, fqname_segments
+    from crib.symbols import fqname_sep, qualify, segments
     for lang in ("rust", "python", "zsh", "lua", "c"):
-        fq = _qualify(lang, "mod", ("Outer",), "leaf")
+        fq = qualify(lang, "mod", ("Outer",), "leaf")
         # whatever the writer joined with, the reader cuts back into the same parts
-        assert fqname_segments(fq, lang) == ["mod", "Outer", "leaf"]
+        assert segments(fq, lang) == ["mod", "Outer", "leaf"]
         assert fqname_sep(lang) in fq
 
 
@@ -332,8 +332,8 @@ def test_the_reader_and_the_writer_share_one_separator():
     ("helpers.git.push", "git.push", "zsh", "git.push", "name"),
 ])
 def test_match_tiers(fq, name, lang, query, tier):
-    from crib.codeindex import fqname_match
-    assert fqname_match(fq, name, query, lang) == tier
+    from crib.symbols import match
+    assert match(fq, name, query, lang) == tier
 
 
 def test_every_verb_that_narrows_to_one_symbol_discloses_it(crib, tmp_path):
@@ -426,21 +426,21 @@ def test_a_single_file_index_refuses_a_store_of_another_shape(crib, tmp_path):
      ["scripts", "codeindex", "dump_lsp"]),
 ])
 def test_scope_per_language(lang, file, container, scope):
-    from crib.codeindex import scope_of
+    from crib.symbols import scope_of
     assert scope_of(lang, file, container) == scope
 
 
 def test_scope_needs_no_manifest():
     """Every language derives from source and layout alone; only Rust's crate name
     is out of band, and crate-relative scope does without it."""
-    from crib.codeindex import scope_of
+    from crib.symbols import scope_of
     assert scope_of("rust", "rust/src/core/state.rs", []) == ["core", "state"]
 
 
 def test_an_unknown_language_still_matches_on_either_separator():
-    from crib.codeindex import fqname_match
-    assert fqname_match("a::b::c", "c", "b::c", "") == "suffix"
-    assert fqname_match("a::b::c", "c", "c", "") == "name"
+    from crib.symbols import match
+    assert match("a::b::c", "c", "b::c", "") == "suffix"
+    assert match("a::b::c", "c", "c", "") == "name"
 
 
 # --- expected refusals are delivered, not dumped -------------------------------

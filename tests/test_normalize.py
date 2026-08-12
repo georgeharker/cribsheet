@@ -11,7 +11,6 @@ from crib import notes
 from crib.config import expand_location, portable_path
 from crib.util import derived_ulid
 
-
 # --- deterministic identity -------------------------------------------------
 
 def test_derived_ulid_is_stable_and_ulid_shaped():

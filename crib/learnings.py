@@ -22,6 +22,8 @@ from . import notes
 from .errors import CribUserError
 from .notes import Note
 from .refs import UnknownSymbol, resolution
+from .symbols import learning_slug, legacy_learning_slug
+from .symbols import match as fqname_match
 
 if TYPE_CHECKING:
     from .notestore import NoteStore
@@ -46,7 +48,6 @@ class Learnings:
         under the old name. They are NOT migrated — a learning is hand-written
         content whose path a human may have in hand — so every verb resolves
         through here and keeps using the existing file."""
-        from .codeindex import learning_slug, legacy_learning_slug
         rel = f"{learning_slug(fqn)}.md"
         if self.store.abspath(proj, rel).exists():
             return rel
@@ -245,8 +246,9 @@ class Learnings:
                     "candidates": self.candidates(fm, entries)}
         new_entry = next((e for e in entries if e.get("fqname") == new_fqn), None)
         if new_entry is None:                               # allow a unique bare name
-            m = [e for e in entries if e["fqname"].endswith("." + new_fqn)
-                 or e.get("name") == new_fqn]
+            m = [e for e in entries
+                 if fqname_match(e.get("fqname", ""), e.get("name", ""), new_fqn,
+                                 e.get("lang", ""))]
             if len(m) != 1:
                 raise CribUserError(f"target {new_fqn!r} not found or not unique in index")
             new_entry = m[0]

@@ -27,11 +27,30 @@ import time
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
-from typing import IO, Any, Sequence
+from typing import IO, Any
 from urllib.request import url2pathname
 
 from . import tomlrec
-
+from .symbols import (
+    encode_edge,
+    encode_loc,
+    learning_slug,
+    legacy_learning_slug,
+    suffix_of,
+)
+from .symbols import (
+    local_name as _local_name,
+)
+from .symbols import match as fqname_match
+from .symbols import (
+    module_of as _module_of,
+)
+from .symbols import (
+    qualify as _qualify,
+)
+from .symbols import (
+    tail as _tail,
+)
 
 # ── LSP server specs — Claude Code `.lsp.json` schema (docs §3.3) ─────────────
 # A map of label → {command, args, extensionToLanguage, transport?, env?,
@@ -749,7 +768,7 @@ def _locate(uri: str, root: Path, ref_projects: RefProjects | None) -> str | Non
     for proj, rroot, _files in ref_projects:
         if rroot is not None:
             try:
-                return f"{proj}:{p.relative_to(rroot)}"
+                return encode_loc(proj, str(p.relative_to(rroot)))
             except ValueError:
                 continue
     if _in_workspace(uri, root):
@@ -760,7 +779,7 @@ def _locate(uri: str, root: Path, ref_projects: RefProjects | None) -> str | Non
         for proj, _rroot, files in ref_projects:
             for f in files:
                 if f and _path_suffix_match(f, tail):
-                    return f"{proj}:{f}"
+                    return encode_loc(proj, f)
     return None
 
 
@@ -803,8 +822,6 @@ _KIND = {5: "class", 6: "method", 12: "function", 10: "enum", 11: "interface",
 # distinction — so it lives here, not in the universal _INDEX_KINDS sets.
 _KIND_LABEL_OVERRIDE = {("rust", 11): "trait"}
 _REF_CAP = 80  # references resolved per symbol — bounds worst-case on hot helpers
-# Lua binds modules to a local table var (`M.setup`); those aren't real qualifiers.
-_LUA_TABLE_VARS = {"M", "_M", "self", "Module", "mod"}
 
 
 def _symbol_ranges(c: LspClient, uri: str, language_id: str,
@@ -844,187 +861,6 @@ def _enclosing_symbol(c: LspClient, uri: str, line: int, language_id: str,
         if s0 <= line <= e0 and (best is None or (e0 - s0) < best[1]):
             best = (name, e0 - s0)
     return best[0] if best else None
-
-
-def fqname_sep(lang: str) -> str:
-    """The separator a qualified name uses for `lang` — the ONE place the writer of a
-    qualified name and every reader of one agree, so a language added to either side
-    cannot be missing from the other."""
-    return "::" if lang == "rust" else "."
-
-
-def _module_of(relpath: str, lang: str) -> str:
-    """Module/namespace from the FILE PATH (language-specific). The container parts
-    come from documentSymbol; the module part can only come from the path."""
-    p = Path(relpath)
-    parts = list(p.with_suffix("").parts)
-    # drop common source-root prefixes so the module reads naturally
-    while parts and parts[0] in ("src", "lua", "lib"):
-        parts = parts[1:]
-    # the index-file whose name is the *directory's* module is language-specific:
-    # Rust mod.rs, Lua init.lua, Python __init__.py — but a Python `mod.py` is a
-    # real module and must NOT be dropped.
-    index_file = {"rust": "mod", "lua": "init"}.get(lang, "__init__")
-    if parts and parts[-1] == index_file:
-        parts = parts[:-1]
-    return fqname_sep(lang).join(parts)
-
-
-_ANY_SEP = re.compile(r"::|\.")
-
-# Whether a file's PATH forms part of the language's own qualified name, and from
-# which root:
-#   "module"  — the path IS the namespace, file included (python, lua: import/require)
-#   "package" — the last DIRECTORY is the namespace; the filename is not (go)
-#   "crate"   — namespace is crate-relative: everything after the last `src` (rust)
-#   absent    — the path contributes NOTHING. Either the language declares its
-#               namespace in the source (c++, ruby) or it has none (c, zsh, sh).
-_PATH_NAMESPACE = {"python": "module", "lua": "module", "go": "package",
-                   "rust": "crate"}
-# Languages with NO namespace concept at all. Declared nesting in these is lexical
-# LOCATION, not scope: a zsh function defined inside another is callable globally
-# once the outer has run, so it earns an id segment and no scope.
-_NO_NAMESPACE = frozenset({"c", "zsh", "sh", "bash", "fish", "make"})
-# Source roots that are build layout rather than namespace, stripped from the front.
-_PATH_ROOTS = {"python": ("src",), "lua": ("lua",), "go": ("src",)}
-# The file whose name is its DIRECTORY's namespace, not its own segment.
-_INDEX_FILE = {"rust": "mod", "lua": "init", "python": "__init__"}
-
-
-def _path_scope(lang: str, file: str) -> list[str]:
-    """The part of a language's qualified name that comes from the file path."""
-    mode = _PATH_NAMESPACE.get(lang)
-    if not mode or not file:
-        return []
-    parts = list(Path(file).with_suffix("").parts)
-    if mode == "crate":
-        # crate-RELATIVE: the crate name lives in Cargo.toml, out of band, and adds
-        # nothing `path` does not already disambiguate — even across a workspace,
-        # whose crates sit in different directories.
-        if "src" in parts:
-            parts = parts[len(parts) - 1 - parts[::-1].index("src"):][1:]
-    else:
-        while parts and parts[0] in _PATH_ROOTS.get(lang, ()):
-            parts = parts[1:]
-    if mode == "package":
-        # a Go symbol qualifies as `store.Store` — the package name, which is the
-        # containing directory. The full import path needs go.mod and is not how
-        # source refers to symbols.
-        return parts[-2:-1]
-    if parts and parts[-1] == _INDEX_FILE.get(lang):
-        parts = parts[:-1]            # mod.rs / init.lua / __init__.py name the dir
-    return parts
-
-
-def _declared_scope(lang: str, container: Sequence[str]) -> list[str]:
-    """The nesting the source declares, cleaned. `_local_name` reduces a Rust
-    `impl Type` and a Lua module-table prefix; anything that survives it and still is
-    not an identifier is an LSP artifact (a Lua `for in` loop reported as a container)
-    and is dropped rather than rendered as a scope."""
-    out = []
-    for c in container or ():
-        n = _local_name(c, lang)
-        if n and n.isidentifier():
-            out.append(n)
-    return out
-
-
-def scope_of(lang: str, file: str, container: Sequence[str]) -> list[str]:
-    """The language's own qualified context for a symbol — what a developer writing
-    that language would say it belongs to, WITHOUT the leaf name.
-
-    EMPTY for a language with no namespace (C, zsh), and that emptiness is
-    information: `main` in `bin/sharedserver-watcher.c` belongs to nothing, and its
-    directory is not a substitute.
-
-    Distinct from the container chain that gives an id its within-file uniqueness. A
-    zsh function declared inside another is nested in LOCATION only — zsh functions
-    are global wherever they are declared — so it earns an id segment and no scope."""
-    if lang in _NO_NAMESPACE:
-        return []
-    return _path_scope(lang, file) + _declared_scope(lang, container)
-
-
-def fqname_segments(fq: str, lang: str) -> list[str]:
-    """`fq` cut into segments IN ITS OWN LANGUAGE'S TERMS — never a normalized
-    spelling, because normalizing would have to pick some character to mean
-    "separator" and then could not tell that character apart from one occurring
-    inside a name. An unknown `lang` degrades to splitting on either separator,
-    which is a floor rather than the rule."""
-    if not fq:
-        return []
-    return fq.split(fqname_sep(lang)) if lang else _ANY_SEP.split(fq)
-
-
-def fqname_match(entry_fq: str, entry_name: str, query: str,
-                 lang: str = "") -> str | None:
-    """Which TIER `query` matches this entry on — most specific first — or None.
-
-    - `fqname` — the whole qualified name (either separator spelling accepted)
-    - `suffix` — a trailing run of its SEGMENTS (`lockfile::ClientsLock`), so a
-      partial path disambiguates without typing the root
-    - `name`   — the bare local name, from the entry's OWN `name` field. This is
-      what makes a bare name work in every language whatever separator qualified
-      it, and it matters most where the qualified spelling is one the caller could
-      not have guessed (crib renders Rust paths from the file tree, not the crate
-      path).
-
-    Comparison is between SEGMENT LISTS, never between re-joined strings: there is
-    then no separator character in play to collide with one inside a name, and a
-    suffix match is a boundary by construction rather than by string assertion.
-    Only the QUERY is read permissively (either separator) — the caller cannot know
-    which language stored the symbol, and being generous there only widens what may
-    be typed; the result still has to land on real segment boundaries.
-    """
-    if not query:
-        return None
-    if entry_fq == query:
-        return "fqname"
-    seg = fqname_segments(entry_fq, lang)
-    # the entry's own `name` is the AUTHORITATIVE final segment — a name that
-    # contains the separator (a legal zsh `git.push`) would otherwise be split into
-    # pieces that were never boundaries, and `push` would match a symbol not called
-    # `push`. Rebuild the tail from what the writer recorded rather than re-deriving.
-    if entry_name and entry_fq.endswith(entry_name):
-        head = entry_fq[:-len(entry_name)].rstrip(fqname_sep(lang) if lang else ".:")
-        seg = (fqname_segments(head, lang) if head else []) + [entry_name]
-    q = [s for s in _ANY_SEP.split(query) if s]
-    if not q:
-        return None
-    if seg == q:
-        return "fqname"               # same name, spelled with the other separator
-    if len(q) == 1:
-        if entry_name and entry_name == query:
-            return "name"
-        return "suffix" if seg and seg[-1] == query else None
-    if len(q) < len(seg) and seg[-len(q):] == q:
-        return "suffix"
-    return "name" if entry_name and entry_name == query else None
-
-
-def _local_name(raw: str, lang: str) -> str:
-    """The bare symbol name — strip a Lua module-table prefix (`M.setup`→`setup`,
-    `T:method`→`method`) that documentSymbol folds into the name, and reduce a Rust
-    `impl` block's name to the TYPE it's for, so its methods qualify as `Type::method`
-    (rust-analyzer names impl symbols `impl Type` / `impl Trait for Type`)."""
-    if lang == "lua":
-        return raw.replace(":", ".").split(".")[-1]
-    if lang == "rust" and re.match(r"impl\b", raw):
-        body = re.sub(r"^impl\s*<[^>]*>", "impl", raw)[4:].strip()  # drop impl-generics
-        if " for " in body:                       # `Trait for Type` → the Type
-            body = body.split(" for ")[-1].strip()
-        base = re.sub(r"<.*$", "", body).strip().split("::")[-1]    # strip type args/path
-        return base or raw
-    return raw
-
-
-def _qualify(lang: str, module: str, container: tuple[str, ...], name: str) -> str:
-    """Render a language-idiomatic qualified name from the parts. Parts are canonical;
-    this is derived display + a lookup alias."""
-    cont = [c for c in container if _local_name(c, lang) not in _LUA_TABLE_VARS]
-    cont = [_local_name(c, lang) for c in cont]
-    pieces = ([module] if module else []) + cont + [name]
-    return fqname_sep(lang).join(p for p in pieces if p)
 
 
 _SUBTOK = re.compile(r"[A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z]+|[A-Z]+|[0-9]+")
@@ -1081,7 +917,7 @@ def _hierarchy_edges(c: LspClient, method: str, item: dict, key: str,
         t = e.get(key, {})
         loc = _locate(t.get("uri", ""), root, ref_projects)
         if loc:
-            out.append(f"{t.get('name')} [{loc}]")
+            out.append(encode_edge(str(t.get("name") or ""), loc))
     return out
 
 
@@ -1165,7 +1001,7 @@ def _reference_edges(ctx: _ExtractCtx, pos: dict, local: str) -> list[str]:
                                 ctx.sym_cache, ctx.opened)
         if not enc or (enc == local and rloc == ctx.relpath):
             continue                                # skip self-references
-        out.append(f"{enc} [{rloc}]")
+        out.append(encode_edge(enc, rloc))
     return out
 
 
@@ -1527,16 +1363,6 @@ def describe_symbols(gen_cfg: Any, symbols: list[dict]) -> dict[str, dict[str, A
     return _rows_to_meta(data)
 
 
-_QUAL_SEP = re.compile(r"::|\.")
-
-
-def _tail(name: str) -> str:
-    """The bare last segment of a qualified name, splitting on BOTH separators —
-    `.` and Rust's `::`. Splitting on `.` alone left every Rust fqname as one
-    unsplittable token, so no Rust symbol ever matched a describe row."""
-    return _QUAL_SEP.split(name)[-1]
-
-
 def match_meta(fqname: str, metas: dict[str, Any]) -> tuple[str, list[str]]:
     """(description, keywords) for a structural symbol, matched by NAME IDENTITY.
 
@@ -1563,8 +1389,7 @@ def match_meta(fqname: str, metas: dict[str, Any]) -> tuple[str, list[str]]:
         return (v or ""), []
     if fqname in metas:
         return _split(metas[fqname])
-    suffixes = [(k, v) for k, v in metas.items()
-                if k and (fqname.endswith("." + k) or fqname.endswith("::" + k))]
+    suffixes = [(k, v) for k, v in metas.items() if suffix_of(fqname, k)]
     if suffixes:
         longest = max(len(k) for k, _v in suffixes)
         best = [v for k, v in suffixes if len(k) == longest]
@@ -1627,44 +1452,6 @@ def _render(e: dict) -> str:
 # cache): re-indexing never touches it, and it rides the normal watch/index/sync/
 # merge. See docs/code-symbol-index.md § Learnings.
 LEARNINGS_DIR = "code-learnings"
-_SLUG_UNSAFE = re.compile(r"[^A-Za-z0-9._-]+")
-
-
-def learning_slug(fqn: str) -> str:
-    """fqn → a filesystem- and git-sync-safe basename (no extension). Whitelist
-    `[A-Za-z0-9._-]`; everything else (`::` `/` `<>` `*` `&` spaces `~` operators
-    …) collapses to `-`.
-
-    A short fqn hash is appended whenever the basename alone can't identify the
-    symbol — the exact name stays recoverable from the note's `symbol:`
-    frontmatter, which is authoritative regardless:
-
-      • the munge was LOSSY (`core::cache::Store::get` and `core-cache-Store-get`
-        would otherwise be one file);
-      • the slug contains UPPERCASE. macOS (APFS/HFS+) and Windows are
-        case-INSENSITIVE, so `mod.Chunk` and `mod.chunk` are the SAME path there:
-        one symbol's record silently overwrote the other's, and the loser's
-        learning went with it. The hash is over the case-SENSITIVE fqn, so the two
-        land in different files on every platform.
-
-    A clean all-lowercase fqn still passes through verbatim: `crib.notes.load`."""
-    safe = _SLUG_UNSAFE.sub("-", fqn).strip("-")
-    if safe != fqn or safe != safe.lower():
-        safe = f"{safe}-{hashlib.sha1(fqn.encode()).hexdigest()[:8]}"
-    return safe
-
-
-def legacy_learning_slug(fqn: str) -> str:
-    """The pre-case-hash slug (`learning_slug` before the APFS fix), so records and
-    learning notes ALREADY on disk under the old name are still found. Nothing
-    writes this name any more; `SymbolIndex.write` migrates one to the new name as
-    it rewrites, and the learnings verbs read through to it in place."""
-    safe = _SLUG_UNSAFE.sub("-", fqn).strip("-")
-    if safe != fqn:
-        safe = f"{safe}-{hashlib.sha1(fqn.encode()).hexdigest()[:8]}"
-    return safe
-
-
 SYMBOL_SCHEMA_VERSION = 1
 """Shape of a stored symbol entry — its field set, its id spelling, and the spelling
 of the edge refs inside `calls`/`called_by`/`references`.
