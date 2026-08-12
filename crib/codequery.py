@@ -200,9 +200,11 @@ class CodeQuery:
                 out.append({"symbol": f"… +{extra} more", "file": "", "description": ""})
             return out
 
+        from .refs import resolution
         return {
             "fqname": entry["fqname"], "kind": entry.get("kind"),
             "project": owner,
+            "resolved": resolution(entry, symbol, owner if owner != proj else None),
             "file": entry.get("file"), "line": entry.get("line"),
             "signature": entry.get("signature"), "description": entry.get("description"),
             "learning": entry.get("learning"),
@@ -381,18 +383,13 @@ class CodeQuery:
         # ask before deleting something. Catch the miss BY TYPE: an ambiguity is a
         # ValueError too, and swallowing it here would restore the silence in the
         # shape of "symbol not found".
-        from .codeindex import fqname_match
-        from .refs import UnknownSymbol
+        from .refs import UnknownSymbol, resolution
         try:
             root_proj, root = self.refs.resolve_symbol_or_ref(proj, symbol, rc)
         except UnknownSymbol:
             return {}
-        resolved: dict[str, Any] = {
-            "query": symbol, "fqname": root["fqname"],
-            "via": fqname_match(root["fqname"], root.get("name", ""), symbol,
-                                root.get("lang", ""))}
-        if root_proj != proj:
-            resolved["project"] = root_proj
+        resolved = resolution(root, symbol,
+                              root_proj if root_proj != proj else None)
         if shape == "edges":
             sub = self._subgraph(proj, root, root_proj, edge, direction, depth, _nf)
             sub["resolved"] = resolved        # set before the rollup, which carries it

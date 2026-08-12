@@ -336,6 +336,25 @@ def test_match_tiers(fq, name, lang, query, tier):
     assert fqname_match(fq, name, query, lang) == tier
 
 
+def test_every_verb_that_narrows_to_one_symbol_discloses_it(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    graph = crib.code_graph("main", project="p")
+    dossier = crib.code_dossier("main", project="p")
+    learning = crib.learning_read("main", project="p")
+    expected = {"query": "main", "fqname": "app.main", "via": "name"}
+    assert graph["resolved"] == dossier["resolved"] == learning["resolved"] == expected
+
+
+def test_a_verb_that_lists_every_match_discloses_nothing(crib, tmp_path):
+    _wrapper_and_op(crib, tmp_path)
+    # code_xref NARROWS NOTHING — it returns both symbols, so the list already is
+    # the disclosure. Wrapping it in an envelope to carry `resolved` would be
+    # tidying away the rule, not an improvement.
+    hits = crib.code_xref("add_node", project="w")
+    assert {h["fqname"] for h in hits} == {"server.add_node", "ops.add_node"}
+    assert not any("resolved" in h for h in hits)
+
+
 def test_an_unknown_language_still_matches_on_either_separator():
     from crib.codeindex import fqname_match
     assert fqname_match("a::b::c", "c", "b::c", "") == "suffix"

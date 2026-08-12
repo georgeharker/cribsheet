@@ -388,6 +388,7 @@ def _emit_code_dossier(d: Any, as_json: bool) -> None:
     if not d or not d.get("fqname"):
         print("(symbol not found — is this project code-indexed?)"); return
     print(f"{d['fqname']}  ({d.get('kind', '')})  {d.get('file', '')}:{d.get('line', '')}")
+    _emit_resolved(d)
     if d.get("signature"):
         print(f"  {d['signature']}")
     if d.get("description"):

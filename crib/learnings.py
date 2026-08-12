@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING, Any
 from . import notes
 from .errors import CribUserError
 from .notes import Note
+from .refs import UnknownSymbol, resolution
 
 if TYPE_CHECKING:
     from .notestore import NoteStore
@@ -117,6 +118,7 @@ class Learnings:
         note.body = note.body.rstrip() + f"\n\n### {today}\n{text.strip()}\n"
         res = await self.store.write(proj, relpath, note)
         return {"project": proj, "symbol": fqn, "relpath": relpath,
+                "resolved": resolution(entry, symbol),
                 "created": not existed, "indexed": res.upserted}
 
     async def edit(self, proj: str, symbol: str, new_content: str) -> dict[str, Any]:
@@ -132,20 +134,25 @@ class Learnings:
         note.body = new_content.strip() + "\n"
         res = await self.store.write(proj, relpath, note)
         return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
+                "resolved": resolution(entry, symbol),
                 "indexed": res.upserted}
 
     async def forget(self, proj: str, symbol: str) -> dict[str, Any]:
         """Remove a symbol's learning (stashed to the version ring first, recoverable).
         Works on ORPHANS: if the symbol no longer resolves, forget by its recorded fqn."""
+        resolved: dict[str, Any] | None = None
         try:
-            fqn = self.refs.resolve_symbol(proj, symbol)["fqname"]
-        except ValueError:
+            entry = self.refs.resolve_symbol(proj, symbol)
+            fqn = entry["fqname"]
+            resolved = resolution(entry, symbol)
+        except UnknownSymbol:
             fqn = symbol                      # orphan: gone from the index, note lingers
         relpath = self.rel_for_fqn(proj, fqn)
         if not self.store.abspath(proj, relpath).exists():
             raise CribUserError(f"no learning for {symbol!r} in project {proj!r}")
         res = await self.store.delete(proj, relpath)
-        return {**res, "symbol": fqn}
+        return {**res, "symbol": fqn,
+                **({"resolved": resolved} if resolved else {})}
 
     async def reaffirm(self, proj: str, symbol: str) -> dict[str, Any]:
         """Clear a learning's ⚠︎ stale flag WITHOUT editing the body — you re-checked it
@@ -164,6 +171,7 @@ class Learnings:
         note.frontmatter["reaffirmed"] = datetime.date.today().isoformat()
         res = await self.store.write(proj, relpath, note)
         return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
+                "resolved": resolution(entry, symbol),
                 "reaffirmed": note.frontmatter["reaffirmed"], "indexed": res.upserted}
 
     def report(self, proj: str, orphans_only: bool = False) -> list[dict[str, Any]]:
@@ -272,8 +280,10 @@ class Learnings:
         path = self.store.abspath(proj, relpath)
         if not path.exists():
             return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
+                    "resolved": resolution(entry, symbol),
                     "path": str(path), "found": False, "body": None}
         note = notes.load(path)
         return {"project": proj, "symbol": entry["fqname"], "relpath": relpath,
+                "resolved": resolution(entry, symbol),
                 "path": str(path), "found": True,
                 "frontmatter": note.frontmatter, "body": note.body}

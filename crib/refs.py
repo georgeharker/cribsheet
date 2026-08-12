@@ -41,6 +41,30 @@ class AmbiguousSymbol(CribUserError):
     calls this" about live code."""
 
 
+def resolution(entry: dict[str, Any], query: str,
+               project: str | None = None) -> dict[str, Any]:
+    """What the caller's symbol string turned INTO — `{query, fqname, via, project?}`.
+
+    Attached by every verb that NARROWS TO ONE symbol, because that is the moment a
+    choice was made on the caller's behalf and the moment it should be visible: on
+    success especially, which is where nobody thinks to check. `via` names the tier
+    that matched (`fqname` / `suffix` / `name`), which is also how a caller learns the
+    canonical spelling when it is not one they would have guessed.
+
+    Verbs that LIST every match (`code_xref`) deliberately carry no `resolved`: they
+    narrow nothing, so the list is already the disclosure and there is no choice to
+    report. That is the rule — not an inconsistency to be tidied away by wrapping the
+    list in an envelope."""
+    from .codeindex import fqname_match
+    out: dict[str, Any] = {
+        "query": query, "fqname": entry.get("fqname", ""),
+        "via": fqname_match(entry.get("fqname", ""), entry.get("name", ""), query,
+                            entry.get("lang", ""))}
+    if project:
+        out["project"] = project
+    return out
+
+
 class Refs:
     def __init__(self, paths: Paths,
                  resident: Callable[[str], _ResidentCode],
