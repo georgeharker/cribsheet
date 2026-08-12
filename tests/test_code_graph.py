@@ -1,0 +1,206 @@
+"""`code_graph` shapes: the pstree tree, the deduplicated subgraph, the module
+rollup, and the whole-project export.
+
+The tree and the subgraph answer different questions, and the seeded fixture is
+built to make the difference bite: `deep` is reachable both directly from the root
+and via `left → shared`, and `shared` is reached from two sides. A tree can only
+show that by duplicating a node or cutting it off with `repeat`; the subgraph
+states it as one node with two in-edges."""
+
+from __future__ import annotations
+
+import pytest
+
+from crib import codequery
+from crib.app import Crib
+from crib.codeindex import SymbolIndex
+from crib.config import Config
+from crib.paths import Paths
+from crib.store import InMemoryStore
+
+
+@pytest.fixture()
+def crib(tmp_path, monkeypatch):
+    monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "config"))
+    monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "data"))
+    monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
+    return Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+
+
+def _sym(crib, project, fqname, file, **over):
+    e = {"fqname": fqname, "name": fqname.split(".")[-1], "kind": "function",
+         "lang": "python", "module": fqname.rsplit(".", 1)[0], "parent": "",
+         "content_hash": f"h_{fqname}", "file": file, "line": 1,
+         "signature": f"def {fqname.split('.')[-1]}():", "description": "",
+         "container": [], "calls": [], "called_by": [], "references": [],
+         "name_terms": [fqname.split(".")[-1]], **over}
+    SymbolIndex(crib.paths.project_dir(project)).write(e)
+    return e
+
+
+def _diamond(crib, tmp_path):
+    """app.main ⇒ {left, right, deep};  left ⇒ shared;  right ⇒ shared;
+    shared ⇒ {deep, an unindexed vendor call};  orphan is called by nobody."""
+    root = tmp_path / "proj"
+    root.mkdir(parents=True)
+    (root / "app.py").write_text("def main(): pass\n")
+    (root / "core.py").write_text("def shared(): pass\n")
+    (root / "orphan.py").write_text("def orphan(): pass\n")
+    _sym(crib, "p", "app.main", "app.py",
+         calls=["left [app.py]", "right [app.py]", "deep [core.py]"])
+    _sym(crib, "p", "app.left", "app.py", calls=["shared [core.py]"],
+         called_by=["main [app.py]"])
+    _sym(crib, "p", "app.right", "app.py", calls=["shared [core.py]"],
+         called_by=["main [app.py]"])
+    _sym(crib, "p", "core.shared", "core.py",
+         calls=["deep [core.py]", "vendored [vendor/pkg.py]"],
+         called_by=["left [app.py]", "right [app.py]"])
+    _sym(crib, "p", "core.deep", "core.py",
+         called_by=["shared [core.py]", "main [app.py]"])
+    _sym(crib, "p", "orphan.orphan", "orphan.py")
+    SymbolIndex(crib.paths.project_dir("p")).set_source_root(root)
+    return root
+
+
+def _ids(g):
+    return {n["id"] for n in g["nodes"]}
+
+
+def _edge_set(g):
+    return {(e["from"], e["to"]) for e in g["edges"]}
+
+
+# --- the tree loses convergence; the subgraph keeps it -------------------------
+
+def test_tree_duplicates_or_truncates_the_shared_node(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    tree = crib.code_graph("app.main", project="p")
+    left, right, deep = tree["children"]
+    # `shared` appears under BOTH left and right — a second time it is `repeat`
+    # with its own children dropped, so the second reader cannot see what it calls
+    assert left["children"][0]["fqname"] == "core.shared"
+    assert right["children"][0] == {"fqname": "core.shared", "kind": "function",
+                                    "file": "core.py", "line": 1, "children": [],
+                                    "repeat": True}
+    # and depth-first order means the DIRECT main→deep edge is the one truncated,
+    # after `deep` was already shown three levels down under left→shared
+    assert deep["repeat"] is True
+
+
+def test_edges_shape_states_convergence_once(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    g = crib.code_graph("app.main", project="p", shape="edges")
+    assert g["shape"] == "edges" and g["scope"] == "symbol"
+    assert g["root"] == "app.main"
+    # every symbol exactly once, no repeats to reconstruct
+    assert [n["id"] for n in g["nodes"]].count("core.shared") == 1
+    # both paths into `shared` survive as edges — that IS the convergence
+    assert ("app.left", "core.shared") in _edge_set(g)
+    assert ("app.right", "core.shared") in _edge_set(g)
+    assert ("core.shared", "core.deep") in _edge_set(g)
+    assert ("app.main", "core.deep") in _edge_set(g)
+    assert all(e["kind"] == "calls" for e in g["edges"])
+
+
+def test_edges_are_deduplicated(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    g = crib.code_graph("app.main", project="p", shape="edges")
+    assert len(_edge_set(g)) == len(g["edges"])
+
+
+def test_bfs_records_the_shortest_distance(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    g = crib.code_graph("app.main", project="p", shape="edges")
+    depth = {n["id"]: n["depth"] for n in g["nodes"]}
+    assert depth["app.main"] == 0
+    assert depth["app.left"] == 1
+    # depth-first found `deep` at 3 (main→left→shared→deep) before the direct edge;
+    # the subgraph reports the distance that is actually true
+    assert depth["core.deep"] == 1
+    assert depth["core.shared"] == 2
+
+
+def test_unresolved_edge_target_is_an_external_node(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    g = crib.code_graph("app.main", project="p", shape="edges")
+    ext = [n for n in g["nodes"] if n.get("external")]
+    assert [n["id"] for n in ext] == ["vendored [vendor/pkg.py]"]
+    assert ("core.shared", "vendored [vendor/pkg.py]") in _edge_set(g)
+
+
+def test_depth_bound_flags_the_frontier(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    g = crib.code_graph("app.main", project="p", shape="edges", depth=1)
+    assert _ids(g) == {"app.main", "app.left", "app.right", "core.deep"}
+    trunc = {n["id"] for n in g["nodes"] if n.get("truncated")}
+    assert trunc == {"app.left", "app.right"}      # reached, deliberately unwalked
+    assert not any(n.get("truncated") for n in g["nodes"] if n["id"] == "core.deep")
+
+
+def test_callers_direction_keeps_caller_to_callee_orientation(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    g = crib.code_graph("core.shared", project="p", direction="callers",
+                        shape="edges")
+    # walked backwards, but the arrows still point the way the calls go, so the
+    # output is composable with a callees graph and reads the same in a diagram
+    assert ("app.left", "core.shared") in _edge_set(g)
+    assert ("app.main", "app.left") in _edge_set(g)
+    assert ("core.shared", "app.left") not in _edge_set(g)
+
+
+# --- module rollup ------------------------------------------------------------
+
+def test_module_rollup_weights_the_file_edges(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    g = crib.code_graph("app.main", project="p", group_by="module")
+    assert g["group_by"] == "module" and g["shape"] == "edges"
+    w = {(e["from"], e["to"]): e["weight"] for e in g["edges"]}
+    assert w[("app.py", "core.py")] == 3          # left→shared, right→shared, main→deep
+    assert w[("app.py", "app.py")] == 2           # main→left, main→right, kept
+    assert w[("core.py", "core.py")] == 1         # shared→deep
+    counts = {n["id"]: n["symbols"] for n in g["nodes"]}
+    assert counts["app.py"] == 3 and counts["core.py"] == 2
+
+
+def test_module_rollup_implies_edges_and_refuses_a_tree(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    with pytest.raises(ValueError, match="group_by"):
+        crib.code_graph("app.main", project="p", shape="tree", group_by="module")
+
+
+# --- whole-project export -----------------------------------------------------
+
+def test_whole_project_includes_what_no_walk_reaches(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    g = crib.code_graph(project="p")
+    assert g["scope"] == "project" and g["shape"] == "edges"
+    assert "root" not in g
+    # `orphan` is called by nobody, so no rooted walk can ever produce it
+    assert "orphan.orphan" in _ids(g)
+    assert _ids(g) >= {"app.main", "app.left", "app.right", "core.shared",
+                       "core.deep", "orphan.orphan"}
+    assert ("app.left", "core.shared") in _edge_set(g)
+    assert all("depth" not in n for n in g["nodes"])   # no root ⇒ no distance
+
+
+def test_whole_project_rolls_up_and_refuses_a_tree(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    g = crib.code_graph(project="p", group_by="module")
+    assert {n["id"] for n in g["nodes"]} >= {"app.py", "core.py", "orphan.py"}
+    with pytest.raises(ValueError, match="whole-project"):
+        crib.code_graph(project="p", shape="tree")
+
+
+def test_whole_project_symbol_export_is_capped_but_the_rollup_is_not(
+        crib, tmp_path, monkeypatch):
+    _diamond(crib, tmp_path)
+    monkeypatch.setattr(codequery, "MAX_GRAPH_NODES", 2)
+    with pytest.raises(ValueError, match="group_by"):
+        crib.code_graph(project="p")
+    assert crib.code_graph(project="p", group_by="module")["nodes"]
+
+
+def test_unknown_shape_says_what_is_accepted(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    with pytest.raises(ValueError, match="edges"):
+        crib.code_graph("app.main", project="p", shape="dag")

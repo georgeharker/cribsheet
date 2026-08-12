@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .app import Crib
+from .codequery import GRAPH_GROUPINGS
 
 
 def _read_content(value: str) -> str:
@@ -771,6 +772,61 @@ def _graph_direction(args: Any) -> str:
     return "callers" if getattr(args, "callers", False) else "callees"
 
 
+def _graph_symbol(args: Any) -> str | None:
+    """`--all` (or a bare `code graph`) means the whole project — no root symbol."""
+    if getattr(args, "all_symbols", False):
+        return None
+    if not getattr(args, "symbol", None):
+        raise SystemExit("crib code graph: give a SYMBOL, or --all for the "
+                         "whole project")
+    return str(args.symbol)
+
+
+def _graph_shape(args: Any) -> str | None:
+    """--edges / --group-by / --all all mean the edge list; otherwise the tree."""
+    if (getattr(args, "edges", False) or getattr(args, "group_by", None)
+            or getattr(args, "all_symbols", False)):
+        return "edges"
+    return None
+
+
+def _emit_code_edges(data: dict, args: Any) -> None:
+    """Node table + edge list, with the two facts the tree could not state: which
+    symbols CONVERGE (in-degree > 1) and where the walk stopped."""
+    ascii_mode = getattr(args, "ascii", False)
+    arrow = "->" if ascii_mode else "→"
+    pin = " *" if ascii_mode else " ※"
+    nodes, edges = data.get("nodes") or [], data.get("edges") or []
+    scope = (f"{data['root']}  [{data['direction']}, depth {data['depth']}]"
+             if data.get("scope") != "project"
+             else f"{data.get('project', '')}  [all symbols, {data['direction']}]")
+    grouped = data.get("group_by") == "module"
+    print(f"{scope}  {len(nodes)} {'modules' if grouped else 'nodes'}, "
+          f"{len(edges)} edges")
+    indeg: dict[str, int] = {}
+    for e in edges:
+        if e["from"] != e["to"]:
+            indeg[e["to"]] = indeg.get(e["to"], 0) + 1
+    print("\nnodes:")
+    for n in nodes:
+        d = f"{n['depth']}  " if "depth" in n else ""
+        loc = (f"   {n.get('file', '')}:{n['line']}" if n.get("line") else "")
+        tag = ("  ·ext" if n.get("external") else "")
+        tag += (pin if n.get("has_learning") else "")
+        tag += ("  …truncated" if n.get("truncated") else "")
+        extra = f"   ×{n['symbols']}" if grouped else ""
+        print(f"  {d}{n['id']}{extra}{loc}{tag}")
+    print("\nedges:")
+    for e in edges:
+        w = f"  ×{e['weight']}" if "weight" in e else ""
+        print(f"  {e['from']} {arrow} {e['to']}{w}")
+    conv = sorted(((c, i) for i, c in indeg.items() if c > 1), reverse=True)
+    if conv:
+        print("\nconvergence (paths landing on one node):")
+        for c, i in conv:
+            print(f"  {c}×  {i}")
+
+
 def _emit_code_graph(tree: Any, args: Any) -> None:
     """pstree-style call graph (modeled on zdot's hook graph). `--json` = raw tree.
     `↑` marks a DAG node already shown; `·ext` an edge target outside the index."""
@@ -778,6 +834,8 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
         print(json.dumps(tree, indent=2, default=str)); return
     if not tree:
         print("(symbol not found — is this project code-indexed?)"); return
+    if tree.get("shape") == "edges":
+        _emit_code_edges(tree, args); return
     direction = _graph_direction(args)
     ascii_mode = getattr(args, "ascii", False)
     arrows = {"callees": (">", "▸"), "callers": ("<", "◂"), "references": ("=", "⇐")}
@@ -917,14 +975,24 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("symbol"); proj(s)
 
     s = codesub.add_parser("graph",
-                       help="pstree-style call graph around a symbol (recursive)")
-    s.add_argument("symbol"); proj(s)
+                       help="call graph around a symbol — pstree, edge list, or "
+                            "whole-project export")
+    s.add_argument("symbol", nargs="?", help="omit with --all for the whole project")
+    proj(s)
     s.add_argument("--callers", action="store_true",
                    help="what CALLS the symbol (default: what it calls)")
     s.add_argument("--references", action="store_true",
                    help="everywhere the symbol is REFERENCED (broader than calls)")
     s.add_argument("--depth", type=int, default=6)
     s.add_argument("--ascii", action="store_true", help="ASCII glyphs, no box-drawing")
+    s.add_argument("--edges", action="store_true",
+                   help="deduplicated node+edge subgraph instead of a tree "
+                        "(convergence stays visible; feeds a layout tool)")
+    s.add_argument("--group-by", choices=list(GRAPH_GROUPINGS), default=None,
+                   dest="group_by",
+                   help="roll symbol edges up into weighted module-to-module edges")
+    s.add_argument("--all", action="store_true", dest="all_symbols",
+                   help="the WHOLE project: every symbol, every edge, no depth bound")
 
     s = codesub.add_parser("index",
                        help="index a source file: symbols + call graph + descriptions")
@@ -1481,11 +1549,14 @@ VERBS: dict[str, Verb] = {
     "code dossier": Verb("code_dossier", lambda a: {"symbol": a.symbol,
                                                    "project": a.project}, _E_dossier,
                          policy="read", mcp=f"symbol {_PROJ}"),
-    "code graph": Verb("code_graph", lambda a: {"symbol": a.symbol,
+    "code graph": Verb("code_graph", lambda a: {"symbol": _graph_symbol(a),
                                                "direction": _graph_direction(a),
-                                               "depth": a.depth, "project": a.project},
+                                               "depth": a.depth, "project": a.project,
+                                               "shape": _graph_shape(a),
+                                               "group_by": a.group_by},
                        _E_graph, policy="read",
-                       mcp=f"symbol {_PROJ} direction='callees' depth=6"),
+                       mcp=f"symbol=None {_PROJ} direction='callees' depth=6 "
+                           "shape=None group_by=None"),
     "code index": Verb("code_index",
                        lambda a: {"path": str(Path(a.path).expanduser().resolve()),
                                   "project": a.project},

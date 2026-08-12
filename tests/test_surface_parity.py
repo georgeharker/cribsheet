@@ -138,11 +138,15 @@ _CLI_INVOCATIONS = {
 
 @pytest.mark.parametrize("key", sorted(_CLI_INVOCATIONS))
 def test_cli_defaults_match_the_declared_mcp_defaults(key):
-    verb, call = _dispatch(build_parser().parse_args(_CLI_INVOCATIONS[key]))
+    argv = _CLI_INVOCATIONS[key]
+    verb, call = _dispatch(build_parser().parse_args(argv))
     declared = VERBS[key].mcp_params()
     for param, value in call.items():
-        if declared.get(param, ...) is ... or value is None:
-            continue                      # required param, or "not given" on the CLI
+        if declared.get(param, ...) is ... or value is None or value in argv:
+            continue                      # required param, "not given" on the CLI, or
+                                          # supplied BY the invocation (a positional
+                                          # that is optional on the MCP face) — none of
+                                          # those three is a default to compare
         assert value == declared[param], (
             f"{key}: CLI default {param}={value!r} ≠ MCP default {declared[param]!r}")
 

@@ -78,7 +78,10 @@ projects.
 | `crib code lookup <query>` | `code_lookup` | Find a symbol by CONCEPT or name — hybrid dense (LLM descriptions) ⊕ name/subtoken. The entry point; self-diagnoses an unindexed project. |
 | `crib code dossier <sym>` | `code_dossier` | Everything about ONE symbol in one call: signature, description, callers/callees/references (each neighbour annotated), plus any attached learning. |
 | `crib code xref <sym>` | `code_xref` | A symbol's callers (←), callees (→), references (⇐), and any pinned learning. |
-| `crib code graph <sym>` | `code_graph` | Call-graph TREE — callees / callers / references, recursive, pstree-rendered; learning-bearing nodes flagged. |
+| `crib code graph <sym>` | `code_graph` | Call graph — callees / callers / references, recursive, pstree-rendered; learning-bearing nodes flagged. |
+| `crib code graph <sym> --edges` | `code_graph(shape="edges")` | The same walk as a deduplicated SUBGRAPH — `{nodes[], edges[]}`, each symbol once at its shortest distance, every edge kept and oriented caller→callee. Convergence is explicit; feeds a layout tool directly. |
+| `crib code graph <sym> --group-by module` | `code_graph(group_by="module")` | Roll the symbol edges up into weighted module-to-module edges — the architecture view. |
+| `crib code graph --all` | `code_graph()` (no symbol) | The WHOLE project: every indexed symbol and edge, no root, no depth bound — including what no walk reaches (entry points, dead code). |
 | `crib code index <file>` | `code_index` | (Re)index ONE source file. Usually you want `crib project index` (whole repo) instead. |
 
 ## Learnings — durable notes attached to a code symbol

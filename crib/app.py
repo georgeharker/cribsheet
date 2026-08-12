@@ -2242,11 +2242,14 @@ class Crib:
         order = sorted(range(len(head)), key=lambda j: bn[j] + rn[j], reverse=True)
         return [head[j] for j in order] + list(hits[_RERANK_N:])
 
-    def code_graph(self, symbol: str, direction: str = "callees", depth: int = 6,
-                   project: str | None = None,
-                   cwd: Path | None = None) -> dict[str, Any]:
-        """pstree-style call graph around a symbol (recursive), crossing into refs."""
-        return self.query.graph(self.resolve_project(project, cwd), symbol, direction, depth)
+    def code_graph(self, symbol: str | None = None, direction: str = "callees",
+                   depth: int = 6, project: str | None = None,
+                   cwd: Path | None = None, shape: str | None = None,
+                   group_by: str | None = None) -> dict[str, Any]:
+        """Call graph around a symbol — pstree tree, or (`shape="edges"`) the
+        deduplicated subgraph; omit `symbol` for the whole project. Crosses into refs."""
+        return self.query.graph(self.resolve_project(project, cwd), symbol, direction,
+                                depth, shape, group_by)
 
     async def enrich(self, relpath: str | None = None, project: str | None = None,
                      cwd: Path | None = None, overwrite: bool = False) -> dict[str, Any]:

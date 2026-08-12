@@ -10,6 +10,7 @@ indexed" guard). Cores take an explicit resolved `project`; Crib keeps resolve +
 
 from __future__ import annotations
 
+from collections import deque
 from typing import TYPE_CHECKING, Any, Callable
 
 if TYPE_CHECKING:
@@ -28,8 +29,78 @@ _RERANK_N = 20      # candidates carried for the cross-encoder rerank stage
 # nobody asked) or a walk deep enough to be an outage.
 GRAPH_DIRECTIONS = {"callees": "calls", "callers": "called_by",
                     "references": "references"}
+# `tree` is the pstree view for a human reading one chain; `edges` is the
+# SUBGRAPH — the shape you need the moment convergence is the point (several
+# paths landing on one symbol), because a tree can only show a shared node by
+# duplicating it or truncating it, and both hide the fact.
+GRAPH_SHAPES = ("tree", "edges")
+GRAPH_GROUPINGS = ("module",)
 MAX_K = 200
 MAX_DEPTH = 25
+# Whole-project symbol-level export backstop. A rolled-up (`group_by="module"`)
+# export is small whatever the repo size, so the cap applies only to the raw
+# symbol graph, and it errors rather than truncating — a graph silently missing
+# nodes is worse than no graph.
+MAX_GRAPH_NODES = 5000
+
+
+def _edge_target(ref: str, p: str) -> tuple[str, str, str, str]:
+    """Split an index edge ref — `name`, `name [rel]` or `name [proj:rel]` — into
+    (project, name, file-rel, raw-ref); a QUALIFIED ref hops into that project."""
+    name, _, rest = ref.partition(" [")
+    fref = rest.rstrip("]")
+    if ":" in fref:
+        tp, _, trel = fref.partition(":")
+        return tp, name.strip(), trel, fref
+    return p, name.strip(), fref, fref
+
+
+def _rollup_modules(sub: dict[str, Any], proj: str) -> dict[str, Any]:
+    """Collapse a symbol subgraph into MODULE-to-MODULE edges carrying the number of
+    distinct symbol edges they stand for — the architecture view, where what matters
+    is which files depend on which and how heavily. Self-edges (a file calling
+    itself) are kept and left for the consumer to filter: they are real, and
+    dropping them here would misreport a module's internal cohesion as zero."""
+    member: dict[str, str] = {}
+    mods: dict[str, dict[str, Any]] = {}
+    for n in sub["nodes"]:
+        p = str(n.get("project") or proj)
+        f = str(n.get("file") or "")
+        mid = (f or "(unresolved)") if (n.get("external") or p == proj) else f"{p}:{f}"
+        member[str(n["id"])] = mid
+        m = mods.get(mid)
+        if m is None:
+            m = {"id": mid, "file": f, "symbols": 0, "external": True}
+            if p != proj and not n.get("external"):
+                m["project"] = p
+            if "depth" in n:
+                m["depth"] = n["depth"]
+            mods[mid] = m
+        m["symbols"] += 1
+        if not n.get("external"):
+            m["external"] = False
+        if "depth" in n and "depth" in m:
+            m["depth"] = min(m["depth"], n["depth"])
+    for m in mods.values():
+        if not m["external"]:
+            del m["external"]
+    medges: dict[tuple[str, str], dict[str, Any]] = {}
+    for e in sub["edges"]:
+        a, b = member[e["from"]], member[e["to"]]
+        key = (a, b)
+        cur = medges.get(key)
+        if cur is None:
+            medges[key] = {"from": a, "to": b, "kind": e["kind"], "weight": 1}
+        else:
+            cur["weight"] += 1
+    out = {k: v for k, v in sub.items() if k not in ("nodes", "edges")}
+
+    def order(m: dict[str, Any]) -> tuple[Any, str]:
+        return (m.get("depth", 0), str(m["id"]))
+
+    return {**out, "group_by": "module",
+            "nodes": sorted(mods.values(), key=order),
+            "edges": sorted(medges.values(), key=lambda x: (x["from"], x["to"]))}
 
 
 def check_k(k: int, name: str = "k") -> int:
@@ -218,19 +289,57 @@ class CodeQuery:
                 for r, i in enumerate(order)]
         return self.learnings.attach(proj, hits)
 
-    def graph(self, proj: str, symbol: str, direction: str = "callees",
-              depth: int = 6) -> dict[str, Any]:
-        """Call-graph TREE around `symbol` from the persisted symbol_index — `callees`
-        follows `calls`, `callers` follows `called_by`. Nested {fqname, kind, file, line,
-        children[]} with DAG-repeats marked `repeat` and unresolved edges `external`."""
+    def graph(self, proj: str, symbol: str | None = None,
+              direction: str = "callees", depth: int = 6, shape: str | None = None,
+              group_by: str | None = None) -> dict[str, Any]:
+        """Call graph around `symbol` from the persisted symbol_index — `callees`
+        follows `calls`, `callers` follows `called_by`, `references` the broader
+        mention relation. Omit `symbol` for the WHOLE PROJECT: every indexed symbol
+        and every edge between them, with no root and no depth bound (`shape="edges"`
+        only — a tree has to start somewhere).
+
+        `shape="tree"` (default) is the pstree view: nested {fqname, kind, file,
+        line, children[]}, depth-first, DAG-repeats marked `repeat` and unresolved
+        edges `external`.
+
+        `shape="edges"` is the depth-bounded SUBGRAPH: {nodes[], edges[]}, walked
+        breadth-first so every symbol appears ONCE at its shortest distance while
+        EVERY edge is kept — including the ones back into already-visited nodes,
+        which is exactly what the tree drops. Convergence (several paths ending at
+        one symbol) is then a fact in the data, not something the reader has to
+        reconstruct. Edges are deduplicated and oriented caller→callee regardless
+        of walk direction, so the output drops straight into a layout tool.
+
+        `group_by="module"` rolls those symbol edges up into weighted file-to-file
+        edges — the architecture view — and implies `shape="edges"`."""
         if direction not in GRAPH_DIRECTIONS:
             raise ValueError(
                 f"unknown direction {direction!r}: use one of "
                 f"{', '.join(sorted(GRAPH_DIRECTIONS))}")
+        if shape is not None and shape not in GRAPH_SHAPES:
+            raise ValueError(f"unknown shape {shape!r}: use one of "
+                             f"{', '.join(GRAPH_SHAPES)}")
+        if group_by is not None:
+            if group_by not in GRAPH_GROUPINGS:
+                raise ValueError(f"unknown group_by {group_by!r}: use one of "
+                                 f"{', '.join(GRAPH_GROUPINGS)}")
+            if shape == "tree":                 # explicit and contradictory
+                raise ValueError(
+                    "group_by rolls up an edge list, which a tree cannot carry: "
+                    'drop shape="tree" (group_by implies shape="edges")')
+            shape = "edges"                     # …otherwise group_by picks it
+        if symbol is None:
+            if shape == "tree":                 # explicit and impossible
+                raise ValueError(
+                    "a whole-project graph has no root to hang a tree from: "
+                    'drop shape="tree", or pass a symbol')
+            shape = "edges"
+        shape = shape or "tree"
         check_k(depth, "depth")
         if depth > MAX_DEPTH:
             raise ValueError(f"depth must be 1..{MAX_DEPTH}, got {depth!r}")
-        check_query(symbol, "symbol")
+        if symbol is not None:
+            check_query(symbol, "symbol")
         self._require_index(proj)
         rc = self._resident(proj)
         entries = rc.entries
@@ -250,6 +359,11 @@ class CodeQuery:
             return nf_maps[p]
 
         _nf(proj)
+        edge = GRAPH_DIRECTIONS[direction]      # validated above
+        if symbol is None:
+            sub = self._project_graph(proj, entries, edge, direction, _nf,
+                                      capped=group_by is None)
+            return _rollup_modules(sub, proj) if group_by else sub
         root = (rc.by_fq.get(symbol)
                 or next((e for e in entries if e.get("name") == symbol
                          or e["fqname"].endswith("." + symbol)), None))
@@ -259,7 +373,9 @@ class CodeQuery:
                 root_proj, root = self.refs.resolve_symbol_or_ref(proj, symbol, rc)
             except ValueError:
                 return {}
-        edge = GRAPH_DIRECTIONS[direction]      # validated above
+        if shape == "edges":
+            sub = self._subgraph(proj, root, root_proj, edge, direction, depth, _nf)
+            return _rollup_modules(sub, proj) if group_by else sub
         seen: set[str] = set()
 
         def build(e: dict, p: str, d: int) -> dict:
@@ -275,17 +391,12 @@ class CodeQuery:
             if d <= 0:
                 return node
             for ref in e.get(edge) or []:
-                name, _, rest = ref.partition(" [")
-                fref = rest.rstrip("]")
-                if ":" in fref:               # qualified → hop into the ref project
-                    tp, _, trel = fref.partition(":")
-                else:
-                    tp, trel = p, fref
-                child = _nf(tp).get((name.strip(), trel))
+                tp, name, trel, fref = _edge_target(ref, p)
+                child = _nf(tp).get((name, trel))
                 if child:
                     node["children"].append(build(child, tp, d - 1))
                 else:
-                    node["children"].append({"fqname": name.strip(), "kind": "?",
+                    node["children"].append({"fqname": name, "kind": "?",
                                              "file": fref, "external": True,
                                              "children": []})
             return node
@@ -304,3 +415,134 @@ class CodeQuery:
                 n["has_learning"] = True
             stack.extend(n.get("children") or [])
         return tree
+
+    def _project_graph(self, proj: str, entries: list[dict], edge: str,
+                       direction: str,
+                       nf: Callable[[str], dict[tuple[str, str], dict]],
+                       capped: bool = True) -> dict[str, Any]:
+        """EVERY indexed symbol in the project and every edge between them — no root,
+        no depth, nothing reachability can hide. The rooted walk answers "what does
+        this touch"; this answers "what is the shape of the program", which is a
+        different question and the one an architecture diagram asks. Symbols nothing
+        calls (entry points, dead code, test helpers) are in here and cannot be in a
+        rooted walk.
+
+        Cross-project and unresolved edge TARGETS still appear as nodes, so the
+        boundary of the project is visible; only local symbols are enumerated."""
+        kind = "references" if direction == "references" else "calls"
+        forward = direction == "callees"
+        if capped and len(entries) > MAX_GRAPH_NODES:
+            raise ValueError(
+                f"{len(entries)} symbols exceeds the {MAX_GRAPH_NODES}-node "
+                'whole-project cap: pass group_by="module" for the rolled-up '
+                "export (no cap), or give a symbol to walk from")
+        nodes: dict[str, dict[str, Any]] = {}
+        edges: dict[tuple[str, str], dict[str, Any]] = {}
+        for e in entries:
+            nodes[e["fqname"]] = {"id": e["fqname"], "fqname": e["fqname"],
+                                  "kind": e.get("kind", ""), "file": e.get("file", ""),
+                                  "line": e.get("line")}
+        for e in entries:
+            for ref in e.get(edge) or []:
+                tp, name, trel, fref = _edge_target(ref, proj)
+                target = nf(tp).get((name, trel))
+                if target and tp == proj:
+                    ci = target["fqname"]
+                elif target:
+                    ci = f"{tp}:{target['fqname']}"
+                    nodes.setdefault(ci, {"id": ci, "fqname": target["fqname"],
+                                          "kind": target.get("kind", ""),
+                                          "file": target.get("file", ""),
+                                          "line": target.get("line"), "project": tp})
+                else:
+                    ci = f"{name} [{fref}]" if fref else name
+                    nodes.setdefault(ci, {"id": ci, "fqname": name, "kind": "?",
+                                          "file": fref, "line": None,
+                                          "external": True})
+                a, b = (e["fqname"], ci) if forward else (ci, e["fqname"])
+                edges.setdefault((a, b), {"from": a, "to": b, "kind": kind})
+        pinned = self.learnings.fqns(proj)
+        for n in nodes.values():
+            if not n.get("external") and not n.get("project") \
+                    and n["fqname"] in pinned:
+                n["has_learning"] = True
+        return {"project": proj, "scope": "project", "direction": direction,
+                "shape": "edges",
+                "nodes": sorted(nodes.values(), key=lambda n: str(n["id"])),
+                "edges": sorted(edges.values(), key=lambda x: (x["from"], x["to"]))}
+
+    def _subgraph(self, proj: str, root: dict, root_proj: str, edge: str,
+                  direction: str, depth: int,
+                  nf: Callable[[str], dict[tuple[str, str], dict]]) -> dict[str, Any]:
+        """The depth-bounded SUBGRAPH: breadth-first, so each symbol is visited once
+        at its SHORTEST distance from the root, and every edge out of an expanded
+        node is recorded — including edges into nodes already visited. That last
+        part is the whole difference from the tree, which drops them (`repeat`) and
+        so cannot show that four paths converge on one symbol.
+
+        Edges are deduplicated and oriented caller→callee whichever way we walked,
+        because a graph consumer wants one consistent arrow, not one that flips with
+        the query."""
+        kind = "references" if direction == "references" else "calls"
+        forward = direction == "callees"       # walking OUT of the caller
+        nodes: dict[str, dict[str, Any]] = {}
+        edges: dict[tuple[str, str], dict[str, Any]] = {}
+
+        def nid(p: str, fq: str) -> str:
+            return fq if p == proj else f"{p}:{fq}"
+
+        def put(p: str, e: dict, d: int) -> str:
+            i = nid(p, e["fqname"])
+            n = nodes.get(i)
+            if n is None:
+                n = {"id": i, "fqname": e["fqname"], "kind": e.get("kind", ""),
+                     "file": e.get("file", ""), "line": e.get("line"), "depth": d}
+                if p != proj:
+                    n["project"] = p
+                nodes[i] = n
+            elif d < n["depth"]:                # BFS makes this unreachable; cheap guard
+                n["depth"] = d
+            return i
+
+        def put_external(name: str, fref: str, d: int) -> str:
+            i = f"{name} [{fref}]" if fref else name    # unresolvable → its own raw ref
+            nodes.setdefault(i, {"id": i, "fqname": name, "kind": "?", "file": fref,
+                                 "line": None, "depth": d, "external": True})
+            return i
+
+        put(root_proj, root, 0)
+        queue: deque[tuple[str, dict, int]] = deque([(root_proj, root, 0)])
+        expanded: set[str] = set()
+        while queue:
+            p, e, d = queue.popleft()
+            i = nid(p, e["fqname"])
+            if i in expanded:
+                continue
+            if d >= depth:                      # frontier: reached, deliberately unwalked
+                if e.get(edge):
+                    nodes[i]["truncated"] = True
+                continue
+            expanded.add(i)
+            for ref in e.get(edge) or []:
+                tp, name, trel, fref = _edge_target(ref, p)
+                child = nf(tp).get((name, trel))
+                if child:
+                    ci = put(tp, child, d + 1)
+                    queue.append((tp, child, d + 1))
+                else:
+                    ci = put_external(name, fref, d + 1)
+                a, b = (i, ci) if forward else (ci, i)
+                edges.setdefault((a, b), {"from": a, "to": b, "kind": kind})
+        marks: dict[str, set[str]] = {}
+        for n in nodes.values():
+            if n.get("external"):
+                continue
+            p = str(n.get("project") or proj)
+            if p not in marks:
+                marks[p] = self.learnings.fqns(p)
+            if n["fqname"] in marks[p]:
+                n["has_learning"] = True
+        return {"root": nid(root_proj, root["fqname"]), "scope": "symbol",
+                "direction": direction, "depth": depth, "shape": "edges",
+                "nodes": sorted(nodes.values(), key=lambda n: (n["depth"], n["id"])),
+                "edges": sorted(edges.values(), key=lambda x: (x["from"], x["to"]))}

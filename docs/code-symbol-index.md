@@ -198,6 +198,31 @@ loaded; that incantation is the remaining nvim-side tidy-up.)
   the `initialize` result (`callHierarchyProvider` / `referencesProvider`) so a server
   that lacks a facet contributes empty edges for it rather than hanging.
 
+**Two output shapes, because they answer different questions.** `code_graph` renders
+a **tree** by default — the pstree view, for following one chain by eye. A tree
+cannot state convergence: a symbol reached by several paths is either duplicated or
+marked `repeat` and cut off, and which path gets truncated is an artifact of
+depth-first order (the *shorter* route to a node can be the one elided). So the same
+walk is also available as `shape="edges"` — the depth-bounded **subgraph**: breadth-
+first, each symbol once at its true shortest distance, every edge kept, deduplicated,
+and oriented caller→callee whichever direction was walked. That is the native input
+of any layout tool, and it makes "these four paths all end at `Document.resolve`" a
+fact in the data rather than something the reader reconstructs by hand. Frontier
+nodes carry `truncated` so the boundary of the walk is visible instead of implied.
+
+`group_by="module"` collapses the symbol edges into **module-to-module** edges
+carrying the number of symbol edges they stand for (`weight`) — the architecture
+diagram, aggregated once here instead of by every consumer. Self-edges are kept:
+they measure a module's internal cohesion, and dropping them would report it as zero.
+
+**Whole-project export.** Omitting the symbol dumps the entire project — every
+indexed symbol, every edge, no root and no depth bound. This is not the same set as
+any rooted walk: reachability hides entry points, dead code and test helpers, and
+those are exactly what a program-shaped question asks about. Symbol-level export is
+capped (`MAX_GRAPH_NODES`) and errors rather than truncating, because a graph
+silently missing nodes is worse than no graph; the module rollup is uncapped and is
+what large repos want anyway.
+
 **Language routing.** Selection is by extension (§3.3); for **extension-less scripts**
 the `#!` shebang is read and mapped to a language (`_shebang_lang`: `env` and version
 suffixes handled — `#!/usr/bin/env zsh`→zsh, `#!/usr/bin/python3`→python), then the

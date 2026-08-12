@@ -664,15 +664,36 @@ def build_server(crib: Crib | None = None):
         return crib.code_dossier(symbol, project)
 
     @crib_tool("read", echo=True)
-    async def code_graph(symbol: str, direction: str = "callees", depth: int = 6,
-                         project: str | None = None,
-                         project_path: str | None = None) -> dict[str, Any]:
-        """Call-graph TREE around a symbol from the index: `callees` (what it calls),
+    async def code_graph(symbol: str | None = None, direction: str = "callees",
+                         depth: int = 6, project: str | None = None,
+                         project_path: str | None = None, shape: str | None = None,
+                         group_by: str | None = None) -> dict[str, Any]:
+        """Call graph around a symbol from the index: `callees` (what it calls),
         `callers` (what calls it), or `references` (everywhere mentioned — broader than
         calls, and the only relation for symbols-only servers like zsh's shuck),
-        recursive to `depth`. Nested {fqname, kind, file, line, children[]}; nodes with a
-        pinned learning are flagged. Pass `project_path=<a path in the repo>` (or `project=<name>`) only to target a DIFFERENT project than your current one."""
-        return crib.code_graph(symbol, direction, depth, project)
+        recursive to `depth`. Nodes with a pinned learning are flagged.
+
+        TWO SHAPES, and the default is the reading one:
+        - `shape="tree"` (default) — nested {fqname, kind, file, line, children[]} for
+          following one chain by eye. A symbol reached by several paths CANNOT be shown
+          as one node here: it is duplicated, or marked `repeat` and cut off.
+        - `shape="edges"` — the depth-bounded SUBGRAPH as {nodes[], edges[]}: each
+          symbol once, at its shortest distance, with EVERY edge kept and deduplicated,
+          oriented caller→callee whichever direction you walked. REACH FOR THIS when
+          convergence is the point (which paths all end at the same symbol) or when the
+          output feeds a diagram/layout tool — it is their native input, and it makes
+          convergence explicit instead of something you reconstruct by hand.
+
+        `group_by="module"` (implies `shape="edges"`) rolls symbol edges up into
+        file-to-file edges carrying a `weight` — the architecture diagram.
+
+        OMIT `symbol` for the WHOLE PROJECT: every indexed symbol and every edge, no
+        root, no depth bound — including symbols no walk reaches (entry points, dead
+        code). Large repos: prefer `group_by="module"` (uncapped) over the raw symbol
+        export. Pass `project_path=<a path in the repo>` (or `project=<name>`) only to
+        target a DIFFERENT project than your current one."""
+        return crib.code_graph(symbol, direction, depth, project,
+                               shape=shape, group_by=group_by)
 
     @crib_tool("read")
     async def learning_add(symbol: str, text: str, project: str | None = None,
