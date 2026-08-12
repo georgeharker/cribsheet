@@ -42,7 +42,8 @@ class _ResidentCode:
         it drifted apart from the writer's separator once already."""
         from .codeindex import fqname_match     # lazy: keeps this module crib-free
         return [e for e in self.entries
-                if fqname_match(e.get("fqname", ""), e.get("name", ""), name)]
+                if fqname_match(e.get("fqname", ""), e.get("name", ""), name,
+                                e.get("lang", ""))]
 
     def _prepare(self) -> None:
         from .retrieve import BM25, _as_tf, _subtokens, tokenize

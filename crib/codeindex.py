@@ -845,6 +845,15 @@ def _enclosing_symbol(c: LspClient, uri: str, line: int, language_id: str,
     return best[0] if best else None
 
 
+def fqname_sep(lang: str) -> str:
+    """The separator `_qualify` renders for `lang` — the ONE place the writer of a
+    qualified name and every reader of one agree. Inlining this in the writer is
+    exactly how the reader drifted into a dot-only rule that could not see a Rust
+    path: `ClientsLock` read as "unknown symbol" while
+    `rust::src::core::lockfile::ClientsLock` sat in the index."""
+    return "::" if lang == "rust" else "."
+
+
 def _module_of(relpath: str, lang: str) -> str:
     """Module/namespace from the FILE PATH (language-specific). The container parts
     come from documentSymbol; the module part can only come from the path."""
@@ -859,43 +868,67 @@ def _module_of(relpath: str, lang: str) -> str:
     index_file = {"rust": "mod", "lua": "init"}.get(lang, "__init__")
     if parts and parts[-1] == index_file:
         parts = parts[:-1]
-    sep = "::" if lang == "rust" else "."
-    return sep.join(parts)
+    return fqname_sep(lang).join(parts)
 
 
-def normalize_fqname(fq: str) -> str:
-    """The separator-neutral spelling, for MATCHING ONLY — never stored, never shown.
-
-    `_qualify` renders each language's OWN separator, so the qualified name is not
-    always dotted; a dot-only match rule is blind to every language that isn't.
-    That was not hypothetical: `ClientsLock` failed to resolve against the indexed
-    `rust::src::core::lockfile::ClientsLock`, so a symbol sitting in the index read
-    as "unknown symbol"."""
-    return fq.replace("::", ".")
+_ANY_SEP = re.compile(r"::|\.")
 
 
-def fqname_match(entry_fq: str, entry_name: str, query: str) -> str | None:
+def fqname_segments(fq: str, lang: str) -> list[str]:
+    """`fq` cut into segments IN ITS OWN LANGUAGE'S TERMS — never a normalized
+    spelling, because normalizing would have to pick some character to mean
+    "separator" and then could not tell that character apart from one occurring
+    inside a name. An unknown `lang` degrades to splitting on either separator,
+    which is a floor rather than the rule."""
+    if not fq:
+        return []
+    return fq.split(fqname_sep(lang)) if lang else _ANY_SEP.split(fq)
+
+
+def fqname_match(entry_fq: str, entry_name: str, query: str,
+                 lang: str = "") -> str | None:
     """Which TIER `query` matches this entry on — most specific first — or None.
 
-    - `fqname` — the whole qualified name, modulo separator spelling
-    - `suffix` — a trailing run of its segments (`lockfile::ClientsLock`), so a
+    - `fqname` — the whole qualified name (either separator spelling accepted)
+    - `suffix` — a trailing run of its SEGMENTS (`lockfile::ClientsLock`), so a
       partial path disambiguates without typing the root
-    - `name`   — the bare local name, taken from the entry's OWN `name` field
-      rather than by splitting the fqname. That is what makes a bare name work in
-      every language whatever separator qualified it, and it matters most where
-      the qualified spelling is one the caller could not have guessed (crib
-      renders Rust paths from the file tree, not the crate path).
+    - `name`   — the bare local name, from the entry's OWN `name` field. This is
+      what makes a bare name work in every language whatever separator qualified
+      it, and it matters most where the qualified spelling is one the caller could
+      not have guessed (crib renders Rust paths from the file tree, not the crate
+      path).
+
+    Comparison is between SEGMENT LISTS, never between re-joined strings: there is
+    then no separator character in play to collide with one inside a name, and a
+    suffix match is a boundary by construction rather than by string assertion.
+    Only the QUERY is read permissively (either separator) — the caller cannot know
+    which language stored the symbol, and being generous there only widens what may
+    be typed; the result still has to land on real segment boundaries.
     """
-    q, fq = normalize_fqname(query), normalize_fqname(entry_fq)
-    if entry_fq == query or fq == q:
+    if not query:
+        return None
+    if entry_fq == query:
         return "fqname"
-    if entry_name and entry_name == query and "." not in q:
-        return "name"                 # a single token is a NAME, not a 1-segment path
-    if fq.endswith("." + q):
+    seg = fqname_segments(entry_fq, lang)
+    # the entry's own `name` is the AUTHORITATIVE final segment — a name that
+    # contains the separator (a legal zsh `git.push`) would otherwise be split into
+    # pieces that were never boundaries, and `push` would match a symbol not called
+    # `push`. Rebuild the tail from what the writer recorded rather than re-deriving.
+    if entry_name and entry_fq.endswith(entry_name):
+        head = entry_fq[:-len(entry_name)].rstrip(fqname_sep(lang) if lang else ".:")
+        seg = (fqname_segments(head, lang) if head else []) + [entry_name]
+    q = [s for s in _ANY_SEP.split(query) if s]
+    if not q:
+        return None
+    if seg == q:
+        return "fqname"               # same name, spelled with the other separator
+    if len(q) == 1:
+        if entry_name and entry_name == query:
+            return "name"
+        return "suffix" if seg and seg[-1] == query else None
+    if len(q) < len(seg) and seg[-len(q):] == q:
         return "suffix"
-    if entry_name and entry_name == query:
-        return "name"
-    return None
+    return "name" if entry_name and entry_name == query else None
 
 
 def _local_name(raw: str, lang: str) -> str:
@@ -919,9 +952,8 @@ def _qualify(lang: str, module: str, container: tuple[str, ...], name: str) -> s
     this is derived display + a lookup alias."""
     cont = [c for c in container if _local_name(c, lang) not in _LUA_TABLE_VARS]
     cont = [_local_name(c, lang) for c in cont]
-    sep = "::" if lang == "rust" else "."
     pieces = ([module] if module else []) + cont + [name]
-    return sep.join(p for p in pieces if p)
+    return fqname_sep(lang).join(p for p in pieces if p)
 
 
 _SUBTOK = re.compile(r"[A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z]+|[A-Z]+|[0-9]+")
@@ -1619,7 +1651,8 @@ class SymbolIndex:
         """Read entries matching `name` — full qualified name, trailing path segments,
         or the bare local name, in any language's separator (see `fqname_match`)."""
         return [e for e in self.all()
-                if fqname_match(e.get("fqname", ""), e.get("name", ""), name)]
+                if fqname_match(e.get("fqname", ""), e.get("name", ""), name,
+                                e.get("lang", ""))]
 
     def all(self) -> list[dict]:
         """Every persisted symbol entry (for concept search over descriptions).

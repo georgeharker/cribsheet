@@ -118,8 +118,8 @@ class Refs:
                                 f"code_lookup it, or code_index the file first")
         from .codeindex import fqname_match
         exact = [m for m in matches
-                 if fqname_match(m.get("fqname", ""), m.get("name", ""),
-                                 symbol) == "fqname"]
+                 if fqname_match(m.get("fqname", ""), m.get("name", ""), symbol,
+                                 m.get("lang", "")) == "fqname"]
         cands = exact or matches
         if len(cands) > 1:
             # Ranked by caller count and STATED, because the question a bare name

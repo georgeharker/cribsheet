@@ -389,7 +389,8 @@ class CodeQuery:
             return {}
         resolved: dict[str, Any] = {
             "query": symbol, "fqname": root["fqname"],
-            "via": fqname_match(root["fqname"], root.get("name", ""), symbol)}
+            "via": fqname_match(root["fqname"], root.get("name", ""), symbol,
+                                root.get("lang", ""))}
         if root_proj != proj:
             resolved["project"] = root_proj
         if shape == "edges":

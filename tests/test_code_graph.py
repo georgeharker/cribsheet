@@ -301,6 +301,47 @@ def test_an_unknown_symbol_is_still_an_empty_result_not_an_error(crib, tmp_path)
     assert crib.code_graph("no_such_symbol", project="p") == {}
 
 
+# --- the match rule itself: segments, in the entry's own language --------------
+
+def test_the_reader_and_the_writer_share_one_separator():
+    from crib.codeindex import _qualify, fqname_sep, fqname_segments
+    for lang in ("rust", "python", "zsh", "lua", "c"):
+        fq = _qualify(lang, "mod", ("Outer",), "leaf")
+        # whatever the writer joined with, the reader cuts back into the same parts
+        assert fqname_segments(fq, lang) == ["mod", "Outer", "leaf"]
+        assert fqname_sep(lang) in fq
+
+
+@pytest.mark.parametrize("fq, name, lang, query, tier", [
+    # exact, in either spelling the caller might reach for
+    ("a::b::c", "c", "rust", "a::b::c", "fqname"),
+    ("a::b::c", "c", "rust", "a.b.c", "fqname"),
+    ("a.b.c", "c", "python", "a::b::c", "fqname"),
+    # trailing run of SEGMENTS
+    ("a::b::c", "c", "rust", "b::c", "suffix"),
+    ("a::b::c", "c", "rust", "b.c", "suffix"),
+    # the bare local name, whatever qualified it
+    ("a::b::c", "c", "rust", "c", "name"),
+    ("a.b.c", "c", "python", "c", "name"),
+    # a partial that is not a segment boundary matches nothing
+    ("a.bc.d", "d", "python", "c.d", None),
+    ("a::bcd", "bcd", "rust", "cd", None),
+    # a name CONTAINING the separator keeps its boundary: `push` is not a symbol
+    # here, and re-deriving the tail from the fqname would have said it was
+    ("helpers.git.push", "git.push", "zsh", "push", None),
+    ("helpers.git.push", "git.push", "zsh", "git.push", "name"),
+])
+def test_match_tiers(fq, name, lang, query, tier):
+    from crib.codeindex import fqname_match
+    assert fqname_match(fq, name, query, lang) == tier
+
+
+def test_an_unknown_language_still_matches_on_either_separator():
+    from crib.codeindex import fqname_match
+    assert fqname_match("a::b::c", "c", "b::c", "") == "suffix"
+    assert fqname_match("a::b::c", "c", "c", "") == "name"
+
+
 # --- expected refusals are delivered, not dumped -------------------------------
 
 def test_symbol_errors_are_user_errors_and_still_value_errors(crib, tmp_path):

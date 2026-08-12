@@ -225,13 +225,26 @@ what large repos want anyway.
 
 **Resolving the symbol you asked for.** One rule (`fqname_match`), stated once and
 used by both the resident cache and the disk index, matching in three tiers: the full
-qualified name, a trailing run of its segments, or the bare local name taken from the
-entry's own `name` field. The tiers are **separator-neutral** — `_qualify` renders
-each language's own separator, so a dot-only rule is blind to any language that isn't
-dotted, and `ClientsLock` genuinely read as "unknown symbol" while
-`rust::src::core::lockfile::ClientsLock` sat in the index. The `name`-field tier is
-what makes a bare name work regardless, which matters most where the qualified
-spelling is one the caller could not have guessed.
+qualified name, a trailing run of its **segments**, or the bare local name taken from
+the entry's own `name` field. The `name` tier is what makes a bare name work
+regardless of what qualified it, which matters most where the qualified spelling is
+one the caller could not have guessed.
+
+The comparison happens **in the entry's own language**, between segment lists, never
+between normalized strings. `fqname_sep(lang)` is shared by `_qualify` (the writer)
+and the matcher (the reader) — the writer knowing the language while the reader
+guessed is exactly the drift that made `ClientsLock` read as "unknown symbol" while
+`rust::src::core::lockfile::ClientsLock` sat in the index. Normalizing to a common
+separator would only relocate that: any normalization has to pick a character to mean
+"separator" and then can't distinguish it from the same character inside a name, so a
+zsh function named `git.push` would answer to `push`. Picking a safer sentinel
+character doesn't help — it yields the same equivalence classes; what's missing is
+*which positions were separators*, and only the language knows. The entry's recorded
+`name` is taken as the authoritative final segment, so a name containing the
+separator keeps its boundary, and nothing is ever re-joined: a suffix match is a
+boundary by construction. Only the **query** is read permissively (either separator),
+since the caller can't know which language stored the symbol — that widens what may
+be typed without loosening where it may land.
 
 A name matching **several** symbols is refused, never resolved by guessing, with the
 candidates ranked by caller count — because the question a bare name usually precedes
