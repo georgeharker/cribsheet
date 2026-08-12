@@ -355,6 +355,44 @@ def test_a_verb_that_lists_every_match_discloses_nothing(crib, tmp_path):
     assert not any("resolved" in h for h in hits)
 
 
+# --- scope: the language's own qualified context ------------------------------
+
+@pytest.mark.parametrize("lang, file, container, scope", [
+    # the path IS the namespace: python import path, lua require path
+    ("python", "crib/chunk.py", ["Chunk"], ["crib", "chunk", "Chunk"]),
+    ("python", "crib/__init__.py", [], ["crib"]),
+    ("python", "src/pkg/mod.py", ["A", "B"], ["pkg", "mod", "A", "B"]),
+    ("lua", "lua/sharedserver/health.lua", [], ["sharedserver", "health"]),
+    # rust is CRATE-relative — the crate name lives in Cargo.toml and adds nothing
+    # `path` does not already disambiguate
+    ("rust", "rust/src/core/state.rs", ["impl ServerState"],
+     ["core", "state", "ServerState"]),
+    ("rust", "crates/foo/src/a/mod.rs", ["impl T"], ["a", "T"]),
+    # declared in the source; the path contributes nothing
+    ("cpp", "src/engine/render.cpp", ["gfx", "Renderer"], ["gfx", "Renderer"]),
+    ("ruby", "app/models/user.rb", ["Admin", "User"], ["Admin", "User"]),
+    # go qualifies as `store.Store` — the package is the directory, not the file
+    ("go", "pkg/store/index.go", ["Store"], ["store", "Store"]),
+    # no namespace exists, and a directory is not a substitute for one
+    ("c", "bin/sharedserver-watcher.c", [], []),
+    # zsh nests in LOCATION only: the function is global once declared
+    ("zsh", "core/plugin-bundles/omz.zsh", ["_zdot_load_omz_lib"], []),
+    # an LSP artifact is not a scope
+    ("lua", "scripts/codeindex/dump_lsp.lua", ["for in"],
+     ["scripts", "codeindex", "dump_lsp"]),
+])
+def test_scope_per_language(lang, file, container, scope):
+    from crib.codeindex import scope_of
+    assert scope_of(lang, file, container) == scope
+
+
+def test_scope_needs_no_manifest():
+    """Every language derives from source and layout alone; only Rust's crate name
+    is out of band, and crate-relative scope does without it."""
+    from crib.codeindex import scope_of
+    assert scope_of("rust", "rust/src/core/state.rs", []) == ["core", "state"]
+
+
 def test_an_unknown_language_still_matches_on_either_separator():
     from crib.codeindex import fqname_match
     assert fqname_match("a::b::c", "c", "b::c", "") == "suffix"

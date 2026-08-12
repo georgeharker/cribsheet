@@ -374,15 +374,10 @@ class CodeQuery:
             sub = self._project_graph(proj, entries, edge, direction, _nf,
                                       capped=group_by is None)
             return _rollup_modules(sub, proj) if group_by else sub
-        # ONE resolver, the same one dossier and the learnings use. This used to be an
-        # ad-hoc first-match scan with the resolver as a fallback for its MISSES, so
-        # the resolver's unique-or-refuse rule was unreachable: a bare name matching
-        # two symbols silently took whichever came first in (unsorted) store order.
-        # `add_diagram_node` answered "0 callers" for the MCP wrapper while the op it
-        # wraps had 92 — a confident, well-formed, empty answer to the question you
-        # ask before deleting something. Catch the miss BY TYPE: an ambiguity is a
-        # ValueError too, and swallowing it here would restore the silence in the
-        # shape of "symbol not found".
+        # ONE resolver, the same one dossier and the learnings use, so a bare name
+        # matching several symbols refuses here exactly as it does there. Catch the
+        # miss BY TYPE: an ambiguity is a ValueError too, and catching that broadly
+        # would report "symbol not found" for a name that matched twice.
         from .refs import UnknownSymbol, resolution
         try:
             root_proj, root = self.refs.resolve_symbol_or_ref(proj, symbol, rc)

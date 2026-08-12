@@ -793,8 +793,8 @@ def _graph_shape(args: Any) -> str | None:
 
 def _emit_resolved(data: dict) -> None:
     """State what a partial name became — only when it BECAME something, i.e. the
-    caller did not type the qualified name. Silence about a choice is the bug this
-    whole field exists to close."""
+    caller did not type the qualified name. A choice made on the caller's behalf is
+    always said out loud."""
     r = data.get("resolved") or {}
     if r.get("fqname") and r.get("query") != r.get("fqname"):
         proj = f" in {r['project']}" if r.get("project") else ""

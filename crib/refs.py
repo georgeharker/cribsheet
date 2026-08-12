@@ -146,10 +146,10 @@ class Refs:
                                  m.get("lang", "")) == "fqname"]
         cands = exact or matches
         if len(cands) > 1:
-            # Ranked by caller count and STATED, because the question a bare name
-            # usually precedes is "who calls this, can I delete it" — where the
-            # difference between the 92-caller op and its 0-caller wrapper is the
-            # whole answer, and a bare list of names makes the reader go find it.
+            # Ranked by caller count, and the count stated: the question a bare name
+            # usually precedes is "who calls this, can I delete it", so the busiest
+            # candidate is nearly always the one meant, and a bare list of names
+            # makes the reader go and find that out.
             ranked = sorted(cands, key=lambda m: (-len(m.get("called_by") or []),
                                                   m.get("fqname", "")))
             shown = ", ".join(f"{m.get('fqname', '')} ({len(m.get('called_by') or [])}"

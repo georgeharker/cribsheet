@@ -26,7 +26,7 @@ import time
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
-from typing import IO, Any
+from typing import IO, Any, Sequence
 from urllib.request import url2pathname
 
 from . import tomlrec
@@ -846,11 +846,9 @@ def _enclosing_symbol(c: LspClient, uri: str, line: int, language_id: str,
 
 
 def fqname_sep(lang: str) -> str:
-    """The separator `_qualify` renders for `lang` — the ONE place the writer of a
-    qualified name and every reader of one agree. Inlining this in the writer is
-    exactly how the reader drifted into a dot-only rule that could not see a Rust
-    path: `ClientsLock` read as "unknown symbol" while
-    `rust::src::core::lockfile::ClientsLock` sat in the index."""
+    """The separator a qualified name uses for `lang` — the ONE place the writer of a
+    qualified name and every reader of one agree, so a language added to either side
+    cannot be missing from the other."""
     return "::" if lang == "rust" else "."
 
 
@@ -872,6 +870,78 @@ def _module_of(relpath: str, lang: str) -> str:
 
 
 _ANY_SEP = re.compile(r"::|\.")
+
+# Whether a file's PATH forms part of the language's own qualified name, and from
+# which root:
+#   "module"  — the path IS the namespace, file included (python, lua: import/require)
+#   "package" — the last DIRECTORY is the namespace; the filename is not (go)
+#   "crate"   — namespace is crate-relative: everything after the last `src` (rust)
+#   absent    — the path contributes NOTHING. Either the language declares its
+#               namespace in the source (c++, ruby) or it has none (c, zsh, sh).
+_PATH_NAMESPACE = {"python": "module", "lua": "module", "go": "package",
+                   "rust": "crate"}
+# Languages with NO namespace concept at all. Declared nesting in these is lexical
+# LOCATION, not scope: a zsh function defined inside another is callable globally
+# once the outer has run, so it earns an id segment and no scope.
+_NO_NAMESPACE = frozenset({"c", "zsh", "sh", "bash", "fish", "make"})
+# Source roots that are build layout rather than namespace, stripped from the front.
+_PATH_ROOTS = {"python": ("src",), "lua": ("lua",), "go": ("src",)}
+# The file whose name is its DIRECTORY's namespace, not its own segment.
+_INDEX_FILE = {"rust": "mod", "lua": "init", "python": "__init__"}
+
+
+def _path_scope(lang: str, file: str) -> list[str]:
+    """The part of a language's qualified name that comes from the file path."""
+    mode = _PATH_NAMESPACE.get(lang)
+    if not mode or not file:
+        return []
+    parts = list(Path(file).with_suffix("").parts)
+    if mode == "crate":
+        # crate-RELATIVE: the crate name lives in Cargo.toml, out of band, and adds
+        # nothing `path` does not already disambiguate — even across a workspace,
+        # whose crates sit in different directories.
+        if "src" in parts:
+            parts = parts[len(parts) - 1 - parts[::-1].index("src"):][1:]
+    else:
+        while parts and parts[0] in _PATH_ROOTS.get(lang, ()):
+            parts = parts[1:]
+    if mode == "package":
+        # a Go symbol qualifies as `store.Store` — the package name, which is the
+        # containing directory. The full import path needs go.mod and is not how
+        # source refers to symbols.
+        return parts[-2:-1]
+    if parts and parts[-1] == _INDEX_FILE.get(lang):
+        parts = parts[:-1]            # mod.rs / init.lua / __init__.py name the dir
+    return parts
+
+
+def _declared_scope(lang: str, container: Sequence[str]) -> list[str]:
+    """The nesting the source declares, cleaned. `_local_name` reduces a Rust
+    `impl Type` and a Lua module-table prefix; anything that survives it and still is
+    not an identifier is an LSP artifact (a Lua `for in` loop reported as a container)
+    and is dropped rather than rendered as a scope."""
+    out = []
+    for c in container or ():
+        n = _local_name(c, lang)
+        if n and n.isidentifier():
+            out.append(n)
+    return out
+
+
+def scope_of(lang: str, file: str, container: Sequence[str]) -> list[str]:
+    """The language's own qualified context for a symbol — what a developer writing
+    that language would say it belongs to, WITHOUT the leaf name.
+
+    EMPTY for a language with no namespace (C, zsh), and that emptiness is
+    information: `main` in `bin/sharedserver-watcher.c` belongs to nothing, and its
+    directory is not a substitute.
+
+    Distinct from the container chain that gives an id its within-file uniqueness. A
+    zsh function declared inside another is nested in LOCATION only — zsh functions
+    are global wherever they are declared — so it earns an id segment and no scope."""
+    if lang in _NO_NAMESPACE:
+        return []
+    return _path_scope(lang, file) + _declared_scope(lang, container)
 
 
 def fqname_segments(fq: str, lang: str) -> list[str]:

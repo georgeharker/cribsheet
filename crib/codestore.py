@@ -38,8 +38,8 @@ class _ResidentCode:
 
     def by_fqname(self, name: str) -> list[dict[str, Any]]:
         """Entries matching `name` — the resident mirror of SymbolIndex.by_fqname (no
-        disk read). ONE match rule, imported rather than restated: the two copies of
-        it drifted apart from the writer's separator once already."""
+        disk read). The match rule is imported rather than restated, so the two
+        lookups cannot answer differently."""
         from .codeindex import fqname_match     # lazy: keeps this module crib-free
         return [e for e in self.entries
                 if fqname_match(e.get("fqname", ""), e.get("name", ""), name,
