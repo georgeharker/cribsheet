@@ -57,10 +57,14 @@ def _project(crib: Crib, project: str | None, project_path: str | None) -> str:
 
 
 def _echo_dict(out: Any, res: ProjectResolution) -> Any:
-    """Stamp an IMPLICIT resolution onto a dict result (a non-breaking extra key),
-    so an agent that didn't name a project can see which one — and how — answered."""
-    if isinstance(out, dict) and res.implicit:
-        out.setdefault("resolved", res.echo())
+    """Stamp the PROJECT resolution onto a dict result (a non-breaking extra key), so
+    an agent that didn't name a project can see which one — and how — answered, and
+    so a call that adopted the session's project says it did.
+
+    `resolved_project`, not `resolved`: the symbol verbs already return `resolved`
+    for what a symbol name resolved to, and one key cannot mean both."""
+    if isinstance(out, dict) and res.worth_echoing:
+        out.setdefault("resolved_project", res.echo())
     return out
 
 
@@ -70,7 +74,7 @@ def _echo_list(hits: Any, res: ProjectResolution) -> Any:
     from 'answered the wrong project', so return one diagnostic marker instead of a
     bare `[]`. Non-empty lists already tag each hit with its owning `project`."""
     if res.implicit and isinstance(hits, list) and not hits:
-        return [{"resolved": res.echo(), "matches": 0,
+        return [{"resolved_project": res.echo(), "matches": 0,
                  "note": (f"resolved implicitly to {res.project!r} via {res.via}; "
                           "0 matches. If you meant another project pass "
                           "project=<name> or project_path=<a path in that repo>.")}]

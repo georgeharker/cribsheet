@@ -16,39 +16,58 @@ def test_explicit_arg_overrides_without_touching_session():
     assert st.current_project == "sticky"          # override didn't change session
 
 
-def test_seeds_lazily_and_sticks():
+def test_the_first_path_adopts_and_says_so():
     st = SessionState()
     assert st.current_project is None
     res = resolve_session_project(st, None, "/some/cwd", _seed)
-    assert (res.project, res.via) == ("seeded-from-cwd", "path")  # seeded from a path
-    assert st.current_project == "seeded-from-cwd"  # stuck
-
-    # later call with a *different* cwd reuses the stuck value (sticky, not re-seeded)
-    res2 = resolve_session_project(st, None, "/other", _seed)
-    assert (res2.project, res2.via) == ("seeded-from-cwd", "session")
-    assert res2.implicit                            # sticky reuse IS implicit
+    assert (res.project, res.via) == ("seeded-from-cwd", "path")
+    assert st.current_project == "seeded-from-cwd"      # adopted, so `name it once`
+    assert res.session_set and res.worth_echoing        # …and never silently
+    assert res.echo()["session_project_set"] == "seeded-from-cwd"
 
 
-def test_session_current_used_over_seed():
+def test_a_later_path_answers_for_itself_and_re_homes_nothing():
+    st = SessionState()
+    st.current_project = "already-set"
+    res = resolve_session_project(st, None, "/other", lambda _c: "elsewhere")
+    assert (res.project, res.via) == ("elsewhere", "path")
+    assert not res.session_set and not res.worth_echoing
+    # THE bug: one cross-project read must not decide where later writes land
+    assert st.current_project == "already-set"
+
+
+def test_an_explicit_path_beats_the_sticky_project():
+    # the reported failure: design_append(project_path=<other repo>) answered from
+    # the sticky project and reported the note missing. project_path is if anything
+    # the MORE specific selector, so it is not the one that yields.
+    st = SessionState()
+    st.current_project = "sticky"
+    res = resolve_session_project(st, None, "/repo", lambda _c: "other-repo",
+                                  default="default")
+    assert (res.project, res.via) == ("other-repo", "path")
+    assert not res.implicit
+    assert st.current_project == "sticky"          # …and still does not re-home
+
+
+def test_the_sticky_project_is_used_when_no_selector_is_given():
     st = SessionState()
     st.current_project = "chosen"
     called = []
-    res = resolve_session_project(st, None, "/x", lambda c: called.append(c) or "X")
+    res = resolve_session_project(st, None, None, lambda c: called.append(c) or "X")
     assert (res.project, res.via) == ("chosen", "session")
+    assert res.implicit
     assert called == []                            # seed not invoked when set
 
 
-def test_bare_default_seed_is_upgraded_by_a_later_cwd():
-    # a stray early call with no cwd seeds the session to `default`...
+def test_a_path_deciding_nothing_falls_through_to_the_sticky_project():
+    # no `.crib` under the path → the seed lands on the bare default, which the
+    # caller did not ask for; the session is the better answer, and `session` keeps
+    # the echo firing
     st = SessionState()
-    seeds = iter(["default", "real-project"])
-    seed = lambda _cwd: next(seeds)
-    first = resolve_session_project(st, None, None, seed, default="default")
-    assert (first.project, first.via) == ("default", "seed")   # cwd-less bare default
-    # ...and a later call carrying a cwd/.crib UPGRADES it off the bare default
-    second = resolve_session_project(st, None, "/repo", seed, default="default")
-    assert (second.project, second.via) == ("real-project", "path")
-    assert st.current_project == "real-project"
+    st.current_project = "chosen"
+    res = resolve_session_project(st, None, "/no/crib", lambda _c: "default",
+                                  default="default")
+    assert (res.project, res.via) == ("chosen", "session")
 
 
 def test_a_path_that_resolves_to_the_bare_default_is_not_tagged_path():
@@ -63,16 +82,35 @@ def test_a_path_that_resolves_to_the_bare_default_is_not_tagged_path():
     assert res.implicit                              # so the echo fires
 
 
-def test_a_real_seed_still_sticks_against_a_later_cwd():
-    # only the bare default is re-seeded; a real project stays sticky
+def test_each_path_bearing_call_resolves_its_own_path():
+    # adoption happens once; it never short-circuits a later call that named
+    # somewhere else, which is what made project_path lose to stickiness
     st = SessionState()
     calls = []
-    seed = lambda c: calls.append(c) or "svg-mcp"
+
+    def seed(c):
+        calls.append(c)
+        return f"proj{c}"
+
     assert resolve_session_project(st, None, "/a", seed, default="default").project \
-        == "svg-mcp"
+        == "proj/a"
     assert resolve_session_project(st, None, "/b", seed, default="default").project \
-        == "svg-mcp"
-    assert calls == ["/a"]                          # not re-seeded on the second call
+        == "proj/b"
+    assert calls == ["/a", "/b"]
+    assert st.current_project == "proj/a"          # adopted by the first, unmoved
+
+
+def test_a_bare_default_never_adopts():
+    # a stray early call with no cwd must not lock the session to `default`
+    st = SessionState()
+    res = resolve_session_project(st, None, None, lambda _c: "default",
+                                  default="default")
+    assert (res.project, res.via) == ("default", "seed")
+    assert st.current_project is None
+    # …so a later call carrying a real repo still adopts it
+    later = resolve_session_project(st, None, "/repo", lambda _c: "real",
+                                    default="default")
+    assert (later.project, later.via, later.session_set) == ("real", "path", True)
 
 
 def test_session_state_falls_back_to_default_without_context():

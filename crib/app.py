@@ -2761,7 +2761,8 @@ class Crib:
 
     def current_project(self, cwd: Path | None = None) -> dict[str, Any]:
         """Show the session's current project + how it resolved (mirrors the
-        project_current MCP tool), seeding from cwd/.crib if unset."""
+        project_current MCP tool). A cwd naming a real project is reported as the
+        answer, and adopted when the session has none yet."""
         from .session import resolve_session_project, session_state
         res = resolve_session_project(
             session_state(), None, cwd,

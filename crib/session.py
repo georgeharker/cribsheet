@@ -30,16 +30,34 @@ class ProjectResolution:
     ``path``/``explicit`` are caller-directed; ``session``/``seed`` are *implicit*
     — the two that silently answer with the wrong project when a connection's
     session state is shared or stale (see DESIGN §15). ``implicit`` flags them so
-    the code tools surface the resolution only when it's worth surfacing."""
+    the code tools surface the resolution only when it's worth surfacing.
+
+    ``session_set`` marks the call that ADOPTED its project as the session's — the
+    first path-bearing call of a session. That decides where every later
+    selector-less call lands, including writes, so it is always reported even
+    though ``path`` is caller-directed and otherwise quiet."""
     project: str
     via: str
+    session_set: bool = False
 
     @property
     def implicit(self) -> bool:
         return self.via in ("session", "seed")
 
-    def echo(self) -> dict[str, str]:
-        return {"project": self.project, "resolved_via": self.via}
+    @property
+    def worth_echoing(self) -> bool:
+        """Either the caller did not choose this project, or the call just made it
+        the session's — both are things the caller has not been told."""
+        return self.implicit or self.session_set
+
+    def echo(self) -> dict[str, Any]:
+        out: dict[str, Any] = {"project": self.project, "resolved_via": self.via}
+        if self.session_set:
+            out["session_project_set"] = self.project
+            out["note"] = (f"this call also made {self.project!r} the session's "
+                           f"current project — later calls that name no project "
+                           f"will use it. `use_project` to change it.")
+        return out
 
 
 class SessionState:
@@ -74,28 +92,38 @@ def resolve_session_project(state: SessionState, project_arg: str | None,
     """Pick the project for a call (DESIGN §15 precedence), reporting the branch
     (`ProjectResolution.via`) so a caller can echo how it resolved:
 
-      1. explicit `project_arg`  — one-off override; does NOT change the session
-      2. the session's current project — sticky once set to a REAL project
-      3. seed lazily from cwd/.crib (`seed(cwd)`) and stick it to the session
+      1. an EXPLICIT selector — `project_arg`, or a `cwd` whose `.crib` decides a
+         project. Both name a target outright, so neither loses to stickiness, and
+         `project_path` is if anything the more specific of the two ("this exact
+         repo"): it must not be the one that yields.
+      2. the session's current project
+      3. seed from cwd/.crib, or the bare `default`
 
-    The seed sticks — EXCEPT the bare `default`. A stray early call with no cwd
-    (e.g. a notes `lookup`) would otherwise seed the session to `default` and lock
-    it there forever, so a later call carrying a cwd/.crib could never point the
-    code tools at the right project. So while the session is still only on `default`
-    and a cwd is now offered, we re-seed to let that cwd UPGRADE it.
+    ADOPTION happens once. The FIRST path-bearing call of a session adopts its
+    project as the session's, so the common pattern — name the repo once, then call
+    without it — keeps working. After that the session is set and rule 1 outranks
+    it, so a later call naming a different repo answers for that repo and changes
+    nothing: one cross-project read can never re-home the writes that follow it.
+
+    A call that adopts says so (`session_set`), because it decides where every
+    later selector-less call lands. A bare `default` never adopts — nothing sticks
+    that the caller did not point at, so a stray early call cannot lock the session
+    somewhere it has to be argued back out of.
     """
     if project_arg:
         return ProjectResolution(project_arg, "explicit")
-    if state.current_project is None or (
-            state.current_project == default and cwd is not None):
-        state.current_project = seed(cwd)
-        # A seed with a path in hand is caller-directed (`path`) — but ONLY if the
-        # path actually decided anything. When there's no `.crib` under it the seed
+    if cwd is not None:
+        picked = seed(cwd)
+        # ONLY when the path decided something. With no `.crib` under it the seed
         # falls through to the bare `default`, which is not what the caller asked
-        # for: tagging that `path` marks it explicit and MUTES the wrong-project
-        # echo built for exactly this case (a lookup answering from `default` while
-        # the agent believes it named a repo). Landing on `default` is a `seed`.
-        via = ("path" if cwd is not None and state.current_project != default
-               else "seed")
-        return ProjectResolution(state.current_project, via)
-    return ProjectResolution(state.current_project, "session")
+        # for: returning `path` there would mute the wrong-project echo built for
+        # exactly that case (a lookup answering from `default` while the agent
+        # believes it named a repo).
+        if picked != default:
+            first = state.current_project is None
+            if first:
+                state.current_project = picked
+            return ProjectResolution(picked, "path", session_set=first)
+    if state.current_project is not None:
+        return ProjectResolution(state.current_project, "session")
+    return ProjectResolution(seed(cwd), "seed")
