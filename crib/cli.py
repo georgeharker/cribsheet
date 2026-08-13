@@ -913,6 +913,16 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
     render(tree, "")
 
 
+def _narrowers(sp: Any) -> None:
+    """The axes a caller can narrow an ambiguous symbol on, shared by the verbs that
+    resolve one — declared once so they cannot drift apart."""
+    sp.add_argument("--path", default="",
+                    help="a trailing run of the file path (state.rs, core/state.rs)")
+    sp.add_argument("--scope", default="",
+                    help="a trailing run of the language's own scope (ServerState)")
+    sp.add_argument("--lang", default="", help="exact language of the symbol")
+
+
 def build_parser() -> argparse.ArgumentParser:
     from . import __version__
     p = argparse.ArgumentParser(prog="crib", description="markdown memory")
@@ -1025,6 +1035,7 @@ def build_parser() -> argparse.ArgumentParser:
     s = codesub.add_parser("dossier",
                        help="everything about one symbol (+ neighbour descriptions)")
     s.add_argument("symbol"); proj(s)
+    _narrowers(s)
 
     s = codesub.add_parser("graph",
                        help="call graph around a symbol — pstree, edge list, or "
@@ -1045,6 +1056,7 @@ def build_parser() -> argparse.ArgumentParser:
                    help="roll symbol edges up into weighted module-to-module edges")
     s.add_argument("--all", action="store_true", dest="all_symbols",
                    help="the WHOLE project: every symbol, every edge, no depth bound")
+    _narrowers(s)
 
     s = codesub.add_parser("index",
                        help="index a source file: symbols + call graph + descriptions")
@@ -1599,16 +1611,21 @@ VERBS: dict[str, Verb] = {
     "code xref": Verb("code_xref", lambda a: {"symbol": a.symbol, "project": a.project},
                       _E_code("code-xref"), policy="read", mcp=f"symbol {_PROJ}"),
     "code dossier": Verb("code_dossier", lambda a: {"symbol": a.symbol,
-                                                   "project": a.project}, _E_dossier,
-                         policy="read", mcp=f"symbol {_PROJ}"),
+                                                   "project": a.project,
+                                                   "path": a.path, "scope": a.scope,
+                                                   "lang": a.lang}, _E_dossier,
+                         policy="read",
+                         mcp=f"symbol {_PROJ} path='' scope='' lang=''"),
     "code graph": Verb("code_graph", lambda a: {"symbol": _graph_symbol(a),
                                                "direction": _graph_direction(a),
                                                "depth": a.depth, "project": a.project,
                                                "shape": _graph_shape(a),
-                                               "group_by": a.group_by},
+                                               "group_by": a.group_by,
+                                               "path": a.path, "scope": a.scope,
+                                               "lang": a.lang},
                        _E_graph, policy="read",
                        mcp=f"symbol=None {_PROJ} direction='callees' depth=6 "
-                           "shape=None group_by=None"),
+                           "shape=None group_by=None path='' scope='' lang=''"),
     "code index": Verb("code_index",
                        lambda a: {"path": str(Path(a.path).expanduser().resolve()),
                                   "project": a.project},

@@ -174,7 +174,7 @@ class Refs:
             axis = ("path" if len({m.get("file") for m in cands}) == len(cands)
                     else "scope" if len({tuple(m.get("scope") or ())
                                          for m in cands}) == len(cands) else "")
-            hint = (f" Re-run with one of those qualified names"
+            hint = (" Re-run with one of those qualified names"
                     + (f", or narrow with {axis}=." if axis else "."))
             raise AmbiguousSymbol(
                 f"ambiguous symbol {symbol!r} — {len(cands)} symbols match, NO result "

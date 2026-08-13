@@ -696,20 +696,29 @@ def build_server(crib: Crib | None = None):
 
     @crib_tool("read", echo=True)
     def code_dossier(symbol: str, project: str | None = None,
-                     project_path: str | None = None) -> dict[str, Any]:
+                     project_path: str | None = None, path: str = "",
+                     scope: str = "", lang: str = "") -> dict[str, Any]:
         """EVERYTHING about one symbol in a single call: signature + description, and its
         callers/callees/references EACH annotated with the NEIGHBOUR'S own description,
         plus any pinned learning. The efficient way to *understand* a symbol (vs
         code_lookup which *finds* it) — read a symbol and its whole neighbourhood without
-        follow-up lookups. `symbol` is a bare name or dotted fqname; pass `project_path=`/`project=` to target a DIFFERENT project than your current
-        project resolution."""
-        return crib.code_dossier(symbol, project)
+        follow-up lookups. `symbol` is a bare name or dotted fqname.
+
+        NARROW an ambiguous name on the axis you actually know, rather than guessing
+        crib's qualified spelling: `path=` a trailing run of the file path
+        (`state.rs`, `core/state.rs`), `scope=` a trailing run of the language's own
+        scope (`ServerState`, `state::ServerState`), `lang=` exact. They are
+        constraints — several narrow further, and none makes an ambiguous name
+        resolve by picking one. Pass `project_path=`/`project=` to target a DIFFERENT
+        project than your current resolution."""
+        return crib.code_dossier(symbol, project, path=path, scope=scope, lang=lang)
 
     @crib_tool("read", echo=True)
     async def code_graph(symbol: str | None = None, direction: str = "callees",
                          depth: int = 6, project: str | None = None,
                          project_path: str | None = None, shape: str | None = None,
-                         group_by: str | None = None) -> dict[str, Any]:
+                         group_by: str | None = None, path: str = "",
+                         scope: str = "", lang: str = "") -> dict[str, Any]:
         """Call graph around a symbol from the index: `callees` (what it calls),
         `callers` (what calls it), or `references` (everywhere mentioned — broader than
         calls, and the only relation for symbols-only servers like zsh's shuck),
@@ -737,11 +746,16 @@ def build_server(crib: Crib | None = None):
         `symbol` takes a full qualified name, a trailing run of its segments, or a
         bare local name, in any language's separator. A bare name matching SEVERAL
         symbols returns no graph and errors with the candidates ranked by caller
-        count — pick one and re-run. Every result carries `resolved` naming what the
-        symbol resolved to. Pass `project_path=<a path in the repo>` (or
-        `project=<name>`) only to target a DIFFERENT project than your current one."""
-        return crib.code_graph(symbol, direction, depth, project,
-                               shape=shape, group_by=group_by)
+        count. NARROW it on the axis you actually know rather than guessing crib's
+        spelling: `path=` a trailing run of the file path (`state.rs`,
+        `core/state.rs`), `scope=` a trailing run of the language's own scope
+        (`ServerState`, `state::ServerState`), `lang=` exact. They are constraints —
+        several narrow further, and none of them makes an ambiguous name resolve by
+        picking one. Every result carries `resolved` naming what the symbol resolved
+        to. Pass `project_path=<a path in the repo>` (or `project=<name>`) only to
+        target a DIFFERENT project than your current one."""
+        return crib.code_graph(symbol, direction, depth, project, shape=shape,
+                               group_by=group_by, path=path, scope=scope, lang=lang)
 
     @crib_tool("read")
     async def learning_add(symbol: str, text: str, project: str | None = None,
