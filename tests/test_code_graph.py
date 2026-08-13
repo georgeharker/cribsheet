@@ -469,3 +469,18 @@ def test_the_mcp_face_delivers_the_message_verbatim(crib, tmp_path):
                               "direction": "callers"}))
     assert "2 symbols match" in str(e.value)
     assert "ops.add_node (2 callers)" in str(e.value)
+
+
+def test_an_indexed_entry_carries_its_language_scope(crib, tmp_path):
+    """The stored entry gains `scope`; the id is untouched, so nothing migrates."""
+    from crib.codeindex import SYMBOL_SCHEMA_VERSION, SymbolIndex
+    _diamond(crib, tmp_path)
+    si = SymbolIndex(crib.paths.project_dir("p"))
+    si.record_schema()
+    assert si.stored_schema() == SYMBOL_SCHEMA_VERSION == 2
+    # a store written before `scope` existed still READS: the parser normalises
+    # every declared array, so the field comes back EMPTY rather than missing. That
+    # is why absence cannot be read as "this language has no scope" — the schema
+    # stamp is what says the field was computed at all.
+    assert all(e.get("scope") == [] for e in si.all())
+    assert crib.code_graph("app.main", project="p")["fqname"] == "app.main"

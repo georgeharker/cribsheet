@@ -36,21 +36,14 @@ from .symbols import (
     encode_loc,
     learning_slug,
     legacy_learning_slug,
+    scope_of,
     suffix_of,
 )
-from .symbols import (
-    local_name as _local_name,
-)
+from .symbols import local_name as _local_name
 from .symbols import match as fqname_match
-from .symbols import (
-    module_of as _module_of,
-)
-from .symbols import (
-    qualify as _qualify,
-)
-from .symbols import (
-    tail as _tail,
-)
+from .symbols import module_of as _module_of
+from .symbols import qualify as _qualify
+from .symbols import tail as _tail
 
 # ── LSP server specs — Claude Code `.lsp.json` schema (docs §3.3) ─────────────
 # A map of label → {command, args, extensionToLanguage, transport?, env?,
@@ -1185,6 +1178,9 @@ def _symbol_entry(ctx: _ExtractCtx, s: dict, parents: tuple[str, ...],
         "fqname": fqname, "name": local,
         "kind": kind_label,
         "lang": ctx.language_id, "module": ctx.module, "container": list(container),
+        # what the LANGUAGE calls this symbol's context — empty where the language
+        # has no namespace, which is information rather than a gap (see scope_of)
+        "scope": scope_of(ctx.language_id, ctx.relpath, container),
         "parent": parent, "content_hash": content_hash,
         "file": ctx.relpath, "file_hash": ctx.file_hash,
         "line": start + 1, "mtime": ctx.mtime, "signature": sig,
@@ -1418,7 +1414,12 @@ write_atomic = tomlrec.write_atomic
 
 _SCALARS = ("fqname", "name", "kind", "lang", "module", "parent", "content_hash",
             "file", "file_hash", "signature", "description")
-_ARRAYS = ("container", "calls", "called_by", "references", "name_terms", "keywords")
+# `scope` renders only when non-empty, like every other array here. Absence is
+# therefore "no scope", which is the truth for a language that has none — and
+# the schema stamp is what says the field was computed at all, so an entry
+# written before it existed cannot be mistaken for a C symbol.
+_ARRAYS = ("container", "scope", "calls", "called_by", "references",
+           "name_terms", "keywords")
 
 
 def _render(e: dict) -> str:
@@ -1452,7 +1453,7 @@ def _render(e: dict) -> str:
 # cache): re-indexing never touches it, and it rides the normal watch/index/sync/
 # merge. See docs/code-symbol-index.md § Learnings.
 LEARNINGS_DIR = "code-learnings"
-SYMBOL_SCHEMA_VERSION = 1
+SYMBOL_SCHEMA_VERSION = 2
 """Shape of a stored symbol entry — its field set, its id spelling, and the spelling
 of the edge refs inside `calls`/`called_by`/`references`.
 
