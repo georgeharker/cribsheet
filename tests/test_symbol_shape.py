@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pytest
 
-from crib.codeindex import _ARRAYS, _SCALARS, _parse, _render
+from crib.codeindex import _ARRAYS, _SCALARS, _render
 
 _CRIB = Path(__file__).resolve().parent.parent / "crib"
 
@@ -45,6 +45,7 @@ def test_a_rendered_entry_round_trips_every_field():
                  line=7, mtime=3, container=["C"], scope=["a", "b", "C"],
                  calls=["e [a/c.py]"], called_by=[], references=[],
                  name_terms=["d"], keywords=["k"])
+    from crib.codeindex import _parse
     back = _parse(_render(entry))
     for key in ("fqname", "name", "lang", "file", "container", "scope", "calls"):
         assert back.get(key) == entry[key], f"{key} did not survive the round trip"
@@ -63,3 +64,20 @@ def test_no_module_but_symbols_knows_how_a_symbol_is_spelled(pattern, what):
     offenders = [p.name for p in sorted(_CRIB.glob("*.py"))
                  if p.name != "symbols.py" and re.search(pattern, p.read_text())]
     assert not offenders, f"{what} outside symbols.py: {offenders}"
+
+
+def test_a_read_verb_never_mutates_the_resident_cache():
+    """Entries from the resident cache are the CALLER's. `code_xref` stamps a
+    project onto them, `learnings.attach` adds the pinned note, `code_dossier`
+    structures the edge lists — all in place. While those writes were idempotent it
+    only smelled; the moment one changed a field's TYPE, the next reader in the
+    process got a list it could not decode twice."""
+    from crib.codestore import _ResidentCode
+    entries = [{"fqname": "a.b", "name": "b", "file": "a.py", "lang": "python",
+                "calls": ["c [a.py]"], "description": ""}]
+    rc = _ResidentCode(tok=1, entries=entries, emb={})
+    got = rc.by_fqname("b")
+    got[0]["project"] = "somewhere"
+    got[0]["calls"] = [{"symbol": "a.c"}]
+    assert entries[0] == {"fqname": "a.b", "name": "b", "file": "a.py",
+                          "lang": "python", "calls": ["c [a.py]"], "description": ""}

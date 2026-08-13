@@ -125,6 +125,52 @@ class CodeQuery:
         self._resident = resident
         self._require_index = require_index
 
+    def _neighbours(self, owner: str, edges: Any,
+                    cap: int | None = None,
+                    describe: bool = False) -> list[dict[str, Any]]:
+        """One edge list, resolved into structured neighbour refs.
+
+        Every verb that returns neighbours returns THIS shape. `code_lookup` and
+        `code_xref` used to hand back the stored spelling verbatim — a caller
+        received `called_by: ["c_3rrf [scripts/eval_kw.py]"]` and had to parse the
+        brackets to learn anything — which made an internal encoding part of their
+        public contract by omission rather than by decision.
+
+        `resolved: False` marks a target that is not in any index we can see (a
+        dependency, an unindexed ref project). It is stated rather than implied,
+        because `symbol` otherwise carries a bare name and a qualified one with
+        nothing to tell them apart."""
+        out: list[dict[str, Any]] = []
+        for ref in (edges or [])[:cap]:
+            rp, nm, rel, _loc = decode_edge(ref, owner)
+            desc, by_nf = self._proj_maps(rp)
+            fq = by_nf.get((nm, rel))
+            n: dict[str, Any] = {"symbol": fq or nm, "name": nm, "file": rel}
+            if rp != owner:
+                n["project"] = rp
+            if fq is None:
+                n["resolved"] = False
+            if describe:
+                n["description"] = desc.get(fq or "", "")
+            out.append(n)
+        extra = max(len(edges or []) - cap, 0) if cap else 0
+        if extra:
+            out.append({"symbol": f"… +{extra} more", "name": "", "file": "",
+                        "description": ""} if describe else
+                       {"symbol": f"… +{extra} more", "name": "", "file": ""})
+        return out
+
+    def _proj_maps(self, proj: str) -> tuple[dict[str, str], dict[tuple[str, str], str]]:
+        """(fqname → description, (name, file) → fqname) for one project, cached per
+        call chain by the resident cache underneath."""
+        try:
+            rc = self._resident(proj)
+        except Exception:  # noqa: BLE001 — unindexed ref → every edge unresolved
+            return {}, {}
+        return ({e["fqname"]: e.get("description", "") for e in rc.entries},
+                {(e.get("name", ""), e.get("file", "")): e["fqname"]
+                 for e in rc.entries})
+
     def xref(self, proj: str, symbol: str) -> list[dict[str, Any]]:
         """Callers/callees for a symbol from the persisted symbol_index — no live LSP.
         A local miss falls through to the project's `.crib` `refs:`; every entry carries
@@ -142,8 +188,10 @@ class CodeQuery:
                 if matches:
                     owner = ref["project"]
                     break
-        for m in matches:
+        for m in matches:                       # `by_fqname` hands out copies
             m["project"] = owner
+            for rel in ("calls", "called_by", "references"):
+                m[rel] = self._neighbours(owner, m.get(rel))
         return self.learnings.attach(owner, matches)
 
     def dossier(self, proj: str, symbol: str, edge_cap: int = 20) -> dict[str, Any]:
@@ -158,42 +206,6 @@ class CodeQuery:
         if owner != proj:
             rc = self._resident(owner)
         self.learnings.attach(owner, [entry])
-        idx = rc.entries
-        desc = {e["fqname"]: e.get("description", "") for e in idx}
-        by_nf = {(e.get("name", ""), e.get("file", "")): e["fqname"] for e in idx}
-
-        ref_maps: dict[str, tuple[dict, dict]] = {}   # ref proj → (desc, by_nf)
-
-        def _maps(rp: str) -> tuple[dict, dict]:
-            if rp not in ref_maps:
-                try:
-                    rrc = self._resident(rp)
-                    ref_maps[rp] = (
-                        {e["fqname"]: e.get("description", "") for e in rrc.entries},
-                        {(e.get("name", ""), e.get("file", "")): e["fqname"]
-                         for e in rrc.entries})
-                except Exception:  # noqa: BLE001 — unindexed ref → unresolved edge
-                    ref_maps[rp] = ({}, {})
-            return ref_maps[rp]
-
-        def neigh(edges: list[str] | None) -> list[dict[str, Any]]:
-            out = []
-            for ref in (edges or [])[:edge_cap]:
-                rp, nm, rrel, _loc = decode_edge(ref, owner)
-                if rp != owner:            # QUALIFIED edge — lives in a ref'd project
-                    rdesc, rnf = _maps(rp)
-                    fq = rnf.get((nm, rrel))
-                    out.append({"symbol": fq or nm, "file": rrel, "project": rp,
-                                "description": rdesc.get(fq or "", "")})
-                    continue
-                fq = by_nf.get((nm, rrel))
-                out.append({"symbol": fq or nm, "file": rrel,
-                            "description": desc.get(fq or "", "")})
-            extra = max(len(edges or []) - edge_cap, 0)
-            if extra:
-                out.append({"symbol": f"… +{extra} more", "file": "", "description": ""})
-            return out
-
         from .refs import resolution
         return {
             "fqname": entry["fqname"], "kind": entry.get("kind"),
@@ -202,9 +214,12 @@ class CodeQuery:
             "file": entry.get("file"), "line": entry.get("line"),
             "signature": entry.get("signature"), "description": entry.get("description"),
             "learning": entry.get("learning"),
-            "calls": neigh(entry.get("calls")),
-            "called_by": neigh(entry.get("called_by")),
-            "references": neigh(entry.get("references")),
+            "calls": self._neighbours(owner, entry.get("calls"),
+                                      edge_cap, describe=True),
+            "called_by": self._neighbours(owner, entry.get("called_by"),
+                                          edge_cap, describe=True),
+            "references": self._neighbours(owner, entry.get("references"),
+                                           edge_cap, describe=True),
         }
 
     def lookup(self, proj: str, query: str, k: int = 8) -> list[dict[str, Any]]:
@@ -285,6 +300,9 @@ class CodeQuery:
         hits = [{**{key: by_id[ids[i]].get(key) for key in keys},
                  "project": proj, "rank": r + 1, "_score": score[i]}
                 for r, i in enumerate(order)]
+        for h in hits:
+            for rel_key in ("calls", "called_by", "references"):
+                h[rel_key] = self._neighbours(proj, h.get(rel_key))
         return self.learnings.attach(proj, hits)
 
     def graph(self, proj: str, symbol: str | None = None,

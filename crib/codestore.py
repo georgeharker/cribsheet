@@ -42,8 +42,15 @@ class _ResidentCode:
     def by_fqname(self, name: str) -> list[dict[str, Any]]:
         """Entries matching `name` — the resident mirror of SymbolIndex.by_fqname (no
         disk read). The match rule is imported rather than restated, so the two
-        lookups cannot answer differently."""
-        return [e for e in self.entries
+        lookups cannot answer differently.
+
+        SHALLOW COPIES, because callers annotate what they get: `code_xref` stamps
+        the owning project, `learnings.attach` adds the pinned note, `code_dossier`
+        structures the edge lists. Handing out the cache's own dicts made those
+        writes land in state shared by every later call in the process — harmless
+        only while every such write happened to be idempotent, which is not a
+        property anyone was maintaining on purpose."""
+        return [dict(e) for e in self.entries
                 if fqname_match(e.get("fqname", ""), e.get("name", ""), name,
                                 e.get("lang", ""))]
 
