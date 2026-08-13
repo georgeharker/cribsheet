@@ -814,14 +814,14 @@ def _emit_design_write(data: Any, args: Any) -> None:
         print(f"  → {data['next']}")
 
 
-def _graph_direction(args: Any) -> str:
+def _graph_direction(args: argparse.Namespace) -> str:
     """--references > --callers > default callees."""
     if getattr(args, "references", False):
         return "references"
     return "callers" if getattr(args, "callers", False) else "callees"
 
 
-def _graph_symbol(args: Any) -> str | None:
+def _graph_symbol(args: argparse.Namespace) -> str | None:
     """`--all` (or a bare `code graph`) means the whole project — no root symbol."""
     if getattr(args, "all_symbols", False):
         return None
@@ -831,7 +831,7 @@ def _graph_symbol(args: Any) -> str | None:
     return str(args.symbol)
 
 
-def _graph_shape(args: Any) -> str | None:
+def _graph_shape(args: argparse.Namespace) -> str | None:
     """--edges / --group-by / --all all mean the edge list; otherwise the tree."""
     if (getattr(args, "edges", False) or getattr(args, "group_by", None)
             or getattr(args, "all_symbols", False)):
@@ -849,7 +849,7 @@ def _emit_resolved(data: dict) -> None:
         print(f"  ({r['query']!r} → {r['fqname']}{proj}, matched on {r.get('via')})")
 
 
-def _emit_code_edges(data: dict, args: Any) -> None:
+def _emit_code_edges(data: dict, args: argparse.Namespace) -> None:
     """Node table + edge list, with the two facts the tree could not state: which
     symbols CONVERGE (in-degree > 1) and where the walk stopped."""
     ascii_mode = getattr(args, "ascii", False)

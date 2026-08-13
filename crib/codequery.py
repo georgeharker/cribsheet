@@ -125,7 +125,7 @@ class CodeQuery:
         self._resident = resident
         self._require_index = require_index
 
-    def _neighbours(self, owner: str, edges: Any,
+    def _neighbours(self, owner: str, edges: list[str] | None,
                     cap: int | None = None,
                     describe: bool = False) -> list[dict[str, Any]]:
         """One edge list, resolved into structured neighbour refs.
@@ -194,7 +194,8 @@ class CodeQuery:
                 m[rel] = self._neighbours(owner, m.get(rel))
         return self.learnings.attach(owner, matches)
 
-    def dossier(self, proj: str, symbol: str, edge_cap: int = 20) -> dict[str, Any]:
+    def dossier(self, proj: str, symbol: str, edge_cap: int = 20,
+                path: str = "", scope: str = "", lang: str = "") -> dict[str, Any]:
         """Everything about ONE symbol: signature + description, its callers/callees/
         references each annotated with the NEIGHBOUR'S description, and any learning."""
         check_query(symbol, "symbol")
@@ -202,7 +203,8 @@ class CodeQuery:
         rc = self._resident(proj)
         # local first, then the `.crib` refs — the neighbourhood (edges, learnings)
         # lives with the OWNING project, so everything below reads from there
-        owner, entry = self.refs.resolve_symbol_or_ref(proj, symbol, rc)
+        owner, entry = self.refs.resolve_symbol_or_ref(proj, symbol, rc,
+                                                       path, scope, lang)
         if owner != proj:
             rc = self._resident(owner)
         self.learnings.attach(owner, [entry])
@@ -297,9 +299,10 @@ class CodeQuery:
         order = sorted(pool, key=lambda i: score[i], reverse=True)[:max(k, _RERANK_N)]
         keys = ("fqname", "name", "kind", "file", "line", "signature", "description",
                 "parent", "calls", "called_by", "references", "content_hash", "keywords")
-        hits = [{**{key: by_id[ids[i]].get(key) for key in keys},
-                 "project": proj, "rank": r + 1, "_score": score[i]}
-                for r, i in enumerate(order)]
+        hits: list[dict[str, Any]] = [
+            {**{key: by_id[ids[i]].get(key) for key in keys},
+             "project": proj, "rank": r + 1, "_score": score[i]}
+            for r, i in enumerate(order)]
         for h in hits:
             for rel_key in ("calls", "called_by", "references"):
                 h[rel_key] = self._neighbours(proj, h.get(rel_key))
@@ -307,7 +310,8 @@ class CodeQuery:
 
     def graph(self, proj: str, symbol: str | None = None,
               direction: str = "callees", depth: int = 6, shape: str | None = None,
-              group_by: str | None = None) -> dict[str, Any]:
+              group_by: str | None = None, path: str = "", scope: str = "",
+              lang: str = "") -> dict[str, Any]:
         """Call graph around `symbol` from the persisted symbol_index — `callees`
         follows `calls`, `callers` follows `called_by`, `references` the broader
         mention relation. Omit `symbol` for the WHOLE PROJECT: every indexed symbol
@@ -392,7 +396,8 @@ class CodeQuery:
         # would report "symbol not found" for a name that matched twice.
         from .refs import UnknownSymbol, resolution
         try:
-            root_proj, root = self.refs.resolve_symbol_or_ref(proj, symbol, rc)
+            root_proj, root = self.refs.resolve_symbol_or_ref(proj, symbol, rc,
+                                                             path, scope, lang)
         except UnknownSymbol:
             return {}
         resolved = resolution(root, symbol,

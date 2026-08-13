@@ -1970,9 +1970,11 @@ class Crib:
         return self.query.xref(self.resolve_project(project, cwd), symbol)
 
     def code_dossier(self, symbol: str, project: str | None = None,
-                     cwd: Path | None = None, edge_cap: int = 20) -> dict[str, Any]:
+                     cwd: Path | None = None, edge_cap: int = 20, path: str = "",
+                     scope: str = "", lang: str = "") -> dict[str, Any]:
         """Everything about one symbol (+ neighbour descriptions + any learning)."""
-        return self.query.dossier(self.resolve_project(project, cwd), symbol, edge_cap)
+        return self.query.dossier(self.resolve_project(project, cwd), symbol,
+                                  edge_cap, path, scope, lang)
 
     # ── Durable learnings: delegate to Learnings (crib/learnings.py) ───────────
     # Public code_* wrappers resolve_project then delegate; the internal helpers
@@ -2244,11 +2246,12 @@ class Crib:
     def code_graph(self, symbol: str | None = None, direction: str = "callees",
                    depth: int = 6, project: str | None = None,
                    cwd: Path | None = None, shape: str | None = None,
-                   group_by: str | None = None) -> dict[str, Any]:
+                   group_by: str | None = None, path: str = "", scope: str = "",
+                   lang: str = "") -> dict[str, Any]:
         """Call graph around a symbol — pstree tree, or (`shape="edges"`) the
         deduplicated subgraph; omit `symbol` for the whole project. Crosses into refs."""
         return self.query.graph(self.resolve_project(project, cwd), symbol, direction,
-                                depth, shape, group_by)
+                                depth, shape, group_by, path, scope, lang)
 
     async def enrich(self, relpath: str | None = None, project: str | None = None,
                      cwd: Path | None = None, overwrite: bool = False) -> dict[str, Any]:

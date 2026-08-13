@@ -18,6 +18,7 @@ from crib.app import Crib
 from crib.codeindex import SymbolIndex
 from crib.config import Config
 from crib.errors import CribUserError
+from crib.symbols import scope_of
 from crib.paths import Paths
 from crib.store import InMemoryStore
 
@@ -37,6 +38,7 @@ def _sym(crib, project, fqname, file, **over):
          "signature": f"def {fqname.split('.')[-1]}():", "description": "",
          "container": [], "calls": [], "called_by": [], "references": [],
          "name_terms": [fqname.split(".")[-1]], **over}
+    e.setdefault("scope", scope_of(e["lang"], e["file"], e["container"]))
     SymbolIndex(crib.paths.project_dir(project)).write(e)
     return e
 
@@ -482,5 +484,48 @@ def test_an_indexed_entry_carries_its_language_scope(crib, tmp_path):
     # every declared array, so the field comes back EMPTY rather than missing. That
     # is why absence cannot be read as "this language has no scope" — the schema
     # stamp is what says the field was computed at all.
-    assert all(e.get("scope") == [] for e in si.all())
+    _sym(crib, "p", "old.entry", "app.py", scope=[])
+    assert si.read("old.entry").get("scope") == []
+    assert all(e.get("scope") for e in si.all() if e["fqname"] != "old.entry")
     assert crib.code_graph("app.main", project="p")["fqname"] == "app.main"
+
+
+# --- symmetric selectors: narrow on the axis you actually know -----------------
+
+def test_a_path_constraint_makes_an_ambiguous_name_unique(crib, tmp_path):
+    _wrapper_and_op(crib, tmp_path)
+    with pytest.raises(CribUserError, match="2 symbols match"):
+        crib.code_dossier("add_node", project="w")
+    # a caller reading a stack trace knows the FILE, not crib's qualified spelling
+    d = crib.code_dossier("add_node", project="w", path="ops.py")
+    assert d["resolved"]["fqname"] == "ops.add_node"
+    g = crib.code_graph("add_node", project="w", path="server.py", shape="edges")
+    assert g["resolved"]["fqname"] == "server.add_node"
+
+
+def test_a_scope_constraint_narrows_the_same_way(crib, tmp_path):
+    _rust_ish(crib, tmp_path)
+    g = crib.code_graph("ClientsLock", project="r", scope="lockfile", shape="edges")
+    assert g["resolved"]["fqname"] == "rust::src::core::lockfile::ClientsLock"
+
+
+def test_a_constraint_that_excludes_everything_says_so(crib, tmp_path):
+    _wrapper_and_op(crib, tmp_path)
+    with pytest.raises(CribUserError, match="none of them with path='nowhere.py'"):
+        crib.code_dossier("add_node", project="w", path="nowhere.py")
+
+
+def test_the_refusal_names_the_axis_that_would_separate_them(crib, tmp_path):
+    _wrapper_and_op(crib, tmp_path)
+    with pytest.raises(CribUserError) as e:
+        crib.code_graph("add_node", project="w")
+    # the two candidates differ by file, so `path=` is the actionable hint
+    assert "narrow with path=" in str(e.value)
+
+
+def test_constraints_do_not_weaken_unique_or_refuse(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    # a constraint that matches BOTH leaves the ambiguity intact rather than picking
+    _sym(crib, "p", "core.main", "core.py")
+    with pytest.raises(CribUserError, match="symbols match"):
+        crib.code_dossier("main", project="p", lang="python")

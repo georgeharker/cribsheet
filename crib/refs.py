@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Any, Callable
 
 from .config import CribLink
 from .errors import CribUserError
+from .symbols import constrain
 from .symbols import match as fqname_match
 
 if TYPE_CHECKING:
@@ -127,11 +128,18 @@ class Refs:
         return out
 
     def resolve_symbol(self, proj: str, symbol: str,
-                       rc: _ResidentCode | None = None) -> dict[str, Any]:
+                       rc: _ResidentCode | None = None, path: str = "",
+                       scope: str = "", lang: str = "") -> dict[str, Any]:
         """Resolve a user-supplied symbol to exactly one indexed entry. Exact fqn
         wins; a bare/partial name resolves only if unique — else raise, listing
         candidates (never silently pick, so a learning can't land on the wrong one).
-        Resolves against a resident cache when one is passed (avoids a disk read)."""
+        Resolves against a resident cache when one is passed (avoids a disk read).
+
+        `path`/`scope`/`lang` narrow the candidates first, on the axes a caller may
+        actually know: a stack trace gives you the path, reading source gives you
+        the scope, and neither requires knowing the qualified name crib stored.
+        They do not weaken unique-or-refuse — they give a name more ways to BECOME
+        unique."""
         from .codeindex import SymbolIndex
         from .codequery import check_query  # lazy: one message for one boundary
         check_query(symbol, "symbol")
@@ -140,6 +148,15 @@ class Refs:
         if not matches:
             raise UnknownSymbol(f"unknown symbol {symbol!r} in project {proj!r} — "
                                 f"code_lookup it, or code_index the file first")
+        if path or scope or lang:
+            narrowed = constrain(matches, path, scope, lang)
+            if not narrowed:
+                where = ", ".join(f"{k}={v!r}" for k, v in
+                                  (("path", path), ("scope", scope), ("lang", lang)) if v)
+                raise CribUserError(
+                    f"{symbol!r} matches {len(matches)} symbol(s) in project "
+                    f"{proj!r}, none of them with {where}")
+            matches = narrowed
         exact = [m for m in matches
                  if fqname_match(m.get("fqname", ""), m.get("name", ""), symbol,
                                  m.get("lang", "")) == "fqname"]
@@ -154,13 +171,19 @@ class Refs:
             shown = ", ".join(f"{m.get('fqname', '')} ({len(m.get('called_by') or [])}"
                               f" callers)" for m in ranked[:8])
             more = f", +{len(ranked) - 8} more" if len(ranked) > 8 else ""
+            axis = ("path" if len({m.get("file") for m in cands}) == len(cands)
+                    else "scope" if len({tuple(m.get("scope") or ())
+                                         for m in cands}) == len(cands) else "")
+            hint = (f" Re-run with one of those qualified names"
+                    + (f", or narrow with {axis}=." if axis else "."))
             raise AmbiguousSymbol(
                 f"ambiguous symbol {symbol!r} — {len(cands)} symbols match, NO result "
-                f"returned: {shown}{more}. Re-run with one of those qualified names.")
+                f"returned: {shown}{more}.{hint}")
         return cands[0]
 
     def resolve_symbol_or_ref(self, proj: str, symbol: str,
-                              rc: _ResidentCode | None = None,
+                              rc: _ResidentCode | None = None, path: str = "",
+                              scope: str = "", lang: str = "",
                               ) -> tuple[str, dict[str, Any]]:
         """Resolve locally first; on a LOCAL MISS, try the project's `.crib`
         `refs:` (cross-project xref) → (owning_project, entry). Exactly one ref
@@ -169,7 +192,7 @@ class Refs:
         never paper over it) — which is why the miss is caught by TYPE
         (`UnknownSymbol`) and not by matching the message text."""
         try:
-            return proj, self.resolve_symbol(proj, symbol, rc)
+            return proj, self.resolve_symbol(proj, symbol, rc, path, scope, lang)
         except UnknownSymbol as local_err:
             found: list[tuple[str, dict[str, Any]]] = []
             for ref in self.project_refs(proj):
@@ -177,7 +200,8 @@ class Refs:
                     continue
                 try:
                     found.append((ref["project"],
-                                  self.resolve_symbol(ref["project"], symbol)))
+                                  self.resolve_symbol(ref["project"], symbol,
+                                                      None, path, scope, lang)))
                 except ValueError:
                     continue
             if len(found) == 1:

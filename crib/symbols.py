@@ -350,3 +350,43 @@ def display_name(entry: dict[str, Any]) -> str:
     if not scope or not name:
         return str(entry.get("fqname") or name)
     return fqname_sep(str(entry.get("lang") or "")).join([*scope, name])
+
+
+def path_matches(file: str, partial: str) -> bool:
+    """Whether `partial` is a trailing run of `file`'s path segments — `state.rs`,
+    `core/state.rs` and the whole relpath all select it, `re.rs` does not. Boundary
+    on `/`, so a partial can never match mid-segment."""
+    if not partial:
+        return True
+    f, q = file.strip("/").split("/"), partial.strip("/").split("/")
+    return len(q) <= len(f) and f[-len(q):] == q
+
+
+def scope_matches(scope: Sequence[str], partial: str) -> bool:
+    """Whether `partial` is a trailing run of the scope chain — `ServerState` and
+    `state::ServerState` both select `core::state::ServerState`. Either separator is
+    accepted on the way in, since the caller need not know which one stored it."""
+    if not partial:
+        return True
+    q = [s for s in _ANY_SEP.split(partial) if s]
+    sc = list(scope or [])
+    return len(q) <= len(sc) and sc[-len(q):] == q
+
+
+def constrain(entries: Sequence[dict[str, Any]], path: str = "", scope: str = "",
+              lang: str = "") -> list[dict[str, Any]]:
+    """Narrow candidates by the axes a caller might actually know.
+
+    A caller reading a stack trace knows the PATH; one reading source knows the
+    SCOPE; neither necessarily knows the qualified name crib stored. Every field
+    given is a constraint, so more of them means fewer candidates — which is how an
+    ambiguous name becomes unique without the caller having to reconstruct a
+    spelling."""
+    out = list(entries)
+    if lang:
+        out = [e for e in out if e.get("lang") == lang]
+    if path:
+        out = [e for e in out if path_matches(str(e.get("file") or ""), path)]
+    if scope:
+        out = [e for e in out if scope_matches(e.get("scope") or [], scope)]
+    return out
