@@ -18,14 +18,6 @@ REPO = Path(__file__).resolve().parent.parent
 
 
 # --- fqn normalization (per-language qualify / module / local name) ----------
-def test_module_of_python_strips_roots_and_init():
-    assert ci._module_of("crib/retrieve.py", "python") == "crib.retrieve"
-    assert ci._module_of("src/pkg/mod.py", "python") == "pkg.mod"
-    assert ci._module_of("lua/mcp_companion/init.lua", "lua") == "mcp_companion"
-
-
-def test_module_of_rust_uses_colons():
-    assert ci._module_of("src/foo/bar.rs", "rust") == "foo::bar"
 
 
 def test_local_name_strips_lua_table_prefix():
@@ -50,15 +42,16 @@ def test_symbol_index_uses_legible_slug_filenames(tmp_path):
     si = ci.SymbolIndex(tmp_path)
     # clean, all-lowercase fqn → verbatim; anything with uppercase carries a
     # case-hash (macOS is case-insensitive); lossy (rust ::) → munged + hash suffix
-    assert si._relname("crib.notes.load") == "crib.notes.load.toml"
-    assert si._relname("crib.retrieve.LexicalCache.get").startswith(
-        "crib.retrieve.LexicalCache.get-")
+    # a reference always munges (it carries `/` or `#`), so the hash is
+    # UNCONDITIONAL — done-ness never needs a was-this-hashed branch
     p = si.write({"fqname": "a::b::C", "name": "C", "kind": "struct",
                   "content_hash": "h", "file": "a.rs", "line": 1, "mtime": 1,
                   "signature": "", "description": "d", "container": [], "calls": [],
                   "called_by": [], "references": [], "name_terms": ["C"]})
-    assert p.name.startswith("a-b-C-") and p.suffix == ".toml"     # munged + hash
-    assert si.by_fqname("a::b::C") and si.delete("a::b::C")        # write/delete round-trip
+    assert p.name.startswith("a.rs-C-") and p.suffix == ".toml"    # slug of its key
+    assert si.read("a.rs#C")["symbol_was"] == ["a::b::C"]          # history intact
+    assert si.by_fqname("a::b::C")                # any spelling still FINDS it
+    assert si.delete("a.rs#C")                    # the store itself speaks keys
     assert not si.by_fqname("a::b::C")
 
 
@@ -131,15 +124,6 @@ def test_load_grammar_merges_user_over_defaults(tmp_path, monkeypatch):
     assert g["firstLineMarkers"]["funcdef"] == "fish"
     assert g["firstLineMarkers"]["compdef"] == "zsh"
 
-
-def test_qualify_is_language_idiomatic():
-    assert ci._qualify("python", "crib.retrieve", ("BM25",), "scores") \
-        == "crib.retrieve.BM25.scores"
-    assert ci._qualify("rust", "foo::bar", ("Type",), "method") \
-        == "foo::bar::Type::method"
-    # Lua: the `M` table var is dropped from the container, module comes from path
-    assert ci._qualify("lua", "mcp_companion", ("M",), "setup") \
-        == "mcp_companion.setup"
 
 
 def test_name_terms_split_compound_identifiers():
@@ -214,33 +198,33 @@ def test_server_for_shebang_fallback(tmp_path):
     assert sel2 and sel2[2] == "zsh"                    # by extension, not the py shebang
 
 
-# --- learning_slug: fqn → filesystem/git-safe basename ----------------------
+# --- ref_slug: fqn → filesystem/git-safe basename ----------------------
 def test_learning_slug_clean_fqn_verbatim():
     # a pure dotted, all-lowercase fqn is already filesystem-clean AND unambiguous
     # on a case-insensitive filesystem → passes through unchanged
-    assert ci.learning_slug("crib.notes.load") == "crib.notes.load"
+    assert ci.ref_slug("crib.notes.load") == "crib.notes.load"
 
 
 def test_learning_slug_disambiguates_case_on_case_insensitive_filesystems():
     # APFS/HFS+/NTFS fold case, so `mod.Chunk` and `mod.chunk` are ONE path there —
     # one symbol's record (and learning) silently overwrote the other's.
-    a, b = ci.learning_slug("mod.Chunk"), ci.learning_slug("mod.chunk")
+    a, b = ci.ref_slug("mod.Chunk"), ci.ref_slug("mod.chunk")
     assert a.lower() != b.lower() and a.startswith("mod.Chunk-")
     assert b == "mod.chunk"                      # lowercase stays verbatim
     # …and the pre-fix name is still derivable, so notes already on disk are found
-    assert ci.legacy_learning_slug("mod.Chunk") == "mod.Chunk"
+    assert ci.legacy_ref_slug("mod.Chunk") == "mod.Chunk"
 
 
 def test_learning_slug_munges_unsafe_and_disambiguates():
     # anything outside [A-Za-z0-9._-] collapses to '-'; a lossy munge appends a
     # short fqn hash so distinct symbols can't collide on disk
-    a = ci.learning_slug("core::cache::Store::get")
-    b = ci.learning_slug("core-cache-Store-get")        # would collide sans hash
+    a = ci.ref_slug("core::cache::Store::get")
+    b = ci.ref_slug("core-cache-Store-get")        # would collide sans hash
     assert a.startswith("core-cache-Store-get-")
     assert a != b and "::" not in a and "/" not in a
     # Go import paths, C++ generics/operators/dtors — all land valid and unique
     for fq in ("pkg/foo.Bar", "Vec<T>::push", "operator+", "ns::~Dtor"):
-        s = ci.learning_slug(fq)
+        s = ci.ref_slug(fq)
         assert set(s) <= set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._-")
         assert s and not s.startswith("-") and not s.endswith("-")
 
@@ -314,11 +298,11 @@ def test_render_parse_roundtrip_including_empty_arrays():
          "file": "a.py", "line": 12, "signature": "def c(self):",
          "description": 'has "quotes" and, commas', "container": ["B"],
          "calls": ["x [a.py]"], "called_by": [], "name_terms": ["c", "a.B.c"]}
-    got = ci._parse(ci._render(e))
-    assert got["fqname"] == "a.B.c" and got["line"] == 12
+    got = ci._parse(ci._render(ci.SymbolIndex.normalize_identity(e)))
+    assert got["symbol_ref"] == "a.py#B.c" and got["line"] == 12
     assert got["called_by"] == []          # empty array parses as [], not "[]"
     assert got["calls"] == ["x [a.py]"]
-    assert got["parent"] == "a.B"
+    assert "parent" not in got and "module" not in got   # derivable; not stored
     assert 'quotes' in got["description"]
 
 
@@ -326,11 +310,11 @@ def test_render_parse_roundtrip_including_empty_arrays():
 def test_extract_call_graph_anchor_edges():
     if ci.server_for("crib/retrieve.py") is None:
         pytest.skip("no Python LSP server available (pyright/basedpyright)")
-    entries = {e["fqname"]: e for e in ci.extract_file(REPO, "crib/retrieve.py")}
+    entries = {e["fqn"]: e for e in ci.extract_file(REPO, "crib/retrieve.py")}
     # fqn normalization: module-qualified, class-nested
     assert "crib.retrieve.LexicalCache.get" in entries
     get = entries["crib.retrieve.LexicalCache.get"]
-    assert get["name"] == "get" and get["parent"] == "crib.retrieve.LexicalCache"
+    assert get["name"] == "get" and get["container"] == ["LexicalCache"]
     # deterministic call edges (semantic, cross-file) — the LSP-sync contract
     callees = {c.split(" [")[0] for c in get["calls"]}
     assert {"BM25", "_lexical_tf", "get_docs"} <= callees

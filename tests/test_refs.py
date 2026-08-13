@@ -73,13 +73,13 @@ def test_xref_falls_through_to_ref_project(crib, tmp_path):
     _two_projects(crib, tmp_path)
     hits = crib.code_xref("util.helper", project="par")     # not in par
     assert hits and hits[0]["project"] == "dep"
-    assert hits[0]["fqname"] == "util.helper"
+    assert hits[0]["symbol_ref"] == "src/util.py#helper"
 
 
 def test_lookup_fans_out_and_tags_projects(crib, tmp_path):
     _two_projects(crib, tmp_path)
     hits = crib.code_lookup("helper", project="par", k=5)
-    projects = {h["fqname"]: h["project"] for h in hits}
+    projects = {h["fqn"]: h["project"] for h in hits}
     assert projects.get("util.helper") == "dep"              # ref hit surfaced
 
 
@@ -89,7 +89,7 @@ def test_dossier_crosses_into_ref_and_annotates_edges(crib, tmp_path):
     assert d["project"] == "par"
     call = d["calls"][0]
     assert call["project"] == "dep"                          # qualified edge
-    assert call["symbol"] == "util.helper"
+    assert call["symbol"] == "src/util.py#helper"
     assert call["description"] == "shared helper routine"
     # and resolving a ref-owned symbol directly crosses over
     d2 = crib.code_dossier("util.helper", project="par")
@@ -100,7 +100,7 @@ def test_graph_hops_across_qualified_edges(crib, tmp_path):
     _two_projects(crib, tmp_path)
     tree = crib.code_graph("app.main", project="par")
     child = tree["children"][0]
-    assert child["fqname"] == "util.helper" and child["project"] == "dep"
+    assert child["symbol_ref"] == "src/util.py#helper" and child["project"] == "dep"
 
 
 # --- index-time attribution (_locate) ------------------------------------------

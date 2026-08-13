@@ -39,6 +39,8 @@ from .refs import Refs
 from .sources import SRC_PREFIX, SourceRoots, src_relpath
 from .store import Hit, Store
 from .util import derived_ulid
+from .symbols import fqn_of as _symbol_fqn
+from .symbols import key as _symbol_key
 from .versions import VersionRing
 from .watch import CodeWatcher, Watcher
 
@@ -1224,12 +1226,12 @@ class Crib:
 
     def _index_code_file_tracked(self, root: Path, rel: str, proj: str,
                                  patch_edges: bool,
-                                 existing: dict[str, dict] | None = None,
+                                 prior: list[dict] | None = None,
                                  describe_mode: str = "inline") -> dict[str, Any]:
         """Delegate to the CodeIndexer pipeline (kept on Crib so the watcher and the
         resident-cache revalidate hook call it unchanged)."""
         return self.indexer._index_code_file_tracked(root, rel, proj, patch_edges,
-                                                      existing, describe_mode)
+                                                      prior, describe_mode)
 
     # ── Resident code cache: delegates to CodeStore (crib/codestore.py) ────────
     # Thin delegators so existing call sites are untouched; the state + its
@@ -1503,6 +1505,10 @@ class Crib:
         docs = await self.index_docs_insitu(proj, link.root) if link.doc_patterns else {}
         globs = link.paths or self._detect_code_globs(link.root)
         code = await self._index_project_code(proj, link.root, globs, budget_s)
+        # No learning re-attach here. The sweep converts ENTRIES as a side effect
+        # (every write normalizes identity), and the learnings join reads bindings,
+        # so notes stay correct WITHOUT being rewritten — rebinding note files under
+        # a git-synced store is tidiness, kept behind the explicit `learning_migrate`.
         return {"project": proj, "root": str(link.root), "crib_created": created,
                 "created": new_project, "docs_indexed": docs.get("docs", 0), **code}
 
@@ -1806,6 +1812,100 @@ class Crib:
                     notes.save_atomic(note)
                     out.append(f"{pillar.spec.name}/{rel}")
         return out
+
+    async def learning_migrate(self, project: str | None = None,
+                               cwd: Path | None = None,
+                               apply: bool = False) -> dict[str, Any]:
+        """Rebind a project's learning notes to the current symbol identity.
+
+        OPTIONAL TIDINESS, not a correctness step: the learnings join resolves a
+        note bound to any prior spelling, so an unconverted note keeps working
+        forever. What this buys is canonical filenames and `symbol_ref` frontmatter
+        — worth doing once, not worth automating against a git-synced store.
+
+        Per record, no ordering constraint against the entry conversion, re-running
+        is the resume. DRY RUN unless `apply`."""
+        proj = self.resolve_project(project, cwd)
+        return await self.learnings.convert_notes(proj, apply=apply)
+
+    async def code_convert(self, project: str | None = None,
+                           cwd: Path | None = None,
+                           apply: bool = False) -> dict[str, Any]:
+        """Convert a project's symbol store to the current shape, in place — no LSP,
+        no LLM, every expensive facet byte-identical or the entry is left alone.
+
+        Each record is independently classifiable (`schema` + whether its filename
+        is derived from its own key), so the work-list is derived from the data,
+        a crash leaves the ordinary input to the next run, and re-running IS the
+        resume. A record that cannot be converted (no `file`/`name` to derive a
+        reference from) is reported for a reindex rather than guessed at.
+
+        A full `project_index` also converts — every write normalizes identity —
+        but at LSP+LLM price. This is the cheap path. DRY RUN unless `apply`."""
+        from .codeindex import SYMBOL_SCHEMA_VERSION, SymbolIndex
+        from .symconvert import convert_entry, convertible, preserved
+        proj = self.resolve_project(project, cwd)
+        store = SymbolIndex(self.paths.project_dir(proj))
+        rows = store.records()
+        # COLLISION GUARD. Distinct records whose cleaned identities derive ONE key
+        # cannot both be converted — the second write would silently erase the first
+        # (found live: two Lua block-locals told apart only by synthetic containers,
+        # `for in` vs `do end`, which the tail cleaning strips). Convert the first by
+        # filename, LEAVE the rest as they are, and say so — same rule as two notes
+        # claiming one symbol. A reindex is what genuinely resolves them.
+        claims: dict[str, tuple[str, tuple]] = {}
+        collisions: list[dict[str, Any]] = []
+        done = converted = 0
+        skipped: list[str] = []
+        violations: list[dict[str, Any]] = []
+
+        def _parts(e: dict) -> tuple:
+            return (str(e.get("file") or ""),
+                    tuple(str(c) for c in (e.get("container") or ())),
+                    str(e.get("name") or ""))
+
+        with self.code.lock(proj):
+            for path, e in rows:
+                k = _symbol_key(e)
+                holder, hparts = claims.setdefault(k, (path.name, _parts(e)))
+                if holder != path.name:
+                    if hparts == _parts(e):
+                        # the SAME identity twice is a crash leftover (write-new
+                        # happened, unlink-old did not) — ordinary work, swept here
+                        if apply:
+                            path.unlink(missing_ok=True)
+                        converted += 1
+                        continue
+                    # DISTINCT identities deriving one key: converting the second
+                    # would silently erase the first. Leave it, say so, every run.
+                    collisions.append({"record": path.name, "key": k,
+                                       "held_by": holder})
+                    continue
+                if int(e.get("schema") or 0) >= SYMBOL_SCHEMA_VERSION \
+                        and path.name == store._relname(_symbol_key(e)):
+                    done += 1
+                    continue
+                if not convertible(e):
+                    skipped.append(path.name)
+                    continue
+                new = convert_entry(e, SYMBOL_SCHEMA_VERSION)
+                bad = preserved(e, new)
+                if bad:                  # never write an entry conversion mangled
+                    violations.append({"record": path.name, "fields": bad})
+                    continue
+                if apply:
+                    wrote = store.write(new)
+                    if path != wrote:    # a name no binding derives (pre-hash slug)
+                        path.unlink(missing_ok=True)
+                converted += 1
+            if apply and not skipped and not violations and not collisions:
+                store.record_schema()    # a completion claim: this pass saw every record
+        if apply:
+            self.code.bump_epoch(proj)
+        return {"project": proj, "applied": apply, "total": len(rows),
+                "already_done": done, "converted": converted,
+                "needs_reindex": skipped, "violations": violations,
+                "collisions": collisions}
 
     async def project_migrate(self, project: str | None = None,
                               cwd: Path | None = None) -> dict[str, Any]:
@@ -2234,7 +2334,10 @@ class Crib:
         from .codequery import _RERANK_N
         head = hits[:_RERANK_N]
         try:
-            rr = self.reranker.scores(query, [f"{h['fqname']}: {h.get('description','')}" for h in head])
+            # the NAME, not the reference: a cross-encoder scores words against a
+            # query, and `crib.app.Crib.foo` carries them where a path ref does not
+            rr = self.reranker.scores(query, [f"{_symbol_fqn(h)}: {h.get('description', '')}"
+                                              for h in head])
         except Exception as e:  # noqa: BLE001 — reranker optional; degrade to blend order
             print(f"[crib] code reranker disabled: {e}", file=sys.stderr)
             return hits
@@ -2248,12 +2351,15 @@ class Crib:
                    cwd: Path | None = None, shape: str | None = None,
                    group_by: str | None = None, group_depth: int = 0,
                    path: str = "", scope: str = "",
-                   lang: str = "") -> dict[str, Any]:
+                   lang: str = "", under: str = "",
+                   exclude: str = "") -> dict[str, Any]:
         """Call graph around a symbol — pstree tree, or (`shape="edges"`) the
-        deduplicated subgraph; omit `symbol` for the whole project. Crosses into refs."""
+        deduplicated subgraph; omit `symbol` for the whole project (`under=`/`exclude=`
+        then scope the export by path prefix; boundary-crossing edges keep lean
+        `truncated` frontier nodes). Crosses into refs."""
         return self.query.graph(self.resolve_project(project, cwd), symbol, direction,
                                 depth, shape, group_by, group_depth,
-                                path, scope, lang)
+                                path, scope, lang, under, exclude)
 
     async def enrich(self, relpath: str | None = None, project: str | None = None,
                      cwd: Path | None = None, overwrite: bool = False) -> dict[str, Any]:

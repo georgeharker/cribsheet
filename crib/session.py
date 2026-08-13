@@ -26,6 +26,8 @@ class ProjectResolution:
       • ``path``     — seeded from a caller-supplied ``project_path``'s ``.crib``.
       • ``session``  — the sticky per-connection current project (set earlier).
       • ``seed``     — seeded with no path (cwd-less / the bare default).
+      • ``elicited`` — the human was ASKED (an unanchored read + a client that
+        supports elicitation) and named the project; the session adopts it.
 
     ``path``/``explicit`` are caller-directed; ``session``/``seed`` are *implicit*
     — the two that silently answer with the wrong project when a connection's
@@ -39,6 +41,13 @@ class ProjectResolution:
     project: str
     via: str
     session_set: bool = False
+    # NOTHING pointed here: no selector, no path, no session — the resolution is a
+    # pure fallthrough to the bare default. Distinct from `implicit` (a sticky
+    # session at least records something the caller once chose) because it is the
+    # one branch where the answer is a GUESS, and a guess must never be quiet: after
+    # a daemon restart every chat lands exactly here, believing it still has the
+    # project it adopted before the restart.
+    unanchored: bool = False
 
     @property
     def implicit(self) -> bool:
@@ -52,6 +61,12 @@ class ProjectResolution:
 
     def echo(self) -> dict[str, Any]:
         out: dict[str, Any] = {"project": self.project, "resolved_via": self.via}
+        if self.unanchored:
+            out["warning"] = (
+                f"UNANCHORED: nothing names a project for this session — answered "
+                f"from {self.project!r}. If that is not where you meant to look, "
+                f"pass project= or project_path= once to anchor the session "
+                f"(sessions reset when the daemon restarts).")
         if self.session_set:
             out["session_project_set"] = self.project
             out["note"] = (f"this call also made {self.project!r} the session's "
@@ -126,4 +141,12 @@ def resolve_session_project(state: SessionState, project_arg: str | None,
             return ProjectResolution(picked, "path", session_set=first)
     if state.current_project is not None:
         return ProjectResolution(state.current_project, "session")
-    return ProjectResolution(seed(cwd), "seed")
+    # The fallthrough. Two different situations end here and they are NOT the same:
+    #   • a cwd was given but no `.crib` decides — landing on `default` is that
+    #     path's DOCUMENTED meaning (the CLI standing in ~ does this deliberately);
+    #   • NO cwd at all (only MCP can get here: a selector-less call on a fresh
+    #     session — which is every chat right after a daemon restart). Then crib
+    #     knows NOTHING; its own startup directory is meaningless to every chat,
+    #     so any answer is a guess. `unanchored` marks it, and the server layer
+    #     ASKS (elicitation) or REFUSES actionably rather than answering.
+    return ProjectResolution(seed(cwd), "seed", unanchored=cwd is None)

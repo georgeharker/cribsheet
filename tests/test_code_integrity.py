@@ -232,9 +232,9 @@ def test_unchanged_file_hash_withholds_deletion_and_marks_dirty(
     monkeypatch.setattr(ci, "describe_symbols", lambda *a, **k: {})
     out = crib._index_code_file_tracked(root, "m.py", "p", patch_edges=False)
 
-    assert {e["fqname"] for e in store.all()} == {"m.a", "m.b"}   # nothing deleted
-    assert store.read("m.b")["content_hash"] == ""               # …but visibly dirty
-    assert out["deletions_withheld"] == ["m.b"]
+    assert {e["name"] for e in store.all()} == {"a", "b"}         # nothing deleted
+    assert store.read("m.py#b")["content_hash"] == ""               # …but visibly dirty
+    assert out["deletions_withheld"] == ["m.py#b"]
 
 
 def test_changed_file_hash_lets_a_real_removal_through(crib, tmp_path, monkeypatch):
@@ -250,7 +250,7 @@ def test_changed_file_hash_lets_a_real_removal_through(crib, tmp_path, monkeypat
     monkeypatch.setattr(ci, "describe_symbols", lambda *a, **k: {})
     out = crib._index_code_file_tracked(root, "m.py", "p", patch_edges=False)
 
-    assert {e["fqname"] for e in store.all()} == {"m.a"}          # b really removed
+    assert {e["name"] for e in store.all()} == {"a"}              # b really removed
     assert "deletions_withheld" not in out
 
 
@@ -274,7 +274,7 @@ def test_deletion_gate_stays_permissive_for_a_pre_file_hash_index(
     monkeypatch.setattr(ci, "describe_file", lambda *a, **k: {})
     monkeypatch.setattr(ci, "describe_symbols", lambda *a, **k: {})
     crib._index_code_file_tracked(root, "m.py", "p", patch_edges=False)
-    assert {e["fqname"] for e in store.all()} == {"m.a"}
+    assert {e["name"] for e in store.all()} == {"a"}
 
 
 # ── 2.4 reader-thread death fails fast ────────────────────────────────────────
@@ -382,7 +382,7 @@ def test_broken_record_is_marked_dirty_not_partially_parsed(tmp_path):
     p.write_text(text[:text.index("signature")] + 'signature = "def f(\n')
 
     e = ci._parse(p.read_text())
-    assert e["fqname"] == "m.f" and e["file"] == "m.py"    # routable back to its file
+    assert e["name"] == "f" and e["file"] == "m.py"        # routable back to its file
     assert e["content_hash"] == ""                         # dirty
     assert "description" not in e and "keywords" not in e  # never guessed at
 
@@ -448,7 +448,7 @@ def test_unparseable_symbol_record_is_dropped_from_all(tmp_path):
               "container": [], "calls": [], "called_by": [], "references": [],
               "name_terms": ["f"]})
     (si.root / "junk.toml").write_text('= "no key at all\n')
-    assert [e["fqname"] for e in si.all()] == ["m.f"]
+    assert [e["symbol_ref"] for e in si.all()] == ["m.py#f"]
 
 
 def run(coro):
@@ -465,7 +465,7 @@ def test_sweep_reports_unreadable_files(crib, tmp_path, monkeypatch):
     monkeypatch.setattr(crib.indexer.services, "enumerate_code_files",
                         lambda r, globs: [root / "m.py", root / "n.py"])
 
-    def index_one(rt, rel, proj, patch_edges, existing=None):
+    def index_one(rt, rel, proj, patch_edges, existing=None, describe_mode="inline", sweep=False):
         if rel == "n.py":
             return {"symbols": 0, "skipped": "n.py: bad codec",
                     "skipped_kind": "unreadable"}

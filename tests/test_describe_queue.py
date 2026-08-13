@@ -35,8 +35,9 @@ def run(coro):
 
 
 def _sym(fq, h, body):
-    return {"name": fq.split(".")[-1], "kind": "function", "content_hash": h,
-            "_body": body}
+    # the queue payload carries the NAME the describe blob labels blocks with
+    return {"name": fq.split(".")[-1], "fqn": fq, "kind": "function",
+            "content_hash": h, "_body": body}
 
 
 # ── the scheduler ─────────────────────────────────────────────────────────────
@@ -210,7 +211,7 @@ def test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale(
         "b": {"description": "does B", "keywords": ["beta behavior"]}})
     crib._index_code_file_tracked(root, "pkg/mod.py", "p", True)  # inline
     si = SymbolIndex(crib.paths.project_dir("p"))
-    assert {e["fqname"]: e["description"] for e in si.all()} == \
+    assert {e["fqn"]: e["description"] for e in si.all()} == \
         {"pkg.mod.a": "does A", "pkg.mod.b": "does B"}
 
     # 2) defer — only b's body changes
@@ -226,14 +227,14 @@ def test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale(
         _entry("pkg.mod.b", "hb2", "def b(): return 1")])
     crib._index_code_file_tracked(root, "pkg/mod.py", "p", True, None, "defer")
 
-    by_fq = {e["fqname"]: e for e in si.all()}
+    by_fq = {e["fqn"]: e for e in si.all()}
     assert by_fq["pkg.mod.a"]["description"] == "does A"  # unchanged → kept
     # keywords carried too — write() replaces the whole entry, so dropping them here
     # would clobber the stored facet and re-stale the symbol on every save
     assert by_fq["pkg.mod.a"]["keywords"] == ["alpha behavior"]
     assert by_fq["pkg.mod.b"]["description"] == ""        # changed → blanked (durable signal)
     assert len(enq) == 1
-    assert list(enq[0][1]) == ["pkg.mod.b"]               # only the stale symbol queued
+    assert list(enq[0][1]) == ["pkg/mod.py#b"]            # only the stale symbol queued
 
 
 def test_empty_keyword_attempt_is_durable_no_retry(crib, tmp_path, monkeypatch):
@@ -281,7 +282,7 @@ def test_llm_down_backfill_preserves_description(crib, tmp_path, monkeypatch):
     monkeypatch.setattr(ci, "describe_file", boom)
     monkeypatch.setattr(ci, "describe_symbols", boom)
     crib._index_code_file_tracked(root, "pkg/mod.py", "p", True)
-    cur = si.read("pkg.mod.a")
+    cur = si.read("pkg/mod.py#a")
     assert cur["description"] == "does A"      # NOT blanked by the failed backfill
     assert "keywords" not in cur               # still marked never-attempted
 
@@ -289,7 +290,7 @@ def test_llm_down_backfill_preserves_description(crib, tmp_path, monkeypatch):
         "a": {"description": "does A", "keywords": ["alpha behavior"]}})
     monkeypatch.setattr(ci, "describe_symbols", lambda cfg, syms: {})
     crib._index_code_file_tracked(root, "pkg/mod.py", "p", True)
-    assert si.read("pkg.mod.a")["keywords"] == ["alpha behavior"]
+    assert si.read("pkg/mod.py#a")["keywords"] == ["alpha behavior"]
 
 
 def test_describe_and_patch_patches_then_clobber_guards(crib, tmp_path, monkeypatch):
@@ -302,12 +303,12 @@ def test_describe_and_patch_patches_then_clobber_guards(crib, tmp_path, monkeypa
     async def go(pending):
         await crib.indexer._describe_and_patch("p", tmp_path, "pkg/mod.py", pending)
 
-    run(go({"pkg.mod.b": _sym("pkg.mod.b", "hb2", "def b(): return 1")}))
-    assert si.read("pkg.mod.b")["description"] == "does B v2"      # patched
+    run(go({"pkg/mod.py#b": _sym("pkg.mod.b", "hb2", "def b(): return 1")}))
+    assert si.read("pkg/mod.py#b")["description"] == "does B v2"      # patched
 
     # stale content_hash vs disk → skipped (a newer edit already re-queued it)
     run(go({"pkg.mod.b": _sym("pkg.mod.b", "OLD", "def b(): pass")}))
-    assert si.read("pkg.mod.b")["description"] == "does B v2"      # untouched
+    assert si.read("pkg/mod.py#b")["description"] == "does B v2"      # untouched
 
 
 def test_backlog_reindexes_only_blank_described_files(crib, tmp_path, monkeypatch):

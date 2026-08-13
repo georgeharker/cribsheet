@@ -22,6 +22,21 @@ from .symbols import (
     fqname_sep,
     qualified_symbol,
 )
+from .symbols import key as symbol_key
+
+
+def _marked(node: dict[str, Any], marks: set[str]) -> bool:
+    """Whether this node carries a learning — tested against EVERY spelling it
+    answers to, because the note may have been written under any of them.
+
+    A node is not a full entry (it carries what a reader needs, not what a store
+    holds), so this cannot call `bindings()` on it; the fields it does carry are
+    exactly the spellings a binding could be. Comparing one side's legacy name to the
+    other side's references is what left the glyph dead on every migrated project —
+    both halves correct, and never talking about the same string."""
+    return any(s in marks for s in
+               (node.get("symbol_ref"), node.get("id")) if s)
+
 
 if TYPE_CHECKING:
     from .codestore import _ResidentCode
@@ -57,6 +72,18 @@ MAX_DEPTH = 25
 MAX_GRAPH_NODES = 5000
 
 
+def _under(file: str, prefix: str) -> bool:
+    """Segment-aligned path-PREFIX test — `src` covers `src/a/b.py`, never
+    `srchers/x.py`. Empty prefix covers everything. The export scoping filter;
+    deliberately not `path_matches`, whose trailing-run rule answers the OTHER
+    question ("which file did you mean") for symbol narrowing."""
+    if not prefix:
+        return True
+    f = file.strip("/").split("/")
+    q = prefix.strip("/").split("/")
+    return len(q) <= len(f) and f[:len(q)] == q
+
+
 def _group_key(n: dict[str, Any], proj: str, axis: str, depth: int) -> str:
     """Which group this symbol belongs to, on the requested AXIS.
 
@@ -85,6 +112,10 @@ def _group_key(n: dict[str, Any], proj: str, axis: str, depth: int) -> str:
     return f if (n.get("external") or p == proj) else encode_loc(p, f)
 
 
+# Group ids that stand for the ABSENCE of a grouping fact rather than a group.
+_SENTINEL_GROUPS = frozenset({"(no scope)", "(root)", "(unresolved)"})
+
+
 def _rollup(sub: dict[str, Any], proj: str, axis: str,
             depth: int = 0) -> dict[str, Any]:
     """Collapse a symbol subgraph onto one AXIS, edges carrying the number of
@@ -100,7 +131,18 @@ def _rollup(sub: dict[str, Any], proj: str, axis: str,
         member[str(n["id"])] = mid
         m = mods.get(mid)
         if m is None:
-            m = {"id": mid, "symbols": 0, "external": True}
+            m = {"id": mid, "symbols": 0, "external": True, "truncated": True,
+                 # `name` = the last segment of the group id: a rollup node's box
+                 # caption without the consumer re-splitting a language-rendered id
+                 "name": mid.rsplit("/", 1)[-1].split(":")[-1]}
+            if mid in _SENTINEL_GROUPS:
+                # STRUCTURAL, not a magic string a consumer must know: `(no scope)`
+                # in an otherwise svg_mcp.* export poisons shared-prefix label
+                # derivation, and an id-keyed consumer should be able to drop or
+                # relabel sentinels without matching their exact spelling. The
+                # strings themselves remain contract (stable), this flag is how a
+                # consumer is MEANT to detect them.
+                m["synthetic"] = True
             if axis != "scope":
                 m["file"] = mid.split(":")[-1]
             if p != proj and not n.get("external"):
@@ -111,11 +153,15 @@ def _rollup(sub: dict[str, Any], proj: str, axis: str,
         m["symbols"] += 1
         if not n.get("external"):
             m["external"] = False
+        if not n.get("truncated"):
+            m["truncated"] = False
         if "depth" in n and "depth" in m:
             m["depth"] = min(m["depth"], n["depth"])
     for m in mods.values():
         if not m["external"]:
             del m["external"]
+        if not m["truncated"]:
+            del m["truncated"]
     medges: dict[tuple[str, str], dict[str, Any]] = {}
     for e in sub["edges"]:
         a, b = member[e["from"]], member[e["to"]]
@@ -196,14 +242,14 @@ class CodeQuery:
         return out
 
     def _proj_maps(self, proj: str) -> tuple[dict[str, str], dict[tuple[str, str], str]]:
-        """(fqname → description, (name, file) → fqname) for one project, cached per
+        """(key → description, (name, file) → key) for one project, cached per
         call chain by the resident cache underneath."""
         try:
             rc = self._resident(proj)
         except Exception:  # noqa: BLE001 — unindexed ref → every edge unresolved
             return {}, {}
-        return ({e["fqname"]: e.get("description", "") for e in rc.entries},
-                {(e.get("name", ""), e.get("file", "")): e["fqname"]
+        return ({symbol_key(e): e.get("description", "") for e in rc.entries},
+                {(e.get("name", ""), e.get("file", "")): symbol_key(e)
                  for e in rc.entries})
 
     def xref(self, proj: str, symbol: str) -> list[dict[str, Any]]:
@@ -245,7 +291,8 @@ class CodeQuery:
         self.learnings.attach(owner, [entry])
         from .refs import resolution
         return {
-            "fqname": entry["fqname"], "kind": entry.get("kind"),
+            "symbol_ref": symbol_key(entry), "fqn": entry.get("fqn", ""),
+            "kind": entry.get("kind"),
             "project": owner,
             "resolved": resolution(entry, symbol, owner if owner != proj else None),
             "file": entry.get("file"), "line": entry.get("line"),
@@ -284,9 +331,9 @@ class CodeQuery:
             # local mid-ranker — a damped weight buries refs below any full local
             # top-k, since RRF is rank- not score-based). The queried project is the
             # FIRST ranking, so exact rank ties break local-first.
-            by_key = {f"{p}:{h['fqname']}": h for p, hs in pools.items() for h in hs}
+            by_key = {f"{p}:{h['symbol_ref']}": h for p, hs in pools.items() for h in hs}
             fused = reciprocal_rank_fusion(
-                [[f"{p}:{h['fqname']}" for h in hs] for p, hs in pools.items()])
+                [[f"{p}:{h['symbol_ref']}" for h in hs] for p, hs in pools.items()])
             hits = [by_key[key] for key in fused[:k]]
         for i, h in enumerate(hits):
             h["rank"] = i + 1
@@ -332,8 +379,12 @@ class CodeQuery:
             gnorm = {i: 0.0 for i in pool}
         score = {i: dense[i] + gnorm[i] for i in pool}       # alpha = beta = 1
         order = sorted(pool, key=lambda i: score[i], reverse=True)[:max(k, _RERANK_N)]
-        keys = ("fqname", "name", "kind", "file", "line", "signature", "description",
-                "parent", "calls", "called_by", "references", "content_hash", "keywords")
+        # `id` and `lang` ride along: a hit that omits the current identity cannot be
+        # matched to its learning note, and cannot render its language-native name
+        keys = ("symbol_ref", "fqn", "name", "kind", "lang", "scope", "file",
+                "line",
+                "signature", "description", "parent", "calls", "called_by",
+                "references", "content_hash", "keywords")
         hits: list[dict[str, Any]] = [
             {**{key: by_id[ids[i]].get(key) for key in keys},
              "project": proj, "rank": r + 1, "_score": score[i]}
@@ -347,14 +398,14 @@ class CodeQuery:
               direction: str = "callees", depth: int = 6, shape: str | None = None,
               group_by: str | None = None, group_depth: int = 0,
               path: str = "", scope: str = "",
-              lang: str = "") -> dict[str, Any]:
+              lang: str = "", under: str = "", exclude: str = "") -> dict[str, Any]:
         """Call graph around `symbol` from the persisted symbol_index — `callees`
         follows `calls`, `callers` follows `called_by`, `references` the broader
         mention relation. Omit `symbol` for the WHOLE PROJECT: every indexed symbol
         and every edge between them, with no root and no depth bound (`shape="edges"`
         only — a tree has to start somewhere).
 
-        `shape="tree"` (default) is the pstree view: nested {fqname, kind, file,
+        `shape="tree"` (default) is the pstree view: nested {symbol_ref, kind, file,
         line, children[]}, depth-first, DAG-repeats marked `repeat` and unresolved
         edges `external`.
 
@@ -427,8 +478,26 @@ class CodeQuery:
         _nf(proj)
         edge = GRAPH_DIRECTIONS[direction]      # validated above
         if symbol is None:
+            # `under=` / `exclude=` scope the EXPORT: segment-aligned path PREFIXES
+            # applied before anything is serialized, because that is where the
+            # payload is decided — a consumer wanting src/** should not pay for
+            # tests/** at the tool boundary and filter after the tokens are spent.
+            # DELIBERATELY NOT `path=`: that parameter is a trailing-run match that
+            # narrows WHICH SYMBOL was meant, the opposite matching direction — one
+            # name for both was a footgun, so the export refuses it outright.
+            if path:
+                raise CribUserError(
+                    "path= narrows which SYMBOL was meant (a trailing run — "
+                    "'state.rs', 'core/state.rs') and needs a symbol; to scope a "
+                    "whole-project export by path PREFIX use under= / exclude=")
+            in_scope = None
+            if under or exclude:
+                in_scope = {symbol_key(e) for e in entries
+                            if _under(str(e.get("file") or ""), under)
+                            and not (exclude
+                                     and _under(str(e.get("file") or ""), exclude))}
             sub = self._project_graph(proj, entries, edge, direction, _nf,
-                                      capped=group_by is None)
+                                      capped=group_by is None, in_scope=in_scope)
             return _rollup(sub, proj, group_by, group_depth) if group_by else sub
         # ONE resolver, the same one dossier and the learnings use, so a bare name
         # matching several symbols refuses here exactly as it does there. Catch the
@@ -449,11 +518,12 @@ class CodeQuery:
         seen: set[str] = set()
 
         def build(e: dict, p: str, d: int) -> dict:
-            node = {"fqname": e["fqname"], "kind": e.get("kind", ""),
+            node = {"symbol_ref": symbol_key(e), "fqn": e.get("fqn", ""),
+                    "name": e.get("name", ""), "kind": e.get("kind", ""),
                     "file": e.get("file", ""), "line": e.get("line"), "children": []}
             if p != proj:
                 node["project"] = p
-            key = f"{p}:{e['fqname']}"
+            key = f"{p}:{symbol_key(e)}"
             if key in seen:
                 node["repeat"] = True
                 return node
@@ -466,7 +536,7 @@ class CodeQuery:
                 if child:
                     node["children"].append(build(child, tp, d - 1))
                 else:
-                    node["children"].append({"fqname": name, "kind": "?",
+                    node["children"].append({"symbol_ref": ref, "kind": "?",
                                              "file": fref, "external": True,
                                              "children": []})
             return node
@@ -480,8 +550,8 @@ class CodeQuery:
             n = stack.pop()
             p = n.get("project") or proj
             if p not in marks:
-                marks[p] = self.learnings.fqns(p)
-            if n.get("fqname") in marks[p]:
+                marks[p] = self.learnings.marks(p)
+            if _marked(n, marks[p]):
                 n["has_learning"] = True
             stack.extend(n.get("children") or [])
         tree["resolved"] = resolved       # additive on the root node; children unchanged
@@ -490,7 +560,8 @@ class CodeQuery:
     def _project_graph(self, proj: str, entries: list[dict], edge: str,
                        direction: str,
                        nf: Callable[[str], dict[tuple[str, str], dict]],
-                       capped: bool = True) -> dict[str, Any]:
+                       capped: bool = True,
+                       in_scope: set[str] | None = None) -> dict[str, Any]:
         """EVERY indexed symbol in the project and every edge between them — no root,
         no depth, nothing reachability can hide. The rooted walk answers "what does
         this touch"; this answers "what is the shape of the program", which is a
@@ -499,31 +570,64 @@ class CodeQuery:
         rooted walk.
 
         Cross-project and unresolved edge TARGETS still appear as nodes, so the
-        boundary of the project is visible; only local symbols are enumerated."""
+        boundary of the project is visible; only local symbols are enumerated.
+
+        `in_scope` (an `under=`/`exclude=` export) narrows which symbols get FULL
+        nodes; edges that CROSS the boundary are kept — in both directions — with a
+        lean `{id, symbol_ref, name, truncated}` node at the far end. The same
+        frontier semantics as a depth bound: the boundary is stated, never implied,
+        and never a KeyError. Dropping crossings instead would misdraw the scoped
+        module as self-contained, which is usually the exact question being asked."""
         kind = "references" if direction == "references" else "calls"
         forward = direction == "callees"
-        if capped and len(entries) > MAX_GRAPH_NODES:
+        scoped = [e for e in entries if in_scope is None
+                  or symbol_key(e) in in_scope]
+        if capped and len(scoped) > MAX_GRAPH_NODES:
             raise CribUserError(
-                f"{len(entries)} symbols exceeds the {MAX_GRAPH_NODES}-node "
+                f"{len(scoped)} symbols exceeds the {MAX_GRAPH_NODES}-node "
                 'whole-project cap: pass group_by="module" for the rolled-up '
                 "export (no cap), or give a symbol to walk from")
         nodes: dict[str, dict[str, Any]] = {}
         edges: dict[tuple[str, str], dict[str, Any]] = {}
-        for e in entries:
-            nodes[e["fqname"]] = {"id": e["fqname"], "fqname": e["fqname"],
+        for e in scoped:
+            nodes[symbol_key(e)] = {"id": symbol_key(e),
+                                  "symbol_ref": symbol_key(e),
+                                  "name": e.get("name", ""),
                                   "kind": e.get("kind", ""), "file": e.get("file", ""),
                                   "line": e.get("line"), "lang": e.get("lang", ""),
                                   "scope": e.get("scope") or [],
                                   "display": display_name(e)}
+
+        def frontier(x: dict) -> str:
+            """A boundary node for an in-project symbol OUTSIDE the scope — lean on
+            purpose (the minimum contract plus its own truncation flag)."""
+            i = symbol_key(x)
+            nodes.setdefault(i, {"id": i, "symbol_ref": i,
+                                 "name": x.get("name", ""),
+                                 "file": x.get("file", ""), "truncated": True})
+            return i
+
+        # Edges scan ALL entries, not just the scoped ones: an edge is kept when
+        # EITHER endpoint is in scope, so inbound crossings survive symmetrically
+        # with outbound ones instead of silently vanishing.
         for e in entries:
+            src_in = in_scope is None or symbol_key(e) in in_scope
             for ref in e.get(edge) or []:
                 tp, name, trel, fref = decode_edge(ref, proj)
                 target = nf(tp).get((name, trel))
                 if target and tp == proj:
-                    ci = target["fqname"]
+                    tgt_in = in_scope is None or symbol_key(target) in in_scope
+                    if not src_in and not tgt_in:
+                        continue                      # wholly outside the scope
+                    if not src_in:
+                        frontier(e)                   # inbound crossing
+                    ci = symbol_key(target) if tgt_in else frontier(target)
+                elif not src_in:
+                    continue    # cross-project/unresolved edges only from in-scope
                 elif target:
-                    ci = qualified_symbol(tp, target["fqname"])
-                    nodes.setdefault(ci, {"id": ci, "fqname": target["fqname"],
+                    ci = qualified_symbol(tp, symbol_key(target))
+                    nodes.setdefault(ci, {"id": ci, "symbol_ref": symbol_key(target),
+                                          "name": target.get("name", ""),
                                           "kind": target.get("kind", ""),
                                           "file": target.get("file", ""),
                                           "line": target.get("line"), "project": tp,
@@ -532,15 +636,16 @@ class CodeQuery:
                                           "display": display_name(target)})
                 else:
                     ci = encode_edge(name, fref)
-                    nodes.setdefault(ci, {"id": ci, "fqname": name, "kind": "?",
+                    nodes.setdefault(ci, {"id": ci, "symbol_ref": ci, "name": name,
+                                          "kind": "?",
                                           "file": fref, "line": None,
                                           "external": True})
-                a, b = (e["fqname"], ci) if forward else (ci, e["fqname"])
+                a, b = ((symbol_key(e), ci) if forward
+                        else (ci, symbol_key(e)))
                 edges.setdefault((a, b), {"from": a, "to": b, "kind": kind})
-        pinned = self.learnings.fqns(proj)
+        pinned = self.learnings.marks(proj)
         for n in nodes.values():
-            if not n.get("external") and not n.get("project") \
-                    and n["fqname"] in pinned:
+            if not n.get("external") and not n.get("project") and _marked(n, pinned):
                 n["has_learning"] = True
         return {"project": proj, "scope": "project", "direction": direction,
                 "shape": "edges",
@@ -568,10 +673,11 @@ class CodeQuery:
             return qualified_symbol(p if p != proj else None, fq)
 
         def put(p: str, e: dict, d: int) -> str:
-            i = nid(p, e["fqname"])
+            i = nid(p, symbol_key(e))
             n = nodes.get(i)
             if n is None:
-                n = {"id": i, "fqname": e["fqname"], "kind": e.get("kind", ""),
+                n = {"id": i, "symbol_ref": symbol_key(e),
+                     "name": e.get("name", ""), "kind": e.get("kind", ""),
                      "file": e.get("file", ""), "line": e.get("line"), "depth": d,
                      "lang": e.get("lang", ""), "scope": e.get("scope") or [],
                      "display": display_name(e)}
@@ -584,8 +690,9 @@ class CodeQuery:
 
         def put_external(name: str, fref: str, d: int) -> str:
             i = encode_edge(name, fref)   # unresolvable → its own raw ref
-            nodes.setdefault(i, {"id": i, "fqname": name, "kind": "?", "file": fref,
-                                 "line": None, "depth": d, "external": True})
+            nodes.setdefault(i, {"id": i, "symbol_ref": i, "name": name, "kind": "?",
+                                 "file": fref, "line": None, "depth": d,
+                                 "external": True})
             return i
 
         put(root_proj, root, 0)
@@ -593,7 +700,7 @@ class CodeQuery:
         expanded: set[str] = set()
         while queue:
             p, e, d = queue.popleft()
-            i = nid(p, e["fqname"])
+            i = nid(p, symbol_key(e))
             if i in expanded:
                 continue
             if d >= depth:                      # frontier: reached, deliberately unwalked
@@ -617,10 +724,10 @@ class CodeQuery:
                 continue
             p = str(n.get("project") or proj)
             if p not in marks:
-                marks[p] = self.learnings.fqns(p)
-            if n["fqname"] in marks[p]:
+                marks[p] = self.learnings.marks(p)
+            if _marked(n, marks[p]):
                 n["has_learning"] = True
-        return {"root": nid(root_proj, root["fqname"]), "scope": "symbol",
+        return {"root": nid(root_proj, symbol_key(root)), "scope": "symbol",
                 "direction": direction, "depth": depth, "shape": "edges",
                 "nodes": sorted(nodes.values(), key=lambda n: (n["depth"], n["id"])),
                 "edges": sorted(edges.values(), key=lambda x: (x["from"], x["to"]))}

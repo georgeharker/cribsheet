@@ -29,14 +29,14 @@ from .util import spawn
 
 
 class _Entry:
-    """One pending file: the changed symbols (fqname → body-carrying dict), how many
+    """One pending file: the changed symbols (symbol_ref → body-carrying dict), how many
     times its window has been re-armed (the backoff exponent), and its live timer."""
 
     __slots__ = ("root", "pending", "level", "timer")
 
     def __init__(self, root: Path) -> None:
         self.root = root
-        self.pending: dict[str, dict] = {}          # fqname → {name, kind, content_hash, _body}
+        self.pending: dict[str, dict] = {}      # symbol_ref → {fqn, name, kind, content_hash, _body}
         self.level = 0
         self.timer: asyncio.TimerHandle | None = None
 

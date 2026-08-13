@@ -16,7 +16,8 @@ import threading
 from typing import TYPE_CHECKING, Any, Callable
 
 from .symbols import decode_edge, edge_is_from, encode_edge
-from .symbols import match as fqname_match
+from .symbols import key as symbol_key
+from .symbols import match_entry
 
 if TYPE_CHECKING:
     from .config import Config
@@ -28,7 +29,7 @@ class _ResidentCode:
     every symbol TOML and re-embed every description (the dominant cost). Built once
     per freshness token (`tok`); rebuilt only when the token changes — and even then
     description embeddings are reused by description text, so an unchanged symbol is
-    never re-embedded. Holds the parsed entries, an fqname index, the description→
+    never re-embedded. Holds the parsed entries, a by-reference index, the description→
     vector map, and the precomputed dense/sparse query arrays (`_prepare`)."""
 
     def __init__(self, tok: Any, entries: list[dict[str, Any]],
@@ -36,7 +37,7 @@ class _ResidentCode:
         self.tok = tok
         self.entries = entries
         self.emb = emb                                       # description text → vector
-        self.by_fq: dict[str, dict[str, Any]] = {e["fqname"]: e for e in entries}
+        self.by_fq: dict[str, dict[str, Any]] = {symbol_key(e): e for e in entries}
         self._prepare()
 
     def by_fqname(self, name: str) -> list[dict[str, Any]]:
@@ -50,16 +51,14 @@ class _ResidentCode:
         writes land in state shared by every later call in the process — harmless
         only while every such write happened to be idempotent, which is not a
         property anyone was maintaining on purpose."""
-        return [dict(e) for e in self.entries
-                if fqname_match(e.get("fqname", ""), e.get("name", ""), name,
-                                e.get("lang", ""))]
+        return [dict(e) for e in self.entries if match_entry(e, name)]
 
     def _prepare(self) -> None:
         from .retrieve import BM25, _as_tf, _subtokens, tokenize
         # Only symbols with a description or name terms are query candidates.
         self.lk = [e for e in self.entries
                    if e.get("description") or e.get("name_terms")]
-        self.lk_ids = [e["fqname"] for e in self.lk]
+        self.lk_ids = [symbol_key(e) for e in self.lk]
         # EXPANDED lexical field per symbol = name_terms ⊕ synth-keyword tokens. The
         # keywords are the query-independent vocabulary expansion, so a BEHAVIORAL query
         # gets sparse hits the terse identifier alone can't offer. The BM25 is over that
@@ -258,7 +257,7 @@ class CodeStore:
             store = SymbolIndex(self.paths.project_dir(proj))
             for e in store.all():
                 if e.get("file") == relpath:
-                    store.delete(e["fqname"])
+                    store.delete(symbol_key(e))
                     continue
                 cb = [x for x in (e.get("called_by") or [])
                       if not edge_is_from(x, relpath)]
@@ -287,25 +286,31 @@ class CodeStore:
         the one being extracted — so such an edge is dropped here and restored the
         next time B itself is extracted. Bounded staleness, never a wrong edge.
 
-        Targets resolve by FQNAME. The stored edge string carries only `name [file]`,
-        so name+file has to identify the target: an exact fqname match wins outright,
-        otherwise the pair must be UNIQUE in that file. The old `(name, file)` dict
-        kept whichever same-named symbol was parsed last and patched the wrong one;
-        now an ambiguous pair is skipped rather than guessed. Cheap — in-memory from
-        A's own fresh edges; no extra LSP."""
+        The stored edge string carries only `name [file]`, so name+file has to
+        identify the target: a bare name must be UNIQUE in its file, else the pair is
+        skipped rather than guessed (the old `(name, file)` dict kept whichever
+        same-named symbol was parsed last and patched the wrong one). A server that
+        hands back a QUALIFIED name instead resolves through the one matcher on an
+        exact tier, scoped to the file — so `a.B.run [a.py]` lands on `B.run` even
+        though two `run`s live there, whatever id shape the store is at. Cheap —
+        in-memory from A's own fresh edges; no extra LSP."""
         entries = store.all()
-        by_fq: dict[str, dict] = {}
         by_key: dict[tuple[str, str], list[dict]] = {}
+        by_file: dict[str, list[dict]] = {}
         for e in entries:
-            by_fq[e["fqname"]] = e
             by_key.setdefault((e.get("name", ""), e.get("file", "")), []).append(e)
+            by_file.setdefault(str(e.get("file") or ""), []).append(e)
 
         def target(name: str, file: str) -> dict | None:
-            e = by_fq.get(name)
-            if e is not None and e.get("file") == file:
-                return e                       # server handed us a qualified name
             hits = by_key.get((name, file)) or []
-            return hits[0] if len(hits) == 1 else None
+            if len(hits) == 1:
+                return hits[0]                 # a bare name, unique in its file
+            if hits:
+                return None                    # ambiguous bare name: never guess
+            # not a bare name there — a qualified spelling, matched exactly
+            cands = [e for e in by_file.get(file, [])
+                     if match_entry(e, name) in ("ref", "exact", "was")]
+            return cands[0] if len(cands) == 1 else None
 
         changed: dict[str, dict] = {}
         for e in entries:                       # 1) strip every edge originating in A
@@ -316,7 +321,7 @@ class CodeStore:
                 kept = [x for x in cur if not edge_is_from(x, relpath)]
                 if kept != cur:
                     e[rel_key] = kept
-                    changed[e["fqname"]] = e
+                    changed[symbol_key(e)] = e
         for s in new_entries:                   # 2) re-add A's current edges
             edge = encode_edge(s["name"], relpath)
             for call in s.get("calls") or []:
@@ -324,10 +329,10 @@ class CodeStore:
                 tgt = target(name, rel)
                 if tgt is None or tgt.get("file") == relpath:
                     continue
-                e = changed.get(tgt["fqname"], tgt)
+                e = changed.get(symbol_key(tgt), tgt)
                 for rel_key in ("called_by", "references"):
                     if edge not in (e.get(rel_key) or []):
                         e[rel_key] = sorted(set((e.get(rel_key) or []) + [edge]))
-                        changed[e["fqname"]] = e
+                        changed[symbol_key(e)] = e
         for e in changed.values():
             store.write(e)

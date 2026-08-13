@@ -151,6 +151,47 @@ async def _write_project_elicit(crib: Crib, project: str | None,
     return _write_project(crib, None, None)             # raises the explicit-target error
 
 
+async def _read_project_elicit(crib: Crib, res: ProjectResolution) -> ProjectResolution:
+    """An UNANCHORED read — no selector, no path, no session — must not answer from
+    a guess: the daemon's own startup directory is meaningless to every chat, and
+    `default` merely LOOKS like an answer. So ASK (MCP elicitation) when the client
+    supports it; REFUSE with the actionable error when it does not. Either way the
+    caller ends up anchored on something a human named, never on where the daemon
+    happened to be started. (Every chat lands here right after a daemon restart —
+    the session state that made it anchored died with the old process.)"""
+    try:
+        from fastmcp.server.dependencies import get_context
+        ctx = get_context()
+        result = await ctx.elicit(
+            "No project is anchored for this session (sessions reset when the crib "
+            "daemon restarts). Which project should this call use? Name one of: "
+            + ", ".join(sorted(crib.projects())) + " — or give a path inside the "
+            "repo you mean.", response_type=str)
+        chosen = getattr(result, "data", None)
+        if isinstance(chosen, str) and chosen.strip():
+            chosen = chosen.strip()
+            if "/" in chosen or chosen.startswith("~"):
+                proj = crib.resolve_project(None, Path(chosen).expanduser())
+            else:
+                if chosen not in crib.projects():
+                    raise CribUserError(
+                        f"no project named {chosen!r} — one of: "
+                        + ", ".join(sorted(crib.projects())))
+                proj = chosen
+            # the human just anchored the session — adopt, and say so
+            session_state().current_project = proj
+            return ProjectResolution(proj, "elicited", session_set=True)
+    except CribUserError:
+        raise
+    except Exception:  # noqa: BLE001 — no elicitation support / declined → refuse
+        pass
+    raise CribUserError(
+        "no project is anchored for this session and none was named (sessions "
+        "reset when the crib daemon restarts): pass project=<name> or "
+        "project_path=<a path in the repo>, or call project_use once. Projects: "
+        + ", ".join(sorted(crib.projects())))
+
+
 # ── The policy is DECLARED, not chosen in the body ────────────────────────────
 # Which of the resolvers above a tool uses is stated once, at its registration
 # (`@crib_tool("read"|"write"|"source"|"session"|"none")`); the decorator wires the
@@ -310,6 +351,11 @@ def build_server(crib: Crib | None = None):
                                                                a.get("ctx"))
                 else:
                     a["project"], res = resolve(project, path)
+                    if res is not None and res.unanchored:
+                        # an unanchored read never answers from a guess: ask, or
+                        # refuse with the actionable error (see _read_project_elicit)
+                        res = await _read_project_elicit(crib, res)
+                        a["project"] = res.project
                 return finish(await fn(**a), res, project, path)
             return run
 
@@ -317,6 +363,16 @@ def build_server(crib: Crib | None = None):
         def run_sync(*args, **kwargs):
             a, project, path = prepare(args, kwargs)
             a["project"], res = resolve(project, path)
+            if res is not None and res.unanchored:
+                # a sync tool cannot elicit — refuse with the same actionable error
+                # the async path falls back to; the message reaches the LLM verbatim
+                # (CribUserError rides the MCP face), and re-calling with project=
+                # is the recovery. Never answer from a guess.
+                raise CribUserError(
+                    "no project is anchored for this session (sessions reset when "
+                    "the crib daemon restarts): pass project=<name> or "
+                    "project_path=<a path in the repo>, or call project_use once. "
+                    "Projects: " + ", ".join(sorted(crib.projects())))
             return finish(fn(**a), res, project, path)
         return run_sync
 
@@ -719,7 +775,8 @@ def build_server(crib: Crib | None = None):
                          project_path: str | None = None, shape: str | None = None,
                          group_by: str | None = None, group_depth: int = 0,
                          path: str = "", scope: str = "",
-                         lang: str = "") -> dict[str, Any]:
+                         lang: str = "", under: str = "",
+                         exclude: str = "") -> dict[str, Any]:
         """Call graph around a symbol from the index: `callees` (what it calls),
         `callers` (what calls it), or `references` (everywhere mentioned — broader than
         calls, and the only relation for symbols-only servers like zsh's shuck),
@@ -762,7 +819,8 @@ def build_server(crib: Crib | None = None):
         target a DIFFERENT project than your current one."""
         return crib.code_graph(symbol, direction, depth, project, shape=shape,
                                group_by=group_by, group_depth=group_depth,
-                               path=path, scope=scope, lang=lang)
+                               path=path, scope=scope, lang=lang, under=under,
+                               exclude=exclude)
 
     @crib_tool("read")
     async def learning_add(symbol: str, text: str, project: str | None = None,
@@ -812,6 +870,35 @@ def build_server(crib: Crib | None = None):
         content_hash so it reads as fresh again. Use when code_lookup shows a ※ note
         flagged stale but the understanding is still correct."""
         return await crib.learning_reaffirm(symbol, project)
+
+    @crib_tool("read")
+    async def learning_migrate(project: str | None = None,
+                               project_path: str | None = None,
+                               apply: bool = False) -> dict[str, Any]:
+        """Rebind this project's learning notes to the current symbol identity.
+
+        OPTIONAL TIDINESS — the learnings join resolves a note bound to any prior
+        spelling, so an unconverted note keeps working forever; this buys canonical
+        filenames and `symbol_ref` frontmatter. Per record: `noop` (already
+        current), `convert` (rebound, file renamed, old binding kept in
+        `symbol_was`), `orphan` (binding answers to nothing — `learning_rehome`
+        repairs it), `collision` (two notes claim one symbol: both kept, said out
+        loud, never merged). Re-running is the resume.
+
+        DRY RUN unless `apply=True` — it renames files under a git-synced store."""
+        return await crib.learning_migrate(project, cwd=_cwd(project_path),
+                                           apply=apply)
+
+    @crib_tool("write")
+    async def code_convert(project: str | None = None,
+                           project_path: str | None = None,
+                           apply: bool = False) -> dict[str, Any]:
+        """Convert this project's symbol store to the current shape, in place — no
+        LSP, no LLM, descriptions/keywords/edges byte-identical or the record is
+        left alone and reported. Per record and resumable: re-run after a crash and
+        it continues; a record with no `file`/`name` is reported under
+        `needs_reindex` instead of guessed at. DRY RUN unless `apply=True`."""
+        return await crib.code_convert(project, cwd=_cwd(project_path), apply=apply)
 
     @crib_tool("read")
     def learning_report(project: str | None = None, orphans_only: bool = False,

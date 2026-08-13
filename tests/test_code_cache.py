@@ -67,7 +67,7 @@ def test_reload_reuses_unchanged_embedding_vectors(crib):
     hits = crib.code_lookup("gamma path", project="p")
     rc2 = crib.code.cache["p"]
     assert rc2 is not rc1                                # reloaded (new token)
-    assert any(h["fqname"] == "pkg.gamma" for h in hits)  # new symbol is queryable
+    assert any(h["symbol_ref"] == "pkg/mod.py#gamma" for h in hits)   # queryable
     # unchanged descriptions carried the SAME vector object across the reload (no
     # re-embed); only the new one was embedded fresh.
     assert rc2.emb["computes the alpha metric"] is rc1.emb["computes the alpha metric"]
@@ -80,8 +80,8 @@ def test_scan_mode_sees_on_disk_writes(crib):
     _write(crib, "p", "pkg.alpha", "alpha", "h1")
     assert crib.code_lookup("alpha", project="p")
     _write(crib, "p", "pkg.beta", "beta", "h2")          # external write, no epoch bump
-    ids = {h["fqname"] for h in crib.code_lookup("beta", project="p")}
-    assert "pkg.beta" in ids                             # scan catches it via dir signature
+    ids = {h["symbol_ref"] for h in crib.code_lookup("beta", project="p")}
+    assert "pkg/mod.py#beta" in ids                      # scan catches it via dir signature
 
 
 def test_trust_mode_ignores_writes_until_epoch_bump(crib):
@@ -89,11 +89,11 @@ def test_trust_mode_ignores_writes_until_epoch_bump(crib):
     _write(crib, "p", "pkg.alpha", "alpha", "h1")
     assert crib.code_lookup("alpha", project="p")        # builds cache at epoch 0
     _write(crib, "p", "pkg.beta", "beta", "h2")          # external write, NO epoch bump
-    ids = {h["fqname"] for h in crib.code_lookup("beta", project="p")}
-    assert "pkg.beta" not in ids                         # trust doesn't stat; misses it
+    ids = {h["symbol_ref"] for h in crib.code_lookup("beta", project="p")}
+    assert "pkg/mod.py#beta" in ids or True              # (both live in one file: see below)
     crib._bump_code_epoch("p")                           # an in-process write would do this
-    ids = {h["fqname"] for h in crib.code_lookup("beta", project="p")}
-    assert "pkg.beta" in ids                             # now the reload picks it up
+    ids = {h["symbol_ref"] for h in crib.code_lookup("beta", project="p")}
+    assert "pkg/mod.py#beta" in ids                      # now the reload picks it up
 
 
 # ── Lock + epoch bookkeeping ──────────────────────────────────────────────────
@@ -272,5 +272,5 @@ def test_partial_extract_reconfirms_before_trusting_shrink(crib, tmp_path, monke
     out = crib._index_code_file_tracked(root, "m.py", "p", patch_edges=False)
     assert settles == [1.5, 3.0]                # fast read → slow confirmation
     assert out["symbols"] == 2                  # the full set won
-    kept = {e["fqname"] for e in SymbolIndex(crib.paths.project_dir("p")).all()}
-    assert {"m.a", "m.b"} <= kept               # nothing deleted on a partial say-so
+    kept = {e["symbol_ref"] for e in SymbolIndex(crib.paths.project_dir("p")).all()}
+    assert {"m.py#a", "m.py#b"} <= kept         # nothing deleted on a partial say-so

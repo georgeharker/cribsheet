@@ -34,15 +34,17 @@ from . import tomlrec
 from .symbols import (
     encode_edge,
     encode_loc,
-    learning_slug,
-    legacy_learning_slug,
+    ref_slug,
+    legacy_ref_slug,
+    fqn,
     scope_of,
+    symbol_ref,
     suffix_of,
 )
+from .symbols import bindings as symbol_bindings
+from .symbols import key as symbol_key
 from .symbols import local_name as _local_name
-from .symbols import match as fqname_match
-from .symbols import module_of as _module_of
-from .symbols import qualify as _qualify
+from .symbols import match_entry
 from .symbols import tail as _tail
 
 # ── LSP server specs — Claude Code `.lsp.json` schema (docs §3.3) ─────────────
@@ -99,8 +101,10 @@ DEFAULT_LSP_SPECS: dict[str, dict[str, Any]] = {
     "lua-language-server": {"command": "lua-language-server", "args": [],
                             "extensionToLanguage": {".lua": "lua"}},
     # Shell/zsh: shuck (Rust shell checker; `shuck server` speaks LSP over stdio).
-    # documentSymbol + definition + references, but NO call hierarchy — symbols
-    # index fine, calls/called_by stay empty (§3.4). shuck ignores the languageId
+    # documentSymbol + definition + references + CALL HIERARCHY, single-file and
+    # cross-file over a workspace call-graph index — so zsh gets real calls/called_by,
+    # not a references-derived approximation. Capability is read from `initialize`
+    # rather than assumed here (§3.4). shuck ignores the languageId
     # (it keys on content/extension), so "zsh" is just the stored `lang` label.
     # pinWorkspace: shuck's own discovery misses what crib enumerates by grammar
     # (extensionless autoload files, dotfiles) — the sweep didOpen-pins the full
@@ -962,7 +966,6 @@ class _ExtractCtx:
     uri: str
     root: Path
     ref_projects: RefProjects | None
-    module: str
     language_id: str
     relpath: str
     lines: list[str]
@@ -1149,13 +1152,13 @@ def _symbol_entry(ctx: _ExtractCtx, s: dict, parents: tuple[str, ...],
         body = lead + "\n\n" + body
     container = tuple(parents)
     local = _local_name(s.get("name", ""), ctx.language_id)
-    # IDENTITY = the language-normalized qualified name (stable across body edits;
-    # changes only on rename/move). content_hash is a SEPARATE field that gates
-    # description regeneration — the two jobs, split (docs §2.1).
-    fqname = _qualify(ctx.language_id, ctx.module, container, local)
-    parent = (_qualify(ctx.language_id, ctx.module, container[:-1],
-                       _local_name(container[-1], ctx.language_id))
-              if container else "")
+    # IDENTITY is `symbol_ref` (below): where it lives plus the declared tail. Stable
+    # across body edits, changing only on rename or move — content_hash is a SEPARATE
+    # field that gates description regeneration; the two jobs, split (docs §2.1).
+    #
+    # No `parent` is computed. It was the enclosing symbol's own qualified name — a
+    # pointer in a retiring spelling — and the parent's REFERENCE is a truncation of
+    # this symbol's, so it is derivable at read time and can never dangle.
     content_hash = hashlib.sha1(body.encode()).hexdigest()[:16]
     sig = ctx.lines[start].strip()[:120]
     calls: list[str] = []
@@ -1174,19 +1177,39 @@ def _symbol_entry(ctx: _ExtractCtx, s: dict, parents: tuple[str, ...],
     kind_label = ("global" if kind == 13 and not container
                   else _KIND_LABEL_OVERRIDE.get((ctx.language_id, kind or 0))
                   or _KIND.get(kind or 0, "?"))
+    entry_scope = scope_of(ctx.language_id, ctx.relpath, container)
+    entry_fqn = fqn(entry_scope, local, ctx.language_id, ctx.relpath, container)
     return {
-        "fqname": fqname, "name": local,
+        # stamped by the writer, read by the converter: this entry's own shape
+        "schema": SYMBOL_SCHEMA_VERSION,
+        "name": local,
+        # THE KEY: the file, plus the part of the name the file does not already say.
+        # Unique across every indexed project; the store's filename, the graph's node
+        # id, and what a learning binds to.
+        "symbol_ref": symbol_ref(ctx.relpath, container, local, ctx.language_id),
+        # PRIOR spellings this symbol also answers to. EMPTY here, always: this
+        # symbol is being indexed now, so it has never been called anything else.
+        # A prior binding is written by CONVERSION, from what a store actually held —
+        # deriving one here would manufacture history and make a name the symbol
+        # never had look like one it did.
+        "symbol_was": [],
+        # THE NAME: the one language-specific qualified name, what a developer
+        # writing that language would say. For a file-scoped language it coincides
+        # with `symbol_ref`, because there the file IS the scope.
+        "fqn": entry_fqn,
         "kind": kind_label,
-        "lang": ctx.language_id, "module": ctx.module, "container": list(container),
+        "lang": ctx.language_id, "container": list(container),
         # what the LANGUAGE calls this symbol's context — empty where the language
         # has no namespace, which is information rather than a gap (see scope_of)
-        "scope": scope_of(ctx.language_id, ctx.relpath, container),
-        "parent": parent, "content_hash": content_hash,
+        "scope": entry_scope,
+        "content_hash": content_hash,
         "file": ctx.relpath, "file_hash": ctx.file_hash,
         "line": start + 1, "mtime": ctx.mtime, "signature": sig,
         "calls": sorted(set(calls)), "called_by": sorted(set(called_by)),
         "references": sorted(set(references)),
-        "name_terms": _name_terms(local, fqname),
+        # the lexical field is built from the NAME, not the retired key: a legacy
+        # `rust::src::…` put `rust` and `src` into every Rust symbol's search terms
+        "name_terms": _name_terms(local, entry_fqn),
         "_body": body,   # transient: for the description mop-up; not persisted
     }
 
@@ -1248,7 +1271,7 @@ def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
                              {"textDocument": {"uri": uri}})
             ctx = _ExtractCtx(
                 c=c, uri=uri, root=root, ref_projects=ref_projects,
-                module=_module_of(relpath, language_id), language_id=language_id,
+                language_id=language_id,
                 relpath=relpath, lines=lines, file_hash=file_hash,
                 mtime=derive_mtime(root, relpath),   # portable index timestamp
                 has_refs=bool(c.capabilities.get("referencesProvider")),
@@ -1305,7 +1328,7 @@ def _rows_to_meta(data: Any) -> dict[str, dict[str, Any]]:
     pass yields both facets (description feeds dense; keywords feed the expanded BM25
     field). The key is whatever qualified name the row echoes back (the prompt and the
     mop-up blob both demand one); `match_meta` is what reconciles it with the index's
-    own fqname. A repeated key is the model contradicting itself about one symbol —
+    own `fqn`. A repeated key is the model contradicting itself about one symbol —
     FIRST wins, so the row order the file was read in decides, deterministically,
     instead of the last row silently clobbering the rest."""
     out: dict[str, dict[str, Any]] = {}
@@ -1348,7 +1371,7 @@ def describe_symbols(gen_cfg: Any, symbols: list[dict]) -> dict[str, dict[str, A
         return {}
     from .generate import generate_structured
     blob = "\n\n".join(
-        f"# {s.get('kind','')} {s.get('fqname') or s.get('name','')}\n{s.get('_body','')}"
+        f"# {s.get('kind','')} {s.get('fqn') or s.get('name','')}\n{s.get('_body','')}"
         for s in symbols)
     sysp = ("For EACH `# kind name`-delimited definition below, output its name — "
             "COPIED VERBATIM from its `#` header, qualifiers and all — and ONE "
@@ -1362,11 +1385,14 @@ def describe_symbols(gen_cfg: Any, symbols: list[dict]) -> dict[str, dict[str, A
 def match_meta(fqname: str, metas: dict[str, Any]) -> tuple[str, list[str]]:
     """(description, keywords) for a structural symbol, matched by NAME IDENTITY.
 
-    The index keys symbols by the full fqname (`crib.retrieve.LexicalCache.get`); a
-    describe row can only echo what the source file shows (`LexicalCache.get`), so:
+    Matched against the symbol's `fqn` — the language's own qualified name — not its
+    reference. The model is shown source and asked to echo a name; `crib/app.py#Crib.foo`
+    is not a name it could produce, and asking for one would make the reconciliation
+    depend on the model reproducing a path. A describe row can only echo what the
+    source file shows (`LexicalCache.get`), so:
 
-      1. exact fqname — the mop-up path, which labels blocks with the fqname itself;
-      2. else the LONGEST row key that is a qualified SUFFIX of the fqname (on a
+      1. exact fqn — the mop-up path, which labels blocks with the fqn itself;
+      2. else the LONGEST row key that is a qualified SUFFIX of the fqn (on a
          `.`/`::` boundary) — `A.run` for `pkg.mod.A.run`, and `A.f` rather than a
          bare `f` when the file holds both a module function and a method `f`;
       3. else the rows whose bare last segment matches.
@@ -1412,18 +1438,24 @@ _unquote = tomlrec.unquote
 write_atomic = tomlrec.write_atomic
 
 
-_SCALARS = ("fqname", "name", "kind", "lang", "module", "parent", "content_hash",
+_SCALARS = ("symbol_ref", "fqn", "name", "kind", "lang", "content_hash",
             "file", "file_hash", "signature", "description")
 # `scope` renders only when non-empty, like every other array here. Absence is
 # therefore "no scope", which is the truth for a language that has none — and
 # the schema stamp is what says the field was computed at all, so an entry
 # written before it existed cannot be mistaken for a C symbol.
-_ARRAYS = ("container", "scope", "calls", "called_by", "references",
+_ARRAYS = ("container", "scope", "symbol_was", "calls", "called_by", "references",
            "name_terms", "keywords")
 
 
 def _render(e: dict) -> str:
     lines = [f'{k} = "{_esc(str(e.get(k, "")))}"' for k in _SCALARS]
+    # The entry declares the SHAPE IT WAS WRITTEN AT. Schema is a property of the
+    # entry, not of the store: a store is N independent files, so a store-level marker
+    # asserts one fact about all of them and can only be kept true by forbidding
+    # partial writes. Per-entry, a mixed store is the ORDINARY state — which is what
+    # makes conversion resumable without a lock or a sentinel.
+    lines.append(f'schema = {e.get("schema", 0)}')
     lines.append(f'line = {e.get("line", 0)}')
     # `mtime` is DERIVED (see derive_mtime): the git commit date for committed code
     # (identical across machines → the tracked toml doesn't churn on sync) or the
@@ -1453,7 +1485,7 @@ def _render(e: dict) -> str:
 # cache): re-indexing never touches it, and it rides the normal watch/index/sync/
 # merge. See docs/code-symbol-index.md § Learnings.
 LEARNINGS_DIR = "code-learnings"
-SYMBOL_SCHEMA_VERSION = 2
+SYMBOL_SCHEMA_VERSION = 4
 """Shape of a stored symbol entry — its field set, its id spelling, and the spelling
 of the edge refs inside `calls`/`called_by`/`references`.
 
@@ -1466,11 +1498,12 @@ Mirrors CHUNK_SCHEMA_VERSION for the note store."""
 
 
 class SymbolIndex:
-    """Structural store: symbol_index/<slug(fqn)>.toml under the project data dir.
-    Filename is the LEGIBLE munged fqn (same scheme as learnings) — deterministic
-    across machines (same symbol → same path → git 3-way merges it), and a git diff
-    names the symbol (`crib.retrieve.LexicalCache.get.toml`) instead of an opaque
-    hash. The `merge=cribnote` driver auto-resolves any field divergence on sync."""
+    """Structural store: symbol_index/<slug(symbol_ref)>.toml under the project data
+    dir. The filename is the LEGIBLE munged reference of the record's own key (same
+    scheme as learnings) — deterministic across machines (same symbol → same path →
+    git 3-way merges it), and a git diff names the symbol
+    (`crib-retrieve.py-LexicalCache.get-….toml`) instead of an opaque hash. The
+    `merge=cribnote` driver auto-resolves any field divergence on sync."""
 
     def __init__(self, project_dir: Path) -> None:
         self.root = project_dir / "symbol_index"
@@ -1500,44 +1533,87 @@ class SymbolIndex:
             print(f"[crib] could not record symbol schema version: {e}",
                   file=sys.stderr)
 
-    def schema_stale(self) -> bool:
-        """Whether this store holds entries of a DIFFERENT shape to the current one.
 
-        Two stores are never stale. An EMPTY one, because there is nothing in an old
-        shape for a new write to mix with. And an UNSTAMPED one (version 0), because
-        it predates stamping rather than disagreeing with it — treating "unknown" as
-        "wrong" would demand a full reindex of every existing project for a version
-        that changes no format at all. A single-file write stamps as it goes, so an
-        unstamped store converges to a known one from ordinary use."""
-        stored = self.stored_schema()
-        return self.is_populated() and stored not in (0, SYMBOL_SCHEMA_VERSION)
+    def _relname(self, ref: str) -> str:
+        return f"{ref_slug(ref)}.toml"
 
-    def _relname(self, fqname: str) -> str:
-        return f"{learning_slug(fqname)}.toml"
+    def _names_for(self, entry: dict) -> list[str]:
+        """Every basename this entry has ever been filed under, canonical first.
 
-    def _path(self, fqname: str) -> Path:
-        """Where this symbol's record lives NOW — the current name, or the
-        pre-case-hash one if that is what's still on disk (see
-        `legacy_learning_slug`). Reads/deletes go through here so an index written
-        by an older crib keeps working without a forced full reindex."""
-        p = self.root / self._relname(fqname)
+        Derived from `bindings`, so the store learns nothing about spellings on its
+        own account: what an entry answers to is decided in one place, and this just
+        turns each of those into a filename. The pre-case-hash slug is included
+        because a store written before that fix has real files under it."""
+        out: list[str] = []
+        for b in symbol_bindings(entry):
+            for cand in (f"{ref_slug(b)}.toml",
+                         f"{legacy_ref_slug(b)}.toml"):
+                if cand not in out:
+                    out.append(cand)
+        return out
+
+    def _path(self, ref: str) -> Path:
+        """Where this symbol's record lives NOW — its canonical name, or the
+        pre-case-hash one if that is what is still on disk. Reads and deletes go
+        through here so an index written by an older crib keeps working."""
+        p = self.root / self._relname(ref)
         if p.exists():
             return p
-        old = self.root / f"{legacy_learning_slug(fqname)}.toml"
+        old = self.root / f"{legacy_ref_slug(ref)}.toml"
         return old if old.exists() else p
 
+    @staticmethod
+    def normalize_identity(entry: dict) -> dict:
+        """Fill in every field that is a pure function of the entry's own parts.
+
+        The store derives what is derivable rather than trusting the caller to have
+        done it. `symbol_ref`, `fqn` and `scope` all follow from `file`/`lang`/
+        `container`/`name`, which every entry ever written carries — so an entry
+        handed in at an older shape comes out at the current one, and CONVERSION is
+        just "read it, write it back".
+
+        `symbol_was` records what this entry ANSWERED TO BEFORE, and is therefore the
+        one field that cannot be derived: it is read from the legacy `fqname` the
+        record actually held. A symbol first indexed after the change has no prior
+        binding and gets an empty list — inventing one from today's rules would
+        manufacture a name it never had.
+
+        Returns a NEW dict; the caller's is untouched, so a converter can diff them."""
+        out = dict(entry)
+        lang = str(out.get("lang") or "")
+        file = str(out.get("file") or "")
+        container = tuple(out.get("container") or ())
+        name = str(out.get("name") or "")
+        out["symbol_ref"] = symbol_key(out)
+        out.setdefault("scope", scope_of(lang, file, container))
+        out.setdefault("fqn", fqn(out["scope"], name, lang, file, container))
+        was = list(out.get("symbol_was") or ())
+        legacy = out.pop("fqname", "")
+        if legacy and legacy not in was and legacy != out["symbol_ref"]:
+            was.append(str(legacy))
+        out["symbol_was"] = was
+        out.pop("module", None)          # only ever fed `fqname` and `parent`
+        out.pop("parent", None)          # derivable: the reference, minus one segment
+        return out
+
     def write(self, entry: dict) -> Path:
+        entry = self.normalize_identity(entry)
         self.root.mkdir(parents=True, exist_ok=True)
-        # Filename keyed by the FQN (identity), so a body edit UPDATES the same file
-        # (clean git diff) instead of orphaning it — content_hash is a field inside.
-        p = self.root / self._relname(entry["fqname"])
+        # CANONICAL BY DERIVATION: the filename is the slug of the entry's own key, so
+        # "is this record where it belongs" is answerable from the record alone. A
+        # body edit updates the same file (clean git diff); an IDENTITY change writes
+        # the new name and unlinks the old ones below.
+        names = self._names_for(entry)
+        p = self.root / names[0]
         write_atomic(p, _render(entry))
-        # Migrate in place: an entry previously stored under the legacy slug would
-        # otherwise linger and be read a SECOND time by `all()` (one symbol, two
-        # records). Rewriting is the migration; no separate pass.
-        old = self.root / f"{legacy_learning_slug(entry['fqname'])}.toml"
-        if old != p and old.exists():
-            old.unlink(missing_ok=True)
+        # REWRITING IS THE MIGRATION; no separate pass. A record left under a prior
+        # name would be read a SECOND time by `all()` — one symbol, two records — so
+        # every name this entry used to have goes. Crash between the write and the
+        # unlink leaves a leftover, which the next write of the same entry removes.
+        for old in names[1:]:
+            q = self.root / old
+            if q != p and q.exists():
+                q.unlink(missing_ok=True)
         return p
 
     def write_all(self, entries: list[dict]) -> int:
@@ -1545,40 +1621,55 @@ class SymbolIndex:
             self.write(e)
         return len(entries)
 
-    def read(self, fqname: str) -> dict | None:
-        """One symbol's entry by EXACT fqname — O(1) (filename is the fqn slug), for
-        the deferred-describe clobber guard: re-read at patch time and skip if the
+    def read(self, ref: str) -> dict | None:
+        """One symbol's entry by EXACT reference — O(1) (the filename is its slug),
+        for the deferred-describe clobber guard: re-read at patch time and skip if the
         body changed again since it was queued. None when absent (dropped/renamed)."""
-        p = self._path(fqname)
+        p = self._path(ref)
         try:
             return _parse(p.read_text())
         except OSError:
             return None
 
     def by_fqname(self, name: str) -> list[dict]:
-        """Read entries matching `name` — full qualified name, trailing path segments,
-        or the bare local name, in any language's separator (see `fqname_match`)."""
-        return [e for e in self.all()
-                if fqname_match(e.get("fqname", ""), e.get("name", ""), name,
-                                e.get("lang", ""))]
+        """Read entries matching `name` — a reference (whole or partial), the legacy
+        qualified name, trailing segments, or the bare local name (see `match`)."""
+        return [e for e in self.all() if match_entry(e, name)]
 
     def all(self) -> list[dict]:
         """Every persisted symbol entry (for concept search over descriptions).
-        A record so broken that not even its fqname survived (`_parse_dirty`) is
-        dropped here — it has no identity to key, and nothing downstream could
-        route it anywhere; the file is re-created by the next sweep of its source."""
+
+        A record too broken to identify (`_parse_dirty`) is dropped here — nothing
+        downstream could route it anywhere, and the next sweep of its source
+        re-creates it. Identity is `file` + `name`, which is what a REFERENCE is made
+        of, so this admits an unconverted entry as readily as a current one — an
+        `all()` that filtered on the new field would drop the entire input of the
+        conversion that is supposed to add it."""
         if not self.root.exists():
             return []
         return [e for e in (_parse(p.read_text()) for p in self.root.glob("*.toml"))
-                if e.get("fqname")]
+                if e.get("file") and e.get("name")]
+
+    def records(self) -> list[tuple[Path, dict]]:
+        """Every parseable record with the path it actually lives at — for the
+        converter, whose whole job is comparing where a record IS with where its own
+        contents say it belongs. `all()` deliberately hides the path."""
+        if not self.root.exists():
+            return []
+        out = []
+        for p in sorted(self.root.glob("*.toml")):
+            e = _parse(p.read_text())
+            if e.get("file") and e.get("name"):
+                out.append((p, e))
+        return out
 
     def is_populated(self) -> bool:
         """Cheap check (no parse) — does this project have any indexed symbols?"""
         return self.root.exists() and any(self.root.glob("*.toml"))
 
-    def delete(self, fqname: str) -> bool:
-        """Drop one symbol's entry by exact fqname (rename/removal). Returns hit."""
-        p = self._path(fqname)
+    def delete(self, ref: str) -> bool:
+        """Drop one symbol's entry by exact reference (rename/removal). Returns hit."""
+        p = self._path(ref)
         if p.exists():
             p.unlink()
             return True
@@ -1602,14 +1693,14 @@ class SymbolIndex:
 
 # Identity fields salvaged from a record whose TOML no longer parses — just enough
 # to route it back through a re-extract. Deliberately NOT the payload fields.
-_SALVAGE = re.compile(r'^\s*(fqname|file|name)\s*=\s*("[^"]*")\s*$', re.M)
+_SALVAGE = re.compile(r'^\s*(symbol_ref|file|name)\s*=\s*("[^"]*")\s*$', re.M)
 
 
 def _parse_dirty(text: str) -> dict:
     """A record whose TOML is broken (truncated write, botched merge, a pre-fix
     embedded newline). We do NOT partially parse it — half a record read as whole is
     exactly the "plausibly wrong" state this store must never hold. Salvage only the
-    identity (`fqname`/`file`) that says WHICH file to re-extract, blank
+    identity (`file`/`name`) that says WHICH file to re-extract, blank
     `content_hash` — the store-wide MERGE-DIRTY marker `revalidate`/`reconcile`
     already sweep — and drop description/keywords so the symbol re-enters the
     describe backlog. Structure comes back from the re-extract; the record self-heals

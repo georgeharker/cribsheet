@@ -27,12 +27,12 @@ def run(coro):
     return asyncio.run(coro)
 
 
-def _seed_symbol(crib, project, fqname="pkg.Mod.foo", content_hash="aaaa1111"):
+def _seed_symbol(crib, project, fqname="pkg.Mod.foo", content_hash="aaaa1111",
+                 file="pkg/mod.py"):
     """Persist one synthetic symbol_index entry so the learning verbs can resolve it."""
     SymbolIndex(crib.paths.project_dir(project)).write({
         "fqname": fqname, "name": fqname.split(".")[-1], "kind": "function",
-        "lang": "python", "module": "pkg.Mod", "parent": "",
-        "content_hash": content_hash, "file": "pkg/mod.py", "line": 10,
+        "lang": "python", "content_hash": content_hash, "file": file, "line": 10,
         "signature": "def foo():", "description": "does foo",
         "container": [], "calls": [], "called_by": [], "name_terms": ["foo"]})
 
@@ -40,8 +40,12 @@ def _seed_symbol(crib, project, fqname="pkg.Mod.foo", content_hash="aaaa1111"):
 def test_append_creates_then_appends_dated_entries(crib):
     _seed_symbol(crib, "p")
     a = run(crib.learning_add("pkg.Mod.foo", "first insight", project="p"))
-    # `pkg.Mod.foo` carries uppercase → slug gets a case-hash (macOS folds case)
-    assert a["created"] and a["relpath"].startswith("pkg.Mod.foo-")
+    # A NEW note is filed under the symbol's REFERENCE, so nothing written from here
+    # on adds to the migration surface. The slug always carries a hash for a
+    # reference (`/` and `#` are both munged, so the name alone can never identify
+    # it) — which is what makes "is this file at its canonical name" a uniform check
+    # rather than one with a was-this-hashed branch.
+    assert a["created"] and a["relpath"] == "pkg-mod.py-foo-f04b29ec.md"
     b = run(crib.learning_add("pkg.Mod.foo", "second insight", project="p"))
     assert not b["created"]                                   # same running note
     body = crib.learning_read("pkg.Mod.foo", project="p")["body"]
@@ -49,8 +53,8 @@ def test_append_creates_then_appends_dated_entries(crib):
 
 
 def test_unknown_and_ambiguous_symbols_raise(crib):
-    _seed_symbol(crib, "p", fqname="a.foo")
-    _seed_symbol(crib, "p", fqname="b.foo")
+    _seed_symbol(crib, "p", fqname="a.foo", file="a/mod.py")
+    _seed_symbol(crib, "p", fqname="b.foo", file="b/mod.py")
     with pytest.raises(ValueError, match="unknown symbol"):
         run(crib.learning_add("nope.nope", "x", project="p"))
     with pytest.raises(ValueError, match="ambiguous"):          # bare name, two hits
@@ -109,7 +113,7 @@ def test_code_graph_marks_nodes_with_learnings(crib):
     run(crib.learning_add("pkg.Mod.bar", "gotcha", project="p"))
     tree = crib.code_graph("pkg.Mod.foo", project="p")
     assert not tree.get("has_learning")                       # foo has none
-    assert tree["children"][0]["fqname"].endswith("bar")
+    assert tree["children"][0]["symbol_ref"].endswith("#bar")
     assert tree["children"][0]["has_learning"] is True        # bar is glyphed
 
 
@@ -123,13 +127,14 @@ def test_learnings_report_and_orphan_lifecycle(crib):
     shutil.rmtree(crib.paths.project_dir("p") / "symbol_index")
     _seed_symbol(crib, "p", fqname="a.bar", content_hash="h")     # renamed foo→bar
     rows = crib.learning_report(project="p", orphans_only=True)
-    assert rows and rows[0]["symbol"] == "a.foo" and rows[0]["status"] == "orphan"
+    assert rows and rows[0]["symbol"] == "pkg/mod.py#foo" \
+        and rows[0]["status"] == "orphan"
 
     # rehome suggestions surface the rename target; then confirm the move
     sugg = run(crib.learning_rehome("a.foo", project="p"))
-    assert any(c["fqname"] == "a.bar" for c in sugg["candidates"])
+    assert any(c["symbol_ref"] == "pkg/mod.py#bar" for c in sugg["candidates"])
     moved = run(crib.learning_rehome("a.foo", "a.bar", project="p"))
-    assert moved["new"] == "a.bar"
+    assert moved["new"] == "pkg/mod.py#bar"
     assert crib.learning_read("a.bar", project="p")["found"] is True
     assert crib.learning_report(project="p", orphans_only=True) == []   # resolved
 
@@ -157,7 +162,7 @@ def test_graph_validates_its_boundaries(crib):
         crib.code_graph("a.foo", depth=1000, project="p")
     with pytest.raises(ValueError, match="empty symbol"):
         crib.code_graph("  ", project="p")
-    assert crib.code_graph("a.foo", project="p")["fqname"] == "a.foo"
+    assert crib.code_graph("a.foo", project="p")["symbol_ref"] == "pkg/mod.py#foo"
 
 
 def test_dossier_annotates_neighbours_with_their_descriptions(crib):
@@ -171,8 +176,8 @@ def test_dossier_annotates_neighbours_with_their_descriptions(crib):
               "signature": "def bar():", "description": "does the bar thing", "container": [],
               "calls": [], "called_by": ["foo [m.py]"], "references": [], "name_terms": ["bar"]})
     d = crib.code_dossier("m.foo", project="p")
-    assert d["fqname"] == "m.foo" and d["description"] == "does foo"
-    assert d["calls"][0]["symbol"] == "m.bar"
+    assert d["symbol_ref"] == "m.py#foo" and d["description"] == "does foo"
+    assert d["calls"][0]["symbol"] == "m.py#bar"
     assert d["calls"][0]["description"] == "does the bar thing"   # neighbour's OWN description
 
 
@@ -265,3 +270,49 @@ def test_forget_removes_an_orphan(crib):
     shutil.rmtree(crib.paths.project_dir("p") / "symbol_index")        # foo is gone
     out = run(crib.learning_forget("a.foo", project="p"))                 # still removable
     assert out["symbol"] == "a.foo" and out["removed"] >= 1
+
+
+# --- the join survives an identity change, in BOTH directions -----------------
+# These use a MIGRATED fixture on purpose. The join tests that came before were
+# written against notes bound the same way the index spelled them, so they passed
+# whichever spelling that was — which is exactly why `learning_forget` and the ※
+# glyph could both be broken on every migrated project without a single red test.
+
+def _note_bound_to(crib, project, binding, body="pinned", **fm):
+    """Write a learning note directly, bound to an arbitrary spelling."""
+    from crib import notes
+    root = crib.learnings.store.root(project)
+    root.mkdir(parents=True, exist_ok=True)
+    path = root / "hand-written-name.md"
+    notes.save_atomic(notes.Note(path=path, body=f"\n### 2026-01-01\n{body}\n",
+                                 frontmatter={"title": binding, "kind": "code-learning",
+                                              "symbol_ref": binding, **fm}))
+    return path
+
+
+@pytest.mark.parametrize("binding", [
+    "pkg/mod.py#foo",     # the note is on the REFERENCE, the entry answers to both
+    "pkg.Mod.foo",        # the note is on the LEGACY name — an unmigrated store
+])
+def test_every_learning_verb_finds_a_note_whatever_it_is_bound_to(crib, binding):
+    _seed_symbol(crib, "p")
+    _note_bound_to(crib, "p", binding)
+
+    # read / attach / forget must ALL agree. `forget` is the one that diverged: it
+    # derived its own path from the entry's legacy name while its four siblings went
+    # through the shared one, so a note bound to a reference could not be deleted.
+    assert crib.learning_read("pkg.Mod.foo", project="p")["found"]
+    hit = crib.learnings.attach("p", [dict(
+        SymbolIndex(crib.paths.project_dir("p")).all()[0])])[0]
+    assert hit.get("learning"), "attach missed the note"
+    run(crib.learning_forget("pkg.Mod.foo", project="p"))
+    assert not crib.learning_read("pkg.Mod.foo", project="p")["found"]
+
+
+@pytest.mark.parametrize("binding", ["pkg/mod.py#foo", "pkg.Mod.foo"])
+def test_the_glyph_marks_the_node_whatever_the_note_is_bound_to(crib, binding):
+    _seed_symbol(crib, "p")
+    _note_bound_to(crib, "p", binding)
+    g = crib.code_graph("foo", project="p", shape="edges")
+    assert [n.get("has_learning") for n in g["nodes"]] == [True], \
+        "the ※ join compared one spelling against the other"

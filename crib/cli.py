@@ -215,7 +215,8 @@ def _emit_write_result(item: dict) -> None:
 def _sym_name(d: dict) -> str:
     """The symbol's rendered name. `id` where the payload is a graph node (it may be
     cross-project or external), the qualified name everywhere else."""
-    return str(d.get("id") or d.get("fqname") or d.get("symbol") or "")
+    return str(d.get("fqn") or d.get("id") or d.get("symbol_ref")
+               or d.get("symbol") or "")
 
 
 def _sym_loc(d: dict, gap: str = "  ") -> str:
@@ -433,7 +434,7 @@ def _emit_code_dossier(d: Any, as_json: bool) -> None:
     """Full single-symbol view: header + description + annotated neighbours + learning."""
     if as_json:
         print(json.dumps(d, indent=2, default=str)); return
-    if not d or not d.get("fqname"):
+    if not d or not d.get("symbol_ref"):
         print("(symbol not found — is this project code-indexed?)"); return
     print(render_symbol(d))
     _emit_resolved(d)
@@ -511,7 +512,7 @@ def _emit_code_rehome(data: Any, as_json: bool) -> None:
             print("  (none — `crib learning forget` if it's truly gone)"); return
         for c in cands:
             print(f"  [{c.get('score', '')}] {_sym_name(c)}   {c.get('file', '')}")
-        print(f"\nconfirm: crib learning rehome {data.get('old', '')} <fqname>")
+        print(f"\nconfirm: crib learning rehome {data.get('old', '')} <symbol>")
         return
     print(f"rehomed {data.get('old', '')} → {data.get('new', '')}  ({data.get('relpath', '')})")
 
@@ -844,9 +845,10 @@ def _emit_resolved(data: dict) -> None:
     caller did not type the qualified name. A choice made on the caller's behalf is
     always said out loud."""
     r = data.get("resolved") or {}
-    if r.get("fqname") and r.get("query") != r.get("fqname"):
+    ref = r.get("symbol_ref") or r.get("fqn")
+    if ref and r.get("query") != ref:
         proj = f" in {r['project']}" if r.get("project") else ""
-        print(f"  ({r['query']!r} → {r['fqname']}{proj}, matched on {r.get('via')})")
+        print(f"  ({r['query']!r} → {ref}{proj}, matched on {r.get('via')})")
 
 
 def _emit_code_edges(data: dict, args: argparse.Namespace) -> None:
@@ -1058,11 +1060,23 @@ def build_parser() -> argparse.ArgumentParser:
                    help="how coarse: dirs/scope segments to keep (0 = all)")
     s.add_argument("--all", action="store_true", dest="all_symbols",
                    help="the WHOLE project: every symbol, every edge, no depth bound")
+    s.add_argument("--under", default="",
+                   help="whole-project only: export just the files under this path "
+                        "prefix (boundary-crossing edges keep truncated frontier "
+                        "nodes)")
+    s.add_argument("--exclude", default="",
+                   help="whole-project only: drop files under this path prefix "
+                        "before export")
     _narrowers(s)
 
     s = codesub.add_parser("index",
                        help="index a source file: symbols + call graph + descriptions")
     s.add_argument("path"); proj(s)
+
+    s = codesub.add_parser("convert",
+                       help="convert the symbol store to the current shape in place "
+                            "(no LSP/LLM; dry run without --apply)")
+    s.add_argument("--apply", action="store_true"); proj(s)
 
     s = learnsub.add_parser("add",
                        help="attach a durable learning to a code symbol ('-' reads stdin)")
@@ -1082,6 +1096,13 @@ def build_parser() -> argparse.ArgumentParser:
     s = learnsub.add_parser("reaffirm",
                        help="clear a learning's ⚠︎ stale flag without rewriting it")
     s.add_argument("symbol"); proj(s)
+
+    s = learnsub.add_parser("migrate",
+                       help="re-attach learnings to the current symbol identity "
+                            "(dry run unless --apply)")
+    proj(s)
+    s.add_argument("--apply", action="store_true",
+                   help="write the plan out; without it nothing is changed")
 
     s = learnsub.add_parser("report",
                        help="health report for attached learnings (ok/moved/orphan)")
@@ -1625,16 +1646,22 @@ VERBS: dict[str, Verb] = {
                                                "group_by": a.group_by,
                                                "group_depth": a.group_depth,
                                                "path": a.path, "scope": a.scope,
-                                               "lang": a.lang},
+                                               "lang": a.lang,
+                                               "under": a.under,
+                                               "exclude": a.exclude},
                        _E_graph, policy="read",
                        mcp=f"symbol=None {_PROJ} direction='callees' depth=6 "
                            "shape=None group_by=None group_depth=0 "
-                           "path='' scope='' lang=''"),
+                           "path='' scope='' lang='' under='' exclude=''"),
     "code index": Verb("code_index",
                        lambda a: {"path": str(Path(a.path).expanduser().resolve()),
                                   "project": a.project},
                        _E_code("code-index"), is_async=True, policy="source",
                        mcp=f"path {_PROJ}"),
+    "code convert": Verb("code_convert",
+                         lambda a: {"project": a.project, "apply": a.apply},
+                         _E, is_async=True, policy="write",
+                         mcp=f"{_PROJ} apply=False"),
     # code learnings — `read` policy BY INTENT (a learning is about a symbol in the
     # project you're in); see the exception block above `_write_project` in server.py
     "learning add": Verb("learning_add", lambda a: {"symbol": a.symbol,
@@ -1657,6 +1684,10 @@ VERBS: dict[str, Verb] = {
                                                      "project": a.project},
                           _E_learning("learning-reaffirm"), is_async=True, policy="read",
                           mcp=f"symbol {_PROJ}"),
+    "learning migrate": Verb("learning_migrate",
+                             lambda a: {"project": a.project, "apply": a.apply},
+                             _E, is_async=True, policy="read",
+                             mcp=f"{_PROJ} apply=False"),
     "learning report": Verb("learning_report", lambda a: {"project": a.project,
                                                        "orphans_only": a.orphans},
                            _E_report, policy="read",

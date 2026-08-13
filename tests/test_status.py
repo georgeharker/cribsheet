@@ -49,7 +49,7 @@ def test_status_reports_in_flight_indexing(crib, monkeypatch):
     """While `_index_code_file_tracked` runs, status names the (project, file)."""
     seen: list[dict] = []
 
-    def fake_inner(root, rel, proj, patch_edges, existing=None, describe_mode="inline"):
+    def fake_inner(root, rel, proj, patch_edges, existing=None, describe_mode="inline", sweep=False):
         seen.append(crib.status()["indexing"])
         return {"symbols": 0}
 
@@ -68,7 +68,7 @@ def test_status_sweeps_progress_signal(crib, tmp_path, monkeypatch):
     (root / "b.py").write_text("def b(): pass\n")
     seen: list[dict] = []
 
-    def fake(rt, rel, proj, patch_edges, existing=None):
+    def fake(rt, rel, proj, patch_edges, existing=None, describe_mode="inline", sweep=False):
         seen.append(dict(crib.status()["sweeps"].get("p", {})))
         return {"symbols": 1, "described": 1}
 
@@ -90,7 +90,7 @@ def test_budgeted_sweep_defers_and_resumes(crib, tmp_path, monkeypatch):
         (root / name).write_text(f"def {name[0]}(): pass\n")
     processed: list[str] = []
 
-    def fake(rt, rel, proj, patch_edges, existing=None):
+    def fake(rt, rel, proj, patch_edges, existing=None, describe_mode="inline", sweep=False):
         processed.append(rel)
         time.sleep(0.15)                       # each file outlives the budget below
         return {"symbols": 1, "described": 1}

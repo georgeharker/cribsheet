@@ -42,12 +42,17 @@ def run(coro):
 
 
 def _entry(fqname: str, *, file: str, name: str | None = None, **kw) -> dict:
-    e = {"fqname": fqname, "name": name or fqname.split(".")[-1], "kind": "function",
-         "lang": "python", "module": file.replace(".py", ""), "parent": "",
-         "content_hash": f"h_{fqname}", "file": file, "line": 1, "mtime": 1,
-         "signature": "def _():", "description": "d", "container": [],
-         "calls": [], "called_by": [], "references": [],
-         "name_terms": [fqname.split(".")[-1]]}
+    leaf = name or fqname.split(".")[-1]
+    # the declared chain, as the extractor would observe it: whatever qualifies the
+    # leaf beyond the module. `a.B.run` in a.py → container ["B"]; `a.target` → [].
+    mod = file.replace(".py", "").replace("/", ".")
+    mid = fqname[len(mod) + 1:] if fqname.startswith(mod + ".") else fqname
+    chain = mid.split(".")[:-1] if mid.endswith(leaf) else []
+    e = {"fqname": fqname, "name": leaf, "kind": "function",
+         "lang": "python", "content_hash": f"h_{fqname}", "file": file, "line": 1,
+         "mtime": 1, "signature": "def _():", "description": "d",
+         "container": chain, "calls": [], "called_by": [], "references": [],
+         "name_terms": [leaf]}
     e.update(kw)
     return e
 
@@ -117,8 +122,8 @@ def test_mop_up_blob_labels_each_block_with_the_fqname(monkeypatch):
 
     monkeypatch.setattr("crib.generate.generate_structured", fake_generate)
     out = ci.describe_symbols(None, [
-        {"fqname": "m.A.run", "name": "run", "kind": "method", "_body": "a"},
-        {"fqname": "m.B.run", "name": "run", "kind": "method", "_body": "b"}])
+        {"fqn": "m.A.run", "name": "run", "kind": "method", "_body": "a"},
+        {"fqn": "m.B.run", "name": "run", "kind": "method", "_body": "b"}])
     assert "# method m.A.run" in seen["blob"] and "# method m.B.run" in seen["blob"]
     assert out["m.A.run"]["description"] == "runs A"
     assert out["m.B.run"]["description"] == "runs B"
@@ -134,13 +139,14 @@ def test_deferred_describe_patches_each_symbol_by_fqname(crib, tmp_path, monkeyp
         "m.A.run": {"description": "runs A", "keywords": ["a"]},
         "m.B.run": {"description": "runs B", "keywords": ["b"]}})
 
-    pending = {fq: {"fqname": fq, "name": "run", "kind": "method",
+    pending = {f"m.py#{fq.split('.', 1)[1]}":
+                   {"fqn": fq, "name": "run", "kind": "method",
                     "content_hash": f"h_{fq}", "_body": "..."}
                for fq in ("m.A.run", "m.B.run")}
     out = run(crib.indexer._describe_and_patch("p", tmp_path, "m.py", pending))
     assert out["described"] == 2
-    assert store.read("m.A.run")["description"] == "runs A"
-    assert store.read("m.B.run")["description"] == "runs B"
+    assert store.read("m.py#A.run")["description"] == "runs A"
+    assert store.read("m.py#B.run")["description"] == "runs B"
 
 
 # ── 2.7 patch_edges: both relations, fqname-keyed targets ─────────────────────
@@ -152,12 +158,12 @@ def test_patch_edges_updates_references_symmetrically(crib):
 
     crib.code.patch_edges(
         store, [_entry("b.caller", file="b.py", calls=["target [a.py]"])], "b.py")
-    tgt = store.read("a.target")
+    tgt = store.read("a.py#target")
     assert tgt["called_by"] == ["caller [b.py]"]
     assert tgt["references"] == ["caller [b.py]"]     # the half that was never patched
 
     crib.code.patch_edges(store, [_entry("b.caller", file="b.py")], "b.py")
-    tgt = store.read("a.target")
+    tgt = store.read("a.py#target")
     assert tgt["called_by"] == [] and tgt["references"] == []
 
 
@@ -171,8 +177,8 @@ def test_patch_edges_skips_an_ambiguous_same_named_target(crib):
 
     crib.code.patch_edges(
         store, [_entry("b.caller", file="b.py", calls=["run [a.py]"])], "b.py")
-    assert store.read("a.A.run")["called_by"] == []
-    assert store.read("a.B.run")["called_by"] == []
+    assert store.read("a.py#A.run")["called_by"] == []
+    assert store.read("a.py#B.run")["called_by"] == []
 
 
 def test_patch_edges_resolves_a_qualified_edge_target_exactly(crib):
@@ -184,8 +190,8 @@ def test_patch_edges_resolves_a_qualified_edge_target_exactly(crib):
 
     crib.code.patch_edges(
         store, [_entry("b.caller", file="b.py", calls=["a.B.run [a.py]"])], "b.py")
-    assert store.read("a.A.run")["called_by"] == []
-    assert store.read("a.B.run")["called_by"] == ["caller [b.py]"]
+    assert store.read("a.py#A.run")["called_by"] == []
+    assert store.read("a.py#B.run")["called_by"] == ["caller [b.py]"]
 
 
 def test_same_named_sources_in_one_file_patch_independently(crib):
@@ -200,8 +206,8 @@ def test_same_named_sources_in_one_file_patch_independently(crib):
         _entry("b.X.run", file="b.py", name="run", calls=["first [a.py]"]),
         _entry("b.Y.run", file="b.py", name="run", calls=["second [c.py]"]),
     ], "b.py")
-    assert store.read("a.first")["called_by"] == ["run [b.py]"]
-    assert store.read("c.second")["called_by"] == ["run [b.py]"]
+    assert store.read("a.py#first")["called_by"] == ["run [b.py]"]
+    assert store.read("c.py#second")["called_by"] == ["run [b.py]"]
 
 
 # ── Edge attribution: URI decoding + path-boundary anchoring (robustness 4.6) ──

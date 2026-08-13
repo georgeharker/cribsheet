@@ -17,7 +17,9 @@ from typing import TYPE_CHECKING, Any, Callable
 from .config import CribLink
 from .errors import CribUserError
 from .symbols import constrain
-from .symbols import match as fqname_match
+from .symbols import fqn_of
+from .symbols import key as symbol_key
+from .symbols import match_entry
 
 if TYPE_CHECKING:
     from .codeindex import RefProjects
@@ -45,22 +47,34 @@ class AmbiguousSymbol(CribUserError):
 
 def resolution(entry: dict[str, Any], query: str,
                project: str | None = None) -> dict[str, Any]:
-    """What the caller's symbol string turned INTO — `{query, fqname, via, project?}`.
+    """What the caller's symbol string turned INTO — `{query, symbol_ref, fqn, via}`.
 
     Attached by every verb that NARROWS TO ONE symbol, because that is the moment a
     choice was made on the caller's behalf and the moment it should be visible: on
-    success especially, which is where nobody thinks to check. `via` names the tier
-    that matched (`fqname` / `suffix` / `name`), which is also how a caller learns the
-    canonical spelling when it is not one they would have guessed.
+    success especially, which is where nobody thinks to check.
+
+    TWO answers, because a caller wants two different things. `symbol_ref` is the KEY
+    — the spelling to paste into the next call. `fqn` is the NAME — what a developer
+    writing that language would actually say. `via` names the tier that matched
+    (`ref` / `exact` / `suffix` / `name` / `was`), which is how a caller learns that the
+    spelling they typed was not the canonical one.
+
+    The LEGACY qualified name is deliberately NOT echoed. It is neither of those two
+    things: it was the old store key, and for rust and zsh it is a spelling nobody
+    would type and that makes a false claim about the program (`rust::src::…` is not
+    a Rust path). It still RESOLVES — old habits and old notes must keep working —
+    but a verb that hands it back invites it to be stored somewhere new, which is
+    exactly how one deprecated key became two live ones.
 
     Verbs that LIST every match (`code_xref`) deliberately carry no `resolved`: they
     narrow nothing, so the list is already the disclosure and there is no choice to
     report. That is the rule — not an inconsistency to be tidied away by wrapping the
     list in an envelope."""
     out: dict[str, Any] = {
-        "query": query, "fqname": entry.get("fqname", ""),
-        "via": fqname_match(entry.get("fqname", ""), entry.get("name", ""), query,
-                            entry.get("lang", ""))}
+        "query": query,
+        "symbol_ref": symbol_key(entry),
+        "fqn": fqn_of(entry),
+        "via": match_entry(entry, query)}
     if project:
         out["project"] = project
     return out
@@ -157,9 +171,11 @@ class Refs:
                     f"{symbol!r} matches {len(matches)} symbol(s) in project "
                     f"{proj!r}, none of them with {where}")
             matches = narrowed
+        # An EXACT tier wins outright — the caller named the symbol rather than
+        # gestured at it. `ref` and `was` are exact by construction; `fqname` is the
+        # whole language-native name.
         exact = [m for m in matches
-                 if fqname_match(m.get("fqname", ""), m.get("name", ""), symbol,
-                                 m.get("lang", "")) == "fqname"]
+                 if match_entry(m, symbol) in ("ref", "was", "exact")]
         cands = exact or matches
         if len(cands) > 1:
             # Ranked by caller count, and the count stated: the question a bare name
@@ -167,8 +183,8 @@ class Refs:
             # candidate is nearly always the one meant, and a bare list of names
             # makes the reader go and find that out.
             ranked = sorted(cands, key=lambda m: (-len(m.get("called_by") or []),
-                                                  m.get("fqname", "")))
-            shown = ", ".join(f"{m.get('fqname', '')} ({len(m.get('called_by') or [])}"
+                                                  symbol_key(m)))
+            shown = ", ".join(f"{symbol_key(m)} ({len(m.get('called_by') or [])}"
                               f" callers)" for m in ranked[:8])
             more = f", +{len(ranked) - 8} more" if len(ranked) > 8 else ""
             axis = ("path" if len({m.get("file") for m in cands}) == len(cands)
@@ -207,7 +223,7 @@ class Refs:
             if len(found) == 1:
                 return found[0]
             if len(found) > 1:
-                names = ", ".join(f"{p}:{e['fqname']}" for p, e in found)
+                names = ", ".join(f"{p}:{symbol_key(e)}" for p, e in found)
                 raise AmbiguousSymbol(
                     f"ambiguous symbol {symbol!r} across refs → {names}; "
                     f"pass project= to disambiguate") from None

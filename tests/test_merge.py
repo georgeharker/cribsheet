@@ -115,7 +115,7 @@ def test_symbol_merge_divergent_code_states_marks_dirty():
 
 
 def test_run_driver_routes_toml_clean(tmp_path):
-    from crib.codeindex import _parse, _render
+    from crib.codeindex import _render
     e = {"fqname": "m.f", "name": "f", "kind": "function", "content_hash": "h",
          "description": "d", "file": "m.py", "line": 1, "mtime": 1, "calls": [],
          "called_by": [], "references": [], "name_terms": ["f"]}
