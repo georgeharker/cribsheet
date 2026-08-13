@@ -1,5 +1,15 @@
 # Symbol interface — full catalog
 
+> **STATUS (2026-08-13): executed and superseded.** The audit below described the
+> pre-conversion surface. The conversion is complete — every store keys on
+> `symbol_ref`, `fqname`/`module`/`parent` are gone from the entry, resolution is
+> one rule over the canonical run, and the seams this catalog names are closed
+> (narrowing axes and `resolved` reached the verbs; `learning_rehome`'s params are
+> the one item still open). Current reference: `docs/symbol-reference-map.md`;
+> design + evidence: `docs/plans/symbol-ref-conversion.md`. Kept as the record of
+> what the surface looked like when the work was scoped.
+
+
 Everything that speaks "symbol", and what each needs for the struct interface
 (`{id, project, path, scope, name, lang}`). Enumerated from the code, not from memory.
 

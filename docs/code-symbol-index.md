@@ -210,10 +210,18 @@ of any layout tool, and it makes "these four paths all end at `Document.resolve`
 fact in the data rather than something the reader reconstructs by hand. Frontier
 nodes carry `truncated` so the boundary of the walk is visible instead of implied.
 
-`group_by="module"` collapses the symbol edges into **module-to-module** edges
-carrying the number of symbol edges they stand for (`weight`) — the architecture
-diagram, aggregated once here instead of by every consumer. Self-edges are kept:
-they measure a module's internal cohesion, and dropping them would report it as zero.
+`group_by` collapses the symbol edges onto an **axis** — `file`, `dir` (optionally
+depth-truncated), or `scope` — with each rolled-up edge carrying the number of
+symbol edges it stands for (`weight`): the architecture diagram, aggregated once
+here instead of by every consumer. The word "module" is deliberately not an axis:
+it means the file to a Python reader, the declared namespace to a C++ one, and
+nothing at all in C. Self-edges are kept: they measure a group's internal
+cohesion, and dropping them would report it as zero.
+
+**Node ids are `symbol_ref`** (`proj:symbol_ref` cross-project) — computed per
+query, never persisted, so the id spelling changes with the store's key and needs
+no migration. An unresolved edge target keys by its raw `name [file]` ref with
+`external: true`; it has nothing else to key on.
 
 **Whole-project export.** Omitting the symbol dumps the entire project — every
 indexed symbol, every edge, no root and no depth bound. This is not the same set as
@@ -223,12 +231,17 @@ capped (`MAX_GRAPH_NODES`) and errors rather than truncating, because a graph
 silently missing nodes is worse than no graph; the module rollup is uncapped and is
 what large repos want anyway.
 
-**Resolving the symbol you asked for.** One rule (`fqname_match`), stated once and
-used by both the resident cache and the disk index, matching in three tiers: the full
-qualified name, a trailing run of its **segments**, or the bare local name taken from
-the entry's own `name` field. The `name` tier is what makes a bare name work
-regardless of what qualified it, which matters most where the qualified spelling is
-one the caller could not have guessed.
+**Resolving the symbol you asked for.** One rule (`symbols.match_entry`), stated
+once and used by both the resident cache and the disk index: everything a caller
+might type is a **trailing run of one canonical sequence** — the file's path
+segments plus the declared tail — with `#` optionally pinning where the path ends.
+The whole run is the legacy key (`exact`); a partial run is a `suffix`; a
+`#`-carrying query is a reference (`ref`, whole or partial path); the bare `name`
+is a run of one. A spelling only history knows resolves **exactly** via
+`symbol_was` (`was`) — a compatibility surface, never a search space. Tiers are
+disclosures of how much the caller pinned down, not separate strategies — which is
+what makes a bare name work regardless of what qualified it, and matters most
+where the qualified spelling is one the caller could not have guessed.
 
 The comparison happens **in the entry's own language**, between segment lists, never
 between normalized strings. `fqname_sep(lang)` is shared by `_qualify` (the writer)
@@ -388,18 +401,20 @@ the opposite: irreplaceable, human, source-of-truth. Putting it in the symbol fi
 would marry the durable thing to the disposable one (regen churn, mixed provenance,
 sync riding on a cache). So it lives elsewhere.
 
-**A learning is a first-class cribsheet note**, keyed to a symbol's `fqname`, under a
-dedicated `<project>/code-learnings/` subtree. The symbol index gains a *join*, never
+**A learning is a first-class cribsheet note**, bound to a symbol's `symbol_ref`,
+in the learnings pillar store (`<project>/learnings/`; pre-pillar stores used
+`code-learnings/`, still read). The symbol index gains a *join*, never
 a storage responsibility — and the learning inherits the entire note machinery for
 free: the version ring, git sync, the frontmatter merge driver, semantic search
 (`lookup`/`apropos` find it as a note *and* it surfaces via the symbol). Same move as
 `import-memory`: one source of truth, two searchable surfaces.
 
 ```
-code-learnings/crib.retrieve.LexicalCache.get.md
+learnings/crib-retrieve.py-LexicalCache.get-….md
 ---
 kind: code-learning
-symbol: crib.retrieve.LexicalCache.get   # fqn — the foreign key (authoritative)
+symbol_ref: crib/retrieve.py#LexicalCache.get   # THE binding (authoritative)
+symbol_was: [crib.retrieve.LexicalCache.get]    # prior bindings — orphan reachability
 lang, file, signature                    # snapshot at authoring (for orphan legibility)
 content_hash: 1f89…                      # body hash when written → staleness signal
 ---
@@ -407,18 +422,17 @@ content_hash: 1f89…                      # body hash when written → stalenes
 The BM25 cache is keyed by project+corpus-hash; I misread it as global for a while.
 ```
 
-- **Filename = the fqn, munged only as the filesystem forces.** Whitelist
-  `[A-Za-z0-9._-]`; everything else (`::` `/` `<>` `*` `&` spaces `~` operators)
-  collapses to `-`, and a *lossy* munge appends a short fqn hash so distinct symbols
-  can't collide (`core::cache::Store::get` → `core-cache-Store-get-132ab1a5`). Clean
-  dotted fqns pass through verbatim. The `symbol:` frontmatter is authoritative, so
-  the filename never has to round-trip. (`crib/codeindex.py: learning_slug`.)
+- **Filename = `ref_slug(symbol_ref)`, same scheme as the symbol store.** Whitelist
+  `[A-Za-z0-9._-]`; everything else collapses to `-`, with a short hash appended —
+  unconditionally for a reference, since one always carries `/` or `#`. The
+  frontmatter binding is authoritative and the JOIN reads frontmatter, never
+  filenames — the filename never has to round-trip. (`crib/symbols.py: ref_slug`.)
 - **Same primitives as notes, under the `learning` noun** — `learning_add` (attach a dated entry,
   creating the running note on first use), `learning_edit` (rewrite the body), `learning_forget`
   (remove, recoverable via the ring — works on orphans too), `learning_read`, plus
   `learning_reaffirm` (clear a ⚠︎ stale flag without a rewrite) and the maintenance pair
   `learning_report` (health report) / `learning_rehome` (re-point an orphan). Each resolves
-  the symbol against the index (exact fqn wins; a bare name only if unique — never
+  the symbol against the index (an exact spelling wins; a bare name only if unique — never
   silently pick, so a learning can't land on the wrong symbol) and reuse the note write/delete path (`NoteStore`). MCP (`learning_add`, …)
   + CLI (`crib learning add <symbol> "…"`).
 - **Attach to code you can't edit.** A learning is external, so it pins understanding to
@@ -428,8 +442,9 @@ The BM25 cache is keyed by project+corpus-hash; I misread it as global for a whi
   comment but shouldn't be re-derived).
 
 **Identity drift.** `content_hash` already immunizes against body churn — the same
-`fqname` still points true after a body edit. The failure mode is *rename/move*, which
-orphans the fqn key. The rule: **never auto-attach a durable learning to a symbol it
+reference still points true after a body edit. The failure mode is *rename/move*,
+which orphans the binding (an id-format change is NOT drift: the entry's
+`symbol_was` and the note's both keep every prior spelling resolving). The rule: **never auto-attach a durable learning to a symbol it
 wasn't authored against** — a wrong attachment is worse than a dangling one. So orphans
 are *surfaced, not solved* (report-only, never gates indexing). The report (§ step 4)
 distinguishes two cases: a **true orphan** (the `symbol:` fqn no longer resolves at all)
@@ -452,11 +467,11 @@ holds, **`learning_reaffirm` clears the flag without a rewrite** — it re-snaps
 
 Build order:
 1. `learning_add`/`edit`/`forget`/`read` + the `code-learnings/` subtree ✓
-2. Query-time join — ※ block in `code_lookup`/`code_xref` + staleness ⚠︎ ✓ (keyed
-   O(1) by `learning_slug(fqn)`; only symbols that carry a note pay a read)
+2. Query-time join — ※ block in `code_lookup`/`code_xref` + staleness ⚠︎ ✓ (joined
+   by BINDING via frontmatter; only symbols that carry a note pay a read)
 3. `code_graph` glyph (※) marking nodes that carry a learning ✓ — the call tree
-   becomes a treasure map. fqn→slug membership against the subtree (never filename→fqn,
-   since the munge is lossy)
+   becomes a treasure map. Note bindings resolve through the index to KEYS
+   (`Learnings.marks`), so the node's `symbol_ref` meets them one string against one
 4. `learning_report` report ✓ — true orphans (fqn unresolved) *and* moved learnings (fqn
    resolves, snapshot `file:` drifted); report-only, never gates indexing
 5. `learning_rehome` ✓ — suggestion-ranked (no target → candidates by name/signature/file;
