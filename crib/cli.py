@@ -1053,7 +1053,9 @@ def build_parser() -> argparse.ArgumentParser:
                         "(convergence stays visible; feeds a layout tool)")
     s.add_argument("--group-by", choices=list(GRAPH_GROUPINGS), default=None,
                    dest="group_by",
-                   help="roll symbol edges up into weighted module-to-module edges")
+                   help="roll symbol edges up onto one axis: file, dir or scope")
+    s.add_argument("--group-depth", type=int, default=0, dest="group_depth",
+                   help="how coarse: dirs/scope segments to keep (0 = all)")
     s.add_argument("--all", action="store_true", dest="all_symbols",
                    help="the WHOLE project: every symbol, every edge, no depth bound")
     _narrowers(s)
@@ -1621,11 +1623,13 @@ VERBS: dict[str, Verb] = {
                                                "depth": a.depth, "project": a.project,
                                                "shape": _graph_shape(a),
                                                "group_by": a.group_by,
+                                               "group_depth": a.group_depth,
                                                "path": a.path, "scope": a.scope,
                                                "lang": a.lang},
                        _E_graph, policy="read",
                        mcp=f"symbol=None {_PROJ} direction='callees' depth=6 "
-                           "shape=None group_by=None path='' scope='' lang=''"),
+                           "shape=None group_by=None group_depth=0 "
+                           "path='' scope='' lang=''"),
     "code index": Verb("code_index",
                        lambda a: {"path": str(Path(a.path).expanduser().resolve()),
                                   "project": a.project},

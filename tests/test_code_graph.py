@@ -155,10 +155,10 @@ def test_callers_direction_keeps_caller_to_callee_orientation(crib, tmp_path):
 
 # --- module rollup ------------------------------------------------------------
 
-def test_module_rollup_weights_the_file_edges(crib, tmp_path):
+def test_file_rollup_weights_the_edges(crib, tmp_path):
     _diamond(crib, tmp_path)
-    g = crib.code_graph("app.main", project="p", group_by="module")
-    assert g["group_by"] == "module" and g["shape"] == "edges"
+    g = crib.code_graph("app.main", project="p", group_by="file")
+    assert g["group_by"] == "file" and g["shape"] == "edges"
     w = {(e["from"], e["to"]): e["weight"] for e in g["edges"]}
     assert w[("app.py", "core.py")] == 3          # left→shared, right→shared, main→deep
     assert w[("app.py", "app.py")] == 2           # main→left, main→right, kept
@@ -167,10 +167,10 @@ def test_module_rollup_weights_the_file_edges(crib, tmp_path):
     assert counts["app.py"] == 3 and counts["core.py"] == 2
 
 
-def test_module_rollup_implies_edges_and_refuses_a_tree(crib, tmp_path):
+def test_a_rollup_implies_edges_and_refuses_a_tree(crib, tmp_path):
     _diamond(crib, tmp_path)
     with pytest.raises(ValueError, match="group_by"):
-        crib.code_graph("app.main", project="p", shape="tree", group_by="module")
+        crib.code_graph("app.main", project="p", shape="tree", group_by="file")
 
 
 # --- whole-project export -----------------------------------------------------
@@ -190,7 +190,7 @@ def test_whole_project_includes_what_no_walk_reaches(crib, tmp_path):
 
 def test_whole_project_rolls_up_and_refuses_a_tree(crib, tmp_path):
     _diamond(crib, tmp_path)
-    g = crib.code_graph(project="p", group_by="module")
+    g = crib.code_graph(project="p", group_by="file")
     assert {n["id"] for n in g["nodes"]} >= {"app.py", "core.py", "orphan.py"}
     with pytest.raises(ValueError, match="whole-project"):
         crib.code_graph(project="p", shape="tree")
@@ -202,7 +202,7 @@ def test_whole_project_symbol_export_is_capped_but_the_rollup_is_not(
     monkeypatch.setattr(codequery, "MAX_GRAPH_NODES", 2)
     with pytest.raises(ValueError, match="group_by"):
         crib.code_graph(project="p")
-    assert crib.code_graph(project="p", group_by="module")["nodes"]
+    assert crib.code_graph(project="p", group_by="file")["nodes"]
 
 
 def test_unknown_shape_says_what_is_accepted(crib, tmp_path):
@@ -256,7 +256,7 @@ def test_every_result_says_what_the_name_became(crib, tmp_path):
     assert tree["resolved"] == {"query": "main", "fqname": "app.main", "via": "name"}
     edges = crib.code_graph("app.main", project="p", shape="edges")
     assert edges["resolved"]["via"] == "fqname"
-    rolled = crib.code_graph("main", project="p", group_by="module")
+    rolled = crib.code_graph("main", project="p", group_by="file")
     assert rolled["resolved"]["fqname"] == "app.main"   # the rollup carries it through
 
 
@@ -266,14 +266,15 @@ def _rust_ish(crib, tmp_path):
     """crib renders a Rust qualified name with `::` (`_qualify`), so a dot-only
     match rule cannot see it — the symbol is indexed and reads as unknown."""
     root = tmp_path / "rs"
-    (root / "src").mkdir(parents=True)
-    (root / "src" / "lockfile.rs").write_text("pub struct ClientsLock;\n")
-    _sym(crib, "r", "rust::src::core::lockfile::ClientsLock", "src/lockfile.rs",
+    (root / "src" / "core").mkdir(parents=True)
+    (root / "src" / "core" / "lockfile.rs").write_text(
+        "pub struct ClientsLock;\n")
+    _sym(crib, "r", "rust::src::core::lockfile::ClientsLock", "src/core/lockfile.rs",
          name="ClientsLock", lang="rust", kind="struct",
-         called_by=["acquire [src/lockfile.rs]"])
-    _sym(crib, "r", "rust::src::core::lockfile::acquire", "src/lockfile.rs",
+         called_by=["acquire [src/core/lockfile.rs]"])
+    _sym(crib, "r", "rust::src::core::lockfile::acquire", "src/core/lockfile.rs",
          name="acquire", lang="rust",
-         calls=["ClientsLock [src/lockfile.rs]"])
+         calls=["ClientsLock [src/core/lockfile.rs]"])
     SymbolIndex(crib.paths.project_dir("r")).set_source_root(root)
     return root
 
@@ -529,3 +530,45 @@ def test_constraints_do_not_weaken_unique_or_refuse(crib, tmp_path):
     _sym(crib, "p", "core.main", "core.py")
     with pytest.raises(CribUserError, match="symbols match"):
         crib.code_dossier("main", project="p", lang="python")
+
+
+# --- group_by is an AXIS, not one overloaded word -----------------------------
+
+def test_the_three_axes_answer_different_questions(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    by_file = crib.code_graph(project="p", group_by="file")
+    by_dir = crib.code_graph(project="p", group_by="dir")
+    by_scope = crib.code_graph(project="p", group_by="scope")
+    assert {n["id"] for n in by_file["nodes"]} >= {"app.py", "core.py", "orphan.py"}
+    # every seeded file sits at the repo root, so `dir` collapses them into one
+    # the diamond has an unresolved `vendor/pkg.py` target, which is a real
+    # location and groups as one
+    assert {n["id"] for n in by_dir["nodes"]} == {"(root)", "vendor"}
+    # python ties namespace to path, so scope tracks the module
+    assert {n["id"] for n in by_scope["nodes"]} >= {"app", "core", "orphan"}
+
+
+def test_a_language_with_no_scope_groups_under_no_scope(crib, tmp_path):
+    root = tmp_path / "c"
+    root.mkdir(parents=True)
+    (root / "watch.c").write_text("int main(void){return 0;}\n")
+    _sym(crib, "cproj", "bin.watch.main", "watch.c", lang="c", name="main")
+    SymbolIndex(crib.paths.project_dir("cproj")).set_source_root(root)
+    g = crib.code_graph(project="cproj", group_by="scope")
+    # C has no namespace; grouping by scope says so rather than inventing one
+    assert [n["id"] for n in g["nodes"]] == ["(no scope)"]
+
+
+def test_group_depth_makes_the_axis_coarser(crib, tmp_path):
+    _rust_ish(crib, tmp_path)
+    full = crib.code_graph(project="r", group_by="scope")
+    coarse = crib.code_graph(project="r", group_by="scope", group_depth=1)
+    assert {n["id"] for n in full["nodes"]} == {"core::lockfile"}
+    assert {n["id"] for n in coarse["nodes"]} == {"core"}
+    assert coarse["group_depth"] == 1
+
+
+def test_module_is_no_longer_an_axis(crib, tmp_path):
+    _diamond(crib, tmp_path)
+    with pytest.raises(CribUserError, match="file, dir, scope"):
+        crib.code_graph(project="p", group_by="module")

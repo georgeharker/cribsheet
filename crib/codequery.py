@@ -16,8 +16,10 @@ from typing import TYPE_CHECKING, Any, Callable
 from .errors import CribUserError
 from .symbols import (
     decode_edge,
+    display_name,
     encode_edge,
     encode_loc,
+    fqname_sep,
     qualified_symbol,
 )
 
@@ -42,7 +44,10 @@ GRAPH_DIRECTIONS = {"callees": "calls", "callers": "called_by",
 # paths landing on one symbol), because a tree can only show a shared node by
 # duplicating it or truncating it, and both hide the fact.
 GRAPH_SHAPES = ("tree", "edges")
-GRAPH_GROUPINGS = ("module",)
+# The AXIS a rollup collapses onto. "module" is not among them on purpose: it means
+# the file to a Python reader, the declared namespace to a C++ one, and nothing at
+# all in C — one word for three different questions.
+GRAPH_GROUPINGS = ("file", "dir", "scope")
 MAX_K = 200
 MAX_DEPTH = 25
 # Whole-project symbol-level export backstop. A rolled-up (`group_by="module"`)
@@ -52,23 +57,52 @@ MAX_DEPTH = 25
 MAX_GRAPH_NODES = 5000
 
 
-def _rollup_modules(sub: dict[str, Any], proj: str) -> dict[str, Any]:
-    """Collapse a symbol subgraph into MODULE-to-MODULE edges carrying the number of
+def _group_key(n: dict[str, Any], proj: str, axis: str, depth: int) -> str:
+    """Which group this symbol belongs to, on the requested AXIS.
+
+    `file` and `dir` are LOCATION; `scope` is what the language says the symbol
+    belongs to. They are different questions and a repo answers them differently —
+    Python's package tree makes them nearly agree, C++ namespaces make them
+    unrelated, and C has no scope at all. A symbol with no scope groups under
+    `(no scope)`, which is a fact about the language rather than a gap."""
+    p = str(n.get("project") or proj)
+    f = str(n.get("file") or "")
+    if axis == "scope":
+        sc = list(n.get("scope") or [])
+        if not sc:
+            return "(no scope)"
+        if depth:
+            sc = sc[:depth]
+        key = fqname_sep(str(n.get("lang") or "")).join(sc)
+        return key if p == proj else qualified_symbol(p, key)
+    if axis == "dir":
+        parts = f.split("/")[:-1]              # the containing directory
+        if depth:
+            parts = parts[:depth]
+        f = "/".join(parts) or "(root)"
+    if not f:
+        return "(unresolved)"
+    return f if (n.get("external") or p == proj) else encode_loc(p, f)
+
+
+def _rollup(sub: dict[str, Any], proj: str, axis: str,
+            depth: int = 0) -> dict[str, Any]:
+    """Collapse a symbol subgraph onto one AXIS, edges carrying the number of
     distinct symbol edges they stand for — the architecture view, where what matters
-    is which files depend on which and how heavily. Self-edges (a file calling
-    itself) are kept and left for the consumer to filter: they are real, and
-    dropping them here would misreport a module's internal cohesion as zero."""
+    is which parts depend on which and how heavily. Self-edges are kept and left for
+    the consumer to filter: they are real, and dropping them would misreport a
+    group's internal cohesion as zero."""
     member: dict[str, str] = {}
     mods: dict[str, dict[str, Any]] = {}
     for n in sub["nodes"]:
         p = str(n.get("project") or proj)
-        f = str(n.get("file") or "")
-        mid = ((f or "(unresolved)") if (n.get("external") or p == proj)
-               else encode_loc(p, f))
+        mid = _group_key(n, proj, axis, depth)
         member[str(n["id"])] = mid
         m = mods.get(mid)
         if m is None:
-            m = {"id": mid, "file": f, "symbols": 0, "external": True}
+            m = {"id": mid, "symbols": 0, "external": True}
+            if axis != "scope":
+                m["file"] = mid.split(":")[-1]
             if p != proj and not n.get("external"):
                 m["project"] = p
             if "depth" in n:
@@ -96,7 +130,8 @@ def _rollup_modules(sub: dict[str, Any], proj: str) -> dict[str, Any]:
     def order(m: dict[str, Any]) -> tuple[Any, str]:
         return (m.get("depth", 0), str(m["id"]))
 
-    return {**out, "group_by": "module",
+    return {**out, "group_by": axis,
+            **({"group_depth": depth} if depth else {}),
             "nodes": sorted(mods.values(), key=order),
             "edges": sorted(medges.values(), key=lambda x: (x["from"], x["to"]))}
 
@@ -310,7 +345,8 @@ class CodeQuery:
 
     def graph(self, proj: str, symbol: str | None = None,
               direction: str = "callees", depth: int = 6, shape: str | None = None,
-              group_by: str | None = None, path: str = "", scope: str = "",
+              group_by: str | None = None, group_depth: int = 0,
+              path: str = "", scope: str = "",
               lang: str = "") -> dict[str, Any]:
         """Call graph around `symbol` from the persisted symbol_index — `callees`
         follows `calls`, `callers` follows `called_by`, `references` the broader
@@ -330,8 +366,12 @@ class CodeQuery:
         reconstruct. Edges are deduplicated and oriented caller→callee regardless
         of walk direction, so the output drops straight into a layout tool.
 
-        `group_by="module"` rolls those symbol edges up into weighted file-to-file
-        edges — the architecture view — and implies `shape="edges"`.
+        `group_by` rolls the symbol edges up onto ONE AXIS and implies
+        `shape="edges"`: `file` (which files depend on which), `dir` (the same at
+        directory grain, with `group_depth` to choose how coarse), or `scope` (what
+        the LANGUAGE says each symbol belongs to). Location and scope are different
+        questions — a repo where they agree is a repo whose language ties namespace
+        to path.
 
         `symbol` may be a full qualified name, a trailing run of its segments, or a
         bare local name in any language's separator. It resolves through the shared
@@ -389,7 +429,7 @@ class CodeQuery:
         if symbol is None:
             sub = self._project_graph(proj, entries, edge, direction, _nf,
                                       capped=group_by is None)
-            return _rollup_modules(sub, proj) if group_by else sub
+            return _rollup(sub, proj, group_by, group_depth) if group_by else sub
         # ONE resolver, the same one dossier and the learnings use, so a bare name
         # matching several symbols refuses here exactly as it does there. Catch the
         # miss BY TYPE: an ambiguity is a ValueError too, and catching that broadly
@@ -405,7 +445,7 @@ class CodeQuery:
         if shape == "edges":
             sub = self._subgraph(proj, root, root_proj, edge, direction, depth, _nf)
             sub["resolved"] = resolved        # set before the rollup, which carries it
-            return _rollup_modules(sub, proj) if group_by else sub
+            return _rollup(sub, proj, group_by, group_depth) if group_by else sub
         seen: set[str] = set()
 
         def build(e: dict, p: str, d: int) -> dict:
@@ -472,7 +512,9 @@ class CodeQuery:
         for e in entries:
             nodes[e["fqname"]] = {"id": e["fqname"], "fqname": e["fqname"],
                                   "kind": e.get("kind", ""), "file": e.get("file", ""),
-                                  "line": e.get("line")}
+                                  "line": e.get("line"), "lang": e.get("lang", ""),
+                                  "scope": e.get("scope") or [],
+                                  "display": display_name(e)}
         for e in entries:
             for ref in e.get(edge) or []:
                 tp, name, trel, fref = decode_edge(ref, proj)
@@ -484,7 +526,10 @@ class CodeQuery:
                     nodes.setdefault(ci, {"id": ci, "fqname": target["fqname"],
                                           "kind": target.get("kind", ""),
                                           "file": target.get("file", ""),
-                                          "line": target.get("line"), "project": tp})
+                                          "line": target.get("line"), "project": tp,
+                                          "lang": target.get("lang", ""),
+                                          "scope": target.get("scope") or [],
+                                          "display": display_name(target)})
                 else:
                     ci = encode_edge(name, fref)
                     nodes.setdefault(ci, {"id": ci, "fqname": name, "kind": "?",
@@ -527,7 +572,9 @@ class CodeQuery:
             n = nodes.get(i)
             if n is None:
                 n = {"id": i, "fqname": e["fqname"], "kind": e.get("kind", ""),
-                     "file": e.get("file", ""), "line": e.get("line"), "depth": d}
+                     "file": e.get("file", ""), "line": e.get("line"), "depth": d,
+                     "lang": e.get("lang", ""), "scope": e.get("scope") or [],
+                     "display": display_name(e)}
                 if p != proj:
                     n["project"] = p
                 nodes[i] = n

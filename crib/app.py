@@ -2246,12 +2246,14 @@ class Crib:
     def code_graph(self, symbol: str | None = None, direction: str = "callees",
                    depth: int = 6, project: str | None = None,
                    cwd: Path | None = None, shape: str | None = None,
-                   group_by: str | None = None, path: str = "", scope: str = "",
+                   group_by: str | None = None, group_depth: int = 0,
+                   path: str = "", scope: str = "",
                    lang: str = "") -> dict[str, Any]:
         """Call graph around a symbol — pstree tree, or (`shape="edges"`) the
         deduplicated subgraph; omit `symbol` for the whole project. Crosses into refs."""
         return self.query.graph(self.resolve_project(project, cwd), symbol, direction,
-                                depth, shape, group_by, path, scope, lang)
+                                depth, shape, group_by, group_depth,
+                                path, scope, lang)
 
     async def enrich(self, relpath: str | None = None, project: str | None = None,
                      cwd: Path | None = None, overwrite: bool = False) -> dict[str, Any]:

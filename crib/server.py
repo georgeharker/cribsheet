@@ -717,8 +717,9 @@ def build_server(crib: Crib | None = None):
     async def code_graph(symbol: str | None = None, direction: str = "callees",
                          depth: int = 6, project: str | None = None,
                          project_path: str | None = None, shape: str | None = None,
-                         group_by: str | None = None, path: str = "",
-                         scope: str = "", lang: str = "") -> dict[str, Any]:
+                         group_by: str | None = None, group_depth: int = 0,
+                         path: str = "", scope: str = "",
+                         lang: str = "") -> dict[str, Any]:
         """Call graph around a symbol from the index: `callees` (what it calls),
         `callers` (what calls it), or `references` (everywhere mentioned — broader than
         calls, and the only relation for symbols-only servers like zsh's shuck),
@@ -735,8 +736,13 @@ def build_server(crib: Crib | None = None):
           output feeds a diagram/layout tool — it is their native input, and it makes
           convergence explicit instead of something you reconstruct by hand.
 
-        `group_by="module"` (implies `shape="edges"`) rolls symbol edges up into
-        file-to-file edges carrying a `weight` — the architecture diagram.
+        `group_by` (implies `shape="edges"`) rolls symbol edges up onto ONE AXIS,
+        each edge carrying a `weight` — the architecture diagram. `file` is which
+        files depend on which; `dir` is the same at directory grain, with
+        `group_depth=N` choosing how coarse; `scope` groups by what the LANGUAGE
+        says a symbol belongs to, which is a different question from where it lives
+        (they nearly agree in Python, are unrelated in C++, and C has no scope at
+        all — those symbols group under `(no scope)`).
 
         OMIT `symbol` for the WHOLE PROJECT: every indexed symbol and every edge, no
         root, no depth bound — including symbols no walk reaches (entry points, dead
@@ -755,7 +761,8 @@ def build_server(crib: Crib | None = None):
         to. Pass `project_path=<a path in the repo>` (or `project=<name>`) only to
         target a DIFFERENT project than your current one."""
         return crib.code_graph(symbol, direction, depth, project, shape=shape,
-                               group_by=group_by, path=path, scope=scope, lang=lang)
+                               group_by=group_by, group_depth=group_depth,
+                               path=path, scope=scope, lang=lang)
 
     @crib_tool("read")
     async def learning_add(symbol: str, text: str, project: str | None = None,
