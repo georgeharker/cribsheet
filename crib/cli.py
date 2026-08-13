@@ -207,6 +207,57 @@ def _emit_write_result(item: dict) -> None:
               + (f" — {s['heading']}" if s.get("heading") else ""))
 
 
+# ── how a symbol looks, in one place ─────────────────────────────────────────
+# Eight emitters used to spell this out themselves, so a change to what a symbol
+# renders as meant eight consistent edits. The atoms are shared; `render_symbol`
+# composes the shapes that actually differ.
+
+def _sym_name(d: dict) -> str:
+    """The symbol's rendered name. `id` where the payload is a graph node (it may be
+    cross-project or external), the qualified name everywhere else."""
+    return str(d.get("id") or d.get("fqname") or d.get("symbol") or "")
+
+
+def _sym_loc(d: dict, gap: str = "  ") -> str:
+    """`file:line` — nothing without a line, because a rolled-up module IS its file
+    and an unresolved target has no location to point at."""
+    if d.get("external") or not d.get("line"):
+        return ""
+    return f"{gap}{d.get('file', '')}:{d['line']}"
+
+
+def _sym_tags(d: dict, ascii_mode: bool = False) -> str:
+    """The flags a symbol can carry, in a fixed order so two rows line up."""
+    out = ""
+    if d.get("repeat"):
+        out += " ↑" if not ascii_mode else " ^"
+    if d.get("external"):
+        out += " ·ext"
+    if d.get("has_learning"):
+        out += " *" if ascii_mode else " ※"
+    if d.get("truncated"):
+        out += "  …truncated"
+    return out
+
+
+def render_symbol(d: dict, style: str = "inline", ascii_mode: bool = False) -> str:
+    """One symbol, rendered for `style`:
+
+      `inline` — name, kind, location (xref, dossier)
+      `title`  — name and kind only, for a header that appends its own context
+      `hit`    — a ranked-list row (kind column, then name and location)
+      `tree`   — a graph row: name, flags, location
+    """
+    name, kind = _sym_name(d), d.get("kind", "")
+    if style == "title":
+        return f"{name}  ({kind})"
+    if style == "hit":
+        return f"{kind:8} {name}{_sym_loc(d)}"
+    if style == "tree":
+        return f"{name}{_sym_tags(d, ascii_mode)}{_sym_loc(d, '   ')}"
+    return f"{name}  ({kind}){_sym_loc(d)}"
+
+
 def _emit_code(data: Any, verb: str, as_json: bool) -> None:
     """Human-readable rendering for the code verbs; raw JSON with the global --json."""
     if as_json:
@@ -235,8 +286,7 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
             refs = len(h.get('references') or [])
             cg = (f"  {len(h.get('called_by') or [])}←/{len(h.get('calls') or [])}→"
                   + (f"/{refs}⇐" if refs else ""))
-            print(f"[{h.get('rank', '?')}] {h.get('kind', ''):8} {h.get('fqname', '')}"
-                  f"  {h.get('file', '')}:{h.get('line', '')}{cg}")
+            print(f"[{h.get('rank', '?')}] {render_symbol(h, 'hit')}{cg}")
             if h.get("description"):
                 print(f"      {h['description']}")
             if h.get("learning"):
@@ -245,8 +295,7 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
         if not data:
             print("(symbol not found in the symbol_index)"); return
         for e in data:
-            print(f"{e.get('fqname', '')}  ({e.get('kind', '')})  "
-                  f"{e.get('file', '')}:{e.get('line', '')}")
+            print(render_symbol(e))
             for c in e.get("called_by") or []:
                 print(f"   ← {c}")
             for c in e.get("calls") or []:
@@ -386,7 +435,7 @@ def _emit_code_dossier(d: Any, as_json: bool) -> None:
         print(json.dumps(d, indent=2, default=str)); return
     if not d or not d.get("fqname"):
         print("(symbol not found — is this project code-indexed?)"); return
-    print(f"{d['fqname']}  ({d.get('kind', '')})  {d.get('file', '')}:{d.get('line', '')}")
+    print(render_symbol(d))
     _emit_resolved(d)
     if d.get("signature"):
         print(f"  {d['signature']}")
@@ -461,7 +510,7 @@ def _emit_code_rehome(data: Any, as_json: bool) -> None:
         if not cands:
             print("  (none — `crib learning forget` if it's truly gone)"); return
         for c in cands:
-            print(f"  [{c.get('score', '')}] {c.get('fqname', '')}   {c.get('file', '')}")
+            print(f"  [{c.get('score', '')}] {_sym_name(c)}   {c.get('file', '')}")
         print(f"\nconfirm: crib learning rehome {data.get('old', '')} <fqname>")
         return
     print(f"rehomed {data.get('old', '')} → {data.get('new', '')}  ({data.get('relpath', '')})")
@@ -805,7 +854,6 @@ def _emit_code_edges(data: dict, args: Any) -> None:
     symbols CONVERGE (in-degree > 1) and where the walk stopped."""
     ascii_mode = getattr(args, "ascii", False)
     arrow = "->" if ascii_mode else "→"
-    pin = " *" if ascii_mode else " ※"
     nodes, edges = data.get("nodes") or [], data.get("edges") or []
     scope = (f"{data['root']}  [{data['direction']}, depth {data['depth']}]"
              if data.get("scope") != "project"
@@ -821,12 +869,9 @@ def _emit_code_edges(data: dict, args: Any) -> None:
     print("\nnodes:")
     for n in nodes:
         d = f"{n['depth']}  " if "depth" in n else ""
-        loc = (f"   {n.get('file', '')}:{n['line']}" if n.get("line") else "")
-        tag = ("  ·ext" if n.get("external") else "")
-        tag += (pin if n.get("has_learning") else "")
-        tag += ("  …truncated" if n.get("truncated") else "")
         extra = f"   ×{n['symbols']}" if grouped else ""
-        print(f"  {d}{n['id']}{extra}{loc}{tag}")
+        print(f"  {d}{_sym_name(n)}{extra}{_sym_loc(n, '   ')}"
+              f"{_sym_tags(n, ascii_mode)}")
     print("\nedges:")
     for e in edges:
         w = f"  ×{e['weight']}" if "weight" in e else ""
@@ -852,9 +897,8 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
     arrows = {"callees": (">", "▸"), "callers": ("<", "◂"), "references": ("=", "⇐")}
     arrow = arrows[direction][0 if ascii_mode else 1]
     branch, last, vert, blank = _tree_glyphs(ascii_mode)
-    pin = " *" if ascii_mode else " ※"          # step 3: node carries a learning
-    print(f"{tree['fqname']}  ({tree.get('kind', '')})   [{direction}]"
-          f"{pin if tree.get('has_learning') else ''}")
+    print(f"{render_symbol(tree, 'title')}   [{direction}]"
+          f"{_sym_tags(tree, ascii_mode)}")
     _emit_resolved(tree)
 
     def render(node: dict, prefix: str) -> None:
@@ -862,12 +906,8 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
         for i, c in enumerate(kids):
             islast = i == len(kids) - 1
             conn = last if islast else branch
-            tag = " ↑" if c.get("repeat") else (" ·ext" if c.get("external") else "")
-            if c.get("has_learning"):
-                tag += pin
-            loc = (f"   {c.get('file', '')}:{c.get('line', '')}"
-                   if c.get("line") and not c.get("external") else "")
-            print(f"{prefix}{conn}{arrow} {c.get('fqname', '')}{tag}{loc}")
+            print(f"{prefix}{conn}{arrow} "
+                  f"{render_symbol(c, 'tree', ascii_mode)}")
             render(c, prefix + (blank if islast else vert))
 
     render(tree, "")

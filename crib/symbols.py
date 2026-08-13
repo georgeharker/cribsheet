@@ -335,3 +335,18 @@ def entry_ref(entry: dict[str, Any], project: str | None = None) -> dict[str, An
             "fqname": entry.get("fqname", ""), "name": entry.get("name", ""),
             "path": entry.get("file", ""), "lang": entry.get("lang", ""),
             **({"project": project} if project else {})}
+
+
+def display_name(entry: dict[str, Any]) -> str:
+    """What a developer writing this language would CALL the symbol — its own scope
+    joined to its name in its own separator.
+
+    A LABEL, never a key. It can collide where a language has no namespace (every C
+    `main` renders the same), so it is what a reader is shown and never what a
+    consumer keys on; `id` is for that. Falls back to the qualified name when no
+    scope was computed, so an entry from a store written before `scope` existed
+    still renders."""
+    scope, name = entry.get("scope") or [], entry.get("name") or ""
+    if not scope or not name:
+        return str(entry.get("fqname") or name)
+    return fqname_sep(str(entry.get("lang") or "")).join([*scope, name])
