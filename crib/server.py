@@ -1015,7 +1015,8 @@ def build_server(crib: Crib | None = None):
 
     @crib_tool("read")
     async def design_append(ref: str, content: str, project: str | None = None,
-                            project_path: str | None = None) -> dict[str, Any]:
+                            project_path: str | None = None,
+                            sources: list[str] | None = None) -> dict[str, Any]:
         """Extend a decision through the facet — the same edge-aware answer as
         `design_edit` (`newly_tainted` + chains), for when new information EXTENDS
         a decision rather than replacing it.
@@ -1023,8 +1024,15 @@ def build_server(crib: Crib | None = None):
         CUE: you were about to `design_add` a decision that qualifies or elaborates
         one that already exists. Append to that one instead; a near-duplicate
         decision forks the graph and splits its dependents between two records.
-        Resolves its project like a read."""
-        return await crib.design_append(ref, content, project)
+        Resolves its project like a read.
+
+        `sources` ADDS doc-section citations to the decision (deduped; existing
+        ones keep their capture-time hashes) — the post-hoc wire for the common
+        node-first-doc-later sequence, where the doc of record grows AFTER the
+        decision was written and its edits would otherwise re-check plan items
+        but silently miss the decision itself. Same `doc.md#Heading` spelling as
+        `design_add`; `design_edit(sources=)` is the replace-everything form."""
+        return await crib.design_append(ref, content, project, sources=sources)
 
     @crib_tool("read")
     def design_lookup(query: str, project: str | None = None, k: int = 8,
@@ -1252,6 +1260,18 @@ def build_server(crib: Crib | None = None):
         project."""
         return await crib.plan_add(title, content, deps, after, before, items,
                                    project, sources)
+
+    @crib_tool("read")
+    async def plan_reaffirm(ref: str, project: str | None = None,
+                            project_path: str | None = None) -> dict[str, Any]:
+        """Re-record a plan item's dep AND source hashes — 'I re-read what moved
+        and this item still stands against it.' The plan-side twin of
+        `design_reaffirm`, and what clears a benign taint on an item whose DESIGN
+        dep was edited/reaffirmed: without it the item sits blocked in `plan_next`
+        (a design dep blocks while tainted) with no verb but the dep_remove/
+        dep_add dance. A claim about the item's GROUND; `plan_status` is the claim
+        about the WORK. Resolves its project like a read, as `plan_status` does."""
+        return await crib.plan_reaffirm(ref, project)
 
     @crib_tool("read")
     async def plan_status(ref: str, status: str, project: str | None = None,

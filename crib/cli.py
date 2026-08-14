@@ -1162,6 +1162,9 @@ def build_parser() -> argparse.ArgumentParser:
     s = designsub.add_parser("append",
                        help="extend a decision; lists what the change tainted")
     s.add_argument("ref"); body_args(s, "the text to append"); proj(s)
+    s.add_argument("--source", action="append", default=[],
+                   help="ADD a doc-section citation (doc.md#Heading; repeatable; "
+                        "existing citations keep their capture-time hashes)")
 
     s = designsub.add_parser("lookup", aliases=["search"],
                        help="semantic search over DECISIONS (hits flag stale ones)")
@@ -1243,6 +1246,11 @@ def build_parser() -> argparse.ArgumentParser:
                        help="semantic search over PLAN ITEMS")
     s.add_argument("query"); proj(s)
     s.add_argument("-k", type=int, default=8)
+
+    s = plansub.add_parser("reaffirm",
+                       help="re-record an item's dep/source hashes — its ground "
+                            "moved, you re-read it, it still stands")
+    s.add_argument("ref"); proj(s)
 
     s = plansub.add_parser("status",
                        help="set an item's status (todo/in-progress/done/verified)")
@@ -1739,9 +1747,10 @@ VERBS: dict[str, Verb] = {
                           lambda a: {"ref": a.ref,
                                      "content": _body(a.content, a.file,
                                                       what="the text to append"),
-                                     "project": a.project},
+                                     "project": a.project,
+                                     "sources": a.source or None},
                           _E_dwrite, is_async=True, policy="read",
-                          mcp=f"ref content {_PROJ}"),
+                          mcp=f"ref content {_PROJ} sources=None"),
     "design lookup": Verb("design_lookup", lambda a: {"query": a.query, "k": a.k,
                                                       "project": a.project},
                           _E_facet, policy="read", mcp=f"query {_PROJ} k=8"),
@@ -1816,6 +1825,9 @@ VERBS: dict[str, Verb] = {
     "plan lookup": Verb("plan_lookup", lambda a: {"query": a.query, "k": a.k,
                                                   "project": a.project},
                         _E_facet, policy="read", mcp=f"query {_PROJ} k=8"),
+    "plan reaffirm": Verb("plan_reaffirm",
+                          lambda a: {"ref": a.ref, "project": a.project},
+                          _E, is_async=True, policy="read", mcp=f"ref {_PROJ}"),
     "plan status": Verb("plan_status", lambda a: {"ref": a.ref, "status": a.status,
                                                   "project": a.project},
                         _E_dwrite, is_async=True, policy="read",

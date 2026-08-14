@@ -641,3 +641,74 @@ def test_plan_graph_includes_the_decisions_items_rest_on(crib):
     run(crib.design_add("Unrelated decision", "nothing plans on this", project="p"))
     g2 = crib.plan_graph(project="p")
     assert not any(n["name"] == "Unrelated decision" for n in g2["nodes"])
+
+
+# --- the three asks from live facet use ------------------------------------------
+
+def test_plan_reaffirm_clears_a_benign_taint_without_the_dep_dance(crib):
+    """Plan items record the hash of each design dep as it read when the edge was
+    made (`checked`); when the decision's body moves, the ITEM is tainted — the
+    ⚠︎-stale flag lookups show — and there was no plan-side reaffirm: the only
+    'fix' was dep_remove + dep_add per edge, a workaround wearing a verb costume.
+    This IS reaffirm: 'I re-read the moved decision; this item still stands
+    against it; re-record the baseline.'"""
+    d = run(crib.design_add("Ground", "the decision", project="p"))
+    run(crib.plan_add(project="p", title="build on it", deps=[d["relpath"]]))
+    run(crib.design_append(d["relpath"], "the ground shifted", project="p"))
+
+    designs = crib.designs
+    proj_graph = designs._load_graph("p")
+    item_id = crib.plan_list(project="p")["items"][0]["id"]
+    assert item_id in designs._taint(proj_graph)          # the ⚠︎ the session hit
+
+    item_rel = crib.plan_list(project="p")["items"][0]["relpath"]
+    out = run(crib.plan_reaffirm(item_rel, project="p"))
+    assert d["id"] in out["verified"] and not out["missing"]
+
+    after = designs._load_graph("p")
+    assert item_id not in designs._taint(after)           # baseline re-recorded
+    assert after.nodes[item_id].checked[d["id"]] \
+        == after.nodes[d["id"]].body_hash
+    # …and status was NOT touched: a ground-claim, not a work-claim
+    assert crib.plan_list(project="p")["items"][0]["status"] == "todo"
+
+
+def test_design_append_adds_citations_post_hoc_keeping_old_hashes(crib, tmp_path):
+    """The real sequence is node-first-doc-later: the decision exists, then the
+    doc of record grows. `sources` on append ADDS the wire (deduped); the
+    citation already recorded keeps its capture-time hash — that hash IS its
+    meaning — while only the new section is hashed as it reads now."""
+    docs = tmp_path / "proj"
+    docs.mkdir(parents=True)
+    (docs / ".crib").write_text("project: p\ndocs:\n  - '*.md'\n")
+    doc = docs / "DESIGN.md"
+    doc.write_text("# Spec\n\n## Early\nfirst section\n")
+    run(crib.project_setup(cwd=docs))
+    d = run(crib.design_add("Node first", "written before the doc grew",
+                            project="p", sources=["DESIGN.md#Early"]))
+    doc.write_text("# Spec\n\n## Early\nfirst section\n\n## Later\ngrown after\n")
+
+    out = run(crib.design_append(d["relpath"], "now wired to the grown doc",
+                                 project="p", sources=["DESIGN.md#Later"]))
+    got = crib.design_read(d["relpath"], project="p")
+    cites = {s["label"] if isinstance(s, dict) else str(s)
+             for s in got.get("sources") or []}
+    assert any("Later" in c for c in cites) and any("Early" in c for c in cites)
+    # appending the SAME citation again is a no-op, not a duplicate
+    again = run(crib.design_append(d["relpath"], "again", project="p",
+                                   sources=["DESIGN.md#Later"]))
+    got2 = crib.design_read(d["relpath"], project="p")
+    assert len(got2.get("sources") or []) == len(got.get("sources") or [])
+
+
+def test_the_wrong_facet_miss_names_the_right_verb(crib):
+    """design_read on a ref that exists as a PLAN item used to answer 'no design
+    note matches' — which reads as store corruption and cost a real session a
+    real detour. The miss now says which aisle it is on."""
+    run(crib.plan_add(project="p", title="a plan item"))
+    rel = crib.plan_list(project="p")["items"][0]["relpath"]
+    with pytest.raises(ValueError, match="PLAN item.*plan_"):
+        crib.design_read(rel, project="p")
+    d = run(crib.design_add("a decision", "body", project="p"))
+    with pytest.raises(ValueError, match="DESIGN.*design_"):
+        run(crib.plan_status(d["relpath"], "done", project="p"))

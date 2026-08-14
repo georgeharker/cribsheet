@@ -2155,10 +2155,12 @@ class Crib:
 
     async def design_append(self, ref: str, content: str,
                             project: str | None = None,
-                            cwd: Path | None = None) -> dict[str, Any]:
-        """Extend a decision through the facet; result names what it tainted."""
+                            cwd: Path | None = None,
+                            sources: list[Any] | None = None) -> dict[str, Any]:
+        """Extend a decision through the facet; result names what it tainted.
+        `sources` ADDS citations (post-hoc doc wiring), never replaces."""
         return await self.designs.design_append(self.resolve_project(project, cwd),
-                                                ref, content)
+                                                ref, content, sources)
 
     def design_list(self, tainted: bool = False, project: str | None = None,
                     cwd: Path | None = None) -> dict[str, Any]:
@@ -2219,6 +2221,14 @@ class Crib:
         normal outcome of a taint — not error recovery)."""
         return await self.designs.design_reaffirm(self.resolve_project(project, cwd),
                                                   ref)
+
+    async def plan_reaffirm(self, ref: str, project: str | None = None,
+                            cwd: Path | None = None) -> dict[str, Any]:
+        """Re-record a plan item's dep hashes after re-reading what moved — the
+        plan-side twin of design_reaffirm (clears a benign taint without the
+        dep_remove/dep_add dance, and without pretending the work moved)."""
+        return await self.designs.plan_reaffirm(self.resolve_project(project, cwd),
+                                                ref)
 
     async def design_promote(self, ref: str, project: str | None = None,
                              cwd: Path | None = None) -> dict[str, Any]:

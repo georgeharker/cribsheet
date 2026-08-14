@@ -717,7 +717,7 @@ class Designs:
     # ── refs ──────────────────────────────────────────────────────────────────
 
     def _resolve_ref(self, graph: Graph, ref: str,
-                     kind: str | None = None) -> Node:
+                     kind: str | None = None, _cross: bool = False) -> Node:
         """Resolve a user-supplied reference to exactly one node: a full ULID, a
         unique ULID prefix, a relpath (`design/x.md`, `x.md` or bare `x`), or the
         title / its slug. Ambiguity lists the candidates rather than guessing —
@@ -727,7 +727,24 @@ class Designs:
         if not ref:
             raise CribUserError("empty ref — pass an id, relpath, or title")
         pool = [n for n in graph.nodes.values() if kind is None or n.kind == kind]
+
+        def _other_facet_hint() -> None:
+            """The miss that reads as store-corruption when it is actually the
+            wrong FACET: the ref exists, just across the aisle. Say so — a session
+            was lost to concluding crib was broken over exactly this."""
+            if kind is None or _cross:
+                return
+            other = "plan" if kind == "design" else "design"
+            try:
+                hit = self._resolve_ref(graph, ref, other, _cross=True)
+            except CribUserError:
+                return
+            raise CribUserError(
+                f"{ref!r} is not a {kind} note — it exists as a "
+                f"{other.upper()} item ({hit.relpath}): use the {other}_* verbs")
+
         if not pool:
+            _other_facet_hint()
             raise CribUserError(
                 f"no {kind or 'design/plan'} notes yet — "
                 f"`{kind or 'design'}_add` creates the first one")
@@ -753,6 +770,7 @@ class Designs:
         if len(matches) == 1:
             return matches[0]
         if not matches:
+            _other_facet_hint()
             raise CribUserError(
                 f"no {kind or 'design/plan'} note matches {ref!r} — "
                 f"reference it by id, relpath or title "
@@ -1130,7 +1148,8 @@ class Designs:
         return out
 
     async def _write_body(self, proj: str, ref: str, rewrite: Any,
-                          sources: list[Any] | None = None) -> dict[str, Any]:
+                          sources: list[Any] | None = None,
+                          precaptured: bool = False) -> dict[str, Any]:
         """The edge-aware write path shared by `design_edit`/`design_append`:
         snapshot the taint state, write the new body through the locked index
         path, then diff — so the answer to "I changed this" is "…and here is what
@@ -1142,15 +1161,17 @@ class Designs:
 
         `sources`, when given, REPLACES the recorded citations (re-captured at
         their current hashes) — the decision is being restated, so what it was
-        drawn from is restated with it. Omitted, they are left untouched."""
+        drawn from is restated with it. Omitted, they are left untouched.
+        `precaptured` marks rows already in stored form (design_append's additive
+        merge, where existing citations must KEEP their capture-time hashes)."""
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, "design")
         before = set(self._taint(graph))
         note = self._note(proj, node)
         fm: dict[str, Any] = {}
         if sources is not None:
-            cited = self._capture_sources(proj, sources)
-            fm["sources"] = _source_rows(cited)
+            fm["sources"] = (sources if precaptured
+                             else _source_rows(self._capture_sources(proj, sources)))
         out = await self._save(proj, node, fm, body=rewrite(note.body))
         after_graph = self._load_graph(proj)
         after = self._taint(after_graph)
@@ -1178,13 +1199,34 @@ class Designs:
                                       lambda _: (new_content or "").strip() + "\n",
                                       sources)
 
-    async def design_append(self, proj: str, ref: str,
-                            content: str) -> dict[str, Any]:
+    async def design_append(self, proj: str, ref: str, content: str,
+                            sources: list[Any] | None = None) -> dict[str, Any]:
         """Extend a decision's body through the facet, answering with the
-        dependents the change just tainted."""
+        dependents the change just tainted.
+
+        `sources` here ADDS citations (deduped by section) rather than replacing
+        them — append semantics for the append verb, and the shape of the real
+        sequence it exists for: the decision is written first, the doc-of-record
+        grows later, and without a post-hoc wire the doc's edits re-check plan
+        items but silently miss the decision itself. Existing citations keep the
+        hash they were CAPTURED at (their whole meaning); only the new ones are
+        hashed as the doc reads now. `design_edit(sources=)` remains the
+        replace-everything spelling."""
+        merged: list[Any] | None = None
+        if sources:
+            graph = self._load_graph(proj)
+            node = self._resolve_ref(graph, ref, "design")
+            kept = [{k: v for k, v in s.items() if k != "current"}
+                    for s in node.sources]
+            have = {(s.get("ref"), s.get("heading")) for s in kept}
+            new = [r for r in _source_rows(self._capture_sources(proj, sources))
+                   if (r.get("ref"), r.get("heading")) not in have]
+            merged = kept + new
         return await self._write_body(
             proj, ref,
-            lambda body: body.rstrip() + "\n\n" + (content or "").strip() + "\n")
+            lambda body: body.rstrip() + "\n\n" + (content or "").strip() + "\n",
+            sources=None if merged is None else merged,
+            precaptured=merged is not None)
 
     def design_list(self, proj: str, tainted: bool = False) -> dict[str, Any]:
         """Every decision as a flat table — title, ref, status, taint flag, edge
@@ -1270,6 +1312,30 @@ class Designs:
         re-read this and it still holds" is a statement about."""
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, "design")
+        checked, missing = self._recheck(graph, node)
+        sources, missing_sources = self._recapture(proj, node)
+        fm: dict[str, Any] = {"checked": checked}
+        if node.sources:
+            fm["sources"] = sources
+        out = await self._save(proj, node, fm)
+        return {**out, "verified": sorted(checked), "missing": missing,
+                "sources": [source_label(s) for s in sources],
+                "missing_sources": missing_sources}
+
+    async def plan_reaffirm(self, proj: str, ref: str) -> dict[str, Any]:
+        """Re-record a plan item's dep AND source hashes after a human re-read
+        what moved — the plan-side twin of `design_reaffirm`, and the missing
+        half of a symmetry: plan items carry design deps that taint when the
+        decision moves, but the only way to clear a benign taint used to be
+        `plan_dep_remove` + `plan_dep_add` per edge — a workaround wearing a verb
+        costume. Semantically this IS reaffirm: "I re-read the moved decision;
+        this item still stands against it; re-record the baseline."
+
+        Distinct from `plan_status` on purpose: a status write is a claim about
+        the WORK (and re-records source hashes as part of it); this is a claim
+        about the item's GROUND, made without pretending the work moved."""
+        graph = self._load_graph(proj)
+        node = self._resolve_ref(graph, ref, "plan")
         checked, missing = self._recheck(graph, node)
         sources, missing_sources = self._recapture(proj, node)
         fm: dict[str, Any] = {"checked": checked}
