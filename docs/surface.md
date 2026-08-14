@@ -79,10 +79,11 @@ projects.
 | `crib code dossier <sym>` | `code_dossier` | Everything about ONE symbol in one call: signature, description, callers/callees/references (each neighbour annotated), plus any attached learning. |
 | `crib code xref <sym>` | `code_xref` | A symbol's callers (←), callees (→), references (⇐), and any pinned learning. |
 | `crib code graph <sym>` | `code_graph` | Call graph — callees / callers / references, recursive, pstree-rendered; learning-bearing nodes flagged. |
-| `crib code graph <sym> --edges` | `code_graph(shape="edges")` | The same walk as a deduplicated SUBGRAPH — `{nodes[], edges[]}`, each symbol once at its shortest distance, every edge kept and oriented caller→callee. Convergence is explicit; feeds a layout tool directly. |
-| `crib code graph <sym> --group-by file\|dir\|scope` | `code_graph(group_by=…)` | Roll the symbol edges up onto ONE axis, weighted — `file` (which files depend on which), `dir` (same at directory grain, `--group-depth N` for how coarse), or `scope` (what the LANGUAGE says each symbol belongs to; C and zsh group under `(no scope)`). |
-| `crib code graph --all` | `code_graph()` (no symbol) | The WHOLE project: every indexed symbol and edge, no root, no depth bound — including what no walk reaches (entry points, dead code). |
+| `crib code graph <sym> --edges` | `code_graph(shape="edges")` | The same walk as a deduplicated SUBGRAPH — `{nodes[], edges[]}`, each symbol once at its shortest distance, every edge kept and oriented caller→callee. Convergence is explicit; feeds a layout tool directly. Node ids are `symbol_ref` (pasteable back into any verb) and every node carries the bare `name` — nothing a consumer has to string-parse. |
+| `crib code graph <sym> --group-by file\|dir\|scope` | `code_graph(group_by=…)` | Roll the symbol edges up onto ONE axis, weighted — `file` (which files depend on which), `dir` (same at directory grain, `--group-depth N` for how coarse), or `scope` (what the LANGUAGE says each symbol belongs to). Sentinel groups — `(no scope)`, `(root)`, `(unresolved)` — carry `synthetic: true`, so a consumer drops or relabels them without matching magic strings. |
+| `crib code graph --all` | `code_graph()` (no symbol) | The WHOLE project: every indexed symbol and edge, no root, no depth bound — including what no walk reaches (entry points, dead code). `--under <prefix>` / `--exclude <prefix>` scope the export by path **before** serialization (a consumer wanting `src/**` doesn't pay for `tests/**`); edges crossing the boundary keep lean `truncated` frontier nodes in both directions, so a scoped module never misdraws as self-contained. (`path=` keeps its other meaning — narrowing *which symbol* — and the export refuses it with a pointer.) |
 | `crib code index <file>` | `code_index` | (Re)index ONE source file. Usually you want `crib project index` (whole repo) instead. |
+| `crib code convert [--apply]` | `code_convert` | Convert the symbol store to the current shape **in place** — no LSP, no LLM; descriptions, keywords and edges byte-identical or the record is left alone and reported. Per record and resumable (re-running is the resume); dry run without `--apply`. A full `project index` also converts, at LSP+LLM price. |
 
 ## Learnings — durable notes attached to a code symbol
 
@@ -95,8 +96,11 @@ projects.
 | `crib learning reaffirm <sym>` | `learning_reaffirm` | Clear a learning's ⚠︎ stale flag without a rewrite (you re-checked; it still holds). |
 | `crib learning report` | `learning_report` | Health report: each learning `ok` / `moved` / `orphan` (`--orphans` to filter). |
 | `crib learning rehome <old> [new]` | `learning_rehome` | Re-point an orphaned learning (no target → ranked candidates; target → move it). |
+| `crib learning migrate [--apply]` | `learning_migrate` | Rebind learning notes to the current symbol identity — optional tidiness, not correctness (the join resolves any prior binding forever): buys canonical filenames + `symbol_ref` frontmatter. Per note: `noop` / `convert` / `orphan` / `collision` (both kept, never merged). Dry run without `--apply`. |
 
 ## Design decisions — what was settled, and what rests on it
+
+*(Concepts and rationale in depth: [decisions-and-plans.md](decisions-and-plans.md).)*
 
 Decisions live in the `design/` pillar store — a sibling of `notes/`, sharing
 the store implementation but never the search scope — with typed dependencies on
@@ -115,7 +119,13 @@ which an origin changes silently.
 
 Taint is **coarse by design**: it means *a dep moved*, not *this is wrong*. The
 normal ending for a tainted decision is `reaffirm` — cheap, expected, not error
-recovery — and `supersede` is the exception.
+recovery — and `supersede` is the exception. This is a deliberate economics choice:
+if re-reading were expensive or blame-shaped, nobody would declare deps, and an
+undeclared dep is precisely the silent breakage the facet exists to prevent.
+
+**Refs resolve by id, relpath, or title** — and a ref that exists in the *other*
+facet says so (`'x.md' is not a design note — it exists as a PLAN item: use the
+plan_* verbs`) instead of reading like store corruption.
 
 **Two edge families.** `deps` are graph edges: body-hash checked, and they **gate**
 `plan_next`. `sources` are attribution edges — where an entry was drawn from —
@@ -141,7 +151,7 @@ fresh. Hand-authored decisions still land `active` — only extraction quarantin
 | `crib design add <title> [body]` | `design_add` | Record a decision (`--dep` repeatable, by id/relpath/title); `checked` is seeded, so a new decision is born verified. Body required, and via `--file`/`-`/`$EDITOR` as well as inline. `--source "<doc>#<heading>"` (repeatable) records where it came from; `--proposed` lands it in the import tier. Returns `similar` — a near-duplicate decision forks the graph. |
 | `crib design read <ref>` | `design_read` | **Dossier**: body + status + every dep and dependent annotated (title, status, tainted?) + its citations with their state (`ok`/`changed`/`missing`) + this decision's own taint with chains. The one-call orientation before touching anything. |
 | `crib design edit <ref> [body]` | `design_edit` | Rewrite a decision through the facet; the result carries `newly_tainted` — what the change just put out of date, with chains, computed against the pre-edit state. `--source` replaces its citations. |
-| `crib design append <ref> [text]` | `design_append` | Extend a decision, same edge-aware answer. Prefer over adding a near-duplicate. |
+| `crib design append <ref> [text]` | `design_append` | Extend a decision, same edge-aware answer. Prefer over adding a near-duplicate. `--source` (repeatable) **adds** citations post-hoc — the node-first-doc-later wire; added ones are hashed as the doc reads now, existing ones keep their capture-time hashes. (`edit --source` is the replace-everything form.) |
 | `crib design lookup <query>` | `design_lookup` | Semantic search scoped to decisions; hits annotated with `status`, `tainted`, dep/dependent counts. |
 | `crib design list [--tainted]` | `design_list` | Every decision as a flat table: title, ref, status, taint, edge counts. `--tainted` is the re-read queue. |
 | `crib design dep-add <ref> <dep>` | `design_dep_add` | Declare that a decision builds on another (cycle-checked; the new edge starts UNVERIFIED, so it shows up in `check`). |
@@ -151,6 +161,7 @@ fresh. Hand-authored decisions still land `active` — only extraction quarantin
 | `crib design promote <ref>` | `design_promote` | `proposed` → `active`: the human act that turns an extracted decision into ground others may build on. Seeds `checked` + source hashes fresh. |
 | `crib design import <doc>` | `design_import` | Prepare a doc for extraction: its sections (each with `heading_path`, current `section_hash` and a verbatim-citable `source` string), the entries already citing it, and **the extraction procedure as the result's `instruction`**. Runs no model and writes nothing — the session LLM reads and judges; this supplies the exact citations it can't derive. |
 | `crib design tree [ref]` | `design_tree` | Dependency tree, pstree-rendered and taint-flagged: what it builds on, or `--dependents` for what would be affected by changing it. |
+| `crib design graph` | `design_graph` | The whole decision map as `{nodes, edges}` — the same consumer contract as `code_graph --edges`: every node an object with `id` (the pasteable `design:x.md` ref) and `name` (the title), every edge endpoint declared. Edge kinds `dep` and `superseded_by` (old → new); `tainted` on a node is live. `--sources` adds doc-section attribution nodes + `source` edges. |
 | `crib design supersede <ref> [by]` | `design_supersede` | Soft-delete a replaced decision: keeps it readable, taints everything that built on it (they come back as `dep-superseded`). |
 | `crib design forget <ref>` | `design_forget` | Delete a decision. Refuses while dependents exist; `--force` deletes and leaves them tainted. |
 
@@ -161,6 +172,8 @@ carries a per-project `design_tainted` count, and any retrieval hit (`note_looku
 it is doing so, which is the only moment the warning can change the outcome.
 
 ## Plans — persistent, resumable work items
+
+*(Concepts and rationale in depth: [decisions-and-plans.md](decisions-and-plans.md).)*
 
 Plan items live in the `plans/` pillar store with a status, must-precede
 dependencies, and a lexorank order that never renumbers neighbours. Order is
@@ -175,6 +188,14 @@ plain **note** dep never blocks — it is a reference, not a gate. A dep id that
 resolves to nothing is reported as `missing_deps`: visible, never blocking. A
 changed **source** never blocks anything.
 
+**Two stalenesses, two claims.** The *decision's own* taint blocks dependents until
+someone `design reaffirm`s the decision. Separately, each item records the hash of
+every dep **as it read when the edge was made**, so the *item* shows ⚠︎ stale in
+lookups when a decision it rests on is edited — even benignly. `plan reaffirm`
+clears that: a claim about the item's **ground** ("I re-read what moved; this still
+stands"), where `plan status` is the claim about the **work**. Before it existed the
+only way out was a dep-remove/dep-add dance per edge.
+
 | CLI | MCP | Description |
 |---|---|---|
 | `crib plan` (bare) | — | `plan list` — the orienting read. |
@@ -182,7 +203,9 @@ changed **source** never blocks anything.
 | `crib plan status <ref> <status>` | `plan_status` | `todo` / `in-progress` / `done` / `verified`. Completing an item answers with `unblocked` — the items its completion just freed (the plan-side mirror of `design_edit`'s `newly_tainted`). `in-progress` is a CLAIM: it takes the item out of everyone's `plan_next`. Marking done with unfinished deps warns, doesn't block. Also re-records the item's source hashes — re-running it is what clears a `revisit`. |
 | `crib plan list [--all]` | `plan_list` | The plan as a **working set**: in-progress first, then ready, then blocked (each naming what it waits on inline), finished hidden unless `--all`. Topo+rank order holds within each group. A done/verified item whose cited source has since changed carries `revisit` — the graph reports, it never re-opens a status. |
 | `crib plan next [-k]` | `plan_next` | What's actionable now: `todo` items nothing blocks, in order. **Excludes in-progress** (claimed); each item carries the loop to run. |
+| `crib plan reaffirm <ref>` | `plan_reaffirm` | Re-record an item's dep **and source** hashes — the plan-side twin of `design reaffirm`, for the ⚠︎ that means "a decision this rests on moved". Ground-claim only; status untouched. |
 | `crib plan lookup <query>` | `plan_lookup` | Semantic search scoped to plan items, hits annotated as `design_lookup`'s are. |
+| `crib plan graph` | `plan_graph` | The plan as `{nodes, edges}` **including the design nodes items rest on** (those edges gate — a plan drawn without them looks self-contained when it isn't) but no more of the decision map. Same contract as `design_graph`; note-deps appear as lean external nodes. |
 | `crib plan dep-add <ref> <dep>` | `plan_dep_add` | Declare that an item must follow another (cycle-checked). |
 | `crib plan dep-remove <ref> <dep>` | `plan_dep_remove` | Drop a must-precede edge. |
 | `crib plan move <ref> --after/--before` | `plan_move` | Re-order an item — rank only, deps untouched, so it can't break the plan. |

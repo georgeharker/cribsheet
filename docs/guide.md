@@ -24,14 +24,24 @@ install, see the [README](../README.md); for the exhaustive command list, see
   understand a tricky function, you pin the insight to it; it resurfaces whenever
   anyone looks that symbol up, and survives re-indexing.
 - **Design decisions** — settled choices, each declaring the decisions it *rests on*.
-  A dep is a promise: *if that changes, reconsider this.* So editing one names the
-  decisions it just put out of date, `crib design check` explains why with the chain,
-  and `crib design reaffirm` records that you re-read it and it still holds. A
-  decision can also cite the doc **section** it came from, so an edit to that passage
-  re-checks exactly what was drawn from it.
-- **Plans** — work items that outlive the session that wrote them: a status, ordering,
-  and must-precede deps. `crib plan next` tells any later session (yours, or another
-  agent's) what's actionable right now, and finishing an item names what it unblocked.
+  A note can hold the prose of a decision; what it cannot hold is the *promise* —
+  and a dep is exactly that: *if that changes, reconsider this.* The graph keeps the
+  promise for you: editing a decision names the decisions it just put out of date,
+  `crib design check` explains why with the chain, and `crib design reaffirm`
+  records that you re-read one and it still holds. That last part matters: taint
+  means *a dep moved*, never *you were wrong* — re-reading and reaffirming is the
+  cheap, normal ending, which is what makes people willing to record decisions at
+  all. A decision can also cite the doc **section** it came from (never the whole
+  file), so an edit to that one passage re-checks exactly what was drawn from it
+  and an edit anywhere else re-checks nothing.
+- **Plans** — work items that outlive the session that wrote them. An in-chat todo
+  list dies with the chat and a list in your head dies with the context window; a
+  plan item has a status, an order, and must-precede deps, so `crib plan next`
+  tells any later session — yours, or a different agent's — what's actionable
+  *right now*. The quiet power is in what deps may point at: an item that declares
+  the *decision* it implements drops out of `plan next` the moment that decision's
+  ground moves — the work stops looking actionable exactly when it stops being
+  safe to do, without anyone asking.
 - **Projects** — separate memory namespaces. Each repo (or topic) has its own notes,
   code index, learnings, decisions, and plan, so nothing bleeds between contexts. A
   `default` project holds cross-cutting knowledge.
@@ -186,6 +196,19 @@ citable sections and the extraction procedure — extracted entries land `propos
 until `crib design promote` blesses them. When a decision genuinely no longer holds,
 `crib design supersede` retires it and taints what built on it.
 
+Two later-life conveniences. Decisions are usually written *before* the doc of
+record grows around them — so `crib design append <ref> "…" --source "DESIGN.md#7a"`
+wires a citation in **after the fact** (added, deduped; existing citations keep the
+hash they were captured at). And the whole decision map exports as a diagram-ready
+graph:
+
+```bash
+crib design graph -p myrepo        # {nodes, edges}: dep + superseded_by edges,
+                                   # every node titled and taint-flagged
+```
+
+Same shape as `crib code graph --edges`, so one renderer draws both.
+
 ### 5. Plan work that outlives the session
 
 Anywhere you'd write a todo list, write it into the plan instead — one call takes
@@ -213,6 +236,27 @@ Marking an item `done` reports the items its completion just freed. `in-progress
 *claim* — it takes the item out of everyone else's `plan next`. Deps may also point at a
 design decision, which blocks while that decision is tainted or still `proposed`:
 unstable ground is not something to build on.
+
+Two different things can go stale about an item, and they have two different verbs
+because they are two different *claims*:
+
+```bash
+crib plan status <ref> done -p myrepo      # a claim about the WORK: it happened
+crib plan reaffirm <ref> -p myrepo         # a claim about the GROUND: the decision
+                                           # this rests on moved; I re-read it; the
+                                           # item still stands — re-record the baseline
+```
+
+Without `reaffirm`, an item whose underlying decision was edited keeps a ⚠︎ stale
+marker in lookups even though nothing is wrong — and clearing it should never
+require pretending the work moved. The plan also exports as a graph, *including*
+the decisions items rest on (those edges gate, so a plan drawn without them would
+look self-contained when it isn't):
+
+```bash
+crib plan graph -p myrepo          # {nodes, edges}: plan items + the design
+                                   # nodes they rest on, dep edges typed
+```
 
 ### 6. Share memory across machines
 
@@ -244,6 +288,9 @@ install; see the [README](../README.md#quickstart).
 ## Where to go next
 
 - [README](../README.md) — the intro, install, and quickstart.
+- [decisions-and-plans.md](decisions-and-plans.md) — the design/plan facets in
+  depth: why a graph and not notes, how staleness is computed, the two claims,
+  the import quarantine, and the graph exports.
 - [surface.md](surface.md) — the complete CLI + MCP reference (every verb and tool),
   including the full design/plan verb tables and how the two edge families check.
 - [storage.md](storage.md) — where each kind of content lives, who owns the bytes,
