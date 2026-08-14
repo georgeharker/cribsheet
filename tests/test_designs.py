@@ -596,3 +596,48 @@ def test_note_verbs_refuse_facet_store_paths(crib):
         run(crib.edit_note("design/base.md", "sneaky", project="p"))
     with pytest.raises(ValueError, match="plan"):
         run(crib.forget("plans/anything.md", project="p"))
+
+
+# --- the facet graph: the symbol graph's consumer contract, for decisions/plans --
+
+def test_design_graph_speaks_the_diagram_contract(crib):
+    a = run(crib.design_add("Ground truth", "the base decision", project="p"))
+    b = run(crib.design_add("Built on it", "rests on A", deps=[a["relpath"]],
+                            project="p"))
+    c = run(crib.design_add("Replacement", "supersedes A", project="p"))
+    run(crib.design_supersede(a["relpath"], c["relpath"], project="p"))
+
+    g = crib.design_graph(project="p")
+    assert g["shape"] == "edges" and g["kind"] == "design"
+    ids = {n["id"] for n in g["nodes"]}
+    # ids are the pasteable pillar-qualified refs; every node carries name+status
+    assert f"design:{b['relpath']}" in ids
+    assert all(n.get("name") and n.get("id") for n in g["nodes"])
+    # edges ⊆ nodes, and both kinds present
+    assert all(e["from"] in ids and e["to"] in ids for e in g["edges"])
+    kinds = {(e["kind"]) for e in g["edges"]}
+    assert kinds == {"dep", "superseded_by"}
+    # supersession points old → new
+    assert {"from": f"design:{a['relpath']}", "to": f"design:{c['relpath']}",
+            "kind": "superseded_by"} in g["edges"]
+    # B's ground (A) was superseded → B reads tainted, live
+    bn = next(n for n in g["nodes"] if n["id"] == f"design:{b['relpath']}")
+    assert bn["tainted"] is True and bn["kind"] == "design"
+
+
+def test_plan_graph_includes_the_decisions_items_rest_on(crib):
+    d = run(crib.design_add("Keying decision", "keys are refs", project="p"))
+    run(crib.plan_add(project="p", items=[
+        {"title": "implement it", "deps": [d["relpath"]]},
+        {"title": "unrelated chore"}]))
+    g = crib.plan_graph(project="p")
+    kinds = {n["kind"] for n in g["nodes"]}
+    assert kinds == {"plan", "design"}          # the gating decision is IN the graph
+    ids = {n["id"] for n in g["nodes"]}
+    assert all(e["from"] in ids and e["to"] in ids for e in g["edges"])
+    dep_edges = [e for e in g["edges"] if e["kind"] == "dep"]
+    assert any(e["to"] == f"design:{d['relpath']}" for e in dep_edges)
+    # …but only decisions items REST ON — not the whole decision map
+    run(crib.design_add("Unrelated decision", "nothing plans on this", project="p"))
+    g2 = crib.plan_graph(project="p")
+    assert not any(n["name"] == "Unrelated decision" for n in g2["nodes"])

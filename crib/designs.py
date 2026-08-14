@@ -1354,6 +1354,95 @@ class Designs:
         return {"project": proj, "direction": direction,
                 "roots": [build(r, frozenset(), 0) for r in roots]}
 
+    def facet_graph(self, proj: str, kind: str = "design",
+                    sources: bool = False) -> dict[str, Any]:
+        """The decision/plan graph as `{nodes, edges}` — the same consumer contract
+        as the symbol graph: every node an object carrying `id` and `name`, every
+        edge endpoint declared (lean nodes for note-deps and missing targets), no
+        string a consumer has to parse. `id` is the pillar-qualified ref
+        (`design:x.md`) — the pasteable spelling `sources` citations already use.
+
+        `kind="design"` is the decision map; `kind="plan"` includes the DESIGN
+        nodes plan items depend on, because those edges gate (`plan_next` drops an
+        item while its design dep is tainted) and a plan graph that hid them would
+        misdraw the plan as self-contained. `tainted` is this graph's ※: computed
+        live, never stored. `sources=True` adds doc-section attribution nodes and
+        `kind="source"` edges — off by default, they double the node count.
+
+        Edge kinds: `dep` (from depends on to), `superseded_by` (old → new)."""
+        if kind not in ("design", "plan"):
+            raise CribUserError(
+                f"unknown kind {kind!r}: use 'design' (the decision map) or "
+                f"'plan' (items plus the decisions they rest on)")
+        graph = self._load_graph(proj)
+        tainted = self._taint(graph)
+        kinds = {"design"} if kind == "design" else {"plan", "design"}
+        picked = [n for n in graph.nodes.values() if n.kind in kinds]
+        if kind == "plan":
+            # only design nodes a plan item actually rests on — the whole decision
+            # map belongs to kind="design", not to every plan export
+            plan_dep_ids = {d for n in picked if n.kind == "plan" for d in n.deps}
+            picked = [n for n in picked
+                      if n.kind == "plan" or n.id in plan_dep_ids]
+
+        def ref_of(n: Node) -> str:
+            return f"{n.kind}:{n.relpath}"
+
+        nodes: dict[str, dict[str, Any]] = {}
+        for n in picked:
+            node: dict[str, Any] = {"id": ref_of(n), "ulid": n.id,
+                                    "name": n.title, "kind": n.kind,
+                                    "status": n.status, "updated": n.updated}
+            if n.kind == "design":
+                node["tainted"] = n.id in tainted
+            if n.kind == "plan" and n.rank:
+                node["rank"] = n.rank
+            nodes[n.id] = node                 # keyed by ulid while wiring edges
+
+        edges: list[dict[str, str]] = []
+        for n in picked:
+            for dep in n.deps:
+                target = graph.nodes.get(dep)
+                if target is not None and target.id in nodes:
+                    to = nodes[target.id]["id"]
+                elif target is not None:
+                    # a real node outside the export (a design edge from a
+                    # design-only export never lands here; a plan edge to a note
+                    # does not either — this is e.g. kind="design" citing a plan)
+                    to = f"{target.kind}:{target.relpath}"
+                    nodes.setdefault(target.id, {
+                        "id": to, "ulid": target.id, "name": target.title,
+                        "kind": target.kind, "truncated": True})
+                else:
+                    # a NOTE dep (never blocks, lives outside this graph) or a
+                    # genuinely dangling id — declared lean, never a bare string
+                    to = f"note:{dep}"
+                    nodes.setdefault(dep, {"id": to, "ulid": dep,
+                                           "name": dep[-8:], "kind": "note",
+                                           "external": True})
+                edges.append({"from": nodes[n.id]["id"], "to": to, "kind": "dep"})
+            by = str(n.frontmatter.get("superseded_by") or "")
+            if by and by in nodes:
+                edges.append({"from": nodes[n.id]["id"], "to": nodes[by]["id"],
+                              "kind": "superseded_by"})
+            if sources:
+                for s in n.sources:
+                    sid = f"doc:{source_label(s)}"
+                    if sid not in nodes:
+                        nodes[sid] = {"id": sid, "name":
+                                      str(s.get("heading") or s.get("ref") or "")
+                                      .split("/")[-1],
+                                      "kind": "doc", "synthetic": True}
+                    edges.append({"from": nodes[n.id]["id"], "to": sid,
+                                  "kind": "source"})
+        uniq: dict[tuple[str, str, str], dict[str, str]] = {}
+        for e in edges:
+            uniq[(e["from"], e["to"], e["kind"])] = e
+        return {"project": proj, "kind": kind, "shape": "edges",
+                "nodes": sorted(nodes.values(), key=lambda x: str(x["id"])),
+                "edges": sorted(uniq.values(),
+                                key=lambda x: (x["from"], x["to"], x["kind"]))}
+
     async def design_supersede(self, proj: str, ref: str,
                                by_ref: str | None = None) -> dict[str, Any]:
         """Soft-delete a decision: mark it `superseded` (optionally naming its

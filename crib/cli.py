@@ -1201,6 +1201,13 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--depth", type=int, default=6)
     s.add_argument("--ascii", action="store_true", help="ASCII glyphs, no box-drawing")
 
+    s = designsub.add_parser("graph",
+                       help="the decision map as {nodes, edges} (taint-flagged; "
+                            "same shape as `code graph --edges`)")
+    proj(s)
+    s.add_argument("--sources", action="store_true",
+                   help="add doc-section attribution nodes + `source` edges")
+
     s = designsub.add_parser("supersede",
                        help="mark a decision superseded + taint its dependents")
     s.add_argument("ref"); s.add_argument("by", nargs="?"); proj(s)
@@ -1214,6 +1221,13 @@ def build_parser() -> argparse.ArgumentParser:
                        help=f"prepare a doc for extraction into {_what} (writes nothing)")
         _s.add_argument("doc", help="note relpath, or a repo path indexed in situ")
         proj(_s)
+
+    s = plansub.add_parser("graph",
+                       help="the plan as {nodes, edges}, including the decisions "
+                            "items rest on")
+    proj(s)
+    s.add_argument("--sources", action="store_true",
+                   help="add doc-section attribution nodes + `source` edges")
 
     s = plansub.add_parser("add",
                        help="add plan item(s) — body optional, `--item` adds more")
@@ -1761,6 +1775,12 @@ VERBS: dict[str, Verb] = {
                                                  else "deps"), "depth": a.depth},
                         _E_dtree, policy="read",
                         mcp=f"{_PROJ} ref=None direction='deps' depth=6"),
+    "design graph": Verb("design_graph",
+                         lambda a: {"project": a.project, "sources": a.sources},
+                         _E, policy="read", mcp=f"{_PROJ} sources=False"),
+    "plan graph": Verb("plan_graph",
+                       lambda a: {"project": a.project, "sources": a.sources},
+                       _E, policy="read", mcp=f"{_PROJ} sources=False"),
     "design supersede": Verb("design_supersede", lambda a: {"ref": a.ref,
                                                             "by_ref": a.by,
                                                             "project": a.project},

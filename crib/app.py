@@ -2245,6 +2245,21 @@ class Crib:
         return self.designs.design_tree(self.resolve_project(project, cwd), ref,
                                         direction, depth)
 
+    def design_graph(self, project: str | None = None, cwd: Path | None = None,
+                     sources: bool = False) -> dict[str, Any]:
+        """The decision map as {nodes, edges} — the symbol graph's consumer
+        contract, for decisions. `tainted` is this graph's ※."""
+        return self.designs.facet_graph(self.resolve_project(project, cwd),
+                                        "design", sources)
+
+    def plan_graph(self, project: str | None = None, cwd: Path | None = None,
+                   sources: bool = False) -> dict[str, Any]:
+        """The plan as {nodes, edges}, INCLUDING the design nodes items rest on —
+        those edges gate, so a plan graph without them would misdraw the plan as
+        self-contained."""
+        return self.designs.facet_graph(self.resolve_project(project, cwd),
+                                        "plan", sources)
+
     async def design_supersede(self, ref: str, by_ref: str | None = None,
                                project: str | None = None,
                                cwd: Path | None = None) -> dict[str, Any]:

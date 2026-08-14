@@ -1187,6 +1187,26 @@ def build_server(crib: Crib | None = None):
         (`design_read` is the same picture for ONE decision, plus its body.)"""
         return crib.design_tree(ref, direction, depth, project)
 
+    @crib_tool("read", echo=True)
+    def design_graph(project: str | None = None, project_path: str | None = None,
+                     sources: bool = False) -> dict[str, Any]:
+        """The whole DECISION MAP as {nodes, edges} — for rendering or computing
+        over, the same shape as code_graph's edge export: every node carries `id`
+        (the pasteable `design:x.md` ref) and `name` (the title); every edge
+        endpoint is declared. Edge kinds: `dep`, `superseded_by`. `tainted` on a
+        node is live — the ground under that decision moved. `sources=True` adds
+        doc-section attribution nodes and `source` edges."""
+        return crib.design_graph(project, cwd=_cwd(project_path), sources=sources)
+
+    @crib_tool("read", echo=True)
+    def plan_graph(project: str | None = None, project_path: str | None = None,
+                   sources: bool = False) -> dict[str, Any]:
+        """The PLAN as {nodes, edges}, including the design decisions items rest
+        on (those deps gate: an item drops out of plan_next while its decision is
+        tainted). Same consumer contract as code_graph / design_graph. Edge kinds:
+        `dep`, `superseded_by`; note-deps appear as lean external nodes."""
+        return crib.plan_graph(project, cwd=_cwd(project_path), sources=sources)
+
     @crib_tool("read")
     async def design_supersede(ref: str, by_ref: str | None = None,
                                project: str | None = None,
