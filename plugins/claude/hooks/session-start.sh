@@ -33,6 +33,10 @@ warn() {
   echo "$1" >&2
 }
 
+# Canonical source: CLAUDE.md.example at the repo root. instructions.txt is a
+# committed COPY of it, re-synced by scripts/bump-version.sh — never a symlink:
+# marketplace installs copy the plugin subtree into a cache with no repo root,
+# where a ../../ symlink dangles and this hook silently emits nothing.
 _emit() {
   local txt="$dir/instructions.txt" ctx=""
   [[ -f "$txt" ]] && ctx="$(cat "$txt")"
