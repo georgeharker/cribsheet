@@ -142,7 +142,6 @@ def _fmt(items: Any, key: str) -> list[str]:
     out = []
     for it in items or []:
         node = it.get(key, {})
-        frm = it.get("fromRanges") or it.get("to") or []
         out.append(f"{node.get('name','?')}  [{Path(node.get('uri','')).name}]")
     return out
 

@@ -688,15 +688,15 @@ def test_design_append_adds_citations_post_hoc_keeping_old_hashes(crib, tmp_path
                             project="p", sources=["DESIGN.md#Early"]))
     doc.write_text("# Spec\n\n## Early\nfirst section\n\n## Later\ngrown after\n")
 
-    out = run(crib.design_append(d["relpath"], "now wired to the grown doc",
-                                 project="p", sources=["DESIGN.md#Later"]))
+    run(crib.design_append(d["relpath"], "now wired to the grown doc",
+                           project="p", sources=["DESIGN.md#Later"]))
     got = crib.design_read(d["relpath"], project="p")
     cites = {s["label"] if isinstance(s, dict) else str(s)
              for s in got.get("sources") or []}
     assert any("Later" in c for c in cites) and any("Early" in c for c in cites)
     # appending the SAME citation again is a no-op, not a duplicate
-    again = run(crib.design_append(d["relpath"], "again", project="p",
-                                   sources=["DESIGN.md#Later"]))
+    run(crib.design_append(d["relpath"], "again", project="p",
+                           sources=["DESIGN.md#Later"]))
     got2 = crib.design_read(d["relpath"], project="p")
     assert len(got2.get("sources") or []) == len(got.get("sources") or [])
 

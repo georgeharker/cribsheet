@@ -285,7 +285,9 @@ def test_walk_tracks_container_kinds_for_scope_guard():
             {"name": "local", "kind": 13, "children": []}]}]},             # local
         {"name": "G", "kind": 13}]                                          # module global
     by_name = {s["name"]: kinds for s, _p, kinds in ci._walk(tree)}
-    is_local = lambda name: any(k in ci._FUNC_KINDS for k in by_name[name])
+    def is_local(name):
+        return any(k in ci._FUNC_KINDS for k in by_name[name])
+
     assert not is_local("attr")            # class-scoped → kept
     assert not is_local("G")               # module-scoped → kept
     assert is_local("local")               # under a method → dropped as noise

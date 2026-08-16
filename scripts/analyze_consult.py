@@ -31,7 +31,6 @@ record), so a windowed re-run only reprocesses new/changed sessions.
 from __future__ import annotations
 
 import argparse
-import datetime as dt
 import hashlib
 import json
 import os
@@ -140,7 +139,7 @@ def _crib_first_available() -> str | None:
         out = subprocess.run(
             ["git", "-C", str(dd), "log", "--diff-filter=A", "--format=%aI",
              "--", "projects"], capture_output=True, text=True, timeout=15)
-        dates = [l for l in out.stdout.splitlines() if l.strip()]
+        dates = [line for line in out.stdout.splitlines() if line.strip()]
         return dates[-1][:10] if dates else None
     except Exception:  # noqa: BLE001
         return None
@@ -191,7 +190,7 @@ def main(argv: list[str] | None = None) -> int:
         files = [f for f in files if args.project in f.parent.name]
 
     # Aggregate, split by availability bucket.
-    from collections import defaultdict, Counter
+    from collections import Counter
     buckets = ["pre-crib", "early", "current", "unknown"]
     agg: dict[str, Counter] = {b: Counter() for b in buckets}
     sessions: dict[str, set] = {b: set() for b in buckets}
@@ -202,7 +201,6 @@ def main(argv: list[str] | None = None) -> int:
 
     for f in files:
         data = _parse_transcript(f) if args.rebuild else _load(f)
-        proj = _project_of(f)
         used = False
         # session -> its events (windowed)
         for e in data["events"]:
@@ -276,7 +274,7 @@ def _report(agg, sessions, consult_sessions, save_sessions, first_move,
         consult = cur.get("crib_consult", 0)
         code = cur.get("code_search", 0) + cur.get("read_source", 0)
         fm = first_move["current"]; fmn = sum(fm.values())
-        print(f"CURRENT regime (crib populated, post-instructions-rewrite):")
+        print("CURRENT regime (crib populated, post-instructions-rewrite):")
         print(f"  sessions with a consult : {len(consult_sessions['current'])}/{cs} "
               f"({100*len(consult_sessions['current'])//max(cs,1)}%)")
         print(f"  first-move = consult    : {fm.get('crib_consult',0)}/{fmn} "
