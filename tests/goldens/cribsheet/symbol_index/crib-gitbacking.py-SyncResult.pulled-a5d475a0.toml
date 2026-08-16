@@ -1,0 +1,35 @@
+symbol_ref = "crib/gitbacking.py#SyncResult.pulled"
+fqn = "crib.gitbacking.SyncResult.pulled"
+name = "pulled"
+kind = "field"
+lang = "python"
+content_hash = "bb53b9c621b19032"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "pulled: bool"
+description = ""
+schema = 4
+line = 81
+mtime = 1785963011000000000
+container = [
+  "SyncResult",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "SyncResult",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_setup_joins_a_master_remote_on_master [tests/test_sync.py]",
+]
+name_terms = [
+  "crib",
+  "crib.gitbacking.SyncResult.pulled",
+  "gitbacking",
+  "pulled",
+  "result",
+  "sync",
+]

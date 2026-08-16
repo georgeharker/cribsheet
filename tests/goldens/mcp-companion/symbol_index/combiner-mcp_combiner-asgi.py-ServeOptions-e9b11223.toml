@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/asgi.py#ServeOptions"
+fqn = "combiner.mcp_combiner.asgi.ServeOptions"
+name = "ServeOptions"
+kind = "class"
+lang = "python"
+content_hash = "ef74ad7c6902637b"
+file = "combiner/mcp_combiner/asgi.py"
+file_hash = "1ff2dd1d6ee7f6d0"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 45
+mtime = 1783548694000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "asgi",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_serve [combiner/mcp_combiner/__main__.py]",
+  "create_app [combiner/mcp_combiner/asgi.py]",
+  "from_env [combiner/mcp_combiner/asgi.py]",
+]
+name_terms = [
+  "ServeOptions",
+  "asgi",
+  "combiner",
+  "combiner.mcp_combiner.asgi.ServeOptions",
+  "mcp",
+  "options",
+  "serve",
+]

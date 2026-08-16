@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_config.py#TestAutoApprove.test_auto_approve_true_becomes_wildcard"
+fqn = "combiner.tests.test_config.TestAutoApprove.test_auto_approve_true_becomes_wildcard"
+name = "test_auto_approve_true_becomes_wildcard"
+kind = "method"
+lang = "python"
+content_hash = "2ecaee6568ff6de5"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_auto_approve_true_becomes_wildcard(self) -> None:"
+description = ""
+schema = 4
+line = 195
+mtime = 1782852601000000000
+container = [
+  "TestAutoApprove",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+  "TestAutoApprove",
+]
+symbol_was = []
+calls = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "approve",
+  "auto",
+  "becomes",
+  "combiner",
+  "combiner.tests.test_config.TestAutoApprove.test_auto_approve_true_becomes_wildcard",
+  "config",
+  "test",
+  "test_auto_approve_true_becomes_wildcard",
+  "tests",
+  "true",
+  "wildcard",
+]

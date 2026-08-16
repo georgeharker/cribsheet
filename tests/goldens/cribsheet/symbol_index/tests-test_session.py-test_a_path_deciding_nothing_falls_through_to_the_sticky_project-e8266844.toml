@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_session.py#test_a_path_deciding_nothing_falls_through_to_the_sticky_project"
+fqn = "tests.test_session.test_a_path_deciding_nothing_falls_through_to_the_sticky_project"
+name = "test_a_path_deciding_nothing_falls_through_to_the_sticky_project"
+kind = "function"
+lang = "python"
+content_hash = "6119a7dde5bca0bc"
+file = "tests/test_session.py"
+file_hash = "bef48c1ca7e1ebb9"
+signature = "def test_a_path_deciding_nothing_falls_through_to_the_sticky_project():"
+description = ""
+schema = 4
+line = 62
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_session",
+]
+symbol_was = []
+calls = [
+  "SessionState [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "deciding",
+  "falls",
+  "nothing",
+  "path",
+  "project",
+  "session",
+  "sticky",
+  "test",
+  "test_a_path_deciding_nothing_falls_through_to_the_sticky_project",
+  "tests",
+  "tests.test_session.test_a_path_deciding_nothing_falls_through_to_the_sticky_project",
+  "the",
+  "through",
+  "to",
+]

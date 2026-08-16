@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#_CaptureSession.send_resource_updated"
+fqn = "combiner.tests.test_notifications_e2e._CaptureSession.send_resource_updated"
+name = "send_resource_updated"
+kind = "method"
+lang = "python"
+content_hash = "fa602f1f24d6d34d"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "async def send_resource_updated(self, uri: AnyUrl) -> None:"
+description = ""
+schema = 4
+line = 76
+mtime = 1783629928000000000
+container = [
+  "_CaptureSession",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+  "_CaptureSession",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "2",
+  "capture",
+  "combiner",
+  "combiner.tests.test_notifications_e2e._CaptureSession.send_resource_updated",
+  "e",
+  "notifications",
+  "resource",
+  "send",
+  "send_resource_updated",
+  "session",
+  "test",
+  "tests",
+  "updated",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_auth.py#TestBuildAuth.test_bearer_dict"
+fqn = "combiner.tests.test_auth.TestBuildAuth.test_bearer_dict"
+name = "test_bearer_dict"
+kind = "method"
+lang = "python"
+content_hash = "b6155eca105614ca"
+file = "combiner/tests/test_auth.py"
+file_hash = "2b3aa7eeeed5bf38"
+signature = "def test_bearer_dict(self) -> None:"
+description = ""
+schema = 4
+line = 103
+mtime = 1782852601000000000
+container = [
+  "TestBuildAuth",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_auth",
+  "TestBuildAuth",
+]
+symbol_was = []
+calls = [
+  "auth_flow [combiner/mcp_combiner/auth.py]",
+  "build_auth [combiner/mcp_combiner/auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "bearer",
+  "build",
+  "combiner",
+  "combiner.tests.test_auth.TestBuildAuth.test_bearer_dict",
+  "dict",
+  "test",
+  "test_bearer_dict",
+  "tests",
+]

@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_ctl_lifecycle.py#test_build_start_cmd_attaches_pid_and_serve_argv"
+fqn = "combiner.tests.test_ctl_lifecycle.test_build_start_cmd_attaches_pid_and_serve_argv"
+name = "test_build_start_cmd_attaches_pid_and_serve_argv"
+kind = "function"
+lang = "python"
+content_hash = "7aa72ee05d771f07"
+file = "combiner/tests/test_ctl_lifecycle.py"
+file_hash = "561e3360d44bd010"
+signature = "def test_build_start_cmd_attaches_pid_and_serve_argv() -> None:"
+description = ""
+schema = 4
+line = 16
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_ctl_lifecycle",
+]
+symbol_was = []
+calls = [
+  "_build_start_cmd [combiner/mcp_combiner/ctl.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "argv",
+  "attaches",
+  "build",
+  "cmd",
+  "combiner",
+  "combiner.tests.test_ctl_lifecycle.test_build_start_cmd_attaches_pid_and_serve_argv",
+  "ctl",
+  "lifecycle",
+  "pid",
+  "serve",
+  "start",
+  "test",
+  "test_build_start_cmd_attaches_pid_and_serve_argv",
+  "tests",
+]

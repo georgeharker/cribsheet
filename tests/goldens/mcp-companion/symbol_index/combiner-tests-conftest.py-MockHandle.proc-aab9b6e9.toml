@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/conftest.py#MockHandle.proc"
+fqn = "combiner.tests.conftest.MockHandle.proc"
+name = "proc"
+kind = "field"
+lang = "python"
+content_hash = "44f914534e3f1062"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "proc: subprocess.Popen[bytes]"
+description = ""
+schema = 4
+line = 214
+mtime = 1783544328000000000
+container = [
+  "MockHandle",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "MockHandle",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "start_http_mock [combiner/tests/conftest.py]",
+  "terminate [combiner/tests/conftest.py]",
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_crash_reconnects_when_back [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.MockHandle.proc",
+  "conftest",
+  "handle",
+  "mock",
+  "proc",
+  "tests",
+]

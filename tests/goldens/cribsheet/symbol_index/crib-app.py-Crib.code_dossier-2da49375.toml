@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.code_dossier"
+fqn = "crib.app.Crib.code_dossier"
+name = "code_dossier"
+kind = "method"
+lang = "python"
+content_hash = "b397bec56c978857"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def code_dossier(self, symbol: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 2072
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "dossier [crib/codequery.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "code_dossier [crib/server.py]",
+]
+references = [
+  "code_dossier [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "code",
+  "code_dossier",
+  "crib",
+  "crib.app.Crib.code_dossier",
+  "dossier",
+]

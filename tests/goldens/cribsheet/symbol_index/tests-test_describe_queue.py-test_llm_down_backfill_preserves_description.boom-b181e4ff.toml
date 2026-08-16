@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_describe_queue.py#test_llm_down_backfill_preserves_description.boom"
+fqn = "tests.test_describe_queue.test_llm_down_backfill_preserves_description.boom"
+name = "boom"
+kind = "function"
+lang = "python"
+content_hash = "2b87ca6ca95ed6c4"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def boom(*a, **k):"
+description = ""
+schema = 4
+line = 279
+mtime = 1786664729000000000
+container = [
+  "test_llm_down_backfill_preserves_description",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "test_llm_down_backfill_preserves_description",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_llm_down_backfill_preserves_description [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "backfill",
+  "boom",
+  "describe",
+  "description",
+  "down",
+  "llm",
+  "preserves",
+  "queue",
+  "test",
+  "tests",
+  "tests.test_describe_queue.test_llm_down_backfill_preserves_description.boom",
+]

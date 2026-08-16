@@ -1,0 +1,42 @@
+symbol_ref = "crib/codeindex.py#uri_path"
+fqn = "crib.codeindex.uri_path"
+name = "uri_path"
+kind = "function"
+lang = "python"
+content_hash = "4ff9e869a7ab95be"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def uri_path(uri: str) -> str | None:"
+description = ""
+schema = 4
+line = 734
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_in_workspace [crib/codeindex.py]",
+  "_locate [crib/codeindex.py]",
+  "_rel [crib/codeindex.py]",
+  "_symbol_ranges [crib/codeindex.py]",
+  "test_uri_path_percent_decodes [tests/test_code_attribution.py]",
+]
+references = [
+  "_in_workspace [crib/codeindex.py]",
+  "_locate [crib/codeindex.py]",
+  "_rel [crib/codeindex.py]",
+  "_symbol_ranges [crib/codeindex.py]",
+  "test_uri_path_percent_decodes [tests/test_code_attribution.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.uri_path",
+  "path",
+  "uri",
+  "uri_path",
+]

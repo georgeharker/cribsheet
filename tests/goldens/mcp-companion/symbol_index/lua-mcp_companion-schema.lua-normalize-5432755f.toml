@@ -1,0 +1,38 @@
+symbol_ref = "lua/mcp_companion/schema.lua#normalize"
+fqn = "mcp_companion.schema.normalize"
+name = "normalize"
+kind = "function"
+lang = "lua"
+content_hash = "7f829764a6198e36"
+file = "lua/mcp_companion/schema.lua"
+file_hash = "aae999ba7dcb96af"
+signature = "function M.normalize(schema)"
+description = ""
+schema = 4
+line = 58
+mtime = 1783013405000000000
+container = []
+scope = [
+  "mcp_companion",
+  "schema",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/native/init.lua]",
+  "schema.lua [lua/mcp_companion/schema.lua]",
+  "tools.lua [lua/mcp_companion/cc/tools.lua]",
+]
+references = [
+  "captured_input_schema [lua/mcp_companion/cc/tools.lua]",
+  "for in [lua/mcp_companion/native/init.lua]",
+  "input_schema [lua/mcp_companion/cc/tools.lua]",
+  "schema [lua/mcp_companion/schema.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.schema.normalize",
+  "normalize",
+  "schema",
+]

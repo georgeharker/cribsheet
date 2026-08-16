@@ -1,0 +1,42 @@
+symbol_ref = "crib/session.py#ProjectResolution.session_set"
+fqn = "crib.session.ProjectResolution.session_set"
+name = "session_set"
+kind = "field"
+lang = "python"
+content_hash = "ecb83f72ff6cf65e"
+file = "crib/session.py"
+file_hash = "62abc565a376f242"
+signature = "session_set: bool = False"
+description = ""
+schema = 4
+line = 43
+mtime = 1786664729000000000
+container = [
+  "ProjectResolution",
+]
+scope = [
+  "crib",
+  "session",
+  "ProjectResolution",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_read_project_elicit [crib/server.py]",
+  "echo [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+  "test_a_bare_default_never_adopts [tests/test_session.py]",
+  "test_a_later_path_answers_for_itself_and_re_homes_nothing [tests/test_session.py]",
+  "test_an_adopting_call_reports_it [tests/test_surface_parity.py]",
+  "worth_echoing [crib/session.py]",
+]
+name_terms = [
+  "crib",
+  "crib.session.ProjectResolution.session_set",
+  "project",
+  "resolution",
+  "session",
+  "session_set",
+  "set",
+]

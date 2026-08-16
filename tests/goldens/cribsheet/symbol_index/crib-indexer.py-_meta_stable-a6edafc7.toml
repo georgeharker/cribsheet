@@ -1,0 +1,34 @@
+symbol_ref = "crib/indexer.py#_meta_stable"
+fqn = "crib.indexer._meta_stable"
+name = "_meta_stable"
+kind = "function"
+lang = "python"
+content_hash = "c761bda0395d4548"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "def _meta_stable(meta: dict) -> dict:"
+description = ""
+schema = 4
+line = 30
+mtime = 1786578262000000000
+container = []
+scope = [
+  "crib",
+  "indexer",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_plan [crib/indexer.py]",
+]
+references = [
+  "_plan [crib/indexer.py]",
+]
+name_terms = [
+  "_meta_stable",
+  "crib",
+  "crib.indexer._meta_stable",
+  "indexer",
+  "meta",
+  "stable",
+]

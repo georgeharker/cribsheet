@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockTool"
+fqn = "combiner.mcp_combiner.mockserver.MockTool"
+name = "MockTool"
+kind = "class"
+lang = "python"
+content_hash = "277bc74f21dc3d27"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "class MockTool(Tool):"
+description = ""
+schema = 4
+line = 236
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+  "_add [combiner/mcp_combiner/mockserver.py]",
+  "from_spec [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "MockTool",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockTool",
+  "mcp",
+  "mock",
+  "mockserver",
+  "tool",
+]

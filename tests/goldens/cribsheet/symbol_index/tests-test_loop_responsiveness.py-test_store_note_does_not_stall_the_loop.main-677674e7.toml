@@ -1,0 +1,46 @@
+symbol_ref = "tests/test_loop_responsiveness.py#test_store_note_does_not_stall_the_loop.main"
+fqn = "tests.test_loop_responsiveness.test_store_note_does_not_stall_the_loop.main"
+name = "main"
+kind = "function"
+lang = "python"
+content_hash = "77db114d00497682"
+file = "tests/test_loop_responsiveness.py"
+file_hash = "3e5d3308dc33e6f4"
+signature = "async def main():"
+description = ""
+schema = 4
+line = 97
+mtime = 1785959234000000000
+container = [
+  "test_store_note_does_not_stall_the_loop",
+]
+scope = [
+  "tests",
+  "test_loop_responsiveness",
+  "test_store_note_does_not_stall_the_loop",
+]
+symbol_was = []
+calls = [
+  "_big_note [tests/test_loop_responsiveness.py]",
+  "_measure [tests/test_loop_responsiveness.py]",
+]
+called_by = [
+  "test_store_note_does_not_stall_the_loop [tests/test_loop_responsiveness.py]",
+]
+references = [
+  "test_store_note_does_not_stall_the_loop [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "does",
+  "loop",
+  "main",
+  "not",
+  "note",
+  "responsiveness",
+  "stall",
+  "store",
+  "test",
+  "tests",
+  "tests.test_loop_responsiveness.test_store_note_does_not_stall_the_loop.main",
+  "the",
+]

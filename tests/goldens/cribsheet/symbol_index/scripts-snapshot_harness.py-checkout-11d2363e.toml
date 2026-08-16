@@ -1,0 +1,39 @@
+symbol_ref = "scripts/snapshot_harness.py#checkout"
+fqn = "scripts.snapshot_harness.checkout"
+name = "checkout"
+kind = "function"
+lang = "python"
+content_hash = "952336d065c4b654"
+file = "scripts/snapshot_harness.py"
+file_hash = "60b46810ead50638"
+signature = "def checkout(repo: str, sha: str, dest: Path) -> Path:"
+description = ""
+schema = 4
+line = 30
+mtime = 1783498271000000000
+container = []
+scope = [
+  "scripts",
+  "snapshot_harness",
+]
+symbol_was = []
+calls = [
+  "_git [scripts/snapshot_harness.py]",
+]
+called_by = [
+  "capture [scripts/snapshot_harness.py]",
+  "compare [scripts/snapshot_harness.py]",
+  "idempotency [scripts/snapshot_harness.py]",
+]
+references = [
+  "capture [scripts/snapshot_harness.py]",
+  "compare [scripts/snapshot_harness.py]",
+  "idempotency [scripts/snapshot_harness.py]",
+]
+name_terms = [
+  "checkout",
+  "harness",
+  "scripts",
+  "scripts.snapshot_harness.checkout",
+  "snapshot",
+]

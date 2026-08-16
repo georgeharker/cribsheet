@@ -1,0 +1,50 @@
+symbol_ref = "tests/test_symbol_migration.py#_legacy_note"
+fqn = "tests.test_symbol_migration._legacy_note"
+name = "_legacy_note"
+kind = "function"
+lang = "python"
+content_hash = "2d28e251b703e81f"
+file = "tests/test_symbol_migration.py"
+file_hash = "f1bc5f45850c293a"
+signature = "def _legacy_note(crib, project, binding, relpath=None, body=\"pinned\"):"
+description = ""
+schema = 4
+line = 67
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_migration",
+]
+symbol_was = []
+calls = [
+  "Note [crib/notes.py]",
+  "ref_slug [crib/symbols.py]",
+  "save_atomic [crib/notes.py]",
+]
+called_by = [
+  "test_an_unmappable_note_is_an_orphan_and_untouched [tests/test_symbol_migration.py]",
+  "test_apply_rebinds_renames_and_keeps_history [tests/test_symbol_migration.py]",
+  "test_conversion_needs_no_converted_entry_store [tests/test_symbol_migration.py]",
+  "test_converted_notes_are_searchable [tests/test_symbol_migration.py]",
+  "test_dry_run_classifies_and_writes_nothing [tests/test_symbol_migration.py]",
+  "test_two_notes_claiming_one_symbol_collide_never_merge [tests/test_symbol_migration.py]",
+]
+references = [
+  "test_an_unmappable_note_is_an_orphan_and_untouched [tests/test_symbol_migration.py]",
+  "test_apply_rebinds_renames_and_keeps_history [tests/test_symbol_migration.py]",
+  "test_conversion_needs_no_converted_entry_store [tests/test_symbol_migration.py]",
+  "test_converted_notes_are_searchable [tests/test_symbol_migration.py]",
+  "test_dry_run_classifies_and_writes_nothing [tests/test_symbol_migration.py]",
+  "test_two_notes_claiming_one_symbol_collide_never_merge [tests/test_symbol_migration.py]",
+]
+name_terms = [
+  "_legacy_note",
+  "legacy",
+  "migration",
+  "note",
+  "symbol",
+  "test",
+  "tests",
+  "tests.test_symbol_migration._legacy_note",
+]

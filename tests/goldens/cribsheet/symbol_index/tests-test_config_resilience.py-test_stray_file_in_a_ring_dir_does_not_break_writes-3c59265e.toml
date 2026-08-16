@@ -1,0 +1,45 @@
+symbol_ref = "tests/test_config_resilience.py#test_stray_file_in_a_ring_dir_does_not_break_writes"
+fqn = "tests.test_config_resilience.test_stray_file_in_a_ring_dir_does_not_break_writes"
+name = "test_stray_file_in_a_ring_dir_does_not_break_writes"
+kind = "function"
+lang = "python"
+content_hash = "809fa33b2e4264c8"
+file = "tests/test_config_resilience.py"
+file_hash = "620aeb96b59e7b2d"
+signature = "def test_stray_file_in_a_ring_dir_does_not_break_writes(tmp_path, capsys):"
+description = ""
+schema = 4
+line = 156
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_config_resilience",
+]
+symbol_was = []
+calls = [
+  "VersionRing [crib/versions.py]",
+  "list [crib/versions.py]",
+  "read [crib/versions.py]",
+  "stash [crib/versions.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "break",
+  "config",
+  "dir",
+  "does",
+  "file",
+  "in",
+  "not",
+  "resilience",
+  "ring",
+  "stray",
+  "test",
+  "test_stray_file_in_a_ring_dir_does_not_break_writes",
+  "tests",
+  "tests.test_config_resilience.test_stray_file_in_a_ring_dir_does_not_break_writes",
+  "writes",
+]

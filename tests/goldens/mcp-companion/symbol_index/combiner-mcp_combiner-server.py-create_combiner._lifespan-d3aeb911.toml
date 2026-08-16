@@ -1,0 +1,48 @@
+symbol_ref = "combiner/mcp_combiner/server.py#create_combiner._lifespan"
+fqn = "combiner.mcp_combiner.server.create_combiner._lifespan"
+name = "_lifespan"
+kind = "function"
+lang = "python"
+content_hash = "9f3a6d92f605928b"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "@asynccontextmanager"
+description = ""
+schema = 4
+line = 302
+mtime = 1784493613000000000
+container = [
+  "create_combiner",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+  "create_combiner",
+]
+symbol_was = []
+calls = [
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "close_all [combiner/mcp_combiner/connections.py]",
+  "connect_all [combiner/mcp_combiner/connections.py]",
+  "get_enabled_servers [combiner/mcp_combiner/config.py]",
+  "is_http_server [combiner/mcp_combiner/connections.py]",
+  "mount_server_provider [combiner/mcp_combiner/mounts.py]",
+  "register [combiner/mcp_combiner/connections.py]",
+  "spawn_prime [combiner/mcp_combiner/toolcache.py]",
+  "start_all [combiner/mcp_combiner/sharedserver.py]",
+  "stop_all [combiner/mcp_combiner/sharedserver.py]",
+]
+called_by = []
+references = [
+  "create_combiner [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_lifespan",
+  "combiner",
+  "combiner.mcp_combiner.server.create_combiner._lifespan",
+  "create",
+  "lifespan",
+  "mcp",
+  "server",
+]

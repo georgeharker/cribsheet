@@ -1,0 +1,38 @@
+symbol_ref = "crib/codeindex.py#LspClient"
+fqn = "crib.codeindex.LspClient"
+name = "LspClient"
+kind = "class"
+lang = "python"
+content_hash = "2b64e50c206c0c38"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "class LspClient:"
+description = ""
+schema = 4
+line = 359
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/codeindex.py]",
+  "_enclosing_symbol [crib/codeindex.py]",
+  "_hierarchy_edges [crib/codeindex.py]",
+  "_symbol_ranges [crib/codeindex.py]",
+  "acquire [crib/codeindex.py]",
+  "c [crib/codeindex.py]",
+  "test_settle_policy_defaults_but_an_explicit_value_wins [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "LspClient",
+  "client",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspClient",
+  "lsp",
+]

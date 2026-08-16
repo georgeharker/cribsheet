@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_path_confinement.py#test_check_project_name_allows_ordinary_names"
+fqn = "tests.test_path_confinement.test_check_project_name_allows_ordinary_names"
+name = "test_check_project_name_allows_ordinary_names"
+kind = "function"
+lang = "python"
+content_hash = "9888895acc989c37"
+file = "tests/test_path_confinement.py"
+file_hash = "ca5f375c4fa4dfa2"
+signature = "def test_check_project_name_allows_ordinary_names():"
+description = ""
+schema = 4
+line = 64
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_path_confinement",
+]
+symbol_was = []
+calls = [
+  "check_project_name [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "allows",
+  "check",
+  "confinement",
+  "name",
+  "names",
+  "ordinary",
+  "path",
+  "project",
+  "test",
+  "test_check_project_name_allows_ordinary_names",
+  "tests",
+  "tests.test_path_confinement.test_check_project_name_allows_ordinary_names",
+]

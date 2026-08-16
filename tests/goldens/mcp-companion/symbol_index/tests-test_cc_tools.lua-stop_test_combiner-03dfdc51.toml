@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_cc_tools.lua#stop_test_combiner"
+fqn = "tests.test_cc_tools.stop_test_combiner"
+name = "stop_test_combiner"
+kind = "function"
+lang = "lua"
+content_hash = "84e43cfcf2917a54"
+file = "tests/test_cc_tools.lua"
+file_hash = "3253ff527c66fcb1"
+signature = "local function stop_test_combiner()"
+description = ""
+schema = 4
+line = 129
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_cc_tools",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_cc_tools.lua [tests/test_cc_tools.lua]",
+]
+references = []
+name_terms = [
+  "cc",
+  "combiner",
+  "stop",
+  "stop_test_combiner",
+  "test",
+  "tests",
+  "tests.test_cc_tools.stop_test_combiner",
+  "tools",
+]

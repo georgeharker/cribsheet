@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_cc_tools.lua#ok_log"
+fqn = "tests.test_cc_tools.ok_log"
+name = "ok_log"
+kind = "global"
+lang = "lua"
+content_hash = "32d89c5f43d2d4e2"
+file = "tests/test_cc_tools.lua"
+file_hash = "3253ff527c66fcb1"
+signature = "local ok_log, log = pcall(require, \"mcp_companion.log\")"
+description = ""
+schema = 4
+line = 139
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_cc_tools",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "log",
+  "ok",
+  "ok_log",
+  "test",
+  "tests",
+  "tests.test_cc_tools.ok_log",
+  "tools",
+]

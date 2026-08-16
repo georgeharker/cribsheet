@@ -1,0 +1,37 @@
+symbol_ref = "crib/server.py#build_server.note_reindex"
+fqn = "crib.server.build_server.note_reindex"
+name = "note_reindex"
+kind = "function"
+lang = "python"
+content_hash = "02448a06d182300c"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"read\")"
+description = ""
+schema = 4
+line = 546
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "crib_tool [crib/server.py]",
+  "reindex [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.note_reindex",
+  "note",
+  "note_reindex",
+  "reindex",
+  "server",
+]

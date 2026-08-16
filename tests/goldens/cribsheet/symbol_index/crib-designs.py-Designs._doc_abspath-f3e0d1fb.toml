@@ -1,0 +1,44 @@
+symbol_ref = "crib/designs.py#Designs._doc_abspath"
+fqn = "crib.designs.Designs._doc_abspath"
+name = "_doc_abspath"
+kind = "method"
+lang = "python"
+content_hash = "d8ff85589ccdb3b1"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _doc_abspath(self, proj: str, ref: str):"
+description = ""
+schema = 4
+line = 459
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "abspath [crib/notestore.py]",
+  "split_docref [crib/designs.py]",
+]
+called_by = [
+  "_doc_exists [crib/designs.py]",
+  "_doc_sections [crib/designs.py]",
+  "_import [crib/designs.py]",
+]
+references = [
+  "_doc_exists [crib/designs.py]",
+  "_doc_sections [crib/designs.py]",
+  "_import [crib/designs.py]",
+]
+name_terms = [
+  "_doc_abspath",
+  "abspath",
+  "crib",
+  "crib.designs.Designs._doc_abspath",
+  "designs",
+  "doc",
+]

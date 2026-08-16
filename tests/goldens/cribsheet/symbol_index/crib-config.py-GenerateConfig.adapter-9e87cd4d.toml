@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#GenerateConfig.adapter"
+fqn = "crib.config.GenerateConfig.adapter"
+name = "adapter"
+kind = "field"
+lang = "python"
+content_hash = "b2760c49bfc59247"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "adapter: str = \"claude_code\"     # claude_code | openai-compatible | anthropic | google"
+description = ""
+schema = 4
+line = 188
+mtime = 1786564832000000000
+container = [
+  "GenerateConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "GenerateConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_generate_enrichment [crib/app.py]",
+  "resolve_provider [crib/generate.py]",
+  "test_resolve_provider_inline_fallback [tests/test_elaborate.py]",
+]
+name_terms = [
+  "adapter",
+  "config",
+  "crib",
+  "crib.config.GenerateConfig.adapter",
+  "generate",
+]

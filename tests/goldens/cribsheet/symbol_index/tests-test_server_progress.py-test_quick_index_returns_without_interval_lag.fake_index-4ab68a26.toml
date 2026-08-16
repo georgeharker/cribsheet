@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_server_progress.py#test_quick_index_returns_without_interval_lag.fake_index"
+fqn = "tests.test_server_progress.test_quick_index_returns_without_interval_lag.fake_index"
+name = "fake_index"
+kind = "function"
+lang = "python"
+content_hash = "e5fef29fada1f666"
+file = "tests/test_server_progress.py"
+file_hash = "eb2fa9d1ba7041e5"
+signature = "async def fake_index(project=None, cwd=None, budget_s=None):"
+description = ""
+schema = 4
+line = 36
+mtime = 1783981122000000000
+container = [
+  "test_quick_index_returns_without_interval_lag",
+]
+scope = [
+  "tests",
+  "test_server_progress",
+  "test_quick_index_returns_without_interval_lag",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_quick_index_returns_without_interval_lag [tests/test_server_progress.py]",
+]
+name_terms = [
+  "fake",
+  "fake_index",
+  "index",
+  "interval",
+  "lag",
+  "progress",
+  "quick",
+  "returns",
+  "server",
+  "test",
+  "tests",
+  "tests.test_server_progress.test_quick_index_returns_without_interval_lag.fake_index",
+  "without",
+]

@@ -1,0 +1,47 @@
+symbol_ref = "crib/app.py#Crib._generate_enrichment"
+fqn = "crib.app.Crib._generate_enrichment"
+name = "_generate_enrichment"
+kind = "method"
+lang = "python"
+content_hash = "66995e84e25c22cb"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def _generate_enrichment(self, proj: str, purpose: str,"
+description = ""
+schema = 4
+line = 2442
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "_bulk [crib/app.py]",
+  "_one_facet [crib/app.py]",
+  "_section_text [crib/app.py]",
+  "get_docs [crib/store.py]",
+  "invalidate_caches [crib/indexer.py]",
+  "resolve_provider [crib/generate.py]",
+  "section_key [crib/chunk.py]",
+]
+called_by = [
+  "_generate_index [crib/app.py]",
+  "enrich [crib/app.py]",
+]
+references = [
+  "_generate_index [crib/app.py]",
+  "enrich [crib/app.py]",
+]
+name_terms = [
+  "_generate_enrichment",
+  "app",
+  "crib",
+  "crib.app.Crib._generate_enrichment",
+  "enrichment",
+  "generate",
+]

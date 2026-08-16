@@ -1,0 +1,32 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestInstrumentation"
+fqn = "combiner.tests.test_mockserver.TestInstrumentation"
+name = "TestInstrumentation"
+kind = "class"
+lang = "python"
+content_hash = "bcf4dbf09c86addc"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "class TestInstrumentation:"
+description = ""
+schema = 4
+line = 236
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestInstrumentation",
+  "combiner",
+  "combiner.tests.test_mockserver.TestInstrumentation",
+  "instrumentation",
+  "mockserver",
+  "test",
+  "tests",
+]

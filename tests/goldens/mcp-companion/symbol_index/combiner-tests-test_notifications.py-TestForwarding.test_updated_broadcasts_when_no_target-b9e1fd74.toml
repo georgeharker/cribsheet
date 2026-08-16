@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestForwarding.test_updated_broadcasts_when_no_target"
+fqn = "combiner.tests.test_notifications.TestForwarding.test_updated_broadcasts_when_no_target"
+name = "test_updated_broadcasts_when_no_target"
+kind = "method"
+lang = "python"
+content_hash = "2faddeca0f758771"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "async def test_updated_broadcasts_when_no_target("
+description = ""
+schema = 4
+line = 275
+mtime = 1784493613000000000
+container = [
+  "TestForwarding",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "TestForwarding",
+]
+symbol_was = []
+calls = [
+  "_FakeClient [combiner/tests/test_notifications.py]",
+  "_ResourceNotifyHandler [combiner/mcp_combiner/notifications.py]",
+  "_updated [combiner/tests/test_notifications.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "broadcasts",
+  "combiner",
+  "combiner.tests.test_notifications.TestForwarding.test_updated_broadcasts_when_no_target",
+  "forwarding",
+  "no",
+  "notifications",
+  "target",
+  "test",
+  "test_updated_broadcasts_when_no_target",
+  "tests",
+  "updated",
+  "when",
+]

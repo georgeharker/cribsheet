@@ -1,0 +1,44 @@
+symbol_ref = "crib/codequery.py#CodeQuery._subgraph.put_external"
+fqn = "crib.codequery.CodeQuery._subgraph.put_external"
+name = "put_external"
+kind = "function"
+lang = "python"
+content_hash = "2733dcbb04454fbf"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def put_external(name: str, fref: str, d: int) -> str:"
+description = ""
+schema = 4
+line = 691
+mtime = 1786664729000000000
+container = [
+  "CodeQuery",
+  "_subgraph",
+]
+scope = [
+  "crib",
+  "codequery",
+  "CodeQuery",
+  "_subgraph",
+]
+symbol_was = []
+calls = [
+  "encode_edge [crib/symbols.py]",
+]
+called_by = [
+  "_subgraph [crib/codequery.py]",
+]
+references = [
+  "_subgraph [crib/codequery.py]",
+]
+name_terms = [
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery._subgraph.put_external",
+  "external",
+  "put",
+  "put_external",
+  "query",
+  "subgraph",
+]

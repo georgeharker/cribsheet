@@ -1,0 +1,29 @@
+symbol_ref = "crib/codeindex.py#_unesc"
+fqn = "crib.codeindex._unesc"
+name = "_unesc"
+kind = "global"
+lang = "python"
+content_hash = "193ecb07603343ac"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "_unesc = tomlrec.unesc"
+description = ""
+schema = 4
+line = 1457
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_unesc",
+  "codeindex",
+  "crib",
+  "crib.codeindex._unesc",
+  "unesc",
+]

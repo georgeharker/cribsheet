@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/config.py#HealthResponse.config_path"
+fqn = "combiner.mcp_combiner.config.HealthResponse.config_path"
+name = "config_path"
+kind = "field"
+lang = "python"
+content_hash = "ca0fe3931f3c2463"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "config_path: str = \"\""
+description = ""
+schema = 4
+line = 422
+mtime = 1783633313000000000
+container = [
+  "HealthResponse",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "HealthResponse",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "health_check [combiner/mcp_combiner/routes.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.HealthResponse.config_path",
+  "config",
+  "config_path",
+  "health",
+  "mcp",
+  "path",
+  "response",
+]

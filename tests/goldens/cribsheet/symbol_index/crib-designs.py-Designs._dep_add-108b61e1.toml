@@ -1,0 +1,46 @@
+symbol_ref = "crib/designs.py#Designs._dep_add"
+fqn = "crib.designs.Designs._dep_add"
+name = "_dep_add"
+kind = "method"
+lang = "python"
+content_hash = "f494d55c9042bf87"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "async def _dep_add(self, proj: str, kind: str, ref: str,"
+description = ""
+schema = 4
+line = 1039
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "Node [crib/designs.py]",
+  "_cycles [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_save [crib/designs.py]",
+]
+called_by = [
+  "design_dep_add [crib/designs.py]",
+  "plan_dep_add [crib/designs.py]",
+]
+references = [
+  "design_dep_add [crib/designs.py]",
+  "plan_dep_add [crib/designs.py]",
+]
+name_terms = [
+  "_dep_add",
+  "add",
+  "crib",
+  "crib.designs.Designs._dep_add",
+  "dep",
+  "designs",
+]

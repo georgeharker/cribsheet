@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#namespace_uri"
+fqn = "combiner.mcp_combiner.toolcache.namespace_uri"
+name = "namespace_uri"
+kind = "function"
+lang = "python"
+content_hash = "c4d6e198ff66d5ea"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "def namespace_uri(uri: str, prefix: str) -> str:"
+description = ""
+schema = 4
+line = 113
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_rewrite_app_meta [combiner/mcp_combiner/middleware.py]",
+  "on_resource_updated [combiner/mcp_combiner/notifications.py]",
+  "test_namespace_uri_matches_fastmcp [combiner/tests/test_app_meta.py]",
+]
+references = [
+  "_rewrite_app_meta [combiner/mcp_combiner/middleware.py]",
+  "on_resource_updated [combiner/mcp_combiner/notifications.py]",
+  "test_namespace_uri_matches_fastmcp [combiner/tests/test_app_meta.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.toolcache.namespace_uri",
+  "mcp",
+  "namespace",
+  "namespace_uri",
+  "toolcache",
+  "uri",
+]

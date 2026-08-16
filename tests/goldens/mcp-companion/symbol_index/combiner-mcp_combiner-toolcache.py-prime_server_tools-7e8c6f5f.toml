@@ -1,0 +1,66 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#prime_server_tools"
+fqn = "combiner.mcp_combiner.toolcache.prime_server_tools"
+name = "prime_server_tools"
+kind = "function"
+lang = "python"
+content_hash = "52c00817db4703e9"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "async def prime_server_tools("
+description = ""
+schema = 4
+line = 352
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = [
+  "_filter_tools [combiner/mcp_combiner/toolcache.py]",
+  "_list_all [combiner/mcp_combiner/toolcache.py]",
+  "_sanitize_tools [combiner/mcp_combiner/schemafix.py]",
+  "get_server_providers [combiner/mcp_combiner/mounts.py]",
+  "invalidate_tool_cache [combiner/mcp_combiner/toolcache.py]",
+  "store_slice [combiner/mcp_combiner/runtime.py]",
+]
+called_by = [
+  "_prime_gated [combiner/mcp_combiner/toolcache.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+  "fast_prime [combiner/tests/test_reload_config.py]",
+  "spawn_prime [combiner/mcp_combiner/toolcache.py]",
+  "test_prime_empty_answer_preserves_confirmed_slice [combiner/tests/test_session_filter.py]",
+  "test_prime_empty_answers_retry_until_timeout [combiner/tests/test_session_filter.py]",
+  "test_prime_empty_then_populated_publishes_once [combiner/tests/test_session_filter.py]",
+  "test_prime_retries_stores_then_invalidates [combiner/tests/test_session_filter.py]",
+  "test_prime_timeout_no_store_no_invalidate [combiner/tests/test_session_filter.py]",
+  "test_reprime_changed_list_publishes [combiner/tests/test_session_filter.py]",
+  "test_reprime_unchanged_list_is_silent [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "_prime_gated [combiner/mcp_combiner/toolcache.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+  "spawn_prime [combiner/mcp_combiner/toolcache.py]",
+  "test_prime_empty_answer_preserves_confirmed_slice [combiner/tests/test_session_filter.py]",
+  "test_prime_empty_answers_retry_until_timeout [combiner/tests/test_session_filter.py]",
+  "test_prime_empty_then_populated_publishes_once [combiner/tests/test_session_filter.py]",
+  "test_prime_retries_stores_then_invalidates [combiner/tests/test_session_filter.py]",
+  "test_prime_timeout_no_store_no_invalidate [combiner/tests/test_session_filter.py]",
+  "test_reprime_changed_list_publishes [combiner/tests/test_session_filter.py]",
+  "test_reprime_unchanged_list_is_silent [combiner/tests/test_session_filter.py]",
+  "test_restart_stdio_empty_answer_keeps_slice_silent [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.toolcache.prime_server_tools",
+  "mcp",
+  "prime",
+  "prime_server_tools",
+  "server",
+  "toolcache",
+  "tools",
+]

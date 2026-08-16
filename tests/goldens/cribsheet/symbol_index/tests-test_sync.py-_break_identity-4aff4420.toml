@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_sync.py#_break_identity"
+fqn = "tests.test_sync._break_identity"
+name = "_break_identity"
+kind = "function"
+lang = "python"
+content_hash = "b4d190e0754dded4"
+file = "tests/test_sync.py"
+file_hash = "594e3dd701dbe999"
+signature = "def _break_identity(g: GitBacking, tmp_path: Path, monkeypatch) -> None:"
+description = ""
+schema = 4
+line = 160
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_sync",
+]
+symbol_was = []
+calls = [
+  "git [tests/test_sync.py]",
+]
+called_by = [
+  "test_snapshot_reports_commit_failure_structurally [tests/test_sync.py]",
+  "test_sync_stops_when_the_commit_fails [tests/test_sync.py]",
+]
+references = [
+  "test_snapshot_reports_commit_failure_structurally [tests/test_sync.py]",
+  "test_sync_stops_when_the_commit_fails [tests/test_sync.py]",
+]
+name_terms = [
+  "_break_identity",
+  "break",
+  "identity",
+  "sync",
+  "test",
+  "tests",
+  "tests.test_sync._break_identity",
+]

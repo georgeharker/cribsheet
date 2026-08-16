@@ -1,0 +1,32 @@
+symbol_ref = "crib/codequery.py#GRAPH_DIRECTIONS"
+fqn = "crib.codequery.GRAPH_DIRECTIONS"
+name = "GRAPH_DIRECTIONS"
+kind = "constant"
+lang = "python"
+content_hash = "f1eb5babe432fa50"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "GRAPH_DIRECTIONS = {\"callees\": \"calls\", \"callers\": \"called_by\","
+description = ""
+schema = 4
+line = 55
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "graph [crib/codequery.py]",
+]
+name_terms = [
+  "GRAPH_DIRECTIONS",
+  "codequery",
+  "crib",
+  "crib.codequery.GRAPH_DIRECTIONS",
+  "directions",
+  "graph",
+]

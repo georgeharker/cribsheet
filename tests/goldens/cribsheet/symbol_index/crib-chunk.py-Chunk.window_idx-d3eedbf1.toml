@@ -1,0 +1,37 @@
+symbol_ref = "crib/chunk.py#Chunk.window_idx"
+fqn = "crib.chunk.Chunk.window_idx"
+name = "window_idx"
+kind = "field"
+lang = "python"
+content_hash = "6a91dca2bc320d0f"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "window_idx: int"
+description = ""
+schema = 4
+line = 58
+mtime = 1786136167000000000
+container = [
+  "Chunk",
+]
+scope = [
+  "crib",
+  "chunk",
+  "Chunk",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_doc_sections [crib/designs.py]",
+  "chunk_id [crib/chunk.py]",
+  "metadata [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.window_idx",
+  "idx",
+  "window",
+  "window_idx",
+]

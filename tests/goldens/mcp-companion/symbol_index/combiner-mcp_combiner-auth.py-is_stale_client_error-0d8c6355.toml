@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#is_stale_client_error"
+fqn = "combiner.mcp_combiner.auth.is_stale_client_error"
+name = "is_stale_client_error"
+kind = "function"
+lang = "python"
+content_hash = "55a3f2b8dcd8d999"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "def is_stale_client_error(error: Exception) -> bool:"
+description = ""
+schema = 4
+line = 1172
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+]
+references = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+]
+name_terms = [
+  "auth",
+  "client",
+  "combiner",
+  "combiner.mcp_combiner.auth.is_stale_client_error",
+  "error",
+  "is",
+  "is_stale_client_error",
+  "mcp",
+  "stale",
+]

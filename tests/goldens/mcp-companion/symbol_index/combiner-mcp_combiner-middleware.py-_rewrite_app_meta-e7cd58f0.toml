@@ -1,0 +1,52 @@
+symbol_ref = "combiner/mcp_combiner/middleware.py#_rewrite_app_meta"
+fqn = "combiner.mcp_combiner.middleware._rewrite_app_meta"
+name = "_rewrite_app_meta"
+kind = "function"
+lang = "python"
+content_hash = "64ca5e2b8429ec2e"
+file = "combiner/mcp_combiner/middleware.py"
+file_hash = "6dee47cf65146f20"
+signature = "def _rewrite_app_meta(meta: dict[str, Any], server: str) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 45
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "middleware",
+]
+symbol_was = []
+calls = [
+  "_is_uri [combiner/mcp_combiner/middleware.py]",
+  "namespace_uri [combiner/mcp_combiner/toolcache.py]",
+]
+called_by = [
+  "_namespace_app_meta [combiner/mcp_combiner/middleware.py]",
+  "test_leaves_other_ui_fields_untouched [combiner/tests/test_app_meta.py]",
+  "test_non_uri_resource_uri_left_alone [combiner/tests/test_app_meta.py]",
+  "test_noop_returns_same_object [combiner/tests/test_app_meta.py]",
+  "test_rewrites_openai_output_template [combiner/tests/test_app_meta.py]",
+  "test_rewrites_ui_resource_uri [combiner/tests/test_app_meta.py]",
+  "test_rewritten_pointer_reverse_resolves_to_upstream [combiner/tests/test_app_meta.py]",
+]
+references = [
+  "_namespace_app_meta [combiner/mcp_combiner/middleware.py]",
+  "test_leaves_other_ui_fields_untouched [combiner/tests/test_app_meta.py]",
+  "test_non_uri_resource_uri_left_alone [combiner/tests/test_app_meta.py]",
+  "test_noop_returns_same_object [combiner/tests/test_app_meta.py]",
+  "test_rewrites_openai_output_template [combiner/tests/test_app_meta.py]",
+  "test_rewrites_ui_resource_uri [combiner/tests/test_app_meta.py]",
+  "test_rewritten_pointer_reverse_resolves_to_upstream [combiner/tests/test_app_meta.py]",
+]
+name_terms = [
+  "_rewrite_app_meta",
+  "app",
+  "combiner",
+  "combiner.mcp_combiner.middleware._rewrite_app_meta",
+  "mcp",
+  "meta",
+  "middleware",
+  "rewrite",
+]

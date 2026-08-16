@@ -1,0 +1,33 @@
+symbol_ref = "crib/symbols.py#LUA_TABLE_VARS"
+fqn = "crib.symbols.LUA_TABLE_VARS"
+name = "LUA_TABLE_VARS"
+kind = "constant"
+lang = "python"
+content_hash = "3c003489e025fe05"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "LUA_TABLE_VARS = {\"M\", \"_M\", \"self\", \"Module\", \"mod\"}"
+description = ""
+schema = 4
+line = 96
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "declared_tail [crib/symbols.py]",
+]
+name_terms = [
+  "LUA_TABLE_VARS",
+  "crib",
+  "crib.symbols.LUA_TABLE_VARS",
+  "lua",
+  "symbols",
+  "table",
+  "vars",
+]

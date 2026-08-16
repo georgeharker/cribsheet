@@ -1,0 +1,41 @@
+symbol_ref = "crib/app.py#Crib._register_code_root"
+fqn = "crib.app.Crib._register_code_root"
+name = "_register_code_root"
+kind = "method"
+lang = "python"
+content_hash = "9023346ba15273d2"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _register_code_root(self, project: str, root: str | Path) -> None:"
+description = ""
+schema = 4
+line = 375
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "watch_root [crib/watch.py]",
+]
+called_by = [
+  "index_docs_insitu [crib/app.py]",
+]
+references = [
+  "__init__ [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+]
+name_terms = [
+  "_register_code_root",
+  "app",
+  "code",
+  "crib",
+  "crib.app.Crib._register_code_root",
+  "register",
+  "root",
+]

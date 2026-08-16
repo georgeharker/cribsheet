@@ -1,0 +1,38 @@
+symbol_ref = "crib/section_index.py#SectionIndex.labels"
+fqn = "crib.section_index.SectionIndex.labels"
+name = "labels"
+kind = "method"
+lang = "python"
+content_hash = "e9b3721625c2f57f"
+file = "crib/section_index.py"
+file_hash = "a65e5200b70d95a7"
+signature = "def labels(self) -> list[str]:"
+description = ""
+schema = 4
+line = 194
+mtime = 1786044759000000000
+container = [
+  "SectionIndex",
+]
+scope = [
+  "crib",
+  "section_index",
+  "SectionIndex",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+  "test_summarize_writes_summary_index [tests/test_elaborate.py]",
+]
+references = [
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+  "test_summarize_writes_summary_index [tests/test_elaborate.py]",
+]
+name_terms = [
+  "crib",
+  "crib.section_index.SectionIndex.labels",
+  "index",
+  "labels",
+  "section",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/test_config.py#test_oauth_config_from_dict_token_dir"
+fqn = "combiner.tests.test_config.test_oauth_config_from_dict_token_dir"
+name = "test_oauth_config_from_dict_token_dir"
+kind = "function"
+lang = "python"
+content_hash = "bdd17457fc6d72d6"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_oauth_config_from_dict_token_dir() -> None:"
+description = ""
+schema = 4
+line = 81
+mtime = 1782852601000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+]
+symbol_was = []
+calls = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.test_oauth_config_from_dict_token_dir",
+  "config",
+  "dict",
+  "dir",
+  "from",
+  "oauth",
+  "test",
+  "test_oauth_config_from_dict_token_dir",
+  "tests",
+  "token",
+]

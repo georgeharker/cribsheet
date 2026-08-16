@@ -1,0 +1,56 @@
+symbol_ref = "combiner/mcp_combiner/sharedserver.py#SharedServerManager.start_all"
+fqn = "combiner.mcp_combiner.sharedserver.SharedServerManager.start_all"
+name = "start_all"
+kind = "method"
+lang = "python"
+content_hash = "98418946385f3941"
+file = "combiner/mcp_combiner/sharedserver.py"
+file_hash = "00df81a0a741c869"
+signature = "async def start_all(self) -> None:"
+description = ""
+schema = 4
+line = 144
+mtime = 1782539642000000000
+container = [
+  "SharedServerManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "sharedserver",
+  "SharedServerManager",
+]
+symbol_was = []
+calls = [
+  "_start_one [combiner/mcp_combiner/sharedserver.py]",
+  "get_enabled_servers [combiner/mcp_combiner/config.py]",
+  "resolve_shared_server [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "test_health_poll_timeout_warns_but_continues [combiner/tests/test_sharedserver.py]",
+  "test_start_all_calls_sharedserver_use [combiner/tests/test_sharedserver.py]",
+  "test_start_all_no_sharedserver_config [combiner/tests/test_sharedserver.py]",
+  "test_start_all_skips_on_nonzero_exit [combiner/tests/test_sharedserver.py]",
+  "test_start_all_skips_when_binary_missing [combiner/tests/test_sharedserver.py]",
+]
+references = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "test_health_poll_timeout_warns_but_continues [combiner/tests/test_sharedserver.py]",
+  "test_start_all_calls_sharedserver_use [combiner/tests/test_sharedserver.py]",
+  "test_start_all_no_sharedserver_config [combiner/tests/test_sharedserver.py]",
+  "test_start_all_skips_on_nonzero_exit [combiner/tests/test_sharedserver.py]",
+  "test_start_all_skips_when_binary_missing [combiner/tests/test_sharedserver.py]",
+]
+name_terms = [
+  "all",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.SharedServerManager.start_all",
+  "manager",
+  "mcp",
+  "server",
+  "shared",
+  "sharedserver",
+  "start",
+  "start_all",
+]

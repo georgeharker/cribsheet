@@ -1,0 +1,56 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager._signal_tools_ready"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager._signal_tools_ready"
+name = "_signal_tools_ready"
+kind = "method"
+lang = "python"
+content_hash = "54302560857b1abe"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "async def _signal_tools_ready(self, conn: _ManagedConnection) -> None:"
+description = ""
+schema = 4
+line = 569
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+  "_open [combiner/mcp_combiner/connections.py]",
+  "test_callback_exception_is_swallowed [combiner/tests/test_connections.py]",
+  "test_does_not_signal_when_list_fails [combiner/tests/test_connections.py]",
+  "test_empty_answer_defers_ready [combiner/tests/test_connections.py]",
+  "test_no_callback_is_noop [combiner/tests/test_connections.py]",
+  "test_no_client_is_noop [combiner/tests/test_connections.py]",
+  "test_signals_ready_when_list_succeeds [combiner/tests/test_connections.py]",
+]
+references = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+  "_open [combiner/mcp_combiner/connections.py]",
+  "test_callback_exception_is_swallowed [combiner/tests/test_connections.py]",
+  "test_does_not_signal_when_list_fails [combiner/tests/test_connections.py]",
+  "test_empty_answer_defers_ready [combiner/tests/test_connections.py]",
+  "test_no_callback_is_noop [combiner/tests/test_connections.py]",
+  "test_no_client_is_noop [combiner/tests/test_connections.py]",
+  "test_signals_ready_when_list_succeeds [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "_signal_tools_ready",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager._signal_tools_ready",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+  "ready",
+  "signal",
+  "tools",
+]

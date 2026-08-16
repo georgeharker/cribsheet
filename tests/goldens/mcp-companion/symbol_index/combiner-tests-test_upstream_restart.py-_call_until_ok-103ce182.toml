@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_upstream_restart.py#_call_until_ok"
+fqn = "combiner.tests.test_upstream_restart._call_until_ok"
+name = "_call_until_ok"
+kind = "function"
+lang = "python"
+content_hash = "6a6919b76a48780e"
+file = "combiner/tests/test_upstream_restart.py"
+file_hash = "c3ceaa6ec420f1df"
+signature = "async def _call_until_ok("
+description = ""
+schema = 4
+line = 79
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_upstream_restart",
+]
+symbol_was = []
+calls = [
+  "poll_until [combiner/tests/conftest.py]",
+]
+called_by = [
+  "test_http_upstream_crash_reconnects_when_back [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_crash_recovers [combiner/tests/test_upstream_restart.py]",
+]
+references = [
+  "test_http_upstream_crash_reconnects_when_back [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_crash_recovers [combiner/tests/test_upstream_restart.py]",
+]
+name_terms = [
+  "_call_until_ok",
+  "call",
+  "combiner",
+  "combiner.tests.test_upstream_restart._call_until_ok",
+  "ok",
+  "restart",
+  "test",
+  "tests",
+  "until",
+  "upstream",
+]

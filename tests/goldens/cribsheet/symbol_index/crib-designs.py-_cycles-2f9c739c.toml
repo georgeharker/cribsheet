@@ -1,0 +1,45 @@
+symbol_ref = "crib/designs.py#_cycles"
+fqn = "crib.designs._cycles"
+name = "_cycles"
+kind = "function"
+lang = "python"
+content_hash = "00d6acef47dbe04e"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _cycles(nodes: dict[str, Node]) -> list[list[str]]:"
+description = ""
+schema = 4
+line = 352
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = [
+  "visit [crib/designs.py]",
+]
+called_by = [
+  "_dep_add [crib/designs.py]",
+  "_ordered [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "test_cycle_detection_finds_each_cycle_once [tests/test_designs.py]",
+  "test_dangling_dep_is_not_a_cycle [tests/test_designs.py]",
+]
+references = [
+  "_dep_add [crib/designs.py]",
+  "_ordered [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "test_cycle_detection_finds_each_cycle_once [tests/test_designs.py]",
+  "test_dangling_dep_is_not_a_cycle [tests/test_designs.py]",
+]
+name_terms = [
+  "_cycles",
+  "crib",
+  "crib.designs._cycles",
+  "cycles",
+  "designs",
+]

@@ -1,0 +1,34 @@
+symbol_ref = "combiner/mcp_combiner/server.py#_active_sessions"
+fqn = "combiner.mcp_combiner.server._active_sessions"
+name = "_active_sessions"
+kind = "global"
+lang = "python"
+content_hash = "76c53aa22d1aca1f"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "_active_sessions: weakref.WeakSet[ServerSession] = RUNTIME.sessions.active"
+description = ""
+schema = 4
+line = 120
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_reset_session_state [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_active_sessions",
+  "active",
+  "combiner",
+  "combiner.mcp_combiner.server._active_sessions",
+  "mcp",
+  "server",
+  "sessions",
+]

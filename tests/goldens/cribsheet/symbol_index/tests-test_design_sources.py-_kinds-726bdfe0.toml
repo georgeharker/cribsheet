@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_design_sources.py#_kinds"
+fqn = "tests.test_design_sources._kinds"
+name = "_kinds"
+kind = "function"
+lang = "python"
+content_hash = "c19d3b0e9b6be7ff"
+file = "tests/test_design_sources.py"
+file_hash = "f89b5a94b236ce9c"
+signature = "def _kinds(crib) -> list[str]:"
+description = ""
+schema = 4
+line = 71
+mtime = 1786137963000000000
+container = []
+scope = [
+  "tests",
+  "test_design_sources",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_a_changed_source_never_blocks_work [tests/test_design_sources.py]",
+  "test_a_headingless_doc_is_its_own_section [tests/test_design_sources.py]",
+  "test_reaffirm_does_not_paper_over_a_vanished_section [tests/test_design_sources.py]",
+  "test_reaffirm_re_records_source_hashes_alongside_dep_hashes [tests/test_design_sources.py]",
+  "test_sources_check_against_the_file_by_any_route [tests/test_design_sources.py]",
+]
+references = [
+  "test_a_changed_source_never_blocks_work [tests/test_design_sources.py]",
+  "test_a_headingless_doc_is_its_own_section [tests/test_design_sources.py]",
+  "test_reaffirm_does_not_paper_over_a_vanished_section [tests/test_design_sources.py]",
+  "test_reaffirm_re_records_source_hashes_alongside_dep_hashes [tests/test_design_sources.py]",
+  "test_sources_check_against_the_file_by_any_route [tests/test_design_sources.py]",
+]
+name_terms = [
+  "_kinds",
+  "design",
+  "kinds",
+  "sources",
+  "test",
+  "tests",
+  "tests.test_design_sources._kinds",
+]

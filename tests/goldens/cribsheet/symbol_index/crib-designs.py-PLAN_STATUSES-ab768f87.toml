@@ -1,0 +1,32 @@
+symbol_ref = "crib/designs.py#PLAN_STATUSES"
+fqn = "crib.designs.PLAN_STATUSES"
+name = "PLAN_STATUSES"
+kind = "constant"
+lang = "python"
+content_hash = "48c8f74fd5332ea8"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "PLAN_STATUSES = (\"todo\", \"in-progress\", \"done\", \"verified\")"
+description = ""
+schema = 4
+line = 108
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "plan_status [crib/designs.py]",
+]
+name_terms = [
+  "PLAN_STATUSES",
+  "crib",
+  "crib.designs.PLAN_STATUSES",
+  "designs",
+  "plan",
+  "statuses",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/config.py#CombinerConfig.permissions"
+fqn = "combiner.mcp_combiner.config.CombinerConfig.permissions"
+name = "permissions"
+kind = "field"
+lang = "python"
+content_hash = "af1517c7beead644"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "permissions: PermissionPolicy | None = None"
+description = ""
+schema = 4
+line = 477
+mtime = 1783633313000000000
+container = [
+  "CombinerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "CombinerConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "effective_policy [combiner/mcp_combiner/config.py]",
+  "load [combiner/mcp_combiner/config.py]",
+  "test_effective_policy_via_combiner_config [combiner/tests/test_permissions.py]",
+  "test_unknown_server_is_global_only [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.CombinerConfig.permissions",
+  "config",
+  "mcp",
+  "permissions",
+]

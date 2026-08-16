@@ -1,0 +1,37 @@
+symbol_ref = "crib/server.py#build_server.note_summarize"
+fqn = "crib.server.build_server.note_summarize"
+name = "note_summarize"
+kind = "function"
+lang = "python"
+content_hash = "220eacd6565969c3"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"read\")"
+description = ""
+schema = 4
+line = 592
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "crib_tool [crib/server.py]",
+  "summarize [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.note_summarize",
+  "note",
+  "note_summarize",
+  "server",
+  "summarize",
+]

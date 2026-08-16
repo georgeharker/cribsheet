@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.grant"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.grant"
+name = "grant"
+kind = "method"
+lang = "python"
+content_hash = "173f4ef9b9228fe2"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def grant(self, session_id: str, key: str) -> None:"
+description = ""
+schema = 4
+line = 107
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "enforce [combiner/mcp_combiner/permissions.py]",
+  "test_clear [combiner/tests/test_permissions.py]",
+  "test_grant_and_check [combiner/tests/test_permissions.py]",
+]
+references = [
+  "enforce [combiner/mcp_combiner/permissions.py]",
+  "test_clear [combiner/tests/test_permissions.py]",
+  "test_grant_and_check [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.grant",
+  "grant",
+  "mcp",
+  "registry",
+  "runtime",
+  "session",
+]

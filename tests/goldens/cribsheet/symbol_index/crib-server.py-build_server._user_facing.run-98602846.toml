@@ -1,0 +1,38 @@
+symbol_ref = "crib/server.py#build_server._user_facing.run"
+fqn = "crib.server.build_server._user_facing.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "88a1715b405aef1b"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@functools.wraps(fn)"
+description = ""
+schema = 4
+line = 393
+mtime = 1786693579000000000
+container = [
+  "build_server",
+  "_user_facing",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+  "_user_facing",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_user_facing [crib/server.py]",
+]
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server._user_facing.run",
+  "facing",
+  "run",
+  "server",
+  "user",
+]

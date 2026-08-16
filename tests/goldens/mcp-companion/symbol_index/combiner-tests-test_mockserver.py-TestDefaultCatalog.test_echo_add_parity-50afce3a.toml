@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestDefaultCatalog.test_echo_add_parity"
+fqn = "combiner.tests.test_mockserver.TestDefaultCatalog.test_echo_add_parity"
+name = "test_echo_add_parity"
+kind = "method"
+lang = "python"
+content_hash = "ee466db09b1eff08"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "async def test_echo_add_parity(self) -> None:"
+description = ""
+schema = 4
+line = 61
+mtime = 1783534978000000000
+container = [
+  "TestDefaultCatalog",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+  "TestDefaultCatalog",
+]
+symbol_was = []
+calls = [
+  "MockServer [combiner/mcp_combiner/mockserver.py]",
+  "_text [combiner/tests/test_mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "add",
+  "catalog",
+  "combiner",
+  "combiner.tests.test_mockserver.TestDefaultCatalog.test_echo_add_parity",
+  "default",
+  "echo",
+  "mockserver",
+  "parity",
+  "test",
+  "test_echo_add_parity",
+  "tests",
+]

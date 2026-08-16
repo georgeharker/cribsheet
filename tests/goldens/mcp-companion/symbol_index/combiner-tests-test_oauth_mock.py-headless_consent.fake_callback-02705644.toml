@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#headless_consent.fake_callback"
+fqn = "combiner.tests.test_oauth_mock.headless_consent.fake_callback"
+name = "fake_callback"
+kind = "function"
+lang = "python"
+content_hash = "359d29bb4a37744d"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def fake_callback(self: _RefreshTokenOAuth) -> tuple[str, str | None]:"
+description = ""
+schema = 4
+line = 168
+mtime = 1784495646000000000
+container = [
+  "headless_consent",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "headless_consent",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "headless_consent [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "callback",
+  "combiner",
+  "combiner.tests.test_oauth_mock.headless_consent.fake_callback",
+  "consent",
+  "fake",
+  "fake_callback",
+  "headless",
+  "mock",
+  "oauth",
+  "test",
+  "tests",
+]

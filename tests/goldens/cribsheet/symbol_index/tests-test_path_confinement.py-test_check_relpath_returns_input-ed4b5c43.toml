@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_path_confinement.py#test_check_relpath_returns_input"
+fqn = "tests.test_path_confinement.test_check_relpath_returns_input"
+name = "test_check_relpath_returns_input"
+kind = "function"
+lang = "python"
+content_hash = "8b217bf1d1f00b3c"
+file = "tests/test_path_confinement.py"
+file_hash = "ca5f375c4fa4dfa2"
+signature = "def test_check_relpath_returns_input():"
+description = ""
+schema = 4
+line = 69
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_path_confinement",
+]
+symbol_was = []
+calls = [
+  "check_relpath [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "check",
+  "confinement",
+  "input",
+  "path",
+  "relpath",
+  "returns",
+  "test",
+  "test_check_relpath_returns_input",
+  "tests",
+  "tests.test_path_confinement.test_check_relpath_returns_input",
+]

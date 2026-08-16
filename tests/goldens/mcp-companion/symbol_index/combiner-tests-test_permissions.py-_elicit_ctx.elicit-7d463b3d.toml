@@ -1,0 +1,37 @@
+symbol_ref = "combiner/tests/test_permissions.py#_elicit_ctx.elicit"
+fqn = "combiner.tests.test_permissions._elicit_ctx.elicit"
+name = "elicit"
+kind = "function"
+lang = "python"
+content_hash = "8474c057c10a584b"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "async def elicit(message: str, response_type: Any = None) -> Any:"
+description = ""
+schema = 4
+line = 192
+mtime = 1783633313000000000
+container = [
+  "_elicit_ctx",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "_elicit_ctx",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_elicit_ctx [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.test_permissions._elicit_ctx.elicit",
+  "ctx",
+  "elicit",
+  "permissions",
+  "test",
+  "tests",
+]

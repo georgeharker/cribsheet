@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_ctl_lifecycle.py#test_restart_refuses_when_other_clients_and_no_force"
+fqn = "combiner.tests.test_ctl_lifecycle.test_restart_refuses_when_other_clients_and_no_force"
+name = "test_restart_refuses_when_other_clients_and_no_force"
+kind = "function"
+lang = "python"
+content_hash = "e1d622e6d96040e8"
+file = "combiner/tests/test_ctl_lifecycle.py"
+file_hash = "561e3360d44bd010"
+signature = "@pytest.mark.asyncio"
+description = ""
+schema = 4
+line = 105
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_ctl_lifecycle",
+]
+symbol_was = []
+calls = [
+  "_restart_args [combiner/tests/test_ctl_lifecycle.py]",
+  "cmd_restart_combiner [combiner/mcp_combiner/ctl.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "clients",
+  "combiner",
+  "combiner.tests.test_ctl_lifecycle.test_restart_refuses_when_other_clients_and_no_force",
+  "ctl",
+  "force",
+  "lifecycle",
+  "no",
+  "other",
+  "refuses",
+  "restart",
+  "test",
+  "test_restart_refuses_when_other_clients_and_no_force",
+  "tests",
+  "when",
+]

@@ -1,0 +1,46 @@
+symbol_ref = "tests/test_keyword_refresh.py#test_edit_then_quit_heals_on_startup.body"
+fqn = "tests.test_keyword_refresh.test_edit_then_quit_heals_on_startup.body"
+name = "body"
+kind = "function"
+lang = "python"
+content_hash = "5123cf953fd4620b"
+file = "tests/test_keyword_refresh.py"
+file_hash = "d758ff5010231936"
+signature = "async def body():"
+description = ""
+schema = 4
+line = 172
+mtime = 1786044759000000000
+container = [
+  "test_edit_then_quit_heals_on_startup",
+]
+scope = [
+  "tests",
+  "test_keyword_refresh",
+  "test_edit_then_quit_heals_on_startup",
+]
+symbol_was = []
+calls = [
+  "_hashes [tests/test_keyword_refresh.py]",
+  "has [crib/section_index.py]",
+]
+called_by = [
+  "test_edit_then_quit_heals_on_startup [tests/test_keyword_refresh.py]",
+]
+references = [
+  "test_edit_then_quit_heals_on_startup [tests/test_keyword_refresh.py]",
+]
+name_terms = [
+  "body",
+  "edit",
+  "heals",
+  "keyword",
+  "on",
+  "quit",
+  "refresh",
+  "startup",
+  "test",
+  "tests",
+  "tests.test_keyword_refresh.test_edit_then_quit_heals_on_startup.body",
+  "then",
+]

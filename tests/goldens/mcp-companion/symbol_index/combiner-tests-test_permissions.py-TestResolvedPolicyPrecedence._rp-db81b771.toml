@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestResolvedPolicyPrecedence._rp"
+fqn = "combiner.tests.test_permissions.TestResolvedPolicyPrecedence._rp"
+name = "_rp"
+kind = "method"
+lang = "python"
+content_hash = "e91084d356d8bcd4"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "def _rp(self, **kw: Any) -> ResolvedPolicy:"
+description = ""
+schema = 4
+line = 82
+mtime = 1783633313000000000
+container = [
+  "TestResolvedPolicyPrecedence",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "TestResolvedPolicyPrecedence",
+]
+symbol_was = []
+calls = [
+  "ResolvedPolicy [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "test_deny_beats_elicit_beats_allow [combiner/tests/test_permissions.py]",
+  "test_is_active [combiner/tests/test_permissions.py]",
+  "test_unmatched_uses_default [combiner/tests/test_permissions.py]",
+]
+references = [
+  "test_deny_beats_elicit_beats_allow [combiner/tests/test_permissions.py]",
+  "test_is_active [combiner/tests/test_permissions.py]",
+  "test_unmatched_uses_default [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "_rp",
+  "combiner",
+  "combiner.tests.test_permissions.TestResolvedPolicyPrecedence._rp",
+  "permissions",
+  "policy",
+  "precedence",
+  "resolved",
+  "rp",
+  "test",
+  "tests",
+]

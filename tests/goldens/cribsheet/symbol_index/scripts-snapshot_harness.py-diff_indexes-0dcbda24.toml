@@ -1,0 +1,37 @@
+symbol_ref = "scripts/snapshot_harness.py#diff_indexes"
+fqn = "scripts.snapshot_harness.diff_indexes"
+name = "diff_indexes"
+kind = "function"
+lang = "python"
+content_hash = "b39048eda27524cc"
+file = "scripts/snapshot_harness.py"
+file_hash = "60b46810ead50638"
+signature = "def diff_indexes(a: dict[str, dict], b: dict[str, dict],"
+description = ""
+schema = 4
+line = 67
+mtime = 1783498271000000000
+container = []
+scope = [
+  "scripts",
+  "snapshot_harness",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "compare [scripts/snapshot_harness.py]",
+  "idempotency [scripts/snapshot_harness.py]",
+]
+references = [
+  "compare [scripts/snapshot_harness.py]",
+  "idempotency [scripts/snapshot_harness.py]",
+]
+name_terms = [
+  "diff",
+  "diff_indexes",
+  "harness",
+  "indexes",
+  "scripts",
+  "scripts.snapshot_harness.diff_indexes",
+  "snapshot",
+]

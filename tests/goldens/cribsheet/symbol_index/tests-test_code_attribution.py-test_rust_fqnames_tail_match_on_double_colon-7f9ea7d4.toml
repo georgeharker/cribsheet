@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_code_attribution.py#test_rust_fqnames_tail_match_on_double_colon"
+fqn = "tests.test_code_attribution.test_rust_fqnames_tail_match_on_double_colon"
+name = "test_rust_fqnames_tail_match_on_double_colon"
+kind = "function"
+lang = "python"
+content_hash = "1b31a1f9b46de21b"
+file = "tests/test_code_attribution.py"
+file_hash = "ff3c29a685f6f6d7"
+signature = "def test_rust_fqnames_tail_match_on_double_colon():"
+description = ""
+schema = 4
+line = 80
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_attribution",
+]
+symbol_was = []
+calls = [
+  "_rows_to_meta [crib/codeindex.py]",
+  "match_meta [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "attribution",
+  "code",
+  "colon",
+  "double",
+  "fqnames",
+  "match",
+  "on",
+  "rust",
+  "tail",
+  "test",
+  "test_rust_fqnames_tail_match_on_double_colon",
+  "tests",
+  "tests.test_code_attribution.test_rust_fqnames_tail_match_on_double_colon",
+]

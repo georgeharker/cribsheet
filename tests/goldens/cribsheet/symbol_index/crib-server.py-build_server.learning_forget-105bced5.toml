@@ -1,0 +1,37 @@
+symbol_ref = "crib/server.py#build_server.learning_forget"
+fqn = "crib.server.build_server.learning_forget"
+name = "learning_forget"
+kind = "function"
+lang = "python"
+content_hash = "5bfabfeafb2c90e5"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"read\")"
+description = ""
+schema = 4
+line = 850
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "crib_tool [crib/server.py]",
+  "learning_forget [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.learning_forget",
+  "forget",
+  "learning",
+  "learning_forget",
+  "server",
+]

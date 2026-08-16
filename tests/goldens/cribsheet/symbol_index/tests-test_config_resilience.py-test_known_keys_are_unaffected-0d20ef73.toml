@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_config_resilience.py#test_known_keys_are_unaffected"
+fqn = "tests.test_config_resilience.test_known_keys_are_unaffected"
+name = "test_known_keys_are_unaffected"
+kind = "function"
+lang = "python"
+content_hash = "4db5c656783d76b6"
+file = "tests/test_config_resilience.py"
+file_hash = "620aeb96b59e7b2d"
+signature = "def test_known_keys_are_unaffected(tmp_path, capsys):"
+description = ""
+schema = 4
+line = 47
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_config_resilience",
+]
+symbol_was = []
+calls = [
+  "_cfg [tests/test_config_resilience.py]",
+  "load [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "are",
+  "config",
+  "keys",
+  "known",
+  "resilience",
+  "test",
+  "test_known_keys_are_unaffected",
+  "tests",
+  "tests.test_config_resilience.test_known_keys_are_unaffected",
+  "unaffected",
+]

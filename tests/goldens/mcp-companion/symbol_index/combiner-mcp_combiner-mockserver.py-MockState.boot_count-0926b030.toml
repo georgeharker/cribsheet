@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockState.boot_count"
+fqn = "combiner.mcp_combiner.mockserver.MockState.boot_count"
+name = "boot_count"
+kind = "field"
+lang = "python"
+content_hash = "7da9019574f789f9"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "boot_count: int = 1"
+description = ""
+schema = 4
+line = 156
+mtime = 1783622326000000000
+container = [
+  "MockState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockState",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "snapshot [combiner/mcp_combiner/mockserver.py]",
+  "test_boot_counter_persists [combiner/tests/test_mockserver.py]",
+]
+name_terms = [
+  "boot",
+  "boot_count",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockState.boot_count",
+  "count",
+  "mcp",
+  "mock",
+  "mockserver",
+  "state",
+]

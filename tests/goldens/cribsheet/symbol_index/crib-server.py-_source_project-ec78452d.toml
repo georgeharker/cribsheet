@@ -1,0 +1,42 @@
+symbol_ref = "crib/server.py#_source_project"
+fqn = "crib.server._source_project"
+name = "_source_project"
+kind = "function"
+lang = "python"
+content_hash = "5e6ea383fab29e13"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def _source_project(crib: Crib, project: str | None,"
+description = ""
+schema = 4
+line = 84
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = [
+  "_project [crib/server.py]",
+]
+called_by = [
+  "resolve [crib/server.py]",
+  "test_explicit_project_wins [tests/test_project_resolution.py]",
+  "test_no_path_falls_back_to_session [tests/test_project_resolution.py]",
+  "test_project_path_defers_to_crib_not_sticky [tests/test_project_resolution.py]",
+]
+references = [
+  "resolve [crib/server.py]",
+  "test_explicit_project_wins [tests/test_project_resolution.py]",
+  "test_no_path_falls_back_to_session [tests/test_project_resolution.py]",
+  "test_project_path_defers_to_crib_not_sticky [tests/test_project_resolution.py]",
+]
+name_terms = [
+  "_source_project",
+  "crib",
+  "crib.server._source_project",
+  "project",
+  "server",
+  "source",
+]

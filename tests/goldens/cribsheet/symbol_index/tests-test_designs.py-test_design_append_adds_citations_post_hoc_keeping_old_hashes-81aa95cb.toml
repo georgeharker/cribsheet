@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_designs.py#test_design_append_adds_citations_post_hoc_keeping_old_hashes"
+fqn = "tests.test_designs.test_design_append_adds_citations_post_hoc_keeping_old_hashes"
+name = "test_design_append_adds_citations_post_hoc_keeping_old_hashes"
+kind = "function"
+lang = "python"
+content_hash = "bbef13b752d630e4"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_design_append_adds_citations_post_hoc_keeping_old_hashes(crib, tmp_path):"
+description = ""
+schema = 4
+line = 676
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "adds",
+  "append",
+  "citations",
+  "design",
+  "designs",
+  "hashes",
+  "hoc",
+  "keeping",
+  "old",
+  "post",
+  "test",
+  "test_design_append_adds_citations_post_hoc_keeping_old_hashes",
+  "tests",
+  "tests.test_designs.test_design_append_adds_citations_post_hoc_keeping_old_hashes",
+]

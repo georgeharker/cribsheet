@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ServerStatusInfo.disabled"
+fqn = "combiner.mcp_combiner.config.ServerStatusInfo.disabled"
+name = "disabled"
+kind = "field"
+lang = "python"
+content_hash = "3e8c2ed4d1cb20d3"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "disabled: bool"
+description = ""
+schema = 4
+line = 402
+mtime = 1783633313000000000
+container = [
+  "ServerStatusInfo",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ServerStatusInfo",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "get_server_status [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerStatusInfo.disabled",
+  "config",
+  "disabled",
+  "info",
+  "mcp",
+  "server",
+  "status",
+]

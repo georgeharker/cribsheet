@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthAudit.bearer_seen"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthAudit.bearer_seen"
+name = "bearer_seen"
+kind = "field"
+lang = "python"
+content_hash = "51cb82d56705a364"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "bearer_seen: list[str | None] = field(default_factory=list)"
+description = ""
+schema = 4
+line = 646
+mtime = 1783622326000000000
+container = [
+  "MockOAuthAudit",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthAudit",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "authenticated_mcp_calls [combiner/mcp_combiner/mockserver.py]",
+  "test_unauthenticated_call_is_rejected_then_recovers [combiner/tests/test_oauth_mock.py]",
+  "wrapped [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "audit",
+  "auth",
+  "bearer",
+  "bearer_seen",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthAudit.bearer_seen",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "seen",
+]

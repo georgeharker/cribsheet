@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_cli_labels.py#test_explicit_empty_disables"
+fqn = "tests.test_cli_labels.test_explicit_empty_disables"
+name = "test_explicit_empty_disables"
+kind = "function"
+lang = "python"
+content_hash = "abe0d52c182ddd36"
+file = "tests/test_cli_labels.py"
+file_hash = "6fae42b1c5757b72"
+signature = "def test_explicit_empty_disables():"
+description = ""
+schema = 4
+line = 18
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_cli_labels",
+]
+symbol_was = []
+calls = [
+  "_split_labels [crib/cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cli",
+  "disables",
+  "empty",
+  "explicit",
+  "labels",
+  "test",
+  "test_explicit_empty_disables",
+  "tests",
+  "tests.test_cli_labels.test_explicit_empty_disables",
+]

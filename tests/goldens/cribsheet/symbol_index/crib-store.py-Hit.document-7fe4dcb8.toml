@@ -1,0 +1,36 @@
+symbol_ref = "crib/store.py#Hit.document"
+fqn = "crib.store.Hit.document"
+name = "document"
+kind = "field"
+lang = "python"
+content_hash = "d42dd8d5f5d6426c"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "document: str"
+description = ""
+schema = 4
+line = 37
+mtime = 1786564832000000000
+container = [
+  "Hit",
+]
+scope = [
+  "crib",
+  "store",
+  "Hit",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_rerank [crib/app.py]",
+  "_retrieve [crib/app.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Hit.document",
+  "document",
+  "hit",
+  "store",
+]

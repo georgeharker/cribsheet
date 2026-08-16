@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_WAKE_GAP_SECONDS"
+fqn = "combiner.mcp_combiner.auth._WAKE_GAP_SECONDS"
+name = "_WAKE_GAP_SECONDS"
+kind = "constant"
+lang = "python"
+content_hash = "ddb8678a361a95d3"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "_WAKE_GAP_SECONDS = 300.0  # 5 minutes"
+description = ""
+schema = 4
+line = 120
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+  "test_network_error_does_not_shorten_distant_expiry [combiner/tests/test_auth.py]",
+  "test_wake_up_forces_refresh_even_with_time_left [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "_WAKE_GAP_SECONDS",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._WAKE_GAP_SECONDS",
+  "gap",
+  "mcp",
+  "seconds",
+  "wake",
+]

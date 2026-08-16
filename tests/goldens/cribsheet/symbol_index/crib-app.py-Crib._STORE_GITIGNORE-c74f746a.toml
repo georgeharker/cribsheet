@@ -1,0 +1,36 @@
+symbol_ref = "crib/app.py#Crib._STORE_GITIGNORE"
+fqn = "crib.app.Crib._STORE_GITIGNORE"
+name = "_STORE_GITIGNORE"
+kind = "constant"
+lang = "python"
+content_hash = "0e2a9618a4cf9c82"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "_STORE_GITIGNORE = (\"# crib in-repo store — the notes ARE the repo's, the \""
+description = ""
+schema = 4
+line = 1576
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+]
+name_terms = [
+  "_STORE_GITIGNORE",
+  "app",
+  "crib",
+  "crib.app.Crib._STORE_GITIGNORE",
+  "gitignore",
+  "store",
+]

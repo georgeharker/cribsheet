@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_dim_recovery.py#test_no_dim_change_no_recovery"
+fqn = "tests.test_dim_recovery.test_no_dim_change_no_recovery"
+name = "test_no_dim_change_no_recovery"
+kind = "function"
+lang = "python"
+content_hash = "c7dd8c701ce29f74"
+file = "tests/test_dim_recovery.py"
+file_hash = "5f6ffd4e573336e9"
+signature = "def test_no_dim_change_no_recovery(crib):"
+description = ""
+schema = 4
+line = 126
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_dim_recovery",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_dim_recovery.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "change",
+  "dim",
+  "no",
+  "recovery",
+  "test",
+  "test_no_dim_change_no_recovery",
+  "tests",
+  "tests.test_dim_recovery.test_no_dim_change_no_recovery",
+]

@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_app_meta.py#_tool"
+fqn = "combiner.tests.test_app_meta._tool"
+name = "_tool"
+kind = "function"
+lang = "python"
+content_hash = "d94c6829a3bf852b"
+file = "combiner/tests/test_app_meta.py"
+file_hash = "fc52f36639c3320a"
+signature = "def _tool(name: str, meta: dict[str, Any] | None) -> Tool:"
+description = ""
+schema = 4
+line = 29
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_app_meta",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_applied_once_not_double [combiner/tests/test_app_meta.py]",
+  "test_recovers_namespace_from_tool_name [combiner/tests/test_app_meta.py]",
+  "test_tool_pointer_matches_namespaced_resource [combiner/tests/test_app_meta.py]",
+  "test_tools_without_meta_pass_through [combiner/tests/test_app_meta.py]",
+  "test_unowned_tools_pass_through [combiner/tests/test_app_meta.py]",
+]
+references = [
+  "test_applied_once_not_double [combiner/tests/test_app_meta.py]",
+  "test_recovers_namespace_from_tool_name [combiner/tests/test_app_meta.py]",
+  "test_tool_pointer_matches_namespaced_resource [combiner/tests/test_app_meta.py]",
+  "test_tools_without_meta_pass_through [combiner/tests/test_app_meta.py]",
+  "test_unowned_tools_pass_through [combiner/tests/test_app_meta.py]",
+]
+name_terms = [
+  "_tool",
+  "app",
+  "combiner",
+  "combiner.tests.test_app_meta._tool",
+  "meta",
+  "test",
+  "tests",
+  "tool",
+]

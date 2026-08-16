@@ -1,0 +1,32 @@
+symbol_ref = "crib/retrieve.py#STOPWORDS"
+fqn = "crib.retrieve.STOPWORDS"
+name = "STOPWORDS"
+kind = "constant"
+lang = "python"
+content_hash = "d23c5be78baceaa5"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "STOPWORDS = frozenset({"
+description = ""
+schema = 4
+line = 49
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "retrieve",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_lookup_one [crib/codequery.py]",
+  "_retrieve [crib/app.py]",
+]
+name_terms = [
+  "STOPWORDS",
+  "crib",
+  "crib.retrieve.STOPWORDS",
+  "retrieve",
+  "stopwords",
+]

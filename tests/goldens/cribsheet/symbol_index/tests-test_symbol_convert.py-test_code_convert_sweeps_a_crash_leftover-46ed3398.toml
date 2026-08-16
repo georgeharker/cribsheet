@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_symbol_convert.py#test_code_convert_sweeps_a_crash_leftover"
+fqn = "tests.test_symbol_convert.test_code_convert_sweeps_a_crash_leftover"
+name = "test_code_convert_sweeps_a_crash_leftover"
+kind = "function"
+lang = "python"
+content_hash = "b0fa102e9f704621"
+file = "tests/test_symbol_convert.py"
+file_hash = "3cdbfd7f71b23e65"
+signature = "def test_code_convert_sweeps_a_crash_leftover(crib):"
+description = ""
+schema = 4
+line = 155
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_convert",
+]
+symbol_was = []
+calls = [
+  "_seed_legacy_store [tests/test_symbol_convert.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "code",
+  "convert",
+  "crash",
+  "leftover",
+  "sweeps",
+  "symbol",
+  "test",
+  "test_code_convert_sweeps_a_crash_leftover",
+  "tests",
+  "tests.test_symbol_convert.test_code_convert_sweeps_a_crash_leftover",
+]

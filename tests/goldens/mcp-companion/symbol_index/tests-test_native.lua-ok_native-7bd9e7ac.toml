@@ -1,0 +1,32 @@
+symbol_ref = "tests/test_native.lua#ok_native"
+fqn = "tests.test_native.ok_native"
+name = "ok_native"
+kind = "global"
+lang = "lua"
+content_hash = "82200f13f570f5c8"
+file = "tests/test_native.lua"
+file_hash = "68d141d843ba3fa4"
+signature = "local ok_native, native = pcall(require, \"mcp_companion.native\")"
+description = ""
+schema = 4
+line = 39
+mtime = 1783022631000000000
+container = []
+scope = [
+  "tests",
+  "test_native",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_native.lua]",
+]
+name_terms = [
+  "native",
+  "ok",
+  "ok_native",
+  "test",
+  "tests",
+  "tests.test_native.ok_native",
+]

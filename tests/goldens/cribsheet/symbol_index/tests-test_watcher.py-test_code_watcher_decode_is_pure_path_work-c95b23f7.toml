@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_watcher.py#test_code_watcher_decode_is_pure_path_work"
+fqn = "tests.test_watcher.test_code_watcher_decode_is_pure_path_work"
+name = "test_code_watcher_decode_is_pure_path_work"
+kind = "function"
+lang = "python"
+content_hash = "76b826a5268901f2"
+file = "tests/test_watcher.py"
+file_hash = "f95c6316824837fd"
+signature = "def test_code_watcher_decode_is_pure_path_work(tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 65
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_watcher",
+]
+symbol_was = []
+calls = [
+  "CodeWatcher [crib/watch.py]",
+  "_code_exts [crib/watch.py]",
+  "_decode [crib/watch.py]",
+  "_spy [tests/test_watcher.py]",
+  "watch_root [crib/watch.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "decode",
+  "is",
+  "path",
+  "pure",
+  "test",
+  "test_code_watcher_decode_is_pure_path_work",
+  "tests",
+  "tests.test_watcher.test_code_watcher_decode_is_pure_path_work",
+  "watcher",
+  "work",
+]

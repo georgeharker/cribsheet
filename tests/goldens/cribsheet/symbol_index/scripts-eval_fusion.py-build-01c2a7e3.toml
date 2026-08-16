@@ -1,0 +1,40 @@
+symbol_ref = "scripts/eval_fusion.py#build"
+fqn = "scripts.eval_fusion.build"
+name = "build"
+kind = "function"
+lang = "python"
+content_hash = "17a47f1a72117833"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def build(heavy: bool):"
+description = ""
+schema = 4
+line = 241
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = [
+  "c_bm25f [scripts/eval_fusion.py]",
+  "c_colbert [scripts/eval_fusion.py]",
+  "c_convex [scripts/eval_fusion.py]",
+  "c_covpc [scripts/eval_fusion.py]",
+  "c_graph [scripts/eval_fusion.py]",
+  "with_rerank [scripts/eval_fusion.py]",
+]
+called_by = [
+  "main [scripts/eval_fusion.py]",
+]
+references = [
+  "main [scripts/eval_fusion.py]",
+]
+name_terms = [
+  "build",
+  "eval",
+  "fusion",
+  "scripts",
+  "scripts.eval_fusion.build",
+]

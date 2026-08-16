@@ -1,0 +1,43 @@
+symbol_ref = "scripts/eval_fusion.py#main"
+fqn = "scripts.eval_fusion.main"
+name = "main"
+kind = "function"
+lang = "python"
+content_hash = "abe0b6b268efb275"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def main(argv=None) -> int:"
+description = ""
+schema = 4
+line = 332
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = [
+  "Feat [scripts/eval_fusion.py]",
+  "build [scripts/eval_fusion.py]",
+  "build_token_emb [scripts/eval_fusion.py]",
+  "close [crib/app.py]",
+  "ltr_eval [scripts/eval_fusion.py]",
+  "mrr [scripts/eval_fusion.py]",
+  "open [crib/app.py]",
+  "p1 [scripts/eval_fusion.py]",
+  "q [scripts/eval_fusion.py]",
+  "r3 [scripts/eval_fusion.py]",
+  "target_rank [scripts/eval_fusion.py]",
+]
+called_by = [
+  "eval_fusion [scripts/eval_fusion.py]",
+]
+references = []
+name_terms = [
+  "eval",
+  "fusion",
+  "main",
+  "scripts",
+  "scripts.eval_fusion.main",
+]

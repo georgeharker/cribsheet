@@ -1,0 +1,35 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#icons.connecting"
+fqn = "mcp_companion.ui.icons.connecting"
+name = "connecting"
+kind = "field"
+lang = "lua"
+content_hash = "bb7e860e6425be20"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "connecting = \"◌\","
+description = ""
+schema = 4
+line = 32
+mtime = 1783545086000000000
+container = [
+  "icons",
+]
+scope = [
+  "mcp_companion",
+  "ui",
+  "icons",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "elseif [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "companion",
+  "connecting",
+  "icons",
+  "mcp",
+  "mcp_companion.ui.icons.connecting",
+  "ui",
+]

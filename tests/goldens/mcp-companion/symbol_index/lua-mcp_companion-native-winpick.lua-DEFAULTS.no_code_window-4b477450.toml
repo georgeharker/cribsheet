@@ -1,0 +1,38 @@
+symbol_ref = "lua/mcp_companion/native/winpick.lua#DEFAULTS.no_code_window"
+fqn = "mcp_companion.native.winpick.DEFAULTS.no_code_window"
+name = "no_code_window"
+kind = "field"
+lang = "lua"
+content_hash = "467cd33bbc678a9d"
+file = "lua/mcp_companion/native/winpick.lua"
+file_hash = "6bf70fc950ff8924"
+signature = "no_code_window = \"tab\","
+description = ""
+schema = 4
+line = 37
+mtime = 1782852601000000000
+container = [
+  "DEFAULTS",
+]
+scope = [
+  "mcp_companion",
+  "native",
+  "winpick",
+  "DEFAULTS",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "companion",
+  "defaults",
+  "mcp",
+  "mcp_companion.native.winpick.DEFAULTS.no_code_window",
+  "native",
+  "no",
+  "no_code_window",
+  "window",
+  "winpick",
+]

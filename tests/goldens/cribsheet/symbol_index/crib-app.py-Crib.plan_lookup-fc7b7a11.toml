@@ -1,0 +1,41 @@
+symbol_ref = "crib/app.py#Crib.plan_lookup"
+fqn = "crib.app.Crib.plan_lookup"
+name = "plan_lookup"
+kind = "method"
+lang = "python"
+content_hash = "15ff950853420ccf"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def plan_lookup(self, query: str, project: str | None = None, k: int = 8,"
+description = ""
+schema = 4
+line = 2183
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "annotate_hits [crib/designs.py]",
+  "lookup [crib/app.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "plan_lookup [crib/server.py]",
+]
+references = [
+  "plan_lookup [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.plan_lookup",
+  "lookup",
+  "plan",
+  "plan_lookup",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_code_attribution.py#test_longest_qualified_suffix_wins"
+fqn = "tests.test_code_attribution.test_longest_qualified_suffix_wins"
+name = "test_longest_qualified_suffix_wins"
+kind = "function"
+lang = "python"
+content_hash = "fe253be0c5f6bdb6"
+file = "tests/test_code_attribution.py"
+file_hash = "ff3c29a685f6f6d7"
+signature = "def test_longest_qualified_suffix_wins():"
+description = ""
+schema = 4
+line = 95
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_attribution",
+]
+symbol_was = []
+calls = [
+  "match_meta [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "attribution",
+  "code",
+  "longest",
+  "qualified",
+  "suffix",
+  "test",
+  "test_longest_qualified_suffix_wins",
+  "tests",
+  "tests.test_code_attribution.test_longest_qualified_suffix_wins",
+  "wins",
+]

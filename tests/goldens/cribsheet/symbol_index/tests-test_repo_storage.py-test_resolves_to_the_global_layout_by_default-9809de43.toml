@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_repo_storage.py#test_resolves_to_the_global_layout_by_default"
+fqn = "tests.test_repo_storage.test_resolves_to_the_global_layout_by_default"
+name = "test_resolves_to_the_global_layout_by_default"
+kind = "function"
+lang = "python"
+content_hash = "28e765e563276f18"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_resolves_to_the_global_layout_by_default(paths, config):"
+description = ""
+schema = 4
+line = 95
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "pillar_dir [crib/paths.py]",
+  "resolve_project_paths [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "by",
+  "default",
+  "global",
+  "layout",
+  "repo",
+  "resolves",
+  "storage",
+  "test",
+  "test_resolves_to_the_global_layout_by_default",
+  "tests",
+  "tests.test_repo_storage.test_resolves_to_the_global_layout_by_default",
+  "the",
+  "to",
+]

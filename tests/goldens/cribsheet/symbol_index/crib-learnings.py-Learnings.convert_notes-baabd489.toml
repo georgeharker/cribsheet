@@ -1,0 +1,50 @@
+symbol_ref = "crib/learnings.py#Learnings.convert_notes"
+fqn = "crib.learnings.Learnings.convert_notes"
+name = "convert_notes"
+kind = "method"
+lang = "python"
+content_hash = "f03e718510e930d1"
+file = "crib/learnings.py"
+file_hash = "977a14d62df88945"
+signature = "async def convert_notes(self, proj: str, apply: bool = False) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 257
+mtime = 1786664729000000000
+container = [
+  "Learnings",
+]
+scope = [
+  "crib",
+  "learnings",
+  "Learnings",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "abspath [crib/notestore.py]",
+  "all [crib/codeindex.py]",
+  "bindings [crib/symbols.py]",
+  "fqn_of [crib/symbols.py]",
+  "key [crib/symbols.py]",
+  "load [crib/notes.py]",
+  "project_dir [crib/paths.py]",
+  "ref_slug [crib/symbols.py]",
+  "reindex [crib/notestore.py]",
+  "root [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+called_by = [
+  "learning_migrate [crib/app.py]",
+]
+references = [
+  "learning_migrate [crib/app.py]",
+]
+name_terms = [
+  "convert",
+  "convert_notes",
+  "crib",
+  "crib.learnings.Learnings.convert_notes",
+  "learnings",
+  "notes",
+]

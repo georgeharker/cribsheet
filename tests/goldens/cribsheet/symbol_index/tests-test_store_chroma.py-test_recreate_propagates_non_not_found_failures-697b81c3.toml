@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_store_chroma.py#test_recreate_propagates_non_not_found_failures"
+fqn = "tests.test_store_chroma.test_recreate_propagates_non_not_found_failures"
+name = "test_recreate_propagates_non_not_found_failures"
+kind = "function"
+lang = "python"
+content_hash = "40c95e4b202f7b68"
+file = "tests/test_store_chroma.py"
+file_hash = "c9d58563fea059fc"
+signature = "def test_recreate_propagates_non_not_found_failures(chroma_dir):"
+description = ""
+schema = 4
+line = 64
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_store_chroma",
+]
+symbol_was = []
+calls = [
+  "embedded [crib/store.py]",
+  "recreate [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chroma",
+  "failures",
+  "found",
+  "non",
+  "not",
+  "propagates",
+  "recreate",
+  "store",
+  "test",
+  "test_recreate_propagates_non_not_found_failures",
+  "tests",
+  "tests.test_store_chroma.test_recreate_propagates_non_not_found_failures",
+]

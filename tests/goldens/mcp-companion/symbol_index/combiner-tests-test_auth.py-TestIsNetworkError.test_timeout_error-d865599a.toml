@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_auth.py#TestIsNetworkError.test_timeout_error"
+fqn = "combiner.tests.test_auth.TestIsNetworkError.test_timeout_error"
+name = "test_timeout_error"
+kind = "method"
+lang = "python"
+content_hash = "026eece26499de6f"
+file = "combiner/tests/test_auth.py"
+file_hash = "2b3aa7eeeed5bf38"
+signature = "def test_timeout_error(self) -> None:"
+description = ""
+schema = 4
+line = 233
+mtime = 1782852601000000000
+container = [
+  "TestIsNetworkError",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_auth",
+  "TestIsNetworkError",
+]
+symbol_was = []
+calls = [
+  "_is_network_error [combiner/mcp_combiner/auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestIsNetworkError.test_timeout_error",
+  "error",
+  "is",
+  "network",
+  "test",
+  "test_timeout_error",
+  "tests",
+  "timeout",
+]

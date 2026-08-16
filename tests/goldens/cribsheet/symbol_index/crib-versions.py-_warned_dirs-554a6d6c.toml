@@ -1,0 +1,32 @@
+symbol_ref = "crib/versions.py#_warned_dirs"
+fqn = "crib.versions._warned_dirs"
+name = "_warned_dirs"
+kind = "global"
+lang = "python"
+content_hash = "07d050c8a1ef6f37"
+file = "crib/versions.py"
+file_hash = "c84588155a74a02c"
+signature = "_warned_dirs: set[Path] = set()"
+description = ""
+schema = 4
+line = 22
+mtime = 1785966856000000000
+container = []
+scope = [
+  "crib",
+  "versions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_ring_files [crib/versions.py]",
+]
+name_terms = [
+  "_warned_dirs",
+  "crib",
+  "crib.versions._warned_dirs",
+  "dirs",
+  "versions",
+  "warned",
+]

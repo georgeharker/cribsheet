@@ -1,0 +1,32 @@
+symbol_ref = "crib/notestore.py#LEARNINGS_SPEC"
+fqn = "crib.notestore.LEARNINGS_SPEC"
+name = "LEARNINGS_SPEC"
+kind = "constant"
+lang = "python"
+content_hash = "65e5a47dcbb32b24"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "LEARNINGS_SPEC = StoreSpec(\"learnings\", \"learnings\", facet=\"learning\")"
+description = ""
+schema = 4
+line = 57
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "notestore",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+]
+name_terms = [
+  "LEARNINGS_SPEC",
+  "crib",
+  "crib.notestore.LEARNINGS_SPEC",
+  "learnings",
+  "notestore",
+  "spec",
+]

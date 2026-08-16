@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#GenerateConfig.concurrency"
+fqn = "crib.config.GenerateConfig.concurrency"
+name = "concurrency"
+kind = "field"
+lang = "python"
+content_hash = "3d69e28e8eaba488"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "concurrency: int = 6"
+description = ""
+schema = 4
+line = 201
+mtime = 1786564832000000000
+container = [
+  "GenerateConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "GenerateConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_generate_enrichment [crib/app.py]",
+  "_index_project_code [crib/codeindexer.py]",
+  "_reindex_dirty_code [crib/app.py]",
+]
+name_terms = [
+  "concurrency",
+  "config",
+  "crib",
+  "crib.config.GenerateConfig.concurrency",
+  "generate",
+]

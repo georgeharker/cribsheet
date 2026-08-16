@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_keyword_refresh.py#test_no_refresh_outside_the_daemon.body"
+fqn = "tests.test_keyword_refresh.test_no_refresh_outside_the_daemon.body"
+name = "body"
+kind = "function"
+lang = "python"
+content_hash = "4c4fad88fafcca3d"
+file = "tests/test_keyword_refresh.py"
+file_hash = "d758ff5010231936"
+signature = "async def body():"
+description = ""
+schema = 4
+line = 104
+mtime = 1786044759000000000
+container = [
+  "test_no_refresh_outside_the_daemon",
+]
+scope = [
+  "tests",
+  "test_keyword_refresh",
+  "test_no_refresh_outside_the_daemon",
+]
+symbol_was = []
+calls = [
+  "_arm [tests/test_keyword_refresh.py]",
+]
+called_by = [
+  "test_no_refresh_outside_the_daemon [tests/test_keyword_refresh.py]",
+]
+references = [
+  "test_no_refresh_outside_the_daemon [tests/test_keyword_refresh.py]",
+]
+name_terms = [
+  "body",
+  "daemon",
+  "keyword",
+  "no",
+  "outside",
+  "refresh",
+  "test",
+  "tests",
+  "tests.test_keyword_refresh.test_no_refresh_outside_the_daemon.body",
+  "the",
+]

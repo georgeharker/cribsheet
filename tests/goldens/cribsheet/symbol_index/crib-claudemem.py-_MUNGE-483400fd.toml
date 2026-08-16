@@ -1,0 +1,31 @@
+symbol_ref = "crib/claudemem.py#_MUNGE"
+fqn = "crib.claudemem._MUNGE"
+name = "_MUNGE"
+kind = "constant"
+lang = "python"
+content_hash = "d324773bab6c1c8b"
+file = "crib/claudemem.py"
+file_hash = "f5d989e8add2ed0e"
+signature = "_MUNGE = re.compile(r\"[/.]\")"
+description = ""
+schema = 4
+line = 22
+mtime = 1782762348000000000
+container = []
+scope = [
+  "crib",
+  "claudemem",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "munge [crib/claudemem.py]",
+]
+name_terms = [
+  "_MUNGE",
+  "claudemem",
+  "crib",
+  "crib.claudemem._MUNGE",
+  "munge",
+]

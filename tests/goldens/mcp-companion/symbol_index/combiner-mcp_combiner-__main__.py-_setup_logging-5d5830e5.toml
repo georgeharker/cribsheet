@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/__main__.py#_setup_logging"
+fqn = "combiner.mcp_combiner.__main__._setup_logging"
+name = "_setup_logging"
+kind = "function"
+lang = "python"
+content_hash = "51545b757a860518"
+file = "combiner/mcp_combiner/__main__.py"
+file_hash = "d4d263eede19a350"
+signature = "def _setup_logging(log_level: str, log_file: str | None) -> None:"
+description = ""
+schema = 4
+line = 184
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "__main__",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_serve [combiner/mcp_combiner/__main__.py]",
+]
+references = [
+  "_serve [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "_setup_logging",
+  "combiner",
+  "combiner.mcp_combiner.__main__._setup_logging",
+  "logging",
+  "main",
+  "mcp",
+  "setup",
+]

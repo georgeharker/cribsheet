@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_code_integrity.py#_seed_two_symbols"
+fqn = "tests.test_code_integrity._seed_two_symbols"
+name = "_seed_two_symbols"
+kind = "function"
+lang = "python"
+content_hash = "82d195df2e76aca8"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def _seed_two_symbols(crib, root, file_hash):"
+description = ""
+schema = 4
+line = 209
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_sym [tests/test_code_integrity.py]",
+  "set_source_root [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = [
+  "test_changed_file_hash_lets_a_real_removal_through [tests/test_code_integrity.py]",
+  "test_unchanged_file_hash_withholds_deletion_and_marks_dirty [tests/test_code_integrity.py]",
+]
+references = [
+  "test_changed_file_hash_lets_a_real_removal_through [tests/test_code_integrity.py]",
+  "test_unchanged_file_hash_withholds_deletion_and_marks_dirty [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "_seed_two_symbols",
+  "code",
+  "integrity",
+  "seed",
+  "symbols",
+  "test",
+  "tests",
+  "tests.test_code_integrity._seed_two_symbols",
+  "two",
+]

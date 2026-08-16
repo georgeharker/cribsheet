@@ -1,0 +1,39 @@
+symbol_ref = "crib/cli.py#_emit"
+fqn = "crib.cli._emit"
+name = "_emit"
+kind = "function"
+lang = "python"
+content_hash = "0c421740d40ecf48"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _emit(obj: Any, as_json: bool) -> None:"
+description = ""
+schema = 4
+line = 136
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_emit_human [crib/cli.py]",
+]
+called_by = [
+  "_E [crib/cli.py]",
+  "_emit_apropos [crib/cli.py]",
+  "_emit_status [crib/cli.py]",
+]
+references = [
+  "_E [crib/cli.py]",
+  "_emit_apropos [crib/cli.py]",
+  "_emit_status [crib/cli.py]",
+]
+name_terms = [
+  "_emit",
+  "cli",
+  "crib",
+  "crib.cli._emit",
+  "emit",
+]

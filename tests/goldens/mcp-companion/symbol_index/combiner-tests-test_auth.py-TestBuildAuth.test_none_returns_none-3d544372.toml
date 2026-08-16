@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_auth.py#TestBuildAuth.test_none_returns_none"
+fqn = "combiner.tests.test_auth.TestBuildAuth.test_none_returns_none"
+name = "test_none_returns_none"
+kind = "method"
+lang = "python"
+content_hash = "388f249718a701a3"
+file = "combiner/tests/test_auth.py"
+file_hash = "2b3aa7eeeed5bf38"
+signature = "def test_none_returns_none(self) -> None:"
+description = ""
+schema = 4
+line = 100
+mtime = 1782852601000000000
+container = [
+  "TestBuildAuth",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_auth",
+  "TestBuildAuth",
+]
+symbol_was = []
+calls = [
+  "build_auth [combiner/mcp_combiner/auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "build",
+  "combiner",
+  "combiner.tests.test_auth.TestBuildAuth.test_none_returns_none",
+  "none",
+  "returns",
+  "test",
+  "test_none_returns_none",
+  "tests",
+]

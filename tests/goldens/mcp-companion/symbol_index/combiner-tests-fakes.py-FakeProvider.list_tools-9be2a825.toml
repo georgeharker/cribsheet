@@ -1,0 +1,37 @@
+symbol_ref = "combiner/tests/fakes.py#FakeProvider.list_tools"
+fqn = "combiner.tests.fakes.FakeProvider.list_tools"
+name = "list_tools"
+kind = "method"
+lang = "python"
+content_hash = "6558aadfb5ca2860"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "async def list_tools(self) -> list[Any]:"
+description = ""
+schema = 4
+line = 19
+mtime = 1783534978000000000
+container = [
+  "FakeProvider",
+]
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+  "FakeProvider",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.fakes.FakeProvider.list_tools",
+  "fake",
+  "fakes",
+  "list",
+  "list_tools",
+  "provider",
+  "tests",
+  "tools",
+]

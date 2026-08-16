@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#parse_tool_specs"
+fqn = "combiner.mcp_combiner.mockserver.parse_tool_specs"
+name = "parse_tool_specs"
+kind = "function"
+lang = "python"
+content_hash = "e15eb40933fa3c60"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def parse_tool_specs(text: str) -> list[ToolSpec]:"
+description = ""
+schema = 4
+line = 325
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = [
+  "from_dict [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = [
+  "_spec [combiner/tests/test_mockserver.py]",
+  "main [combiner/mcp_combiner/mockserver.py]",
+  "test_tools_wrapper_dict_accepted [combiner/tests/test_mockserver.py]",
+]
+references = [
+  "_spec [combiner/tests/test_mockserver.py]",
+  "main [combiner/mcp_combiner/mockserver.py]",
+  "test_tools_wrapper_dict_accepted [combiner/tests/test_mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.parse_tool_specs",
+  "mcp",
+  "mockserver",
+  "parse",
+  "parse_tool_specs",
+  "specs",
+  "tool",
+]

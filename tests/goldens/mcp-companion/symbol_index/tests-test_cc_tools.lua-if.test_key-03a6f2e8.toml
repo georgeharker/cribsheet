@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_cc_tools.lua#if.test_key"
+fqn = "tests.test_cc_tools.if.test_key"
+name = "test_key"
+kind = "variable"
+lang = "lua"
+content_hash = "3f1c683216701961"
+file = "tests/test_cc_tools.lua"
+file_hash = "3253ff527c66fcb1"
+signature = "local test_key = nil"
+description = ""
+schema = 4
+line = 384
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+scope = [
+  "tests",
+  "test_cc_tools",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cc",
+  "if",
+  "key",
+  "test",
+  "test_key",
+  "tests",
+  "tests.test_cc_tools.if.test_key",
+  "tools",
+]

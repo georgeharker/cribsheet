@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#cmd_reload"
+fqn = "combiner.mcp_combiner.ctl.cmd_reload"
+name = "cmd_reload"
+kind = "function"
+lang = "python"
+content_hash = "a3bfb7aac613f076"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "async def cmd_reload(args: argparse.Namespace) -> int:"
+description = ""
+schema = 4
+line = 445
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = [
+  "_call_meta [combiner/mcp_combiner/ctl.py]",
+  "_emit [combiner/mcp_combiner/ctl.py]",
+]
+called_by = []
+references = [
+  "add_ctl_parsers [combiner/mcp_combiner/ctl.py]",
+]
+name_terms = [
+  "cmd",
+  "cmd_reload",
+  "combiner",
+  "combiner.mcp_combiner.ctl.cmd_reload",
+  "ctl",
+  "mcp",
+  "reload",
+]

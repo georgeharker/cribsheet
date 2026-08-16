@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestRefresh._seed_refreshable"
+fqn = "combiner.tests.test_oauth_mock.TestRefresh._seed_refreshable"
+name = "_seed_refreshable"
+kind = "method"
+lang = "python"
+content_hash = "813934f549ec1aaa"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "def _seed_refreshable("
+description = ""
+schema = 4
+line = 260
+mtime = 1784495646000000000
+container = [
+  "TestRefresh",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "TestRefresh",
+]
+symbol_was = []
+calls = [
+  "seed_refresh_token [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = [
+  "test_refresh_sends_right_token_and_stores_rotated [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_token_preserved_when_provider_omits_it [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_with_unknown_token_is_auth_error [combiner/tests/test_oauth_mock.py]",
+]
+references = [
+  "test_refresh_sends_right_token_and_stores_rotated [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_token_preserved_when_provider_omits_it [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_with_unknown_token_is_auth_error [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "_seed_refreshable",
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestRefresh._seed_refreshable",
+  "mock",
+  "oauth",
+  "refresh",
+  "refreshable",
+  "seed",
+  "test",
+  "tests",
+]

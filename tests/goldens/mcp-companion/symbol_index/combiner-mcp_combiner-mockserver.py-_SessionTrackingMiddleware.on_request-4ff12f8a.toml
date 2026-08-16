@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#_SessionTrackingMiddleware.on_request"
+fqn = "combiner.mcp_combiner.mockserver._SessionTrackingMiddleware.on_request"
+name = "on_request"
+kind = "method"
+lang = "python"
+content_hash = "d217a66150816596"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "async def on_request("
+description = ""
+schema = 4
+line = 225
+mtime = 1783622326000000000
+container = [
+  "_SessionTrackingMiddleware",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "_SessionTrackingMiddleware",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver._SessionTrackingMiddleware.on_request",
+  "mcp",
+  "middleware",
+  "mockserver",
+  "on",
+  "on_request",
+  "request",
+  "session",
+  "tracking",
+]

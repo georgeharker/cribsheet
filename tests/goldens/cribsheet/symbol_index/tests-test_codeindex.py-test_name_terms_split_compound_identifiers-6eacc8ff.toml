@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_codeindex.py#test_name_terms_split_compound_identifiers"
+fqn = "tests.test_codeindex.test_name_terms_split_compound_identifiers"
+name = "test_name_terms_split_compound_identifiers"
+kind = "function"
+lang = "python"
+content_hash = "36be1526c246ab7c"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_name_terms_split_compound_identifiers():"
+description = ""
+schema = 4
+line = 129
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "_name_terms [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "compound",
+  "identifiers",
+  "name",
+  "split",
+  "terms",
+  "test",
+  "test_name_terms_split_compound_identifiers",
+  "tests",
+  "tests.test_codeindex.test_name_terms_split_compound_identifiers",
+]

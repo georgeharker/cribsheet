@@ -1,0 +1,38 @@
+symbol_ref = "crib/server.py#build_server.design_dep_add"
+fqn = "crib.server.build_server.design_dep_add"
+name = "design_dep_add"
+kind = "function"
+lang = "python"
+content_hash = "ff1ca605e5a08541"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"read\")"
+description = ""
+schema = 4
+line = 1062
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "crib_tool [crib/server.py]",
+  "design_dep_add [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "add",
+  "build",
+  "crib",
+  "crib.server.build_server.design_dep_add",
+  "dep",
+  "design",
+  "design_dep_add",
+  "server",
+]

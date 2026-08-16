@@ -1,0 +1,46 @@
+symbol_ref = "crib/designs.py#Node.sources"
+fqn = "crib.designs.Node.sources"
+name = "sources"
+kind = "field"
+lang = "python"
+content_hash = "6910ebff2f2d2935"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "sources: list[dict[str, Any]] = field(default_factory=list)"
+description = ""
+schema = 4
+line = 330
+mtime = 1786693579000000000
+container = [
+  "Node",
+]
+scope = [
+  "crib",
+  "designs",
+  "Node",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_citing [crib/designs.py]",
+  "_direct_taint [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_recapture [crib/designs.py]",
+  "brief [crib/designs.py]",
+  "design_append [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_reaffirm [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+  "plan_reaffirm [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Node.sources",
+  "designs",
+  "node",
+  "sources",
+]

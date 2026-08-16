@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestTokenRouteFilters.test_token_filter_actually_filters"
+fqn = "combiner.tests.test_session_independence.TestTokenRouteFilters.test_token_filter_actually_filters"
+name = "test_token_filter_actually_filters"
+kind = "method"
+lang = "python"
+content_hash = "ac4779f91665653b"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "@xfail_session_namespace_split"
+description = ""
+schema = 4
+line = 260
+mtime = 1783541669000000000
+container = [
+  "TestTokenRouteFilters",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+  "TestTokenRouteFilters",
+]
+symbol_was = []
+calls = [
+  "_header_client [combiner/tests/test_session_independence.py]",
+  "_rest [combiner/tests/test_session_independence.py]",
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "_text [combiner/tests/test_session_independence.py]",
+  "_token [combiner/tests/test_session_independence.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "actually",
+  "combiner",
+  "combiner.tests.test_session_independence.TestTokenRouteFilters.test_token_filter_actually_filters",
+  "filter",
+  "filters",
+  "independence",
+  "route",
+  "session",
+  "test",
+  "test_token_filter_actually_filters",
+  "tests",
+  "token",
+]

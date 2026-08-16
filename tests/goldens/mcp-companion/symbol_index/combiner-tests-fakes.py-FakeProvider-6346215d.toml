@@ -1,0 +1,36 @@
+symbol_ref = "combiner/tests/fakes.py#FakeProvider"
+fqn = "combiner.tests.fakes.FakeProvider"
+name = "FakeProvider"
+kind = "class"
+lang = "python"
+content_hash = "93c577edd80e3fa7"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "class FakeProvider:"
+description = ""
+schema = 4
+line = 15
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "mount [combiner/tests/fakes.py]",
+  "test_restart_stdio_empty_answer_keeps_slice_silent [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "FakeProvider",
+  "combiner",
+  "combiner.tests.fakes.FakeProvider",
+  "fake",
+  "fakes",
+  "provider",
+  "tests",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_chunk_identity.py#DUPES"
+fqn = "tests.test_chunk_identity.DUPES"
+name = "DUPES"
+kind = "constant"
+lang = "python"
+content_hash = "9b6a8e4efb7a9c95"
+file = "tests/test_chunk_identity.py"
+file_hash = "0afd98c1ecf1279e"
+signature = "DUPES = ("
+description = ""
+schema = 4
+line = 21
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_chunk_identity",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_duplicate_headings_are_separate_sections_with_occurrences [tests/test_chunk_identity.py]",
+  "test_duplicate_headings_get_distinct_chunk_ids [tests/test_chunk_identity.py]",
+  "test_ids_are_deterministic_across_runs [tests/test_chunk_identity.py]",
+  "test_line_map_covers_every_occurrence [tests/test_chunk_identity.py]",
+  "test_line_map_keys_match_chunk_identity [tests/test_chunk_identity.py]",
+  "test_occurrence_reaches_metadata_but_not_the_heading_path [tests/test_chunk_identity.py]",
+]
+name_terms = [
+  "DUPES",
+  "chunk",
+  "dupes",
+  "identity",
+  "test",
+  "tests",
+  "tests.test_chunk_identity.DUPES",
+]

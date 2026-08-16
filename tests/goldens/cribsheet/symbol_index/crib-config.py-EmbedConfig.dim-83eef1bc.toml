@@ -1,0 +1,35 @@
+symbol_ref = "crib/config.py#EmbedConfig.dim"
+fqn = "crib.config.EmbedConfig.dim"
+name = "dim"
+kind = "field"
+lang = "python"
+content_hash = "aac5e89445911691"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "dim: int = 256  # only used by the hash embedder"
+description = ""
+schema = 4
+line = 45
+mtime = 1786564832000000000
+container = [
+  "EmbedConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "EmbedConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "build_embedder [crib/embed.py]",
+  "test_hash_fallback_still_applies_to_an_empty_store [tests/test_embed.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.EmbedConfig.dim",
+  "dim",
+  "embed",
+]

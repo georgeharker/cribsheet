@@ -1,0 +1,39 @@
+symbol_ref = "crib/designs.py#Designs.plan_import"
+fqn = "crib.designs.Designs.plan_import"
+name = "plan_import"
+kind = "method"
+lang = "python"
+content_hash = "e1f58b5c87f6e6f0"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def plan_import(self, proj: str, relpath: str) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 1930
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_import [crib/designs.py]",
+]
+called_by = [
+  "plan_import [crib/app.py]",
+]
+references = [
+  "plan_import [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs.plan_import",
+  "designs",
+  "import",
+  "plan",
+  "plan_import",
+]

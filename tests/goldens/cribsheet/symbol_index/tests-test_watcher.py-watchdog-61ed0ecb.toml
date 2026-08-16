@@ -1,0 +1,29 @@
+symbol_ref = "tests/test_watcher.py#watchdog"
+fqn = "tests.test_watcher.watchdog"
+name = "watchdog"
+kind = "global"
+lang = "python"
+content_hash = "90ec3e2d2503486a"
+file = "tests/test_watcher.py"
+file_hash = "f95c6316824837fd"
+signature = "watchdog = pytest.importorskip(\"watchdog\")"
+description = ""
+schema = 4
+line = 16
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_watcher",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "test",
+  "tests",
+  "tests.test_watcher.watchdog",
+  "watchdog",
+  "watcher",
+]

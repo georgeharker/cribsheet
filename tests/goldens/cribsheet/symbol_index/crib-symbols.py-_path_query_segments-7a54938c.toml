@@ -1,0 +1,35 @@
+symbol_ref = "crib/symbols.py#_path_query_segments"
+fqn = "crib.symbols._path_query_segments"
+name = "_path_query_segments"
+kind = "function"
+lang = "python"
+content_hash = "857a58deb6da8125"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def _path_query_segments(qp: str) -> list[str]:"
+description = ""
+schema = 4
+line = 504
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "match_entry [crib/symbols.py]",
+]
+references = [
+  "match_entry [crib/symbols.py]",
+]
+name_terms = [
+  "_path_query_segments",
+  "crib",
+  "crib.symbols._path_query_segments",
+  "path",
+  "query",
+  "segments",
+  "symbols",
+]

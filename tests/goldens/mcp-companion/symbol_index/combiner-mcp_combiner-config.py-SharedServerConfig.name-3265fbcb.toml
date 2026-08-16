@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/config.py#SharedServerConfig.name"
+fqn = "combiner.mcp_combiner.config.SharedServerConfig.name"
+name = "name"
+kind = "field"
+lang = "python"
+content_hash = "8931c29c62db3eb7"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "name: str"
+description = ""
+schema = 4
+line = 76
+mtime = 1783633313000000000
+container = [
+  "SharedServerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "SharedServerConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_build_use_cmd [combiner/mcp_combiner/sharedserver.py]",
+  "_start_one [combiner/mcp_combiner/sharedserver.py]",
+  "ensure_started [combiner/mcp_combiner/sharedserver.py]",
+  "ensure_stopped [combiner/mcp_combiner/sharedserver.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "restart [combiner/mcp_combiner/sharedserver.py]",
+  "start_all [combiner/mcp_combiner/sharedserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.SharedServerConfig.name",
+  "config",
+  "mcp",
+  "name",
+  "server",
+  "shared",
+]

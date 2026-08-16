@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#_sharedserver_refcount"
+fqn = "combiner.mcp_combiner.ctl._sharedserver_refcount"
+name = "_sharedserver_refcount"
+kind = "function"
+lang = "python"
+content_hash = "2142f7448992794e"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "async def _sharedserver_refcount(binary: str, name: str) -> int | None:"
+description = ""
+schema = 4
+line = 265
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "cmd_restart_combiner [combiner/mcp_combiner/ctl.py]",
+]
+references = [
+  "cmd_restart_combiner [combiner/mcp_combiner/ctl.py]",
+]
+name_terms = [
+  "_sharedserver_refcount",
+  "combiner",
+  "combiner.mcp_combiner.ctl._sharedserver_refcount",
+  "ctl",
+  "mcp",
+  "refcount",
+  "sharedserver",
+]

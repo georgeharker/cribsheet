@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_real_servers.lua#if.keyword"
+fqn = "tests.test_real_servers.if.keyword"
+name = "keyword"
+kind = "variable"
+lang = "lua"
+content_hash = "a251c11fc510abdb"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "for _, keyword in ipairs(expected_keywords) do"
+description = ""
+schema = 4
+line = 322
+mtime = 1782853510000000000
+container = [
+  "if",
+  "for in",
+]
+scope = [
+  "tests",
+  "test_real_servers",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "else [tests/test_real_servers.lua]",
+  "if [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "if",
+  "keyword",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.keyword",
+]

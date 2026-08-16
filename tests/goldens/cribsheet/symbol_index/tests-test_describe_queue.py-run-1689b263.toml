@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_describe_queue.py#run"
+fqn = "tests.test_describe_queue.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "44052857cf112194"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def run(coro):"
+description = ""
+schema = 4
+line = 33
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_backlog_reindexes_only_blank_described_files [tests/test_describe_queue.py]",
+  "test_burst_coalesces_to_one_focused_describe [tests/test_describe_queue.py]",
+  "test_describe_and_patch_patches_then_clobber_guards [tests/test_describe_queue.py]",
+  "test_failed_describe_reenqueues_as_retry [tests/test_describe_queue.py]",
+  "test_inflight_describe_task_is_strongly_referenced [tests/test_describe_queue.py]",
+]
+references = [
+  "test_backlog_reindexes_only_blank_described_files [tests/test_describe_queue.py]",
+  "test_burst_coalesces_to_one_focused_describe [tests/test_describe_queue.py]",
+  "test_describe_and_patch_patches_then_clobber_guards [tests/test_describe_queue.py]",
+  "test_failed_describe_reenqueues_as_retry [tests/test_describe_queue.py]",
+  "test_inflight_describe_task_is_strongly_referenced [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "describe",
+  "queue",
+  "run",
+  "test",
+  "tests",
+  "tests.test_describe_queue.run",
+]

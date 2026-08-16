@@ -1,0 +1,39 @@
+symbol_ref = "crib/gitbacking.py#GitBacking.snapshot"
+fqn = "crib.gitbacking.GitBacking.snapshot"
+name = "snapshot"
+kind = "method"
+lang = "python"
+content_hash = "295c684ad0abd4b1"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def snapshot(self, message: str | None = None) -> str:"
+description = ""
+schema = 4
+line = 239
+mtime = 1785963011000000000
+container = [
+  "GitBacking",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "GitBacking",
+]
+symbol_was = []
+calls = [
+  "snapshot_result [crib/gitbacking.py]",
+]
+called_by = [
+  "snapshot [crib/app.py]",
+]
+references = [
+  "snapshot [crib/app.py]",
+]
+name_terms = [
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking.snapshot",
+  "git",
+  "gitbacking",
+  "snapshot",
+]

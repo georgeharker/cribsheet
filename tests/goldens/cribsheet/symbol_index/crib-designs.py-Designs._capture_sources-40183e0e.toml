@@ -1,0 +1,44 @@
+symbol_ref = "crib/designs.py#Designs._capture_sources"
+fqn = "crib.designs.Designs._capture_sources"
+name = "_capture_sources"
+kind = "method"
+lang = "python"
+content_hash = "2b9e700423e8356e"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _capture_sources(self, proj: str,"
+description = ""
+schema = 4
+line = 678
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_resolve_source [crib/designs.py]",
+  "source_label [crib/designs.py]",
+]
+called_by = [
+  "_add [crib/designs.py]",
+  "_write_body [crib/designs.py]",
+  "design_append [crib/designs.py]",
+]
+references = [
+  "_add [crib/designs.py]",
+  "_write_body [crib/designs.py]",
+  "design_append [crib/designs.py]",
+]
+name_terms = [
+  "_capture_sources",
+  "capture",
+  "crib",
+  "crib.designs.Designs._capture_sources",
+  "designs",
+  "sources",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_surface_parity.py#test_every_mcp_tool_declares_a_resolution_policy"
+fqn = "tests.test_surface_parity.test_every_mcp_tool_declares_a_resolution_policy"
+name = "test_every_mcp_tool_declares_a_resolution_policy"
+kind = "function"
+lang = "python"
+content_hash = "4bb8ba083cdbaef7"
+file = "tests/test_surface_parity.py"
+file_hash = "0c4fc72b5f441359"
+signature = "def test_every_mcp_tool_declares_a_resolution_policy(tools):"
+description = ""
+schema = 4
+line = 93
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_surface_parity",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "declares",
+  "every",
+  "mcp",
+  "parity",
+  "policy",
+  "resolution",
+  "surface",
+  "test",
+  "test_every_mcp_tool_declares_a_resolution_policy",
+  "tests",
+  "tests.test_surface_parity.test_every_mcp_tool_declares_a_resolution_policy",
+  "tool",
+]

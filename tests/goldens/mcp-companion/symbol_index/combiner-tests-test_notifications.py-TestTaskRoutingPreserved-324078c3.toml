@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestTaskRoutingPreserved"
+fqn = "combiner.tests.test_notifications.TestTaskRoutingPreserved"
+name = "TestTaskRoutingPreserved"
+kind = "class"
+lang = "python"
+content_hash = "dcab265c091e5fa0"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "class TestTaskRoutingPreserved:"
+description = ""
+schema = 4
+line = 239
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestTaskRoutingPreserved",
+  "combiner",
+  "combiner.tests.test_notifications.TestTaskRoutingPreserved",
+  "notifications",
+  "preserved",
+  "routing",
+  "task",
+  "test",
+  "tests",
+]

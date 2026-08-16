@@ -1,0 +1,38 @@
+symbol_ref = "crib/app.py#_build_store"
+fqn = "crib.app._build_store"
+name = "_build_store"
+kind = "function"
+lang = "python"
+content_hash = "1567e53ac764b3d9"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _build_store(paths: Paths, config: Config) -> tuple[Store, Callable[[], None] | None]:"
+description = ""
+schema = 4
+line = 2932
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "app",
+]
+symbol_was = []
+calls = [
+  "JsonStore [crib/store.py]",
+  "_build_shared_chroma [crib/app.py]",
+  "embedded [crib/store.py]",
+]
+called_by = [
+  "open [crib/app.py]",
+]
+references = [
+  "open [crib/app.py]",
+]
+name_terms = [
+  "_build_store",
+  "app",
+  "build",
+  "crib",
+  "crib.app._build_store",
+  "store",
+]

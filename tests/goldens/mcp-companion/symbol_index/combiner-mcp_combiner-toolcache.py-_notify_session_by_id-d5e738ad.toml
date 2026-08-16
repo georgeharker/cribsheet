@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#_notify_session_by_id"
+fqn = "combiner.mcp_combiner.toolcache._notify_session_by_id"
+name = "_notify_session_by_id"
+kind = "function"
+lang = "python"
+content_hash = "7c2f9883a05aa11c"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "async def _notify_session_by_id(session_id: str) -> None:"
+description = ""
+schema = 4
+line = 84
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = [
+  "sessions [combiner/mcp_combiner/runtime.py]",
+]
+called_by = [
+  "manage_session_filter [combiner/mcp_combiner/routes.py]",
+  "manage_token_filter [combiner/mcp_combiner/routes.py]",
+]
+references = [
+  "manage_session_filter [combiner/mcp_combiner/routes.py]",
+  "manage_token_filter [combiner/mcp_combiner/routes.py]",
+]
+name_terms = [
+  "_notify_session_by_id",
+  "by",
+  "combiner",
+  "combiner.mcp_combiner.toolcache._notify_session_by_id",
+  "id",
+  "mcp",
+  "notify",
+  "session",
+  "toolcache",
+]

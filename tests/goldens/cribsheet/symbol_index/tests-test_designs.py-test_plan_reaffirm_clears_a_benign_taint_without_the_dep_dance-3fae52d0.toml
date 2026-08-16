@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_designs.py#test_plan_reaffirm_clears_a_benign_taint_without_the_dep_dance"
+fqn = "tests.test_designs.test_plan_reaffirm_clears_a_benign_taint_without_the_dep_dance"
+name = "test_plan_reaffirm_clears_a_benign_taint_without_the_dep_dance"
+kind = "function"
+lang = "python"
+content_hash = "0bf49fed1833ea95"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_plan_reaffirm_clears_a_benign_taint_without_the_dep_dance(crib):"
+description = ""
+schema = 4
+line = 648
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "benign",
+  "clears",
+  "dance",
+  "dep",
+  "designs",
+  "plan",
+  "reaffirm",
+  "taint",
+  "test",
+  "test_plan_reaffirm_clears_a_benign_taint_without_the_dep_dance",
+  "tests",
+  "tests.test_designs.test_plan_reaffirm_clears_a_benign_taint_without_the_dep_dance",
+  "the",
+  "without",
+]

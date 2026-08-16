@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/notifications.py#logger"
+fqn = "combiner.mcp_combiner.notifications.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/notifications.py"
+file_hash = "3a02dac6027ca8f5"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+schema = 4
+line = 78
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "notifications",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_forward [combiner/mcp_combiner/notifications.py]",
+  "_target [combiner/mcp_combiner/notifications.py]",
+  "attach_resource_forwarding [combiner/mcp_combiner/notifications.py]",
+  "on_resource_updated [combiner/mcp_combiner/notifications.py]",
+  "on_tool_list_changed [combiner/mcp_combiner/notifications.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.notifications.logger",
+  "logger",
+  "mcp",
+  "notifications",
+]

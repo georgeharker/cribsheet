@@ -1,0 +1,39 @@
+symbol_ref = "scripts/eval_hybrid.py#main.R3"
+fqn = "scripts.eval_hybrid.main.R3"
+name = "R3"
+kind = "function"
+lang = "python"
+content_hash = "bb29a78cdec15987"
+file = "scripts/eval_hybrid.py"
+file_hash = "7efc1218d091601c"
+signature = "def R3(rs): return sum(1 for r in rs if r and r <= 3) / len(rs)"
+description = ""
+schema = 4
+line = 150
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_hybrid",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_hybrid.py]",
+]
+references = [
+  "main [scripts/eval_hybrid.py]",
+]
+name_terms = [
+  "3",
+  "R3",
+  "eval",
+  "hybrid",
+  "main",
+  "r",
+  "scripts",
+  "scripts.eval_hybrid.main.R3",
+]

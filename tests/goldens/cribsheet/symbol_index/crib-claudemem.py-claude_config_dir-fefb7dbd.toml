@@ -1,0 +1,37 @@
+symbol_ref = "crib/claudemem.py#claude_config_dir"
+fqn = "crib.claudemem.claude_config_dir"
+name = "claude_config_dir"
+kind = "function"
+lang = "python"
+content_hash = "a2cb9e1aca4edbe7"
+file = "crib/claudemem.py"
+file_hash = "f5d989e8add2ed0e"
+signature = "def claude_config_dir() -> Path:"
+description = ""
+schema = 4
+line = 52
+mtime = 1782762348000000000
+container = []
+scope = [
+  "crib",
+  "claudemem",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "harness_memory_dir [crib/claudemem.py]",
+  "import_claude_memory [crib/app.py]",
+]
+references = [
+  "harness_memory_dir [crib/claudemem.py]",
+  "import_claude_memory [crib/app.py]",
+]
+name_terms = [
+  "claude",
+  "claude_config_dir",
+  "claudemem",
+  "config",
+  "crib",
+  "crib.claudemem.claude_config_dir",
+  "dir",
+]

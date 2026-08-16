@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_code_integrity.py#test_file_read_error_reports_the_file_skipped"
+fqn = "tests.test_code_integrity.test_file_read_error_reports_the_file_skipped"
+name = "test_file_read_error_reports_the_file_skipped"
+kind = "function"
+lang = "python"
+content_hash = "51bac8f048f42c05"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_file_read_error_reports_the_file_skipped(crib, tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 172
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "error",
+  "file",
+  "integrity",
+  "read",
+  "reports",
+  "skipped",
+  "test",
+  "test_file_read_error_reports_the_file_skipped",
+  "tests",
+  "tests.test_code_integrity.test_file_read_error_reports_the_file_skipped",
+  "the",
+]

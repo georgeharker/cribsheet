@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/conftest.py#ProcFactory.mocks"
+fqn = "combiner.tests.conftest.ProcFactory.mocks"
+name = "mocks"
+kind = "field"
+lang = "python"
+content_hash = "ee6d390a5def480d"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "mocks: list[MockHandle] = field(default_factory=list)"
+description = ""
+schema = 4
+line = 273
+mtime = 1783544328000000000
+container = [
+  "ProcFactory",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "ProcFactory",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "start_http_mock [combiner/tests/conftest.py]",
+  "teardown [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.ProcFactory.mocks",
+  "conftest",
+  "factory",
+  "mocks",
+  "proc",
+  "tests",
+]

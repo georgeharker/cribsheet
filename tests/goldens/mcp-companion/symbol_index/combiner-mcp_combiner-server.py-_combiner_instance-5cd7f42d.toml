@@ -1,0 +1,31 @@
+symbol_ref = "combiner/mcp_combiner/server.py#_combiner_instance"
+fqn = "combiner.mcp_combiner.server._combiner_instance"
+name = "_combiner_instance"
+kind = "global"
+lang = "python"
+content_hash = "60def901a29b22c7"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "_combiner_instance: FastMCP | None = None"
+description = ""
+schema = 4
+line = 82
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_combiner_instance",
+  "combiner",
+  "combiner.mcp_combiner.server._combiner_instance",
+  "instance",
+  "mcp",
+  "server",
+]

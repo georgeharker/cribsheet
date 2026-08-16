@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/notifications.py#_ResourceNotifyHandler._forward"
+fqn = "combiner.mcp_combiner.notifications._ResourceNotifyHandler._forward"
+name = "_forward"
+kind = "method"
+lang = "python"
+content_hash = "274ab17784674456"
+file = "combiner/mcp_combiner/notifications.py"
+file_hash = "3a02dac6027ca8f5"
+signature = "async def _forward(self, send: Callable[[ServerSession], Awaitable[None]], desc: str) -> None:"
+description = ""
+schema = 4
+line = 151
+mtime = 1784493613000000000
+container = [
+  "_ResourceNotifyHandler",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "notifications",
+  "_ResourceNotifyHandler",
+]
+symbol_was = []
+calls = [
+  "sessions [combiner/mcp_combiner/runtime.py]",
+]
+called_by = [
+  "on_resource_list_changed [combiner/mcp_combiner/notifications.py]",
+  "on_resource_updated [combiner/mcp_combiner/notifications.py]",
+]
+references = [
+  "on_resource_list_changed [combiner/mcp_combiner/notifications.py]",
+  "on_resource_updated [combiner/mcp_combiner/notifications.py]",
+]
+name_terms = [
+  "_forward",
+  "combiner",
+  "combiner.mcp_combiner.notifications._ResourceNotifyHandler._forward",
+  "forward",
+  "handler",
+  "mcp",
+  "notifications",
+  "notify",
+  "resource",
+]

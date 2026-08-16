@@ -1,0 +1,39 @@
+symbol_ref = "scripts/eval_hybrid.py#main.minmax_dict"
+fqn = "scripts.eval_hybrid.main.minmax_dict"
+name = "minmax_dict"
+kind = "function"
+lang = "python"
+content_hash = "dec8ae13eb3400ee"
+file = "scripts/eval_hybrid.py"
+file_hash = "7efc1218d091601c"
+signature = "def minmax_dict(d, keys):"
+description = ""
+schema = 4
+line = 107
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_hybrid",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_hybrid.py]",
+]
+references = [
+  "main [scripts/eval_hybrid.py]",
+]
+name_terms = [
+  "dict",
+  "eval",
+  "hybrid",
+  "main",
+  "minmax",
+  "minmax_dict",
+  "scripts",
+  "scripts.eval_hybrid.main.minmax_dict",
+]

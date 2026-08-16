@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_core_loop.py#test_store_then_lookup"
+fqn = "tests.test_core_loop.test_store_then_lookup"
+name = "test_store_then_lookup"
+kind = "function"
+lang = "python"
+content_hash = "51f0d9e754bbaf19"
+file = "tests/test_core_loop.py"
+file_hash = "1351f07bad0f5656"
+signature = "def test_store_then_lookup(crib):"
+description = ""
+schema = 4
+line = 33
+mtime = 1782930371000000000
+container = []
+scope = [
+  "tests",
+  "test_core_loop",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_core_loop.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "core",
+  "lookup",
+  "loop",
+  "store",
+  "test",
+  "test_store_then_lookup",
+  "tests",
+  "tests.test_core_loop.test_store_then_lookup",
+  "then",
+]

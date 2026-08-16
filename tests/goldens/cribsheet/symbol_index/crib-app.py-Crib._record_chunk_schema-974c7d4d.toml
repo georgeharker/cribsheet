@@ -1,0 +1,38 @@
+symbol_ref = "crib/app.py#Crib._record_chunk_schema"
+fqn = "crib.app.Crib._record_chunk_schema"
+name = "_record_chunk_schema"
+kind = "method"
+lang = "python"
+content_hash = "2725b9b368f0e0e2"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _record_chunk_schema(self) -> None:"
+description = ""
+schema = 4
+line = 769
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "reconcile_all [crib/app.py]",
+]
+references = [
+  "reconcile_all [crib/app.py]",
+]
+name_terms = [
+  "_record_chunk_schema",
+  "app",
+  "chunk",
+  "crib",
+  "crib.app.Crib._record_chunk_schema",
+  "record",
+  "schema",
+]

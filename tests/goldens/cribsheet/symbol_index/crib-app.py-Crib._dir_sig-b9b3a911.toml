@@ -1,0 +1,35 @@
+symbol_ref = "crib/app.py#Crib._dir_sig"
+fqn = "crib.app.Crib._dir_sig"
+name = "_dir_sig"
+kind = "method"
+lang = "python"
+content_hash = "0896381813597256"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _dir_sig(self, proj: str) -> tuple[int, int]:"
+description = ""
+schema = 4
+line = 1255
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "dir_sig [crib/codestore.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "_dir_sig",
+  "app",
+  "crib",
+  "crib.app.Crib._dir_sig",
+  "dir",
+  "sig",
+]

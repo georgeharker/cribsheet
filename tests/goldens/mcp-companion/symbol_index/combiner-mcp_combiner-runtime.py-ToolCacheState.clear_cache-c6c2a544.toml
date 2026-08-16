@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#ToolCacheState.clear_cache"
+fqn = "combiner.mcp_combiner.runtime.ToolCacheState.clear_cache"
+name = "clear_cache"
+kind = "method"
+lang = "python"
+content_hash = "ca39a792ce683ca5"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def clear_cache(self) -> None:"
+description = ""
+schema = 4
+line = 218
+mtime = 1784493613000000000
+container = [
+  "ToolCacheState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "ToolCacheState",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "clear_tool_cache [combiner/mcp_combiner/toolcache.py]",
+  "test_cache_fill_loses_to_mid_fetch_invalidation [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "clear_tool_cache [combiner/mcp_combiner/toolcache.py]",
+  "test_cache_fill_loses_to_mid_fetch_invalidation [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "cache",
+  "clear",
+  "clear_cache",
+  "combiner",
+  "combiner.mcp_combiner.runtime.ToolCacheState.clear_cache",
+  "mcp",
+  "runtime",
+  "state",
+  "tool",
+]

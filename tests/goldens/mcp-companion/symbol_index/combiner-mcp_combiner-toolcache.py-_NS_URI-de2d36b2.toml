@@ -1,0 +1,34 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#_NS_URI"
+fqn = "combiner.mcp_combiner.toolcache._NS_URI"
+name = "_NS_URI"
+kind = "constant"
+lang = "python"
+content_hash = "105dbd3e684e1174"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "_NS_URI = re.compile(r\"^([^:]+://)(.*?)$\")"
+description = ""
+schema = 4
+line = 110
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "namespace_uri [combiner/mcp_combiner/toolcache.py]",
+]
+name_terms = [
+  "_NS_URI",
+  "combiner",
+  "combiner.mcp_combiner.toolcache._NS_URI",
+  "mcp",
+  "ns",
+  "toolcache",
+  "uri",
+]

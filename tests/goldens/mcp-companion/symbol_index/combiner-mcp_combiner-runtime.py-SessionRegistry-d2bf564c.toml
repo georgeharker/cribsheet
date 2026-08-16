@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry"
+name = "SessionRegistry"
+kind = "class"
+lang = "python"
+content_hash = "fc5ac339d0ca43b1"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 38
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "sessions [combiner/mcp_combiner/runtime.py]",
+  "test_clear [combiner/tests/test_permissions.py]",
+  "test_grant_and_check [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "SessionRegistry",
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry",
+  "mcp",
+  "registry",
+  "runtime",
+  "session",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_lexical_cache.py#test_a_store_wipe_invalidates_every_projects_cache"
+fqn = "tests.test_lexical_cache.test_a_store_wipe_invalidates_every_projects_cache"
+name = "test_a_store_wipe_invalidates_every_projects_cache"
+kind = "function"
+lang = "python"
+content_hash = "a723b72af5cb39be"
+file = "tests/test_lexical_cache.py"
+file_hash = "b9aadb3266daf858"
+signature = "def test_a_store_wipe_invalidates_every_projects_cache(crib):"
+description = ""
+schema = 4
+line = 88
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_lexical_cache",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_lexical_cache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "cache",
+  "every",
+  "invalidates",
+  "lexical",
+  "projects",
+  "store",
+  "test",
+  "test_a_store_wipe_invalidates_every_projects_cache",
+  "tests",
+  "tests.test_lexical_cache.test_a_store_wipe_invalidates_every_projects_cache",
+  "wipe",
+]

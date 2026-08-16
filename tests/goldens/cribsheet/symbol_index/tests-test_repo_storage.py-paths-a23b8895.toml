@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_repo_storage.py#paths"
+fqn = "tests.test_repo_storage.paths"
+name = "paths"
+kind = "function"
+lang = "python"
+content_hash = "d2f3c7f18bd06e03"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 23
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "paths",
+  "repo",
+  "storage",
+  "test",
+  "tests",
+  "tests.test_repo_storage.paths",
+]

@@ -1,0 +1,45 @@
+symbol_ref = "tests/test_loop_responsiveness.py#test_jsonstore_survives_concurrent_writers_and_readers.writer"
+fqn = "tests.test_loop_responsiveness.test_jsonstore_survives_concurrent_writers_and_readers.writer"
+name = "writer"
+kind = "function"
+lang = "python"
+content_hash = "55820604c57e5292"
+file = "tests/test_loop_responsiveness.py"
+file_hash = "3e5d3308dc33e6f4"
+signature = "def writer() -> None:"
+description = ""
+schema = 4
+line = 152
+mtime = 1785959234000000000
+container = [
+  "test_jsonstore_survives_concurrent_writers_and_readers",
+]
+scope = [
+  "tests",
+  "test_loop_responsiveness",
+  "test_jsonstore_survives_concurrent_writers_and_readers",
+]
+symbol_was = []
+calls = [
+  "Record [crib/store.py]",
+  "delete [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+called_by = []
+references = [
+  "test_jsonstore_survives_concurrent_writers_and_readers [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "and",
+  "concurrent",
+  "jsonstore",
+  "loop",
+  "readers",
+  "responsiveness",
+  "survives",
+  "test",
+  "tests",
+  "tests.test_loop_responsiveness.test_jsonstore_survives_concurrent_writers_and_readers.writer",
+  "writer",
+  "writers",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "crib/retrieve.py#_TOKEN"
+fqn = "crib.retrieve._TOKEN"
+name = "_TOKEN"
+kind = "constant"
+lang = "python"
+content_hash = "5aa6056f32ab9926"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "_TOKEN = re.compile(r\"[A-Za-z0-9_]+\")"
+description = ""
+schema = 4
+line = 40
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "retrieve",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_subtokens [crib/retrieve.py]",
+  "tokenize [crib/retrieve.py]",
+]
+name_terms = [
+  "_TOKEN",
+  "crib",
+  "crib.retrieve._TOKEN",
+  "retrieve",
+  "token",
+]

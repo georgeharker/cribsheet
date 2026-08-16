@@ -1,0 +1,33 @@
+symbol_ref = "crib/gitbacking.py#_text"
+fqn = "crib.gitbacking._text"
+name = "_text"
+kind = "function"
+lang = "python"
+content_hash = "2a12c772654db710"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def _text(out: str | bytes | None) -> str:"
+description = ""
+schema = 4
+line = 69
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "gitbacking",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_run [crib/gitbacking.py]",
+]
+references = [
+  "_run [crib/gitbacking.py]",
+]
+name_terms = [
+  "_text",
+  "crib",
+  "crib.gitbacking._text",
+  "gitbacking",
+  "text",
+]

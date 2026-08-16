@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#IssuedTokens.access_token"
+fqn = "combiner.mcp_combiner.mockserver.IssuedTokens.access_token"
+name = "access_token"
+kind = "field"
+lang = "python"
+content_hash = "66fdb6a194e1980d"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "access_token: str"
+description = ""
+schema = 4
+line = 632
+mtime = 1783622326000000000
+container = [
+  "IssuedTokens",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "IssuedTokens",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_token_payload [combiner/mcp_combiner/mockserver.py]",
+  "test_cache_without_persisted_expiry_bootstraps_one_refresh [combiner/tests/test_oauth_mock.py]",
+  "test_expired_cached_token_refreshed_silently_on_restart [combiner/tests/test_oauth_mock.py]",
+  "test_expired_token_refreshed_and_new_bearer_attached [combiner/tests/test_oauth_mock.py]",
+  "test_full_flow_issues_and_attaches_tokens [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_sends_right_token_and_stores_rotated [combiner/tests/test_oauth_mock.py]",
+  "test_valid_cached_token_reused_without_new_consent [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "access",
+  "access_token",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.IssuedTokens.access_token",
+  "issued",
+  "mcp",
+  "mockserver",
+  "token",
+  "tokens",
+]

@@ -1,0 +1,59 @@
+symbol_ref = "crib/codeindex.py#extract_file"
+fqn = "crib.codeindex.extract_file"
+name = "extract_file"
+kind = "function"
+lang = "python"
+content_hash = "d8cd2d5b879d208e"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def extract_file(root: Path, relpath: str, settle: float | None = None,"
+description = ""
+schema = 4
+line = 942
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = [
+  "NoServer [crib/codeindex.py]",
+  "_extract [crib/codeindex.py]",
+  "discard [crib/codeindex.py]",
+  "server_for [crib/codeindex.py]",
+]
+called_by = [
+  "_index_code_file [crib/codeindexer.py]",
+  "test_extract_call_graph_anchor_edges [tests/test_codeindex.py]",
+  "test_garbage_frame_kills_the_reader_and_the_session_is_replaced_once [tests/test_code_integrity.py]",
+  "test_progress_tracked_and_wait_quiescent_honors_it [tests/test_codeindex.py]",
+  "test_session_pool_pins_docs_across_calls [tests/test_codeindex.py]",
+  "test_session_pool_pumps_watched_file_changes [tests/test_codeindex.py]",
+  "test_session_pool_respawns_after_crash [tests/test_codeindex.py]",
+  "test_session_pool_reuses_one_server_across_files [tests/test_codeindex.py]",
+  "test_settle_policy_defaults_but_an_explicit_value_wins [tests/test_code_integrity.py]",
+  "test_undecodable_source_indexes_lossily_on_the_same_session [tests/test_code_integrity.py]",
+  "test_unreadable_file_raises_file_read_error_and_keeps_the_session [tests/test_code_integrity.py]",
+]
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+  "test_extract_call_graph_anchor_edges [tests/test_codeindex.py]",
+  "test_garbage_frame_kills_the_reader_and_the_session_is_replaced_once [tests/test_code_integrity.py]",
+  "test_progress_tracked_and_wait_quiescent_honors_it [tests/test_codeindex.py]",
+  "test_session_pool_pins_docs_across_calls [tests/test_codeindex.py]",
+  "test_session_pool_pumps_watched_file_changes [tests/test_codeindex.py]",
+  "test_session_pool_respawns_after_crash [tests/test_codeindex.py]",
+  "test_session_pool_reuses_one_server_across_files [tests/test_codeindex.py]",
+  "test_settle_policy_defaults_but_an_explicit_value_wins [tests/test_code_integrity.py]",
+  "test_undecodable_source_indexes_lossily_on_the_same_session [tests/test_code_integrity.py]",
+  "test_unreadable_file_raises_file_read_error_and_keeps_the_session [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.extract_file",
+  "extract",
+  "extract_file",
+  "file",
+]

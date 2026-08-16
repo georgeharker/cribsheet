@@ -1,0 +1,44 @@
+symbol_ref = "crib/codequery.py#CodeQuery._subgraph.nid"
+fqn = "crib.codequery.CodeQuery._subgraph.nid"
+name = "nid"
+kind = "function"
+lang = "python"
+content_hash = "3b6e1248d791da4d"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def nid(p: str, fq: str) -> str:"
+description = ""
+schema = 4
+line = 672
+mtime = 1786664729000000000
+container = [
+  "CodeQuery",
+  "_subgraph",
+]
+scope = [
+  "crib",
+  "codequery",
+  "CodeQuery",
+  "_subgraph",
+]
+symbol_was = []
+calls = [
+  "qualified_symbol [crib/symbols.py]",
+]
+called_by = [
+  "_subgraph [crib/codequery.py]",
+  "put [crib/codequery.py]",
+]
+references = [
+  "_subgraph [crib/codequery.py]",
+  "put [crib/codequery.py]",
+]
+name_terms = [
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery._subgraph.nid",
+  "nid",
+  "query",
+  "subgraph",
+]

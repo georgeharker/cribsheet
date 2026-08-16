@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_code_attribution.py#_entry"
+fqn = "tests.test_code_attribution._entry"
+name = "_entry"
+kind = "function"
+lang = "python"
+content_hash = "acfa06492de85669"
+file = "tests/test_code_attribution.py"
+file_hash = "ff3c29a685f6f6d7"
+signature = "def _entry(fqname: str, *, file: str, name: str | None = None, **kw) -> dict:"
+description = ""
+schema = 4
+line = 44
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_attribution",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_deferred_describe_patches_each_symbol_by_fqname [tests/test_code_attribution.py]",
+  "test_patch_edges_resolves_a_qualified_edge_target_exactly [tests/test_code_attribution.py]",
+  "test_patch_edges_skips_an_ambiguous_same_named_target [tests/test_code_attribution.py]",
+  "test_patch_edges_updates_references_symmetrically [tests/test_code_attribution.py]",
+  "test_same_named_sources_in_one_file_patch_independently [tests/test_code_attribution.py]",
+]
+references = [
+  "test_deferred_describe_patches_each_symbol_by_fqname [tests/test_code_attribution.py]",
+  "test_patch_edges_resolves_a_qualified_edge_target_exactly [tests/test_code_attribution.py]",
+  "test_patch_edges_skips_an_ambiguous_same_named_target [tests/test_code_attribution.py]",
+  "test_patch_edges_updates_references_symmetrically [tests/test_code_attribution.py]",
+  "test_same_named_sources_in_one_file_patch_independently [tests/test_code_attribution.py]",
+]
+name_terms = [
+  "_entry",
+  "attribution",
+  "code",
+  "entry",
+  "test",
+  "tests",
+  "tests.test_code_attribution._entry",
+]

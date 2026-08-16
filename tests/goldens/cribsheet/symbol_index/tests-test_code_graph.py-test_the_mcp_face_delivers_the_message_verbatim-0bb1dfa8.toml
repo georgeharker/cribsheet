@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_code_graph.py#test_the_mcp_face_delivers_the_message_verbatim"
+fqn = "tests.test_code_graph.test_the_mcp_face_delivers_the_message_verbatim"
+name = "test_the_mcp_face_delivers_the_message_verbatim"
+kind = "function"
+lang = "python"
+content_hash = "933fdf9fd5b7d960"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def test_the_mcp_face_delivers_the_message_verbatim(crib, tmp_path):"
+description = ""
+schema = 4
+line = 546
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "_wrapper_and_op [tests/test_code_graph.py]",
+  "build_server [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "delivers",
+  "face",
+  "graph",
+  "mcp",
+  "message",
+  "test",
+  "test_the_mcp_face_delivers_the_message_verbatim",
+  "tests",
+  "tests.test_code_graph.test_the_mcp_face_delivers_the_message_verbatim",
+  "the",
+  "verbatim",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_cc_tools.lua#if.spec_ok"
+fqn = "tests.test_cc_tools.if.spec_ok"
+name = "spec_ok"
+kind = "variable"
+lang = "lua"
+content_hash = "d2f288e606960b33"
+file = "tests/test_cc_tools.lua"
+file_hash = "3253ff527c66fcb1"
+signature = "local spec_ok, spec = pcall(entry.callback)"
+description = ""
+schema = 4
+line = 349
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+scope = [
+  "tests",
+  "test_cc_tools",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "if",
+  "ok",
+  "spec",
+  "spec_ok",
+  "test",
+  "tests",
+  "tests.test_cc_tools.if.spec_ok",
+  "tools",
+]

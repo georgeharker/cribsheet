@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#IssuedTokens.refresh_token"
+fqn = "combiner.mcp_combiner.mockserver.IssuedTokens.refresh_token"
+name = "refresh_token"
+kind = "field"
+lang = "python"
+content_hash = "896083556d382720"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "refresh_token: str | None"
+description = ""
+schema = 4
+line = 633
+mtime = 1783622326000000000
+container = [
+  "IssuedTokens",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "IssuedTokens",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_token_payload [combiner/mcp_combiner/mockserver.py]",
+  "test_cache_without_persisted_expiry_bootstraps_one_refresh [combiner/tests/test_oauth_mock.py]",
+  "test_expired_cached_token_refreshed_silently_on_restart [combiner/tests/test_oauth_mock.py]",
+  "test_full_flow_issues_and_attaches_tokens [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_sends_right_token_and_stores_rotated [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_token_preserved_when_provider_omits_it [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.IssuedTokens.refresh_token",
+  "issued",
+  "mcp",
+  "mockserver",
+  "refresh",
+  "refresh_token",
+  "token",
+  "tokens",
+]

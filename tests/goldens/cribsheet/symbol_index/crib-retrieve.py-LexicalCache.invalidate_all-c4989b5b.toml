@@ -1,0 +1,39 @@
+symbol_ref = "crib/retrieve.py#LexicalCache.invalidate_all"
+fqn = "crib.retrieve.LexicalCache.invalidate_all"
+name = "invalidate_all"
+kind = "method"
+lang = "python"
+content_hash = "c3be0bcbd818bf89"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "def invalidate_all(self) -> None:"
+description = ""
+schema = 4
+line = 301
+mtime = 1786136167000000000
+container = [
+  "LexicalCache",
+]
+scope = [
+  "crib",
+  "retrieve",
+  "LexicalCache",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "invalidate_all_caches [crib/indexer.py]",
+]
+references = [
+  "invalidate_all_caches [crib/indexer.py]",
+]
+name_terms = [
+  "all",
+  "cache",
+  "crib",
+  "crib.retrieve.LexicalCache.invalidate_all",
+  "invalidate",
+  "invalidate_all",
+  "lexical",
+  "retrieve",
+]

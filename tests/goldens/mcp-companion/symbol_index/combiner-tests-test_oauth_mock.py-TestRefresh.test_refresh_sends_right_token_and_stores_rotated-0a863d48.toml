@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestRefresh.test_refresh_sends_right_token_and_stores_rotated"
+fqn = "combiner.tests.test_oauth_mock.TestRefresh.test_refresh_sends_right_token_and_stores_rotated"
+name = "test_refresh_sends_right_token_and_stores_rotated"
+kind = "method"
+lang = "python"
+content_hash = "aa1b4e2decc407ca"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def test_refresh_sends_right_token_and_stores_rotated("
+description = ""
+schema = 4
+line = 283
+mtime = 1784495646000000000
+container = [
+  "TestRefresh",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "TestRefresh",
+]
+symbol_was = []
+calls = [
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "_seed_refreshable [combiner/tests/test_oauth_mock.py]",
+  "token_requests_of [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestRefresh.test_refresh_sends_right_token_and_stores_rotated",
+  "mock",
+  "oauth",
+  "refresh",
+  "right",
+  "rotated",
+  "sends",
+  "stores",
+  "test",
+  "test_refresh_sends_right_token_and_stores_rotated",
+  "tests",
+  "token",
+]

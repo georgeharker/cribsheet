@@ -1,0 +1,44 @@
+symbol_ref = "scripts/codeindex/lsp_probe.py#Client._send"
+fqn = "scripts.codeindex.lsp_probe.Client._send"
+name = "_send"
+kind = "method"
+lang = "python"
+content_hash = "93043a78ccfa7de2"
+file = "scripts/codeindex/lsp_probe.py"
+file_hash = "014ef92d65f6717d"
+signature = "def _send(self, msg: dict) -> None:"
+description = ""
+schema = 4
+line = 38
+mtime = 1783033292000000000
+container = [
+  "Client",
+]
+scope = [
+  "scripts",
+  "codeindex",
+  "lsp_probe",
+  "Client",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_on_request [scripts/codeindex/lsp_probe.py]",
+  "notify [scripts/codeindex/lsp_probe.py]",
+  "request [scripts/codeindex/lsp_probe.py]",
+]
+references = [
+  "_on_request [scripts/codeindex/lsp_probe.py]",
+  "notify [scripts/codeindex/lsp_probe.py]",
+  "request [scripts/codeindex/lsp_probe.py]",
+]
+name_terms = [
+  "_send",
+  "client",
+  "codeindex",
+  "lsp",
+  "probe",
+  "scripts",
+  "scripts.codeindex.lsp_probe.Client._send",
+  "send",
+]

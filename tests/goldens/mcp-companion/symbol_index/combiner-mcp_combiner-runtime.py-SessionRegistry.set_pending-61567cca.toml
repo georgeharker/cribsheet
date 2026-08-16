@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.set_pending"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.set_pending"
+name = "set_pending"
+kind = "method"
+lang = "python"
+content_hash = "92154ac7e32e921a"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def set_pending(self, token: str, servers: set[str] | None) -> None:"
+description = ""
+schema = 4
+line = 132
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "manage_token_filter [combiner/mcp_combiner/routes.py]",
+]
+references = [
+  "manage_token_filter [combiner/mcp_combiner/routes.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.set_pending",
+  "mcp",
+  "pending",
+  "registry",
+  "runtime",
+  "session",
+  "set",
+  "set_pending",
+]

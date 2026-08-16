@@ -1,0 +1,50 @@
+symbol_ref = "tests/test_sync.py#_note"
+fqn = "tests.test_sync._note"
+name = "_note"
+kind = "function"
+lang = "python"
+content_hash = "b50b382367dfe93d"
+file = "tests/test_sync.py"
+file_hash = "594e3dd701dbe999"
+signature = "def _note(g: GitBacking, name: str, body: str) -> None:"
+description = ""
+schema = 4
+line = 39
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_sync",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_imported_note [tests/test_sync.py]",
+  "test_daemon_side_backing_refuses_network_git [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_memory_bindings_is_gitignored [tests/test_sync.py]",
+  "test_pull_reports_conflicts_without_pushing [tests/test_sync.py]",
+  "test_snapshot_reports_commit_failure_structurally [tests/test_sync.py]",
+  "test_snapshot_with_nothing_to_do_is_ok_but_not_committed [tests/test_sync.py]",
+  "test_sync_round_trips_between_two_machines [tests/test_sync.py]",
+  "test_sync_stops_when_the_commit_fails [tests/test_sync.py]",
+]
+references = [
+  "_imported_note [tests/test_sync.py]",
+  "test_daemon_side_backing_refuses_network_git [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_memory_bindings_is_gitignored [tests/test_sync.py]",
+  "test_pull_reports_conflicts_without_pushing [tests/test_sync.py]",
+  "test_snapshot_reports_commit_failure_structurally [tests/test_sync.py]",
+  "test_snapshot_with_nothing_to_do_is_ok_but_not_committed [tests/test_sync.py]",
+  "test_sync_round_trips_between_two_machines [tests/test_sync.py]",
+  "test_sync_stops_when_the_commit_fails [tests/test_sync.py]",
+]
+name_terms = [
+  "_note",
+  "note",
+  "sync",
+  "test",
+  "tests",
+  "tests.test_sync._note",
+]

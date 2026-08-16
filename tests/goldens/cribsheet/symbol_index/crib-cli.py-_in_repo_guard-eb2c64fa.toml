@@ -1,0 +1,38 @@
+symbol_ref = "crib/cli.py#_in_repo_guard"
+fqn = "crib.cli._in_repo_guard"
+name = "_in_repo_guard"
+kind = "function"
+lang = "python"
+content_hash = "f36d5de4d2b6fe58"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _in_repo_guard(paths: Any, cfg: Any, cwd: Path) -> str | None:"
+description = ""
+schema = 4
+line = 1931
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "resolve_project [crib/config.py]",
+  "resolve_project_paths [crib/paths.py]",
+]
+called_by = [
+  "_run_git [crib/cli.py]",
+]
+references = [
+  "_run_git [crib/cli.py]",
+]
+name_terms = [
+  "_in_repo_guard",
+  "cli",
+  "crib",
+  "crib.cli._in_repo_guard",
+  "guard",
+  "in",
+  "repo",
+]

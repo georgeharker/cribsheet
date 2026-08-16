@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_auth.py#TestIsNetworkError.test_connection_error"
+fqn = "combiner.tests.test_auth.TestIsNetworkError.test_connection_error"
+name = "test_connection_error"
+kind = "method"
+lang = "python"
+content_hash = "4e73f8530dc0dd0f"
+file = "combiner/tests/test_auth.py"
+file_hash = "2b3aa7eeeed5bf38"
+signature = "def test_connection_error(self) -> None:"
+description = ""
+schema = 4
+line = 227
+mtime = 1782852601000000000
+container = [
+  "TestIsNetworkError",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_auth",
+  "TestIsNetworkError",
+]
+symbol_was = []
+calls = [
+  "_is_network_error [combiner/mcp_combiner/auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestIsNetworkError.test_connection_error",
+  "connection",
+  "error",
+  "is",
+  "network",
+  "test",
+  "test_connection_error",
+  "tests",
+]

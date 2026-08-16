@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_chunk_identity.py#test_occurrence_reaches_metadata_but_not_the_heading_path"
+fqn = "tests.test_chunk_identity.test_occurrence_reaches_metadata_but_not_the_heading_path"
+name = "test_occurrence_reaches_metadata_but_not_the_heading_path"
+kind = "function"
+lang = "python"
+content_hash = "d2045c1f890169d0"
+file = "tests/test_chunk_identity.py"
+file_hash = "0afd98c1ecf1279e"
+signature = "def test_occurrence_reaches_metadata_but_not_the_heading_path():"
+description = ""
+schema = 4
+line = 54
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_chunk_identity",
+]
+symbol_was = []
+calls = [
+  "chunk_note [crib/chunk.py]",
+  "metadata [crib/chunk.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "but",
+  "chunk",
+  "heading",
+  "identity",
+  "metadata",
+  "not",
+  "occurrence",
+  "path",
+  "reaches",
+  "test",
+  "test_occurrence_reaches_metadata_but_not_the_heading_path",
+  "tests",
+  "tests.test_chunk_identity.test_occurrence_reaches_metadata_but_not_the_heading_path",
+  "the",
+]

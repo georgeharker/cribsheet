@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#TokenRequest"
+fqn = "combiner.mcp_combiner.mockserver.TokenRequest"
+name = "TokenRequest"
+kind = "class"
+lang = "python"
+content_hash = "ae4f3d4667c70d95"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 616
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "token [combiner/mcp_combiner/mockserver.py]",
+  "token_requests [combiner/mcp_combiner/mockserver.py]",
+  "token_requests_of [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "TokenRequest",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.TokenRequest",
+  "mcp",
+  "mockserver",
+  "request",
+  "token",
+]

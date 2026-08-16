@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_keyword_refresh.py#test_startup_backlog_noop_without_labels"
+fqn = "tests.test_keyword_refresh.test_startup_backlog_noop_without_labels"
+name = "test_startup_backlog_noop_without_labels"
+kind = "function"
+lang = "python"
+content_hash = "217753b4a0dbbe3b"
+file = "tests/test_keyword_refresh.py"
+file_hash = "d758ff5010231936"
+signature = "def test_startup_backlog_noop_without_labels(crib, monkeypatch):"
+description = ""
+schema = 4
+line = 128
+mtime = 1786044759000000000
+container = []
+scope = [
+  "tests",
+  "test_keyword_refresh",
+]
+symbol_was = []
+calls = [
+  "body [tests/test_keyword_refresh.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "backlog",
+  "keyword",
+  "labels",
+  "noop",
+  "refresh",
+  "startup",
+  "test",
+  "test_startup_backlog_noop_without_labels",
+  "tests",
+  "tests.test_keyword_refresh.test_startup_backlog_noop_without_labels",
+  "without",
+]

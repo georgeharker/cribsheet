@@ -1,0 +1,39 @@
+symbol_ref = "scripts/eval_kw.py#main.c_all"
+fqn = "scripts.eval_kw.main.c_all"
+name = "c_all"
+kind = "function"
+lang = "python"
+content_hash = "1939bebe8ddbc02b"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def c_all(a_kw, a_cov, facet):"
+description = ""
+schema = 4
+line = 102
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_kw.py]",
+]
+references = [
+  "main [scripts/eval_kw.py]",
+]
+name_terms = [
+  "all",
+  "c",
+  "c_all",
+  "eval",
+  "kw",
+  "main",
+  "scripts",
+  "scripts.eval_kw.main.c_all",
+]

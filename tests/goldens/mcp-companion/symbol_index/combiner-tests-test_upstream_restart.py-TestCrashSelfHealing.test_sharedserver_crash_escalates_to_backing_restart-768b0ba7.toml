@@ -1,0 +1,55 @@
+symbol_ref = "combiner/tests/test_upstream_restart.py#TestCrashSelfHealing.test_sharedserver_crash_escalates_to_backing_restart"
+fqn = "combiner.tests.test_upstream_restart.TestCrashSelfHealing.test_sharedserver_crash_escalates_to_backing_restart"
+name = "test_sharedserver_crash_escalates_to_backing_restart"
+kind = "method"
+lang = "python"
+content_hash = "7d4928d1935d8b6d"
+file = "combiner/tests/test_upstream_restart.py"
+file_hash = "c3ceaa6ec420f1df"
+signature = "@requires_sharedserver"
+description = ""
+schema = 4
+line = 219
+mtime = 1783534978000000000
+container = [
+  "TestCrashSelfHealing",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_upstream_restart",
+  "TestCrashSelfHealing",
+]
+symbol_was = []
+calls = [
+  "_call_until_ok [combiner/tests/test_upstream_restart.py]",
+  "_wait_pid_gone [combiner/tests/test_upstream_restart.py]",
+  "_whoami [combiner/tests/test_upstream_restart.py]",
+  "free_port [combiner/tests/conftest.py]",
+  "sharedserver_def [combiner/tests/conftest.py]",
+  "sharedserver_mock_entry [combiner/tests/conftest.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+  "track_shared [combiner/tests/conftest.py]",
+  "unique_shared_name [combiner/tests/conftest.py]",
+  "wait_server_state [combiner/tests/conftest.py]",
+  "write_servers_config [combiner/tests/conftest.py]",
+  "write_tools_spec [combiner/tests/conftest.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "backing",
+  "combiner",
+  "combiner.tests.test_upstream_restart.TestCrashSelfHealing.test_sharedserver_crash_escalates_to_backing_restart",
+  "crash",
+  "escalates",
+  "healing",
+  "restart",
+  "self",
+  "sharedserver",
+  "test",
+  "test_sharedserver_crash_escalates_to_backing_restart",
+  "tests",
+  "to",
+  "upstream",
+]

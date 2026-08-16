@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/asgi.py#_ACP_TOKEN_HEADER"
+fqn = "combiner.mcp_combiner.asgi._ACP_TOKEN_HEADER"
+name = "_ACP_TOKEN_HEADER"
+kind = "constant"
+lang = "python"
+content_hash = "9d2d3cf83dd32180"
+file = "combiner/mcp_combiner/asgi.py"
+file_hash = "1ff2dd1d6ee7f6d0"
+signature = "_ACP_TOKEN_HEADER = \"x-mcp-combiner-session\""
+description = ""
+schema = 4
+line = 31
+mtime = 1783548694000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "asgi",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "dispatch [combiner/mcp_combiner/asgi.py]",
+]
+name_terms = [
+  "_ACP_TOKEN_HEADER",
+  "acp",
+  "asgi",
+  "combiner",
+  "combiner.mcp_combiner.asgi._ACP_TOKEN_HEADER",
+  "header",
+  "mcp",
+  "token",
+]

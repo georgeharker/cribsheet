@@ -1,0 +1,31 @@
+symbol_ref = "combiner/mcp_combiner/__init__.py#__version__"
+fqn = "combiner.mcp_combiner.__version__"
+name = "__version__"
+kind = "global"
+lang = "python"
+content_hash = "86d23a2ec963c1fb"
+file = "combiner/mcp_combiner/__init__.py"
+file_hash = "dd1fbb78f8f13472"
+signature = "__version__ = \"0.0.0.dev0\""
+description = ""
+schema = 4
+line = 8
+mtime = 1783544504000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_add_serve_args [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "__version__",
+  "combiner",
+  "combiner.mcp_combiner.__version__",
+  "mcp",
+  "version",
+]

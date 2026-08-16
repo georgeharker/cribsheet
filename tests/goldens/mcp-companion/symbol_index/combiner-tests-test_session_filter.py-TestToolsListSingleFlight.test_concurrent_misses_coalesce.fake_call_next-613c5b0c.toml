@@ -1,0 +1,49 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestToolsListSingleFlight.test_concurrent_misses_coalesce.fake_call_next"
+fqn = "combiner.tests.test_session_filter.TestToolsListSingleFlight.test_concurrent_misses_coalesce.fake_call_next"
+name = "fake_call_next"
+kind = "function"
+lang = "python"
+content_hash = "76bed696a6747af1"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "async def fake_call_next(_ctx):"
+description = ""
+schema = 4
+line = 309
+mtime = 1784493613000000000
+container = [
+  "TestToolsListSingleFlight",
+  "test_concurrent_misses_coalesce",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestToolsListSingleFlight",
+  "test_concurrent_misses_coalesce",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_concurrent_misses_coalesce [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "call",
+  "coalesce",
+  "combiner",
+  "combiner.tests.test_session_filter.TestToolsListSingleFlight.test_concurrent_misses_coalesce.fake_call_next",
+  "concurrent",
+  "fake",
+  "fake_call_next",
+  "filter",
+  "flight",
+  "list",
+  "misses",
+  "next",
+  "session",
+  "single",
+  "test",
+  "tests",
+  "tools",
+]

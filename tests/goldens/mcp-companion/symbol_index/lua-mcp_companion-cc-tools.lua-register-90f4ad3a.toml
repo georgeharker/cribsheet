@@ -1,0 +1,39 @@
+symbol_ref = "lua/mcp_companion/cc/tools.lua#register"
+fqn = "mcp_companion.cc.tools.register"
+name = "register"
+kind = "function"
+lang = "lua"
+content_hash = "ba2918a30d9a938c"
+file = "lua/mcp_companion/cc/tools.lua"
+file_hash = "1319bd3ac569f910"
+signature = "function M.register()"
+description = ""
+schema = 4
+line = 158
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "cc",
+  "tools",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M._auto_native_tools [lua/mcp_companion/cc/init.lua]",
+  "tools.lua [lua/mcp_companion/cc/tools.lua]",
+]
+references = [
+  "_auto_native_tools [lua/mcp_companion/cc/init.lua]",
+  "clear_fingerprint [lua/mcp_companion/cc/tools.lua]",
+  "register_native [lua/mcp_companion/cc/tools.lua]",
+  "unregister [lua/mcp_companion/cc/tools.lua]",
+]
+name_terms = [
+  "cc",
+  "companion",
+  "mcp",
+  "mcp_companion.cc.tools.register",
+  "register",
+  "tools",
+]

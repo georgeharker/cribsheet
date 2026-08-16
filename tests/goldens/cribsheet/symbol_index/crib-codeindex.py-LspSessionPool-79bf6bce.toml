@@ -1,0 +1,47 @@
+symbol_ref = "crib/codeindex.py#LspSessionPool"
+fqn = "crib.codeindex.LspSessionPool"
+name = "LspSessionPool"
+kind = "class"
+lang = "python"
+content_hash = "3924fd55a160612f"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "class LspSessionPool:"
+description = ""
+schema = 4
+line = 569
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_POOL [crib/codeindex.py]",
+  "_extract [crib/codeindex.py]",
+  "extract_file [crib/codeindex.py]",
+  "test_dead_session_raises_immediately_and_leaks_no_response_slot [tests/test_code_integrity.py]",
+  "test_extra_roots_ride_as_workspace_folders [tests/test_codeindex.py]",
+  "test_garbage_frame_kills_the_reader_and_the_session_is_replaced_once [tests/test_code_integrity.py]",
+  "test_progress_tracked_and_wait_quiescent_honors_it [tests/test_codeindex.py]",
+  "test_session_pool_pins_docs_across_calls [tests/test_codeindex.py]",
+  "test_session_pool_pumps_watched_file_changes [tests/test_codeindex.py]",
+  "test_session_pool_respawns_after_crash [tests/test_codeindex.py]",
+  "test_session_pool_reuses_one_server_across_files [tests/test_codeindex.py]",
+  "test_settle_policy_defaults_but_an_explicit_value_wins [tests/test_code_integrity.py]",
+  "test_timed_out_request_pops_its_own_response_slot [tests/test_code_integrity.py]",
+  "test_undecodable_source_indexes_lossily_on_the_same_session [tests/test_code_integrity.py]",
+  "test_unreadable_file_raises_file_read_error_and_keeps_the_session [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "LspSessionPool",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspSessionPool",
+  "lsp",
+  "pool",
+  "session",
+]

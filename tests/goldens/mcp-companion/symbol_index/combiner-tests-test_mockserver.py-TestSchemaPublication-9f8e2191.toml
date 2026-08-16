@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestSchemaPublication"
+fqn = "combiner.tests.test_mockserver.TestSchemaPublication"
+name = "TestSchemaPublication"
+kind = "class"
+lang = "python"
+content_hash = "afa59421ea2c8086"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "class TestSchemaPublication:"
+description = ""
+schema = 4
+line = 83
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestSchemaPublication",
+  "combiner",
+  "combiner.tests.test_mockserver.TestSchemaPublication",
+  "mockserver",
+  "publication",
+  "schema",
+  "test",
+  "tests",
+]

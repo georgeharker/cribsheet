@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.list_versions"
+fqn = "crib.app.Crib.list_versions"
+name = "list_versions"
+kind = "method"
+lang = "python"
+content_hash = "e8e1c8109b12faef"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def list_versions(self, relpath: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 2861
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "list_versions [crib/notestore.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "note_versions [crib/server.py]",
+]
+references = [
+  "note_versions [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.list_versions",
+  "list",
+  "list_versions",
+  "versions",
+]

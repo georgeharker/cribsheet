@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_RefreshTokenOAuth.callback_handler"
+fqn = "combiner.mcp_combiner.auth._RefreshTokenOAuth.callback_handler"
+name = "callback_handler"
+kind = "method"
+lang = "python"
+content_hash = "63d23967bb14c18b"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "async def callback_handler(self) -> tuple[str, str | None]:"
+description = ""
+schema = 4
+line = 224
+mtime = 1783622326000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+  "_RefreshTokenOAuth",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "callback",
+  "callback_handler",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth.callback_handler",
+  "handler",
+  "mcp",
+  "o",
+  "refresh",
+  "token",
+]

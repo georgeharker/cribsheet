@@ -1,0 +1,51 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ResolvedPolicy.resolve"
+fqn = "combiner.mcp_combiner.config.ResolvedPolicy.resolve"
+name = "resolve"
+kind = "method"
+lang = "python"
+content_hash = "766c9015d4b0340c"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def resolve(self, local_tool: str) -> PermissionAction:"
+description = ""
+schema = 4
+line = 209
+mtime = 1783633313000000000
+container = [
+  "ResolvedPolicy",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ResolvedPolicy",
+]
+symbol_was = []
+calls = [
+  "_matches_any [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "enforce [combiner/mcp_combiner/permissions.py]",
+  "test_auto_approve_folds_into_allow [combiner/tests/test_permissions.py]",
+  "test_deny_beats_elicit_beats_allow [combiner/tests/test_permissions.py]",
+  "test_effective_policy_via_combiner_config [combiner/tests/test_permissions.py]",
+  "test_pattern_sets_are_unioned [combiner/tests/test_permissions.py]",
+  "test_unmatched_uses_default [combiner/tests/test_permissions.py]",
+]
+references = [
+  "enforce [combiner/mcp_combiner/permissions.py]",
+  "test_auto_approve_folds_into_allow [combiner/tests/test_permissions.py]",
+  "test_deny_beats_elicit_beats_allow [combiner/tests/test_permissions.py]",
+  "test_effective_policy_via_combiner_config [combiner/tests/test_permissions.py]",
+  "test_pattern_sets_are_unioned [combiner/tests/test_permissions.py]",
+  "test_unmatched_uses_default [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ResolvedPolicy.resolve",
+  "config",
+  "mcp",
+  "policy",
+  "resolve",
+  "resolved",
+]

@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestBearerLifecycle.test_expired_token_refreshed_and_new_bearer_attached"
+fqn = "combiner.tests.test_oauth_mock.TestBearerLifecycle.test_expired_token_refreshed_and_new_bearer_attached"
+name = "test_expired_token_refreshed_and_new_bearer_attached"
+kind = "method"
+lang = "python"
+content_hash = "01f6338644260766"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def test_expired_token_refreshed_and_new_bearer_attached("
+description = ""
+schema = 4
+line = 357
+mtime = 1784495646000000000
+container = [
+  "TestBearerLifecycle",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "TestBearerLifecycle",
+]
+symbol_was = []
+calls = [
+  "_call_echo [combiner/tests/test_oauth_mock.py]",
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+  "authenticated_mcp_calls [combiner/mcp_combiner/mockserver.py]",
+  "token_requests_of [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "attached",
+  "bearer",
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestBearerLifecycle.test_expired_token_refreshed_and_new_bearer_attached",
+  "expired",
+  "lifecycle",
+  "mock",
+  "new",
+  "oauth",
+  "refreshed",
+  "test",
+  "test_expired_token_refreshed_and_new_bearer_attached",
+  "tests",
+  "token",
+]

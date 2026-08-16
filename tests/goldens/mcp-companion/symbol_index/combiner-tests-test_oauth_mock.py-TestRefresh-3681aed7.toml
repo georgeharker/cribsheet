@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestRefresh"
+fqn = "combiner.tests.test_oauth_mock.TestRefresh"
+name = "TestRefresh"
+kind = "class"
+lang = "python"
+content_hash = "fd5dc1ae4edbde7e"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "class TestRefresh:"
+description = ""
+schema = 4
+line = 256
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestRefresh",
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestRefresh",
+  "mock",
+  "oauth",
+  "refresh",
+  "test",
+  "tests",
+]

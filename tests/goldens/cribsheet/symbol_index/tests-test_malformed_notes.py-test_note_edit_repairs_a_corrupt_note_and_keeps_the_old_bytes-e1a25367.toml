@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_malformed_notes.py#test_note_edit_repairs_a_corrupt_note_and_keeps_the_old_bytes"
+fqn = "tests.test_malformed_notes.test_note_edit_repairs_a_corrupt_note_and_keeps_the_old_bytes"
+name = "test_note_edit_repairs_a_corrupt_note_and_keeps_the_old_bytes"
+kind = "function"
+lang = "python"
+content_hash = "e5421af66f957977"
+file = "tests/test_malformed_notes.py"
+file_hash = "e46dac071f53c31f"
+signature = "def test_note_edit_repairs_a_corrupt_note_and_keeps_the_old_bytes(crib):"
+description = ""
+schema = 4
+line = 68
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_malformed_notes",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_malformed_notes.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "and",
+  "bytes",
+  "corrupt",
+  "edit",
+  "keeps",
+  "malformed",
+  "note",
+  "notes",
+  "old",
+  "repairs",
+  "test",
+  "test_note_edit_repairs_a_corrupt_note_and_keeps_the_old_bytes",
+  "tests",
+  "tests.test_malformed_notes.test_note_edit_repairs_a_corrupt_note_and_keeps_the_old_bytes",
+  "the",
+]

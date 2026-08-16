@@ -1,0 +1,41 @@
+symbol_ref = "lua/mcp_companion/cc/session_commands.lua#_get_disabled"
+fqn = "mcp_companion.cc.session_commands._get_disabled"
+name = "_get_disabled"
+kind = "function"
+lang = "lua"
+content_hash = "f2c8fe6ffc6ce0c1"
+file = "lua/mcp_companion/cc/session_commands.lua"
+file_hash = "70b271c7f95add3d"
+signature = "local function _get_disabled(bufnr)"
+description = ""
+schema = 4
+line = 24
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "cc",
+  "session_commands",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.register [lua/mcp_companion/cc/session_commands.lua]",
+  "M.toggle_server_for_session [lua/mcp_companion/cc/session_commands.lua]",
+  "session_commands.lua [lua/mcp_companion/cc/session_commands.lua]",
+]
+references = [
+  "disabled [lua/mcp_companion/cc/session_commands.lua]",
+  "register [lua/mcp_companion/cc/session_commands.lua]",
+]
+name_terms = [
+  "_get_disabled",
+  "cc",
+  "commands",
+  "companion",
+  "disabled",
+  "get",
+  "mcp",
+  "mcp_companion.cc.session_commands._get_disabled",
+  "session",
+]

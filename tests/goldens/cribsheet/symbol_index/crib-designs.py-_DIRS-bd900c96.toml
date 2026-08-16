@@ -1,0 +1,31 @@
+symbol_ref = "crib/designs.py#_DIRS"
+fqn = "crib.designs._DIRS"
+name = "_DIRS"
+kind = "constant"
+lang = "python"
+content_hash = "606212b64637a449"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "_DIRS = {\"design\": DESIGN_DIR, \"plan\": PLANS_DIR}"
+description = ""
+schema = 4
+line = 84
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_rel_match [crib/designs.py]",
+]
+name_terms = [
+  "_DIRS",
+  "crib",
+  "crib.designs._DIRS",
+  "designs",
+  "dirs",
+]

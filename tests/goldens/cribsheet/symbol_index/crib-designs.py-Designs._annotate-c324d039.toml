@@ -1,0 +1,36 @@
+symbol_ref = "crib/designs.py#Designs._annotate"
+fqn = "crib.designs.Designs._annotate"
+name = "_annotate"
+kind = "method"
+lang = "python"
+content_hash = "9b858d7bc29709e8"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _annotate(self, graph: Graph, tainted: dict[str, Any],"
+description = ""
+schema = 4
+line = 899
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "design_read [crib/designs.py]",
+]
+references = [
+  "design_read [crib/designs.py]",
+]
+name_terms = [
+  "_annotate",
+  "annotate",
+  "crib",
+  "crib.designs.Designs._annotate",
+  "designs",
+]

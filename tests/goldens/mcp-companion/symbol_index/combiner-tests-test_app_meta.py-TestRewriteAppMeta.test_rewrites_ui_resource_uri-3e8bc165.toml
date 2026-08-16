@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_app_meta.py#TestRewriteAppMeta.test_rewrites_ui_resource_uri"
+fqn = "combiner.tests.test_app_meta.TestRewriteAppMeta.test_rewrites_ui_resource_uri"
+name = "test_rewrites_ui_resource_uri"
+kind = "method"
+lang = "python"
+content_hash = "add7230f9abf13c5"
+file = "combiner/tests/test_app_meta.py"
+file_hash = "fc52f36639c3320a"
+signature = "def test_rewrites_ui_resource_uri(self) -> None:"
+description = ""
+schema = 4
+line = 58
+mtime = 1783629928000000000
+container = [
+  "TestRewriteAppMeta",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_app_meta",
+  "TestRewriteAppMeta",
+]
+symbol_was = []
+calls = [
+  "_rewrite_app_meta [combiner/mcp_combiner/middleware.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "app",
+  "combiner",
+  "combiner.tests.test_app_meta.TestRewriteAppMeta.test_rewrites_ui_resource_uri",
+  "meta",
+  "resource",
+  "rewrite",
+  "rewrites",
+  "test",
+  "test_rewrites_ui_resource_uri",
+  "tests",
+  "ui",
+  "uri",
+]

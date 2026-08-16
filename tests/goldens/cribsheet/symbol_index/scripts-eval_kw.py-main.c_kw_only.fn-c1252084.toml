@@ -1,0 +1,42 @@
+symbol_ref = "scripts/eval_kw.py#main.c_kw_only.fn"
+fqn = "scripts.eval_kw.main.c_kw_only.fn"
+name = "fn"
+kind = "function"
+lang = "python"
+content_hash = "9c6cb0ebd1a5b9c0"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def fn(feat, proj, q, qf, qv, k):"
+description = ""
+schema = 4
+line = 83
+mtime = 1783981122000000000
+container = [
+  "main",
+  "c_kw_only",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+  "c_kw_only",
+]
+symbol_was = []
+calls = [
+  "kw_maxsim [scripts/eval_kw.py]",
+  "order_from [scripts/eval_fusion.py]",
+]
+called_by = []
+references = [
+  "c_kw_only [scripts/eval_kw.py]",
+]
+name_terms = [
+  "c",
+  "eval",
+  "fn",
+  "kw",
+  "main",
+  "only",
+  "scripts",
+  "scripts.eval_kw.main.c_kw_only.fn",
+]

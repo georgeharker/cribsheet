@@ -1,0 +1,32 @@
+symbol_ref = "scripts/eval_hybrid.py#K"
+fqn = "scripts.eval_hybrid.K"
+name = "K"
+kind = "constant"
+lang = "python"
+content_hash = "6e72bd3439631579"
+file = "scripts/eval_hybrid.py"
+file_hash = "7efc1218d091601c"
+signature = "K = 50"
+description = ""
+schema = 4
+line = 37
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_hybrid",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "main [scripts/eval_hybrid.py]",
+]
+name_terms = [
+  "K",
+  "eval",
+  "hybrid",
+  "k",
+  "scripts",
+  "scripts.eval_hybrid.K",
+]

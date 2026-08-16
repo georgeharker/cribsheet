@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_designs.py#test_a_dangling_dep_is_visible_but_never_wedges_the_plan"
+fqn = "tests.test_designs.test_a_dangling_dep_is_visible_but_never_wedges_the_plan"
+name = "test_a_dangling_dep_is_visible_but_never_wedges_the_plan"
+kind = "function"
+lang = "python"
+content_hash = "4f613e1c752de898"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_a_dangling_dep_is_visible_but_never_wedges_the_plan(crib):"
+description = ""
+schema = 4
+line = 494
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "_set_deps [tests/test_designs.py]",
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "but",
+  "dangling",
+  "dep",
+  "designs",
+  "is",
+  "never",
+  "plan",
+  "test",
+  "test_a_dangling_dep_is_visible_but_never_wedges_the_plan",
+  "tests",
+  "tests.test_designs.test_a_dangling_dep_is_visible_but_never_wedges_the_plan",
+  "the",
+  "visible",
+  "wedges",
+]

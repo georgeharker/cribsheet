@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#Verb.build"
+fqn = "crib.cli.Verb.build"
+name = "build"
+kind = "field"
+lang = "python"
+content_hash = "eb164293895844d4"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "build: Callable[[Any], dict[str, Any]]      # parsed args → logical call params"
+description = ""
+schema = 4
+line = 1462
+mtime = 1786693579000000000
+container = [
+  "Verb",
+]
+scope = [
+  "crib",
+  "cli",
+  "Verb",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_resolve_verb [crib/cli.py]",
+]
+name_terms = [
+  "build",
+  "cli",
+  "crib",
+  "crib.cli.Verb.build",
+  "verb",
+]

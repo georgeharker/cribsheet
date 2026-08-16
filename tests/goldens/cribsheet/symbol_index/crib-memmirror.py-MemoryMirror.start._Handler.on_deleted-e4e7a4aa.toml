@@ -1,0 +1,43 @@
+symbol_ref = "crib/memmirror.py#MemoryMirror.start._Handler.on_deleted"
+fqn = "crib.memmirror.MemoryMirror.start._Handler.on_deleted"
+name = "on_deleted"
+kind = "method"
+lang = "python"
+content_hash = "8bca5b6039d9ba5f"
+file = "crib/memmirror.py"
+file_hash = "9ff08381721a9203"
+signature = "def on_deleted(self, e):  # noqa: ANN001 — re-sync drops the chunk"
+description = ""
+schema = 4
+line = 80
+mtime = 1785959234000000000
+container = [
+  "MemoryMirror",
+  "start",
+  "_Handler",
+]
+scope = [
+  "crib",
+  "memmirror",
+  "MemoryMirror",
+  "start",
+  "_Handler",
+]
+symbol_was = []
+calls = [
+  "_emit [crib/memmirror.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.memmirror.MemoryMirror.start._Handler.on_deleted",
+  "deleted",
+  "handler",
+  "memmirror",
+  "memory",
+  "mirror",
+  "on",
+  "on_deleted",
+  "start",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_HEALTH_PING_TIMEOUT"
+fqn = "combiner.mcp_combiner.connections._HEALTH_PING_TIMEOUT"
+name = "_HEALTH_PING_TIMEOUT"
+kind = "constant"
+lang = "python"
+content_hash = "d254ae30703736bb"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_HEALTH_PING_TIMEOUT = _env_float(\"MCP_COMBINER_HEALTH_PING_TIMEOUT\", 10.0)"
+description = ""
+schema = 4
+line = 96
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+  "test_ping_timeout_and_failures_are_env_configurable [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "_HEALTH_PING_TIMEOUT",
+  "combiner",
+  "combiner.mcp_combiner.connections._HEALTH_PING_TIMEOUT",
+  "connections",
+  "health",
+  "mcp",
+  "ping",
+  "timeout",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_store_migration.py#test_full_reindex_self_heals_a_pulled_straggler"
+fqn = "tests.test_store_migration.test_full_reindex_self_heals_a_pulled_straggler"
+name = "test_full_reindex_self_heals_a_pulled_straggler"
+kind = "function"
+lang = "python"
+content_hash = "9d9137740d23505e"
+file = "tests/test_store_migration.py"
+file_hash = "a18552bb17863360"
+signature = "def test_full_reindex_self_heals_a_pulled_straggler(crib):"
+description = ""
+schema = 4
+line = 120
+mtime = 1786140093000000000
+container = []
+scope = [
+  "tests",
+  "test_store_migration",
+]
+symbol_was = []
+calls = [
+  "_legacy_layout [tests/test_store_migration.py]",
+  "run [tests/test_store_migration.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "full",
+  "heals",
+  "migration",
+  "pulled",
+  "reindex",
+  "self",
+  "store",
+  "straggler",
+  "test",
+  "test_full_reindex_self_heals_a_pulled_straggler",
+  "tests",
+  "tests.test_store_migration.test_full_reindex_self_heals_a_pulled_straggler",
+]

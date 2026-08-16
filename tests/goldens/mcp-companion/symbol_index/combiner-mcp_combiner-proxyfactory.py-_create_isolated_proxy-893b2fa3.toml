@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/proxyfactory.py#_create_isolated_proxy"
+fqn = "combiner.mcp_combiner.proxyfactory._create_isolated_proxy"
+name = "_create_isolated_proxy"
+kind = "function"
+lang = "python"
+content_hash = "ee9dff9ece2d49cb"
+file = "combiner/mcp_combiner/proxyfactory.py"
+file_hash = "1092ffabcd4f650e"
+signature = "def _create_isolated_proxy(config: CombinerConfig, name: str, srv: ServerConfig) -> FastMCP:"
+description = ""
+schema = 4
+line = 109
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "proxyfactory",
+]
+symbol_was = []
+calls = [
+  "_needs_oauth [combiner/mcp_combiner/proxyfactory.py]",
+  "build_auth [combiner/mcp_combiner/auth.py]",
+  "build_http_transport [combiner/mcp_combiner/connections.py]",
+  "forwarding_factory [combiner/mcp_combiner/notifications.py]",
+  "get_auth [combiner/mcp_combiner/connections.py]",
+  "has_connection [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+]
+references = [
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+]
+name_terms = [
+  "_create_isolated_proxy",
+  "combiner",
+  "combiner.mcp_combiner.proxyfactory._create_isolated_proxy",
+  "create",
+  "isolated",
+  "mcp",
+  "proxy",
+  "proxyfactory",
+]

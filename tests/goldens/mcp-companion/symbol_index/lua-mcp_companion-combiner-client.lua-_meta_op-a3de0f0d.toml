@@ -1,0 +1,42 @@
+symbol_ref = "lua/mcp_companion/combiner/client.lua#_meta_op"
+fqn = "mcp_companion.combiner.client._meta_op"
+name = "_meta_op"
+kind = "function"
+lang = "lua"
+content_hash = "00c5bd789d29cfa8"
+file = "lua/mcp_companion/combiner/client.lua"
+file_hash = "f8af10d7cbc68062"
+signature = "local function _meta_op(self, tool_name, args, label, callback)"
+description = ""
+schema = 4
+line = 1004
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "combiner",
+  "client",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "Client.reload_config [lua/mcp_companion/combiner/client.lua]",
+  "Client.restart_server [lua/mcp_companion/combiner/client.lua]",
+  "Client.toggle_server [lua/mcp_companion/combiner/client.lua]",
+  "client.lua [lua/mcp_companion/combiner/client.lua]",
+]
+references = [
+  "reload_config [lua/mcp_companion/combiner/client.lua]",
+  "restart_server [lua/mcp_companion/combiner/client.lua]",
+  "toggle_server [lua/mcp_companion/combiner/client.lua]",
+]
+name_terms = [
+  "_meta_op",
+  "client",
+  "combiner",
+  "companion",
+  "mcp",
+  "mcp_companion.combiner.client._meta_op",
+  "meta",
+  "op",
+]

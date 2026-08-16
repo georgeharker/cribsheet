@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_real_servers.lua#if.if.n"
+fqn = "tests.test_real_servers.if.if.n"
+name = "n"
+kind = "variable"
+lang = "lua"
+content_hash = "08e7a60175f699be"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local n = (t._namespaced or t.name):lower()"
+description = ""
+schema = 4
+line = 457
+mtime = 1782853510000000000
+container = [
+  "if",
+  "if",
+  "for in",
+  "for in",
+]
+scope = [
+  "tests",
+  "test_real_servers",
+  "if",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "n",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.if.n",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "crib/gitbacking.py#GitBacking.history"
+fqn = "crib.gitbacking.GitBacking.history"
+name = "history"
+kind = "method"
+lang = "python"
+content_hash = "b98b3829c59d37f8"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def history(self, relpath: str | None = None, limit: int = 20) -> list[str]:"
+description = ""
+schema = 4
+line = 243
+mtime = 1785963011000000000
+container = [
+  "GitBacking",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "GitBacking",
+]
+symbol_was = []
+calls = [
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "history [crib/app.py]",
+  "test_daemon_side_backing_refuses_network_git [tests/test_sync.py]",
+]
+references = [
+  "history [crib/app.py]",
+  "test_daemon_side_backing_refuses_network_git [tests/test_sync.py]",
+]
+name_terms = [
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking.history",
+  "git",
+  "gitbacking",
+  "history",
+]

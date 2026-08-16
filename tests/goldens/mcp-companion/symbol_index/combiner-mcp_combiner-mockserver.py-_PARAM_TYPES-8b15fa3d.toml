@@ -1,0 +1,34 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#_PARAM_TYPES"
+fqn = "combiner.mcp_combiner.mockserver._PARAM_TYPES"
+name = "_PARAM_TYPES"
+kind = "constant"
+lang = "python"
+content_hash = "fe911632999b1944"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "_PARAM_TYPES = (\"string\", \"integer\", \"number\", \"boolean\")"
+description = ""
+schema = 4
+line = 79
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "_PARAM_TYPES",
+  "combiner",
+  "combiner.mcp_combiner.mockserver._PARAM_TYPES",
+  "mcp",
+  "mockserver",
+  "param",
+  "types",
+]

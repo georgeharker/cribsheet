@@ -1,0 +1,42 @@
+symbol_ref = "scripts/eval_rigor.py#main.signals"
+fqn = "scripts.eval_rigor.main.signals"
+name = "signals"
+kind = "function"
+lang = "python"
+content_hash = "d132d6abca00d885"
+file = "scripts/eval_rigor.py"
+file_hash = "352ea4b1e1221f95"
+signature = "def signals(p, q):"
+description = ""
+schema = 4
+line = 82
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_rigor",
+  "main",
+]
+symbol_was = []
+calls = [
+  "_subtokens [crib/retrieve.py]",
+  "q [scripts/eval_fusion.py]",
+  "scores [crib/retrieve.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = [
+  "main [scripts/eval_rigor.py]",
+]
+references = [
+  "main [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "eval",
+  "main",
+  "rigor",
+  "scripts",
+  "scripts.eval_rigor.main.signals",
+  "signals",
+]

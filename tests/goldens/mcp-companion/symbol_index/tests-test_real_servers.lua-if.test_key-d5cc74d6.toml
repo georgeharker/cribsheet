@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_real_servers.lua#if.test_key"
+fqn = "tests.test_real_servers.if.test_key"
+name = "test_key"
+kind = "variable"
+lang = "lua"
+content_hash = "2f3660bdfa913212"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local test_key = nil"
+description = ""
+schema = 4
+line = 563
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+scope = [
+  "tests",
+  "test_real_servers",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "key",
+  "real",
+  "servers",
+  "test",
+  "test_key",
+  "tests",
+  "tests.test_real_servers.if.test_key",
+]

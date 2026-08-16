@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/middleware.py#ToolProcessingMiddleware.on_request"
+fqn = "combiner.mcp_combiner.middleware.ToolProcessingMiddleware.on_request"
+name = "on_request"
+kind = "method"
+lang = "python"
+content_hash = "7a43ba9af1581b8e"
+file = "combiner/mcp_combiner/middleware.py"
+file_hash = "6dee47cf65146f20"
+signature = "async def on_request("
+description = ""
+schema = 4
+line = 134
+mtime = 1784493613000000000
+container = [
+  "ToolProcessingMiddleware",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "middleware",
+  "ToolProcessingMiddleware",
+]
+symbol_was = []
+calls = [
+  "record_session_token [combiner/mcp_combiner/nvim_proxy.py]",
+  "track [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.middleware.ToolProcessingMiddleware.on_request",
+  "mcp",
+  "middleware",
+  "on",
+  "on_request",
+  "processing",
+  "request",
+  "tool",
+]

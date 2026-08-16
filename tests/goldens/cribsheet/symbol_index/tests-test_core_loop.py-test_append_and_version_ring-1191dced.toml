@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_core_loop.py#test_append_and_version_ring"
+fqn = "tests.test_core_loop.test_append_and_version_ring"
+name = "test_append_and_version_ring"
+kind = "function"
+lang = "python"
+content_hash = "67a333c7242fc08e"
+file = "tests/test_core_loop.py"
+file_hash = "1351f07bad0f5656"
+signature = "def test_append_and_version_ring(crib):"
+description = ""
+schema = 4
+line = 71
+mtime = 1782930371000000000
+container = []
+scope = [
+  "tests",
+  "test_core_loop",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_core_loop.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "append",
+  "core",
+  "loop",
+  "ring",
+  "test",
+  "test_append_and_version_ring",
+  "tests",
+  "tests.test_core_loop.test_append_and_version_ring",
+  "version",
+]

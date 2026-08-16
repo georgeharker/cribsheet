@@ -1,0 +1,42 @@
+symbol_ref = "crib/app.py#Crib._keyword_backlog"
+fqn = "crib.app.Crib._keyword_backlog"
+name = "_keyword_backlog"
+kind = "method"
+lang = "python"
+content_hash = "837d885c94a35f95"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def _keyword_backlog(self) -> None:"
+description = ""
+schema = 4
+line = 406
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "__call__ [crib/paths.py]",
+  "_skip_if_unavailable [crib/app.py]",
+  "enrich [crib/app.py]",
+  "projects [crib/app.py]",
+]
+called_by = [
+  "start_watchers [crib/app.py]",
+]
+references = [
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "_keyword_backlog",
+  "app",
+  "backlog",
+  "crib",
+  "crib.app.Crib._keyword_backlog",
+  "keyword",
+]

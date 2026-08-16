@@ -1,0 +1,31 @@
+symbol_ref = "crib/symconvert.py#DERIVABLE"
+fqn = "crib.symconvert.DERIVABLE"
+name = "DERIVABLE"
+kind = "constant"
+lang = "python"
+content_hash = "47e311cfa2a47da6"
+file = "crib/symconvert.py"
+file_hash = "ffd3514e85111d6e"
+signature = "DERIVABLE = (\"symbol_ref\", \"fqn\", \"scope\", \"symbol_was\", \"schema\")"
+description = ""
+schema = 4
+line = 32
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symconvert",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "preserved [crib/symconvert.py]",
+]
+name_terms = [
+  "DERIVABLE",
+  "crib",
+  "crib.symconvert.DERIVABLE",
+  "derivable",
+  "symconvert",
+]

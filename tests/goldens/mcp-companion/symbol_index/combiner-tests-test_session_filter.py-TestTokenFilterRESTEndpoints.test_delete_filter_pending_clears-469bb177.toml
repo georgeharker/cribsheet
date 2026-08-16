@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestTokenFilterRESTEndpoints.test_delete_filter_pending_clears"
+fqn = "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints.test_delete_filter_pending_clears"
+name = "test_delete_filter_pending_clears"
+kind = "method"
+lang = "python"
+content_hash = "5484b80bc6d45ce7"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_delete_filter_pending_clears(self, client):"
+description = ""
+schema = 4
+line = 1288
+mtime = 1784493613000000000
+container = [
+  "TestTokenFilterRESTEndpoints",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestTokenFilterRESTEndpoints",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "clears",
+  "combiner",
+  "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints.test_delete_filter_pending_clears",
+  "delete",
+  "endpoints",
+  "filter",
+  "pending",
+  "rest",
+  "session",
+  "test",
+  "test_delete_filter_pending_clears",
+  "tests",
+  "token",
+]

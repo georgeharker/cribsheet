@@ -1,0 +1,48 @@
+symbol_ref = "tests/test_code_graph.py#_edge_set"
+fqn = "tests.test_code_graph._edge_set"
+name = "_edge_set"
+kind = "function"
+lang = "python"
+content_hash = "fe1e847bbc87f5c3"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def _edge_set(g):"
+description = ""
+schema = 4
+line = 81
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_a_bare_name_resolves_under_a_non_dot_separator [tests/test_code_graph.py]",
+  "test_a_scoped_export_keeps_boundary_crossings_as_frontier_nodes [tests/test_code_graph.py]",
+  "test_callers_direction_keeps_caller_to_callee_orientation [tests/test_code_graph.py]",
+  "test_edges_are_deduplicated [tests/test_code_graph.py]",
+  "test_edges_shape_states_convergence_once [tests/test_code_graph.py]",
+  "test_unresolved_edge_target_is_an_external_node [tests/test_code_graph.py]",
+  "test_whole_project_includes_what_no_walk_reaches [tests/test_code_graph.py]",
+]
+references = [
+  "test_a_bare_name_resolves_under_a_non_dot_separator [tests/test_code_graph.py]",
+  "test_a_scoped_export_keeps_boundary_crossings_as_frontier_nodes [tests/test_code_graph.py]",
+  "test_callers_direction_keeps_caller_to_callee_orientation [tests/test_code_graph.py]",
+  "test_edges_are_deduplicated [tests/test_code_graph.py]",
+  "test_edges_shape_states_convergence_once [tests/test_code_graph.py]",
+  "test_unresolved_edge_target_is_an_external_node [tests/test_code_graph.py]",
+  "test_whole_project_includes_what_no_walk_reaches [tests/test_code_graph.py]",
+]
+name_terms = [
+  "_edge_set",
+  "code",
+  "edge",
+  "graph",
+  "set",
+  "test",
+  "tests",
+  "tests.test_code_graph._edge_set",
+]

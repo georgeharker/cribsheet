@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#IssuedTokens"
+fqn = "combiner.mcp_combiner.mockserver.IssuedTokens"
+name = "IssuedTokens"
+kind = "class"
+lang = "python"
+content_hash = "eefdce487e26167a"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 628
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_token_payload [combiner/mcp_combiner/mockserver.py]",
+  "issued [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "IssuedTokens",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.IssuedTokens",
+  "issued",
+  "mcp",
+  "mockserver",
+  "tokens",
+]

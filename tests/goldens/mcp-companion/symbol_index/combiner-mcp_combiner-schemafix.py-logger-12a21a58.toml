@@ -1,0 +1,33 @@
+symbol_ref = "combiner/mcp_combiner/schemafix.py#logger"
+fqn = "combiner.mcp_combiner.schemafix.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/schemafix.py"
+file_hash = "49870021f06866cb"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+schema = 4
+line = 32
+mtime = 1783542616000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "schemafix",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_sanitize_tools [combiner/mcp_combiner/schemafix.py]",
+  "_to_clean_tool [combiner/mcp_combiner/schemafix.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.schemafix.logger",
+  "logger",
+  "mcp",
+  "schemafix",
+]

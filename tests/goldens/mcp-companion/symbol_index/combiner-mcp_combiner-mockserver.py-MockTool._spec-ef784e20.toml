@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockTool._spec"
+fqn = "combiner.mcp_combiner.mockserver.MockTool._spec"
+name = "_spec"
+kind = "field"
+lang = "python"
+content_hash = "dff336bc465cd01d"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "_spec: ToolSpec = PrivateAttr()"
+description = ""
+schema = 4
+line = 244
+mtime = 1783622326000000000
+container = [
+  "MockTool",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockTool",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "push_responses [combiner/mcp_combiner/mockserver.py]",
+  "run [combiner/mcp_combiner/mockserver.py]",
+  "set_behavior [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "_spec",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockTool._spec",
+  "mcp",
+  "mock",
+  "mockserver",
+  "spec",
+  "tool",
+]

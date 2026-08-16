@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestConsentFlow.test_unauthenticated_call_is_rejected_then_recovers"
+fqn = "combiner.tests.test_oauth_mock.TestConsentFlow.test_unauthenticated_call_is_rejected_then_recovers"
+name = "test_unauthenticated_call_is_rejected_then_recovers"
+kind = "method"
+lang = "python"
+content_hash = "4581ec1f63757a04"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def test_unauthenticated_call_is_rejected_then_recovers("
+description = ""
+schema = 4
+line = 238
+mtime = 1784495646000000000
+container = [
+  "TestConsentFlow",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "TestConsentFlow",
+]
+symbol_was = []
+calls = [
+  "_call_echo [combiner/tests/test_oauth_mock.py]",
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+  "authenticated_mcp_calls [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "call",
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestConsentFlow.test_unauthenticated_call_is_rejected_then_recovers",
+  "consent",
+  "flow",
+  "is",
+  "mock",
+  "oauth",
+  "recovers",
+  "rejected",
+  "test",
+  "test_unauthenticated_call_is_rejected_then_recovers",
+  "tests",
+  "then",
+  "unauthenticated",
+]

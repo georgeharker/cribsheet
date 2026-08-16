@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_malformed_notes.py#BAD"
+fqn = "tests.test_malformed_notes.BAD"
+name = "BAD"
+kind = "constant"
+lang = "python"
+content_hash = "413ebdf9757f09a9"
+file = "tests/test_malformed_notes.py"
+file_hash = "e46dac071f53c31f"
+signature = "BAD = \"\"\"---"
+description = ""
+schema = 4
+line = 17
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_malformed_notes",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_forget_still_recovers_a_corrupt_note [tests/test_malformed_notes.py]",
+  "test_insitu_sweep_skips_an_unparseable_repo_doc [tests/test_malformed_notes.py]",
+  "test_note_edit_repairs_a_corrupt_note_and_keeps_the_old_bytes [tests/test_malformed_notes.py]",
+  "test_parse_raises_note_parse_error_naming_the_file [tests/test_malformed_notes.py]",
+  "test_reconcile_indexes_siblings_and_reports_the_skip [tests/test_malformed_notes.py]",
+  "test_scan_id_recovers_the_id_from_unparseable_frontmatter [tests/test_malformed_notes.py]",
+]
+name_terms = [
+  "BAD",
+  "bad",
+  "malformed",
+  "notes",
+  "test",
+  "tests",
+  "tests.test_malformed_notes.BAD",
+]

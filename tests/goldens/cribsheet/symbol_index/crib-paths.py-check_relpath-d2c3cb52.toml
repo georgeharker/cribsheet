@@ -1,0 +1,40 @@
+symbol_ref = "crib/paths.py#check_relpath"
+fqn = "crib.paths.check_relpath"
+name = "check_relpath"
+kind = "function"
+lang = "python"
+content_hash = "842b5793862dc107"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "def check_relpath(relpath: str, base: Path | str = \"the store\") -> str:"
+description = ""
+schema = 4
+line = 40
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "paths",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+]
+called_by = [
+  "abspath [crib/notestore.py]",
+  "confine [crib/paths.py]",
+  "test_check_relpath_returns_input [tests/test_path_confinement.py]",
+]
+references = [
+  "abspath [crib/notestore.py]",
+  "confine [crib/paths.py]",
+  "test_check_relpath_returns_input [tests/test_path_confinement.py]",
+]
+name_terms = [
+  "check",
+  "check_relpath",
+  "crib",
+  "crib.paths.check_relpath",
+  "paths",
+  "relpath",
+]

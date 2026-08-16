@@ -1,0 +1,34 @@
+symbol_ref = "crib/symbols.py#_path_scope"
+fqn = "crib.symbols._path_scope"
+name = "_path_scope"
+kind = "function"
+lang = "python"
+content_hash = "53a60054ad5980af"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def _path_scope(lang: str, file: str) -> list[str]:"
+description = ""
+schema = 4
+line = 140
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "scope_of [crib/symbols.py]",
+]
+references = [
+  "scope_of [crib/symbols.py]",
+]
+name_terms = [
+  "_path_scope",
+  "crib",
+  "crib.symbols._path_scope",
+  "path",
+  "scope",
+  "symbols",
+]

@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_connections.py#TestLocalBackoffCap.test_local_backoff_capped.no_sleep"
+fqn = "combiner.tests.test_connections.TestLocalBackoffCap.test_local_backoff_capped.no_sleep"
+name = "no_sleep"
+kind = "function"
+lang = "python"
+content_hash = "c1c1d34088b85b3b"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def no_sleep(_delay):"
+description = ""
+schema = 4
+line = 504
+mtime = 1784493613000000000
+container = [
+  "TestLocalBackoffCap",
+  "test_local_backoff_capped",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestLocalBackoffCap",
+  "test_local_backoff_capped",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_local_backoff_capped [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "backoff",
+  "cap",
+  "capped",
+  "combiner",
+  "combiner.tests.test_connections.TestLocalBackoffCap.test_local_backoff_capped.no_sleep",
+  "connections",
+  "local",
+  "no",
+  "no_sleep",
+  "sleep",
+  "test",
+  "tests",
+]

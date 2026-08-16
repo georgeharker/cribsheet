@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_loop_responsiveness.py#_measure"
+fqn = "tests.test_loop_responsiveness._measure"
+name = "_measure"
+kind = "function"
+lang = "python"
+content_hash = "29876015a663ecc4"
+file = "tests/test_loop_responsiveness.py"
+file_hash = "3e5d3308dc33e6f4"
+signature = "async def _measure(coro):"
+description = ""
+schema = 4
+line = 70
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_loop_responsiveness",
+]
+symbol_was = []
+calls = [
+  "heartbeat [tests/test_loop_responsiveness.py]",
+]
+called_by = [
+  "main [tests/test_loop_responsiveness.py]",
+]
+references = [
+  "main [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "_measure",
+  "loop",
+  "measure",
+  "responsiveness",
+  "test",
+  "tests",
+  "tests.test_loop_responsiveness._measure",
+]

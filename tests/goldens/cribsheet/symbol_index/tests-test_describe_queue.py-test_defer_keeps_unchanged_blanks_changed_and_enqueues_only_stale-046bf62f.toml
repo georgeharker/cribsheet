@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_describe_queue.py#test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale"
+fqn = "tests.test_describe_queue.test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale"
+name = "test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale"
+kind = "function"
+lang = "python"
+content_hash = "928e4980f0bdc5a8"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale("
+description = ""
+schema = 4
+line = 198
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_Q [tests/test_describe_queue.py]",
+  "all [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "blanks",
+  "changed",
+  "defer",
+  "describe",
+  "enqueues",
+  "keeps",
+  "only",
+  "queue",
+  "stale",
+  "test",
+  "test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale",
+  "tests",
+  "tests.test_describe_queue.test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale",
+  "unchanged",
+]

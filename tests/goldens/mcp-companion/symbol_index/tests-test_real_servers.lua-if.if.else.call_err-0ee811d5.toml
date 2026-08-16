@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_real_servers.lua#if.if.else.call_err"
+fqn = "tests.test_real_servers.if.if.else.call_err"
+name = "call_err"
+kind = "variable"
+lang = "lua"
+content_hash = "7c21817b21bec692"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local result, call_err = call_tool(ns, { limit = 3 })"
+description = ""
+schema = 4
+line = 493
+mtime = 1782853510000000000
+container = [
+  "if",
+  "if",
+  "else",
+]
+scope = [
+  "tests",
+  "test_real_servers",
+  "if",
+  "if",
+  "else",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "call",
+  "call_err",
+  "else",
+  "err",
+  "if",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.if.else.call_err",
+]

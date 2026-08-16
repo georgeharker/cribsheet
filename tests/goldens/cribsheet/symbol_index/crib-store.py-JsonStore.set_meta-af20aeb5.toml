@@ -1,0 +1,37 @@
+symbol_ref = "crib/store.py#JsonStore.set_meta"
+fqn = "crib.store.JsonStore.set_meta"
+name = "set_meta"
+kind = "method"
+lang = "python"
+content_hash = "0919cb0ca6b38411"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:"
+description = ""
+schema = 4
+line = 185
+mtime = 1786564832000000000
+container = [
+  "JsonStore",
+]
+scope = [
+  "crib",
+  "store",
+  "JsonStore",
+]
+symbol_was = []
+calls = [
+  "_save [crib/store.py]",
+  "set_meta [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.store.JsonStore.set_meta",
+  "json",
+  "meta",
+  "set",
+  "set_meta",
+  "store",
+]

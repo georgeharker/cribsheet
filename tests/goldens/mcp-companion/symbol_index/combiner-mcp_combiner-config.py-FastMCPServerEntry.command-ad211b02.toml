@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/config.py#FastMCPServerEntry.command"
+fqn = "combiner.mcp_combiner.config.FastMCPServerEntry.command"
+name = "command"
+kind = "field"
+lang = "python"
+content_hash = "0780e80e0f959162"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "command: str | None = None"
+description = ""
+schema = 4
+line = 384
+mtime = 1783633313000000000
+container = [
+  "FastMCPServerEntry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "FastMCPServerEntry",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.FastMCPServerEntry.command",
+  "command",
+  "config",
+  "entry",
+  "fast",
+  "mcp",
+  "server",
+]

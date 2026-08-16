@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_NETWORK_ERROR_GRACE_SECONDS"
+fqn = "combiner.mcp_combiner.auth._NETWORK_ERROR_GRACE_SECONDS"
+name = "_NETWORK_ERROR_GRACE_SECONDS"
+kind = "constant"
+lang = "python"
+content_hash = "1904d73a4a17b867"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "_NETWORK_ERROR_GRACE_SECONDS = 300.0  # 5 minutes"
+description = ""
+schema = 4
+line = 105
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_apply_network_grace_window [combiner/mcp_combiner/auth.py]",
+  "test_initialize_sets_grace_window_on_network_error [combiner/tests/test_auth.py]",
+  "test_network_error_applies_grace_window [combiner/tests/test_auth.py]",
+  "test_network_error_does_not_shorten_distant_expiry [combiner/tests/test_auth.py]",
+  "test_network_error_extends_short_or_expired_token [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "_NETWORK_ERROR_GRACE_SECONDS",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._NETWORK_ERROR_GRACE_SECONDS",
+  "error",
+  "grace",
+  "mcp",
+  "network",
+  "seconds",
+]

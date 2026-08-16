@@ -1,0 +1,39 @@
+symbol_ref = "crib/chunk.py#Chunk.index_text"
+fqn = "crib.chunk.Chunk.index_text"
+name = "index_text"
+kind = "method"
+lang = "python"
+content_hash = "21e0023dcb526d3e"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "@property"
+description = ""
+schema = 4
+line = 91
+mtime = 1786136167000000000
+container = [
+  "Chunk",
+]
+scope = [
+  "crib",
+  "chunk",
+  "Chunk",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_index_locked [crib/indexer.py]",
+  "content_hash [crib/chunk.py]",
+]
+references = [
+  "_index_locked [crib/indexer.py]",
+  "content_hash [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.index_text",
+  "index",
+  "index_text",
+  "text",
+]

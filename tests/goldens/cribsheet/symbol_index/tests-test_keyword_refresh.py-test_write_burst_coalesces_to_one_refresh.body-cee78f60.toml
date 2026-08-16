@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_keyword_refresh.py#test_write_burst_coalesces_to_one_refresh.body"
+fqn = "tests.test_keyword_refresh.test_write_burst_coalesces_to_one_refresh.body"
+name = "body"
+kind = "function"
+lang = "python"
+content_hash = "6302987e01a4e2a4"
+file = "tests/test_keyword_refresh.py"
+file_hash = "d758ff5010231936"
+signature = "async def body():"
+description = ""
+schema = 4
+line = 42
+mtime = 1786044759000000000
+container = [
+  "test_write_burst_coalesces_to_one_refresh",
+]
+scope = [
+  "tests",
+  "test_keyword_refresh",
+  "test_write_burst_coalesces_to_one_refresh",
+]
+symbol_was = []
+calls = [
+  "_arm [tests/test_keyword_refresh.py]",
+]
+called_by = [
+  "test_write_burst_coalesces_to_one_refresh [tests/test_keyword_refresh.py]",
+]
+references = [
+  "test_write_burst_coalesces_to_one_refresh [tests/test_keyword_refresh.py]",
+]
+name_terms = [
+  "body",
+  "burst",
+  "coalesces",
+  "keyword",
+  "one",
+  "refresh",
+  "test",
+  "tests",
+  "tests.test_keyword_refresh.test_write_burst_coalesces_to_one_refresh.body",
+  "to",
+  "write",
+]

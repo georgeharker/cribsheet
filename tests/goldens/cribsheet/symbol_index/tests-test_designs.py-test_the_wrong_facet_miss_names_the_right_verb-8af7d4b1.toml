@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_designs.py#test_the_wrong_facet_miss_names_the_right_verb"
+fqn = "tests.test_designs.test_the_wrong_facet_miss_names_the_right_verb"
+name = "test_the_wrong_facet_miss_names_the_right_verb"
+kind = "function"
+lang = "python"
+content_hash = "2e14ff2e66a4bd57"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_the_wrong_facet_miss_names_the_right_verb(crib):"
+description = ""
+schema = 4
+line = 704
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "designs",
+  "facet",
+  "miss",
+  "names",
+  "right",
+  "test",
+  "test_the_wrong_facet_miss_names_the_right_verb",
+  "tests",
+  "tests.test_designs.test_the_wrong_facet_miss_names_the_right_verb",
+  "the",
+  "verb",
+  "wrong",
+]

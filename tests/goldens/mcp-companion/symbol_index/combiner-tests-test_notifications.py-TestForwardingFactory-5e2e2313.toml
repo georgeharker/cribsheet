@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestForwardingFactory"
+fqn = "combiner.tests.test_notifications.TestForwardingFactory"
+name = "TestForwardingFactory"
+kind = "class"
+lang = "python"
+content_hash = "dc40dcecdffa0973"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "class TestForwardingFactory:"
+description = ""
+schema = 4
+line = 180
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestForwardingFactory",
+  "combiner",
+  "combiner.tests.test_notifications.TestForwardingFactory",
+  "factory",
+  "forwarding",
+  "notifications",
+  "test",
+  "tests",
+]

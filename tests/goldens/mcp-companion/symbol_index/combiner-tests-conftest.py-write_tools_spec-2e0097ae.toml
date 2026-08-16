@@ -1,0 +1,65 @@
+symbol_ref = "combiner/tests/conftest.py#write_tools_spec"
+fqn = "combiner.tests.conftest.write_tools_spec"
+name = "write_tools_spec"
+kind = "function"
+lang = "python"
+content_hash = "bf4851e29de28920"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "def write_tools_spec(path: Path, spec: list[dict[str, Any]]) -> Path:"
+description = ""
+schema = 4
+line = 129
+mtime = 1783544328000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_crash_reconnects_when_back [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_isolate_true_gives_each_chat_its_own_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_malformed_schema_survives_combiner [combiner/tests/test_route_matrix.py]",
+  "test_non_isolated_chats_share_one_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_stdio_restart_bounces_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_crash_recovers [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+]
+references = [
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_crash_reconnects_when_back [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_isolate_true_gives_each_chat_its_own_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_malformed_schema_survives_combiner [combiner/tests/test_route_matrix.py]",
+  "test_non_isolated_chats_share_one_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_stdio_restart_bounces_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_crash_recovers [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.write_tools_spec",
+  "conftest",
+  "spec",
+  "tests",
+  "tools",
+  "write",
+  "write_tools_spec",
+]

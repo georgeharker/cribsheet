@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_project_resolution.py#test_incidental_cwd_of_other_repo_defers_to_registered_root"
+fqn = "tests.test_project_resolution.test_incidental_cwd_of_other_repo_defers_to_registered_root"
+name = "test_incidental_cwd_of_other_repo_defers_to_registered_root"
+kind = "function"
+lang = "python"
+content_hash = "74db89b1b9db103b"
+file = "tests/test_project_resolution.py"
+file_hash = "4fafa653cef61a42"
+signature = "def test_incidental_cwd_of_other_repo_defers_to_registered_root(crib, tmp_path):"
+description = ""
+schema = 4
+line = 146
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_project_resolution",
+]
+symbol_was = []
+calls = [
+  "_crib_repo [tests/test_project_resolution.py]",
+  "_register [tests/test_project_resolution.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cwd",
+  "defers",
+  "incidental",
+  "of",
+  "other",
+  "project",
+  "registered",
+  "repo",
+  "resolution",
+  "root",
+  "test",
+  "test_incidental_cwd_of_other_repo_defers_to_registered_root",
+  "tests",
+  "tests.test_project_resolution.test_incidental_cwd_of_other_repo_defers_to_registered_root",
+  "to",
+]

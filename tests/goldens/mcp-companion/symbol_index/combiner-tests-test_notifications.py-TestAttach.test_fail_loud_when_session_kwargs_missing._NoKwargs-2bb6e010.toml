@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestAttach.test_fail_loud_when_session_kwargs_missing._NoKwargs"
+fqn = "combiner.tests.test_notifications.TestAttach.test_fail_loud_when_session_kwargs_missing._NoKwargs"
+name = "_NoKwargs"
+kind = "class"
+lang = "python"
+content_hash = "45205491ca6b4826"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "class _NoKwargs:"
+description = ""
+schema = 4
+line = 156
+mtime = 1784493613000000000
+container = [
+  "TestAttach",
+  "test_fail_loud_when_session_kwargs_missing",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "TestAttach",
+  "test_fail_loud_when_session_kwargs_missing",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_fail_loud_when_session_kwargs_missing [combiner/tests/test_notifications.py]",
+]
+name_terms = [
+  "_NoKwargs",
+  "attach",
+  "combiner",
+  "combiner.tests.test_notifications.TestAttach.test_fail_loud_when_session_kwargs_missing._NoKwargs",
+  "fail",
+  "kwargs",
+  "loud",
+  "missing",
+  "no",
+  "notifications",
+  "session",
+  "test",
+  "tests",
+  "when",
+]

@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_store_chroma.py#test_recreate_propagates_non_not_found_failures.explode"
+fqn = "tests.test_store_chroma.test_recreate_propagates_non_not_found_failures.explode"
+name = "explode"
+kind = "function"
+lang = "python"
+content_hash = "0aca57c624c85f07"
+file = "tests/test_store_chroma.py"
+file_hash = "c9d58563fea059fc"
+signature = "def explode(_name):"
+description = ""
+schema = 4
+line = 72
+mtime = 1785959234000000000
+container = [
+  "test_recreate_propagates_non_not_found_failures",
+]
+scope = [
+  "tests",
+  "test_store_chroma",
+  "test_recreate_propagates_non_not_found_failures",
+]
+symbol_was = []
+calls = [
+  "Boom [tests/test_store_chroma.py]",
+]
+called_by = []
+references = [
+  "test_recreate_propagates_non_not_found_failures [tests/test_store_chroma.py]",
+]
+name_terms = [
+  "chroma",
+  "explode",
+  "failures",
+  "found",
+  "non",
+  "not",
+  "propagates",
+  "recreate",
+  "store",
+  "test",
+  "tests",
+  "tests.test_store_chroma.test_recreate_propagates_non_not_found_failures.explode",
+]

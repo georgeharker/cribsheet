@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_connections.py#TestMonitorRePrime.test_monitor_reprimes_connected_but_not_ready.list_tools"
+fqn = "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_reprimes_connected_but_not_ready.list_tools"
+name = "list_tools"
+kind = "function"
+lang = "python"
+content_hash = "4952d7d3000184aa"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def list_tools():"
+description = ""
+schema = 4
+line = 133
+mtime = 1784493613000000000
+container = [
+  "TestMonitorRePrime",
+  "test_monitor_reprimes_connected_but_not_ready",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestMonitorRePrime",
+  "test_monitor_reprimes_connected_but_not_ready",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_monitor_reprimes_connected_but_not_ready [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "but",
+  "combiner",
+  "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_reprimes_connected_but_not_ready.list_tools",
+  "connected",
+  "connections",
+  "list",
+  "list_tools",
+  "monitor",
+  "not",
+  "prime",
+  "re",
+  "ready",
+  "reprimes",
+  "test",
+  "tests",
+  "tools",
+]

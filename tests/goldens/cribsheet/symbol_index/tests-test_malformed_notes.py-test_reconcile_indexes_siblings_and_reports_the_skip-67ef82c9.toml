@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_malformed_notes.py#test_reconcile_indexes_siblings_and_reports_the_skip"
+fqn = "tests.test_malformed_notes.test_reconcile_indexes_siblings_and_reports_the_skip"
+name = "test_reconcile_indexes_siblings_and_reports_the_skip"
+kind = "function"
+lang = "python"
+content_hash = "1ef5e4ff088ec557"
+file = "tests/test_malformed_notes.py"
+file_hash = "e46dac071f53c31f"
+signature = "def test_reconcile_indexes_siblings_and_reports_the_skip(crib):"
+description = ""
+schema = 4
+line = 51
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_malformed_notes",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_malformed_notes.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "indexes",
+  "malformed",
+  "notes",
+  "reconcile",
+  "reports",
+  "siblings",
+  "skip",
+  "test",
+  "test_reconcile_indexes_siblings_and_reports_the_skip",
+  "tests",
+  "tests.test_malformed_notes.test_reconcile_indexes_siblings_and_reports_the_skip",
+  "the",
+]

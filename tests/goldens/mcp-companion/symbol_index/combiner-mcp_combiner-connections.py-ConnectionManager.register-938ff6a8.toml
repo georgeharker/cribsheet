@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager.register"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager.register"
+name = "register"
+kind = "method"
+lang = "python"
+content_hash = "d3d4e0bb186ff29a"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "def register(self, config: CombinerConfig, name: str, srv: ServerConfig) -> None:"
+description = ""
+schema = 4
+line = 394
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = [
+  "_ManagedConnection [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+]
+references = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.register",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+  "register",
+]

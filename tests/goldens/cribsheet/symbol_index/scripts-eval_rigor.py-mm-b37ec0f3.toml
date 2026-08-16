@@ -1,0 +1,33 @@
+symbol_ref = "scripts/eval_rigor.py#mm"
+fqn = "scripts.eval_rigor.mm"
+name = "mm"
+kind = "function"
+lang = "python"
+content_hash = "62d87633b449f129"
+file = "scripts/eval_rigor.py"
+file_hash = "352ea4b1e1221f95"
+signature = "def mm(d):"
+description = ""
+schema = 4
+line = 32
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_rigor",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_rigor.py]",
+]
+references = [
+  "main [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "eval",
+  "mm",
+  "rigor",
+  "scripts",
+  "scripts.eval_rigor.mm",
+]

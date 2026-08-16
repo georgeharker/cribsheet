@@ -1,0 +1,39 @@
+symbol_ref = "scripts/eval_hybrid.py#main.add_exact"
+fqn = "scripts.eval_hybrid.main.add_exact"
+name = "add_exact"
+kind = "function"
+lang = "python"
+content_hash = "bcd353ea0ff0f88a"
+file = "scripts/eval_hybrid.py"
+file_hash = "7efc1218d091601c"
+signature = "def add_exact(fq_to_qs, label):"
+description = ""
+schema = 4
+line = 66
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_hybrid",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_hybrid.py]",
+]
+references = [
+  "main [scripts/eval_hybrid.py]",
+]
+name_terms = [
+  "add",
+  "add_exact",
+  "eval",
+  "exact",
+  "hybrid",
+  "main",
+  "scripts",
+  "scripts.eval_hybrid.main.add_exact",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "crib/config.py#GenerateConfig.bulk_max_sections"
+fqn = "crib.config.GenerateConfig.bulk_max_sections"
+name = "bulk_max_sections"
+kind = "field"
+lang = "python"
+content_hash = "4688bcd55668c553"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "bulk_max_sections: int = 10"
+description = ""
+schema = 4
+line = 211
+mtime = 1786564832000000000
+container = [
+  "GenerateConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "GenerateConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_generate_enrichment [crib/app.py]",
+]
+name_terms = [
+  "bulk",
+  "bulk_max_sections",
+  "config",
+  "crib",
+  "crib.config.GenerateConfig.bulk_max_sections",
+  "generate",
+  "max",
+  "sections",
+]

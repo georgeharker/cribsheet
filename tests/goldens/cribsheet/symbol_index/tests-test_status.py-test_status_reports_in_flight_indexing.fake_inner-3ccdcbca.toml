@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_status.py#test_status_reports_in_flight_indexing.fake_inner"
+fqn = "tests.test_status.test_status_reports_in_flight_indexing.fake_inner"
+name = "fake_inner"
+kind = "function"
+lang = "python"
+content_hash = "dfef53699251d627"
+file = "tests/test_status.py"
+file_hash = "09906d8541a460d9"
+signature = "def fake_inner(root, rel, proj, patch_edges, existing=None, describe_mode=\"inline\", sweep=False):"
+description = ""
+schema = 4
+line = 52
+mtime = 1786664729000000000
+container = [
+  "test_status_reports_in_flight_indexing",
+]
+scope = [
+  "tests",
+  "test_status",
+  "test_status_reports_in_flight_indexing",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_status_reports_in_flight_indexing [tests/test_status.py]",
+]
+name_terms = [
+  "fake",
+  "fake_inner",
+  "flight",
+  "in",
+  "indexing",
+  "inner",
+  "reports",
+  "status",
+  "test",
+  "tests",
+  "tests.test_status.test_status_reports_in_flight_indexing.fake_inner",
+]

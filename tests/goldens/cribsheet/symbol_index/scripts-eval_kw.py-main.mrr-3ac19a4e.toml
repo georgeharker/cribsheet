@@ -1,0 +1,37 @@
+symbol_ref = "scripts/eval_kw.py#main.mrr"
+fqn = "scripts.eval_kw.main.mrr"
+name = "mrr"
+kind = "function"
+lang = "python"
+content_hash = "794bf22c777746f8"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def mrr(rs): return sum((1 / r) for r in rs if r) / len(rs)"
+description = ""
+schema = 4
+line = 187
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_kw.py]",
+]
+references = [
+  "main [scripts/eval_kw.py]",
+]
+name_terms = [
+  "eval",
+  "kw",
+  "main",
+  "mrr",
+  "scripts",
+  "scripts.eval_kw.main.mrr",
+]

@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager._connect_one"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager._connect_one"
+name = "_connect_one"
+kind = "method"
+lang = "python"
+content_hash = "a45ca29543392d52"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "async def _connect_one(self, config: CombinerConfig, name: str, srv: ServerConfig) -> None:"
+description = ""
+schema = 4
+line = 460
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = [
+  "connect [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "connect_all [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "connect_all [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_connect_one",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager._connect_one",
+  "connect",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+  "one",
+]

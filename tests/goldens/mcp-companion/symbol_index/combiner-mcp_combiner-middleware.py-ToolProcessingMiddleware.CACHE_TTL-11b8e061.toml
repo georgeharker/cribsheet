@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/middleware.py#ToolProcessingMiddleware.CACHE_TTL"
+fqn = "combiner.mcp_combiner.middleware.ToolProcessingMiddleware.CACHE_TTL"
+name = "CACHE_TTL"
+kind = "constant"
+lang = "python"
+content_hash = "4e48ea390cc04d40"
+file = "combiner/mcp_combiner/middleware.py"
+file_hash = "6dee47cf65146f20"
+signature = "CACHE_TTL = 300  # 5 minutes max cache age"
+description = ""
+schema = 4
+line = 123
+mtime = 1784493613000000000
+container = [
+  "ToolProcessingMiddleware",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "middleware",
+  "ToolProcessingMiddleware",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "on_list_tools [combiner/mcp_combiner/middleware.py]",
+]
+name_terms = [
+  "CACHE_TTL",
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.middleware.ToolProcessingMiddleware.CACHE_TTL",
+  "mcp",
+  "middleware",
+  "processing",
+  "tool",
+  "ttl",
+]

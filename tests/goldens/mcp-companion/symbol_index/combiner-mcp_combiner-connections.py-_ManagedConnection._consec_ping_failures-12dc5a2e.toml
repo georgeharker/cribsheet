@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_ManagedConnection._consec_ping_failures"
+fqn = "combiner.mcp_combiner.connections._ManagedConnection._consec_ping_failures"
+name = "_consec_ping_failures"
+kind = "field"
+lang = "python"
+content_hash = "8b6ac2afc5cb27cd"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_consec_ping_failures: int = field(default=0, repr=False)"
+description = ""
+schema = 4
+line = 180
+mtime = 1784493613000000000
+container = [
+  "_ManagedConnection",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "_ManagedConnection",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_consec_ping_failures",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection._consec_ping_failures",
+  "connection",
+  "connections",
+  "consec",
+  "failures",
+  "managed",
+  "mcp",
+  "ping",
+]

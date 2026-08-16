@@ -1,0 +1,32 @@
+symbol_ref = "lua/mcp_companion/state.lua#_state.errors"
+fqn = "mcp_companion.state._state.errors"
+name = "errors"
+kind = "field"
+lang = "lua"
+content_hash = "05d9bec7541c96fe"
+file = "lua/mcp_companion/state.lua"
+file_hash = "0ebe5b76a6380351"
+signature = "errors = {}, -- Recent errors (max 50)"
+description = ""
+schema = 4
+line = 35
+mtime = 1782852601000000000
+container = [
+  "_state",
+]
+scope = [
+  "mcp_companion",
+  "state",
+  "_state",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "companion",
+  "errors",
+  "mcp",
+  "mcp_companion.state._state.errors",
+  "state",
+]

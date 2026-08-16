@@ -1,0 +1,41 @@
+symbol_ref = "crib/designs.py#Designs.plan_list"
+fqn = "crib.designs.Designs.plan_list"
+name = "plan_list"
+kind = "method"
+lang = "python"
+content_hash = "8a42c103e94d0387"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def plan_list(self, proj: str, all: bool = False) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 1816
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_load_graph [crib/designs.py]",
+  "_ordered [crib/designs.py]",
+  "_rows [crib/designs.py]",
+]
+called_by = [
+  "plan_list [crib/app.py]",
+]
+references = [
+  "plan_list [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs.plan_list",
+  "designs",
+  "list",
+  "plan",
+  "plan_list",
+]

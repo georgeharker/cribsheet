@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_app_meta.py#TestRewriteAppMeta.test_rewritten_pointer_reverse_resolves_to_upstream"
+fqn = "combiner.tests.test_app_meta.TestRewriteAppMeta.test_rewritten_pointer_reverse_resolves_to_upstream"
+name = "test_rewritten_pointer_reverse_resolves_to_upstream"
+kind = "method"
+lang = "python"
+content_hash = "dba3ecd1bb371784"
+file = "combiner/tests/test_app_meta.py"
+file_hash = "fc52f36639c3320a"
+signature = "def test_rewritten_pointer_reverse_resolves_to_upstream(self) -> None:"
+description = ""
+schema = 4
+line = 62
+mtime = 1783629928000000000
+container = [
+  "TestRewriteAppMeta",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_app_meta",
+  "TestRewriteAppMeta",
+]
+symbol_was = []
+calls = [
+  "_rewrite_app_meta [combiner/mcp_combiner/middleware.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "app",
+  "combiner",
+  "combiner.tests.test_app_meta.TestRewriteAppMeta.test_rewritten_pointer_reverse_resolves_to_upstream",
+  "meta",
+  "pointer",
+  "resolves",
+  "reverse",
+  "rewrite",
+  "rewritten",
+  "test",
+  "test_rewritten_pointer_reverse_resolves_to_upstream",
+  "tests",
+  "to",
+  "upstream",
+]

@@ -1,0 +1,46 @@
+symbol_ref = "tests/test_code_attribution.py#test_mop_up_blob_labels_each_block_with_the_fqname.fake_generate"
+fqn = "tests.test_code_attribution.test_mop_up_blob_labels_each_block_with_the_fqname.fake_generate"
+name = "fake_generate"
+kind = "function"
+lang = "python"
+content_hash = "7c8c96b936b64b4c"
+file = "tests/test_code_attribution.py"
+file_hash = "ff3c29a685f6f6d7"
+signature = "def fake_generate(cfg, sysp, blob, schema, purpose=None, schema_name=None):"
+description = ""
+schema = 4
+line = 118
+mtime = 1786664729000000000
+container = [
+  "test_mop_up_blob_labels_each_block_with_the_fqname",
+]
+scope = [
+  "tests",
+  "test_code_attribution",
+  "test_mop_up_blob_labels_each_block_with_the_fqname",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_mop_up_blob_labels_each_block_with_the_fqname [tests/test_code_attribution.py]",
+]
+name_terms = [
+  "attribution",
+  "blob",
+  "block",
+  "code",
+  "each",
+  "fake",
+  "fake_generate",
+  "fqname",
+  "generate",
+  "labels",
+  "mop",
+  "test",
+  "tests",
+  "tests.test_code_attribution.test_mop_up_blob_labels_each_block_with_the_fqname.fake_generate",
+  "the",
+  "up",
+  "with",
+]

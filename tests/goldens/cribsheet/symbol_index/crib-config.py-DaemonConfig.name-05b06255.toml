@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#DaemonConfig.name"
+fqn = "crib.config.DaemonConfig.name"
+name = "name"
+kind = "field"
+lang = "python"
+content_hash = "cbd85fec2f61353e"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "name: str = \"cribsheet\"         # sharedserver name (== the MCP registration)"
+description = ""
+schema = 4
+line = 243
+mtime = 1786564832000000000
+container = [
+  "DaemonConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "DaemonConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__enter__ [crib/client.py]",
+  "__exit__ [crib/client.py]",
+  "cmd_info [crib/cli.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.DaemonConfig.name",
+  "daemon",
+  "name",
+]

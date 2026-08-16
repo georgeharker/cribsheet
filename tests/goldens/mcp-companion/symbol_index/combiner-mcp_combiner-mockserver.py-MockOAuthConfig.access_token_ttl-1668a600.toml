@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthConfig.access_token_ttl"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthConfig.access_token_ttl"
+name = "access_token_ttl"
+kind = "field"
+lang = "python"
+content_hash = "2301a9a71d94b156"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "access_token_ttl: int = 3600"
+description = ""
+schema = 4
+line = 603
+mtime = 1783622326000000000
+container = [
+  "MockOAuthConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_token_payload [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "access",
+  "access_token_ttl",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthConfig.access_token_ttl",
+  "config",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "token",
+  "ttl",
+]

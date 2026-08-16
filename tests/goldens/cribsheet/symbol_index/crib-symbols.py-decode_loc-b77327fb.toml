@@ -1,0 +1,34 @@
+symbol_ref = "crib/symbols.py#decode_loc"
+fqn = "crib.symbols.decode_loc"
+name = "decode_loc"
+kind = "function"
+lang = "python"
+content_hash = "44c94ee20d956540"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def decode_loc(loc: str, default_project: str) -> tuple[str, str]:"
+description = ""
+schema = 4
+line = 202
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "decode_edge [crib/symbols.py]",
+]
+references = [
+  "decode_edge [crib/symbols.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.decode_loc",
+  "decode",
+  "decode_loc",
+  "loc",
+  "symbols",
+]

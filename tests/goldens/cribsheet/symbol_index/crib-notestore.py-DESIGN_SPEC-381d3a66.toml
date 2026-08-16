@@ -1,0 +1,32 @@
+symbol_ref = "crib/notestore.py#DESIGN_SPEC"
+fqn = "crib.notestore.DESIGN_SPEC"
+name = "DESIGN_SPEC"
+kind = "constant"
+lang = "python"
+content_hash = "ad84d8ec1b7167e9"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "DESIGN_SPEC = StoreSpec(\"design\", \"design\", facet=\"design\")"
+description = ""
+schema = 4
+line = 55
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "notestore",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+]
+name_terms = [
+  "DESIGN_SPEC",
+  "crib",
+  "crib.notestore.DESIGN_SPEC",
+  "design",
+  "notestore",
+  "spec",
+]

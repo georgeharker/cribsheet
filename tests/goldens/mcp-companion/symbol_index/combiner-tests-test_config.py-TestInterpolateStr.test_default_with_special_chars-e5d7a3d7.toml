@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_config.py#TestInterpolateStr.test_default_with_special_chars"
+fqn = "combiner.tests.test_config.TestInterpolateStr.test_default_with_special_chars"
+name = "test_default_with_special_chars"
+kind = "method"
+lang = "python"
+content_hash = "fe56f214da8fe662"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_default_with_special_chars(self) -> None:"
+description = ""
+schema = 4
+line = 287
+mtime = 1782852601000000000
+container = [
+  "TestInterpolateStr",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+  "TestInterpolateStr",
+]
+symbol_was = []
+calls = [
+  "_interpolate_str [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chars",
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateStr.test_default_with_special_chars",
+  "config",
+  "default",
+  "interpolate",
+  "special",
+  "str",
+  "test",
+  "test_default_with_special_chars",
+  "tests",
+  "with",
+]

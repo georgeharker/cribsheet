@@ -1,0 +1,47 @@
+symbol_ref = "crib/session.py#ProjectResolution.implicit"
+fqn = "crib.session.ProjectResolution.implicit"
+name = "implicit"
+kind = "method"
+lang = "python"
+content_hash = "3af58a718136d58d"
+file = "crib/session.py"
+file_hash = "62abc565a376f242"
+signature = "@property"
+description = ""
+schema = 4
+line = 52
+mtime = 1786664729000000000
+container = [
+  "ProjectResolution",
+]
+scope = [
+  "crib",
+  "session",
+  "ProjectResolution",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_echo_list [crib/server.py]",
+  "test_a_path_that_resolves_to_the_bare_default_is_not_tagged_path [tests/test_session.py]",
+  "test_an_explicit_path_beats_the_sticky_project [tests/test_session.py]",
+  "test_explicit_arg_overrides_without_touching_session [tests/test_session.py]",
+  "test_the_sticky_project_is_used_when_no_selector_is_given [tests/test_session.py]",
+  "worth_echoing [crib/session.py]",
+]
+references = [
+  "_echo_list [crib/server.py]",
+  "test_a_path_that_resolves_to_the_bare_default_is_not_tagged_path [tests/test_session.py]",
+  "test_an_explicit_path_beats_the_sticky_project [tests/test_session.py]",
+  "test_explicit_arg_overrides_without_touching_session [tests/test_session.py]",
+  "test_the_sticky_project_is_used_when_no_selector_is_given [tests/test_session.py]",
+  "worth_echoing [crib/session.py]",
+]
+name_terms = [
+  "crib",
+  "crib.session.ProjectResolution.implicit",
+  "implicit",
+  "project",
+  "resolution",
+  "session",
+]

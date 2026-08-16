@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockServer.remove_tool"
+fqn = "combiner.mcp_combiner.mockserver.MockServer.remove_tool"
+name = "remove_tool"
+kind = "method"
+lang = "python"
+content_hash = "49362470d551dc1b"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "async def remove_tool(self, name: str) -> bool:"
+description = ""
+schema = 4
+line = 377
+mtime = 1783622326000000000
+container = [
+  "MockServer",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockServer",
+]
+symbol_was = []
+calls = [
+  "notify_tools_changed [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = [
+  "control_remove_tool [combiner/mcp_combiner/mockserver.py]",
+  "mock__remove_tool [combiner/mcp_combiner/mockserver.py]",
+]
+references = [
+  "control_remove_tool [combiner/mcp_combiner/mockserver.py]",
+  "mock__remove_tool [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockServer.remove_tool",
+  "mcp",
+  "mock",
+  "mockserver",
+  "remove",
+  "remove_tool",
+  "server",
+  "tool",
+]

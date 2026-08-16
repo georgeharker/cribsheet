@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_config_resilience.py#test_malformed_crib_is_treated_as_absent"
+fqn = "tests.test_config_resilience.test_malformed_crib_is_treated_as_absent"
+name = "test_malformed_crib_is_treated_as_absent"
+kind = "function"
+lang = "python"
+content_hash = "1fa327b5be2f04c6"
+file = "tests/test_config_resilience.py"
+file_hash = "620aeb96b59e7b2d"
+signature = "@pytest.mark.parametrize(\"body\", ["
+description = ""
+schema = 4
+line = 70
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_config_resilience",
+]
+symbol_was = []
+calls = [
+  "find [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "absent",
+  "as",
+  "config",
+  "crib",
+  "is",
+  "malformed",
+  "resilience",
+  "test",
+  "test_malformed_crib_is_treated_as_absent",
+  "tests",
+  "tests.test_config_resilience.test_malformed_crib_is_treated_as_absent",
+  "treated",
+]

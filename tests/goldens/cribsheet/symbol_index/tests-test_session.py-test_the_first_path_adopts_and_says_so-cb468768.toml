@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_session.py#test_the_first_path_adopts_and_says_so"
+fqn = "tests.test_session.test_the_first_path_adopts_and_says_so"
+name = "test_the_first_path_adopts_and_says_so"
+kind = "function"
+lang = "python"
+content_hash = "2436036457d6e564"
+file = "tests/test_session.py"
+file_hash = "bef48c1ca7e1ebb9"
+signature = "def test_the_first_path_adopts_and_says_so():"
+description = ""
+schema = 4
+line = 19
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_session",
+]
+symbol_was = []
+calls = [
+  "SessionState [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "adopts",
+  "and",
+  "first",
+  "path",
+  "says",
+  "session",
+  "so",
+  "test",
+  "test_the_first_path_adopts_and_says_so",
+  "tests",
+  "tests.test_session.test_the_first_path_adopts_and_says_so",
+  "the",
+]

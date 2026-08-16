@@ -1,0 +1,40 @@
+symbol_ref = "crib/designs.py#Designs.plan_dep_add"
+fqn = "crib.designs.Designs.plan_dep_add"
+name = "plan_dep_add"
+kind = "method"
+lang = "python"
+content_hash = "efe32d8e1a6bea50"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "async def plan_dep_add(self, proj: str, ref: str, dep_ref: str) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 1674
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_dep_add [crib/designs.py]",
+]
+called_by = [
+  "plan_dep_add [crib/app.py]",
+]
+references = [
+  "plan_dep_add [crib/app.py]",
+]
+name_terms = [
+  "add",
+  "crib",
+  "crib.designs.Designs.plan_dep_add",
+  "dep",
+  "designs",
+  "plan",
+  "plan_dep_add",
+]

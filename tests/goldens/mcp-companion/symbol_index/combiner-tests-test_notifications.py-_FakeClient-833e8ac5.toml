@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_notifications.py#_FakeClient"
+fqn = "combiner.tests.test_notifications._FakeClient"
+name = "_FakeClient"
+kind = "class"
+lang = "python"
+content_hash = "b45e666d88cfab08"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "class _FakeClient:"
+description = ""
+schema = 4
+line = 51
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_dead_target_is_skipped_not_broadcast [combiner/tests/test_notifications.py]",
+  "test_idempotent_on_cache_hit [combiner/tests/test_notifications.py]",
+  "test_installs_our_handler [combiner/tests/test_notifications.py]",
+  "test_list_changed_forwarded [combiner/tests/test_notifications.py]",
+  "test_no_resource_notification_is_passthrough [combiner/tests/test_notifications.py]",
+  "test_reattach_over_cloned_plain_handler [combiner/tests/test_notifications.py]",
+  "test_task_status_still_routes_to_client [combiner/tests/test_notifications.py]",
+  "test_tool_list_changed_triggers_reprime_not_forward [combiner/tests/test_notifications.py]",
+  "test_updated_broadcasts_when_no_target [combiner/tests/test_notifications.py]",
+  "test_updated_forward_namespaced_to_target [combiner/tests/test_notifications.py]",
+]
+name_terms = [
+  "_FakeClient",
+  "client",
+  "combiner",
+  "combiner.tests.test_notifications._FakeClient",
+  "fake",
+  "notifications",
+  "test",
+  "tests",
+]

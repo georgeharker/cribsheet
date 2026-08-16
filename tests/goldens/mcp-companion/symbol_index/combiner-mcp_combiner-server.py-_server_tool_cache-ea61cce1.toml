@@ -1,0 +1,52 @@
+symbol_ref = "combiner/mcp_combiner/server.py#_server_tool_cache"
+fqn = "combiner.mcp_combiner.server._server_tool_cache"
+name = "_server_tool_cache"
+kind = "global"
+lang = "python"
+content_hash = "4d101b17571e44cf"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "_server_tool_cache: dict[str, list[Tool]] = RUNTIME.tools.server_tools"
+description = ""
+schema = 4
+line = 104
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_cleanup [combiner/tests/test_session_filter.py]",
+  "setup_method [combiner/tests/test_session_filter.py]",
+  "teardown_method [combiner/tests/test_session_filter.py]",
+  "test_auth_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_disabled_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_grace_window_expiry_drops_tools [combiner/tests/test_session_filter.py]",
+  "test_present_server_gains_confirmed_slice [combiner/tests/test_session_filter.py]",
+  "test_prime_empty_answer_preserves_confirmed_slice [combiner/tests/test_session_filter.py]",
+  "test_prime_empty_answers_retry_until_timeout [combiner/tests/test_session_filter.py]",
+  "test_prime_empty_then_populated_publishes_once [combiner/tests/test_session_filter.py]",
+  "test_prime_retries_stores_then_invalidates [combiner/tests/test_session_filter.py]",
+  "test_prime_timeout_no_store_no_invalidate [combiner/tests/test_session_filter.py]",
+  "test_reprime_changed_list_publishes [combiner/tests/test_session_filter.py]",
+  "test_restart_leaves_one_live_provider [combiner/tests/test_mounts.py]",
+  "test_restart_stdio_empty_answer_keeps_slice_silent [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+  "test_stdio_crash_reports_disconnected [combiner/tests/test_connections.py]",
+  "test_stdio_server_tristate [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "_server_tool_cache",
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.server._server_tool_cache",
+  "mcp",
+  "server",
+  "tool",
+]

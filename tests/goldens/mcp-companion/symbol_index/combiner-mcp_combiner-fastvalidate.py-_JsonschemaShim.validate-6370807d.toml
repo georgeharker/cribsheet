@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/fastvalidate.py#_JsonschemaShim.validate"
+fqn = "combiner.mcp_combiner.fastvalidate._JsonschemaShim.validate"
+name = "validate"
+kind = "field"
+lang = "python"
+content_hash = "179ba944803b1524"
+file = "combiner/mcp_combiner/fastvalidate.py"
+file_hash = "c78d5e6efce28ebe"
+signature = "validate = staticmethod(validate)"
+description = ""
+schema = 4
+line = 125
+mtime = 1782420032000000000
+container = [
+  "_JsonschemaShim",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "fastvalidate",
+  "_JsonschemaShim",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.fastvalidate._JsonschemaShim.validate",
+  "fastvalidate",
+  "jsonschema",
+  "mcp",
+  "shim",
+  "validate",
+]

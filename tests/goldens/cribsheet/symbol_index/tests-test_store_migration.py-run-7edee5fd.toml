@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_store_migration.py#run"
+fqn = "tests.test_store_migration.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "44052857cf112194"
+file = "tests/test_store_migration.py"
+file_hash = "a18552bb17863360"
+signature = "def run(coro):"
+description = ""
+schema = 4
+line = 30
+mtime = 1786140093000000000
+container = []
+scope = [
+  "tests",
+  "test_store_migration",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_legacy_layout [tests/test_store_migration.py]",
+  "test_full_reindex_self_heals_a_pulled_straggler [tests/test_store_migration.py]",
+  "test_migrate_is_idempotent [tests/test_store_migration.py]",
+  "test_migrate_moves_requalifies_and_reindexes [tests/test_store_migration.py]",
+  "test_migrate_skips_collisions_and_reports [tests/test_store_migration.py]",
+]
+references = [
+  "_legacy_layout [tests/test_store_migration.py]",
+  "test_full_reindex_self_heals_a_pulled_straggler [tests/test_store_migration.py]",
+  "test_migrate_is_idempotent [tests/test_store_migration.py]",
+  "test_migrate_moves_requalifies_and_reindexes [tests/test_store_migration.py]",
+  "test_migrate_skips_collisions_and_reports [tests/test_store_migration.py]",
+]
+name_terms = [
+  "migration",
+  "run",
+  "store",
+  "test",
+  "tests",
+  "tests.test_store_migration.run",
+]

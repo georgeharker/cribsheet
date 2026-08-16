@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_ManagedConnection"
+fqn = "combiner.mcp_combiner.connections._ManagedConnection"
+name = "_ManagedConnection"
+kind = "class"
+lang = "python"
+content_hash = "f4a01a21abcc3492"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 131
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [combiner/mcp_combiner/connections.py]",
+  "_monitor [combiner/mcp_combiner/connections.py]",
+  "_open [combiner/mcp_combiner/connections.py]",
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+  "_signal_tools_ready [combiner/mcp_combiner/connections.py]",
+  "_teardown [combiner/mcp_combiner/connections.py]",
+  "connect [combiner/mcp_combiner/connections.py]",
+  "register [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_ManagedConnection",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection",
+  "connection",
+  "connections",
+  "managed",
+  "mcp",
+]

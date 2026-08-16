@@ -1,0 +1,39 @@
+symbol_ref = "crib/cli.py#_emit_rebuilding_note"
+fqn = "crib.cli._emit_rebuilding_note"
+name = "_emit_rebuilding_note"
+kind = "function"
+lang = "python"
+content_hash = "18d651122d18efd9"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _emit_rebuilding_note(hits: Any) -> None:"
+description = ""
+schema = 4
+line = 154
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_flag [crib/cli.py]",
+]
+called_by = [
+  "_emit_apropos [crib/cli.py]",
+  "_emit_human [crib/cli.py]",
+]
+references = [
+  "_emit_apropos [crib/cli.py]",
+  "_emit_human [crib/cli.py]",
+]
+name_terms = [
+  "_emit_rebuilding_note",
+  "cli",
+  "crib",
+  "crib.cli._emit_rebuilding_note",
+  "emit",
+  "note",
+  "rebuilding",
+]

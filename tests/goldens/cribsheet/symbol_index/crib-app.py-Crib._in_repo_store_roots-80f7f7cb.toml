@@ -1,0 +1,43 @@
+symbol_ref = "crib/app.py#Crib._in_repo_store_roots"
+fqn = "crib.app.Crib._in_repo_store_roots"
+name = "_in_repo_store_roots"
+kind = "method"
+lang = "python"
+content_hash = "0c05825f9a24fc47"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _in_repo_store_roots(self) -> dict[str, Path]:"
+description = ""
+schema = 4
+line = 280
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "__call__ [crib/paths.py]",
+  "_skip_if_unavailable [crib/app.py]",
+  "projects [crib/app.py]",
+]
+called_by = [
+  "start_watchers [crib/app.py]",
+]
+references = [
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "_in_repo_store_roots",
+  "app",
+  "crib",
+  "crib.app.Crib._in_repo_store_roots",
+  "in",
+  "repo",
+  "roots",
+  "store",
+]

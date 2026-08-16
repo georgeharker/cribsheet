@@ -1,0 +1,38 @@
+symbol_ref = "crib/chunk.py#section_line_map.close"
+fqn = "crib.chunk.section_line_map.close"
+name = "close"
+kind = "function"
+lang = "python"
+content_hash = "4b6b4808373cd242"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "def close(end_idx: int) -> None:"
+description = ""
+schema = 4
+line = 287
+mtime = 1786136167000000000
+container = [
+  "section_line_map",
+]
+scope = [
+  "crib",
+  "chunk",
+  "section_line_map",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "section_line_map [crib/chunk.py]",
+]
+references = [
+  "section_line_map [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "close",
+  "crib",
+  "crib.chunk.section_line_map.close",
+  "line",
+  "map",
+  "section",
+]

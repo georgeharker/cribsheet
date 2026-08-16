@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_session.py#test_each_path_bearing_call_resolves_its_own_path"
+fqn = "tests.test_session.test_each_path_bearing_call_resolves_its_own_path"
+name = "test_each_path_bearing_call_resolves_its_own_path"
+kind = "function"
+lang = "python"
+content_hash = "e83280b2a7717712"
+file = "tests/test_session.py"
+file_hash = "bef48c1ca7e1ebb9"
+signature = "def test_each_path_bearing_call_resolves_its_own_path():"
+description = ""
+schema = 4
+line = 85
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_session",
+]
+symbol_was = []
+calls = [
+  "SessionState [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "bearing",
+  "call",
+  "each",
+  "its",
+  "own",
+  "path",
+  "resolves",
+  "session",
+  "test",
+  "test_each_path_bearing_call_resolves_its_own_path",
+  "tests",
+  "tests.test_session.test_each_path_bearing_call_resolves_its_own_path",
+]

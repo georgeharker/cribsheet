@@ -1,0 +1,44 @@
+symbol_ref = "crib/codestore.py#CodeStore.reload"
+fqn = "crib.codestore.CodeStore.reload"
+name = "reload"
+kind = "method"
+lang = "python"
+content_hash = "506aface87bc8e4c"
+file = "crib/codestore.py"
+file_hash = "85066097f15df7df"
+signature = "def reload(self, proj: str, tok: Any,"
+description = ""
+schema = 4
+line = 191
+mtime = 1786664729000000000
+container = [
+  "CodeStore",
+]
+scope = [
+  "crib",
+  "codestore",
+  "CodeStore",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_ResidentCode [crib/codestore.py]",
+  "all [crib/codeindex.py]",
+  "project_dir [crib/paths.py]",
+]
+called_by = [
+  "_reload_code [crib/app.py]",
+  "resident [crib/codestore.py]",
+]
+references = [
+  "_reload_code [crib/app.py]",
+  "resident [crib/codestore.py]",
+]
+name_terms = [
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore.CodeStore.reload",
+  "reload",
+  "store",
+]

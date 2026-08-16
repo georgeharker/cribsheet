@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_repo_storage.py#test_watch_roots_skip_an_unavailable_store"
+fqn = "tests.test_repo_storage.test_watch_roots_skip_an_unavailable_store"
+name = "test_watch_roots_skip_an_unavailable_store"
+kind = "function"
+lang = "python"
+content_hash = "6a5e95b2b0b3f77b"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_watch_roots_skip_an_unavailable_store(crib, paths, capsys):"
+description = ""
+schema = 4
+line = 347
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "ProjectConfig [crib/config.py]",
+  "save [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "an",
+  "repo",
+  "roots",
+  "skip",
+  "storage",
+  "store",
+  "test",
+  "test_watch_roots_skip_an_unavailable_store",
+  "tests",
+  "tests.test_repo_storage.test_watch_roots_skip_an_unavailable_store",
+  "unavailable",
+  "watch",
+]

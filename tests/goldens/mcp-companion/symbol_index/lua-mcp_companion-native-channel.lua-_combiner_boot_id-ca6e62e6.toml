@@ -1,0 +1,34 @@
+symbol_ref = "lua/mcp_companion/native/channel.lua#_combiner_boot_id"
+fqn = "mcp_companion.native.channel._combiner_boot_id"
+name = "_combiner_boot_id"
+kind = "global"
+lang = "lua"
+content_hash = "e152a2e37e37e587"
+file = "lua/mcp_companion/native/channel.lua"
+file_hash = "1ed98336baf8a3f0"
+signature = "local _combiner_boot_id = nil"
+description = ""
+schema = 4
+line = 31
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "native",
+  "channel",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_combiner_boot_id",
+  "boot",
+  "channel",
+  "combiner",
+  "companion",
+  "id",
+  "mcp",
+  "mcp_companion.native.channel._combiner_boot_id",
+  "native",
+]

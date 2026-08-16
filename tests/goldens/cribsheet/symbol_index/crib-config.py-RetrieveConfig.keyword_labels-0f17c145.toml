@@ -1,0 +1,39 @@
+symbol_ref = "crib/config.py#RetrieveConfig.keyword_labels"
+fqn = "crib.config.RetrieveConfig.keyword_labels"
+name = "keyword_labels"
+kind = "field"
+lang = "python"
+content_hash = "140b698ce15f41b7"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "keyword_labels: list[str] = field(default_factory=list)"
+description = ""
+schema = 4
+line = 103
+mtime = 1786564832000000000
+container = [
+  "RetrieveConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "RetrieveConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_keyword_backlog [crib/app.py]",
+  "_schedule_keyword_refresh [crib/app.py]",
+  "enrich [crib/app.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.RetrieveConfig.keyword_labels",
+  "keyword",
+  "keyword_labels",
+  "labels",
+  "retrieve",
+]

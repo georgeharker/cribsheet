@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_connections.py#TestMonitorHealthCheck.test_reconnects_after_threshold_consecutive_misses"
+fqn = "combiner.tests.test_connections.TestMonitorHealthCheck.test_reconnects_after_threshold_consecutive_misses"
+name = "test_reconnects_after_threshold_consecutive_misses"
+kind = "method"
+lang = "python"
+content_hash = "efeae383fd691bcb"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def test_reconnects_after_threshold_consecutive_misses(self, monkeypatch):"
+description = ""
+schema = 4
+line = 317
+mtime = 1784493613000000000
+container = [
+  "TestMonitorHealthCheck",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestMonitorHealthCheck",
+]
+symbol_was = []
+calls = [
+  "ConnectionManager [combiner/mcp_combiner/connections.py]",
+  "_monitor [combiner/mcp_combiner/connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "after",
+  "check",
+  "combiner",
+  "combiner.tests.test_connections.TestMonitorHealthCheck.test_reconnects_after_threshold_consecutive_misses",
+  "connections",
+  "consecutive",
+  "health",
+  "misses",
+  "monitor",
+  "reconnects",
+  "test",
+  "test_reconnects_after_threshold_consecutive_misses",
+  "tests",
+  "threshold",
+]

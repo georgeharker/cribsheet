@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/nvim_proxy.py#_NVIM_SERVER"
+fqn = "combiner.mcp_combiner.nvim_proxy._NVIM_SERVER"
+name = "_NVIM_SERVER"
+kind = "constant"
+lang = "python"
+content_hash = "f60df35d5f974408"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+file_hash = "072f85ddbeb3b759"
+signature = "_NVIM_SERVER = \"neovim\""
+description = ""
+schema = 4
+line = 40
+mtime = 1783022631000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "nvim_proxy",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_build_nvim_tools [combiner/mcp_combiner/nvim_proxy.py]",
+  "append_nvim_tools [combiner/mcp_combiner/nvim_proxy.py]",
+  "call_nvim_tool [combiner/mcp_combiner/nvim_proxy.py]",
+]
+name_terms = [
+  "_NVIM_SERVER",
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy._NVIM_SERVER",
+  "mcp",
+  "nvim",
+  "proxy",
+  "server",
+]

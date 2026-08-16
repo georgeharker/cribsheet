@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_codeindex.py#test_type_kinds_indexed_and_descended"
+fqn = "tests.test_codeindex.test_type_kinds_indexed_and_descended"
+name = "test_type_kinds_indexed_and_descended"
+kind = "function"
+lang = "python"
+content_hash = "98d6fd07c749f5f6"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_type_kinds_indexed_and_descended():"
+description = ""
+schema = 4
+line = 82
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "codeindex",
+  "descended",
+  "indexed",
+  "kinds",
+  "test",
+  "test_type_kinds_indexed_and_descended",
+  "tests",
+  "tests.test_codeindex.test_type_kinds_indexed_and_descended",
+  "type",
+]

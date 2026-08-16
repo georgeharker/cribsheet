@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_nvim_channel.py#test_call_unregistered_instance_raises"
+fqn = "combiner.tests.test_nvim_channel.test_call_unregistered_instance_raises"
+name = "test_call_unregistered_instance_raises"
+kind = "function"
+lang = "python"
+content_hash = "5c1ec663e81fa8e4"
+file = "combiner/tests/test_nvim_channel.py"
+file_hash = "182e2a76d8efddf4"
+signature = "async def test_call_unregistered_instance_raises() -> None:"
+description = ""
+schema = 4
+line = 137
+mtime = 1783022631000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_nvim_channel",
+]
+symbol_was = []
+calls = [
+  "NvimChannelManager [combiner/mcp_combiner/nvim_channel.py]",
+  "call [combiner/mcp_combiner/nvim_channel.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "call",
+  "channel",
+  "combiner",
+  "combiner.tests.test_nvim_channel.test_call_unregistered_instance_raises",
+  "instance",
+  "nvim",
+  "raises",
+  "test",
+  "test_call_unregistered_instance_raises",
+  "tests",
+  "unregistered",
+]

@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_connections.py#TestSignalToolsReady.test_empty_answer_defers_ready"
+fqn = "combiner.tests.test_connections.TestSignalToolsReady.test_empty_answer_defers_ready"
+name = "test_empty_answer_defers_ready"
+kind = "method"
+lang = "python"
+content_hash = "5423ab86c8557ea1"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def test_empty_answer_defers_ready(self):"
+description = ""
+schema = 4
+line = 46
+mtime = 1784493613000000000
+container = [
+  "TestSignalToolsReady",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestSignalToolsReady",
+]
+symbol_was = []
+calls = [
+  "ConnectionManager [combiner/mcp_combiner/connections.py]",
+  "_fake_conn [combiner/tests/test_connections.py]",
+  "_signal_tools_ready [combiner/mcp_combiner/connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "answer",
+  "combiner",
+  "combiner.tests.test_connections.TestSignalToolsReady.test_empty_answer_defers_ready",
+  "connections",
+  "defers",
+  "empty",
+  "ready",
+  "signal",
+  "test",
+  "test_empty_answer_defers_ready",
+  "tests",
+  "tools",
+]

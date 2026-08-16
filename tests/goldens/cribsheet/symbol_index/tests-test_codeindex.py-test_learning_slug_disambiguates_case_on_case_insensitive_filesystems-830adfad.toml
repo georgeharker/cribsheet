@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_codeindex.py#test_learning_slug_disambiguates_case_on_case_insensitive_filesystems"
+fqn = "tests.test_codeindex.test_learning_slug_disambiguates_case_on_case_insensitive_filesystems"
+name = "test_learning_slug_disambiguates_case_on_case_insensitive_filesystems"
+kind = "function"
+lang = "python"
+content_hash = "d967ea2f93ac849e"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_learning_slug_disambiguates_case_on_case_insensitive_filesystems():"
+description = ""
+schema = 4
+line = 208
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "legacy_ref_slug [crib/symbols.py]",
+  "ref_slug [crib/symbols.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "case",
+  "codeindex",
+  "disambiguates",
+  "filesystems",
+  "insensitive",
+  "learning",
+  "on",
+  "slug",
+  "test",
+  "test_learning_slug_disambiguates_case_on_case_insensitive_filesystems",
+  "tests",
+  "tests.test_codeindex.test_learning_slug_disambiguates_case_on_case_insensitive_filesystems",
+]

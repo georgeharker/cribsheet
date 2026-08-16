@@ -1,0 +1,35 @@
+symbol_ref = "lua/mcp_companion/native/winpick.lua#DEFAULTS.focus"
+fqn = "mcp_companion.native.winpick.DEFAULTS.focus"
+name = "focus"
+kind = "field"
+lang = "lua"
+content_hash = "5cce05a0c3ac75b5"
+file = "lua/mcp_companion/native/winpick.lua"
+file_hash = "6bf70fc950ff8924"
+signature = "focus = \"file\","
+description = ""
+schema = 4
+line = 38
+mtime = 1782852601000000000
+container = [
+  "DEFAULTS",
+]
+scope = [
+  "mcp_companion",
+  "native",
+  "winpick",
+  "DEFAULTS",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "companion",
+  "defaults",
+  "focus",
+  "mcp",
+  "mcp_companion.native.winpick.DEFAULTS.focus",
+  "native",
+  "winpick",
+]

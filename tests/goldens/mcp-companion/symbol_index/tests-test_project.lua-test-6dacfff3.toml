@@ -1,0 +1,30 @@
+symbol_ref = "tests/test_project.lua#test"
+fqn = "tests.test_project.test"
+name = "test"
+kind = "function"
+lang = "lua"
+content_hash = "125ad4dc73df2494"
+file = "tests/test_project.lua"
+file_hash = "a8e547beff4cb5d7"
+signature = "local function test(name, fn)"
+description = ""
+schema = 4
+line = 32
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_project",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_project.lua [tests/test_project.lua]",
+]
+references = []
+name_terms = [
+  "project",
+  "test",
+  "tests",
+  "tests.test_project.test",
+]

@@ -1,0 +1,60 @@
+symbol_ref = "crib/codeindex.py#LspSessionPool.acquire"
+fqn = "crib.codeindex.LspSessionPool.acquire"
+name = "acquire"
+kind = "method"
+lang = "python"
+content_hash = "933f1f5ae64f9d80"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def acquire(self, root: Path, label: str, argv: list[str], spec: dict,"
+description = ""
+schema = 4
+line = 594
+mtime = 1786844518000000000
+container = [
+  "LspSessionPool",
+]
+scope = [
+  "crib",
+  "codeindex",
+  "LspSessionPool",
+]
+symbol_was = []
+calls = [
+  "LspClient [crib/codeindex.py]",
+  "_Session [crib/codeindex.py]",
+  "_reap [crib/codeindex.py]",
+  "close [crib/codeindex.py]",
+  "initialize [crib/codeindex.py]",
+]
+called_by = [
+  "_extract [crib/codeindex.py]",
+  "pin_docs [crib/codeindex.py]",
+  "test_dead_session_raises_immediately_and_leaks_no_response_slot [tests/test_code_integrity.py]",
+  "test_extra_roots_ride_as_workspace_folders [tests/test_codeindex.py]",
+  "test_progress_tracked_and_wait_quiescent_honors_it [tests/test_codeindex.py]",
+  "test_session_pool_respawns_after_crash [tests/test_codeindex.py]",
+  "test_timed_out_request_pops_its_own_response_slot [tests/test_code_integrity.py]",
+  "test_undecodable_source_indexes_lossily_on_the_same_session [tests/test_code_integrity.py]",
+  "test_unreadable_file_raises_file_read_error_and_keeps_the_session [tests/test_code_integrity.py]",
+]
+references = [
+  "_extract [crib/codeindex.py]",
+  "pin_docs [crib/codeindex.py]",
+  "test_dead_session_raises_immediately_and_leaks_no_response_slot [tests/test_code_integrity.py]",
+  "test_extra_roots_ride_as_workspace_folders [tests/test_codeindex.py]",
+  "test_progress_tracked_and_wait_quiescent_honors_it [tests/test_codeindex.py]",
+  "test_session_pool_respawns_after_crash [tests/test_codeindex.py]",
+  "test_timed_out_request_pops_its_own_response_slot [tests/test_code_integrity.py]",
+  "test_undecodable_source_indexes_lossily_on_the_same_session [tests/test_code_integrity.py]",
+  "test_unreadable_file_raises_file_read_error_and_keeps_the_session [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "acquire",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspSessionPool.acquire",
+  "lsp",
+  "pool",
+  "session",
+]

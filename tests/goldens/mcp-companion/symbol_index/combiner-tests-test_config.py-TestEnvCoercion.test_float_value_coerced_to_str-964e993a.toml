@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_config.py#TestEnvCoercion.test_float_value_coerced_to_str"
+fqn = "combiner.tests.test_config.TestEnvCoercion.test_float_value_coerced_to_str"
+name = "test_float_value_coerced_to_str"
+kind = "method"
+lang = "python"
+content_hash = "487a4c0e5296657b"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_float_value_coerced_to_str(self) -> None:"
+description = ""
+schema = 4
+line = 171
+mtime = 1782852601000000000
+container = [
+  "TestEnvCoercion",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+  "TestEnvCoercion",
+]
+symbol_was = []
+calls = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "coerced",
+  "coercion",
+  "combiner",
+  "combiner.tests.test_config.TestEnvCoercion.test_float_value_coerced_to_str",
+  "config",
+  "env",
+  "float",
+  "str",
+  "test",
+  "test_float_value_coerced_to_str",
+  "tests",
+  "to",
+  "value",
+]

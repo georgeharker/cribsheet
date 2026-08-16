@@ -1,0 +1,43 @@
+symbol_ref = "crib/cli.py#_emit_code_graph"
+fqn = "crib.cli._emit_code_graph"
+name = "_emit_code_graph"
+kind = "function"
+lang = "python"
+content_hash = "911caafa34a7c7ae"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _emit_code_graph(tree: Any, args: Any) -> None:"
+description = ""
+schema = 4
+line = 888
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_emit_code_edges [crib/cli.py]",
+  "_emit_resolved [crib/cli.py]",
+  "_graph_direction [crib/cli.py]",
+  "_sym_tags [crib/cli.py]",
+  "_tree_glyphs [crib/cli.py]",
+  "render [crib/cli.py]",
+  "render_symbol [crib/cli.py]",
+]
+called_by = [
+  "_E_graph [crib/cli.py]",
+]
+references = [
+  "_E_graph [crib/cli.py]",
+]
+name_terms = [
+  "_emit_code_graph",
+  "cli",
+  "code",
+  "crib",
+  "crib.cli._emit_code_graph",
+  "emit",
+  "graph",
+]

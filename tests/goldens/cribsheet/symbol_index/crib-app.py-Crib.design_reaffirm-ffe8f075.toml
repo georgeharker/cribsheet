@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.design_reaffirm"
+fqn = "crib.app.Crib.design_reaffirm"
+name = "design_reaffirm"
+kind = "method"
+lang = "python"
+content_hash = "617c00654fbd04a8"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def design_reaffirm(self, ref: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 2218
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "design_reaffirm [crib/designs.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "design_reaffirm [crib/server.py]",
+]
+references = [
+  "design_reaffirm [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.design_reaffirm",
+  "design",
+  "design_reaffirm",
+  "reaffirm",
+]

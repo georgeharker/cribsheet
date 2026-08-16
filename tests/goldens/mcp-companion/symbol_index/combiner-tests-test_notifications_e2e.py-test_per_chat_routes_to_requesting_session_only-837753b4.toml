@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#test_per_chat_routes_to_requesting_session_only"
+fqn = "combiner.tests.test_notifications_e2e.test_per_chat_routes_to_requesting_session_only"
+name = "test_per_chat_routes_to_requesting_session_only"
+kind = "function"
+lang = "python"
+content_hash = "62f54fb53611d7c6"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "async def test_per_chat_routes_to_requesting_session_only(capture: _CaptureSession) -> None:"
+description = ""
+schema = 4
+line = 169
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+]
+symbol_was = []
+calls = [
+  "_CaptureHandler [combiner/tests/test_notifications_e2e.py]",
+  "_forwarding_proxy [combiner/tests/test_notifications_e2e.py]",
+  "_make_upstream [combiner/tests/test_notifications_e2e.py]",
+  "_settle [combiner/tests/test_notifications_e2e.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "2",
+  "chat",
+  "combiner",
+  "combiner.tests.test_notifications_e2e.test_per_chat_routes_to_requesting_session_only",
+  "e",
+  "notifications",
+  "only",
+  "per",
+  "requesting",
+  "routes",
+  "session",
+  "test",
+  "test_per_chat_routes_to_requesting_session_only",
+  "tests",
+  "to",
+]

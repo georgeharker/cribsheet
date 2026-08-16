@@ -1,0 +1,46 @@
+symbol_ref = "tests/test_code_integrity.py#_fake_lsp"
+fqn = "tests.test_code_integrity._fake_lsp"
+name = "_fake_lsp"
+kind = "function"
+lang = "python"
+content_hash = "002b82830f5341ff"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def _fake_lsp(tmp_path, monkeypatch, garbage: str = \"\"):"
+description = ""
+schema = 4
+line = 98
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_dead_session_raises_immediately_and_leaks_no_response_slot [tests/test_code_integrity.py]",
+  "test_garbage_frame_kills_the_reader_and_the_session_is_replaced_once [tests/test_code_integrity.py]",
+  "test_settle_policy_defaults_but_an_explicit_value_wins [tests/test_code_integrity.py]",
+  "test_timed_out_request_pops_its_own_response_slot [tests/test_code_integrity.py]",
+  "test_undecodable_source_indexes_lossily_on_the_same_session [tests/test_code_integrity.py]",
+  "test_unreadable_file_raises_file_read_error_and_keeps_the_session [tests/test_code_integrity.py]",
+]
+references = [
+  "test_dead_session_raises_immediately_and_leaks_no_response_slot [tests/test_code_integrity.py]",
+  "test_garbage_frame_kills_the_reader_and_the_session_is_replaced_once [tests/test_code_integrity.py]",
+  "test_settle_policy_defaults_but_an_explicit_value_wins [tests/test_code_integrity.py]",
+  "test_timed_out_request_pops_its_own_response_slot [tests/test_code_integrity.py]",
+  "test_undecodable_source_indexes_lossily_on_the_same_session [tests/test_code_integrity.py]",
+  "test_unreadable_file_raises_file_read_error_and_keeps_the_session [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "_fake_lsp",
+  "code",
+  "fake",
+  "integrity",
+  "lsp",
+  "test",
+  "tests",
+  "tests.test_code_integrity._fake_lsp",
+]

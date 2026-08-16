@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestRefresh.test_refresh_token_preserved_when_provider_omits_it"
+fqn = "combiner.tests.test_oauth_mock.TestRefresh.test_refresh_token_preserved_when_provider_omits_it"
+name = "test_refresh_token_preserved_when_provider_omits_it"
+kind = "method"
+lang = "python"
+content_hash = "9287b2f504900e94"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def test_refresh_token_preserved_when_provider_omits_it("
+description = ""
+schema = 4
+line = 310
+mtime = 1784495646000000000
+container = [
+  "TestRefresh",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "TestRefresh",
+]
+symbol_was = []
+calls = [
+  "MockOAuthConfig [combiner/mcp_combiner/mockserver.py]",
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "_seed_refreshable [combiner/tests/test_oauth_mock.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestRefresh.test_refresh_token_preserved_when_provider_omits_it",
+  "it",
+  "mock",
+  "oauth",
+  "omits",
+  "preserved",
+  "provider",
+  "refresh",
+  "test",
+  "test_refresh_token_preserved_when_provider_omits_it",
+  "tests",
+  "token",
+  "when",
+]

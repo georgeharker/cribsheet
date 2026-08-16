@@ -1,0 +1,34 @@
+symbol_ref = "combiner/mcp_combiner/sharedserver.py#cleanup"
+fqn = "combiner.mcp_combiner.sharedserver.cleanup"
+name = "cleanup"
+kind = "function"
+lang = "python"
+content_hash = "d34c3ad5cea45111"
+file = "combiner/mcp_combiner/sharedserver.py"
+file_hash = "00df81a0a741c869"
+signature = "def cleanup() -> None:"
+description = ""
+schema = 4
+line = 394
+mtime = 1782539642000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "sharedserver",
+]
+symbol_was = []
+calls = [
+  "stop_all [combiner/mcp_combiner/sharedserver.py]",
+]
+called_by = [
+  "_signal_handler [combiner/mcp_combiner/__main__.py]",
+]
+references = []
+name_terms = [
+  "cleanup",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.cleanup",
+  "mcp",
+  "sharedserver",
+]

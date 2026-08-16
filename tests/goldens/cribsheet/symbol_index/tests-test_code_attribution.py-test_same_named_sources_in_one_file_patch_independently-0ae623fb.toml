@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_code_attribution.py#test_same_named_sources_in_one_file_patch_independently"
+fqn = "tests.test_code_attribution.test_same_named_sources_in_one_file_patch_independently"
+name = "test_same_named_sources_in_one_file_patch_independently"
+kind = "function"
+lang = "python"
+content_hash = "1c502691189c9b07"
+file = "tests/test_code_attribution.py"
+file_hash = "ff3c29a685f6f6d7"
+signature = "def test_same_named_sources_in_one_file_patch_independently(crib):"
+description = ""
+schema = 4
+line = 197
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_attribution",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_entry [tests/test_code_attribution.py]",
+  "read [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "attribution",
+  "code",
+  "file",
+  "in",
+  "independently",
+  "named",
+  "one",
+  "patch",
+  "same",
+  "sources",
+  "test",
+  "test_same_named_sources_in_one_file_patch_independently",
+  "tests",
+  "tests.test_code_attribution.test_same_named_sources_in_one_file_patch_independently",
+]

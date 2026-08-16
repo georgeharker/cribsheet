@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_app_meta.py#TestNamespaceAppMeta.test_tool_pointer_matches_namespaced_resource"
+fqn = "combiner.tests.test_app_meta.TestNamespaceAppMeta.test_tool_pointer_matches_namespaced_resource"
+name = "test_tool_pointer_matches_namespaced_resource"
+kind = "method"
+lang = "python"
+content_hash = "3a951d266f79ce8f"
+file = "combiner/tests/test_app_meta.py"
+file_hash = "fc52f36639c3320a"
+signature = "def test_tool_pointer_matches_namespaced_resource(self, _config: None) -> None:"
+description = ""
+schema = 4
+line = 105
+mtime = 1783629928000000000
+container = [
+  "TestNamespaceAppMeta",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_app_meta",
+  "TestNamespaceAppMeta",
+]
+symbol_was = []
+calls = [
+  "_namespace_app_meta [combiner/mcp_combiner/middleware.py]",
+  "_tool [combiner/tests/test_app_meta.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "app",
+  "combiner",
+  "combiner.tests.test_app_meta.TestNamespaceAppMeta.test_tool_pointer_matches_namespaced_resource",
+  "matches",
+  "meta",
+  "namespace",
+  "namespaced",
+  "pointer",
+  "resource",
+  "test",
+  "test_tool_pointer_matches_namespaced_resource",
+  "tests",
+  "tool",
+]

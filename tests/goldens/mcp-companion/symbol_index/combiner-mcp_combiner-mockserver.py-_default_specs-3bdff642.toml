@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#_default_specs"
+fqn = "combiner.mcp_combiner.mockserver._default_specs"
+name = "_default_specs"
+kind = "function"
+lang = "python"
+content_hash = "ff8ec28c24c6b6fd"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def _default_specs() -> list[ToolSpec]:"
+description = ""
+schema = 4
+line = 303
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = [
+  "from_dict [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+]
+references = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "_default_specs",
+  "combiner",
+  "combiner.mcp_combiner.mockserver._default_specs",
+  "default",
+  "mcp",
+  "mockserver",
+  "specs",
+]

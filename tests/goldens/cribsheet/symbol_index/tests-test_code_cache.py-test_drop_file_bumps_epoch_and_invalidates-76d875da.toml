@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_code_cache.py#test_drop_file_bumps_epoch_and_invalidates"
+fqn = "tests.test_code_cache.test_drop_file_bumps_epoch_and_invalidates"
+name = "test_drop_file_bumps_epoch_and_invalidates"
+kind = "function"
+lang = "python"
+content_hash = "99e9a8889cfdeb98"
+file = "tests/test_code_cache.py"
+file_hash = "44f8f848adca2094"
+signature = "def test_drop_file_bumps_epoch_and_invalidates(crib):"
+description = ""
+schema = 4
+line = 100
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_cache",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_write [tests/test_code_cache.py]",
+  "by_fqname [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "bumps",
+  "cache",
+  "code",
+  "drop",
+  "epoch",
+  "file",
+  "invalidates",
+  "test",
+  "test_drop_file_bumps_epoch_and_invalidates",
+  "tests",
+  "tests.test_code_cache.test_drop_file_bumps_epoch_and_invalidates",
+]

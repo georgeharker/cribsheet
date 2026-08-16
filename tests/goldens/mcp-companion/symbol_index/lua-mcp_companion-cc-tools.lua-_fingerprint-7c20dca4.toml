@@ -1,0 +1,37 @@
+symbol_ref = "lua/mcp_companion/cc/tools.lua#_fingerprint"
+fqn = "mcp_companion.cc.tools._fingerprint"
+name = "_fingerprint"
+kind = "function"
+lang = "lua"
+content_hash = "b447d71c64c3df2a"
+file = "lua/mcp_companion/cc/tools.lua"
+file_hash = "1319bd3ac569f910"
+signature = "local function _fingerprint(servers)"
+description = ""
+schema = 4
+line = 23
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "cc",
+  "tools",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.register [lua/mcp_companion/cc/tools.lua]",
+  "tools.lua [lua/mcp_companion/cc/tools.lua]",
+]
+references = [
+  "fp [lua/mcp_companion/cc/tools.lua]",
+]
+name_terms = [
+  "_fingerprint",
+  "cc",
+  "companion",
+  "fingerprint",
+  "mcp",
+  "mcp_companion.cc.tools._fingerprint",
+  "tools",
+]

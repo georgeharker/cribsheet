@@ -1,0 +1,47 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#open"
+fqn = "mcp_companion.ui.open"
+name = "open"
+kind = "function"
+lang = "lua"
+content_hash = "89fcb21fad8788b0"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "function M.open()"
+description = ""
+schema = 4
+line = 415
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "ui",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M._fetch_and_render [lua/mcp_companion/ui/init.lua]",
+  "M.close [lua/mcp_companion/ui/init.lua]",
+  "M.open [lua/mcp_companion/ui/init.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "init.lua [lua/mcp_companion/ui/init.lua]",
+  "render_server [lua/mcp_companion/ui/init.lua]",
+]
+references = [
+  "_cleanup [lua/mcp_companion/ui/init.lua]",
+  "_fetch_and_render [lua/mcp_companion/ui/init.lua]",
+  "close [lua/mcp_companion/ui/init.lua]",
+  "else [lua/mcp_companion/ui/init.lua]",
+  "if [lua/mcp_companion/ui/init.lua]",
+  "is_open [lua/mcp_companion/ui/init.lua]",
+  "render [lua/mcp_companion/ui/init.lua]",
+  "render_server [lua/mcp_companion/ui/init.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+  "toggle [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.ui.open",
+  "open",
+  "ui",
+]

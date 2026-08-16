@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#_call_meta"
+fqn = "combiner.mcp_combiner.ctl._call_meta"
+name = "_call_meta"
+kind = "function"
+lang = "python"
+content_hash = "b461be8418e8a5c0"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "async def _call_meta(args: argparse.Namespace, tool: str, tool_args: dict[str, Any]) -> str:"
+description = ""
+schema = 4
+line = 47
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = [
+  "_base_url [combiner/mcp_combiner/ctl.py]",
+]
+called_by = [
+  "cmd_call [combiner/mcp_combiner/ctl.py]",
+  "cmd_disable [combiner/mcp_combiner/ctl.py]",
+  "cmd_enable [combiner/mcp_combiner/ctl.py]",
+  "cmd_reload [combiner/mcp_combiner/ctl.py]",
+  "cmd_restart_server [combiner/mcp_combiner/ctl.py]",
+]
+references = [
+  "cmd_call [combiner/mcp_combiner/ctl.py]",
+  "cmd_disable [combiner/mcp_combiner/ctl.py]",
+  "cmd_enable [combiner/mcp_combiner/ctl.py]",
+  "cmd_reload [combiner/mcp_combiner/ctl.py]",
+  "cmd_restart_server [combiner/mcp_combiner/ctl.py]",
+]
+name_terms = [
+  "_call_meta",
+  "call",
+  "combiner",
+  "combiner.mcp_combiner.ctl._call_meta",
+  "ctl",
+  "mcp",
+  "meta",
+]

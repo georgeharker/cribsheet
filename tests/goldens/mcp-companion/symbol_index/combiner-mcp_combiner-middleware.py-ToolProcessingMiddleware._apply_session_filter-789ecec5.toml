@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/middleware.py#ToolProcessingMiddleware._apply_session_filter"
+fqn = "combiner.mcp_combiner.middleware.ToolProcessingMiddleware._apply_session_filter"
+name = "_apply_session_filter"
+kind = "method"
+lang = "python"
+content_hash = "c92cce736d9214e1"
+file = "combiner/mcp_combiner/middleware.py"
+file_hash = "6dee47cf65146f20"
+signature = "@staticmethod"
+description = ""
+schema = 4
+line = 285
+mtime = 1784493613000000000
+container = [
+  "ToolProcessingMiddleware",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "middleware",
+  "ToolProcessingMiddleware",
+]
+symbol_was = []
+calls = [
+  "_find_server_for_tool [combiner/mcp_combiner/toolcache.py]",
+  "disabled_for [combiner/mcp_combiner/runtime.py]",
+]
+called_by = [
+  "on_list_tools [combiner/mcp_combiner/middleware.py]",
+]
+references = [
+  "on_list_tools [combiner/mcp_combiner/middleware.py]",
+]
+name_terms = [
+  "_apply_session_filter",
+  "apply",
+  "combiner",
+  "combiner.mcp_combiner.middleware.ToolProcessingMiddleware._apply_session_filter",
+  "filter",
+  "mcp",
+  "middleware",
+  "processing",
+  "session",
+  "tool",
+]

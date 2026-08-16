@@ -1,0 +1,56 @@
+symbol_ref = "combiner/mcp_combiner/config.py#OAuthConfig.token_dir_path"
+fqn = "combiner.mcp_combiner.config.OAuthConfig.token_dir_path"
+name = "token_dir_path"
+kind = "method"
+lang = "python"
+content_hash = "d11f6ed6e5dcc75b"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "@property"
+description = ""
+schema = 4
+line = 455
+mtime = 1783633313000000000
+container = [
+  "OAuthConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "OAuthConfig",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_make_disconnected_client [combiner/mcp_combiner/connections.py]",
+  "get_auth [combiner/mcp_combiner/connections.py]",
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "test_oauth_config_defaults [combiner/tests/test_config.py]",
+  "test_oauth_config_from_dict_token_dir [combiner/tests/test_config.py]",
+  "test_oauth_config_from_dict_token_dir_camel [combiner/tests/test_config.py]",
+]
+references = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_make_disconnected_client [combiner/mcp_combiner/connections.py]",
+  "get_auth [combiner/mcp_combiner/connections.py]",
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "test_oauth_config_defaults [combiner/tests/test_config.py]",
+  "test_oauth_config_from_dict_token_dir [combiner/tests/test_config.py]",
+  "test_oauth_config_from_dict_token_dir_camel [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.config.OAuthConfig.token_dir_path",
+  "config",
+  "dir",
+  "mcp",
+  "o",
+  "path",
+  "token",
+  "token_dir_path",
+]

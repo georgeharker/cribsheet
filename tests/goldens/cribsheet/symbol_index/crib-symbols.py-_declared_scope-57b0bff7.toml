@@ -1,0 +1,36 @@
+symbol_ref = "crib/symbols.py#_declared_scope"
+fqn = "crib.symbols._declared_scope"
+name = "_declared_scope"
+kind = "function"
+lang = "python"
+content_hash = "b7fd82ef0ed4214d"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def _declared_scope(lang: str, container: Sequence[str]) -> list[str]:"
+description = ""
+schema = 4
+line = 165
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = [
+  "local_name [crib/symbols.py]",
+]
+called_by = [
+  "scope_of [crib/symbols.py]",
+]
+references = [
+  "scope_of [crib/symbols.py]",
+]
+name_terms = [
+  "_declared_scope",
+  "crib",
+  "crib.symbols._declared_scope",
+  "declared",
+  "scope",
+  "symbols",
+]

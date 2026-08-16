@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.pending_for"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.pending_for"
+name = "pending_for"
+kind = "method"
+lang = "python"
+content_hash = "ee5615cb5924d555"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def pending_for(self, token: str) -> set[str]:"
+description = ""
+schema = 4
+line = 129
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "manage_token_filter [combiner/mcp_combiner/routes.py]",
+]
+references = [
+  "manage_token_filter [combiner/mcp_combiner/routes.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.pending_for",
+  "for",
+  "mcp",
+  "pending",
+  "pending_for",
+  "registry",
+  "runtime",
+  "session",
+]

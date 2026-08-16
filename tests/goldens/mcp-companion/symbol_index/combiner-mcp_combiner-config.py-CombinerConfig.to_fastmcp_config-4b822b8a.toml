@@ -1,0 +1,63 @@
+symbol_ref = "combiner/mcp_combiner/config.py#CombinerConfig.to_fastmcp_config"
+fqn = "combiner.mcp_combiner.config.CombinerConfig.to_fastmcp_config"
+name = "to_fastmcp_config"
+kind = "method"
+lang = "python"
+content_hash = "ad34c1d7b4aa5f43"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def to_fastmcp_config(self, name: str) -> FastMCPConfig:"
+description = ""
+schema = 4
+line = 546
+mtime = 1783633313000000000
+container = [
+  "CombinerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "CombinerConfig",
+]
+symbol_was = []
+calls = [
+  "FastMCPConfig [combiner/mcp_combiner/config.py]",
+  "FastMCPServerEntry [combiner/mcp_combiner/config.py]",
+  "_interpolate_dict [combiner/mcp_combiner/config.py]",
+  "_interpolate_list [combiner/mcp_combiner/config.py]",
+  "_interpolate_str [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "test_args_expanded [combiner/tests/test_config.py]",
+  "test_command_expanded [combiner/tests/test_config.py]",
+  "test_default_fallback_in_config [combiner/tests/test_config.py]",
+  "test_env_expanded [combiner/tests/test_config.py]",
+  "test_headers_expanded [combiner/tests/test_config.py]",
+  "test_raw_config_not_mutated [combiner/tests/test_config.py]",
+  "test_to_fastmcp_config_http [combiner/tests/test_config.py]",
+  "test_to_fastmcp_config_stdio [combiner/tests/test_config.py]",
+  "test_url_expanded [combiner/tests/test_config.py]",
+]
+references = [
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "test_args_expanded [combiner/tests/test_config.py]",
+  "test_command_expanded [combiner/tests/test_config.py]",
+  "test_default_fallback_in_config [combiner/tests/test_config.py]",
+  "test_env_expanded [combiner/tests/test_config.py]",
+  "test_headers_expanded [combiner/tests/test_config.py]",
+  "test_raw_config_not_mutated [combiner/tests/test_config.py]",
+  "test_to_fastmcp_config_http [combiner/tests/test_config.py]",
+  "test_to_fastmcp_config_stdio [combiner/tests/test_config.py]",
+  "test_url_expanded [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.CombinerConfig.to_fastmcp_config",
+  "config",
+  "fastmcp",
+  "mcp",
+  "to",
+  "to_fastmcp_config",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_dim_recovery.py#crib"
+fqn = "tests.test_dim_recovery.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+content_hash = "843661f7d5a24b5e"
+file = "tests/test_dim_recovery.py"
+file_hash = "5f6ffd4e573336e9"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 24
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_dim_recovery",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "dim",
+  "recovery",
+  "test",
+  "tests",
+  "tests.test_dim_recovery.crib",
+]

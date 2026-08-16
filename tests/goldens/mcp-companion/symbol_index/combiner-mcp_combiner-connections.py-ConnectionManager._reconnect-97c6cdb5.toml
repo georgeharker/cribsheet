@@ -1,0 +1,51 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager._reconnect"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager._reconnect"
+name = "_reconnect"
+kind = "method"
+lang = "python"
+content_hash = "52c68a7623841b85"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "async def _reconnect(self, conn: _ManagedConnection) -> None:"
+description = ""
+schema = 4
+line = 638
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = [
+  "_is_local_upstream [combiner/mcp_combiner/connections.py]",
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+  "test_local_backoff_capped [combiner/tests/test_connections.py]",
+  "test_no_restart_without_shared_server [combiner/tests/test_connections.py]",
+  "test_restarts_backing_after_threshold [combiner/tests/test_connections.py]",
+  "test_success_resets_failure_counter [combiner/tests/test_connections.py]",
+]
+references = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+  "test_local_backoff_capped [combiner/tests/test_connections.py]",
+  "test_no_restart_without_shared_server [combiner/tests/test_connections.py]",
+  "test_restarts_backing_after_threshold [combiner/tests/test_connections.py]",
+  "test_success_resets_failure_counter [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "_reconnect",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager._reconnect",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+  "reconnect",
+]

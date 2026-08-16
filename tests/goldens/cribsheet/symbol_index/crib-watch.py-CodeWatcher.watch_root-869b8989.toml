@@ -1,0 +1,45 @@
+symbol_ref = "crib/watch.py#CodeWatcher.watch_root"
+fqn = "crib.watch.CodeWatcher.watch_root"
+name = "watch_root"
+kind = "method"
+lang = "python"
+content_hash = "d23f7af5992a3433"
+file = "crib/watch.py"
+file_hash = "c10c30739292eebe"
+signature = "def watch_root(self, project: str, root: str | Path) -> None:"
+description = ""
+schema = 4
+line = 296
+mtime = 1786139638000000000
+container = [
+  "CodeWatcher",
+]
+scope = [
+  "crib",
+  "watch",
+  "CodeWatcher",
+]
+symbol_was = []
+calls = [
+  "_schedule_dir [crib/watch.py]",
+  "_unschedule_dir [crib/watch.py]",
+]
+called_by = [
+  "_register_code_root [crib/app.py]",
+  "start_watchers [crib/app.py]",
+  "test_code_watcher_decode_is_pure_path_work [tests/test_watcher.py]",
+]
+references = [
+  "_register_code_root [crib/app.py]",
+  "start_watchers [crib/app.py]",
+  "test_code_watcher_decode_is_pure_path_work [tests/test_watcher.py]",
+]
+name_terms = [
+  "code",
+  "crib",
+  "crib.watch.CodeWatcher.watch_root",
+  "root",
+  "watch",
+  "watch_root",
+  "watcher",
+]

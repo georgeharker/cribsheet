@@ -1,0 +1,40 @@
+symbol_ref = "scripts/eval_fusion.py#Feat.build_token_emb"
+fqn = "scripts.eval_fusion.Feat.build_token_emb"
+name = "build_token_emb"
+kind = "method"
+lang = "python"
+content_hash = "1ad141c372f7b204"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def build_token_emb(self):"
+description = ""
+schema = 4
+line = 113
+mtime = 1783981122000000000
+container = [
+  "Feat",
+]
+scope = [
+  "scripts",
+  "eval_fusion",
+  "Feat",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_fusion.py]",
+]
+references = [
+  "main [scripts/eval_fusion.py]",
+]
+name_terms = [
+  "build",
+  "build_token_emb",
+  "emb",
+  "eval",
+  "feat",
+  "fusion",
+  "scripts",
+  "scripts.eval_fusion.Feat.build_token_emb",
+  "token",
+]

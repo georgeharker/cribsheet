@@ -1,0 +1,51 @@
+symbol_ref = "combiner/mcp_combiner/schemafix.py#_apply_object_fixes"
+fqn = "combiner.mcp_combiner.schemafix._apply_object_fixes"
+name = "_apply_object_fixes"
+kind = "function"
+lang = "python"
+content_hash = "a291a133e0211978"
+file = "combiner/mcp_combiner/schemafix.py"
+file_hash = "49870021f06866cb"
+signature = "def _apply_object_fixes(params: dict[str, Any], fixes: frozenset[str]) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 222
+mtime = 1783542616000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "schemafix",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_apply_schema_fixes [combiner/mcp_combiner/schemafix.py]",
+  "test_drop_invalid_required_drops_non_list [combiner/tests/test_schema_fixes.py]",
+  "test_drop_invalid_required_keeps_list [combiner/tests/test_schema_fixes.py]",
+  "test_empty_object_coerces_list_properties_to_dict [combiner/tests/test_schema_fixes.py]",
+  "test_empty_object_fills_missing_type_and_properties [combiner/tests/test_schema_fixes.py]",
+  "test_empty_object_fills_properties_on_object [combiner/tests/test_schema_fixes.py]",
+  "test_empty_object_leaves_non_object_type_alone [combiner/tests/test_schema_fixes.py]",
+  "test_empty_object_off_by_default [combiner/tests/test_schema_fixes.py]",
+]
+references = [
+  "_apply_schema_fixes [combiner/mcp_combiner/schemafix.py]",
+  "test_drop_invalid_required_drops_non_list [combiner/tests/test_schema_fixes.py]",
+  "test_drop_invalid_required_keeps_list [combiner/tests/test_schema_fixes.py]",
+  "test_empty_object_coerces_list_properties_to_dict [combiner/tests/test_schema_fixes.py]",
+  "test_empty_object_fills_missing_type_and_properties [combiner/tests/test_schema_fixes.py]",
+  "test_empty_object_fills_properties_on_object [combiner/tests/test_schema_fixes.py]",
+  "test_empty_object_leaves_non_object_type_alone [combiner/tests/test_schema_fixes.py]",
+  "test_empty_object_off_by_default [combiner/tests/test_schema_fixes.py]",
+]
+name_terms = [
+  "_apply_object_fixes",
+  "apply",
+  "combiner",
+  "combiner.mcp_combiner.schemafix._apply_object_fixes",
+  "fixes",
+  "mcp",
+  "object",
+  "schemafix",
+]

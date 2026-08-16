@@ -1,0 +1,45 @@
+symbol_ref = "crib/app.py#Crib.project_index"
+fqn = "crib.app.Crib.project_index"
+name = "project_index"
+kind = "method"
+lang = "python"
+content_hash = "331c8ae348899cd0"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def project_index(self, project: str | None = None,"
+description = ""
+schema = 4
+line = 1495
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "_detect_code_globs [crib/app.py]",
+  "_ensure_crib [crib/app.py]",
+  "_index_project_code [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "projects [crib/app.py]",
+]
+called_by = [
+  "index [scripts/snapshot_harness.py]",
+  "project_index [crib/server.py]",
+]
+references = [
+  "index [scripts/snapshot_harness.py]",
+  "project_index [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.project_index",
+  "index",
+  "project",
+  "project_index",
+]

@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_connections.py#TestLifecycleState.test_mark_tools_unready_downgrades_ready_to_connected"
+fqn = "combiner.tests.test_connections.TestLifecycleState.test_mark_tools_unready_downgrades_ready_to_connected"
+name = "test_mark_tools_unready_downgrades_ready_to_connected"
+kind = "method"
+lang = "python"
+content_hash = "0375fe0a39ce4cd4"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "def test_mark_tools_unready_downgrades_ready_to_connected(self):"
+description = ""
+schema = 4
+line = 561
+mtime = 1784493613000000000
+container = [
+  "TestLifecycleState",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestLifecycleState",
+]
+symbol_was = []
+calls = [
+  "ConnectionManager [combiner/mcp_combiner/connections.py]",
+  "_inject_conn [combiner/tests/test_connections.py]",
+  "lifecycle_state [combiner/mcp_combiner/connections.py]",
+  "mark_tools_unready [combiner/mcp_combiner/connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_connections.TestLifecycleState.test_mark_tools_unready_downgrades_ready_to_connected",
+  "connected",
+  "connections",
+  "downgrades",
+  "lifecycle",
+  "mark",
+  "ready",
+  "state",
+  "test",
+  "test_mark_tools_unready_downgrades_ready_to_connected",
+  "tests",
+  "to",
+  "tools",
+  "unready",
+]

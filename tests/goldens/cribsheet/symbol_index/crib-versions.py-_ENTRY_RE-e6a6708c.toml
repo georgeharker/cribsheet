@@ -1,0 +1,32 @@
+symbol_ref = "crib/versions.py#_ENTRY_RE"
+fqn = "crib.versions._ENTRY_RE"
+name = "_ENTRY_RE"
+kind = "constant"
+lang = "python"
+content_hash = "eb659a7afe46b8c6"
+file = "crib/versions.py"
+file_hash = "c84588155a74a02c"
+signature = "_ENTRY_RE = re.compile(r\"^(\\d+)-[^/]*\\.md$\")"
+description = ""
+schema = 4
+line = 21
+mtime = 1785966856000000000
+container = []
+scope = [
+  "crib",
+  "versions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_ring_files [crib/versions.py]",
+]
+name_terms = [
+  "_ENTRY_RE",
+  "crib",
+  "crib.versions._ENTRY_RE",
+  "entry",
+  "re",
+  "versions",
+]

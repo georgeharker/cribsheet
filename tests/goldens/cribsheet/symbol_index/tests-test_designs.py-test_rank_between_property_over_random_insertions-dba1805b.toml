@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_designs.py#test_rank_between_property_over_random_insertions"
+fqn = "tests.test_designs.test_rank_between_property_over_random_insertions"
+name = "test_rank_between_property_over_random_insertions"
+kind = "function"
+lang = "python"
+content_hash = "5f1a1c18c1dde95f"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_rank_between_property_over_random_insertions():"
+description = ""
+schema = 4
+line = 65
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "_rank_between [crib/designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "between",
+  "designs",
+  "insertions",
+  "over",
+  "property",
+  "random",
+  "rank",
+  "test",
+  "test_rank_between_property_over_random_insertions",
+  "tests",
+  "tests.test_designs.test_rank_between_property_over_random_insertions",
+]

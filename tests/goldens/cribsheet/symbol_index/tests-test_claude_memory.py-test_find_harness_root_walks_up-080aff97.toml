@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_claude_memory.py#test_find_harness_root_walks_up"
+fqn = "tests.test_claude_memory.test_find_harness_root_walks_up"
+name = "test_find_harness_root_walks_up"
+kind = "function"
+lang = "python"
+content_hash = "796890bfcd6a4917"
+file = "tests/test_claude_memory.py"
+file_hash = "f5a685193106ac4d"
+signature = "def test_find_harness_root_walks_up(env):"
+description = ""
+schema = 4
+line = 57
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_claude_memory",
+]
+symbol_was = []
+calls = [
+  "_write [tests/test_claude_memory.py]",
+  "find_harness_root [crib/claudemem.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "claude",
+  "find",
+  "harness",
+  "memory",
+  "root",
+  "test",
+  "test_find_harness_root_walks_up",
+  "tests",
+  "tests.test_claude_memory.test_find_harness_root_walks_up",
+  "up",
+  "walks",
+]

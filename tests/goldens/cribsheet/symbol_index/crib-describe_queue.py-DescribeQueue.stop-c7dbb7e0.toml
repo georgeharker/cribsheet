@@ -1,0 +1,32 @@
+symbol_ref = "crib/describe_queue.py#DescribeQueue.stop"
+fqn = "crib.describe_queue.DescribeQueue.stop"
+name = "stop"
+kind = "method"
+lang = "python"
+content_hash = "9ae0c35144150f66"
+file = "crib/describe_queue.py"
+file_hash = "305c34e160ae74c1"
+signature = "def stop(self) -> None:"
+description = ""
+schema = 4
+line = 116
+mtime = 1786664729000000000
+container = [
+  "DescribeQueue",
+]
+scope = [
+  "crib",
+  "describe_queue",
+  "DescribeQueue",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.describe_queue.DescribeQueue.stop",
+  "describe",
+  "queue",
+  "stop",
+]

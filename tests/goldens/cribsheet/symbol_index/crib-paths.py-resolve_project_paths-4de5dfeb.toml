@@ -1,0 +1,47 @@
+symbol_ref = "crib/paths.py#resolve_project_paths"
+fqn = "crib.paths.resolve_project_paths"
+name = "resolve_project_paths"
+kind = "function"
+lang = "python"
+content_hash = "1869aafe4a421f07"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "def resolve_project_paths(paths: Paths, cfg: \"Config\", project: str) -> ProjectPaths:"
+description = ""
+schema = 4
+line = 192
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "paths",
+]
+symbol_was = []
+calls = [
+  "ProjectPaths [crib/paths.py]",
+  "check_project_name [crib/paths.py]",
+  "expand_location [crib/config.py]",
+  "load [crib/config.py]",
+]
+called_by = [
+  "__call__ [crib/paths.py]",
+  "_in_repo_guard [crib/cli.py]",
+  "test_a_store_that_is_not_on_this_machine_is_unavailable [tests/test_repo_storage.py]",
+  "test_resolves_to_the_global_layout_by_default [tests/test_repo_storage.py]",
+  "test_resolves_to_the_store_when_the_stub_points_at_one [tests/test_repo_storage.py]",
+]
+references = [
+  "__call__ [crib/paths.py]",
+  "_in_repo_guard [crib/cli.py]",
+  "test_a_store_that_is_not_on_this_machine_is_unavailable [tests/test_repo_storage.py]",
+  "test_resolves_to_the_global_layout_by_default [tests/test_repo_storage.py]",
+  "test_resolves_to_the_store_when_the_stub_points_at_one [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.resolve_project_paths",
+  "paths",
+  "project",
+  "resolve",
+  "resolve_project_paths",
+]

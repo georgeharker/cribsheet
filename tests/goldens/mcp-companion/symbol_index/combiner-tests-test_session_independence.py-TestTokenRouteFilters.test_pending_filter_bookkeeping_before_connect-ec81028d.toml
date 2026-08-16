@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestTokenRouteFilters.test_pending_filter_bookkeeping_before_connect"
+fqn = "combiner.tests.test_session_independence.TestTokenRouteFilters.test_pending_filter_bookkeeping_before_connect"
+name = "test_pending_filter_bookkeeping_before_connect"
+kind = "method"
+lang = "python"
+content_hash = "ec90ce6a95802351"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "async def test_pending_filter_bookkeeping_before_connect("
+description = ""
+schema = 4
+line = 294
+mtime = 1783541669000000000
+container = [
+  "TestTokenRouteFilters",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+  "TestTokenRouteFilters",
+]
+symbol_was = []
+calls = [
+  "_rest [combiner/tests/test_session_independence.py]",
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "_token [combiner/tests/test_session_independence.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "before",
+  "bookkeeping",
+  "combiner",
+  "combiner.tests.test_session_independence.TestTokenRouteFilters.test_pending_filter_bookkeeping_before_connect",
+  "connect",
+  "filter",
+  "filters",
+  "independence",
+  "pending",
+  "route",
+  "session",
+  "test",
+  "test_pending_filter_bookkeeping_before_connect",
+  "tests",
+  "token",
+]

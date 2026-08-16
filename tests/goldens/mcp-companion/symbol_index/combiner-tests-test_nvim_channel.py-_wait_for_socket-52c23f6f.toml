@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_nvim_channel.py#_wait_for_socket"
+fqn = "combiner.tests.test_nvim_channel._wait_for_socket"
+name = "_wait_for_socket"
+kind = "function"
+lang = "python"
+content_hash = "fd88a06c07ec0cd3"
+file = "combiner/tests/test_nvim_channel.py"
+file_hash = "182e2a76d8efddf4"
+signature = "async def _wait_for_socket(path: str, timeout: float = 10.0) -> None:"
+description = ""
+schema = 4
+line = 31
+mtime = 1783022631000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_nvim_channel",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "nvim_instance [combiner/tests/test_nvim_channel.py]",
+]
+references = [
+  "nvim_instance [combiner/tests/test_nvim_channel.py]",
+]
+name_terms = [
+  "_wait_for_socket",
+  "channel",
+  "combiner",
+  "combiner.tests.test_nvim_channel._wait_for_socket",
+  "for",
+  "nvim",
+  "socket",
+  "test",
+  "tests",
+  "wait",
+]

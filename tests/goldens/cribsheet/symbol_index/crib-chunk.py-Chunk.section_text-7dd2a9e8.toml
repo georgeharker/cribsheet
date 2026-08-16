@@ -1,0 +1,38 @@
+symbol_ref = "crib/chunk.py#Chunk.section_text"
+fqn = "crib.chunk.Chunk.section_text"
+name = "section_text"
+kind = "field"
+lang = "python"
+content_hash = "5d47c530bfd5ff51"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "section_text: str = \"\""
+description = ""
+schema = 4
+line = 64
+mtime = 1786136167000000000
+container = [
+  "Chunk",
+]
+scope = [
+  "crib",
+  "chunk",
+  "Chunk",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_doc_sections [crib/designs.py]",
+  "chunk_note [crib/chunk.py]",
+  "section_hash [crib/chunk.py]",
+  "test_windowed_duplicate_sections_share_their_section_span [tests/test_chunk_identity.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.section_text",
+  "section",
+  "section_text",
+  "text",
+]

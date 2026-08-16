@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_codeindex.py#test_leading_comment_one_blank_glues_two_severs"
+fqn = "tests.test_codeindex.test_leading_comment_one_blank_glues_two_severs"
+name = "test_leading_comment_one_blank_glues_two_severs"
+kind = "function"
+lang = "python"
+content_hash = "2cbd89be0048824c"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_leading_comment_one_blank_glues_two_severs():"
+description = ""
+schema = 4
+line = 145
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "_leading_comment [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "blank",
+  "codeindex",
+  "comment",
+  "glues",
+  "leading",
+  "one",
+  "severs",
+  "test",
+  "test_leading_comment_one_blank_glues_two_severs",
+  "tests",
+  "tests.test_codeindex.test_leading_comment_one_blank_glues_two_severs",
+  "two",
+]

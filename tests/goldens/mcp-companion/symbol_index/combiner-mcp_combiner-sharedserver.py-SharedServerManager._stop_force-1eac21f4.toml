@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/sharedserver.py#SharedServerManager._stop_force"
+fqn = "combiner.mcp_combiner.sharedserver.SharedServerManager._stop_force"
+name = "_stop_force"
+kind = "method"
+lang = "python"
+content_hash = "a757399d6961ed79"
+file = "combiner/mcp_combiner/sharedserver.py"
+file_hash = "00df81a0a741c869"
+signature = "async def _stop_force(self, binary: str, name: str) -> None:"
+description = ""
+schema = 4
+line = 319
+mtime = 1782539642000000000
+container = [
+  "SharedServerManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "sharedserver",
+  "SharedServerManager",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "restart [combiner/mcp_combiner/sharedserver.py]",
+]
+references = [
+  "restart [combiner/mcp_combiner/sharedserver.py]",
+]
+name_terms = [
+  "_stop_force",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.SharedServerManager._stop_force",
+  "force",
+  "manager",
+  "mcp",
+  "server",
+  "shared",
+  "sharedserver",
+  "stop",
+]

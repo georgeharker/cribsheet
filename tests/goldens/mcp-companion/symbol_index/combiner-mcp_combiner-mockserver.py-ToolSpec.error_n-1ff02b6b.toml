@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#ToolSpec.error_n"
+fqn = "combiner.mcp_combiner.mockserver.ToolSpec.error_n"
+name = "error_n"
+kind = "field"
+lang = "python"
+content_hash = "e756fdeb23094b30"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "error_n: int = 0"
+description = ""
+schema = 4
+line = 96
+mtime = 1783622326000000000
+container = [
+  "ToolSpec",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "ToolSpec",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/mockserver.py]",
+  "run [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.ToolSpec.error_n",
+  "error",
+  "error_n",
+  "mcp",
+  "mockserver",
+  "n",
+  "spec",
+  "tool",
+]

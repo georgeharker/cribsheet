@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_loop_responsiveness.py#_measure.heartbeat"
+fqn = "tests.test_loop_responsiveness._measure.heartbeat"
+name = "heartbeat"
+kind = "function"
+lang = "python"
+content_hash = "5c103c9cfad31164"
+file = "tests/test_loop_responsiveness.py"
+file_hash = "3e5d3308dc33e6f4"
+signature = "async def heartbeat() -> None:"
+description = ""
+schema = 4
+line = 75
+mtime = 1785959234000000000
+container = [
+  "_measure",
+]
+scope = [
+  "tests",
+  "test_loop_responsiveness",
+  "_measure",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_measure [tests/test_loop_responsiveness.py]",
+]
+references = [
+  "_measure [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "heartbeat",
+  "loop",
+  "measure",
+  "responsiveness",
+  "test",
+  "tests",
+  "tests.test_loop_responsiveness._measure.heartbeat",
+]

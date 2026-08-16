@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/config.py#SharedServerConfig.health_timeout"
+fqn = "combiner.mcp_combiner.config.SharedServerConfig.health_timeout"
+name = "health_timeout"
+kind = "field"
+lang = "python"
+content_hash = "6c51d071f13e07d6"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "health_timeout: int = 30"
+description = ""
+schema = 4
+line = 95
+mtime = 1783633313000000000
+container = [
+  "SharedServerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "SharedServerConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_start_one [combiner/mcp_combiner/sharedserver.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "test_load_config_sharedserver_parsed [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.SharedServerConfig.health_timeout",
+  "config",
+  "health",
+  "health_timeout",
+  "mcp",
+  "server",
+  "shared",
+  "timeout",
+]

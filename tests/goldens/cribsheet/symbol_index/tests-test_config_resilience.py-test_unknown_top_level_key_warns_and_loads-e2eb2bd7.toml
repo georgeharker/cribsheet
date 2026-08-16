@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_config_resilience.py#test_unknown_top_level_key_warns_and_loads"
+fqn = "tests.test_config_resilience.test_unknown_top_level_key_warns_and_loads"
+name = "test_unknown_top_level_key_warns_and_loads"
+kind = "function"
+lang = "python"
+content_hash = "f7fa776866a979be"
+file = "tests/test_config_resilience.py"
+file_hash = "620aeb96b59e7b2d"
+signature = "def test_unknown_top_level_key_warns_and_loads(tmp_path, capsys):"
+description = ""
+schema = 4
+line = 30
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_config_resilience",
+]
+symbol_was = []
+calls = [
+  "_cfg [tests/test_config_resilience.py]",
+  "load [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "config",
+  "key",
+  "level",
+  "loads",
+  "resilience",
+  "test",
+  "test_unknown_top_level_key_warns_and_loads",
+  "tests",
+  "tests.test_config_resilience.test_unknown_top_level_key_warns_and_loads",
+  "top",
+  "unknown",
+  "warns",
+]

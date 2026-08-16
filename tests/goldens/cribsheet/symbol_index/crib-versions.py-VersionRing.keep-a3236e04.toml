@@ -1,0 +1,37 @@
+symbol_ref = "crib/versions.py#VersionRing.keep"
+fqn = "crib.versions.VersionRing.keep"
+name = "keep"
+kind = "method"
+lang = "python"
+content_hash = "742b4313c67e7df4"
+file = "crib/versions.py"
+file_hash = "c84588155a74a02c"
+signature = "@property"
+description = ""
+schema = 4
+line = 61
+mtime = 1785966856000000000
+container = [
+  "VersionRing",
+]
+scope = [
+  "crib",
+  "versions",
+  "VersionRing",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "versions_for [crib/notestore.py]",
+]
+references = [
+  "versions_for [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.versions.VersionRing.keep",
+  "keep",
+  "ring",
+  "version",
+  "versions",
+]

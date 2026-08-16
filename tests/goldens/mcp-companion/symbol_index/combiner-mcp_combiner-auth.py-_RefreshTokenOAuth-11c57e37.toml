@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_RefreshTokenOAuth"
+fqn = "combiner.mcp_combiner.auth._RefreshTokenOAuth"
+name = "_RefreshTokenOAuth"
+kind = "class"
+lang = "python"
+content_hash = "386bac69f916d13c"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "class _RefreshTokenOAuth(OAuth):"
+description = ""
+schema = 4
+line = 200
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_build_oauth [combiner/mcp_combiner/auth.py]",
+  "_call_echo [combiner/tests/test_oauth_mock.py]",
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+  "_seed_refreshable [combiner/tests/test_oauth_mock.py]",
+  "fake_callback [combiner/tests/test_oauth_mock.py]",
+  "fake_redirect [combiner/tests/test_oauth_mock.py]",
+  "headless_consent [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "_RefreshTokenOAuth",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth",
+  "mcp",
+  "o",
+  "refresh",
+  "token",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_surface_parity.py#test_imports_refuse_to_fall_through_to_the_default_project"
+fqn = "tests.test_surface_parity.test_imports_refuse_to_fall_through_to_the_default_project"
+name = "test_imports_refuse_to_fall_through_to_the_default_project"
+kind = "function"
+lang = "python"
+content_hash = "90e207e6b3552824"
+file = "tests/test_surface_parity.py"
+file_hash = "0c4fc72b5f441359"
+signature = "@pytest.mark.parametrize(\"tool_name, args\", ["
+description = ""
+schema = 4
+line = 156
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_surface_parity",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "default",
+  "fall",
+  "imports",
+  "parity",
+  "project",
+  "refuse",
+  "surface",
+  "test",
+  "test_imports_refuse_to_fall_through_to_the_default_project",
+  "tests",
+  "tests.test_surface_parity.test_imports_refuse_to_fall_through_to_the_default_project",
+  "the",
+  "through",
+  "to",
+]

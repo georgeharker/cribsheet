@@ -1,0 +1,40 @@
+symbol_ref = "crib/cli.py#_split_labels"
+fqn = "crib.cli._split_labels"
+name = "_split_labels"
+kind = "function"
+lang = "python"
+content_hash = "46b1a431706a8f66"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _split_labels(spec: str | None) -> list[str] | None:"
+description = ""
+schema = 4
+line = 79
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_b_lookup [crib/cli.py]",
+  "test_absent_flag_is_none_use_default [tests/test_cli_labels.py]",
+  "test_explicit_empty_disables [tests/test_cli_labels.py]",
+  "test_labels_parse_and_trim [tests/test_cli_labels.py]",
+]
+references = [
+  "_b_lookup [crib/cli.py]",
+  "test_absent_flag_is_none_use_default [tests/test_cli_labels.py]",
+  "test_explicit_empty_disables [tests/test_cli_labels.py]",
+  "test_labels_parse_and_trim [tests/test_cli_labels.py]",
+]
+name_terms = [
+  "_split_labels",
+  "cli",
+  "crib",
+  "crib.cli._split_labels",
+  "labels",
+  "split",
+]

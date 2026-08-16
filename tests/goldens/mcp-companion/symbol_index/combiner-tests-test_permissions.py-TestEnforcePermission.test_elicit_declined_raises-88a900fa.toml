@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestEnforcePermission.test_elicit_declined_raises"
+fqn = "combiner.tests.test_permissions.TestEnforcePermission.test_elicit_declined_raises"
+name = "test_elicit_declined_raises"
+kind = "method"
+lang = "python"
+content_hash = "222c7f7f8d37d29e"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "async def test_elicit_declined_raises(self) -> None:"
+description = ""
+schema = 4
+line = 258
+mtime = 1783633313000000000
+container = [
+  "TestEnforcePermission",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "TestEnforcePermission",
+]
+symbol_was = []
+calls = [
+  "_elicit_ctx [combiner/tests/test_permissions.py]",
+  "_rp [combiner/tests/test_permissions.py]",
+  "enforce [combiner/mcp_combiner/permissions.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_permissions.TestEnforcePermission.test_elicit_declined_raises",
+  "declined",
+  "elicit",
+  "enforce",
+  "permission",
+  "permissions",
+  "raises",
+  "test",
+  "test_elicit_declined_raises",
+  "tests",
+]

@@ -1,0 +1,104 @@
+symbol_ref = "crib/codeindex.py#SymbolIndex"
+fqn = "crib.codeindex.SymbolIndex"
+name = "SymbolIndex"
+kind = "class"
+lang = "python"
+content_hash = "515423b032bae48e"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "class SymbolIndex:"
+description = ""
+schema = 4
+line = 1521
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_describe_and_patch [crib/codeindexer.py]",
+  "_describe_backlog [crib/app.py]",
+  "_diamond [tests/test_code_graph.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_index_project_code [crib/codeindexer.py]",
+  "_register [tests/test_project_resolution.py]",
+  "_registered_root [crib/app.py]",
+  "_reindex_dirty_code [crib/app.py]",
+  "_require_code_index [crib/app.py]",
+  "_rust_ish [tests/test_code_graph.py]",
+  "_seed [tests/test_symbol_migration.py]",
+  "_seed_legacy_store [tests/test_symbol_convert.py]",
+  "_seed_symbol [tests/test_code_learnings.py]",
+  "_seed_two_symbols [tests/test_code_integrity.py]",
+  "_sym [tests/test_code_graph.py]",
+  "_sym [tests/test_refs.py]",
+  "_two_projects [tests/test_refs.py]",
+  "_wrapper_and_op [tests/test_code_graph.py]",
+  "_write [tests/test_code_cache.py]",
+  "capture [scripts/symstats.py]",
+  "code_convert [crib/app.py]",
+  "code_indexed_projects [crib/app.py]",
+  "convert_entry [crib/symconvert.py]",
+  "convert_notes [crib/learnings.py]",
+  "dir_sig [crib/codestore.py]",
+  "drop_file [crib/codestore.py]",
+  "index [scripts/snapshot_harness.py]",
+  "main [scripts/eval_code.py]",
+  "marks [crib/learnings.py]",
+  "project_refs [crib/refs.py]",
+  "project_status [crib/app.py]",
+  "rehome [crib/learnings.py]",
+  "reload [crib/codestore.py]",
+  "report [crib/learnings.py]",
+  "resolve_symbol [crib/refs.py]",
+  "revalidate [crib/codestore.py]",
+  "start_watchers [crib/app.py]",
+  "test_a_file_scoped_language_groups_by_its_file [tests/test_code_graph.py]",
+  "test_a_single_file_index_writes_into_a_store_of_another_shape [tests/test_code_graph.py]",
+  "test_an_empty_store_is_never_stale [tests/test_code_graph.py]",
+  "test_an_indexed_entry_carries_its_language_scope [tests/test_code_graph.py]",
+  "test_backlog_reindexes_only_blank_described_files [tests/test_describe_queue.py]",
+  "test_broken_record_is_marked_dirty_not_partially_parsed [tests/test_code_integrity.py]",
+  "test_code_graph_marks_nodes_with_learnings [tests/test_code_learnings.py]",
+  "test_conversion_needs_no_converted_entry_store [tests/test_symbol_migration.py]",
+  "test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale [tests/test_describe_queue.py]",
+  "test_deferred_describe_patches_each_symbol_by_fqname [tests/test_code_attribution.py]",
+  "test_deletion_gate_stays_permissive_for_a_pre_file_hash_index [tests/test_code_integrity.py]",
+  "test_describe_and_patch_patches_then_clobber_guards [tests/test_describe_queue.py]",
+  "test_dirty_record_is_swept_back_into_the_index_and_rewritten_valid [tests/test_code_integrity.py]",
+  "test_dossier_annotates_neighbours_with_their_descriptions [tests/test_code_learnings.py]",
+  "test_drop_file_bumps_epoch_and_invalidates [tests/test_code_cache.py]",
+  "test_drop_file_removes_symbols_and_edges [tests/test_code_learnings.py]",
+  "test_every_learning_verb_finds_a_note_whatever_it_is_bound_to [tests/test_code_learnings.py]",
+  "test_genuinely_empty_file_still_prunes [tests/test_grammar_enum.py]",
+  "test_keep_prior_on_empty_extraction [tests/test_grammar_enum.py]",
+  "test_llm_down_backfill_preserves_description [tests/test_describe_queue.py]",
+  "test_only_a_DIFFERENT_recorded_version_is_stale [tests/test_code_graph.py]",
+  "test_partial_extract_reconfirms_before_trusting_shrink [tests/test_code_cache.py]",
+  "test_patch_edges_keeps_cross_file_graph_consistent [tests/test_code_learnings.py]",
+  "test_patch_edges_resolves_a_qualified_edge_target_exactly [tests/test_code_attribution.py]",
+  "test_patch_edges_skips_an_ambiguous_same_named_target [tests/test_code_attribution.py]",
+  "test_patch_edges_updates_references_symmetrically [tests/test_code_attribution.py]",
+  "test_reconcile_rebuilds_merge_dirtied_files [tests/test_code_cache.py]",
+  "test_render_parse_roundtrip_including_empty_arrays [tests/test_codeindex.py]",
+  "test_revalidate_reindexes_merge_dirtied_file [tests/test_code_cache.py]",
+  "test_same_named_sources_in_one_file_patch_independently [tests/test_code_attribution.py]",
+  "test_status_inventories_projects [tests/test_status.py]",
+  "test_symbol_index_uses_legible_slug_filenames [tests/test_codeindex.py]",
+  "test_symbol_record_write_is_atomic [tests/test_code_integrity.py]",
+  "test_the_description_cache_hits_across_an_id_format_difference [tests/test_code_graph.py]",
+  "test_the_stamp_is_invisible_to_the_entry_reader [tests/test_code_graph.py]",
+  "test_unparseable_symbol_record_is_dropped_from_all [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "SymbolIndex",
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex",
+  "index",
+  "symbol",
+]

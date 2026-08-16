@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_code_graph.py#test_an_unknown_language_still_matches_on_either_separator"
+fqn = "tests.test_code_graph.test_an_unknown_language_still_matches_on_either_separator"
+name = "test_an_unknown_language_still_matches_on_either_separator"
+kind = "function"
+lang = "python"
+content_hash = "55a0965e29e81d67"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def test_an_unknown_language_still_matches_on_either_separator():"
+description = ""
+schema = 4
+line = 526
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "match_entry [crib/symbols.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "an",
+  "code",
+  "either",
+  "graph",
+  "language",
+  "matches",
+  "on",
+  "separator",
+  "still",
+  "test",
+  "test_an_unknown_language_still_matches_on_either_separator",
+  "tests",
+  "tests.test_code_graph.test_an_unknown_language_still_matches_on_either_separator",
+  "unknown",
+]

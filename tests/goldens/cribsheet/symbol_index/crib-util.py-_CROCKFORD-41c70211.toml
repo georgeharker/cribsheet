@@ -1,0 +1,31 @@
+symbol_ref = "crib/util.py#_CROCKFORD"
+fqn = "crib.util._CROCKFORD"
+name = "_CROCKFORD"
+kind = "constant"
+lang = "python"
+content_hash = "30684c7cc53ccf67"
+file = "crib/util.py"
+file_hash = "c8fb8142505bcf40"
+signature = "_CROCKFORD = \"0123456789ABCDEFGHJKMNPQRSTVWXYZ\""
+description = ""
+schema = 4
+line = 12
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "util",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_b32 [crib/util.py]",
+]
+name_terms = [
+  "_CROCKFORD",
+  "crib",
+  "crib.util._CROCKFORD",
+  "crockford",
+  "util",
+]

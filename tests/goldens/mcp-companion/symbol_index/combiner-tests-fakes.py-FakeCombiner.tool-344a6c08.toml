@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/fakes.py#FakeCombiner.tool"
+fqn = "combiner.tests.fakes.FakeCombiner.tool"
+name = "tool"
+kind = "method"
+lang = "python"
+content_hash = "637e14ff4a8f6bbb"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "def tool(self, *_args: Any, **_kwargs: Any):"
+description = ""
+schema = 4
+line = 33
+mtime = 1783534978000000000
+container = [
+  "FakeCombiner",
+]
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+  "FakeCombiner",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.fakes.FakeCombiner.tool",
+  "fake",
+  "fakes",
+  "tests",
+  "tool",
+]

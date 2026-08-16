@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_loop_responsiveness.py#TICK"
+fqn = "tests.test_loop_responsiveness.TICK"
+name = "TICK"
+kind = "constant"
+lang = "python"
+content_hash = "20e0b1ea9c8c5c7d"
+file = "tests/test_loop_responsiveness.py"
+file_hash = "3e5d3308dc33e6f4"
+signature = "TICK = 0.02         # heartbeat period"
+description = ""
+schema = 4
+line = 26
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_loop_responsiveness",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_measure [tests/test_loop_responsiveness.py]",
+  "heartbeat [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "TICK",
+  "loop",
+  "responsiveness",
+  "test",
+  "tests",
+  "tests.test_loop_responsiveness.TICK",
+  "tick",
+]

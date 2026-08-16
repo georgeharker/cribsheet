@@ -1,0 +1,47 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager.disconnect"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager.disconnect"
+name = "disconnect"
+kind = "method"
+lang = "python"
+content_hash = "1bdf8b1b19ce4d18"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "async def disconnect(self, name: str) -> None:"
+description = ""
+schema = 4
+line = 471
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = [
+  "_teardown [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "_unmount_server [combiner/mcp_combiner/meta_tools.py]",
+  "close_all [combiner/mcp_combiner/connections.py]",
+  "combiner__disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+]
+references = [
+  "_unmount_server [combiner/mcp_combiner/meta_tools.py]",
+  "close_all [combiner/mcp_combiner/connections.py]",
+  "combiner__disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.disconnect",
+  "connection",
+  "connections",
+  "disconnect",
+  "manager",
+  "mcp",
+]

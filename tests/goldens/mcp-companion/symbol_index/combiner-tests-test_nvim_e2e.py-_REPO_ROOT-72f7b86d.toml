@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/test_nvim_e2e.py#_REPO_ROOT"
+fqn = "combiner.tests.test_nvim_e2e._REPO_ROOT"
+name = "_REPO_ROOT"
+kind = "constant"
+lang = "python"
+content_hash = "71474678b08519b9"
+file = "combiner/tests/test_nvim_e2e.py"
+file_hash = "45d9b468ec0b5858"
+signature = "_REPO_ROOT = Path(__file__).resolve().parents[2]"
+description = ""
+schema = 4
+line = 32
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_nvim_e2e",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_COMBINER_DIR [combiner/tests/test_nvim_e2e.py]",
+  "_PLUGIN_ROOT [combiner/tests/test_nvim_e2e.py]",
+]
+name_terms = [
+  "2",
+  "_REPO_ROOT",
+  "combiner",
+  "combiner.tests.test_nvim_e2e._REPO_ROOT",
+  "e",
+  "nvim",
+  "repo",
+  "root",
+  "test",
+  "tests",
+]

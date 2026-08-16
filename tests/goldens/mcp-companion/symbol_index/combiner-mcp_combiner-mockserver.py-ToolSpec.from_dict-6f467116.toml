@@ -1,0 +1,47 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#ToolSpec.from_dict"
+fqn = "combiner.mcp_combiner.mockserver.ToolSpec.from_dict"
+name = "from_dict"
+kind = "method"
+lang = "python"
+content_hash = "282a01d7895319e7"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@classmethod"
+description = ""
+schema = 4
+line = 98
+mtime = 1783622326000000000
+container = [
+  "ToolSpec",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "ToolSpec",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_default_specs [combiner/mcp_combiner/mockserver.py]",
+  "control_add_tool [combiner/mcp_combiner/mockserver.py]",
+  "mock__add_tool [combiner/mcp_combiner/mockserver.py]",
+  "parse_tool_specs [combiner/mcp_combiner/mockserver.py]",
+]
+references = [
+  "_default_specs [combiner/mcp_combiner/mockserver.py]",
+  "control_add_tool [combiner/mcp_combiner/mockserver.py]",
+  "mock__add_tool [combiner/mcp_combiner/mockserver.py]",
+  "parse_tool_specs [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.ToolSpec.from_dict",
+  "dict",
+  "from",
+  "from_dict",
+  "mcp",
+  "mockserver",
+  "spec",
+  "tool",
+]

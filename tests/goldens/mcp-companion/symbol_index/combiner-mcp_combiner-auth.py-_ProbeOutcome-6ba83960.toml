@@ -1,0 +1,48 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_ProbeOutcome"
+fqn = "combiner.mcp_combiner.auth._ProbeOutcome"
+name = "_ProbeOutcome"
+kind = "class"
+lang = "python"
+content_hash = "03816d43c9941b46"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "class _ProbeOutcome(enum.Enum):"
+description = ""
+schema = 4
+line = 63
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_drive_401 [combiner/tests/test_auth.py]",
+  "_probe_token_at [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+  "test_401_propagated_when_google_says_token_valid [combiner/tests/test_auth.py]",
+  "test_401_propagated_when_probe_unknown [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_auth_error_falls_through [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_network_error_propagates [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retries_quietly [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retry_still_401_propagates [combiner/tests/test_auth.py]",
+  "test_probe_returns_invalid_on_401 [combiner/tests/test_auth.py]",
+  "test_probe_returns_unknown_on_5xx [combiner/tests/test_auth.py]",
+  "test_probe_returns_unknown_on_network_error [combiner/tests/test_auth.py]",
+  "test_probe_returns_valid_on_200 [combiner/tests/test_auth.py]",
+  "test_self_validating_provider_falls_through_to_sdk [combiner/tests/test_auth.py]",
+  "test_third_party_unknown_validator_propagates [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "_ProbeOutcome",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._ProbeOutcome",
+  "mcp",
+  "outcome",
+  "probe",
+]

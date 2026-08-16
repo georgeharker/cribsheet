@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_symbol_shape.py#_CRIB"
+fqn = "tests.test_symbol_shape._CRIB"
+name = "_CRIB"
+kind = "constant"
+lang = "python"
+content_hash = "10bf3bf06a889b09"
+file = "tests/test_symbol_shape.py"
+file_hash = "cbe61056081f2393"
+signature = "_CRIB = Path(__file__).resolve().parent.parent / \"crib\""
+description = ""
+schema = 4
+line = 24
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_shape",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_entry_fields [tests/test_symbol_shape.py]",
+  "test_no_code_module_splits_a_reference_by_hand [tests/test_symbol_shape.py]",
+  "test_no_module_but_symbols_knows_how_a_symbol_is_spelled [tests/test_symbol_shape.py]",
+  "test_only_the_full_sweep_stamps_the_store [tests/test_symbol_shape.py]",
+]
+name_terms = [
+  "_CRIB",
+  "crib",
+  "shape",
+  "symbol",
+  "test",
+  "tests",
+  "tests.test_symbol_shape._CRIB",
+]

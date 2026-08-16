@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_pillar_stores.py#crib"
+fqn = "tests.test_pillar_stores.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+content_hash = "843661f7d5a24b5e"
+file = "tests/test_pillar_stores.py"
+file_hash = "1a0ecd183d71d1ba"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 18
+mtime = 1786138910000000000
+container = []
+scope = [
+  "tests",
+  "test_pillar_stores",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "pillar",
+  "stores",
+  "test",
+  "tests",
+  "tests.test_pillar_stores.crib",
+]

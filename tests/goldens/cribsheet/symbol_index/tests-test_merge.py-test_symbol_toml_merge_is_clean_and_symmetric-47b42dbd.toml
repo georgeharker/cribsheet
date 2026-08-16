@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_merge.py#test_symbol_toml_merge_is_clean_and_symmetric"
+fqn = "tests.test_merge.test_symbol_toml_merge_is_clean_and_symmetric"
+name = "test_symbol_toml_merge_is_clean_and_symmetric"
+kind = "function"
+lang = "python"
+content_hash = "c3c6b5da39b28611"
+file = "tests/test_merge.py"
+file_hash = "3726dccae7cf8779"
+signature = "def test_symbol_toml_merge_is_clean_and_symmetric():"
+description = ""
+schema = 4
+line = 79
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_merge",
+]
+symbol_was = []
+calls = [
+  "_parse [crib/codeindex.py]",
+  "_render [crib/codeindex.py]",
+  "merge_symbol_texts [crib/merge.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "clean",
+  "is",
+  "merge",
+  "symbol",
+  "symmetric",
+  "test",
+  "test_symbol_toml_merge_is_clean_and_symmetric",
+  "tests",
+  "tests.test_merge.test_symbol_toml_merge_is_clean_and_symmetric",
+  "toml",
+]

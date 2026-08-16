@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockState.calls_total"
+fqn = "combiner.mcp_combiner.mockserver.MockState.calls_total"
+name = "calls_total"
+kind = "field"
+lang = "python"
+content_hash = "d9c15486fd3b98f9"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "calls_total: int = 0"
+description = ""
+schema = 4
+line = 157
+mtime = 1783622326000000000
+container = [
+  "MockState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockState",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "mock__stats [combiner/mcp_combiner/mockserver.py]",
+  "snapshot [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "calls",
+  "calls_total",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockState.calls_total",
+  "mcp",
+  "mock",
+  "mockserver",
+  "state",
+  "total",
+]

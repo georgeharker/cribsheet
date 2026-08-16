@@ -1,0 +1,36 @@
+symbol_ref = "combiner/tests/test_config.py#test_server_config_isolate_true"
+fqn = "combiner.tests.test_config.test_server_config_isolate_true"
+name = "test_server_config_isolate_true"
+kind = "function"
+lang = "python"
+content_hash = "2be708c259f9d5d9"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_server_config_isolate_true() -> None:"
+description = ""
+schema = 4
+line = 137
+mtime = 1782852601000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+]
+symbol_was = []
+calls = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.test_server_config_isolate_true",
+  "config",
+  "isolate",
+  "server",
+  "test",
+  "test_server_config_isolate_true",
+  "tests",
+  "true",
+]

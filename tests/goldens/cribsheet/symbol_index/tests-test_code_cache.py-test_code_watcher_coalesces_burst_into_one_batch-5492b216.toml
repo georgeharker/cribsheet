@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_code_cache.py#test_code_watcher_coalesces_burst_into_one_batch"
+fqn = "tests.test_code_cache.test_code_watcher_coalesces_burst_into_one_batch"
+name = "test_code_watcher_coalesces_burst_into_one_batch"
+kind = "function"
+lang = "python"
+content_hash = "6be3d51991f0acec"
+file = "tests/test_code_cache.py"
+file_hash = "44f8f848adca2094"
+signature = "def test_code_watcher_coalesces_burst_into_one_batch(tmp_path):"
+description = ""
+schema = 4
+line = 196
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_cache",
+]
+symbol_was = []
+calls = [
+  "scenario [tests/test_code_cache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "batch",
+  "burst",
+  "cache",
+  "coalesces",
+  "code",
+  "into",
+  "one",
+  "test",
+  "test_code_watcher_coalesces_burst_into_one_batch",
+  "tests",
+  "tests.test_code_cache.test_code_watcher_coalesces_burst_into_one_batch",
+  "watcher",
+]

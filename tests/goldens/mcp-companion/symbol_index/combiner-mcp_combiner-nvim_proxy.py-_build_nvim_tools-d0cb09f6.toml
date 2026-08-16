@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/nvim_proxy.py#_build_nvim_tools"
+fqn = "combiner.mcp_combiner.nvim_proxy._build_nvim_tools"
+name = "_build_nvim_tools"
+kind = "function"
+lang = "python"
+content_hash = "02493a8e55f2157c"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+file_hash = "072f85ddbeb3b759"
+signature = "def _build_nvim_tools(manifest: dict[str, Any]) -> list[Tool]:"
+description = ""
+schema = 4
+line = 117
+mtime = 1783022631000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "nvim_proxy",
+]
+symbol_was = []
+calls = [
+  "_inject_instance_arg [combiner/mcp_combiner/nvim_proxy.py]",
+]
+called_by = [
+  "append_nvim_tools [combiner/mcp_combiner/nvim_proxy.py]",
+  "test_build_nvim_tools_carries_output_schema [combiner/tests/test_session_filter.py]",
+  "test_list_schema_yields_object_tool [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "append_nvim_tools [combiner/mcp_combiner/nvim_proxy.py]",
+  "test_build_nvim_tools_carries_output_schema [combiner/tests/test_session_filter.py]",
+  "test_list_schema_yields_object_tool [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_build_nvim_tools",
+  "build",
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy._build_nvim_tools",
+  "mcp",
+  "nvim",
+  "proxy",
+  "tools",
+]

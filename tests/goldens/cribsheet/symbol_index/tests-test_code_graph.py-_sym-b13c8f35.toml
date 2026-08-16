@@ -1,0 +1,53 @@
+symbol_ref = "tests/test_code_graph.py#_sym"
+fqn = "tests.test_code_graph._sym"
+name = "_sym"
+kind = "function"
+lang = "python"
+content_hash = "6c9cdeb2a20bbca0"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def _sym(crib, project, fqname, file, **over):"
+description = ""
+schema = 4
+line = 34
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "fqn [crib/symbols.py]",
+  "scope_of [crib/symbols.py]",
+  "symbol_ref [crib/symbols.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = [
+  "_diamond [tests/test_code_graph.py]",
+  "_rust_ish [tests/test_code_graph.py]",
+  "_wrapper_and_op [tests/test_code_graph.py]",
+  "test_a_file_scoped_language_groups_by_its_file [tests/test_code_graph.py]",
+  "test_an_indexed_entry_carries_its_language_scope [tests/test_code_graph.py]",
+  "test_constraints_do_not_weaken_unique_or_refuse [tests/test_code_graph.py]",
+  "test_the_no_scope_sentinel_is_structural [tests/test_code_graph.py]",
+]
+references = [
+  "_diamond [tests/test_code_graph.py]",
+  "_rust_ish [tests/test_code_graph.py]",
+  "_wrapper_and_op [tests/test_code_graph.py]",
+  "test_a_file_scoped_language_groups_by_its_file [tests/test_code_graph.py]",
+  "test_an_indexed_entry_carries_its_language_scope [tests/test_code_graph.py]",
+  "test_constraints_do_not_weaken_unique_or_refuse [tests/test_code_graph.py]",
+  "test_the_no_scope_sentinel_is_structural [tests/test_code_graph.py]",
+]
+name_terms = [
+  "_sym",
+  "code",
+  "graph",
+  "sym",
+  "test",
+  "tests",
+  "tests.test_code_graph._sym",
+]

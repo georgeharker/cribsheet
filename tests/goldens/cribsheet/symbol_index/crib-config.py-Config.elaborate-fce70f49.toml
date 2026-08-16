@@ -1,0 +1,34 @@
+symbol_ref = "crib/config.py#Config.elaborate"
+fqn = "crib.config.Config.elaborate"
+name = "elaborate"
+kind = "field"
+lang = "python"
+content_hash = "fd8472451ce93cc7"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "elaborate: dict[str, dict[str, Any]] = field(default_factory=dict)"
+description = ""
+schema = 4
+line = 263
+mtime = 1786564832000000000
+container = [
+  "Config",
+]
+scope = [
+  "crib",
+  "config",
+  "Config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "elaborate [crib/app.py]",
+  "enrich [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.elaborate",
+  "elaborate",
+]

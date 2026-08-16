@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#TokenRequest.client_id"
+fqn = "combiner.mcp_combiner.mockserver.TokenRequest.client_id"
+name = "client_id"
+kind = "field"
+lang = "python"
+content_hash = "386222916bd8625d"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "client_id: str | None"
+description = ""
+schema = 4
+line = 621
+mtime = 1783622326000000000
+container = [
+  "TokenRequest",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "TokenRequest",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_full_flow_issues_and_attaches_tokens [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_sends_right_token_and_stores_rotated [combiner/tests/test_oauth_mock.py]",
+  "token [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "client",
+  "client_id",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.TokenRequest.client_id",
+  "id",
+  "mcp",
+  "mockserver",
+  "request",
+  "token",
+]

@@ -1,0 +1,43 @@
+symbol_ref = "crib/designs.py#Graph.dependents"
+fqn = "crib.designs.Graph.dependents"
+name = "dependents"
+kind = "field"
+lang = "python"
+content_hash = "c81fa5e76e3d1d0d"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "dependents: dict[str, list[str]] = field(default_factory=dict)"
+description = ""
+schema = 4
+line = 346
+mtime = 1786693579000000000
+container = [
+  "Graph",
+]
+scope = [
+  "crib",
+  "designs",
+  "Graph",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_forget [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_taint [tests/test_designs.py]",
+  "annotate_hits [crib/designs.py]",
+  "build [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+  "design_tree [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Graph.dependents",
+  "dependents",
+  "designs",
+  "graph",
+]

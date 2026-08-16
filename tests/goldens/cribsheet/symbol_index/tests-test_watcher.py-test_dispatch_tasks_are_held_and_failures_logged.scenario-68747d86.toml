@@ -1,0 +1,46 @@
+symbol_ref = "tests/test_watcher.py#test_dispatch_tasks_are_held_and_failures_logged.scenario"
+fqn = "tests.test_watcher.test_dispatch_tasks_are_held_and_failures_logged.scenario"
+name = "scenario"
+kind = "function"
+lang = "python"
+content_hash = "7a969002f6eb8a32"
+file = "tests/test_watcher.py"
+file_hash = "f95c6316824837fd"
+signature = "async def scenario():"
+description = ""
+schema = 4
+line = 210
+mtime = 1786139638000000000
+container = [
+  "test_dispatch_tasks_are_held_and_failures_logged",
+]
+scope = [
+  "tests",
+  "test_watcher",
+  "test_dispatch_tasks_are_held_and_failures_logged",
+]
+symbol_was = []
+calls = [
+  "Watcher [crib/watch.py]",
+  "_fire [crib/watch.py]",
+]
+called_by = [
+  "test_dispatch_tasks_are_held_and_failures_logged [tests/test_watcher.py]",
+]
+references = [
+  "test_dispatch_tasks_are_held_and_failures_logged [tests/test_watcher.py]",
+]
+name_terms = [
+  "and",
+  "are",
+  "dispatch",
+  "failures",
+  "held",
+  "logged",
+  "scenario",
+  "tasks",
+  "test",
+  "tests",
+  "tests.test_watcher.test_dispatch_tasks_are_held_and_failures_logged.scenario",
+  "watcher",
+]

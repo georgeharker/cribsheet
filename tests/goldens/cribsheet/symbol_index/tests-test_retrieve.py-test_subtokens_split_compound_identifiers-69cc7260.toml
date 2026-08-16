@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_retrieve.py#test_subtokens_split_compound_identifiers"
+fqn = "tests.test_retrieve.test_subtokens_split_compound_identifiers"
+name = "test_subtokens_split_compound_identifiers"
+kind = "function"
+lang = "python"
+content_hash = "a354286747897e92"
+file = "tests/test_retrieve.py"
+file_hash = "e2f2cfadeca4f35a"
+signature = "def test_subtokens_split_compound_identifiers():"
+description = ""
+schema = 4
+line = 30
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_retrieve",
+]
+symbol_was = []
+calls = [
+  "_subtokens [crib/retrieve.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "compound",
+  "identifiers",
+  "retrieve",
+  "split",
+  "subtokens",
+  "test",
+  "test_subtokens_split_compound_identifiers",
+  "tests",
+  "tests.test_retrieve.test_subtokens_split_compound_identifiers",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager.is_connected"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager.is_connected"
+name = "is_connected"
+kind = "method"
+lang = "python"
+content_hash = "22aea075477f3b5f"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "def is_connected(self, name: str) -> bool:"
+description = ""
+schema = 4
+line = 242
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+]
+references = [
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.is_connected",
+  "connected",
+  "connection",
+  "connections",
+  "is",
+  "is_connected",
+  "manager",
+  "mcp",
+]

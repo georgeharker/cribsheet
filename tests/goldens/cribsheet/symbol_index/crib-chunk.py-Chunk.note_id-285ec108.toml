@@ -1,0 +1,35 @@
+symbol_ref = "crib/chunk.py#Chunk.note_id"
+fqn = "crib.chunk.Chunk.note_id"
+name = "note_id"
+kind = "field"
+lang = "python"
+content_hash = "cce4f5aae08ef546"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "note_id: str"
+description = ""
+schema = 4
+line = 56
+mtime = 1786136167000000000
+container = [
+  "Chunk",
+]
+scope = [
+  "crib",
+  "chunk",
+  "Chunk",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "metadata [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.note_id",
+  "id",
+  "note",
+  "note_id",
+]

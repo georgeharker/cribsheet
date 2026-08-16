@@ -1,0 +1,47 @@
+symbol_ref = "scripts/eval_rigor.py#main"
+fqn = "scripts.eval_rigor.main"
+name = "main"
+kind = "function"
+lang = "python"
+content_hash = "ead629cbd3086cad"
+file = "scripts/eval_rigor.py"
+file_hash = "352ea4b1e1221f95"
+signature = "def main(argv=None) -> int:"
+description = ""
+schema = 4
+line = 40
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_rigor",
+]
+symbol_was = []
+calls = [
+  "BM25 [crib/retrieve.py]",
+  "Feat [scripts/eval_fusion.py]",
+  "_leaf [scripts/eval_rigor.py]",
+  "_subtokens [crib/retrieve.py]",
+  "close [crib/app.py]",
+  "h3 [scripts/eval_rigor.py]",
+  "mm [scripts/eval_rigor.py]",
+  "mrr [scripts/eval_rigor.py]",
+  "open [crib/app.py]",
+  "order_from [scripts/eval_fusion.py]",
+  "p1 [scripts/eval_rigor.py]",
+  "rank_exact [scripts/eval_rigor.py]",
+  "reciprocal_rank_fusion [crib/retrieve.py]",
+  "signals [scripts/eval_rigor.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = [
+  "eval_rigor [scripts/eval_rigor.py]",
+]
+references = []
+name_terms = [
+  "eval",
+  "main",
+  "rigor",
+  "scripts",
+  "scripts.eval_rigor.main",
+]

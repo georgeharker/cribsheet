@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_upstream_restart.py#_wait_pid_gone._gone"
+fqn = "combiner.tests.test_upstream_restart._wait_pid_gone._gone"
+name = "_gone"
+kind = "function"
+lang = "python"
+content_hash = "e9d5327205b7f426"
+file = "combiner/tests/test_upstream_restart.py"
+file_hash = "c3ceaa6ec420f1df"
+signature = "async def _gone() -> bool:"
+description = ""
+schema = 4
+line = 69
+mtime = 1783534978000000000
+container = [
+  "_wait_pid_gone",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_upstream_restart",
+  "_wait_pid_gone",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_wait_pid_gone [combiner/tests/test_upstream_restart.py]",
+]
+name_terms = [
+  "_gone",
+  "combiner",
+  "combiner.tests.test_upstream_restart._wait_pid_gone._gone",
+  "gone",
+  "pid",
+  "restart",
+  "test",
+  "tests",
+  "upstream",
+  "wait",
+]

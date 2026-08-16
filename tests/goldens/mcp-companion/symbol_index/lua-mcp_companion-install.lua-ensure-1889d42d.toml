@@ -1,0 +1,39 @@
+symbol_ref = "lua/mcp_companion/install.lua#ensure"
+fqn = "mcp_companion.install.ensure"
+name = "ensure"
+kind = "function"
+lang = "lua"
+content_hash = "e6570655b72c4e75"
+file = "lua/mcp_companion/install.lua"
+file_hash = "3de9ccc3f9cb05c6"
+signature = "function M.ensure(venv, callback, force)"
+description = ""
+schema = 4
+line = 96
+mtime = 1782852601000000000
+container = []
+scope = [
+  "mcp_companion",
+  "install",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.ensure [lua/mcp_companion/install.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "install.lua [lua/mcp_companion/install.lua]",
+]
+references = [
+  "if [lua/mcp_companion/init.lua]",
+  "if [lua/mcp_companion/install.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+  "target_venv [lua/mcp_companion/install.lua]",
+  "venv [lua/mcp_companion/install.lua]",
+]
+name_terms = [
+  "companion",
+  "ensure",
+  "install",
+  "mcp",
+  "mcp_companion.install.ensure",
+]

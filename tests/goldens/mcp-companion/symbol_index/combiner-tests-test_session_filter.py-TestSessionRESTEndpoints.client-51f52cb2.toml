@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestSessionRESTEndpoints.client"
+fqn = "combiner.tests.test_session_filter.TestSessionRESTEndpoints.client"
+name = "client"
+kind = "method"
+lang = "python"
+content_hash = "ed7234188456e9b8"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "@pytest.fixture"
+description = ""
+schema = 4
+line = 155
+mtime = 1784493613000000000
+container = [
+  "TestSessionRESTEndpoints",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestSessionRESTEndpoints",
+]
+symbol_was = []
+calls = [
+  "_make_combiner_app [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "combiner",
+  "combiner.tests.test_session_filter.TestSessionRESTEndpoints.client",
+  "endpoints",
+  "filter",
+  "rest",
+  "session",
+  "test",
+  "tests",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_claude_memory.py#_write"
+fqn = "tests.test_claude_memory._write"
+name = "_write"
+kind = "function"
+lang = "python"
+content_hash = "98e7890eadcc547c"
+file = "tests/test_claude_memory.py"
+file_hash = "f5a685193106ac4d"
+signature = "def _write(p: Path, text: str) -> None:"
+description = ""
+schema = 4
+line = 35
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_claude_memory",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_find_harness_root_walks_up [tests/test_claude_memory.py]",
+  "test_resync_is_idempotent_and_reconciles_deletes [tests/test_claude_memory.py]",
+  "test_sync_mirrors_indexes_and_tags [tests/test_claude_memory.py]",
+]
+references = [
+  "test_find_harness_root_walks_up [tests/test_claude_memory.py]",
+  "test_resync_is_idempotent_and_reconciles_deletes [tests/test_claude_memory.py]",
+  "test_sync_mirrors_indexes_and_tags [tests/test_claude_memory.py]",
+]
+name_terms = [
+  "_write",
+  "claude",
+  "memory",
+  "test",
+  "tests",
+  "tests.test_claude_memory._write",
+  "write",
+]

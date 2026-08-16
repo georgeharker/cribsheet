@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_status.py#test_budgeted_sweep_defers_and_resumes"
+fqn = "tests.test_status.test_budgeted_sweep_defers_and_resumes"
+name = "test_budgeted_sweep_defers_and_resumes"
+kind = "function"
+lang = "python"
+content_hash = "2e7b1f27dea39da3"
+file = "tests/test_status.py"
+file_hash = "09906d8541a460d9"
+signature = "def test_budgeted_sweep_defers_and_resumes(crib, tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 82
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_status",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "budgeted",
+  "defers",
+  "resumes",
+  "status",
+  "sweep",
+  "test",
+  "test_budgeted_sweep_defers_and_resumes",
+  "tests",
+  "tests.test_status.test_budgeted_sweep_defers_and_resumes",
+]

@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestIsolatedUpstreamSessions"
+fqn = "combiner.tests.test_session_independence.TestIsolatedUpstreamSessions"
+name = "TestIsolatedUpstreamSessions"
+kind = "class"
+lang = "python"
+content_hash = "598c24ca1c7aeb03"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "class TestIsolatedUpstreamSessions:"
+description = ""
+schema = 4
+line = 318
+mtime = 1783541669000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestIsolatedUpstreamSessions",
+  "combiner",
+  "combiner.tests.test_session_independence.TestIsolatedUpstreamSessions",
+  "independence",
+  "isolated",
+  "session",
+  "sessions",
+  "test",
+  "tests",
+  "upstream",
+]

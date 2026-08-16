@@ -1,0 +1,32 @@
+symbol_ref = "combiner/mcp_combiner/server.py#_conn_manager"
+fqn = "combiner.mcp_combiner.server._conn_manager"
+name = "_conn_manager"
+kind = "global"
+lang = "python"
+content_hash = "90ef893d28e68780"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "_conn_manager: ConnectionManager | None = None"
+description = ""
+schema = 4
+line = 77
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_conn_manager",
+  "combiner",
+  "combiner.mcp_combiner.server._conn_manager",
+  "conn",
+  "manager",
+  "mcp",
+  "server",
+]

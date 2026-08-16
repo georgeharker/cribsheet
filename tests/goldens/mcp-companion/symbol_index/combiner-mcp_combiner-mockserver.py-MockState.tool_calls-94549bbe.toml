@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockState.tool_calls"
+fqn = "combiner.mcp_combiner.mockserver.MockState.tool_calls"
+name = "tool_calls"
+kind = "field"
+lang = "python"
+content_hash = "409159b1fe6efee8"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "tool_calls: dict[str, int] = field(default_factory=dict)"
+description = ""
+schema = 4
+line = 158
+mtime = 1783622326000000000
+container = [
+  "MockState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockState",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "mock__stats [combiner/mcp_combiner/mockserver.py]",
+  "record_call [combiner/mcp_combiner/mockserver.py]",
+  "snapshot [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "calls",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockState.tool_calls",
+  "mcp",
+  "mock",
+  "mockserver",
+  "state",
+  "tool",
+  "tool_calls",
+]

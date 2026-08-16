@@ -1,0 +1,42 @@
+symbol_ref = "crib/app.py#Crib._generate_enrichment._record"
+fqn = "crib.app.Crib._generate_enrichment._record"
+name = "_record"
+kind = "function"
+lang = "python"
+content_hash = "327486bbb647afb3"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _record(facet: dict, sh: str, rp: str, heading: str,"
+description = ""
+schema = 4
+line = 2518
+mtime = 1786693579000000000
+container = [
+  "Crib",
+  "_generate_enrichment",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+  "_generate_enrichment",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_bulk [crib/app.py]",
+  "_one_facet [crib/app.py]",
+]
+references = [
+  "_bulk [crib/app.py]",
+  "_one_facet [crib/app.py]",
+]
+name_terms = [
+  "_record",
+  "app",
+  "crib",
+  "crib.app.Crib._generate_enrichment._record",
+  "enrichment",
+  "generate",
+  "record",
+]

@@ -1,0 +1,44 @@
+symbol_ref = "crib/codeindexer.py#CodeIndexer._index_code_file_tracked"
+fqn = "crib.codeindexer.CodeIndexer._index_code_file_tracked"
+name = "_index_code_file_tracked"
+kind = "method"
+lang = "python"
+content_hash = "c4b367bade239233"
+file = "crib/codeindexer.py"
+file_hash = "8848838a57e51f0a"
+signature = "def _index_code_file_tracked(self, root: Path, rel: str, proj: str,"
+description = ""
+schema = 4
+line = 83
+mtime = 1786664729000000000
+container = [
+  "CodeIndexer",
+]
+scope = [
+  "crib",
+  "codeindexer",
+  "CodeIndexer",
+]
+symbol_was = []
+calls = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+called_by = [
+  "_index_code_file_tracked [crib/app.py]",
+]
+references = [
+  "_index_code_file_tracked [crib/app.py]",
+  "_one [crib/codeindexer.py]",
+  "code_index [crib/codeindexer.py]",
+]
+name_terms = [
+  "_index_code_file_tracked",
+  "code",
+  "codeindexer",
+  "crib",
+  "crib.codeindexer.CodeIndexer._index_code_file_tracked",
+  "file",
+  "index",
+  "indexer",
+  "tracked",
+]

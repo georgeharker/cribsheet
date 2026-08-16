@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#ToolCacheState.stale_grace"
+fqn = "combiner.mcp_combiner.runtime.ToolCacheState.stale_grace"
+name = "stale_grace"
+kind = "field"
+lang = "python"
+content_hash = "4c65eb4e9025a7c8"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "stale_grace: float = 30.0"
+description = ""
+schema = 4
+line = 189
+mtime = 1784493613000000000
+container = [
+  "ToolCacheState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "ToolCacheState",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "create_combiner [combiner/mcp_combiner/server.py]",
+  "test_grace_window_expiry_drops_tools [combiner/tests/test_session_filter.py]",
+  "test_stale_tool_grace_configurable [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.runtime.ToolCacheState.stale_grace",
+  "grace",
+  "mcp",
+  "runtime",
+  "stale",
+  "stale_grace",
+  "state",
+  "tool",
+]

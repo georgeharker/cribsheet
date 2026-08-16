@@ -1,0 +1,49 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestLocalToolsReady.test_reprime_unchanged_list_is_silent"
+fqn = "combiner.tests.test_session_filter.TestLocalToolsReady.test_reprime_unchanged_list_is_silent"
+name = "test_reprime_unchanged_list_is_silent"
+kind = "method"
+lang = "python"
+content_hash = "72ff63f8a00aec95"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "async def test_reprime_unchanged_list_is_silent(self, monkeypatch):"
+description = ""
+schema = 4
+line = 709
+mtime = 1784493613000000000
+container = [
+  "TestLocalToolsReady",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestLocalToolsReady",
+]
+symbol_was = []
+calls = [
+  "_cleanup [combiner/tests/test_session_filter.py]",
+  "_combiner_with_provider [combiner/tests/test_session_filter.py]",
+  "_tool [combiner/tests/test_session_filter.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "store_slice [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestLocalToolsReady.test_reprime_unchanged_list_is_silent",
+  "filter",
+  "is",
+  "list",
+  "local",
+  "ready",
+  "reprime",
+  "session",
+  "silent",
+  "test",
+  "test_reprime_unchanged_list_is_silent",
+  "tests",
+  "tools",
+  "unchanged",
+]

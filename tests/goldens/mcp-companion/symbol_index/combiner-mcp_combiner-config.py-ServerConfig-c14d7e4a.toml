@@ -1,0 +1,80 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ServerConfig"
+fqn = "combiner.mcp_combiner.config.ServerConfig"
+name = "ServerConfig"
+kind = "class"
+lang = "python"
+content_hash = "d7c3fb0c6ad299a8"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "class ServerConfig(BaseModel):"
+description = ""
+schema = 4
+line = 258
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_config [combiner/tests/test_app_meta.py]",
+  "_config [combiner/tests/test_session_filter.py]",
+  "_connect_but_down [combiner/tests/test_reload_config.py]",
+  "_connect_one [combiner/mcp_combiner/connections.py]",
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_effective_isolate [combiner/mcp_combiner/proxyfactory.py]",
+  "_is_local_upstream [combiner/mcp_combiner/connections.py]",
+  "_log_auth_failure_details [combiner/mcp_combiner/connections.py]",
+  "_make_disconnected_client [combiner/mcp_combiner/connections.py]",
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "_needs_oauth [combiner/mcp_combiner/proxyfactory.py]",
+  "build_http_transport [combiner/mcp_combiner/connections.py]",
+  "connect [combiner/mcp_combiner/connections.py]",
+  "connect [combiner/tests/fakes.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "get_enabled_servers [combiner/mcp_combiner/config.py]",
+  "is_http_server [combiner/mcp_combiner/connections.py]",
+  "is_http_server [combiner/tests/fakes.py]",
+  "load [combiner/mcp_combiner/config.py]",
+  "register [combiner/mcp_combiner/connections.py]",
+  "register [combiner/tests/fakes.py]",
+  "servers [combiner/mcp_combiner/config.py]",
+  "srv [combiner/mcp_combiner/connections.py]",
+  "test_args_expanded [combiner/tests/test_config.py]",
+  "test_auto_approve_false_becomes_empty [combiner/tests/test_config.py]",
+  "test_auto_approve_list [combiner/tests/test_config.py]",
+  "test_auto_approve_missing_defaults_empty [combiner/tests/test_config.py]",
+  "test_auto_approve_null_becomes_empty [combiner/tests/test_config.py]",
+  "test_auto_approve_true_becomes_wildcard [combiner/tests/test_config.py]",
+  "test_bool_value_coerced_to_str [combiner/tests/test_config.py]",
+  "test_command_expanded [combiner/tests/test_config.py]",
+  "test_default_fallback_in_config [combiner/tests/test_config.py]",
+  "test_effective_policy_via_combiner_config [combiner/tests/test_permissions.py]",
+  "test_env_expanded [combiner/tests/test_config.py]",
+  "test_float_value_coerced_to_str [combiner/tests/test_config.py]",
+  "test_headers_expanded [combiner/tests/test_config.py]",
+  "test_int_value_coerced_to_str [combiner/tests/test_config.py]",
+  "test_missing_env_defaults_empty [combiner/tests/test_config.py]",
+  "test_raw_config_not_mutated [combiner/tests/test_config.py]",
+  "test_server_config_from_dict_http [combiner/tests/test_config.py]",
+  "test_server_config_from_dict_stdio [combiner/tests/test_config.py]",
+  "test_server_config_isolate_absent_is_none [combiner/tests/test_config.py]",
+  "test_server_config_isolate_false_explicit [combiner/tests/test_config.py]",
+  "test_server_config_isolate_true [combiner/tests/test_config.py]",
+  "test_server_config_unknown_key_warns [combiner/tests/test_config.py]",
+  "test_string_value_passes_through [combiner/tests/test_config.py]",
+  "test_url_expanded [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "ServerConfig",
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig",
+  "config",
+  "mcp",
+  "server",
+]

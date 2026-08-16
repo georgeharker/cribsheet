@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_code_learnings.py#_note_bound_to"
+fqn = "tests.test_code_learnings._note_bound_to"
+name = "_note_bound_to"
+kind = "function"
+lang = "python"
+content_hash = "4bead4f985ed83d9"
+file = "tests/test_code_learnings.py"
+file_hash = "2cacd018989edacf"
+signature = "def _note_bound_to(crib, project, binding, body=\"pinned\", **fm):"
+description = ""
+schema = 4
+line = 281
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_learnings",
+]
+symbol_was = []
+calls = [
+  "Note [crib/notes.py]",
+  "save_atomic [crib/notes.py]",
+]
+called_by = [
+  "test_every_learning_verb_finds_a_note_whatever_it_is_bound_to [tests/test_code_learnings.py]",
+  "test_the_glyph_marks_the_node_whatever_the_note_is_bound_to [tests/test_code_learnings.py]",
+]
+references = [
+  "test_every_learning_verb_finds_a_note_whatever_it_is_bound_to [tests/test_code_learnings.py]",
+  "test_the_glyph_marks_the_node_whatever_the_note_is_bound_to [tests/test_code_learnings.py]",
+]
+name_terms = [
+  "_note_bound_to",
+  "bound",
+  "code",
+  "learnings",
+  "note",
+  "test",
+  "tests",
+  "tests.test_code_learnings._note_bound_to",
+  "to",
+]

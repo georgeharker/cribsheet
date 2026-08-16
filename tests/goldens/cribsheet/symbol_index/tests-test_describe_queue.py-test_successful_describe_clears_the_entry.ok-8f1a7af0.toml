@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_describe_queue.py#test_successful_describe_clears_the_entry.ok"
+fqn = "tests.test_describe_queue.test_successful_describe_clears_the_entry.ok"
+name = "ok"
+kind = "function"
+lang = "python"
+content_hash = "023d751787c048e6"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "async def ok(*a):"
+description = ""
+schema = 4
+line = 120
+mtime = 1786664729000000000
+container = [
+  "test_successful_describe_clears_the_entry",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "test_successful_describe_clears_the_entry",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_successful_describe_clears_the_entry [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "clears",
+  "describe",
+  "entry",
+  "ok",
+  "queue",
+  "successful",
+  "test",
+  "tests",
+  "tests.test_describe_queue.test_successful_describe_clears_the_entry.ok",
+  "the",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#DaemonConfig.enabled"
+fqn = "crib.config.DaemonConfig.enabled"
+name = "enabled"
+kind = "field"
+lang = "python"
+content_hash = "39bc353b35c4c464"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "enabled: bool = True"
+description = ""
+schema = 4
+line = 242
+mtime = 1786564832000000000
+container = [
+  "DaemonConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "DaemonConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "cmd_info [crib/cli.py]",
+  "main [crib/cli.py]",
+  "test_known_keys_are_unaffected [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.DaemonConfig.enabled",
+  "daemon",
+  "enabled",
+]

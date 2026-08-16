@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_claude_memory.py#test_sync_mirrors_indexes_and_tags"
+fqn = "tests.test_claude_memory.test_sync_mirrors_indexes_and_tags"
+name = "test_sync_mirrors_indexes_and_tags"
+kind = "function"
+lang = "python"
+content_hash = "5dae125487d62478"
+file = "tests/test_claude_memory.py"
+file_hash = "f5a685193106ac4d"
+signature = "def test_sync_mirrors_indexes_and_tags(env):"
+description = ""
+schema = 4
+line = 65
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_claude_memory",
+]
+symbol_was = []
+calls = [
+  "_write [tests/test_claude_memory.py]",
+  "hostslug [crib/claudemem.py]",
+  "run [tests/test_claude_memory.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "claude",
+  "indexes",
+  "memory",
+  "mirrors",
+  "sync",
+  "tags",
+  "test",
+  "test_sync_mirrors_indexes_and_tags",
+  "tests",
+  "tests.test_claude_memory.test_sync_mirrors_indexes_and_tags",
+]

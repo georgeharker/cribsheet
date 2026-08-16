@@ -1,0 +1,45 @@
+symbol_ref = "crib/designs.py#Designs.design_check"
+fqn = "crib.designs.Designs.design_check"
+name = "design_check"
+kind = "method"
+lang = "python"
+content_hash = "8467f259940b088c"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def design_check(self, proj: str, ref: str | None = None) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 1263
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_cycles [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_next [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_taint [crib/designs.py]",
+  "brief [crib/designs.py]",
+  "of_kind [crib/designs.py]",
+]
+called_by = [
+  "design_check [crib/app.py]",
+]
+references = [
+  "design_check [crib/app.py]",
+]
+name_terms = [
+  "check",
+  "crib",
+  "crib.designs.Designs.design_check",
+  "design",
+  "design_check",
+  "designs",
+]

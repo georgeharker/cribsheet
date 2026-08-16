@@ -1,0 +1,37 @@
+symbol_ref = "crib/section_index.py#parse_terms"
+fqn = "crib.section_index.parse_terms"
+name = "parse_terms"
+kind = "function"
+lang = "python"
+content_hash = "7d7bda954071d76e"
+file = "crib/section_index.py"
+file_hash = "a65e5200b70d95a7"
+signature = "def parse_terms(text: str) -> list[str]:"
+description = ""
+schema = 4
+line = 79
+mtime = 1786044759000000000
+container = []
+scope = [
+  "crib",
+  "section_index",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_one_facet [crib/app.py]",
+  "test_parse_terms_strips_noise_and_dedupes [tests/test_elaborate.py]",
+]
+references = [
+  "_one_facet [crib/app.py]",
+  "test_parse_terms_strips_noise_and_dedupes [tests/test_elaborate.py]",
+]
+name_terms = [
+  "crib",
+  "crib.section_index.parse_terms",
+  "index",
+  "parse",
+  "parse_terms",
+  "section",
+  "terms",
+]

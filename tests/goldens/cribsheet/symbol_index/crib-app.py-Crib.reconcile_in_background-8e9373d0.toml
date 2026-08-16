@@ -1,0 +1,44 @@
+symbol_ref = "crib/app.py#Crib.reconcile_in_background"
+fqn = "crib.app.Crib.reconcile_in_background"
+name = "reconcile_in_background"
+kind = "method"
+lang = "python"
+content_hash = "0d84913f68d453a7"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def reconcile_in_background(self, loop: asyncio.AbstractEventLoop,"
+description = ""
+schema = 4
+line = 840
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "_reconcile_background [crib/app.py]",
+  "_spawn_bg [crib/app.py]",
+  "stored_chunk_schema [crib/app.py]",
+]
+called_by = [
+  "_recover_from_wipe [crib/app.py]",
+  "_serve_async [crib/server.py]",
+]
+references = [
+  "_recover_from_wipe [crib/app.py]",
+  "_serve_async [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "background",
+  "crib",
+  "crib.app.Crib.reconcile_in_background",
+  "in",
+  "reconcile",
+  "reconcile_in_background",
+]

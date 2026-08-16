@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_app_meta.py#TestRewriteAppMeta.test_non_uri_resource_uri_left_alone"
+fqn = "combiner.tests.test_app_meta.TestRewriteAppMeta.test_non_uri_resource_uri_left_alone"
+name = "test_non_uri_resource_uri_left_alone"
+kind = "method"
+lang = "python"
+content_hash = "34646e5895cd3e78"
+file = "combiner/tests/test_app_meta.py"
+file_hash = "fc52f36639c3320a"
+signature = "def test_non_uri_resource_uri_left_alone(self) -> None:"
+description = ""
+schema = 4
+line = 84
+mtime = 1783629928000000000
+container = [
+  "TestRewriteAppMeta",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_app_meta",
+  "TestRewriteAppMeta",
+]
+symbol_was = []
+calls = [
+  "_rewrite_app_meta [combiner/mcp_combiner/middleware.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "alone",
+  "app",
+  "combiner",
+  "combiner.tests.test_app_meta.TestRewriteAppMeta.test_non_uri_resource_uri_left_alone",
+  "left",
+  "meta",
+  "non",
+  "resource",
+  "rewrite",
+  "test",
+  "test_non_uri_resource_uri_left_alone",
+  "tests",
+  "uri",
+]

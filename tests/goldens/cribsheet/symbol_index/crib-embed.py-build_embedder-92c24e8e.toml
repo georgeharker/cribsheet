@@ -1,0 +1,41 @@
+symbol_ref = "crib/embed.py#build_embedder"
+fqn = "crib.embed.build_embedder"
+name = "build_embedder"
+kind = "function"
+lang = "python"
+content_hash = "f176b4e80f953d90"
+file = "crib/embed.py"
+file_hash = "46323c76e4ac82a3"
+signature = "def build_embedder(cfg: EmbedConfig, stored_dim: int | None = None) -> Embedder:"
+description = ""
+schema = 4
+line = 180
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "embed",
+]
+symbol_was = []
+calls = [
+  "FastEmbedEmbedder [crib/embed.py]",
+  "HashEmbedder [crib/embed.py]",
+  "SentenceTransformerEmbedder [crib/embed.py]",
+  "_resolve_query_prefix [crib/embed.py]",
+]
+called_by = [
+  "__init__ [crib/app.py]",
+  "test_hash_fallback_still_applies_to_an_empty_store [tests/test_embed.py]",
+]
+references = [
+  "__init__ [crib/app.py]",
+  "test_hash_fallback_still_applies_to_an_empty_store [tests/test_embed.py]",
+]
+name_terms = [
+  "build",
+  "build_embedder",
+  "crib",
+  "crib.embed.build_embedder",
+  "embed",
+  "embedder",
+]

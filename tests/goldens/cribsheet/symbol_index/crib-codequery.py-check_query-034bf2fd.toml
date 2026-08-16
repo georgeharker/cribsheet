@@ -1,0 +1,48 @@
+symbol_ref = "crib/codequery.py#check_query"
+fqn = "crib.codequery.check_query"
+name = "check_query"
+kind = "function"
+lang = "python"
+content_hash = "5105525aded1ca82"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def check_query(query: str, name: str = \"query\") -> str:"
+description = ""
+schema = 4
+line = 191
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+]
+called_by = [
+  "code_lookup [crib/app.py]",
+  "dossier [crib/codequery.py]",
+  "graph [crib/codequery.py]",
+  "lookup [crib/app.py]",
+  "lookup [crib/codequery.py]",
+  "resolve_symbol [crib/refs.py]",
+  "xref [crib/codequery.py]",
+]
+references = [
+  "code_lookup [crib/app.py]",
+  "dossier [crib/codequery.py]",
+  "graph [crib/codequery.py]",
+  "lookup [crib/app.py]",
+  "lookup [crib/codequery.py]",
+  "resolve_symbol [crib/refs.py]",
+  "xref [crib/codequery.py]",
+]
+name_terms = [
+  "check",
+  "check_query",
+  "codequery",
+  "crib",
+  "crib.codequery.check_query",
+  "query",
+]

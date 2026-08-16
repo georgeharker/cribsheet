@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_keyword_refresh.py#test_enrich_one_call_covers_both_facets.fake_struct"
+fqn = "tests.test_keyword_refresh.test_enrich_one_call_covers_both_facets.fake_struct"
+name = "fake_struct"
+kind = "function"
+lang = "python"
+content_hash = "3f73570477e36af2"
+file = "tests/test_keyword_refresh.py"
+file_hash = "d758ff5010231936"
+signature = "async def fake_struct(cfg, system, user, schema, **kw):"
+description = ""
+schema = 4
+line = 65
+mtime = 1786044759000000000
+container = [
+  "test_enrich_one_call_covers_both_facets",
+]
+scope = [
+  "tests",
+  "test_keyword_refresh",
+  "test_enrich_one_call_covers_both_facets",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_enrich_one_call_covers_both_facets [tests/test_keyword_refresh.py]",
+]
+name_terms = [
+  "both",
+  "call",
+  "covers",
+  "enrich",
+  "facets",
+  "fake",
+  "fake_struct",
+  "keyword",
+  "one",
+  "refresh",
+  "struct",
+  "test",
+  "tests",
+  "tests.test_keyword_refresh.test_enrich_one_call_covers_both_facets.fake_struct",
+]

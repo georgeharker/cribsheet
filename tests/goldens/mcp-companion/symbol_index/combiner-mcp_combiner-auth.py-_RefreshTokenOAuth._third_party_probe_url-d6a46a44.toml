@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_RefreshTokenOAuth._third_party_probe_url"
+fqn = "combiner.mcp_combiner.auth._RefreshTokenOAuth._third_party_probe_url"
+name = "_third_party_probe_url"
+kind = "method"
+lang = "python"
+content_hash = "2c5c41a5a8d7f951"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "def _third_party_probe_url(self) -> str | None:"
+description = ""
+schema = 4
+line = 545
+mtime = 1783622326000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+  "_RefreshTokenOAuth",
+]
+symbol_was = []
+calls = [
+  "_delegated_validator_host [combiner/mcp_combiner/auth.py]",
+]
+called_by = [
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+references = [
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_third_party_probe_url",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth._third_party_probe_url",
+  "mcp",
+  "o",
+  "party",
+  "probe",
+  "refresh",
+  "third",
+  "token",
+  "url",
+]

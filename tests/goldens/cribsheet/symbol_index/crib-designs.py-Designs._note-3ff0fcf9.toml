@@ -1,0 +1,44 @@
+symbol_ref = "crib/designs.py#Designs._note"
+fqn = "crib.designs.Designs._note"
+name = "_note"
+kind = "method"
+lang = "python"
+content_hash = "2b68f402f97d0f05"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _note(self, proj: str, node: Node) -> Note:"
+description = ""
+schema = 4
+line = 451
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_store [crib/designs.py]",
+  "abspath [crib/notestore.py]",
+  "load [crib/notes.py]",
+]
+called_by = [
+  "_write_body [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+]
+references = [
+  "_write_body [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+]
+name_terms = [
+  "_note",
+  "crib",
+  "crib.designs.Designs._note",
+  "designs",
+  "note",
+]

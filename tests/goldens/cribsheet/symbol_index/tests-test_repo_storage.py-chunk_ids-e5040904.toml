@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_repo_storage.py#chunk_ids"
+fqn = "tests.test_repo_storage.chunk_ids"
+name = "chunk_ids"
+kind = "function"
+lang = "python"
+content_hash = "efde9a5b77b4c1d3"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def chunk_ids(crib, project):"
+description = ""
+schema = 4
+line = 57
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_adopt_moves_the_data_tier_and_leaves_chunk_ids_alone [tests/test_repo_storage.py]",
+  "test_release_moves_it_back_and_still_leaves_chunk_ids_alone [tests/test_repo_storage.py]",
+]
+references = [
+  "test_adopt_moves_the_data_tier_and_leaves_chunk_ids_alone [tests/test_repo_storage.py]",
+  "test_release_moves_it_back_and_still_leaves_chunk_ids_alone [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "chunk",
+  "chunk_ids",
+  "ids",
+  "repo",
+  "storage",
+  "test",
+  "tests",
+  "tests.test_repo_storage.chunk_ids",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "crib/app.py#Crib._spawn_bg"
+fqn = "crib.app.Crib._spawn_bg"
+name = "_spawn_bg"
+kind = "method"
+lang = "python"
+content_hash = "e1b1819fdc9021cb"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _spawn_bg(self, loop: asyncio.AbstractEventLoop, coro: Any) -> None:"
+description = ""
+schema = 4
+line = 311
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "reconcile_in_background [crib/app.py]",
+  "start_watchers [crib/app.py]",
+]
+references = [
+  "reconcile_in_background [crib/app.py]",
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "_spawn_bg",
+  "app",
+  "bg",
+  "crib",
+  "crib.app.Crib._spawn_bg",
+  "spawn",
+]

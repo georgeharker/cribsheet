@@ -1,0 +1,49 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestLocalToolsReady.test_prime_empty_answers_retry_until_timeout.list_tools"
+fqn = "combiner.tests.test_session_filter.TestLocalToolsReady.test_prime_empty_answers_retry_until_timeout.list_tools"
+name = "list_tools"
+kind = "function"
+lang = "python"
+content_hash = "3630c6e4eb4ca5a9"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "async def list_tools():"
+description = ""
+schema = 4
+line = 646
+mtime = 1784493613000000000
+container = [
+  "TestLocalToolsReady",
+  "test_prime_empty_answers_retry_until_timeout",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestLocalToolsReady",
+  "test_prime_empty_answers_retry_until_timeout",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_prime_empty_answers_retry_until_timeout [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "answers",
+  "combiner",
+  "combiner.tests.test_session_filter.TestLocalToolsReady.test_prime_empty_answers_retry_until_timeout.list_tools",
+  "empty",
+  "filter",
+  "list",
+  "list_tools",
+  "local",
+  "prime",
+  "ready",
+  "retry",
+  "session",
+  "test",
+  "tests",
+  "timeout",
+  "tools",
+  "until",
+]

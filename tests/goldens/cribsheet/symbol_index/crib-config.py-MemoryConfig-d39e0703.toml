@@ -1,0 +1,32 @@
+symbol_ref = "crib/config.py#MemoryConfig"
+fqn = "crib.config.MemoryConfig"
+name = "MemoryConfig"
+kind = "class"
+lang = "python"
+content_hash = "28c464558173832a"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 73
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "load [crib/config.py]",
+  "memory [crib/config.py]",
+]
+name_terms = [
+  "MemoryConfig",
+  "config",
+  "crib",
+  "crib.config.MemoryConfig",
+  "memory",
+]

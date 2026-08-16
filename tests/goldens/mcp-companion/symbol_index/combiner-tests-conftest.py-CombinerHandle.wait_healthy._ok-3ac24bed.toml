@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/conftest.py#CombinerHandle.wait_healthy._ok"
+fqn = "combiner.tests.conftest.CombinerHandle.wait_healthy._ok"
+name = "_ok"
+kind = "function"
+lang = "python"
+content_hash = "2fd7efacb7ea90d2"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "async def _ok() -> dict[str, Any] | None:"
+description = ""
+schema = 4
+line = 178
+mtime = 1783544328000000000
+container = [
+  "CombinerHandle",
+  "wait_healthy",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "CombinerHandle",
+  "wait_healthy",
+]
+symbol_was = []
+calls = [
+  "health [combiner/tests/conftest.py]",
+]
+called_by = []
+references = [
+  "wait_healthy [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "_ok",
+  "combiner",
+  "combiner.tests.conftest.CombinerHandle.wait_healthy._ok",
+  "conftest",
+  "handle",
+  "healthy",
+  "ok",
+  "tests",
+  "wait",
+]

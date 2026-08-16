@@ -1,0 +1,50 @@
+symbol_ref = "crib/notes.py#save_atomic"
+fqn = "crib.notes.save_atomic"
+name = "save_atomic"
+kind = "function"
+lang = "python"
+content_hash = "026b5068254e740e"
+file = "crib/notes.py"
+file_hash = "6e2385b754de60b6"
+signature = "def save_atomic(note: Note) -> None:"
+description = ""
+schema = 4
+line = 171
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "notes",
+]
+symbol_was = []
+calls = [
+  "serialize [crib/notes.py]",
+]
+called_by = [
+  "_legacy_note [tests/test_symbol_migration.py]",
+  "_note_bound_to [tests/test_code_learnings.py]",
+  "_plan [crib/indexer.py]",
+  "_requalify_facet_refs [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "move [crib/notestore.py]",
+  "test_import_pins_first_import_date [tests/test_import.py]",
+  "write [crib/notestore.py]",
+]
+references = [
+  "_legacy_note [tests/test_symbol_migration.py]",
+  "_note_bound_to [tests/test_code_learnings.py]",
+  "_plan [crib/indexer.py]",
+  "_requalify_facet_refs [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "move [crib/notestore.py]",
+  "test_import_pins_first_import_date [tests/test_import.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "atomic",
+  "crib",
+  "crib.notes.save_atomic",
+  "notes",
+  "save",
+  "save_atomic",
+]

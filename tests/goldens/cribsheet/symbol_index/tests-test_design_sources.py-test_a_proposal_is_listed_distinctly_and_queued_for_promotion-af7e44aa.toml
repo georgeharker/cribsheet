@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_design_sources.py#test_a_proposal_is_listed_distinctly_and_queued_for_promotion"
+fqn = "tests.test_design_sources.test_a_proposal_is_listed_distinctly_and_queued_for_promotion"
+name = "test_a_proposal_is_listed_distinctly_and_queued_for_promotion"
+kind = "function"
+lang = "python"
+content_hash = "764e474055a81237"
+file = "tests/test_design_sources.py"
+file_hash = "f89b5a94b236ce9c"
+signature = "def test_a_proposal_is_listed_distinctly_and_queued_for_promotion(crib):"
+description = ""
+schema = 4
+line = 248
+mtime = 1786137963000000000
+container = []
+scope = [
+  "tests",
+  "test_design_sources",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_design_sources.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "and",
+  "design",
+  "distinctly",
+  "for",
+  "is",
+  "listed",
+  "promotion",
+  "proposal",
+  "queued",
+  "sources",
+  "test",
+  "test_a_proposal_is_listed_distinctly_and_queued_for_promotion",
+  "tests",
+  "tests.test_design_sources.test_a_proposal_is_listed_distinctly_and_queued_for_promotion",
+]

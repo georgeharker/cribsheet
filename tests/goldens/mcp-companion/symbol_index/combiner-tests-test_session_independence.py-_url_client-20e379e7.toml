@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/test_session_independence.py#_url_client"
+fqn = "combiner.tests.test_session_independence._url_client"
+name = "_url_client"
+kind = "function"
+lang = "python"
+content_hash = "254eda635c2c6674"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "def _url_client(combiner: CombinerHandle, token: str) -> Client:"
+description = ""
+schema = 4
+line = 60
+mtime = 1783541669000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_concurrent_clients_get_distinct_sessions [combiner/tests/test_session_independence.py]",
+]
+references = [
+  "test_concurrent_clients_get_distinct_sessions [combiner/tests/test_session_independence.py]",
+]
+name_terms = [
+  "_url_client",
+  "client",
+  "combiner",
+  "combiner.tests.test_session_independence._url_client",
+  "independence",
+  "session",
+  "test",
+  "tests",
+  "url",
+]

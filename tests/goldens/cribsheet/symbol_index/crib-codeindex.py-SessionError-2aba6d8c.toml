@@ -1,0 +1,36 @@
+symbol_ref = "crib/codeindex.py#SessionError"
+fqn = "crib.codeindex.SessionError"
+name = "SessionError"
+kind = "class"
+lang = "python"
+content_hash = "75d719ace9b65160"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "class SessionError(ExtractError):"
+description = ""
+schema = 4
+line = 915
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_hover_doc [crib/codeindex.py]",
+  "extract_file [crib/codeindex.py]",
+  "request [crib/codeindex.py]",
+  "test_dead_session_raises_immediately_and_leaks_no_response_slot [tests/test_code_integrity.py]",
+  "test_timed_out_request_pops_its_own_response_slot [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "SessionError",
+  "codeindex",
+  "crib",
+  "crib.codeindex.SessionError",
+  "error",
+  "session",
+]

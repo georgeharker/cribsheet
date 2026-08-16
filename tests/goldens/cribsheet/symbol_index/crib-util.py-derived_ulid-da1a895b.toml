@@ -1,0 +1,47 @@
+symbol_ref = "crib/util.py#derived_ulid"
+fqn = "crib.util.derived_ulid"
+name = "derived_ulid"
+kind = "function"
+lang = "python"
+content_hash = "1d62adae03399994"
+file = "crib/util.py"
+file_hash = "c8fb8142505bcf40"
+signature = "def derived_ulid(*parts: str) -> str:"
+description = ""
+schema = 4
+line = 63
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "util",
+]
+symbol_was = []
+calls = [
+  "_b32 [crib/util.py]",
+]
+called_by = [
+  "_note_ring_ids [crib/app.py]",
+  "_plan [crib/indexer.py]",
+  "_ring_id [crib/notestore.py]",
+  "_stash_existing [crib/notestore.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "test_derived_ulid_is_stable_and_ulid_shaped [tests/test_normalize.py]",
+]
+references = [
+  "_note_ring_ids [crib/app.py]",
+  "_ring_id [crib/notestore.py]",
+  "_stash_existing [crib/notestore.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "test_derived_ulid_is_stable_and_ulid_shaped [tests/test_normalize.py]",
+]
+name_terms = [
+  "crib",
+  "crib.util.derived_ulid",
+  "derived",
+  "derived_ulid",
+  "ulid",
+  "util",
+]

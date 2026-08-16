@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/conftest.py#poll_until"
+fqn = "combiner.tests.conftest.poll_until"
+name = "poll_until"
+kind = "function"
+lang = "python"
+content_hash = "4edec734b306c62d"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "async def poll_until("
+description = ""
+schema = 4
+line = 134
+mtime = 1783544328000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_call_until_ok [combiner/tests/test_upstream_restart.py]",
+  "_wait_pid_gone [combiner/tests/test_upstream_restart.py]",
+  "make [combiner/tests/test_oauth_mock.py]",
+  "wait_healthy [combiner/tests/conftest.py]",
+  "wait_server_state [combiner/tests/conftest.py]",
+]
+references = [
+  "_call_until_ok [combiner/tests/test_upstream_restart.py]",
+  "_wait_pid_gone [combiner/tests/test_upstream_restart.py]",
+  "make [combiner/tests/test_oauth_mock.py]",
+  "wait_healthy [combiner/tests/conftest.py]",
+  "wait_server_state [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.poll_until",
+  "conftest",
+  "poll",
+  "poll_until",
+  "tests",
+  "until",
+]

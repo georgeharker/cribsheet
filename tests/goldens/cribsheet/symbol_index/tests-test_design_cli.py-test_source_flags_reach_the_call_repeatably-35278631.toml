@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_design_cli.py#test_source_flags_reach_the_call_repeatably"
+fqn = "tests.test_design_cli.test_source_flags_reach_the_call_repeatably"
+name = "test_source_flags_reach_the_call_repeatably"
+kind = "function"
+lang = "python"
+content_hash = "6181ed8b1d80bd17"
+file = "tests/test_design_cli.py"
+file_hash = "0f819c263d62afaf"
+signature = "@pytest.mark.parametrize(\"argv\", ["
+description = ""
+schema = 4
+line = 106
+mtime = 1785974065000000000
+container = []
+scope = [
+  "tests",
+  "test_design_cli",
+]
+symbol_was = []
+calls = [
+  "_call [tests/test_design_cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "call",
+  "cli",
+  "design",
+  "flags",
+  "reach",
+  "repeatably",
+  "source",
+  "test",
+  "test_source_flags_reach_the_call_repeatably",
+  "tests",
+  "tests.test_design_cli.test_source_flags_reach_the_call_repeatably",
+  "the",
+]

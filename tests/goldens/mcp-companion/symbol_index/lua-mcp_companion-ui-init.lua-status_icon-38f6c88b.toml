@@ -1,0 +1,37 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#status_icon"
+fqn = "mcp_companion.ui.status_icon"
+name = "status_icon"
+kind = "function"
+lang = "lua"
+content_hash = "6ae783ef279c3fac"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "local function status_icon(status)"
+description = ""
+schema = 4
+line = 45
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "ui",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/ui/init.lua]",
+  "render_combiner [lua/mcp_companion/ui/init.lua]",
+  "render_server [lua/mcp_companion/ui/init.lua]",
+]
+references = [
+  "icon [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "companion",
+  "icon",
+  "mcp",
+  "mcp_companion.ui.status_icon",
+  "status",
+  "status_icon",
+  "ui",
+]

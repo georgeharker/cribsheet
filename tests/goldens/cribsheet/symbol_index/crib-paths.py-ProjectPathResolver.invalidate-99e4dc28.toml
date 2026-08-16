@@ -1,0 +1,40 @@
+symbol_ref = "crib/paths.py#ProjectPathResolver.invalidate"
+fqn = "crib.paths.ProjectPathResolver.invalidate"
+name = "invalidate"
+kind = "method"
+lang = "python"
+content_hash = "1df4d7d6560e194c"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "def invalidate(self, project: str | None = None) -> None:"
+description = ""
+schema = 4
+line = 234
+mtime = 1786564832000000000
+container = [
+  "ProjectPathResolver",
+]
+scope = [
+  "crib",
+  "paths",
+  "ProjectPathResolver",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+]
+references = [
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.ProjectPathResolver.invalidate",
+  "invalidate",
+  "path",
+  "paths",
+  "project",
+  "resolver",
+]

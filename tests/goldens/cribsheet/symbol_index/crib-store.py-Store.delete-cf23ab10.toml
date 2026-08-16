@@ -1,0 +1,40 @@
+symbol_ref = "crib/store.py#Store.delete"
+fqn = "crib.store.Store.delete"
+name = "delete"
+kind = "method"
+lang = "python"
+content_hash = "0f78a5cd76f3fcf6"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def delete(self, ids: list[str]) -> None: ..."
+description = ""
+schema = 4
+line = 44
+mtime = 1786564832000000000
+container = [
+  "Store",
+]
+scope = [
+  "crib",
+  "store",
+  "Store",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_commit [crib/indexer.py]",
+  "_plan [crib/indexer.py]",
+  "project_forget [crib/app.py]",
+]
+references = [
+  "_commit [crib/indexer.py]",
+  "_plan [crib/indexer.py]",
+  "forget [crib/indexer.py]",
+  "project_forget [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Store.delete",
+  "delete",
+  "store",
+]

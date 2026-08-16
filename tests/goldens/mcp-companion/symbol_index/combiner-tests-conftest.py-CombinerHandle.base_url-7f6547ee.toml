@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/conftest.py#CombinerHandle.base_url"
+fqn = "combiner.tests.conftest.CombinerHandle.base_url"
+name = "base_url"
+kind = "method"
+lang = "python"
+content_hash = "8c0fa5b5f96ec39a"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "@property"
+description = ""
+schema = 4
+line = 163
+mtime = 1783544328000000000
+container = [
+  "CombinerHandle",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "CombinerHandle",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_rest [combiner/tests/test_session_independence.py]",
+  "health [combiner/tests/conftest.py]",
+  "mcp_url [combiner/tests/conftest.py]",
+]
+references = [
+  "_rest [combiner/tests/test_session_independence.py]",
+  "health [combiner/tests/conftest.py]",
+  "mcp_url [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "base",
+  "base_url",
+  "combiner",
+  "combiner.tests.conftest.CombinerHandle.base_url",
+  "conftest",
+  "handle",
+  "tests",
+  "url",
+]

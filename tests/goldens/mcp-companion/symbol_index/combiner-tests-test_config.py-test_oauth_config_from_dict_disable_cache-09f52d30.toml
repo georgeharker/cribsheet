@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/test_config.py#test_oauth_config_from_dict_disable_cache"
+fqn = "combiner.tests.test_config.test_oauth_config_from_dict_disable_cache"
+name = "test_oauth_config_from_dict_disable_cache"
+kind = "function"
+lang = "python"
+content_hash = "eb3e15320fb6c64e"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_oauth_config_from_dict_disable_cache() -> None:"
+description = ""
+schema = 4
+line = 76
+mtime = 1782852601000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+]
+symbol_was = []
+calls = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "combiner",
+  "combiner.tests.test_config.test_oauth_config_from_dict_disable_cache",
+  "config",
+  "dict",
+  "disable",
+  "from",
+  "oauth",
+  "test",
+  "test_oauth_config_from_dict_disable_cache",
+  "tests",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "crib/app.py#Crib.current_project"
+fqn = "crib.app.Crib.current_project"
+name = "current_project"
+kind = "method"
+lang = "python"
+content_hash = "d2cc6a86254822b2"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def current_project(self, cwd: Path | None = None) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 2898
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "projects [crib/app.py]",
+  "resolve_session_project [crib/session.py]",
+  "session_state [crib/session.py]",
+]
+called_by = [
+  "project_current [crib/server.py]",
+]
+references = [
+  "project_current [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.current_project",
+  "current",
+  "current_project",
+  "project",
+]

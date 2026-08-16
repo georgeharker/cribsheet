@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/schemafix.py#_TYPE_SIBLING_KEYWORDS"
+fqn = "combiner.mcp_combiner.schemafix._TYPE_SIBLING_KEYWORDS"
+name = "_TYPE_SIBLING_KEYWORDS"
+kind = "constant"
+lang = "python"
+content_hash = "f82fe8b02b1315b5"
+file = "combiner/mcp_combiner/schemafix.py"
+file_hash = "49870021f06866cb"
+signature = "_TYPE_SIBLING_KEYWORDS = frozenset("
+description = ""
+schema = 4
+line = 158
+mtime = 1783542616000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "schemafix",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_normalize_schema [combiner/mcp_combiner/schemafix.py]",
+]
+name_terms = [
+  "_TYPE_SIBLING_KEYWORDS",
+  "combiner",
+  "combiner.mcp_combiner.schemafix._TYPE_SIBLING_KEYWORDS",
+  "keywords",
+  "mcp",
+  "schemafix",
+  "sibling",
+  "type",
+]

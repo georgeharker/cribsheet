@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_describe_queue.py#crib"
+fqn = "tests.test_describe_queue.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+content_hash = "843661f7d5a24b5e"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 25
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "describe",
+  "queue",
+  "test",
+  "tests",
+  "tests.test_describe_queue.crib",
+]

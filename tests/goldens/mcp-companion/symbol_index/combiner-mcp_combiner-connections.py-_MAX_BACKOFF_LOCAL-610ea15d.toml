@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_MAX_BACKOFF_LOCAL"
+fqn = "combiner.mcp_combiner.connections._MAX_BACKOFF_LOCAL"
+name = "_MAX_BACKOFF_LOCAL"
+kind = "constant"
+lang = "python"
+content_hash = "d8d4ac89de419aa2"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_MAX_BACKOFF_LOCAL = _env_float(\"MCP_COMBINER_MAX_BACKOFF_LOCAL\", 15.0)"
+description = ""
+schema = 4
+line = 85
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+  "test_local_backoff_capped [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "_MAX_BACKOFF_LOCAL",
+  "backoff",
+  "combiner",
+  "combiner.mcp_combiner.connections._MAX_BACKOFF_LOCAL",
+  "connections",
+  "local",
+  "max",
+  "mcp",
+]

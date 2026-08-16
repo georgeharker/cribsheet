@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/config.py#PermissionPolicy.elicit_unavailable"
+fqn = "combiner.mcp_combiner.config.PermissionPolicy.elicit_unavailable"
+name = "elicit_unavailable"
+kind = "field"
+lang = "python"
+content_hash = "8a5d80fe389b6d65"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "elicit_unavailable: PermissionAction | None = None"
+description = ""
+schema = 4
+line = 162
+mtime = 1783633313000000000
+container = [
+  "PermissionPolicy",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "PermissionPolicy",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "test_parses_fields [combiner/tests/test_permissions.py]",
+  "test_snake_case_elicit_unavailable [combiner/tests/test_permissions.py]",
+  "test_unset_scalars_are_none [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.PermissionPolicy.elicit_unavailable",
+  "config",
+  "elicit",
+  "elicit_unavailable",
+  "mcp",
+  "permission",
+  "policy",
+  "unavailable",
+]

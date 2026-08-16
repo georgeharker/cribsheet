@@ -1,0 +1,35 @@
+symbol_ref = "crib/codequery.py#_under"
+fqn = "crib.codequery._under"
+name = "_under"
+kind = "function"
+lang = "python"
+content_hash = "f2a11da0d0e08e3c"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def _under(file: str, prefix: str) -> bool:"
+description = ""
+schema = 4
+line = 75
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "graph [crib/codequery.py]",
+  "test_whole_project_export_scopes_by_path_prefix [tests/test_code_graph.py]",
+]
+references = [
+  "graph [crib/codequery.py]",
+  "test_whole_project_export_scopes_by_path_prefix [tests/test_code_graph.py]",
+]
+name_terms = [
+  "_under",
+  "codequery",
+  "crib",
+  "crib.codequery._under",
+  "under",
+]

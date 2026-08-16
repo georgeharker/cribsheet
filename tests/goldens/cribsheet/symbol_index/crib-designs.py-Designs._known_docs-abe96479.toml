@@ -1,0 +1,41 @@
+symbol_ref = "crib/designs.py#Designs._known_docs"
+fqn = "crib.designs.Designs._known_docs"
+name = "_known_docs"
+kind = "method"
+lang = "python"
+content_hash = "5705082595de294b"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _known_docs(self, proj: str) -> set[str]:"
+description = ""
+schema = 4
+line = 471
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "format_docref [crib/designs.py]",
+  "get_meta [crib/store.py]",
+  "root [crib/notestore.py]",
+]
+called_by = [
+  "_resolve_doc [crib/designs.py]",
+]
+references = [
+  "_resolve_doc [crib/designs.py]",
+]
+name_terms = [
+  "_known_docs",
+  "crib",
+  "crib.designs.Designs._known_docs",
+  "designs",
+  "docs",
+  "known",
+]

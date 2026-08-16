@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/nvim_channel.py#NvimChannelManager"
+fqn = "combiner.mcp_combiner.nvim_channel.NvimChannelManager"
+name = "NvimChannelManager"
+kind = "class"
+lang = "python"
+content_hash = "112c7e209bdd8f14"
+file = "combiner/mcp_combiner/nvim_channel.py"
+file_hash = "78901790bbdc7457"
+signature = "class NvimChannelManager:"
+description = ""
+schema = 4
+line = 87
+mtime = 1782852601000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "nvim_channel",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_inject_manifest [combiner/tests/test_session_filter.py]",
+  "_nvim_channel [combiner/mcp_combiner/nvim_proxy.py]",
+  "get_nvim_channel [combiner/mcp_combiner/nvim_proxy.py]",
+  "test_call_unregistered_instance_raises [combiner/tests/test_nvim_channel.py]",
+  "test_dispatch_round_trip [combiner/tests/test_nvim_channel.py]",
+  "test_edit_round_trip_preserves_order [combiner/tests/test_nvim_channel.py]",
+  "test_manifest_captured_and_frozen [combiner/tests/test_nvim_channel.py]",
+  "test_manifest_none_until_an_instance_connects [combiner/tests/test_nvim_channel.py]",
+  "test_unknown_tool_returns_is_error [combiner/tests/test_nvim_channel.py]",
+]
+name_terms = [
+  "NvimChannelManager",
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager",
+  "manager",
+  "mcp",
+  "nvim",
+]

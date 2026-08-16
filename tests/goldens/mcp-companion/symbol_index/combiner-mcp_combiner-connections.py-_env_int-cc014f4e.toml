@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_env_int"
+fqn = "combiner.mcp_combiner.connections._env_int"
+name = "_env_int"
+kind = "function"
+lang = "python"
+content_hash = "d85f7b8522b79842"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "def _env_int(name: str, default: int) -> int:"
+description = ""
+schema = 4
+line = 72
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "connections [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "_HEALTH_FAILURES_BEFORE_RECONNECT [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_env_int",
+  "combiner",
+  "combiner.mcp_combiner.connections._env_int",
+  "connections",
+  "env",
+  "int",
+  "mcp",
+]

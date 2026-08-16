@@ -1,0 +1,34 @@
+symbol_ref = "crib/symbols.py#scope_matches"
+fqn = "crib.symbols.scope_matches"
+name = "scope_matches"
+kind = "function"
+lang = "python"
+content_hash = "7d12fe06b23181a0"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def scope_matches(scope: Sequence[str], partial: str) -> bool:"
+description = ""
+schema = 4
+line = 309
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "constrain [crib/symbols.py]",
+]
+references = [
+  "constrain [crib/symbols.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.scope_matches",
+  "matches",
+  "scope",
+  "scope_matches",
+  "symbols",
+]

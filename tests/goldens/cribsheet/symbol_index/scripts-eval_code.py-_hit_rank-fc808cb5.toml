@@ -1,0 +1,35 @@
+symbol_ref = "scripts/eval_code.py#_hit_rank"
+fqn = "scripts.eval_code._hit_rank"
+name = "_hit_rank"
+kind = "function"
+lang = "python"
+content_hash = "7b7ea97c613d8f15"
+file = "scripts/eval_code.py"
+file_hash = "b641517d69fd6e49"
+signature = "def _hit_rank(hits: list[dict], expect) -> int | None:"
+description = ""
+schema = 4
+line = 24
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_code",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_code.py]",
+]
+references = [
+  "main [scripts/eval_code.py]",
+]
+name_terms = [
+  "_hit_rank",
+  "code",
+  "eval",
+  "hit",
+  "rank",
+  "scripts",
+  "scripts.eval_code._hit_rank",
+]

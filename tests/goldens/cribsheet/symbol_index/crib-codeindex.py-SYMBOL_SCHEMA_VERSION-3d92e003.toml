@@ -1,0 +1,40 @@
+symbol_ref = "crib/codeindex.py#SYMBOL_SCHEMA_VERSION"
+fqn = "crib.codeindex.SYMBOL_SCHEMA_VERSION"
+name = "SYMBOL_SCHEMA_VERSION"
+kind = "constant"
+lang = "python"
+content_hash = "9a8df51d2abf2ad1"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "SYMBOL_SCHEMA_VERSION = 4"
+description = ""
+schema = 4
+line = 1509
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "TARGET [tests/test_symbol_convert.py]",
+  "_symbol_entry [crib/codeindex.py]",
+  "code_convert [crib/app.py]",
+  "record_schema [crib/codeindex.py]",
+  "test_a_single_file_index_writes_into_a_store_of_another_shape [tests/test_code_graph.py]",
+  "test_an_empty_store_is_never_stale [tests/test_code_graph.py]",
+  "test_an_indexed_entry_carries_its_language_scope [tests/test_code_graph.py]",
+  "test_only_a_DIFFERENT_recorded_version_is_stale [tests/test_code_graph.py]",
+]
+name_terms = [
+  "SYMBOL_SCHEMA_VERSION",
+  "codeindex",
+  "crib",
+  "crib.codeindex.SYMBOL_SCHEMA_VERSION",
+  "schema",
+  "symbol",
+  "version",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.plan_add"
+fqn = "crib.app.Crib.plan_add"
+name = "plan_add"
+kind = "method"
+lang = "python"
+content_hash = "c9ccbc643b66610b"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def plan_add(self, title: str | None = None, content: str = \"\","
+description = ""
+schema = 4
+line = 2280
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "plan_add [crib/designs.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "plan_add [crib/server.py]",
+]
+references = [
+  "plan_add [crib/server.py]",
+]
+name_terms = [
+  "add",
+  "app",
+  "crib",
+  "crib.app.Crib.plan_add",
+  "plan",
+  "plan_add",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "crib/indexer.py#IndexEngine._commit"
+fqn = "crib.indexer.IndexEngine._commit"
+name = "_commit"
+kind = "method"
+lang = "python"
+content_hash = "2c4c2421a27ce844"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "def _commit(self, records: list[Record], stale_ids: list[str],"
+description = ""
+schema = 4
+line = 155
+mtime = 1786578262000000000
+container = [
+  "IndexEngine",
+]
+scope = [
+  "crib",
+  "indexer",
+  "IndexEngine",
+]
+symbol_was = []
+calls = [
+  "delete [crib/store.py]",
+  "set_meta [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+]
+name_terms = [
+  "_commit",
+  "commit",
+  "crib",
+  "crib.indexer.IndexEngine._commit",
+  "engine",
+  "index",
+  "indexer",
+]

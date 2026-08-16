@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_server_progress.py#test_progress_reports_only_this_calls_sweep.on_progress"
+fqn = "tests.test_server_progress.test_progress_reports_only_this_calls_sweep.on_progress"
+name = "on_progress"
+kind = "function"
+lang = "python"
+content_hash = "7e44951a205ad2e9"
+file = "tests/test_server_progress.py"
+file_hash = "eb2fa9d1ba7041e5"
+signature = "async def on_progress(progress, total, message):"
+description = ""
+schema = 4
+line = 72
+mtime = 1783981122000000000
+container = [
+  "test_progress_reports_only_this_calls_sweep",
+]
+scope = [
+  "tests",
+  "test_server_progress",
+  "test_progress_reports_only_this_calls_sweep",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "body [tests/test_server_progress.py]",
+]
+name_terms = [
+  "calls",
+  "on",
+  "on_progress",
+  "only",
+  "progress",
+  "reports",
+  "server",
+  "sweep",
+  "test",
+  "tests",
+  "tests.test_server_progress.test_progress_reports_only_this_calls_sweep.on_progress",
+  "this",
+]

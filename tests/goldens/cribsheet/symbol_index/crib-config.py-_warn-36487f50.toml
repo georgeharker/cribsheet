@@ -1,0 +1,37 @@
+symbol_ref = "crib/config.py#_warn"
+fqn = "crib.config._warn"
+name = "_warn"
+kind = "function"
+lang = "python"
+content_hash = "cc1d3b97039fd0c5"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "def _warn(msg: str) -> None:"
+description = ""
+schema = 4
+line = 17
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_parse [crib/config.py]",
+  "_warn_unknown [crib/config.py]",
+  "load [crib/config.py]",
+]
+references = [
+  "_parse [crib/config.py]",
+  "_warn_unknown [crib/config.py]",
+  "load [crib/config.py]",
+]
+name_terms = [
+  "_warn",
+  "config",
+  "crib",
+  "crib.config._warn",
+  "warn",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "crib/app.py#Crib._revalidate"
+fqn = "crib.app.Crib._revalidate"
+name = "_revalidate"
+kind = "method"
+lang = "python"
+content_hash = "3000521027d6d323"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _revalidate(self, proj: str) -> None:"
+description = ""
+schema = 4
+line = 1280
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "revalidate [crib/codestore.py]",
+]
+called_by = []
+references = [
+  "_on_code_change [crib/app.py]",
+  "_resident_code [crib/app.py]",
+]
+name_terms = [
+  "_revalidate",
+  "app",
+  "crib",
+  "crib.app.Crib._revalidate",
+  "revalidate",
+]

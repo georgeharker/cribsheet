@@ -1,0 +1,39 @@
+symbol_ref = "crib/retrieve.py#BM25.coverage"
+fqn = "crib.retrieve.BM25.coverage"
+name = "coverage"
+kind = "method"
+lang = "python"
+content_hash = "8e1eff508b3874b9"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "def coverage(self, qtokens: set[str]) -> list[float]:"
+description = ""
+schema = 4
+line = 89
+mtime = 1786136167000000000
+container = [
+  "BM25",
+]
+scope = [
+  "crib",
+  "retrieve",
+  "BM25",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_retrieve [crib/app.py]",
+  "coverage [crib/codestore.py]",
+]
+references = [
+  "_retrieve [crib/app.py]",
+  "coverage [crib/codestore.py]",
+]
+name_terms = [
+  "25",
+  "bm",
+  "coverage",
+  "crib",
+  "crib.retrieve.BM25.coverage",
+  "retrieve",
+]

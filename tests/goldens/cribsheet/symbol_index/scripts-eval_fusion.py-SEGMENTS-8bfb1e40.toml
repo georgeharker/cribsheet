@@ -1,0 +1,34 @@
+symbol_ref = "scripts/eval_fusion.py#SEGMENTS"
+fqn = "scripts.eval_fusion.SEGMENTS"
+name = "SEGMENTS"
+kind = "constant"
+lang = "python"
+content_hash = "9f419dd49016b3d7"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "SEGMENTS = [\"concept\", \"terse\", \"name\"]"
+description = ""
+schema = 4
+line = 76
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "ltr_eval [scripts/eval_fusion.py]",
+  "main [scripts/eval_fusion.py]",
+  "main [scripts/eval_kw.py]",
+]
+name_terms = [
+  "SEGMENTS",
+  "eval",
+  "fusion",
+  "scripts",
+  "scripts.eval_fusion.SEGMENTS",
+  "segments",
+]

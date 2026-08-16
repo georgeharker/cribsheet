@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/fastvalidate.py#_get_validator"
+fqn = "combiner.mcp_combiner.fastvalidate._get_validator"
+name = "_get_validator"
+kind = "function"
+lang = "python"
+content_hash = "66aba89c34452ab9"
+file = "combiner/mcp_combiner/fastvalidate.py"
+file_hash = "c78d5e6efce28ebe"
+signature = "def _get_validator(schema: object) -> Any:"
+description = ""
+schema = 4
+line = 74
+mtime = 1782420032000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "fastvalidate",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "validate [combiner/mcp_combiner/fastvalidate.py]",
+]
+references = [
+  "validate [combiner/mcp_combiner/fastvalidate.py]",
+]
+name_terms = [
+  "_get_validator",
+  "combiner",
+  "combiner.mcp_combiner.fastvalidate._get_validator",
+  "fastvalidate",
+  "get",
+  "mcp",
+  "validator",
+]

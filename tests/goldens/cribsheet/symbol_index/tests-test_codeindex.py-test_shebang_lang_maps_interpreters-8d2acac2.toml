@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_codeindex.py#test_shebang_lang_maps_interpreters"
+fqn = "tests.test_codeindex.test_shebang_lang_maps_interpreters"
+name = "test_shebang_lang_maps_interpreters"
+kind = "function"
+lang = "python"
+content_hash = "0ab2805100003fbc"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_shebang_lang_maps_interpreters(tmp_path):"
+description = ""
+schema = 4
+line = 165
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "_shebang_lang [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "interpreters",
+  "lang",
+  "maps",
+  "shebang",
+  "test",
+  "test_shebang_lang_maps_interpreters",
+  "tests",
+  "tests.test_codeindex.test_shebang_lang_maps_interpreters",
+]

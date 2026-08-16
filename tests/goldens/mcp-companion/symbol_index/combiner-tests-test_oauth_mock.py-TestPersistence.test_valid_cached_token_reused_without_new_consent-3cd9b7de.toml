@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestPersistence.test_valid_cached_token_reused_without_new_consent"
+fqn = "combiner.tests.test_oauth_mock.TestPersistence.test_valid_cached_token_reused_without_new_consent"
+name = "test_valid_cached_token_reused_without_new_consent"
+kind = "method"
+lang = "python"
+content_hash = "130a55556c7d7a4d"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def test_valid_cached_token_reused_without_new_consent("
+description = ""
+schema = 4
+line = 423
+mtime = 1784495646000000000
+container = [
+  "TestPersistence",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "TestPersistence",
+]
+symbol_was = []
+calls = [
+  "_call_echo [combiner/tests/test_oauth_mock.py]",
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+  "authenticated_mcp_calls [combiner/mcp_combiner/mockserver.py]",
+  "token_requests_of [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cached",
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestPersistence.test_valid_cached_token_reused_without_new_consent",
+  "consent",
+  "mock",
+  "new",
+  "oauth",
+  "persistence",
+  "reused",
+  "test",
+  "test_valid_cached_token_reused_without_new_consent",
+  "tests",
+  "token",
+  "valid",
+  "without",
+]

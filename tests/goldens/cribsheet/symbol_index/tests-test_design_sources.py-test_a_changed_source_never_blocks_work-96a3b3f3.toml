@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_design_sources.py#test_a_changed_source_never_blocks_work"
+fqn = "tests.test_design_sources.test_a_changed_source_never_blocks_work"
+name = "test_a_changed_source_never_blocks_work"
+kind = "function"
+lang = "python"
+content_hash = "e03e15f9d5915b17"
+file = "tests/test_design_sources.py"
+file_hash = "f89b5a94b236ce9c"
+signature = "def test_a_changed_source_never_blocks_work(crib):"
+description = ""
+schema = 4
+line = 269
+mtime = 1786137963000000000
+container = []
+scope = [
+  "tests",
+  "test_design_sources",
+]
+symbol_was = []
+calls = [
+  "_kinds [tests/test_design_sources.py]",
+  "_rewrite [tests/test_design_sources.py]",
+  "run [tests/test_design_sources.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "blocks",
+  "changed",
+  "design",
+  "never",
+  "source",
+  "sources",
+  "test",
+  "test_a_changed_source_never_blocks_work",
+  "tests",
+  "tests.test_design_sources.test_a_changed_source_never_blocks_work",
+  "work",
+]

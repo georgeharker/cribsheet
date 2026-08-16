@@ -1,0 +1,39 @@
+symbol_ref = "lua/mcp_companion/native/winpick.lua#opt"
+fqn = "mcp_companion.native.winpick.opt"
+name = "opt"
+kind = "function"
+lang = "lua"
+content_hash = "f828fa454af1e0fd"
+file = "lua/mcp_companion/native/winpick.lua"
+file_hash = "6bf70fc950ff8924"
+signature = "local function opt(key)"
+description = ""
+schema = 4
+line = 55
+mtime = 1782852601000000000
+container = []
+scope = [
+  "mcp_companion",
+  "native",
+  "winpick",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.is_code_win [lua/mcp_companion/native/winpick.lua]",
+  "M.maybe_focus [lua/mcp_companion/native/winpick.lua]",
+  "M.open [lua/mcp_companion/native/winpick.lua]",
+  "winpick.lua [lua/mcp_companion/native/winpick.lua]",
+]
+references = [
+  "if [lua/mcp_companion/native/winpick.lua]",
+  "strat [lua/mcp_companion/native/winpick.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.native.winpick.opt",
+  "native",
+  "opt",
+  "winpick",
+]

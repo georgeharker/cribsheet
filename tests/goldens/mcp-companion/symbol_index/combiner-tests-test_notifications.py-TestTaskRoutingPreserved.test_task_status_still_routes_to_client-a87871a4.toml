@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestTaskRoutingPreserved.test_task_status_still_routes_to_client"
+fqn = "combiner.tests.test_notifications.TestTaskRoutingPreserved.test_task_status_still_routes_to_client"
+name = "test_task_status_still_routes_to_client"
+kind = "method"
+lang = "python"
+content_hash = "f7ec741c85e47b3d"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "async def test_task_status_still_routes_to_client(self) -> None:"
+description = ""
+schema = 4
+line = 240
+mtime = 1784493613000000000
+container = [
+  "TestTaskRoutingPreserved",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "TestTaskRoutingPreserved",
+]
+symbol_was = []
+calls = [
+  "_FakeClient [combiner/tests/test_notifications.py]",
+  "_task_status [combiner/tests/test_notifications.py]",
+  "attach_resource_forwarding [combiner/mcp_combiner/notifications.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "combiner",
+  "combiner.tests.test_notifications.TestTaskRoutingPreserved.test_task_status_still_routes_to_client",
+  "notifications",
+  "preserved",
+  "routes",
+  "routing",
+  "status",
+  "still",
+  "task",
+  "test",
+  "test_task_status_still_routes_to_client",
+  "tests",
+  "to",
+]

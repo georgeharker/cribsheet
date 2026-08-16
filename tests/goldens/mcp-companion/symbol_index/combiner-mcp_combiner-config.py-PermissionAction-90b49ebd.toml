@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/config.py#PermissionAction"
+fqn = "combiner.mcp_combiner.config.PermissionAction"
+name = "PermissionAction"
+kind = "class"
+lang = "python"
+content_hash = "25c45ffbf571e155"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "class PermissionAction(str, Enum):"
+description = ""
+schema = 4
+line = 129
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "A [combiner/tests/test_permissions.py]",
+  "_action [combiner/mcp_combiner/config.py]",
+  "_elicit [combiner/mcp_combiner/permissions.py]",
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+  "default [combiner/mcp_combiner/config.py]",
+  "elicit_unavailable [combiner/mcp_combiner/config.py]",
+  "enforce [combiner/mcp_combiner/permissions.py]",
+  "is_active [combiner/mcp_combiner/config.py]",
+  "pick [combiner/mcp_combiner/config.py]",
+  "resolve [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "PermissionAction",
+  "action",
+  "combiner",
+  "combiner.mcp_combiner.config.PermissionAction",
+  "config",
+  "mcp",
+  "permission",
+]

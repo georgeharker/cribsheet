@@ -1,0 +1,32 @@
+symbol_ref = "combiner/mcp_combiner/permissions.py#logger"
+fqn = "combiner.mcp_combiner.permissions.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/permissions.py"
+file_hash = "a8b8b27efa667303"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+schema = 4
+line = 30
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "permissions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_elicit [combiner/mcp_combiner/permissions.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.permissions.logger",
+  "logger",
+  "mcp",
+  "permissions",
+]

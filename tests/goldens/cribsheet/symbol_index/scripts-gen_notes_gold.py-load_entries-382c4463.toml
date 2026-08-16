@@ -1,0 +1,36 @@
+symbol_ref = "scripts/gen_notes_gold.py#load_entries"
+fqn = "scripts.gen_notes_gold.load_entries"
+name = "load_entries"
+kind = "function"
+lang = "python"
+content_hash = "7c55a681e7566a1f"
+file = "scripts/gen_notes_gold.py"
+file_hash = "c163aa3d44ca5940"
+signature = "def load_entries(project_dir: Path, source: str) -> list[dict]:"
+description = ""
+schema = 4
+line = 40
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "gen_notes_gold",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/gen_notes_gold.py]",
+]
+references = [
+  "main [scripts/gen_notes_gold.py]",
+]
+name_terms = [
+  "entries",
+  "gen",
+  "gold",
+  "load",
+  "load_entries",
+  "notes",
+  "scripts",
+  "scripts.gen_notes_gold.load_entries",
+]

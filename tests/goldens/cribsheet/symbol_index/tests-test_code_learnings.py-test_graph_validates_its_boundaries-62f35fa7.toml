@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_code_learnings.py#test_graph_validates_its_boundaries"
+fqn = "tests.test_code_learnings.test_graph_validates_its_boundaries"
+name = "test_graph_validates_its_boundaries"
+kind = "function"
+lang = "python"
+content_hash = "032a383579c25b85"
+file = "tests/test_code_learnings.py"
+file_hash = "2cacd018989edacf"
+signature = "def test_graph_validates_its_boundaries(crib):"
+description = ""
+schema = 4
+line = 155
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_learnings",
+]
+symbol_was = []
+calls = [
+  "_seed_symbol [tests/test_code_learnings.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "boundaries",
+  "code",
+  "graph",
+  "its",
+  "learnings",
+  "test",
+  "test_graph_validates_its_boundaries",
+  "tests",
+  "tests.test_code_learnings.test_graph_validates_its_boundaries",
+  "validates",
+]

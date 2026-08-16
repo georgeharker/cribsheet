@@ -1,0 +1,36 @@
+symbol_ref = "crib/embed.py#FastEmbedEmbedder.embed"
+fqn = "crib.embed.FastEmbedEmbedder.embed"
+name = "embed"
+kind = "method"
+lang = "python"
+content_hash = "b0daf1862ae5a67e"
+file = "crib/embed.py"
+file_hash = "46323c76e4ac82a3"
+signature = "def embed(self, texts: list[str]) -> list[list[float]]:"
+description = ""
+schema = 4
+line = 101
+mtime = 1785963011000000000
+container = [
+  "FastEmbedEmbedder",
+]
+scope = [
+  "crib",
+  "embed",
+  "FastEmbedEmbedder",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "embed_query [crib/embed.py]",
+]
+references = [
+  "embed_query [crib/embed.py]",
+]
+name_terms = [
+  "crib",
+  "crib.embed.FastEmbedEmbedder.embed",
+  "embed",
+  "embedder",
+  "fast",
+]

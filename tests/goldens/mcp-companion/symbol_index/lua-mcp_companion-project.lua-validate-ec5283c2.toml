@@ -1,0 +1,34 @@
+symbol_ref = "lua/mcp_companion/project.lua#validate"
+fqn = "mcp_companion.project.validate"
+name = "validate"
+kind = "function"
+lang = "lua"
+content_hash = "a614d9a91694ddc2"
+file = "lua/mcp_companion/project.lua"
+file_hash = "0edf3620225b6e81"
+signature = "local function validate(raw)"
+description = ""
+schema = 4
+line = 85
+mtime = 1782852601000000000
+container = []
+scope = [
+  "mcp_companion",
+  "project",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.resolve [lua/mcp_companion/project.lua]",
+  "project.lua [lua/mcp_companion/project.lua]",
+]
+references = [
+  "cfg [lua/mcp_companion/project.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.project.validate",
+  "project",
+  "validate",
+]

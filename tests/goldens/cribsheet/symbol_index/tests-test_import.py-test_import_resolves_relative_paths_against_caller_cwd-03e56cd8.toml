@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_import.py#test_import_resolves_relative_paths_against_caller_cwd"
+fqn = "tests.test_import.test_import_resolves_relative_paths_against_caller_cwd"
+name = "test_import_resolves_relative_paths_against_caller_cwd"
+kind = "function"
+lang = "python"
+content_hash = "37743dbc35dfef32"
+file = "tests/test_import.py"
+file_hash = "5cfa852350c34602"
+signature = "def test_import_resolves_relative_paths_against_caller_cwd(crib, tmp_path):"
+description = ""
+schema = 4
+line = 102
+mtime = 1783450349000000000
+container = []
+scope = [
+  "tests",
+  "test_import",
+]
+symbol_was = []
+calls = [
+  "_files [tests/test_import.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "against",
+  "caller",
+  "cwd",
+  "import",
+  "paths",
+  "relative",
+  "resolves",
+  "test",
+  "test_import_resolves_relative_paths_against_caller_cwd",
+  "tests",
+  "tests.test_import.test_import_resolves_relative_paths_against_caller_cwd",
+]

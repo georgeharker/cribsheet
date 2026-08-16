@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_session.py#test_each_path_bearing_call_resolves_its_own_path.seed"
+fqn = "tests.test_session.test_each_path_bearing_call_resolves_its_own_path.seed"
+name = "seed"
+kind = "function"
+lang = "python"
+content_hash = "9ccf641c65ca9e42"
+file = "tests/test_session.py"
+file_hash = "bef48c1ca7e1ebb9"
+signature = "def seed(c):"
+description = ""
+schema = 4
+line = 91
+mtime = 1786664729000000000
+container = [
+  "test_each_path_bearing_call_resolves_its_own_path",
+]
+scope = [
+  "tests",
+  "test_session",
+  "test_each_path_bearing_call_resolves_its_own_path",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_each_path_bearing_call_resolves_its_own_path [tests/test_session.py]",
+]
+name_terms = [
+  "bearing",
+  "call",
+  "each",
+  "its",
+  "own",
+  "path",
+  "resolves",
+  "seed",
+  "session",
+  "test",
+  "tests",
+  "tests.test_session.test_each_path_bearing_call_resolves_its_own_path.seed",
+]

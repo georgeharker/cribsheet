@@ -1,0 +1,57 @@
+symbol_ref = "combiner/mcp_combiner/permissions.py#enforce"
+fqn = "combiner.mcp_combiner.permissions.enforce"
+name = "enforce"
+kind = "function"
+lang = "python"
+content_hash = "929923851291eab8"
+file = "combiner/mcp_combiner/permissions.py"
+file_hash = "a8b8b27efa667303"
+signature = "async def enforce(ctx: Any, server: str, local_name: str, policy: ResolvedPolicy) -> None:"
+description = ""
+schema = 4
+line = 37
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "permissions",
+]
+symbol_was = []
+calls = [
+  "_elicit [combiner/mcp_combiner/permissions.py]",
+  "grant [combiner/mcp_combiner/runtime.py]",
+  "is_granted [combiner/mcp_combiner/runtime.py]",
+  "resolve [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "test_allow_passes [combiner/tests/test_permissions.py]",
+  "test_deny_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_allow_for_session_caches [combiner/tests/test_permissions.py]",
+  "test_elicit_allow_once_passes_without_caching [combiner/tests/test_permissions.py]",
+  "test_elicit_cancelled_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_declined_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_deny_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_unavailable_fallback_allow [combiner/tests/test_permissions.py]",
+  "test_elicit_unavailable_fallback_deny [combiner/tests/test_permissions.py]",
+]
+references = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "test_allow_passes [combiner/tests/test_permissions.py]",
+  "test_deny_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_allow_for_session_caches [combiner/tests/test_permissions.py]",
+  "test_elicit_allow_once_passes_without_caching [combiner/tests/test_permissions.py]",
+  "test_elicit_cancelled_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_declined_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_deny_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_unavailable_fallback_allow [combiner/tests/test_permissions.py]",
+  "test_elicit_unavailable_fallback_deny [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.permissions.enforce",
+  "enforce",
+  "mcp",
+  "permissions",
+]

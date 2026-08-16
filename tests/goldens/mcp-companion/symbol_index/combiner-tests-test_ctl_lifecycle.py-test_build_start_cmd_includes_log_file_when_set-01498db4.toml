@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_ctl_lifecycle.py#test_build_start_cmd_includes_log_file_when_set"
+fqn = "combiner.tests.test_ctl_lifecycle.test_build_start_cmd_includes_log_file_when_set"
+name = "test_build_start_cmd_includes_log_file_when_set"
+kind = "function"
+lang = "python"
+content_hash = "60c33a69a5853c11"
+file = "combiner/tests/test_ctl_lifecycle.py"
+file_hash = "561e3360d44bd010"
+signature = "def test_build_start_cmd_includes_log_file_when_set() -> None:"
+description = ""
+schema = 4
+line = 30
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_ctl_lifecycle",
+]
+symbol_was = []
+calls = [
+  "_build_start_cmd [combiner/mcp_combiner/ctl.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "cmd",
+  "combiner",
+  "combiner.tests.test_ctl_lifecycle.test_build_start_cmd_includes_log_file_when_set",
+  "ctl",
+  "file",
+  "includes",
+  "lifecycle",
+  "log",
+  "set",
+  "start",
+  "test",
+  "test_build_start_cmd_includes_log_file_when_set",
+  "tests",
+  "when",
+]

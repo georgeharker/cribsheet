@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_connections.py#TestSignalToolsReady.test_empty_answer_defers_ready.list_tools"
+fqn = "combiner.tests.test_connections.TestSignalToolsReady.test_empty_answer_defers_ready.list_tools"
+name = "list_tools"
+kind = "function"
+lang = "python"
+content_hash = "580fd73773162b8f"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def list_tools():"
+description = ""
+schema = 4
+line = 53
+mtime = 1784493613000000000
+container = [
+  "TestSignalToolsReady",
+  "test_empty_answer_defers_ready",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestSignalToolsReady",
+  "test_empty_answer_defers_ready",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_empty_answer_defers_ready [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "answer",
+  "combiner",
+  "combiner.tests.test_connections.TestSignalToolsReady.test_empty_answer_defers_ready.list_tools",
+  "connections",
+  "defers",
+  "empty",
+  "list",
+  "list_tools",
+  "ready",
+  "signal",
+  "test",
+  "tests",
+  "tools",
+]

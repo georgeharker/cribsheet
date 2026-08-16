@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_ops.lua#fake_client.toggle_server"
+fqn = "tests.test_ops.fake_client.toggle_server"
+name = "toggle_server"
+kind = "function"
+lang = "lua"
+content_hash = "a01a92c731b1ea45"
+file = "tests/test_ops.lua"
+file_hash = "f9230679396cb256"
+signature = "toggle_server = function(_, name, cb)"
+description = ""
+schema = 4
+line = 43
+mtime = 1783545086000000000
+container = [
+  "fake_client",
+]
+scope = [
+  "tests",
+  "test_ops",
+  "fake_client",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_ops.lua [tests/test_ops.lua]",
+]
+references = []
+name_terms = [
+  "client",
+  "fake",
+  "ops",
+  "server",
+  "test",
+  "tests",
+  "tests.test_ops.fake_client.toggle_server",
+  "toggle",
+  "toggle_server",
+]

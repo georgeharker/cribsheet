@@ -1,0 +1,47 @@
+symbol_ref = "crib/gitbacking.py#GitBacking._ensure_gitignore"
+fqn = "crib.gitbacking.GitBacking._ensure_gitignore"
+name = "_ensure_gitignore"
+kind = "method"
+lang = "python"
+content_hash = "bf9c9e8ef2a32965"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def _ensure_gitignore(self) -> None:"
+description = ""
+schema = 4
+line = 155
+mtime = 1785963011000000000
+container = [
+  "GitBacking",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "GitBacking",
+]
+symbol_was = []
+calls = [
+  "_remote_file [crib/gitbacking.py]",
+]
+called_by = [
+  "_ensure_repo_config [crib/gitbacking.py]",
+  "init [crib/gitbacking.py]",
+  "pull [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+]
+references = [
+  "_ensure_repo_config [crib/gitbacking.py]",
+  "init [crib/gitbacking.py]",
+  "pull [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+]
+name_terms = [
+  "_ensure_gitignore",
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking._ensure_gitignore",
+  "ensure",
+  "git",
+  "gitbacking",
+  "gitignore",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "crib/codeindexer.py#_parts"
+fqn = "crib.codeindexer._parts"
+name = "_parts"
+kind = "function"
+lang = "python"
+content_hash = "ab8e990b5cafb3e4"
+file = "crib/codeindexer.py"
+file_hash = "8848838a57e51f0a"
+signature = "def _parts(e: dict) -> tuple[tuple[str, ...], str]:"
+description = ""
+schema = 4
+line = 27
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codeindexer",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+name_terms = [
+  "_parts",
+  "codeindexer",
+  "crib",
+  "crib.codeindexer._parts",
+  "parts",
+]

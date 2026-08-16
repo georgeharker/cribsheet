@@ -1,0 +1,39 @@
+symbol_ref = "crib/cli.py#_TAINT"
+fqn = "crib.cli._TAINT"
+name = "_TAINT"
+kind = "constant"
+lang = "python"
+content_hash = "c744d8ebb43747b1"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "_TAINT = \"⚠︎\""
+description = ""
+schema = 4
+line = 520
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_emit_design_check [crib/cli.py]",
+  "_emit_design_list [crib/cli.py]",
+  "_emit_design_read [crib/cli.py]",
+  "_emit_design_tree [crib/cli.py]",
+  "_emit_design_write [crib/cli.py]",
+  "_emit_facet_hits [crib/cli.py]",
+  "_emit_human_one [crib/cli.py]",
+  "_emit_plan_list [crib/cli.py]",
+  "_facet_flags [crib/cli.py]",
+]
+name_terms = [
+  "_TAINT",
+  "cli",
+  "crib",
+  "crib.cli._TAINT",
+  "taint",
+]

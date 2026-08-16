@@ -1,0 +1,89 @@
+symbol_ref = "crib/designs.py#Designs._load_graph"
+fqn = "crib.designs.Designs._load_graph"
+name = "_load_graph"
+kind = "method"
+lang = "python"
+content_hash = "9746139bde5a8e5c"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _load_graph(self, proj: str) -> Graph:"
+description = ""
+schema = 4
+line = 406
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "Graph [crib/designs.py]",
+  "Node [crib/designs.py]",
+  "_body_hash [crib/designs.py]",
+  "_parse_sources [crib/designs.py]",
+  "_section_hash [crib/designs.py]",
+  "parse [crib/notes.py]",
+  "root [crib/notestore.py]",
+]
+called_by = [
+  "_add [crib/designs.py]",
+  "_citing [crib/designs.py]",
+  "_dep_add [crib/designs.py]",
+  "_dep_remove [crib/designs.py]",
+  "_forget [crib/designs.py]",
+  "_write_body [crib/designs.py]",
+  "annotate_hits [crib/designs.py]",
+  "design_append [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_reaffirm [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+  "design_tree [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+  "plan_add [crib/designs.py]",
+  "plan_list [crib/designs.py]",
+  "plan_move [crib/designs.py]",
+  "plan_next [crib/designs.py]",
+  "plan_reaffirm [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+  "tainted_designs [crib/designs.py]",
+]
+references = [
+  "_add [crib/designs.py]",
+  "_citing [crib/designs.py]",
+  "_dep_add [crib/designs.py]",
+  "_dep_remove [crib/designs.py]",
+  "_forget [crib/designs.py]",
+  "_write_body [crib/designs.py]",
+  "annotate_hits [crib/designs.py]",
+  "design_append [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_reaffirm [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+  "design_tree [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+  "plan_add [crib/designs.py]",
+  "plan_list [crib/designs.py]",
+  "plan_move [crib/designs.py]",
+  "plan_next [crib/designs.py]",
+  "plan_reaffirm [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+  "tainted_designs [crib/designs.py]",
+]
+name_terms = [
+  "_load_graph",
+  "crib",
+  "crib.designs.Designs._load_graph",
+  "designs",
+  "graph",
+  "load",
+]

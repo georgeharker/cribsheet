@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_code_graph.py#_ids"
+fqn = "tests.test_code_graph._ids"
+name = "_ids"
+kind = "function"
+lang = "python"
+content_hash = "4e1dd81b8bbe6863"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def _ids(g):"
+description = ""
+schema = 4
+line = 77
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_depth_bound_flags_the_frontier [tests/test_code_graph.py]",
+  "test_whole_project_includes_what_no_walk_reaches [tests/test_code_graph.py]",
+]
+references = [
+  "test_depth_bound_flags_the_frontier [tests/test_code_graph.py]",
+  "test_whole_project_includes_what_no_walk_reaches [tests/test_code_graph.py]",
+]
+name_terms = [
+  "_ids",
+  "code",
+  "graph",
+  "ids",
+  "test",
+  "tests",
+  "tests.test_code_graph._ids",
+]

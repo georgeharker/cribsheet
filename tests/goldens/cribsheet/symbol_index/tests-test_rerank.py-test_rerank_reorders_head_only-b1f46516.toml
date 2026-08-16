@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_rerank.py#test_rerank_reorders_head_only"
+fqn = "tests.test_rerank.test_rerank_reorders_head_only"
+name = "test_rerank_reorders_head_only"
+kind = "function"
+lang = "python"
+content_hash = "ce168aea083affa0"
+file = "tests/test_rerank.py"
+file_hash = "29066147cbea547e"
+signature = "def test_rerank_reorders_head_only(crib):"
+description = ""
+schema = 4
+line = 78
+mtime = 1783981122000000000
+container = []
+scope = [
+  "tests",
+  "test_rerank",
+]
+symbol_was = []
+calls = [
+  "_Fixed [tests/test_rerank.py]",
+  "_hits [tests/test_rerank.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "head",
+  "only",
+  "reorders",
+  "rerank",
+  "test",
+  "test_rerank_reorders_head_only",
+  "tests",
+  "tests.test_rerank.test_rerank_reorders_head_only",
+]

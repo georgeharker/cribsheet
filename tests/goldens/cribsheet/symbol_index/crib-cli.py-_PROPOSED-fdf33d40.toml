@@ -1,0 +1,35 @@
+symbol_ref = "crib/cli.py#_PROPOSED"
+fqn = "crib.cli._PROPOSED"
+name = "_PROPOSED"
+kind = "constant"
+lang = "python"
+content_hash = "7c3eb7538a4782c7"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "_PROPOSED = \"?\""
+description = ""
+schema = 4
+line = 523
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_emit_design_check [crib/cli.py]",
+  "_emit_design_list [crib/cli.py]",
+  "_emit_design_read [crib/cli.py]",
+  "_facet_flags [crib/cli.py]",
+  "label [crib/cli.py]",
+]
+name_terms = [
+  "_PROPOSED",
+  "cli",
+  "crib",
+  "crib.cli._PROPOSED",
+  "proposed",
+]

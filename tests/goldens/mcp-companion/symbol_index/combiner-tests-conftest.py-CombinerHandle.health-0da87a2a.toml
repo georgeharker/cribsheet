@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/conftest.py#CombinerHandle.health"
+fqn = "combiner.tests.conftest.CombinerHandle.health"
+name = "health"
+kind = "method"
+lang = "python"
+content_hash = "779ebf41bb3f0b18"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "async def health(self) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 171
+mtime = 1783544328000000000
+container = [
+  "CombinerHandle",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "CombinerHandle",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_ok [combiner/tests/conftest.py]",
+  "_state [combiner/tests/conftest.py]",
+  "test_health_reports_transport_states [combiner/tests/test_route_matrix.py]",
+]
+references = [
+  "_ok [combiner/tests/conftest.py]",
+  "_state [combiner/tests/conftest.py]",
+  "test_health_reports_transport_states [combiner/tests/test_route_matrix.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.CombinerHandle.health",
+  "conftest",
+  "handle",
+  "health",
+  "tests",
+]

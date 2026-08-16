@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_describe_queue.py#test_describe_and_patch_patches_then_clobber_guards.go"
+fqn = "tests.test_describe_queue.test_describe_and_patch_patches_then_clobber_guards.go"
+name = "go"
+kind = "function"
+lang = "python"
+content_hash = "7946a18c3684bd33"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "async def go(pending):"
+description = ""
+schema = 4
+line = 303
+mtime = 1786664729000000000
+container = [
+  "test_describe_and_patch_patches_then_clobber_guards",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "test_describe_and_patch_patches_then_clobber_guards",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_describe_and_patch_patches_then_clobber_guards [tests/test_describe_queue.py]",
+]
+references = [
+  "test_describe_and_patch_patches_then_clobber_guards [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "and",
+  "clobber",
+  "describe",
+  "go",
+  "guards",
+  "patch",
+  "patches",
+  "queue",
+  "test",
+  "tests",
+  "tests.test_describe_queue.test_describe_and_patch_patches_then_clobber_guards.go",
+  "then",
+]

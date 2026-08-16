@@ -1,0 +1,35 @@
+symbol_ref = "crib/chunk.py#_window"
+fqn = "crib.chunk._window"
+name = "_window"
+kind = "function"
+lang = "python"
+content_hash = "bb2bf15a3a33a888"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "def _window(text: str, window_words: int = WINDOW_WORDS,"
+description = ""
+schema = 4
+line = 222
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "chunk",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "chunk_note [crib/chunk.py]",
+  "test_window_respects_params_and_overlaps [tests/test_chunk_config.py]",
+]
+references = [
+  "chunk_note [crib/chunk.py]",
+  "test_window_respects_params_and_overlaps [tests/test_chunk_config.py]",
+]
+name_terms = [
+  "_window",
+  "chunk",
+  "crib",
+  "crib.chunk._window",
+  "window",
+]

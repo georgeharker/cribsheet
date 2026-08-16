@@ -1,0 +1,42 @@
+symbol_ref = "crib/symbols.py#encode_edge"
+fqn = "crib.symbols.encode_edge"
+name = "encode_edge"
+kind = "function"
+lang = "python"
+content_hash = "149bbf2d08f5114a"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def encode_edge(name: str, loc: str) -> str:"
+description = ""
+schema = 4
+line = 211
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_hierarchy_edges [crib/codeindex.py]",
+  "_project_graph [crib/codequery.py]",
+  "_reference_edges [crib/codeindex.py]",
+  "patch_edges [crib/codestore.py]",
+  "put_external [crib/codequery.py]",
+]
+references = [
+  "_hierarchy_edges [crib/codeindex.py]",
+  "_project_graph [crib/codequery.py]",
+  "_reference_edges [crib/codeindex.py]",
+  "patch_edges [crib/codestore.py]",
+  "put_external [crib/codequery.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.encode_edge",
+  "edge",
+  "encode",
+  "encode_edge",
+  "symbols",
+]

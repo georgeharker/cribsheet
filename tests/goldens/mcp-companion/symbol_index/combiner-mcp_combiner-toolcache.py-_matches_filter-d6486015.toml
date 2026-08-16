@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#_matches_filter"
+fqn = "combiner.mcp_combiner.toolcache._matches_filter"
+name = "_matches_filter"
+kind = "function"
+lang = "python"
+content_hash = "6bec6d7623b36562"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "def _matches_filter(tool_name: str, patterns: list[str]) -> bool:"
+description = ""
+schema = 4
+line = 96
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_filter_tools [combiner/mcp_combiner/toolcache.py]",
+]
+references = [
+  "_filter_tools [combiner/mcp_combiner/toolcache.py]",
+]
+name_terms = [
+  "_matches_filter",
+  "combiner",
+  "combiner.mcp_combiner.toolcache._matches_filter",
+  "filter",
+  "matches",
+  "mcp",
+  "toolcache",
+]

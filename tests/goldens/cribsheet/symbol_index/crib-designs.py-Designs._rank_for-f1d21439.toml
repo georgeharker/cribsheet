@@ -1,0 +1,42 @@
+symbol_ref = "crib/designs.py#Designs._rank_for"
+fqn = "crib.designs.Designs._rank_for"
+name = "_rank_for"
+kind = "method"
+lang = "python"
+content_hash = "fd40c2812c750de3"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _rank_for(self, graph: Graph, after: Node | None, before: Node | None,"
+description = ""
+schema = 4
+line = 1541
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_rank_between [crib/designs.py]",
+  "of_kind [crib/designs.py]",
+]
+called_by = [
+  "plan_add [crib/designs.py]",
+  "plan_move [crib/designs.py]",
+]
+references = [
+  "plan_add [crib/designs.py]",
+  "plan_move [crib/designs.py]",
+]
+name_terms = [
+  "_rank_for",
+  "crib",
+  "crib.designs.Designs._rank_for",
+  "designs",
+  "for",
+  "rank",
+]

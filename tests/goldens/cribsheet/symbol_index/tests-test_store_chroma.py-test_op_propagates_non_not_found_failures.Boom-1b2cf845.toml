@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_store_chroma.py#test_op_propagates_non_not_found_failures.Boom"
+fqn = "tests.test_store_chroma.test_op_propagates_non_not_found_failures.Boom"
+name = "Boom"
+kind = "class"
+lang = "python"
+content_hash = "2d2a33371a8c72e6"
+file = "tests/test_store_chroma.py"
+file_hash = "c9d58563fea059fc"
+signature = "class Boom(Exception):"
+description = ""
+schema = 4
+line = 85
+mtime = 1785959234000000000
+container = [
+  "test_op_propagates_non_not_found_failures",
+]
+scope = [
+  "tests",
+  "test_store_chroma",
+  "test_op_propagates_non_not_found_failures",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "explode [tests/test_store_chroma.py]",
+  "test_op_propagates_non_not_found_failures [tests/test_store_chroma.py]",
+]
+name_terms = [
+  "Boom",
+  "boom",
+  "chroma",
+  "failures",
+  "found",
+  "non",
+  "not",
+  "op",
+  "propagates",
+  "store",
+  "test",
+  "tests",
+  "tests.test_store_chroma.test_op_propagates_non_not_found_failures.Boom",
+]

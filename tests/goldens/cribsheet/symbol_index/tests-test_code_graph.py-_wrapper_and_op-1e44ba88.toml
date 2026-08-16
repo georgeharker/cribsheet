@@ -1,0 +1,55 @@
+symbol_ref = "tests/test_code_graph.py#_wrapper_and_op"
+fqn = "tests.test_code_graph._wrapper_and_op"
+name = "_wrapper_and_op"
+kind = "function"
+lang = "python"
+content_hash = "4e12b5d9f909f4b7"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def _wrapper_and_op(crib, tmp_path):"
+description = ""
+schema = 4
+line = 225
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_sym [tests/test_code_graph.py]",
+  "set_source_root [crib/codeindex.py]",
+]
+called_by = [
+  "test_a_constraint_that_excludes_everything_says_so [tests/test_code_graph.py]",
+  "test_a_path_constraint_makes_an_ambiguous_name_unique [tests/test_code_graph.py]",
+  "test_a_verb_that_lists_every_match_discloses_nothing [tests/test_code_graph.py]",
+  "test_an_ambiguous_bare_name_refuses_instead_of_picking [tests/test_code_graph.py]",
+  "test_qualifying_the_name_resolves_and_answers [tests/test_code_graph.py]",
+  "test_symbol_errors_are_user_errors_and_still_value_errors [tests/test_code_graph.py]",
+  "test_the_mcp_face_delivers_the_message_verbatim [tests/test_code_graph.py]",
+  "test_the_refusal_names_the_axis_that_would_separate_them [tests/test_code_graph.py]",
+]
+references = [
+  "test_a_constraint_that_excludes_everything_says_so [tests/test_code_graph.py]",
+  "test_a_path_constraint_makes_an_ambiguous_name_unique [tests/test_code_graph.py]",
+  "test_a_verb_that_lists_every_match_discloses_nothing [tests/test_code_graph.py]",
+  "test_an_ambiguous_bare_name_refuses_instead_of_picking [tests/test_code_graph.py]",
+  "test_qualifying_the_name_resolves_and_answers [tests/test_code_graph.py]",
+  "test_symbol_errors_are_user_errors_and_still_value_errors [tests/test_code_graph.py]",
+  "test_the_mcp_face_delivers_the_message_verbatim [tests/test_code_graph.py]",
+  "test_the_refusal_names_the_axis_that_would_separate_them [tests/test_code_graph.py]",
+]
+name_terms = [
+  "_wrapper_and_op",
+  "and",
+  "code",
+  "graph",
+  "op",
+  "test",
+  "tests",
+  "tests.test_code_graph._wrapper_and_op",
+  "wrapper",
+]

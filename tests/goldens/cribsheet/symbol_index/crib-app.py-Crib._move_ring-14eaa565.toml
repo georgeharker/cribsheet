@@ -1,0 +1,42 @@
+symbol_ref = "crib/app.py#Crib._move_ring"
+fqn = "crib.app.Crib._move_ring"
+name = "_move_ring"
+kind = "method"
+lang = "python"
+content_hash = "81423f43c367fdae"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _move_ring(self, ids: list[str], src: Path, dst: Path) -> int:"
+description = ""
+schema = 4
+line = 1560
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "_move_tree [crib/app.py]",
+  "confine [crib/paths.py]",
+]
+called_by = [
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+]
+references = [
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+]
+name_terms = [
+  "_move_ring",
+  "app",
+  "crib",
+  "crib.app.Crib._move_ring",
+  "move",
+  "ring",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_TOOLS_PROBE_BACKOFF_MAX"
+fqn = "combiner.mcp_combiner.connections._TOOLS_PROBE_BACKOFF_MAX"
+name = "_TOOLS_PROBE_BACKOFF_MAX"
+kind = "constant"
+lang = "python"
+content_hash = "4c5922dc89a7be88"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_TOOLS_PROBE_BACKOFF_MAX = _env_float(\"MCP_COMBINER_TOOLS_PROBE_BACKOFF_MAX\", 300.0)"
+description = ""
+schema = 4
+line = 103
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_TOOLS_PROBE_BACKOFF_MAX",
+  "backoff",
+  "combiner",
+  "combiner.mcp_combiner.connections._TOOLS_PROBE_BACKOFF_MAX",
+  "connections",
+  "max",
+  "mcp",
+  "probe",
+  "tools",
+]

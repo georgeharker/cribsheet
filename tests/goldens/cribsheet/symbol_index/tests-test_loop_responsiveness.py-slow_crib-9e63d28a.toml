@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_loop_responsiveness.py#slow_crib"
+fqn = "tests.test_loop_responsiveness.slow_crib"
+name = "slow_crib"
+kind = "function"
+lang = "python"
+content_hash = "6db0733608de6a9e"
+file = "tests/test_loop_responsiveness.py"
+file_hash = "3e5d3308dc33e6f4"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 55
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_loop_responsiveness",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "SlowEmbedder [tests/test_loop_responsiveness.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "loop",
+  "responsiveness",
+  "slow",
+  "slow_crib",
+  "test",
+  "tests",
+  "tests.test_loop_responsiveness.slow_crib",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "lua/mcp_companion/state.lua#_state.setup_state"
+fqn = "mcp_companion.state._state.setup_state"
+name = "setup_state"
+kind = "field"
+lang = "lua"
+content_hash = "aaa6762c32af3de9"
+file = "lua/mcp_companion/state.lua"
+file_hash = "0ebe5b76a6380351"
+signature = "setup_state = \"not_started\", -- not_started | in_progress | completed | failed"
+description = ""
+schema = 4
+line = 25
+mtime = 1782852601000000000
+container = [
+  "_state",
+]
+scope = [
+  "mcp_companion",
+  "state",
+  "_state",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.state._state.setup_state",
+  "setup",
+  "setup_state",
+  "state",
+]

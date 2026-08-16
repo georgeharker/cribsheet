@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/test_config.py#test_server_config_isolate_absent_is_none"
+fqn = "combiner.tests.test_config.test_server_config_isolate_absent_is_none"
+name = "test_server_config_isolate_absent_is_none"
+kind = "function"
+lang = "python"
+content_hash = "1d0112f444f6de67"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_server_config_isolate_absent_is_none() -> None:"
+description = ""
+schema = 4
+line = 132
+mtime = 1782852601000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+]
+symbol_was = []
+calls = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "absent",
+  "combiner",
+  "combiner.tests.test_config.test_server_config_isolate_absent_is_none",
+  "config",
+  "is",
+  "isolate",
+  "none",
+  "server",
+  "test",
+  "test_server_config_isolate_absent_is_none",
+  "tests",
+]

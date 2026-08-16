@@ -1,0 +1,49 @@
+symbol_ref = "combiner/tests/conftest.py#http_mock_entry"
+fqn = "combiner.tests.conftest.http_mock_entry"
+name = "http_mock_entry"
+kind = "function"
+lang = "python"
+content_hash = "e6a5ea6e9f59791f"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "def http_mock_entry(port: int) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 81
+mtime = 1783544328000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_health_reports_transport_states [combiner/tests/test_route_matrix.py]",
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_crash_reconnects_when_back [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_isolate_true_gives_each_chat_its_own_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_non_isolated_chats_share_one_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+]
+references = [
+  "test_health_reports_transport_states [combiner/tests/test_route_matrix.py]",
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_crash_reconnects_when_back [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_isolate_true_gives_each_chat_its_own_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_non_isolated_chats_share_one_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.http_mock_entry",
+  "conftest",
+  "entry",
+  "http",
+  "http_mock_entry",
+  "mock",
+  "tests",
+]

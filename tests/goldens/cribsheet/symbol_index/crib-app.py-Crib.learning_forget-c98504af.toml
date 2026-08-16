@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.learning_forget"
+fqn = "crib.app.Crib.learning_forget"
+name = "learning_forget"
+kind = "method"
+lang = "python"
+content_hash = "46a5b0e56bb1a6b6"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def learning_forget(self, symbol: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 2093
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "forget [crib/learnings.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "learning_forget [crib/server.py]",
+]
+references = [
+  "learning_forget [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.learning_forget",
+  "forget",
+  "learning",
+  "learning_forget",
+]

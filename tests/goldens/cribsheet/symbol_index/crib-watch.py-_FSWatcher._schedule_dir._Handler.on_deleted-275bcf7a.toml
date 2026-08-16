@@ -1,0 +1,44 @@
+symbol_ref = "crib/watch.py#_FSWatcher._schedule_dir._Handler.on_deleted"
+fqn = "crib.watch._FSWatcher._schedule_dir._Handler.on_deleted"
+name = "on_deleted"
+kind = "method"
+lang = "python"
+content_hash = "47ababcb12b3f673"
+file = "crib/watch.py"
+file_hash = "c10c30739292eebe"
+signature = "def on_deleted(self, e):  # noqa: ANN001"
+description = ""
+schema = 4
+line = 166
+mtime = 1786139638000000000
+container = [
+  "_FSWatcher",
+  "_schedule_dir",
+  "_Handler",
+]
+scope = [
+  "crib",
+  "watch",
+  "_FSWatcher",
+  "_schedule_dir",
+  "_Handler",
+]
+symbol_was = []
+calls = [
+  "_emit [crib/watch.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.watch._FSWatcher._schedule_dir._Handler.on_deleted",
+  "deleted",
+  "dir",
+  "fs",
+  "handler",
+  "on",
+  "on_deleted",
+  "schedule",
+  "watch",
+  "watcher",
+]

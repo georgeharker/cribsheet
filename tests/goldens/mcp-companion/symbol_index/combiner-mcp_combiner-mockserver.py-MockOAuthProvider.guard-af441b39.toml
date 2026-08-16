@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthProvider.guard"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthProvider.guard"
+name = "guard"
+kind = "method"
+lang = "python"
+content_hash = "f23d74e53dcf8fc0"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def guard(self, app: Any) -> Any:"
+description = ""
+schema = 4
+line = 889
+mtime = 1783622326000000000
+container = [
+  "MockOAuthProvider",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthProvider",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [combiner/mcp_combiner/mockserver.py]",
+  "make [combiner/tests/test_oauth_mock.py]",
+]
+references = [
+  "main [combiner/mcp_combiner/mockserver.py]",
+  "make [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthProvider.guard",
+  "guard",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "provider",
+]

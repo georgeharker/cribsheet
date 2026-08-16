@@ -1,0 +1,37 @@
+symbol_ref = "crib/designs.py#Node.checked"
+fqn = "crib.designs.Node.checked"
+name = "checked"
+kind = "field"
+lang = "python"
+content_hash = "12874397f3dea940"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "checked: dict[str, str]"
+description = ""
+schema = 4
+line = 320
+mtime = 1786693579000000000
+container = [
+  "Node",
+]
+scope = [
+  "crib",
+  "designs",
+  "Node",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_dep_remove [crib/designs.py]",
+  "_direct_taint [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_node [tests/test_designs.py]",
+]
+name_terms = [
+  "checked",
+  "crib",
+  "crib.designs.Node.checked",
+  "designs",
+  "node",
+]

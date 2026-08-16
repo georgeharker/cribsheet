@@ -1,0 +1,42 @@
+symbol_ref = "scripts/eval_hybrid.py#main.signals"
+fqn = "scripts.eval_hybrid.main.signals"
+name = "signals"
+kind = "function"
+lang = "python"
+content_hash = "c96fca12b90a219c"
+file = "scripts/eval_hybrid.py"
+file_hash = "7efc1218d091601c"
+signature = "def signals(p, q):"
+description = ""
+schema = 4
+line = 95
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_hybrid",
+  "main",
+]
+symbol_was = []
+calls = [
+  "_subtokens [crib/retrieve.py]",
+  "q [scripts/eval_fusion.py]",
+  "scores [crib/retrieve.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = [
+  "main [scripts/eval_hybrid.py]",
+]
+references = [
+  "main [scripts/eval_hybrid.py]",
+]
+name_terms = [
+  "eval",
+  "hybrid",
+  "main",
+  "scripts",
+  "scripts.eval_hybrid.main.signals",
+  "signals",
+]

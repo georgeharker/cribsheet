@@ -1,0 +1,45 @@
+symbol_ref = "tests/test_code_integrity.py#test_dead_session_raises_immediately_and_leaks_no_response_slot"
+fqn = "tests.test_code_integrity.test_dead_session_raises_immediately_and_leaks_no_response_slot"
+name = "test_dead_session_raises_immediately_and_leaks_no_response_slot"
+kind = "function"
+lang = "python"
+content_hash = "d66516f1f7658097"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_dead_session_raises_immediately_and_leaks_no_response_slot("
+description = ""
+schema = 4
+line = 299
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "LspSessionPool [crib/codeindex.py]",
+  "_fake_lsp [tests/test_code_integrity.py]",
+  "acquire [crib/codeindex.py]",
+  "close_all [crib/codeindex.py]",
+  "request [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "code",
+  "dead",
+  "immediately",
+  "integrity",
+  "leaks",
+  "no",
+  "raises",
+  "response",
+  "session",
+  "slot",
+  "test",
+  "test_dead_session_raises_immediately_and_leaks_no_response_slot",
+  "tests",
+  "tests.test_code_integrity.test_dead_session_raises_immediately_and_leaks_no_response_slot",
+]

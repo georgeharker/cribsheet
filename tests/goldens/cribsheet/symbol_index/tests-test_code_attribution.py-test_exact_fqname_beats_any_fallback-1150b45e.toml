@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_code_attribution.py#test_exact_fqname_beats_any_fallback"
+fqn = "tests.test_code_attribution.test_exact_fqname_beats_any_fallback"
+name = "test_exact_fqname_beats_any_fallback"
+kind = "function"
+lang = "python"
+content_hash = "6a23860547743b47"
+file = "tests/test_code_attribution.py"
+file_hash = "ff3c29a685f6f6d7"
+signature = "def test_exact_fqname_beats_any_fallback():"
+description = ""
+schema = 4
+line = 89
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_attribution",
+]
+symbol_was = []
+calls = [
+  "match_meta [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "any",
+  "attribution",
+  "beats",
+  "code",
+  "exact",
+  "fallback",
+  "fqname",
+  "test",
+  "test_exact_fqname_beats_any_fallback",
+  "tests",
+  "tests.test_code_attribution.test_exact_fqname_beats_any_fallback",
+]

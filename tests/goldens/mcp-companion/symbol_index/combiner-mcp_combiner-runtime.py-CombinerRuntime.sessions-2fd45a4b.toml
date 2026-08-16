@@ -1,0 +1,60 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#CombinerRuntime.sessions"
+fqn = "combiner.mcp_combiner.runtime.CombinerRuntime.sessions"
+name = "sessions"
+kind = "field"
+lang = "python"
+content_hash = "9f0323bdd5b7aaf1"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "sessions: SessionRegistry = field(default_factory=SessionRegistry)"
+description = ""
+schema = 4
+line = 265
+mtime = 1784493613000000000
+container = [
+  "CombinerRuntime",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "CombinerRuntime",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_active_sessions [combiner/mcp_combiner/server.py]",
+  "_apply_session_filter [combiner/mcp_combiner/middleware.py]",
+  "_clean_grants [combiner/tests/test_permissions.py]",
+  "_forward [combiner/mcp_combiner/notifications.py]",
+  "_notify_session_by_id [combiner/mcp_combiner/toolcache.py]",
+  "_notify_tool_list_changed [combiner/mcp_combiner/toolcache.py]",
+  "_pending_token_filters [combiner/mcp_combiner/server.py]",
+  "_session_disabled [combiner/mcp_combiner/server.py]",
+  "_token_sessions [combiner/mcp_combiner/server.py]",
+  "broadcast_sessions [combiner/tests/test_notifications.py]",
+  "capture [combiner/tests/test_notifications_e2e.py]",
+  "combiner__session_disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__session_enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__session_status [combiner/mcp_combiner/meta_tools.py]",
+  "dispatch [combiner/mcp_combiner/asgi.py]",
+  "enforce [combiner/mcp_combiner/permissions.py]",
+  "list_sessions [combiner/mcp_combiner/routes.py]",
+  "lookup_session_token [combiner/mcp_combiner/routes.py]",
+  "manage_session_filter [combiner/mcp_combiner/routes.py]",
+  "manage_token_filter [combiner/mcp_combiner/routes.py]",
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "on_list_tools [combiner/mcp_combiner/middleware.py]",
+  "on_request [combiner/mcp_combiner/middleware.py]",
+  "reset [combiner/mcp_combiner/runtime.py]",
+  "test_elicit_allow_for_session_caches [combiner/tests/test_permissions.py]",
+  "test_elicit_allow_once_passes_without_caching [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.CombinerRuntime.sessions",
+  "mcp",
+  "runtime",
+  "sessions",
+]

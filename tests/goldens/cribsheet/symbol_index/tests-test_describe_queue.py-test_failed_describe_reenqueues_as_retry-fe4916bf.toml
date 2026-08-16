@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_describe_queue.py#test_failed_describe_reenqueues_as_retry"
+fqn = "tests.test_describe_queue.test_failed_describe_reenqueues_as_retry"
+name = "test_failed_describe_reenqueues_as_retry"
+kind = "function"
+lang = "python"
+content_hash = "45ff6b206bf03d5f"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def test_failed_describe_reenqueues_as_retry():"
+description = ""
+schema = 4
+line = 167
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = [
+  "body [tests/test_describe_queue.py]",
+  "run [tests/test_describe_queue.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "as",
+  "describe",
+  "failed",
+  "queue",
+  "reenqueues",
+  "retry",
+  "test",
+  "test_failed_describe_reenqueues_as_retry",
+  "tests",
+  "tests.test_describe_queue.test_failed_describe_reenqueues_as_retry",
+]

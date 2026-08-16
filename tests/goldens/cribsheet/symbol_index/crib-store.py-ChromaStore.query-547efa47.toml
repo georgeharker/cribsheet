@@ -1,0 +1,39 @@
+symbol_ref = "crib/store.py#ChromaStore.query"
+fqn = "crib.store.ChromaStore.query"
+name = "query"
+kind = "method"
+lang = "python"
+content_hash = "8017b9c9941ff3de"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def query(self, embedding: list[float], k: int,"
+description = ""
+schema = 4
+line = 334
+mtime = 1786564832000000000
+container = [
+  "ChromaStore",
+]
+scope = [
+  "crib",
+  "store",
+  "ChromaStore",
+]
+symbol_was = []
+calls = [
+  "Hit [crib/store.py]",
+  "_run [crib/store.py]",
+]
+called_by = [
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+references = [
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+name_terms = [
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore.query",
+  "query",
+  "store",
+]

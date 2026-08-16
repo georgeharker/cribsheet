@@ -1,0 +1,45 @@
+symbol_ref = "crib/codequery.py#CodeQuery._neighbours"
+fqn = "crib.codequery.CodeQuery._neighbours"
+name = "_neighbours"
+kind = "method"
+lang = "python"
+content_hash = "d124f3d275f42fff"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def _neighbours(self, owner: str, edges: list[str] | None,"
+description = ""
+schema = 4
+line = 209
+mtime = 1786664729000000000
+container = [
+  "CodeQuery",
+]
+scope = [
+  "crib",
+  "codequery",
+  "CodeQuery",
+]
+symbol_was = []
+calls = [
+  "_proj_maps [crib/codequery.py]",
+  "decode_edge [crib/symbols.py]",
+]
+called_by = [
+  "_lookup_one [crib/codequery.py]",
+  "dossier [crib/codequery.py]",
+  "xref [crib/codequery.py]",
+]
+references = [
+  "_lookup_one [crib/codequery.py]",
+  "dossier [crib/codequery.py]",
+  "xref [crib/codequery.py]",
+]
+name_terms = [
+  "_neighbours",
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery._neighbours",
+  "neighbours",
+  "query",
+]

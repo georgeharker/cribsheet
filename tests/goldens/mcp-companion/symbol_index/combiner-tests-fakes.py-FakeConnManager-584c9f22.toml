@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/fakes.py#FakeConnManager"
+fqn = "combiner.tests.fakes.FakeConnManager"
+name = "FakeConnManager"
+kind = "class"
+lang = "python"
+content_hash = "c3c7cf764c25bfea"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "class FakeConnManager:"
+description = ""
+schema = 4
+line = 44
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "harness [combiner/tests/test_reload_config.py]",
+  "test_restart_leaves_one_live_provider [combiner/tests/test_mounts.py]",
+  "test_restart_stdio_empty_answer_keeps_slice_silent [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "FakeConnManager",
+  "combiner",
+  "combiner.tests.fakes.FakeConnManager",
+  "conn",
+  "fake",
+  "fakes",
+  "manager",
+  "tests",
+]

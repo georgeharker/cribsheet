@@ -1,0 +1,41 @@
+symbol_ref = "crib/retrieve.py#SummaryVectorCache.get"
+fqn = "crib.retrieve.SummaryVectorCache.get"
+name = "get"
+kind = "method"
+lang = "python"
+content_hash = "ddbef0c4313098bb"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "def get(self, project: str, labels: tuple[str, ...], *,"
+description = ""
+schema = 4
+line = 386
+mtime = 1786136167000000000
+container = [
+  "SummaryVectorCache",
+]
+scope = [
+  "crib",
+  "retrieve",
+  "SummaryVectorCache",
+]
+symbol_was = []
+calls = [
+  "embed_batch [crib/embed.py]",
+  "get_docs [crib/store.py]",
+]
+called_by = [
+  "best_cosines [crib/retrieve.py]",
+]
+references = [
+  "best_cosines [crib/retrieve.py]",
+]
+name_terms = [
+  "cache",
+  "crib",
+  "crib.retrieve.SummaryVectorCache.get",
+  "get",
+  "retrieve",
+  "summary",
+  "vector",
+]

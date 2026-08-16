@@ -1,0 +1,39 @@
+symbol_ref = "crib/server.py#_resolve"
+fqn = "crib.server._resolve"
+name = "_resolve"
+kind = "function"
+lang = "python"
+content_hash = "5d3ad06e12fc04c3"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def _resolve(crib: Crib, project: str | None,"
+description = ""
+schema = 4
+line = 45
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = [
+  "_cwd [crib/server.py]",
+  "resolve_session_project [crib/session.py]",
+  "session_state [crib/session.py]",
+]
+called_by = [
+  "_project [crib/server.py]",
+  "resolve [crib/server.py]",
+]
+references = [
+  "_project [crib/server.py]",
+  "resolve [crib/server.py]",
+]
+name_terms = [
+  "_resolve",
+  "crib",
+  "crib.server._resolve",
+  "resolve",
+  "server",
+]

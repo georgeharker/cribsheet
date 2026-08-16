@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestPermissionPolicyParsing.test_parses_fields"
+fqn = "combiner.tests.test_permissions.TestPermissionPolicyParsing.test_parses_fields"
+name = "test_parses_fields"
+kind = "method"
+lang = "python"
+content_hash = "3669163e5208ee8e"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "def test_parses_fields(self) -> None:"
+description = ""
+schema = 4
+line = 49
+mtime = 1783633313000000000
+container = [
+  "TestPermissionPolicyParsing",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "TestPermissionPolicyParsing",
+]
+symbol_was = []
+calls = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_permissions.TestPermissionPolicyParsing.test_parses_fields",
+  "fields",
+  "parses",
+  "parsing",
+  "permission",
+  "permissions",
+  "policy",
+  "test",
+  "test_parses_fields",
+  "tests",
+]

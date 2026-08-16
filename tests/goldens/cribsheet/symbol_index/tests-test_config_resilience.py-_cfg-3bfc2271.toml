@@ -1,0 +1,45 @@
+symbol_ref = "tests/test_config_resilience.py#_cfg"
+fqn = "tests.test_config_resilience._cfg"
+name = "_cfg"
+kind = "function"
+lang = "python"
+content_hash = "218725fd0f73d67e"
+file = "tests/test_config_resilience.py"
+file_hash = "620aeb96b59e7b2d"
+signature = "def _cfg(tmp_path: Path, body: str) -> Path:"
+description = ""
+schema = 4
+line = 16
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_config_resilience",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_broken_toml_names_the_file [tests/test_config_resilience.py]",
+  "test_every_table_tolerates_unknown_keys [tests/test_config_resilience.py]",
+  "test_known_keys_are_unaffected [tests/test_config_resilience.py]",
+  "test_unknown_key_in_a_table_warns_and_loads [tests/test_config_resilience.py]",
+  "test_unknown_top_level_key_warns_and_loads [tests/test_config_resilience.py]",
+  "test_wrong_shaped_values_warn_instead_of_raising [tests/test_config_resilience.py]",
+]
+references = [
+  "test_broken_toml_names_the_file [tests/test_config_resilience.py]",
+  "test_every_table_tolerates_unknown_keys [tests/test_config_resilience.py]",
+  "test_known_keys_are_unaffected [tests/test_config_resilience.py]",
+  "test_unknown_key_in_a_table_warns_and_loads [tests/test_config_resilience.py]",
+  "test_unknown_top_level_key_warns_and_loads [tests/test_config_resilience.py]",
+  "test_wrong_shaped_values_warn_instead_of_raising [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "_cfg",
+  "cfg",
+  "config",
+  "resilience",
+  "test",
+  "tests",
+  "tests.test_config_resilience._cfg",
+]

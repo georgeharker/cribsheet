@@ -1,0 +1,63 @@
+symbol_ref = "combiner/mcp_combiner/config.py#PermissionPolicy.from_dict"
+fqn = "combiner.mcp_combiner.config.PermissionPolicy.from_dict"
+name = "from_dict"
+kind = "method"
+lang = "python"
+content_hash = "b88e7265a06b7aca"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "@classmethod"
+description = ""
+schema = 4
+line = 166
+mtime = 1783633313000000000
+container = [
+  "PermissionPolicy",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "PermissionPolicy",
+]
+symbol_was = []
+calls = [
+  "_action [combiner/mcp_combiner/config.py]",
+  "_patterns [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "load [combiner/mcp_combiner/config.py]",
+  "test_auto_approve_folds_into_allow [combiner/tests/test_permissions.py]",
+  "test_effective_policy_via_combiner_config [combiner/tests/test_permissions.py]",
+  "test_empty_is_none [combiner/tests/test_permissions.py]",
+  "test_invalid_action_rejected [combiner/tests/test_permissions.py]",
+  "test_parses_fields [combiner/tests/test_permissions.py]",
+  "test_pattern_sets_are_unioned [combiner/tests/test_permissions.py]",
+  "test_server_overrides_global_scalars [combiner/tests/test_permissions.py]",
+  "test_snake_case_elicit_unavailable [combiner/tests/test_permissions.py]",
+  "test_unset_scalars_are_none [combiner/tests/test_permissions.py]",
+]
+references = [
+  "load [combiner/mcp_combiner/config.py]",
+  "test_auto_approve_folds_into_allow [combiner/tests/test_permissions.py]",
+  "test_effective_policy_via_combiner_config [combiner/tests/test_permissions.py]",
+  "test_empty_is_none [combiner/tests/test_permissions.py]",
+  "test_invalid_action_rejected [combiner/tests/test_permissions.py]",
+  "test_parses_fields [combiner/tests/test_permissions.py]",
+  "test_pattern_sets_are_unioned [combiner/tests/test_permissions.py]",
+  "test_server_overrides_global_scalars [combiner/tests/test_permissions.py]",
+  "test_snake_case_elicit_unavailable [combiner/tests/test_permissions.py]",
+  "test_unset_scalars_are_none [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.PermissionPolicy.from_dict",
+  "config",
+  "dict",
+  "from",
+  "from_dict",
+  "mcp",
+  "permission",
+  "policy",
+]

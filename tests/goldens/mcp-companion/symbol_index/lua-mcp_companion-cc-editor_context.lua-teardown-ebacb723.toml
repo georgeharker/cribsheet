@@ -1,0 +1,38 @@
+symbol_ref = "lua/mcp_companion/cc/editor_context.lua#teardown"
+fqn = "mcp_companion.cc.editor_context.teardown"
+name = "teardown"
+kind = "function"
+lang = "lua"
+content_hash = "1e862429d4799760"
+file = "lua/mcp_companion/cc/editor_context.lua"
+file_hash = "065b8b561038406b"
+signature = "function M.teardown()"
+description = ""
+schema = 4
+line = 257
+mtime = 1782852601000000000
+container = []
+scope = [
+  "mcp_companion",
+  "cc",
+  "editor_context",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.register [lua/mcp_companion/cc/editor_context.lua]",
+  "editor_context.lua [lua/mcp_companion/cc/editor_context.lua]",
+]
+references = [
+  "_setup_system_prompt_injection [lua/mcp_companion/cc/editor_context.lua]",
+  "register [lua/mcp_companion/cc/editor_context.lua]",
+]
+name_terms = [
+  "cc",
+  "companion",
+  "context",
+  "editor",
+  "mcp",
+  "mcp_companion.cc.editor_context.teardown",
+  "teardown",
+]

@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_codeindex.py#test_walk_descends_containers"
+fqn = "tests.test_codeindex.test_walk_descends_containers"
+name = "test_walk_descends_containers"
+kind = "function"
+lang = "python"
+content_hash = "73ab48c45f2e2bab"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_walk_descends_containers():"
+description = ""
+schema = 4
+line = 268
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "_walk [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "containers",
+  "descends",
+  "test",
+  "test_walk_descends_containers",
+  "tests",
+  "tests.test_codeindex.test_walk_descends_containers",
+  "walk",
+]

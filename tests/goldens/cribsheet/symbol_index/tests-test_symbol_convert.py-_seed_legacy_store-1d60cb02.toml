@@ -1,0 +1,49 @@
+symbol_ref = "tests/test_symbol_convert.py#_seed_legacy_store"
+fqn = "tests.test_symbol_convert._seed_legacy_store"
+name = "_seed_legacy_store"
+kind = "function"
+lang = "python"
+content_hash = "ebdb21181d7c708e"
+file = "tests/test_symbol_convert.py"
+file_hash = "3cdbfd7f71b23e65"
+signature = "def _seed_legacy_store(crib, project, n=3):"
+description = ""
+schema = 4
+line = 116
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_convert",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_legacy_toml [tests/test_symbol_convert.py]",
+  "write_atomic [crib/tomlrec.py]",
+]
+called_by = [
+  "test_a_record_with_no_file_is_reported_for_reindex_not_guessed [tests/test_symbol_convert.py]",
+  "test_code_convert_dry_run_reports_and_writes_nothing [tests/test_symbol_convert.py]",
+  "test_code_convert_renames_stamps_and_preserves [tests/test_symbol_convert.py]",
+  "test_code_convert_sweeps_a_crash_leftover [tests/test_symbol_convert.py]",
+  "test_colliding_records_convert_one_and_report_the_rest [tests/test_symbol_convert.py]",
+]
+references = [
+  "test_a_record_with_no_file_is_reported_for_reindex_not_guessed [tests/test_symbol_convert.py]",
+  "test_code_convert_dry_run_reports_and_writes_nothing [tests/test_symbol_convert.py]",
+  "test_code_convert_renames_stamps_and_preserves [tests/test_symbol_convert.py]",
+  "test_code_convert_sweeps_a_crash_leftover [tests/test_symbol_convert.py]",
+  "test_colliding_records_convert_one_and_report_the_rest [tests/test_symbol_convert.py]",
+]
+name_terms = [
+  "_seed_legacy_store",
+  "convert",
+  "legacy",
+  "seed",
+  "store",
+  "symbol",
+  "test",
+  "tests",
+  "tests.test_symbol_convert._seed_legacy_store",
+]

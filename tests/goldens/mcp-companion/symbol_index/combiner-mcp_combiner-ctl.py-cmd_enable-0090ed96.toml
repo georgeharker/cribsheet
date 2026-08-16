@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#cmd_enable"
+fqn = "combiner.mcp_combiner.ctl.cmd_enable"
+name = "cmd_enable"
+kind = "function"
+lang = "python"
+content_hash = "67622a3bf5c8184c"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "async def cmd_enable(args: argparse.Namespace) -> int:"
+description = ""
+schema = 4
+line = 429
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = [
+  "_call_meta [combiner/mcp_combiner/ctl.py]",
+  "_emit [combiner/mcp_combiner/ctl.py]",
+]
+called_by = []
+references = [
+  "add_ctl_parsers [combiner/mcp_combiner/ctl.py]",
+]
+name_terms = [
+  "cmd",
+  "cmd_enable",
+  "combiner",
+  "combiner.mcp_combiner.ctl.cmd_enable",
+  "ctl",
+  "enable",
+  "mcp",
+]

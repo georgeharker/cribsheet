@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockTool.from_spec"
+fqn = "combiner.mcp_combiner.mockserver.MockTool.from_spec"
+name = "from_spec"
+kind = "method"
+lang = "python"
+content_hash = "9d9c4a40474eeee9"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@classmethod"
+description = ""
+schema = 4
+line = 247
+mtime = 1783622326000000000
+container = [
+  "MockTool",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockTool",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_add [combiner/mcp_combiner/mockserver.py]",
+]
+references = [
+  "_add [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockTool.from_spec",
+  "from",
+  "from_spec",
+  "mcp",
+  "mock",
+  "mockserver",
+  "spec",
+  "tool",
+]

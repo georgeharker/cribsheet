@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#_CaptureSession"
+fqn = "combiner.tests.test_notifications_e2e._CaptureSession"
+name = "_CaptureSession"
+kind = "class"
+lang = "python"
+content_hash = "a0027617d0185ec2"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "class _CaptureSession(_SessionBase):"
+description = ""
+schema = 4
+line = 65
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "capture [combiner/tests/test_notifications_e2e.py]",
+  "test_per_chat_routes_to_requesting_session_only [combiner/tests/test_notifications_e2e.py]",
+  "test_resource_updated_delivered_namespaced [combiner/tests/test_notifications_e2e.py]",
+]
+name_terms = [
+  "2",
+  "_CaptureSession",
+  "capture",
+  "combiner",
+  "combiner.tests.test_notifications_e2e._CaptureSession",
+  "e",
+  "notifications",
+  "session",
+  "test",
+  "tests",
+]

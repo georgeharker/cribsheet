@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#_on_upstream_tools_ready._prime_gated"
+fqn = "combiner.mcp_combiner.toolcache._on_upstream_tools_ready._prime_gated"
+name = "_prime_gated"
+kind = "function"
+lang = "python"
+content_hash = "0afa62643c965412"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "async def _prime_gated() -> None:"
+description = ""
+schema = 4
+line = 480
+mtime = 1784493613000000000
+container = [
+  "_on_upstream_tools_ready",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+  "_on_upstream_tools_ready",
+]
+symbol_was = []
+calls = [
+  "clear_tool_cache [combiner/mcp_combiner/toolcache.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+]
+called_by = [
+  "_on_upstream_tools_ready [combiner/mcp_combiner/toolcache.py]",
+]
+references = [
+  "_on_upstream_tools_ready [combiner/mcp_combiner/toolcache.py]",
+]
+name_terms = [
+  "_prime_gated",
+  "combiner",
+  "combiner.mcp_combiner.toolcache._on_upstream_tools_ready._prime_gated",
+  "gated",
+  "mcp",
+  "on",
+  "prime",
+  "ready",
+  "toolcache",
+  "tools",
+  "upstream",
+]

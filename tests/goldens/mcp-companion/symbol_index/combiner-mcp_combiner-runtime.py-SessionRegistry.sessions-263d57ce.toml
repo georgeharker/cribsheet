@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.sessions"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.sessions"
+name = "sessions"
+kind = "method"
+lang = "python"
+content_hash = "228022d24dfc18d9"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def sessions(self) -> list[ServerSession]:"
+description = ""
+schema = 4
+line = 68
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_forward [combiner/mcp_combiner/notifications.py]",
+  "_notify_session_by_id [combiner/mcp_combiner/toolcache.py]",
+  "_notify_tool_list_changed [combiner/mcp_combiner/toolcache.py]",
+  "list_sessions [combiner/mcp_combiner/routes.py]",
+]
+references = [
+  "_forward [combiner/mcp_combiner/notifications.py]",
+  "_notify_session_by_id [combiner/mcp_combiner/toolcache.py]",
+  "_notify_tool_list_changed [combiner/mcp_combiner/toolcache.py]",
+  "list_sessions [combiner/mcp_combiner/routes.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.sessions",
+  "mcp",
+  "registry",
+  "runtime",
+  "session",
+  "sessions",
+]

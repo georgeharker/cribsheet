@@ -1,0 +1,37 @@
+symbol_ref = "crib/server.py#build_server.design_promote"
+fqn = "crib.server.build_server.design_promote"
+name = "design_promote"
+kind = "function"
+lang = "python"
+content_hash = "d77c35f64db1865d"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"read\")"
+description = ""
+schema = 4
+line = 1133
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "crib_tool [crib/server.py]",
+  "design_promote [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.design_promote",
+  "design",
+  "design_promote",
+  "promote",
+  "server",
+]

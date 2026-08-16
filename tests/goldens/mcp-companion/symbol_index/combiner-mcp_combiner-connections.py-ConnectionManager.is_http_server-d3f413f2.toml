@@ -1,0 +1,50 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager.is_http_server"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager.is_http_server"
+name = "is_http_server"
+kind = "method"
+lang = "python"
+content_hash = "17bf11aaa1c3e7d4"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "@staticmethod"
+description = ""
+schema = 4
+line = 234
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_effective_isolate [combiner/mcp_combiner/proxyfactory.py]",
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+]
+references = [
+  "_effective_isolate [combiner/mcp_combiner/proxyfactory.py]",
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.is_http_server",
+  "connection",
+  "connections",
+  "http",
+  "is",
+  "is_http_server",
+  "manager",
+  "mcp",
+  "server",
+]

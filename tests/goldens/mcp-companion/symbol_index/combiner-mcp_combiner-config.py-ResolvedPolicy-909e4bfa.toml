@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ResolvedPolicy"
+fqn = "combiner.mcp_combiner.config.ResolvedPolicy"
+name = "ResolvedPolicy"
+kind = "class"
+lang = "python"
+content_hash = "e67709fd4ba42057"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "@dataclass(frozen=True)"
+description = ""
+schema = 4
+line = 195
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_elicit [combiner/mcp_combiner/permissions.py]",
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+  "_rp [combiner/tests/test_permissions.py]",
+  "effective_policy [combiner/mcp_combiner/config.py]",
+  "enforce [combiner/mcp_combiner/permissions.py]",
+]
+name_terms = [
+  "ResolvedPolicy",
+  "combiner",
+  "combiner.mcp_combiner.config.ResolvedPolicy",
+  "config",
+  "mcp",
+  "policy",
+  "resolved",
+]

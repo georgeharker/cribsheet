@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#logger"
+fqn = "combiner.mcp_combiner.toolcache.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+schema = 4
+line = 35
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "_notify_session_by_id [combiner/mcp_combiner/toolcache.py]",
+  "_notify_tool_list_changed [combiner/mcp_combiner/toolcache.py]",
+  "_schedule_promotion_notify [combiner/mcp_combiner/toolcache.py]",
+  "clear_tool_cache [combiner/mcp_combiner/toolcache.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.toolcache.logger",
+  "logger",
+  "mcp",
+  "toolcache",
+]

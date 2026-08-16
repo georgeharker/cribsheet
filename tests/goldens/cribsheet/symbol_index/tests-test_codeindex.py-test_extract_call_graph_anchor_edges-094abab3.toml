@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_codeindex.py#test_extract_call_graph_anchor_edges"
+fqn = "tests.test_codeindex.test_extract_call_graph_anchor_edges"
+name = "test_extract_call_graph_anchor_edges"
+kind = "function"
+lang = "python"
+content_hash = "4c9a0ef23bdbdc4e"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_extract_call_graph_anchor_edges():"
+description = ""
+schema = 4
+line = 310
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "extract_file [crib/codeindex.py]",
+  "server_for [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "anchor",
+  "call",
+  "codeindex",
+  "edges",
+  "extract",
+  "graph",
+  "test",
+  "test_extract_call_graph_anchor_edges",
+  "tests",
+  "tests.test_codeindex.test_extract_call_graph_anchor_edges",
+]

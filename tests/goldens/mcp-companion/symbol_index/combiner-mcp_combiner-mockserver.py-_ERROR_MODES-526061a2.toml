@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#_ERROR_MODES"
+fqn = "combiner.mcp_combiner.mockserver._ERROR_MODES"
+name = "_ERROR_MODES"
+kind = "constant"
+lang = "python"
+content_hash = "e0c58ee7a52c005f"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "_ERROR_MODES = (\"none\", \"always\", \"first_n\", \"after_n\")"
+description = ""
+schema = 4
+line = 81
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/mockserver.py]",
+  "set_behavior [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "_ERROR_MODES",
+  "combiner",
+  "combiner.mcp_combiner.mockserver._ERROR_MODES",
+  "error",
+  "mcp",
+  "mockserver",
+  "modes",
+]

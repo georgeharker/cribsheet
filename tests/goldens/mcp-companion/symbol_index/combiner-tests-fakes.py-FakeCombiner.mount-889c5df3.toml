@@ -1,0 +1,36 @@
+symbol_ref = "combiner/tests/fakes.py#FakeCombiner.mount"
+fqn = "combiner.tests.fakes.FakeCombiner.mount"
+name = "mount"
+kind = "method"
+lang = "python"
+content_hash = "3bb9329e5e1224c4"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "def mount(self, proxy: Any, namespace: str) -> None:"
+description = ""
+schema = 4
+line = 40
+mtime = 1783534978000000000
+container = [
+  "FakeCombiner",
+]
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+  "FakeCombiner",
+]
+symbol_was = []
+calls = [
+  "FakeProvider [combiner/tests/fakes.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.fakes.FakeCombiner.mount",
+  "fake",
+  "fakes",
+  "mount",
+  "tests",
+]

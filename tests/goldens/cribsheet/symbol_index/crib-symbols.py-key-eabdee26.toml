@@ -1,0 +1,63 @@
+symbol_ref = "crib/symbols.py#key"
+fqn = "crib.symbols.key"
+name = "key"
+kind = "function"
+lang = "python"
+content_hash = "bceda863d11cc7fb"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def key(entry: dict[str, Any]) -> str:"
+description = ""
+schema = 4
+line = 398
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = [
+  "symbol_ref [crib/symbols.py]",
+]
+called_by = [
+  "(lambda) [crib/refs.py]",
+  "__init__ [crib/codestore.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_prepare [crib/codestore.py]",
+  "_proj_maps [crib/codequery.py]",
+  "_project_graph [crib/codequery.py]",
+  "_subgraph [crib/codequery.py]",
+  "append [crib/learnings.py]",
+  "bindings [crib/symbols.py]",
+  "build [crib/codequery.py]",
+  "candidates [crib/learnings.py]",
+  "code_convert [crib/app.py]",
+  "convert_notes [crib/learnings.py]",
+  "dossier [crib/codequery.py]",
+  "drop_file [crib/codestore.py]",
+  "edit [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "frontier [crib/codequery.py]",
+  "graph [crib/codequery.py]",
+  "marks [crib/learnings.py]",
+  "normalize_identity [crib/codeindex.py]",
+  "patch_edges [crib/codestore.py]",
+  "put [crib/codequery.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+  "resolution [crib/refs.py]",
+  "resolve_symbol [crib/refs.py]",
+  "resolve_symbol_or_ref [crib/refs.py]",
+]
+references = [
+  "bindings [crib/symbols.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.key",
+  "key",
+  "symbols",
+]

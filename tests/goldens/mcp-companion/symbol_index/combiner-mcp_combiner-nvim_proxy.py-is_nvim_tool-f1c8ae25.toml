@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/nvim_proxy.py#is_nvim_tool"
+fqn = "combiner.mcp_combiner.nvim_proxy.is_nvim_tool"
+name = "is_nvim_tool"
+kind = "function"
+lang = "python"
+content_hash = "18843d5d3b2c9348"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+file_hash = "072f85ddbeb3b759"
+signature = "def is_nvim_tool(name: str) -> bool:"
+description = ""
+schema = 4
+line = 69
+mtime = 1783022631000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "nvim_proxy",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+]
+references = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy.is_nvim_tool",
+  "is",
+  "is_nvim_tool",
+  "mcp",
+  "nvim",
+  "proxy",
+  "tool",
+]

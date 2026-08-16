@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_RefreshTokenOAuth._flow_lock"
+fqn = "combiner.mcp_combiner.auth._RefreshTokenOAuth._flow_lock"
+name = "_flow_lock"
+kind = "field"
+lang = "python"
+content_hash = "846481e78ad62017"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "_flow_lock: ClassVar[asyncio.Lock] = asyncio.Lock()"
+description = ""
+schema = 4
+line = 222
+mtime = 1783622326000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+  "_RefreshTokenOAuth",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "callback_handler [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_flow_lock",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth._flow_lock",
+  "flow",
+  "lock",
+  "mcp",
+  "o",
+  "refresh",
+  "token",
+]

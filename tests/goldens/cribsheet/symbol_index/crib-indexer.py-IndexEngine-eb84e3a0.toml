@@ -1,0 +1,33 @@
+symbol_ref = "crib/indexer.py#IndexEngine"
+fqn = "crib.indexer.IndexEngine"
+name = "IndexEngine"
+kind = "class"
+lang = "python"
+content_hash = "1f99cd2b553351ca"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "class IndexEngine:"
+description = ""
+schema = 4
+line = 60
+mtime = 1786578262000000000
+container = []
+scope = [
+  "crib",
+  "indexer",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/notestore.py]",
+]
+name_terms = [
+  "IndexEngine",
+  "crib",
+  "crib.indexer.IndexEngine",
+  "engine",
+  "index",
+  "indexer",
+]

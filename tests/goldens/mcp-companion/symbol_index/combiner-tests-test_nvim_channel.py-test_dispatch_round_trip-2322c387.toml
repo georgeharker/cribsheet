@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_nvim_channel.py#test_dispatch_round_trip"
+fqn = "combiner.tests.test_nvim_channel.test_dispatch_round_trip"
+name = "test_dispatch_round_trip"
+kind = "function"
+lang = "python"
+content_hash = "ea6b5f1aec51119b"
+file = "combiner/tests/test_nvim_channel.py"
+file_hash = "182e2a76d8efddf4"
+signature = "async def test_dispatch_round_trip(nvim_instance: str) -> None:"
+description = ""
+schema = 4
+line = 83
+mtime = 1783022631000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_nvim_channel",
+]
+symbol_was = []
+calls = [
+  "NvimChannelManager [combiner/mcp_combiner/nvim_channel.py]",
+  "call [combiner/mcp_combiner/nvim_channel.py]",
+  "deregister [combiner/mcp_combiner/nvim_channel.py]",
+  "register [combiner/mcp_combiner/nvim_channel.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.tests.test_nvim_channel.test_dispatch_round_trip",
+  "dispatch",
+  "nvim",
+  "round",
+  "test",
+  "test_dispatch_round_trip",
+  "tests",
+  "trip",
+]

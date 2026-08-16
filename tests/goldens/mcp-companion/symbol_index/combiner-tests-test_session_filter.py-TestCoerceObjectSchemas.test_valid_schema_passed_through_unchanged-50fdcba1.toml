@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestCoerceObjectSchemas.test_valid_schema_passed_through_unchanged"
+fqn = "combiner.tests.test_session_filter.TestCoerceObjectSchemas.test_valid_schema_passed_through_unchanged"
+name = "test_valid_schema_passed_through_unchanged"
+kind = "method"
+lang = "python"
+content_hash = "55484ba348cef817"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_valid_schema_passed_through_unchanged(self):"
+description = ""
+schema = 4
+line = 820
+mtime = 1784493613000000000
+container = [
+  "TestCoerceObjectSchemas",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestCoerceObjectSchemas",
+]
+symbol_was = []
+calls = [
+  "_coerce_object_schemas [combiner/mcp_combiner/schemafix.py]",
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "coerce",
+  "combiner",
+  "combiner.tests.test_session_filter.TestCoerceObjectSchemas.test_valid_schema_passed_through_unchanged",
+  "filter",
+  "object",
+  "passed",
+  "schema",
+  "schemas",
+  "session",
+  "test",
+  "test_valid_schema_passed_through_unchanged",
+  "tests",
+  "through",
+  "unchanged",
+  "valid",
+]

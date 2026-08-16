@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/mounts.py#_sniff_namespace"
+fqn = "combiner.mcp_combiner.mounts._sniff_namespace"
+name = "_sniff_namespace"
+kind = "function"
+lang = "python"
+content_hash = "01f273f486dd3765"
+file = "combiner/mcp_combiner/mounts.py"
+file_hash = "6bd48bfe5deb1fbd"
+signature = "def _sniff_namespace(provider: object, server_name: str) -> bool:"
+description = ""
+schema = 4
+line = 36
+mtime = 1783452495000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mounts",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "drop_server_providers [combiner/mcp_combiner/mounts.py]",
+]
+references = [
+  "drop_server_providers [combiner/mcp_combiner/mounts.py]",
+]
+name_terms = [
+  "_sniff_namespace",
+  "combiner",
+  "combiner.mcp_combiner.mounts._sniff_namespace",
+  "mcp",
+  "mounts",
+  "namespace",
+  "sniff",
+]

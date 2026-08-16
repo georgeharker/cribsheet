@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_designs.py#test_plan_add_takes_a_batch_with_intra_batch_deps"
+fqn = "tests.test_designs.test_plan_add_takes_a_batch_with_intra_batch_deps"
+name = "test_plan_add_takes_a_batch_with_intra_batch_deps"
+kind = "function"
+lang = "python"
+content_hash = "0e6185432b96d8f4"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_plan_add_takes_a_batch_with_intra_batch_deps(crib):"
+description = ""
+schema = 4
+line = 540
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "_by_rank [tests/test_designs.py]",
+  "_titles [tests/test_designs.py]",
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "add",
+  "batch",
+  "deps",
+  "designs",
+  "intra",
+  "plan",
+  "takes",
+  "test",
+  "test_plan_add_takes_a_batch_with_intra_batch_deps",
+  "tests",
+  "tests.test_designs.test_plan_add_takes_a_batch_with_intra_batch_deps",
+  "with",
+]

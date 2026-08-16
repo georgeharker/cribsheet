@@ -1,0 +1,33 @@
+symbol_ref = "crib/merge.py#_canon"
+fqn = "crib.merge._canon"
+name = "_canon"
+kind = "function"
+lang = "python"
+content_hash = "cc128b27aab36bf2"
+file = "crib/merge.py"
+file_hash = "b7c8dd0572a149cc"
+signature = "def _canon(v: Any) -> str:"
+description = ""
+schema = 4
+line = 26
+mtime = 1783446057000000000
+container = []
+scope = [
+  "crib",
+  "merge",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_resolve [crib/merge.py]",
+]
+references = [
+  "_resolve [crib/merge.py]",
+]
+name_terms = [
+  "_canon",
+  "canon",
+  "crib",
+  "crib.merge._canon",
+  "merge",
+]

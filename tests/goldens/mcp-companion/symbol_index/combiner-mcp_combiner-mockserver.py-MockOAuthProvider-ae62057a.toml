@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthProvider"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthProvider"
+name = "MockOAuthProvider"
+kind = "class"
+lang = "python"
+content_hash = "abb2846a3df9de2f"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "class MockOAuthProvider:"
+description = ""
+schema = 4
+line = 673
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+  "build_server [combiner/mcp_combiner/mockserver.py]",
+  "main [combiner/mcp_combiner/mockserver.py]",
+  "make [combiner/tests/test_oauth_mock.py]",
+  "provider [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "MockOAuthProvider",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthProvider",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "provider",
+]

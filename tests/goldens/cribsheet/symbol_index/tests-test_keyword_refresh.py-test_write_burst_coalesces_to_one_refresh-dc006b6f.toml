@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_keyword_refresh.py#test_write_burst_coalesces_to_one_refresh"
+fqn = "tests.test_keyword_refresh.test_write_burst_coalesces_to_one_refresh"
+name = "test_write_burst_coalesces_to_one_refresh"
+kind = "function"
+lang = "python"
+content_hash = "029123c5939ef0db"
+file = "tests/test_keyword_refresh.py"
+file_hash = "d758ff5010231936"
+signature = "def test_write_burst_coalesces_to_one_refresh(crib, monkeypatch):"
+description = ""
+schema = 4
+line = 39
+mtime = 1786044759000000000
+container = []
+scope = [
+  "tests",
+  "test_keyword_refresh",
+]
+symbol_was = []
+calls = [
+  "body [tests/test_keyword_refresh.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "burst",
+  "coalesces",
+  "keyword",
+  "one",
+  "refresh",
+  "test",
+  "test_write_burst_coalesces_to_one_refresh",
+  "tests",
+  "tests.test_keyword_refresh.test_write_burst_coalesces_to_one_refresh",
+  "to",
+  "write",
+]

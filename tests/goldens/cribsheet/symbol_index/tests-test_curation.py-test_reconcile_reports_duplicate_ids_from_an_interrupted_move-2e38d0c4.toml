@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_curation.py#test_reconcile_reports_duplicate_ids_from_an_interrupted_move"
+fqn = "tests.test_curation.test_reconcile_reports_duplicate_ids_from_an_interrupted_move"
+name = "test_reconcile_reports_duplicate_ids_from_an_interrupted_move"
+kind = "function"
+lang = "python"
+content_hash = "fa6b9c41d2103693"
+file = "tests/test_curation.py"
+file_hash = "f61c123d8750454b"
+signature = "def test_reconcile_reports_duplicate_ids_from_an_interrupted_move(crib):"
+description = ""
+schema = 4
+line = 76
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_curation",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_curation.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "an",
+  "curation",
+  "duplicate",
+  "from",
+  "ids",
+  "interrupted",
+  "move",
+  "reconcile",
+  "reports",
+  "test",
+  "test_reconcile_reports_duplicate_ids_from_an_interrupted_move",
+  "tests",
+  "tests.test_curation.test_reconcile_reports_duplicate_ids_from_an_interrupted_move",
+]

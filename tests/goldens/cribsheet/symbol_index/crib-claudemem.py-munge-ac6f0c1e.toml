@@ -1,0 +1,36 @@
+symbol_ref = "crib/claudemem.py#munge"
+fqn = "crib.claudemem.munge"
+name = "munge"
+kind = "function"
+lang = "python"
+content_hash = "b2f5f763c4f36b44"
+file = "crib/claudemem.py"
+file_hash = "f5d989e8add2ed0e"
+signature = "def munge(path: Path) -> str:"
+description = ""
+schema = 4
+line = 46
+mtime = 1782762348000000000
+container = []
+scope = [
+  "crib",
+  "claudemem",
+]
+symbol_was = []
+calls = [
+  "resolve_path [crib/claudemem.py]",
+]
+called_by = [
+  "harness_memory_dir [crib/claudemem.py]",
+  "test_munge_encodes_realpath [tests/test_claude_memory.py]",
+]
+references = [
+  "harness_memory_dir [crib/claudemem.py]",
+  "test_munge_encodes_realpath [tests/test_claude_memory.py]",
+]
+name_terms = [
+  "claudemem",
+  "crib",
+  "crib.claudemem.munge",
+  "munge",
+]

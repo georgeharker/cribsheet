@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_HEALTH_CHECK_INTERVAL"
+fqn = "combiner.mcp_combiner.connections._HEALTH_CHECK_INTERVAL"
+name = "_HEALTH_CHECK_INTERVAL"
+kind = "constant"
+lang = "python"
+content_hash = "55dd2c49dcd57451"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_HEALTH_CHECK_INTERVAL = _env_float(\"MCP_COMBINER_HEALTH_INTERVAL\", 30.0)"
+description = ""
+schema = 4
+line = 92
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_HEALTH_CHECK_INTERVAL",
+  "check",
+  "combiner",
+  "combiner.mcp_combiner.connections._HEALTH_CHECK_INTERVAL",
+  "connections",
+  "health",
+  "interval",
+  "mcp",
+]

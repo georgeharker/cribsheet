@@ -1,0 +1,43 @@
+symbol_ref = "scripts/eval_kw.py#main.c_dense_kw.fn"
+fqn = "scripts.eval_kw.main.c_dense_kw.fn"
+name = "fn"
+kind = "function"
+lang = "python"
+content_hash = "1f3d88c725b5e116"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def fn(feat, proj, q, qf, qv, k):"
+description = ""
+schema = 4
+line = 89
+mtime = 1783981122000000000
+container = [
+  "main",
+  "c_dense_kw",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+  "c_dense_kw",
+]
+symbol_was = []
+calls = [
+  "kw_maxsim [scripts/eval_kw.py]",
+  "mm [scripts/eval_kw.py]",
+  "order_from [scripts/eval_fusion.py]",
+]
+called_by = []
+references = [
+  "c_dense_kw [scripts/eval_kw.py]",
+]
+name_terms = [
+  "c",
+  "dense",
+  "eval",
+  "fn",
+  "kw",
+  "main",
+  "scripts",
+  "scripts.eval_kw.main.c_dense_kw.fn",
+]

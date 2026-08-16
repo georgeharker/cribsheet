@@ -1,0 +1,48 @@
+symbol_ref = "tests/test_claude_memory.py#test_mirror_catch_up_names_a_binding_that_failed.scenario"
+fqn = "tests.test_claude_memory.test_mirror_catch_up_names_a_binding_that_failed.scenario"
+name = "scenario"
+kind = "function"
+lang = "python"
+content_hash = "0c4e818d62842fc0"
+file = "tests/test_claude_memory.py"
+file_hash = "f5a685193106ac4d"
+signature = "async def scenario():"
+description = ""
+schema = 4
+line = 129
+mtime = 1785959234000000000
+container = [
+  "test_mirror_catch_up_names_a_binding_that_failed",
+]
+scope = [
+  "tests",
+  "test_claude_memory",
+  "test_mirror_catch_up_names_a_binding_that_failed",
+]
+symbol_was = []
+calls = [
+  "MemoryMirror [crib/memmirror.py]",
+  "catch_up [crib/memmirror.py]",
+]
+called_by = [
+  "test_mirror_catch_up_names_a_binding_that_failed [tests/test_claude_memory.py]",
+]
+references = [
+  "test_mirror_catch_up_names_a_binding_that_failed [tests/test_claude_memory.py]",
+]
+name_terms = [
+  "a",
+  "binding",
+  "catch",
+  "claude",
+  "failed",
+  "memory",
+  "mirror",
+  "names",
+  "scenario",
+  "test",
+  "tests",
+  "tests.test_claude_memory.test_mirror_catch_up_names_a_binding_that_failed.scenario",
+  "that",
+  "up",
+]

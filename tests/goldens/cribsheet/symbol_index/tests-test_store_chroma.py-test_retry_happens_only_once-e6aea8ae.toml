@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_store_chroma.py#test_retry_happens_only_once"
+fqn = "tests.test_store_chroma.test_retry_happens_only_once"
+name = "test_retry_happens_only_once"
+kind = "function"
+lang = "python"
+content_hash = "b899166f1e116084"
+file = "tests/test_store_chroma.py"
+file_hash = "c9d58563fea059fc"
+signature = "def test_retry_happens_only_once(chroma_dir):"
+description = ""
+schema = 4
+line = 98
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_store_chroma",
+]
+symbol_was = []
+calls = [
+  "_run [crib/store.py]",
+  "embedded [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chroma",
+  "happens",
+  "once",
+  "only",
+  "retry",
+  "store",
+  "test",
+  "test_retry_happens_only_once",
+  "tests",
+  "tests.test_store_chroma.test_retry_happens_only_once",
+]

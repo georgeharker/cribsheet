@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_grammar_enum.py#test_keep_prior_on_empty_extraction"
+fqn = "tests.test_grammar_enum.test_keep_prior_on_empty_extraction"
+name = "test_keep_prior_on_empty_extraction"
+kind = "function"
+lang = "python"
+content_hash = "36f5e435c7ef507c"
+file = "tests/test_grammar_enum.py"
+file_hash = "8ffe2e1b34e0351c"
+signature = "def test_keep_prior_on_empty_extraction(crib, tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 48
+mtime = 1783476730000000000
+container = []
+scope = [
+  "tests",
+  "test_grammar_enum",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "by_fqname [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "empty",
+  "enum",
+  "extraction",
+  "grammar",
+  "keep",
+  "on",
+  "prior",
+  "test",
+  "test_keep_prior_on_empty_extraction",
+  "tests",
+  "tests.test_grammar_enum.test_keep_prior_on_empty_extraction",
+]

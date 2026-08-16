@@ -1,0 +1,45 @@
+symbol_ref = "lua/mcp_companion/native/init.lua#get_servers"
+fqn = "mcp_companion.native.get_servers"
+name = "get_servers"
+kind = "function"
+lang = "lua"
+content_hash = "0a2bd0f3c54364dd"
+file = "lua/mcp_companion/native/init.lua"
+file_hash = "731c163c944cc384"
+signature = "function M.get_servers()"
+description = ""
+schema = 4
+line = 220
+mtime = 1783022631000000000
+container = []
+scope = [
+  "mcp_companion",
+  "native",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.setup [lua/mcp_companion/init.lua]",
+  "_make_native_cmd [lua/mcp_companion/cc/tools.lua]",
+  "init.lua [lua/mcp_companion/init.lua]",
+  "init.lua [lua/mcp_companion/native/init.lua]",
+]
+references = [
+  "_make_native_cmd [lua/mcp_companion/cc/tools.lua]",
+  "config [lua/mcp_companion/native/init.lua]",
+  "for in [lua/mcp_companion/native/init.lua]",
+  "manifest [lua/mcp_companion/native/init.lua]",
+  "name [lua/mcp_companion/native/init.lua]",
+  "server_name [lua/mcp_companion/native/init.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+  "uri [lua/mcp_companion/native/init.lua]",
+]
+name_terms = [
+  "companion",
+  "get",
+  "get_servers",
+  "mcp",
+  "mcp_companion.native.get_servers",
+  "native",
+  "servers",
+]

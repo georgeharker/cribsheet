@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_session.py#test_only_the_no_cwd_fallthrough_is_unanchored"
+fqn = "tests.test_session.test_only_the_no_cwd_fallthrough_is_unanchored"
+name = "test_only_the_no_cwd_fallthrough_is_unanchored"
+kind = "function"
+lang = "python"
+content_hash = "9c7a2d5051c05946"
+file = "tests/test_session.py"
+file_hash = "bef48c1ca7e1ebb9"
+signature = "def test_only_the_no_cwd_fallthrough_is_unanchored():"
+description = ""
+schema = 4
+line = 123
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_session",
+]
+symbol_was = []
+calls = [
+  "SessionState [crib/session.py]",
+  "echo [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cwd",
+  "fallthrough",
+  "is",
+  "no",
+  "only",
+  "session",
+  "test",
+  "test_only_the_no_cwd_fallthrough_is_unanchored",
+  "tests",
+  "tests.test_session.test_only_the_no_cwd_fallthrough_is_unanchored",
+  "the",
+  "unanchored",
+]

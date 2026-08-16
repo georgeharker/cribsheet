@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#main"
+fqn = "combiner.mcp_combiner.mockserver.main"
+name = "main"
+kind = "function"
+lang = "python"
+content_hash = "bd4183e6403b1ac7"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def main(argv: list[str] | None = None) -> None:"
+description = ""
+schema = 4
+line = 941
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = [
+  "MockOAuthProvider [combiner/mcp_combiner/mockserver.py]",
+  "build_server [combiner/mcp_combiner/mockserver.py]",
+  "guard [combiner/mcp_combiner/mockserver.py]",
+  "parse_tool_specs [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = [
+  "mockserver [combiner/mcp_combiner/mockserver.py]",
+]
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.main",
+  "main",
+  "mcp",
+  "mockserver",
+]

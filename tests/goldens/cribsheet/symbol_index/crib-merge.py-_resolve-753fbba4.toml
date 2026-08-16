@@ -1,0 +1,35 @@
+symbol_ref = "crib/merge.py#_resolve"
+fqn = "crib.merge._resolve"
+name = "_resolve"
+kind = "function"
+lang = "python"
+content_hash = "0cde3c066f1091e6"
+file = "crib/merge.py"
+file_hash = "b7c8dd0572a149cc"
+signature = "def _resolve(o: Any, a: Any, b: Any) -> Any:"
+description = ""
+schema = 4
+line = 31
+mtime = 1783446057000000000
+container = []
+scope = [
+  "crib",
+  "merge",
+]
+symbol_was = []
+calls = [
+  "_canon [crib/merge.py]",
+]
+called_by = [
+  "merge_frontmatter [crib/merge.py]",
+]
+references = [
+  "merge_frontmatter [crib/merge.py]",
+]
+name_terms = [
+  "_resolve",
+  "crib",
+  "crib.merge._resolve",
+  "merge",
+  "resolve",
+]

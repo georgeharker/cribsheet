@@ -1,0 +1,38 @@
+symbol_ref = "crib/watch.py#decode_store"
+fqn = "crib.watch.decode_store"
+name = "decode_store"
+kind = "function"
+lang = "python"
+content_hash = "1c5943d7f20d0c37"
+file = "crib/watch.py"
+file_hash = "c10c30739292eebe"
+signature = "def decode_store(stores: dict[str, Path], raw_path: str) -> tuple[str, str, str] | None:"
+description = ""
+schema = 4
+line = 64
+mtime = 1786139638000000000
+container = []
+scope = [
+  "crib",
+  "watch",
+]
+symbol_was = []
+calls = [
+  "_ignored [crib/watch.py]",
+]
+called_by = [
+  "_decode [crib/watch.py]",
+  "test_decode_store_routes_by_data_root_and_pillar [tests/test_watcher.py]",
+]
+references = [
+  "_decode [crib/watch.py]",
+  "test_decode_store_routes_by_data_root_and_pillar [tests/test_watcher.py]",
+]
+name_terms = [
+  "crib",
+  "crib.watch.decode_store",
+  "decode",
+  "decode_store",
+  "store",
+  "watch",
+]

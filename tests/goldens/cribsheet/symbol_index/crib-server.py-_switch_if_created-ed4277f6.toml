@@ -1,0 +1,45 @@
+symbol_ref = "crib/server.py#_switch_if_created"
+fqn = "crib.server._switch_if_created"
+name = "_switch_if_created"
+kind = "function"
+lang = "python"
+content_hash = "963dc7a31d665e30"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def _switch_if_created(result: dict) -> dict:"
+description = ""
+schema = 4
+line = 215
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = [
+  "session_state [crib/session.py]",
+]
+called_by = [
+  "note_import [crib/server.py]",
+  "note_import_memory [crib/server.py]",
+  "project_index [crib/server.py]",
+  "project_setup [crib/server.py]",
+  "test_switch_if_created_fires_on_project_creation [tests/test_project_resolution.py]",
+]
+references = [
+  "note_import [crib/server.py]",
+  "note_import_memory [crib/server.py]",
+  "project_index [crib/server.py]",
+  "project_setup [crib/server.py]",
+  "test_switch_if_created_fires_on_project_creation [tests/test_project_resolution.py]",
+]
+name_terms = [
+  "_switch_if_created",
+  "created",
+  "crib",
+  "crib.server._switch_if_created",
+  "if",
+  "server",
+  "switch",
+]

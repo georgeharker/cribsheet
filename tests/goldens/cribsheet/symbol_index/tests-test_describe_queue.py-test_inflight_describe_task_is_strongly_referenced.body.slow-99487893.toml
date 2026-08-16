@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_describe_queue.py#test_inflight_describe_task_is_strongly_referenced.body.slow"
+fqn = "tests.test_describe_queue.test_inflight_describe_task_is_strongly_referenced.body.slow"
+name = "slow"
+kind = "function"
+lang = "python"
+content_hash = "ada265efe1b5a761"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "async def slow(*a):"
+description = ""
+schema = 4
+line = 136
+mtime = 1786664729000000000
+container = [
+  "test_inflight_describe_task_is_strongly_referenced",
+  "body",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "test_inflight_describe_task_is_strongly_referenced",
+  "body",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "body [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "body",
+  "describe",
+  "inflight",
+  "is",
+  "queue",
+  "referenced",
+  "slow",
+  "strongly",
+  "task",
+  "test",
+  "tests",
+  "tests.test_describe_queue.test_inflight_describe_task_is_strongly_referenced.body.slow",
+]

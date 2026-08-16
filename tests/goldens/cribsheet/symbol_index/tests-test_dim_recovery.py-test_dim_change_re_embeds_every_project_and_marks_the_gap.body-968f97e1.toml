@@ -1,0 +1,48 @@
+symbol_ref = "tests/test_dim_recovery.py#test_dim_change_re_embeds_every_project_and_marks_the_gap.body"
+fqn = "tests.test_dim_recovery.test_dim_change_re_embeds_every_project_and_marks_the_gap.body"
+name = "body"
+kind = "function"
+lang = "python"
+content_hash = "1e88f2fc91fad8ca"
+file = "tests/test_dim_recovery.py"
+file_hash = "5f6ffd4e573336e9"
+signature = "async def body():"
+description = ""
+schema = 4
+line = 77
+mtime = 1786578262000000000
+container = [
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap",
+]
+scope = [
+  "tests",
+  "test_dim_recovery",
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap",
+]
+symbol_was = []
+calls = [
+  "_insitu_chunks [tests/test_dim_recovery.py]",
+]
+called_by = [
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap [tests/test_dim_recovery.py]",
+]
+references = [
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap [tests/test_dim_recovery.py]",
+]
+name_terms = [
+  "and",
+  "body",
+  "change",
+  "dim",
+  "embeds",
+  "every",
+  "gap",
+  "marks",
+  "project",
+  "re",
+  "recovery",
+  "test",
+  "tests",
+  "tests.test_dim_recovery.test_dim_change_re_embeds_every_project_and_marks_the_gap.body",
+  "the",
+]

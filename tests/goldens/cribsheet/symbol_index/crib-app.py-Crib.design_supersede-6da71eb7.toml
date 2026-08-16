@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.design_supersede"
+fqn = "crib.app.Crib.design_supersede"
+name = "design_supersede"
+kind = "method"
+lang = "python"
+content_hash = "fca5b0d2d2f1a77d"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def design_supersede(self, ref: str, by_ref: str | None = None,"
+description = ""
+schema = 4
+line = 2273
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "design_supersede [crib/designs.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "design_supersede [crib/server.py]",
+]
+references = [
+  "design_supersede [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.design_supersede",
+  "design",
+  "design_supersede",
+  "supersede",
+]

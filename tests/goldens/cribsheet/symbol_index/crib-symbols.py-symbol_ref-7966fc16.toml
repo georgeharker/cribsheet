@@ -1,0 +1,44 @@
+symbol_ref = "crib/symbols.py#symbol_ref"
+fqn = "crib.symbols.symbol_ref"
+name = "symbol_ref"
+kind = "function"
+lang = "python"
+content_hash = "7de37c8f4af14d4b"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def symbol_ref(path: str, container: Sequence[str], name: str,"
+description = ""
+schema = 4
+line = 363
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = [
+  "declared_tail [crib/symbols.py]",
+]
+called_by = [
+  "_entry_key [scripts/symstats.py]",
+  "_sym [tests/test_code_graph.py]",
+  "_symbol_entry [crib/codeindex.py]",
+  "fqn [crib/symbols.py]",
+  "key [crib/symbols.py]",
+]
+references = [
+  "_entry_key [scripts/symstats.py]",
+  "_sym [tests/test_code_graph.py]",
+  "_symbol_entry [crib/codeindex.py]",
+  "fqn [crib/symbols.py]",
+  "key [crib/symbols.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.symbol_ref",
+  "ref",
+  "symbol",
+  "symbol_ref",
+  "symbols",
+]

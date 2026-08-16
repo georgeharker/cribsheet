@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthProvider.register_routes.token"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthProvider.register_routes.token"
+name = "token"
+kind = "function"
+lang = "python"
+content_hash = "5279a43f4eca6db2"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@mcp.custom_route(\"/oauth/token\", methods=[\"POST\"])"
+description = ""
+schema = 4
+line = 818
+mtime = 1783622326000000000
+container = [
+  "MockOAuthProvider",
+  "register_routes",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthProvider",
+  "register_routes",
+]
+symbol_was = []
+calls = [
+  "TokenRequest [combiner/mcp_combiner/mockserver.py]",
+  "_grant_authorization_code [combiner/mcp_combiner/mockserver.py]",
+  "_grant_refresh_token [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthProvider.register_routes.token",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "provider",
+  "register",
+  "routes",
+  "token",
+]

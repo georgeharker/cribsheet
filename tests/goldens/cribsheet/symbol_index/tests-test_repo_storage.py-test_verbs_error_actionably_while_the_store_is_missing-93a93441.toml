@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_repo_storage.py#test_verbs_error_actionably_while_the_store_is_missing"
+fqn = "tests.test_repo_storage.test_verbs_error_actionably_while_the_store_is_missing"
+name = "test_verbs_error_actionably_while_the_store_is_missing"
+kind = "function"
+lang = "python"
+content_hash = "7bcb6c8388d80d6d"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_verbs_error_actionably_while_the_store_is_missing(crib, paths):"
+description = ""
+schema = 4
+line = 133
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "ProjectConfig [crib/config.py]",
+  "save [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "actionably",
+  "error",
+  "is",
+  "missing",
+  "repo",
+  "storage",
+  "store",
+  "test",
+  "test_verbs_error_actionably_while_the_store_is_missing",
+  "tests",
+  "tests.test_repo_storage.test_verbs_error_actionably_while_the_store_is_missing",
+  "the",
+  "verbs",
+  "while",
+]

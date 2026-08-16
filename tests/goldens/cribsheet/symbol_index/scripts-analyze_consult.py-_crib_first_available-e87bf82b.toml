@@ -1,0 +1,36 @@
+symbol_ref = "scripts/analyze_consult.py#_crib_first_available"
+fqn = "scripts.analyze_consult._crib_first_available"
+name = "_crib_first_available"
+kind = "function"
+lang = "python"
+content_hash = "9de0ec186a909c76"
+file = "scripts/analyze_consult.py"
+file_hash = "4e68de40abb91ec4"
+signature = "def _crib_first_available() -> str | None:"
+description = ""
+schema = 4
+line = 134
+mtime = 1783033314000000000
+container = []
+scope = [
+  "scripts",
+  "analyze_consult",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/analyze_consult.py]",
+]
+references = [
+  "main [scripts/analyze_consult.py]",
+]
+name_terms = [
+  "_crib_first_available",
+  "analyze",
+  "available",
+  "consult",
+  "crib",
+  "first",
+  "scripts",
+  "scripts.analyze_consult._crib_first_available",
+]

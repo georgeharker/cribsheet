@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestStaleServerTools"
+fqn = "combiner.tests.test_session_filter.TestStaleServerTools"
+name = "TestStaleServerTools"
+kind = "class"
+lang = "python"
+content_hash = "db3e80e2827eb752"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "class TestStaleServerTools:"
+description = ""
+schema = 4
+line = 361
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "list_tools [combiner/tests/test_session_filter.py]",
+  "test_prime_empty_answer_preserves_confirmed_slice [combiner/tests/test_session_filter.py]",
+  "test_reprime_changed_list_publishes [combiner/tests/test_session_filter.py]",
+  "test_reprime_unchanged_list_is_silent [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "TestStaleServerTools",
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools",
+  "filter",
+  "server",
+  "session",
+  "stale",
+  "test",
+  "tests",
+  "tools",
+]

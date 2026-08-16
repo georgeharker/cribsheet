@@ -1,0 +1,54 @@
+symbol_ref = "crib/app.py#Crib.start_watchers"
+fqn = "crib.app.Crib.start_watchers"
+name = "start_watchers"
+kind = "method"
+lang = "python"
+content_hash = "fd3a8d64175f1162"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def start_watchers(self, loop: asyncio.AbstractEventLoop) -> None:"
+description = ""
+schema = 4
+line = 241
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "CodeWatcher [crib/watch.py]",
+  "DescribeQueue [crib/describe_queue.py]",
+  "SymbolIndex [crib/codeindex.py]",
+  "Watcher [crib/watch.py]",
+  "_describe_backlog [crib/app.py]",
+  "_in_repo_store_roots [crib/app.py]",
+  "_keyword_backlog [crib/app.py]",
+  "_spawn_bg [crib/app.py]",
+  "project_dir [crib/paths.py]",
+  "projects [crib/app.py]",
+  "set_describe_queue [crib/codeindexer.py]",
+  "source_root [crib/codeindex.py]",
+  "start [crib/watch.py]",
+  "watch_root [crib/watch.py]",
+]
+called_by = [
+  "_serve_async [crib/server.py]",
+  "scenario [tests/test_watcher.py]",
+]
+references = [
+  "_serve_async [crib/server.py]",
+  "scenario [tests/test_watcher.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.start_watchers",
+  "start",
+  "start_watchers",
+  "watchers",
+]

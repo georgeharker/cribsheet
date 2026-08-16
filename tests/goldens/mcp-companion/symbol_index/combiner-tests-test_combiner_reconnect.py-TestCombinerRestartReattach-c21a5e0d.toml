@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_combiner_reconnect.py#TestCombinerRestartReattach"
+fqn = "combiner.tests.test_combiner_reconnect.TestCombinerRestartReattach"
+name = "TestCombinerRestartReattach"
+kind = "class"
+lang = "python"
+content_hash = "d65fb41b150d2f32"
+file = "combiner/tests/test_combiner_reconnect.py"
+file_hash = "0f559a1b56a92ac5"
+signature = "class TestCombinerRestartReattach:"
+description = ""
+schema = 4
+line = 46
+mtime = 1783535856000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_combiner_reconnect",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestCombinerRestartReattach",
+  "combiner",
+  "combiner.tests.test_combiner_reconnect.TestCombinerRestartReattach",
+  "reattach",
+  "reconnect",
+  "restart",
+  "test",
+  "tests",
+]

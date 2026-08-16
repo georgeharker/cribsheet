@@ -1,0 +1,30 @@
+symbol_ref = "crib/codeindex.py#LEARNINGS_DIR"
+fqn = "crib.codeindex.LEARNINGS_DIR"
+name = "LEARNINGS_DIR"
+kind = "constant"
+lang = "python"
+content_hash = "d2abd1ee756b49fe"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "LEARNINGS_DIR = \"code-learnings\""
+description = ""
+schema = 4
+line = 1508
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "LEARNINGS_DIR",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LEARNINGS_DIR",
+  "dir",
+  "learnings",
+]

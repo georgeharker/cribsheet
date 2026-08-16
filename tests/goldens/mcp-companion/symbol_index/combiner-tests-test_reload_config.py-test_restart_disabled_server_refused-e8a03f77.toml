@@ -1,0 +1,36 @@
+symbol_ref = "combiner/tests/test_reload_config.py#test_restart_disabled_server_refused"
+fqn = "combiner.tests.test_reload_config.test_restart_disabled_server_refused"
+name = "test_restart_disabled_server_refused"
+kind = "function"
+lang = "python"
+content_hash = "a153b293447e0173"
+file = "combiner/tests/test_reload_config.py"
+file_hash = "1ab3b3e0b48c7d3d"
+signature = "async def test_restart_disabled_server_refused(harness: dict[str, Any]) -> None:"
+description = ""
+schema = 4
+line = 154
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_reload_config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_reload_config.test_restart_disabled_server_refused",
+  "config",
+  "disabled",
+  "refused",
+  "reload",
+  "restart",
+  "server",
+  "test",
+  "test_restart_disabled_server_refused",
+  "tests",
+]

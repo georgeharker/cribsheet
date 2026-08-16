@@ -1,0 +1,45 @@
+symbol_ref = "crib/designs.py#Designs._recapture"
+fqn = "crib.designs.Designs._recapture"
+name = "_recapture"
+kind = "method"
+lang = "python"
+content_hash = "a82701cea87d0c4a"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _recapture(self, proj: str,"
+description = ""
+schema = 4
+line = 691
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_section_hash [crib/designs.py]",
+  "source_label [crib/designs.py]",
+]
+called_by = [
+  "design_promote [crib/designs.py]",
+  "design_reaffirm [crib/designs.py]",
+  "plan_reaffirm [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+]
+references = [
+  "design_promote [crib/designs.py]",
+  "design_reaffirm [crib/designs.py]",
+  "plan_reaffirm [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+]
+name_terms = [
+  "_recapture",
+  "crib",
+  "crib.designs.Designs._recapture",
+  "designs",
+  "recapture",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_code_integrity.py#test_section_index_escapes_newlines_and_writes_atomically"
+fqn = "tests.test_code_integrity.test_section_index_escapes_newlines_and_writes_atomically"
+name = "test_section_index_escapes_newlines_and_writes_atomically"
+kind = "function"
+lang = "python"
+content_hash = "1b10961e1e0bc3ae"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_section_index_escapes_newlines_and_writes_atomically(tmp_path):"
+description = ""
+schema = 4
+line = 433
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "SectionIndex [crib/section_index.py]",
+  "read_terms [crib/section_index.py]",
+  "write [crib/section_index.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "atomically",
+  "code",
+  "escapes",
+  "index",
+  "integrity",
+  "newlines",
+  "section",
+  "test",
+  "test_section_index_escapes_newlines_and_writes_atomically",
+  "tests",
+  "tests.test_code_integrity.test_section_index_escapes_newlines_and_writes_atomically",
+  "writes",
+]

@@ -1,0 +1,45 @@
+symbol_ref = "tests/test_describe_queue.py#test_failed_describe_backs_off_instead_of_restarting_at_zero"
+fqn = "tests.test_describe_queue.test_failed_describe_backs_off_instead_of_restarting_at_zero"
+name = "test_failed_describe_backs_off_instead_of_restarting_at_zero"
+kind = "function"
+lang = "python"
+content_hash = "906a160dc9031838"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def test_failed_describe_backs_off_instead_of_restarting_at_zero():"
+description = ""
+schema = 4
+line = 100
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = [
+  "DescribeQueue [crib/describe_queue.py]",
+  "_DrivingLoop [tests/test_describe_queue.py]",
+  "_fire [crib/describe_queue.py]",
+  "_sym [tests/test_describe_queue.py]",
+  "enqueue [crib/describe_queue.py]",
+  "pending_symbols [crib/describe_queue.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "at",
+  "backs",
+  "describe",
+  "failed",
+  "instead",
+  "of",
+  "off",
+  "queue",
+  "restarting",
+  "test",
+  "test_failed_describe_backs_off_instead_of_restarting_at_zero",
+  "tests",
+  "tests.test_describe_queue.test_failed_describe_backs_off_instead_of_restarting_at_zero",
+  "zero",
+]

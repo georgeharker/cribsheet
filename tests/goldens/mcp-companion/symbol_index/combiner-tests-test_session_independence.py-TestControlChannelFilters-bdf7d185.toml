@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestControlChannelFilters"
+fqn = "combiner.tests.test_session_independence.TestControlChannelFilters"
+name = "TestControlChannelFilters"
+kind = "class"
+lang = "python"
+content_hash = "fafd84bd7a39edf5"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "class TestControlChannelFilters:"
+description = ""
+schema = 4
+line = 187
+mtime = 1783541669000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestControlChannelFilters",
+  "channel",
+  "combiner",
+  "combiner.tests.test_session_independence.TestControlChannelFilters",
+  "control",
+  "filters",
+  "independence",
+  "session",
+  "test",
+  "tests",
+]

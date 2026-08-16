@@ -1,0 +1,35 @@
+symbol_ref = "crib/chunk.py#Chunk.store"
+fqn = "crib.chunk.Chunk.store"
+name = "store"
+kind = "field"
+lang = "python"
+content_hash = "e4f8172ac2ef70d3"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "store: str = \"notes\""
+description = ""
+schema = 4
+line = 73
+mtime = 1786136167000000000
+container = [
+  "Chunk",
+]
+scope = [
+  "crib",
+  "chunk",
+  "Chunk",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "chunk_id [crib/chunk.py]",
+  "chunk_note [crib/chunk.py]",
+  "metadata [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.store",
+  "store",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_project_resolution.py#test_create_refuses_dirname_collision_with_existing_project"
+fqn = "tests.test_project_resolution.test_create_refuses_dirname_collision_with_existing_project"
+name = "test_create_refuses_dirname_collision_with_existing_project"
+kind = "function"
+lang = "python"
+content_hash = "1db27f44a965c252"
+file = "tests/test_project_resolution.py"
+file_hash = "4fafa653cef61a42"
+signature = "def test_create_refuses_dirname_collision_with_existing_project(crib, tmp_path):"
+description = ""
+schema = 4
+line = 164
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_project_resolution",
+]
+symbol_was = []
+calls = [
+  "_crib_repo [tests/test_project_resolution.py]",
+  "_register [tests/test_project_resolution.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "collision",
+  "create",
+  "dirname",
+  "existing",
+  "project",
+  "refuses",
+  "resolution",
+  "test",
+  "test_create_refuses_dirname_collision_with_existing_project",
+  "tests",
+  "tests.test_project_resolution.test_create_refuses_dirname_collision_with_existing_project",
+  "with",
+]

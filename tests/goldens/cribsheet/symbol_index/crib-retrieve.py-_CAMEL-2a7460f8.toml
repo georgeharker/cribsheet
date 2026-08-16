@@ -1,0 +1,31 @@
+symbol_ref = "crib/retrieve.py#_CAMEL"
+fqn = "crib.retrieve._CAMEL"
+name = "_CAMEL"
+kind = "constant"
+lang = "python"
+content_hash = "893a4c170b9e60db"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "_CAMEL = re.compile(r\"[A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z0-9]+|[A-Z]+|[0-9]+\")"
+description = ""
+schema = 4
+line = 124
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "retrieve",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_subtokens [crib/retrieve.py]",
+]
+name_terms = [
+  "_CAMEL",
+  "camel",
+  "crib",
+  "crib.retrieve._CAMEL",
+  "retrieve",
+]

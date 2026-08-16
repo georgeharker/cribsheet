@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_connections.py#TestLocalBackoffCap.test_local_backoff_capped"
+fqn = "combiner.tests.test_connections.TestLocalBackoffCap.test_local_backoff_capped"
+name = "test_local_backoff_capped"
+kind = "method"
+lang = "python"
+content_hash = "e2c18d903bef112c"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def test_local_backoff_capped(self, monkeypatch):"
+description = ""
+schema = 4
+line = 491
+mtime = 1784493613000000000
+container = [
+  "TestLocalBackoffCap",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestLocalBackoffCap",
+]
+symbol_was = []
+calls = [
+  "ConnectionManager [combiner/mcp_combiner/connections.py]",
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+  "_reconnect_conn [combiner/tests/test_connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "backoff",
+  "cap",
+  "capped",
+  "combiner",
+  "combiner.tests.test_connections.TestLocalBackoffCap.test_local_backoff_capped",
+  "connections",
+  "local",
+  "test",
+  "test_local_backoff_capped",
+  "tests",
+]

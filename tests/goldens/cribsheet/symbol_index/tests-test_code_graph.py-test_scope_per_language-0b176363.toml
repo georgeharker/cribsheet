@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_code_graph.py#test_scope_per_language"
+fqn = "tests.test_code_graph.test_scope_per_language"
+name = "test_scope_per_language"
+kind = "function"
+lang = "python"
+content_hash = "e11278cb47c22b05"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "@pytest.mark.parametrize(\"lang, file, container, scope\", ["
+description = ""
+schema = 4
+line = 488
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "scope_of [crib/symbols.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "graph",
+  "language",
+  "per",
+  "scope",
+  "test",
+  "test_scope_per_language",
+  "tests",
+  "tests.test_code_graph.test_scope_per_language",
+]

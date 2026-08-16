@@ -1,0 +1,32 @@
+symbol_ref = "crib/designs.py#DESIGN_DIR"
+fqn = "crib.designs.DESIGN_DIR"
+name = "DESIGN_DIR"
+kind = "constant"
+lang = "python"
+content_hash = "41f166d9a51ff078"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "DESIGN_DIR = \"design\""
+description = ""
+schema = 4
+line = 80
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_DIRS [crib/designs.py]",
+]
+name_terms = [
+  "DESIGN_DIR",
+  "crib",
+  "crib.designs.DESIGN_DIR",
+  "design",
+  "designs",
+  "dir",
+]

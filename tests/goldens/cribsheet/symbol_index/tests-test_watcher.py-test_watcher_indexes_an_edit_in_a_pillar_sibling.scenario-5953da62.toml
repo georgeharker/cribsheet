@@ -1,0 +1,48 @@
+symbol_ref = "tests/test_watcher.py#test_watcher_indexes_an_edit_in_a_pillar_sibling.scenario"
+fqn = "tests.test_watcher.test_watcher_indexes_an_edit_in_a_pillar_sibling.scenario"
+name = "scenario"
+kind = "function"
+lang = "python"
+content_hash = "76743f59728296f9"
+file = "tests/test_watcher.py"
+file_hash = "f95c6316824837fd"
+signature = "async def scenario():"
+description = ""
+schema = 4
+line = 185
+mtime = 1786139638000000000
+container = [
+  "test_watcher_indexes_an_edit_in_a_pillar_sibling",
+]
+scope = [
+  "tests",
+  "test_watcher",
+  "test_watcher_indexes_an_edit_in_a_pillar_sibling",
+]
+symbol_was = []
+calls = [
+  "dir [crib/notestore.py]",
+  "lookup [crib/app.py]",
+  "start_watchers [crib/app.py]",
+  "stop_watchers [crib/app.py]",
+]
+called_by = [
+  "test_watcher_indexes_an_edit_in_a_pillar_sibling [tests/test_watcher.py]",
+]
+references = [
+  "test_watcher_indexes_an_edit_in_a_pillar_sibling [tests/test_watcher.py]",
+]
+name_terms = [
+  "a",
+  "an",
+  "edit",
+  "in",
+  "indexes",
+  "pillar",
+  "scenario",
+  "sibling",
+  "test",
+  "tests",
+  "tests.test_watcher.test_watcher_indexes_an_edit_in_a_pillar_sibling.scenario",
+  "watcher",
+]

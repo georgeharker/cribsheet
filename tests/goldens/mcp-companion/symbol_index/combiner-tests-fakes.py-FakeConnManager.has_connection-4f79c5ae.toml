@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/fakes.py#FakeConnManager.has_connection"
+fqn = "combiner.tests.fakes.FakeConnManager.has_connection"
+name = "has_connection"
+kind = "method"
+lang = "python"
+content_hash = "79d199823238a91d"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "def has_connection(self, name: str) -> bool:"
+description = ""
+schema = 4
+line = 53
+mtime = 1783534978000000000
+container = [
+  "FakeConnManager",
+]
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+  "FakeConnManager",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.fakes.FakeConnManager.has_connection",
+  "conn",
+  "connection",
+  "fake",
+  "fakes",
+  "has",
+  "has_connection",
+  "manager",
+  "tests",
+]

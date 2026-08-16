@@ -1,0 +1,32 @@
+symbol_ref = "combiner/mcp_combiner/config.py#logger"
+fqn = "combiner.mcp_combiner.config.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+schema = 4
+line = 18
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_warn_unknown_keys [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.logger",
+  "config",
+  "logger",
+  "mcp",
+]

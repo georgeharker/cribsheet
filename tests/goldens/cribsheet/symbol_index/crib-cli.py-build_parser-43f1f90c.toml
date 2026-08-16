@@ -1,0 +1,47 @@
+symbol_ref = "crib/cli.py#build_parser"
+fqn = "crib.cli.build_parser"
+name = "build_parser"
+kind = "function"
+lang = "python"
+content_hash = "c8cbbc1f6b6adf60"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def build_parser() -> argparse.ArgumentParser:"
+description = ""
+schema = 4
+line = 928
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_narrowers [crib/cli.py]",
+  "body_args [crib/cli.py]",
+  "proj [crib/cli.py]",
+  "source_arg [crib/cli.py]",
+]
+called_by = [
+  "_call [tests/test_cli_labels.py]",
+  "_call [tests/test_design_cli.py]",
+  "main [crib/cli.py]",
+  "test_cli_defaults_match_the_declared_mcp_defaults [tests/test_surface_parity.py]",
+  "test_reaffirm_replaced_verify_outright [tests/test_design_cli.py]",
+]
+references = [
+  "_call [tests/test_cli_labels.py]",
+  "_call [tests/test_design_cli.py]",
+  "main [crib/cli.py]",
+  "test_cli_defaults_match_the_declared_mcp_defaults [tests/test_surface_parity.py]",
+  "test_reaffirm_replaced_verify_outright [tests/test_design_cli.py]",
+]
+name_terms = [
+  "build",
+  "build_parser",
+  "cli",
+  "crib",
+  "crib.cli.build_parser",
+  "parser",
+]

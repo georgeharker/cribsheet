@@ -1,0 +1,37 @@
+symbol_ref = "crib/notestore.py#StoreSpec.reserved"
+fqn = "crib.notestore.StoreSpec.reserved"
+name = "reserved"
+kind = "field"
+lang = "python"
+content_hash = "55a41334da940d20"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "reserved: tuple[str, ...] = ()"
+description = ""
+schema = 4
+line = 46
+mtime = 1786564832000000000
+container = [
+  "StoreSpec",
+]
+scope = [
+  "crib",
+  "notestore",
+  "StoreSpec",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "NOTES_SPEC [crib/notestore.py]",
+  "_refuse_reserved [crib/notestore.py]",
+  "test_reserved_prefixes_are_refused_with_the_facet_verb_named [tests/test_pillar_stores.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.StoreSpec.reserved",
+  "notestore",
+  "reserved",
+  "spec",
+  "store",
+]

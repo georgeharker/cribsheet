@@ -1,0 +1,30 @@
+symbol_ref = "combiner/mcp_combiner/status.py#logger"
+fqn = "combiner.mcp_combiner.status.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/status.py"
+file_hash = "abd7f6c34588a039"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+schema = 4
+line = 16
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "status",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.status.logger",
+  "logger",
+  "mcp",
+  "status",
+]

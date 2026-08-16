@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_designs.py#test_a_decision_must_carry_its_rationale"
+fqn = "tests.test_designs.test_a_decision_must_carry_its_rationale"
+name = "test_a_decision_must_carry_its_rationale"
+kind = "function"
+lang = "python"
+content_hash = "ca268681d4d27d7a"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_a_decision_must_carry_its_rationale(crib):"
+description = ""
+schema = 4
+line = 371
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "_titles [tests/test_designs.py]",
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "carry",
+  "decision",
+  "designs",
+  "its",
+  "must",
+  "rationale",
+  "test",
+  "test_a_decision_must_carry_its_rationale",
+  "tests",
+  "tests.test_designs.test_a_decision_must_carry_its_rationale",
+]

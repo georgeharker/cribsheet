@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.learning_read"
+fqn = "crib.app.Crib.learning_read"
+name = "learning_read"
+kind = "method"
+lang = "python"
+content_hash = "fc31f893e75ca1b4"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def learning_read(self, symbol: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 2114
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "read [crib/learnings.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "learning_read [crib/server.py]",
+]
+references = [
+  "learning_read [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.learning_read",
+  "learning",
+  "learning_read",
+  "read",
+]

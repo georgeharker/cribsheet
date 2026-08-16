@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_reload_config.py#test_restart_stdio_empty_answer_keeps_slice_silent._list_tools"
+fqn = "combiner.tests.test_reload_config.test_restart_stdio_empty_answer_keeps_slice_silent._list_tools"
+name = "_list_tools"
+kind = "function"
+lang = "python"
+content_hash = "cce9357bfd09e6b8"
+file = "combiner/tests/test_reload_config.py"
+file_hash = "1ab3b3e0b48c7d3d"
+signature = "async def _list_tools(self: Any) -> list[Any]:"
+description = ""
+schema = 4
+line = 324
+mtime = 1784493613000000000
+container = [
+  "test_restart_stdio_empty_answer_keeps_slice_silent",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_reload_config",
+  "test_restart_stdio_empty_answer_keeps_slice_silent",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_restart_stdio_empty_answer_keeps_slice_silent [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "_list_tools",
+  "answer",
+  "combiner",
+  "combiner.tests.test_reload_config.test_restart_stdio_empty_answer_keeps_slice_silent._list_tools",
+  "config",
+  "empty",
+  "keeps",
+  "list",
+  "reload",
+  "restart",
+  "silent",
+  "slice",
+  "stdio",
+  "test",
+  "tests",
+  "tools",
+]

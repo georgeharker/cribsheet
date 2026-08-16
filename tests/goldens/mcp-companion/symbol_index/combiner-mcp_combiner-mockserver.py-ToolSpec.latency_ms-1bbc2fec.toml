@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#ToolSpec.latency_ms"
+fqn = "combiner.mcp_combiner.mockserver.ToolSpec.latency_ms"
+name = "latency_ms"
+kind = "field"
+lang = "python"
+content_hash = "46c2d0a521ec01e5"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "latency_ms: float = 0.0"
+description = ""
+schema = 4
+line = 94
+mtime = 1783622326000000000
+container = [
+  "ToolSpec",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "ToolSpec",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/mockserver.py]",
+  "run [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.ToolSpec.latency_ms",
+  "latency",
+  "latency_ms",
+  "mcp",
+  "mockserver",
+  "ms",
+  "spec",
+  "tool",
+]

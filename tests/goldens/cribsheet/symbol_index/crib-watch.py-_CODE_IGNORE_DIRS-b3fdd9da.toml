@@ -1,0 +1,33 @@
+symbol_ref = "crib/watch.py#_CODE_IGNORE_DIRS"
+fqn = "crib.watch._CODE_IGNORE_DIRS"
+name = "_CODE_IGNORE_DIRS"
+kind = "constant"
+lang = "python"
+content_hash = "c1ca04aac28d4fe3"
+file = "crib/watch.py"
+file_hash = "c10c30739292eebe"
+signature = "_CODE_IGNORE_DIRS = {\".git\", \".versions\", \"node_modules\", \".venv\", \"venv\","
+description = ""
+schema = 4
+line = 251
+mtime = 1786139638000000000
+container = []
+scope = [
+  "crib",
+  "watch",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_decode [crib/watch.py]",
+]
+name_terms = [
+  "_CODE_IGNORE_DIRS",
+  "code",
+  "crib",
+  "crib.watch._CODE_IGNORE_DIRS",
+  "dirs",
+  "ignore",
+  "watch",
+]

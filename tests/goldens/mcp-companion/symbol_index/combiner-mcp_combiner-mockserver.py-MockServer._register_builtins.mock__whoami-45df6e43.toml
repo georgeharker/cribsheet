@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockServer._register_builtins.mock__whoami"
+fqn = "combiner.mcp_combiner.mockserver.MockServer._register_builtins.mock__whoami"
+name = "mock__whoami"
+kind = "function"
+lang = "python"
+content_hash = "f07d11f57d7cee61"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@mcp_srv.tool(name=\"mock__whoami\", description=\"Report mock server identity and counters.\")"
+description = ""
+schema = 4
+line = 411
+mtime = 1783622326000000000
+container = [
+  "MockServer",
+  "_register_builtins",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockServer",
+  "_register_builtins",
+]
+symbol_was = []
+calls = [
+  "record_call [combiner/mcp_combiner/mockserver.py]",
+  "record_session [combiner/mcp_combiner/mockserver.py]",
+  "snapshot [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "builtins",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockServer._register_builtins.mock__whoami",
+  "mcp",
+  "mock",
+  "mock__whoami",
+  "mockserver",
+  "register",
+  "server",
+  "whoami",
+]

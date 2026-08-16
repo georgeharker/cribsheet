@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_sync.py#test_git_runs_are_bounded_and_get_no_stdin"
+fqn = "tests.test_sync.test_git_runs_are_bounded_and_get_no_stdin"
+name = "test_git_runs_are_bounded_and_get_no_stdin"
+kind = "function"
+lang = "python"
+content_hash = "e3e3c17f09838600"
+file = "tests/test_sync.py"
+file_hash = "594e3dd701dbe999"
+signature = "def test_git_runs_are_bounded_and_get_no_stdin(tmp_path, remote, monkeypatch):"
+description = ""
+schema = 4
+line = 253
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_sync",
+]
+symbol_was = []
+calls = [
+  "_machine [tests/test_sync.py]",
+  "_run [crib/gitbacking.py]",
+  "state [crib/gitbacking.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "are",
+  "bounded",
+  "get",
+  "git",
+  "no",
+  "runs",
+  "stdin",
+  "sync",
+  "test",
+  "test_git_runs_are_bounded_and_get_no_stdin",
+  "tests",
+  "tests.test_sync.test_git_runs_are_bounded_and_get_no_stdin",
+]

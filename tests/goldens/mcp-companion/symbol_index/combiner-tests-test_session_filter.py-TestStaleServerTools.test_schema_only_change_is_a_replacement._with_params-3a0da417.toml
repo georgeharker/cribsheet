@@ -1,0 +1,52 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestStaleServerTools.test_schema_only_change_is_a_replacement._with_params"
+fqn = "combiner.tests.test_session_filter.TestStaleServerTools.test_schema_only_change_is_a_replacement._with_params"
+name = "_with_params"
+kind = "function"
+lang = "python"
+content_hash = "4c42293279699bce"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def _with_params(params):"
+description = ""
+schema = 4
+line = 548
+mtime = 1784493613000000000
+container = [
+  "TestStaleServerTools",
+  "test_schema_only_change_is_a_replacement",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestStaleServerTools",
+  "test_schema_only_change_is_a_replacement",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_schema_only_change_is_a_replacement [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "test_schema_only_change_is_a_replacement [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_with_params",
+  "a",
+  "change",
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools.test_schema_only_change_is_a_replacement._with_params",
+  "filter",
+  "is",
+  "only",
+  "params",
+  "replacement",
+  "schema",
+  "server",
+  "session",
+  "stale",
+  "test",
+  "tests",
+  "tools",
+  "with",
+]

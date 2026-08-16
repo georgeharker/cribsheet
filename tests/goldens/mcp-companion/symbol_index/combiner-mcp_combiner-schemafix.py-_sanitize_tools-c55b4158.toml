@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/schemafix.py#_sanitize_tools"
+fqn = "combiner.mcp_combiner.schemafix._sanitize_tools"
+name = "_sanitize_tools"
+kind = "function"
+lang = "python"
+content_hash = "deae72b30edb8ed3"
+file = "combiner/mcp_combiner/schemafix.py"
+file_hash = "49870021f06866cb"
+signature = "def _sanitize_tools(raw: list[Tool]) -> list[Tool]:"
+description = ""
+schema = 4
+line = 53
+mtime = 1783542616000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "schemafix",
+]
+symbol_was = []
+calls = [
+  "_to_clean_tool [combiner/mcp_combiner/schemafix.py]",
+]
+called_by = [
+  "_do_fetch [combiner/mcp_combiner/middleware.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+]
+references = [
+  "_do_fetch [combiner/mcp_combiner/middleware.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+]
+name_terms = [
+  "_sanitize_tools",
+  "combiner",
+  "combiner.mcp_combiner.schemafix._sanitize_tools",
+  "mcp",
+  "sanitize",
+  "schemafix",
+  "tools",
+]

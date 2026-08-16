@@ -1,0 +1,41 @@
+symbol_ref = "crib/codestore.py#CodeStore.resident"
+fqn = "crib.codestore.CodeStore.resident"
+name = "resident"
+kind = "method"
+lang = "python"
+content_hash = "6e3c1c2b402a8213"
+file = "crib/codestore.py"
+file_hash = "85066097f15df7df"
+signature = "def resident(self, proj: str, revalidate: Callable[[str], None] | None = None,"
+description = ""
+schema = 4
+line = 173
+mtime = 1786664729000000000
+container = [
+  "CodeStore",
+]
+scope = [
+  "crib",
+  "codestore",
+  "CodeStore",
+]
+symbol_was = []
+calls = [
+  "freshness [crib/codestore.py]",
+  "reload [crib/codestore.py]",
+  "tok [crib/codestore.py]",
+]
+called_by = [
+  "_resident_code [crib/app.py]",
+]
+references = [
+  "_resident_code [crib/app.py]",
+]
+name_terms = [
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore.CodeStore.resident",
+  "resident",
+  "store",
+]

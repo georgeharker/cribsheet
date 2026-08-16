@@ -1,0 +1,58 @@
+symbol_ref = "crib/designs.py#Graph.nodes"
+fqn = "crib.designs.Graph.nodes"
+name = "nodes"
+kind = "field"
+lang = "python"
+content_hash = "29716c0ea0fdb270"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "nodes: dict[str, Node] = field(default_factory=dict)"
+description = ""
+schema = 4
+line = 345
+mtime = 1786693579000000000
+container = [
+  "Graph",
+]
+scope = [
+  "crib",
+  "designs",
+  "Graph",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_annotate [crib/designs.py]",
+  "_dep_add [crib/designs.py]",
+  "_direct_taint [crib/designs.py]",
+  "_forget [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_ordered [crib/designs.py]",
+  "_recheck [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_row [crib/designs.py]",
+  "_rows [crib/designs.py]",
+  "_taint [crib/designs.py]",
+  "_taint [tests/test_designs.py]",
+  "_write_body [crib/designs.py]",
+  "annotate_hits [crib/designs.py]",
+  "build [crib/designs.py]",
+  "chains [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+  "of_kind [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+  "propagates [crib/designs.py]",
+  "tainted_designs [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Graph.nodes",
+  "designs",
+  "graph",
+  "nodes",
+]

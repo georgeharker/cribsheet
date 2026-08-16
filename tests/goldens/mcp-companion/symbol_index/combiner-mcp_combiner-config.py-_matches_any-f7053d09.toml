@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/config.py#_matches_any"
+fqn = "combiner.mcp_combiner.config._matches_any"
+name = "_matches_any"
+kind = "function"
+lang = "python"
+content_hash = "608576d5a81d52d4"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def _matches_any(name: str, patterns: list[str]) -> bool:"
+description = ""
+schema = 4
+line = 137
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "resolve [combiner/mcp_combiner/config.py]",
+]
+references = [
+  "resolve [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "_matches_any",
+  "any",
+  "combiner",
+  "combiner.mcp_combiner.config._matches_any",
+  "config",
+  "matches",
+  "mcp",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "crib/designs.py#_DESIGN_IMPORT"
+fqn = "crib.designs._DESIGN_IMPORT"
+name = "_DESIGN_IMPORT"
+kind = "constant"
+lang = "python"
+content_hash = "9841745599a15b90"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "_DESIGN_IMPORT = \"\"\"\\"
+description = ""
+schema = 4
+line = 131
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_import [crib/designs.py]",
+]
+name_terms = [
+  "_DESIGN_IMPORT",
+  "crib",
+  "crib.designs._DESIGN_IMPORT",
+  "design",
+  "designs",
+  "import",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_native.lua#if.res"
+fqn = "tests.test_native.if.res"
+name = "res"
+kind = "variable"
+lang = "lua"
+content_hash = "31f065f68d2dabba"
+file = "tests/test_native.lua"
+file_hash = "68d141d843ba3fa4"
+signature = "local res = rjson(native.read_resource(\"neovim://workspace\"))"
+description = ""
+schema = 4
+line = 204
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+scope = [
+  "tests",
+  "test_native",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "native",
+  "res",
+  "test",
+  "tests",
+  "tests.test_native.if.res",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.forget"
+fqn = "crib.app.Crib.forget"
+name = "forget"
+kind = "method"
+lang = "python"
+content_hash = "2c84fafaedeeb71d"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def forget(self, relpath: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 652
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "delete [crib/notestore.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "_scenario [tests/test_notestore_snapshot.py]",
+  "note_forget [crib/server.py]",
+]
+references = [
+  "_scenario [tests/test_notestore_snapshot.py]",
+  "note_forget [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.forget",
+  "forget",
+]

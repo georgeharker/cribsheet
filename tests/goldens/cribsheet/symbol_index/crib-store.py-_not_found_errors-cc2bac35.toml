@@ -1,0 +1,35 @@
+symbol_ref = "crib/store.py#_not_found_errors"
+fqn = "crib.store._not_found_errors"
+name = "_not_found_errors"
+kind = "function"
+lang = "python"
+content_hash = "a0f0e2b2d344eef8"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "@functools.lru_cache(maxsize=1)"
+description = ""
+schema = 4
+line = 205
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "store",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_is_missing_collection [crib/store.py]",
+]
+references = [
+  "_is_missing_collection [crib/store.py]",
+]
+name_terms = [
+  "_not_found_errors",
+  "crib",
+  "crib.store._not_found_errors",
+  "errors",
+  "found",
+  "not",
+  "store",
+]

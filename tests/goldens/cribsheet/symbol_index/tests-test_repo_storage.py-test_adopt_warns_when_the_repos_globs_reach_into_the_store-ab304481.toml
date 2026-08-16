@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_repo_storage.py#test_adopt_warns_when_the_repos_globs_reach_into_the_store"
+fqn = "tests.test_repo_storage.test_adopt_warns_when_the_repos_globs_reach_into_the_store"
+name = "test_adopt_warns_when_the_repos_globs_reach_into_the_store"
+kind = "function"
+lang = "python"
+content_hash = "def5359266b60dfc"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_adopt_warns_when_the_repos_globs_reach_into_the_store(crib, tmp_path, capsys):"
+description = ""
+schema = 4
+line = 299
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "repo_with_store [tests/test_repo_storage.py]",
+  "run [tests/test_repo_storage.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "adopt",
+  "globs",
+  "into",
+  "reach",
+  "repo",
+  "repos",
+  "storage",
+  "store",
+  "test",
+  "test_adopt_warns_when_the_repos_globs_reach_into_the_store",
+  "tests",
+  "tests.test_repo_storage.test_adopt_warns_when_the_repos_globs_reach_into_the_store",
+  "the",
+  "warns",
+  "when",
+]

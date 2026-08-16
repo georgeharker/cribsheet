@@ -1,0 +1,37 @@
+symbol_ref = "crib/app.py#_slug"
+fqn = "crib.app._slug"
+name = "_slug"
+kind = "function"
+lang = "python"
+content_hash = "df355549a58a9591"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _slug(title: str) -> str:"
+description = ""
+schema = 4
+line = 48
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "app",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_add [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "store_note [crib/app.py]",
+]
+references = [
+  "_add [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "store_note [crib/app.py]",
+]
+name_terms = [
+  "_slug",
+  "app",
+  "crib",
+  "crib.app._slug",
+  "slug",
+]

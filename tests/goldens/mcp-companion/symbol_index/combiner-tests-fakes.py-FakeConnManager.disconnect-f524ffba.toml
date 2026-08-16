@@ -1,0 +1,36 @@
+symbol_ref = "combiner/tests/fakes.py#FakeConnManager.disconnect"
+fqn = "combiner.tests.fakes.FakeConnManager.disconnect"
+name = "disconnect"
+kind = "method"
+lang = "python"
+content_hash = "ef7609f1e2f1f1d0"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "async def disconnect(self, name: str) -> None:"
+description = ""
+schema = 4
+line = 72
+mtime = 1783534978000000000
+container = [
+  "FakeConnManager",
+]
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+  "FakeConnManager",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.fakes.FakeConnManager.disconnect",
+  "conn",
+  "disconnect",
+  "fake",
+  "fakes",
+  "manager",
+  "tests",
+]

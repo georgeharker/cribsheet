@@ -1,0 +1,46 @@
+symbol_ref = "crib/generate.py#resolve_provider"
+fqn = "crib.generate.resolve_provider"
+name = "resolve_provider"
+kind = "function"
+lang = "python"
+content_hash = "f18e7cd6ee155ad0"
+file = "crib/generate.py"
+file_hash = "a18a92dc048caeef"
+signature = "def resolve_provider(cfg: GenerateConfig, purpose: str):"
+description = ""
+schema = 4
+line = 26
+mtime = 1784103453000000000
+container = []
+scope = [
+  "crib",
+  "generate",
+]
+symbol_was = []
+calls = [
+  "GenerationError [crib/generate.py]",
+]
+called_by = [
+  "_generate_enrichment [crib/app.py]",
+  "generate [crib/generate.py]",
+  "generate_structured [crib/generate.py]",
+  "test_resolve_provider_by_profile_and_purpose [tests/test_elaborate.py]",
+  "test_resolve_provider_inline_fallback [tests/test_elaborate.py]",
+  "test_resolve_provider_missing_selection_errors [tests/test_elaborate.py]",
+]
+references = [
+  "_generate_enrichment [crib/app.py]",
+  "generate [crib/generate.py]",
+  "generate_structured [crib/generate.py]",
+  "test_resolve_provider_by_profile_and_purpose [tests/test_elaborate.py]",
+  "test_resolve_provider_inline_fallback [tests/test_elaborate.py]",
+  "test_resolve_provider_missing_selection_errors [tests/test_elaborate.py]",
+]
+name_terms = [
+  "crib",
+  "crib.generate.resolve_provider",
+  "generate",
+  "provider",
+  "resolve",
+  "resolve_provider",
+]

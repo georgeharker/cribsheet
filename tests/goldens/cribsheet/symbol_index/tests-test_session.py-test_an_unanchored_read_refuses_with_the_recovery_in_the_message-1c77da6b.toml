@@ -1,0 +1,46 @@
+symbol_ref = "tests/test_session.py#test_an_unanchored_read_refuses_with_the_recovery_in_the_message"
+fqn = "tests.test_session.test_an_unanchored_read_refuses_with_the_recovery_in_the_message"
+name = "test_an_unanchored_read_refuses_with_the_recovery_in_the_message"
+kind = "function"
+lang = "python"
+content_hash = "034d350ec51505c3"
+file = "tests/test_session.py"
+file_hash = "bef48c1ca7e1ebb9"
+signature = "def test_an_unanchored_read_refuses_with_the_recovery_in_the_message("
+description = ""
+schema = 4
+line = 157
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_session",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "SessionState [crib/session.py]",
+  "build_server [crib/server.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "an",
+  "in",
+  "message",
+  "read",
+  "recovery",
+  "refuses",
+  "session",
+  "test",
+  "test_an_unanchored_read_refuses_with_the_recovery_in_the_message",
+  "tests",
+  "tests.test_session.test_an_unanchored_read_refuses_with_the_recovery_in_the_message",
+  "the",
+  "unanchored",
+  "with",
+]

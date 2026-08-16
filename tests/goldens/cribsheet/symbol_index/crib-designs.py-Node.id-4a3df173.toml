@@ -1,0 +1,60 @@
+symbol_ref = "crib/designs.py#Node.id"
+fqn = "crib.designs.Node.id"
+name = "id"
+kind = "field"
+lang = "python"
+content_hash = "815fab59afaac4c9"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "id: str"
+description = ""
+schema = 4
+line = 314
+mtime = 1786693579000000000
+container = [
+  "Node",
+]
+scope = [
+  "crib",
+  "designs",
+  "Node",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_add [crib/designs.py]",
+  "_annotate [crib/designs.py]",
+  "_dep_add [crib/designs.py]",
+  "_dep_remove [crib/designs.py]",
+  "_direct_taint [crib/designs.py]",
+  "_forget [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_node [tests/test_designs.py]",
+  "_ordered [crib/designs.py]",
+  "_rank_for [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_row [crib/designs.py]",
+  "_save [crib/designs.py]",
+  "_taint [crib/designs.py]",
+  "annotate_hits [crib/designs.py]",
+  "brief [crib/designs.py]",
+  "build [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+  "design_tree [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+  "plan_move [crib/designs.py]",
+  "tainted_designs [crib/designs.py]",
+  "test_cycle_detection_finds_each_cycle_once [tests/test_designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Node.id",
+  "designs",
+  "id",
+  "node",
+]

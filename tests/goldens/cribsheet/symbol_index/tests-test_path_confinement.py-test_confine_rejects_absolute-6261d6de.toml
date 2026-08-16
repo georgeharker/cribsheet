@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_path_confinement.py#test_confine_rejects_absolute"
+fqn = "tests.test_path_confinement.test_confine_rejects_absolute"
+name = "test_confine_rejects_absolute"
+kind = "function"
+lang = "python"
+content_hash = "164faf7893e9461c"
+file = "tests/test_path_confinement.py"
+file_hash = "ca5f375c4fa4dfa2"
+signature = "def test_confine_rejects_absolute(tmp_path):"
+description = ""
+schema = 4
+line = 42
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_path_confinement",
+]
+symbol_was = []
+calls = [
+  "confine [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "absolute",
+  "confine",
+  "confinement",
+  "path",
+  "rejects",
+  "test",
+  "test_confine_rejects_absolute",
+  "tests",
+  "tests.test_path_confinement.test_confine_rejects_absolute",
+]

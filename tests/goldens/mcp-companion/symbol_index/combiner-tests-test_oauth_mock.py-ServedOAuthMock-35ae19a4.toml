@@ -1,0 +1,51 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#ServedOAuthMock"
+fqn = "combiner.tests.test_oauth_mock.ServedOAuthMock"
+name = "ServedOAuthMock"
+kind = "class"
+lang = "python"
+content_hash = "145a27ead7a78061"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 99
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_call_echo [combiner/tests/test_oauth_mock.py]",
+  "_drop_persisted_expiry [combiner/tests/test_oauth_mock.py]",
+  "_expire_persisted_token [combiner/tests/test_oauth_mock.py]",
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+  "_seed_refreshable [combiner/tests/test_oauth_mock.py]",
+  "make [combiner/tests/test_oauth_mock.py]",
+  "test_cache_without_persisted_expiry_bootstraps_one_refresh [combiner/tests/test_oauth_mock.py]",
+  "test_expired_cached_token_refreshed_silently_on_restart [combiner/tests/test_oauth_mock.py]",
+  "test_expired_token_refreshed_and_new_bearer_attached [combiner/tests/test_oauth_mock.py]",
+  "test_full_flow_issues_and_attaches_tokens [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_sends_right_token_and_stores_rotated [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_token_preserved_when_provider_omits_it [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_with_unknown_token_is_auth_error [combiner/tests/test_oauth_mock.py]",
+  "test_unauthenticated_call_is_rejected_then_recovers [combiner/tests/test_oauth_mock.py]",
+  "test_valid_cached_token_reused_without_new_consent [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "ServedOAuthMock",
+  "auth",
+  "combiner",
+  "combiner.tests.test_oauth_mock.ServedOAuthMock",
+  "mock",
+  "o",
+  "oauth",
+  "served",
+  "test",
+  "tests",
+]

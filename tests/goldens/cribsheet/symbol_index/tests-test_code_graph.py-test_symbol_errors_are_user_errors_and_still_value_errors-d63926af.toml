@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_code_graph.py#test_symbol_errors_are_user_errors_and_still_value_errors"
+fqn = "tests.test_code_graph.test_symbol_errors_are_user_errors_and_still_value_errors"
+name = "test_symbol_errors_are_user_errors_and_still_value_errors"
+kind = "function"
+lang = "python"
+content_hash = "d2322d589faaf859"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def test_symbol_errors_are_user_errors_and_still_value_errors(crib, tmp_path):"
+description = ""
+schema = 4
+line = 536
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "_wrapper_and_op [tests/test_code_graph.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "are",
+  "code",
+  "errors",
+  "graph",
+  "still",
+  "symbol",
+  "test",
+  "test_symbol_errors_are_user_errors_and_still_value_errors",
+  "tests",
+  "tests.test_code_graph.test_symbol_errors_are_user_errors_and_still_value_errors",
+  "user",
+  "value",
+]

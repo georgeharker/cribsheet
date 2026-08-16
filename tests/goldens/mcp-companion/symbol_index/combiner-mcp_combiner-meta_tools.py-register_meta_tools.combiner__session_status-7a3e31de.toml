@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/meta_tools.py#register_meta_tools.combiner__session_status"
+fqn = "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__session_status"
+name = "combiner__session_status"
+kind = "function"
+lang = "python"
+content_hash = "33c508ce319c1938"
+file = "combiner/mcp_combiner/meta_tools.py"
+file_hash = "8eb0757202928f82"
+signature = "@combiner.tool()"
+description = ""
+schema = 4
+line = 501
+mtime = 1784493613000000000
+container = [
+  "register_meta_tools",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "meta_tools",
+  "register_meta_tools",
+]
+symbol_was = []
+calls = [
+  "disabled_snapshot [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__session_status",
+  "combiner__session_status",
+  "mcp",
+  "meta",
+  "register",
+  "session",
+  "status",
+  "tools",
+]

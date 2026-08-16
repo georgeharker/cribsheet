@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_upstream_restart.py#_restart"
+fqn = "combiner.tests.test_upstream_restart._restart"
+name = "_restart"
+kind = "function"
+lang = "python"
+content_hash = "e1d934a61340dcd1"
+file = "combiner/tests/test_upstream_restart.py"
+file_hash = "c3ceaa6ec420f1df"
+signature = "async def _restart(combiner: CombinerHandle, server: str = \"mockup\") -> str:"
+description = ""
+schema = 4
+line = 59
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_upstream_restart",
+]
+symbol_was = []
+calls = [
+  "_text [combiner/tests/test_upstream_restart.py]",
+]
+called_by = [
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_restart_bounces_process [combiner/tests/test_upstream_restart.py]",
+]
+references = [
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_restart_bounces_process [combiner/tests/test_upstream_restart.py]",
+]
+name_terms = [
+  "_restart",
+  "combiner",
+  "combiner.tests.test_upstream_restart._restart",
+  "restart",
+  "test",
+  "tests",
+  "upstream",
+]

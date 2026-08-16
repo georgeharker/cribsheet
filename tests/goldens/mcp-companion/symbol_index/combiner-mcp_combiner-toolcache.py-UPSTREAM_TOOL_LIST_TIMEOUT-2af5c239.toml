@@ -1,0 +1,34 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#UPSTREAM_TOOL_LIST_TIMEOUT"
+fqn = "combiner.mcp_combiner.toolcache.UPSTREAM_TOOL_LIST_TIMEOUT"
+name = "UPSTREAM_TOOL_LIST_TIMEOUT"
+kind = "constant"
+lang = "python"
+content_hash = "b03f8008cf0bea79"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "UPSTREAM_TOOL_LIST_TIMEOUT = 5.0  # seconds"
+description = ""
+schema = 4
+line = 52
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "UPSTREAM_TOOL_LIST_TIMEOUT",
+  "combiner",
+  "combiner.mcp_combiner.toolcache.UPSTREAM_TOOL_LIST_TIMEOUT",
+  "list",
+  "mcp",
+  "timeout",
+  "tool",
+  "toolcache",
+  "upstream",
+]

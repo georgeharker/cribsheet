@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.disable"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.disable"
+name = "disable"
+kind = "method"
+lang = "python"
+content_hash = "52fef623724c625b"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def disable(self, session_id: str, server: str) -> None:"
+description = ""
+schema = 4
+line = 82
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "combiner__session_disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "manage_session_filter [combiner/mcp_combiner/routes.py]",
+]
+references = [
+  "combiner__session_disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "manage_session_filter [combiner/mcp_combiner/routes.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.disable",
+  "disable",
+  "mcp",
+  "registry",
+  "runtime",
+  "session",
+]

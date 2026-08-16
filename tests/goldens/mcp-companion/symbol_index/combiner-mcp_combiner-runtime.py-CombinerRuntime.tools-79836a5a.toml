@@ -1,0 +1,57 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#CombinerRuntime.tools"
+fqn = "combiner.mcp_combiner.runtime.CombinerRuntime.tools"
+name = "tools"
+kind = "field"
+lang = "python"
+content_hash = "0897c836de2b565f"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "tools: ToolCacheState = field(default_factory=ToolCacheState)"
+description = ""
+schema = 4
+line = 266
+mtime = 1784493613000000000
+container = [
+  "CombinerRuntime",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "CombinerRuntime",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_do_fetch [combiner/mcp_combiner/middleware.py]",
+  "_failed_servers [combiner/mcp_combiner/server.py]",
+  "_fetch_or_join [combiner/mcp_combiner/middleware.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "_server_tool_cache [combiner/mcp_combiner/server.py]",
+  "_server_tool_seen [combiner/mcp_combiner/server.py]",
+  "build_server_status [combiner/mcp_combiner/status.py]",
+  "clear_tool_cache [combiner/mcp_combiner/toolcache.py]",
+  "create_combiner [combiner/mcp_combiner/server.py]",
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "on_list_tools [combiner/mcp_combiner/middleware.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "reset [combiner/mcp_combiner/runtime.py]",
+  "setup_method [combiner/tests/test_session_filter.py]",
+  "teardown_method [combiner/tests/test_session_filter.py]",
+  "test_cache_fill_loses_to_mid_fetch_invalidation [combiner/tests/test_session_filter.py]",
+  "test_grace_window_expiry_drops_tools [combiner/tests/test_session_filter.py]",
+  "test_prime_empty_answer_preserves_confirmed_slice [combiner/tests/test_session_filter.py]",
+  "test_reordered_list_is_not_a_replacement [combiner/tests/test_session_filter.py]",
+  "test_reprime_changed_list_publishes [combiner/tests/test_session_filter.py]",
+  "test_reprime_unchanged_list_is_silent [combiner/tests/test_session_filter.py]",
+  "test_schema_only_change_is_a_replacement [combiner/tests/test_session_filter.py]",
+  "test_stale_tool_grace_configurable [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.CombinerRuntime.tools",
+  "mcp",
+  "runtime",
+  "tools",
+]

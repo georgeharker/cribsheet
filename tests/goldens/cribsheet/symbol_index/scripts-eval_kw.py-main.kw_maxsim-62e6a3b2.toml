@@ -1,0 +1,42 @@
+symbol_ref = "scripts/eval_kw.py#main.kw_maxsim"
+fqn = "scripts.eval_kw.main.kw_maxsim"
+name = "kw_maxsim"
+kind = "function"
+lang = "python"
+content_hash = "7fe64a4d26c8bc92"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def kw_maxsim(feat, proj, qv, facet):"
+description = ""
+schema = 4
+line = 66
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+]
+symbol_was = []
+calls = [
+  "_cos [scripts/eval_kw.py]",
+]
+called_by = [
+  "fn [scripts/eval_kw.py]",
+  "three_facets [scripts/eval_kw.py]",
+]
+references = [
+  "fn [scripts/eval_kw.py]",
+  "three_facets [scripts/eval_kw.py]",
+]
+name_terms = [
+  "eval",
+  "kw",
+  "kw_maxsim",
+  "main",
+  "maxsim",
+  "scripts",
+  "scripts.eval_kw.main.kw_maxsim",
+]

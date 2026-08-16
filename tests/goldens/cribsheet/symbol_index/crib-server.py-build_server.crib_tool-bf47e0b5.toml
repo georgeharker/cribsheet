@@ -1,0 +1,109 @@
+symbol_ref = "crib/server.py#build_server.crib_tool"
+fqn = "crib.server.build_server.crib_tool"
+name = "crib_tool"
+kind = "function"
+lang = "python"
+content_hash = "02d8b77dc1d96887"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def crib_tool(resolution: str, *, echo: bool = False, elicit: bool = False,"
+description = ""
+schema = 4
+line = 409
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "build_server [crib/server.py]",
+]
+references = [
+  "code_convert [crib/server.py]",
+  "code_dossier [crib/server.py]",
+  "code_graph [crib/server.py]",
+  "code_index [crib/server.py]",
+  "code_lookup [crib/server.py]",
+  "code_xref [crib/server.py]",
+  "design_add [crib/server.py]",
+  "design_append [crib/server.py]",
+  "design_check [crib/server.py]",
+  "design_dep_add [crib/server.py]",
+  "design_dep_remove [crib/server.py]",
+  "design_edit [crib/server.py]",
+  "design_forget [crib/server.py]",
+  "design_graph [crib/server.py]",
+  "design_import [crib/server.py]",
+  "design_list [crib/server.py]",
+  "design_lookup [crib/server.py]",
+  "design_promote [crib/server.py]",
+  "design_read [crib/server.py]",
+  "design_reaffirm [crib/server.py]",
+  "design_supersede [crib/server.py]",
+  "design_tree [crib/server.py]",
+  "learning_add [crib/server.py]",
+  "learning_edit [crib/server.py]",
+  "learning_forget [crib/server.py]",
+  "learning_migrate [crib/server.py]",
+  "learning_read [crib/server.py]",
+  "learning_reaffirm [crib/server.py]",
+  "learning_rehome [crib/server.py]",
+  "learning_report [crib/server.py]",
+  "memory_history [crib/server.py]",
+  "memory_snapshot [crib/server.py]",
+  "note_append [crib/server.py]",
+  "note_apropos [crib/server.py]",
+  "note_distill [crib/server.py]",
+  "note_edit [crib/server.py]",
+  "note_elaborate [crib/server.py]",
+  "note_forget [crib/server.py]",
+  "note_import [crib/server.py]",
+  "note_import_memory [crib/server.py]",
+  "note_locate [crib/server.py]",
+  "note_lookup [crib/server.py]",
+  "note_move [crib/server.py]",
+  "note_read [crib/server.py]",
+  "note_reindex [crib/server.py]",
+  "note_restore [crib/server.py]",
+  "note_store [crib/server.py]",
+  "note_summarize [crib/server.py]",
+  "note_versions [crib/server.py]",
+  "plan_add [crib/server.py]",
+  "plan_dep_add [crib/server.py]",
+  "plan_dep_remove [crib/server.py]",
+  "plan_forget [crib/server.py]",
+  "plan_graph [crib/server.py]",
+  "plan_import [crib/server.py]",
+  "plan_list [crib/server.py]",
+  "plan_lookup [crib/server.py]",
+  "plan_move [crib/server.py]",
+  "plan_next [crib/server.py]",
+  "plan_reaffirm [crib/server.py]",
+  "plan_status [crib/server.py]",
+  "project_adopt [crib/server.py]",
+  "project_current [crib/server.py]",
+  "project_forget [crib/server.py]",
+  "project_index [crib/server.py]",
+  "project_list [crib/server.py]",
+  "project_migrate [crib/server.py]",
+  "project_reconcile [crib/server.py]",
+  "project_release [crib/server.py]",
+  "project_setup [crib/server.py]",
+  "project_status [crib/server.py]",
+  "project_use [crib/server.py]",
+  "status [crib/server.py]",
+]
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.crib_tool",
+  "crib_tool",
+  "server",
+  "tool",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_cc_tools.lua#err"
+fqn = "tests.test_cc_tools.err"
+name = "err"
+kind = "function"
+lang = "lua"
+content_hash = "0e42cffe1ea46879"
+file = "tests/test_cc_tools.lua"
+file_hash = "3253ff527c66fcb1"
+signature = "local function err(name, msg)"
+description = ""
+schema = 4
+line = 24
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_cc_tools",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_cc_tools.lua [tests/test_cc_tools.lua]",
+]
+references = [
+  "else [tests/test_cc_tools.lua]",
+  "elseif [tests/test_cc_tools.lua]",
+  "if [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "err",
+  "test",
+  "tests",
+  "tests.test_cc_tools.err",
+  "tools",
+]

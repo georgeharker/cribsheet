@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_ops.lua#fake_client.reload_config"
+fqn = "tests.test_ops.fake_client.reload_config"
+name = "reload_config"
+kind = "function"
+lang = "lua"
+content_hash = "d16c6aded47c348c"
+file = "tests/test_ops.lua"
+file_hash = "f9230679396cb256"
+signature = "reload_config = function(_, cb)"
+description = ""
+schema = 4
+line = 47
+mtime = 1783545086000000000
+container = [
+  "fake_client",
+]
+scope = [
+  "tests",
+  "test_ops",
+  "fake_client",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_ops.lua [tests/test_ops.lua]",
+]
+references = []
+name_terms = [
+  "client",
+  "config",
+  "fake",
+  "ops",
+  "reload",
+  "reload_config",
+  "test",
+  "tests",
+  "tests.test_ops.fake_client.reload_config",
+]

@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_TOOLS_PROBE_GIVEUP"
+fqn = "combiner.mcp_combiner.connections._TOOLS_PROBE_GIVEUP"
+name = "_TOOLS_PROBE_GIVEUP"
+kind = "constant"
+lang = "python"
+content_hash = "1b56969af8ce442e"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_TOOLS_PROBE_GIVEUP = _env_float(\"MCP_COMBINER_TOOLS_PROBE_GIVEUP\", 1800.0)"
+description = ""
+schema = 4
+line = 104
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_TOOLS_PROBE_GIVEUP",
+  "combiner",
+  "combiner.mcp_combiner.connections._TOOLS_PROBE_GIVEUP",
+  "connections",
+  "giveup",
+  "mcp",
+  "probe",
+  "tools",
+]

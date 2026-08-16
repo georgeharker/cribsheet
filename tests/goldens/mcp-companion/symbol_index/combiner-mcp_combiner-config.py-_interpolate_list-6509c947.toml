@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/config.py#_interpolate_list"
+fqn = "combiner.mcp_combiner.config._interpolate_list"
+name = "_interpolate_list"
+kind = "function"
+lang = "python"
+content_hash = "3d2c50df5081278d"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def _interpolate_list(values: list[str]) -> list[str]:"
+description = ""
+schema = 4
+line = 629
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+]
+symbol_was = []
+calls = [
+  "_interpolate [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "_build_use_cmd [combiner/mcp_combiner/sharedserver.py]",
+  "test_empty_list [combiner/tests/test_config.py]",
+  "test_list_expansion [combiner/tests/test_config.py]",
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+references = [
+  "_build_use_cmd [combiner/mcp_combiner/sharedserver.py]",
+  "test_empty_list [combiner/tests/test_config.py]",
+  "test_list_expansion [combiner/tests/test_config.py]",
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "_interpolate_list",
+  "combiner",
+  "combiner.mcp_combiner.config._interpolate_list",
+  "config",
+  "interpolate",
+  "list",
+  "mcp",
+]

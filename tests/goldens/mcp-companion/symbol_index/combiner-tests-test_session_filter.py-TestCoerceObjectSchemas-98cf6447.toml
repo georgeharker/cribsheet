@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestCoerceObjectSchemas"
+fqn = "combiner.tests.test_session_filter.TestCoerceObjectSchemas"
+name = "TestCoerceObjectSchemas"
+kind = "class"
+lang = "python"
+content_hash = "896343d8331777a7"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "class TestCoerceObjectSchemas:"
+description = ""
+schema = 4
+line = 792
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestCoerceObjectSchemas",
+  "coerce",
+  "combiner",
+  "combiner.tests.test_session_filter.TestCoerceObjectSchemas",
+  "filter",
+  "object",
+  "schemas",
+  "session",
+  "test",
+  "tests",
+]

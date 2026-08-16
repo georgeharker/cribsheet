@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_path_confinement.py#test_source_relpaths_are_not_writable_through_note_verbs"
+fqn = "tests.test_path_confinement.test_source_relpaths_are_not_writable_through_note_verbs"
+name = "test_source_relpaths_are_not_writable_through_note_verbs"
+kind = "function"
+lang = "python"
+content_hash = "60eff4ad91d071fd"
+file = "tests/test_path_confinement.py"
+file_hash = "ca5f375c4fa4dfa2"
+signature = "def test_source_relpaths_are_not_writable_through_note_verbs(crib, tmp_path):"
+description = ""
+schema = 4
+line = 131
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_path_confinement",
+]
+symbol_was = []
+calls = [
+  "_repo [tests/test_path_confinement.py]",
+  "run [tests/test_path_confinement.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "are",
+  "confinement",
+  "not",
+  "note",
+  "path",
+  "relpaths",
+  "source",
+  "test",
+  "test_source_relpaths_are_not_writable_through_note_verbs",
+  "tests",
+  "tests.test_path_confinement.test_source_relpaths_are_not_writable_through_note_verbs",
+  "through",
+  "verbs",
+  "writable",
+]

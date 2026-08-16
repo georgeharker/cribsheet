@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_project.lua#write_file"
+fqn = "tests.test_project.write_file"
+name = "write_file"
+kind = "function"
+lang = "lua"
+content_hash = "f0289a231bced96e"
+file = "tests/test_project.lua"
+file_hash = "a8e547beff4cb5d7"
+signature = "local function write_file(path, content)"
+description = ""
+schema = 4
+line = 68
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_project",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_project.lua [tests/test_project.lua]",
+]
+references = []
+name_terms = [
+  "file",
+  "project",
+  "test",
+  "tests",
+  "tests.test_project.write_file",
+  "write",
+  "write_file",
+]

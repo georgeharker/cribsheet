@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestTokenSessions.test_missing_token_returns_none"
+fqn = "combiner.tests.test_session_filter.TestTokenSessions.test_missing_token_returns_none"
+name = "test_missing_token_returns_none"
+kind = "method"
+lang = "python"
+content_hash = "94d87775788d30ff"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_missing_token_returns_none(self):"
+description = ""
+schema = 4
+line = 119
+mtime = 1784493613000000000
+container = [
+  "TestTokenSessions",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestTokenSessions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestTokenSessions.test_missing_token_returns_none",
+  "filter",
+  "missing",
+  "none",
+  "returns",
+  "session",
+  "sessions",
+  "test",
+  "test_missing_token_returns_none",
+  "tests",
+  "token",
+]

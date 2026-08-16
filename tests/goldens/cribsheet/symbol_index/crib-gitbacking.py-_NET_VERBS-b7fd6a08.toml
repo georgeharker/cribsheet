@@ -1,0 +1,32 @@
+symbol_ref = "crib/gitbacking.py#_NET_VERBS"
+fqn = "crib.gitbacking._NET_VERBS"
+name = "_NET_VERBS"
+kind = "constant"
+lang = "python"
+content_hash = "e6a4c351b9ebb096"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "_NET_VERBS = frozenset({\"fetch\", \"pull\", \"push\", \"clone\", \"ls-remote\"})"
+description = ""
+schema = 4
+line = 52
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "gitbacking",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_run [crib/gitbacking.py]",
+]
+name_terms = [
+  "_NET_VERBS",
+  "crib",
+  "crib.gitbacking._NET_VERBS",
+  "gitbacking",
+  "net",
+  "verbs",
+]

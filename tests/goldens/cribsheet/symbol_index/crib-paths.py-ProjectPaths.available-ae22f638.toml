@@ -1,0 +1,41 @@
+symbol_ref = "crib/paths.py#ProjectPaths.available"
+fqn = "crib.paths.ProjectPaths.available"
+name = "available"
+kind = "field"
+lang = "python"
+content_hash = "3c2adfac717b1a35"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "available: bool = True              # False ⇒ store_root isn't on this machine"
+description = ""
+schema = 4
+line = 158
+mtime = 1786564832000000000
+container = [
+  "ProjectPaths",
+]
+scope = [
+  "crib",
+  "paths",
+  "ProjectPaths",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_skip_if_unavailable [crib/app.py]",
+  "project_list [crib/app.py]",
+  "require [crib/paths.py]",
+  "resolve_project_paths [crib/paths.py]",
+  "status [crib/app.py]",
+  "test_a_store_that_is_not_on_this_machine_is_unavailable [tests/test_repo_storage.py]",
+  "test_resolves_to_the_global_layout_by_default [tests/test_repo_storage.py]",
+  "test_resolves_to_the_store_when_the_stub_points_at_one [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "available",
+  "crib",
+  "crib.paths.ProjectPaths.available",
+  "paths",
+  "project",
+]

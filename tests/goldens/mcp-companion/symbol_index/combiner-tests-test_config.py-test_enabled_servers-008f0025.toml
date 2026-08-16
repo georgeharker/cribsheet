@@ -1,0 +1,36 @@
+symbol_ref = "combiner/tests/test_config.py#test_enabled_servers"
+fqn = "combiner.tests.test_config.test_enabled_servers"
+name = "test_enabled_servers"
+kind = "function"
+lang = "python"
+content_hash = "e9fa89d55fafd077"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_enabled_servers() -> None:"
+description = ""
+schema = 4
+line = 212
+mtime = 1782852601000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+]
+symbol_was = []
+calls = [
+  "get_enabled_servers [combiner/mcp_combiner/config.py]",
+  "load [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.test_enabled_servers",
+  "config",
+  "enabled",
+  "servers",
+  "test",
+  "test_enabled_servers",
+  "tests",
+]

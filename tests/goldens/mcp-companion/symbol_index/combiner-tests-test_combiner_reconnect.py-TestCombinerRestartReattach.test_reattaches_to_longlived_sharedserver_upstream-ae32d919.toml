@@ -1,0 +1,53 @@
+symbol_ref = "combiner/tests/test_combiner_reconnect.py#TestCombinerRestartReattach.test_reattaches_to_longlived_sharedserver_upstream"
+fqn = "combiner.tests.test_combiner_reconnect.TestCombinerRestartReattach.test_reattaches_to_longlived_sharedserver_upstream"
+name = "test_reattaches_to_longlived_sharedserver_upstream"
+kind = "method"
+lang = "python"
+content_hash = "246a16c635d1b657"
+file = "combiner/tests/test_combiner_reconnect.py"
+file_hash = "0f559a1b56a92ac5"
+signature = "@requires_sharedserver"
+description = ""
+schema = 4
+line = 77
+mtime = 1783535856000000000
+container = [
+  "TestCombinerRestartReattach",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_combiner_reconnect",
+  "TestCombinerRestartReattach",
+]
+symbol_was = []
+calls = [
+  "_text [combiner/tests/test_combiner_reconnect.py]",
+  "free_port [combiner/tests/conftest.py]",
+  "sharedserver_def [combiner/tests/conftest.py]",
+  "sharedserver_mock_entry [combiner/tests/conftest.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+  "terminate [combiner/tests/conftest.py]",
+  "track_shared [combiner/tests/conftest.py]",
+  "unique_shared_name [combiner/tests/conftest.py]",
+  "wait_server_state [combiner/tests/conftest.py]",
+  "write_servers_config [combiner/tests/conftest.py]",
+  "write_tools_spec [combiner/tests/conftest.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_combiner_reconnect.TestCombinerRestartReattach.test_reattaches_to_longlived_sharedserver_upstream",
+  "longlived",
+  "reattach",
+  "reattaches",
+  "reconnect",
+  "restart",
+  "sharedserver",
+  "test",
+  "test_reattaches_to_longlived_sharedserver_upstream",
+  "tests",
+  "to",
+  "upstream",
+]

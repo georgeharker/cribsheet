@@ -1,0 +1,37 @@
+symbol_ref = "crib/config.py#ProjectConfig.distill_prompt"
+fqn = "crib.config.ProjectConfig.distill_prompt"
+name = "distill_prompt"
+kind = "field"
+lang = "python"
+content_hash = "e1478f173748f0c0"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "distill_prompt: str | None = None"
+description = ""
+schema = 4
+line = 327
+mtime = 1786564832000000000
+container = [
+  "ProjectConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "ProjectConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "distill [crib/app.py]",
+  "load [crib/config.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.ProjectConfig.distill_prompt",
+  "distill",
+  "distill_prompt",
+  "project",
+  "prompt",
+]

@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestEnforcePermission.test_elicit_allow_once_passes_without_caching"
+fqn = "combiner.tests.test_permissions.TestEnforcePermission.test_elicit_allow_once_passes_without_caching"
+name = "test_elicit_allow_once_passes_without_caching"
+kind = "method"
+lang = "python"
+content_hash = "6b3499dc3975bcec"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "async def test_elicit_allow_once_passes_without_caching(self) -> None:"
+description = ""
+schema = 4
+line = 232
+mtime = 1783633313000000000
+container = [
+  "TestEnforcePermission",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "TestEnforcePermission",
+]
+symbol_was = []
+calls = [
+  "_elicit_ctx [combiner/tests/test_permissions.py]",
+  "_rp [combiner/tests/test_permissions.py]",
+  "enforce [combiner/mcp_combiner/permissions.py]",
+  "is_granted [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "allow",
+  "caching",
+  "combiner",
+  "combiner.tests.test_permissions.TestEnforcePermission.test_elicit_allow_once_passes_without_caching",
+  "elicit",
+  "enforce",
+  "once",
+  "passes",
+  "permission",
+  "permissions",
+  "test",
+  "test_elicit_allow_once_passes_without_caching",
+  "tests",
+  "without",
+]

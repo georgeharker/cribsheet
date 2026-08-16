@@ -1,0 +1,49 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.disabled"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.disabled"
+name = "disabled"
+kind = "field"
+lang = "python"
+content_hash = "0347fb281c9ff5e9"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "disabled: dict[str, set[str]] = field(default_factory=dict)"
+description = ""
+schema = 4
+line = 51
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_session_disabled [combiner/mcp_combiner/server.py]",
+  "clear_disabled [combiner/mcp_combiner/runtime.py]",
+  "disable [combiner/mcp_combiner/runtime.py]",
+  "disabled_for [combiner/mcp_combiner/runtime.py]",
+  "disabled_snapshot [combiner/mcp_combiner/runtime.py]",
+  "enable [combiner/mcp_combiner/runtime.py]",
+  "list_sessions [combiner/mcp_combiner/routes.py]",
+  "manage_session_filter [combiner/mcp_combiner/routes.py]",
+  "manage_token_filter [combiner/mcp_combiner/routes.py]",
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "on_list_tools [combiner/mcp_combiner/middleware.py]",
+  "reset [combiner/mcp_combiner/runtime.py]",
+  "set_disabled [combiner/mcp_combiner/runtime.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.disabled",
+  "disabled",
+  "mcp",
+  "registry",
+  "runtime",
+  "session",
+]

@@ -1,0 +1,45 @@
+symbol_ref = "crib/server.py#build_server._wire.resolve"
+fqn = "crib.server.build_server._wire.resolve"
+name = "resolve"
+kind = "function"
+lang = "python"
+content_hash = "2e9ebf45d8d4f65b"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def resolve(project, path):"
+description = ""
+schema = 4
+line = 326
+mtime = 1786693579000000000
+container = [
+  "build_server",
+  "_wire",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+  "_wire",
+]
+symbol_was = []
+calls = [
+  "_resolve [crib/server.py]",
+  "_source_project [crib/server.py]",
+  "_write_project [crib/server.py]",
+]
+called_by = [
+  "run [crib/server.py]",
+  "run_sync [crib/server.py]",
+]
+references = [
+  "run [crib/server.py]",
+  "run_sync [crib/server.py]",
+]
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server._wire.resolve",
+  "resolve",
+  "server",
+  "wire",
+]

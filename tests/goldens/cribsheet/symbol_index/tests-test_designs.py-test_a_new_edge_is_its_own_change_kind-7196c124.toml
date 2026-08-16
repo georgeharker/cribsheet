@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_designs.py#test_a_new_edge_is_its_own_change_kind"
+fqn = "tests.test_designs.test_a_new_edge_is_its_own_change_kind"
+name = "test_a_new_edge_is_its_own_change_kind"
+kind = "function"
+lang = "python"
+content_hash = "eacef6d4ae338e7c"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_a_new_edge_is_its_own_change_kind(crib):"
+description = ""
+schema = 4
+line = 446
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "change",
+  "designs",
+  "edge",
+  "is",
+  "its",
+  "kind",
+  "new",
+  "own",
+  "test",
+  "test_a_new_edge_is_its_own_change_kind",
+  "tests",
+  "tests.test_designs.test_a_new_edge_is_its_own_change_kind",
+]

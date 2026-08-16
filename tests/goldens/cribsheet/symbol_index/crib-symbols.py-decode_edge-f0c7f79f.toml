@@ -1,0 +1,44 @@
+symbol_ref = "crib/symbols.py#decode_edge"
+fqn = "crib.symbols.decode_edge"
+name = "decode_edge"
+kind = "function"
+lang = "python"
+content_hash = "7e6b5d365a2fbc34"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def decode_edge(ref: str, default_project: str) -> tuple[str, str, str, str]:"
+description = ""
+schema = 4
+line = 221
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = [
+  "decode_loc [crib/symbols.py]",
+]
+called_by = [
+  "_neighbours [crib/codequery.py]",
+  "_project_graph [crib/codequery.py]",
+  "_subgraph [crib/codequery.py]",
+  "build [crib/codequery.py]",
+  "patch_edges [crib/codestore.py]",
+]
+references = [
+  "_neighbours [crib/codequery.py]",
+  "_project_graph [crib/codequery.py]",
+  "_subgraph [crib/codequery.py]",
+  "build [crib/codequery.py]",
+  "patch_edges [crib/codestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.decode_edge",
+  "decode",
+  "decode_edge",
+  "edge",
+  "symbols",
+]

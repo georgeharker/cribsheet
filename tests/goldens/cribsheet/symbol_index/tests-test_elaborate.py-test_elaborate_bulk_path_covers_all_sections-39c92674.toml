@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_elaborate.py#test_elaborate_bulk_path_covers_all_sections"
+fqn = "tests.test_elaborate.test_elaborate_bulk_path_covers_all_sections"
+name = "test_elaborate_bulk_path_covers_all_sections"
+kind = "function"
+lang = "python"
+content_hash = "942f678b4b85cd23"
+file = "tests/test_elaborate.py"
+file_hash = "5cde1a0229322e89"
+signature = "def test_elaborate_bulk_path_covers_all_sections(crib, monkeypatch):"
+description = ""
+schema = 4
+line = 226
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_elaborate",
+]
+symbol_was = []
+calls = [
+  "SectionIndex [crib/section_index.py]",
+  "read_terms [crib/section_index.py]",
+  "run [tests/test_elaborate.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "all",
+  "bulk",
+  "covers",
+  "elaborate",
+  "path",
+  "sections",
+  "test",
+  "test_elaborate_bulk_path_covers_all_sections",
+  "tests",
+  "tests.test_elaborate.test_elaborate_bulk_path_covers_all_sections",
+]

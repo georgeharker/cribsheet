@@ -1,0 +1,59 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestStaleServerTools._config"
+fqn = "combiner.tests.test_session_filter.TestStaleServerTools._config"
+name = "_config"
+kind = "method"
+lang = "python"
+content_hash = "7084a239563c694d"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def _config(self, **flags):"
+description = ""
+schema = 4
+line = 397
+mtime = 1784493613000000000
+container = [
+  "TestStaleServerTools",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestStaleServerTools",
+]
+symbol_was = []
+calls = [
+  "ServerConfig [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "test_auth_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_disabled_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_grace_window_expiry_drops_tools [combiner/tests/test_session_filter.py]",
+  "test_present_server_gains_confirmed_slice [combiner/tests/test_session_filter.py]",
+  "test_promotion_publishes_notify_only_once [combiner/tests/test_session_filter.py]",
+  "test_reconnecting_peer_tools_survive [combiner/tests/test_session_filter.py]",
+  "test_replacement_publishes [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "test_auth_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_disabled_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_grace_window_expiry_drops_tools [combiner/tests/test_session_filter.py]",
+  "test_present_server_gains_confirmed_slice [combiner/tests/test_session_filter.py]",
+  "test_promotion_publishes_notify_only_once [combiner/tests/test_session_filter.py]",
+  "test_reconnecting_peer_tools_survive [combiner/tests/test_session_filter.py]",
+  "test_replacement_publishes [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_config",
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools._config",
+  "config",
+  "filter",
+  "server",
+  "session",
+  "stale",
+  "test",
+  "tests",
+  "tools",
+]

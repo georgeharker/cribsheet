@@ -1,0 +1,40 @@
+symbol_ref = "crib/notes.py#NoteParseError"
+fqn = "crib.notes.NoteParseError"
+name = "NoteParseError"
+kind = "class"
+lang = "python"
+content_hash = "9bc0f4d62885adfa"
+file = "crib/notes.py"
+file_hash = "6e2385b754de60b6"
+signature = "class NoteParseError(ValueError):"
+description = ""
+schema = 4
+line = 20
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "notes",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_load_graph [crib/designs.py]",
+  "_ring_id [crib/notestore.py]",
+  "_stash_existing [crib/notestore.py]",
+  "edit_note [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "parse [crib/notes.py]",
+  "reindex [crib/notestore.py]",
+  "test_parse_raises_note_parse_error_naming_the_file [tests/test_malformed_notes.py]",
+]
+name_terms = [
+  "NoteParseError",
+  "crib",
+  "crib.notes.NoteParseError",
+  "error",
+  "note",
+  "notes",
+  "parse",
+]

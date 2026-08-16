@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_project_resolution.py#test_insitu_docs_and_memory_import_require_repo_dir"
+fqn = "tests.test_project_resolution.test_insitu_docs_and_memory_import_require_repo_dir"
+name = "test_insitu_docs_and_memory_import_require_repo_dir"
+kind = "function"
+lang = "python"
+content_hash = "9d9bf68681b49a8f"
+file = "tests/test_project_resolution.py"
+file_hash = "4fafa653cef61a42"
+signature = "def test_insitu_docs_and_memory_import_require_repo_dir(crib):"
+description = ""
+schema = 4
+line = 184
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_project_resolution",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "dir",
+  "docs",
+  "import",
+  "insitu",
+  "memory",
+  "project",
+  "repo",
+  "require",
+  "resolution",
+  "test",
+  "test_insitu_docs_and_memory_import_require_repo_dir",
+  "tests",
+  "tests.test_project_resolution.test_insitu_docs_and_memory_import_require_repo_dir",
+]

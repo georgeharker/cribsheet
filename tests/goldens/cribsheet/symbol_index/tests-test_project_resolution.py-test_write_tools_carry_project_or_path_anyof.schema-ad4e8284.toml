@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_project_resolution.py#test_write_tools_carry_project_or_path_anyof.schema"
+fqn = "tests.test_project_resolution.test_write_tools_carry_project_or_path_anyof.schema"
+name = "schema"
+kind = "function"
+lang = "python"
+content_hash = "1a3481648489e887"
+file = "tests/test_project_resolution.py"
+file_hash = "4fafa653cef61a42"
+signature = "async def schema(name):"
+description = ""
+schema = 4
+line = 50
+mtime = 1785959234000000000
+container = [
+  "test_write_tools_carry_project_or_path_anyof",
+]
+scope = [
+  "tests",
+  "test_project_resolution",
+  "test_write_tools_carry_project_or_path_anyof",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_write_tools_carry_project_or_path_anyof [tests/test_project_resolution.py]",
+]
+references = [
+  "test_write_tools_carry_project_or_path_anyof [tests/test_project_resolution.py]",
+]
+name_terms = [
+  "anyof",
+  "carry",
+  "or",
+  "path",
+  "project",
+  "resolution",
+  "schema",
+  "test",
+  "tests",
+  "tests.test_project_resolution.test_write_tools_carry_project_or_path_anyof.schema",
+  "tools",
+  "write",
+]

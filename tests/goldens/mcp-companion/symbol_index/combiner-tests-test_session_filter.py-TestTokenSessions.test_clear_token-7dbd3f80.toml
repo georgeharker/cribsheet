@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestTokenSessions.test_clear_token"
+fqn = "combiner.tests.test_session_filter.TestTokenSessions.test_clear_token"
+name = "test_clear_token"
+kind = "method"
+lang = "python"
+content_hash = "43ad724cc8d12915"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_clear_token(self):"
+description = ""
+schema = 4
+line = 132
+mtime = 1784493613000000000
+container = [
+  "TestTokenSessions",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestTokenSessions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "clear",
+  "combiner",
+  "combiner.tests.test_session_filter.TestTokenSessions.test_clear_token",
+  "filter",
+  "session",
+  "sessions",
+  "test",
+  "test_clear_token",
+  "tests",
+  "token",
+]

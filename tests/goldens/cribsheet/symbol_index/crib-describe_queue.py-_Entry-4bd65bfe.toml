@@ -1,0 +1,33 @@
+symbol_ref = "crib/describe_queue.py#_Entry"
+fqn = "crib.describe_queue._Entry"
+name = "_Entry"
+kind = "class"
+lang = "python"
+content_hash = "f34f6bbcffc8ec6a"
+file = "crib/describe_queue.py"
+file_hash = "305c34e160ae74c1"
+signature = "class _Entry:"
+description = ""
+schema = 4
+line = 31
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "describe_queue",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/describe_queue.py]",
+  "_arm [crib/describe_queue.py]",
+]
+name_terms = [
+  "_Entry",
+  "crib",
+  "crib.describe_queue._Entry",
+  "describe",
+  "entry",
+  "queue",
+]

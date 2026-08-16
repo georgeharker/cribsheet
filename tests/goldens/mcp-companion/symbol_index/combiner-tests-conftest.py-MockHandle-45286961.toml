@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/conftest.py#MockHandle"
+fqn = "combiner.tests.conftest.MockHandle"
+name = "MockHandle"
+kind = "class"
+lang = "python"
+content_hash = "fef9ae7e1180b93c"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 210
+mtime = 1783544328000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "mocks [combiner/tests/conftest.py]",
+  "start_http_mock [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "MockHandle",
+  "combiner",
+  "combiner.tests.conftest.MockHandle",
+  "conftest",
+  "handle",
+  "mock",
+  "tests",
+]

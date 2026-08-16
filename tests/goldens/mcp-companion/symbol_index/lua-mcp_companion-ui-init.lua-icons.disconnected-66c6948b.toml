@@ -1,0 +1,35 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#icons.disconnected"
+fqn = "mcp_companion.ui.icons.disconnected"
+name = "disconnected"
+kind = "field"
+lang = "lua"
+content_hash = "fba660090a3f411c"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "disconnected = \"○\","
+description = ""
+schema = 4
+line = 29
+mtime = 1783545086000000000
+container = [
+  "icons",
+]
+scope = [
+  "mcp_companion",
+  "ui",
+  "icons",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "else [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "companion",
+  "disconnected",
+  "icons",
+  "mcp",
+  "mcp_companion.ui.icons.disconnected",
+  "ui",
+]

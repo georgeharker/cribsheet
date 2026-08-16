@@ -1,0 +1,50 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager.is_auth_failed"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager.is_auth_failed"
+name = "is_auth_failed"
+kind = "method"
+lang = "python"
+content_hash = "57f3e519e6458419"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "def is_auth_failed(self, name: str) -> bool:"
+description = ""
+schema = 4
+line = 340
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_gated_factory [combiner/mcp_combiner/proxyfactory.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "health_check [combiner/mcp_combiner/routes.py]",
+]
+references = [
+  "_gated_factory [combiner/mcp_combiner/proxyfactory.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "health_check [combiner/mcp_combiner/routes.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.is_auth_failed",
+  "connection",
+  "connections",
+  "failed",
+  "is",
+  "is_auth_failed",
+  "manager",
+  "mcp",
+]

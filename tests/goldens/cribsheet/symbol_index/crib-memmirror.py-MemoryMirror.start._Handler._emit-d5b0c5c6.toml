@@ -1,0 +1,52 @@
+symbol_ref = "crib/memmirror.py#MemoryMirror.start._Handler._emit"
+fqn = "crib.memmirror.MemoryMirror.start._Handler._emit"
+name = "_emit"
+kind = "method"
+lang = "python"
+content_hash = "f24061f6fa468df0"
+file = "crib/memmirror.py"
+file_hash = "9ff08381721a9203"
+signature = "def _emit(self, raw_path: str) -> None:"
+description = ""
+schema = 4
+line = 63
+mtime = 1785959234000000000
+container = [
+  "MemoryMirror",
+  "start",
+  "_Handler",
+]
+scope = [
+  "crib",
+  "memmirror",
+  "MemoryMirror",
+  "start",
+  "_Handler",
+]
+symbol_was = []
+calls = [
+  "_match [crib/memmirror.py]",
+]
+called_by = [
+  "on_created [crib/memmirror.py]",
+  "on_deleted [crib/memmirror.py]",
+  "on_modified [crib/memmirror.py]",
+  "on_moved [crib/memmirror.py]",
+]
+references = [
+  "on_created [crib/memmirror.py]",
+  "on_deleted [crib/memmirror.py]",
+  "on_modified [crib/memmirror.py]",
+  "on_moved [crib/memmirror.py]",
+]
+name_terms = [
+  "_emit",
+  "crib",
+  "crib.memmirror.MemoryMirror.start._Handler._emit",
+  "emit",
+  "handler",
+  "memmirror",
+  "memory",
+  "mirror",
+  "start",
+]

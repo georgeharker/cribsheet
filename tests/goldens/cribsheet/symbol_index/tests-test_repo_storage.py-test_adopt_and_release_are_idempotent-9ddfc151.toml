@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_repo_storage.py#test_adopt_and_release_are_idempotent"
+fqn = "tests.test_repo_storage.test_adopt_and_release_are_idempotent"
+name = "test_adopt_and_release_are_idempotent"
+kind = "function"
+lang = "python"
+content_hash = "f031061285eb0ad5"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_adopt_and_release_are_idempotent(crib, tmp_path):"
+description = ""
+schema = 4
+line = 215
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "repo_with_store [tests/test_repo_storage.py]",
+  "run [tests/test_repo_storage.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "adopt",
+  "and",
+  "are",
+  "idempotent",
+  "release",
+  "repo",
+  "storage",
+  "test",
+  "test_adopt_and_release_are_idempotent",
+  "tests",
+  "tests.test_repo_storage.test_adopt_and_release_are_idempotent",
+]

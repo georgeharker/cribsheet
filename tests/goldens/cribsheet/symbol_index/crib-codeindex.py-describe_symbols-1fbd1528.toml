@@ -1,0 +1,40 @@
+symbol_ref = "crib/codeindex.py#describe_symbols"
+fqn = "crib.codeindex.describe_symbols"
+name = "describe_symbols"
+kind = "function"
+lang = "python"
+content_hash = "194c02bd535cea1a"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def describe_symbols(gen_cfg: Any, symbols: list[dict]) -> dict[str, dict[str, Any]]:"
+description = ""
+schema = 4
+line = 1384
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = [
+  "_rows_to_meta [crib/codeindex.py]",
+  "generate_structured [crib/generate.py]",
+]
+called_by = [
+  "_index_code_file [crib/codeindexer.py]",
+  "test_mop_up_blob_labels_each_block_with_the_fqname [tests/test_code_attribution.py]",
+]
+references = [
+  "_describe_and_patch [crib/codeindexer.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "test_mop_up_blob_labels_each_block_with_the_fqname [tests/test_code_attribution.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.describe_symbols",
+  "describe",
+  "describe_symbols",
+  "symbols",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "crib/symbols.py#_PATH_NAMESPACE"
+fqn = "crib.symbols._PATH_NAMESPACE"
+name = "_PATH_NAMESPACE"
+kind = "constant"
+lang = "python"
+content_hash = "b4cef93b9e794e42"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "_PATH_NAMESPACE = {\"python\": \"module\", \"lua\": \"module\", \"go\": \"package\","
+description = ""
+schema = 4
+line = 124
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_path_scope [crib/symbols.py]",
+]
+name_terms = [
+  "_PATH_NAMESPACE",
+  "crib",
+  "crib.symbols._PATH_NAMESPACE",
+  "namespace",
+  "path",
+  "symbols",
+]

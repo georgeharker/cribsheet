@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_config.py#TestEnvCoercion"
+fqn = "combiner.tests.test_config.TestEnvCoercion"
+name = "TestEnvCoercion"
+kind = "class"
+lang = "python"
+content_hash = "8d7578392442f69b"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "class TestEnvCoercion:"
+description = ""
+schema = 4
+line = 164
+mtime = 1782852601000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestEnvCoercion",
+  "coercion",
+  "combiner",
+  "combiner.tests.test_config.TestEnvCoercion",
+  "config",
+  "env",
+  "test",
+  "tests",
+]

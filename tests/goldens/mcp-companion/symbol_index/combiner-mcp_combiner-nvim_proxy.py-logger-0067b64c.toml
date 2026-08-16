@@ -1,0 +1,34 @@
+symbol_ref = "combiner/mcp_combiner/nvim_proxy.py#logger"
+fqn = "combiner.mcp_combiner.nvim_proxy.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+file_hash = "072f85ddbeb3b759"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+schema = 4
+line = 37
+mtime = 1783022631000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "nvim_proxy",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "manage_nvim_bind [combiner/mcp_combiner/nvim_proxy.py]",
+  "manage_nvim_instances [combiner/mcp_combiner/nvim_proxy.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy.logger",
+  "logger",
+  "mcp",
+  "nvim",
+  "proxy",
+]

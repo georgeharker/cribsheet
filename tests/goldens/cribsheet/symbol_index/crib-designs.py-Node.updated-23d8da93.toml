@@ -1,0 +1,39 @@
+symbol_ref = "crib/designs.py#Node.updated"
+fqn = "crib.designs.Node.updated"
+name = "updated"
+kind = "field"
+lang = "python"
+content_hash = "a5bc6669952bd4bf"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "updated: str = \"\""
+description = ""
+schema = 4
+line = 326
+mtime = 1786693579000000000
+container = [
+  "Node",
+]
+scope = [
+  "crib",
+  "designs",
+  "Node",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_annotate [crib/designs.py]",
+  "_direct_taint [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "brief [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Node.updated",
+  "designs",
+  "node",
+  "updated",
+]

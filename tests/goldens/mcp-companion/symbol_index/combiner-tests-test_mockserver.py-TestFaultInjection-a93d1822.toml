@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestFaultInjection"
+fqn = "combiner.tests.test_mockserver.TestFaultInjection"
+name = "TestFaultInjection"
+kind = "class"
+lang = "python"
+content_hash = "1174cf7a711ba398"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "class TestFaultInjection:"
+description = ""
+schema = 4
+line = 153
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestFaultInjection",
+  "combiner",
+  "combiner.tests.test_mockserver.TestFaultInjection",
+  "fault",
+  "injection",
+  "mockserver",
+  "test",
+  "tests",
+]

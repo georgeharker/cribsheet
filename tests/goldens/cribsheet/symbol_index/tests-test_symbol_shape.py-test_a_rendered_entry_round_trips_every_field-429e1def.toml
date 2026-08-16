@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_symbol_shape.py#test_a_rendered_entry_round_trips_every_field"
+fqn = "tests.test_symbol_shape.test_a_rendered_entry_round_trips_every_field"
+name = "test_a_rendered_entry_round_trips_every_field"
+kind = "function"
+lang = "python"
+content_hash = "cc70721cb9ebbc3c"
+file = "tests/test_symbol_shape.py"
+file_hash = "cbe61056081f2393"
+signature = "def test_a_rendered_entry_round_trips_every_field():"
+description = ""
+schema = 4
+line = 66
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_shape",
+]
+symbol_was = []
+calls = [
+  "_parse [crib/codeindex.py]",
+  "_render [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "entry",
+  "every",
+  "field",
+  "rendered",
+  "round",
+  "shape",
+  "symbol",
+  "test",
+  "test_a_rendered_entry_round_trips_every_field",
+  "tests",
+  "tests.test_symbol_shape.test_a_rendered_entry_round_trips_every_field",
+  "trips",
+]

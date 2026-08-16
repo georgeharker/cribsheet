@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_notifications.py#_updated"
+fqn = "combiner.tests.test_notifications._updated"
+name = "_updated"
+kind = "function"
+lang = "python"
+content_hash = "476397f51ecbc849"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "def _updated(uri: str) -> ServerNotification:"
+description = ""
+schema = 4
+line = 75
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_dead_target_is_skipped_not_broadcast [combiner/tests/test_notifications.py]",
+  "test_updated_broadcasts_when_no_target [combiner/tests/test_notifications.py]",
+  "test_updated_forward_namespaced_to_target [combiner/tests/test_notifications.py]",
+]
+references = [
+  "test_dead_target_is_skipped_not_broadcast [combiner/tests/test_notifications.py]",
+  "test_updated_broadcasts_when_no_target [combiner/tests/test_notifications.py]",
+  "test_updated_forward_namespaced_to_target [combiner/tests/test_notifications.py]",
+]
+name_terms = [
+  "_updated",
+  "combiner",
+  "combiner.tests.test_notifications._updated",
+  "notifications",
+  "test",
+  "tests",
+  "updated",
+]

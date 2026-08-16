@@ -1,0 +1,39 @@
+symbol_ref = "crib/designs.py#Designs._source_view"
+fqn = "crib.designs.Designs._source_view"
+name = "_source_view"
+kind = "method"
+lang = "python"
+content_hash = "41d5450d3509aeae"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _source_view(self, src: dict[str, Any]) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 707
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "source_label [crib/designs.py]",
+]
+called_by = [
+  "design_read [crib/designs.py]",
+]
+references = [
+  "design_read [crib/designs.py]",
+]
+name_terms = [
+  "_source_view",
+  "crib",
+  "crib.designs.Designs._source_view",
+  "designs",
+  "source",
+  "view",
+]

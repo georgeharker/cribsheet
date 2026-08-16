@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_elaborate.py#test_lexical_cache_folds_elaboration_terms.FakeStore"
+fqn = "tests.test_elaborate.test_lexical_cache_folds_elaboration_terms.FakeStore"
+name = "FakeStore"
+kind = "class"
+lang = "python"
+content_hash = "161b9d101cf9d32e"
+file = "tests/test_elaborate.py"
+file_hash = "5cde1a0229322e89"
+signature = "class FakeStore:"
+description = ""
+schema = 4
+line = 89
+mtime = 1786578262000000000
+container = [
+  "test_lexical_cache_folds_elaboration_terms",
+]
+scope = [
+  "tests",
+  "test_elaborate",
+  "test_lexical_cache_folds_elaboration_terms",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+]
+name_terms = [
+  "FakeStore",
+  "cache",
+  "elaborate",
+  "elaboration",
+  "fake",
+  "folds",
+  "lexical",
+  "store",
+  "terms",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_lexical_cache_folds_elaboration_terms.FakeStore",
+]

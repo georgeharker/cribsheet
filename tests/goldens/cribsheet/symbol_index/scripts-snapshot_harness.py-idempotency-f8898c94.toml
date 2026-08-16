@@ -1,0 +1,36 @@
+symbol_ref = "scripts/snapshot_harness.py#idempotency"
+fqn = "scripts.snapshot_harness.idempotency"
+name = "idempotency"
+kind = "function"
+lang = "python"
+content_hash = "a134456f7f0975eb"
+file = "scripts/snapshot_harness.py"
+file_hash = "60b46810ead50638"
+signature = "def idempotency(repo: str, sha: str) -> int:"
+description = ""
+schema = 4
+line = 82
+mtime = 1783498271000000000
+container = []
+scope = [
+  "scripts",
+  "snapshot_harness",
+]
+symbol_was = []
+calls = [
+  "_load [scripts/snapshot_harness.py]",
+  "checkout [scripts/snapshot_harness.py]",
+  "diff_indexes [scripts/snapshot_harness.py]",
+  "index [scripts/snapshot_harness.py]",
+]
+called_by = [
+  "snapshot_harness [scripts/snapshot_harness.py]",
+]
+references = []
+name_terms = [
+  "harness",
+  "idempotency",
+  "scripts",
+  "scripts.snapshot_harness.idempotency",
+  "snapshot",
+]

@@ -1,0 +1,51 @@
+symbol_ref = "crib/app.py#Crib.project_release"
+fqn = "crib.app.Crib.project_release"
+name = "project_release"
+kind = "method"
+lang = "python"
+content_hash = "b98f79bcc19f9241"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def project_release(self, project: str | None = None,"
+description = ""
+schema = 4
+line = 1681
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "__call__ [crib/paths.py]",
+  "_move_ring [crib/app.py]",
+  "_move_tree [crib/app.py]",
+  "_note_ring_ids [crib/app.py]",
+  "invalidate [crib/paths.py]",
+  "load [crib/config.py]",
+  "pillar_dir [crib/paths.py]",
+  "project_dir [crib/paths.py]",
+  "reindex [crib/app.py]",
+  "require [crib/paths.py]",
+  "resolve_project [crib/app.py]",
+  "save [crib/config.py]",
+]
+called_by = [
+  "project_release [crib/server.py]",
+]
+references = [
+  "project_release [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.project_release",
+  "project",
+  "project_release",
+  "release",
+]

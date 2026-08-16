@@ -1,0 +1,30 @@
+symbol_ref = "crib/designs.py#DESIGN_STATUSES"
+fqn = "crib.designs.DESIGN_STATUSES"
+name = "DESIGN_STATUSES"
+kind = "constant"
+lang = "python"
+content_hash = "19282178f01de1cb"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "DESIGN_STATUSES = (\"proposed\", \"active\", \"superseded\")"
+description = ""
+schema = 4
+line = 106
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "DESIGN_STATUSES",
+  "crib",
+  "crib.designs.DESIGN_STATUSES",
+  "design",
+  "designs",
+  "statuses",
+]

@@ -1,0 +1,93 @@
+symbol_ref = "tests/test_designs.py#run"
+fqn = "tests.test_designs.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "44052857cf112194"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def run(coro):"
+description = ""
+schema = 4
+line = 36
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_set_deps [tests/test_designs.py]",
+  "test_a_batch_dep_can_only_point_backwards [tests/test_designs.py]",
+  "test_a_dangling_dep_is_visible_but_never_wedges_the_plan [tests/test_designs.py]",
+  "test_a_decision_must_carry_its_rationale [tests/test_designs.py]",
+  "test_a_new_edge_is_its_own_change_kind [tests/test_designs.py]",
+  "test_a_ref_does_not_leak_across_facets [tests/test_designs.py]",
+  "test_a_single_item_add_keeps_its_shape [tests/test_designs.py]",
+  "test_a_stale_decision_says_so_on_every_retrieval_hit [tests/test_designs.py]",
+  "test_ambiguous_ref_lists_candidates [tests/test_designs.py]",
+  "test_check_names_the_change_kind_the_date_and_the_next_verb [tests/test_designs.py]",
+  "test_completing_an_item_names_what_it_unblocked [tests/test_designs.py]",
+  "test_dep_add_refuses_to_create_a_cycle [tests/test_designs.py]",
+  "test_design_add_probes_for_near_duplicate_decisions [tests/test_designs.py]",
+  "test_design_append_adds_citations_post_hoc_keeping_old_hashes [tests/test_designs.py]",
+  "test_design_append_extends_and_is_edge_aware [tests/test_designs.py]",
+  "test_design_edit_reports_what_it_tainted [tests/test_designs.py]",
+  "test_design_graph_speaks_the_diagram_contract [tests/test_designs.py]",
+  "test_design_list_tables_and_filters_to_the_stale [tests/test_designs.py]",
+  "test_design_read_is_a_dossier_not_a_file_fetch [tests/test_designs.py]",
+  "test_facet_lookup_annotates_hits_with_status_and_taint [tests/test_designs.py]",
+  "test_frontmatter_churn_does_not_taint [tests/test_designs.py]",
+  "test_note_verbs_refuse_facet_store_paths [tests/test_designs.py]",
+  "test_plan_add_places_relative_to_neighbours [tests/test_designs.py]",
+  "test_plan_add_takes_a_batch_with_intra_batch_deps [tests/test_designs.py]",
+  "test_plan_graph_includes_the_decisions_items_rest_on [tests/test_designs.py]",
+  "test_plan_list_groups_the_working_set [tests/test_designs.py]",
+  "test_plan_move_reorders_without_touching_deps [tests/test_designs.py]",
+  "test_plan_next_excludes_claimed_items_and_prescribes_the_loop [tests/test_designs.py]",
+  "test_plan_next_mixed_dep_matrix [tests/test_designs.py]",
+  "test_plan_order_is_topological_with_rank_as_tie_breaker [tests/test_designs.py]",
+  "test_plan_reaffirm_clears_a_benign_taint_without_the_dep_dance [tests/test_designs.py]",
+  "test_plan_status_validates_and_warns_on_open_deps [tests/test_designs.py]",
+  "test_refs_resolve_by_id_prefix_relpath_and_title [tests/test_designs.py]",
+  "test_status_counts_stale_decisions_per_project [tests/test_designs.py]",
+  "test_store_reaches_chunk_metadata_and_scopes_retrieval [tests/test_designs.py]",
+  "test_supersede_taints_dependents_and_forget_blocks [tests/test_designs.py]",
+  "test_taint_survives_a_plain_file_edit [tests/test_designs.py]",
+  "test_the_wrong_facet_miss_names_the_right_verb [tests/test_designs.py]",
+]
+references = [
+  "_set_deps [tests/test_designs.py]",
+  "test_a_decision_must_carry_its_rationale [tests/test_designs.py]",
+  "test_a_new_edge_is_its_own_change_kind [tests/test_designs.py]",
+  "test_a_ref_does_not_leak_across_facets [tests/test_designs.py]",
+  "test_a_stale_decision_says_so_on_every_retrieval_hit [tests/test_designs.py]",
+  "test_ambiguous_ref_lists_candidates [tests/test_designs.py]",
+  "test_check_names_the_change_kind_the_date_and_the_next_verb [tests/test_designs.py]",
+  "test_dep_add_refuses_to_create_a_cycle [tests/test_designs.py]",
+  "test_design_add_probes_for_near_duplicate_decisions [tests/test_designs.py]",
+  "test_design_append_extends_and_is_edge_aware [tests/test_designs.py]",
+  "test_design_edit_reports_what_it_tainted [tests/test_designs.py]",
+  "test_design_list_tables_and_filters_to_the_stale [tests/test_designs.py]",
+  "test_design_read_is_a_dossier_not_a_file_fetch [tests/test_designs.py]",
+  "test_facet_lookup_annotates_hits_with_status_and_taint [tests/test_designs.py]",
+  "test_frontmatter_churn_does_not_taint [tests/test_designs.py]",
+  "test_plan_add_places_relative_to_neighbours [tests/test_designs.py]",
+  "test_plan_move_reorders_without_touching_deps [tests/test_designs.py]",
+  "test_plan_next_mixed_dep_matrix [tests/test_designs.py]",
+  "test_plan_order_is_topological_with_rank_as_tie_breaker [tests/test_designs.py]",
+  "test_plan_status_validates_and_warns_on_open_deps [tests/test_designs.py]",
+  "test_refs_resolve_by_id_prefix_relpath_and_title [tests/test_designs.py]",
+  "test_status_counts_stale_decisions_per_project [tests/test_designs.py]",
+  "test_supersede_taints_dependents_and_forget_blocks [tests/test_designs.py]",
+  "test_taint_survives_a_plain_file_edit [tests/test_designs.py]",
+]
+name_terms = [
+  "designs",
+  "run",
+  "test",
+  "tests",
+  "tests.test_designs.run",
+]

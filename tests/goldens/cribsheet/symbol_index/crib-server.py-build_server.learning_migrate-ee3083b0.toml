@@ -1,0 +1,38 @@
+symbol_ref = "crib/server.py#build_server.learning_migrate"
+fqn = "crib.server.build_server.learning_migrate"
+name = "learning_migrate"
+kind = "function"
+lang = "python"
+content_hash = "474d0fbc5ce3f0aa"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"read\")"
+description = ""
+schema = 4
+line = 874
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "_cwd [crib/server.py]",
+  "crib_tool [crib/server.py]",
+  "learning_migrate [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.learning_migrate",
+  "learning",
+  "learning_migrate",
+  "migrate",
+  "server",
+]

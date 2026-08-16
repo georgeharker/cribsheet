@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_ManagedConnection._tools_probe_started"
+fqn = "combiner.mcp_combiner.connections._ManagedConnection._tools_probe_started"
+name = "_tools_probe_started"
+kind = "field"
+lang = "python"
+content_hash = "1d2a108a62655381"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_tools_probe_started: float = field(default=0.0, repr=False)"
+description = ""
+schema = 4
+line = 170
+mtime = 1784493613000000000
+container = [
+  "_ManagedConnection",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "_ManagedConnection",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_tools_probe_started",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection._tools_probe_started",
+  "connection",
+  "connections",
+  "managed",
+  "mcp",
+  "probe",
+  "started",
+  "tools",
+]

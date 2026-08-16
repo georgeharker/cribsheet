@@ -1,0 +1,33 @@
+symbol_ref = "crib/gitbacking.py#_TIMEOUT_RC"
+fqn = "crib.gitbacking._TIMEOUT_RC"
+name = "_TIMEOUT_RC"
+kind = "constant"
+lang = "python"
+content_hash = "92fb78410578ed20"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "_TIMEOUT_RC = 124                       # coreutils' convention, and never git's"
+description = ""
+schema = 4
+line = 53
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "gitbacking",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_run [crib/gitbacking.py]",
+  "test_a_timeout_surfaces_as_a_failed_run_not_a_hang [tests/test_sync.py]",
+]
+name_terms = [
+  "_TIMEOUT_RC",
+  "crib",
+  "crib.gitbacking._TIMEOUT_RC",
+  "gitbacking",
+  "rc",
+  "timeout",
+]

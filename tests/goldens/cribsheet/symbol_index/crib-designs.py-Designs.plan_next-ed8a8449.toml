@@ -1,0 +1,42 @@
+symbol_ref = "crib/designs.py#Designs.plan_next"
+fqn = "crib.designs.Designs.plan_next"
+name = "plan_next"
+kind = "method"
+lang = "python"
+content_hash = "12ecbe750b8ddf88"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def plan_next(self, proj: str, k: int = 5) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 1837
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_load_graph [crib/designs.py]",
+  "_ordered [crib/designs.py]",
+  "_rows [crib/designs.py]",
+  "of_kind [crib/designs.py]",
+]
+called_by = [
+  "plan_next [crib/app.py]",
+]
+references = [
+  "plan_next [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs.plan_next",
+  "designs",
+  "next",
+  "plan",
+  "plan_next",
+]

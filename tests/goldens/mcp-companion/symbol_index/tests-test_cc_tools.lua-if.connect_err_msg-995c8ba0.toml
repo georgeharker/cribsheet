@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_cc_tools.lua#if.connect_err_msg"
+fqn = "tests.test_cc_tools.if.connect_err_msg"
+name = "connect_err_msg"
+kind = "variable"
+lang = "lua"
+content_hash = "d002ff0c45379849"
+file = "tests/test_cc_tools.lua"
+file_hash = "3253ff527c66fcb1"
+signature = "local connect_err_msg = nil"
+description = ""
+schema = 4
+line = 234
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+scope = [
+  "tests",
+  "test_cc_tools",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cc",
+  "connect",
+  "connect_err_msg",
+  "err",
+  "if",
+  "msg",
+  "test",
+  "tests",
+  "tests.test_cc_tools.if.connect_err_msg",
+  "tools",
+]

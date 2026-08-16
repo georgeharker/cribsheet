@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/conftest.py#procs"
+fqn = "combiner.tests.conftest.procs"
+name = "procs"
+kind = "function"
+lang = "python"
+content_hash = "6e98289e6d26f87c"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "@pytest.fixture"
+description = ""
+schema = 4
+line = 353
+mtime = 1783544328000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+]
+symbol_was = []
+calls = [
+  "ProcFactory [combiner/tests/conftest.py]",
+  "teardown [combiner/tests/conftest.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.procs",
+  "conftest",
+  "procs",
+  "tests",
+]

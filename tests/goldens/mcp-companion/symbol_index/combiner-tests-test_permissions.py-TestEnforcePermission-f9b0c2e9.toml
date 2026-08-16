@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestEnforcePermission"
+fqn = "combiner.tests.test_permissions.TestEnforcePermission"
+name = "TestEnforcePermission"
+kind = "class"
+lang = "python"
+content_hash = "92a671b892c29036"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "class TestEnforcePermission:"
+description = ""
+schema = 4
+line = 211
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestEnforcePermission",
+  "combiner",
+  "combiner.tests.test_permissions.TestEnforcePermission",
+  "enforce",
+  "permission",
+  "permissions",
+  "test",
+  "tests",
+]

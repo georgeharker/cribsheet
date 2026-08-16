@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_code_learnings.py#test_ensure_crib_creates_sensible_defaults_and_anchors_in_repo"
+fqn = "tests.test_code_learnings.test_ensure_crib_creates_sensible_defaults_and_anchors_in_repo"
+name = "test_ensure_crib_creates_sensible_defaults_and_anchors_in_repo"
+kind = "function"
+lang = "python"
+content_hash = "4d5b1e2ec2d23c02"
+file = "tests/test_code_learnings.py"
+file_hash = "2cacd018989edacf"
+signature = "def test_ensure_crib_creates_sensible_defaults_and_anchors_in_repo(crib, tmp_path):"
+description = ""
+schema = 4
+line = 197
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_learnings",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "anchors",
+  "and",
+  "code",
+  "creates",
+  "crib",
+  "defaults",
+  "ensure",
+  "in",
+  "learnings",
+  "repo",
+  "sensible",
+  "test",
+  "test_ensure_crib_creates_sensible_defaults_and_anchors_in_repo",
+  "tests",
+  "tests.test_code_learnings.test_ensure_crib_creates_sensible_defaults_and_anchors_in_repo",
+]

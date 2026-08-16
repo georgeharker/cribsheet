@@ -1,0 +1,57 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockState.record_call"
+fqn = "combiner.mcp_combiner.mockserver.MockState.record_call"
+name = "record_call"
+kind = "method"
+lang = "python"
+content_hash = "a5795fa69920a06d"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def record_call(self, tool: str, session_id: str | None) -> int:"
+description = ""
+schema = 4
+line = 166
+mtime = 1783622326000000000
+container = [
+  "MockState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockState",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "mock__add_tool [combiner/mcp_combiner/mockserver.py]",
+  "mock__crash [combiner/mcp_combiner/mockserver.py]",
+  "mock__push_responses [combiner/mcp_combiner/mockserver.py]",
+  "mock__remove_tool [combiner/mcp_combiner/mockserver.py]",
+  "mock__set_behavior [combiner/mcp_combiner/mockserver.py]",
+  "mock__sleep [combiner/mcp_combiner/mockserver.py]",
+  "mock__stats [combiner/mcp_combiner/mockserver.py]",
+  "mock__whoami [combiner/mcp_combiner/mockserver.py]",
+  "run [combiner/mcp_combiner/mockserver.py]",
+]
+references = [
+  "mock__add_tool [combiner/mcp_combiner/mockserver.py]",
+  "mock__crash [combiner/mcp_combiner/mockserver.py]",
+  "mock__push_responses [combiner/mcp_combiner/mockserver.py]",
+  "mock__remove_tool [combiner/mcp_combiner/mockserver.py]",
+  "mock__set_behavior [combiner/mcp_combiner/mockserver.py]",
+  "mock__sleep [combiner/mcp_combiner/mockserver.py]",
+  "mock__stats [combiner/mcp_combiner/mockserver.py]",
+  "mock__whoami [combiner/mcp_combiner/mockserver.py]",
+  "run [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "call",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockState.record_call",
+  "mcp",
+  "mock",
+  "mockserver",
+  "record",
+  "record_call",
+  "state",
+]

@@ -1,0 +1,56 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#ToolCacheState.store_slice"
+fqn = "combiner.mcp_combiner.runtime.ToolCacheState.store_slice"
+name = "store_slice"
+kind = "method"
+lang = "python"
+content_hash = "49ab08d13f40f057"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def store_slice(self, server: str, tools: list[Tool], now: float) -> bool:"
+description = ""
+schema = 4
+line = 225
+mtime = 1784493613000000000
+container = [
+  "ToolCacheState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "ToolCacheState",
+]
+symbol_was = []
+calls = [
+  "_tool_fingerprint [combiner/mcp_combiner/runtime.py]",
+]
+called_by = [
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "test_prime_empty_answer_preserves_confirmed_slice [combiner/tests/test_session_filter.py]",
+  "test_reordered_list_is_not_a_replacement [combiner/tests/test_session_filter.py]",
+  "test_reprime_changed_list_publishes [combiner/tests/test_session_filter.py]",
+  "test_reprime_unchanged_list_is_silent [combiner/tests/test_session_filter.py]",
+  "test_schema_only_change_is_a_replacement [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "test_prime_empty_answer_preserves_confirmed_slice [combiner/tests/test_session_filter.py]",
+  "test_reordered_list_is_not_a_replacement [combiner/tests/test_session_filter.py]",
+  "test_reprime_changed_list_publishes [combiner/tests/test_session_filter.py]",
+  "test_reprime_unchanged_list_is_silent [combiner/tests/test_session_filter.py]",
+  "test_schema_only_change_is_a_replacement [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.runtime.ToolCacheState.store_slice",
+  "mcp",
+  "runtime",
+  "slice",
+  "state",
+  "store",
+  "store_slice",
+  "tool",
+]

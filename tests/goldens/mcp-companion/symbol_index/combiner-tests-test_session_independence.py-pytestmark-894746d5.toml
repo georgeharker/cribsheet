@@ -1,0 +1,32 @@
+symbol_ref = "combiner/tests/test_session_independence.py#pytestmark"
+fqn = "combiner.tests.test_session_independence.pytestmark"
+name = "pytestmark"
+kind = "global"
+lang = "python"
+content_hash = "d2ca828675f797eb"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "pytestmark = pytest.mark.e2e"
+description = ""
+schema = 4
+line = 37
+mtime = 1783541669000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_independence.pytestmark",
+  "independence",
+  "pytestmark",
+  "session",
+  "test",
+  "tests",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "scripts/eval_retrieval.py#report"
+fqn = "scripts.eval_retrieval.report"
+name = "report"
+kind = "function"
+lang = "python"
+content_hash = "addf53e34a7e68f2"
+file = "scripts/eval_retrieval.py"
+file_hash = "fbbe367f0bc2d09b"
+signature = "def report(rows: list[dict[str, Any]], recall_k: int) -> tuple[float, float]:"
+description = ""
+schema = 4
+line = 140
+mtime = 1786044759000000000
+container = []
+scope = [
+  "scripts",
+  "eval_retrieval",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_retrieval.py]",
+]
+references = [
+  "main [scripts/eval_retrieval.py]",
+]
+name_terms = [
+  "eval",
+  "report",
+  "retrieval",
+  "scripts",
+  "scripts.eval_retrieval.report",
+]

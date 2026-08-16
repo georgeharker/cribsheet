@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_symbol_migration.py#test_converted_notes_are_searchable"
+fqn = "tests.test_symbol_migration.test_converted_notes_are_searchable"
+name = "test_converted_notes_are_searchable"
+kind = "function"
+lang = "python"
+content_hash = "a44ad985ff419626"
+file = "tests/test_symbol_migration.py"
+file_hash = "f1bc5f45850c293a"
+signature = "def test_converted_notes_are_searchable(crib):"
+description = ""
+schema = 4
+line = 149
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_migration",
+]
+symbol_was = []
+calls = [
+  "_legacy_note [tests/test_symbol_migration.py]",
+  "_seed [tests/test_symbol_migration.py]",
+  "run [tests/test_symbol_migration.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "are",
+  "converted",
+  "migration",
+  "notes",
+  "searchable",
+  "symbol",
+  "test",
+  "test_converted_notes_are_searchable",
+  "tests",
+  "tests.test_symbol_migration.test_converted_notes_are_searchable",
+]

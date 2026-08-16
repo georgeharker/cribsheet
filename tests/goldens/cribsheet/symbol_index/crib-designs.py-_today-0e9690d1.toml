@@ -1,0 +1,37 @@
+symbol_ref = "crib/designs.py#_today"
+fqn = "crib.designs._today"
+name = "_today"
+kind = "function"
+lang = "python"
+content_hash = "444a6b9760550b9b"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _today() -> str:"
+description = ""
+schema = 4
+line = 192
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_add [crib/designs.py]",
+  "_save [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+]
+references = [
+  "_add [crib/designs.py]",
+  "_save [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+]
+name_terms = [
+  "_today",
+  "crib",
+  "crib.designs._today",
+  "designs",
+  "today",
+]

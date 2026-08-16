@@ -1,0 +1,44 @@
+symbol_ref = "crib/config.py#CribLink.doc_patterns"
+fqn = "crib.config.CribLink.doc_patterns"
+name = "doc_patterns"
+kind = "method"
+lang = "python"
+content_hash = "468b9c99e41d2b61"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "@property"
+description = ""
+schema = 4
+line = 418
+mtime = 1786564832000000000
+container = [
+  "CribLink",
+]
+scope = [
+  "crib",
+  "config",
+  "CribLink",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_matches_doc_globs [crib/watch.py]",
+  "_warn_store_glob_overlap [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "test_good_crib_still_parses [tests/test_config_resilience.py]",
+]
+references = [
+  "_matches_doc_globs [crib/watch.py]",
+  "_warn_store_glob_overlap [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "test_good_crib_still_parses [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.doc_patterns",
+  "doc",
+  "doc_patterns",
+  "link",
+  "patterns",
+]

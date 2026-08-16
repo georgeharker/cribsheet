@@ -1,0 +1,37 @@
+symbol_ref = "crib/server.py#build_server.plan_lookup"
+fqn = "crib.server.build_server.plan_lookup"
+name = "plan_lookup"
+kind = "function"
+lang = "python"
+content_hash = "5733de90986a21e5"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"read\")"
+description = ""
+schema = 4
+line = 1298
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "crib_tool [crib/server.py]",
+  "plan_lookup [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.plan_lookup",
+  "lookup",
+  "plan",
+  "plan_lookup",
+  "server",
+]

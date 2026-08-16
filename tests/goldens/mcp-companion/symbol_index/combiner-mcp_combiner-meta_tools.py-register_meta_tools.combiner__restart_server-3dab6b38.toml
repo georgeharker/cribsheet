@@ -1,0 +1,48 @@
+symbol_ref = "combiner/mcp_combiner/meta_tools.py#register_meta_tools.combiner__restart_server"
+fqn = "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__restart_server"
+name = "combiner__restart_server"
+kind = "function"
+lang = "python"
+content_hash = "98c33d25b03fc7a2"
+file = "combiner/mcp_combiner/meta_tools.py"
+file_hash = "8eb0757202928f82"
+signature = "@combiner.tool()"
+description = ""
+schema = 4
+line = 181
+mtime = 1784493613000000000
+container = [
+  "register_meta_tools",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "meta_tools",
+  "register_meta_tools",
+]
+symbol_was = []
+calls = [
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "clear_tool_cache [combiner/mcp_combiner/toolcache.py]",
+  "disconnect [combiner/mcp_combiner/connections.py]",
+  "drop_server_providers [combiner/mcp_combiner/mounts.py]",
+  "has_connection [combiner/mcp_combiner/connections.py]",
+  "invalidate_tool_cache [combiner/mcp_combiner/toolcache.py]",
+  "is_connected [combiner/mcp_combiner/connections.py]",
+  "is_http_server [combiner/mcp_combiner/connections.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "restart [combiner/mcp_combiner/sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__restart_server",
+  "combiner__restart_server",
+  "mcp",
+  "meta",
+  "register",
+  "restart",
+  "server",
+  "tools",
+]

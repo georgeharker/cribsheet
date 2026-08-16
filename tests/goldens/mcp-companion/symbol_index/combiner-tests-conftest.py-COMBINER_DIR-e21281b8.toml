@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/conftest.py#COMBINER_DIR"
+fqn = "combiner.tests.conftest.COMBINER_DIR"
+name = "COMBINER_DIR"
+kind = "constant"
+lang = "python"
+content_hash = "1f874f2e1095c5a1"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "COMBINER_DIR = Path(__file__).resolve().parents[1]"
+description = ""
+schema = 4
+line = 25
+mtime = 1783544328000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "start_combiner [combiner/tests/conftest.py]",
+  "start_http_mock [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "COMBINER_DIR",
+  "combiner",
+  "combiner.tests.conftest.COMBINER_DIR",
+  "conftest",
+  "dir",
+  "tests",
+]

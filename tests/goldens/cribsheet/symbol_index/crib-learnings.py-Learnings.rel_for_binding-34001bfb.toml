@@ -1,0 +1,45 @@
+symbol_ref = "crib/learnings.py#Learnings.rel_for_binding"
+fqn = "crib.learnings.Learnings.rel_for_binding"
+name = "rel_for_binding"
+kind = "method"
+lang = "python"
+content_hash = "251dc6e61c791711"
+file = "crib/learnings.py"
+file_hash = "977a14d62df88945"
+signature = "def rel_for_binding(self, proj: str, binding: str) -> str | None:"
+description = ""
+schema = 4
+line = 69
+mtime = 1786664729000000000
+container = [
+  "Learnings",
+]
+scope = [
+  "crib",
+  "learnings",
+  "Learnings",
+]
+symbol_was = []
+calls = [
+  "abspath [crib/notestore.py]",
+  "legacy_ref_slug [crib/symbols.py]",
+  "notes_by_binding [crib/learnings.py]",
+  "ref_slug [crib/symbols.py]",
+]
+called_by = [
+  "forget [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+]
+references = [
+  "forget [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+]
+name_terms = [
+  "binding",
+  "crib",
+  "crib.learnings.Learnings.rel_for_binding",
+  "for",
+  "learnings",
+  "rel",
+  "rel_for_binding",
+]

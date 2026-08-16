@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_codeindex.py#test_session_pool_respawns_after_crash"
+fqn = "tests.test_codeindex.test_session_pool_respawns_after_crash"
+name = "test_session_pool_respawns_after_crash"
+kind = "function"
+lang = "python"
+content_hash = "5d27ebcc072607d5"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_session_pool_respawns_after_crash(tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 422
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "LspSessionPool [crib/codeindex.py]",
+  "_fake_lsp [tests/test_codeindex.py]",
+  "acquire [crib/codeindex.py]",
+  "close_all [crib/codeindex.py]",
+  "extract_file [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "after",
+  "codeindex",
+  "crash",
+  "pool",
+  "respawns",
+  "session",
+  "test",
+  "test_session_pool_respawns_after_crash",
+  "tests",
+  "tests.test_codeindex.test_session_pool_respawns_after_crash",
+]

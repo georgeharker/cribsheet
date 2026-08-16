@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_symbol_migration.py#crib"
+fqn = "tests.test_symbol_migration.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+content_hash = "843661f7d5a24b5e"
+file = "tests/test_symbol_migration.py"
+file_hash = "f1bc5f45850c293a"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 25
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_migration",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "migration",
+  "symbol",
+  "test",
+  "tests",
+  "tests.test_symbol_migration.crib",
+]

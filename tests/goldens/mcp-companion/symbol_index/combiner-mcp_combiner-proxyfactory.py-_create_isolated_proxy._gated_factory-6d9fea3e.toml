@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/proxyfactory.py#_create_isolated_proxy._gated_factory"
+fqn = "combiner.mcp_combiner.proxyfactory._create_isolated_proxy._gated_factory"
+name = "_gated_factory"
+kind = "function"
+lang = "python"
+content_hash = "3b7ea9ca67e26768"
+file = "combiner/mcp_combiner/proxyfactory.py"
+file_hash = "1092ffabcd4f650e"
+signature = "async def _gated_factory() -> Any:"
+description = ""
+schema = 4
+line = 149
+mtime = 1783629928000000000
+container = [
+  "_create_isolated_proxy",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "proxyfactory",
+  "_create_isolated_proxy",
+]
+symbol_was = []
+calls = [
+  "AuthenticationError [combiner/mcp_combiner/connections.py]",
+  "auth_error [combiner/mcp_combiner/connections.py]",
+  "is_auth_failed [combiner/mcp_combiner/connections.py]",
+  "wait_ready [combiner/mcp_combiner/connections.py]",
+]
+called_by = []
+references = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+]
+name_terms = [
+  "_gated_factory",
+  "combiner",
+  "combiner.mcp_combiner.proxyfactory._create_isolated_proxy._gated_factory",
+  "create",
+  "factory",
+  "gated",
+  "isolated",
+  "mcp",
+  "proxy",
+  "proxyfactory",
+]

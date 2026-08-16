@@ -1,0 +1,35 @@
+symbol_ref = "crib/store.py#JsonStore.recreate"
+fqn = "crib.store.JsonStore.recreate"
+name = "recreate"
+kind = "method"
+lang = "python"
+content_hash = "018ab34080628e33"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def recreate(self) -> None:"
+description = ""
+schema = 4
+line = 190
+mtime = 1786564832000000000
+container = [
+  "JsonStore",
+]
+scope = [
+  "crib",
+  "store",
+  "JsonStore",
+]
+symbol_was = []
+calls = [
+  "_save [crib/store.py]",
+  "recreate [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.store.JsonStore.recreate",
+  "json",
+  "recreate",
+  "store",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestDefaultCatalog.test_instrumentation_tools_present"
+fqn = "combiner.tests.test_mockserver.TestDefaultCatalog.test_instrumentation_tools_present"
+name = "test_instrumentation_tools_present"
+kind = "method"
+lang = "python"
+content_hash = "37cd42a09612bd98"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "async def test_instrumentation_tools_present(self) -> None:"
+description = ""
+schema = 4
+line = 67
+mtime = 1783534978000000000
+container = [
+  "TestDefaultCatalog",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+  "TestDefaultCatalog",
+]
+symbol_was = []
+calls = [
+  "MockServer [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "catalog",
+  "combiner",
+  "combiner.tests.test_mockserver.TestDefaultCatalog.test_instrumentation_tools_present",
+  "default",
+  "instrumentation",
+  "mockserver",
+  "present",
+  "test",
+  "test_instrumentation_tools_present",
+  "tests",
+  "tools",
+]

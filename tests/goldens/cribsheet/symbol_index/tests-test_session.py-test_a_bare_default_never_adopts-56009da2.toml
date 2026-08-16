@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_session.py#test_a_bare_default_never_adopts"
+fqn = "tests.test_session.test_a_bare_default_never_adopts"
+name = "test_a_bare_default_never_adopts"
+kind = "function"
+lang = "python"
+content_hash = "103f52db14756561"
+file = "tests/test_session.py"
+file_hash = "bef48c1ca7e1ebb9"
+signature = "def test_a_bare_default_never_adopts():"
+description = ""
+schema = 4
+line = 103
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_session",
+]
+symbol_was = []
+calls = [
+  "SessionState [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "adopts",
+  "bare",
+  "default",
+  "never",
+  "session",
+  "test",
+  "test_a_bare_default_never_adopts",
+  "tests",
+  "tests.test_session.test_a_bare_default_never_adopts",
+]

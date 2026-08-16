@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_symbol_migration.py#test_the_legacy_key_resolves_as_a_run_and_symbol_was_exactly"
+fqn = "tests.test_symbol_migration.test_the_legacy_key_resolves_as_a_run_and_symbol_was_exactly"
+name = "test_the_legacy_key_resolves_as_a_run_and_symbol_was_exactly"
+kind = "function"
+lang = "python"
+content_hash = "c235a69c7e3ae65f"
+file = "tests/test_symbol_migration.py"
+file_hash = "f1bc5f45850c293a"
+signature = "def test_the_legacy_key_resolves_as_a_run_and_symbol_was_exactly(crib):"
+description = ""
+schema = 4
+line = 169
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_migration",
+]
+symbol_was = []
+calls = [
+  "match_entry [crib/symbols.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "and",
+  "as",
+  "exactly",
+  "key",
+  "legacy",
+  "migration",
+  "resolves",
+  "run",
+  "symbol",
+  "test",
+  "test_the_legacy_key_resolves_as_a_run_and_symbol_was_exactly",
+  "tests",
+  "tests.test_symbol_migration.test_the_legacy_key_resolves_as_a_run_and_symbol_was_exactly",
+  "the",
+  "was",
+]

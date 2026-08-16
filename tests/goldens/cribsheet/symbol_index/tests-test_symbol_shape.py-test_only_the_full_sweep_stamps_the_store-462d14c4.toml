@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_symbol_shape.py#test_only_the_full_sweep_stamps_the_store"
+fqn = "tests.test_symbol_shape.test_only_the_full_sweep_stamps_the_store"
+name = "test_only_the_full_sweep_stamps_the_store"
+kind = "function"
+lang = "python"
+content_hash = "f978174fbe8522fd"
+file = "tests/test_symbol_shape.py"
+file_hash = "cbe61056081f2393"
+signature = "def test_only_the_full_sweep_stamps_the_store():"
+description = ""
+schema = 4
+line = 132
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_shape",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "full",
+  "only",
+  "shape",
+  "stamps",
+  "store",
+  "sweep",
+  "symbol",
+  "test",
+  "test_only_the_full_sweep_stamps_the_store",
+  "tests",
+  "tests.test_symbol_shape.test_only_the_full_sweep_stamps_the_store",
+  "the",
+]

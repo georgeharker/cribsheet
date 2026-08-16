@@ -1,0 +1,39 @@
+symbol_ref = "crib/codestore.py#_ResidentCode.coverage"
+fqn = "crib.codestore._ResidentCode.coverage"
+name = "coverage"
+kind = "method"
+lang = "python"
+content_hash = "73bfe572ff09ad3d"
+file = "crib/codestore.py"
+file_hash = "85066097f15df7df"
+signature = "def coverage(self, qtokens: set[str]) -> list[float]:"
+description = ""
+schema = 4
+line = 76
+mtime = 1786664729000000000
+container = [
+  "_ResidentCode",
+]
+scope = [
+  "crib",
+  "codestore",
+  "_ResidentCode",
+]
+symbol_was = []
+calls = [
+  "coverage [crib/retrieve.py]",
+]
+called_by = [
+  "_lookup_one [crib/codequery.py]",
+]
+references = [
+  "_lookup_one [crib/codequery.py]",
+]
+name_terms = [
+  "code",
+  "codestore",
+  "coverage",
+  "crib",
+  "crib.codestore._ResidentCode.coverage",
+  "resident",
+]

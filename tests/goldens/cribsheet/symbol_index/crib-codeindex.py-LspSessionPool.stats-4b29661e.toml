@@ -1,0 +1,38 @@
+symbol_ref = "crib/codeindex.py#LspSessionPool.stats"
+fqn = "crib.codeindex.LspSessionPool.stats"
+name = "stats"
+kind = "method"
+lang = "python"
+content_hash = "a06548d5ce2c9ae2"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def stats(self) -> list[dict[str, Any]]:"
+description = ""
+schema = 4
+line = 710
+mtime = 1786844518000000000
+container = [
+  "LspSessionPool",
+]
+scope = [
+  "crib",
+  "codeindex",
+  "LspSessionPool",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "status [crib/app.py]",
+]
+references = [
+  "status [crib/app.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspSessionPool.stats",
+  "lsp",
+  "pool",
+  "session",
+  "stats",
+]

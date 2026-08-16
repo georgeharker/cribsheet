@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_surface_parity.py#test_no_tool_body_picks_a_resolver_itself"
+fqn = "tests.test_surface_parity.test_no_tool_body_picks_a_resolver_itself"
+name = "test_no_tool_body_picks_a_resolver_itself"
+kind = "function"
+lang = "python"
+content_hash = "b919b8c4a12f49b5"
+file = "tests/test_surface_parity.py"
+file_hash = "0c4fc72b5f441359"
+signature = "def test_no_tool_body_picks_a_resolver_itself():"
+description = ""
+schema = 4
+line = 99
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_surface_parity",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "body",
+  "itself",
+  "no",
+  "parity",
+  "picks",
+  "resolver",
+  "surface",
+  "test",
+  "test_no_tool_body_picks_a_resolver_itself",
+  "tests",
+  "tests.test_surface_parity.test_no_tool_body_picks_a_resolver_itself",
+  "tool",
+]

@@ -1,0 +1,66 @@
+symbol_ref = "crib/chunk.py#chunk_note"
+fqn = "crib.chunk.chunk_note"
+name = "chunk_note"
+kind = "function"
+lang = "python"
+content_hash = "eac62af926e03cb7"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "def chunk_note(project: str, relpath: str, note_id: str, body: str,"
+description = ""
+schema = 4
+line = 235
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "chunk",
+]
+symbol_was = []
+calls = [
+  "Chunk [crib/chunk.py]",
+  "Section [crib/chunk.py]",
+  "_split_sections [crib/chunk.py]",
+  "_window [crib/chunk.py]",
+]
+called_by = [
+  "_doc_sections [crib/designs.py]",
+  "_legacy_layout [tests/test_store_migration.py]",
+  "_plan [crib/indexer.py]",
+  "test_duplicate_headings_get_distinct_chunk_ids [tests/test_chunk_identity.py]",
+  "test_fenced_heading_does_not_split_either_walker [tests/test_chunk_identity.py]",
+  "test_first_occurrence_id_unchanged_from_the_bare_breadcrumb [tests/test_chunk_identity.py]",
+  "test_ids_are_deterministic_across_runs [tests/test_chunk_identity.py]",
+  "test_line_map_keys_match_chunk_identity [tests/test_chunk_identity.py]",
+  "test_long_section_span_covers_full_extent [tests/test_line_map.py]",
+  "test_notes_store_ids_are_unchanged_by_the_store_axis [tests/test_chunk_identity.py]",
+  "test_occurrence_reaches_metadata_but_not_the_heading_path [tests/test_chunk_identity.py]",
+  "test_same_relpath_in_two_stores_never_collides [tests/test_chunk_identity.py]",
+  "test_section_hash_invariant_to_windowing [tests/test_elaborate.py]",
+  "test_store_reaches_metadata [tests/test_chunk_identity.py]",
+  "test_windowed_duplicate_sections_share_their_section_span [tests/test_chunk_identity.py]",
+]
+references = [
+  "_doc_sections [crib/designs.py]",
+  "_legacy_layout [tests/test_store_migration.py]",
+  "_plan [crib/indexer.py]",
+  "test_duplicate_headings_get_distinct_chunk_ids [tests/test_chunk_identity.py]",
+  "test_fenced_heading_does_not_split_either_walker [tests/test_chunk_identity.py]",
+  "test_first_occurrence_id_unchanged_from_the_bare_breadcrumb [tests/test_chunk_identity.py]",
+  "test_ids_are_deterministic_across_runs [tests/test_chunk_identity.py]",
+  "test_line_map_keys_match_chunk_identity [tests/test_chunk_identity.py]",
+  "test_long_section_span_covers_full_extent [tests/test_line_map.py]",
+  "test_notes_store_ids_are_unchanged_by_the_store_axis [tests/test_chunk_identity.py]",
+  "test_occurrence_reaches_metadata_but_not_the_heading_path [tests/test_chunk_identity.py]",
+  "test_same_relpath_in_two_stores_never_collides [tests/test_chunk_identity.py]",
+  "test_section_hash_invariant_to_windowing [tests/test_elaborate.py]",
+  "test_store_reaches_metadata [tests/test_chunk_identity.py]",
+  "test_windowed_duplicate_sections_share_their_section_span [tests/test_chunk_identity.py]",
+]
+name_terms = [
+  "chunk",
+  "chunk_note",
+  "crib",
+  "crib.chunk.chunk_note",
+  "note",
+]

@@ -1,0 +1,34 @@
+symbol_ref = "crib/config.py#_as_list"
+fqn = "crib.config._as_list"
+name = "_as_list"
+kind = "function"
+lang = "python"
+content_hash = "1568284651778c7d"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "def _as_list(v: Any) -> list[str]:"
+description = ""
+schema = 4
+line = 482
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_parse [crib/config.py]",
+]
+references = [
+  "_parse [crib/config.py]",
+]
+name_terms = [
+  "_as_list",
+  "as",
+  "config",
+  "crib",
+  "crib.config._as_list",
+  "list",
+]

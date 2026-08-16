@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_designs.py#test_plan_order_is_topological_with_rank_as_tie_breaker"
+fqn = "tests.test_designs.test_plan_order_is_topological_with_rank_as_tie_breaker"
+name = "test_plan_order_is_topological_with_rank_as_tie_breaker"
+kind = "function"
+lang = "python"
+content_hash = "035485c35bd9d03a"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_plan_order_is_topological_with_rank_as_tie_breaker(crib):"
+description = ""
+schema = 4
+line = 226
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "_titles [tests/test_designs.py]",
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "as",
+  "breaker",
+  "designs",
+  "is",
+  "order",
+  "plan",
+  "rank",
+  "test",
+  "test_plan_order_is_topological_with_rank_as_tie_breaker",
+  "tests",
+  "tests.test_designs.test_plan_order_is_topological_with_rank_as_tie_breaker",
+  "tie",
+  "topological",
+  "with",
+]

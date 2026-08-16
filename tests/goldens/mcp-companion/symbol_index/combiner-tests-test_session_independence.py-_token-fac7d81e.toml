@@ -1,0 +1,61 @@
+symbol_ref = "combiner/tests/test_session_independence.py#_token"
+fqn = "combiner.tests.test_session_independence._token"
+name = "_token"
+kind = "function"
+lang = "python"
+content_hash = "fe6a63357fd3a144"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "def _token() -> str:"
+description = ""
+schema = 4
+line = 50
+mtime = 1783541669000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_allowed_servers_inverts_and_applies [combiner/tests/test_session_independence.py]",
+  "test_concurrent_clients_get_distinct_sessions [combiner/tests/test_session_independence.py]",
+  "test_control_session_filters_chat_via_meta_tool_chat_id [combiner/tests/test_session_independence.py]",
+  "test_control_session_filters_chat_via_token_route [combiner/tests/test_session_independence.py]",
+  "test_disable_for_one_session_leaves_others_untouched [combiner/tests/test_session_independence.py]",
+  "test_isolate_true_gives_each_chat_its_own_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_non_isolated_chats_share_one_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_pending_filter_applies_at_first_connect [combiner/tests/test_session_independence.py]",
+  "test_pending_filter_bookkeeping_before_connect [combiner/tests/test_session_independence.py]",
+  "test_sessions_do_not_share_filter_state [combiner/tests/test_session_independence.py]",
+  "test_token_filter_actually_filters [combiner/tests/test_session_independence.py]",
+  "test_token_filter_bookkeeping [combiner/tests/test_session_independence.py]",
+  "test_token_sessions_appear_in_sessions_listing [combiner/tests/test_session_independence.py]",
+]
+references = [
+  "test_allowed_servers_inverts_and_applies [combiner/tests/test_session_independence.py]",
+  "test_concurrent_clients_get_distinct_sessions [combiner/tests/test_session_independence.py]",
+  "test_control_session_filters_chat_via_meta_tool_chat_id [combiner/tests/test_session_independence.py]",
+  "test_control_session_filters_chat_via_token_route [combiner/tests/test_session_independence.py]",
+  "test_disable_for_one_session_leaves_others_untouched [combiner/tests/test_session_independence.py]",
+  "test_isolate_true_gives_each_chat_its_own_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_non_isolated_chats_share_one_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_pending_filter_applies_at_first_connect [combiner/tests/test_session_independence.py]",
+  "test_pending_filter_bookkeeping_before_connect [combiner/tests/test_session_independence.py]",
+  "test_sessions_do_not_share_filter_state [combiner/tests/test_session_independence.py]",
+  "test_token_filter_actually_filters [combiner/tests/test_session_independence.py]",
+  "test_token_filter_bookkeeping [combiner/tests/test_session_independence.py]",
+  "test_token_sessions_appear_in_sessions_listing [combiner/tests/test_session_independence.py]",
+]
+name_terms = [
+  "_token",
+  "combiner",
+  "combiner.tests.test_session_independence._token",
+  "independence",
+  "session",
+  "test",
+  "tests",
+  "token",
+]

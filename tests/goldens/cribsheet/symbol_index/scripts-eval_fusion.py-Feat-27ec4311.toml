@@ -1,0 +1,35 @@
+symbol_ref = "scripts/eval_fusion.py#Feat"
+fqn = "scripts.eval_fusion.Feat"
+name = "Feat"
+kind = "class"
+lang = "python"
+content_hash = "4cb5327447fe135c"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "class Feat:"
+description = ""
+schema = 4
+line = 92
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "main [scripts/eval_fusion.py]",
+  "main [scripts/eval_hybrid.py]",
+  "main [scripts/eval_kw.py]",
+  "main [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "Feat",
+  "eval",
+  "feat",
+  "fusion",
+  "scripts",
+  "scripts.eval_fusion.Feat",
+]

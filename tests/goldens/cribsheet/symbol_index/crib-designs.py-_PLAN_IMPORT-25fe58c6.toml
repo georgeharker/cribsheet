@@ -1,0 +1,32 @@
+symbol_ref = "crib/designs.py#_PLAN_IMPORT"
+fqn = "crib.designs._PLAN_IMPORT"
+name = "_PLAN_IMPORT"
+kind = "constant"
+lang = "python"
+content_hash = "a24656c7e62f0c45"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "_PLAN_IMPORT = \"\"\"\\"
+description = ""
+schema = 4
+line = 158
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_import [crib/designs.py]",
+]
+name_terms = [
+  "_PLAN_IMPORT",
+  "crib",
+  "crib.designs._PLAN_IMPORT",
+  "designs",
+  "import",
+  "plan",
+]

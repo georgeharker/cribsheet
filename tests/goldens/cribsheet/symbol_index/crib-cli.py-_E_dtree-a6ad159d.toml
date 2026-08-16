@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#_E_dtree"
+fqn = "crib.cli._E_dtree"
+name = "_E_dtree"
+kind = "function"
+lang = "python"
+content_hash = "e26fb5e3255c1401"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _E_dtree(d, a): _emit_design_tree(d, a)"
+description = ""
+schema = 4
+line = 1493
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_emit_design_tree [crib/cli.py]",
+]
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_E_dtree",
+  "cli",
+  "crib",
+  "crib.cli._E_dtree",
+  "dtree",
+  "e",
+]

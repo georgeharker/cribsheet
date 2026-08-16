@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_session.py#test_an_explicit_path_beats_the_sticky_project"
+fqn = "tests.test_session.test_an_explicit_path_beats_the_sticky_project"
+name = "test_an_explicit_path_beats_the_sticky_project"
+kind = "function"
+lang = "python"
+content_hash = "8a29ec32d4f74bcc"
+file = "tests/test_session.py"
+file_hash = "bef48c1ca7e1ebb9"
+signature = "def test_an_explicit_path_beats_the_sticky_project():"
+description = ""
+schema = 4
+line = 39
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_session",
+]
+symbol_was = []
+calls = [
+  "SessionState [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "an",
+  "beats",
+  "explicit",
+  "path",
+  "project",
+  "session",
+  "sticky",
+  "test",
+  "test_an_explicit_path_beats_the_sticky_project",
+  "tests",
+  "tests.test_session.test_an_explicit_path_beats_the_sticky_project",
+  "the",
+]

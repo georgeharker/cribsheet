@@ -1,0 +1,40 @@
+symbol_ref = "crib/sources.py#SourceRoots._save"
+fqn = "crib.sources.SourceRoots._save"
+name = "_save"
+kind = "method"
+lang = "python"
+content_hash = "31e40b2fb07f56b3"
+file = "crib/sources.py"
+file_hash = "c8bfac9ab4947657"
+signature = "def _save(self) -> None:"
+description = ""
+schema = 4
+line = 69
+mtime = 1786140485000000000
+container = [
+  "SourceRoots",
+]
+scope = [
+  "crib",
+  "sources",
+  "SourceRoots",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "remove [crib/sources.py]",
+  "upsert [crib/sources.py]",
+]
+references = [
+  "remove [crib/sources.py]",
+  "upsert [crib/sources.py]",
+]
+name_terms = [
+  "_save",
+  "crib",
+  "crib.sources.SourceRoots._save",
+  "roots",
+  "save",
+  "source",
+  "sources",
+]

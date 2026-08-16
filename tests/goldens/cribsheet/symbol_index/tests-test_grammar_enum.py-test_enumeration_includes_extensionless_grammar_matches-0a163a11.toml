@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_grammar_enum.py#test_enumeration_includes_extensionless_grammar_matches"
+fqn = "tests.test_grammar_enum.test_enumeration_includes_extensionless_grammar_matches"
+name = "test_enumeration_includes_extensionless_grammar_matches"
+kind = "function"
+lang = "python"
+content_hash = "cb3a094b29de9f98"
+file = "tests/test_grammar_enum.py"
+file_hash = "8ffe2e1b34e0351c"
+signature = "def test_enumeration_includes_extensionless_grammar_matches(crib, tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 30
+mtime = 1783476730000000000
+container = []
+scope = [
+  "tests",
+  "test_grammar_enum",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "enum",
+  "enumeration",
+  "extensionless",
+  "grammar",
+  "includes",
+  "matches",
+  "test",
+  "test_enumeration_includes_extensionless_grammar_matches",
+  "tests",
+  "tests.test_grammar_enum.test_enumeration_includes_extensionless_grammar_matches",
+]

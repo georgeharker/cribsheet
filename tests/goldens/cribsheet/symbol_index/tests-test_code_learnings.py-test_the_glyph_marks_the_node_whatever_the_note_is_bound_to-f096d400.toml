@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_code_learnings.py#test_the_glyph_marks_the_node_whatever_the_note_is_bound_to"
+fqn = "tests.test_code_learnings.test_the_glyph_marks_the_node_whatever_the_note_is_bound_to"
+name = "test_the_glyph_marks_the_node_whatever_the_note_is_bound_to"
+kind = "function"
+lang = "python"
+content_hash = "43345d885d8aa828"
+file = "tests/test_code_learnings.py"
+file_hash = "2cacd018989edacf"
+signature = "@pytest.mark.parametrize(\"binding\", [\"pkg/mod.py#foo\", \"pkg.Mod.foo\"])"
+description = ""
+schema = 4
+line = 312
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_learnings",
+]
+symbol_was = []
+calls = [
+  "_note_bound_to [tests/test_code_learnings.py]",
+  "_seed_symbol [tests/test_code_learnings.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "bound",
+  "code",
+  "glyph",
+  "is",
+  "learnings",
+  "marks",
+  "node",
+  "note",
+  "test",
+  "test_the_glyph_marks_the_node_whatever_the_note_is_bound_to",
+  "tests",
+  "tests.test_code_learnings.test_the_glyph_marks_the_node_whatever_the_note_is_bound_to",
+  "the",
+  "to",
+  "whatever",
+]

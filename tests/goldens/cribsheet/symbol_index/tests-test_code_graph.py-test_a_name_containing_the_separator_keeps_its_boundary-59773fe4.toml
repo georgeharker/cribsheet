@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_code_graph.py#test_a_name_containing_the_separator_keeps_its_boundary"
+fqn = "tests.test_code_graph.test_a_name_containing_the_separator_keeps_its_boundary"
+name = "test_a_name_containing_the_separator_keeps_its_boundary"
+kind = "function"
+lang = "python"
+content_hash = "891a606c4264be60"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def test_a_name_containing_the_separator_keeps_its_boundary():"
+description = ""
+schema = 4
+line = 319
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "match_entry [crib/symbols.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "boundary",
+  "code",
+  "containing",
+  "graph",
+  "its",
+  "keeps",
+  "name",
+  "separator",
+  "test",
+  "test_a_name_containing_the_separator_keeps_its_boundary",
+  "tests",
+  "tests.test_code_graph.test_a_name_containing_the_separator_keeps_its_boundary",
+  "the",
+]

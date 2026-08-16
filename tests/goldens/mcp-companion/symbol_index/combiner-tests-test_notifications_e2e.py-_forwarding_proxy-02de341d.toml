@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#_forwarding_proxy"
+fqn = "combiner.tests.test_notifications_e2e._forwarding_proxy"
+name = "_forwarding_proxy"
+kind = "function"
+lang = "python"
+content_hash = "8b2734f7a130b212"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "def _forwarding_proxy(upstream: FastMCP, *, per_chat: bool) -> FastMCPProxy:"
+description = ""
+schema = 4
+line = 42
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+]
+symbol_was = []
+calls = [
+  "forwarding_factory [combiner/mcp_combiner/notifications.py]",
+]
+called_by = [
+  "test_forwarding_factory_wraps_a_real_proxy [combiner/tests/test_notifications_e2e.py]",
+  "test_list_changed_forwarded_through_proxy [combiner/tests/test_notifications_e2e.py]",
+  "test_per_chat_routes_to_requesting_session_only [combiner/tests/test_notifications_e2e.py]",
+  "test_resource_updated_delivered_namespaced [combiner/tests/test_notifications_e2e.py]",
+]
+references = [
+  "test_forwarding_factory_wraps_a_real_proxy [combiner/tests/test_notifications_e2e.py]",
+  "test_list_changed_forwarded_through_proxy [combiner/tests/test_notifications_e2e.py]",
+  "test_per_chat_routes_to_requesting_session_only [combiner/tests/test_notifications_e2e.py]",
+  "test_resource_updated_delivered_namespaced [combiner/tests/test_notifications_e2e.py]",
+]
+name_terms = [
+  "2",
+  "_forwarding_proxy",
+  "combiner",
+  "combiner.tests.test_notifications_e2e._forwarding_proxy",
+  "e",
+  "forwarding",
+  "notifications",
+  "proxy",
+  "test",
+  "tests",
+]

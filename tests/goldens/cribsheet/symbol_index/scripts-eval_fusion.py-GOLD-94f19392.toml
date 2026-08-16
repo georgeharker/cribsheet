@@ -1,0 +1,36 @@
+symbol_ref = "scripts/eval_fusion.py#GOLD"
+fqn = "scripts.eval_fusion.GOLD"
+name = "GOLD"
+kind = "constant"
+lang = "python"
+content_hash = "6aa3a311e61a863f"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "GOLD: list[tuple[str, str, list[str], str]] = ["
+description = ""
+schema = 4
+line = 35
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "ltr_eval [scripts/eval_fusion.py]",
+  "main [scripts/eval_fusion.py]",
+  "main [scripts/eval_hybrid.py]",
+  "main [scripts/eval_kw.py]",
+  "main [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "GOLD",
+  "eval",
+  "fusion",
+  "gold",
+  "scripts",
+  "scripts.eval_fusion.GOLD",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "scripts/eval_fusion.py#c_covpc"
+fqn = "scripts.eval_fusion.c_covpc"
+name = "c_covpc"
+kind = "function"
+lang = "python"
+content_hash = "2129495f4352bc7c"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def c_covpc(a):"
+description = ""
+schema = 4
+line = 169
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "build [scripts/eval_fusion.py]",
+  "c_covpc_wrap [scripts/eval_kw.py]",
+]
+references = [
+  "build [scripts/eval_fusion.py]",
+  "c_covpc_wrap [scripts/eval_kw.py]",
+]
+name_terms = [
+  "c",
+  "c_covpc",
+  "covpc",
+  "eval",
+  "fusion",
+  "scripts",
+  "scripts.eval_fusion.c_covpc",
+]

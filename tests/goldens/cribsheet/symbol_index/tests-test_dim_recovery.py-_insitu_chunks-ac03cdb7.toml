@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_dim_recovery.py#_insitu_chunks"
+fqn = "tests.test_dim_recovery._insitu_chunks"
+name = "_insitu_chunks"
+kind = "function"
+lang = "python"
+content_hash = "41a1e026642c9fc4"
+file = "tests/test_dim_recovery.py"
+file_hash = "5f6ffd4e573336e9"
+signature = "def _insitu_chunks(crib, project) -> list[str]:"
+description = ""
+schema = 4
+line = 43
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_dim_recovery",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "body [tests/test_dim_recovery.py]",
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap [tests/test_dim_recovery.py]",
+]
+references = [
+  "body [tests/test_dim_recovery.py]",
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap [tests/test_dim_recovery.py]",
+]
+name_terms = [
+  "_insitu_chunks",
+  "chunks",
+  "dim",
+  "insitu",
+  "recovery",
+  "test",
+  "tests",
+  "tests.test_dim_recovery._insitu_chunks",
+]

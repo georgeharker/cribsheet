@@ -1,0 +1,46 @@
+symbol_ref = "crib/section_index.py#SectionIndex.write"
+fqn = "crib.section_index.SectionIndex.write"
+name = "write"
+kind = "method"
+lang = "python"
+content_hash = "fbee4af6d0f0db52"
+file = "crib/section_index.py"
+file_hash = "a65e5200b70d95a7"
+signature = "def write(self, label: str, section_hash: str, terms: list[str], *,"
+description = ""
+schema = 4
+line = 165
+mtime = 1786044759000000000
+container = [
+  "SectionIndex",
+]
+scope = [
+  "crib",
+  "section_index",
+  "SectionIndex",
+]
+symbol_was = []
+calls = [
+  "_render_toml [crib/section_index.py]",
+  "path [crib/section_index.py]",
+  "write_atomic [crib/tomlrec.py]",
+]
+called_by = [
+  "test_section_index_escapes_newlines_and_writes_atomically [tests/test_code_integrity.py]",
+  "test_store_prune_drops_orphans_keeps_live_and_fresh [tests/test_elaborate.py]",
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+  "test_store_toml_is_deterministic [tests/test_elaborate.py]",
+]
+references = [
+  "test_section_index_escapes_newlines_and_writes_atomically [tests/test_code_integrity.py]",
+  "test_store_prune_drops_orphans_keeps_live_and_fresh [tests/test_elaborate.py]",
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+  "test_store_toml_is_deterministic [tests/test_elaborate.py]",
+]
+name_terms = [
+  "crib",
+  "crib.section_index.SectionIndex.write",
+  "index",
+  "section",
+  "write",
+]

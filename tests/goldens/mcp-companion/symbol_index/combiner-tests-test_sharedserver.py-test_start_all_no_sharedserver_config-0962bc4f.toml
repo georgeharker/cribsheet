@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_sharedserver.py#test_start_all_no_sharedserver_config"
+fqn = "combiner.tests.test_sharedserver.test_start_all_no_sharedserver_config"
+name = "test_start_all_no_sharedserver_config"
+kind = "function"
+lang = "python"
+content_hash = "05043bb879566740"
+file = "combiner/tests/test_sharedserver.py"
+file_hash = "b47819ea6b71fce5"
+signature = "@pytest.mark.anyio"
+description = ""
+schema = 4
+line = 221
+mtime = 1782420032000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_sharedserver",
+]
+symbol_was = []
+calls = [
+  "SharedServerManager [combiner/mcp_combiner/sharedserver.py]",
+  "_mock_async_process [combiner/tests/test_sharedserver.py]",
+  "load [combiner/mcp_combiner/config.py]",
+  "start_all [combiner/mcp_combiner/sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "all",
+  "combiner",
+  "combiner.tests.test_sharedserver.test_start_all_no_sharedserver_config",
+  "config",
+  "no",
+  "sharedserver",
+  "start",
+  "test",
+  "test_start_all_no_sharedserver_config",
+  "tests",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "tests/test_codeindex.py#REPO"
+fqn = "tests.test_codeindex.REPO"
+name = "REPO"
+kind = "constant"
+lang = "python"
+content_hash = "19445b119dfd60c1"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "REPO = Path(__file__).resolve().parent.parent"
+description = ""
+schema = 4
+line = 17
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_extract_call_graph_anchor_edges [tests/test_codeindex.py]",
+]
+name_terms = [
+  "REPO",
+  "codeindex",
+  "repo",
+  "test",
+  "tests",
+  "tests.test_codeindex.REPO",
+]

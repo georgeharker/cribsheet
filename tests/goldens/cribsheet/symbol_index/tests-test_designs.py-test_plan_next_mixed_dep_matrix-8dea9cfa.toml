@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_designs.py#test_plan_next_mixed_dep_matrix"
+fqn = "tests.test_designs.test_plan_next_mixed_dep_matrix"
+name = "test_plan_next_mixed_dep_matrix"
+kind = "function"
+lang = "python"
+content_hash = "68a1e5660a587d3c"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_plan_next_mixed_dep_matrix(crib):"
+description = ""
+schema = 4
+line = 456
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "_set_deps [tests/test_designs.py]",
+  "_titles [tests/test_designs.py]",
+  "load [crib/notes.py]",
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "dep",
+  "designs",
+  "matrix",
+  "mixed",
+  "next",
+  "plan",
+  "test",
+  "test_plan_next_mixed_dep_matrix",
+  "tests",
+  "tests.test_designs.test_plan_next_mixed_dep_matrix",
+]

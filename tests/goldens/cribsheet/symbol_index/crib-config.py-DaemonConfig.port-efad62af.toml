@@ -1,0 +1,39 @@
+symbol_ref = "crib/config.py#DaemonConfig.port"
+fqn = "crib.config.DaemonConfig.port"
+name = "port"
+kind = "field"
+lang = "python"
+content_hash = "5edb7785396bd9f5"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "port: int = 7732                # crib's MCP band (chroma is 7733)"
+description = ""
+schema = 4
+line = 245
+mtime = 1786564832000000000
+container = [
+  "DaemonConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "DaemonConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/client.py]",
+  "_command [crib/client.py]",
+  "_resolve_serve_endpoint [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+  "test_every_table_tolerates_unknown_keys [tests/test_config_resilience.py]",
+  "test_known_keys_are_unaffected [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.DaemonConfig.port",
+  "daemon",
+  "port",
+]

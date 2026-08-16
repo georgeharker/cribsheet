@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_app_meta.py#TestRewriteAppMeta.test_noop_returns_same_object"
+fqn = "combiner.tests.test_app_meta.TestRewriteAppMeta.test_noop_returns_same_object"
+name = "test_noop_returns_same_object"
+kind = "method"
+lang = "python"
+content_hash = "377c246e6eaa2f94"
+file = "combiner/tests/test_app_meta.py"
+file_hash = "fc52f36639c3320a"
+signature = "def test_noop_returns_same_object(self) -> None:"
+description = ""
+schema = 4
+line = 80
+mtime = 1783629928000000000
+container = [
+  "TestRewriteAppMeta",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_app_meta",
+  "TestRewriteAppMeta",
+]
+symbol_was = []
+calls = [
+  "_rewrite_app_meta [combiner/mcp_combiner/middleware.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "app",
+  "combiner",
+  "combiner.tests.test_app_meta.TestRewriteAppMeta.test_noop_returns_same_object",
+  "meta",
+  "noop",
+  "object",
+  "returns",
+  "rewrite",
+  "same",
+  "test",
+  "test_noop_returns_same_object",
+  "tests",
+]

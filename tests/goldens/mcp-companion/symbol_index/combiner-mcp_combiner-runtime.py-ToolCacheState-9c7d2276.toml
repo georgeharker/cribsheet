@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#ToolCacheState"
+fqn = "combiner.mcp_combiner.runtime.ToolCacheState"
+name = "ToolCacheState"
+kind = "class"
+lang = "python"
+content_hash = "9309f901b6e6983d"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 165
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "tools [combiner/mcp_combiner/runtime.py]",
+]
+name_terms = [
+  "ToolCacheState",
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.runtime.ToolCacheState",
+  "mcp",
+  "runtime",
+  "state",
+  "tool",
+]

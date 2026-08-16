@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#CombinerRuntime.prime_tasks"
+fqn = "combiner.mcp_combiner.runtime.CombinerRuntime.prime_tasks"
+name = "prime_tasks"
+kind = "field"
+lang = "python"
+content_hash = "9d6b3b120c63b995"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "prime_tasks: set[asyncio.Task[Any]] = field(default_factory=set)"
+description = ""
+schema = 4
+line = 282
+mtime = 1784493613000000000
+container = [
+  "CombinerRuntime",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "CombinerRuntime",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_on_upstream_tools_ready [combiner/mcp_combiner/toolcache.py]",
+  "_prime_tasks [combiner/mcp_combiner/server.py]",
+  "reset [combiner/mcp_combiner/runtime.py]",
+  "spawn_prime [combiner/mcp_combiner/toolcache.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.CombinerRuntime.prime_tasks",
+  "mcp",
+  "prime",
+  "prime_tasks",
+  "runtime",
+  "tasks",
+]

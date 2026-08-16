@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_design_cli.py#test_a_bare_noun_means_its_orienting_read"
+fqn = "tests.test_design_cli.test_a_bare_noun_means_its_orienting_read"
+name = "test_a_bare_noun_means_its_orienting_read"
+kind = "function"
+lang = "python"
+content_hash = "cefbbcae1c82049e"
+file = "tests/test_design_cli.py"
+file_hash = "0f819c263d62afaf"
+signature = "@pytest.mark.parametrize(\"noun, tool\", [(\"design\", \"design_list\"),"
+description = ""
+schema = 4
+line = 26
+mtime = 1785974065000000000
+container = []
+scope = [
+  "tests",
+  "test_design_cli",
+]
+symbol_was = []
+calls = [
+  "_call [tests/test_design_cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "bare",
+  "cli",
+  "design",
+  "its",
+  "means",
+  "noun",
+  "orienting",
+  "read",
+  "test",
+  "test_a_bare_noun_means_its_orienting_read",
+  "tests",
+  "tests.test_design_cli.test_a_bare_noun_means_its_orienting_read",
+]

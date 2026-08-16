@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_code_learnings.py#test_project_forget_clears_index_but_keeps_learnings"
+fqn = "tests.test_code_learnings.test_project_forget_clears_index_but_keeps_learnings"
+name = "test_project_forget_clears_index_but_keeps_learnings"
+kind = "function"
+lang = "python"
+content_hash = "c5521e37435df89a"
+file = "tests/test_code_learnings.py"
+file_hash = "2cacd018989edacf"
+signature = "def test_project_forget_clears_index_but_keeps_learnings(crib):"
+description = ""
+schema = 4
+line = 213
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_learnings",
+]
+symbol_was = []
+calls = [
+  "_seed_symbol [tests/test_code_learnings.py]",
+  "run [tests/test_code_learnings.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "but",
+  "clears",
+  "code",
+  "forget",
+  "index",
+  "keeps",
+  "learnings",
+  "project",
+  "test",
+  "test_project_forget_clears_index_but_keeps_learnings",
+  "tests",
+  "tests.test_code_learnings.test_project_forget_clears_index_but_keeps_learnings",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "crib/indexer.py#IndexEngine.forget"
+fqn = "crib.indexer.IndexEngine.forget"
+name = "forget"
+kind = "method"
+lang = "python"
+content_hash = "2380ef4bcfbdb112"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "async def forget(self, project: str, relpath: str, *,"
+description = ""
+schema = 4
+line = 107
+mtime = 1786578262000000000
+container = [
+  "IndexEngine",
+]
+scope = [
+  "crib",
+  "indexer",
+  "IndexEngine",
+]
+symbol_was = []
+calls = [
+  "_key [crib/indexer.py]",
+  "invalidate_caches [crib/indexer.py]",
+]
+called_by = [
+  "index_docs_insitu [crib/app.py]",
+]
+references = [
+  "index_docs_insitu [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.indexer.IndexEngine.forget",
+  "engine",
+  "forget",
+  "index",
+  "indexer",
+]

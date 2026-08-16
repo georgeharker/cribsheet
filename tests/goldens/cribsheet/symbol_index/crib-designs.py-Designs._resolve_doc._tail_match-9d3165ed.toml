@@ -1,0 +1,43 @@
+symbol_ref = "crib/designs.py#Designs._resolve_doc._tail_match"
+fqn = "crib.designs.Designs._resolve_doc._tail_match"
+name = "_tail_match"
+kind = "function"
+lang = "python"
+content_hash = "f794acf47584a1f4"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _tail_match(rp: str) -> bool:"
+description = ""
+schema = 4
+line = 513
+mtime = 1786693579000000000
+container = [
+  "Designs",
+  "_resolve_doc",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+  "_resolve_doc",
+]
+symbol_was = []
+calls = [
+  "split_docref [crib/designs.py]",
+]
+called_by = [
+  "_resolve_doc [crib/designs.py]",
+]
+references = [
+  "_resolve_doc [crib/designs.py]",
+]
+name_terms = [
+  "_tail_match",
+  "crib",
+  "crib.designs.Designs._resolve_doc._tail_match",
+  "designs",
+  "doc",
+  "match",
+  "resolve",
+  "tail",
+]

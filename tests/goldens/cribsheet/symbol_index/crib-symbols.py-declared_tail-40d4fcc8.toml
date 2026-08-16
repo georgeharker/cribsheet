@@ -1,0 +1,39 @@
+symbol_ref = "crib/symbols.py#declared_tail"
+fqn = "crib.symbols.declared_tail"
+name = "declared_tail"
+kind = "function"
+lang = "python"
+content_hash = "34869c1d2673050d"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def declared_tail(container: Sequence[str], name: str, lang: str = \"\") -> str:"
+description = ""
+schema = 4
+line = 350
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = [
+  "fqname_sep [crib/symbols.py]",
+  "local_name [crib/symbols.py]",
+]
+called_by = [
+  "canonical [crib/symbols.py]",
+  "symbol_ref [crib/symbols.py]",
+]
+references = [
+  "canonical [crib/symbols.py]",
+  "symbol_ref [crib/symbols.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.declared_tail",
+  "declared",
+  "declared_tail",
+  "symbols",
+  "tail",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "crib/config.py#CribLink.in_store"
+fqn = "crib.config.CribLink.in_store"
+name = "in_store"
+kind = "method"
+lang = "python"
+content_hash = "569304287e1d175c"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "def in_store(self, path: Path) -> bool:"
+description = ""
+schema = 4
+line = 400
+mtime = 1786564832000000000
+container = [
+  "CribLink",
+]
+scope = [
+  "crib",
+  "config",
+  "CribLink",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "index_docs_insitu [crib/app.py]",
+]
+references = [
+  "index_docs_insitu [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.in_store",
+  "in",
+  "in_store",
+  "link",
+  "store",
+]

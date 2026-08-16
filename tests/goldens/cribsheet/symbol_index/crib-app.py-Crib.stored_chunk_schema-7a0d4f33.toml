@@ -1,0 +1,42 @@
+symbol_ref = "crib/app.py#Crib.stored_chunk_schema"
+fqn = "crib.app.Crib.stored_chunk_schema"
+name = "stored_chunk_schema"
+kind = "method"
+lang = "python"
+content_hash = "45dea558cf370712"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def stored_chunk_schema(self) -> int:"
+description = ""
+schema = 4
+line = 763
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_retrieve [crib/app.py]",
+  "reconcile_in_background [crib/app.py]",
+  "status [crib/app.py]",
+]
+references = [
+  "_retrieve [crib/app.py]",
+  "reconcile_in_background [crib/app.py]",
+  "status [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "chunk",
+  "crib",
+  "crib.app.Crib.stored_chunk_schema",
+  "schema",
+  "stored",
+  "stored_chunk_schema",
+]

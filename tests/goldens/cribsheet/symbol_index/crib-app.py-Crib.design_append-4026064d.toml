@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.design_append"
+fqn = "crib.app.Crib.design_append"
+name = "design_append"
+kind = "method"
+lang = "python"
+content_hash = "8f8a39bdf8f4263a"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def design_append(self, ref: str, content: str,"
+description = ""
+schema = 4
+line = 2156
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "design_append [crib/designs.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "design_append [crib/server.py]",
+]
+references = [
+  "design_append [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "append",
+  "crib",
+  "crib.app.Crib.design_append",
+  "design",
+  "design_append",
+]

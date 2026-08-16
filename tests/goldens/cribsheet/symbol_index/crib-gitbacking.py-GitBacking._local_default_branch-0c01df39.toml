@@ -1,0 +1,42 @@
+symbol_ref = "crib/gitbacking.py#GitBacking._local_default_branch"
+fqn = "crib.gitbacking.GitBacking._local_default_branch"
+name = "_local_default_branch"
+kind = "method"
+lang = "python"
+content_hash = "26ebf8e6fe81c003"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def _local_default_branch(self) -> str | None:"
+description = ""
+schema = 4
+line = 438
+mtime = 1785963011000000000
+container = [
+  "GitBacking",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "GitBacking",
+]
+symbol_was = []
+calls = [
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "_branch [crib/gitbacking.py]",
+]
+references = [
+  "_branch [crib/gitbacking.py]",
+]
+name_terms = [
+  "_local_default_branch",
+  "backing",
+  "branch",
+  "crib",
+  "crib.gitbacking.GitBacking._local_default_branch",
+  "default",
+  "git",
+  "gitbacking",
+  "local",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "combiner/tests/fakes.py#FakeConnManager.register"
+fqn = "combiner.tests.fakes.FakeConnManager.register"
+name = "register"
+kind = "method"
+lang = "python"
+content_hash = "d323bbc091f990b5"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "def register(self, _config: CombinerConfig, name: str, _srv: ServerConfig) -> None:"
+description = ""
+schema = 4
+line = 65
+mtime = 1783534978000000000
+container = [
+  "FakeConnManager",
+]
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+  "FakeConnManager",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.fakes.FakeConnManager.register",
+  "conn",
+  "fake",
+  "fakes",
+  "manager",
+  "register",
+  "tests",
+]

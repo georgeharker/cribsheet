@@ -1,0 +1,33 @@
+symbol_ref = "lua/mcp_companion/native/channel.lua#_reg_state"
+fqn = "mcp_companion.native.channel._reg_state"
+name = "_reg_state"
+kind = "global"
+lang = "lua"
+content_hash = "8d2a69cf8d324622"
+file = "lua/mcp_companion/native/channel.lua"
+file_hash = "1ed98336baf8a3f0"
+signature = "local _reg_state = \"idle\""
+description = ""
+schema = 4
+line = 19
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "native",
+  "channel",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_reg_state",
+  "channel",
+  "companion",
+  "mcp",
+  "mcp_companion.native.channel._reg_state",
+  "native",
+  "reg",
+  "state",
+]

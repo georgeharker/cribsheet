@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#ToolSpec.input_schema"
+fqn = "combiner.mcp_combiner.mockserver.ToolSpec.input_schema"
+name = "input_schema"
+kind = "field"
+lang = "python"
+content_hash = "2f1a88447ff01e91"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "input_schema: dict[str, Any] = field(default_factory=dict)"
+description = ""
+schema = 4
+line = 90
+mtime = 1783622326000000000
+container = [
+  "ToolSpec",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "ToolSpec",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/mockserver.py]",
+  "from_spec [combiner/mcp_combiner/mockserver.py]",
+  "test_params_shorthand_builds_object_schema [combiner/tests/test_mockserver.py]",
+  "test_raw_input_schema_wins_and_is_kept_verbatim [combiner/tests/test_mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.ToolSpec.input_schema",
+  "input",
+  "input_schema",
+  "mcp",
+  "mockserver",
+  "schema",
+  "spec",
+  "tool",
+]

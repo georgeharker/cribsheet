@@ -1,0 +1,50 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#cmd_restart_combiner"
+fqn = "combiner.mcp_combiner.ctl.cmd_restart_combiner"
+name = "cmd_restart_combiner"
+kind = "function"
+lang = "python"
+content_hash = "c44a277adf37f9c2"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "async def cmd_restart_combiner(args: argparse.Namespace) -> int:"
+description = ""
+schema = 4
+line = 291
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = [
+  "_build_start_cmd [combiner/mcp_combiner/ctl.py]",
+  "_combiner_serve_argv [combiner/mcp_combiner/ctl.py]",
+  "_poll_health [combiner/mcp_combiner/ctl.py]",
+  "_require_binary [combiner/mcp_combiner/sharedserver.py]",
+  "_resolve_config [combiner/mcp_combiner/ctl.py]",
+  "_sharedserver_refcount [combiner/mcp_combiner/ctl.py]",
+]
+called_by = [
+  "test_restart_combiner_pid_defaults_to_parent_shell [combiner/tests/test_ctl_lifecycle.py]",
+  "test_restart_proceeds_with_force [combiner/tests/test_ctl_lifecycle.py]",
+  "test_restart_refuses_when_other_clients_and_no_force [combiner/tests/test_ctl_lifecycle.py]",
+  "test_restart_sole_client_needs_no_force [combiner/tests/test_ctl_lifecycle.py]",
+]
+references = [
+  "add_ctl_parsers [combiner/mcp_combiner/ctl.py]",
+  "test_restart_combiner_pid_defaults_to_parent_shell [combiner/tests/test_ctl_lifecycle.py]",
+  "test_restart_proceeds_with_force [combiner/tests/test_ctl_lifecycle.py]",
+  "test_restart_refuses_when_other_clients_and_no_force [combiner/tests/test_ctl_lifecycle.py]",
+  "test_restart_sole_client_needs_no_force [combiner/tests/test_ctl_lifecycle.py]",
+]
+name_terms = [
+  "cmd",
+  "cmd_restart_combiner",
+  "combiner",
+  "combiner.mcp_combiner.ctl.cmd_restart_combiner",
+  "ctl",
+  "mcp",
+  "restart",
+]

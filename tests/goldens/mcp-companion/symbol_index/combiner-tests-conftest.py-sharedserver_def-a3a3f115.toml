@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/conftest.py#sharedserver_def"
+fqn = "combiner.tests.conftest.sharedserver_def"
+name = "sharedserver_def"
+kind = "function"
+lang = "python"
+content_hash = "1a6c2e74458ccbb3"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "def sharedserver_def("
+description = ""
+schema = 4
+line = 99
+mtime = 1783544328000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+]
+symbol_was = []
+calls = [
+  "mockserver_argv [combiner/tests/conftest.py]",
+]
+called_by = [
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+]
+references = [
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.sharedserver_def",
+  "conftest",
+  "def",
+  "sharedserver",
+  "sharedserver_def",
+  "tests",
+]

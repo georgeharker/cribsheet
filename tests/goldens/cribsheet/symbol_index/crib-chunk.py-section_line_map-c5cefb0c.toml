@@ -1,0 +1,61 @@
+symbol_ref = "crib/chunk.py#section_line_map"
+fqn = "crib.chunk.section_line_map"
+name = "section_line_map"
+kind = "function"
+lang = "python"
+content_hash = "3773dad5798be52c"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "def section_line_map(text: str) -> dict[str, tuple[int, int]]:"
+description = ""
+schema = 4
+line = 256
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "chunk",
+]
+symbol_was = []
+calls = [
+  "_scan [crib/chunk.py]",
+  "close [crib/chunk.py]",
+  "section_key [crib/chunk.py]",
+]
+called_by = [
+  "_section_text [crib/app.py]",
+  "lookup [crib/app.py]",
+  "test_code_fence_comments_are_not_headings [tests/test_elaborate.py]",
+  "test_fenced_duplicate_heading_does_not_bump_the_occurrence_counter [tests/test_chunk_identity.py]",
+  "test_fenced_heading_does_not_split_either_walker [tests/test_chunk_identity.py]",
+  "test_frontmatter_offset_and_nesting [tests/test_line_map.py]",
+  "test_line_map_covers_every_occurrence [tests/test_chunk_identity.py]",
+  "test_line_map_keys_match_chunk_identity [tests/test_chunk_identity.py]",
+  "test_missing_heading_is_absent [tests/test_line_map.py]",
+  "test_no_frontmatter_and_preheading_section [tests/test_line_map.py]",
+  "test_tilde_fence_tracked_too [tests/test_chunk_identity.py]",
+  "test_windowed_duplicate_sections_share_their_section_span [tests/test_chunk_identity.py]",
+]
+references = [
+  "_section_text [crib/app.py]",
+  "lookup [crib/app.py]",
+  "test_code_fence_comments_are_not_headings [tests/test_elaborate.py]",
+  "test_fenced_duplicate_heading_does_not_bump_the_occurrence_counter [tests/test_chunk_identity.py]",
+  "test_fenced_heading_does_not_split_either_walker [tests/test_chunk_identity.py]",
+  "test_frontmatter_offset_and_nesting [tests/test_line_map.py]",
+  "test_line_map_covers_every_occurrence [tests/test_chunk_identity.py]",
+  "test_line_map_keys_match_chunk_identity [tests/test_chunk_identity.py]",
+  "test_missing_heading_is_absent [tests/test_line_map.py]",
+  "test_no_frontmatter_and_preheading_section [tests/test_line_map.py]",
+  "test_tilde_fence_tracked_too [tests/test_chunk_identity.py]",
+  "test_windowed_duplicate_sections_share_their_section_span [tests/test_chunk_identity.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.section_line_map",
+  "line",
+  "map",
+  "section",
+  "section_line_map",
+]

@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#_emit.default"
+fqn = "crib.cli._emit.default"
+name = "default"
+kind = "function"
+lang = "python"
+content_hash = "30dd49e3b5e8a851"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def default(o):"
+description = ""
+schema = 4
+line = 138
+mtime = 1786693579000000000
+container = [
+  "_emit",
+]
+scope = [
+  "crib",
+  "cli",
+  "_emit",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_emit [crib/cli.py]",
+]
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli._emit.default",
+  "default",
+  "emit",
+]

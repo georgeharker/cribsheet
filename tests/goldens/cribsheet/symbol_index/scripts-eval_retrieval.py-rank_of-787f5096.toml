@@ -1,0 +1,37 @@
+symbol_ref = "scripts/eval_retrieval.py#rank_of"
+fqn = "scripts.eval_retrieval.rank_of"
+name = "rank_of"
+kind = "function"
+lang = "python"
+content_hash = "bb30693f28a931f6"
+file = "scripts/eval_retrieval.py"
+file_hash = "fbbe367f0bc2d09b"
+signature = "def rank_of(hits: list[dict[str, Any]], expect: str | list[str],"
+description = ""
+schema = 4
+line = 72
+mtime = 1786044759000000000
+container = []
+scope = [
+  "scripts",
+  "eval_retrieval",
+]
+symbol_was = []
+calls = [
+  "_rel_match [scripts/eval_retrieval.py]",
+]
+called_by = [
+  "evaluate [scripts/eval_retrieval.py]",
+]
+references = [
+  "evaluate [scripts/eval_retrieval.py]",
+]
+name_terms = [
+  "eval",
+  "of",
+  "rank",
+  "rank_of",
+  "retrieval",
+  "scripts",
+  "scripts.eval_retrieval.rank_of",
+]

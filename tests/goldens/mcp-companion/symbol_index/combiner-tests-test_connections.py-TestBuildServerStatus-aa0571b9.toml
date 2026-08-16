@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/test_connections.py#TestBuildServerStatus"
+fqn = "combiner.tests.test_connections.TestBuildServerStatus"
+name = "TestBuildServerStatus"
+kind = "class"
+lang = "python"
+content_hash = "dd4231284365a556"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "class TestBuildServerStatus:"
+description = ""
+schema = 4
+line = 572
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestBuildServerStatus",
+  "build",
+  "combiner",
+  "combiner.tests.test_connections.TestBuildServerStatus",
+  "connections",
+  "server",
+  "status",
+  "test",
+  "tests",
+]

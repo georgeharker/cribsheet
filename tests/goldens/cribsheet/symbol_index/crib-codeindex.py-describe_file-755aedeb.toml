@@ -1,0 +1,37 @@
+symbol_ref = "crib/codeindex.py#describe_file"
+fqn = "crib.codeindex.describe_file"
+name = "describe_file"
+kind = "function"
+lang = "python"
+content_hash = "71d18c4d35d6e026"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def describe_file(gen_cfg: Any, root: Path, relpath: str) -> dict[str, dict[str, Any]]:"
+description = ""
+schema = 4
+line = 1364
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = [
+  "_rows_to_meta [crib/codeindex.py]",
+  "generate_structured [crib/generate.py]",
+]
+called_by = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.describe_file",
+  "describe",
+  "describe_file",
+  "file",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "crib/cli.py#Verb"
+fqn = "crib.cli.Verb"
+name = "Verb"
+kind = "class"
+lang = "python"
+content_hash = "fcdc26945825063c"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "@dataclass(frozen=True)"
+description = ""
+schema = 4
+line = 1459
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+  "_dispatch [crib/cli.py]",
+  "_resolve_verb [crib/cli.py]",
+]
+name_terms = [
+  "Verb",
+  "cli",
+  "crib",
+  "crib.cli.Verb",
+  "verb",
+]

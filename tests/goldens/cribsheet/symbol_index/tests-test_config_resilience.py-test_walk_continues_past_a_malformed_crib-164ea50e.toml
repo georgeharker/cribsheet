@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_config_resilience.py#test_walk_continues_past_a_malformed_crib"
+fqn = "tests.test_config_resilience.test_walk_continues_past_a_malformed_crib"
+name = "test_walk_continues_past_a_malformed_crib"
+kind = "function"
+lang = "python"
+content_hash = "90e70e2ddf7fa50f"
+file = "tests/test_config_resilience.py"
+file_hash = "620aeb96b59e7b2d"
+signature = "def test_walk_continues_past_a_malformed_crib(tmp_path):"
+description = ""
+schema = 4
+line = 85
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_config_resilience",
+]
+symbol_was = []
+calls = [
+  "find [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "config",
+  "continues",
+  "crib",
+  "malformed",
+  "past",
+  "resilience",
+  "test",
+  "test_walk_continues_past_a_malformed_crib",
+  "tests",
+  "tests.test_config_resilience.test_walk_continues_past_a_malformed_crib",
+  "walk",
+]

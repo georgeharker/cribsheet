@@ -1,0 +1,32 @@
+symbol_ref = "scripts/eval_rigor.py#GLARGE"
+fqn = "scripts.eval_rigor.GLARGE"
+name = "GLARGE"
+kind = "constant"
+lang = "python"
+content_hash = "461c808732e3e045"
+file = "scripts/eval_rigor.py"
+file_hash = "352ea4b1e1221f95"
+signature = "GLARGE = SC / \"gold_large.json\""
+description = ""
+schema = 4
+line = 29
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_rigor",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "main [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "GLARGE",
+  "eval",
+  "glarge",
+  "rigor",
+  "scripts",
+  "scripts.eval_rigor.GLARGE",
+]

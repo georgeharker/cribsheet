@@ -1,0 +1,33 @@
+symbol_ref = "crib/server.py#_POLICIES"
+fqn = "crib.server._POLICIES"
+name = "_POLICIES"
+kind = "constant"
+lang = "python"
+content_hash = "32255105968c10de"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "_POLICIES = (\"read\", \"write\", \"source\", \"session\", \"none\")"
+description = ""
+schema = 4
+line = 212
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "crib_tool [crib/server.py]",
+  "test_every_mcp_tool_declares_a_resolution_policy [tests/test_surface_parity.py]",
+  "test_every_registry_row_declares_its_mcp_signature_and_policy [tests/test_surface_parity.py]",
+]
+name_terms = [
+  "_POLICIES",
+  "crib",
+  "crib.server._POLICIES",
+  "policies",
+  "server",
+]

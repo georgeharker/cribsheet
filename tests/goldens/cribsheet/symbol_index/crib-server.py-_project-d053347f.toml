@@ -1,0 +1,35 @@
+symbol_ref = "crib/server.py#_project"
+fqn = "crib.server._project"
+name = "_project"
+kind = "function"
+lang = "python"
+content_hash = "5a6bd34df1ef3234"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def _project(crib: Crib, project: str | None, project_path: str | None) -> str:"
+description = ""
+schema = 4
+line = 54
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = [
+  "_resolve [crib/server.py]",
+]
+called_by = [
+  "_source_project [crib/server.py]",
+]
+references = [
+  "_source_project [crib/server.py]",
+]
+name_terms = [
+  "_project",
+  "crib",
+  "crib.server._project",
+  "project",
+  "server",
+]

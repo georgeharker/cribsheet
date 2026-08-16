@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_mounts.py#test_remount_does_not_duplicate"
+fqn = "combiner.tests.test_mounts.test_remount_does_not_duplicate"
+name = "test_remount_does_not_duplicate"
+kind = "function"
+lang = "python"
+content_hash = "81f53e014bba3877"
+file = "combiner/tests/test_mounts.py"
+file_hash = "5a0de1047967797a"
+signature = "def test_remount_does_not_duplicate() -> None:"
+description = ""
+schema = 4
+line = 65
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_mounts",
+]
+symbol_was = []
+calls = [
+  "_child [combiner/tests/test_mounts.py]",
+  "drop_server_providers [combiner/mcp_combiner/mounts.py]",
+  "mount_server_provider [combiner/mcp_combiner/mounts.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_mounts.test_remount_does_not_duplicate",
+  "does",
+  "duplicate",
+  "mounts",
+  "not",
+  "remount",
+  "test",
+  "test_remount_does_not_duplicate",
+  "tests",
+]

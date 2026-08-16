@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/test_upstream_restart.py#TestCrashSelfHealing"
+fqn = "combiner.tests.test_upstream_restart.TestCrashSelfHealing"
+name = "TestCrashSelfHealing"
+kind = "class"
+lang = "python"
+content_hash = "1c27a6bf44578a94"
+file = "combiner/tests/test_upstream_restart.py"
+file_hash = "c3ceaa6ec420f1df"
+signature = "class TestCrashSelfHealing:"
+description = ""
+schema = 4
+line = 169
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_upstream_restart",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestCrashSelfHealing",
+  "combiner",
+  "combiner.tests.test_upstream_restart.TestCrashSelfHealing",
+  "crash",
+  "healing",
+  "restart",
+  "self",
+  "test",
+  "tests",
+  "upstream",
+]

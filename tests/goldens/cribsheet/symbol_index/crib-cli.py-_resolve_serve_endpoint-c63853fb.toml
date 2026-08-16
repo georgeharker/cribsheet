@@ -1,0 +1,38 @@
+symbol_ref = "crib/cli.py#_resolve_serve_endpoint"
+fqn = "crib.cli._resolve_serve_endpoint"
+name = "_resolve_serve_endpoint"
+kind = "function"
+lang = "python"
+content_hash = "0a53abe1bb5cee89"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _resolve_serve_endpoint(args: Any) -> tuple[str, int]:"
+description = ""
+schema = 4
+line = 1909
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "load [crib/config.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = [
+  "main [crib/cli.py]",
+]
+references = [
+  "main [crib/cli.py]",
+]
+name_terms = [
+  "_resolve_serve_endpoint",
+  "cli",
+  "crib",
+  "crib.cli._resolve_serve_endpoint",
+  "endpoint",
+  "resolve",
+  "serve",
+]

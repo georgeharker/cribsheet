@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/asgi.py#ServeOptions.normalize_schema"
+fqn = "combiner.mcp_combiner.asgi.ServeOptions.normalize_schema"
+name = "normalize_schema"
+kind = "field"
+lang = "python"
+content_hash = "1a788492954bbd0c"
+file = "combiner/mcp_combiner/asgi.py"
+file_hash = "1ff2dd1d6ee7f6d0"
+signature = "normalize_schema: bool = False"
+description = ""
+schema = 4
+line = 54
+mtime = 1783548694000000000
+container = [
+  "ServeOptions",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "asgi",
+  "ServeOptions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_serve [combiner/mcp_combiner/__main__.py]",
+  "create_app [combiner/mcp_combiner/asgi.py]",
+  "from_env [combiner/mcp_combiner/asgi.py]",
+]
+name_terms = [
+  "asgi",
+  "combiner",
+  "combiner.mcp_combiner.asgi.ServeOptions.normalize_schema",
+  "mcp",
+  "normalize",
+  "normalize_schema",
+  "options",
+  "schema",
+  "serve",
+]

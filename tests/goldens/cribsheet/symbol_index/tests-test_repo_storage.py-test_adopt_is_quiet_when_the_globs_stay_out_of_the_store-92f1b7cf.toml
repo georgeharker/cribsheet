@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_repo_storage.py#test_adopt_is_quiet_when_the_globs_stay_out_of_the_store"
+fqn = "tests.test_repo_storage.test_adopt_is_quiet_when_the_globs_stay_out_of_the_store"
+name = "test_adopt_is_quiet_when_the_globs_stay_out_of_the_store"
+kind = "function"
+lang = "python"
+content_hash = "6943009f7455b99c"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_adopt_is_quiet_when_the_globs_stay_out_of_the_store(crib, tmp_path, capsys):"
+description = ""
+schema = 4
+line = 307
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "repo_with_store [tests/test_repo_storage.py]",
+  "run [tests/test_repo_storage.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "adopt",
+  "globs",
+  "is",
+  "of",
+  "out",
+  "quiet",
+  "repo",
+  "stay",
+  "storage",
+  "store",
+  "test",
+  "test_adopt_is_quiet_when_the_globs_stay_out_of_the_store",
+  "tests",
+  "tests.test_repo_storage.test_adopt_is_quiet_when_the_globs_stay_out_of_the_store",
+  "the",
+  "when",
+]

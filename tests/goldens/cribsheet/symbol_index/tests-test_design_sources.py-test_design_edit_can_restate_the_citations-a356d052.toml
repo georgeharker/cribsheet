@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_design_sources.py#test_design_edit_can_restate_the_citations"
+fqn = "tests.test_design_sources.test_design_edit_can_restate_the_citations"
+name = "test_design_edit_can_restate_the_citations"
+kind = "function"
+lang = "python"
+content_hash = "888c52fb8c59ffa1"
+file = "tests/test_design_sources.py"
+file_hash = "f89b5a94b236ce9c"
+signature = "def test_design_edit_can_restate_the_citations(crib):"
+description = ""
+schema = 4
+line = 179
+mtime = 1786137963000000000
+container = []
+scope = [
+  "tests",
+  "test_design_sources",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_design_sources.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "can",
+  "citations",
+  "design",
+  "edit",
+  "restate",
+  "sources",
+  "test",
+  "test_design_edit_can_restate_the_citations",
+  "tests",
+  "tests.test_design_sources.test_design_edit_can_restate_the_citations",
+  "the",
+]

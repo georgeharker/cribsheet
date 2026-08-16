@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_code_graph.py#test_a_reference_resolves_by_parts"
+fqn = "tests.test_code_graph.test_a_reference_resolves_by_parts"
+name = "test_a_reference_resolves_by_parts"
+kind = "function"
+lang = "python"
+content_hash = "b44c610101ebdad9"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "@pytest.mark.parametrize(\"query, tier\", ["
+description = ""
+schema = 4
+line = 331
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "match_entry [crib/symbols.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "by",
+  "code",
+  "graph",
+  "parts",
+  "reference",
+  "resolves",
+  "test",
+  "test_a_reference_resolves_by_parts",
+  "tests",
+  "tests.test_code_graph.test_a_reference_resolves_by_parts",
+]

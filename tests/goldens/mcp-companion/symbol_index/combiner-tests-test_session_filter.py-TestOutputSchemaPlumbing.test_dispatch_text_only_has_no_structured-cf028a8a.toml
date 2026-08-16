@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestOutputSchemaPlumbing.test_dispatch_text_only_has_no_structured"
+fqn = "combiner.tests.test_session_filter.TestOutputSchemaPlumbing.test_dispatch_text_only_has_no_structured"
+name = "test_dispatch_text_only_has_no_structured"
+kind = "method"
+lang = "python"
+content_hash = "458c5889b593d8c2"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_dispatch_text_only_has_no_structured(self):"
+description = ""
+schema = 4
+line = 1062
+mtime = 1784493613000000000
+container = [
+  "TestOutputSchemaPlumbing",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestOutputSchemaPlumbing",
+]
+symbol_was = []
+calls = [
+  "_dispatch_result_to_tool_result [combiner/mcp_combiner/nvim_proxy.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestOutputSchemaPlumbing.test_dispatch_text_only_has_no_structured",
+  "dispatch",
+  "filter",
+  "has",
+  "no",
+  "only",
+  "output",
+  "plumbing",
+  "schema",
+  "session",
+  "structured",
+  "test",
+  "test_dispatch_text_only_has_no_structured",
+  "tests",
+  "text",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.project_config"
+fqn = "crib.app.Crib.project_config"
+name = "project_config"
+kind = "method"
+lang = "python"
+content_hash = "a4bd78216c2b8033"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def project_config(self, project: str) -> ProjectConfig:"
+description = ""
+schema = 4
+line = 2910
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "__call__ [crib/paths.py]",
+  "load [crib/config.py]",
+]
+called_by = [
+  "distill [crib/app.py]",
+]
+references = [
+  "distill [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "config",
+  "crib",
+  "crib.app.Crib.project_config",
+  "project",
+  "project_config",
+]

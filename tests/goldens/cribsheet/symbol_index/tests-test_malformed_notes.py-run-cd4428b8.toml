@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_malformed_notes.py#run"
+fqn = "tests.test_malformed_notes.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "44052857cf112194"
+file = "tests/test_malformed_notes.py"
+file_hash = "e46dac071f53c31f"
+signature = "def run(coro):"
+description = ""
+schema = 4
+line = 34
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_malformed_notes",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_forget_still_recovers_a_corrupt_note [tests/test_malformed_notes.py]",
+  "test_insitu_sweep_skips_an_unparseable_repo_doc [tests/test_malformed_notes.py]",
+  "test_note_edit_repairs_a_corrupt_note_and_keeps_the_old_bytes [tests/test_malformed_notes.py]",
+  "test_reconcile_indexes_siblings_and_reports_the_skip [tests/test_malformed_notes.py]",
+]
+references = [
+  "test_forget_still_recovers_a_corrupt_note [tests/test_malformed_notes.py]",
+  "test_insitu_sweep_skips_an_unparseable_repo_doc [tests/test_malformed_notes.py]",
+  "test_note_edit_repairs_a_corrupt_note_and_keeps_the_old_bytes [tests/test_malformed_notes.py]",
+  "test_reconcile_indexes_siblings_and_reports_the_skip [tests/test_malformed_notes.py]",
+]
+name_terms = [
+  "malformed",
+  "notes",
+  "run",
+  "test",
+  "tests",
+  "tests.test_malformed_notes.run",
+]

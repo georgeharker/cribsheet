@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#ToolSpec.response_template"
+fqn = "combiner.mcp_combiner.mockserver.ToolSpec.response_template"
+name = "response_template"
+kind = "field"
+lang = "python"
+content_hash = "1e643871660aea8a"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "response_template: str = \"{message}\""
+description = ""
+schema = 4
+line = 92
+mtime = 1783622326000000000
+container = [
+  "ToolSpec",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "ToolSpec",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/mockserver.py]",
+  "run [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.ToolSpec.response_template",
+  "mcp",
+  "mockserver",
+  "response",
+  "response_template",
+  "spec",
+  "template",
+  "tool",
+]

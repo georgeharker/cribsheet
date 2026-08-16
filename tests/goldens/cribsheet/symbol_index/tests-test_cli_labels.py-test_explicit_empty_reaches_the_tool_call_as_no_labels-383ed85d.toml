@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_cli_labels.py#test_explicit_empty_reaches_the_tool_call_as_no_labels"
+fqn = "tests.test_cli_labels.test_explicit_empty_reaches_the_tool_call_as_no_labels"
+name = "test_explicit_empty_reaches_the_tool_call_as_no_labels"
+kind = "function"
+lang = "python"
+content_hash = "3565d70788a29136"
+file = "tests/test_cli_labels.py"
+file_hash = "6fae42b1c5757b72"
+signature = "def test_explicit_empty_reaches_the_tool_call_as_no_labels():"
+description = ""
+schema = 4
+line = 40
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_cli_labels",
+]
+symbol_was = []
+calls = [
+  "_call [tests/test_cli_labels.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "as",
+  "call",
+  "cli",
+  "empty",
+  "explicit",
+  "labels",
+  "no",
+  "reaches",
+  "test",
+  "test_explicit_empty_reaches_the_tool_call_as_no_labels",
+  "tests",
+  "tests.test_cli_labels.test_explicit_empty_reaches_the_tool_call_as_no_labels",
+  "the",
+  "tool",
+]

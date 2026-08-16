@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_rerank.py#_Fixed"
+fqn = "tests.test_rerank._Fixed"
+name = "_Fixed"
+kind = "class"
+lang = "python"
+content_hash = "9b4d954d7d4ec71a"
+file = "tests/test_rerank.py"
+file_hash = "29066147cbea547e"
+signature = "class _Fixed:"
+description = ""
+schema = 4
+line = 24
+mtime = 1783981122000000000
+container = []
+scope = [
+  "tests",
+  "test_rerank",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_code_rerank_head_only_and_degrades [tests/test_rerank.py]",
+  "test_code_rerank_same_blend_as_notes [tests/test_rerank.py]",
+  "test_rerank_decisive_preference_dethrones_close_head [tests/test_rerank.py]",
+  "test_rerank_influence_is_bounded [tests/test_rerank.py]",
+  "test_rerank_reorders_head_only [tests/test_rerank.py]",
+]
+name_terms = [
+  "_Fixed",
+  "fixed",
+  "rerank",
+  "test",
+  "tests",
+  "tests.test_rerank._Fixed",
+]

@@ -1,0 +1,35 @@
+symbol_ref = "crib/sources.py#SourceRoots.prefix_for"
+fqn = "crib.sources.SourceRoots.prefix_for"
+name = "prefix_for"
+kind = "method"
+lang = "python"
+content_hash = "183fa30a96b9ab1a"
+file = "crib/sources.py"
+file_hash = "c8bfac9ab4947657"
+signature = "def prefix_for(self, root: str | Path) -> str | None:"
+description = ""
+schema = 4
+line = 61
+mtime = 1786140485000000000
+container = [
+  "SourceRoots",
+]
+scope = [
+  "crib",
+  "sources",
+  "SourceRoots",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.sources.SourceRoots.prefix_for",
+  "for",
+  "prefix",
+  "prefix_for",
+  "roots",
+  "source",
+  "sources",
+]

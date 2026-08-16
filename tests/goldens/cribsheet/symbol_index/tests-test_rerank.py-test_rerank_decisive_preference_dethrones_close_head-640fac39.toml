@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_rerank.py#test_rerank_decisive_preference_dethrones_close_head"
+fqn = "tests.test_rerank.test_rerank_decisive_preference_dethrones_close_head"
+name = "test_rerank_decisive_preference_dethrones_close_head"
+kind = "function"
+lang = "python"
+content_hash = "b372d28a7ef6503a"
+file = "tests/test_rerank.py"
+file_hash = "29066147cbea547e"
+signature = "def test_rerank_decisive_preference_dethrones_close_head(crib):"
+description = ""
+schema = 4
+line = 60
+mtime = 1783981122000000000
+container = []
+scope = [
+  "tests",
+  "test_rerank",
+]
+symbol_was = []
+calls = [
+  "_Fixed [tests/test_rerank.py]",
+  "_hits [tests/test_rerank.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "close",
+  "decisive",
+  "dethrones",
+  "head",
+  "preference",
+  "rerank",
+  "test",
+  "test_rerank_decisive_preference_dethrones_close_head",
+  "tests",
+  "tests.test_rerank.test_rerank_decisive_preference_dethrones_close_head",
+]

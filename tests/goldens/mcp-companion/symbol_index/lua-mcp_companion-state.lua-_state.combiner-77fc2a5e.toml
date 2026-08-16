@@ -1,0 +1,32 @@
+symbol_ref = "lua/mcp_companion/state.lua#_state.combiner"
+fqn = "mcp_companion.state._state.combiner"
+name = "combiner"
+kind = "field"
+lang = "lua"
+content_hash = "d6f51e3bd7e49f8c"
+file = "lua/mcp_companion/state.lua"
+file_hash = "0ebe5b76a6380351"
+signature = "combiner = {"
+description = ""
+schema = 4
+line = 26
+mtime = 1782852601000000000
+container = [
+  "_state",
+]
+scope = [
+  "mcp_companion",
+  "state",
+  "_state",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "companion",
+  "mcp",
+  "mcp_companion.state._state.combiner",
+  "state",
+]

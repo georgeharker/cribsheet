@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_claude_memory.py#test_resolve_follows_symlinks"
+fqn = "tests.test_claude_memory.test_resolve_follows_symlinks"
+name = "test_resolve_follows_symlinks"
+kind = "function"
+lang = "python"
+content_hash = "b05321d7afcec7da"
+file = "tests/test_claude_memory.py"
+file_hash = "f5a685193106ac4d"
+signature = "def test_resolve_follows_symlinks(tmp_path):"
+description = ""
+schema = 4
+line = 27
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_claude_memory",
+]
+symbol_was = []
+calls = [
+  "resolve_path [crib/claudemem.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "claude",
+  "follows",
+  "memory",
+  "resolve",
+  "symlinks",
+  "test",
+  "test_resolve_follows_symlinks",
+  "tests",
+  "tests.test_claude_memory.test_resolve_follows_symlinks",
+]

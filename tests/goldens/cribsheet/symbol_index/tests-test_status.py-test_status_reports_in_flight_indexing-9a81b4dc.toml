@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_status.py#test_status_reports_in_flight_indexing"
+fqn = "tests.test_status.test_status_reports_in_flight_indexing"
+name = "test_status_reports_in_flight_indexing"
+kind = "function"
+lang = "python"
+content_hash = "5f5c9d206746ce3e"
+file = "tests/test_status.py"
+file_hash = "09906d8541a460d9"
+signature = "def test_status_reports_in_flight_indexing(crib, monkeypatch):"
+description = ""
+schema = 4
+line = 48
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_status",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "flight",
+  "in",
+  "indexing",
+  "reports",
+  "status",
+  "test",
+  "test_status_reports_in_flight_indexing",
+  "tests",
+  "tests.test_status.test_status_reports_in_flight_indexing",
+]

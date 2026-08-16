@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/permissions.py#_elicit"
+fqn = "combiner.mcp_combiner.permissions._elicit"
+name = "_elicit"
+kind = "function"
+lang = "python"
+content_hash = "b3a2617ebc97f1a3"
+file = "combiner/mcp_combiner/permissions.py"
+file_hash = "a8b8b27efa667303"
+signature = "async def _elicit(ctx: Any, server: str, local_name: str, policy: ResolvedPolicy) -> str:"
+description = ""
+schema = 4
+line = 68
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "permissions",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "enforce [combiner/mcp_combiner/permissions.py]",
+]
+references = [
+  "enforce [combiner/mcp_combiner/permissions.py]",
+]
+name_terms = [
+  "_elicit",
+  "combiner",
+  "combiner.mcp_combiner.permissions._elicit",
+  "elicit",
+  "mcp",
+  "permissions",
+]

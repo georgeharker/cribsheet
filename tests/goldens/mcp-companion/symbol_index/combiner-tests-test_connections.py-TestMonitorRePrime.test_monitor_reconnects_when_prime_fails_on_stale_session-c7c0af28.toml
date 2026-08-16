@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_connections.py#TestMonitorRePrime.test_monitor_reconnects_when_prime_fails_on_stale_session"
+fqn = "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_reconnects_when_prime_fails_on_stale_session"
+name = "test_monitor_reconnects_when_prime_fails_on_stale_session"
+kind = "method"
+lang = "python"
+content_hash = "6aab96b0b00aec1f"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def test_monitor_reconnects_when_prime_fails_on_stale_session(self, monkeypatch):"
+description = ""
+schema = 4
+line = 210
+mtime = 1784493613000000000
+container = [
+  "TestMonitorRePrime",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestMonitorRePrime",
+]
+symbol_was = []
+calls = [
+  "ConnectionManager [combiner/mcp_combiner/connections.py]",
+  "_monitor [combiner/mcp_combiner/connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_reconnects_when_prime_fails_on_stale_session",
+  "connections",
+  "fails",
+  "monitor",
+  "on",
+  "prime",
+  "re",
+  "reconnects",
+  "session",
+  "stale",
+  "test",
+  "test_monitor_reconnects_when_prime_fails_on_stale_session",
+  "tests",
+  "when",
+]

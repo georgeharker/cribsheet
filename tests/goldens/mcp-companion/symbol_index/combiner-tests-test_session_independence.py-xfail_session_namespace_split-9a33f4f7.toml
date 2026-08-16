@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_session_independence.py#xfail_session_namespace_split"
+fqn = "combiner.tests.test_session_independence.xfail_session_namespace_split"
+name = "xfail_session_namespace_split"
+kind = "global"
+lang = "python"
+content_hash = "7726e78c6272d0d2"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "xfail_session_namespace_split = pytest.mark.xfail("
+description = ""
+schema = 4
+line = 39
+mtime = 1783541669000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_allowed_servers_inverts_and_applies [combiner/tests/test_session_independence.py]",
+  "test_control_session_filters_chat_via_meta_tool_chat_id [combiner/tests/test_session_independence.py]",
+  "test_control_session_filters_chat_via_token_route [combiner/tests/test_session_independence.py]",
+  "test_pending_filter_applies_at_first_connect [combiner/tests/test_session_independence.py]",
+  "test_token_filter_actually_filters [combiner/tests/test_session_independence.py]",
+  "test_token_sessions_appear_in_sessions_listing [combiner/tests/test_session_independence.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_independence.xfail_session_namespace_split",
+  "independence",
+  "namespace",
+  "session",
+  "split",
+  "test",
+  "tests",
+  "xfail",
+  "xfail_session_namespace_split",
+]

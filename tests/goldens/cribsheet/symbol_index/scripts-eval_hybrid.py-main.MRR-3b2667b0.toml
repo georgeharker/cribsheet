@@ -1,0 +1,38 @@
+symbol_ref = "scripts/eval_hybrid.py#main.MRR"
+fqn = "scripts.eval_hybrid.main.MRR"
+name = "MRR"
+kind = "function"
+lang = "python"
+content_hash = "92668da3d4e46dd6"
+file = "scripts/eval_hybrid.py"
+file_hash = "7efc1218d091601c"
+signature = "def MRR(rs): return sum((1 / r) for r in rs if r) / len(rs)"
+description = ""
+schema = 4
+line = 151
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_hybrid",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_hybrid.py]",
+]
+references = [
+  "main [scripts/eval_hybrid.py]",
+]
+name_terms = [
+  "MRR",
+  "eval",
+  "hybrid",
+  "main",
+  "mrr",
+  "scripts",
+  "scripts.eval_hybrid.main.MRR",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_loop_responsiveness.py#_big_note"
+fqn = "tests.test_loop_responsiveness._big_note"
+name = "_big_note"
+kind = "function"
+lang = "python"
+content_hash = "c603b8d9b41719ee"
+file = "tests/test_loop_responsiveness.py"
+file_hash = "3e5d3308dc33e6f4"
+signature = "def _big_note(sections: int = 120) -> str:"
+description = ""
+schema = 4
+line = 48
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_loop_responsiveness",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [tests/test_loop_responsiveness.py]",
+]
+references = [
+  "main [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "_big_note",
+  "big",
+  "loop",
+  "note",
+  "responsiveness",
+  "test",
+  "tests",
+  "tests.test_loop_responsiveness._big_note",
+]

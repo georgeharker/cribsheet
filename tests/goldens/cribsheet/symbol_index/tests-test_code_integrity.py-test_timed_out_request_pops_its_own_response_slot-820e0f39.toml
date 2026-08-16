@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_code_integrity.py#test_timed_out_request_pops_its_own_response_slot"
+fqn = "tests.test_code_integrity.test_timed_out_request_pops_its_own_response_slot"
+name = "test_timed_out_request_pops_its_own_response_slot"
+kind = "function"
+lang = "python"
+content_hash = "3ea328b78779f8b9"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_timed_out_request_pops_its_own_response_slot(tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 319
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "LspSessionPool [crib/codeindex.py]",
+  "_fake_lsp [tests/test_code_integrity.py]",
+  "acquire [crib/codeindex.py]",
+  "close_all [crib/codeindex.py]",
+  "request [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "integrity",
+  "its",
+  "out",
+  "own",
+  "pops",
+  "request",
+  "response",
+  "slot",
+  "test",
+  "test_timed_out_request_pops_its_own_response_slot",
+  "tests",
+  "tests.test_code_integrity.test_timed_out_request_pops_its_own_response_slot",
+  "timed",
+]

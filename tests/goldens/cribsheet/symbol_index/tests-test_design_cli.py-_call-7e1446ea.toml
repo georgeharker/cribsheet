@@ -1,0 +1,62 @@
+symbol_ref = "tests/test_design_cli.py#_call"
+fqn = "tests.test_design_cli._call"
+name = "_call"
+kind = "function"
+lang = "python"
+content_hash = "1e68795fb6ee103f"
+file = "tests/test_design_cli.py"
+file_hash = "0f819c263d62afaf"
+signature = "def _call(*argv):"
+description = ""
+schema = 4
+line = 20
+mtime = 1785974065000000000
+container = []
+scope = [
+  "tests",
+  "test_design_cli",
+]
+symbol_was = []
+calls = [
+  "_dispatch [crib/cli.py]",
+  "build_parser [crib/cli.py]",
+]
+called_by = [
+  "test_a_bare_noun_means_its_orienting_read [tests/test_design_cli.py]",
+  "test_a_plan_item_may_be_title_only [tests/test_design_cli.py]",
+  "test_a_positional_body_passes_straight_through [tests/test_design_cli.py]",
+  "test_a_source_survives_the_batch_form [tests/test_design_cli.py]",
+  "test_an_omitted_body_opens_the_editor_on_a_tty [tests/test_design_cli.py]",
+  "test_an_omitted_body_reads_stdin_in_a_pipeline [tests/test_design_cli.py]",
+  "test_dash_reads_the_body_from_stdin [tests/test_design_cli.py]",
+  "test_file_reads_the_body_from_a_path [tests/test_design_cli.py]",
+  "test_repeated_item_flags_build_a_batch [tests/test_design_cli.py]",
+  "test_source_flags_reach_the_call_repeatably [tests/test_design_cli.py]",
+  "test_the_bare_noun_and_the_explicit_verb_are_the_same_call [tests/test_design_cli.py]",
+  "test_the_import_tier_is_opt_in_on_the_cli [tests/test_design_cli.py]",
+  "test_the_new_verbs_dispatch [tests/test_design_cli.py]",
+]
+references = [
+  "test_a_bare_noun_means_its_orienting_read [tests/test_design_cli.py]",
+  "test_a_plan_item_may_be_title_only [tests/test_design_cli.py]",
+  "test_a_positional_body_passes_straight_through [tests/test_design_cli.py]",
+  "test_a_source_survives_the_batch_form [tests/test_design_cli.py]",
+  "test_an_omitted_body_opens_the_editor_on_a_tty [tests/test_design_cli.py]",
+  "test_an_omitted_body_reads_stdin_in_a_pipeline [tests/test_design_cli.py]",
+  "test_dash_reads_the_body_from_stdin [tests/test_design_cli.py]",
+  "test_file_reads_the_body_from_a_path [tests/test_design_cli.py]",
+  "test_repeated_item_flags_build_a_batch [tests/test_design_cli.py]",
+  "test_source_flags_reach_the_call_repeatably [tests/test_design_cli.py]",
+  "test_the_bare_noun_and_the_explicit_verb_are_the_same_call [tests/test_design_cli.py]",
+  "test_the_import_tier_is_opt_in_on_the_cli [tests/test_design_cli.py]",
+  "test_the_new_verbs_dispatch [tests/test_design_cli.py]",
+]
+name_terms = [
+  "_call",
+  "call",
+  "cli",
+  "design",
+  "test",
+  "tests",
+  "tests.test_design_cli._call",
+]

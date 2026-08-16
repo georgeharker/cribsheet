@@ -1,0 +1,43 @@
+symbol_ref = "crib/app.py#Crib._maybe_recreate_for_dim"
+fqn = "crib.app.Crib._maybe_recreate_for_dim"
+name = "_maybe_recreate_for_dim"
+kind = "method"
+lang = "python"
+content_hash = "d8e08ba2825d4302"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _maybe_recreate_for_dim(self) -> bool:"
+description = ""
+schema = 4
+line = 712
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "current_dim [crib/store.py]",
+  "invalidate_all_caches [crib/indexer.py]",
+  "recreate [crib/store.py]",
+]
+called_by = [
+  "reindex [crib/app.py]",
+]
+references = [
+  "reindex [crib/app.py]",
+]
+name_terms = [
+  "_maybe_recreate_for_dim",
+  "app",
+  "crib",
+  "crib.app.Crib._maybe_recreate_for_dim",
+  "dim",
+  "for",
+  "maybe",
+  "recreate",
+]

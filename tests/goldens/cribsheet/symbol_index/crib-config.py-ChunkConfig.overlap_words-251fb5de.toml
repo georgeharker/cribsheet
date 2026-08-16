@@ -1,0 +1,44 @@
+symbol_ref = "crib/config.py#ChunkConfig.overlap_words"
+fqn = "crib.config.ChunkConfig.overlap_words"
+name = "overlap_words"
+kind = "method"
+lang = "python"
+content_hash = "9aacd11cbe87b366"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "@property"
+description = ""
+schema = 4
+line = 66
+mtime = 1786564832000000000
+container = [
+  "ChunkConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "ChunkConfig",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "__init__ [crib/app.py]",
+  "cmd_info [crib/cli.py]",
+  "test_overlap_clamped_below_window [tests/test_chunk_config.py]",
+  "test_overlap_words_derived_from_ratio [tests/test_chunk_config.py]",
+]
+references = [
+  "__init__ [crib/app.py]",
+  "cmd_info [crib/cli.py]",
+  "test_overlap_clamped_below_window [tests/test_chunk_config.py]",
+  "test_overlap_words_derived_from_ratio [tests/test_chunk_config.py]",
+]
+name_terms = [
+  "chunk",
+  "config",
+  "crib",
+  "crib.config.ChunkConfig.overlap_words",
+  "overlap",
+  "overlap_words",
+  "words",
+]

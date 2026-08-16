@@ -1,0 +1,48 @@
+symbol_ref = "tests/test_designs.py#_titles"
+fqn = "tests.test_designs._titles"
+name = "_titles"
+kind = "function"
+lang = "python"
+content_hash = "8d437041d1fc67d6"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def _titles(rows):"
+description = ""
+schema = 4
+line = 222
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_a_decision_must_carry_its_rationale [tests/test_designs.py]",
+  "test_plan_add_places_relative_to_neighbours [tests/test_designs.py]",
+  "test_plan_add_takes_a_batch_with_intra_batch_deps [tests/test_designs.py]",
+  "test_plan_list_groups_the_working_set [tests/test_designs.py]",
+  "test_plan_move_reorders_without_touching_deps [tests/test_designs.py]",
+  "test_plan_next_excludes_claimed_items_and_prescribes_the_loop [tests/test_designs.py]",
+  "test_plan_next_mixed_dep_matrix [tests/test_designs.py]",
+  "test_plan_order_is_topological_with_rank_as_tie_breaker [tests/test_designs.py]",
+]
+references = [
+  "test_a_decision_must_carry_its_rationale [tests/test_designs.py]",
+  "test_plan_add_places_relative_to_neighbours [tests/test_designs.py]",
+  "test_plan_add_takes_a_batch_with_intra_batch_deps [tests/test_designs.py]",
+  "test_plan_list_groups_the_working_set [tests/test_designs.py]",
+  "test_plan_move_reorders_without_touching_deps [tests/test_designs.py]",
+  "test_plan_next_excludes_claimed_items_and_prescribes_the_loop [tests/test_designs.py]",
+  "test_plan_next_mixed_dep_matrix [tests/test_designs.py]",
+  "test_plan_order_is_topological_with_rank_as_tie_breaker [tests/test_designs.py]",
+]
+name_terms = [
+  "_titles",
+  "designs",
+  "test",
+  "tests",
+  "tests.test_designs._titles",
+  "titles",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_store_chroma.py#test_retry_happens_only_once.always_missing"
+fqn = "tests.test_store_chroma.test_retry_happens_only_once.always_missing"
+name = "always_missing"
+kind = "function"
+lang = "python"
+content_hash = "31144d2523d491cd"
+file = "tests/test_store_chroma.py"
+file_hash = "c9d58563fea059fc"
+signature = "def always_missing(_col):"
+description = ""
+schema = 4
+line = 104
+mtime = 1785959234000000000
+container = [
+  "test_retry_happens_only_once",
+]
+scope = [
+  "tests",
+  "test_store_chroma",
+  "test_retry_happens_only_once",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_retry_happens_only_once [tests/test_store_chroma.py]",
+]
+name_terms = [
+  "always",
+  "always_missing",
+  "chroma",
+  "happens",
+  "missing",
+  "once",
+  "only",
+  "retry",
+  "store",
+  "test",
+  "tests",
+  "tests.test_store_chroma.test_retry_happens_only_once.always_missing",
+]

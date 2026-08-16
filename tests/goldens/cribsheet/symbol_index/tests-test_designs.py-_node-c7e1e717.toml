@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_designs.py#_node"
+fqn = "tests.test_designs._node"
+name = "_node"
+kind = "function"
+lang = "python"
+content_hash = "803702b32b751f00"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def _node(nid: str, deps: list[str], checked: dict[str, str] | None = None,"
+description = ""
+schema = 4
+line = 48
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "Node [crib/designs.py]",
+]
+called_by = [
+  "test_an_unverified_dep_edge_is_tainted [tests/test_designs.py]",
+  "test_cycle_detection_finds_each_cycle_once [tests/test_designs.py]",
+  "test_dangling_dep_is_not_a_cycle [tests/test_designs.py]",
+  "test_taint_is_direct_transitive_and_missing_dep [tests/test_designs.py]",
+]
+references = [
+  "test_an_unverified_dep_edge_is_tainted [tests/test_designs.py]",
+  "test_cycle_detection_finds_each_cycle_once [tests/test_designs.py]",
+  "test_dangling_dep_is_not_a_cycle [tests/test_designs.py]",
+  "test_taint_is_direct_transitive_and_missing_dep [tests/test_designs.py]",
+]
+name_terms = [
+  "_node",
+  "designs",
+  "node",
+  "test",
+  "tests",
+  "tests.test_designs._node",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#GenerateConfig.api_key"
+fqn = "crib.config.GenerateConfig.api_key"
+name = "api_key"
+kind = "field"
+lang = "python"
+content_hash = "be5a18f379288781"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "api_key: str | None = None"
+description = ""
+schema = 4
+line = 192
+mtime = 1786564832000000000
+container = [
+  "GenerateConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "GenerateConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "resolve_provider [crib/generate.py]",
+]
+name_terms = [
+  "api",
+  "api_key",
+  "config",
+  "crib",
+  "crib.config.GenerateConfig.api_key",
+  "generate",
+  "key",
+]

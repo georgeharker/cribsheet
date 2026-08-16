@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/test_config.py#test_server_status_sharedserver_name"
+fqn = "combiner.tests.test_config.test_server_status_sharedserver_name"
+name = "test_server_status_sharedserver_name"
+kind = "function"
+lang = "python"
+content_hash = "db6e8df7615ffec2"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_server_status_sharedserver_name() -> None:"
+description = ""
+schema = 4
+line = 47
+mtime = 1782852601000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+]
+symbol_was = []
+calls = [
+  "get_server_status [combiner/mcp_combiner/config.py]",
+  "load [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.test_server_status_sharedserver_name",
+  "config",
+  "name",
+  "server",
+  "sharedserver",
+  "status",
+  "test",
+  "test_server_status_sharedserver_name",
+  "tests",
+]

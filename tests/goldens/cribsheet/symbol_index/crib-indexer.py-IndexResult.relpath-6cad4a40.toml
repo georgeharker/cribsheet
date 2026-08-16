@@ -1,0 +1,33 @@
+symbol_ref = "crib/indexer.py#IndexResult.relpath"
+fqn = "crib.indexer.IndexResult.relpath"
+name = "relpath"
+kind = "field"
+lang = "python"
+content_hash = "b1f401c0f0bb3a24"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "relpath: str"
+description = ""
+schema = 4
+line = 38
+mtime = 1786578262000000000
+container = [
+  "IndexResult",
+]
+scope = [
+  "crib",
+  "indexer",
+  "IndexResult",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.indexer.IndexResult.relpath",
+  "index",
+  "indexer",
+  "relpath",
+  "result",
+]

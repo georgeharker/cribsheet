@@ -1,0 +1,33 @@
+symbol_ref = "combiner/mcp_combiner/sharedserver.py#_manager"
+fqn = "combiner.mcp_combiner.sharedserver._manager"
+name = "_manager"
+kind = "global"
+lang = "python"
+content_hash = "cbec64acb5949574"
+file = "combiner/mcp_combiner/sharedserver.py"
+file_hash = "00df81a0a741c869"
+signature = "_manager: SharedServerManager | None = None"
+description = ""
+schema = 4
+line = 385
+mtime = 1782539642000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "sharedserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "cleanup [combiner/mcp_combiner/sharedserver.py]",
+]
+name_terms = [
+  "_manager",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver._manager",
+  "manager",
+  "mcp",
+  "sharedserver",
+]

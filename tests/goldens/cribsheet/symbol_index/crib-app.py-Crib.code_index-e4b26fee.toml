@@ -1,0 +1,39 @@
+symbol_ref = "crib/app.py#Crib.code_index"
+fqn = "crib.app.Crib.code_index"
+name = "code_index"
+kind = "method"
+lang = "python"
+content_hash = "ef973c7f7789f639"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def code_index(self, path: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 1221
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "code_index [crib/codeindexer.py]",
+]
+called_by = [
+  "code_index [crib/server.py]",
+]
+references = [
+  "code_index [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "code",
+  "code_index",
+  "crib",
+  "crib.app.Crib.code_index",
+  "index",
+]

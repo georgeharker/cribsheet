@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_designs.py#test_design_append_extends_and_is_edge_aware"
+fqn = "tests.test_designs.test_design_append_extends_and_is_edge_aware"
+name = "test_design_append_extends_and_is_edge_aware"
+kind = "function"
+lang = "python"
+content_hash = "6634d7292aabc438"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_design_append_extends_and_is_edge_aware(crib):"
+description = ""
+schema = 4
+line = 336
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "append",
+  "aware",
+  "design",
+  "designs",
+  "edge",
+  "extends",
+  "is",
+  "test",
+  "test_design_append_extends_and_is_edge_aware",
+  "tests",
+  "tests.test_designs.test_design_append_extends_and_is_edge_aware",
+]

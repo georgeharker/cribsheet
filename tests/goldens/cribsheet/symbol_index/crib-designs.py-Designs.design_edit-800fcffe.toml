@@ -1,0 +1,39 @@
+symbol_ref = "crib/designs.py#Designs.design_edit"
+fqn = "crib.designs.Designs.design_edit"
+name = "design_edit"
+kind = "method"
+lang = "python"
+content_hash = "2d793ce581623c39"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "async def design_edit(self, proj: str, ref: str, new_content: str,"
+description = ""
+schema = 4
+line = 1194
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_write_body [crib/designs.py]",
+]
+called_by = [
+  "design_edit [crib/app.py]",
+]
+references = [
+  "design_edit [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs.design_edit",
+  "design",
+  "design_edit",
+  "designs",
+  "edit",
+]

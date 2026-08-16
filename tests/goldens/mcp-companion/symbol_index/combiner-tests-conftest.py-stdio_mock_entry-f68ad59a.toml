@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/conftest.py#stdio_mock_entry"
+fqn = "combiner.tests.conftest.stdio_mock_entry"
+name = "stdio_mock_entry"
+kind = "function"
+lang = "python"
+content_hash = "218151e5d947afc8"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "def stdio_mock_entry("
+description = ""
+schema = 4
+line = 71
+mtime = 1783544328000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+]
+symbol_was = []
+calls = [
+  "mockserver_argv [combiner/tests/conftest.py]",
+]
+called_by = [
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "test_malformed_schema_survives_combiner [combiner/tests/test_route_matrix.py]",
+  "test_stdio_restart_bounces_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_crash_recovers [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+]
+references = [
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "test_malformed_schema_survives_combiner [combiner/tests/test_route_matrix.py]",
+  "test_stdio_restart_bounces_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_crash_recovers [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.stdio_mock_entry",
+  "conftest",
+  "entry",
+  "mock",
+  "stdio",
+  "stdio_mock_entry",
+  "tests",
+]

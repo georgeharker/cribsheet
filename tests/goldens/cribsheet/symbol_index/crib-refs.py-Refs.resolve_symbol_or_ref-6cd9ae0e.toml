@@ -1,0 +1,46 @@
+symbol_ref = "crib/refs.py#Refs.resolve_symbol_or_ref"
+fqn = "crib.refs.Refs.resolve_symbol_or_ref"
+name = "resolve_symbol_or_ref"
+kind = "method"
+lang = "python"
+content_hash = "0abd64646a5e9cba"
+file = "crib/refs.py"
+file_hash = "d39b1d18c0921167"
+signature = "def resolve_symbol_or_ref(self, proj: str, symbol: str,"
+description = ""
+schema = 4
+line = 200
+mtime = 1786664729000000000
+container = [
+  "Refs",
+]
+scope = [
+  "crib",
+  "refs",
+  "Refs",
+]
+symbol_was = []
+calls = [
+  "AmbiguousSymbol [crib/refs.py]",
+  "key [crib/symbols.py]",
+  "project_refs [crib/refs.py]",
+  "resolve_symbol [crib/refs.py]",
+]
+called_by = [
+  "dossier [crib/codequery.py]",
+  "graph [crib/codequery.py]",
+]
+references = [
+  "dossier [crib/codequery.py]",
+  "graph [crib/codequery.py]",
+]
+name_terms = [
+  "crib",
+  "crib.refs.Refs.resolve_symbol_or_ref",
+  "or",
+  "ref",
+  "refs",
+  "resolve",
+  "resolve_symbol_or_ref",
+  "symbol",
+]

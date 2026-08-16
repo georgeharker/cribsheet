@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#_E_dread"
+fqn = "crib.cli._E_dread"
+name = "_E_dread"
+kind = "function"
+lang = "python"
+content_hash = "248f1127d8d1ea88"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _E_dread(d, a): _emit_design_read(d, a)"
+description = ""
+schema = 4
+line = 1495
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_emit_design_read [crib/cli.py]",
+]
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_E_dread",
+  "cli",
+  "crib",
+  "crib.cli._E_dread",
+  "dread",
+  "e",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "crib/versions.py#VersionRing._prune"
+fqn = "crib.versions.VersionRing._prune"
+name = "_prune"
+kind = "method"
+lang = "python"
+content_hash = "45ee5f51230b4588"
+file = "crib/versions.py"
+file_hash = "c84588155a74a02c"
+signature = "def _prune(self, d: Path) -> None:"
+description = ""
+schema = 4
+line = 100
+mtime = 1785966856000000000
+container = [
+  "VersionRing",
+]
+scope = [
+  "crib",
+  "versions",
+  "VersionRing",
+]
+symbol_was = []
+calls = [
+  "_ring_files [crib/versions.py]",
+]
+called_by = [
+  "stash [crib/versions.py]",
+]
+references = [
+  "stash [crib/versions.py]",
+]
+name_terms = [
+  "_prune",
+  "crib",
+  "crib.versions.VersionRing._prune",
+  "prune",
+  "ring",
+  "version",
+  "versions",
+]

@@ -1,0 +1,44 @@
+symbol_ref = "crib/codequery.py#CodeQuery.dossier"
+fqn = "crib.codequery.CodeQuery.dossier"
+name = "dossier"
+kind = "method"
+lang = "python"
+content_hash = "83fff5fa233d8392"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def dossier(self, proj: str, symbol: str, edge_cap: int = 20,"
+description = ""
+schema = 4
+line = 278
+mtime = 1786664729000000000
+container = [
+  "CodeQuery",
+]
+scope = [
+  "crib",
+  "codequery",
+  "CodeQuery",
+]
+symbol_was = []
+calls = [
+  "_neighbours [crib/codequery.py]",
+  "attach [crib/learnings.py]",
+  "check_query [crib/codequery.py]",
+  "key [crib/symbols.py]",
+  "resolution [crib/refs.py]",
+  "resolve_symbol_or_ref [crib/refs.py]",
+]
+called_by = [
+  "code_dossier [crib/app.py]",
+]
+references = [
+  "code_dossier [crib/app.py]",
+]
+name_terms = [
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery.dossier",
+  "dossier",
+  "query",
+]

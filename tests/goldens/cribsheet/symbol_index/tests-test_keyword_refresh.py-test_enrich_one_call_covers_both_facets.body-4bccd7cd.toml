@@ -1,0 +1,47 @@
+symbol_ref = "tests/test_keyword_refresh.py#test_enrich_one_call_covers_both_facets.body"
+fqn = "tests.test_keyword_refresh.test_enrich_one_call_covers_both_facets.body"
+name = "body"
+kind = "function"
+lang = "python"
+content_hash = "f2c8d05e08f03f66"
+file = "tests/test_keyword_refresh.py"
+file_hash = "d758ff5010231936"
+signature = "async def body():"
+description = ""
+schema = 4
+line = 74
+mtime = 1786044759000000000
+container = [
+  "test_enrich_one_call_covers_both_facets",
+]
+scope = [
+  "tests",
+  "test_keyword_refresh",
+  "test_enrich_one_call_covers_both_facets",
+]
+symbol_was = []
+calls = [
+  "SectionIndex [crib/section_index.py]",
+  "has [crib/section_index.py]",
+  "path [crib/section_index.py]",
+]
+called_by = [
+  "test_enrich_one_call_covers_both_facets [tests/test_keyword_refresh.py]",
+]
+references = [
+  "test_enrich_one_call_covers_both_facets [tests/test_keyword_refresh.py]",
+]
+name_terms = [
+  "body",
+  "both",
+  "call",
+  "covers",
+  "enrich",
+  "facets",
+  "keyword",
+  "one",
+  "refresh",
+  "test",
+  "tests",
+  "tests.test_keyword_refresh.test_enrich_one_call_covers_both_facets.body",
+]

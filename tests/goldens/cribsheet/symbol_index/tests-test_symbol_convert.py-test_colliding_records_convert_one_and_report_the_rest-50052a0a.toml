@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_symbol_convert.py#test_colliding_records_convert_one_and_report_the_rest"
+fqn = "tests.test_symbol_convert.test_colliding_records_convert_one_and_report_the_rest"
+name = "test_colliding_records_convert_one_and_report_the_rest"
+kind = "function"
+lang = "python"
+content_hash = "d957dda50bfb1a46"
+file = "tests/test_symbol_convert.py"
+file_hash = "3cdbfd7f71b23e65"
+signature = "def test_colliding_records_convert_one_and_report_the_rest(crib):"
+description = ""
+schema = 4
+line = 179
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_convert",
+]
+symbol_was = []
+calls = [
+  "_legacy_toml [tests/test_symbol_convert.py]",
+  "_seed_legacy_store [tests/test_symbol_convert.py]",
+  "write_atomic [crib/tomlrec.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "colliding",
+  "convert",
+  "one",
+  "records",
+  "report",
+  "rest",
+  "symbol",
+  "test",
+  "test_colliding_records_convert_one_and_report_the_rest",
+  "tests",
+  "tests.test_symbol_convert.test_colliding_records_convert_one_and_report_the_rest",
+  "the",
+]

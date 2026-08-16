@@ -1,0 +1,37 @@
+symbol_ref = "crib/gitbacking.py#SnapshotResult.ok"
+fqn = "crib.gitbacking.SnapshotResult.ok"
+name = "ok"
+kind = "field"
+lang = "python"
+content_hash = "503112e48ee2a825"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "ok: bool"
+description = ""
+schema = 4
+line = 94
+mtime = 1785963011000000000
+container = [
+  "SnapshotResult",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "SnapshotResult",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "sync [crib/gitbacking.py]",
+  "test_snapshot_reports_commit_failure_structurally [tests/test_sync.py]",
+  "test_snapshot_with_nothing_to_do_is_ok_but_not_committed [tests/test_sync.py]",
+]
+name_terms = [
+  "crib",
+  "crib.gitbacking.SnapshotResult.ok",
+  "gitbacking",
+  "ok",
+  "result",
+  "snapshot",
+]

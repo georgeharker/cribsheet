@@ -1,0 +1,31 @@
+symbol_ref = "crib/tomlrec.py#_ESC"
+fqn = "crib.tomlrec._ESC"
+name = "_ESC"
+kind = "constant"
+lang = "python"
+content_hash = "8af19d619c2d4e37"
+file = "crib/tomlrec.py"
+file_hash = "f33317468899fcd5"
+signature = "_ESC = {\"\\\\\": \"\\\\\\\\\", '\"': '\\\\\"', \"\\n\": \"\\\\n\", \"\\r\": \"\\\\r\", \"\\t\": \"\\\\t\","
+description = ""
+schema = 4
+line = 23
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "tomlrec",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "esc [crib/tomlrec.py]",
+]
+name_terms = [
+  "_ESC",
+  "crib",
+  "crib.tomlrec._ESC",
+  "esc",
+  "tomlrec",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_design_sources.py#test_import_writes_nothing"
+fqn = "tests.test_design_sources.test_import_writes_nothing"
+name = "test_import_writes_nothing"
+kind = "function"
+lang = "python"
+content_hash = "1c5461c8e9363289"
+file = "tests/test_design_sources.py"
+file_hash = "f89b5a94b236ce9c"
+signature = "def test_import_writes_nothing(crib):"
+description = ""
+schema = 4
+line = 343
+mtime = 1786137963000000000
+container = []
+scope = [
+  "tests",
+  "test_design_sources",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "design",
+  "import",
+  "nothing",
+  "sources",
+  "test",
+  "test_import_writes_nothing",
+  "tests",
+  "tests.test_design_sources.test_import_writes_nothing",
+  "writes",
+]

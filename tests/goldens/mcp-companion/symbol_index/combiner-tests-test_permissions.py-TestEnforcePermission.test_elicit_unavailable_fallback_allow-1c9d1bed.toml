@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestEnforcePermission.test_elicit_unavailable_fallback_allow"
+fqn = "combiner.tests.test_permissions.TestEnforcePermission.test_elicit_unavailable_fallback_allow"
+name = "test_elicit_unavailable_fallback_allow"
+kind = "method"
+lang = "python"
+content_hash = "de29c17ae21827ce"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "async def test_elicit_unavailable_fallback_allow(self) -> None:"
+description = ""
+schema = 4
+line = 275
+mtime = 1783633313000000000
+container = [
+  "TestEnforcePermission",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "TestEnforcePermission",
+]
+symbol_was = []
+calls = [
+  "_elicit_ctx [combiner/tests/test_permissions.py]",
+  "_rp [combiner/tests/test_permissions.py]",
+  "enforce [combiner/mcp_combiner/permissions.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "allow",
+  "combiner",
+  "combiner.tests.test_permissions.TestEnforcePermission.test_elicit_unavailable_fallback_allow",
+  "elicit",
+  "enforce",
+  "fallback",
+  "permission",
+  "permissions",
+  "test",
+  "test_elicit_unavailable_fallback_allow",
+  "tests",
+  "unavailable",
+]

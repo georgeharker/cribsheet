@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/fakes.py#FakeSSManager.ensure_started"
+fqn = "combiner.tests.fakes.FakeSSManager.ensure_started"
+name = "ensure_started"
+kind = "method"
+lang = "python"
+content_hash = "8caf3abb3a3a6a94"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "async def ensure_started(self, name: str) -> None:"
+description = ""
+schema = 4
+line = 83
+mtime = 1783534978000000000
+container = [
+  "FakeSSManager",
+]
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+  "FakeSSManager",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.fakes.FakeSSManager.ensure_started",
+  "ensure",
+  "ensure_started",
+  "fake",
+  "fakes",
+  "manager",
+  "ss",
+  "started",
+  "tests",
+]

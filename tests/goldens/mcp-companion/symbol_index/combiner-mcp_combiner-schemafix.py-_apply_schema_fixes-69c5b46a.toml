@@ -1,0 +1,50 @@
+symbol_ref = "combiner/mcp_combiner/schemafix.py#_apply_schema_fixes"
+fqn = "combiner.mcp_combiner.schemafix._apply_schema_fixes"
+name = "_apply_schema_fixes"
+kind = "function"
+lang = "python"
+content_hash = "8017fbbb210b1b7d"
+file = "combiner/mcp_combiner/schemafix.py"
+file_hash = "49870021f06866cb"
+signature = "def _apply_schema_fixes(params: object, fixes: frozenset[str]) -> object:"
+description = ""
+schema = 4
+line = 247
+mtime = 1783542616000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "schemafix",
+]
+symbol_was = []
+calls = [
+  "_apply_object_fixes [combiner/mcp_combiner/schemafix.py]",
+  "_normalize_schema [combiner/mcp_combiner/schemafix.py]",
+]
+called_by = [
+  "_normalize_tool_schema [combiner/mcp_combiner/schemafix.py]",
+  "test_all_fixes_combine [combiner/tests/test_schema_fixes.py]",
+  "test_anyof_hoist_does_not_force_object [combiner/tests/test_schema_fixes.py]",
+  "test_anyof_type_hoist_distributes_parent_type [combiner/tests/test_schema_fixes.py]",
+  "test_no_fixes_is_a_noop [combiner/tests/test_schema_fixes.py]",
+  "test_non_dict_schema_returned_unchanged [combiner/tests/test_schema_fixes.py]",
+]
+references = [
+  "_normalize_tool_schema [combiner/mcp_combiner/schemafix.py]",
+  "test_all_fixes_combine [combiner/tests/test_schema_fixes.py]",
+  "test_anyof_hoist_does_not_force_object [combiner/tests/test_schema_fixes.py]",
+  "test_anyof_type_hoist_distributes_parent_type [combiner/tests/test_schema_fixes.py]",
+  "test_no_fixes_is_a_noop [combiner/tests/test_schema_fixes.py]",
+  "test_non_dict_schema_returned_unchanged [combiner/tests/test_schema_fixes.py]",
+]
+name_terms = [
+  "_apply_schema_fixes",
+  "apply",
+  "combiner",
+  "combiner.mcp_combiner.schemafix._apply_schema_fixes",
+  "fixes",
+  "mcp",
+  "schema",
+  "schemafix",
+]

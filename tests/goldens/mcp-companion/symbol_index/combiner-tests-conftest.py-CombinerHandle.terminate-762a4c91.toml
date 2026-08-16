@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/conftest.py#CombinerHandle.terminate"
+fqn = "combiner.tests.conftest.CombinerHandle.terminate"
+name = "terminate"
+kind = "method"
+lang = "python"
+content_hash = "e15e051a2fd35368"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "def terminate(self, timeout: float = 10.0) -> None:"
+description = ""
+schema = 4
+line = 200
+mtime = 1783544328000000000
+container = [
+  "CombinerHandle",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "CombinerHandle",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "teardown [combiner/tests/conftest.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_stale_session_gets_clean_error_not_hang [combiner/tests/test_combiner_reconnect.py]",
+]
+references = [
+  "teardown [combiner/tests/conftest.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_stale_session_gets_clean_error_not_hang [combiner/tests/test_combiner_reconnect.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.CombinerHandle.terminate",
+  "conftest",
+  "handle",
+  "terminate",
+  "tests",
+]

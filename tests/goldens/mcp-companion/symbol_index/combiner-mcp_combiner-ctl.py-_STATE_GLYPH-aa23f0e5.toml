@@ -1,0 +1,34 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#_STATE_GLYPH"
+fqn = "combiner.mcp_combiner.ctl._STATE_GLYPH"
+name = "_STATE_GLYPH"
+kind = "constant"
+lang = "python"
+content_hash = "03002428f875b2b1"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "_STATE_GLYPH = {"
+description = ""
+schema = 4
+line = 388
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "cmd_status [combiner/mcp_combiner/ctl.py]",
+]
+name_terms = [
+  "_STATE_GLYPH",
+  "combiner",
+  "combiner.mcp_combiner.ctl._STATE_GLYPH",
+  "ctl",
+  "glyph",
+  "mcp",
+  "state",
+]

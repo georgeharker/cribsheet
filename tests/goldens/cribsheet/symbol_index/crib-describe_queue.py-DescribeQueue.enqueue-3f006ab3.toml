@@ -1,0 +1,42 @@
+symbol_ref = "crib/describe_queue.py#DescribeQueue.enqueue"
+fqn = "crib.describe_queue.DescribeQueue.enqueue"
+name = "enqueue"
+kind = "method"
+lang = "python"
+content_hash = "1598acfcaaf4c0d8"
+file = "crib/describe_queue.py"
+file_hash = "305c34e160ae74c1"
+signature = "def enqueue(self, project: str, root: Path, relpath: str,"
+description = ""
+schema = 4
+line = 61
+mtime = 1786664729000000000
+container = [
+  "DescribeQueue",
+]
+scope = [
+  "crib",
+  "describe_queue",
+  "DescribeQueue",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "body [tests/test_describe_queue.py]",
+  "test_backoff_delays_double_then_cap [tests/test_describe_queue.py]",
+  "test_failed_describe_backs_off_instead_of_restarting_at_zero [tests/test_describe_queue.py]",
+  "test_successful_describe_clears_the_entry [tests/test_describe_queue.py]",
+]
+references = [
+  "body [tests/test_describe_queue.py]",
+  "test_backoff_delays_double_then_cap [tests/test_describe_queue.py]",
+  "test_failed_describe_backs_off_instead_of_restarting_at_zero [tests/test_describe_queue.py]",
+  "test_successful_describe_clears_the_entry [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "crib",
+  "crib.describe_queue.DescribeQueue.enqueue",
+  "describe",
+  "enqueue",
+  "queue",
+]

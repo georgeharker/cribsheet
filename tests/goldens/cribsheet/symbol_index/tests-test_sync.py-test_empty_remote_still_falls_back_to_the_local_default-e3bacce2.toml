@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_sync.py#test_empty_remote_still_falls_back_to_the_local_default"
+fqn = "tests.test_sync.test_empty_remote_still_falls_back_to_the_local_default"
+name = "test_empty_remote_still_falls_back_to_the_local_default"
+kind = "function"
+lang = "python"
+content_hash = "bed65cc30585cde1"
+file = "tests/test_sync.py"
+file_hash = "594e3dd701dbe999"
+signature = "def test_empty_remote_still_falls_back_to_the_local_default(tmp_path, remote):"
+description = ""
+schema = 4
+line = 246
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_sync",
+]
+symbol_was = []
+calls = [
+  "_branch [crib/gitbacking.py]",
+  "_machine [tests/test_sync.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "back",
+  "default",
+  "empty",
+  "falls",
+  "local",
+  "remote",
+  "still",
+  "sync",
+  "test",
+  "test_empty_remote_still_falls_back_to_the_local_default",
+  "tests",
+  "tests.test_sync.test_empty_remote_still_falls_back_to_the_local_default",
+  "the",
+  "to",
+]

@@ -1,0 +1,50 @@
+symbol_ref = "crib/server.py#build_server"
+fqn = "crib.server.build_server"
+name = "build_server"
+kind = "function"
+lang = "python"
+content_hash = "dd3f0e95e520f9ed"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def build_server(crib: Crib | None = None):"
+description = ""
+schema = 4
+line = 223
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = [
+  "crib_tool [crib/server.py]",
+  "open [crib/app.py]",
+]
+called_by = [
+  "_serve_async [crib/server.py]",
+  "test_an_unanchored_read_refuses_with_the_recovery_in_the_message [tests/test_session.py]",
+  "test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project [tests/test_project_resolution.py]",
+  "test_progress_reports_only_this_calls_sweep [tests/test_server_progress.py]",
+  "test_quick_index_returns_without_interval_lag [tests/test_server_progress.py]",
+  "test_the_mcp_face_delivers_the_message_verbatim [tests/test_code_graph.py]",
+  "test_write_tools_carry_project_or_path_anyof [tests/test_project_resolution.py]",
+  "tools [tests/test_surface_parity.py]",
+]
+references = [
+  "_serve_async [crib/server.py]",
+  "test_an_unanchored_read_refuses_with_the_recovery_in_the_message [tests/test_session.py]",
+  "test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project [tests/test_project_resolution.py]",
+  "test_progress_reports_only_this_calls_sweep [tests/test_server_progress.py]",
+  "test_quick_index_returns_without_interval_lag [tests/test_server_progress.py]",
+  "test_the_mcp_face_delivers_the_message_verbatim [tests/test_code_graph.py]",
+  "test_write_tools_carry_project_or_path_anyof [tests/test_project_resolution.py]",
+  "tools [tests/test_surface_parity.py]",
+]
+name_terms = [
+  "build",
+  "build_server",
+  "crib",
+  "crib.server.build_server",
+  "server",
+]

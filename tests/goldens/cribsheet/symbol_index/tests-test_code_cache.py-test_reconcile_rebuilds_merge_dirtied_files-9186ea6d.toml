@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_code_cache.py#test_reconcile_rebuilds_merge_dirtied_files"
+fqn = "tests.test_code_cache.test_reconcile_rebuilds_merge_dirtied_files"
+name = "test_reconcile_rebuilds_merge_dirtied_files"
+kind = "function"
+lang = "python"
+content_hash = "ac57fb90fffbcbc8"
+file = "tests/test_code_cache.py"
+file_hash = "44f8f848adca2094"
+signature = "def test_reconcile_rebuilds_merge_dirtied_files(crib, tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 171
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_cache",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_write [tests/test_code_cache.py]",
+  "run [tests/test_code_cache.py]",
+  "set_source_root [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "code",
+  "dirtied",
+  "files",
+  "merge",
+  "rebuilds",
+  "reconcile",
+  "test",
+  "test_reconcile_rebuilds_merge_dirtied_files",
+  "tests",
+  "tests.test_code_cache.test_reconcile_rebuilds_merge_dirtied_files",
+]

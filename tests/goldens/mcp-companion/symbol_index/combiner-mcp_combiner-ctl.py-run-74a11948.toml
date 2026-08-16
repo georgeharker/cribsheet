@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#run"
+fqn = "combiner.mcp_combiner.ctl.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "05cf72a16b765dda"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "def run(args: argparse.Namespace) -> int:"
+description = ""
+schema = 4
+line = 689
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = [
+  "_base_url [combiner/mcp_combiner/ctl.py]",
+]
+called_by = [
+  "main [combiner/mcp_combiner/__main__.py]",
+]
+references = [
+  "main [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.ctl.run",
+  "ctl",
+  "mcp",
+  "run",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "lua/mcp_companion/install.lua#ensure.pip_install"
+fqn = "mcp_companion.install.ensure.pip_install"
+name = "pip_install"
+kind = "function"
+lang = "lua"
+content_hash = "201aab83980616a3"
+file = "lua/mcp_companion/install.lua"
+file_hash = "3de9ccc3f9cb05c6"
+signature = "local function pip_install()"
+description = ""
+schema = 4
+line = 139
+mtime = 1782852601000000000
+container = [
+  "M.ensure",
+]
+scope = [
+  "mcp_companion",
+  "install",
+  "ensure",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.ensure [lua/mcp_companion/install.lua]",
+]
+references = [
+  "else [lua/mcp_companion/install.lua]",
+  "if [lua/mcp_companion/install.lua]",
+]
+name_terms = [
+  "companion",
+  "ensure",
+  "install",
+  "mcp",
+  "mcp_companion.install.ensure.pip_install",
+  "pip",
+  "pip_install",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "crib/describe_queue.py#DescribeQueue.pending_symbols"
+fqn = "crib.describe_queue.DescribeQueue.pending_symbols"
+name = "pending_symbols"
+kind = "method"
+lang = "python"
+content_hash = "7786706fedbc1f4e"
+file = "crib/describe_queue.py"
+file_hash = "305c34e160ae74c1"
+signature = "def pending_symbols(self) -> int:"
+description = ""
+schema = 4
+line = 113
+mtime = 1786664729000000000
+container = [
+  "DescribeQueue",
+]
+scope = [
+  "crib",
+  "describe_queue",
+  "DescribeQueue",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_failed_describe_backs_off_instead_of_restarting_at_zero [tests/test_describe_queue.py]",
+]
+references = [
+  "test_failed_describe_backs_off_instead_of_restarting_at_zero [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "crib",
+  "crib.describe_queue.DescribeQueue.pending_symbols",
+  "describe",
+  "pending",
+  "pending_symbols",
+  "queue",
+  "symbols",
+]

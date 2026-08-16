@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#GenerateConfig.model"
+fqn = "crib.config.GenerateConfig.model"
+name = "model"
+kind = "field"
+lang = "python"
+content_hash = "4066509706329b72"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "model: str | None = None"
+description = ""
+schema = 4
+line = 189
+mtime = 1786564832000000000
+container = [
+  "GenerateConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "GenerateConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_generate_enrichment [crib/app.py]",
+  "resolve_provider [crib/generate.py]",
+  "test_resolve_provider_inline_fallback [tests/test_elaborate.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.GenerateConfig.model",
+  "generate",
+  "model",
+]

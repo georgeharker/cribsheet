@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthProvider._grant_refresh_token"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthProvider._grant_refresh_token"
+name = "_grant_refresh_token"
+kind = "method"
+lang = "python"
+content_hash = "96a868545295f31a"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def _grant_refresh_token(self, form: dict[str, str]) -> JSONResponse:"
+description = ""
+schema = 4
+line = 865
+mtime = 1783622326000000000
+container = [
+  "MockOAuthProvider",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthProvider",
+]
+symbol_was = []
+calls = [
+  "_token_payload [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = [
+  "token [combiner/mcp_combiner/mockserver.py]",
+]
+references = [
+  "token [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "_grant_refresh_token",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthProvider._grant_refresh_token",
+  "grant",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "provider",
+  "refresh",
+  "token",
+]

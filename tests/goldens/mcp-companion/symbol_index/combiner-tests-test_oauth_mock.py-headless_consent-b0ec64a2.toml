@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#headless_consent"
+fqn = "combiner.tests.test_oauth_mock.headless_consent"
+name = "headless_consent"
+kind = "function"
+lang = "python"
+content_hash = "189350f56cbcfedf"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "@pytest.fixture"
+description = ""
+schema = 4
+line = 154
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_oauth_mock.headless_consent",
+  "consent",
+  "headless",
+  "headless_consent",
+  "mock",
+  "oauth",
+  "test",
+  "tests",
+]

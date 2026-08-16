@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_codeindex.py#test_leading_comment_python_skips_decorators_and_globs_hash_block"
+fqn = "tests.test_codeindex.test_leading_comment_python_skips_decorators_and_globs_hash_block"
+name = "test_leading_comment_python_skips_decorators_and_globs_hash_block"
+kind = "function"
+lang = "python"
+content_hash = "afcdb38849bb479b"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_leading_comment_python_skips_decorators_and_globs_hash_block():"
+description = ""
+schema = 4
+line = 136
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "_leading_comment [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "block",
+  "codeindex",
+  "comment",
+  "decorators",
+  "globs",
+  "hash",
+  "leading",
+  "python",
+  "skips",
+  "test",
+  "test_leading_comment_python_skips_decorators_and_globs_hash_block",
+  "tests",
+  "tests.test_codeindex.test_leading_comment_python_skips_decorators_and_globs_hash_block",
+]

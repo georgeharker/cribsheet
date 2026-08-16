@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_designs.py#test_design_list_tables_and_filters_to_the_stale"
+fqn = "tests.test_designs.test_design_list_tables_and_filters_to_the_stale"
+name = "test_design_list_tables_and_filters_to_the_stale"
+kind = "function"
+lang = "python"
+content_hash = "87997ccb09f3d136"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_design_list_tables_and_filters_to_the_stale(crib):"
+description = ""
+schema = 4
+line = 345
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "design",
+  "designs",
+  "filters",
+  "list",
+  "stale",
+  "tables",
+  "test",
+  "test_design_list_tables_and_filters_to_the_stale",
+  "tests",
+  "tests.test_designs.test_design_list_tables_and_filters_to_the_stale",
+  "the",
+  "to",
+]

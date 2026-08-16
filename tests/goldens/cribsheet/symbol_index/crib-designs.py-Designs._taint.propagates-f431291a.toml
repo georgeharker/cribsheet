@@ -1,0 +1,40 @@
+symbol_ref = "crib/designs.py#Designs._taint.propagates"
+fqn = "crib.designs.Designs._taint.propagates"
+name = "propagates"
+kind = "function"
+lang = "python"
+content_hash = "5a61de7aa0d258be"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def propagates(dep_id: str) -> bool:"
+description = ""
+schema = 4
+line = 861
+mtime = 1786693579000000000
+container = [
+  "Designs",
+  "_taint",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+  "_taint",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_taint [crib/designs.py]",
+  "chains [crib/designs.py]",
+]
+references = [
+  "_taint [crib/designs.py]",
+  "chains [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs._taint.propagates",
+  "designs",
+  "propagates",
+  "taint",
+]

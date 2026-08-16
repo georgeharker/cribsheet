@@ -1,0 +1,35 @@
+symbol_ref = "crib/store.py#Hit.id"
+fqn = "crib.store.Hit.id"
+name = "id"
+kind = "field"
+lang = "python"
+content_hash = "815fab59afaac4c9"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "id: str"
+description = ""
+schema = 4
+line = 36
+mtime = 1786564832000000000
+container = [
+  "Hit",
+]
+scope = [
+  "crib",
+  "store",
+  "Hit",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_retrieve [crib/app.py]",
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Hit.id",
+  "hit",
+  "id",
+  "store",
+]

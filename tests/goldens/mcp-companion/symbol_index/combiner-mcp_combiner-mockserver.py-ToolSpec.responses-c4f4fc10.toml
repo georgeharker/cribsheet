@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#ToolSpec.responses"
+fqn = "combiner.mcp_combiner.mockserver.ToolSpec.responses"
+name = "responses"
+kind = "field"
+lang = "python"
+content_hash = "a3cc69f9aa623007"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "responses: list[dict[str, Any]] = field(default_factory=list)"
+description = ""
+schema = 4
+line = 93
+mtime = 1783622326000000000
+container = [
+  "ToolSpec",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "ToolSpec",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/mockserver.py]",
+  "push_responses [combiner/mcp_combiner/mockserver.py]",
+  "run [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.ToolSpec.responses",
+  "mcp",
+  "mockserver",
+  "responses",
+  "spec",
+  "tool",
+]

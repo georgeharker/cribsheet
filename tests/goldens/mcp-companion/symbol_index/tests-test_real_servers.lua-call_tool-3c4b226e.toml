@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_real_servers.lua#call_tool"
+fqn = "tests.test_real_servers.call_tool"
+name = "call_tool"
+kind = "function"
+lang = "lua"
+content_hash = "d03df74c59f7a4bc"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local function call_tool(namespaced, params)"
+description = ""
+schema = 4
+line = 354
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_real_servers",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_real_servers.lua [tests/test_real_servers.lua]",
+]
+references = [
+  "result [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "call",
+  "call_tool",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.call_tool",
+  "tool",
+]

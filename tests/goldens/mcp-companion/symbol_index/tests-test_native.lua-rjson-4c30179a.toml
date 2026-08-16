@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_native.lua#rjson"
+fqn = "tests.test_native.rjson"
+name = "rjson"
+kind = "function"
+lang = "lua"
+content_hash = "1a459d5a7101a718"
+file = "tests/test_native.lua"
+file_hash = "68d141d843ba3fa4"
+signature = "local function rjson(r)"
+description = ""
+schema = 4
+line = 31
+mtime = 1783022631000000000
+container = []
+scope = [
+  "tests",
+  "test_native",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_native.lua [tests/test_native.lua]",
+]
+references = [
+  "del [tests/test_native.lua]",
+  "er [tests/test_native.lua]",
+  "gc [tests/test_native.lua]",
+  "gd [tests/test_native.lua]",
+  "lb [tests/test_native.lua]",
+  "miss [tests/test_native.lua]",
+  "of [tests/test_native.lua]",
+  "res [tests/test_native.lua]",
+]
+name_terms = [
+  "native",
+  "rjson",
+  "test",
+  "tests",
+  "tests.test_native.rjson",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_design_sources.py#DOC"
+fqn = "tests.test_design_sources.DOC"
+name = "DOC"
+kind = "constant"
+lang = "python"
+content_hash = "9d87a674af5317e9"
+file = "tests/test_design_sources.py"
+file_hash = "f89b5a94b236ce9c"
+signature = "DOC = \"\"\"\\"
+description = ""
+schema = 4
+line = 30
+mtime = 1786137963000000000
+container = []
+scope = [
+  "tests",
+  "test_design_sources",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "crib [tests/test_design_sources.py]",
+]
+name_terms = [
+  "DOC",
+  "design",
+  "doc",
+  "sources",
+  "test",
+  "tests",
+  "tests.test_design_sources.DOC",
+]

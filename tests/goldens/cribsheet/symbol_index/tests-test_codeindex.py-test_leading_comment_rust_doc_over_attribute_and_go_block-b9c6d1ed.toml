@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_codeindex.py#test_leading_comment_rust_doc_over_attribute_and_go_block"
+fqn = "tests.test_codeindex.test_leading_comment_rust_doc_over_attribute_and_go_block"
+name = "test_leading_comment_rust_doc_over_attribute_and_go_block"
+kind = "function"
+lang = "python"
+content_hash = "69c05db791f22a19"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_leading_comment_rust_doc_over_attribute_and_go_block():"
+description = ""
+schema = 4
+line = 152
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "_leading_comment [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "attribute",
+  "block",
+  "codeindex",
+  "comment",
+  "doc",
+  "go",
+  "leading",
+  "over",
+  "rust",
+  "test",
+  "test_leading_comment_rust_doc_over_attribute_and_go_block",
+  "tests",
+  "tests.test_codeindex.test_leading_comment_rust_doc_over_attribute_and_go_block",
+]

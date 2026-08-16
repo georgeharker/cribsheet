@@ -1,0 +1,40 @@
+symbol_ref = "crib/designs.py#Designs._unique_relpath"
+fqn = "crib.designs.Designs._unique_relpath"
+name = "_unique_relpath"
+kind = "method"
+lang = "python"
+content_hash = "150c8f5af608643e"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _unique_relpath(self, proj: str, kind: str, slug: str) -> str:"
+description = ""
+schema = 4
+line = 975
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_store [crib/designs.py]",
+  "root [crib/notestore.py]",
+]
+called_by = [
+  "_add [crib/designs.py]",
+]
+references = [
+  "_add [crib/designs.py]",
+]
+name_terms = [
+  "_unique_relpath",
+  "crib",
+  "crib.designs.Designs._unique_relpath",
+  "designs",
+  "relpath",
+  "unique",
+]

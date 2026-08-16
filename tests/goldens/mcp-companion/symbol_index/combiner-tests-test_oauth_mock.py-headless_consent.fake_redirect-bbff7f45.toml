@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#headless_consent.fake_redirect"
+fqn = "combiner.tests.test_oauth_mock.headless_consent.fake_redirect"
+name = "fake_redirect"
+kind = "function"
+lang = "python"
+content_hash = "4632a529395acfa1"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def fake_redirect(self: _RefreshTokenOAuth, authorization_url: str) -> None:"
+description = ""
+schema = 4
+line = 165
+mtime = 1784495646000000000
+container = [
+  "headless_consent",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "headless_consent",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "headless_consent [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.test_oauth_mock.headless_consent.fake_redirect",
+  "consent",
+  "fake",
+  "fake_redirect",
+  "headless",
+  "mock",
+  "oauth",
+  "redirect",
+  "test",
+  "tests",
+]

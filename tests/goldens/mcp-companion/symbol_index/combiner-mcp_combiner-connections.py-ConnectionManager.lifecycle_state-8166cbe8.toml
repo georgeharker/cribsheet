@@ -1,0 +1,55 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager.lifecycle_state"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager.lifecycle_state"
+name = "lifecycle_state"
+kind = "method"
+lang = "python"
+content_hash = "81974a2410c06965"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "def lifecycle_state(self, name: str) -> str:"
+description = ""
+schema = 4
+line = 345
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "build_server_status [combiner/mcp_combiner/status.py]",
+  "test_auth_failed_takes_precedence [combiner/tests/test_connections.py]",
+  "test_connected_when_tools_not_ready [combiner/tests/test_connections.py]",
+  "test_disconnected_when_client_not_connected [combiner/tests/test_connections.py]",
+  "test_disconnected_when_no_client [combiner/tests/test_connections.py]",
+  "test_mark_tools_unready_downgrades_ready_to_connected [combiner/tests/test_connections.py]",
+  "test_ready_when_connected_and_tools_ready [combiner/tests/test_connections.py]",
+  "test_unknown_when_not_managed [combiner/tests/test_connections.py]",
+]
+references = [
+  "build_server_status [combiner/mcp_combiner/status.py]",
+  "test_auth_failed_takes_precedence [combiner/tests/test_connections.py]",
+  "test_connected_when_tools_not_ready [combiner/tests/test_connections.py]",
+  "test_disconnected_when_client_not_connected [combiner/tests/test_connections.py]",
+  "test_disconnected_when_no_client [combiner/tests/test_connections.py]",
+  "test_mark_tools_unready_downgrades_ready_to_connected [combiner/tests/test_connections.py]",
+  "test_ready_when_connected_and_tools_ready [combiner/tests/test_connections.py]",
+  "test_unknown_when_not_managed [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.lifecycle_state",
+  "connection",
+  "connections",
+  "lifecycle",
+  "lifecycle_state",
+  "manager",
+  "mcp",
+  "state",
+]

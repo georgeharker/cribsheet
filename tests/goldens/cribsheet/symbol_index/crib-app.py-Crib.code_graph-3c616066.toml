@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.code_graph"
+fqn = "crib.app.Crib.code_graph"
+name = "code_graph"
+kind = "method"
+lang = "python"
+content_hash = "dc041a87bba5865d"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def code_graph(self, symbol: str | None = None, direction: str = \"callees\","
+description = ""
+schema = 4
+line = 2374
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "graph [crib/codequery.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "code_graph [crib/server.py]",
+]
+references = [
+  "code_graph [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "code",
+  "code_graph",
+  "crib",
+  "crib.app.Crib.code_graph",
+  "graph",
+]

@@ -1,0 +1,86 @@
+symbol_ref = "crib/notestore.py#NoteStore.abspath"
+fqn = "crib.notestore.NoteStore.abspath"
+name = "abspath"
+kind = "method"
+lang = "python"
+content_hash = "aabd09ccd3b91fbc"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "def abspath(self, project: str, relpath: str) -> Path:"
+description = ""
+schema = 4
+line = 129
+mtime = 1786564832000000000
+container = [
+  "NoteStore",
+]
+scope = [
+  "crib",
+  "notestore",
+  "NoteStore",
+]
+symbol_was = []
+calls = [
+  "_refuse_reserved [crib/notestore.py]",
+  "check_relpath [crib/paths.py]",
+  "confine [crib/paths.py]",
+  "resolve [crib/sources.py]",
+  "root [crib/notestore.py]",
+  "source_roots [crib/notestore.py]",
+]
+called_by = [
+  "_add [crib/designs.py]",
+  "_doc_abspath [crib/designs.py]",
+  "_note [crib/designs.py]",
+  "_ring_id [crib/notestore.py]",
+  "_save [crib/designs.py]",
+  "abspath [crib/app.py]",
+  "append [crib/learnings.py]",
+  "apropos [crib/app.py]",
+  "convert_notes [crib/learnings.py]",
+  "delete [crib/notestore.py]",
+  "edit [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "lookup [crib/app.py]",
+  "move [crib/notestore.py]",
+  "read [crib/learnings.py]",
+  "read [crib/notestore.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "rel_for_binding [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+  "test_reserved_prefixes_are_refused_with_the_facet_verb_named [tests/test_pillar_stores.py]",
+  "write [crib/notestore.py]",
+]
+references = [
+  "_add [crib/designs.py]",
+  "_doc_abspath [crib/designs.py]",
+  "_note [crib/designs.py]",
+  "_ring_id [crib/notestore.py]",
+  "_save [crib/designs.py]",
+  "abspath [crib/app.py]",
+  "append [crib/learnings.py]",
+  "apropos [crib/app.py]",
+  "convert_notes [crib/learnings.py]",
+  "delete [crib/notestore.py]",
+  "edit [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "lookup [crib/app.py]",
+  "move [crib/notestore.py]",
+  "read [crib/learnings.py]",
+  "read [crib/notestore.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "rel_for_binding [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+  "test_reserved_prefixes_are_refused_with_the_facet_verb_named [tests/test_pillar_stores.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "abspath",
+  "crib",
+  "crib.notestore.NoteStore.abspath",
+  "note",
+  "notestore",
+  "store",
+]

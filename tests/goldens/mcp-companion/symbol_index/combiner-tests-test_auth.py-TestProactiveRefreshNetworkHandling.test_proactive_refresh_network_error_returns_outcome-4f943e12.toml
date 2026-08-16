@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_auth.py#TestProactiveRefreshNetworkHandling.test_proactive_refresh_network_error_returns_outcome"
+fqn = "combiner.tests.test_auth.TestProactiveRefreshNetworkHandling.test_proactive_refresh_network_error_returns_outcome"
+name = "test_proactive_refresh_network_error_returns_outcome"
+kind = "method"
+lang = "python"
+content_hash = "2c62548d1e88a0de"
+file = "combiner/tests/test_auth.py"
+file_hash = "2b3aa7eeeed5bf38"
+signature = "@pytest.mark.anyio"
+description = ""
+schema = 4
+line = 265
+mtime = 1782852601000000000
+container = [
+  "TestProactiveRefreshNetworkHandling",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_auth",
+  "TestProactiveRefreshNetworkHandling",
+]
+symbol_was = []
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestProactiveRefreshNetworkHandling.test_proactive_refresh_network_error_returns_outcome",
+  "error",
+  "handling",
+  "network",
+  "outcome",
+  "proactive",
+  "refresh",
+  "returns",
+  "test",
+  "test_proactive_refresh_network_error_returns_outcome",
+  "tests",
+]

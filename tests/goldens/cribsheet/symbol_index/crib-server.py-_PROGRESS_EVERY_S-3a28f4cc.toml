@@ -1,0 +1,33 @@
+symbol_ref = "crib/server.py#_PROGRESS_EVERY_S"
+fqn = "crib.server._PROGRESS_EVERY_S"
+name = "_PROGRESS_EVERY_S"
+kind = "constant"
+lang = "python"
+content_hash = "0d837d4d2739dc81"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "_PROGRESS_EVERY_S = 2.0"
+description = ""
+schema = 4
+line = 21
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "project_index [crib/server.py]",
+]
+name_terms = [
+  "_PROGRESS_EVERY_S",
+  "crib",
+  "crib.server._PROGRESS_EVERY_S",
+  "every",
+  "progress",
+  "s",
+  "server",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_project_resolution.py#test_project_path_defers_to_crib_not_sticky"
+fqn = "tests.test_project_resolution.test_project_path_defers_to_crib_not_sticky"
+name = "test_project_path_defers_to_crib_not_sticky"
+kind = "function"
+lang = "python"
+content_hash = "a19f9fadb3ef8162"
+file = "tests/test_project_resolution.py"
+file_hash = "4fafa653cef61a42"
+signature = "def test_project_path_defers_to_crib_not_sticky(crib):"
+description = ""
+schema = 4
+line = 29
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_project_resolution",
+]
+symbol_was = []
+calls = [
+  "_source_project [crib/server.py]",
+  "session_state [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "defers",
+  "not",
+  "path",
+  "project",
+  "resolution",
+  "sticky",
+  "test",
+  "test_project_path_defers_to_crib_not_sticky",
+  "tests",
+  "tests.test_project_resolution.test_project_path_defers_to_crib_not_sticky",
+  "to",
+]

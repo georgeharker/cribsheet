@@ -1,0 +1,37 @@
+symbol_ref = "crib/session.py#ProjectResolution.unanchored"
+fqn = "crib.session.ProjectResolution.unanchored"
+name = "unanchored"
+kind = "field"
+lang = "python"
+content_hash = "ec78a193635e0f88"
+file = "crib/session.py"
+file_hash = "62abc565a376f242"
+signature = "unanchored: bool = False"
+description = ""
+schema = 4
+line = 50
+mtime = 1786664729000000000
+container = [
+  "ProjectResolution",
+]
+scope = [
+  "crib",
+  "session",
+  "ProjectResolution",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "echo [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+  "test_only_the_no_cwd_fallthrough_is_unanchored [tests/test_session.py]",
+]
+name_terms = [
+  "crib",
+  "crib.session.ProjectResolution.unanchored",
+  "project",
+  "resolution",
+  "session",
+  "unanchored",
+]

@@ -1,0 +1,45 @@
+symbol_ref = "tests/test_code_integrity.py#test_unreadable_file_raises_file_read_error_and_keeps_the_session"
+fqn = "tests.test_code_integrity.test_unreadable_file_raises_file_read_error_and_keeps_the_session"
+name = "test_unreadable_file_raises_file_read_error_and_keeps_the_session"
+kind = "function"
+lang = "python"
+content_hash = "a47f70b8d03d6dd3"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_unreadable_file_raises_file_read_error_and_keeps_the_session("
+description = ""
+schema = 4
+line = 156
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "LspSessionPool [crib/codeindex.py]",
+  "_fake_lsp [tests/test_code_integrity.py]",
+  "acquire [crib/codeindex.py]",
+  "close_all [crib/codeindex.py]",
+  "extract_file [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "code",
+  "error",
+  "file",
+  "integrity",
+  "keeps",
+  "raises",
+  "read",
+  "session",
+  "test",
+  "test_unreadable_file_raises_file_read_error_and_keeps_the_session",
+  "tests",
+  "tests.test_code_integrity.test_unreadable_file_raises_file_read_error_and_keeps_the_session",
+  "the",
+  "unreadable",
+]

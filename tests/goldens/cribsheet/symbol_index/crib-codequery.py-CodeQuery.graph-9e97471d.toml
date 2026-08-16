@@ -1,0 +1,52 @@
+symbol_ref = "crib/codequery.py#CodeQuery.graph"
+fqn = "crib.codequery.CodeQuery.graph"
+name = "graph"
+kind = "method"
+lang = "python"
+content_hash = "1f5bcc01bafb93ba"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def graph(self, proj: str, symbol: str | None = None,"
+description = ""
+schema = 4
+line = 397
+mtime = 1786664729000000000
+container = [
+  "CodeQuery",
+]
+scope = [
+  "crib",
+  "codequery",
+  "CodeQuery",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_marked [crib/codequery.py]",
+  "_nf [crib/codequery.py]",
+  "_project_graph [crib/codequery.py]",
+  "_rollup [crib/codequery.py]",
+  "_subgraph [crib/codequery.py]",
+  "_under [crib/codequery.py]",
+  "build [crib/codequery.py]",
+  "check_k [crib/codequery.py]",
+  "check_query [crib/codequery.py]",
+  "key [crib/symbols.py]",
+  "marks [crib/learnings.py]",
+  "resolution [crib/refs.py]",
+  "resolve_symbol_or_ref [crib/refs.py]",
+]
+called_by = [
+  "code_graph [crib/app.py]",
+]
+references = [
+  "code_graph [crib/app.py]",
+]
+name_terms = [
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery.graph",
+  "graph",
+  "query",
+]

@@ -1,0 +1,42 @@
+symbol_ref = "crib/app.py#Crib._skip_if_unavailable"
+fqn = "crib.app.Crib._skip_if_unavailable"
+name = "_skip_if_unavailable"
+kind = "method"
+lang = "python"
+content_hash = "2dd319dddfc47e0c"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _skip_if_unavailable(self, pp: ProjectPaths, what: str) -> bool:"
+description = ""
+schema = 4
+line = 296
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_in_repo_store_roots [crib/app.py]",
+  "_keyword_backlog [crib/app.py]",
+  "reconcile_all [crib/app.py]",
+]
+references = [
+  "_in_repo_store_roots [crib/app.py]",
+  "_keyword_backlog [crib/app.py]",
+  "reconcile_all [crib/app.py]",
+]
+name_terms = [
+  "_skip_if_unavailable",
+  "app",
+  "crib",
+  "crib.app.Crib._skip_if_unavailable",
+  "if",
+  "skip",
+  "unavailable",
+]

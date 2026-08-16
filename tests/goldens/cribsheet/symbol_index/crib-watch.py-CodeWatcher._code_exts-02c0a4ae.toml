@@ -1,0 +1,44 @@
+symbol_ref = "crib/watch.py#CodeWatcher._code_exts"
+fqn = "crib.watch.CodeWatcher._code_exts"
+name = "_code_exts"
+kind = "method"
+lang = "python"
+content_hash = "c5ad8be2a1de6acd"
+file = "crib/watch.py"
+file_hash = "c10c30739292eebe"
+signature = "def _code_exts(self) -> set[str]:"
+description = ""
+schema = 4
+line = 289
+mtime = 1786139638000000000
+container = [
+  "CodeWatcher",
+]
+scope = [
+  "crib",
+  "watch",
+  "CodeWatcher",
+]
+symbol_was = []
+calls = [
+  "load_specs [crib/codeindex.py]",
+]
+called_by = [
+  "_decode [crib/watch.py]",
+  "_watch_dirs [crib/watch.py]",
+  "test_code_watcher_decode_is_pure_path_work [tests/test_watcher.py]",
+]
+references = [
+  "_decode [crib/watch.py]",
+  "_watch_dirs [crib/watch.py]",
+  "test_code_watcher_decode_is_pure_path_work [tests/test_watcher.py]",
+]
+name_terms = [
+  "_code_exts",
+  "code",
+  "crib",
+  "crib.watch.CodeWatcher._code_exts",
+  "exts",
+  "watch",
+  "watcher",
+]

@@ -1,0 +1,35 @@
+symbol_ref = "crib/describe_queue.py#DescribeQueue"
+fqn = "crib.describe_queue.DescribeQueue"
+name = "DescribeQueue"
+kind = "class"
+lang = "python"
+content_hash = "769228fccfc8a28f"
+file = "crib/describe_queue.py"
+file_hash = "305c34e160ae74c1"
+signature = "class DescribeQueue:"
+description = ""
+schema = 4
+line = 44
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "describe_queue",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "body [tests/test_describe_queue.py]",
+  "start_watchers [crib/app.py]",
+  "test_backoff_delays_double_then_cap [tests/test_describe_queue.py]",
+  "test_failed_describe_backs_off_instead_of_restarting_at_zero [tests/test_describe_queue.py]",
+  "test_successful_describe_clears_the_entry [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "DescribeQueue",
+  "crib",
+  "crib.describe_queue.DescribeQueue",
+  "describe",
+  "queue",
+]

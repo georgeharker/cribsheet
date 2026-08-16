@@ -1,0 +1,34 @@
+symbol_ref = "combiner/mcp_combiner/server.py#_prime_tasks"
+fqn = "combiner.mcp_combiner.server._prime_tasks"
+name = "_prime_tasks"
+kind = "global"
+lang = "python"
+content_hash = "1bc778f56be9a945"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "_prime_tasks: set[asyncio.Task[Any]] = RUNTIME.prime_tasks"
+description = ""
+schema = 4
+line = 86
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "_prime_tasks",
+  "combiner",
+  "combiner.mcp_combiner.server._prime_tasks",
+  "mcp",
+  "prime",
+  "server",
+  "tasks",
+]

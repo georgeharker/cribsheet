@@ -1,0 +1,33 @@
+symbol_ref = "crib/versions.py#VersionEntry"
+fqn = "crib.versions.VersionEntry"
+name = "VersionEntry"
+kind = "class"
+lang = "python"
+content_hash = "7b1c351b4d17a031"
+file = "crib/versions.py"
+file_hash = "c84588155a74a02c"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 25
+mtime = 1785966856000000000
+container = []
+scope = [
+  "crib",
+  "versions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "list [crib/versions.py]",
+  "stash [crib/versions.py]",
+]
+name_terms = [
+  "VersionEntry",
+  "crib",
+  "crib.versions.VersionEntry",
+  "entry",
+  "version",
+  "versions",
+]

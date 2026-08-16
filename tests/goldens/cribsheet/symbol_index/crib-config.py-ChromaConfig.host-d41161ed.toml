@@ -1,0 +1,35 @@
+symbol_ref = "crib/config.py#ChromaConfig.host"
+fqn = "crib.config.ChromaConfig.host"
+name = "host"
+kind = "field"
+lang = "python"
+content_hash = "22092ea10990ba9e"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "host: str = \"127.0.0.1\""
+description = ""
+schema = 4
+line = 227
+mtime = 1786564832000000000
+container = [
+  "ChromaConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "ChromaConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_build_shared_chroma [crib/app.py]",
+  "probe [crib/app.py]",
+]
+name_terms = [
+  "chroma",
+  "config",
+  "crib",
+  "crib.config.ChromaConfig.host",
+  "host",
+]

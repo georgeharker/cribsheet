@@ -1,0 +1,36 @@
+symbol_ref = "crib/chunk.py#Chunk.text"
+fqn = "crib.chunk.Chunk.text"
+name = "text"
+kind = "field"
+lang = "python"
+content_hash = "d20c3c4eb85ef28c"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "text: str"
+description = ""
+schema = 4
+line = 59
+mtime = 1786136167000000000
+container = [
+  "Chunk",
+]
+scope = [
+  "crib",
+  "chunk",
+  "Chunk",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "index_text [crib/chunk.py]",
+  "section_hash [crib/chunk.py]",
+  "test_duplicate_headings_get_distinct_chunk_ids [tests/test_chunk_identity.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.text",
+  "text",
+]

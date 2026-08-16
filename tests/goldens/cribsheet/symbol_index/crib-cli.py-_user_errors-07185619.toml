@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#_user_errors"
+fqn = "crib.cli._user_errors"
+name = "_user_errors"
+kind = "function"
+lang = "python"
+content_hash = "85ce31aa008875bc"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _user_errors() -> tuple[type[BaseException], ...]:"
+description = ""
+schema = 4
+line = 2037
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [crib/cli.py]",
+]
+references = [
+  "main [crib/cli.py]",
+]
+name_terms = [
+  "_user_errors",
+  "cli",
+  "crib",
+  "crib.cli._user_errors",
+  "errors",
+  "user",
+]

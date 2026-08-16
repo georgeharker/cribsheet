@@ -1,0 +1,32 @@
+symbol_ref = "crib/section_index.py#_esc"
+fqn = "crib.section_index._esc"
+name = "_esc"
+kind = "global"
+lang = "python"
+content_hash = "3352e31d2bd07e64"
+file = "crib/section_index.py"
+file_hash = "a65e5200b70d95a7"
+signature = "_esc = tomlrec.esc"
+description = ""
+schema = 4
+line = 110
+mtime = 1786044759000000000
+container = []
+scope = [
+  "crib",
+  "section_index",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_render_toml [crib/section_index.py]",
+]
+name_terms = [
+  "_esc",
+  "crib",
+  "crib.section_index._esc",
+  "esc",
+  "index",
+  "section",
+]

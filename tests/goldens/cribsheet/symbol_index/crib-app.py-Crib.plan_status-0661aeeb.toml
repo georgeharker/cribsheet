@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.plan_status"
+fqn = "crib.app.Crib.plan_status"
+name = "plan_status"
+kind = "method"
+lang = "python"
+content_hash = "2d2e11a76c60d0ad"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def plan_status(self, ref: str, status: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 2293
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "plan_status [crib/designs.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "plan_status [crib/server.py]",
+]
+references = [
+  "plan_status [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.plan_status",
+  "plan",
+  "plan_status",
+  "status",
+]

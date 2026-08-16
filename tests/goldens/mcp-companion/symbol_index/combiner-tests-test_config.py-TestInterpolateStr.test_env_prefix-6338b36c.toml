@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_config.py#TestInterpolateStr.test_env_prefix"
+fqn = "combiner.tests.test_config.TestInterpolateStr.test_env_prefix"
+name = "test_env_prefix"
+kind = "method"
+lang = "python"
+content_hash = "2242412724967c18"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_env_prefix(self) -> None:"
+description = ""
+schema = 4
+line = 247
+mtime = 1782852601000000000
+container = [
+  "TestInterpolateStr",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+  "TestInterpolateStr",
+]
+symbol_was = []
+calls = [
+  "_interpolate_str [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateStr.test_env_prefix",
+  "config",
+  "env",
+  "interpolate",
+  "prefix",
+  "str",
+  "test",
+  "test_env_prefix",
+  "tests",
+]

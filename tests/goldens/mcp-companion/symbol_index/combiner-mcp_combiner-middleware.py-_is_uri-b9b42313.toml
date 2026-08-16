@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/middleware.py#_is_uri"
+fqn = "combiner.mcp_combiner.middleware._is_uri"
+name = "_is_uri"
+kind = "function"
+lang = "python"
+content_hash = "f51e3a95dc12df4f"
+file = "combiner/mcp_combiner/middleware.py"
+file_hash = "6dee47cf65146f20"
+signature = "def _is_uri(value: Any) -> TypeGuard[str]:"
+description = ""
+schema = 4
+line = 40
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "middleware",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_rewrite_app_meta [combiner/mcp_combiner/middleware.py]",
+]
+references = [
+  "_rewrite_app_meta [combiner/mcp_combiner/middleware.py]",
+]
+name_terms = [
+  "_is_uri",
+  "combiner",
+  "combiner.mcp_combiner.middleware._is_uri",
+  "is",
+  "mcp",
+  "middleware",
+  "uri",
+]

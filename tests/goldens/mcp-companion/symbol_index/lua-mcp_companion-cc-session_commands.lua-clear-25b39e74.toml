@@ -1,0 +1,41 @@
+symbol_ref = "lua/mcp_companion/cc/session_commands.lua#clear"
+fqn = "mcp_companion.cc.session_commands.clear"
+name = "clear"
+kind = "function"
+lang = "lua"
+content_hash = "4991e2829f116b19"
+file = "lua/mcp_companion/cc/session_commands.lua"
+file_hash = "70b271c7f95add3d"
+signature = "function M.clear(bufnr)"
+description = ""
+schema = 4
+line = 381
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "cc",
+  "session_commands",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.register [lua/mcp_companion/cc/session_commands.lua]",
+  "M.setup [lua/mcp_companion/cc/init.lua]",
+  "session_commands.lua [lua/mcp_companion/cc/session_commands.lua]",
+]
+references = [
+  "bufnr [lua/mcp_companion/cc/session_commands.lua]",
+  "chat [lua/mcp_companion/cc/session_commands.lua]",
+  "register [lua/mcp_companion/cc/session_commands.lua]",
+  "setup [lua/mcp_companion/cc/init.lua]",
+]
+name_terms = [
+  "cc",
+  "clear",
+  "commands",
+  "companion",
+  "mcp",
+  "mcp_companion.cc.session_commands.clear",
+  "session",
+]

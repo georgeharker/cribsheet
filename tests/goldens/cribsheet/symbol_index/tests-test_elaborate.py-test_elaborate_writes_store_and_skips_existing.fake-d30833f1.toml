@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_elaborate.py#test_elaborate_writes_store_and_skips_existing.fake"
+fqn = "tests.test_elaborate.test_elaborate_writes_store_and_skips_existing.fake"
+name = "fake"
+kind = "function"
+lang = "python"
+content_hash = "b2fd87e507db851d"
+file = "tests/test_elaborate.py"
+file_hash = "5cde1a0229322e89"
+signature = "async def fake(cfg, system, user, purpose=\"elaborate\", timeout=None):"
+description = ""
+schema = 4
+line = 157
+mtime = 1786578262000000000
+container = [
+  "test_elaborate_writes_store_and_skips_existing",
+]
+scope = [
+  "tests",
+  "test_elaborate",
+  "test_elaborate_writes_store_and_skips_existing",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_elaborate_writes_store_and_skips_existing [tests/test_elaborate.py]",
+]
+name_terms = [
+  "and",
+  "elaborate",
+  "existing",
+  "fake",
+  "skips",
+  "store",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_elaborate_writes_store_and_skips_existing.fake",
+  "writes",
+]

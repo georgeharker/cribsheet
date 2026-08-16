@@ -1,0 +1,31 @@
+symbol_ref = "tests/test_ops.lua#got_result"
+fqn = "tests.test_ops.got_result"
+name = "got_result"
+kind = "global"
+lang = "lua"
+content_hash = "c349d093acd6da1b"
+file = "tests/test_ops.lua"
+file_hash = "f9230679396cb256"
+signature = "local got_err, got_result"
+description = ""
+schema = 4
+line = 61
+mtime = 1783545086000000000
+container = []
+scope = [
+  "tests",
+  "test_ops",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "got",
+  "got_result",
+  "ops",
+  "result",
+  "test",
+  "tests",
+  "tests.test_ops.got_result",
+]

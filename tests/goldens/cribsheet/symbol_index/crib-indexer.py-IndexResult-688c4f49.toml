@@ -1,0 +1,37 @@
+symbol_ref = "crib/indexer.py#IndexResult"
+fqn = "crib.indexer.IndexResult"
+name = "IndexResult"
+kind = "class"
+lang = "python"
+content_hash = "469719f5a8a551c3"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 36
+mtime = 1786578262000000000
+container = []
+scope = [
+  "crib",
+  "indexer",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "_plan [crib/indexer.py]",
+  "_write_note [crib/app.py]",
+  "index_file [crib/indexer.py]",
+  "result [crib/indexer.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "IndexResult",
+  "crib",
+  "crib.indexer.IndexResult",
+  "index",
+  "indexer",
+  "result",
+]

@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestRefresh.test_refresh_with_unknown_token_is_auth_error"
+fqn = "combiner.tests.test_oauth_mock.TestRefresh.test_refresh_with_unknown_token_is_auth_error"
+name = "test_refresh_with_unknown_token_is_auth_error"
+kind = "method"
+lang = "python"
+content_hash = "859cf14635ce9396"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def test_refresh_with_unknown_token_is_auth_error("
+description = ""
+schema = 4
+line = 332
+mtime = 1784495646000000000
+container = [
+  "TestRefresh",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "TestRefresh",
+]
+symbol_was = []
+calls = [
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "_seed_refreshable [combiner/tests/test_oauth_mock.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestRefresh.test_refresh_with_unknown_token_is_auth_error",
+  "error",
+  "is",
+  "mock",
+  "oauth",
+  "refresh",
+  "test",
+  "test_refresh_with_unknown_token_is_auth_error",
+  "tests",
+  "token",
+  "unknown",
+  "with",
+]

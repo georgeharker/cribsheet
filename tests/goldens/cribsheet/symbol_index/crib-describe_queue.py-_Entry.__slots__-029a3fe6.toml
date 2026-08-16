@@ -1,0 +1,34 @@
+symbol_ref = "crib/describe_queue.py#_Entry.__slots__"
+fqn = "crib.describe_queue._Entry.__slots__"
+name = "__slots__"
+kind = "field"
+lang = "python"
+content_hash = "1da1f47f7484e4be"
+file = "crib/describe_queue.py"
+file_hash = "305c34e160ae74c1"
+signature = "__slots__ = (\"root\", \"pending\", \"level\", \"timer\")"
+description = ""
+schema = 4
+line = 35
+mtime = 1786664729000000000
+container = [
+  "_Entry",
+]
+scope = [
+  "crib",
+  "describe_queue",
+  "_Entry",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "__slots__",
+  "crib",
+  "crib.describe_queue._Entry.__slots__",
+  "describe",
+  "entry",
+  "queue",
+  "slots",
+]

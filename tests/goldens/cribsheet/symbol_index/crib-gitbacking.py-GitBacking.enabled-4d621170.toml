@@ -1,0 +1,51 @@
+symbol_ref = "crib/gitbacking.py#GitBacking.enabled"
+fqn = "crib.gitbacking.GitBacking.enabled"
+name = "enabled"
+kind = "method"
+lang = "python"
+content_hash = "0c1d7228a27494e7"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "@property"
+description = ""
+schema = 4
+line = 105
+mtime = 1785963011000000000
+container = [
+  "GitBacking",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "GitBacking",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "history [crib/gitbacking.py]",
+  "init [crib/gitbacking.py]",
+  "pull [crib/gitbacking.py]",
+  "push [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+  "snapshot_result [crib/gitbacking.py]",
+  "state [crib/gitbacking.py]",
+  "sync [crib/gitbacking.py]",
+]
+references = [
+  "history [crib/gitbacking.py]",
+  "init [crib/gitbacking.py]",
+  "pull [crib/gitbacking.py]",
+  "push [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+  "snapshot_result [crib/gitbacking.py]",
+  "state [crib/gitbacking.py]",
+  "sync [crib/gitbacking.py]",
+]
+name_terms = [
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking.enabled",
+  "enabled",
+  "git",
+  "gitbacking",
+]

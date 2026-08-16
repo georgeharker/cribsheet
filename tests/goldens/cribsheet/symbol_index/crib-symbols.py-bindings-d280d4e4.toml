@@ -1,0 +1,40 @@
+symbol_ref = "crib/symbols.py#bindings"
+fqn = "crib.symbols.bindings"
+name = "bindings"
+kind = "function"
+lang = "python"
+content_hash = "efa34214865b0d1f"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def bindings(entry: dict[str, Any]) -> list[str]:"
+description = ""
+schema = 4
+line = 429
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = [
+  "key [crib/symbols.py]",
+]
+called_by = [
+  "_names_for [crib/codeindex.py]",
+  "append [crib/learnings.py]",
+  "attach [crib/learnings.py]",
+  "candidates [crib/learnings.py]",
+  "convert_notes [crib/learnings.py]",
+  "marks [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+  "report [crib/learnings.py]",
+]
+references = []
+name_terms = [
+  "bindings",
+  "crib",
+  "crib.symbols.bindings",
+  "symbols",
+]

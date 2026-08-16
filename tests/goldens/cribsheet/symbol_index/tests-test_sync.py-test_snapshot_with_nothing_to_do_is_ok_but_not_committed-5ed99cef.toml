@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_sync.py#test_snapshot_with_nothing_to_do_is_ok_but_not_committed"
+fqn = "tests.test_sync.test_snapshot_with_nothing_to_do_is_ok_but_not_committed"
+name = "test_snapshot_with_nothing_to_do_is_ok_but_not_committed"
+kind = "function"
+lang = "python"
+content_hash = "962ceedbf0a40abd"
+file = "tests/test_sync.py"
+file_hash = "594e3dd701dbe999"
+signature = "def test_snapshot_with_nothing_to_do_is_ok_but_not_committed(tmp_path, remote):"
+description = ""
+schema = 4
+line = 199
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_sync",
+]
+symbol_was = []
+calls = [
+  "_machine [tests/test_sync.py]",
+  "_note [tests/test_sync.py]",
+  "snapshot_result [crib/gitbacking.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "but",
+  "committed",
+  "do",
+  "is",
+  "not",
+  "nothing",
+  "ok",
+  "snapshot",
+  "sync",
+  "test",
+  "test_snapshot_with_nothing_to_do_is_ok_but_not_committed",
+  "tests",
+  "tests.test_sync.test_snapshot_with_nothing_to_do_is_ok_but_not_committed",
+  "to",
+  "with",
+]

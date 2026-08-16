@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_repo_storage.py#test_resolves_to_the_store_when_the_stub_points_at_one"
+fqn = "tests.test_repo_storage.test_resolves_to_the_store_when_the_stub_points_at_one"
+name = "test_resolves_to_the_store_when_the_stub_points_at_one"
+kind = "function"
+lang = "python"
+content_hash = "16896d5e45639119"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_resolves_to_the_store_when_the_stub_points_at_one(paths, config, tmp_path):"
+description = ""
+schema = 4
+line = 107
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "ProjectConfig [crib/config.py]",
+  "pillar_dir [crib/paths.py]",
+  "resolve_project_paths [crib/paths.py]",
+  "save [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "at",
+  "one",
+  "points",
+  "repo",
+  "resolves",
+  "storage",
+  "store",
+  "stub",
+  "test",
+  "test_resolves_to_the_store_when_the_stub_points_at_one",
+  "tests",
+  "tests.test_repo_storage.test_resolves_to_the_store_when_the_stub_points_at_one",
+  "the",
+  "to",
+  "when",
+]

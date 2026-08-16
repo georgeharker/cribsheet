@@ -1,0 +1,31 @@
+symbol_ref = "tests/test_native.lua#ns"
+fqn = "tests.test_native.ns"
+name = "ns"
+kind = "variable"
+lang = "lua"
+content_hash = "8cdb9adf9440b01c"
+file = "tests/test_native.lua"
+file_hash = "68d141d843ba3fa4"
+signature = "local ns = state.field(\"native_servers\") or {}"
+description = ""
+schema = 4
+line = 217
+mtime = 1783022631000000000
+container = [
+  "do end",
+]
+scope = [
+  "tests",
+  "test_native",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "native",
+  "ns",
+  "test",
+  "tests",
+  "tests.test_native.ns",
+]

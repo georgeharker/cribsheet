@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestSchemaPublication.test_malformed_schema_published_verbatim"
+fqn = "combiner.tests.test_mockserver.TestSchemaPublication.test_malformed_schema_published_verbatim"
+name = "test_malformed_schema_published_verbatim"
+kind = "method"
+lang = "python"
+content_hash = "6af31648b19608db"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "async def test_malformed_schema_published_verbatim(self) -> None:"
+description = ""
+schema = 4
+line = 84
+mtime = 1783534978000000000
+container = [
+  "TestSchemaPublication",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+  "TestSchemaPublication",
+]
+symbol_was = []
+calls = [
+  "MockServer [combiner/mcp_combiner/mockserver.py]",
+  "_spec [combiner/tests/test_mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_mockserver.TestSchemaPublication.test_malformed_schema_published_verbatim",
+  "malformed",
+  "mockserver",
+  "publication",
+  "published",
+  "schema",
+  "test",
+  "test_malformed_schema_published_verbatim",
+  "tests",
+  "verbatim",
+]

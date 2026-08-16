@@ -1,0 +1,33 @@
+symbol_ref = "scripts/gen_notes_gold.py#ROOT"
+fqn = "scripts.gen_notes_gold.ROOT"
+name = "ROOT"
+kind = "constant"
+lang = "python"
+content_hash = "ccf98307102c6636"
+file = "scripts/gen_notes_gold.py"
+file_hash = "c163aa3d44ca5940"
+signature = "ROOT = Path(__file__).resolve().parent.parent"
+description = ""
+schema = 4
+line = 34
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "gen_notes_gold",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "main [scripts/gen_notes_gold.py]",
+]
+name_terms = [
+  "ROOT",
+  "gen",
+  "gold",
+  "notes",
+  "root",
+  "scripts",
+  "scripts.gen_notes_gold.ROOT",
+]

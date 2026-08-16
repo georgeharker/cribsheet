@@ -1,0 +1,32 @@
+symbol_ref = "scripts/eval_rigor.py#KWS"
+fqn = "scripts.eval_rigor.KWS"
+name = "KWS"
+kind = "constant"
+lang = "python"
+content_hash = "1ace3d8a2a03ec3b"
+file = "scripts/eval_rigor.py"
+file_hash = "352ea4b1e1221f95"
+signature = "KWS = SC / \"kws.json\""
+description = ""
+schema = 4
+line = 28
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_rigor",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "main [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "KWS",
+  "eval",
+  "kws",
+  "rigor",
+  "scripts",
+  "scripts.eval_rigor.KWS",
+]

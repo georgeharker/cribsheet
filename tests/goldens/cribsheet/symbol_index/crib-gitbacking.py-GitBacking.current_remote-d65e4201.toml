@@ -1,0 +1,45 @@
+symbol_ref = "crib/gitbacking.py#GitBacking.current_remote"
+fqn = "crib.gitbacking.GitBacking.current_remote"
+name = "current_remote"
+kind = "method"
+lang = "python"
+content_hash = "ffba92171103bf30"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def current_remote(self) -> str | None:"
+description = ""
+schema = 4
+line = 188
+mtime = 1785963011000000000
+container = [
+  "GitBacking",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "GitBacking",
+]
+symbol_was = []
+calls = [
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "_remote_head_branch [crib/gitbacking.py]",
+  "_run_git [crib/cli.py]",
+  "state [crib/gitbacking.py]",
+]
+references = [
+  "_remote_head_branch [crib/gitbacking.py]",
+  "_run_git [crib/cli.py]",
+  "state [crib/gitbacking.py]",
+]
+name_terms = [
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking.current_remote",
+  "current",
+  "current_remote",
+  "git",
+  "gitbacking",
+  "remote",
+]

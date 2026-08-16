@@ -1,0 +1,42 @@
+symbol_ref = "crib/notestore.py#StoreSpec.name"
+fqn = "crib.notestore.StoreSpec.name"
+name = "name"
+kind = "field"
+lang = "python"
+content_hash = "8931c29c62db3eb7"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "name: str"
+description = ""
+schema = 4
+line = 43
+mtime = 1786564832000000000
+container = [
+  "StoreSpec",
+]
+scope = [
+  "crib",
+  "notestore",
+  "StoreSpec",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_on_fs_change [crib/app.py]",
+  "_refuse_source [crib/notestore.py]",
+  "_requalify_facet_refs [crib/app.py]",
+  "abspath [crib/notestore.py]",
+  "delete [crib/notestore.py]",
+  "move [crib/notestore.py]",
+  "reindex [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.StoreSpec.name",
+  "name",
+  "notestore",
+  "spec",
+  "store",
+]

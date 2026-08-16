@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#GenerateConfig.max_tokens"
+fqn = "crib.config.GenerateConfig.max_tokens"
+name = "max_tokens"
+kind = "field"
+lang = "python"
+content_hash = "050a0f2b0bced3a1"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "max_tokens: int = 8192           # inline-fallback default; keep generous — a low"
+description = ""
+schema = 4
+line = 193
+mtime = 1786564832000000000
+container = [
+  "GenerateConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "GenerateConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "resolve_provider [crib/generate.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.GenerateConfig.max_tokens",
+  "generate",
+  "max",
+  "max_tokens",
+  "tokens",
+]

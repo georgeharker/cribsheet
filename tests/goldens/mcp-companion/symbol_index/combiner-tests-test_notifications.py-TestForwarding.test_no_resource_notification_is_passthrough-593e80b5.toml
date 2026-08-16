@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestForwarding.test_no_resource_notification_is_passthrough"
+fqn = "combiner.tests.test_notifications.TestForwarding.test_no_resource_notification_is_passthrough"
+name = "test_no_resource_notification_is_passthrough"
+kind = "method"
+lang = "python"
+content_hash = "16b1cea8fa7a50b7"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "async def test_no_resource_notification_is_passthrough(self) -> None:"
+description = ""
+schema = 4
+line = 327
+mtime = 1784493613000000000
+container = [
+  "TestForwarding",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "TestForwarding",
+]
+symbol_was = []
+calls = [
+  "_FakeClient [combiner/tests/test_notifications.py]",
+  "_FakeSession [combiner/tests/test_notifications.py]",
+  "_ResourceNotifyHandler [combiner/mcp_combiner/notifications.py]",
+  "_task_status [combiner/tests/test_notifications.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_notifications.TestForwarding.test_no_resource_notification_is_passthrough",
+  "forwarding",
+  "is",
+  "no",
+  "notification",
+  "notifications",
+  "passthrough",
+  "resource",
+  "test",
+  "test_no_resource_notification_is_passthrough",
+  "tests",
+]

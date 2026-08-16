@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_dim_recovery.py#_repo_with_docs"
+fqn = "tests.test_dim_recovery._repo_with_docs"
+name = "_repo_with_docs"
+kind = "function"
+lang = "python"
+content_hash = "ae745caba262ccd8"
+file = "tests/test_dim_recovery.py"
+file_hash = "5f6ffd4e573336e9"
+signature = "def _repo_with_docs(tmp_path, project):"
+description = ""
+schema = 4
+line = 50
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_dim_recovery",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap [tests/test_dim_recovery.py]",
+]
+references = [
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap [tests/test_dim_recovery.py]",
+]
+name_terms = [
+  "_repo_with_docs",
+  "dim",
+  "docs",
+  "recovery",
+  "repo",
+  "test",
+  "tests",
+  "tests.test_dim_recovery._repo_with_docs",
+  "with",
+]

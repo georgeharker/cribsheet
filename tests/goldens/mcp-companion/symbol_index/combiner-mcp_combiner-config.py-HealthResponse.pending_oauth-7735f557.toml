@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/config.py#HealthResponse.pending_oauth"
+fqn = "combiner.mcp_combiner.config.HealthResponse.pending_oauth"
+name = "pending_oauth"
+kind = "field"
+lang = "python"
+content_hash = "3e0d1e6dc1fe65bf"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "pending_oauth: list[str] = Field(default_factory=list)"
+description = ""
+schema = 4
+line = 423
+mtime = 1783633313000000000
+container = [
+  "HealthResponse",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "HealthResponse",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "health_check [combiner/mcp_combiner/routes.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.HealthResponse.pending_oauth",
+  "config",
+  "health",
+  "mcp",
+  "oauth",
+  "pending",
+  "pending_oauth",
+  "response",
+]

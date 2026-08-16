@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_symbol_convert.py#test_an_entry_without_a_file_is_not_convertible"
+fqn = "tests.test_symbol_convert.test_an_entry_without_a_file_is_not_convertible"
+name = "test_an_entry_without_a_file_is_not_convertible"
+kind = "function"
+lang = "python"
+content_hash = "d1c8020751c96925"
+file = "tests/test_symbol_convert.py"
+file_hash = "3cdbfd7f71b23e65"
+signature = "def test_an_entry_without_a_file_is_not_convertible():"
+description = ""
+schema = 4
+line = 100
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_convert",
+]
+symbol_was = []
+calls = [
+  "convertible [crib/symconvert.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "an",
+  "convert",
+  "convertible",
+  "entry",
+  "file",
+  "is",
+  "not",
+  "symbol",
+  "test",
+  "test_an_entry_without_a_file_is_not_convertible",
+  "tests",
+  "tests.test_symbol_convert.test_an_entry_without_a_file_is_not_convertible",
+  "without",
+]

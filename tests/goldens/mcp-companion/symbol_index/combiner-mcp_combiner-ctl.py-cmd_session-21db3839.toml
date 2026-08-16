@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#cmd_session"
+fqn = "combiner.mcp_combiner.ctl.cmd_session"
+name = "cmd_session"
+kind = "function"
+lang = "python"
+content_hash = "1d72b721c5da2e1b"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "async def cmd_session(args: argparse.Namespace) -> int:"
+description = ""
+schema = 4
+line = 469
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = [
+  "_emit [combiner/mcp_combiner/ctl.py]",
+  "_rest [combiner/mcp_combiner/ctl.py]",
+]
+called_by = []
+references = [
+  "add_ctl_parsers [combiner/mcp_combiner/ctl.py]",
+]
+name_terms = [
+  "cmd",
+  "cmd_session",
+  "combiner",
+  "combiner.mcp_combiner.ctl.cmd_session",
+  "ctl",
+  "mcp",
+  "session",
+]

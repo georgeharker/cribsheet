@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/config.py#CombinerConfig.get_server_status"
+fqn = "combiner.mcp_combiner.config.CombinerConfig.get_server_status"
+name = "get_server_status"
+kind = "method"
+lang = "python"
+content_hash = "460b02f627e47680"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def get_server_status(self, name: str) -> ServerStatusInfo:"
+description = ""
+schema = 4
+line = 573
+mtime = 1783633313000000000
+container = [
+  "CombinerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "CombinerConfig",
+]
+symbol_was = []
+calls = [
+  "ServerStatusInfo [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "build_server_status [combiner/mcp_combiner/status.py]",
+  "test_server_status_no_sharedserver [combiner/tests/test_config.py]",
+  "test_server_status_sharedserver_name [combiner/tests/test_config.py]",
+]
+references = [
+  "build_server_status [combiner/mcp_combiner/status.py]",
+  "test_server_status_no_sharedserver [combiner/tests/test_config.py]",
+  "test_server_status_sharedserver_name [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.CombinerConfig.get_server_status",
+  "config",
+  "get",
+  "get_server_status",
+  "mcp",
+  "server",
+  "status",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "scripts/eval_fusion.py#ltr_eval"
+fqn = "scripts.eval_fusion.ltr_eval"
+name = "ltr_eval"
+kind = "function"
+lang = "python"
+content_hash = "cc9155718ebba9b1"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def ltr_eval(feats, per_query):"
+description = ""
+schema = 4
+line = 297
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = [
+  "_logistic_fit [scripts/eval_fusion.py]",
+  "_ltr_rows [scripts/eval_fusion.py]",
+]
+called_by = [
+  "main [scripts/eval_fusion.py]",
+]
+references = [
+  "main [scripts/eval_fusion.py]",
+]
+name_terms = [
+  "eval",
+  "fusion",
+  "ltr",
+  "ltr_eval",
+  "scripts",
+  "scripts.eval_fusion.ltr_eval",
+]

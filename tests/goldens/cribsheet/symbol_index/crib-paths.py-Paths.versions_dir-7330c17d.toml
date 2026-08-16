@@ -1,0 +1,45 @@
+symbol_ref = "crib/paths.py#Paths.versions_dir"
+fqn = "crib.paths.Paths.versions_dir"
+name = "versions_dir"
+kind = "method"
+lang = "python"
+content_hash = "2959a18bc2988e2d"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "@property"
+description = ""
+schema = 4
+line = 104
+mtime = 1786564832000000000
+container = [
+  "Paths",
+]
+scope = [
+  "crib",
+  "paths",
+  "Paths",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "__init__ [crib/app.py]",
+  "ensure [crib/paths.py]",
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+  "resolve_project_paths [crib/paths.py]",
+]
+references = [
+  "__init__ [crib/app.py]",
+  "ensure [crib/paths.py]",
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+  "resolve_project_paths [crib/paths.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.Paths.versions_dir",
+  "dir",
+  "paths",
+  "versions",
+  "versions_dir",
+]

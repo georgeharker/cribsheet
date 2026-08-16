@@ -1,0 +1,38 @@
+symbol_ref = "crib/indexer.py#IndexResult.changed"
+fqn = "crib.indexer.IndexResult.changed"
+name = "changed"
+kind = "field"
+lang = "python"
+content_hash = "798eeabb3650666e"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "changed: bool"
+description = ""
+schema = 4
+line = 39
+mtime = 1786578262000000000
+container = [
+  "IndexResult",
+]
+scope = [
+  "crib",
+  "indexer",
+  "IndexResult",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "_plan [crib/indexer.py]",
+  "index_docs_insitu [crib/app.py]",
+  "reindex [crib/notestore.py]",
+]
+name_terms = [
+  "changed",
+  "crib",
+  "crib.indexer.IndexResult.changed",
+  "index",
+  "indexer",
+  "result",
+]

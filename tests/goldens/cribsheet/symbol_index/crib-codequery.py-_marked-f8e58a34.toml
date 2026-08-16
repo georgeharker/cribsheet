@@ -1,0 +1,37 @@
+symbol_ref = "crib/codequery.py#_marked"
+fqn = "crib.codequery._marked"
+name = "_marked"
+kind = "function"
+lang = "python"
+content_hash = "565b480740718135"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def _marked(node: dict[str, Any], marks: set[str]) -> bool:"
+description = ""
+schema = 4
+line = 28
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_project_graph [crib/codequery.py]",
+  "_subgraph [crib/codequery.py]",
+  "graph [crib/codequery.py]",
+]
+references = [
+  "_project_graph [crib/codequery.py]",
+  "_subgraph [crib/codequery.py]",
+  "graph [crib/codequery.py]",
+]
+name_terms = [
+  "_marked",
+  "codequery",
+  "crib",
+  "crib.codequery._marked",
+  "marked",
+]

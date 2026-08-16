@@ -1,0 +1,32 @@
+symbol_ref = "crib/codequery.py#MAX_DEPTH"
+fqn = "crib.codequery.MAX_DEPTH"
+name = "MAX_DEPTH"
+kind = "constant"
+lang = "python"
+content_hash = "4e3bba74d3fcf7d7"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "MAX_DEPTH = 25"
+description = ""
+schema = 4
+line = 67
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "graph [crib/codequery.py]",
+]
+name_terms = [
+  "MAX_DEPTH",
+  "codequery",
+  "crib",
+  "crib.codequery.MAX_DEPTH",
+  "depth",
+  "max",
+]

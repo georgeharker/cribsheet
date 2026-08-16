@@ -1,0 +1,58 @@
+symbol_ref = "crib/notes.py#Note.id"
+fqn = "crib.notes.Note.id"
+name = "id"
+kind = "method"
+lang = "python"
+content_hash = "6b1e50ca8770865d"
+file = "crib/notes.py"
+file_hash = "6e2385b754de60b6"
+signature = "@property"
+description = ""
+schema = 4
+line = 39
+mtime = 1785959234000000000
+container = [
+  "Note",
+]
+scope = [
+  "crib",
+  "notes",
+  "Note",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_add [crib/designs.py]",
+  "_id_of [tests/test_import.py]",
+  "_note_id [tests/test_claude_memory.py]",
+  "_plan [crib/indexer.py]",
+  "_requalify_facet_refs [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "move [crib/notestore.py]",
+  "test_forget_removes_file_and_index_but_stashes_version [tests/test_forget.py]",
+  "test_heal_file_rewrites_only_when_dirty [tests/test_normalize.py]",
+  "test_move_across_projects_preserves_id [tests/test_curation.py]",
+  "write [crib/notestore.py]",
+]
+references = [
+  "_add [crib/designs.py]",
+  "_id_of [tests/test_import.py]",
+  "_note_id [tests/test_claude_memory.py]",
+  "_plan [crib/indexer.py]",
+  "_requalify_facet_refs [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "move [crib/notestore.py]",
+  "test_forget_removes_file_and_index_but_stashes_version [tests/test_forget.py]",
+  "test_heal_file_rewrites_only_when_dirty [tests/test_normalize.py]",
+  "test_move_across_projects_preserves_id [tests/test_curation.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notes.Note.id",
+  "id",
+  "note",
+  "notes",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "crib/chunk.py#Section"
+fqn = "crib.chunk.Section"
+name = "Section"
+kind = "class"
+lang = "python"
+content_hash = "dc0226b4277ba8f8"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "class Section(NamedTuple):"
+description = ""
+schema = 4
+line = 192
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "chunk",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_split_sections [crib/chunk.py]",
+  "chunk_note [crib/chunk.py]",
+  "flush [crib/chunk.py]",
+]
+name_terms = [
+  "Section",
+  "chunk",
+  "crib",
+  "crib.chunk.Section",
+  "section",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "crib/codeindex.py#_ARRAYS"
+fqn = "crib.codeindex._ARRAYS"
+name = "_ARRAYS"
+kind = "constant"
+lang = "python"
+content_hash = "97cb1c731e1236ad"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "_ARRAYS = (\"container\", \"scope\", \"symbol_was\", \"calls\", \"called_by\", \"references\","
+description = ""
+schema = 4
+line = 1468
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_render [crib/codeindex.py]",
+  "test_the_persist_allow_list_covers_every_declared_field [tests/test_symbol_shape.py]",
+]
+name_terms = [
+  "_ARRAYS",
+  "arrays",
+  "codeindex",
+  "crib",
+  "crib.codeindex._ARRAYS",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "crib/notes.py#_ID_RE"
+fqn = "crib.notes._ID_RE"
+name = "_ID_RE"
+kind = "constant"
+lang = "python"
+content_hash = "88b3dfe3bda83c12"
+file = "crib/notes.py"
+file_hash = "6e2385b754de60b6"
+signature = "_ID_RE = re.compile(r\"^id:\\s*(\\S+)\\s*$\", re.MULTILINE)"
+description = ""
+schema = 4
+line = 17
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "notes",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "scan_id [crib/notes.py]",
+]
+name_terms = [
+  "_ID_RE",
+  "crib",
+  "crib.notes._ID_RE",
+  "id",
+  "notes",
+  "re",
+]

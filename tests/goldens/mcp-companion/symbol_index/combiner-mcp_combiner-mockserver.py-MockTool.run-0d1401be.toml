@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockTool.run"
+fqn = "combiner.mcp_combiner.mockserver.MockTool.run"
+name = "run"
+kind = "method"
+lang = "python"
+content_hash = "c038be12bf3ec33f"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "async def run(self, arguments: dict[str, Any]) -> ToolResult:"
+description = ""
+schema = 4
+line = 259
+mtime = 1783622326000000000
+container = [
+  "MockTool",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockTool",
+]
+symbol_was = []
+calls = [
+  "record_call [combiner/mcp_combiner/mockserver.py]",
+  "record_session [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockTool.run",
+  "mcp",
+  "mock",
+  "mockserver",
+  "run",
+  "tool",
+]

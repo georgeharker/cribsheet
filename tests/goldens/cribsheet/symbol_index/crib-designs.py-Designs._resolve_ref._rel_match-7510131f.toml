@@ -1,0 +1,41 @@
+symbol_ref = "crib/designs.py#Designs._resolve_ref._rel_match"
+fqn = "crib.designs.Designs._resolve_ref._rel_match"
+name = "_rel_match"
+kind = "function"
+lang = "python"
+content_hash = "39b853140691e121"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _rel_match(n: Node) -> bool:"
+description = ""
+schema = 4
+line = 756
+mtime = 1786693579000000000
+container = [
+  "Designs",
+  "_resolve_ref",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+  "_resolve_ref",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_resolve_ref [crib/designs.py]",
+]
+references = [
+  "_resolve_ref [crib/designs.py]",
+]
+name_terms = [
+  "_rel_match",
+  "crib",
+  "crib.designs.Designs._resolve_ref._rel_match",
+  "designs",
+  "match",
+  "ref",
+  "rel",
+  "resolve",
+]

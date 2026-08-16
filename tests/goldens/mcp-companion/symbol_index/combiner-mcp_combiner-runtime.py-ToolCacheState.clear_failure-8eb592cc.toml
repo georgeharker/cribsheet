@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#ToolCacheState.clear_failure"
+fqn = "combiner.mcp_combiner.runtime.ToolCacheState.clear_failure"
+name = "clear_failure"
+kind = "method"
+lang = "python"
+content_hash = "e02d97d97fa1a553"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def clear_failure(self, server: str) -> bool:"
+description = ""
+schema = 4
+line = 253
+mtime = 1784493613000000000
+container = [
+  "ToolCacheState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "ToolCacheState",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+]
+references = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+]
+name_terms = [
+  "cache",
+  "clear",
+  "clear_failure",
+  "combiner",
+  "combiner.mcp_combiner.runtime.ToolCacheState.clear_failure",
+  "failure",
+  "mcp",
+  "runtime",
+  "state",
+  "tool",
+]

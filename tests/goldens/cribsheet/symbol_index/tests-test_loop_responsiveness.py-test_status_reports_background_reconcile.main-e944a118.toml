@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_loop_responsiveness.py#test_status_reports_background_reconcile.main"
+fqn = "tests.test_loop_responsiveness.test_status_reports_background_reconcile.main"
+name = "main"
+kind = "function"
+lang = "python"
+content_hash = "1cc841e4b420ff88"
+file = "tests/test_loop_responsiveness.py"
+file_hash = "3e5d3308dc33e6f4"
+signature = "async def main():"
+description = ""
+schema = 4
+line = 129
+mtime = 1785959234000000000
+container = [
+  "test_status_reports_background_reconcile",
+]
+scope = [
+  "tests",
+  "test_loop_responsiveness",
+  "test_status_reports_background_reconcile",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_status_reports_background_reconcile [tests/test_loop_responsiveness.py]",
+]
+references = [
+  "test_status_reports_background_reconcile [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "background",
+  "loop",
+  "main",
+  "reconcile",
+  "reports",
+  "responsiveness",
+  "status",
+  "test",
+  "tests",
+  "tests.test_loop_responsiveness.test_status_reports_background_reconcile.main",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/fastvalidate.py#_JsonschemaShim.__getattr__"
+fqn = "combiner.mcp_combiner.fastvalidate._JsonschemaShim.__getattr__"
+name = "__getattr__"
+kind = "method"
+lang = "python"
+content_hash = "6ac274a8b3164a16"
+file = "combiner/mcp_combiner/fastvalidate.py"
+file_hash = "c78d5e6efce28ebe"
+signature = "def __getattr__(self, name: str) -> Any:"
+description = ""
+schema = 4
+line = 127
+mtime = 1782420032000000000
+container = [
+  "_JsonschemaShim",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "fastvalidate",
+  "_JsonschemaShim",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "__getattr__",
+  "combiner",
+  "combiner.mcp_combiner.fastvalidate._JsonschemaShim.__getattr__",
+  "fastvalidate",
+  "getattr",
+  "jsonschema",
+  "mcp",
+  "shim",
+]

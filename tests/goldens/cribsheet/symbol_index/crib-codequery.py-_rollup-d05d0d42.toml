@@ -1,0 +1,35 @@
+symbol_ref = "crib/codequery.py#_rollup"
+fqn = "crib.codequery._rollup"
+name = "_rollup"
+kind = "function"
+lang = "python"
+content_hash = "6fa088030cdfdf00"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def _rollup(sub: dict[str, Any], proj: str, axis: str,"
+description = ""
+schema = 4
+line = 119
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = [
+  "_group_key [crib/codequery.py]",
+]
+called_by = [
+  "graph [crib/codequery.py]",
+]
+references = [
+  "graph [crib/codequery.py]",
+]
+name_terms = [
+  "_rollup",
+  "codequery",
+  "crib",
+  "crib.codequery._rollup",
+  "rollup",
+]

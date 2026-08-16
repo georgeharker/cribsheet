@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_app_meta.py#TestRewriteAppMeta.test_leaves_other_ui_fields_untouched"
+fqn = "combiner.tests.test_app_meta.TestRewriteAppMeta.test_leaves_other_ui_fields_untouched"
+name = "test_leaves_other_ui_fields_untouched"
+kind = "method"
+lang = "python"
+content_hash = "5ed22727c8d93e4d"
+file = "combiner/tests/test_app_meta.py"
+file_hash = "fc52f36639c3320a"
+signature = "def test_leaves_other_ui_fields_untouched(self) -> None:"
+description = ""
+schema = 4
+line = 68
+mtime = 1783629928000000000
+container = [
+  "TestRewriteAppMeta",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_app_meta",
+  "TestRewriteAppMeta",
+]
+symbol_was = []
+calls = [
+  "_rewrite_app_meta [combiner/mcp_combiner/middleware.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "app",
+  "combiner",
+  "combiner.tests.test_app_meta.TestRewriteAppMeta.test_leaves_other_ui_fields_untouched",
+  "fields",
+  "leaves",
+  "meta",
+  "other",
+  "rewrite",
+  "test",
+  "test_leaves_other_ui_fields_untouched",
+  "tests",
+  "ui",
+  "untouched",
+]

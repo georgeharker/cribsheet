@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/schema.py#normalize_object_schema"
+fqn = "combiner.mcp_combiner.schema.normalize_object_schema"
+name = "normalize_object_schema"
+kind = "function"
+lang = "python"
+content_hash = "61b2aeed544e5805"
+file = "combiner/mcp_combiner/schema.py"
+file_hash = "1585312c14346875"
+signature = "def normalize_object_schema(params: Any) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 24
+mtime = 1783013405000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "schema",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_coerce_object_schemas [combiner/mcp_combiner/schemafix.py]",
+]
+references = [
+  "_coerce_object_schemas [combiner/mcp_combiner/schemafix.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.schema.normalize_object_schema",
+  "mcp",
+  "normalize",
+  "normalize_object_schema",
+  "object",
+  "schema",
+]

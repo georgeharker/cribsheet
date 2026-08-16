@@ -1,0 +1,35 @@
+symbol_ref = "crib/chunk.py#Section.occurrence"
+fqn = "crib.chunk.Section.occurrence"
+name = "occurrence"
+kind = "field"
+lang = "python"
+content_hash = "8bda9e486dd5cc10"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "occurrence: int"
+description = ""
+schema = 4
+line = 194
+mtime = 1786136167000000000
+container = [
+  "Section",
+]
+scope = [
+  "crib",
+  "chunk",
+  "Section",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_duplicate_headings_are_separate_sections_with_occurrences [tests/test_chunk_identity.py]",
+  "test_fenced_duplicate_heading_does_not_bump_the_occurrence_counter [tests/test_chunk_identity.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Section.occurrence",
+  "occurrence",
+  "section",
+]

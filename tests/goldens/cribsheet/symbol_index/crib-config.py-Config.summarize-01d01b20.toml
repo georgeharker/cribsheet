@@ -1,0 +1,34 @@
+symbol_ref = "crib/config.py#Config.summarize"
+fqn = "crib.config.Config.summarize"
+name = "summarize"
+kind = "field"
+lang = "python"
+content_hash = "0a6b3938a11d9a6d"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "summarize: dict[str, dict[str, Any]] = field(default_factory=dict)"
+description = ""
+schema = 4
+line = 264
+mtime = 1786564832000000000
+container = [
+  "Config",
+]
+scope = [
+  "crib",
+  "config",
+  "Config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "enrich [crib/app.py]",
+  "summarize [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.summarize",
+  "summarize",
+]

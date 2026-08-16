@@ -1,0 +1,51 @@
+symbol_ref = "crib/gitbacking.py#GitBacking.pull"
+fqn = "crib.gitbacking.GitBacking.pull"
+name = "pull"
+kind = "method"
+lang = "python"
+content_hash = "a9a0f2e22708ab9f"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def pull(self) -> SyncResult:"
+description = ""
+schema = 4
+line = 324
+mtime = 1785963011000000000
+container = [
+  "GitBacking",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "GitBacking",
+]
+symbol_was = []
+calls = [
+  "SyncResult [crib/gitbacking.py]",
+  "_branch [crib/gitbacking.py]",
+  "_conflicts [crib/gitbacking.py]",
+  "_ensure_gitattributes [crib/gitbacking.py]",
+  "_ensure_gitignore [crib/gitbacking.py]",
+  "_ensure_repo_config [crib/gitbacking.py]",
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "_run_git [crib/cli.py]",
+  "setup [crib/gitbacking.py]",
+  "sync [crib/gitbacking.py]",
+  "test_daemon_side_backing_refuses_network_git [tests/test_sync.py]",
+]
+references = [
+  "_run_git [crib/cli.py]",
+  "setup [crib/gitbacking.py]",
+  "sync [crib/gitbacking.py]",
+  "test_daemon_side_backing_refuses_network_git [tests/test_sync.py]",
+]
+name_terms = [
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking.pull",
+  "git",
+  "gitbacking",
+  "pull",
+]

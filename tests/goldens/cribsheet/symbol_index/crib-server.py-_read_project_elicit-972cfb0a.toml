@@ -1,0 +1,41 @@
+symbol_ref = "crib/server.py#_read_project_elicit"
+fqn = "crib.server._read_project_elicit"
+name = "_read_project_elicit"
+kind = "function"
+lang = "python"
+content_hash = "74bd59ee536fa525"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "async def _read_project_elicit(crib: Crib, res: ProjectResolution) -> ProjectResolution:"
+description = ""
+schema = 4
+line = 154
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "ProjectResolution [crib/session.py]",
+  "projects [crib/app.py]",
+  "resolve_project [crib/app.py]",
+  "session_state [crib/session.py]",
+]
+called_by = [
+  "run [crib/server.py]",
+]
+references = [
+  "run [crib/server.py]",
+]
+name_terms = [
+  "_read_project_elicit",
+  "crib",
+  "crib.server._read_project_elicit",
+  "elicit",
+  "project",
+  "read",
+  "server",
+]

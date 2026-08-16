@@ -1,0 +1,59 @@
+symbol_ref = "crib/notestore.py#NoteStore.write"
+fqn = "crib.notestore.NoteStore.write"
+name = "write"
+kind = "method"
+lang = "python"
+content_hash = "0b28cff269352889"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "async def write(self, project: str, relpath: str, note: Note) -> IndexResult:"
+description = ""
+schema = 4
+line = 207
+mtime = 1786564832000000000
+container = [
+  "NoteStore",
+]
+scope = [
+  "crib",
+  "notestore",
+  "NoteStore",
+]
+symbol_was = []
+calls = [
+  "_refuse_source [crib/notestore.py]",
+  "_stash_existing [crib/notestore.py]",
+  "abspath [crib/notestore.py]",
+  "dir [crib/notestore.py]",
+  "ensure_id [crib/notes.py]",
+  "index_file [crib/indexer.py]",
+  "save_atomic [crib/notes.py]",
+]
+called_by = [
+  "_add [crib/designs.py]",
+  "_save [crib/designs.py]",
+  "_write_note [crib/app.py]",
+  "append [crib/learnings.py]",
+  "convert_notes [crib/learnings.py]",
+  "edit [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+]
+references = [
+  "_add [crib/designs.py]",
+  "_save [crib/designs.py]",
+  "_write_note [crib/app.py]",
+  "append [crib/learnings.py]",
+  "convert_notes [crib/learnings.py]",
+  "edit [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.NoteStore.write",
+  "note",
+  "notestore",
+  "store",
+  "write",
+]

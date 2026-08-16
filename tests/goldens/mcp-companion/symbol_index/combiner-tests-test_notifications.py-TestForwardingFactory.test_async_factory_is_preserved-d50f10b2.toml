@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestForwardingFactory.test_async_factory_is_preserved"
+fqn = "combiner.tests.test_notifications.TestForwardingFactory.test_async_factory_is_preserved"
+name = "test_async_factory_is_preserved"
+kind = "method"
+lang = "python"
+content_hash = "42de77d32851f18c"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "async def test_async_factory_is_preserved(self) -> None:"
+description = ""
+schema = 4
+line = 200
+mtime = 1784493613000000000
+container = [
+  "TestForwardingFactory",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "TestForwardingFactory",
+]
+symbol_was = []
+calls = [
+  "_resolve [combiner/tests/test_notifications.py]",
+  "forwarding_factory [combiner/mcp_combiner/notifications.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "async",
+  "combiner",
+  "combiner.tests.test_notifications.TestForwardingFactory.test_async_factory_is_preserved",
+  "factory",
+  "forwarding",
+  "is",
+  "notifications",
+  "preserved",
+  "test",
+  "test_async_factory_is_preserved",
+  "tests",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_status.py#test_status_sweeps_progress_signal.fake"
+fqn = "tests.test_status.test_status_sweeps_progress_signal.fake"
+name = "fake"
+kind = "function"
+lang = "python"
+content_hash = "5b96d643592492ab"
+file = "tests/test_status.py"
+file_hash = "09906d8541a460d9"
+signature = "def fake(rt, rel, proj, patch_edges, existing=None, describe_mode=\"inline\", sweep=False):"
+description = ""
+schema = 4
+line = 71
+mtime = 1786664729000000000
+container = [
+  "test_status_sweeps_progress_signal",
+]
+scope = [
+  "tests",
+  "test_status",
+  "test_status_sweeps_progress_signal",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_status_sweeps_progress_signal [tests/test_status.py]",
+]
+name_terms = [
+  "fake",
+  "progress",
+  "signal",
+  "status",
+  "sweeps",
+  "test",
+  "tests",
+  "tests.test_status.test_status_sweeps_progress_signal.fake",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "combiner/mcp_combiner/proxyfactory.py#logger"
+fqn = "combiner.mcp_combiner.proxyfactory.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/proxyfactory.py"
+file_hash = "1092ffabcd4f650e"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+schema = 4
+line = 33
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "proxyfactory",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.proxyfactory.logger",
+  "logger",
+  "mcp",
+  "proxyfactory",
+]

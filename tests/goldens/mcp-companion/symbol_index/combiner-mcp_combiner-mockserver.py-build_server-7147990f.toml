@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#build_server"
+fqn = "combiner.mcp_combiner.mockserver.build_server"
+name = "build_server"
+kind = "function"
+lang = "python"
+content_hash = "bcfedfc07faf4115"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def build_server("
+description = ""
+schema = 4
+line = 929
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = [
+  "MockServer [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = [
+  "main [combiner/mcp_combiner/mockserver.py]",
+  "make [combiner/tests/test_oauth_mock.py]",
+]
+references = [
+  "main [combiner/mcp_combiner/mockserver.py]",
+  "make [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "build",
+  "build_server",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.build_server",
+  "mcp",
+  "mockserver",
+  "server",
+]

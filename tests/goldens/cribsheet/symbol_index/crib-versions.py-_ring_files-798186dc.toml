@@ -1,0 +1,38 @@
+symbol_ref = "crib/versions.py#_ring_files"
+fqn = "crib.versions._ring_files"
+name = "_ring_files"
+kind = "function"
+lang = "python"
+content_hash = "0ecc9e4874b8a48b"
+file = "crib/versions.py"
+file_hash = "c84588155a74a02c"
+signature = "def _ring_files(d: Path) -> list[tuple[int, Path]]:"
+description = ""
+schema = 4
+line = 33
+mtime = 1785966856000000000
+container = []
+scope = [
+  "crib",
+  "versions",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_next_seq [crib/versions.py]",
+  "_prune [crib/versions.py]",
+  "list [crib/versions.py]",
+]
+references = [
+  "_next_seq [crib/versions.py]",
+  "_prune [crib/versions.py]",
+  "list [crib/versions.py]",
+]
+name_terms = [
+  "_ring_files",
+  "crib",
+  "crib.versions._ring_files",
+  "files",
+  "ring",
+  "versions",
+]

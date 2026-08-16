@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_designs.py#test_plan_move_reorders_without_touching_deps"
+fqn = "tests.test_designs.test_plan_move_reorders_without_touching_deps"
+name = "test_plan_move_reorders_without_touching_deps"
+kind = "function"
+lang = "python"
+content_hash = "02f40bae6f65332f"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_plan_move_reorders_without_touching_deps(crib):"
+description = ""
+schema = 4
+line = 251
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "_by_rank [tests/test_designs.py]",
+  "_titles [tests/test_designs.py]",
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "deps",
+  "designs",
+  "move",
+  "plan",
+  "reorders",
+  "test",
+  "test_plan_move_reorders_without_touching_deps",
+  "tests",
+  "tests.test_designs.test_plan_move_reorders_without_touching_deps",
+  "touching",
+  "without",
+]

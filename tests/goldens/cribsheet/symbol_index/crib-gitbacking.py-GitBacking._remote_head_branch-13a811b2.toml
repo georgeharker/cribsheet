@@ -1,0 +1,43 @@
+symbol_ref = "crib/gitbacking.py#GitBacking._remote_head_branch"
+fqn = "crib.gitbacking.GitBacking._remote_head_branch"
+name = "_remote_head_branch"
+kind = "method"
+lang = "python"
+content_hash = "138b4918adaaf2d2"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def _remote_head_branch(self) -> str | None:"
+description = ""
+schema = 4
+line = 419
+mtime = 1785963011000000000
+container = [
+  "GitBacking",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "GitBacking",
+]
+symbol_was = []
+calls = [
+  "_run [crib/gitbacking.py]",
+  "current_remote [crib/gitbacking.py]",
+]
+called_by = [
+  "_branch [crib/gitbacking.py]",
+]
+references = [
+  "_branch [crib/gitbacking.py]",
+]
+name_terms = [
+  "_remote_head_branch",
+  "backing",
+  "branch",
+  "crib",
+  "crib.gitbacking.GitBacking._remote_head_branch",
+  "git",
+  "gitbacking",
+  "head",
+  "remote",
+]

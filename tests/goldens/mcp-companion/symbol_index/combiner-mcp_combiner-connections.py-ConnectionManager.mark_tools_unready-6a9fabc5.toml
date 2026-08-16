@@ -1,0 +1,48 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager.mark_tools_unready"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager.mark_tools_unready"
+name = "mark_tools_unready"
+kind = "method"
+lang = "python"
+content_hash = "ba368c155289a9aa"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "def mark_tools_unready(self, name: str) -> None:"
+description = ""
+schema = 4
+line = 370
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "test_http_server_reflects_connection_lifecycle [combiner/tests/test_connections.py]",
+  "test_mark_tools_unready_downgrades_ready_to_connected [combiner/tests/test_connections.py]",
+  "test_mark_tools_unready_unknown_is_noop [combiner/tests/test_connections.py]",
+]
+references = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "test_http_server_reflects_connection_lifecycle [combiner/tests/test_connections.py]",
+  "test_mark_tools_unready_downgrades_ready_to_connected [combiner/tests/test_connections.py]",
+  "test_mark_tools_unready_unknown_is_noop [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.mark_tools_unready",
+  "connection",
+  "connections",
+  "manager",
+  "mark",
+  "mark_tools_unready",
+  "mcp",
+  "tools",
+  "unready",
+]

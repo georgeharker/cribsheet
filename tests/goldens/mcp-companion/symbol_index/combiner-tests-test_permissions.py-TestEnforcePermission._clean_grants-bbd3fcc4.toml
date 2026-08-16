@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestEnforcePermission._clean_grants"
+fqn = "combiner.tests.test_permissions.TestEnforcePermission._clean_grants"
+name = "_clean_grants"
+kind = "method"
+lang = "python"
+content_hash = "0ab5e9c0a59077ee"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "@pytest.fixture(autouse=True)"
+description = ""
+schema = 4
+line = 212
+mtime = 1783633313000000000
+container = [
+  "TestEnforcePermission",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "TestEnforcePermission",
+]
+symbol_was = []
+calls = [
+  "clear_granted [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "_clean_grants",
+  "clean",
+  "combiner",
+  "combiner.tests.test_permissions.TestEnforcePermission._clean_grants",
+  "enforce",
+  "grants",
+  "permission",
+  "permissions",
+  "test",
+  "tests",
+]

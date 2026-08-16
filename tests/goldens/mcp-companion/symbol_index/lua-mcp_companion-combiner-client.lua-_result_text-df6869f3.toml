@@ -1,0 +1,38 @@
+symbol_ref = "lua/mcp_companion/combiner/client.lua#_result_text"
+fqn = "mcp_companion.combiner.client._result_text"
+name = "_result_text"
+kind = "function"
+lang = "lua"
+content_hash = "8c23953c29adb614"
+file = "lua/mcp_companion/combiner/client.lua"
+file_hash = "f8af10d7cbc68062"
+signature = "local function _result_text(result)"
+description = ""
+schema = 4
+line = 977
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "combiner",
+  "client",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_meta_op [lua/mcp_companion/combiner/client.lua]",
+  "client.lua [lua/mcp_companion/combiner/client.lua]",
+]
+references = [
+  "_meta_op [lua/mcp_companion/combiner/client.lua]",
+]
+name_terms = [
+  "_result_text",
+  "client",
+  "combiner",
+  "companion",
+  "mcp",
+  "mcp_companion.combiner.client._result_text",
+  "result",
+  "text",
+]

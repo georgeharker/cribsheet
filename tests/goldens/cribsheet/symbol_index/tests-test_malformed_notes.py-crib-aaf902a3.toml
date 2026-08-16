@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_malformed_notes.py#crib"
+fqn = "tests.test_malformed_notes.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+content_hash = "843661f7d5a24b5e"
+file = "tests/test_malformed_notes.py"
+file_hash = "e46dac071f53c31f"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 26
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_malformed_notes",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "malformed",
+  "notes",
+  "test",
+  "tests",
+  "tests.test_malformed_notes.crib",
+]

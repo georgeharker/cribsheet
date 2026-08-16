@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#cmd_call"
+fqn = "combiner.mcp_combiner.ctl.cmd_call"
+name = "cmd_call"
+kind = "function"
+lang = "python"
+content_hash = "a26430a18146d428"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "async def cmd_call(args: argparse.Namespace) -> int:"
+description = ""
+schema = 4
+line = 450
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = [
+  "_call_meta [combiner/mcp_combiner/ctl.py]",
+  "_emit [combiner/mcp_combiner/ctl.py]",
+]
+called_by = []
+references = [
+  "add_ctl_parsers [combiner/mcp_combiner/ctl.py]",
+]
+name_terms = [
+  "call",
+  "cmd",
+  "cmd_call",
+  "combiner",
+  "combiner.mcp_combiner.ctl.cmd_call",
+  "ctl",
+  "mcp",
+]

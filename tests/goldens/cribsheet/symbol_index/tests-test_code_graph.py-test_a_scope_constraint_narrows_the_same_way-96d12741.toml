@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_code_graph.py#test_a_scope_constraint_narrows_the_same_way"
+fqn = "tests.test_code_graph.test_a_scope_constraint_narrows_the_same_way"
+name = "test_a_scope_constraint_narrows_the_same_way"
+kind = "function"
+lang = "python"
+content_hash = "c2faf025a779ada9"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def test_a_scope_constraint_narrows_the_same_way(crib, tmp_path):"
+description = ""
+schema = 4
+line = 593
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "_rust_ish [tests/test_code_graph.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "code",
+  "constraint",
+  "graph",
+  "narrows",
+  "same",
+  "scope",
+  "test",
+  "test_a_scope_constraint_narrows_the_same_way",
+  "tests",
+  "tests.test_code_graph.test_a_scope_constraint_narrows_the_same_way",
+  "the",
+  "way",
+]

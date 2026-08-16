@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_config.py#TestEnvCoercion.test_int_value_coerced_to_str"
+fqn = "combiner.tests.test_config.TestEnvCoercion.test_int_value_coerced_to_str"
+name = "test_int_value_coerced_to_str"
+kind = "method"
+lang = "python"
+content_hash = "aba90719c0070d2c"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_int_value_coerced_to_str(self) -> None:"
+description = ""
+schema = 4
+line = 167
+mtime = 1782852601000000000
+container = [
+  "TestEnvCoercion",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+  "TestEnvCoercion",
+]
+symbol_was = []
+calls = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "coerced",
+  "coercion",
+  "combiner",
+  "combiner.tests.test_config.TestEnvCoercion.test_int_value_coerced_to_str",
+  "config",
+  "env",
+  "int",
+  "str",
+  "test",
+  "test_int_value_coerced_to_str",
+  "tests",
+  "to",
+  "value",
+]

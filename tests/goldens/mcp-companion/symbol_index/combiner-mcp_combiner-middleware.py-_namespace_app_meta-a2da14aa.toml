@@ -1,0 +1,50 @@
+symbol_ref = "combiner/mcp_combiner/middleware.py#_namespace_app_meta"
+fqn = "combiner.mcp_combiner.middleware._namespace_app_meta"
+name = "_namespace_app_meta"
+kind = "function"
+lang = "python"
+content_hash = "48298119945d562a"
+file = "combiner/mcp_combiner/middleware.py"
+file_hash = "6dee47cf65146f20"
+signature = "def _namespace_app_meta(tools: Sequence[Tool]) -> list[Tool]:"
+description = ""
+schema = 4
+line = 74
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "middleware",
+]
+symbol_was = []
+calls = [
+  "_find_server_for_tool [combiner/mcp_combiner/toolcache.py]",
+  "_rewrite_app_meta [combiner/mcp_combiner/middleware.py]",
+]
+called_by = [
+  "on_list_tools [combiner/mcp_combiner/middleware.py]",
+  "test_applied_once_not_double [combiner/tests/test_app_meta.py]",
+  "test_recovers_namespace_from_tool_name [combiner/tests/test_app_meta.py]",
+  "test_tool_pointer_matches_namespaced_resource [combiner/tests/test_app_meta.py]",
+  "test_tools_without_meta_pass_through [combiner/tests/test_app_meta.py]",
+  "test_unowned_tools_pass_through [combiner/tests/test_app_meta.py]",
+]
+references = [
+  "on_list_tools [combiner/mcp_combiner/middleware.py]",
+  "test_applied_once_not_double [combiner/tests/test_app_meta.py]",
+  "test_recovers_namespace_from_tool_name [combiner/tests/test_app_meta.py]",
+  "test_tool_pointer_matches_namespaced_resource [combiner/tests/test_app_meta.py]",
+  "test_tools_without_meta_pass_through [combiner/tests/test_app_meta.py]",
+  "test_unowned_tools_pass_through [combiner/tests/test_app_meta.py]",
+]
+name_terms = [
+  "_namespace_app_meta",
+  "app",
+  "combiner",
+  "combiner.mcp_combiner.middleware._namespace_app_meta",
+  "mcp",
+  "meta",
+  "middleware",
+  "namespace",
+]

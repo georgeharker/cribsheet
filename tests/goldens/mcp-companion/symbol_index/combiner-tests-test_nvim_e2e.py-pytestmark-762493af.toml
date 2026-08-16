@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_nvim_e2e.py#pytestmark"
+fqn = "combiner.tests.test_nvim_e2e.pytestmark"
+name = "pytestmark"
+kind = "global"
+lang = "python"
+content_hash = "72f31a44ccba0744"
+file = "combiner/tests/test_nvim_e2e.py"
+file_hash = "45d9b468ec0b5858"
+signature = "pytestmark = ["
+description = ""
+schema = 4
+line = 43
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_nvim_e2e",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "2",
+  "combiner",
+  "combiner.tests.test_nvim_e2e.pytestmark",
+  "e",
+  "nvim",
+  "pytestmark",
+  "test",
+  "tests",
+]

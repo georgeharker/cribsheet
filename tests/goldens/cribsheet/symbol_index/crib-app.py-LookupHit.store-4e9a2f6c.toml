@@ -1,0 +1,36 @@
+symbol_ref = "crib/app.py#LookupHit.store"
+fqn = "crib.app.LookupHit.store"
+name = "store"
+kind = "field"
+lang = "python"
+content_hash = "5cbdbc9213dc812f"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "store: str = \"notes\""
+description = ""
+schema = 4
+line = 84
+mtime = 1786693579000000000
+container = [
+  "LookupHit",
+]
+scope = [
+  "crib",
+  "app",
+  "LookupHit",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "apropos [crib/app.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.LookupHit.store",
+  "hit",
+  "lookup",
+  "store",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#_s256_challenge"
+fqn = "combiner.mcp_combiner.mockserver._s256_challenge"
+name = "_s256_challenge"
+kind = "function"
+lang = "python"
+content_hash = "e5348a5eebe80b21"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def _s256_challenge(code_verifier: str) -> str:"
+description = ""
+schema = 4
+line = 657
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_grant_authorization_code [combiner/mcp_combiner/mockserver.py]",
+]
+references = [
+  "_grant_authorization_code [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "256",
+  "_s256_challenge",
+  "challenge",
+  "combiner",
+  "combiner.mcp_combiner.mockserver._s256_challenge",
+  "mcp",
+  "mockserver",
+  "s",
+]

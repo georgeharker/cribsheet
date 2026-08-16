@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#_call_echo"
+fqn = "combiner.tests.test_oauth_mock._call_echo"
+name = "_call_echo"
+kind = "function"
+lang = "python"
+content_hash = "b17e5bc1d7150a6d"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def _call_echo(mock: ServedOAuthMock, oauth: _RefreshTokenOAuth, msg: str) -> str:"
+description = ""
+schema = 4
+line = 189
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_cache_without_persisted_expiry_bootstraps_one_refresh [combiner/tests/test_oauth_mock.py]",
+  "test_expired_cached_token_refreshed_silently_on_restart [combiner/tests/test_oauth_mock.py]",
+  "test_expired_token_refreshed_and_new_bearer_attached [combiner/tests/test_oauth_mock.py]",
+  "test_full_flow_issues_and_attaches_tokens [combiner/tests/test_oauth_mock.py]",
+  "test_unauthenticated_call_is_rejected_then_recovers [combiner/tests/test_oauth_mock.py]",
+  "test_valid_cached_token_reused_without_new_consent [combiner/tests/test_oauth_mock.py]",
+]
+references = [
+  "test_cache_without_persisted_expiry_bootstraps_one_refresh [combiner/tests/test_oauth_mock.py]",
+  "test_expired_cached_token_refreshed_silently_on_restart [combiner/tests/test_oauth_mock.py]",
+  "test_expired_token_refreshed_and_new_bearer_attached [combiner/tests/test_oauth_mock.py]",
+  "test_full_flow_issues_and_attaches_tokens [combiner/tests/test_oauth_mock.py]",
+  "test_unauthenticated_call_is_rejected_then_recovers [combiner/tests/test_oauth_mock.py]",
+  "test_valid_cached_token_reused_without_new_consent [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "_call_echo",
+  "call",
+  "combiner",
+  "combiner.tests.test_oauth_mock._call_echo",
+  "echo",
+  "mock",
+  "oauth",
+  "test",
+  "tests",
+]

@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_RefreshOutcome.AUTH_ERROR"
+fqn = "combiner.mcp_combiner.auth._RefreshOutcome.AUTH_ERROR"
+name = "AUTH_ERROR"
+kind = "constant"
+lang = "python"
+content_hash = "d0083b1fba3ace7c"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "AUTH_ERROR = \"auth_error\"  # permanent — need full re-auth"
+description = ""
+schema = 4
+line = 60
+mtime = 1783622326000000000
+container = [
+  "_RefreshOutcome",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+  "_RefreshOutcome",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_drive_401 [combiner/tests/test_auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+  "test_auth_error_leaves_tokens_for_sdk_to_handle [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_auth_error_falls_through [combiner/tests/test_auth.py]",
+  "test_refresh_with_unknown_token_is_auth_error [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "AUTH_ERROR",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshOutcome.AUTH_ERROR",
+  "error",
+  "mcp",
+  "outcome",
+  "refresh",
+]

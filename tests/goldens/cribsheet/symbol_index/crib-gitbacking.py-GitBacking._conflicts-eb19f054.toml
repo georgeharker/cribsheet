@@ -1,0 +1,40 @@
+symbol_ref = "crib/gitbacking.py#GitBacking._conflicts"
+fqn = "crib.gitbacking.GitBacking._conflicts"
+name = "_conflicts"
+kind = "method"
+lang = "python"
+content_hash = "4c3d70235fa57eb1"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def _conflicts(self) -> list[str]:"
+description = ""
+schema = 4
+line = 320
+mtime = 1785963011000000000
+container = [
+  "GitBacking",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "GitBacking",
+]
+symbol_was = []
+calls = [
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "pull [crib/gitbacking.py]",
+]
+references = [
+  "pull [crib/gitbacking.py]",
+]
+name_terms = [
+  "_conflicts",
+  "backing",
+  "conflicts",
+  "crib",
+  "crib.gitbacking.GitBacking._conflicts",
+  "git",
+  "gitbacking",
+]

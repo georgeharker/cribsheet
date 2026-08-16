@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_keyword_refresh.py#test_enrich_one_call_covers_both_facets"
+fqn = "tests.test_keyword_refresh.test_enrich_one_call_covers_both_facets"
+name = "test_enrich_one_call_covers_both_facets"
+kind = "function"
+lang = "python"
+content_hash = "3504857f6b0320f2"
+file = "tests/test_keyword_refresh.py"
+file_hash = "d758ff5010231936"
+signature = "def test_enrich_one_call_covers_both_facets(crib, monkeypatch):"
+description = ""
+schema = 4
+line = 55
+mtime = 1786044759000000000
+container = []
+scope = [
+  "tests",
+  "test_keyword_refresh",
+]
+symbol_was = []
+calls = [
+  "body [tests/test_keyword_refresh.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "both",
+  "call",
+  "covers",
+  "enrich",
+  "facets",
+  "keyword",
+  "one",
+  "refresh",
+  "test",
+  "test_enrich_one_call_covers_both_facets",
+  "tests",
+  "tests.test_keyword_refresh.test_enrich_one_call_covers_both_facets",
+]

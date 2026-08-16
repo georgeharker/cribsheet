@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#_resolve_config"
+fqn = "combiner.mcp_combiner.ctl._resolve_config"
+name = "_resolve_config"
+kind = "function"
+lang = "python"
+content_hash = "906b0ed15214f282"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "def _resolve_config(explicit: str | None) -> str | None:"
+description = ""
+schema = 4
+line = 85
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "cmd_restart_combiner [combiner/mcp_combiner/ctl.py]",
+  "cmd_start [combiner/mcp_combiner/ctl.py]",
+  "test_resolve_config_explicit_wins [combiner/tests/test_ctl_lifecycle.py]",
+  "test_resolve_config_none_when_absent [combiner/tests/test_ctl_lifecycle.py]",
+  "test_resolve_config_uses_env [combiner/tests/test_ctl_lifecycle.py]",
+]
+references = [
+  "cmd_restart_combiner [combiner/mcp_combiner/ctl.py]",
+  "cmd_start [combiner/mcp_combiner/ctl.py]",
+  "test_resolve_config_explicit_wins [combiner/tests/test_ctl_lifecycle.py]",
+  "test_resolve_config_none_when_absent [combiner/tests/test_ctl_lifecycle.py]",
+  "test_resolve_config_uses_env [combiner/tests/test_ctl_lifecycle.py]",
+]
+name_terms = [
+  "_resolve_config",
+  "combiner",
+  "combiner.mcp_combiner.ctl._resolve_config",
+  "config",
+  "ctl",
+  "mcp",
+  "resolve",
+]

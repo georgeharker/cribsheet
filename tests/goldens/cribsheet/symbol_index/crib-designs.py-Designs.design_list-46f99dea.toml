@@ -1,0 +1,42 @@
+symbol_ref = "crib/designs.py#Designs.design_list"
+fqn = "crib.designs.Designs.design_list"
+name = "design_list"
+kind = "method"
+lang = "python"
+content_hash = "6ff4d5ba50c08854"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def design_list(self, proj: str, tainted: bool = False) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 1231
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_cycles [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_taint [crib/designs.py]",
+  "of_kind [crib/designs.py]",
+]
+called_by = [
+  "design_list [crib/app.py]",
+]
+references = [
+  "design_list [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs.design_list",
+  "design",
+  "design_list",
+  "designs",
+  "list",
+]

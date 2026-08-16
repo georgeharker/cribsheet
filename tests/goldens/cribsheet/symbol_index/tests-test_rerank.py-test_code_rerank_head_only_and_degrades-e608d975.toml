@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_rerank.py#test_code_rerank_head_only_and_degrades"
+fqn = "tests.test_rerank.test_code_rerank_head_only_and_degrades"
+name = "test_code_rerank_head_only_and_degrades"
+kind = "function"
+lang = "python"
+content_hash = "9abeb0c925c239d1"
+file = "tests/test_rerank.py"
+file_hash = "29066147cbea547e"
+signature = "def test_code_rerank_head_only_and_degrades(crib, monkeypatch):"
+description = ""
+schema = 4
+line = 110
+mtime = 1783981122000000000
+container = []
+scope = [
+  "tests",
+  "test_rerank",
+]
+symbol_was = []
+calls = [
+  "_Boom [tests/test_rerank.py]",
+  "_Fixed [tests/test_rerank.py]",
+  "_code_hits [tests/test_rerank.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "code",
+  "degrades",
+  "head",
+  "only",
+  "rerank",
+  "test",
+  "test_code_rerank_head_only_and_degrades",
+  "tests",
+  "tests.test_rerank.test_code_rerank_head_only_and_degrades",
+]

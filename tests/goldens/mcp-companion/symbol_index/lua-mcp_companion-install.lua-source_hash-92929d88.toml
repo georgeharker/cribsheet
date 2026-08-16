@@ -1,0 +1,37 @@
+symbol_ref = "lua/mcp_companion/install.lua#source_hash"
+fqn = "mcp_companion.install.source_hash"
+name = "source_hash"
+kind = "function"
+lang = "lua"
+content_hash = "b6556bd6469942e3"
+file = "lua/mcp_companion/install.lua"
+file_hash = "3de9ccc3f9cb05c6"
+signature = "local function source_hash()"
+description = ""
+schema = 4
+line = 31
+mtime = 1782852601000000000
+container = []
+scope = [
+  "mcp_companion",
+  "install",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.is_installed [lua/mcp_companion/install.lua]",
+  "install.lua [lua/mcp_companion/install.lua]",
+]
+references = [
+  "pip_install [lua/mcp_companion/install.lua]",
+  "want [lua/mcp_companion/install.lua]",
+]
+name_terms = [
+  "companion",
+  "hash",
+  "install",
+  "mcp",
+  "mcp_companion.install.source_hash",
+  "source",
+  "source_hash",
+]

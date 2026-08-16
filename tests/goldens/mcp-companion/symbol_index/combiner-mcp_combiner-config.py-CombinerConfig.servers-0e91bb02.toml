@@ -1,0 +1,69 @@
+symbol_ref = "combiner/mcp_combiner/config.py#CombinerConfig.servers"
+fqn = "combiner.mcp_combiner.config.CombinerConfig.servers"
+name = "servers"
+kind = "field"
+lang = "python"
+content_hash = "968cb0c829a71a59"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "servers: dict[str, ServerConfig] = Field(default_factory=dict)"
+description = ""
+schema = 4
+line = 474
+mtime = 1783633313000000000
+container = [
+  "CombinerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "CombinerConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_config [combiner/tests/test_app_meta.py]",
+  "_filter_tools [combiner/mcp_combiner/toolcache.py]",
+  "_find_server_for_tool [combiner/mcp_combiner/toolcache.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "_resolve_disabled [combiner/mcp_combiner/routes.py]",
+  "build_server_status [combiner/mcp_combiner/status.py]",
+  "combiner__disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__session_disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__session_enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__status [combiner/mcp_combiner/meta_tools.py]",
+  "effective_policy [combiner/mcp_combiner/config.py]",
+  "ensure_started [combiner/mcp_combiner/sharedserver.py]",
+  "get_enabled_servers [combiner/mcp_combiner/config.py]",
+  "get_server_status [combiner/mcp_combiner/config.py]",
+  "health_check [combiner/mcp_combiner/routes.py]",
+  "load [combiner/mcp_combiner/config.py]",
+  "manage_session_filter [combiner/mcp_combiner/routes.py]",
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "resolve_shared_server [combiner/mcp_combiner/config.py]",
+  "restart [combiner/mcp_combiner/sharedserver.py]",
+  "test_args_expanded [combiner/tests/test_config.py]",
+  "test_command_expanded [combiner/tests/test_config.py]",
+  "test_default_fallback_in_config [combiner/tests/test_config.py]",
+  "test_effective_policy_via_combiner_config [combiner/tests/test_permissions.py]",
+  "test_env_expanded [combiner/tests/test_config.py]",
+  "test_headers_expanded [combiner/tests/test_config.py]",
+  "test_load_config [combiner/tests/test_config.py]",
+  "test_load_config_sharedserver_parsed [combiner/tests/test_config.py]",
+  "test_raw_config_not_mutated [combiner/tests/test_config.py]",
+  "test_unknown_server_is_global_only [combiner/tests/test_permissions.py]",
+  "test_url_expanded [combiner/tests/test_config.py]",
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.CombinerConfig.servers",
+  "config",
+  "mcp",
+  "servers",
+]

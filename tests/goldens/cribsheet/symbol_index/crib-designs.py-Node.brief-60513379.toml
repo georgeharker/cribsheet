@@ -1,0 +1,52 @@
+symbol_ref = "crib/designs.py#Node.brief"
+fqn = "crib.designs.Node.brief"
+name = "brief"
+kind = "method"
+lang = "python"
+content_hash = "66c22518730fd2be"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def brief(self) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 332
+mtime = 1786693579000000000
+container = [
+  "Node",
+]
+scope = [
+  "crib",
+  "designs",
+  "Node",
+]
+symbol_was = []
+calls = [
+  "source_label [crib/designs.py]",
+]
+called_by = [
+  "_citing [crib/designs.py]",
+  "_forget [crib/designs.py]",
+  "_row [crib/designs.py]",
+  "build [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+]
+references = [
+  "_citing [crib/designs.py]",
+  "_forget [crib/designs.py]",
+  "_row [crib/designs.py]",
+  "build [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+]
+name_terms = [
+  "brief",
+  "crib",
+  "crib.designs.Node.brief",
+  "designs",
+  "node",
+]

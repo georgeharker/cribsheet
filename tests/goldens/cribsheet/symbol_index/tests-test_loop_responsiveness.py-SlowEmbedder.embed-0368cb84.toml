@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_loop_responsiveness.py#SlowEmbedder.embed"
+fqn = "tests.test_loop_responsiveness.SlowEmbedder.embed"
+name = "embed"
+kind = "method"
+lang = "python"
+content_hash = "e533e4984cfe9cc2"
+file = "tests/test_loop_responsiveness.py"
+file_hash = "3e5d3308dc33e6f4"
+signature = "def embed(self, texts: list[str]) -> list[list[float]]:"
+description = ""
+schema = 4
+line = 39
+mtime = 1785959234000000000
+container = [
+  "SlowEmbedder",
+]
+scope = [
+  "tests",
+  "test_loop_responsiveness",
+  "SlowEmbedder",
+]
+symbol_was = []
+calls = [
+  "embed [crib/embed.py]",
+]
+called_by = [
+  "embed_query [tests/test_loop_responsiveness.py]",
+]
+references = [
+  "embed_query [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "embed",
+  "embedder",
+  "loop",
+  "responsiveness",
+  "slow",
+  "test",
+  "tests",
+  "tests.test_loop_responsiveness.SlowEmbedder.embed",
+]

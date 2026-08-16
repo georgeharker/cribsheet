@@ -1,0 +1,62 @@
+symbol_ref = "crib/notes.py#parse"
+fqn = "crib.notes.parse"
+name = "parse"
+kind = "function"
+lang = "python"
+content_hash = "be981d676b64f8b3"
+file = "crib/notes.py"
+file_hash = "6e2385b754de60b6"
+signature = "def parse(text: str, source: str | Path | None = None) -> tuple[dict[str, Any], str]:"
+description = ""
+schema = 4
+line = 53
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "notes",
+]
+symbol_was = []
+calls = [
+  "NoteParseError [crib/notes.py]",
+]
+called_by = [
+  "_doc_sections [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_ring_id [crib/notestore.py]",
+  "_stash_existing [crib/notestore.py]",
+  "edit_note [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "load [crib/notes.py]",
+  "merge_note_texts [crib/merge.py]",
+  "test_body_divergence_surfaces_with_healed_header [tests/test_merge.py]",
+  "test_frontmatter_only_divergence_merges_clean [tests/test_merge.py]",
+  "test_normalize_collapses_duplicate_keys_deterministically [tests/test_normalize.py]",
+  "test_normalize_is_order_independent [tests/test_normalize.py]",
+  "test_parse_raises_note_parse_error_naming_the_file [tests/test_malformed_notes.py]",
+  "test_run_driver_writes_and_signals [tests/test_merge.py]",
+]
+references = [
+  "_doc_sections [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_ring_id [crib/notestore.py]",
+  "_stash_existing [crib/notestore.py]",
+  "edit_note [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "load [crib/notes.py]",
+  "merge_note_texts [crib/merge.py]",
+  "test_body_divergence_surfaces_with_healed_header [tests/test_merge.py]",
+  "test_frontmatter_only_divergence_merges_clean [tests/test_merge.py]",
+  "test_normalize_collapses_duplicate_keys_deterministically [tests/test_normalize.py]",
+  "test_normalize_is_order_independent [tests/test_normalize.py]",
+  "test_parse_raises_note_parse_error_naming_the_file [tests/test_malformed_notes.py]",
+  "test_run_driver_writes_and_signals [tests/test_merge.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notes.parse",
+  "notes",
+  "parse",
+]

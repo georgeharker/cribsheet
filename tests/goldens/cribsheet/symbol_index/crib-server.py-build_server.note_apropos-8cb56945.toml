@@ -1,0 +1,37 @@
+symbol_ref = "crib/server.py#build_server.note_apropos"
+fqn = "crib.server.build_server.note_apropos"
+name = "note_apropos"
+kind = "function"
+lang = "python"
+content_hash = "9d29307b802b8503"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"read\")"
+description = ""
+schema = 4
+line = 469
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "apropos [crib/app.py]",
+  "crib_tool [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "apropos",
+  "build",
+  "crib",
+  "crib.server.build_server.note_apropos",
+  "note",
+  "note_apropos",
+  "server",
+]

@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestBuildNvimTools.test_list_schema_yields_object_tool"
+fqn = "combiner.tests.test_session_filter.TestBuildNvimTools.test_list_schema_yields_object_tool"
+name = "test_list_schema_yields_object_tool"
+kind = "method"
+lang = "python"
+content_hash = "0ef8f429be2ea930"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_list_schema_yields_object_tool(self):"
+description = ""
+schema = 4
+line = 925
+mtime = 1784493613000000000
+container = [
+  "TestBuildNvimTools",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestBuildNvimTools",
+]
+symbol_was = []
+calls = [
+  "_build_nvim_tools [combiner/mcp_combiner/nvim_proxy.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "combiner",
+  "combiner.tests.test_session_filter.TestBuildNvimTools.test_list_schema_yields_object_tool",
+  "filter",
+  "list",
+  "nvim",
+  "object",
+  "schema",
+  "session",
+  "test",
+  "test_list_schema_yields_object_tool",
+  "tests",
+  "tool",
+  "tools",
+  "yields",
+]

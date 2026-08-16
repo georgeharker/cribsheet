@@ -1,0 +1,41 @@
+symbol_ref = "crib/app.py#Crib._reindex_dirty_code._one"
+fqn = "crib.app.Crib._reindex_dirty_code._one"
+name = "_one"
+kind = "function"
+lang = "python"
+content_hash = "60dcccf716321149"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def _one(rel: str, proj: str = proj, root: Path = src_root) -> bool:"
+description = ""
+schema = 4
+line = 897
+mtime = 1786693579000000000
+container = [
+  "Crib",
+  "_reindex_dirty_code",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+  "_reindex_dirty_code",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_reindex_dirty_code [crib/app.py]",
+]
+references = [
+  "_reindex_dirty_code [crib/app.py]",
+]
+name_terms = [
+  "_one",
+  "app",
+  "code",
+  "crib",
+  "crib.app.Crib._reindex_dirty_code._one",
+  "dirty",
+  "one",
+  "reindex",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "tests/test_real_servers.lua#find_namespaced"
+fqn = "tests.test_real_servers.find_namespaced"
+name = "find_namespaced"
+kind = "function"
+lang = "lua"
+content_hash = "c0c2aa568039bc4a"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local function find_namespaced(cc_key)"
+description = ""
+schema = 4
+line = 390
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_real_servers",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "find",
+  "find_namespaced",
+  "namespaced",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.find_namespaced",
+]

@@ -1,0 +1,42 @@
+symbol_ref = "crib/store.py#ChromaStore.current_dim"
+fqn = "crib.store.ChromaStore.current_dim"
+name = "current_dim"
+kind = "method"
+lang = "python"
+content_hash = "cee3ef36f039acdd"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def current_dim(self) -> int | None:"
+description = ""
+schema = 4
+line = 265
+mtime = 1786564832000000000
+container = [
+  "ChromaStore",
+]
+scope = [
+  "crib",
+  "store",
+  "ChromaStore",
+]
+symbol_was = []
+calls = [
+  "_run [crib/store.py]",
+]
+called_by = [
+  "test_recreate_after_dim_change_across_handles [tests/test_store_chroma.py]",
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+references = [
+  "test_recreate_after_dim_change_across_handles [tests/test_store_chroma.py]",
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+name_terms = [
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore.current_dim",
+  "current",
+  "current_dim",
+  "dim",
+  "store",
+]

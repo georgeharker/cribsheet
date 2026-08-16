@@ -1,0 +1,48 @@
+symbol_ref = "crib/app.py#Crib.import_files"
+fqn = "crib.app.Crib.import_files"
+name = "import_files"
+kind = "method"
+lang = "python"
+content_hash = "8e6c94aa99e473c0"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def import_files(self, paths: list[str], project: str | None = None,"
+description = ""
+schema = 4
+line = 2732
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "Note [crib/notes.py]",
+  "_write_note [crib/app.py]",
+  "abspath [crib/app.py]",
+  "derived_ulid [crib/util.py]",
+  "load [crib/notes.py]",
+  "parse [crib/notes.py]",
+  "portable_path [crib/config.py]",
+  "project_is_new [crib/app.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "note_import [crib/server.py]",
+]
+references = [
+  "note_import [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.import_files",
+  "files",
+  "import",
+  "import_files",
+]

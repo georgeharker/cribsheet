@@ -1,0 +1,36 @@
+symbol_ref = "crib/util.py#_b32"
+fqn = "crib.util._b32"
+name = "_b32"
+kind = "function"
+lang = "python"
+content_hash = "dcec44352f15b245"
+file = "crib/util.py"
+file_hash = "c8fb8142505bcf40"
+signature = "def _b32(value: int) -> str:"
+description = ""
+schema = 4
+line = 76
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "util",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "derived_ulid [crib/util.py]",
+  "new_ulid [crib/util.py]",
+]
+references = [
+  "derived_ulid [crib/util.py]",
+  "new_ulid [crib/util.py]",
+]
+name_terms = [
+  "32",
+  "_b32",
+  "b",
+  "crib",
+  "crib.util._b32",
+  "util",
+]

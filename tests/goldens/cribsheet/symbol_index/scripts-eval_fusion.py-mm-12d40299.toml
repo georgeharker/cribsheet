@@ -1,0 +1,35 @@
+symbol_ref = "scripts/eval_fusion.py#mm"
+fqn = "scripts.eval_fusion.mm"
+name = "mm"
+kind = "function"
+lang = "python"
+content_hash = "035b3698a9b90b38"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def mm(xs: list[float]) -> list[float]:"
+description = ""
+schema = 4
+line = 82
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_ltr_rows [scripts/eval_fusion.py]",
+  "fn [scripts/eval_fusion.py]",
+]
+references = [
+  "_ltr_rows [scripts/eval_fusion.py]",
+  "fn [scripts/eval_fusion.py]",
+]
+name_terms = [
+  "eval",
+  "fusion",
+  "mm",
+  "scripts",
+  "scripts.eval_fusion.mm",
+]

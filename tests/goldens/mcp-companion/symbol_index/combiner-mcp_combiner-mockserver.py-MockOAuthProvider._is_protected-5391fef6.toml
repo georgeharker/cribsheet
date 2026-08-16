@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthProvider._is_protected"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthProvider._is_protected"
+name = "_is_protected"
+kind = "method"
+lang = "python"
+content_hash = "d6beed6b85813c6c"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def _is_protected(self, path: str) -> bool:"
+description = ""
+schema = 4
+line = 907
+mtime = 1783622326000000000
+container = [
+  "MockOAuthProvider",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthProvider",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "wrapped [combiner/mcp_combiner/mockserver.py]",
+]
+references = [
+  "wrapped [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "_is_protected",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthProvider._is_protected",
+  "is",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "protected",
+  "provider",
+]

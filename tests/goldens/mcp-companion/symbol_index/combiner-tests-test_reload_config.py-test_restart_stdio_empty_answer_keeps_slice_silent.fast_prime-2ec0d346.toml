@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_reload_config.py#test_restart_stdio_empty_answer_keeps_slice_silent.fast_prime"
+fqn = "combiner.tests.test_reload_config.test_restart_stdio_empty_answer_keeps_slice_silent.fast_prime"
+name = "fast_prime"
+kind = "function"
+lang = "python"
+content_hash = "4e56b2bb1d081ae5"
+file = "combiner/tests/test_reload_config.py"
+file_hash = "1ab3b3e0b48c7d3d"
+signature = "async def fast_prime(combiner_, name_, timeout=None, interval=None):"
+description = ""
+schema = 4
+line = 339
+mtime = 1784493613000000000
+container = [
+  "test_restart_stdio_empty_answer_keeps_slice_silent",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_reload_config",
+  "test_restart_stdio_empty_answer_keeps_slice_silent",
+]
+symbol_was = []
+calls = [
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+]
+called_by = []
+references = [
+  "test_restart_stdio_empty_answer_keeps_slice_silent [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "answer",
+  "combiner",
+  "combiner.tests.test_reload_config.test_restart_stdio_empty_answer_keeps_slice_silent.fast_prime",
+  "config",
+  "empty",
+  "fast",
+  "fast_prime",
+  "keeps",
+  "prime",
+  "reload",
+  "restart",
+  "silent",
+  "slice",
+  "stdio",
+  "test",
+  "tests",
+]

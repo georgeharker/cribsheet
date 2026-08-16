@@ -1,0 +1,40 @@
+symbol_ref = "crib/designs.py#Designs.design_dep_remove"
+fqn = "crib.designs.Designs.design_dep_remove"
+name = "design_dep_remove"
+kind = "method"
+lang = "python"
+content_hash = "be08311f1a359173"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "async def design_dep_remove(self, proj: str, ref: str,"
+description = ""
+schema = 4
+line = 1255
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_dep_remove [crib/designs.py]",
+]
+called_by = [
+  "design_dep_remove [crib/app.py]",
+]
+references = [
+  "design_dep_remove [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs.design_dep_remove",
+  "dep",
+  "design",
+  "design_dep_remove",
+  "designs",
+  "remove",
+]

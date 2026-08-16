@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_code_integrity.py#test_unparseable_symbol_record_is_dropped_from_all"
+fqn = "tests.test_code_integrity.test_unparseable_symbol_record_is_dropped_from_all"
+name = "test_unparseable_symbol_record_is_dropped_from_all"
+kind = "function"
+lang = "python"
+content_hash = "cd377765db635b8d"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_unparseable_symbol_record_is_dropped_from_all(tmp_path):"
+description = ""
+schema = 4
+line = 442
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "all [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "all",
+  "code",
+  "dropped",
+  "from",
+  "integrity",
+  "is",
+  "record",
+  "symbol",
+  "test",
+  "test_unparseable_symbol_record_is_dropped_from_all",
+  "tests",
+  "tests.test_code_integrity.test_unparseable_symbol_record_is_dropped_from_all",
+  "unparseable",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "crib/describe_queue.py#DescribeQueue.pending_files"
+fqn = "crib.describe_queue.DescribeQueue.pending_files"
+name = "pending_files"
+kind = "method"
+lang = "python"
+content_hash = "55f0b2755b183988"
+file = "crib/describe_queue.py"
+file_hash = "305c34e160ae74c1"
+signature = "def pending_files(self) -> int:"
+description = ""
+schema = 4
+line = 110
+mtime = 1786664729000000000
+container = [
+  "DescribeQueue",
+]
+scope = [
+  "crib",
+  "describe_queue",
+  "DescribeQueue",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_successful_describe_clears_the_entry [tests/test_describe_queue.py]",
+]
+references = [
+  "test_successful_describe_clears_the_entry [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "crib",
+  "crib.describe_queue.DescribeQueue.pending_files",
+  "describe",
+  "files",
+  "pending",
+  "pending_files",
+  "queue",
+]

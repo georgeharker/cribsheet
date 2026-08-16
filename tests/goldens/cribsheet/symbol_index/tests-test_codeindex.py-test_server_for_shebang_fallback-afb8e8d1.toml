@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_codeindex.py#test_server_for_shebang_fallback"
+fqn = "tests.test_codeindex.test_server_for_shebang_fallback"
+name = "test_server_for_shebang_fallback"
+kind = "function"
+lang = "python"
+content_hash = "dea1ec44a27afe8d"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_server_for_shebang_fallback(tmp_path):"
+description = ""
+schema = 4
+line = 181
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "server_for [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "fallback",
+  "for",
+  "server",
+  "shebang",
+  "test",
+  "test_server_for_shebang_fallback",
+  "tests",
+  "tests.test_codeindex.test_server_for_shebang_fallback",
+]

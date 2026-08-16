@@ -1,0 +1,47 @@
+symbol_ref = "crib/designs.py#Designs._doc_sections"
+fqn = "crib.designs.Designs._doc_sections"
+name = "_doc_sections"
+kind = "method"
+lang = "python"
+content_hash = "0d4071bb9dc0af41"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _doc_sections(self, proj: str, relpath: str) -> list[dict[str, Any]]:"
+description = ""
+schema = 4
+line = 559
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_doc_abspath [crib/designs.py]",
+  "_indexed_sections [crib/designs.py]",
+  "chunk_note [crib/chunk.py]",
+  "parse [crib/notes.py]",
+  "section_key [crib/chunk.py]",
+]
+called_by = [
+  "_doc_index [crib/designs.py]",
+  "_import [crib/designs.py]",
+  "_resolve_source [crib/designs.py]",
+]
+references = [
+  "_doc_index [crib/designs.py]",
+  "_import [crib/designs.py]",
+  "_resolve_source [crib/designs.py]",
+]
+name_terms = [
+  "_doc_sections",
+  "crib",
+  "crib.designs.Designs._doc_sections",
+  "designs",
+  "doc",
+  "sections",
+]

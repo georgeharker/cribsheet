@@ -1,0 +1,74 @@
+symbol_ref = "crib/designs.py#Designs._resolve_ref"
+fqn = "crib.designs.Designs._resolve_ref"
+name = "_resolve_ref"
+kind = "method"
+lang = "python"
+content_hash = "46c9f8c07d5a6606"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _resolve_ref(self, graph: Graph, ref: str,"
+description = ""
+schema = 4
+line = 719
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_other_facet_hint [crib/designs.py]",
+  "_rel_match [crib/designs.py]",
+  "_slug [crib/app.py]",
+]
+called_by = [
+  "_add [crib/designs.py]",
+  "_dep_add [crib/designs.py]",
+  "_dep_remove [crib/designs.py]",
+  "_forget [crib/designs.py]",
+  "_other_facet_hint [crib/designs.py]",
+  "_write_body [crib/designs.py]",
+  "design_append [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_reaffirm [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+  "design_tree [crib/designs.py]",
+  "plan_add [crib/designs.py]",
+  "plan_move [crib/designs.py]",
+  "plan_reaffirm [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+]
+references = [
+  "_add [crib/designs.py]",
+  "_dep_add [crib/designs.py]",
+  "_dep_remove [crib/designs.py]",
+  "_forget [crib/designs.py]",
+  "_other_facet_hint [crib/designs.py]",
+  "_write_body [crib/designs.py]",
+  "design_append [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_reaffirm [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+  "design_tree [crib/designs.py]",
+  "plan_add [crib/designs.py]",
+  "plan_move [crib/designs.py]",
+  "plan_reaffirm [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+]
+name_terms = [
+  "_resolve_ref",
+  "crib",
+  "crib.designs.Designs._resolve_ref",
+  "designs",
+  "ref",
+  "resolve",
+]

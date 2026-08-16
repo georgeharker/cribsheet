@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_code_integrity.py#test_sweep_reports_unreadable_files.index_one"
+fqn = "tests.test_code_integrity.test_sweep_reports_unreadable_files.index_one"
+name = "index_one"
+kind = "function"
+lang = "python"
+content_hash = "73f798354404c578"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def index_one(rt, rel, proj, patch_edges, existing=None, describe_mode=\"inline\", sweep=False):"
+description = ""
+schema = 4
+line = 468
+mtime = 1786664729000000000
+container = [
+  "test_sweep_reports_unreadable_files",
+]
+scope = [
+  "tests",
+  "test_code_integrity",
+  "test_sweep_reports_unreadable_files",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_sweep_reports_unreadable_files [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "code",
+  "files",
+  "index",
+  "index_one",
+  "integrity",
+  "one",
+  "reports",
+  "sweep",
+  "test",
+  "tests",
+  "tests.test_code_integrity.test_sweep_reports_unreadable_files.index_one",
+  "unreadable",
+]

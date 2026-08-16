@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestRuntimeCatalog.test_push_responses"
+fqn = "combiner.tests.test_mockserver.TestRuntimeCatalog.test_push_responses"
+name = "test_push_responses"
+kind = "method"
+lang = "python"
+content_hash = "1595de62326b444c"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "async def test_push_responses(self) -> None:"
+description = ""
+schema = 4
+line = 225
+mtime = 1783534978000000000
+container = [
+  "TestRuntimeCatalog",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+  "TestRuntimeCatalog",
+]
+symbol_was = []
+calls = [
+  "MockServer [combiner/mcp_combiner/mockserver.py]",
+  "_text [combiner/tests/test_mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "catalog",
+  "combiner",
+  "combiner.tests.test_mockserver.TestRuntimeCatalog.test_push_responses",
+  "mockserver",
+  "push",
+  "responses",
+  "runtime",
+  "test",
+  "test_push_responses",
+  "tests",
+]

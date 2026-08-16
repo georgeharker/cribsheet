@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_designs.py#test_refs_resolve_by_id_prefix_relpath_and_title"
+fqn = "tests.test_designs.test_refs_resolve_by_id_prefix_relpath_and_title"
+name = "test_refs_resolve_by_id_prefix_relpath_and_title"
+kind = "function"
+lang = "python"
+content_hash = "1a5270e778ecad7b"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_refs_resolve_by_id_prefix_relpath_and_title(crib):"
+description = ""
+schema = 4
+line = 193
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "by",
+  "designs",
+  "id",
+  "prefix",
+  "refs",
+  "relpath",
+  "resolve",
+  "test",
+  "test_refs_resolve_by_id_prefix_relpath_and_title",
+  "tests",
+  "tests.test_designs.test_refs_resolve_by_id_prefix_relpath_and_title",
+  "title",
+]

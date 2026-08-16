@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_surface_parity.py#test_cli_defaults_match_the_declared_mcp_defaults"
+fqn = "tests.test_surface_parity.test_cli_defaults_match_the_declared_mcp_defaults"
+name = "test_cli_defaults_match_the_declared_mcp_defaults"
+kind = "function"
+lang = "python"
+content_hash = "81771c2f03f42040"
+file = "tests/test_surface_parity.py"
+file_hash = "0c4fc72b5f441359"
+signature = "@pytest.mark.parametrize(\"key\", sorted(_CLI_INVOCATIONS))"
+description = ""
+schema = 4
+line = 139
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_surface_parity",
+]
+symbol_was = []
+calls = [
+  "_dispatch [crib/cli.py]",
+  "build_parser [crib/cli.py]",
+  "mcp_params [crib/cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cli",
+  "declared",
+  "defaults",
+  "match",
+  "mcp",
+  "parity",
+  "surface",
+  "test",
+  "test_cli_defaults_match_the_declared_mcp_defaults",
+  "tests",
+  "tests.test_surface_parity.test_cli_defaults_match_the_declared_mcp_defaults",
+  "the",
+]

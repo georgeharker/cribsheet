@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_build_oauth"
+fqn = "combiner.mcp_combiner.auth._build_oauth"
+name = "_build_oauth"
+kind = "function"
+lang = "python"
+content_hash = "4f3d933079f838ac"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "def _build_oauth("
+description = ""
+schema = 4
+line = 1054
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+]
+symbol_was = []
+calls = [
+  "_RefreshTokenOAuth [combiner/mcp_combiner/auth.py]",
+  "create_encrypted_store [combiner/mcp_combiner/auth.py]",
+]
+called_by = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "build_auth [combiner/mcp_combiner/auth.py]",
+]
+references = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+  "build_auth [combiner/mcp_combiner/auth.py]",
+]
+name_terms = [
+  "_build_oauth",
+  "auth",
+  "build",
+  "combiner",
+  "combiner.mcp_combiner.auth._build_oauth",
+  "mcp",
+  "oauth",
+]

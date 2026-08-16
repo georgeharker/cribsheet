@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_path_confinement.py#test_project_name_with_a_separator_is_refused"
+fqn = "tests.test_path_confinement.test_project_name_with_a_separator_is_refused"
+name = "test_project_name_with_a_separator_is_refused"
+kind = "function"
+lang = "python"
+content_hash = "0ca81a8042c37352"
+file = "tests/test_path_confinement.py"
+file_hash = "ca5f375c4fa4dfa2"
+signature = "def test_project_name_with_a_separator_is_refused(crib, tmp_path):"
+description = ""
+schema = 4
+line = 105
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_path_confinement",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_path_confinement.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "confinement",
+  "is",
+  "name",
+  "path",
+  "project",
+  "refused",
+  "separator",
+  "test",
+  "test_project_name_with_a_separator_is_refused",
+  "tests",
+  "tests.test_path_confinement.test_project_name_with_a_separator_is_refused",
+  "with",
+]

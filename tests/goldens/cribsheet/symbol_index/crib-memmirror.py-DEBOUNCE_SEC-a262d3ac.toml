@@ -1,0 +1,32 @@
+symbol_ref = "crib/memmirror.py#DEBOUNCE_SEC"
+fqn = "crib.memmirror.DEBOUNCE_SEC"
+name = "DEBOUNCE_SEC"
+kind = "constant"
+lang = "python"
+content_hash = "47a23dcff119813d"
+file = "crib/memmirror.py"
+file_hash = "9ff08381721a9203"
+signature = "DEBOUNCE_SEC = 0.5  # a memory write is one file; coalesce its create/modify burst"
+description = ""
+schema = 4
+line = 23
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "memmirror",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_schedule [crib/memmirror.py]",
+]
+name_terms = [
+  "DEBOUNCE_SEC",
+  "crib",
+  "crib.memmirror.DEBOUNCE_SEC",
+  "debounce",
+  "memmirror",
+  "sec",
+]

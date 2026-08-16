@@ -1,0 +1,38 @@
+symbol_ref = "lua/mcp_companion/native/init.lua#_resolve_context"
+fqn = "mcp_companion.native._resolve_context"
+name = "_resolve_context"
+kind = "function"
+lang = "lua"
+content_hash = "e8e574e6a064ae7b"
+file = "lua/mcp_companion/native/init.lua"
+file_hash = "731c163c944cc384"
+signature = "local function _resolve_context()"
+description = ""
+schema = 4
+line = 125
+mtime = 1783022631000000000
+container = []
+scope = [
+  "mcp_companion",
+  "native",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.dispatch [lua/mcp_companion/native/init.lua]",
+  "M.read_resource [lua/mcp_companion/native/init.lua]",
+  "init.lua [lua/mcp_companion/native/init.lua]",
+]
+references = [
+  "dispatch [lua/mcp_companion/native/init.lua]",
+  "read_resource [lua/mcp_companion/native/init.lua]",
+]
+name_terms = [
+  "_resolve_context",
+  "companion",
+  "context",
+  "mcp",
+  "mcp_companion.native._resolve_context",
+  "native",
+  "resolve",
+]

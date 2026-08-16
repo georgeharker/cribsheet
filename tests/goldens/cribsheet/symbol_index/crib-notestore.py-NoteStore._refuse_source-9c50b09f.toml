@@ -1,0 +1,45 @@
+symbol_ref = "crib/notestore.py#NoteStore._refuse_source"
+fqn = "crib.notestore.NoteStore._refuse_source"
+name = "_refuse_source"
+kind = "method"
+lang = "python"
+content_hash = "8646561a5411b1d6"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "def _refuse_source(self, relpath: str, verb: str) -> None:"
+description = ""
+schema = 4
+line = 165
+mtime = 1786564832000000000
+container = [
+  "NoteStore",
+]
+scope = [
+  "crib",
+  "notestore",
+  "NoteStore",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+]
+called_by = [
+  "delete [crib/notestore.py]",
+  "move [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+references = [
+  "delete [crib/notestore.py]",
+  "move [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "_refuse_source",
+  "crib",
+  "crib.notestore.NoteStore._refuse_source",
+  "note",
+  "notestore",
+  "refuse",
+  "source",
+  "store",
+]

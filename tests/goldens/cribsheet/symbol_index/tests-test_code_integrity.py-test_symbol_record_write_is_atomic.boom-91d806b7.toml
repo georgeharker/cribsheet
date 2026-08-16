@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_code_integrity.py#test_symbol_record_write_is_atomic.boom"
+fqn = "tests.test_code_integrity.test_symbol_record_write_is_atomic.boom"
+name = "boom"
+kind = "function"
+lang = "python"
+content_hash = "44cc766852d663f8"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def boom(_src, _dst):"
+description = ""
+schema = 4
+line = 423
+mtime = 1786664729000000000
+container = [
+  "test_symbol_record_write_is_atomic",
+]
+scope = [
+  "tests",
+  "test_code_integrity",
+  "test_symbol_record_write_is_atomic",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_symbol_record_write_is_atomic [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "atomic",
+  "boom",
+  "code",
+  "integrity",
+  "is",
+  "record",
+  "symbol",
+  "test",
+  "tests",
+  "tests.test_code_integrity.test_symbol_record_write_is_atomic.boom",
+  "write",
+]

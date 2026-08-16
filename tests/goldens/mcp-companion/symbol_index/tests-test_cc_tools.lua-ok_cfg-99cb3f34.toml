@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_cc_tools.lua#ok_cfg"
+fqn = "tests.test_cc_tools.ok_cfg"
+name = "ok_cfg"
+kind = "global"
+lang = "lua"
+content_hash = "dd00d2e2862d55c3"
+file = "tests/test_cc_tools.lua"
+file_hash = "3253ff527c66fcb1"
+signature = "local ok_cfg, cfg = pcall(require, \"mcp_companion.config\")"
+description = ""
+schema = 4
+line = 146
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_cc_tools",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "cfg",
+  "ok",
+  "ok_cfg",
+  "test",
+  "tests",
+  "tests.test_cc_tools.ok_cfg",
+  "tools",
+]

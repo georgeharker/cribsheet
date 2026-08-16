@@ -1,0 +1,33 @@
+symbol_ref = "crib/gitbacking.py#_msg"
+fqn = "crib.gitbacking._msg"
+name = "_msg"
+kind = "function"
+lang = "python"
+content_hash = "eebb1c4dfc4200c4"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def _msg(r: subprocess.CompletedProcess) -> str:"
+description = ""
+schema = 4
+line = 63
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "gitbacking",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "snapshot_result [crib/gitbacking.py]",
+]
+references = [
+  "snapshot_result [crib/gitbacking.py]",
+]
+name_terms = [
+  "_msg",
+  "crib",
+  "crib.gitbacking._msg",
+  "gitbacking",
+  "msg",
+]

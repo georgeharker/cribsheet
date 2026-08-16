@@ -1,0 +1,34 @@
+symbol_ref = "crib/config.py#RetrieveConfig.code_freshness"
+fqn = "crib.config.RetrieveConfig.code_freshness"
+name = "code_freshness"
+kind = "field"
+lang = "python"
+content_hash = "bdb255768ddfc8ab"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "code_freshness: str = \"scan\""
+description = ""
+schema = 4
+line = 165
+mtime = 1786564832000000000
+container = [
+  "RetrieveConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "RetrieveConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "code_freshness",
+  "config",
+  "crib",
+  "crib.config.RetrieveConfig.code_freshness",
+  "freshness",
+  "retrieve",
+]

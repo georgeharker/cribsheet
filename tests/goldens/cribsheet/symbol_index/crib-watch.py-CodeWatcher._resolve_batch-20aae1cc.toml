@@ -1,0 +1,47 @@
+symbol_ref = "crib/watch.py#CodeWatcher._resolve_batch"
+fqn = "crib.watch.CodeWatcher._resolve_batch"
+name = "_resolve_batch"
+kind = "method"
+lang = "python"
+content_hash = "b3a4584edb7c7f35"
+file = "crib/watch.py"
+file_hash = "c10c30739292eebe"
+signature = "@staticmethod"
+description = ""
+schema = 4
+line = 383
+mtime = 1786139638000000000
+container = [
+  "CodeWatcher",
+]
+scope = [
+  "crib",
+  "watch",
+  "CodeWatcher",
+]
+symbol_was = []
+calls = [
+  "_link [crib/watch.py]",
+  "content_lang [crib/codeindex.py]",
+]
+called_by = [
+  "test_code_watcher_resolve_batch_applies_the_io_half [tests/test_watcher.py]",
+  "test_code_watcher_resolve_batch_routes_new_extensionless_files [tests/test_watcher.py]",
+  "test_code_watcher_skips_saves_inside_the_store [tests/test_repo_storage.py]",
+]
+references = [
+  "_dispatch [crib/watch.py]",
+  "test_code_watcher_resolve_batch_applies_the_io_half [tests/test_watcher.py]",
+  "test_code_watcher_resolve_batch_routes_new_extensionless_files [tests/test_watcher.py]",
+  "test_code_watcher_skips_saves_inside_the_store [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "_resolve_batch",
+  "batch",
+  "code",
+  "crib",
+  "crib.watch.CodeWatcher._resolve_batch",
+  "resolve",
+  "watch",
+  "watcher",
+]

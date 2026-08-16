@@ -1,0 +1,39 @@
+symbol_ref = "crib/designs.py#Designs._direct_taint"
+fqn = "crib.designs.Designs._direct_taint"
+name = "_direct_taint"
+kind = "method"
+lang = "python"
+content_hash = "b9e6345e8f0b9e1c"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _direct_taint(self, graph: Graph,"
+description = ""
+schema = 4
+line = 783
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_source_cause [crib/designs.py]",
+]
+called_by = [
+  "_taint [crib/designs.py]",
+]
+references = [
+  "_taint [crib/designs.py]",
+]
+name_terms = [
+  "_direct_taint",
+  "crib",
+  "crib.designs.Designs._direct_taint",
+  "designs",
+  "direct",
+  "taint",
+]

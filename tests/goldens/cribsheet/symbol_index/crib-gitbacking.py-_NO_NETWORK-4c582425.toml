@@ -1,0 +1,36 @@
+symbol_ref = "crib/gitbacking.py#_NO_NETWORK"
+fqn = "crib.gitbacking._NO_NETWORK"
+name = "_NO_NETWORK"
+kind = "constant"
+lang = "python"
+content_hash = "281f1acdabd5f0a6"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "_NO_NETWORK = (\"network git is CLI-side only (DESIGN §14) — run `crib memory \""
+description = ""
+schema = 4
+line = 59
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "gitbacking",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_run [crib/gitbacking.py]",
+  "pull [crib/gitbacking.py]",
+  "push [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+  "sync [crib/gitbacking.py]",
+]
+name_terms = [
+  "_NO_NETWORK",
+  "crib",
+  "crib.gitbacking._NO_NETWORK",
+  "gitbacking",
+  "network",
+  "no",
+]

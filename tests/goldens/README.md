@@ -5,21 +5,40 @@ structural regression gate for the code-index pipeline (extract → store → qu
 
 Each `<project>/` holds:
 - `symbol_index/*.toml` — the frozen index (the snapshot).
-- `meta` — three lines: `project`, **git remote URL**, `sha`. The URL (not a local path)
-  is what makes these portable: `compare` clones the repo from GitHub at the pinned SHA,
-  re-indexes it, and diffs against the frozen `symbol_index`.
+- `meta` — three lines: `project`, **git remote URL**, `rev`. The URL (not a local path)
+  is what makes these portable: `compare` clones the repo from GitHub, checks out the
+  pinned rev, re-indexes it, and diffs against the frozen `symbol_index`.
+
+## Pin a TAG, not a SHA
+
+`rev` is a **release tag** (`v0.9.1`), and that is the durable choice — `compare` clones
+before it checks out, so anything git can resolve works, but the two forms fail very
+differently when the remote moves:
+
+- A **bare SHA** stops resolving the moment history is rewritten, and `compare` then dies
+  at `checkout` — the gate reports an unreachable ref, not a verdict about the code. That
+  is silent rot: the gate looks present and tests nothing.
+- A **tag** keeps resolving across a rewrite. If a rewrite changes what the tag points at,
+  the re-index drifts and the gate FAILS LOUDLY, which is the outcome you want: a real
+  signal to review and re-capture.
+
+Both pins here were dead on arrival for exactly that reason (a rewrite across these repos
+invalidated `a1577b2` and `21c573e80e97`), which is why they were re-captured against
+tags. **After a history rewrite, re-capture** — a tag that survived still needs its
+snapshot re-derived from whatever the tag now names.
 
 ## What's committed, and why
 
-- `cribsheet` — self, pinned to `c9ec609` on the pushed `codestore-refactor` branch.
-  Verified IDENTICAL (1157 symbols, byte-clean). **Durability caveat:** the pin is a
-  *branch* commit, not `main`. If the branch is later squash-merged and deleted, that SHA
-  becomes unreachable and `compare` can't clone it — re-capture at the merge commit then
-  (`capture <url> <merge-sha> tests/goldens/cribsheet`).
-- `mcp-companion` — public repo, ours, byte-stable, pinned to a SHA **on GitHub**.
-  Verified IDENTICAL.
+- `cribsheet` — self, pinned to tag `v0.9.1`. Re-derived by `compare`: 2334 symbols,
+  IDENTICAL (byte-clean, zero edge-wobble).
+- `mcp-companion` — public repo, ours, pinned to tag `v0.9.4`. Re-derived by `compare`:
+  1831 symbols, STRUCTURALLY IDENTICAL (1 edge-wobble, LSP noise).
 
-A committed golden MUST pin to a SHA reachable on the remote — that's the whole point of
+Both lines above mean a `compare` run was executed against the committed snapshot, not
+that it looked right when captured. Capture and re-derivation are different claims —
+`capture` writing 2334 files says nothing about whether 2334 come back.
+
+A committed golden MUST pin to a rev reachable on the remote — that's the whole point of
 URL pinning. (An early self-golden attempt pinned to an unpushed local commit; `compare`
 cloned fine but couldn't `checkout` it. Pushing the branch fixed it.)
 
@@ -50,10 +69,12 @@ change); LSP cross-file edge wobble is reported but tolerated as noise. The fast
 always-on structural gates are the unit suite + `tests/test_notestore_snapshot` (notes) +
 `tests/test_codeindex` (extraction) — this is the deliberate deep check.
 
-## Regenerating (after an intentional format change)
+## Regenerating (after an intentional format change, or a history rewrite)
 
 ```
-python scripts/snapshot_harness.py capture <git-url> <sha> tests/goldens/<project>
+python scripts/snapshot_harness.py capture <git-url> <tag> tests/goldens/<project>
 ```
 
-then review the diff before committing.
+then review the diff before committing. Pass the release **tag**, not a SHA — `capture`
+writes whatever rev you hand it straight into `meta`, so a SHA passed here is the pin
+`compare` inherits.

@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#ProjectConfig.versions_keep"
+fqn = "crib.config.ProjectConfig.versions_keep"
+name = "versions_keep"
+kind = "field"
+lang = "python"
+content_hash = "60bd588d5566998e"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "versions_keep: int | None = None"
+description = ""
+schema = 4
+line = 328
+mtime = 1786564832000000000
+container = [
+  "ProjectConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "ProjectConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "load [crib/config.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.ProjectConfig.versions_keep",
+  "keep",
+  "project",
+  "versions",
+  "versions_keep",
+]

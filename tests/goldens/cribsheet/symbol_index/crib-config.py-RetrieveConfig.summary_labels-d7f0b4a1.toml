@@ -1,0 +1,39 @@
+symbol_ref = "crib/config.py#RetrieveConfig.summary_labels"
+fqn = "crib.config.RetrieveConfig.summary_labels"
+name = "summary_labels"
+kind = "field"
+lang = "python"
+content_hash = "d2106bb4870ccac3"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "summary_labels: list[str] = field(default_factory=lambda: [\"summary\", \"asks\"])"
+description = ""
+schema = 4
+line = 140
+mtime = 1786564832000000000
+container = [
+  "RetrieveConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "RetrieveConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_keyword_backlog [crib/app.py]",
+  "_schedule_keyword_refresh [crib/app.py]",
+  "enrich [crib/app.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.RetrieveConfig.summary_labels",
+  "labels",
+  "retrieve",
+  "summary",
+  "summary_labels",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_designs.py#test_dangling_dep_is_not_a_cycle"
+fqn = "tests.test_designs.test_dangling_dep_is_not_a_cycle"
+name = "test_dangling_dep_is_not_a_cycle"
+kind = "function"
+lang = "python"
+content_hash = "6ab5a78dc3aac564"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_dangling_dep_is_not_a_cycle():"
+description = ""
+schema = 4
+line = 99
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "_cycles [crib/designs.py]",
+  "_node [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "cycle",
+  "dangling",
+  "dep",
+  "designs",
+  "is",
+  "not",
+  "test",
+  "test_dangling_dep_is_not_a_cycle",
+  "tests",
+  "tests.test_designs.test_dangling_dep_is_not_a_cycle",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_ManagedConnection._tools_probe_gave_up"
+fqn = "combiner.mcp_combiner.connections._ManagedConnection._tools_probe_gave_up"
+name = "_tools_probe_gave_up"
+kind = "field"
+lang = "python"
+content_hash = "88580a34da1a05c1"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_tools_probe_gave_up: bool = field(default=False, repr=False)"
+description = ""
+schema = 4
+line = 171
+mtime = 1784493613000000000
+container = [
+  "_ManagedConnection",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "_ManagedConnection",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_tools_probe_gave_up",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection._tools_probe_gave_up",
+  "connection",
+  "connections",
+  "gave",
+  "managed",
+  "mcp",
+  "probe",
+  "tools",
+  "up",
+]

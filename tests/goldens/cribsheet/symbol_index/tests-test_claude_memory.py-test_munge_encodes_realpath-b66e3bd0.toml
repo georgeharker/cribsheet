@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_claude_memory.py#test_munge_encodes_realpath"
+fqn = "tests.test_claude_memory.test_munge_encodes_realpath"
+name = "test_munge_encodes_realpath"
+kind = "function"
+lang = "python"
+content_hash = "bd6ed9830c33e110"
+file = "tests/test_claude_memory.py"
+file_hash = "f5a685193106ac4d"
+signature = "def test_munge_encodes_realpath(tmp_path):"
+description = ""
+schema = 4
+line = 17
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_claude_memory",
+]
+symbol_was = []
+calls = [
+  "munge [crib/claudemem.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "claude",
+  "encodes",
+  "memory",
+  "munge",
+  "realpath",
+  "test",
+  "test_munge_encodes_realpath",
+  "tests",
+  "tests.test_claude_memory.test_munge_encodes_realpath",
+]

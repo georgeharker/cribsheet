@@ -1,0 +1,38 @@
+symbol_ref = "scripts/eval_fusion.py#with_rerank.fn"
+fqn = "scripts.eval_fusion.with_rerank.fn"
+name = "fn"
+kind = "function"
+lang = "python"
+content_hash = "353429e11ad8772d"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def fn(crib, proj, q, feat, qf, k):"
+description = ""
+schema = 4
+line = 229
+mtime = 1783981122000000000
+container = [
+  "with_rerank",
+]
+scope = [
+  "scripts",
+  "eval_fusion",
+  "with_rerank",
+]
+symbol_was = []
+calls = [
+  "reciprocal_rank_fusion [crib/retrieve.py]",
+]
+called_by = []
+references = [
+  "with_rerank [scripts/eval_fusion.py]",
+]
+name_terms = [
+  "eval",
+  "fn",
+  "fusion",
+  "rerank",
+  "scripts",
+  "scripts.eval_fusion.with_rerank.fn",
+  "with",
+]

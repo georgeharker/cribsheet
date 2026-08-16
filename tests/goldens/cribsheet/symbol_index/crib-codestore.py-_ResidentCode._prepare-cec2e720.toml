@@ -1,0 +1,44 @@
+symbol_ref = "crib/codestore.py#_ResidentCode._prepare"
+fqn = "crib.codestore._ResidentCode._prepare"
+name = "_prepare"
+kind = "method"
+lang = "python"
+content_hash = "52094098da0ecc8c"
+file = "crib/codestore.py"
+file_hash = "85066097f15df7df"
+signature = "def _prepare(self) -> None:"
+description = ""
+schema = 4
+line = 56
+mtime = 1786664729000000000
+container = [
+  "_ResidentCode",
+]
+scope = [
+  "crib",
+  "codestore",
+  "_ResidentCode",
+]
+symbol_was = []
+calls = [
+  "BM25 [crib/retrieve.py]",
+  "_as_tf [crib/retrieve.py]",
+  "_subtokens [crib/retrieve.py]",
+  "key [crib/symbols.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = [
+  "__init__ [crib/codestore.py]",
+]
+references = [
+  "__init__ [crib/codestore.py]",
+]
+name_terms = [
+  "_prepare",
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore._ResidentCode._prepare",
+  "prepare",
+  "resident",
+]

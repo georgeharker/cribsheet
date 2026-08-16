@@ -1,0 +1,38 @@
+symbol_ref = "crib/symbols.py#qualified_symbol"
+fqn = "crib.symbols.qualified_symbol"
+name = "qualified_symbol"
+kind = "function"
+lang = "python"
+content_hash = "6eac67915dcac679"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def qualified_symbol(project: str | None, fqname: str) -> str:"
+description = ""
+schema = 4
+line = 239
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_group_key [crib/codequery.py]",
+  "_project_graph [crib/codequery.py]",
+  "nid [crib/codequery.py]",
+]
+references = [
+  "_group_key [crib/codequery.py]",
+  "_project_graph [crib/codequery.py]",
+  "nid [crib/codequery.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.qualified_symbol",
+  "qualified",
+  "qualified_symbol",
+  "symbol",
+  "symbols",
+]

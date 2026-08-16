@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestMergePolicies.test_pattern_sets_are_unioned"
+fqn = "combiner.tests.test_permissions.TestMergePolicies.test_pattern_sets_are_unioned"
+name = "test_pattern_sets_are_unioned"
+kind = "method"
+lang = "python"
+content_hash = "b40c52bf41179822"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "def test_pattern_sets_are_unioned(self) -> None:"
+description = ""
+schema = 4
+line = 124
+mtime = 1783633313000000000
+container = [
+  "TestMergePolicies",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "TestMergePolicies",
+]
+symbol_was = []
+calls = [
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "resolve [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "are",
+  "combiner",
+  "combiner.tests.test_permissions.TestMergePolicies.test_pattern_sets_are_unioned",
+  "merge",
+  "pattern",
+  "permissions",
+  "policies",
+  "sets",
+  "test",
+  "test_pattern_sets_are_unioned",
+  "tests",
+  "unioned",
+]

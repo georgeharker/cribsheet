@@ -1,0 +1,41 @@
+symbol_ref = "crib/chunk.py#Chunk.content_hash"
+fqn = "crib.chunk.Chunk.content_hash"
+name = "content_hash"
+kind = "method"
+lang = "python"
+content_hash = "7dac9608aff0a8d1"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "@property"
+description = ""
+schema = 4
+line = 102
+mtime = 1786136167000000000
+container = [
+  "Chunk",
+]
+scope = [
+  "crib",
+  "chunk",
+  "Chunk",
+]
+symbol_was = []
+calls = [
+  "sha1_hex [crib/util.py]",
+]
+called_by = [
+  "_plan [crib/indexer.py]",
+  "metadata [crib/chunk.py]",
+]
+references = [
+  "_plan [crib/indexer.py]",
+  "metadata [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "content",
+  "content_hash",
+  "crib",
+  "crib.chunk.Chunk.content_hash",
+  "hash",
+]

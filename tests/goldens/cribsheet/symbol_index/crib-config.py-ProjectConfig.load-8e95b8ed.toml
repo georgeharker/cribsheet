@@ -1,0 +1,44 @@
+symbol_ref = "crib/config.py#ProjectConfig.load"
+fqn = "crib.config.ProjectConfig.load"
+name = "load"
+kind = "method"
+lang = "python"
+content_hash = "c303029eb50351a4"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "@classmethod"
+description = ""
+schema = 4
+line = 336
+mtime = 1786564832000000000
+container = [
+  "ProjectConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "ProjectConfig",
+]
+symbol_was = []
+calls = [
+  "_warn [crib/config.py]",
+]
+called_by = [
+  "project_adopt [crib/app.py]",
+  "project_config [crib/app.py]",
+  "project_release [crib/app.py]",
+  "resolve_project_paths [crib/paths.py]",
+]
+references = [
+  "project_adopt [crib/app.py]",
+  "project_config [crib/app.py]",
+  "project_release [crib/app.py]",
+  "resolve_project_paths [crib/paths.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.ProjectConfig.load",
+  "load",
+  "project",
+]

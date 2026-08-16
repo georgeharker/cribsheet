@@ -1,0 +1,35 @@
+symbol_ref = "scripts/eval_retrieval.py#run_lookup"
+fqn = "scripts.eval_retrieval.run_lookup"
+name = "run_lookup"
+kind = "function"
+lang = "python"
+content_hash = "2e33e353906a09a3"
+file = "scripts/eval_retrieval.py"
+file_hash = "fbbe367f0bc2d09b"
+signature = "def run_lookup(query: str, project: str, k: int, crib: str,"
+description = ""
+schema = 4
+line = 34
+mtime = 1786044759000000000
+container = []
+scope = [
+  "scripts",
+  "eval_retrieval",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "evaluate [scripts/eval_retrieval.py]",
+]
+references = [
+  "evaluate [scripts/eval_retrieval.py]",
+]
+name_terms = [
+  "eval",
+  "lookup",
+  "retrieval",
+  "run",
+  "run_lookup",
+  "scripts",
+  "scripts.eval_retrieval.run_lookup",
+]

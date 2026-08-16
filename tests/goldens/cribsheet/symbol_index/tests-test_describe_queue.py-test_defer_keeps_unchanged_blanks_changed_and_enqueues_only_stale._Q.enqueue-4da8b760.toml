@@ -1,0 +1,45 @@
+symbol_ref = "tests/test_describe_queue.py#test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale._Q.enqueue"
+fqn = "tests.test_describe_queue.test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale._Q.enqueue"
+name = "enqueue"
+kind = "method"
+lang = "python"
+content_hash = "c60bf380b1a5f089"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def enqueue(self, proj, rt, rel, syms):"
+description = ""
+schema = 4
+line = 221
+mtime = 1786664729000000000
+container = [
+  "test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale",
+  "_Q",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale",
+  "_Q",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "blanks",
+  "changed",
+  "defer",
+  "describe",
+  "enqueue",
+  "enqueues",
+  "keeps",
+  "only",
+  "q",
+  "queue",
+  "stale",
+  "test",
+  "tests",
+  "tests.test_describe_queue.test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale._Q.enqueue",
+  "unchanged",
+]

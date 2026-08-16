@@ -1,0 +1,34 @@
+symbol_ref = "crib/designs.py#SOURCE_KINDS"
+fqn = "crib.designs.SOURCE_KINDS"
+name = "SOURCE_KINDS"
+kind = "constant"
+lang = "python"
+content_hash = "d33a8d148fd4fea9"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "SOURCE_KINDS = (\"source-changed\", \"source-missing\")"
+description = ""
+schema = 4
+line = 118
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "CHANGE_KINDS [crib/designs.py]",
+  "_next [crib/designs.py]",
+  "_row [crib/designs.py]",
+]
+name_terms = [
+  "SOURCE_KINDS",
+  "crib",
+  "crib.designs.SOURCE_KINDS",
+  "designs",
+  "kinds",
+  "source",
+]

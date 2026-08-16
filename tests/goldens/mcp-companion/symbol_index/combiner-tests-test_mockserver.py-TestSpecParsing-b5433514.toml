@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestSpecParsing"
+fqn = "combiner.tests.test_mockserver.TestSpecParsing"
+name = "TestSpecParsing"
+kind = "class"
+lang = "python"
+content_hash = "855d8ae260175341"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "class TestSpecParsing:"
+description = ""
+schema = 4
+line = 29
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestSpecParsing",
+  "combiner",
+  "combiner.tests.test_mockserver.TestSpecParsing",
+  "mockserver",
+  "parsing",
+  "spec",
+  "test",
+  "tests",
+]

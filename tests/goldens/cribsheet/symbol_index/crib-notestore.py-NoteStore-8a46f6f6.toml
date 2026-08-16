@@ -1,0 +1,36 @@
+symbol_ref = "crib/notestore.py#NoteStore"
+fqn = "crib.notestore.NoteStore"
+name = "NoteStore"
+kind = "class"
+lang = "python"
+content_hash = "19085949596c7ace"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "class NoteStore:"
+description = ""
+schema = 4
+line = 60
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "notestore",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/designs.py]",
+  "__init__ [crib/learnings.py]",
+  "_store [crib/designs.py]",
+  "test_reserved_prefixes_are_refused_with_the_facet_verb_named [tests/test_pillar_stores.py]",
+]
+name_terms = [
+  "NoteStore",
+  "crib",
+  "crib.notestore.NoteStore",
+  "note",
+  "notestore",
+  "store",
+]

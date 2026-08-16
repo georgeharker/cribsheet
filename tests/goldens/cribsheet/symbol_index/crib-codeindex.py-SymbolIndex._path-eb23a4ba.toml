@@ -1,0 +1,43 @@
+symbol_ref = "crib/codeindex.py#SymbolIndex._path"
+fqn = "crib.codeindex.SymbolIndex._path"
+name = "_path"
+kind = "method"
+lang = "python"
+content_hash = "e5b6d56212f64f27"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def _path(self, ref: str) -> Path:"
+description = ""
+schema = 4
+line = 1576
+mtime = 1786844518000000000
+container = [
+  "SymbolIndex",
+]
+scope = [
+  "crib",
+  "codeindex",
+  "SymbolIndex",
+]
+symbol_was = []
+calls = [
+  "_relname [crib/codeindex.py]",
+  "legacy_ref_slug [crib/symbols.py]",
+]
+called_by = [
+  "delete [crib/codeindex.py]",
+  "read [crib/codeindex.py]",
+]
+references = [
+  "delete [crib/codeindex.py]",
+  "read [crib/codeindex.py]",
+]
+name_terms = [
+  "_path",
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex._path",
+  "index",
+  "path",
+  "symbol",
+]

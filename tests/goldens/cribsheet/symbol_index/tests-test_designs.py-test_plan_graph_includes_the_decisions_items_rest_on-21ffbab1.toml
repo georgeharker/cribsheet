@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_designs.py#test_plan_graph_includes_the_decisions_items_rest_on"
+fqn = "tests.test_designs.test_plan_graph_includes_the_decisions_items_rest_on"
+name = "test_plan_graph_includes_the_decisions_items_rest_on"
+kind = "function"
+lang = "python"
+content_hash = "15b8c4d0678580a7"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_plan_graph_includes_the_decisions_items_rest_on(crib):"
+description = ""
+schema = 4
+line = 628
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "decisions",
+  "designs",
+  "graph",
+  "includes",
+  "items",
+  "on",
+  "plan",
+  "rest",
+  "test",
+  "test_plan_graph_includes_the_decisions_items_rest_on",
+  "tests",
+  "tests.test_designs.test_plan_graph_includes_the_decisions_items_rest_on",
+  "the",
+]

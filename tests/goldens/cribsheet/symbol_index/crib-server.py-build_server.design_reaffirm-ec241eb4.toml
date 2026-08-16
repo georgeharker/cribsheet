@@ -1,0 +1,37 @@
+symbol_ref = "crib/server.py#build_server.design_reaffirm"
+fqn = "crib.server.build_server.design_reaffirm"
+name = "design_reaffirm"
+kind = "function"
+lang = "python"
+content_hash = "e72c8df113298fd0"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"read\")"
+description = ""
+schema = 4
+line = 1117
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "crib_tool [crib/server.py]",
+  "design_reaffirm [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.design_reaffirm",
+  "design",
+  "design_reaffirm",
+  "reaffirm",
+  "server",
+]

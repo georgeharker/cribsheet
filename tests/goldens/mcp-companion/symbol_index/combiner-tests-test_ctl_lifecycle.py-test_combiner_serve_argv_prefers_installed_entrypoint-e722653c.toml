@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_ctl_lifecycle.py#test_combiner_serve_argv_prefers_installed_entrypoint"
+fqn = "combiner.tests.test_ctl_lifecycle.test_combiner_serve_argv_prefers_installed_entrypoint"
+name = "test_combiner_serve_argv_prefers_installed_entrypoint"
+kind = "function"
+lang = "python"
+content_hash = "83e6f1e38503a6cc"
+file = "combiner/tests/test_ctl_lifecycle.py"
+file_hash = "561e3360d44bd010"
+signature = "def test_combiner_serve_argv_prefers_installed_entrypoint() -> None:"
+description = ""
+schema = 4
+line = 52
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_ctl_lifecycle",
+]
+symbol_was = []
+calls = [
+  "_combiner_serve_argv [combiner/mcp_combiner/ctl.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "argv",
+  "combiner",
+  "combiner.tests.test_ctl_lifecycle.test_combiner_serve_argv_prefers_installed_entrypoint",
+  "ctl",
+  "entrypoint",
+  "installed",
+  "lifecycle",
+  "prefers",
+  "serve",
+  "test",
+  "test_combiner_serve_argv_prefers_installed_entrypoint",
+  "tests",
+]

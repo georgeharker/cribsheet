@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_connections.py#TestMonitorHealthCheck.test_ping_timeout_and_failures_are_env_configurable"
+fqn = "combiner.tests.test_connections.TestMonitorHealthCheck.test_ping_timeout_and_failures_are_env_configurable"
+name = "test_ping_timeout_and_failures_are_env_configurable"
+kind = "method"
+lang = "python"
+content_hash = "767788904b679558"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def test_ping_timeout_and_failures_are_env_configurable(self, monkeypatch):"
+description = ""
+schema = 4
+line = 363
+mtime = 1784493613000000000
+container = [
+  "TestMonitorHealthCheck",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestMonitorHealthCheck",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "are",
+  "check",
+  "combiner",
+  "combiner.tests.test_connections.TestMonitorHealthCheck.test_ping_timeout_and_failures_are_env_configurable",
+  "configurable",
+  "connections",
+  "env",
+  "failures",
+  "health",
+  "monitor",
+  "ping",
+  "test",
+  "test_ping_timeout_and_failures_are_env_configurable",
+  "tests",
+  "timeout",
+]

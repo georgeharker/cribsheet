@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_session.py#test_a_later_path_answers_for_itself_and_re_homes_nothing"
+fqn = "tests.test_session.test_a_later_path_answers_for_itself_and_re_homes_nothing"
+name = "test_a_later_path_answers_for_itself_and_re_homes_nothing"
+kind = "function"
+lang = "python"
+content_hash = "6a110b4f035fb210"
+file = "tests/test_session.py"
+file_hash = "bef48c1ca7e1ebb9"
+signature = "def test_a_later_path_answers_for_itself_and_re_homes_nothing():"
+description = ""
+schema = 4
+line = 29
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_session",
+]
+symbol_was = []
+calls = [
+  "SessionState [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "and",
+  "answers",
+  "for",
+  "homes",
+  "itself",
+  "later",
+  "nothing",
+  "path",
+  "re",
+  "session",
+  "test",
+  "test_a_later_path_answers_for_itself_and_re_homes_nothing",
+  "tests",
+  "tests.test_session.test_a_later_path_answers_for_itself_and_re_homes_nothing",
+]

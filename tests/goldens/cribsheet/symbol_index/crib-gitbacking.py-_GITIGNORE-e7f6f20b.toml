@@ -1,0 +1,31 @@
+symbol_ref = "crib/gitbacking.py#_GITIGNORE"
+fqn = "crib.gitbacking._GITIGNORE"
+name = "_GITIGNORE"
+kind = "constant"
+lang = "python"
+content_hash = "a310f3047a9543c8"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "_GITIGNORE = \"\"\"\\"
+description = ""
+schema = 4
+line = 23
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "gitbacking",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_ensure_gitignore [crib/gitbacking.py]",
+]
+name_terms = [
+  "_GITIGNORE",
+  "crib",
+  "crib.gitbacking._GITIGNORE",
+  "gitbacking",
+  "gitignore",
+]

@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ResolvedPolicy.default"
+fqn = "combiner.mcp_combiner.config.ResolvedPolicy.default"
+name = "default"
+kind = "field"
+lang = "python"
+content_hash = "dd4d27d28a10f6f8"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "default: PermissionAction"
+description = ""
+schema = 4
+line = 199
+mtime = 1783633313000000000
+container = [
+  "ResolvedPolicy",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ResolvedPolicy",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+  "_rp [combiner/tests/test_permissions.py]",
+  "is_active [combiner/mcp_combiner/config.py]",
+  "resolve [combiner/mcp_combiner/config.py]",
+  "test_off_by_default [combiner/tests/test_permissions.py]",
+  "test_server_overrides_global_scalars [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ResolvedPolicy.default",
+  "config",
+  "default",
+  "mcp",
+  "policy",
+  "resolved",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "crib/codeindex.py#_path_suffix_match"
+fqn = "crib.codeindex._path_suffix_match"
+name = "_path_suffix_match"
+kind = "function"
+lang = "python"
+content_hash = "ef07a57f605893cb"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def _path_suffix_match(a: str, b: str) -> bool:"
+description = ""
+schema = 4
+line = 804
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_locate [crib/codeindex.py]",
+  "test_site_packages_suffix_match_aligns_on_segments [tests/test_code_attribution.py]",
+]
+references = [
+  "_locate [crib/codeindex.py]",
+  "test_site_packages_suffix_match_aligns_on_segments [tests/test_code_attribution.py]",
+]
+name_terms = [
+  "_path_suffix_match",
+  "codeindex",
+  "crib",
+  "crib.codeindex._path_suffix_match",
+  "match",
+  "path",
+  "suffix",
+]

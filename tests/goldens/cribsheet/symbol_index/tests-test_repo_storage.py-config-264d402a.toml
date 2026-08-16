@@ -1,0 +1,32 @@
+symbol_ref = "tests/test_repo_storage.py#config"
+fqn = "tests.test_repo_storage.config"
+name = "config"
+kind = "function"
+lang = "python"
+content_hash = "99886a352ed71445"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 31
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "config",
+  "repo",
+  "storage",
+  "test",
+  "tests",
+  "tests.test_repo_storage.config",
+]

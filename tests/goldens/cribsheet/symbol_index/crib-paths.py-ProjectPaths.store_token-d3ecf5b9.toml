@@ -1,0 +1,41 @@
+symbol_ref = "crib/paths.py#ProjectPaths.store_token"
+fqn = "crib.paths.ProjectPaths.store_token"
+name = "store_token"
+kind = "field"
+lang = "python"
+content_hash = "e0ca9a888a3841e4"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "store_token: str | None = None      # its portable `$LOCATION/...` spelling"
+description = ""
+schema = 4
+line = 157
+mtime = 1786564832000000000
+container = [
+  "ProjectPaths",
+]
+scope = [
+  "crib",
+  "paths",
+  "ProjectPaths",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_skip_if_unavailable [crib/app.py]",
+  "project_adopt [crib/app.py]",
+  "project_list [crib/app.py]",
+  "require [crib/paths.py]",
+  "resolve_project_paths [crib/paths.py]",
+  "status [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.ProjectPaths.store_token",
+  "paths",
+  "project",
+  "store",
+  "store_token",
+  "token",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "crib/app.py#Crib._resweep_insitu"
+fqn = "crib.app.Crib._resweep_insitu"
+name = "_resweep_insitu"
+kind = "method"
+lang = "python"
+content_hash = "38b184fbe4fa4214"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def _resweep_insitu(self, project: str) -> int:"
+description = ""
+schema = 4
+line = 826
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "index_docs_insitu [crib/app.py]",
+]
+called_by = [
+  "reconcile_all [crib/app.py]",
+]
+references = [
+  "reconcile_all [crib/app.py]",
+]
+name_terms = [
+  "_resweep_insitu",
+  "app",
+  "crib",
+  "crib.app.Crib._resweep_insitu",
+  "insitu",
+  "resweep",
+]

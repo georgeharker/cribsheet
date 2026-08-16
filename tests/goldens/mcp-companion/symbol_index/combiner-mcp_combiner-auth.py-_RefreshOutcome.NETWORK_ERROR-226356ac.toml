@@ -1,0 +1,47 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_RefreshOutcome.NETWORK_ERROR"
+fqn = "combiner.mcp_combiner.auth._RefreshOutcome.NETWORK_ERROR"
+name = "NETWORK_ERROR"
+kind = "constant"
+lang = "python"
+content_hash = "4dbf35b537571eba"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "NETWORK_ERROR = \"network_error\"  # transient — token may still be usable"
+description = ""
+schema = 4
+line = 59
+mtime = 1783622326000000000
+container = [
+  "_RefreshOutcome",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+  "_RefreshOutcome",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_initialize [combiner/mcp_combiner/auth.py]",
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "test_initialize_sets_grace_window_on_network_error [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_network_error_propagates [combiner/tests/test_auth.py]",
+  "test_network_error_applies_grace_window [combiner/tests/test_auth.py]",
+  "test_network_error_does_not_shorten_distant_expiry [combiner/tests/test_auth.py]",
+  "test_network_error_extends_short_or_expired_token [combiner/tests/test_auth.py]",
+  "test_proactive_refresh_network_error_returns_outcome [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "NETWORK_ERROR",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshOutcome.NETWORK_ERROR",
+  "error",
+  "mcp",
+  "network",
+  "outcome",
+  "refresh",
+]

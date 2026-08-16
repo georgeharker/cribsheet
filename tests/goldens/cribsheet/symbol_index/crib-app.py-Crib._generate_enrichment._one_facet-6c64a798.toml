@@ -1,0 +1,45 @@
+symbol_ref = "crib/app.py#Crib._generate_enrichment._one_facet"
+fqn = "crib.app.Crib._generate_enrichment._one_facet"
+name = "_one_facet"
+kind = "function"
+lang = "python"
+content_hash = "468f06c9340bbd21"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def _one_facet(facet: dict, sh: str, rp: str, heading: str,"
+description = ""
+schema = 4
+line = 2527
+mtime = 1786693579000000000
+container = [
+  "Crib",
+  "_generate_enrichment",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+  "_generate_enrichment",
+]
+symbol_was = []
+calls = [
+  "_record [crib/app.py]",
+  "agenerate [crib/generate.py]",
+  "parse_terms [crib/section_index.py]",
+]
+called_by = [
+  "_generate_enrichment [crib/app.py]",
+]
+references = [
+  "_generate_enrichment [crib/app.py]",
+]
+name_terms = [
+  "_one_facet",
+  "app",
+  "crib",
+  "crib.app.Crib._generate_enrichment._one_facet",
+  "enrichment",
+  "facet",
+  "generate",
+  "one",
+]

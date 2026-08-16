@@ -1,0 +1,45 @@
+symbol_ref = "crib/paths.py#Paths.projects_dir"
+fqn = "crib.paths.Paths.projects_dir"
+name = "projects_dir"
+kind = "method"
+lang = "python"
+content_hash = "25ae04f3a892e806"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "@property"
+description = ""
+schema = 4
+line = 100
+mtime = 1786564832000000000
+container = [
+  "Paths",
+]
+scope = [
+  "crib",
+  "paths",
+  "Paths",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "ensure [crib/paths.py]",
+  "project_dir [crib/paths.py]",
+  "projects [crib/app.py]",
+  "resolve_project_paths [crib/paths.py]",
+  "start_watchers [crib/app.py]",
+]
+references = [
+  "ensure [crib/paths.py]",
+  "project_dir [crib/paths.py]",
+  "projects [crib/app.py]",
+  "resolve_project_paths [crib/paths.py]",
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.Paths.projects_dir",
+  "dir",
+  "paths",
+  "projects",
+  "projects_dir",
+]

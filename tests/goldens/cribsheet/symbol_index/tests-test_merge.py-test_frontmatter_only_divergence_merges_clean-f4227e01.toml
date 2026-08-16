@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_merge.py#test_frontmatter_only_divergence_merges_clean"
+fqn = "tests.test_merge.test_frontmatter_only_divergence_merges_clean"
+name = "test_frontmatter_only_divergence_merges_clean"
+kind = "function"
+lang = "python"
+content_hash = "4f1caf78295727f5"
+file = "tests/test_merge.py"
+file_hash = "3726dccae7cf8779"
+signature = "def test_frontmatter_only_divergence_merges_clean():"
+description = ""
+schema = 4
+line = 38
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_merge",
+]
+symbol_was = []
+calls = [
+  "_note [tests/test_merge.py]",
+  "merge_note_texts [crib/merge.py]",
+  "parse [crib/notes.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "clean",
+  "divergence",
+  "frontmatter",
+  "merge",
+  "merges",
+  "only",
+  "test",
+  "test_frontmatter_only_divergence_merges_clean",
+  "tests",
+  "tests.test_merge.test_frontmatter_only_divergence_merges_clean",
+]

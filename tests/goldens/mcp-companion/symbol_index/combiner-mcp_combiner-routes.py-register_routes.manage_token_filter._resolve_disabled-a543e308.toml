@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/routes.py#register_routes.manage_token_filter._resolve_disabled"
+fqn = "combiner.mcp_combiner.routes.register_routes.manage_token_filter._resolve_disabled"
+name = "_resolve_disabled"
+kind = "function"
+lang = "python"
+content_hash = "865ac47f937d56ca"
+file = "combiner/mcp_combiner/routes.py"
+file_hash = "51ce6733e6f93928"
+signature = "def _resolve_disabled(current: set[str]) -> set[str] | None:"
+description = ""
+schema = 4
+line = 295
+mtime = 1783548694000000000
+container = [
+  "register_routes",
+  "manage_token_filter",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "routes",
+  "register_routes",
+  "manage_token_filter",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "manage_token_filter [combiner/mcp_combiner/routes.py]",
+]
+references = [
+  "manage_token_filter [combiner/mcp_combiner/routes.py]",
+]
+name_terms = [
+  "_resolve_disabled",
+  "combiner",
+  "combiner.mcp_combiner.routes.register_routes.manage_token_filter._resolve_disabled",
+  "disabled",
+  "filter",
+  "manage",
+  "mcp",
+  "register",
+  "resolve",
+  "routes",
+  "token",
+]

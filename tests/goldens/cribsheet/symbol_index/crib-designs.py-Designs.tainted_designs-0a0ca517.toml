@@ -1,0 +1,41 @@
+symbol_ref = "crib/designs.py#Designs.tainted_designs"
+fqn = "crib.designs.Designs.tainted_designs"
+name = "tainted_designs"
+kind = "method"
+lang = "python"
+content_hash = "ea64dc161f72eb70"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def tainted_designs(self, proj: str) -> set[str]:"
+description = ""
+schema = 4
+line = 933
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_load_graph [crib/designs.py]",
+  "_taint [crib/designs.py]",
+]
+called_by = [
+  "lookup [crib/app.py]",
+  "status [crib/app.py]",
+]
+references = [
+  "lookup [crib/app.py]",
+  "status [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs.tainted_designs",
+  "designs",
+  "tainted",
+  "tainted_designs",
+]

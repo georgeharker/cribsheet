@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/config.py#PermissionPolicy.deny"
+fqn = "combiner.mcp_combiner.config.PermissionPolicy.deny"
+name = "deny"
+kind = "field"
+lang = "python"
+content_hash = "cd7420651c8d6a9c"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "deny: list[str] = Field(default_factory=list)"
+description = ""
+schema = 4
+line = 160
+mtime = 1783633313000000000
+container = [
+  "PermissionPolicy",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "PermissionPolicy",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "test_parses_fields [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.PermissionPolicy.deny",
+  "config",
+  "deny",
+  "mcp",
+  "permission",
+  "policy",
+]

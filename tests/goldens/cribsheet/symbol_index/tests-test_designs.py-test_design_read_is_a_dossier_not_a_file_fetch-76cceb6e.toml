@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_designs.py#test_design_read_is_a_dossier_not_a_file_fetch"
+fqn = "tests.test_designs.test_design_read_is_a_dossier_not_a_file_fetch"
+name = "test_design_read_is_a_dossier_not_a_file_fetch"
+kind = "function"
+lang = "python"
+content_hash = "24b35c9fa62db6f9"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_design_read_is_a_dossier_not_a_file_fetch(crib):"
+description = ""
+schema = 4
+line = 286
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "design",
+  "designs",
+  "dossier",
+  "fetch",
+  "file",
+  "is",
+  "not",
+  "read",
+  "test",
+  "test_design_read_is_a_dossier_not_a_file_fetch",
+  "tests",
+  "tests.test_designs.test_design_read_is_a_dossier_not_a_file_fetch",
+]

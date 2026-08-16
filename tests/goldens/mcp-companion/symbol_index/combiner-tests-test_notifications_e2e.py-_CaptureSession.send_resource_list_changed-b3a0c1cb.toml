@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#_CaptureSession.send_resource_list_changed"
+fqn = "combiner.tests.test_notifications_e2e._CaptureSession.send_resource_list_changed"
+name = "send_resource_list_changed"
+kind = "method"
+lang = "python"
+content_hash = "67c8531fea0cf12a"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "async def send_resource_list_changed(self) -> None:"
+description = ""
+schema = 4
+line = 79
+mtime = 1783629928000000000
+container = [
+  "_CaptureSession",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+  "_CaptureSession",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "2",
+  "capture",
+  "changed",
+  "combiner",
+  "combiner.tests.test_notifications_e2e._CaptureSession.send_resource_list_changed",
+  "e",
+  "list",
+  "notifications",
+  "resource",
+  "send",
+  "send_resource_list_changed",
+  "session",
+  "test",
+  "tests",
+]

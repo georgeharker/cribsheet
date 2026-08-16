@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_real_servers.lua#if.name"
+fqn = "tests.test_real_servers.if.name"
+name = "name"
+kind = "variable"
+lang = "lua"
+content_hash = "fe336ab0b33fd45d"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "for _, name in ipairs(server_name_list) do"
+description = ""
+schema = 4
+line = 324
+mtime = 1782853510000000000
+container = [
+  "if",
+  "for in",
+  "for in",
+]
+scope = [
+  "tests",
+  "test_real_servers",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "if",
+  "name",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.name",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "crib/gitbacking.py#_LOCAL_TIMEOUT"
+fqn = "crib.gitbacking._LOCAL_TIMEOUT"
+name = "_LOCAL_TIMEOUT"
+kind = "constant"
+lang = "python"
+content_hash = "d8baf93d52d667f7"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "_LOCAL_TIMEOUT = 15.0"
+description = ""
+schema = 4
+line = 50
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "gitbacking",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_run [crib/gitbacking.py]",
+  "test_git_runs_are_bounded_and_get_no_stdin [tests/test_sync.py]",
+]
+name_terms = [
+  "_LOCAL_TIMEOUT",
+  "crib",
+  "crib.gitbacking._LOCAL_TIMEOUT",
+  "gitbacking",
+  "local",
+  "timeout",
+]

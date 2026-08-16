@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_real_servers.lua#if.elseif.start_err"
+fqn = "tests.test_real_servers.if.elseif.start_err"
+name = "start_err"
+kind = "variable"
+lang = "lua"
+content_hash = "9967ec56f12a3aa3"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local started, start_err = start_combiner(plugin_root, config_path)"
+description = ""
+schema = 4
+line = 237
+mtime = 1782853510000000000
+container = [
+  "if",
+  "elseif",
+]
+scope = [
+  "tests",
+  "test_real_servers",
+  "if",
+  "elseif",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "else [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "elseif",
+  "err",
+  "if",
+  "real",
+  "servers",
+  "start",
+  "start_err",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.elseif.start_err",
+]

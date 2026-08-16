@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.token_sessions"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.token_sessions"
+name = "token_sessions"
+kind = "field"
+lang = "python"
+content_hash = "6c1e297970d3b00d"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "token_sessions: dict[str, str] = field(default_factory=dict)"
+description = ""
+schema = 4
+line = 56
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_token_sessions [combiner/mcp_combiner/server.py]",
+  "map_token [combiner/mcp_combiner/runtime.py]",
+  "reset [combiner/mcp_combiner/runtime.py]",
+  "session_for_token [combiner/mcp_combiner/runtime.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.token_sessions",
+  "mcp",
+  "registry",
+  "runtime",
+  "session",
+  "sessions",
+  "token",
+  "token_sessions",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_code_learnings.py#test_patch_edges_keeps_cross_file_graph_consistent"
+fqn = "tests.test_code_learnings.test_patch_edges_keeps_cross_file_graph_consistent"
+name = "test_patch_edges_keeps_cross_file_graph_consistent"
+kind = "function"
+lang = "python"
+content_hash = "772355a39b2c1244"
+file = "tests/test_code_learnings.py"
+file_hash = "2cacd018989edacf"
+signature = "def test_patch_edges_keeps_cross_file_graph_consistent(crib):"
+description = ""
+schema = 4
+line = 225
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_learnings",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "by_fqname [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "consistent",
+  "cross",
+  "edges",
+  "file",
+  "graph",
+  "keeps",
+  "learnings",
+  "patch",
+  "test",
+  "test_patch_edges_keeps_cross_file_graph_consistent",
+  "tests",
+  "tests.test_code_learnings.test_patch_edges_keeps_cross_file_graph_consistent",
+]

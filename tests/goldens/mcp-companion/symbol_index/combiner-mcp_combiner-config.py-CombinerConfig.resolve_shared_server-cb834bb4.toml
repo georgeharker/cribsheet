@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/config.py#CombinerConfig.resolve_shared_server"
+fqn = "combiner.mcp_combiner.config.CombinerConfig.resolve_shared_server"
+name = "resolve_shared_server"
+kind = "method"
+lang = "python"
+content_hash = "8f719fff4431558c"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def resolve_shared_server(self, server_name: str) -> SharedServerConfig | None:"
+description = ""
+schema = 4
+line = 534
+mtime = 1783633313000000000
+container = [
+  "CombinerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "CombinerConfig",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "ensure_started [combiner/mcp_combiner/sharedserver.py]",
+  "ensure_stopped [combiner/mcp_combiner/sharedserver.py]",
+  "restart [combiner/mcp_combiner/sharedserver.py]",
+  "start_all [combiner/mcp_combiner/sharedserver.py]",
+]
+references = [
+  "ensure_started [combiner/mcp_combiner/sharedserver.py]",
+  "ensure_stopped [combiner/mcp_combiner/sharedserver.py]",
+  "restart [combiner/mcp_combiner/sharedserver.py]",
+  "start_all [combiner/mcp_combiner/sharedserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.CombinerConfig.resolve_shared_server",
+  "config",
+  "mcp",
+  "resolve",
+  "resolve_shared_server",
+  "server",
+  "shared",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "crib/symbols.py#display_name"
+fqn = "crib.symbols.display_name"
+name = "display_name"
+kind = "function"
+lang = "python"
+content_hash = "4d415e84a5dfd909"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def display_name(entry: dict[str, Any]) -> str:"
+description = ""
+schema = 4
+line = 284
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = [
+  "fqn_of [crib/symbols.py]",
+  "fqname_sep [crib/symbols.py]",
+]
+called_by = [
+  "_project_graph [crib/codequery.py]",
+  "put [crib/codequery.py]",
+]
+references = [
+  "_project_graph [crib/codequery.py]",
+  "put [crib/codequery.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.display_name",
+  "display",
+  "display_name",
+  "name",
+  "symbols",
+]

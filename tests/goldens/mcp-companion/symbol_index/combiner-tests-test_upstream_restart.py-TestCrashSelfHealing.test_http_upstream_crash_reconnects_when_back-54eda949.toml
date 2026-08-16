@@ -1,0 +1,51 @@
+symbol_ref = "combiner/tests/test_upstream_restart.py#TestCrashSelfHealing.test_http_upstream_crash_reconnects_when_back"
+fqn = "combiner.tests.test_upstream_restart.TestCrashSelfHealing.test_http_upstream_crash_reconnects_when_back"
+name = "test_http_upstream_crash_reconnects_when_back"
+kind = "method"
+lang = "python"
+content_hash = "8876e16101a2eb50"
+file = "combiner/tests/test_upstream_restart.py"
+file_hash = "c3ceaa6ec420f1df"
+signature = "async def test_http_upstream_crash_reconnects_when_back("
+description = ""
+schema = 4
+line = 170
+mtime = 1783534978000000000
+container = [
+  "TestCrashSelfHealing",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_upstream_restart",
+  "TestCrashSelfHealing",
+]
+symbol_was = []
+calls = [
+  "_call_until_ok [combiner/tests/test_upstream_restart.py]",
+  "_whoami [combiner/tests/test_upstream_restart.py]",
+  "http_mock_entry [combiner/tests/conftest.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+  "start_http_mock [combiner/tests/conftest.py]",
+  "wait_server_state [combiner/tests/conftest.py]",
+  "write_servers_config [combiner/tests/conftest.py]",
+  "write_tools_spec [combiner/tests/conftest.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "back",
+  "combiner",
+  "combiner.tests.test_upstream_restart.TestCrashSelfHealing.test_http_upstream_crash_reconnects_when_back",
+  "crash",
+  "healing",
+  "http",
+  "reconnects",
+  "restart",
+  "self",
+  "test",
+  "test_http_upstream_crash_reconnects_when_back",
+  "tests",
+  "upstream",
+  "when",
+]

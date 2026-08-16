@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestPermissionPolicyParsing"
+fqn = "combiner.tests.test_permissions.TestPermissionPolicyParsing"
+name = "TestPermissionPolicyParsing"
+kind = "class"
+lang = "python"
+content_hash = "82242d82c259e06d"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "class TestPermissionPolicyParsing:"
+description = ""
+schema = 4
+line = 44
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestPermissionPolicyParsing",
+  "combiner",
+  "combiner.tests.test_permissions.TestPermissionPolicyParsing",
+  "parsing",
+  "permission",
+  "permissions",
+  "policy",
+  "test",
+  "tests",
+]

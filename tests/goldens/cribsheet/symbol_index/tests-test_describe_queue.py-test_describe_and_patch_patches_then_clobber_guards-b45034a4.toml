@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_describe_queue.py#test_describe_and_patch_patches_then_clobber_guards"
+fqn = "tests.test_describe_queue.test_describe_and_patch_patches_then_clobber_guards"
+name = "test_describe_and_patch_patches_then_clobber_guards"
+kind = "function"
+lang = "python"
+content_hash = "f9b05250ea3f6b74"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def test_describe_and_patch_patches_then_clobber_guards(crib, tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 296
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_entry [tests/test_describe_queue.py]",
+  "_sym [tests/test_describe_queue.py]",
+  "go [tests/test_describe_queue.py]",
+  "read [crib/codeindex.py]",
+  "run [tests/test_describe_queue.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "clobber",
+  "describe",
+  "guards",
+  "patch",
+  "patches",
+  "queue",
+  "test",
+  "test_describe_and_patch_patches_then_clobber_guards",
+  "tests",
+  "tests.test_describe_queue.test_describe_and_patch_patches_then_clobber_guards",
+  "then",
+]

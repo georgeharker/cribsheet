@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#oauth_mock.make._healthy"
+fqn = "combiner.tests.test_oauth_mock.oauth_mock.make._healthy"
+name = "_healthy"
+kind = "function"
+lang = "python"
+content_hash = "026a33a13f9d0247"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def _healthy() -> bool:"
+description = ""
+schema = 4
+line = 131
+mtime = 1784495646000000000
+container = [
+  "oauth_mock",
+  "make",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "oauth_mock",
+  "make",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "make [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "_healthy",
+  "combiner",
+  "combiner.tests.test_oauth_mock.oauth_mock.make._healthy",
+  "healthy",
+  "make",
+  "mock",
+  "oauth",
+  "test",
+  "tests",
+]

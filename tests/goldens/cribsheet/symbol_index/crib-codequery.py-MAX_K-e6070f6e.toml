@@ -1,0 +1,32 @@
+symbol_ref = "crib/codequery.py#MAX_K"
+fqn = "crib.codequery.MAX_K"
+name = "MAX_K"
+kind = "constant"
+lang = "python"
+content_hash = "1ff0e4b0a6612b78"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "MAX_K = 200"
+description = ""
+schema = 4
+line = 66
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "check_k [crib/codequery.py]",
+]
+name_terms = [
+  "MAX_K",
+  "codequery",
+  "crib",
+  "crib.codequery.MAX_K",
+  "k",
+  "max",
+]

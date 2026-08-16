@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_refs.py#test_criblink_parses_refs"
+fqn = "tests.test_refs.test_criblink_parses_refs"
+name = "test_criblink_parses_refs"
+kind = "function"
+lang = "python"
+content_hash = "a01f618b2b9c0e3b"
+file = "tests/test_refs.py"
+file_hash = "c2372f74f28bca49"
+signature = "def test_criblink_parses_refs(tmp_path):"
+description = ""
+schema = 4
+line = 58
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_refs",
+]
+symbol_was = []
+calls = [
+  "find [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "criblink",
+  "parses",
+  "refs",
+  "test",
+  "test_criblink_parses_refs",
+  "tests",
+  "tests.test_refs.test_criblink_parses_refs",
+]

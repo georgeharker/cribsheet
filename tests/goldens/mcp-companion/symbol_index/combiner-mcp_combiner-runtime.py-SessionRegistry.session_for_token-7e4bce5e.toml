@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.session_for_token"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.session_for_token"
+name = "session_for_token"
+kind = "method"
+lang = "python"
+content_hash = "3b7eecaea167b8f7"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def session_for_token(self, token: str) -> str | None:"
+description = ""
+schema = 4
+line = 121
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "dispatch [combiner/mcp_combiner/asgi.py]",
+  "lookup_session_token [combiner/mcp_combiner/routes.py]",
+  "manage_token_filter [combiner/mcp_combiner/routes.py]",
+]
+references = [
+  "dispatch [combiner/mcp_combiner/asgi.py]",
+  "lookup_session_token [combiner/mcp_combiner/routes.py]",
+  "manage_token_filter [combiner/mcp_combiner/routes.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.session_for_token",
+  "for",
+  "mcp",
+  "registry",
+  "runtime",
+  "session",
+  "session_for_token",
+  "token",
+]

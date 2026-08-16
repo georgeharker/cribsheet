@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_store_chroma.py#test_op_propagates_non_not_found_failures"
+fqn = "tests.test_store_chroma.test_op_propagates_non_not_found_failures"
+name = "test_op_propagates_non_not_found_failures"
+kind = "function"
+lang = "python"
+content_hash = "335236cbd3688e1a"
+file = "tests/test_store_chroma.py"
+file_hash = "c9d58563fea059fc"
+signature = "def test_op_propagates_non_not_found_failures(chroma_dir):"
+description = ""
+schema = 4
+line = 80
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_store_chroma",
+]
+symbol_was = []
+calls = [
+  "_rec [tests/test_store_chroma.py]",
+  "embedded [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chroma",
+  "failures",
+  "found",
+  "non",
+  "not",
+  "op",
+  "propagates",
+  "store",
+  "test",
+  "test_op_propagates_non_not_found_failures",
+  "tests",
+  "tests.test_store_chroma.test_op_propagates_non_not_found_failures",
+]

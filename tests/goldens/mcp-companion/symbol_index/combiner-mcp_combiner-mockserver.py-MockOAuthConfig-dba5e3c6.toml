@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthConfig"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthConfig"
+name = "MockOAuthConfig"
+kind = "class"
+lang = "python"
+content_hash = "f35931a35bf69c23"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 586
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+  "make [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_token_preserved_when_provider_omits_it [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "MockOAuthConfig",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthConfig",
+  "config",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+]

@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/config.py#CombinerConfig.get_enabled_servers"
+fqn = "combiner.mcp_combiner.config.CombinerConfig.get_enabled_servers"
+name = "get_enabled_servers"
+kind = "method"
+lang = "python"
+content_hash = "5b573b2e9fd91b9c"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def get_enabled_servers(self) -> dict[str, ServerConfig]:"
+description = ""
+schema = 4
+line = 530
+mtime = 1783633313000000000
+container = [
+  "CombinerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "CombinerConfig",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "start_all [combiner/mcp_combiner/sharedserver.py]",
+  "test_enabled_servers [combiner/tests/test_config.py]",
+]
+references = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "start_all [combiner/mcp_combiner/sharedserver.py]",
+  "test_enabled_servers [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.CombinerConfig.get_enabled_servers",
+  "config",
+  "enabled",
+  "get",
+  "get_enabled_servers",
+  "mcp",
+  "servers",
+]

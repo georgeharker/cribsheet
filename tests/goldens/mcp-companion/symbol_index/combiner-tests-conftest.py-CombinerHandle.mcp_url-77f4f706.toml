@@ -1,0 +1,76 @@
+symbol_ref = "combiner/tests/conftest.py#CombinerHandle.mcp_url"
+fqn = "combiner.tests.conftest.CombinerHandle.mcp_url"
+name = "mcp_url"
+kind = "method"
+lang = "python"
+content_hash = "767f01ac525d370b"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "@property"
+description = ""
+schema = 4
+line = 167
+mtime = 1783544328000000000
+container = [
+  "CombinerHandle",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "CombinerHandle",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_header_client [combiner/tests/test_session_independence.py]",
+  "_restart [combiner/tests/test_upstream_restart.py]",
+  "_try [combiner/tests/test_upstream_restart.py]",
+  "_url_client [combiner/tests/test_session_independence.py]",
+  "test_control_session_filters_chat_via_meta_tool_chat_id [combiner/tests/test_session_independence.py]",
+  "test_control_session_filters_chat_via_token_route [combiner/tests/test_session_independence.py]",
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_crash_reconnects_when_back [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_malformed_schema_survives_combiner [combiner/tests/test_route_matrix.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_stale_session_gets_clean_error_not_hang [combiner/tests/test_combiner_reconnect.py]",
+  "test_stdio_restart_bounces_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_crash_recovers [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+]
+references = [
+  "_header_client [combiner/tests/test_session_independence.py]",
+  "_restart [combiner/tests/test_upstream_restart.py]",
+  "_try [combiner/tests/test_upstream_restart.py]",
+  "_url_client [combiner/tests/test_session_independence.py]",
+  "test_control_session_filters_chat_via_meta_tool_chat_id [combiner/tests/test_session_independence.py]",
+  "test_control_session_filters_chat_via_token_route [combiner/tests/test_session_independence.py]",
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_crash_reconnects_when_back [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_malformed_schema_survives_combiner [combiner/tests/test_route_matrix.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_stale_session_gets_clean_error_not_hang [combiner/tests/test_combiner_reconnect.py]",
+  "test_stdio_restart_bounces_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_crash_recovers [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.CombinerHandle.mcp_url",
+  "conftest",
+  "handle",
+  "mcp",
+  "mcp_url",
+  "tests",
+  "url",
+]

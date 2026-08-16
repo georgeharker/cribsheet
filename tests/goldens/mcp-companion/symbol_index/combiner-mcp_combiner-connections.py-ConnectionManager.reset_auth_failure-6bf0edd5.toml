@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager.reset_auth_failure"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager.reset_auth_failure"
+name = "reset_auth_failure"
+kind = "method"
+lang = "python"
+content_hash = "960558765d681b2a"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "def reset_auth_failure(self, name: str) -> None:"
+description = ""
+schema = 4
+line = 381
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+]
+references = [
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.reset_auth_failure",
+  "connection",
+  "connections",
+  "failure",
+  "manager",
+  "mcp",
+  "reset",
+  "reset_auth_failure",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "crib/symconvert.py#preserved"
+fqn = "crib.symconvert.preserved"
+name = "preserved"
+kind = "function"
+lang = "python"
+content_hash = "0521a2250c7ccb93"
+file = "crib/symconvert.py"
+file_hash = "ffd3514e85111d6e"
+signature = "def preserved(before: dict[str, Any], after: dict[str, Any]) -> list[str]:"
+description = ""
+schema = 4
+line = 53
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symconvert",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "code_convert [crib/app.py]",
+  "test_convert_preserves_every_expensive_facet_byte_identical [tests/test_symbol_convert.py]",
+  "test_preserved_names_a_mangled_facet [tests/test_symbol_convert.py]",
+]
+references = [
+  "code_convert [crib/app.py]",
+  "test_convert_preserves_every_expensive_facet_byte_identical [tests/test_symbol_convert.py]",
+  "test_preserved_names_a_mangled_facet [tests/test_symbol_convert.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symconvert.preserved",
+  "preserved",
+  "symconvert",
+]

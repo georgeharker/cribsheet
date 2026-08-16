@@ -1,0 +1,33 @@
+symbol_ref = "crib/codequery.py#GRAPH_GROUPINGS"
+fqn = "crib.codequery.GRAPH_GROUPINGS"
+name = "GRAPH_GROUPINGS"
+kind = "constant"
+lang = "python"
+content_hash = "d725d28164d0cbe6"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "GRAPH_GROUPINGS = (\"file\", \"dir\", \"scope\")"
+description = ""
+schema = 4
+line = 65
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "build_parser [crib/cli.py]",
+  "graph [crib/codequery.py]",
+]
+name_terms = [
+  "GRAPH_GROUPINGS",
+  "codequery",
+  "crib",
+  "crib.codequery.GRAPH_GROUPINGS",
+  "graph",
+  "groupings",
+]

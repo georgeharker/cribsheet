@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_dim_recovery.py#_flip_embedder"
+fqn = "tests.test_dim_recovery._flip_embedder"
+name = "_flip_embedder"
+kind = "function"
+lang = "python"
+content_hash = "120c1172cc644da0"
+file = "tests/test_dim_recovery.py"
+file_hash = "5f6ffd4e573336e9"
+signature = "def _flip_embedder(crib, dim: int) -> None:"
+description = ""
+schema = 4
+line = 36
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_dim_recovery",
+]
+symbol_was = []
+calls = [
+  "HashEmbedder [crib/embed.py]",
+]
+called_by = [
+  "test_a_reindex_that_wipes_the_store_drops_the_derived_caches [tests/test_dim_recovery.py]",
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap [tests/test_dim_recovery.py]",
+  "test_wipe_without_a_daemon_loop_warns_instead_of_stranding_a_task [tests/test_dim_recovery.py]",
+]
+references = [
+  "test_a_reindex_that_wipes_the_store_drops_the_derived_caches [tests/test_dim_recovery.py]",
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap [tests/test_dim_recovery.py]",
+  "test_wipe_without_a_daemon_loop_warns_instead_of_stranding_a_task [tests/test_dim_recovery.py]",
+]
+name_terms = [
+  "_flip_embedder",
+  "dim",
+  "embedder",
+  "flip",
+  "recovery",
+  "test",
+  "tests",
+  "tests.test_dim_recovery._flip_embedder",
+]

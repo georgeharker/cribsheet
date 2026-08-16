@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/conftest.py#MockHandle.stats"
+fqn = "combiner.tests.conftest.MockHandle.stats"
+name = "stats"
+kind = "method"
+lang = "python"
+content_hash = "f61dc43dfcfb8f35"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "async def stats(self) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 226
+mtime = 1783544328000000000
+container = [
+  "MockHandle",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "MockHandle",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_http_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_isolate_true_gives_each_chat_its_own_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_non_isolated_chats_share_one_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+]
+references = [
+  "test_http_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_isolate_true_gives_each_chat_its_own_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_non_isolated_chats_share_one_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.MockHandle.stats",
+  "conftest",
+  "handle",
+  "mock",
+  "stats",
+  "tests",
+]

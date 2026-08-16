@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_keyword_refresh.py#_arm"
+fqn = "tests.test_keyword_refresh._arm"
+name = "_arm"
+kind = "function"
+lang = "python"
+content_hash = "67a02176c42403da"
+file = "tests/test_keyword_refresh.py"
+file_hash = "d758ff5010231936"
+signature = "def _arm(crib, monkeypatch, calls):"
+description = ""
+schema = 4
+line = 26
+mtime = 1786044759000000000
+container = []
+scope = [
+  "tests",
+  "test_keyword_refresh",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "body [tests/test_keyword_refresh.py]",
+]
+references = [
+  "body [tests/test_keyword_refresh.py]",
+]
+name_terms = [
+  "_arm",
+  "arm",
+  "keyword",
+  "refresh",
+  "test",
+  "tests",
+  "tests.test_keyword_refresh._arm",
+]

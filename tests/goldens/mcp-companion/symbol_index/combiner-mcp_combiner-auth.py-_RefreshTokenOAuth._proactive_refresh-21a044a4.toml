@@ -1,0 +1,55 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_RefreshTokenOAuth._proactive_refresh"
+fqn = "combiner.mcp_combiner.auth._RefreshTokenOAuth._proactive_refresh"
+name = "_proactive_refresh"
+kind = "method"
+lang = "python"
+content_hash = "a2d69352623bdb77"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "async def _proactive_refresh(self) -> _RefreshOutcome:"
+description = ""
+schema = 4
+line = 320
+mtime = 1783622326000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+  "_RefreshTokenOAuth",
+]
+symbol_was = []
+calls = [
+  "_build_refresh_request [combiner/mcp_combiner/auth.py]",
+  "_discover_oauth_metadata [combiner/mcp_combiner/auth.py]",
+  "_is_network_error [combiner/mcp_combiner/auth.py]",
+]
+called_by = [
+  "_initialize [combiner/mcp_combiner/auth.py]",
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+  "test_refresh_sends_right_token_and_stores_rotated [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_token_preserved_when_provider_omits_it [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_with_unknown_token_is_auth_error [combiner/tests/test_oauth_mock.py]",
+]
+references = [
+  "_initialize [combiner/mcp_combiner/auth.py]",
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+  "test_refresh_sends_right_token_and_stores_rotated [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_token_preserved_when_provider_omits_it [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_with_unknown_token_is_auth_error [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "_proactive_refresh",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth._proactive_refresh",
+  "mcp",
+  "o",
+  "proactive",
+  "refresh",
+  "token",
+]

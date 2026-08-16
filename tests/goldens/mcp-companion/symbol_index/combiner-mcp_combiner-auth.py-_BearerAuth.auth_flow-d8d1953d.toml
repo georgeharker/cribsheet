@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_BearerAuth.auth_flow"
+fqn = "combiner.mcp_combiner.auth._BearerAuth.auth_flow"
+name = "auth_flow"
+kind = "method"
+lang = "python"
+content_hash = "8403fac5bf494b30"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "def auth_flow(self, request: httpx.Request) -> Any:"
+description = ""
+schema = 4
+line = 963
+mtime = 1783622326000000000
+container = [
+  "_BearerAuth",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+  "_BearerAuth",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_bearer_dict [combiner/tests/test_auth.py]",
+  "test_injects_header [combiner/tests/test_auth.py]",
+]
+references = [
+  "test_bearer_dict [combiner/tests/test_auth.py]",
+  "test_injects_header [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "auth",
+  "auth_flow",
+  "bearer",
+  "combiner",
+  "combiner.mcp_combiner.auth._BearerAuth.auth_flow",
+  "flow",
+  "mcp",
+]

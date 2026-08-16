@@ -1,0 +1,38 @@
+symbol_ref = "lua/mcp_companion/ops.lua#finish"
+fqn = "mcp_companion.ops.finish"
+name = "finish"
+kind = "function"
+lang = "lua"
+content_hash = "e77092bc3664ad18"
+file = "lua/mcp_companion/ops.lua"
+file_hash = "7ca7520a63575997"
+signature = "local function finish(notify, action, done)"
+description = ""
+schema = 4
+line = 45
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "ops",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.reload_config [lua/mcp_companion/ops.lua]",
+  "M.restart_server [lua/mcp_companion/ops.lua]",
+  "M.toggle_server [lua/mcp_companion/ops.lua]",
+  "ops.lua [lua/mcp_companion/ops.lua]",
+]
+references = [
+  "reload_config [lua/mcp_companion/ops.lua]",
+  "restart_server [lua/mcp_companion/ops.lua]",
+  "toggle_server [lua/mcp_companion/ops.lua]",
+]
+name_terms = [
+  "companion",
+  "finish",
+  "mcp",
+  "mcp_companion.ops.finish",
+  "ops",
+]

@@ -1,0 +1,35 @@
+symbol_ref = "crib/server.py#build_server.status"
+fqn = "crib.server.build_server.status"
+name = "status"
+kind = "function"
+lang = "python"
+content_hash = "89ea13fb24e7af41"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"none\")"
+description = ""
+schema = 4
+line = 1421
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "crib_tool [crib/server.py]",
+  "status [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.status",
+  "server",
+  "status",
+]

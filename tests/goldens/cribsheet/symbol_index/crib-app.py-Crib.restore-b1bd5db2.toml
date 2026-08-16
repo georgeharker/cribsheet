@@ -1,0 +1,39 @@
+symbol_ref = "crib/app.py#Crib.restore"
+fqn = "crib.app.Crib.restore"
+name = "restore"
+kind = "method"
+lang = "python"
+content_hash = "32095ffff810b60a"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def restore(self, relpath: str, version: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 2866
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "edit_note [crib/app.py]",
+  "resolve_project [crib/app.py]",
+  "version_content [crib/notestore.py]",
+]
+called_by = [
+  "note_restore [crib/server.py]",
+]
+references = [
+  "note_restore [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.restore",
+  "restore",
+]

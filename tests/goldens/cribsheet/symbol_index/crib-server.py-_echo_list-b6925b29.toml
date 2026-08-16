@@ -1,0 +1,38 @@
+symbol_ref = "crib/server.py#_echo_list"
+fqn = "crib.server._echo_list"
+name = "_echo_list"
+kind = "function"
+lang = "python"
+content_hash = "5aaa3419bfe821f9"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def _echo_list(hits: Any, res: ProjectResolution) -> Any:"
+description = ""
+schema = 4
+line = 71
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = [
+  "echo [crib/session.py]",
+]
+called_by = [
+  "finish [crib/server.py]",
+  "test_the_empty_result_marker_is_the_key_the_cli_renders [tests/test_surface_parity.py]",
+]
+references = [
+  "finish [crib/server.py]",
+  "test_the_empty_result_marker_is_the_key_the_cli_renders [tests/test_surface_parity.py]",
+]
+name_terms = [
+  "_echo_list",
+  "crib",
+  "crib.server._echo_list",
+  "echo",
+  "list",
+  "server",
+]

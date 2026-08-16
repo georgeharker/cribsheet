@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_sync.py#test_setup_joins_a_master_remote_on_master"
+fqn = "tests.test_sync.test_setup_joins_a_master_remote_on_master"
+name = "test_setup_joins_a_master_remote_on_master"
+kind = "function"
+lang = "python"
+content_hash = "18d4e66c6d227d69"
+file = "tests/test_sync.py"
+file_hash = "594e3dd701dbe999"
+signature = "def test_setup_joins_a_master_remote_on_master(tmp_path, master_remote):"
+description = ""
+schema = 4
+line = 236
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_sync",
+]
+symbol_was = []
+calls = [
+  "GitBacking [crib/gitbacking.py]",
+  "git [tests/test_sync.py]",
+  "setup [crib/gitbacking.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "joins",
+  "master",
+  "on",
+  "remote",
+  "setup",
+  "sync",
+  "test",
+  "test_setup_joins_a_master_remote_on_master",
+  "tests",
+  "tests.test_sync.test_setup_joins_a_master_remote_on_master",
+]

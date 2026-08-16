@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_codeindex.py#test_derive_mtime_git_date_for_committed_disk_for_modified"
+fqn = "tests.test_codeindex.test_derive_mtime_git_date_for_committed_disk_for_modified"
+name = "test_derive_mtime_git_date_for_committed_disk_for_modified"
+kind = "function"
+lang = "python"
+content_hash = "99aa2f07dacad2bd"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_derive_mtime_git_date_for_committed_disk_for_modified(tmp_path):"
+description = ""
+schema = 4
+line = 58
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "derive_mtime [crib/codeindex.py]",
+  "git [tests/test_codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "committed",
+  "date",
+  "derive",
+  "disk",
+  "for",
+  "git",
+  "modified",
+  "mtime",
+  "test",
+  "test_derive_mtime_git_date_for_committed_disk_for_modified",
+  "tests",
+  "tests.test_codeindex.test_derive_mtime_git_date_for_committed_disk_for_modified",
+]

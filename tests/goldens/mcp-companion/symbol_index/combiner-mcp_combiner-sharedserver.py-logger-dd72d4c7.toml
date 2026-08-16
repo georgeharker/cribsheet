@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/sharedserver.py#logger"
+fqn = "combiner.mcp_combiner.sharedserver.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+content_hash = "3f3978554a5fada2"
+file = "combiner/mcp_combiner/sharedserver.py"
+file_hash = "00df81a0a741c869"
+signature = "logger = logging.getLogger(\"mcp-combiner.sharedserver\")"
+description = ""
+schema = 4
+line = 30
+mtime = 1782539642000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "sharedserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_start_one [combiner/mcp_combiner/sharedserver.py]",
+  "_stop_force [combiner/mcp_combiner/sharedserver.py]",
+  "_stop_one [combiner/mcp_combiner/sharedserver.py]",
+  "cleanup [combiner/mcp_combiner/sharedserver.py]",
+  "restart [combiner/mcp_combiner/sharedserver.py]",
+  "start_all [combiner/mcp_combiner/sharedserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.logger",
+  "logger",
+  "mcp",
+  "sharedserver",
+]

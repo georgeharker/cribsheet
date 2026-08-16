@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#_bump_boot_count"
+fqn = "combiner.mcp_combiner.mockserver._bump_boot_count"
+name = "_bump_boot_count"
+kind = "function"
+lang = "python"
+content_hash = "d384179305e0e730"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def _bump_boot_count(state_dir: Path, name: str) -> int:"
+description = ""
+schema = 4
+line = 204
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+]
+references = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "_bump_boot_count",
+  "boot",
+  "bump",
+  "combiner",
+  "combiner.mcp_combiner.mockserver._bump_boot_count",
+  "count",
+  "mcp",
+  "mockserver",
+]

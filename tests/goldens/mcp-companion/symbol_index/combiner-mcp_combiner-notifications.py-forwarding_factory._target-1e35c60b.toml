@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/notifications.py#forwarding_factory._target"
+fqn = "combiner.mcp_combiner.notifications.forwarding_factory._target"
+name = "_target"
+kind = "function"
+lang = "python"
+content_hash = "9328acd336e7df40"
+file = "combiner/mcp_combiner/notifications.py"
+file_hash = "3a02dac6027ca8f5"
+signature = "def _target() -> ServerSession | None:"
+description = ""
+schema = 4
+line = 236
+mtime = 1784493613000000000
+container = [
+  "forwarding_factory",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "notifications",
+  "forwarding_factory",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_finish [combiner/mcp_combiner/notifications.py]",
+  "wrapped [combiner/mcp_combiner/notifications.py]",
+]
+references = [
+  "_finish [combiner/mcp_combiner/notifications.py]",
+  "wrapped [combiner/mcp_combiner/notifications.py]",
+]
+name_terms = [
+  "_target",
+  "combiner",
+  "combiner.mcp_combiner.notifications.forwarding_factory._target",
+  "factory",
+  "forwarding",
+  "mcp",
+  "notifications",
+  "target",
+]

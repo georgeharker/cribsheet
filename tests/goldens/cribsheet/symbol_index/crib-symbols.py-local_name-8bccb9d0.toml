@@ -1,0 +1,38 @@
+symbol_ref = "crib/symbols.py#local_name"
+fqn = "crib.symbols.local_name"
+name = "local_name"
+kind = "function"
+lang = "python"
+content_hash = "63287cfd56bf82ed"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def local_name(raw: str, lang: str) -> str:"
+description = ""
+schema = 4
+line = 99
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_declared_scope [crib/symbols.py]",
+  "_symbol_entry [crib/codeindex.py]",
+  "_symbol_ranges [crib/codeindex.py]",
+  "declared_tail [crib/symbols.py]",
+]
+references = [
+  "_declared_scope [crib/symbols.py]",
+  "declared_tail [crib/symbols.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.local_name",
+  "local",
+  "local_name",
+  "name",
+  "symbols",
+]

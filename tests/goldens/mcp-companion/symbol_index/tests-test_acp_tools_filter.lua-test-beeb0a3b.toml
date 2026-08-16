@@ -1,0 +1,32 @@
+symbol_ref = "tests/test_acp_tools_filter.lua#test"
+fqn = "tests.test_acp_tools_filter.test"
+name = "test"
+kind = "function"
+lang = "lua"
+content_hash = "767b37b47f5d21d8"
+file = "tests/test_acp_tools_filter.lua"
+file_hash = "f1de5056c51ce838"
+signature = "local function test(name, fn)"
+description = ""
+schema = 4
+line = 28
+mtime = 1782420032000000000
+container = []
+scope = [
+  "tests",
+  "test_acp_tools_filter",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_acp_tools_filter.lua [tests/test_acp_tools_filter.lua]",
+]
+references = []
+name_terms = [
+  "acp",
+  "filter",
+  "test",
+  "tests",
+  "tests.test_acp_tools_filter.test",
+  "tools",
+]

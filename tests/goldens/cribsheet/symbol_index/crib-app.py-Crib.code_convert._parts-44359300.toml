@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.code_convert._parts"
+fqn = "crib.app.Crib.code_convert._parts"
+name = "_parts"
+kind = "function"
+lang = "python"
+content_hash = "69553e968a8073f0"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _parts(e: dict) -> tuple:"
+description = ""
+schema = 4
+line = 1862
+mtime = 1786693579000000000
+container = [
+  "Crib",
+  "code_convert",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+  "code_convert",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "code_convert [crib/app.py]",
+]
+references = [
+  "code_convert [crib/app.py]",
+]
+name_terms = [
+  "_parts",
+  "app",
+  "code",
+  "convert",
+  "crib",
+  "crib.app.Crib.code_convert._parts",
+  "parts",
+]

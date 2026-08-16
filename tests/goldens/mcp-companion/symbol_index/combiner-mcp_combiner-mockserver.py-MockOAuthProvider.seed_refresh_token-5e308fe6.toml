@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthProvider.seed_refresh_token"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthProvider.seed_refresh_token"
+name = "seed_refresh_token"
+kind = "method"
+lang = "python"
+content_hash = "35e381eae773146b"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def seed_refresh_token(self, token: str) -> None:"
+description = ""
+schema = 4
+line = 708
+mtime = 1783622326000000000
+container = [
+  "MockOAuthProvider",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthProvider",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_seed_refreshable [combiner/tests/test_oauth_mock.py]",
+]
+references = [
+  "_seed_refreshable [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthProvider.seed_refresh_token",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "provider",
+  "refresh",
+  "seed",
+  "seed_refresh_token",
+  "token",
+]

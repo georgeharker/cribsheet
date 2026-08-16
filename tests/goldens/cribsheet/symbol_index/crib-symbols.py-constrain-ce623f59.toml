@@ -1,0 +1,35 @@
+symbol_ref = "crib/symbols.py#constrain"
+fqn = "crib.symbols.constrain"
+name = "constrain"
+kind = "function"
+lang = "python"
+content_hash = "5e5411905d1afc16"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def constrain(entries: Sequence[dict[str, Any]], path: str = \"\", scope: str = \"\","
+description = ""
+schema = 4
+line = 320
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = [
+  "path_matches [crib/symbols.py]",
+  "scope_matches [crib/symbols.py]",
+]
+called_by = [
+  "resolve_symbol [crib/refs.py]",
+]
+references = [
+  "resolve_symbol [crib/refs.py]",
+]
+name_terms = [
+  "constrain",
+  "crib",
+  "crib.symbols.constrain",
+  "symbols",
+]

@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_server_progress.py#test_progress_reports_only_this_calls_sweep.body"
+fqn = "tests.test_server_progress.test_progress_reports_only_this_calls_sweep.body"
+name = "body"
+kind = "function"
+lang = "python"
+content_hash = "6514d89203aadf9a"
+file = "tests/test_server_progress.py"
+file_hash = "eb2fa9d1ba7041e5"
+signature = "async def body():"
+description = ""
+schema = 4
+line = 75
+mtime = 1783981122000000000
+container = [
+  "test_progress_reports_only_this_calls_sweep",
+]
+scope = [
+  "tests",
+  "test_server_progress",
+  "test_progress_reports_only_this_calls_sweep",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_progress_reports_only_this_calls_sweep [tests/test_server_progress.py]",
+]
+references = [
+  "test_progress_reports_only_this_calls_sweep [tests/test_server_progress.py]",
+]
+name_terms = [
+  "body",
+  "calls",
+  "only",
+  "progress",
+  "reports",
+  "server",
+  "sweep",
+  "test",
+  "tests",
+  "tests.test_server_progress.test_progress_reports_only_this_calls_sweep.body",
+  "this",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#_NoSignalServer"
+fqn = "combiner.tests.test_oauth_mock._NoSignalServer"
+name = "_NoSignalServer"
+kind = "class"
+lang = "python"
+content_hash = "ba60212d2a486fd6"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "class _NoSignalServer(uvicorn.Server):"
+description = ""
+schema = 4
+line = 58
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "make [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "_NoSignalServer",
+  "combiner",
+  "combiner.tests.test_oauth_mock._NoSignalServer",
+  "mock",
+  "no",
+  "oauth",
+  "server",
+  "signal",
+  "test",
+  "tests",
+]

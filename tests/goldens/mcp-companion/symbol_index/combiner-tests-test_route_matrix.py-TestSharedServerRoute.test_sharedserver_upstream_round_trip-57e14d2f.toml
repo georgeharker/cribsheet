@@ -1,0 +1,52 @@
+symbol_ref = "combiner/tests/test_route_matrix.py#TestSharedServerRoute.test_sharedserver_upstream_round_trip"
+fqn = "combiner.tests.test_route_matrix.TestSharedServerRoute.test_sharedserver_upstream_round_trip"
+name = "test_sharedserver_upstream_round_trip"
+kind = "method"
+lang = "python"
+content_hash = "f92add5c795ecdc9"
+file = "combiner/tests/test_route_matrix.py"
+file_hash = "e02757ba8c7bf654"
+signature = "async def test_sharedserver_upstream_round_trip("
+description = ""
+schema = 4
+line = 125
+mtime = 1783534978000000000
+container = [
+  "TestSharedServerRoute",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_route_matrix",
+  "TestSharedServerRoute",
+]
+symbol_was = []
+calls = [
+  "_text [combiner/tests/test_route_matrix.py]",
+  "free_port [combiner/tests/conftest.py]",
+  "sharedserver_def [combiner/tests/conftest.py]",
+  "sharedserver_mock_entry [combiner/tests/conftest.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+  "track_shared [combiner/tests/conftest.py]",
+  "unique_shared_name [combiner/tests/conftest.py]",
+  "wait_server_state [combiner/tests/conftest.py]",
+  "write_servers_config [combiner/tests/conftest.py]",
+  "write_tools_spec [combiner/tests/conftest.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_route_matrix.TestSharedServerRoute.test_sharedserver_upstream_round_trip",
+  "matrix",
+  "round",
+  "route",
+  "server",
+  "shared",
+  "sharedserver",
+  "test",
+  "test_sharedserver_upstream_round_trip",
+  "tests",
+  "trip",
+  "upstream",
+]

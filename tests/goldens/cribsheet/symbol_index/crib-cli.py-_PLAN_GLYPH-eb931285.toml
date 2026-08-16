@@ -1,0 +1,32 @@
+symbol_ref = "crib/cli.py#_PLAN_GLYPH"
+fqn = "crib.cli._PLAN_GLYPH"
+name = "_PLAN_GLYPH"
+kind = "constant"
+lang = "python"
+content_hash = "89aa0f374ec15ed7"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "_PLAN_GLYPH = {\"todo\": \"·\", \"in-progress\": \"▶\", \"done\": \"✓\", \"verified\": \"✓✓\"}"
+description = ""
+schema = 4
+line = 702
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_emit_plan_list [crib/cli.py]",
+]
+name_terms = [
+  "_PLAN_GLYPH",
+  "cli",
+  "crib",
+  "crib.cli._PLAN_GLYPH",
+  "glyph",
+  "plan",
+]

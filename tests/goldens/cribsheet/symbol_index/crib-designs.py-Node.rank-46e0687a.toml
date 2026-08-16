@@ -1,0 +1,38 @@
+symbol_ref = "crib/designs.py#Node.rank"
+fqn = "crib.designs.Node.rank"
+name = "rank"
+kind = "field"
+lang = "python"
+content_hash = "5b26b68a4dee8a59"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "rank: str"
+description = ""
+schema = 4
+line = 321
+mtime = 1786693579000000000
+container = [
+  "Node",
+]
+scope = [
+  "crib",
+  "designs",
+  "Node",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_load_graph [crib/designs.py]",
+  "_node [tests/test_designs.py]",
+  "_rank_for [crib/designs.py]",
+  "brief [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Node.rank",
+  "designs",
+  "node",
+  "rank",
+]

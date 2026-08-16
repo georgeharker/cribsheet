@@ -1,0 +1,43 @@
+symbol_ref = "crib/store.py#ChromaStore.recreate"
+fqn = "crib.store.ChromaStore.recreate"
+name = "recreate"
+kind = "method"
+lang = "python"
+content_hash = "733de4657c069cda"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def recreate(self) -> None:"
+description = ""
+schema = 4
+line = 270
+mtime = 1786564832000000000
+container = [
+  "ChromaStore",
+]
+scope = [
+  "crib",
+  "store",
+  "ChromaStore",
+]
+symbol_was = []
+calls = [
+  "_is_missing_collection [crib/store.py]",
+  "_resolve [crib/store.py]",
+]
+called_by = [
+  "test_recreate_after_dim_change_across_handles [tests/test_store_chroma.py]",
+  "test_recreate_propagates_non_not_found_failures [tests/test_store_chroma.py]",
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+references = [
+  "test_recreate_after_dim_change_across_handles [tests/test_store_chroma.py]",
+  "test_recreate_propagates_non_not_found_failures [tests/test_store_chroma.py]",
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+name_terms = [
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore.recreate",
+  "recreate",
+  "store",
+]

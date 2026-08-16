@@ -1,0 +1,41 @@
+symbol_ref = "lua/mcp_companion/cc/tools.lua#register_native"
+fqn = "mcp_companion.cc.tools.register_native"
+name = "register_native"
+kind = "function"
+lang = "lua"
+content_hash = "2cb896da7e6dadf7"
+file = "lua/mcp_companion/cc/tools.lua"
+file_hash = "1319bd3ac569f910"
+signature = "function M.register_native()"
+description = ""
+schema = 4
+line = 315
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "cc",
+  "tools",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M._auto_native_tools [lua/mcp_companion/cc/init.lua]",
+  "tools.lua [lua/mcp_companion/cc/tools.lua]",
+]
+references = [
+  "_auto_native_tools [lua/mcp_companion/cc/init.lua]",
+  "clear_fingerprint [lua/mcp_companion/cc/tools.lua]",
+  "register [lua/mcp_companion/cc/tools.lua]",
+  "unregister [lua/mcp_companion/cc/tools.lua]",
+]
+name_terms = [
+  "cc",
+  "companion",
+  "mcp",
+  "mcp_companion.cc.tools.register_native",
+  "native",
+  "register",
+  "register_native",
+  "tools",
+]

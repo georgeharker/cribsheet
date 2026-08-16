@@ -1,0 +1,44 @@
+symbol_ref = "crib/notestore.py#NoteStore.version_content"
+fqn = "crib.notestore.NoteStore.version_content"
+name = "version_content"
+kind = "method"
+lang = "python"
+content_hash = "f79eda1e53c4fc12"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "def version_content(self, project: str, relpath: str, version: str) -> str:"
+description = ""
+schema = 4
+line = 361
+mtime = 1786564832000000000
+container = [
+  "NoteStore",
+]
+scope = [
+  "crib",
+  "notestore",
+  "NoteStore",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_ring_id [crib/notestore.py]",
+  "read [crib/versions.py]",
+  "versions_for [crib/notestore.py]",
+]
+called_by = [
+  "restore [crib/app.py]",
+]
+references = [
+  "restore [crib/app.py]",
+]
+name_terms = [
+  "content",
+  "crib",
+  "crib.notestore.NoteStore.version_content",
+  "note",
+  "notestore",
+  "store",
+  "version",
+  "version_content",
+]

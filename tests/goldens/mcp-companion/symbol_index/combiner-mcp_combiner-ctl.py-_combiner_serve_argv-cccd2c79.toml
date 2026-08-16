@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#_combiner_serve_argv"
+fqn = "combiner.mcp_combiner.ctl._combiner_serve_argv"
+name = "_combiner_serve_argv"
+kind = "function"
+lang = "python"
+content_hash = "2324fa05ee798f5b"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "def _combiner_serve_argv(config: str, host: str, port: int, extra: list[str]) -> list[str]:"
+description = ""
+schema = 4
+line = 106
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "cmd_restart_combiner [combiner/mcp_combiner/ctl.py]",
+  "cmd_start [combiner/mcp_combiner/ctl.py]",
+  "test_combiner_serve_argv_falls_back_to_module [combiner/tests/test_ctl_lifecycle.py]",
+  "test_combiner_serve_argv_prefers_installed_entrypoint [combiner/tests/test_ctl_lifecycle.py]",
+]
+references = [
+  "cmd_restart_combiner [combiner/mcp_combiner/ctl.py]",
+  "cmd_start [combiner/mcp_combiner/ctl.py]",
+  "test_combiner_serve_argv_falls_back_to_module [combiner/tests/test_ctl_lifecycle.py]",
+  "test_combiner_serve_argv_prefers_installed_entrypoint [combiner/tests/test_ctl_lifecycle.py]",
+]
+name_terms = [
+  "_combiner_serve_argv",
+  "argv",
+  "combiner",
+  "combiner.mcp_combiner.ctl._combiner_serve_argv",
+  "ctl",
+  "mcp",
+  "serve",
+]

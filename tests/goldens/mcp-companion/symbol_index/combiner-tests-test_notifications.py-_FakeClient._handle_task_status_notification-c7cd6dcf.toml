@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_notifications.py#_FakeClient._handle_task_status_notification"
+fqn = "combiner.tests.test_notifications._FakeClient._handle_task_status_notification"
+name = "_handle_task_status_notification"
+kind = "method"
+lang = "python"
+content_hash = "2cef18e07a9f6bdb"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "def _handle_task_status_notification(self, notification: Any) -> None:"
+description = ""
+schema = 4
+line = 59
+mtime = 1784493613000000000
+container = [
+  "_FakeClient",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "_FakeClient",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_handle_task_status_notification",
+  "client",
+  "combiner",
+  "combiner.tests.test_notifications._FakeClient._handle_task_status_notification",
+  "fake",
+  "handle",
+  "notification",
+  "notifications",
+  "status",
+  "task",
+  "test",
+  "tests",
+]

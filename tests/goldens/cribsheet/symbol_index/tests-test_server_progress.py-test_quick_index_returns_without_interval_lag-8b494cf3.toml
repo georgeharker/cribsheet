@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_server_progress.py#test_quick_index_returns_without_interval_lag"
+fqn = "tests.test_server_progress.test_quick_index_returns_without_interval_lag"
+name = "test_quick_index_returns_without_interval_lag"
+kind = "function"
+lang = "python"
+content_hash = "c30af1d1668dcfbd"
+file = "tests/test_server_progress.py"
+file_hash = "eb2fa9d1ba7041e5"
+signature = "def test_quick_index_returns_without_interval_lag(crib, monkeypatch):"
+description = ""
+schema = 4
+line = 31
+mtime = 1783981122000000000
+container = []
+scope = [
+  "tests",
+  "test_server_progress",
+]
+symbol_was = []
+calls = [
+  "body [tests/test_server_progress.py]",
+  "build_server [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "index",
+  "interval",
+  "lag",
+  "progress",
+  "quick",
+  "returns",
+  "server",
+  "test",
+  "test_quick_index_returns_without_interval_lag",
+  "tests",
+  "tests.test_server_progress.test_quick_index_returns_without_interval_lag",
+  "without",
+]

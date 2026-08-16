@@ -1,0 +1,31 @@
+symbol_ref = "tests/test_store_chroma.py#chroma_dir"
+fqn = "tests.test_store_chroma.chroma_dir"
+name = "chroma_dir"
+kind = "function"
+lang = "python"
+content_hash = "57240c8497a5446c"
+file = "tests/test_store_chroma.py"
+file_hash = "c9d58563fea059fc"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 22
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_store_chroma",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "chroma",
+  "chroma_dir",
+  "dir",
+  "store",
+  "test",
+  "tests",
+  "tests.test_store_chroma.chroma_dir",
+]

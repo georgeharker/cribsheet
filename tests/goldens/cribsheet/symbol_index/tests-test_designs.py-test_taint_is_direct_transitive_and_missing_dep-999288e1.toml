@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_designs.py#test_taint_is_direct_transitive_and_missing_dep"
+fqn = "tests.test_designs.test_taint_is_direct_transitive_and_missing_dep"
+name = "test_taint_is_direct_transitive_and_missing_dep"
+kind = "function"
+lang = "python"
+content_hash = "6ab2bf9b8f108206"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_taint_is_direct_transitive_and_missing_dep(crib):"
+description = ""
+schema = 4
+line = 123
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "_node [tests/test_designs.py]",
+  "_taint [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "dep",
+  "designs",
+  "direct",
+  "is",
+  "missing",
+  "taint",
+  "test",
+  "test_taint_is_direct_transitive_and_missing_dep",
+  "tests",
+  "tests.test_designs.test_taint_is_direct_transitive_and_missing_dep",
+  "transitive",
+]

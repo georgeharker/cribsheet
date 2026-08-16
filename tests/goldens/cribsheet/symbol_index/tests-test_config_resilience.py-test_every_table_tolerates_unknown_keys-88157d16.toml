@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_config_resilience.py#test_every_table_tolerates_unknown_keys"
+fqn = "tests.test_config_resilience.test_every_table_tolerates_unknown_keys"
+name = "test_every_table_tolerates_unknown_keys"
+kind = "function"
+lang = "python"
+content_hash = "bcdbc0e7bd07e4d6"
+file = "tests/test_config_resilience.py"
+file_hash = "620aeb96b59e7b2d"
+signature = "def test_every_table_tolerates_unknown_keys(tmp_path):"
+description = ""
+schema = 4
+line = 39
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_config_resilience",
+]
+symbol_was = []
+calls = [
+  "_cfg [tests/test_config_resilience.py]",
+  "load [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "config",
+  "every",
+  "keys",
+  "resilience",
+  "table",
+  "test",
+  "test_every_table_tolerates_unknown_keys",
+  "tests",
+  "tests.test_config_resilience.test_every_table_tolerates_unknown_keys",
+  "tolerates",
+  "unknown",
+]

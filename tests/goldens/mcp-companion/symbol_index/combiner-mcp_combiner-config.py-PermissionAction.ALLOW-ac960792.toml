@@ -1,0 +1,49 @@
+symbol_ref = "combiner/mcp_combiner/config.py#PermissionAction.ALLOW"
+fqn = "combiner.mcp_combiner.config.PermissionAction.ALLOW"
+name = "ALLOW"
+kind = "constant"
+lang = "python"
+content_hash = "1fbe3cef431230f6"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "ALLOW = \"allow\""
+description = ""
+schema = 4
+line = 132
+mtime = 1783633313000000000
+container = [
+  "PermissionAction",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "PermissionAction",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_elicit [combiner/mcp_combiner/permissions.py]",
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+  "_rp [combiner/tests/test_permissions.py]",
+  "enforce [combiner/mcp_combiner/permissions.py]",
+  "is_active [combiner/mcp_combiner/config.py]",
+  "resolve [combiner/mcp_combiner/config.py]",
+  "test_auto_approve_folds_into_allow [combiner/tests/test_permissions.py]",
+  "test_effective_policy_via_combiner_config [combiner/tests/test_permissions.py]",
+  "test_elicit_unavailable_fallback_allow [combiner/tests/test_permissions.py]",
+  "test_off_by_default [combiner/tests/test_permissions.py]",
+  "test_parses_fields [combiner/tests/test_permissions.py]",
+  "test_unmatched_uses_default [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "ALLOW",
+  "action",
+  "allow",
+  "combiner",
+  "combiner.mcp_combiner.config.PermissionAction.ALLOW",
+  "config",
+  "mcp",
+  "permission",
+]

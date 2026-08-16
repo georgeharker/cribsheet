@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/server.py#_server_tool_seen"
+fqn = "combiner.mcp_combiner.server._server_tool_seen"
+name = "_server_tool_seen"
+kind = "global"
+lang = "python"
+content_hash = "cdfd67873267a317"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "_server_tool_seen: dict[str, float] = RUNTIME.tools.server_seen"
+description = ""
+schema = 4
+line = 105
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_cleanup [combiner/tests/test_session_filter.py]",
+  "setup_method [combiner/tests/test_session_filter.py]",
+  "teardown_method [combiner/tests/test_session_filter.py]",
+  "test_auth_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_disabled_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_grace_window_expiry_drops_tools [combiner/tests/test_session_filter.py]",
+  "test_restart_leaves_one_live_provider [combiner/tests/test_mounts.py]",
+  "test_restart_stdio_empty_answer_keeps_slice_silent [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "_server_tool_seen",
+  "combiner",
+  "combiner.mcp_combiner.server._server_tool_seen",
+  "mcp",
+  "seen",
+  "server",
+  "tool",
+]

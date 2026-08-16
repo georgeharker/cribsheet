@@ -1,0 +1,33 @@
+symbol_ref = "scripts/symstats.py#main"
+fqn = "scripts.symstats.main"
+name = "main"
+kind = "function"
+lang = "python"
+content_hash = "3177e2d6a9eb2b2b"
+file = "scripts/symstats.py"
+file_hash = "bc09f2e285e5b003"
+signature = "def main(argv: list[str]) -> int:"
+description = ""
+schema = 4
+line = 210
+mtime = 1786664729000000000
+container = []
+scope = [
+  "scripts",
+  "symstats",
+]
+symbol_was = []
+calls = [
+  "capture [scripts/symstats.py]",
+  "diff [scripts/symstats.py]",
+]
+called_by = [
+  "symstats [scripts/symstats.py]",
+]
+references = []
+name_terms = [
+  "main",
+  "scripts",
+  "scripts.symstats.main",
+  "symstats",
+]

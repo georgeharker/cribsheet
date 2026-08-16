@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/schemafix.py#SCHEMA_FIXES"
+fqn = "combiner.mcp_combiner.schemafix.SCHEMA_FIXES"
+name = "SCHEMA_FIXES"
+kind = "constant"
+lang = "python"
+content_hash = "0a0af809b006315a"
+file = "combiner/mcp_combiner/schemafix.py"
+file_hash = "49870021f06866cb"
+signature = "SCHEMA_FIXES: tuple[str, ...] = (\"anyof_type_hoist\", \"empty_object\", \"drop_invalid_required\")"
+description = ""
+schema = 4
+line = 45
+mtime = 1783542616000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "schemafix",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "ALL [combiner/tests/test_schema_fixes.py]",
+  "_add_serve_args [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "SCHEMA_FIXES",
+  "combiner",
+  "combiner.mcp_combiner.schemafix.SCHEMA_FIXES",
+  "fixes",
+  "mcp",
+  "schema",
+  "schemafix",
+]

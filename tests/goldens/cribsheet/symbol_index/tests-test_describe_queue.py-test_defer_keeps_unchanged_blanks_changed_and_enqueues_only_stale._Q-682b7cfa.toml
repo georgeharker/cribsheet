@@ -1,0 +1,45 @@
+symbol_ref = "tests/test_describe_queue.py#test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale._Q"
+fqn = "tests.test_describe_queue.test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale._Q"
+name = "_Q"
+kind = "class"
+lang = "python"
+content_hash = "f415003512e29bda"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "class _Q:"
+description = ""
+schema = 4
+line = 220
+mtime = 1786664729000000000
+container = [
+  "test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "_Q",
+  "and",
+  "blanks",
+  "changed",
+  "defer",
+  "describe",
+  "enqueues",
+  "keeps",
+  "only",
+  "q",
+  "queue",
+  "stale",
+  "test",
+  "tests",
+  "tests.test_describe_queue.test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale._Q",
+  "unchanged",
+]

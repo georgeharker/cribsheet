@@ -1,0 +1,46 @@
+symbol_ref = "crib/config.py#Config.retrieve"
+fqn = "crib.config.Config.retrieve"
+name = "retrieve"
+kind = "field"
+lang = "python"
+content_hash = "fe4ff40376fff188"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "retrieve: RetrieveConfig = field(default_factory=RetrieveConfig)"
+description = ""
+schema = 4
+line = 254
+mtime = 1786564832000000000
+container = [
+  "Config",
+]
+scope = [
+  "crib",
+  "config",
+  "Config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_keyword_backlog [crib/app.py]",
+  "_rerank [crib/app.py]",
+  "_retrieve [crib/app.py]",
+  "_schedule_keyword_refresh [crib/app.py]",
+  "cmd_info [crib/cli.py]",
+  "code_lookup [crib/app.py]",
+  "crib [tests/test_keyword_refresh.py]",
+  "crib [tests/test_rerank.py]",
+  "enrich [crib/app.py]",
+  "freshness [crib/codestore.py]",
+  "lookup [crib/app.py]",
+  "reranker [crib/app.py]",
+  "slow_crib [tests/test_loop_responsiveness.py]",
+  "test_every_table_tolerates_unknown_keys [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.retrieve",
+  "retrieve",
+]

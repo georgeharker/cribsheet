@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_core_loop.py#test_stable_id_assigned_and_persisted"
+fqn = "tests.test_core_loop.test_stable_id_assigned_and_persisted"
+name = "test_stable_id_assigned_and_persisted"
+kind = "function"
+lang = "python"
+content_hash = "6b3249a5547e6bec"
+file = "tests/test_core_loop.py"
+file_hash = "1351f07bad0f5656"
+signature = "def test_stable_id_assigned_and_persisted(crib):"
+description = ""
+schema = 4
+line = 93
+mtime = 1782930371000000000
+container = []
+scope = [
+  "tests",
+  "test_core_loop",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_core_loop.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "assigned",
+  "core",
+  "id",
+  "loop",
+  "persisted",
+  "stable",
+  "test",
+  "test_stable_id_assigned_and_persisted",
+  "tests",
+  "tests.test_core_loop.test_stable_id_assigned_and_persisted",
+]

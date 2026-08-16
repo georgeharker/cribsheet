@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#ServedOAuthMock.base_url"
+fqn = "combiner.tests.test_oauth_mock.ServedOAuthMock.base_url"
+name = "base_url"
+kind = "field"
+lang = "python"
+content_hash = "a349f78fad601942"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "base_url: str"
+description = ""
+schema = 4
+line = 102
+mtime = 1784495646000000000
+container = [
+  "ServedOAuthMock",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "ServedOAuthMock",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_seed_refreshable [combiner/tests/test_oauth_mock.py]",
+  "make [combiner/tests/test_oauth_mock.py]",
+  "mcp_url [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "auth",
+  "base",
+  "base_url",
+  "combiner",
+  "combiner.tests.test_oauth_mock.ServedOAuthMock.base_url",
+  "mock",
+  "o",
+  "oauth",
+  "served",
+  "test",
+  "tests",
+  "url",
+]

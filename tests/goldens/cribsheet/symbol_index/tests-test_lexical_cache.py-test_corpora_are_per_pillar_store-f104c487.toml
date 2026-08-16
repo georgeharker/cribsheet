@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_lexical_cache.py#test_corpora_are_per_pillar_store"
+fqn = "tests.test_lexical_cache.test_corpora_are_per_pillar_store"
+name = "test_corpora_are_per_pillar_store"
+kind = "function"
+lang = "python"
+content_hash = "cdcceed2fcf6ebeb"
+file = "tests/test_lexical_cache.py"
+file_hash = "b9aadb3266daf858"
+signature = "def test_corpora_are_per_pillar_store(crib):"
+description = ""
+schema = 4
+line = 59
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_lexical_cache",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_lexical_cache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "are",
+  "cache",
+  "corpora",
+  "lexical",
+  "per",
+  "pillar",
+  "store",
+  "test",
+  "test_corpora_are_per_pillar_store",
+  "tests",
+  "tests.test_lexical_cache.test_corpora_are_per_pillar_store",
+]

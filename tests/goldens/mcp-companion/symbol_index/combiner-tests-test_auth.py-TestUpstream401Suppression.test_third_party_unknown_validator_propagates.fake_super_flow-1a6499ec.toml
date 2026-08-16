@@ -1,0 +1,49 @@
+symbol_ref = "combiner/tests/test_auth.py#TestUpstream401Suppression.test_third_party_unknown_validator_propagates.fake_super_flow"
+fqn = "combiner.tests.test_auth.TestUpstream401Suppression.test_third_party_unknown_validator_propagates.fake_super_flow"
+name = "fake_super_flow"
+kind = "function"
+lang = "python"
+content_hash = "2bd6d2b62046d612"
+file = "combiner/tests/test_auth.py"
+file_hash = "2b3aa7eeeed5bf38"
+signature = "async def fake_super_flow(self_inner, request):"
+description = ""
+schema = 4
+line = 1011
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+  "test_third_party_unknown_validator_propagates",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_auth",
+  "TestUpstream401Suppression",
+  "test_third_party_unknown_validator_propagates",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_third_party_unknown_validator_propagates [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression.test_third_party_unknown_validator_propagates.fake_super_flow",
+  "fake",
+  "fake_super_flow",
+  "flow",
+  "party",
+  "propagates",
+  "super",
+  "suppression",
+  "test",
+  "tests",
+  "third",
+  "unknown",
+  "upstream",
+  "validator",
+]

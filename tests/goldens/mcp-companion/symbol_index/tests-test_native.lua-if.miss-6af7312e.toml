@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_native.lua#if.miss"
+fqn = "tests.test_native.if.miss"
+name = "miss"
+kind = "variable"
+lang = "lua"
+content_hash = "539051474b529bc8"
+file = "tests/test_native.lua"
+file_hash = "68d141d843ba3fa4"
+signature = "local miss = rjson("
+description = ""
+schema = 4
+line = 152
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+scope = [
+  "tests",
+  "test_native",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "miss",
+  "native",
+  "test",
+  "tests",
+  "tests.test_native.if.miss",
+]

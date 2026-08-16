@@ -1,0 +1,47 @@
+symbol_ref = "crib/symbols.py#scope_of"
+fqn = "crib.symbols.scope_of"
+name = "scope_of"
+kind = "function"
+lang = "python"
+content_hash = "d61187915a910f26"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def scope_of(lang: str, file: str, container: Sequence[str]) -> list[str]:"
+description = ""
+schema = 4
+line = 178
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = [
+  "_declared_scope [crib/symbols.py]",
+  "_path_scope [crib/symbols.py]",
+]
+called_by = [
+  "_sym [tests/test_code_graph.py]",
+  "_symbol_entry [crib/codeindex.py]",
+  "fqn_of [crib/symbols.py]",
+  "normalize_identity [crib/codeindex.py]",
+  "test_scope_needs_no_manifest [tests/test_code_graph.py]",
+  "test_scope_per_language [tests/test_code_graph.py]",
+]
+references = [
+  "_sym [tests/test_code_graph.py]",
+  "_symbol_entry [crib/codeindex.py]",
+  "fqn_of [crib/symbols.py]",
+  "normalize_identity [crib/codeindex.py]",
+  "test_scope_needs_no_manifest [tests/test_code_graph.py]",
+  "test_scope_per_language [tests/test_code_graph.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.scope_of",
+  "of",
+  "scope",
+  "scope_of",
+  "symbols",
+]

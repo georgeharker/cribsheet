@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#CombinerRuntime.conn_manager"
+fqn = "combiner.mcp_combiner.runtime.CombinerRuntime.conn_manager"
+name = "conn_manager"
+kind = "field"
+lang = "python"
+content_hash = "5ef49a08aa571f90"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "conn_manager: ConnectionManager | None = None"
+description = ""
+schema = 4
+line = 271
+mtime = 1784493613000000000
+container = [
+  "CombinerRuntime",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "CombinerRuntime",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "setup_method [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.CombinerRuntime.conn_manager",
+  "conn",
+  "conn_manager",
+  "manager",
+  "mcp",
+  "runtime",
+]

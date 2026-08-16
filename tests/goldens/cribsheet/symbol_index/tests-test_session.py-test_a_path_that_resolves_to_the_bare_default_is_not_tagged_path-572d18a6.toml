@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_session.py#test_a_path_that_resolves_to_the_bare_default_is_not_tagged_path"
+fqn = "tests.test_session.test_a_path_that_resolves_to_the_bare_default_is_not_tagged_path"
+name = "test_a_path_that_resolves_to_the_bare_default_is_not_tagged_path"
+kind = "function"
+lang = "python"
+content_hash = "b8e76546ed22e3b6"
+file = "tests/test_session.py"
+file_hash = "bef48c1ca7e1ebb9"
+signature = "def test_a_path_that_resolves_to_the_bare_default_is_not_tagged_path():"
+description = ""
+schema = 4
+line = 73
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_session",
+]
+symbol_was = []
+calls = [
+  "SessionState [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "bare",
+  "default",
+  "is",
+  "not",
+  "path",
+  "resolves",
+  "session",
+  "tagged",
+  "test",
+  "test_a_path_that_resolves_to_the_bare_default_is_not_tagged_path",
+  "tests",
+  "tests.test_session.test_a_path_that_resolves_to_the_bare_default_is_not_tagged_path",
+  "that",
+  "the",
+  "to",
+]

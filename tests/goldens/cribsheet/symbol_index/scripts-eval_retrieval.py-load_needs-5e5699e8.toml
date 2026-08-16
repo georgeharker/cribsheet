@@ -1,0 +1,35 @@
+symbol_ref = "scripts/eval_retrieval.py#load_needs"
+fqn = "scripts.eval_retrieval.load_needs"
+name = "load_needs"
+kind = "function"
+lang = "python"
+content_hash = "e3e3c23f4c440232"
+file = "scripts/eval_retrieval.py"
+file_hash = "fbbe367f0bc2d09b"
+signature = "def load_needs(spec: dict[str, Any]) -> list[dict[str, Any]]:"
+description = ""
+schema = 4
+line = 85
+mtime = 1786044759000000000
+container = []
+scope = [
+  "scripts",
+  "eval_retrieval",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "evaluate [scripts/eval_retrieval.py]",
+]
+references = [
+  "evaluate [scripts/eval_retrieval.py]",
+]
+name_terms = [
+  "eval",
+  "load",
+  "load_needs",
+  "needs",
+  "retrieval",
+  "scripts",
+  "scripts.eval_retrieval.load_needs",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "crib/app.py#Crib._warn_store_glob_overlap"
+fqn = "crib.app.Crib._warn_store_glob_overlap"
+name = "_warn_store_glob_overlap"
+kind = "method"
+lang = "python"
+content_hash = "dbff3e1b28015599"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "@staticmethod"
+description = ""
+schema = 4
+line = 1579
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "project_adopt [crib/app.py]",
+]
+references = [
+  "project_adopt [crib/app.py]",
+]
+name_terms = [
+  "_warn_store_glob_overlap",
+  "app",
+  "crib",
+  "crib.app.Crib._warn_store_glob_overlap",
+  "glob",
+  "overlap",
+  "store",
+  "warn",
+]

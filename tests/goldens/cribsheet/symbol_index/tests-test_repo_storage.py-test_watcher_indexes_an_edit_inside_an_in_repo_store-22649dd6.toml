@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_repo_storage.py#test_watcher_indexes_an_edit_inside_an_in_repo_store"
+fqn = "tests.test_repo_storage.test_watcher_indexes_an_edit_inside_an_in_repo_store"
+name = "test_watcher_indexes_an_edit_inside_an_in_repo_store"
+kind = "function"
+lang = "python"
+content_hash = "05244d5e8881a4f8"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_watcher_indexes_an_edit_inside_an_in_repo_store(crib, tmp_path):"
+description = ""
+schema = 4
+line = 318
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "relpaths [tests/test_repo_storage.py]",
+  "repo_with_store [tests/test_repo_storage.py]",
+  "run [tests/test_repo_storage.py]",
+  "scenario [tests/test_repo_storage.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "an",
+  "edit",
+  "in",
+  "indexes",
+  "inside",
+  "repo",
+  "storage",
+  "store",
+  "test",
+  "test_watcher_indexes_an_edit_inside_an_in_repo_store",
+  "tests",
+  "tests.test_repo_storage.test_watcher_indexes_an_edit_inside_an_in_repo_store",
+  "watcher",
+]

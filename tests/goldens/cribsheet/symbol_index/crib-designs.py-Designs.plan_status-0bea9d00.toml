@@ -1,0 +1,45 @@
+symbol_ref = "crib/designs.py#Designs.plan_status"
+fqn = "crib.designs.Designs.plan_status"
+name = "plan_status"
+kind = "method"
+lang = "python"
+content_hash = "0dc0e7734f91af99"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "async def plan_status(self, proj: str, ref: str, status: str) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 1619
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_load_graph [crib/designs.py]",
+  "_recapture [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_rows [crib/designs.py]",
+  "_save [crib/designs.py]",
+  "of_kind [crib/designs.py]",
+]
+called_by = [
+  "plan_status [crib/app.py]",
+]
+references = [
+  "plan_status [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs.plan_status",
+  "designs",
+  "plan",
+  "plan_status",
+  "status",
+]

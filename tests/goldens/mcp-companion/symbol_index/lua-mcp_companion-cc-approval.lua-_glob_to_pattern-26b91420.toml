@@ -1,0 +1,38 @@
+symbol_ref = "lua/mcp_companion/cc/approval.lua#_glob_to_pattern"
+fqn = "mcp_companion.cc.approval._glob_to_pattern"
+name = "_glob_to_pattern"
+kind = "function"
+lang = "lua"
+content_hash = "4c50fcc4e2c4c2e4"
+file = "lua/mcp_companion/cc/approval.lua"
+file_hash = "29ddb5ce5fa64966"
+signature = "local function _glob_to_pattern(glob)"
+description = ""
+schema = 4
+line = 21
+mtime = 1782852601000000000
+container = []
+scope = [
+  "mcp_companion",
+  "cc",
+  "approval",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "approval.lua [lua/mcp_companion/cc/approval.lua]",
+]
+references = [
+  "elseif [lua/mcp_companion/cc/approval.lua]",
+]
+name_terms = [
+  "_glob_to_pattern",
+  "approval",
+  "cc",
+  "companion",
+  "glob",
+  "mcp",
+  "mcp_companion.cc.approval._glob_to_pattern",
+  "pattern",
+  "to",
+]

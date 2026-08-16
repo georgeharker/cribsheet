@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_code_attribution.py#test_patch_edges_skips_an_ambiguous_same_named_target"
+fqn = "tests.test_code_attribution.test_patch_edges_skips_an_ambiguous_same_named_target"
+name = "test_patch_edges_skips_an_ambiguous_same_named_target"
+kind = "function"
+lang = "python"
+content_hash = "6cab734b8b91355c"
+file = "tests/test_code_attribution.py"
+file_hash = "ff3c29a685f6f6d7"
+signature = "def test_patch_edges_skips_an_ambiguous_same_named_target(crib):"
+description = ""
+schema = 4
+line = 170
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_attribution",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_entry [tests/test_code_attribution.py]",
+  "read [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "ambiguous",
+  "an",
+  "attribution",
+  "code",
+  "edges",
+  "named",
+  "patch",
+  "same",
+  "skips",
+  "target",
+  "test",
+  "test_patch_edges_skips_an_ambiguous_same_named_target",
+  "tests",
+  "tests.test_code_attribution.test_patch_edges_skips_an_ambiguous_same_named_target",
+]

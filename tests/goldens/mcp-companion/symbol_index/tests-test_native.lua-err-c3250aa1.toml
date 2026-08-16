@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_native.lua#err"
+fqn = "tests.test_native.err"
+name = "err"
+kind = "function"
+lang = "lua"
+content_hash = "0e42cffe1ea46879"
+file = "tests/test_native.lua"
+file_hash = "68d141d843ba3fa4"
+signature = "local function err(name, msg)"
+description = ""
+schema = 4
+line = 16
+mtime = 1783022631000000000
+container = []
+scope = [
+  "tests",
+  "test_native",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_native.lua [tests/test_native.lua]",
+]
+references = [
+  "else [tests/test_native.lua]",
+]
+name_terms = [
+  "err",
+  "native",
+  "test",
+  "tests",
+  "tests.test_native.err",
+]

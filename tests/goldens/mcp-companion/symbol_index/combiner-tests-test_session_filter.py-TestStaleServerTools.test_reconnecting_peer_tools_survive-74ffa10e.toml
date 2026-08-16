@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestStaleServerTools.test_reconnecting_peer_tools_survive"
+fqn = "combiner.tests.test_session_filter.TestStaleServerTools.test_reconnecting_peer_tools_survive"
+name = "test_reconnecting_peer_tools_survive"
+kind = "method"
+lang = "python"
+content_hash = "ae5a02784486ad07"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_reconnecting_peer_tools_survive(self):"
+description = ""
+schema = 4
+line = 415
+mtime = 1784493613000000000
+container = [
+  "TestStaleServerTools",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestStaleServerTools",
+]
+symbol_was = []
+calls = [
+  "_config [combiner/tests/test_session_filter.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "_names [combiner/tests/test_session_filter.py]",
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools.test_reconnecting_peer_tools_survive",
+  "filter",
+  "peer",
+  "reconnecting",
+  "server",
+  "session",
+  "stale",
+  "survive",
+  "test",
+  "test_reconnecting_peer_tools_survive",
+  "tests",
+  "tools",
+]

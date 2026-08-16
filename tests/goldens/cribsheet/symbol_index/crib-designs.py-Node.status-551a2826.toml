@@ -1,0 +1,50 @@
+symbol_ref = "crib/designs.py#Node.status"
+fqn = "crib.designs.Node.status"
+name = "status"
+kind = "field"
+lang = "python"
+content_hash = "01cbf08efeb64985"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "status: str"
+description = ""
+schema = 4
+line = 318
+mtime = 1786693579000000000
+container = [
+  "Node",
+]
+scope = [
+  "crib",
+  "designs",
+  "Node",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_annotate [crib/designs.py]",
+  "_direct_taint [crib/designs.py]",
+  "_group [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_node [tests/test_designs.py]",
+  "_row [crib/designs.py]",
+  "annotate_hits [crib/designs.py]",
+  "brief [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+  "plan_list [crib/designs.py]",
+  "plan_next [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+  "propagates [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Node.status",
+  "designs",
+  "node",
+  "status",
+]

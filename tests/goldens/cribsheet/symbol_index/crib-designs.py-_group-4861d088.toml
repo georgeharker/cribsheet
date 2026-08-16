@@ -1,0 +1,33 @@
+symbol_ref = "crib/designs.py#_group"
+fqn = "crib.designs._group"
+name = "_group"
+kind = "function"
+lang = "python"
+content_hash = "a762e3e72b04d0eb"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _group(node: Node, blocked: bool) -> str:"
+description = ""
+schema = 4
+line = 183
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_row [crib/designs.py]",
+]
+references = [
+  "_row [crib/designs.py]",
+]
+name_terms = [
+  "_group",
+  "crib",
+  "crib.designs._group",
+  "designs",
+  "group",
+]

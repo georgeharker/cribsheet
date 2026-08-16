@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_notifications.py#_FakeSession.send_resource_updated"
+fqn = "combiner.tests.test_notifications._FakeSession.send_resource_updated"
+name = "send_resource_updated"
+kind = "method"
+lang = "python"
+content_hash = "fa602f1f24d6d34d"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "async def send_resource_updated(self, uri: AnyUrl) -> None:"
+description = ""
+schema = 4
+line = 68
+mtime = 1784493613000000000
+container = [
+  "_FakeSession",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "_FakeSession",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_notifications._FakeSession.send_resource_updated",
+  "fake",
+  "notifications",
+  "resource",
+  "send",
+  "send_resource_updated",
+  "session",
+  "test",
+  "tests",
+  "updated",
+]

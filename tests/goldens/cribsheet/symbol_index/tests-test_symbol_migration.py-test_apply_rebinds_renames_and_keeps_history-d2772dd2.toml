@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_symbol_migration.py#test_apply_rebinds_renames_and_keeps_history"
+fqn = "tests.test_symbol_migration.test_apply_rebinds_renames_and_keeps_history"
+name = "test_apply_rebinds_renames_and_keeps_history"
+kind = "function"
+lang = "python"
+content_hash = "fd64c4540e5fb858"
+file = "tests/test_symbol_migration.py"
+file_hash = "f1bc5f45850c293a"
+signature = "def test_apply_rebinds_renames_and_keeps_history(crib):"
+description = ""
+schema = 4
+line = 90
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_migration",
+]
+symbol_was = []
+calls = [
+  "_legacy_note [tests/test_symbol_migration.py]",
+  "_seed [tests/test_symbol_migration.py]",
+  "load [crib/notes.py]",
+  "run [tests/test_symbol_migration.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "apply",
+  "history",
+  "keeps",
+  "migration",
+  "rebinds",
+  "renames",
+  "symbol",
+  "test",
+  "test_apply_rebinds_renames_and_keeps_history",
+  "tests",
+  "tests.test_symbol_migration.test_apply_rebinds_renames_and_keeps_history",
+]

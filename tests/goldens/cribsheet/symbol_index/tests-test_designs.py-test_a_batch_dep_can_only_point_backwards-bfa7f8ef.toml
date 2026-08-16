@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_designs.py#test_a_batch_dep_can_only_point_backwards"
+fqn = "tests.test_designs.test_a_batch_dep_can_only_point_backwards"
+name = "test_a_batch_dep_can_only_point_backwards"
+kind = "function"
+lang = "python"
+content_hash = "6828d668bcd3a344"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_a_batch_dep_can_only_point_backwards(crib):"
+description = ""
+schema = 4
+line = 555
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "backwards",
+  "batch",
+  "can",
+  "dep",
+  "designs",
+  "only",
+  "point",
+  "test",
+  "test_a_batch_dep_can_only_point_backwards",
+  "tests",
+  "tests.test_designs.test_a_batch_dep_can_only_point_backwards",
+]

@@ -1,0 +1,54 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthAudit.token_requests_of"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthAudit.token_requests_of"
+name = "token_requests_of"
+kind = "method"
+lang = "python"
+content_hash = "1809d7da89a52423"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def token_requests_of(self, grant_type: str) -> list[TokenRequest]:"
+description = ""
+schema = 4
+line = 649
+mtime = 1783622326000000000
+container = [
+  "MockOAuthAudit",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthAudit",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_cache_without_persisted_expiry_bootstraps_one_refresh [combiner/tests/test_oauth_mock.py]",
+  "test_expired_cached_token_refreshed_silently_on_restart [combiner/tests/test_oauth_mock.py]",
+  "test_expired_token_refreshed_and_new_bearer_attached [combiner/tests/test_oauth_mock.py]",
+  "test_full_flow_issues_and_attaches_tokens [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_sends_right_token_and_stores_rotated [combiner/tests/test_oauth_mock.py]",
+  "test_valid_cached_token_reused_without_new_consent [combiner/tests/test_oauth_mock.py]",
+]
+references = [
+  "test_cache_without_persisted_expiry_bootstraps_one_refresh [combiner/tests/test_oauth_mock.py]",
+  "test_expired_cached_token_refreshed_silently_on_restart [combiner/tests/test_oauth_mock.py]",
+  "test_expired_token_refreshed_and_new_bearer_attached [combiner/tests/test_oauth_mock.py]",
+  "test_full_flow_issues_and_attaches_tokens [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_sends_right_token_and_stores_rotated [combiner/tests/test_oauth_mock.py]",
+  "test_valid_cached_token_reused_without_new_consent [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "audit",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthAudit.token_requests_of",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "of",
+  "requests",
+  "token",
+  "token_requests_of",
+]

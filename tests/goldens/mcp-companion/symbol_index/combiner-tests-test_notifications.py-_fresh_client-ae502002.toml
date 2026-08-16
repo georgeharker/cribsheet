@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_notifications.py#_fresh_client"
+fqn = "combiner.tests.test_notifications._fresh_client"
+name = "_fresh_client"
+kind = "function"
+lang = "python"
+content_hash = "80d9bfda92b17876"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "def _fresh_client() -> Any:"
+description = ""
+schema = 4
+line = 167
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "afactory [combiner/tests/test_notifications.py]",
+]
+references = [
+  "afactory [combiner/tests/test_notifications.py]",
+  "test_fresh_clone_each_call_is_attached [combiner/tests/test_notifications.py]",
+  "test_per_chat_without_context_falls_back_to_broadcast [combiner/tests/test_notifications.py]",
+  "test_wrapped_factory_output_is_attached [combiner/tests/test_notifications.py]",
+]
+name_terms = [
+  "_fresh_client",
+  "client",
+  "combiner",
+  "combiner.tests.test_notifications._fresh_client",
+  "fresh",
+  "notifications",
+  "test",
+  "tests",
+]

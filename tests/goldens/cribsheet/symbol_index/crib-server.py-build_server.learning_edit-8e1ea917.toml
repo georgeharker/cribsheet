@@ -1,0 +1,37 @@
+symbol_ref = "crib/server.py#build_server.learning_edit"
+fqn = "crib.server.build_server.learning_edit"
+name = "learning_edit"
+kind = "function"
+lang = "python"
+content_hash = "ac31e5611cd901ae"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"read\")"
+description = ""
+schema = 4
+line = 842
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "crib_tool [crib/server.py]",
+  "learning_edit [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.learning_edit",
+  "edit",
+  "learning",
+  "learning_edit",
+  "server",
+]

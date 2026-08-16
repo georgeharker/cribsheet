@@ -1,0 +1,39 @@
+symbol_ref = "crib/store.py#ChromaStore"
+fqn = "crib.store.ChromaStore"
+name = "ChromaStore"
+kind = "class"
+lang = "python"
+content_hash = "262bb6c00e3dab1b"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "class ChromaStore:"
+description = ""
+schema = 4
+line = 230
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "store",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_build_shared_chroma [crib/app.py]",
+  "_build_store [crib/app.py]",
+  "embedded [crib/store.py]",
+  "shared [crib/store.py]",
+  "test_op_propagates_non_not_found_failures [tests/test_store_chroma.py]",
+  "test_recreate_after_dim_change_across_handles [tests/test_store_chroma.py]",
+  "test_recreate_propagates_non_not_found_failures [tests/test_store_chroma.py]",
+  "test_retry_happens_only_once [tests/test_store_chroma.py]",
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+name_terms = [
+  "ChromaStore",
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore",
+  "store",
+]

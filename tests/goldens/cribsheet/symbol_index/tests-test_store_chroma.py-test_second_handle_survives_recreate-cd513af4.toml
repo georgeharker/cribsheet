@@ -1,0 +1,45 @@
+symbol_ref = "tests/test_store_chroma.py#test_second_handle_survives_recreate"
+fqn = "tests.test_store_chroma.test_second_handle_survives_recreate"
+name = "test_second_handle_survives_recreate"
+kind = "function"
+lang = "python"
+content_hash = "4c40fc8e6b1bec7d"
+file = "tests/test_store_chroma.py"
+file_hash = "c9d58563fea059fc"
+signature = "def test_second_handle_survives_recreate(chroma_dir):"
+description = ""
+schema = 4
+line = 29
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_store_chroma",
+]
+symbol_was = []
+calls = [
+  "_rec [tests/test_store_chroma.py]",
+  "current_dim [crib/store.py]",
+  "delete [crib/store.py]",
+  "embedded [crib/store.py]",
+  "get_docs [crib/store.py]",
+  "get_meta [crib/store.py]",
+  "query [crib/store.py]",
+  "recreate [crib/store.py]",
+  "set_meta [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chroma",
+  "handle",
+  "recreate",
+  "second",
+  "store",
+  "survives",
+  "test",
+  "test_second_handle_survives_recreate",
+  "tests",
+  "tests.test_store_chroma.test_second_handle_survives_recreate",
+]

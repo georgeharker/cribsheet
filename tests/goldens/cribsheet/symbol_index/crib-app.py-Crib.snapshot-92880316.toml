@@ -1,0 +1,37 @@
+symbol_ref = "crib/app.py#Crib.snapshot"
+fqn = "crib.app.Crib.snapshot"
+name = "snapshot"
+kind = "method"
+lang = "python"
+content_hash = "c5547a9724cdc7b3"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def snapshot(self, message: str | None = None) -> str:"
+description = ""
+schema = 4
+line = 2872
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "snapshot [crib/gitbacking.py]",
+]
+called_by = [
+  "memory_snapshot [crib/server.py]",
+]
+references = [
+  "memory_snapshot [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.snapshot",
+  "snapshot",
+]

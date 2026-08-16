@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestToolsListSingleFlight.test_failure_does_not_wedge_inflight"
+fqn = "combiner.tests.test_session_filter.TestToolsListSingleFlight.test_failure_does_not_wedge_inflight"
+name = "test_failure_does_not_wedge_inflight"
+kind = "method"
+lang = "python"
+content_hash = "ad96ba045b4fac4c"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "@pytest.mark.asyncio"
+description = ""
+schema = 4
+line = 328
+mtime = 1784493613000000000
+container = [
+  "TestToolsListSingleFlight",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestToolsListSingleFlight",
+]
+symbol_was = []
+calls = [
+  "ToolProcessingMiddleware [combiner/mcp_combiner/middleware.py]",
+  "on_list_tools [combiner/mcp_combiner/middleware.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestToolsListSingleFlight.test_failure_does_not_wedge_inflight",
+  "does",
+  "failure",
+  "filter",
+  "flight",
+  "inflight",
+  "list",
+  "not",
+  "session",
+  "single",
+  "test",
+  "test_failure_does_not_wedge_inflight",
+  "tests",
+  "tools",
+  "wedge",
+]

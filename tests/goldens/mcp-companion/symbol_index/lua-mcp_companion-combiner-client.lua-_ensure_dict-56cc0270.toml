@@ -1,0 +1,41 @@
+symbol_ref = "lua/mcp_companion/combiner/client.lua#_ensure_dict"
+fqn = "mcp_companion.combiner.client._ensure_dict"
+name = "_ensure_dict"
+kind = "function"
+lang = "lua"
+content_hash = "a2caf9a9344c2ebf"
+file = "lua/mcp_companion/combiner/client.lua"
+file_hash = "f8af10d7cbc68062"
+signature = "local function _ensure_dict(t)"
+description = ""
+schema = 4
+line = 80
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "combiner",
+  "client",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "Client.call_tool [lua/mcp_companion/combiner/client.lua]",
+  "Client.notify [lua/mcp_companion/combiner/client.lua]",
+  "Client.request [lua/mcp_companion/combiner/client.lua]",
+  "client.lua [lua/mcp_companion/combiner/client.lua]",
+]
+references = [
+  "call_tool [lua/mcp_companion/combiner/client.lua]",
+  "payload [lua/mcp_companion/combiner/client.lua]",
+]
+name_terms = [
+  "_ensure_dict",
+  "client",
+  "combiner",
+  "companion",
+  "dict",
+  "ensure",
+  "mcp",
+  "mcp_companion.combiner.client._ensure_dict",
+]

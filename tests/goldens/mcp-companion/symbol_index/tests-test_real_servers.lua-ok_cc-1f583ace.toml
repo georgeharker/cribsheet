@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_real_servers.lua#ok_cc"
+fqn = "tests.test_real_servers.ok_cc"
+name = "ok_cc"
+kind = "global"
+lang = "lua"
+content_hash = "4d3030a7d997ca57"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local ok_cc, cc_config = pcall(require, \"codecompanion.config\")"
+description = ""
+schema = 4
+line = 206
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_real_servers",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "cc",
+  "ok",
+  "ok_cc",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.ok_cc",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_code_cache.py#test_revalidate_reindexes_merge_dirtied_file"
+fqn = "tests.test_code_cache.test_revalidate_reindexes_merge_dirtied_file"
+name = "test_revalidate_reindexes_merge_dirtied_file"
+kind = "function"
+lang = "python"
+content_hash = "e452b22cde4ae3cb"
+file = "tests/test_code_cache.py"
+file_hash = "44f8f848adca2094"
+signature = "def test_revalidate_reindexes_merge_dirtied_file(crib, tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 112
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_cache",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_write [tests/test_code_cache.py]",
+  "by_fqname [crib/codeindex.py]",
+  "set_source_root [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "code",
+  "dirtied",
+  "file",
+  "merge",
+  "reindexes",
+  "revalidate",
+  "test",
+  "test_revalidate_reindexes_merge_dirtied_file",
+  "tests",
+  "tests.test_code_cache.test_revalidate_reindexes_merge_dirtied_file",
+]

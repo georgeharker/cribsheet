@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/conftest.py#ProcFactory.teardown"
+fqn = "combiner.tests.conftest.ProcFactory.teardown"
+name = "teardown"
+kind = "method"
+lang = "python"
+content_hash = "ff3d83ae2f389bd0"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "def teardown(self) -> None:"
+description = ""
+schema = 4
+line = 334
+mtime = 1783544328000000000
+container = [
+  "ProcFactory",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "ProcFactory",
+]
+symbol_was = []
+calls = [
+  "terminate [combiner/tests/conftest.py]",
+]
+called_by = [
+  "procs [combiner/tests/conftest.py]",
+]
+references = [
+  "procs [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.ProcFactory.teardown",
+  "conftest",
+  "factory",
+  "proc",
+  "teardown",
+  "tests",
+]

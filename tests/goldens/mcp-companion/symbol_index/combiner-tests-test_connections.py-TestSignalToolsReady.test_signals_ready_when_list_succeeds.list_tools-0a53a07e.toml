@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_connections.py#TestSignalToolsReady.test_signals_ready_when_list_succeeds.list_tools"
+fqn = "combiner.tests.test_connections.TestSignalToolsReady.test_signals_ready_when_list_succeeds.list_tools"
+name = "list_tools"
+kind = "function"
+lang = "python"
+content_hash = "010835b7d580a49d"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def list_tools():"
+description = ""
+schema = 4
+line = 36
+mtime = 1784493613000000000
+container = [
+  "TestSignalToolsReady",
+  "test_signals_ready_when_list_succeeds",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestSignalToolsReady",
+  "test_signals_ready_when_list_succeeds",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_signals_ready_when_list_succeeds [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.test_connections.TestSignalToolsReady.test_signals_ready_when_list_succeeds.list_tools",
+  "connections",
+  "list",
+  "list_tools",
+  "ready",
+  "signal",
+  "signals",
+  "succeeds",
+  "test",
+  "tests",
+  "tools",
+  "when",
+]

@@ -1,0 +1,52 @@
+symbol_ref = "combiner/mcp_combiner/middleware.py#ToolProcessingMiddleware.on_list_tools"
+fqn = "combiner.mcp_combiner.middleware.ToolProcessingMiddleware.on_list_tools"
+name = "on_list_tools"
+kind = "method"
+lang = "python"
+content_hash = "771f385acc40c80a"
+file = "combiner/mcp_combiner/middleware.py"
+file_hash = "6dee47cf65146f20"
+signature = "async def on_list_tools("
+description = ""
+schema = 4
+line = 169
+mtime = 1784493613000000000
+container = [
+  "ToolProcessingMiddleware",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "middleware",
+  "ToolProcessingMiddleware",
+]
+symbol_was = []
+calls = [
+  "_apply_session_filter [combiner/mcp_combiner/middleware.py]",
+  "_fetch_or_join [combiner/mcp_combiner/middleware.py]",
+  "_finalize_schemas [combiner/mcp_combiner/schemafix.py]",
+  "_namespace_app_meta [combiner/mcp_combiner/middleware.py]",
+  "append_nvim_tools [combiner/mcp_combiner/nvim_proxy.py]",
+]
+called_by = [
+  "_list [combiner/tests/test_session_filter.py]",
+  "test_concurrent_misses_coalesce [combiner/tests/test_session_filter.py]",
+  "test_failure_does_not_wedge_inflight [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "_list [combiner/tests/test_session_filter.py]",
+  "test_concurrent_misses_coalesce [combiner/tests/test_session_filter.py]",
+  "test_failure_does_not_wedge_inflight [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.middleware.ToolProcessingMiddleware.on_list_tools",
+  "list",
+  "mcp",
+  "middleware",
+  "on",
+  "on_list_tools",
+  "processing",
+  "tool",
+  "tools",
+]

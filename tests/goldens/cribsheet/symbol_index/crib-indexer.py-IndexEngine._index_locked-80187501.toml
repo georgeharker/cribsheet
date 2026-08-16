@@ -1,0 +1,42 @@
+symbol_ref = "crib/indexer.py#IndexEngine._index_locked"
+fqn = "crib.indexer.IndexEngine._index_locked"
+name = "_index_locked"
+kind = "method"
+lang = "python"
+content_hash = "6ab44291acb1d8b9"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "async def _index_locked(self, project: str, notes_dir: Path, relpath: str,"
+description = ""
+schema = 4
+line = 130
+mtime = 1786578262000000000
+container = [
+  "IndexEngine",
+]
+scope = [
+  "crib",
+  "indexer",
+  "IndexEngine",
+]
+symbol_was = []
+calls = [
+  "IndexResult [crib/indexer.py]",
+  "Record [crib/store.py]",
+  "invalidate_caches [crib/indexer.py]",
+]
+called_by = [
+  "index_file [crib/indexer.py]",
+]
+references = [
+  "index_file [crib/indexer.py]",
+]
+name_terms = [
+  "_index_locked",
+  "crib",
+  "crib.indexer.IndexEngine._index_locked",
+  "engine",
+  "index",
+  "indexer",
+  "locked",
+]

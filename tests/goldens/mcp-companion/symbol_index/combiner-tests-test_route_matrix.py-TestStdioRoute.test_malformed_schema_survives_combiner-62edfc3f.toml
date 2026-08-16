@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_route_matrix.py#TestStdioRoute.test_malformed_schema_survives_combiner"
+fqn = "combiner.tests.test_route_matrix.TestStdioRoute.test_malformed_schema_survives_combiner"
+name = "test_malformed_schema_survives_combiner"
+kind = "method"
+lang = "python"
+content_hash = "e1bbec39fc744983"
+file = "combiner/tests/test_route_matrix.py"
+file_hash = "e02757ba8c7bf654"
+signature = "async def test_malformed_schema_survives_combiner("
+description = ""
+schema = 4
+line = 62
+mtime = 1783534978000000000
+container = [
+  "TestStdioRoute",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_route_matrix",
+  "TestStdioRoute",
+]
+symbol_was = []
+calls = [
+  "_text [combiner/tests/test_route_matrix.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+  "stdio_mock_entry [combiner/tests/conftest.py]",
+  "wait_server_state [combiner/tests/conftest.py]",
+  "write_servers_config [combiner/tests/conftest.py]",
+  "write_tools_spec [combiner/tests/conftest.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_route_matrix.TestStdioRoute.test_malformed_schema_survives_combiner",
+  "malformed",
+  "matrix",
+  "route",
+  "schema",
+  "stdio",
+  "survives",
+  "test",
+  "test_malformed_schema_survives_combiner",
+  "tests",
+]

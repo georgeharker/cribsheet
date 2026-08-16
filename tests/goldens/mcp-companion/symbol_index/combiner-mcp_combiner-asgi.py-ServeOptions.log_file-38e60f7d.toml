@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/asgi.py#ServeOptions.log_file"
+fqn = "combiner.mcp_combiner.asgi.ServeOptions.log_file"
+name = "log_file"
+kind = "field"
+lang = "python"
+content_hash = "eb2bca9105d10d04"
+file = "combiner/mcp_combiner/asgi.py"
+file_hash = "1ff2dd1d6ee7f6d0"
+signature = "log_file: str | None = None"
+description = ""
+schema = 4
+line = 59
+mtime = 1783548694000000000
+container = [
+  "ServeOptions",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "asgi",
+  "ServeOptions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_serve [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "asgi",
+  "combiner",
+  "combiner.mcp_combiner.asgi.ServeOptions.log_file",
+  "file",
+  "log",
+  "log_file",
+  "mcp",
+  "options",
+  "serve",
+]

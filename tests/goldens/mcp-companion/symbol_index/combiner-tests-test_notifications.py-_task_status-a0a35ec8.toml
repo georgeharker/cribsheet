@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_notifications.py#_task_status"
+fqn = "combiner.tests.test_notifications._task_status"
+name = "_task_status"
+kind = "function"
+lang = "python"
+content_hash = "bff860d90c0f0d62"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "def _task_status() -> ServerNotification:"
+description = ""
+schema = 4
+line = 96
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_no_resource_notification_is_passthrough [combiner/tests/test_notifications.py]",
+  "test_task_status_still_routes_to_client [combiner/tests/test_notifications.py]",
+]
+references = [
+  "test_no_resource_notification_is_passthrough [combiner/tests/test_notifications.py]",
+  "test_task_status_still_routes_to_client [combiner/tests/test_notifications.py]",
+]
+name_terms = [
+  "_task_status",
+  "combiner",
+  "combiner.tests.test_notifications._task_status",
+  "notifications",
+  "status",
+  "task",
+  "test",
+  "tests",
+]

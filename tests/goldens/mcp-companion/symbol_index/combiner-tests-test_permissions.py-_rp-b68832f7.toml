@@ -1,0 +1,54 @@
+symbol_ref = "combiner/tests/test_permissions.py#_rp"
+fqn = "combiner.tests.test_permissions._rp"
+name = "_rp"
+kind = "function"
+lang = "python"
+content_hash = "2c6a8d93ba9716e7"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "def _rp(**kw: Any) -> ResolvedPolicy:"
+description = ""
+schema = 4
+line = 201
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+]
+symbol_was = []
+calls = [
+  "ResolvedPolicy [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "test_allow_passes [combiner/tests/test_permissions.py]",
+  "test_deny_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_allow_for_session_caches [combiner/tests/test_permissions.py]",
+  "test_elicit_allow_once_passes_without_caching [combiner/tests/test_permissions.py]",
+  "test_elicit_cancelled_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_declined_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_deny_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_unavailable_fallback_allow [combiner/tests/test_permissions.py]",
+  "test_elicit_unavailable_fallback_deny [combiner/tests/test_permissions.py]",
+]
+references = [
+  "test_allow_passes [combiner/tests/test_permissions.py]",
+  "test_deny_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_allow_for_session_caches [combiner/tests/test_permissions.py]",
+  "test_elicit_allow_once_passes_without_caching [combiner/tests/test_permissions.py]",
+  "test_elicit_cancelled_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_declined_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_deny_raises [combiner/tests/test_permissions.py]",
+  "test_elicit_unavailable_fallback_allow [combiner/tests/test_permissions.py]",
+  "test_elicit_unavailable_fallback_deny [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "_rp",
+  "combiner",
+  "combiner.tests.test_permissions._rp",
+  "permissions",
+  "rp",
+  "test",
+  "tests",
+]

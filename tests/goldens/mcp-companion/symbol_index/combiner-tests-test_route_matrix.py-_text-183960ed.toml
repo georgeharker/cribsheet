@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_route_matrix.py#_text"
+fqn = "combiner.tests.test_route_matrix._text"
+name = "_text"
+kind = "function"
+lang = "python"
+content_hash = "3776364cd23f233d"
+file = "combiner/tests/test_route_matrix.py"
+file_hash = "e02757ba8c7bf654"
+signature = "async def _text(client: Client, tool: str, args: dict) -> str:"
+description = ""
+schema = 4
+line = 40
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_route_matrix",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_http_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_malformed_schema_survives_combiner [combiner/tests/test_route_matrix.py]",
+  "test_sharedserver_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_stdio_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+]
+references = [
+  "test_http_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_malformed_schema_survives_combiner [combiner/tests/test_route_matrix.py]",
+  "test_sharedserver_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_stdio_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+]
+name_terms = [
+  "_text",
+  "combiner",
+  "combiner.tests.test_route_matrix._text",
+  "matrix",
+  "route",
+  "test",
+  "tests",
+  "text",
+]

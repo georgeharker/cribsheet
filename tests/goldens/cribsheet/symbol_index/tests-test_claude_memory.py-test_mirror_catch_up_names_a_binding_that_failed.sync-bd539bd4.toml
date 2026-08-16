@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_claude_memory.py#test_mirror_catch_up_names_a_binding_that_failed.sync"
+fqn = "tests.test_claude_memory.test_mirror_catch_up_names_a_binding_that_failed.sync"
+name = "sync"
+kind = "function"
+lang = "python"
+content_hash = "06158f639d7ae651"
+file = "tests/test_claude_memory.py"
+file_hash = "f5a685193106ac4d"
+signature = "async def sync(root, project):"
+description = ""
+schema = 4
+line = 124
+mtime = 1785959234000000000
+container = [
+  "test_mirror_catch_up_names_a_binding_that_failed",
+]
+scope = [
+  "tests",
+  "test_claude_memory",
+  "test_mirror_catch_up_names_a_binding_that_failed",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "scenario [tests/test_claude_memory.py]",
+]
+name_terms = [
+  "a",
+  "binding",
+  "catch",
+  "claude",
+  "failed",
+  "memory",
+  "mirror",
+  "names",
+  "sync",
+  "test",
+  "tests",
+  "tests.test_claude_memory.test_mirror_catch_up_names_a_binding_that_failed.sync",
+  "that",
+  "up",
+]

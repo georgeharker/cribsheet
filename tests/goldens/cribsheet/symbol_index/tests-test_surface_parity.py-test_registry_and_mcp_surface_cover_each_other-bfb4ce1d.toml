@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_surface_parity.py#test_registry_and_mcp_surface_cover_each_other"
+fqn = "tests.test_surface_parity.test_registry_and_mcp_surface_cover_each_other"
+name = "test_registry_and_mcp_surface_cover_each_other"
+kind = "function"
+lang = "python"
+content_hash = "e7e8a17d9eb1bc4d"
+file = "tests/test_surface_parity.py"
+file_hash = "0c4fc72b5f441359"
+signature = "def test_registry_and_mcp_surface_cover_each_other(tools):"
+description = ""
+schema = 4
+line = 68
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_surface_parity",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "cover",
+  "each",
+  "mcp",
+  "other",
+  "parity",
+  "registry",
+  "surface",
+  "test",
+  "test_registry_and_mcp_surface_cover_each_other",
+  "tests",
+  "tests.test_surface_parity.test_registry_and_mcp_surface_cover_each_other",
+]

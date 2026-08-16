@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestSessionGrants.test_grant_and_check"
+fqn = "combiner.tests.test_permissions.TestSessionGrants.test_grant_and_check"
+name = "test_grant_and_check"
+kind = "method"
+lang = "python"
+content_hash = "3bab5dc73d723e2c"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "def test_grant_and_check(self) -> None:"
+description = ""
+schema = 4
+line = 169
+mtime = 1783633313000000000
+container = [
+  "TestSessionGrants",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "TestSessionGrants",
+]
+symbol_was = []
+calls = [
+  "SessionRegistry [combiner/mcp_combiner/runtime.py]",
+  "grant [combiner/mcp_combiner/runtime.py]",
+  "is_granted [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "check",
+  "combiner",
+  "combiner.tests.test_permissions.TestSessionGrants.test_grant_and_check",
+  "grant",
+  "grants",
+  "permissions",
+  "session",
+  "test",
+  "test_grant_and_check",
+  "tests",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/conftest.py#CombinerHandle"
+fqn = "combiner.tests.conftest.CombinerHandle"
+name = "CombinerHandle"
+kind = "class"
+lang = "python"
+content_hash = "3cae14b2ea8d8c80"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 155
+mtime = 1783544328000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_call_until_ok [combiner/tests/test_upstream_restart.py]",
+  "_header_client [combiner/tests/test_session_independence.py]",
+  "_rest [combiner/tests/test_session_independence.py]",
+  "_restart [combiner/tests/test_upstream_restart.py]",
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "_url_client [combiner/tests/test_session_independence.py]",
+  "combiners [combiner/tests/conftest.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "CombinerHandle",
+  "combiner",
+  "combiner.tests.conftest.CombinerHandle",
+  "conftest",
+  "handle",
+  "tests",
+]

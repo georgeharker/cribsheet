@@ -1,0 +1,48 @@
+symbol_ref = "lua/mcp_companion/ops.lua#reload_config"
+fqn = "mcp_companion.ops.reload_config"
+name = "reload_config"
+kind = "function"
+lang = "lua"
+content_hash = "61257d33c6703e68"
+file = "lua/mcp_companion/ops.lua"
+file_hash = "7ca7520a63575997"
+signature = "function M.reload_config(done, opts)"
+description = ""
+schema = 4
+line = 106
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "ops",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M._save_project_config [lua/mcp_companion/cc/init.lua]",
+  "M.open [lua/mcp_companion/ui/init.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "M.toggle_in_project [lua/mcp_companion/ops.lua]",
+  "ops.lua [lua/mcp_companion/ops.lua]",
+  "test_ops.lua [tests/test_ops.lua]",
+]
+references = [
+  "_save_project_config [lua/mcp_companion/cc/init.lua]",
+  "done [lua/mcp_companion/ops.lua]",
+  "known [lua/mcp_companion/ops.lua]",
+  "names [tests/test_ops.lua]",
+  "open [lua/mcp_companion/ui/init.lua]",
+  "opts [lua/mcp_companion/ops.lua]",
+  "server_name [lua/mcp_companion/ops.lua]",
+  "server_names [lua/mcp_companion/ops.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+]
+name_terms = [
+  "companion",
+  "config",
+  "mcp",
+  "mcp_companion.ops.reload_config",
+  "ops",
+  "reload",
+  "reload_config",
+]

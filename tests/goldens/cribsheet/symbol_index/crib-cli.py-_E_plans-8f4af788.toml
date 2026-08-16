@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#_E_plans"
+fqn = "crib.cli._E_plans"
+name = "_E_plans"
+kind = "function"
+lang = "python"
+content_hash = "75d512a87ccca42a"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _E_plans(d, a): _emit_plan_list(d, a)"
+description = ""
+schema = 4
+line = 1498
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_emit_plan_list [crib/cli.py]",
+]
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_E_plans",
+  "cli",
+  "crib",
+  "crib.cli._E_plans",
+  "e",
+  "plans",
+]

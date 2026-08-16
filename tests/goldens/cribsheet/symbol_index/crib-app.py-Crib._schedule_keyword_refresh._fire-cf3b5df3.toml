@@ -1,0 +1,41 @@
+symbol_ref = "crib/app.py#Crib._schedule_keyword_refresh._fire"
+fqn = "crib.app.Crib._schedule_keyword_refresh._fire"
+name = "_fire"
+kind = "function"
+lang = "python"
+content_hash = "0a7e4f01dffaef01"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _fire() -> None:"
+description = ""
+schema = 4
+line = 543
+mtime = 1786693579000000000
+container = [
+  "Crib",
+  "_schedule_keyword_refresh",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+  "_schedule_keyword_refresh",
+]
+symbol_was = []
+calls = [
+  "_refresh [crib/app.py]",
+]
+called_by = []
+references = [
+  "_schedule_keyword_refresh [crib/app.py]",
+]
+name_terms = [
+  "_fire",
+  "app",
+  "crib",
+  "crib.app.Crib._schedule_keyword_refresh._fire",
+  "fire",
+  "keyword",
+  "refresh",
+  "schedule",
+]

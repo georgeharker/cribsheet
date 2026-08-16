@@ -1,0 +1,53 @@
+symbol_ref = "combiner/mcp_combiner/schemafix.py#_coerce_object_schemas"
+fqn = "combiner.mcp_combiner.schemafix._coerce_object_schemas"
+name = "_coerce_object_schemas"
+kind = "function"
+lang = "python"
+content_hash = "065b93ca3947d568"
+file = "combiner/mcp_combiner/schemafix.py"
+file_hash = "49870021f06866cb"
+signature = "def _coerce_object_schemas(tools: Sequence[Tool]) -> list[Tool]:"
+description = ""
+schema = 4
+line = 292
+mtime = 1783542616000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "schemafix",
+]
+symbol_was = []
+calls = [
+  "normalize_object_schema [combiner/mcp_combiner/schema.py]",
+]
+called_by = [
+  "_finalize_schemas [combiner/mcp_combiner/schemafix.py]",
+  "test_dispatch_fn_preserved_on_rebuild [combiner/tests/test_session_filter.py]",
+  "test_missing_properties_filled [combiner/tests/test_session_filter.py]",
+  "test_missing_type_and_properties_coerced [combiner/tests/test_session_filter.py]",
+  "test_string_required_wrapped_in_array [combiner/tests/test_session_filter.py]",
+  "test_uncoercible_required_dropped [combiner/tests/test_session_filter.py]",
+  "test_valid_required_preserved [combiner/tests/test_session_filter.py]",
+  "test_valid_schema_passed_through_unchanged [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "_finalize_schemas [combiner/mcp_combiner/schemafix.py]",
+  "test_dispatch_fn_preserved_on_rebuild [combiner/tests/test_session_filter.py]",
+  "test_missing_properties_filled [combiner/tests/test_session_filter.py]",
+  "test_missing_type_and_properties_coerced [combiner/tests/test_session_filter.py]",
+  "test_string_required_wrapped_in_array [combiner/tests/test_session_filter.py]",
+  "test_uncoercible_required_dropped [combiner/tests/test_session_filter.py]",
+  "test_valid_required_preserved [combiner/tests/test_session_filter.py]",
+  "test_valid_schema_passed_through_unchanged [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_coerce_object_schemas",
+  "coerce",
+  "combiner",
+  "combiner.mcp_combiner.schemafix._coerce_object_schemas",
+  "mcp",
+  "object",
+  "schemafix",
+  "schemas",
+]

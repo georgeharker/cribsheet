@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_sync.py#test_a_timeout_surfaces_as_a_failed_run_not_a_hang.wedged"
+fqn = "tests.test_sync.test_a_timeout_surfaces_as_a_failed_run_not_a_hang.wedged"
+name = "wedged"
+kind = "function"
+lang = "python"
+content_hash = "ac4e31794c1507d9"
+file = "tests/test_sync.py"
+file_hash = "594e3dd701dbe999"
+signature = "def wedged(cmd, **kw):"
+description = ""
+schema = 4
+line = 277
+mtime = 1785963011000000000
+container = [
+  "test_a_timeout_surfaces_as_a_failed_run_not_a_hang",
+]
+scope = [
+  "tests",
+  "test_sync",
+  "test_a_timeout_surfaces_as_a_failed_run_not_a_hang",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_a_timeout_surfaces_as_a_failed_run_not_a_hang [tests/test_sync.py]",
+]
+name_terms = [
+  "a",
+  "as",
+  "failed",
+  "hang",
+  "not",
+  "run",
+  "surfaces",
+  "sync",
+  "test",
+  "tests",
+  "tests.test_sync.test_a_timeout_surfaces_as_a_failed_run_not_a_hang.wedged",
+  "timeout",
+  "wedged",
+]

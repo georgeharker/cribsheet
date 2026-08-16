@@ -1,0 +1,49 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestPersistence.test_cache_without_persisted_expiry_bootstraps_one_refresh"
+fqn = "combiner.tests.test_oauth_mock.TestPersistence.test_cache_without_persisted_expiry_bootstraps_one_refresh"
+name = "test_cache_without_persisted_expiry_bootstraps_one_refresh"
+kind = "method"
+lang = "python"
+content_hash = "89b0d5fc0e4bf942"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def test_cache_without_persisted_expiry_bootstraps_one_refresh("
+description = ""
+schema = 4
+line = 476
+mtime = 1784495646000000000
+container = [
+  "TestPersistence",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "TestPersistence",
+]
+symbol_was = []
+calls = [
+  "_call_echo [combiner/tests/test_oauth_mock.py]",
+  "_drop_persisted_expiry [combiner/tests/test_oauth_mock.py]",
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+  "authenticated_mcp_calls [combiner/mcp_combiner/mockserver.py]",
+  "token_requests_of [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "bootstraps",
+  "cache",
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestPersistence.test_cache_without_persisted_expiry_bootstraps_one_refresh",
+  "expiry",
+  "mock",
+  "oauth",
+  "one",
+  "persisted",
+  "persistence",
+  "refresh",
+  "test",
+  "test_cache_without_persisted_expiry_bootstraps_one_refresh",
+  "tests",
+  "without",
+]

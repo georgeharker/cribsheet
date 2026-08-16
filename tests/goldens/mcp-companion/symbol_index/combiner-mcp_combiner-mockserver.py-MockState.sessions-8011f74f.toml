@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockState.sessions"
+fqn = "combiner.mcp_combiner.mockserver.MockState.sessions"
+name = "sessions"
+kind = "field"
+lang = "python"
+content_hash = "e942dc0743a8e4a8"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "sessions: weakref.WeakSet[Any] = field(default_factory=weakref.WeakSet)"
+description = ""
+schema = 4
+line = 164
+mtime = 1783622326000000000
+container = [
+  "MockState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockState",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "notify_tools_changed [combiner/mcp_combiner/mockserver.py]",
+  "on_request [combiner/mcp_combiner/mockserver.py]",
+  "record_session [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockState.sessions",
+  "mcp",
+  "mock",
+  "mockserver",
+  "sessions",
+  "state",
+]

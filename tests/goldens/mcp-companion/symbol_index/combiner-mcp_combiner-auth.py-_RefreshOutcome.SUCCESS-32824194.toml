@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_RefreshOutcome.SUCCESS"
+fqn = "combiner.mcp_combiner.auth._RefreshOutcome.SUCCESS"
+name = "SUCCESS"
+kind = "constant"
+lang = "python"
+content_hash = "3bddd8e7539bc504"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "SUCCESS = \"success\""
+description = ""
+schema = 4
+line = 58
+mtime = 1783622326000000000
+container = [
+  "_RefreshOutcome",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+  "_RefreshOutcome",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+  "test_first_request_forces_refresh [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retries_quietly [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retry_still_401_propagates [combiner/tests/test_auth.py]",
+  "test_refresh_sends_right_token_and_stores_rotated [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_token_preserved_when_provider_omits_it [combiner/tests/test_oauth_mock.py]",
+  "test_token_within_margin_triggers_refresh [combiner/tests/test_auth.py]",
+  "test_wake_up_forces_refresh_even_with_time_left [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "SUCCESS",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshOutcome.SUCCESS",
+  "mcp",
+  "outcome",
+  "refresh",
+  "success",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_RefreshTokenOAuth._initialize"
+fqn = "combiner.mcp_combiner.auth._RefreshTokenOAuth._initialize"
+name = "_initialize"
+kind = "method"
+lang = "python"
+content_hash = "1936636a00aa76df"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "async def _initialize(self) -> None:"
+description = ""
+schema = 4
+line = 453
+mtime = 1783622326000000000
+container = [
+  "_RefreshTokenOAuth",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+  "_RefreshTokenOAuth",
+]
+symbol_was = []
+calls = [
+  "_apply_network_grace_window [combiner/mcp_combiner/auth.py]",
+  "_discover_oauth_metadata [combiner/mcp_combiner/auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "_initialize",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshTokenOAuth._initialize",
+  "initialize",
+  "mcp",
+  "o",
+  "refresh",
+  "token",
+]

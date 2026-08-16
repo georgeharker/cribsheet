@@ -1,0 +1,39 @@
+symbol_ref = "crib/memmirror.py#MemoryMirror.start._Handler"
+fqn = "crib.memmirror.MemoryMirror.start._Handler"
+name = "_Handler"
+kind = "class"
+lang = "python"
+content_hash = "341e62184c76365c"
+file = "crib/memmirror.py"
+file_hash = "9ff08381721a9203"
+signature = "class _Handler(FileSystemEventHandler):"
+description = ""
+schema = 4
+line = 62
+mtime = 1785959234000000000
+container = [
+  "MemoryMirror",
+  "start",
+]
+scope = [
+  "crib",
+  "memmirror",
+  "MemoryMirror",
+  "start",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "start [crib/memmirror.py]",
+]
+name_terms = [
+  "_Handler",
+  "crib",
+  "crib.memmirror.MemoryMirror.start._Handler",
+  "handler",
+  "memmirror",
+  "memory",
+  "mirror",
+  "start",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_code_integrity.py#test_sweep_reports_unreadable_files"
+fqn = "tests.test_code_integrity.test_sweep_reports_unreadable_files"
+name = "test_sweep_reports_unreadable_files"
+kind = "function"
+lang = "python"
+content_hash = "49448c3761495272"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_sweep_reports_unreadable_files(crib, tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 458
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_code_integrity.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "files",
+  "integrity",
+  "reports",
+  "sweep",
+  "test",
+  "test_sweep_reports_unreadable_files",
+  "tests",
+  "tests.test_code_integrity.test_sweep_reports_unreadable_files",
+  "unreadable",
+]

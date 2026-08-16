@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.clear_granted"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.clear_granted"
+name = "clear_granted"
+kind = "method"
+lang = "python"
+content_hash = "b308f78fae89cfac"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def clear_granted(self, session_id: str) -> None:"
+description = ""
+schema = 4
+line = 115
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_clean_grants [combiner/tests/test_permissions.py]",
+  "test_clear [combiner/tests/test_permissions.py]",
+]
+references = [
+  "_clean_grants [combiner/tests/test_permissions.py]",
+  "test_clear [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "clear",
+  "clear_granted",
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.clear_granted",
+  "granted",
+  "mcp",
+  "registry",
+  "runtime",
+  "session",
+]

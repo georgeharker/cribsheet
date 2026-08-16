@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_design_sources.py#test_a_source_checks_its_own_section_only"
+fqn = "tests.test_design_sources.test_a_source_checks_its_own_section_only"
+name = "test_a_source_checks_its_own_section_only"
+kind = "function"
+lang = "python"
+content_hash = "b49cfefb5e97e3cb"
+file = "tests/test_design_sources.py"
+file_hash = "f89b5a94b236ce9c"
+signature = "def test_a_source_checks_its_own_section_only(crib):"
+description = ""
+schema = 4
+line = 124
+mtime = 1786137963000000000
+container = []
+scope = [
+  "tests",
+  "test_design_sources",
+]
+symbol_was = []
+calls = [
+  "_rewrite [tests/test_design_sources.py]",
+  "run [tests/test_design_sources.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "checks",
+  "design",
+  "its",
+  "only",
+  "own",
+  "section",
+  "source",
+  "sources",
+  "test",
+  "test_a_source_checks_its_own_section_only",
+  "tests",
+  "tests.test_design_sources.test_a_source_checks_its_own_section_only",
+]

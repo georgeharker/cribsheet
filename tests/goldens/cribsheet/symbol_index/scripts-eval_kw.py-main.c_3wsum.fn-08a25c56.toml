@@ -1,0 +1,44 @@
+symbol_ref = "scripts/eval_kw.py#main.c_3wsum.fn"
+fqn = "scripts.eval_kw.main.c_3wsum.fn"
+name = "fn"
+kind = "function"
+lang = "python"
+content_hash = "59a0be6261c46778"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def fn(feat, proj, q, qf, qv, k):"
+description = ""
+schema = 4
+line = 143
+mtime = 1783981122000000000
+container = [
+  "main",
+  "c_3wsum",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+  "c_3wsum",
+]
+symbol_was = []
+calls = [
+  "_normd [scripts/eval_kw.py]",
+  "order_from [scripts/eval_fusion.py]",
+  "three_facets [scripts/eval_kw.py]",
+]
+called_by = []
+references = [
+  "c_3wsum [scripts/eval_kw.py]",
+]
+name_terms = [
+  "3",
+  "c",
+  "eval",
+  "fn",
+  "kw",
+  "main",
+  "scripts",
+  "scripts.eval_kw.main.c_3wsum.fn",
+  "wsum",
+]

@@ -1,0 +1,48 @@
+symbol_ref = "crib/codeindexer.py#CodeIndexer._index_project_code"
+fqn = "crib.codeindexer.CodeIndexer._index_project_code"
+name = "_index_project_code"
+kind = "method"
+lang = "python"
+content_hash = "07b713eb2086fc1e"
+file = "crib/codeindexer.py"
+file_hash = "8848838a57e51f0a"
+signature = "async def _index_project_code(self, proj: str, root: Path, globs: list[str],"
+description = ""
+schema = 4
+line = 419
+mtime = 1786664729000000000
+container = [
+  "CodeIndexer",
+]
+scope = [
+  "crib",
+  "codeindexer",
+  "CodeIndexer",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_one [crib/codeindexer.py]",
+  "all [crib/codeindex.py]",
+  "enumerate_code_files [crib/project_services.py]",
+  "project_dir [crib/paths.py]",
+  "project_refs [crib/project_services.py]",
+  "record_schema [crib/codeindex.py]",
+  "server_for [crib/codeindex.py]",
+]
+called_by = [
+  "_index_project_code [crib/app.py]",
+]
+references = [
+  "_index_project_code [crib/app.py]",
+]
+name_terms = [
+  "_index_project_code",
+  "code",
+  "codeindexer",
+  "crib",
+  "crib.codeindexer.CodeIndexer._index_project_code",
+  "index",
+  "indexer",
+  "project",
+]

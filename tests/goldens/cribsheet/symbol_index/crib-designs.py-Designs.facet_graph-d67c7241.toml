@@ -1,0 +1,45 @@
+symbol_ref = "crib/designs.py#Designs.facet_graph"
+fqn = "crib.designs.Designs.facet_graph"
+name = "facet_graph"
+kind = "method"
+lang = "python"
+content_hash = "b529ef5a74d3bfbc"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def facet_graph(self, proj: str, kind: str = \"design\","
+description = ""
+schema = 4
+line = 1423
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_load_graph [crib/designs.py]",
+  "_taint [crib/designs.py]",
+  "ref_of [crib/designs.py]",
+  "source_label [crib/designs.py]",
+]
+called_by = [
+  "design_graph [crib/app.py]",
+  "plan_graph [crib/app.py]",
+]
+references = [
+  "design_graph [crib/app.py]",
+  "plan_graph [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs.facet_graph",
+  "designs",
+  "facet",
+  "facet_graph",
+  "graph",
+]

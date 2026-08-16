@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockServer._add"
+fqn = "combiner.mcp_combiner.mockserver.MockServer._add"
+name = "_add"
+kind = "method"
+lang = "python"
+content_hash = "6f0aa61620f357f5"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def _add(self, spec: ToolSpec) -> None:"
+description = ""
+schema = 4
+line = 366
+mtime = 1783622326000000000
+container = [
+  "MockServer",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockServer",
+]
+symbol_was = []
+calls = [
+  "from_spec [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+  "add_tool [combiner/mcp_combiner/mockserver.py]",
+]
+references = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+  "add_tool [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "_add",
+  "add",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockServer._add",
+  "mcp",
+  "mock",
+  "mockserver",
+  "server",
+]

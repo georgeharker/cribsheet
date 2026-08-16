@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#_SessionTrackingMiddleware"
+fqn = "combiner.mcp_combiner.mockserver._SessionTrackingMiddleware"
+name = "_SessionTrackingMiddleware"
+kind = "class"
+lang = "python"
+content_hash = "eccda0cf44168553"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "class _SessionTrackingMiddleware(Middleware):"
+description = ""
+schema = 4
+line = 217
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "_SessionTrackingMiddleware",
+  "combiner",
+  "combiner.mcp_combiner.mockserver._SessionTrackingMiddleware",
+  "mcp",
+  "middleware",
+  "mockserver",
+  "session",
+  "tracking",
+]

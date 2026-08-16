@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_repo_storage.py#test_store_notes_are_not_also_indexed_as_in_situ_docs"
+fqn = "tests.test_repo_storage.test_store_notes_are_not_also_indexed_as_in_situ_docs"
+name = "test_store_notes_are_not_also_indexed_as_in_situ_docs"
+kind = "function"
+lang = "python"
+content_hash = "416de01b06f9591f"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_store_notes_are_not_also_indexed_as_in_situ_docs(crib, tmp_path):"
+description = ""
+schema = 4
+line = 254
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "relpaths [tests/test_repo_storage.py]",
+  "repo_with_store [tests/test_repo_storage.py]",
+  "run [tests/test_repo_storage.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "also",
+  "are",
+  "as",
+  "docs",
+  "in",
+  "indexed",
+  "not",
+  "notes",
+  "repo",
+  "situ",
+  "storage",
+  "store",
+  "test",
+  "test_store_notes_are_not_also_indexed_as_in_situ_docs",
+  "tests",
+  "tests.test_repo_storage.test_store_notes_are_not_also_indexed_as_in_situ_docs",
+]

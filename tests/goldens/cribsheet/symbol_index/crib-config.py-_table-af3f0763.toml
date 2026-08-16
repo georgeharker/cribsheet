@@ -1,0 +1,35 @@
+symbol_ref = "crib/config.py#_table"
+fqn = "crib.config._table"
+name = "_table"
+kind = "function"
+lang = "python"
+content_hash = "6bd1309ed4489c38"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "def _table(kind: type, current: Any, data: dict, config_file: Path,"
+description = ""
+schema = 4
+line = 30
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "config",
+]
+symbol_was = []
+calls = [
+  "_warn_unknown [crib/config.py]",
+]
+called_by = [
+  "load [crib/config.py]",
+]
+references = [
+  "load [crib/config.py]",
+]
+name_terms = [
+  "_table",
+  "config",
+  "crib",
+  "crib.config._table",
+  "table",
+]

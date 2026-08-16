@@ -1,0 +1,53 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestIsolatedUpstreamSessions.test_non_isolated_chats_share_one_upstream_session"
+fqn = "combiner.tests.test_session_independence.TestIsolatedUpstreamSessions.test_non_isolated_chats_share_one_upstream_session"
+name = "test_non_isolated_chats_share_one_upstream_session"
+kind = "method"
+lang = "python"
+content_hash = "4b7fc4c0bf6a052d"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "async def test_non_isolated_chats_share_one_upstream_session("
+description = ""
+schema = 4
+line = 345
+mtime = 1783541669000000000
+container = [
+  "TestIsolatedUpstreamSessions",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+  "TestIsolatedUpstreamSessions",
+]
+symbol_was = []
+calls = [
+  "_header_client [combiner/tests/test_session_independence.py]",
+  "_text [combiner/tests/test_session_independence.py]",
+  "_token [combiner/tests/test_session_independence.py]",
+  "http_mock_entry [combiner/tests/conftest.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+  "start_http_mock [combiner/tests/conftest.py]",
+  "stats [combiner/tests/conftest.py]",
+  "wait_server_state [combiner/tests/conftest.py]",
+  "write_servers_config [combiner/tests/conftest.py]",
+  "write_tools_spec [combiner/tests/conftest.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chats",
+  "combiner",
+  "combiner.tests.test_session_independence.TestIsolatedUpstreamSessions.test_non_isolated_chats_share_one_upstream_session",
+  "independence",
+  "isolated",
+  "non",
+  "one",
+  "session",
+  "sessions",
+  "share",
+  "test",
+  "test_non_isolated_chats_share_one_upstream_session",
+  "tests",
+  "upstream",
+]

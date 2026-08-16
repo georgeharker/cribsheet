@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/test_reload_config.py#test_restart_unknown_server"
+fqn = "combiner.tests.test_reload_config.test_restart_unknown_server"
+name = "test_restart_unknown_server"
+kind = "function"
+lang = "python"
+content_hash = "44d02538a55c3834"
+file = "combiner/tests/test_reload_config.py"
+file_hash = "1ab3b3e0b48c7d3d"
+signature = "async def test_restart_unknown_server(harness: dict[str, Any]) -> None:"
+description = ""
+schema = 4
+line = 148
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_reload_config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_reload_config.test_restart_unknown_server",
+  "config",
+  "reload",
+  "restart",
+  "server",
+  "test",
+  "test_restart_unknown_server",
+  "tests",
+  "unknown",
+]

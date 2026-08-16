@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_code_learnings.py#test_drop_file_removes_symbols_and_edges"
+fqn = "tests.test_code_learnings.test_drop_file_removes_symbols_and_edges"
+name = "test_drop_file_removes_symbols_and_edges"
+kind = "function"
+lang = "python"
+content_hash = "9138eac3e157b386"
+file = "tests/test_code_learnings.py"
+file_hash = "2cacd018989edacf"
+signature = "def test_drop_file_removes_symbols_and_edges(crib):"
+description = ""
+schema = 4
+line = 248
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_learnings",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "by_fqname [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "code",
+  "drop",
+  "edges",
+  "file",
+  "learnings",
+  "removes",
+  "symbols",
+  "test",
+  "test_drop_file_removes_symbols_and_edges",
+  "tests",
+  "tests.test_code_learnings.test_drop_file_removes_symbols_and_edges",
+]

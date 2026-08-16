@@ -1,0 +1,37 @@
+symbol_ref = "combiner/tests/test_notifications.py#_tools_changed"
+fqn = "combiner.tests.test_notifications._tools_changed"
+name = "_tools_changed"
+kind = "function"
+lang = "python"
+content_hash = "217dfc3dbb77c98a"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "def _tools_changed() -> ServerNotification:"
+description = ""
+schema = 4
+line = 90
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_tool_list_changed_triggers_reprime_not_forward [combiner/tests/test_notifications.py]",
+]
+references = [
+  "test_tool_list_changed_triggers_reprime_not_forward [combiner/tests/test_notifications.py]",
+]
+name_terms = [
+  "_tools_changed",
+  "changed",
+  "combiner",
+  "combiner.tests.test_notifications._tools_changed",
+  "notifications",
+  "test",
+  "tests",
+  "tools",
+]

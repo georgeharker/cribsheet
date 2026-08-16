@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_ManagedConnection._next_tools_probe"
+fqn = "combiner.mcp_combiner.connections._ManagedConnection._next_tools_probe"
+name = "_next_tools_probe"
+kind = "field"
+lang = "python"
+content_hash = "b545f4a51e5bb5bf"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_next_tools_probe: float = field(default=0.0, repr=False)"
+description = ""
+schema = 4
+line = 169
+mtime = 1784493613000000000
+container = [
+  "_ManagedConnection",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "_ManagedConnection",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_next_tools_probe",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection._next_tools_probe",
+  "connection",
+  "connections",
+  "managed",
+  "mcp",
+  "next",
+  "probe",
+  "tools",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_chunk_identity.py#test_duplicate_headings_are_separate_sections_with_occurrences"
+fqn = "tests.test_chunk_identity.test_duplicate_headings_are_separate_sections_with_occurrences"
+name = "test_duplicate_headings_are_separate_sections_with_occurrences"
+kind = "function"
+lang = "python"
+content_hash = "e5818ec2075b2055"
+file = "tests/test_chunk_identity.py"
+file_hash = "0afd98c1ecf1279e"
+signature = "def test_duplicate_headings_are_separate_sections_with_occurrences():"
+description = ""
+schema = 4
+line = 33
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_chunk_identity",
+]
+symbol_was = []
+calls = [
+  "_split_sections [crib/chunk.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "are",
+  "chunk",
+  "duplicate",
+  "headings",
+  "identity",
+  "occurrences",
+  "sections",
+  "separate",
+  "test",
+  "test_duplicate_headings_are_separate_sections_with_occurrences",
+  "tests",
+  "tests.test_chunk_identity.test_duplicate_headings_are_separate_sections_with_occurrences",
+  "with",
+]

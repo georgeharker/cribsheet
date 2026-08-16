@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_line_map.py#test_lookup_reports_line_span"
+fqn = "tests.test_line_map.test_lookup_reports_line_span"
+name = "test_lookup_reports_line_span"
+kind = "function"
+lang = "python"
+content_hash = "7d0d7113cb5cca57"
+file = "tests/test_line_map.py"
+file_hash = "cf0850bca15c741f"
+signature = "def test_lookup_reports_line_span(crib):"
+description = ""
+schema = 4
+line = 82
+mtime = 1782631409000000000
+container = []
+scope = [
+  "tests",
+  "test_line_map",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_line_map.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "line",
+  "lookup",
+  "map",
+  "reports",
+  "span",
+  "test",
+  "test_lookup_reports_line_span",
+  "tests",
+  "tests.test_line_map.test_lookup_reports_line_span",
+]

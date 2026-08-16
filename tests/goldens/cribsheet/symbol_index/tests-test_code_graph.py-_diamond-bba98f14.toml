@@ -1,0 +1,91 @@
+symbol_ref = "tests/test_code_graph.py#_diamond"
+fqn = "tests.test_code_graph._diamond"
+name = "_diamond"
+kind = "function"
+lang = "python"
+content_hash = "66fc99143a9aff83"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def _diamond(crib, tmp_path):"
+description = ""
+schema = 4
+line = 53
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_sym [tests/test_code_graph.py]",
+  "set_source_root [crib/codeindex.py]",
+]
+called_by = [
+  "test_a_rollup_implies_edges_and_refuses_a_tree [tests/test_code_graph.py]",
+  "test_a_scoped_export_keeps_boundary_crossings_as_frontier_nodes [tests/test_code_graph.py]",
+  "test_a_single_file_index_writes_into_a_store_of_another_shape [tests/test_code_graph.py]",
+  "test_an_indexed_entry_carries_its_language_scope [tests/test_code_graph.py]",
+  "test_bfs_records_the_shortest_distance [tests/test_code_graph.py]",
+  "test_callers_direction_keeps_caller_to_callee_orientation [tests/test_code_graph.py]",
+  "test_constraints_do_not_weaken_unique_or_refuse [tests/test_code_graph.py]",
+  "test_depth_bound_flags_the_frontier [tests/test_code_graph.py]",
+  "test_edges_are_a_subset_of_nodes_even_at_depth_bounds [tests/test_code_graph.py]",
+  "test_edges_are_deduplicated [tests/test_code_graph.py]",
+  "test_edges_shape_states_convergence_once [tests/test_code_graph.py]",
+  "test_every_node_carries_the_bare_name [tests/test_code_graph.py]",
+  "test_every_result_says_what_the_name_became [tests/test_code_graph.py]",
+  "test_every_verb_that_narrows_to_one_symbol_discloses_it [tests/test_code_graph.py]",
+  "test_file_rollup_weights_the_edges [tests/test_code_graph.py]",
+  "test_module_is_no_longer_an_axis [tests/test_code_graph.py]",
+  "test_only_a_DIFFERENT_recorded_version_is_stale [tests/test_code_graph.py]",
+  "test_the_no_scope_sentinel_is_structural [tests/test_code_graph.py]",
+  "test_the_stamp_is_invisible_to_the_entry_reader [tests/test_code_graph.py]",
+  "test_the_three_axes_answer_different_questions [tests/test_code_graph.py]",
+  "test_tree_duplicates_or_truncates_the_shared_node [tests/test_code_graph.py]",
+  "test_unknown_shape_says_what_is_accepted [tests/test_code_graph.py]",
+  "test_unresolved_edge_target_is_an_external_node [tests/test_code_graph.py]",
+  "test_whole_project_export_scopes_by_path_prefix [tests/test_code_graph.py]",
+  "test_whole_project_includes_what_no_walk_reaches [tests/test_code_graph.py]",
+  "test_whole_project_rolls_up_and_refuses_a_tree [tests/test_code_graph.py]",
+  "test_whole_project_symbol_export_is_capped_but_the_rollup_is_not [tests/test_code_graph.py]",
+]
+references = [
+  "test_a_rollup_implies_edges_and_refuses_a_tree [tests/test_code_graph.py]",
+  "test_a_scoped_export_keeps_boundary_crossings_as_frontier_nodes [tests/test_code_graph.py]",
+  "test_a_single_file_index_writes_into_a_store_of_another_shape [tests/test_code_graph.py]",
+  "test_an_indexed_entry_carries_its_language_scope [tests/test_code_graph.py]",
+  "test_bfs_records_the_shortest_distance [tests/test_code_graph.py]",
+  "test_callers_direction_keeps_caller_to_callee_orientation [tests/test_code_graph.py]",
+  "test_constraints_do_not_weaken_unique_or_refuse [tests/test_code_graph.py]",
+  "test_depth_bound_flags_the_frontier [tests/test_code_graph.py]",
+  "test_edges_are_a_subset_of_nodes_even_at_depth_bounds [tests/test_code_graph.py]",
+  "test_edges_are_deduplicated [tests/test_code_graph.py]",
+  "test_edges_shape_states_convergence_once [tests/test_code_graph.py]",
+  "test_every_node_carries_the_bare_name [tests/test_code_graph.py]",
+  "test_every_result_says_what_the_name_became [tests/test_code_graph.py]",
+  "test_every_verb_that_narrows_to_one_symbol_discloses_it [tests/test_code_graph.py]",
+  "test_file_rollup_weights_the_edges [tests/test_code_graph.py]",
+  "test_module_is_no_longer_an_axis [tests/test_code_graph.py]",
+  "test_only_a_DIFFERENT_recorded_version_is_stale [tests/test_code_graph.py]",
+  "test_the_no_scope_sentinel_is_structural [tests/test_code_graph.py]",
+  "test_the_stamp_is_invisible_to_the_entry_reader [tests/test_code_graph.py]",
+  "test_the_three_axes_answer_different_questions [tests/test_code_graph.py]",
+  "test_tree_duplicates_or_truncates_the_shared_node [tests/test_code_graph.py]",
+  "test_unknown_shape_says_what_is_accepted [tests/test_code_graph.py]",
+  "test_unresolved_edge_target_is_an_external_node [tests/test_code_graph.py]",
+  "test_whole_project_export_scopes_by_path_prefix [tests/test_code_graph.py]",
+  "test_whole_project_includes_what_no_walk_reaches [tests/test_code_graph.py]",
+  "test_whole_project_rolls_up_and_refuses_a_tree [tests/test_code_graph.py]",
+  "test_whole_project_symbol_export_is_capped_but_the_rollup_is_not [tests/test_code_graph.py]",
+]
+name_terms = [
+  "_diamond",
+  "code",
+  "diamond",
+  "graph",
+  "test",
+  "tests",
+  "tests.test_code_graph._diamond",
+]

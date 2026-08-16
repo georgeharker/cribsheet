@@ -1,0 +1,34 @@
+symbol_ref = "crib/generate.py#agenerate_structured"
+fqn = "crib.generate.agenerate_structured"
+name = "agenerate_structured"
+kind = "function"
+lang = "python"
+content_hash = "f65de7161f9d6936"
+file = "crib/generate.py"
+file_hash = "a18a92dc048caeef"
+signature = "async def agenerate_structured(cfg: GenerateConfig, system: str, user: str,"
+description = ""
+schema = 4
+line = 126
+mtime = 1784103453000000000
+container = []
+scope = [
+  "crib",
+  "generate",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_bulk [crib/app.py]",
+]
+references = [
+  "_bulk [crib/app.py]",
+]
+name_terms = [
+  "agenerate",
+  "agenerate_structured",
+  "crib",
+  "crib.generate.agenerate_structured",
+  "generate",
+  "structured",
+]

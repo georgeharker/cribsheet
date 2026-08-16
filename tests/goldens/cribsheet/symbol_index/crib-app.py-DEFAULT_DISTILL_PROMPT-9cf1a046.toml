@@ -1,0 +1,33 @@
+symbol_ref = "crib/app.py#DEFAULT_DISTILL_PROMPT"
+fqn = "crib.app.DEFAULT_DISTILL_PROMPT"
+name = "DEFAULT_DISTILL_PROMPT"
+kind = "constant"
+lang = "python"
+content_hash = "27f780d903d63101"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "DEFAULT_DISTILL_PROMPT = ("
+description = ""
+schema = 4
+line = 55
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "app",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "distill [crib/app.py]",
+]
+name_terms = [
+  "DEFAULT_DISTILL_PROMPT",
+  "app",
+  "crib",
+  "crib.app.DEFAULT_DISTILL_PROMPT",
+  "default",
+  "distill",
+  "prompt",
+]

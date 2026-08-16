@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_code_attribution.py#test_in_workspace_is_anchored_at_a_path_boundary"
+fqn = "tests.test_code_attribution.test_in_workspace_is_anchored_at_a_path_boundary"
+name = "test_in_workspace_is_anchored_at_a_path_boundary"
+kind = "function"
+lang = "python"
+content_hash = "79f05cdfa1dac841"
+file = "tests/test_code_attribution.py"
+file_hash = "ff3c29a685f6f6d7"
+signature = "def test_in_workspace_is_anchored_at_a_path_boundary(tmp_path):"
+description = ""
+schema = 4
+line = 229
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_attribution",
+]
+symbol_was = []
+calls = [
+  "_in_workspace [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "anchored",
+  "at",
+  "attribution",
+  "boundary",
+  "code",
+  "in",
+  "is",
+  "path",
+  "test",
+  "test_in_workspace_is_anchored_at_a_path_boundary",
+  "tests",
+  "tests.test_code_attribution.test_in_workspace_is_anchored_at_a_path_boundary",
+  "workspace",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_notestore_snapshot.py#_scenario"
+fqn = "tests.test_notestore_snapshot._scenario"
+name = "_scenario"
+kind = "function"
+lang = "python"
+content_hash = "f7c277f961719da9"
+file = "tests/test_notestore_snapshot.py"
+file_hash = "b2c5a3e37c7b0a55"
+signature = "async def _scenario(crib: Crib) -> None:"
+description = ""
+schema = 4
+line = 48
+mtime = 1783525700000000000
+container = []
+scope = [
+  "tests",
+  "test_notestore_snapshot",
+]
+symbol_was = []
+calls = [
+  "append_note [crib/app.py]",
+  "edit_note [crib/app.py]",
+  "forget [crib/app.py]",
+  "move_note [crib/app.py]",
+  "store_note [crib/app.py]",
+]
+called_by = [
+  "test_notestore_scenario_snapshot [tests/test_notestore_snapshot.py]",
+]
+references = [
+  "test_notestore_scenario_snapshot [tests/test_notestore_snapshot.py]",
+]
+name_terms = [
+  "_scenario",
+  "notestore",
+  "scenario",
+  "snapshot",
+  "test",
+  "tests",
+  "tests.test_notestore_snapshot._scenario",
+]

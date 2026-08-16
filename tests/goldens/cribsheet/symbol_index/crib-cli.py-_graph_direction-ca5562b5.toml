@@ -1,0 +1,36 @@
+symbol_ref = "crib/cli.py#_graph_direction"
+fqn = "crib.cli._graph_direction"
+name = "_graph_direction"
+kind = "function"
+lang = "python"
+content_hash = "4140e1be0ac1a36a"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _graph_direction(args: argparse.Namespace) -> str:"
+description = ""
+schema = 4
+line = 818
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "(lambda) [crib/cli.py]",
+  "_emit_code_graph [crib/cli.py]",
+]
+references = [
+  "VERBS [crib/cli.py]",
+  "_emit_code_graph [crib/cli.py]",
+]
+name_terms = [
+  "_graph_direction",
+  "cli",
+  "crib",
+  "crib.cli._graph_direction",
+  "direction",
+  "graph",
+]

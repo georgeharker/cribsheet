@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_real_servers.lua#if.cc_key"
+fqn = "tests.test_real_servers.if.cc_key"
+name = "cc_key"
+kind = "variable"
+lang = "lua"
+content_hash = "ef025a734cb50f51"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local ns, cc_key = find_namespaced_by_pattern(\"todoist__find\")"
+description = ""
+schema = 4
+line = 489
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+scope = [
+  "tests",
+  "test_real_servers",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "else [tests/test_real_servers.lua]",
+  "if [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "cc",
+  "cc_key",
+  "if",
+  "key",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.cc_key",
+]

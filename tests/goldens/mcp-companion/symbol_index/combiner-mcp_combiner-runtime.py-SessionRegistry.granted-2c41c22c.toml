@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.granted"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.granted"
+name = "granted"
+kind = "field"
+lang = "python"
+content_hash = "6894397f7ef586e7"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "granted: dict[str, set[str]] = field(default_factory=dict)"
+description = ""
+schema = 4
+line = 54
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "clear_granted [combiner/mcp_combiner/runtime.py]",
+  "grant [combiner/mcp_combiner/runtime.py]",
+  "is_granted [combiner/mcp_combiner/runtime.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.granted",
+  "granted",
+  "mcp",
+  "registry",
+  "runtime",
+  "session",
+]

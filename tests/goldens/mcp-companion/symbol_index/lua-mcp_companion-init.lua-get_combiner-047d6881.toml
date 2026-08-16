@@ -1,0 +1,36 @@
+symbol_ref = "lua/mcp_companion/init.lua#get_combiner"
+fqn = "mcp_companion.get_combiner"
+name = "get_combiner"
+kind = "function"
+lang = "lua"
+content_hash = "59084627936dee1b"
+file = "lua/mcp_companion/init.lua"
+file_hash = "97d5bcda7db25914"
+signature = "function M.get_combiner()"
+description = ""
+schema = 4
+line = 226
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/init.lua]",
+]
+references = [
+  "event [lua/mcp_companion/init.lua]",
+  "get_hub_instance [lua/mcp_companion/init.lua]",
+  "get_state [lua/mcp_companion/init.lua]",
+  "opts [lua/mcp_companion/init.lua]",
+]
+name_terms = [
+  "combiner",
+  "companion",
+  "get",
+  "get_combiner",
+  "mcp",
+  "mcp_companion.get_combiner",
+]

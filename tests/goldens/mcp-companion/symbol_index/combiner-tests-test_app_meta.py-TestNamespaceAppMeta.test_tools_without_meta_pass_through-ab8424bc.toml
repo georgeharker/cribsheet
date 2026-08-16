@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_app_meta.py#TestNamespaceAppMeta.test_tools_without_meta_pass_through"
+fqn = "combiner.tests.test_app_meta.TestNamespaceAppMeta.test_tools_without_meta_pass_through"
+name = "test_tools_without_meta_pass_through"
+kind = "method"
+lang = "python"
+content_hash = "d72fedac34df71c2"
+file = "combiner/tests/test_app_meta.py"
+file_hash = "fc52f36639c3320a"
+signature = "def test_tools_without_meta_pass_through(self, _config: None) -> None:"
+description = ""
+schema = 4
+line = 132
+mtime = 1783629928000000000
+container = [
+  "TestNamespaceAppMeta",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_app_meta",
+  "TestNamespaceAppMeta",
+]
+symbol_was = []
+calls = [
+  "_namespace_app_meta [combiner/mcp_combiner/middleware.py]",
+  "_tool [combiner/tests/test_app_meta.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "app",
+  "combiner",
+  "combiner.tests.test_app_meta.TestNamespaceAppMeta.test_tools_without_meta_pass_through",
+  "meta",
+  "namespace",
+  "pass",
+  "test",
+  "test_tools_without_meta_pass_through",
+  "tests",
+  "through",
+  "tools",
+  "without",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ServerConfig.name"
+fqn = "combiner.mcp_combiner.config.ServerConfig.name"
+name = "name"
+kind = "field"
+lang = "python"
+content_hash = "8931c29c62db3eb7"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "name: str"
+description = ""
+schema = 4
+line = 261
+mtime = 1783633313000000000
+container = [
+  "ServerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ServerConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_config [combiner/tests/test_app_meta.py]",
+  "_config [combiner/tests/test_session_filter.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "test_effective_policy_via_combiner_config [combiner/tests/test_permissions.py]",
+  "test_server_config_from_dict_http [combiner/tests/test_config.py]",
+  "test_server_config_from_dict_stdio [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.name",
+  "config",
+  "mcp",
+  "name",
+  "server",
+]

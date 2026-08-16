@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_nvim_channel.py#test_edit_round_trip_preserves_order"
+fqn = "combiner.tests.test_nvim_channel.test_edit_round_trip_preserves_order"
+name = "test_edit_round_trip_preserves_order"
+kind = "function"
+lang = "python"
+content_hash = "8054f7ee1b11d411"
+file = "combiner/tests/test_nvim_channel.py"
+file_hash = "182e2a76d8efddf4"
+signature = "async def test_edit_round_trip_preserves_order(nvim_instance: str) -> None:"
+description = ""
+schema = 4
+line = 113
+mtime = 1783022631000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_nvim_channel",
+]
+symbol_was = []
+calls = [
+  "NvimChannelManager [combiner/mcp_combiner/nvim_channel.py]",
+  "call [combiner/mcp_combiner/nvim_channel.py]",
+  "deregister [combiner/mcp_combiner/nvim_channel.py]",
+  "register [combiner/mcp_combiner/nvim_channel.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.tests.test_nvim_channel.test_edit_round_trip_preserves_order",
+  "edit",
+  "nvim",
+  "order",
+  "preserves",
+  "round",
+  "test",
+  "test_edit_round_trip_preserves_order",
+  "tests",
+  "trip",
+]

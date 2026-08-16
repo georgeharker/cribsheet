@@ -1,0 +1,41 @@
+symbol_ref = "crib/store.py#ChromaStore.get_meta"
+fqn = "crib.store.ChromaStore.get_meta"
+name = "get_meta"
+kind = "method"
+lang = "python"
+content_hash = "7fc154e5aceec9c0"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:"
+description = ""
+schema = 4
+line = 317
+mtime = 1786564832000000000
+container = [
+  "ChromaStore",
+]
+scope = [
+  "crib",
+  "store",
+  "ChromaStore",
+]
+symbol_was = []
+calls = [
+  "_chroma_where [crib/store.py]",
+  "_run [crib/store.py]",
+]
+called_by = [
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+references = [
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+name_terms = [
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore.get_meta",
+  "get",
+  "get_meta",
+  "meta",
+  "store",
+]

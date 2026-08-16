@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_project_resolution.py#test_stale_registration_errors"
+fqn = "tests.test_project_resolution.test_stale_registration_errors"
+name = "test_stale_registration_errors"
+kind = "function"
+lang = "python"
+content_hash = "519150acd831b0a4"
+file = "tests/test_project_resolution.py"
+file_hash = "4fafa653cef61a42"
+signature = "def test_stale_registration_errors(crib, tmp_path):"
+description = ""
+schema = 4
+line = 176
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_project_resolution",
+]
+symbol_was = []
+calls = [
+  "_crib_repo [tests/test_project_resolution.py]",
+  "_register [tests/test_project_resolution.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "errors",
+  "project",
+  "registration",
+  "resolution",
+  "stale",
+  "test",
+  "test_stale_registration_errors",
+  "tests",
+  "tests.test_project_resolution.test_stale_registration_errors",
+]

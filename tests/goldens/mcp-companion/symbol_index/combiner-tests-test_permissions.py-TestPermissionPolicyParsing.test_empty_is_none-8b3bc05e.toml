@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestPermissionPolicyParsing.test_empty_is_none"
+fqn = "combiner.tests.test_permissions.TestPermissionPolicyParsing.test_empty_is_none"
+name = "test_empty_is_none"
+kind = "method"
+lang = "python"
+content_hash = "51ec800c33cd9cbf"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "def test_empty_is_none(self) -> None:"
+description = ""
+schema = 4
+line = 45
+mtime = 1783633313000000000
+container = [
+  "TestPermissionPolicyParsing",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "TestPermissionPolicyParsing",
+]
+symbol_was = []
+calls = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_permissions.TestPermissionPolicyParsing.test_empty_is_none",
+  "empty",
+  "is",
+  "none",
+  "parsing",
+  "permission",
+  "permissions",
+  "policy",
+  "test",
+  "test_empty_is_none",
+  "tests",
+]

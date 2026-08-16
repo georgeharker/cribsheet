@@ -1,0 +1,53 @@
+symbol_ref = "crib/chunk.py#Chunk.chunk_id"
+fqn = "crib.chunk.Chunk.chunk_id"
+name = "chunk_id"
+kind = "method"
+lang = "python"
+content_hash = "a14e542bd4c2464b"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "@property"
+description = ""
+schema = 4
+line = 75
+mtime = 1786136167000000000
+container = [
+  "Chunk",
+]
+scope = [
+  "crib",
+  "chunk",
+  "Chunk",
+]
+symbol_was = []
+calls = [
+  "section_key [crib/chunk.py]",
+  "sha1_hex [crib/util.py]",
+]
+called_by = [
+  "_index_locked [crib/indexer.py]",
+  "_plan [crib/indexer.py]",
+  "test_duplicate_headings_get_distinct_chunk_ids [tests/test_chunk_identity.py]",
+  "test_first_occurrence_id_unchanged_from_the_bare_breadcrumb [tests/test_chunk_identity.py]",
+  "test_ids_are_deterministic_across_runs [tests/test_chunk_identity.py]",
+  "test_notes_store_ids_are_unchanged_by_the_store_axis [tests/test_chunk_identity.py]",
+  "test_same_relpath_in_two_stores_never_collides [tests/test_chunk_identity.py]",
+  "test_windowed_duplicate_sections_share_their_section_span [tests/test_chunk_identity.py]",
+]
+references = [
+  "_index_locked [crib/indexer.py]",
+  "_plan [crib/indexer.py]",
+  "test_duplicate_headings_get_distinct_chunk_ids [tests/test_chunk_identity.py]",
+  "test_first_occurrence_id_unchanged_from_the_bare_breadcrumb [tests/test_chunk_identity.py]",
+  "test_ids_are_deterministic_across_runs [tests/test_chunk_identity.py]",
+  "test_notes_store_ids_are_unchanged_by_the_store_axis [tests/test_chunk_identity.py]",
+  "test_same_relpath_in_two_stores_never_collides [tests/test_chunk_identity.py]",
+  "test_windowed_duplicate_sections_share_their_section_span [tests/test_chunk_identity.py]",
+]
+name_terms = [
+  "chunk",
+  "chunk_id",
+  "crib",
+  "crib.chunk.Chunk.chunk_id",
+  "id",
+]

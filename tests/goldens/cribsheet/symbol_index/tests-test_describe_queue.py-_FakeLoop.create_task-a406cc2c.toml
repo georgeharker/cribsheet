@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_describe_queue.py#_FakeLoop.create_task"
+fqn = "tests.test_describe_queue._FakeLoop.create_task"
+name = "create_task"
+kind = "method"
+lang = "python"
+content_hash = "03658cfa4fb604bc"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def create_task(self, coro):"
+description = ""
+schema = 4
+line = 66
+mtime = 1786664729000000000
+container = [
+  "_FakeLoop",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "_FakeLoop",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "create",
+  "create_task",
+  "describe",
+  "fake",
+  "loop",
+  "queue",
+  "task",
+  "test",
+  "tests",
+  "tests.test_describe_queue._FakeLoop.create_task",
+]

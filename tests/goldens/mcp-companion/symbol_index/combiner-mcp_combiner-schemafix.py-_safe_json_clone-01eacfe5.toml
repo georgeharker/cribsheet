@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/schemafix.py#_safe_json_clone"
+fqn = "combiner.mcp_combiner.schemafix._safe_json_clone"
+name = "_safe_json_clone"
+kind = "function"
+lang = "python"
+content_hash = "134247864a16bc5f"
+file = "combiner/mcp_combiner/schemafix.py"
+file_hash = "49870021f06866cb"
+signature = "def _safe_json_clone(obj: object) -> Any:"
+description = ""
+schema = 4
+line = 48
+mtime = 1783542616000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "schemafix",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_normalize_tool_schema [combiner/mcp_combiner/schemafix.py]",
+  "_to_clean_tool [combiner/mcp_combiner/schemafix.py]",
+]
+references = [
+  "_normalize_tool_schema [combiner/mcp_combiner/schemafix.py]",
+  "_to_clean_tool [combiner/mcp_combiner/schemafix.py]",
+]
+name_terms = [
+  "_safe_json_clone",
+  "clone",
+  "combiner",
+  "combiner.mcp_combiner.schemafix._safe_json_clone",
+  "json",
+  "mcp",
+  "safe",
+  "schemafix",
+]

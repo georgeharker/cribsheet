@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_repo_storage.py#crib"
+fqn = "tests.test_repo_storage.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+content_hash = "a278206c44a86ddc"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 38
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "repo",
+  "storage",
+  "test",
+  "tests",
+  "tests.test_repo_storage.crib",
+]

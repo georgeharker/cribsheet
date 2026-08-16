@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_config_resilience.py#test_unmatched_path_still_falls_back"
+fqn = "tests.test_config_resilience.test_unmatched_path_still_falls_back"
+name = "test_unmatched_path_still_falls_back"
+kind = "function"
+lang = "python"
+content_hash = "86ce4df5465f3113"
+file = "tests/test_config_resilience.py"
+file_hash = "620aeb96b59e7b2d"
+signature = "def test_unmatched_path_still_falls_back(tmp_path):"
+description = ""
+schema = 4
+line = 150
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_config_resilience",
+]
+symbol_was = []
+calls = [
+  "portable_path [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "back",
+  "config",
+  "falls",
+  "path",
+  "resilience",
+  "still",
+  "test",
+  "test_unmatched_path_still_falls_back",
+  "tests",
+  "tests.test_config_resilience.test_unmatched_path_still_falls_back",
+  "unmatched",
+]

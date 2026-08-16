@@ -1,0 +1,30 @@
+symbol_ref = "crib/designs.py#CHANGE_KINDS"
+fqn = "crib.designs.CHANGE_KINDS"
+name = "CHANGE_KINDS"
+kind = "constant"
+lang = "python"
+content_hash = "23b15c351474fd9a"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "CHANGE_KINDS = (\"dep-edited\", \"dep-superseded\", \"dep-deleted\", \"new-unverified-edge\","
+description = ""
+schema = 4
+line = 119
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "CHANGE_KINDS",
+  "change",
+  "crib",
+  "crib.designs.CHANGE_KINDS",
+  "designs",
+  "kinds",
+]

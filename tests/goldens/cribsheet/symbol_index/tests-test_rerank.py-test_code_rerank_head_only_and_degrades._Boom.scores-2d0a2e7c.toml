@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_rerank.py#test_code_rerank_head_only_and_degrades._Boom.scores"
+fqn = "tests.test_rerank.test_code_rerank_head_only_and_degrades._Boom.scores"
+name = "scores"
+kind = "method"
+lang = "python"
+content_hash = "08035367ea0b82f5"
+file = "tests/test_rerank.py"
+file_hash = "29066147cbea547e"
+signature = "def scores(self, *_):"
+description = ""
+schema = 4
+line = 117
+mtime = 1783981122000000000
+container = [
+  "test_code_rerank_head_only_and_degrades",
+  "_Boom",
+]
+scope = [
+  "tests",
+  "test_rerank",
+  "test_code_rerank_head_only_and_degrades",
+  "_Boom",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "boom",
+  "code",
+  "degrades",
+  "head",
+  "only",
+  "rerank",
+  "scores",
+  "test",
+  "tests",
+  "tests.test_rerank.test_code_rerank_head_only_and_degrades._Boom.scores",
+]

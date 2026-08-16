@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestAttach.test_reattach_over_cloned_plain_handler"
+fqn = "combiner.tests.test_notifications.TestAttach.test_reattach_over_cloned_plain_handler"
+name = "test_reattach_over_cloned_plain_handler"
+kind = "method"
+lang = "python"
+content_hash = "6184d66063159a9d"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "def test_reattach_over_cloned_plain_handler(self) -> None:"
+description = ""
+schema = 4
+line = 117
+mtime = 1784493613000000000
+container = [
+  "TestAttach",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "TestAttach",
+]
+symbol_was = []
+calls = [
+  "_FakeClient [combiner/tests/test_notifications.py]",
+  "attach_resource_forwarding [combiner/mcp_combiner/notifications.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "attach",
+  "cloned",
+  "combiner",
+  "combiner.tests.test_notifications.TestAttach.test_reattach_over_cloned_plain_handler",
+  "handler",
+  "notifications",
+  "over",
+  "plain",
+  "reattach",
+  "test",
+  "test_reattach_over_cloned_plain_handler",
+  "tests",
+]

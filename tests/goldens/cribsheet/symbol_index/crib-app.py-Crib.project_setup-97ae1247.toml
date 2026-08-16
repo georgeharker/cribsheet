@@ -1,0 +1,43 @@
+symbol_ref = "crib/app.py#Crib.project_setup"
+fqn = "crib.app.Crib.project_setup"
+name = "project_setup"
+kind = "method"
+lang = "python"
+content_hash = "10ed8be48126f271"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def project_setup(self, project: str | None = None,"
+description = ""
+schema = 4
+line = 1479
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "_detect_code_globs [crib/app.py]",
+  "_ensure_crib [crib/app.py]",
+  "_index_project_code [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "projects [crib/app.py]",
+]
+called_by = [
+  "project_setup [crib/server.py]",
+]
+references = [
+  "project_setup [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.project_setup",
+  "project",
+  "project_setup",
+  "setup",
+]

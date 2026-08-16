@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_repo_storage.py#test_a_store_that_is_not_on_this_machine_is_unavailable"
+fqn = "tests.test_repo_storage.test_a_store_that_is_not_on_this_machine_is_unavailable"
+name = "test_a_store_that_is_not_on_this_machine_is_unavailable"
+kind = "function"
+lang = "python"
+content_hash = "18ef2b1cf0f0c663"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_a_store_that_is_not_on_this_machine_is_unavailable(paths, config):"
+description = ""
+schema = 4
+line = 123
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "ProjectConfig [crib/config.py]",
+  "require [crib/paths.py]",
+  "resolve_project_paths [crib/paths.py]",
+  "save [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "is",
+  "machine",
+  "not",
+  "on",
+  "repo",
+  "storage",
+  "store",
+  "test",
+  "test_a_store_that_is_not_on_this_machine_is_unavailable",
+  "tests",
+  "tests.test_repo_storage.test_a_store_that_is_not_on_this_machine_is_unavailable",
+  "that",
+  "this",
+  "unavailable",
+]

@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_cli_labels.py#test_given_labels_pass_through"
+fqn = "tests.test_cli_labels.test_given_labels_pass_through"
+name = "test_given_labels_pass_through"
+kind = "function"
+lang = "python"
+content_hash = "742cab73d6074812"
+file = "tests/test_cli_labels.py"
+file_hash = "6fae42b1c5757b72"
+signature = "def test_given_labels_pass_through():"
+description = ""
+schema = 4
+line = 51
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_cli_labels",
+]
+symbol_was = []
+calls = [
+  "_call [tests/test_cli_labels.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cli",
+  "given",
+  "labels",
+  "pass",
+  "test",
+  "test_given_labels_pass_through",
+  "tests",
+  "tests.test_cli_labels.test_given_labels_pass_through",
+  "through",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "crib/designs.py#Designs.design_forget"
+fqn = "crib.designs.Designs.design_forget"
+name = "design_forget"
+kind = "method"
+lang = "python"
+content_hash = "c1c8831a871be2c4"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "async def design_forget(self, proj: str, ref: str,"
+description = ""
+schema = 4
+line = 1259
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_forget [crib/designs.py]",
+]
+called_by = [
+  "design_forget [crib/app.py]",
+]
+references = [
+  "design_forget [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs.design_forget",
+  "design",
+  "design_forget",
+  "designs",
+  "forget",
+]

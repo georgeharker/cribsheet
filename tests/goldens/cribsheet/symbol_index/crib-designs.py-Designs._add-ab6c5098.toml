@@ -1,0 +1,52 @@
+symbol_ref = "crib/designs.py#Designs._add"
+fqn = "crib.designs.Designs._add"
+name = "_add"
+kind = "method"
+lang = "python"
+content_hash = "b40e74299d6d375e"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "async def _add(self, proj: str, kind: str, title: str, content: str,"
+description = ""
+schema = 4
+line = 1001
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "Note [crib/notes.py]",
+  "_capture_sources [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_slug [crib/app.py]",
+  "_source_rows [crib/designs.py]",
+  "_store [crib/designs.py]",
+  "_today [crib/designs.py]",
+  "_unique_relpath [crib/designs.py]",
+  "abspath [crib/notestore.py]",
+  "source_label [crib/designs.py]",
+  "write [crib/notestore.py]",
+]
+called_by = [
+  "design_add [crib/designs.py]",
+  "plan_add [crib/designs.py]",
+]
+references = [
+  "design_add [crib/designs.py]",
+  "plan_add [crib/designs.py]",
+]
+name_terms = [
+  "_add",
+  "add",
+  "crib",
+  "crib.designs.Designs._add",
+  "designs",
+]

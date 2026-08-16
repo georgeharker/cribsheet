@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_malformed_notes.py#test_scan_id_recovers_the_id_from_unparseable_frontmatter"
+fqn = "tests.test_malformed_notes.test_scan_id_recovers_the_id_from_unparseable_frontmatter"
+name = "test_scan_id_recovers_the_id_from_unparseable_frontmatter"
+kind = "function"
+lang = "python"
+content_hash = "d86804d2fa9b1010"
+file = "tests/test_malformed_notes.py"
+file_hash = "e46dac071f53c31f"
+signature = "def test_scan_id_recovers_the_id_from_unparseable_frontmatter():"
+description = ""
+schema = 4
+line = 45
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_malformed_notes",
+]
+symbol_was = []
+calls = [
+  "scan_id [crib/notes.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "from",
+  "frontmatter",
+  "id",
+  "malformed",
+  "notes",
+  "recovers",
+  "scan",
+  "test",
+  "test_scan_id_recovers_the_id_from_unparseable_frontmatter",
+  "tests",
+  "tests.test_malformed_notes.test_scan_id_recovers_the_id_from_unparseable_frontmatter",
+  "the",
+  "unparseable",
+]

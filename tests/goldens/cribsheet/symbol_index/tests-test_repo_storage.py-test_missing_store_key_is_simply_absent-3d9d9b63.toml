@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_repo_storage.py#test_missing_store_key_is_simply_absent"
+fqn = "tests.test_repo_storage.test_missing_store_key_is_simply_absent"
+name = "test_missing_store_key_is_simply_absent"
+kind = "function"
+lang = "python"
+content_hash = "f2790dcd5dd01658"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_missing_store_key_is_simply_absent(tmp_path):"
+description = ""
+schema = 4
+line = 70
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "find [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "absent",
+  "is",
+  "key",
+  "missing",
+  "repo",
+  "simply",
+  "storage",
+  "store",
+  "test",
+  "test_missing_store_key_is_simply_absent",
+  "tests",
+  "tests.test_repo_storage.test_missing_store_key_is_simply_absent",
+]

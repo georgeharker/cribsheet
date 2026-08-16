@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_code_cache.py#test_spurious_delete_reindexes_instead_of_dropping"
+fqn = "tests.test_code_cache.test_spurious_delete_reindexes_instead_of_dropping"
+name = "test_spurious_delete_reindexes_instead_of_dropping"
+kind = "function"
+lang = "python"
+content_hash = "9586c9f715147b6a"
+file = "tests/test_code_cache.py"
+file_hash = "44f8f848adca2094"
+signature = "def test_spurious_delete_reindexes_instead_of_dropping(crib, tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 138
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_cache",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_code_cache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "code",
+  "delete",
+  "dropping",
+  "instead",
+  "of",
+  "reindexes",
+  "spurious",
+  "test",
+  "test_spurious_delete_reindexes_instead_of_dropping",
+  "tests",
+  "tests.test_code_cache.test_spurious_delete_reindexes_instead_of_dropping",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "crib/codeindex.py#_SCALARS"
+fqn = "crib.codeindex._SCALARS"
+name = "_SCALARS"
+kind = "constant"
+lang = "python"
+content_hash = "0fbadfd29fa55622"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "_SCALARS = (\"symbol_ref\", \"fqn\", \"name\", \"kind\", \"lang\", \"content_hash\","
+description = ""
+schema = 4
+line = 1462
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_render [crib/codeindex.py]",
+  "test_a_rendered_entry_round_trips_every_field [tests/test_symbol_shape.py]",
+  "test_the_persist_allow_list_covers_every_declared_field [tests/test_symbol_shape.py]",
+]
+name_terms = [
+  "_SCALARS",
+  "codeindex",
+  "crib",
+  "crib.codeindex._SCALARS",
+  "scalars",
+]

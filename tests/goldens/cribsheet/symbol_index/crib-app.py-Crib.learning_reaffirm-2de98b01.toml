@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.learning_reaffirm"
+fqn = "crib.app.Crib.learning_reaffirm"
+name = "learning_reaffirm"
+kind = "method"
+lang = "python"
+content_hash = "42489ad8dbee9809"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def learning_reaffirm(self, symbol: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 2098
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "reaffirm [crib/learnings.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "learning_reaffirm [crib/server.py]",
+]
+references = [
+  "learning_reaffirm [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.learning_reaffirm",
+  "learning",
+  "learning_reaffirm",
+  "reaffirm",
+]

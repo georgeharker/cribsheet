@@ -1,0 +1,38 @@
+symbol_ref = "crib/server.py#build_server.project_adopt"
+fqn = "crib.server.build_server.project_adopt"
+name = "project_adopt"
+kind = "function"
+lang = "python"
+content_hash = "864a359267dc0651"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"source\")"
+description = ""
+schema = 4
+line = 690
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "_cwd [crib/server.py]",
+  "crib_tool [crib/server.py]",
+  "project_adopt [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "adopt",
+  "build",
+  "crib",
+  "crib.server.build_server.project_adopt",
+  "project",
+  "project_adopt",
+  "server",
+]

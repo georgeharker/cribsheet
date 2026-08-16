@@ -1,0 +1,74 @@
+symbol_ref = "crib/store.py#InMemoryStore"
+fqn = "crib.store.InMemoryStore"
+name = "InMemoryStore"
+kind = "class"
+lang = "python"
+content_hash = "40f2fe6db86e4387"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "class InMemoryStore:"
+description = ""
+schema = 4
+line = 90
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "store",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "JsonStore [crib/store.py]",
+  "crib [tests/test_code_attribution.py]",
+  "crib [tests/test_code_cache.py]",
+  "crib [tests/test_code_graph.py]",
+  "crib [tests/test_code_integrity.py]",
+  "crib [tests/test_code_learnings.py]",
+  "crib [tests/test_core_loop.py]",
+  "crib [tests/test_curation.py]",
+  "crib [tests/test_describe_queue.py]",
+  "crib [tests/test_design_sources.py]",
+  "crib [tests/test_designs.py]",
+  "crib [tests/test_dim_recovery.py]",
+  "crib [tests/test_elaborate.py]",
+  "crib [tests/test_forget.py]",
+  "crib [tests/test_grammar_enum.py]",
+  "crib [tests/test_import.py]",
+  "crib [tests/test_insitu_docs.py]",
+  "crib [tests/test_keyword_refresh.py]",
+  "crib [tests/test_lexical_cache.py]",
+  "crib [tests/test_line_map.py]",
+  "crib [tests/test_malformed_notes.py]",
+  "crib [tests/test_notestore_snapshot.py]",
+  "crib [tests/test_path_confinement.py]",
+  "crib [tests/test_pillar_stores.py]",
+  "crib [tests/test_project_resolution.py]",
+  "crib [tests/test_reconcile.py]",
+  "crib [tests/test_refs.py]",
+  "crib [tests/test_repo_storage.py]",
+  "crib [tests/test_rerank.py]",
+  "crib [tests/test_server_progress.py]",
+  "crib [tests/test_status.py]",
+  "crib [tests/test_store_migration.py]",
+  "crib [tests/test_surface_parity.py]",
+  "crib [tests/test_symbol_convert.py]",
+  "crib [tests/test_symbol_migration.py]",
+  "env [tests/test_claude_memory.py]",
+  "fresh [tests/test_import.py]",
+  "index [scripts/snapshot_harness.py]",
+  "slow_crib [tests/test_loop_responsiveness.py]",
+  "test_an_unanchored_read_refuses_with_the_recovery_in_the_message [tests/test_session.py]",
+  "test_lexical_cache_survives_invalidation_mid_read [tests/test_loop_responsiveness.py]",
+  "test_watcher_indexes_an_edit_in_a_pillar_sibling [tests/test_watcher.py]",
+  "test_watcher_indexes_external_edit [tests/test_watcher.py]",
+]
+name_terms = [
+  "InMemoryStore",
+  "crib",
+  "crib.store.InMemoryStore",
+  "in",
+  "memory",
+  "store",
+]

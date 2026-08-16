@@ -1,0 +1,32 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#CombinerRuntime"
+fqn = "combiner.mcp_combiner.runtime.CombinerRuntime"
+name = "CombinerRuntime"
+kind = "class"
+lang = "python"
+content_hash = "8adb53b47f415fbb"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 258
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "RUNTIME [combiner/mcp_combiner/runtime.py]",
+]
+name_terms = [
+  "CombinerRuntime",
+  "combiner",
+  "combiner.mcp_combiner.runtime.CombinerRuntime",
+  "mcp",
+  "runtime",
+]

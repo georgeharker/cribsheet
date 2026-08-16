@@ -1,0 +1,38 @@
+symbol_ref = "crib/server.py#build_server._user_facing"
+fqn = "crib.server.build_server._user_facing"
+name = "_user_facing"
+kind = "function"
+lang = "python"
+content_hash = "3442e179af62f421"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def _user_facing(fn):"
+description = ""
+schema = 4
+line = 379
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "register [crib/server.py]",
+]
+references = [
+  "register [crib/server.py]",
+]
+name_terms = [
+  "_user_facing",
+  "build",
+  "crib",
+  "crib.server.build_server._user_facing",
+  "facing",
+  "server",
+  "user",
+]

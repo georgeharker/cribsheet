@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_code_attribution.py#test_same_named_methods_get_their_own_descriptions"
+fqn = "tests.test_code_attribution.test_same_named_methods_get_their_own_descriptions"
+name = "test_same_named_methods_get_their_own_descriptions"
+kind = "function"
+lang = "python"
+content_hash = "a314a8c9c2969ae5"
+file = "tests/test_code_attribution.py"
+file_hash = "ff3c29a685f6f6d7"
+signature = "def test_same_named_methods_get_their_own_descriptions():"
+description = ""
+schema = 4
+line = 61
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_attribution",
+]
+symbol_was = []
+calls = [
+  "_rows_to_meta [crib/codeindex.py]",
+  "match_meta [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "attribution",
+  "code",
+  "descriptions",
+  "get",
+  "methods",
+  "named",
+  "own",
+  "same",
+  "test",
+  "test_same_named_methods_get_their_own_descriptions",
+  "tests",
+  "tests.test_code_attribution.test_same_named_methods_get_their_own_descriptions",
+  "their",
+]

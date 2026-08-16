@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.plan_list"
+fqn = "crib.app.Crib.plan_list"
+name = "plan_list"
+kind = "method"
+lang = "python"
+content_hash = "8daa042c924381a3"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def plan_list(self, all: bool = False, project: str | None = None,"
+description = ""
+schema = 4
+line = 2325
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "plan_list [crib/designs.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "plan_list [crib/server.py]",
+]
+references = [
+  "plan_list [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.plan_list",
+  "list",
+  "plan",
+  "plan_list",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "crib/claudemem.py#MemoryBindings.all"
+fqn = "crib.claudemem.MemoryBindings.all"
+name = "all"
+kind = "method"
+lang = "python"
+content_hash = "d076a967e3daa34c"
+file = "crib/claudemem.py"
+file_hash = "f5d989e8add2ed0e"
+signature = "def all(self) -> list[dict[str, str]]:"
+description = ""
+schema = 4
+line = 85
+mtime = 1782762348000000000
+container = [
+  "MemoryBindings",
+]
+scope = [
+  "crib",
+  "claudemem",
+  "MemoryBindings",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_resolve_dirs [crib/memmirror.py]",
+  "catch_up [crib/memmirror.py]",
+  "upsert [crib/claudemem.py]",
+]
+references = [
+  "_resolve_dirs [crib/memmirror.py]",
+  "catch_up [crib/memmirror.py]",
+  "upsert [crib/claudemem.py]",
+]
+name_terms = [
+  "all",
+  "bindings",
+  "claudemem",
+  "crib",
+  "crib.claudemem.MemoryBindings.all",
+  "memory",
+]

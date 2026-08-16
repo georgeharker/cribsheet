@@ -1,0 +1,49 @@
+symbol_ref = "crib/retrieve.py#reciprocal_rank_fusion"
+fqn = "crib.retrieve.reciprocal_rank_fusion"
+name = "reciprocal_rank_fusion"
+kind = "function"
+lang = "python"
+content_hash = "d081b98b52b9acca"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "def reciprocal_rank_fusion(rankings: list[list[str]], k: int = 60,"
+description = ""
+schema = 4
+line = 162
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "retrieve",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "c_3rrf [scripts/eval_kw.py]",
+  "fn [scripts/eval_fusion.py]",
+  "fn [scripts/eval_kw.py]",
+  "lookup [crib/codequery.py]",
+  "main [scripts/eval_hybrid.py]",
+  "main [scripts/eval_rigor.py]",
+  "test_rrf_rewards_agreement_across_rankings [tests/test_retrieve.py]",
+  "test_rrf_union_includes_all_ids [tests/test_retrieve.py]",
+]
+references = [
+  "c_3rrf [scripts/eval_kw.py]",
+  "fn [scripts/eval_fusion.py]",
+  "fn [scripts/eval_kw.py]",
+  "lookup [crib/codequery.py]",
+  "main [scripts/eval_hybrid.py]",
+  "main [scripts/eval_rigor.py]",
+  "test_rrf_rewards_agreement_across_rankings [tests/test_retrieve.py]",
+  "test_rrf_union_includes_all_ids [tests/test_retrieve.py]",
+]
+name_terms = [
+  "crib",
+  "crib.retrieve.reciprocal_rank_fusion",
+  "fusion",
+  "rank",
+  "reciprocal",
+  "reciprocal_rank_fusion",
+  "retrieve",
+]

@@ -1,0 +1,34 @@
+symbol_ref = "crib/embed.py#Embedder.dim"
+fqn = "crib.embed.Embedder.dim"
+name = "dim"
+kind = "field"
+lang = "python"
+content_hash = "360d6ad2c591ac02"
+file = "crib/embed.py"
+file_hash = "46323c76e4ac82a3"
+signature = "dim: int"
+description = ""
+schema = 4
+line = 20
+mtime = 1785963011000000000
+container = [
+  "Embedder",
+]
+scope = [
+  "crib",
+  "embed",
+  "Embedder",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_maybe_recreate_for_dim [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.embed.Embedder.dim",
+  "dim",
+  "embed",
+  "embedder",
+]

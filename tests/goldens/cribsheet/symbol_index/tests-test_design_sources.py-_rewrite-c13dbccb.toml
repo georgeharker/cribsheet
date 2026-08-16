@@ -1,0 +1,51 @@
+symbol_ref = "tests/test_design_sources.py#_rewrite"
+fqn = "tests.test_design_sources._rewrite"
+name = "_rewrite"
+kind = "function"
+lang = "python"
+content_hash = "4a9ee27dd92e56c9"
+file = "tests/test_design_sources.py"
+file_hash = "f89b5a94b236ce9c"
+signature = "def _rewrite(crib, old: str, new: str, relpath: str = \"spec.md\") -> None:"
+description = ""
+schema = 4
+line = 63
+mtime = 1786137963000000000
+container = []
+scope = [
+  "tests",
+  "test_design_sources",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_design_sources.py]",
+]
+called_by = [
+  "test_a_changed_source_never_blocks_work [tests/test_design_sources.py]",
+  "test_a_finished_item_flags_revisit_rather_than_re_opening [tests/test_design_sources.py]",
+  "test_a_headingless_doc_is_its_own_section [tests/test_design_sources.py]",
+  "test_a_renamed_heading_is_its_own_change_kind [tests/test_design_sources.py]",
+  "test_a_source_checks_its_own_section_only [tests/test_design_sources.py]",
+  "test_promote_seeds_checked_fresh_and_refuses_a_non_proposal [tests/test_design_sources.py]",
+  "test_reaffirm_does_not_paper_over_a_vanished_section [tests/test_design_sources.py]",
+  "test_reaffirm_re_records_source_hashes_alongside_dep_hashes [tests/test_design_sources.py]",
+]
+references = [
+  "test_a_changed_source_never_blocks_work [tests/test_design_sources.py]",
+  "test_a_finished_item_flags_revisit_rather_than_re_opening [tests/test_design_sources.py]",
+  "test_a_headingless_doc_is_its_own_section [tests/test_design_sources.py]",
+  "test_a_renamed_heading_is_its_own_change_kind [tests/test_design_sources.py]",
+  "test_a_source_checks_its_own_section_only [tests/test_design_sources.py]",
+  "test_promote_seeds_checked_fresh_and_refuses_a_non_proposal [tests/test_design_sources.py]",
+  "test_reaffirm_does_not_paper_over_a_vanished_section [tests/test_design_sources.py]",
+  "test_reaffirm_re_records_source_hashes_alongside_dep_hashes [tests/test_design_sources.py]",
+]
+name_terms = [
+  "_rewrite",
+  "design",
+  "rewrite",
+  "sources",
+  "test",
+  "tests",
+  "tests.test_design_sources._rewrite",
+]

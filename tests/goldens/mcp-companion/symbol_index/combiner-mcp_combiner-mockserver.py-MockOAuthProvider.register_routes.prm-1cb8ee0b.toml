@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthProvider.register_routes.prm"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthProvider.register_routes.prm"
+name = "prm"
+kind = "function"
+lang = "python"
+content_hash = "070317c113990d0e"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "async def prm(request: Request) -> JSONResponse:"
+description = ""
+schema = 4
+line = 760
+mtime = 1783622326000000000
+container = [
+  "MockOAuthProvider",
+  "register_routes",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthProvider",
+  "register_routes",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "register_routes [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthProvider.register_routes.prm",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "prm",
+  "provider",
+  "register",
+  "routes",
+]

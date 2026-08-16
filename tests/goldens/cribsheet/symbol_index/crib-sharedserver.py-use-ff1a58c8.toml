@@ -1,0 +1,37 @@
+symbol_ref = "crib/sharedserver.py#use"
+fqn = "crib.sharedserver.use"
+name = "use"
+kind = "function"
+lang = "python"
+content_hash = "7b421d230dc5ba31"
+file = "crib/sharedserver.py"
+file_hash = "ec64a3161821f01c"
+signature = "def use(name: str, command: list[str], grace_period: str | None = None) -> None:"
+description = ""
+schema = 4
+line = 24
+mtime = 1782609751000000000
+container = []
+scope = [
+  "crib",
+  "sharedserver",
+]
+symbol_was = []
+calls = [
+  "SharedServerError [crib/sharedserver.py]",
+  "available [crib/sharedserver.py]",
+]
+called_by = [
+  "__enter__ [crib/client.py]",
+  "_build_shared_chroma [crib/app.py]",
+]
+references = [
+  "__enter__ [crib/client.py]",
+  "_build_shared_chroma [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.sharedserver.use",
+  "sharedserver",
+  "use",
+]

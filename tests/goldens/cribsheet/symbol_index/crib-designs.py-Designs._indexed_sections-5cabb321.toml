@@ -1,0 +1,41 @@
+symbol_ref = "crib/designs.py#Designs._indexed_sections"
+fqn = "crib.designs.Designs._indexed_sections"
+name = "_indexed_sections"
+kind = "method"
+lang = "python"
+content_hash = "355f7e9def91d286"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _indexed_sections(self, proj: str, relpath: str) -> dict[str, str]:"
+description = ""
+schema = 4
+line = 537
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "get_meta [crib/store.py]",
+  "section_key [crib/chunk.py]",
+  "split_docref [crib/designs.py]",
+]
+called_by = [
+  "_doc_sections [crib/designs.py]",
+]
+references = [
+  "_doc_sections [crib/designs.py]",
+]
+name_terms = [
+  "_indexed_sections",
+  "crib",
+  "crib.designs.Designs._indexed_sections",
+  "designs",
+  "indexed",
+  "sections",
+]

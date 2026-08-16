@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/config.py#PermissionPolicy.elicit"
+fqn = "combiner.mcp_combiner.config.PermissionPolicy.elicit"
+name = "elicit"
+kind = "field"
+lang = "python"
+content_hash = "10f63b3e03235b26"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "elicit: list[str] = Field(default_factory=list)"
+description = ""
+schema = 4
+line = 161
+mtime = 1783633313000000000
+container = [
+  "PermissionPolicy",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "PermissionPolicy",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "test_parses_fields [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.PermissionPolicy.elicit",
+  "config",
+  "elicit",
+  "mcp",
+  "permission",
+  "policy",
+]

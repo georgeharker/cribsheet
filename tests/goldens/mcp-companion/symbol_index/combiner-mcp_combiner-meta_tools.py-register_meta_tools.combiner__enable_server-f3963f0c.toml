@@ -1,0 +1,49 @@
+symbol_ref = "combiner/mcp_combiner/meta_tools.py#register_meta_tools.combiner__enable_server"
+fqn = "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__enable_server"
+name = "combiner__enable_server"
+kind = "function"
+lang = "python"
+content_hash = "79db37b7850d388f"
+file = "combiner/mcp_combiner/meta_tools.py"
+file_hash = "8eb0757202928f82"
+signature = "@combiner.tool()"
+description = ""
+schema = 4
+line = 38
+mtime = 1784493613000000000
+container = [
+  "register_meta_tools",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "meta_tools",
+  "register_meta_tools",
+]
+symbol_was = []
+calls = [
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "connect [combiner/mcp_combiner/connections.py]",
+  "ensure_started [combiner/mcp_combiner/sharedserver.py]",
+  "has_connection [combiner/mcp_combiner/connections.py]",
+  "invalidate_tool_cache [combiner/mcp_combiner/toolcache.py]",
+  "is_auth_failed [combiner/mcp_combiner/connections.py]",
+  "is_http_server [combiner/mcp_combiner/connections.py]",
+  "mount_server_provider [combiner/mcp_combiner/mounts.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "register [combiner/mcp_combiner/connections.py]",
+  "reset_auth_failure [combiner/mcp_combiner/connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__enable_server",
+  "combiner__enable_server",
+  "enable",
+  "mcp",
+  "meta",
+  "register",
+  "server",
+  "tools",
+]

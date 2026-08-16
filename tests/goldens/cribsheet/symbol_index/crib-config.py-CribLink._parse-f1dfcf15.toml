@@ -1,0 +1,40 @@
+symbol_ref = "crib/config.py#CribLink._parse"
+fqn = "crib.config.CribLink._parse"
+name = "_parse"
+kind = "method"
+lang = "python"
+content_hash = "8b58839ea4fcec66"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "@classmethod"
+description = ""
+schema = 4
+line = 439
+mtime = 1786564832000000000
+container = [
+  "CribLink",
+]
+scope = [
+  "crib",
+  "config",
+  "CribLink",
+]
+symbol_was = []
+calls = [
+  "_as_list [crib/config.py]",
+  "_warn [crib/config.py]",
+]
+called_by = [
+  "find [crib/config.py]",
+]
+references = [
+  "find [crib/config.py]",
+]
+name_terms = [
+  "_parse",
+  "config",
+  "crib",
+  "crib.config.CribLink._parse",
+  "link",
+  "parse",
+]

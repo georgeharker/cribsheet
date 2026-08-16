@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#_find_server_for_tool"
+fqn = "combiner.mcp_combiner.toolcache._find_server_for_tool"
+name = "_find_server_for_tool"
+kind = "function"
+lang = "python"
+content_hash = "28a8d0050fa88c67"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "def _find_server_for_tool(tool_name: str) -> tuple[str | None, str]:"
+description = ""
+schema = 4
+line = 124
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_apply_session_filter [combiner/mcp_combiner/middleware.py]",
+  "_filter_tools [combiner/mcp_combiner/toolcache.py]",
+  "_namespace_app_meta [combiner/mcp_combiner/middleware.py]",
+  "_partition_by_server [combiner/mcp_combiner/toolcache.py]",
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+]
+references = [
+  "_apply_session_filter [combiner/mcp_combiner/middleware.py]",
+  "_filter_tools [combiner/mcp_combiner/toolcache.py]",
+  "_namespace_app_meta [combiner/mcp_combiner/middleware.py]",
+  "_partition_by_server [combiner/mcp_combiner/toolcache.py]",
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+]
+name_terms = [
+  "_find_server_for_tool",
+  "combiner",
+  "combiner.mcp_combiner.toolcache._find_server_for_tool",
+  "find",
+  "for",
+  "mcp",
+  "server",
+  "tool",
+  "toolcache",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "scripts/eval_retrieval.py#_run_lift.agg"
+fqn = "scripts.eval_retrieval._run_lift.agg"
+name = "agg"
+kind = "function"
+lang = "python"
+content_hash = "ccd32b066d9d1d32"
+file = "scripts/eval_retrieval.py"
+file_hash = "fbbe367f0bc2d09b"
+signature = "def agg(rows: list[dict[str, Any]]) -> tuple[float, float]:"
+description = ""
+schema = 4
+line = 201
+mtime = 1786044759000000000
+container = [
+  "_run_lift",
+]
+scope = [
+  "scripts",
+  "eval_retrieval",
+  "_run_lift",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_run_lift [scripts/eval_retrieval.py]",
+]
+references = [
+  "_run_lift [scripts/eval_retrieval.py]",
+]
+name_terms = [
+  "agg",
+  "eval",
+  "lift",
+  "retrieval",
+  "run",
+  "scripts",
+  "scripts.eval_retrieval._run_lift.agg",
+]

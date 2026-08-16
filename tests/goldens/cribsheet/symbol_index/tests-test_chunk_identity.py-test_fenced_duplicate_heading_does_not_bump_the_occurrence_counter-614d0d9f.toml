@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_chunk_identity.py#test_fenced_duplicate_heading_does_not_bump_the_occurrence_counter"
+fqn = "tests.test_chunk_identity.test_fenced_duplicate_heading_does_not_bump_the_occurrence_counter"
+name = "test_fenced_duplicate_heading_does_not_bump_the_occurrence_counter"
+kind = "function"
+lang = "python"
+content_hash = "089903a831e8bb78"
+file = "tests/test_chunk_identity.py"
+file_hash = "0afd98c1ecf1279e"
+signature = "def test_fenced_duplicate_heading_does_not_bump_the_occurrence_counter():"
+description = ""
+schema = 4
+line = 160
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_chunk_identity",
+]
+symbol_was = []
+calls = [
+  "_split_sections [crib/chunk.py]",
+  "section_line_map [crib/chunk.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "bump",
+  "chunk",
+  "counter",
+  "does",
+  "duplicate",
+  "fenced",
+  "heading",
+  "identity",
+  "not",
+  "occurrence",
+  "test",
+  "test_fenced_duplicate_heading_does_not_bump_the_occurrence_counter",
+  "tests",
+  "tests.test_chunk_identity.test_fenced_duplicate_heading_does_not_bump_the_occurrence_counter",
+  "the",
+]

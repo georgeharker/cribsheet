@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockState.start_time"
+fqn = "combiner.mcp_combiner.mockserver.MockState.start_time"
+name = "start_time"
+kind = "field"
+lang = "python"
+content_hash = "5e8d5a70445f9683"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "start_time: float = field(default_factory=time.time)"
+description = ""
+schema = 4
+line = 155
+mtime = 1783622326000000000
+container = [
+  "MockState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockState",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "snapshot [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockState.start_time",
+  "mcp",
+  "mock",
+  "mockserver",
+  "start",
+  "start_time",
+  "state",
+  "time",
+]

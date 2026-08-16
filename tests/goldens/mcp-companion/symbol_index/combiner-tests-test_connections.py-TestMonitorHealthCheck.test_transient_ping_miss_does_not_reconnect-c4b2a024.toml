@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_connections.py#TestMonitorHealthCheck.test_transient_ping_miss_does_not_reconnect"
+fqn = "combiner.tests.test_connections.TestMonitorHealthCheck.test_transient_ping_miss_does_not_reconnect"
+name = "test_transient_ping_miss_does_not_reconnect"
+kind = "method"
+lang = "python"
+content_hash = "8468c4c0604e98b7"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def test_transient_ping_miss_does_not_reconnect(self, monkeypatch):"
+description = ""
+schema = 4
+line = 263
+mtime = 1784493613000000000
+container = [
+  "TestMonitorHealthCheck",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestMonitorHealthCheck",
+]
+symbol_was = []
+calls = [
+  "ConnectionManager [combiner/mcp_combiner/connections.py]",
+  "_monitor [combiner/mcp_combiner/connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "check",
+  "combiner",
+  "combiner.tests.test_connections.TestMonitorHealthCheck.test_transient_ping_miss_does_not_reconnect",
+  "connections",
+  "does",
+  "health",
+  "miss",
+  "monitor",
+  "not",
+  "ping",
+  "reconnect",
+  "test",
+  "test_transient_ping_miss_does_not_reconnect",
+  "tests",
+  "transient",
+]

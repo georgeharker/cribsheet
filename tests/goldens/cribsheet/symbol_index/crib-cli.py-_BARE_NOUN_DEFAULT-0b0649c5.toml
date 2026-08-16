@@ -1,0 +1,33 @@
+symbol_ref = "crib/cli.py#_BARE_NOUN_DEFAULT"
+fqn = "crib.cli._BARE_NOUN_DEFAULT"
+name = "_BARE_NOUN_DEFAULT"
+kind = "constant"
+lang = "python"
+content_hash = "e665d6e1fcbbf88b"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "_BARE_NOUN_DEFAULT = {\"project\": \"status\", \"design\": \"list\", \"plan\": \"list\"}"
+description = ""
+schema = 4
+line = 1897
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_dispatch [crib/cli.py]",
+]
+name_terms = [
+  "_BARE_NOUN_DEFAULT",
+  "bare",
+  "cli",
+  "crib",
+  "crib.cli._BARE_NOUN_DEFAULT",
+  "default",
+  "noun",
+]

@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestResponses.test_scripted_fifo_then_template_fallback"
+fqn = "combiner.tests.test_mockserver.TestResponses.test_scripted_fifo_then_template_fallback"
+name = "test_scripted_fifo_then_template_fallback"
+kind = "method"
+lang = "python"
+content_hash = "9b6f4c54d3e535c4"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "async def test_scripted_fifo_then_template_fallback(self) -> None:"
+description = ""
+schema = 4
+line = 102
+mtime = 1783534978000000000
+container = [
+  "TestResponses",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+  "TestResponses",
+]
+symbol_was = []
+calls = [
+  "MockServer [combiner/mcp_combiner/mockserver.py]",
+  "_spec [combiner/tests/test_mockserver.py]",
+  "_text [combiner/tests/test_mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_mockserver.TestResponses.test_scripted_fifo_then_template_fallback",
+  "fallback",
+  "fifo",
+  "mockserver",
+  "responses",
+  "scripted",
+  "template",
+  "test",
+  "test_scripted_fifo_then_template_fallback",
+  "tests",
+  "then",
+]

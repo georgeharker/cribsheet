@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_watcher.py#test_dispatch_tasks_are_held_and_failures_logged"
+fqn = "tests.test_watcher.test_dispatch_tasks_are_held_and_failures_logged"
+name = "test_dispatch_tasks_are_held_and_failures_logged"
+kind = "function"
+lang = "python"
+content_hash = "da7157d088b607a8"
+file = "tests/test_watcher.py"
+file_hash = "f95c6316824837fd"
+signature = "def test_dispatch_tasks_are_held_and_failures_logged(capsys):"
+description = ""
+schema = 4
+line = 204
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_watcher",
+]
+symbol_was = []
+calls = [
+  "scenario [tests/test_watcher.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "are",
+  "dispatch",
+  "failures",
+  "held",
+  "logged",
+  "tasks",
+  "test",
+  "test_dispatch_tasks_are_held_and_failures_logged",
+  "tests",
+  "tests.test_watcher.test_dispatch_tasks_are_held_and_failures_logged",
+  "watcher",
+]

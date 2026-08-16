@@ -1,0 +1,46 @@
+symbol_ref = "tests/test_code_cache.py#test_code_watcher_coalesces_burst_into_one_batch.scenario.on_change"
+fqn = "tests.test_code_cache.test_code_watcher_coalesces_burst_into_one_batch.scenario.on_change"
+name = "on_change"
+kind = "function"
+lang = "python"
+content_hash = "ec7d13c7c681dc31"
+file = "tests/test_code_cache.py"
+file_hash = "44f8f848adca2094"
+signature = "async def on_change(project, changes):"
+description = ""
+schema = 4
+line = 202
+mtime = 1786664729000000000
+container = [
+  "test_code_watcher_coalesces_burst_into_one_batch",
+  "scenario",
+]
+scope = [
+  "tests",
+  "test_code_cache",
+  "test_code_watcher_coalesces_burst_into_one_batch",
+  "scenario",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "scenario [tests/test_code_cache.py]",
+]
+name_terms = [
+  "batch",
+  "burst",
+  "cache",
+  "change",
+  "coalesces",
+  "code",
+  "into",
+  "on",
+  "on_change",
+  "one",
+  "scenario",
+  "test",
+  "tests",
+  "tests.test_code_cache.test_code_watcher_coalesces_burst_into_one_batch.scenario.on_change",
+  "watcher",
+]

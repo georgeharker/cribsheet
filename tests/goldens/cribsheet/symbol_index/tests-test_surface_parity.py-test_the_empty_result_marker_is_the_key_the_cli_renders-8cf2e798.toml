@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_surface_parity.py#test_the_empty_result_marker_is_the_key_the_cli_renders"
+fqn = "tests.test_surface_parity.test_the_empty_result_marker_is_the_key_the_cli_renders"
+name = "test_the_empty_result_marker_is_the_key_the_cli_renders"
+kind = "function"
+lang = "python"
+content_hash = "0f04045b871a5eb7"
+file = "tests/test_surface_parity.py"
+file_hash = "0c4fc72b5f441359"
+signature = "def test_the_empty_result_marker_is_the_key_the_cli_renders(capsys):"
+description = ""
+schema = 4
+line = 233
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_surface_parity",
+]
+symbol_was = []
+calls = [
+  "ProjectResolution [crib/session.py]",
+  "_echo_list [crib/server.py]",
+  "_emit_code [crib/cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cli",
+  "empty",
+  "is",
+  "key",
+  "marker",
+  "parity",
+  "renders",
+  "result",
+  "surface",
+  "test",
+  "test_the_empty_result_marker_is_the_key_the_cli_renders",
+  "tests",
+  "tests.test_surface_parity.test_the_empty_result_marker_is_the_key_the_cli_renders",
+  "the",
+]

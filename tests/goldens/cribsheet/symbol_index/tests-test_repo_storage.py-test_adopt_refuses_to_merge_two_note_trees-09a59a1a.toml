@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_repo_storage.py#test_adopt_refuses_to_merge_two_note_trees"
+fqn = "tests.test_repo_storage.test_adopt_refuses_to_merge_two_note_trees"
+name = "test_adopt_refuses_to_merge_two_note_trees"
+kind = "function"
+lang = "python"
+content_hash = "594915e2f4939c96"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_adopt_refuses_to_merge_two_note_trees(crib, tmp_path):"
+description = ""
+schema = 4
+line = 224
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "repo_with_store [tests/test_repo_storage.py]",
+  "run [tests/test_repo_storage.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "adopt",
+  "merge",
+  "note",
+  "refuses",
+  "repo",
+  "storage",
+  "test",
+  "test_adopt_refuses_to_merge_two_note_trees",
+  "tests",
+  "tests.test_repo_storage.test_adopt_refuses_to_merge_two_note_trees",
+  "to",
+  "trees",
+  "two",
+]

@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_merge.py#test_frontmatter_merge_takes_changed_side"
+fqn = "tests.test_merge.test_frontmatter_merge_takes_changed_side"
+name = "test_frontmatter_merge_takes_changed_side"
+kind = "function"
+lang = "python"
+content_hash = "81f6b068248e935c"
+file = "tests/test_merge.py"
+file_hash = "3726dccae7cf8779"
+signature = "def test_frontmatter_merge_takes_changed_side():"
+description = ""
+schema = 4
+line = 28
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_merge",
+]
+symbol_was = []
+calls = [
+  "merge_frontmatter [crib/merge.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "changed",
+  "frontmatter",
+  "merge",
+  "side",
+  "takes",
+  "test",
+  "test_frontmatter_merge_takes_changed_side",
+  "tests",
+  "tests.test_merge.test_frontmatter_merge_takes_changed_side",
+]

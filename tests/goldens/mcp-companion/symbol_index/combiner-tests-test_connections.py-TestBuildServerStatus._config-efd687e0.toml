@@ -1,0 +1,52 @@
+symbol_ref = "combiner/tests/test_connections.py#TestBuildServerStatus._config"
+fqn = "combiner.tests.test_connections.TestBuildServerStatus._config"
+name = "_config"
+kind = "method"
+lang = "python"
+content_hash = "5d3f98ba97b4b7ce"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "def _config(self):"
+description = ""
+schema = 4
+line = 575
+mtime = 1784493613000000000
+container = [
+  "TestBuildServerStatus",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestBuildServerStatus",
+]
+symbol_was = []
+calls = [
+  "load [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "test_call_failure_overrides_optimistic_http_ready [combiner/tests/test_connections.py]",
+  "test_disabled_server_reports_disabled [combiner/tests/test_connections.py]",
+  "test_http_server_reflects_connection_lifecycle [combiner/tests/test_connections.py]",
+  "test_stdio_crash_reports_disconnected [combiner/tests/test_connections.py]",
+  "test_stdio_server_tristate [combiner/tests/test_connections.py]",
+]
+references = [
+  "test_call_failure_overrides_optimistic_http_ready [combiner/tests/test_connections.py]",
+  "test_disabled_server_reports_disabled [combiner/tests/test_connections.py]",
+  "test_http_server_reflects_connection_lifecycle [combiner/tests/test_connections.py]",
+  "test_stdio_crash_reports_disconnected [combiner/tests/test_connections.py]",
+  "test_stdio_server_tristate [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "_config",
+  "build",
+  "combiner",
+  "combiner.tests.test_connections.TestBuildServerStatus._config",
+  "config",
+  "connections",
+  "server",
+  "status",
+  "test",
+  "tests",
+]

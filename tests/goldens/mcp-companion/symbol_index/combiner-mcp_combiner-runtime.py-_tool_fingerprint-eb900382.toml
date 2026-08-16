@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#_tool_fingerprint"
+fqn = "combiner.mcp_combiner.runtime._tool_fingerprint"
+name = "_tool_fingerprint"
+kind = "function"
+lang = "python"
+content_hash = "255b770a16e55f5e"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def _tool_fingerprint(tool: \"Tool\") -> str:"
+description = ""
+schema = 4
+line = 143
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "store_slice [combiner/mcp_combiner/runtime.py]",
+]
+references = [
+  "store_slice [combiner/mcp_combiner/runtime.py]",
+]
+name_terms = [
+  "_tool_fingerprint",
+  "combiner",
+  "combiner.mcp_combiner.runtime._tool_fingerprint",
+  "fingerprint",
+  "mcp",
+  "runtime",
+  "tool",
+]

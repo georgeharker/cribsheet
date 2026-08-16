@@ -1,0 +1,43 @@
+symbol_ref = "crib/notestore.py#NoteStore.notes_root"
+fqn = "crib.notestore.NoteStore.notes_root"
+name = "notes_root"
+kind = "method"
+lang = "python"
+content_hash = "20959218f600d3ca"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "def notes_root(self, project: str) -> Path:"
+description = ""
+schema = 4
+line = 94
+mtime = 1786564832000000000
+container = [
+  "NoteStore",
+]
+scope = [
+  "crib",
+  "notestore",
+  "NoteStore",
+]
+symbol_was = []
+calls = [
+  "root [crib/notestore.py]",
+]
+called_by = [
+  "_note_dep_ids [crib/designs.py]",
+  "move [crib/notestore.py]",
+]
+references = [
+  "_note_dep_ids [crib/designs.py]",
+  "move [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.NoteStore.notes_root",
+  "note",
+  "notes",
+  "notes_root",
+  "notestore",
+  "root",
+  "store",
+]

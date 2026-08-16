@@ -1,0 +1,44 @@
+symbol_ref = "crib/designs.py#Designs._store"
+fqn = "crib.designs.Designs._store"
+name = "_store"
+kind = "method"
+lang = "python"
+content_hash = "062e7da1c025d79d"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _store(self, kind: str) -> NoteStore:"
+description = ""
+schema = 4
+line = 401
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_add [crib/designs.py]",
+  "_forget [crib/designs.py]",
+  "_note [crib/designs.py]",
+  "_save [crib/designs.py]",
+  "_unique_relpath [crib/designs.py]",
+]
+references = [
+  "_add [crib/designs.py]",
+  "_forget [crib/designs.py]",
+  "_note [crib/designs.py]",
+  "_save [crib/designs.py]",
+  "_unique_relpath [crib/designs.py]",
+]
+name_terms = [
+  "_store",
+  "crib",
+  "crib.designs.Designs._store",
+  "designs",
+  "store",
+]

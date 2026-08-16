@@ -1,0 +1,55 @@
+symbol_ref = "combiner/mcp_combiner/notifications.py#attach_resource_forwarding"
+fqn = "combiner.mcp_combiner.notifications.attach_resource_forwarding"
+name = "attach_resource_forwarding"
+kind = "function"
+lang = "python"
+content_hash = "e80dc04b0ba2947b"
+file = "combiner/mcp_combiner/notifications.py"
+file_hash = "3a02dac6027ca8f5"
+signature = "def attach_resource_forwarding("
+description = ""
+schema = 4
+line = 170
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "notifications",
+]
+symbol_was = []
+calls = [
+  "_ResourceNotifyHandler [combiner/mcp_combiner/notifications.py]",
+]
+called_by = [
+  "_finish [combiner/mcp_combiner/notifications.py]",
+  "_make_disconnected_client [combiner/mcp_combiner/connections.py]",
+  "test_fail_loud_when_session_kwargs_missing [combiner/tests/test_notifications.py]",
+  "test_idempotent_on_cache_hit [combiner/tests/test_notifications.py]",
+  "test_installs_our_handler [combiner/tests/test_notifications.py]",
+  "test_reattach_over_cloned_plain_handler [combiner/tests/test_notifications.py]",
+  "test_survives_real_client_clone [combiner/tests/test_notifications.py]",
+  "test_task_status_still_routes_to_client [combiner/tests/test_notifications.py]",
+  "wrapped [combiner/mcp_combiner/notifications.py]",
+]
+references = [
+  "_finish [combiner/mcp_combiner/notifications.py]",
+  "_make_disconnected_client [combiner/mcp_combiner/connections.py]",
+  "test_fail_loud_when_session_kwargs_missing [combiner/tests/test_notifications.py]",
+  "test_idempotent_on_cache_hit [combiner/tests/test_notifications.py]",
+  "test_installs_our_handler [combiner/tests/test_notifications.py]",
+  "test_reattach_over_cloned_plain_handler [combiner/tests/test_notifications.py]",
+  "test_survives_real_client_clone [combiner/tests/test_notifications.py]",
+  "test_task_status_still_routes_to_client [combiner/tests/test_notifications.py]",
+  "wrapped [combiner/mcp_combiner/notifications.py]",
+]
+name_terms = [
+  "attach",
+  "attach_resource_forwarding",
+  "combiner",
+  "combiner.mcp_combiner.notifications.attach_resource_forwarding",
+  "forwarding",
+  "mcp",
+  "notifications",
+  "resource",
+]

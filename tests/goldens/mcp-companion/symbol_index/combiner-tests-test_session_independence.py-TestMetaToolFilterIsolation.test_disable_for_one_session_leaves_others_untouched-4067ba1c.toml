@@ -1,0 +1,50 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestMetaToolFilterIsolation.test_disable_for_one_session_leaves_others_untouched"
+fqn = "combiner.tests.test_session_independence.TestMetaToolFilterIsolation.test_disable_for_one_session_leaves_others_untouched"
+name = "test_disable_for_one_session_leaves_others_untouched"
+kind = "method"
+lang = "python"
+content_hash = "327e8aa64f2f9550"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "async def test_disable_for_one_session_leaves_others_untouched("
+description = ""
+schema = 4
+line = 131
+mtime = 1783541669000000000
+container = [
+  "TestMetaToolFilterIsolation",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+  "TestMetaToolFilterIsolation",
+]
+symbol_was = []
+calls = [
+  "_header_client [combiner/tests/test_session_independence.py]",
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "_text [combiner/tests/test_session_independence.py]",
+  "_token [combiner/tests/test_session_independence.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_independence.TestMetaToolFilterIsolation.test_disable_for_one_session_leaves_others_untouched",
+  "disable",
+  "filter",
+  "for",
+  "independence",
+  "isolation",
+  "leaves",
+  "meta",
+  "one",
+  "others",
+  "session",
+  "test",
+  "test_disable_for_one_session_leaves_others_untouched",
+  "tests",
+  "tool",
+  "untouched",
+]

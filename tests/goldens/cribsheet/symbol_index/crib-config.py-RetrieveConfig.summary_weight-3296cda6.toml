@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#RetrieveConfig.summary_weight"
+fqn = "crib.config.RetrieveConfig.summary_weight"
+name = "summary_weight"
+kind = "field"
+lang = "python"
+content_hash = "0407b7dcab75d49e"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "summary_weight: float = 1.0"
+description = ""
+schema = 4
+line = 146
+mtime = 1786564832000000000
+container = [
+  "RetrieveConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "RetrieveConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.RetrieveConfig.summary_weight",
+  "retrieve",
+  "summary",
+  "summary_weight",
+  "weight",
+]

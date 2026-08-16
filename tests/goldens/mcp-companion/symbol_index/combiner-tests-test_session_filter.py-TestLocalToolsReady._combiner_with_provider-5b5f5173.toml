@@ -1,0 +1,58 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestLocalToolsReady._combiner_with_provider"
+fqn = "combiner.tests.test_session_filter.TestLocalToolsReady._combiner_with_provider"
+name = "_combiner_with_provider"
+kind = "method"
+lang = "python"
+content_hash = "2ba353a38f7a4e93"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "@staticmethod"
+description = ""
+schema = 4
+line = 572
+mtime = 1784493613000000000
+container = [
+  "TestLocalToolsReady",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestLocalToolsReady",
+]
+symbol_was = []
+calls = [
+  "_registry [combiner/mcp_combiner/mounts.py]",
+]
+called_by = [
+  "test_prime_empty_answer_preserves_confirmed_slice [combiner/tests/test_session_filter.py]",
+  "test_prime_empty_answers_retry_until_timeout [combiner/tests/test_session_filter.py]",
+  "test_prime_empty_then_populated_publishes_once [combiner/tests/test_session_filter.py]",
+  "test_prime_retries_stores_then_invalidates [combiner/tests/test_session_filter.py]",
+  "test_prime_timeout_no_store_no_invalidate [combiner/tests/test_session_filter.py]",
+  "test_reprime_changed_list_publishes [combiner/tests/test_session_filter.py]",
+  "test_reprime_unchanged_list_is_silent [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "test_prime_empty_answer_preserves_confirmed_slice [combiner/tests/test_session_filter.py]",
+  "test_prime_empty_answers_retry_until_timeout [combiner/tests/test_session_filter.py]",
+  "test_prime_empty_then_populated_publishes_once [combiner/tests/test_session_filter.py]",
+  "test_prime_retries_stores_then_invalidates [combiner/tests/test_session_filter.py]",
+  "test_prime_timeout_no_store_no_invalidate [combiner/tests/test_session_filter.py]",
+  "test_reprime_changed_list_publishes [combiner/tests/test_session_filter.py]",
+  "test_reprime_unchanged_list_is_silent [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_combiner_with_provider",
+  "combiner",
+  "combiner.tests.test_session_filter.TestLocalToolsReady._combiner_with_provider",
+  "filter",
+  "local",
+  "provider",
+  "ready",
+  "session",
+  "test",
+  "tests",
+  "tools",
+  "with",
+]

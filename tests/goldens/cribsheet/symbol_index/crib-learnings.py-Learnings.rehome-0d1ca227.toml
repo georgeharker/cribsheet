@@ -1,0 +1,50 @@
+symbol_ref = "crib/learnings.py#Learnings.rehome"
+fqn = "crib.learnings.Learnings.rehome"
+name = "rehome"
+kind = "method"
+lang = "python"
+content_hash = "ec2bcbff7c1fb036"
+file = "crib/learnings.py"
+file_hash = "977a14d62df88945"
+signature = "async def rehome(self, proj: str, old_fqn: str,"
+description = ""
+schema = 4
+line = 434
+mtime = 1786664729000000000
+container = [
+  "Learnings",
+]
+scope = [
+  "crib",
+  "learnings",
+  "Learnings",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "SymbolIndex [crib/codeindex.py]",
+  "abspath [crib/notestore.py]",
+  "all [crib/codeindex.py]",
+  "bindings [crib/symbols.py]",
+  "candidates [crib/learnings.py]",
+  "key [crib/symbols.py]",
+  "load [crib/notes.py]",
+  "match_entry [crib/symbols.py]",
+  "project_dir [crib/paths.py]",
+  "reindex [crib/notestore.py]",
+  "rel_for_binding [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+  "write [crib/notestore.py]",
+]
+called_by = [
+  "learning_rehome [crib/app.py]",
+]
+references = [
+  "learning_rehome [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.learnings.Learnings.rehome",
+  "learnings",
+  "rehome",
+]

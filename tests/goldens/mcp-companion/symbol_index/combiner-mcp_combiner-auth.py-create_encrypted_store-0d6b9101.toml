@@ -1,0 +1,47 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#create_encrypted_store"
+fqn = "combiner.mcp_combiner.auth.create_encrypted_store"
+name = "create_encrypted_store"
+kind = "function"
+lang = "python"
+content_hash = "0689702bc76ce47e"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "def create_encrypted_store(storage_dir: Path) -> AsyncKeyValue:"
+description = ""
+schema = 4
+line = 166
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+]
+symbol_was = []
+calls = [
+  "_get_or_create_encryption_key [combiner/mcp_combiner/auth.py]",
+]
+called_by = [
+  "_build_oauth [combiner/mcp_combiner/auth.py]",
+  "_drop_persisted_expiry [combiner/tests/test_oauth_mock.py]",
+  "_expire_persisted_token [combiner/tests/test_oauth_mock.py]",
+  "store [combiner/tests/test_auth.py]",
+  "test_derives_encryption_key_from_machine_id [combiner/tests/test_auth.py]",
+]
+references = [
+  "_build_oauth [combiner/mcp_combiner/auth.py]",
+  "_drop_persisted_expiry [combiner/tests/test_oauth_mock.py]",
+  "_expire_persisted_token [combiner/tests/test_oauth_mock.py]",
+  "store [combiner/tests/test_auth.py]",
+  "test_derives_encryption_key_from_machine_id [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth.create_encrypted_store",
+  "create",
+  "create_encrypted_store",
+  "encrypted",
+  "mcp",
+  "store",
+]

@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestTokenSessionMapping"
+fqn = "combiner.tests.test_session_independence.TestTokenSessionMapping"
+name = "TestTokenSessionMapping"
+kind = "class"
+lang = "python"
+content_hash = "f2a062d8709f689a"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "class TestTokenSessionMapping:"
+description = ""
+schema = 4
+line = 87
+mtime = 1783541669000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestTokenSessionMapping",
+  "combiner",
+  "combiner.tests.test_session_independence.TestTokenSessionMapping",
+  "independence",
+  "mapping",
+  "session",
+  "test",
+  "tests",
+  "token",
+]

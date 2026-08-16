@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_auth.py#TestEncryptedStore"
+fqn = "combiner.tests.test_auth.TestEncryptedStore"
+name = "TestEncryptedStore"
+kind = "class"
+lang = "python"
+content_hash = "6601f3c082c35f0a"
+file = "combiner/tests/test_auth.py"
+file_hash = "2b3aa7eeeed5bf38"
+signature = "class TestEncryptedStore:"
+description = ""
+schema = 4
+line = 26
+mtime = 1782852601000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_auth",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestEncryptedStore",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestEncryptedStore",
+  "encrypted",
+  "store",
+  "test",
+  "tests",
+]

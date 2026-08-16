@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/routes.py#register_routes.manage_token_filter"
+fqn = "combiner.mcp_combiner.routes.register_routes.manage_token_filter"
+name = "manage_token_filter"
+kind = "function"
+lang = "python"
+content_hash = "21e03c370331e087"
+file = "combiner/mcp_combiner/routes.py"
+file_hash = "51ce6733e6f93928"
+signature = "@combiner.custom_route(\"/sessions/token/{token}/filter\", methods=[\"GET\", \"POST\", \"DELETE\"])"
+description = ""
+schema = 4
+line = 232
+mtime = 1783548694000000000
+container = [
+  "register_routes",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "routes",
+  "register_routes",
+]
+symbol_was = []
+calls = [
+  "_notify_session_by_id [combiner/mcp_combiner/toolcache.py]",
+  "_resolve_disabled [combiner/mcp_combiner/routes.py]",
+  "clear_disabled [combiner/mcp_combiner/runtime.py]",
+  "disabled_snapshot [combiner/mcp_combiner/runtime.py]",
+  "pending_for [combiner/mcp_combiner/runtime.py]",
+  "session_for_token [combiner/mcp_combiner/runtime.py]",
+  "set_disabled [combiner/mcp_combiner/runtime.py]",
+  "set_pending [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.routes.register_routes.manage_token_filter",
+  "filter",
+  "manage",
+  "manage_token_filter",
+  "mcp",
+  "register",
+  "routes",
+  "token",
+]

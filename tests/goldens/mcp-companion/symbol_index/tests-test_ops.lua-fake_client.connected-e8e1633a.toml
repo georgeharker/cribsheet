@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_ops.lua#fake_client.connected"
+fqn = "tests.test_ops.fake_client.connected"
+name = "connected"
+kind = "field"
+lang = "lua"
+content_hash = "5a67361653714631"
+file = "tests/test_ops.lua"
+file_hash = "f9230679396cb256"
+signature = "connected = true,"
+description = ""
+schema = 4
+line = 38
+mtime = 1783545086000000000
+container = [
+  "fake_client",
+]
+scope = [
+  "tests",
+  "test_ops",
+  "fake_client",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "connected",
+  "fake",
+  "ops",
+  "test",
+  "tests",
+  "tests.test_ops.fake_client.connected",
+]

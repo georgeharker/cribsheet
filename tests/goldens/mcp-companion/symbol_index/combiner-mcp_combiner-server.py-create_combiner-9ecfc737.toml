@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/server.py#create_combiner"
+fqn = "combiner.mcp_combiner.server.create_combiner"
+name = "create_combiner"
+kind = "function"
+lang = "python"
+content_hash = "c61cf5daabe5b9ad"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "def create_combiner("
+description = ""
+schema = 4
+line = 189
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_make_combiner_app [combiner/tests/test_session_filter.py]",
+  "create_app [combiner/mcp_combiner/asgi.py]",
+  "test_stale_tool_grace_configurable [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "_make_combiner_app [combiner/tests/test_session_filter.py]",
+  "create_app [combiner/mcp_combiner/asgi.py]",
+  "test_stale_tool_grace_configurable [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.server.create_combiner",
+  "create",
+  "create_combiner",
+  "mcp",
+  "server",
+]

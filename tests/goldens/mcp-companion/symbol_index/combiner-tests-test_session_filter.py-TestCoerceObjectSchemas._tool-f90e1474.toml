@@ -1,0 +1,55 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestCoerceObjectSchemas._tool"
+fqn = "combiner.tests.test_session_filter.TestCoerceObjectSchemas._tool"
+name = "_tool"
+kind = "method"
+lang = "python"
+content_hash = "cf96d9571e1ae4c9"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "@staticmethod"
+description = ""
+schema = 4
+line = 802
+mtime = 1784493613000000000
+container = [
+  "TestCoerceObjectSchemas",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestCoerceObjectSchemas",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_dispatch_fn_preserved_on_rebuild [combiner/tests/test_session_filter.py]",
+  "test_missing_properties_filled [combiner/tests/test_session_filter.py]",
+  "test_missing_type_and_properties_coerced [combiner/tests/test_session_filter.py]",
+  "test_string_required_wrapped_in_array [combiner/tests/test_session_filter.py]",
+  "test_uncoercible_required_dropped [combiner/tests/test_session_filter.py]",
+  "test_valid_required_preserved [combiner/tests/test_session_filter.py]",
+  "test_valid_schema_passed_through_unchanged [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "test_dispatch_fn_preserved_on_rebuild [combiner/tests/test_session_filter.py]",
+  "test_missing_properties_filled [combiner/tests/test_session_filter.py]",
+  "test_missing_type_and_properties_coerced [combiner/tests/test_session_filter.py]",
+  "test_string_required_wrapped_in_array [combiner/tests/test_session_filter.py]",
+  "test_uncoercible_required_dropped [combiner/tests/test_session_filter.py]",
+  "test_valid_required_preserved [combiner/tests/test_session_filter.py]",
+  "test_valid_schema_passed_through_unchanged [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_tool",
+  "coerce",
+  "combiner",
+  "combiner.tests.test_session_filter.TestCoerceObjectSchemas._tool",
+  "filter",
+  "object",
+  "schemas",
+  "session",
+  "test",
+  "tests",
+  "tool",
+]

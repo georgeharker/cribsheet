@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_log_auth_failure_details._redact_header"
+fqn = "combiner.mcp_combiner.connections._log_auth_failure_details._redact_header"
+name = "_redact_header"
+kind = "function"
+lang = "python"
+content_hash = "9e258863ac3527b0"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "def _redact_header(value: str) -> str:"
+description = ""
+schema = 4
+line = 810
+mtime = 1784493613000000000
+container = [
+  "_log_auth_failure_details",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "_log_auth_failure_details",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_log_auth_failure_details [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "_log_auth_failure_details [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_redact_header",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.connections._log_auth_failure_details._redact_header",
+  "connections",
+  "details",
+  "failure",
+  "header",
+  "log",
+  "mcp",
+  "redact",
+]

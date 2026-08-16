@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/nvim_proxy.py#register_routes"
+fqn = "combiner.mcp_combiner.nvim_proxy.register_routes"
+name = "register_routes"
+kind = "function"
+lang = "python"
+content_hash = "9d93bd3d1bdab5db"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+file_hash = "072f85ddbeb3b759"
+signature = "def register_routes("
+description = ""
+schema = 4
+line = 313
+mtime = 1783022631000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "nvim_proxy",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "create_combiner [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "create_combiner [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy.register_routes",
+  "mcp",
+  "nvim",
+  "proxy",
+  "register",
+  "register_routes",
+  "routes",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "crib/codequery.py#_SENTINEL_GROUPS"
+fqn = "crib.codequery._SENTINEL_GROUPS"
+name = "_SENTINEL_GROUPS"
+kind = "constant"
+lang = "python"
+content_hash = "dbfeb974121e5365"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "_SENTINEL_GROUPS = frozenset({\"(no scope)\", \"(root)\", \"(unresolved)\"})"
+description = ""
+schema = 4
+line = 116
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_rollup [crib/codequery.py]",
+]
+name_terms = [
+  "_SENTINEL_GROUPS",
+  "codequery",
+  "crib",
+  "crib.codequery._SENTINEL_GROUPS",
+  "groups",
+  "sentinel",
+]

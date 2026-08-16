@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#cmd_stop"
+fqn = "combiner.mcp_combiner.ctl.cmd_stop"
+name = "cmd_stop"
+kind = "function"
+lang = "python"
+content_hash = "e46a92761746d26a"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "async def cmd_stop(args: argparse.Namespace) -> int:"
+description = ""
+schema = 4
+line = 232
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = [
+  "_build_stop_cmd [combiner/mcp_combiner/ctl.py]",
+  "_require_binary [combiner/mcp_combiner/sharedserver.py]",
+]
+called_by = []
+references = [
+  "add_ctl_parsers [combiner/mcp_combiner/ctl.py]",
+]
+name_terms = [
+  "cmd",
+  "cmd_stop",
+  "combiner",
+  "combiner.mcp_combiner.ctl.cmd_stop",
+  "ctl",
+  "mcp",
+  "stop",
+]

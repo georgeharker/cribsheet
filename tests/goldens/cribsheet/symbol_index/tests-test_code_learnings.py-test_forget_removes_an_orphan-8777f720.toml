@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_code_learnings.py#test_forget_removes_an_orphan"
+fqn = "tests.test_code_learnings.test_forget_removes_an_orphan"
+name = "test_forget_removes_an_orphan"
+kind = "function"
+lang = "python"
+content_hash = "0579dfaa97ffc50f"
+file = "tests/test_code_learnings.py"
+file_hash = "2cacd018989edacf"
+signature = "def test_forget_removes_an_orphan(crib):"
+description = ""
+schema = 4
+line = 266
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_learnings",
+]
+symbol_was = []
+calls = [
+  "_seed_symbol [tests/test_code_learnings.py]",
+  "run [tests/test_code_learnings.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "an",
+  "code",
+  "forget",
+  "learnings",
+  "orphan",
+  "removes",
+  "test",
+  "test_forget_removes_an_orphan",
+  "tests",
+  "tests.test_code_learnings.test_forget_removes_an_orphan",
+]

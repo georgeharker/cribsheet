@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#TokenRequest.form"
+fqn = "combiner.mcp_combiner.mockserver.TokenRequest.form"
+name = "form"
+kind = "field"
+lang = "python"
+content_hash = "b166a4a6cca99c58"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "form: dict[str, str]"
+description = ""
+schema = 4
+line = 625
+mtime = 1783622326000000000
+container = [
+  "TokenRequest",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "TokenRequest",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "token [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.TokenRequest.form",
+  "form",
+  "mcp",
+  "mockserver",
+  "request",
+  "token",
+]

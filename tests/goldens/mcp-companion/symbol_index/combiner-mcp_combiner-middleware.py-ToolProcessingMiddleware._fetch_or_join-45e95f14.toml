@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/middleware.py#ToolProcessingMiddleware._fetch_or_join"
+fqn = "combiner.mcp_combiner.middleware.ToolProcessingMiddleware._fetch_or_join"
+name = "_fetch_or_join"
+kind = "method"
+lang = "python"
+content_hash = "af3a5a4238ce6366"
+file = "combiner/mcp_combiner/middleware.py"
+file_hash = "6dee47cf65146f20"
+signature = "async def _fetch_or_join("
+description = ""
+schema = 4
+line = 192
+mtime = 1784493613000000000
+container = [
+  "ToolProcessingMiddleware",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "middleware",
+  "ToolProcessingMiddleware",
+]
+symbol_was = []
+calls = [
+  "_do_fetch [combiner/mcp_combiner/middleware.py]",
+]
+called_by = [
+  "on_list_tools [combiner/mcp_combiner/middleware.py]",
+]
+references = [
+  "on_list_tools [combiner/mcp_combiner/middleware.py]",
+]
+name_terms = [
+  "_fetch_or_join",
+  "combiner",
+  "combiner.mcp_combiner.middleware.ToolProcessingMiddleware._fetch_or_join",
+  "fetch",
+  "join",
+  "mcp",
+  "middleware",
+  "or",
+  "processing",
+  "tool",
+]

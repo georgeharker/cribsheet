@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_connections.py#TestBuildServerStatus.test_http_server_reflects_connection_lifecycle"
+fqn = "combiner.tests.test_connections.TestBuildServerStatus.test_http_server_reflects_connection_lifecycle"
+name = "test_http_server_reflects_connection_lifecycle"
+kind = "method"
+lang = "python"
+content_hash = "b6b9e8482145323a"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "def test_http_server_reflects_connection_lifecycle(self):"
+description = ""
+schema = 4
+line = 606
+mtime = 1784493613000000000
+container = [
+  "TestBuildServerStatus",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestBuildServerStatus",
+]
+symbol_was = []
+calls = [
+  "ConnectionManager [combiner/mcp_combiner/connections.py]",
+  "_config [combiner/tests/test_connections.py]",
+  "_inject_conn [combiner/tests/test_connections.py]",
+  "build_server_status [combiner/mcp_combiner/status.py]",
+  "mark_tools_unready [combiner/mcp_combiner/connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "combiner",
+  "combiner.tests.test_connections.TestBuildServerStatus.test_http_server_reflects_connection_lifecycle",
+  "connection",
+  "connections",
+  "http",
+  "lifecycle",
+  "reflects",
+  "server",
+  "status",
+  "test",
+  "test_http_server_reflects_connection_lifecycle",
+  "tests",
+]

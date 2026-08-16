@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_pillar_stores.py#test_reserved_prefixes_are_refused_with_the_facet_verb_named"
+fqn = "tests.test_pillar_stores.test_reserved_prefixes_are_refused_with_the_facet_verb_named"
+name = "test_reserved_prefixes_are_refused_with_the_facet_verb_named"
+kind = "function"
+lang = "python"
+content_hash = "fa9534541f9a9d2a"
+file = "tests/test_pillar_stores.py"
+file_hash = "1a0ecd183d71d1ba"
+signature = "def test_reserved_prefixes_are_refused_with_the_facet_verb_named(crib):"
+description = ""
+schema = 4
+line = 56
+mtime = 1786138910000000000
+container = []
+scope = [
+  "tests",
+  "test_pillar_stores",
+]
+symbol_was = []
+calls = [
+  "NoteStore [crib/notestore.py]",
+  "StoreSpec [crib/notestore.py]",
+  "abspath [crib/notestore.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "are",
+  "facet",
+  "named",
+  "pillar",
+  "prefixes",
+  "refused",
+  "reserved",
+  "stores",
+  "test",
+  "test_reserved_prefixes_are_refused_with_the_facet_verb_named",
+  "tests",
+  "tests.test_pillar_stores.test_reserved_prefixes_are_refused_with_the_facet_verb_named",
+  "the",
+  "verb",
+  "with",
+]

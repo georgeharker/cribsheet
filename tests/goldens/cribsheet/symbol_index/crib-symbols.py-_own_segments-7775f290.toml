@@ -1,0 +1,37 @@
+symbol_ref = "crib/symbols.py#_own_segments"
+fqn = "crib.symbols._own_segments"
+name = "_own_segments"
+kind = "function"
+lang = "python"
+content_hash = "3abb6f987d02ffe7"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def _own_segments(fq: str, name: str, lang: str) -> list[str]:"
+description = ""
+schema = 4
+line = 70
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = [
+  "fqname_sep [crib/symbols.py]",
+  "segments [crib/symbols.py]",
+]
+called_by = [
+  "canonical [crib/symbols.py]",
+]
+references = [
+  "canonical [crib/symbols.py]",
+]
+name_terms = [
+  "_own_segments",
+  "crib",
+  "crib.symbols._own_segments",
+  "own",
+  "segments",
+  "symbols",
+]

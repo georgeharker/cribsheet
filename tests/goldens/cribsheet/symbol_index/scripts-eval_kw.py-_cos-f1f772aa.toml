@@ -1,0 +1,34 @@
+symbol_ref = "scripts/eval_kw.py#_cos"
+fqn = "scripts.eval_kw._cos"
+name = "_cos"
+kind = "function"
+lang = "python"
+content_hash = "334c2707b03e913d"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def _cos(a, b):"
+description = ""
+schema = 4
+line = 24
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_kw",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "kw_maxsim [scripts/eval_kw.py]",
+]
+references = [
+  "kw_maxsim [scripts/eval_kw.py]",
+]
+name_terms = [
+  "_cos",
+  "cos",
+  "eval",
+  "kw",
+  "scripts",
+  "scripts.eval_kw._cos",
+]

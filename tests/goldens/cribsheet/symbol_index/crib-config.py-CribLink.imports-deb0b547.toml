@@ -1,0 +1,35 @@
+symbol_ref = "crib/config.py#CribLink.imports"
+fqn = "crib.config.CribLink.imports"
+name = "imports"
+kind = "field"
+lang = "python"
+content_hash = "df2b29a2be32d00a"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "imports: list[str] = field(default_factory=list)"
+description = ""
+schema = 4
+line = 372
+mtime = 1786564832000000000
+container = [
+  "CribLink",
+]
+scope = [
+  "crib",
+  "config",
+  "CribLink",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_parse [crib/config.py]",
+  "doc_patterns [crib/config.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.imports",
+  "imports",
+  "link",
+]

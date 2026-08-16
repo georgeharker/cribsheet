@@ -1,0 +1,59 @@
+symbol_ref = "crib/refs.py#Refs.resolve_symbol"
+fqn = "crib.refs.Refs.resolve_symbol"
+name = "resolve_symbol"
+kind = "method"
+lang = "python"
+content_hash = "3122697c5ee3f16c"
+file = "crib/refs.py"
+file_hash = "d39b1d18c0921167"
+signature = "def resolve_symbol(self, proj: str, symbol: str,"
+description = ""
+schema = 4
+line = 144
+mtime = 1786664729000000000
+container = [
+  "Refs",
+]
+scope = [
+  "crib",
+  "refs",
+  "Refs",
+]
+symbol_was = []
+calls = [
+  "AmbiguousSymbol [crib/refs.py]",
+  "CribUserError [crib/errors.py]",
+  "SymbolIndex [crib/codeindex.py]",
+  "UnknownSymbol [crib/refs.py]",
+  "by_fqname [crib/codeindex.py]",
+  "by_fqname [crib/codestore.py]",
+  "check_query [crib/codequery.py]",
+  "constrain [crib/symbols.py]",
+  "key [crib/symbols.py]",
+  "match_entry [crib/symbols.py]",
+  "project_dir [crib/paths.py]",
+]
+called_by = [
+  "append [crib/learnings.py]",
+  "edit [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "resolve_symbol_or_ref [crib/refs.py]",
+]
+references = [
+  "append [crib/learnings.py]",
+  "edit [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "resolve_symbol_or_ref [crib/refs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.refs.Refs.resolve_symbol",
+  "refs",
+  "resolve",
+  "resolve_symbol",
+  "symbol",
+]

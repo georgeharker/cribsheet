@@ -1,0 +1,36 @@
+symbol_ref = "crib/paths.py#ProjectPaths"
+fqn = "crib.paths.ProjectPaths"
+name = "ProjectPaths"
+kind = "class"
+lang = "python"
+content_hash = "ba33cdb3aa1c3c64"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "@dataclass(frozen=True)"
+description = ""
+schema = 4
+line = 146
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "paths",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__call__ [crib/paths.py]",
+  "__init__ [crib/paths.py]",
+  "_skip_if_unavailable [crib/app.py]",
+  "require [crib/paths.py]",
+  "resolve_project_paths [crib/paths.py]",
+  "resolved [crib/notestore.py]",
+]
+name_terms = [
+  "ProjectPaths",
+  "crib",
+  "crib.paths.ProjectPaths",
+  "paths",
+  "project",
+]

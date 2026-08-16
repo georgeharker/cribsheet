@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestCoerceObjectSchemas.test_string_required_wrapped_in_array"
+fqn = "combiner.tests.test_session_filter.TestCoerceObjectSchemas.test_string_required_wrapped_in_array"
+name = "test_string_required_wrapped_in_array"
+kind = "method"
+lang = "python"
+content_hash = "7ddb00767e2d40d4"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_string_required_wrapped_in_array(self):"
+description = ""
+schema = 4
+line = 835
+mtime = 1784493613000000000
+container = [
+  "TestCoerceObjectSchemas",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestCoerceObjectSchemas",
+]
+symbol_was = []
+calls = [
+  "_coerce_object_schemas [combiner/mcp_combiner/schemafix.py]",
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "array",
+  "coerce",
+  "combiner",
+  "combiner.tests.test_session_filter.TestCoerceObjectSchemas.test_string_required_wrapped_in_array",
+  "filter",
+  "in",
+  "object",
+  "required",
+  "schemas",
+  "session",
+  "string",
+  "test",
+  "test_string_required_wrapped_in_array",
+  "tests",
+  "wrapped",
+]

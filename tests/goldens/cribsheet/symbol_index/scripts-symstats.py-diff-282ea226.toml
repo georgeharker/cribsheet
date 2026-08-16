@@ -1,0 +1,32 @@
+symbol_ref = "scripts/symstats.py#diff"
+fqn = "scripts.symstats.diff"
+name = "diff"
+kind = "function"
+lang = "python"
+content_hash = "afab2a6615596016"
+file = "scripts/symstats.py"
+file_hash = "bc09f2e285e5b003"
+signature = "def diff(before: dict, after: dict) -> int:"
+description = ""
+schema = 4
+line = 172
+mtime = 1786664729000000000
+container = []
+scope = [
+  "scripts",
+  "symstats",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/symstats.py]",
+]
+references = [
+  "main [scripts/symstats.py]",
+]
+name_terms = [
+  "diff",
+  "scripts",
+  "scripts.symstats.diff",
+  "symstats",
+]

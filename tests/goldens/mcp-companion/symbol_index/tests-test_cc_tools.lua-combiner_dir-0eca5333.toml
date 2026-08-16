@@ -1,0 +1,32 @@
+symbol_ref = "tests/test_cc_tools.lua#combiner_dir"
+fqn = "tests.test_cc_tools.combiner_dir"
+name = "combiner_dir"
+kind = "global"
+lang = "lua"
+content_hash = "381b1aa8c8f409a6"
+file = "tests/test_cc_tools.lua"
+file_hash = "3253ff527c66fcb1"
+signature = "local combiner_dir = find_combiner_dir()"
+description = ""
+schema = 4
+line = 195
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_cc_tools",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cc",
+  "combiner",
+  "combiner_dir",
+  "dir",
+  "test",
+  "tests",
+  "tests.test_cc_tools.combiner_dir",
+  "tools",
+]

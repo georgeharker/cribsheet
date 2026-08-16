@@ -1,0 +1,52 @@
+symbol_ref = "crib/app.py#Crib.project_adopt"
+fqn = "crib.app.Crib.project_adopt"
+name = "project_adopt"
+kind = "method"
+lang = "python"
+content_hash = "2553596b093db8f6"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def project_adopt(self, project: str | None = None,"
+description = ""
+schema = 4
+line = 1598
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "__call__ [crib/paths.py]",
+  "_move_ring [crib/app.py]",
+  "_move_tree [crib/app.py]",
+  "_note_ring_ids [crib/app.py]",
+  "_warn_store_glob_overlap [crib/app.py]",
+  "check_project_name [crib/paths.py]",
+  "find [crib/config.py]",
+  "invalidate [crib/paths.py]",
+  "load [crib/config.py]",
+  "pillar_dir [crib/paths.py]",
+  "portable_path [crib/config.py]",
+  "reindex [crib/app.py]",
+  "save [crib/config.py]",
+]
+called_by = [
+  "project_adopt [crib/server.py]",
+]
+references = [
+  "project_adopt [crib/server.py]",
+]
+name_terms = [
+  "adopt",
+  "app",
+  "crib",
+  "crib.app.Crib.project_adopt",
+  "project",
+  "project_adopt",
+]

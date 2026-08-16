@@ -1,0 +1,47 @@
+symbol_ref = "crib/retrieve.py#LexicalCache.get"
+fqn = "crib.retrieve.LexicalCache.get"
+name = "get"
+kind = "method"
+lang = "python"
+content_hash = "51a03ea0e6ee2b5c"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "def get(self, project: str, labels: tuple[str, ...] = (),"
+description = ""
+schema = 4
+line = 309
+mtime = 1786136167000000000
+container = [
+  "LexicalCache",
+]
+scope = [
+  "crib",
+  "retrieve",
+  "LexicalCache",
+]
+symbol_was = []
+calls = [
+  "BM25 [crib/retrieve.py]",
+  "_lexical_tf [crib/retrieve.py]",
+  "get_docs [crib/store.py]",
+]
+called_by = [
+  "_retrieve [crib/app.py]",
+  "test_downweight_scales_elaboration_contribution [tests/test_elaborate.py]",
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+  "test_lexical_cache_survives_invalidation_mid_read [tests/test_loop_responsiveness.py]",
+]
+references = [
+  "_retrieve [crib/app.py]",
+  "test_downweight_scales_elaboration_contribution [tests/test_elaborate.py]",
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+  "test_lexical_cache_survives_invalidation_mid_read [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "cache",
+  "crib",
+  "crib.retrieve.LexicalCache.get",
+  "get",
+  "lexical",
+  "retrieve",
+]

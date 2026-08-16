@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/meta_tools.py#register_meta_tools.combiner__session_disable_server"
+fqn = "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__session_disable_server"
+name = "combiner__session_disable_server"
+kind = "function"
+lang = "python"
+content_hash = "4abdd13d7968c709"
+file = "combiner/mcp_combiner/meta_tools.py"
+file_hash = "8eb0757202928f82"
+signature = "@combiner.tool()"
+description = ""
+schema = 4
+line = 392
+mtime = 1784493613000000000
+container = [
+  "register_meta_tools",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "meta_tools",
+  "register_meta_tools",
+]
+symbol_was = []
+calls = [
+  "disable [combiner/mcp_combiner/runtime.py]",
+  "disabled_snapshot [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__session_disable_server",
+  "combiner__session_disable_server",
+  "disable",
+  "mcp",
+  "meta",
+  "register",
+  "server",
+  "session",
+  "tools",
+]

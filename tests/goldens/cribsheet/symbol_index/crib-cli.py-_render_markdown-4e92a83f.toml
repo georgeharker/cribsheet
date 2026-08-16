@@ -1,0 +1,38 @@
+symbol_ref = "crib/cli.py#_render_markdown"
+fqn = "crib.cli._render_markdown"
+name = "_render_markdown"
+kind = "function"
+lang = "python"
+content_hash = "e1de7c329aa809ab"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _render_markdown(text: str) -> None:"
+description = ""
+schema = 4
+line = 93
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_emit_apropos [crib/cli.py]",
+  "_emit_design_read [crib/cli.py]",
+  "_print_note [crib/cli.py]",
+]
+references = [
+  "_emit_apropos [crib/cli.py]",
+  "_emit_design_read [crib/cli.py]",
+  "_print_note [crib/cli.py]",
+]
+name_terms = [
+  "_render_markdown",
+  "cli",
+  "crib",
+  "crib.cli._render_markdown",
+  "markdown",
+  "render",
+]

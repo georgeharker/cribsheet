@@ -1,0 +1,45 @@
+symbol_ref = "crib/chunk.py#Chunk.section_hash"
+fqn = "crib.chunk.Chunk.section_hash"
+name = "section_hash"
+kind = "method"
+lang = "python"
+content_hash = "f4b6a6719226ea54"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "@property"
+description = ""
+schema = 4
+line = 85
+mtime = 1786136167000000000
+container = [
+  "Chunk",
+]
+scope = [
+  "crib",
+  "chunk",
+  "Chunk",
+]
+symbol_was = []
+calls = [
+  "sha1_hex [crib/util.py]",
+]
+called_by = [
+  "_doc_sections [crib/designs.py]",
+  "_legacy_layout [tests/test_store_migration.py]",
+  "metadata [crib/chunk.py]",
+  "test_section_hash_invariant_to_windowing [tests/test_elaborate.py]",
+]
+references = [
+  "_doc_sections [crib/designs.py]",
+  "_legacy_layout [tests/test_store_migration.py]",
+  "metadata [crib/chunk.py]",
+  "test_section_hash_invariant_to_windowing [tests/test_elaborate.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.section_hash",
+  "hash",
+  "section",
+  "section_hash",
+]

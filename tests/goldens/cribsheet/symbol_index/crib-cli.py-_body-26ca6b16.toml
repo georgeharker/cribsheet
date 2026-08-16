@@ -1,0 +1,37 @@
+symbol_ref = "crib/cli.py#_body"
+fqn = "crib.cli._body"
+name = "_body"
+kind = "function"
+lang = "python"
+content_hash = "882efd937e672aaf"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _body(value: str | None, file: str | None = None, *,"
+description = ""
+schema = 4
+line = 60
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_from_editor [crib/cli.py]",
+]
+called_by = [
+  "(lambda) [crib/cli.py]",
+  "_plan_items [crib/cli.py]",
+]
+references = [
+  "VERBS [crib/cli.py]",
+  "_plan_items [crib/cli.py]",
+]
+name_terms = [
+  "_body",
+  "body",
+  "cli",
+  "crib",
+  "crib.cli._body",
+]

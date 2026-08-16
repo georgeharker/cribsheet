@@ -1,0 +1,37 @@
+symbol_ref = "combiner/tests/test_config.py#test_oauth_config_from_dict_defaults"
+fqn = "combiner.tests.test_config.test_oauth_config_from_dict_defaults"
+name = "test_oauth_config_from_dict_defaults"
+kind = "function"
+lang = "python"
+content_hash = "b0a53268ffc87f78"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_oauth_config_from_dict_defaults() -> None:"
+description = ""
+schema = 4
+line = 70
+mtime = 1782852601000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+]
+symbol_was = []
+calls = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.test_oauth_config_from_dict_defaults",
+  "config",
+  "defaults",
+  "dict",
+  "from",
+  "oauth",
+  "test",
+  "test_oauth_config_from_dict_defaults",
+  "tests",
+]

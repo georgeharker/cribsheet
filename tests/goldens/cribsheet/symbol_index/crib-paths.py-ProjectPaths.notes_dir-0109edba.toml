@@ -1,0 +1,40 @@
+symbol_ref = "crib/paths.py#ProjectPaths.notes_dir"
+fqn = "crib.paths.ProjectPaths.notes_dir"
+name = "notes_dir"
+kind = "field"
+lang = "python"
+content_hash = "697c0b1ed154356b"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "notes_dir: Path"
+description = ""
+schema = 4
+line = 151
+mtime = 1786564832000000000
+container = [
+  "ProjectPaths",
+]
+scope = [
+  "crib",
+  "paths",
+  "ProjectPaths",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_migrate_legacy_layout [crib/app.py]",
+  "project_is_new [crib/app.py]",
+  "status [crib/app.py]",
+  "test_resolves_to_the_global_layout_by_default [tests/test_repo_storage.py]",
+  "test_resolves_to_the_store_when_the_stub_points_at_one [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.ProjectPaths.notes_dir",
+  "dir",
+  "notes",
+  "notes_dir",
+  "paths",
+  "project",
+]

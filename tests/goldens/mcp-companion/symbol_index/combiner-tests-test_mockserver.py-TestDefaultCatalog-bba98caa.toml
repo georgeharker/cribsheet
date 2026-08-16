@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestDefaultCatalog"
+fqn = "combiner.tests.test_mockserver.TestDefaultCatalog"
+name = "TestDefaultCatalog"
+kind = "class"
+lang = "python"
+content_hash = "a3eac44904bfd291"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "class TestDefaultCatalog:"
+description = ""
+schema = 4
+line = 60
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestDefaultCatalog",
+  "catalog",
+  "combiner",
+  "combiner.tests.test_mockserver.TestDefaultCatalog",
+  "default",
+  "mockserver",
+  "test",
+  "tests",
+]

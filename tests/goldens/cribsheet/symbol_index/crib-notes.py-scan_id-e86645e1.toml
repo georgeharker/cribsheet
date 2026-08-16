@@ -1,0 +1,42 @@
+symbol_ref = "crib/notes.py#scan_id"
+fqn = "crib.notes.scan_id"
+name = "scan_id"
+kind = "function"
+lang = "python"
+content_hash = "4b12f6002ca61c2a"
+file = "crib/notes.py"
+file_hash = "6e2385b754de60b6"
+signature = "def scan_id(text: str) -> str | None:"
+description = ""
+schema = 4
+line = 72
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "notes",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_note_dep_ids [crib/designs.py]",
+  "_note_ring_ids [crib/app.py]",
+  "_ring_id [crib/notestore.py]",
+  "_stash_existing [crib/notestore.py]",
+  "test_scan_id_recovers_the_id_from_unparseable_frontmatter [tests/test_malformed_notes.py]",
+]
+references = [
+  "_note_dep_ids [crib/designs.py]",
+  "_note_ring_ids [crib/app.py]",
+  "_ring_id [crib/notestore.py]",
+  "_stash_existing [crib/notestore.py]",
+  "test_scan_id_recovers_the_id_from_unparseable_frontmatter [tests/test_malformed_notes.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notes.scan_id",
+  "id",
+  "notes",
+  "scan",
+  "scan_id",
+]

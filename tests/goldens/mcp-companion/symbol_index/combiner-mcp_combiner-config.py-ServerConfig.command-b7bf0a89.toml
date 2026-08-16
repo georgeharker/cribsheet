@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ServerConfig.command"
+fqn = "combiner.mcp_combiner.config.ServerConfig.command"
+name = "command"
+kind = "field"
+lang = "python"
+content_hash = "0780e80e0f959162"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "command: str | None = None"
+description = ""
+schema = 4
+line = 262
+mtime = 1783633313000000000
+container = [
+  "ServerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ServerConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "get_server_status [combiner/mcp_combiner/config.py]",
+  "test_raw_config_not_mutated [combiner/tests/test_config.py]",
+  "test_server_config_from_dict_stdio [combiner/tests/test_config.py]",
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.command",
+  "command",
+  "config",
+  "mcp",
+  "server",
+]

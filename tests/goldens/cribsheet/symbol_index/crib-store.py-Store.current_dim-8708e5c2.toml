@@ -1,0 +1,39 @@
+symbol_ref = "crib/store.py#Store.current_dim"
+fqn = "crib.store.Store.current_dim"
+name = "current_dim"
+kind = "method"
+lang = "python"
+content_hash = "140e842c43c6af67"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def current_dim(self) -> int | None:"
+description = ""
+schema = 4
+line = 59
+mtime = 1786564832000000000
+container = [
+  "Store",
+]
+scope = [
+  "crib",
+  "store",
+  "Store",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_maybe_recreate_for_dim [crib/app.py]",
+  "_stored_dim [crib/app.py]",
+]
+references = [
+  "_maybe_recreate_for_dim [crib/app.py]",
+  "_stored_dim [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Store.current_dim",
+  "current",
+  "current_dim",
+  "dim",
+  "store",
+]

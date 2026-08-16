@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/fakes.py#FakeConnManager.reset_auth_failure"
+fqn = "combiner.tests.fakes.FakeConnManager.reset_auth_failure"
+name = "reset_auth_failure"
+kind = "method"
+lang = "python"
+content_hash = "d11b2272e25f3864"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "def reset_auth_failure(self, name: str) -> None:"
+description = ""
+schema = 4
+line = 62
+mtime = 1783534978000000000
+container = [
+  "FakeConnManager",
+]
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+  "FakeConnManager",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.fakes.FakeConnManager.reset_auth_failure",
+  "conn",
+  "failure",
+  "fake",
+  "fakes",
+  "manager",
+  "reset",
+  "reset_auth_failure",
+  "tests",
+]

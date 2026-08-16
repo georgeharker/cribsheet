@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_connections.py#TestBuildServerStatus.test_stdio_crash_reports_disconnected"
+fqn = "combiner.tests.test_connections.TestBuildServerStatus.test_stdio_crash_reports_disconnected"
+name = "test_stdio_crash_reports_disconnected"
+kind = "method"
+lang = "python"
+content_hash = "6ebe450bbbbfc66a"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "def test_stdio_crash_reports_disconnected(self):"
+description = ""
+schema = 4
+line = 618
+mtime = 1784493613000000000
+container = [
+  "TestBuildServerStatus",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestBuildServerStatus",
+]
+symbol_was = []
+calls = [
+  "ConnectionManager [combiner/mcp_combiner/connections.py]",
+  "_config [combiner/tests/test_connections.py]",
+  "build_server_status [combiner/mcp_combiner/status.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "combiner",
+  "combiner.tests.test_connections.TestBuildServerStatus.test_stdio_crash_reports_disconnected",
+  "connections",
+  "crash",
+  "disconnected",
+  "reports",
+  "server",
+  "status",
+  "stdio",
+  "test",
+  "test_stdio_crash_reports_disconnected",
+  "tests",
+]

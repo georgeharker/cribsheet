@@ -1,0 +1,37 @@
+symbol_ref = "crib/config.py#DaemonConfig.grace_period"
+fqn = "crib.config.DaemonConfig.grace_period"
+name = "grace_period"
+kind = "field"
+lang = "python"
+content_hash = "44ce25b2223486c0"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "grace_period: str = \"1h\"        # keep warm this long after the last client"
+description = ""
+schema = 4
+line = 246
+mtime = 1786564832000000000
+container = [
+  "DaemonConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "DaemonConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__enter__ [crib/client.py]",
+  "cmd_info [crib/cli.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.DaemonConfig.grace_period",
+  "daemon",
+  "grace",
+  "grace_period",
+  "period",
+]

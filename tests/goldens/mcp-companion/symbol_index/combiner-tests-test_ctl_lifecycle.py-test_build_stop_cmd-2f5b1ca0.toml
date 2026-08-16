@@ -1,0 +1,37 @@
+symbol_ref = "combiner/tests/test_ctl_lifecycle.py#test_build_stop_cmd"
+fqn = "combiner.tests.test_ctl_lifecycle.test_build_stop_cmd"
+name = "test_build_stop_cmd"
+kind = "function"
+lang = "python"
+content_hash = "ba8245dfff940287"
+file = "combiner/tests/test_ctl_lifecycle.py"
+file_hash = "561e3360d44bd010"
+signature = "def test_build_stop_cmd() -> None:"
+description = ""
+schema = 4
+line = 42
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_ctl_lifecycle",
+]
+symbol_was = []
+calls = [
+  "_build_stop_cmd [combiner/mcp_combiner/ctl.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "cmd",
+  "combiner",
+  "combiner.tests.test_ctl_lifecycle.test_build_stop_cmd",
+  "ctl",
+  "lifecycle",
+  "stop",
+  "test",
+  "test_build_stop_cmd",
+  "tests",
+]

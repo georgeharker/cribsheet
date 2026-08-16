@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_auth.py#TestEncryptedStore.test_get_missing_key"
+fqn = "combiner.tests.test_auth.TestEncryptedStore.test_get_missing_key"
+name = "test_get_missing_key"
+kind = "method"
+lang = "python"
+content_hash = "7c1bc175f2b1ec8b"
+file = "combiner/tests/test_auth.py"
+file_hash = "2b3aa7eeeed5bf38"
+signature = "@pytest.mark.anyio"
+description = ""
+schema = 4
+line = 33
+mtime = 1782852601000000000
+container = [
+  "TestEncryptedStore",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_auth",
+  "TestEncryptedStore",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestEncryptedStore.test_get_missing_key",
+  "encrypted",
+  "get",
+  "key",
+  "missing",
+  "store",
+  "test",
+  "test_get_missing_key",
+  "tests",
+]

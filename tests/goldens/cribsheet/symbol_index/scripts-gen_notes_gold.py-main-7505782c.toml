@@ -1,0 +1,36 @@
+symbol_ref = "scripts/gen_notes_gold.py#main"
+fqn = "scripts.gen_notes_gold.main"
+name = "main"
+kind = "function"
+lang = "python"
+content_hash = "af1a0ae60be700ce"
+file = "scripts/gen_notes_gold.py"
+file_hash = "c163aa3d44ca5940"
+signature = "def main(argv: list[str] | None = None) -> int:"
+description = ""
+schema = 4
+line = 54
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "gen_notes_gold",
+]
+symbol_was = []
+calls = [
+  "load_entries [scripts/gen_notes_gold.py]",
+  "project_dir [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = [
+  "gen_notes_gold [scripts/gen_notes_gold.py]",
+]
+references = []
+name_terms = [
+  "gen",
+  "gold",
+  "main",
+  "notes",
+  "scripts",
+  "scripts.gen_notes_gold.main",
+]

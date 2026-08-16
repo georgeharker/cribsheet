@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_designs.py#test_frontmatter_churn_does_not_taint"
+fqn = "tests.test_designs.test_frontmatter_churn_does_not_taint"
+name = "test_frontmatter_churn_does_not_taint"
+kind = "function"
+lang = "python"
+content_hash = "481d21581d56ec63"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_frontmatter_churn_does_not_taint(crib):"
+description = ""
+schema = 4
+line = 168
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "churn",
+  "designs",
+  "does",
+  "frontmatter",
+  "not",
+  "taint",
+  "test",
+  "test_frontmatter_churn_does_not_taint",
+  "tests",
+  "tests.test_designs.test_frontmatter_churn_does_not_taint",
+]

@@ -1,0 +1,95 @@
+symbol_ref = "crib/notes.py#load"
+fqn = "crib.notes.load"
+name = "load"
+kind = "function"
+lang = "python"
+content_hash = "5a5bd12c0273a804"
+file = "crib/notes.py"
+file_hash = "6e2385b754de60b6"
+signature = "def load(path: Path) -> Note:"
+description = ""
+schema = 4
+line = 166
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "notes",
+]
+symbol_was = []
+calls = [
+  "Note [crib/notes.py]",
+  "parse [crib/notes.py]",
+]
+called_by = [
+  "_id_of [tests/test_import.py]",
+  "_note [crib/designs.py]",
+  "_note_id [tests/test_claude_memory.py]",
+  "_plan [crib/indexer.py]",
+  "_requalify_facet_refs [crib/app.py]",
+  "_save [crib/designs.py]",
+  "append [crib/learnings.py]",
+  "append_note [crib/app.py]",
+  "attach [crib/learnings.py]",
+  "capture [scripts/symstats.py]",
+  "convert_notes [crib/learnings.py]",
+  "distill [crib/app.py]",
+  "edit [crib/learnings.py]",
+  "edit_note [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "marks [crib/learnings.py]",
+  "move [crib/notestore.py]",
+  "notes_by_binding [crib/learnings.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "report [crib/learnings.py]",
+  "test_an_unmappable_note_is_an_orphan_and_untouched [tests/test_symbol_migration.py]",
+  "test_apply_rebinds_renames_and_keeps_history [tests/test_symbol_migration.py]",
+  "test_distill_revises_and_thrash_guards [tests/test_elaborate.py]",
+  "test_forget_removes_file_and_index_but_stashes_version [tests/test_forget.py]",
+  "test_heal_file_rewrites_only_when_dirty [tests/test_normalize.py]",
+  "test_import_pins_first_import_date [tests/test_import.py]",
+  "test_move_across_projects_preserves_id [tests/test_curation.py]",
+  "test_plan_next_mixed_dep_matrix [tests/test_designs.py]",
+]
+references = [
+  "_id_of [tests/test_import.py]",
+  "_note [crib/designs.py]",
+  "_note_id [tests/test_claude_memory.py]",
+  "_plan [crib/indexer.py]",
+  "_requalify_facet_refs [crib/app.py]",
+  "_save [crib/designs.py]",
+  "append [crib/learnings.py]",
+  "append_note [crib/app.py]",
+  "attach [crib/learnings.py]",
+  "capture [scripts/symstats.py]",
+  "convert_notes [crib/learnings.py]",
+  "distill [crib/app.py]",
+  "edit [crib/learnings.py]",
+  "edit_note [crib/app.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "marks [crib/learnings.py]",
+  "move [crib/notestore.py]",
+  "notes_by_binding [crib/learnings.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "report [crib/learnings.py]",
+  "test_an_unmappable_note_is_an_orphan_and_untouched [tests/test_symbol_migration.py]",
+  "test_apply_rebinds_renames_and_keeps_history [tests/test_symbol_migration.py]",
+  "test_distill_revises_and_thrash_guards [tests/test_elaborate.py]",
+  "test_forget_removes_file_and_index_but_stashes_version [tests/test_forget.py]",
+  "test_heal_file_rewrites_only_when_dirty [tests/test_normalize.py]",
+  "test_import_pins_first_import_date [tests/test_import.py]",
+  "test_move_across_projects_preserves_id [tests/test_curation.py]",
+  "test_plan_next_mixed_dep_matrix [tests/test_designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notes.load",
+  "load",
+  "notes",
+]

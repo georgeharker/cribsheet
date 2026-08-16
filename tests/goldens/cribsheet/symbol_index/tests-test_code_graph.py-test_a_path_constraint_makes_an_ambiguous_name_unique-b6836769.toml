@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_code_graph.py#test_a_path_constraint_makes_an_ambiguous_name_unique"
+fqn = "tests.test_code_graph.test_a_path_constraint_makes_an_ambiguous_name_unique"
+name = "test_a_path_constraint_makes_an_ambiguous_name_unique"
+kind = "function"
+lang = "python"
+content_hash = "314ad0d39b3a446c"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def test_a_path_constraint_makes_an_ambiguous_name_unique(crib, tmp_path):"
+description = ""
+schema = 4
+line = 582
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "_wrapper_and_op [tests/test_code_graph.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "ambiguous",
+  "an",
+  "code",
+  "constraint",
+  "graph",
+  "makes",
+  "name",
+  "path",
+  "test",
+  "test_a_path_constraint_makes_an_ambiguous_name_unique",
+  "tests",
+  "tests.test_code_graph.test_a_path_constraint_makes_an_ambiguous_name_unique",
+  "unique",
+]

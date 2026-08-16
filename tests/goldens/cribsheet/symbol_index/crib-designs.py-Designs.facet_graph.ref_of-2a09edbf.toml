@@ -1,0 +1,41 @@
+symbol_ref = "crib/designs.py#Designs.facet_graph.ref_of"
+fqn = "crib.designs.Designs.facet_graph.ref_of"
+name = "ref_of"
+kind = "function"
+lang = "python"
+content_hash = "54de154d637e91c2"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def ref_of(n: Node) -> str:"
+description = ""
+schema = 4
+line = 1454
+mtime = 1786693579000000000
+container = [
+  "Designs",
+  "facet_graph",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+  "facet_graph",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "facet_graph [crib/designs.py]",
+]
+references = [
+  "facet_graph [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs.facet_graph.ref_of",
+  "designs",
+  "facet",
+  "graph",
+  "of",
+  "ref",
+  "ref_of",
+]

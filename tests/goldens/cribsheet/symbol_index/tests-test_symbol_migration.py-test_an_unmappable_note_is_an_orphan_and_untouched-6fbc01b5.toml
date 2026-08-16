@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_symbol_migration.py#test_an_unmappable_note_is_an_orphan_and_untouched"
+fqn = "tests.test_symbol_migration.test_an_unmappable_note_is_an_orphan_and_untouched"
+name = "test_an_unmappable_note_is_an_orphan_and_untouched"
+kind = "function"
+lang = "python"
+content_hash = "fc5e1b7be8d51040"
+file = "tests/test_symbol_migration.py"
+file_hash = "f1bc5f45850c293a"
+signature = "def test_an_unmappable_note_is_an_orphan_and_untouched(crib):"
+description = ""
+schema = 4
+line = 127
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_migration",
+]
+symbol_was = []
+calls = [
+  "_legacy_note [tests/test_symbol_migration.py]",
+  "_seed [tests/test_symbol_migration.py]",
+  "load [crib/notes.py]",
+  "run [tests/test_symbol_migration.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "an",
+  "and",
+  "is",
+  "migration",
+  "note",
+  "orphan",
+  "symbol",
+  "test",
+  "test_an_unmappable_note_is_an_orphan_and_untouched",
+  "tests",
+  "tests.test_symbol_migration.test_an_unmappable_note_is_an_orphan_and_untouched",
+  "unmappable",
+  "untouched",
+]

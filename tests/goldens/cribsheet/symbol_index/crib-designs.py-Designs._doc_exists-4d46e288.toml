@@ -1,0 +1,39 @@
+symbol_ref = "crib/designs.py#Designs._doc_exists"
+fqn = "crib.designs.Designs._doc_exists"
+name = "_doc_exists"
+kind = "method"
+lang = "python"
+content_hash = "b9d6b39e30ac025d"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _doc_exists(self, proj: str, relpath: str) -> bool:"
+description = ""
+schema = 4
+line = 465
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_doc_abspath [crib/designs.py]",
+]
+called_by = [
+  "_resolve_doc [crib/designs.py]",
+]
+references = [
+  "_resolve_doc [crib/designs.py]",
+]
+name_terms = [
+  "_doc_exists",
+  "crib",
+  "crib.designs.Designs._doc_exists",
+  "designs",
+  "doc",
+  "exists",
+]

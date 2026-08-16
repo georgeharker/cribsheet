@@ -1,0 +1,34 @@
+symbol_ref = "crib/embed.py#_with_prefix"
+fqn = "crib.embed._with_prefix"
+name = "_with_prefix"
+kind = "function"
+lang = "python"
+content_hash = "06e50e8d8a2e9c73"
+file = "crib/embed.py"
+file_hash = "46323c76e4ac82a3"
+signature = "def _with_prefix(texts: list[str], prefix: str) -> list[str]:"
+description = ""
+schema = 4
+line = 165
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "embed",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "embed_query [crib/embed.py]",
+]
+references = [
+  "embed_query [crib/embed.py]",
+]
+name_terms = [
+  "_with_prefix",
+  "crib",
+  "crib.embed._with_prefix",
+  "embed",
+  "prefix",
+  "with",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "crib/paths.py#Paths.chroma_dir"
+fqn = "crib.paths.Paths.chroma_dir"
+name = "chroma_dir"
+kind = "method"
+lang = "python"
+content_hash = "faffc11926d6ab5c"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "@property"
+description = ""
+schema = 4
+line = 108
+mtime = 1786564832000000000
+container = [
+  "Paths",
+]
+scope = [
+  "crib",
+  "paths",
+  "Paths",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_build_shared_chroma [crib/app.py]",
+  "_build_store [crib/app.py]",
+]
+references = [
+  "_build_shared_chroma [crib/app.py]",
+  "_build_store [crib/app.py]",
+]
+name_terms = [
+  "chroma",
+  "chroma_dir",
+  "crib",
+  "crib.paths.Paths.chroma_dir",
+  "dir",
+  "paths",
+]

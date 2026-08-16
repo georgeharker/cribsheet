@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_path_confinement.py#test_confine_rejects_symlink_escape"
+fqn = "tests.test_path_confinement.test_confine_rejects_symlink_escape"
+name = "test_confine_rejects_symlink_escape"
+kind = "function"
+lang = "python"
+content_hash = "a0b0824e68b3cbe2"
+file = "tests/test_path_confinement.py"
+file_hash = "ca5f375c4fa4dfa2"
+signature = "def test_confine_rejects_symlink_escape(tmp_path):"
+description = ""
+schema = 4
+line = 48
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_path_confinement",
+]
+symbol_was = []
+calls = [
+  "confine [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "confine",
+  "confinement",
+  "escape",
+  "path",
+  "rejects",
+  "symlink",
+  "test",
+  "test_confine_rejects_symlink_escape",
+  "tests",
+  "tests.test_path_confinement.test_confine_rejects_symlink_escape",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthConfig.verify_pkce"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthConfig.verify_pkce"
+name = "verify_pkce"
+kind = "field"
+lang = "python"
+content_hash = "495f80278be30b0c"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "verify_pkce: bool = True"
+description = ""
+schema = 4
+line = 606
+mtime = 1783622326000000000
+container = [
+  "MockOAuthConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_grant_authorization_code [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthConfig.verify_pkce",
+  "config",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "pkce",
+  "verify",
+  "verify_pkce",
+]

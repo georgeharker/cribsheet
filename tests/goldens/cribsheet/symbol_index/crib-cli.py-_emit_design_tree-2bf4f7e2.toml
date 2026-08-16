@@ -1,0 +1,39 @@
+symbol_ref = "crib/cli.py#_emit_design_tree"
+fqn = "crib.cli._emit_design_tree"
+name = "_emit_design_tree"
+kind = "function"
+lang = "python"
+content_hash = "7e043cebd3a3cce7"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _emit_design_tree(data: Any, args: Any) -> None:"
+description = ""
+schema = 4
+line = 540
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_tree_glyphs [crib/cli.py]",
+  "label [crib/cli.py]",
+  "render [crib/cli.py]",
+]
+called_by = [
+  "_E_dtree [crib/cli.py]",
+]
+references = [
+  "_E_dtree [crib/cli.py]",
+]
+name_terms = [
+  "_emit_design_tree",
+  "cli",
+  "crib",
+  "crib.cli._emit_design_tree",
+  "design",
+  "emit",
+  "tree",
+]

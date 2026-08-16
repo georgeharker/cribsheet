@@ -1,0 +1,37 @@
+symbol_ref = "crib/indexer.py#_Plan.stale_ids"
+fqn = "crib.indexer._Plan.stale_ids"
+name = "stale_ids"
+kind = "field"
+lang = "python"
+content_hash = "5aa3d2761565b2de"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "stale_ids: list[str] = field(default_factory=list)"
+description = ""
+schema = 4
+line = 54
+mtime = 1786578262000000000
+container = [
+  "_Plan",
+]
+scope = [
+  "crib",
+  "indexer",
+  "_Plan",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "_plan [crib/indexer.py]",
+]
+name_terms = [
+  "crib",
+  "crib.indexer._Plan.stale_ids",
+  "ids",
+  "indexer",
+  "plan",
+  "stale",
+  "stale_ids",
+]

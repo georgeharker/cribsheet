@@ -1,0 +1,34 @@
+symbol_ref = "combiner/mcp_combiner/config.py#HealthResponse"
+fqn = "combiner.mcp_combiner.config.HealthResponse"
+name = "HealthResponse"
+kind = "class"
+lang = "python"
+content_hash = "608e25d2997103ba"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "class HealthResponse(BaseModel):"
+description = ""
+schema = 4
+line = 417
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "health_check [combiner/mcp_combiner/routes.py]",
+]
+name_terms = [
+  "HealthResponse",
+  "combiner",
+  "combiner.mcp_combiner.config.HealthResponse",
+  "config",
+  "health",
+  "mcp",
+  "response",
+]

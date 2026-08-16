@@ -1,0 +1,43 @@
+symbol_ref = "crib/memmirror.py#MemoryMirror.start._Handler.on_moved"
+fqn = "crib.memmirror.MemoryMirror.start._Handler.on_moved"
+name = "on_moved"
+kind = "method"
+lang = "python"
+content_hash = "cb88c725b1d1f433"
+file = "crib/memmirror.py"
+file_hash = "9ff08381721a9203"
+signature = "def on_moved(self, e):  # noqa: ANN001"
+description = ""
+schema = 4
+line = 76
+mtime = 1785959234000000000
+container = [
+  "MemoryMirror",
+  "start",
+  "_Handler",
+]
+scope = [
+  "crib",
+  "memmirror",
+  "MemoryMirror",
+  "start",
+  "_Handler",
+]
+symbol_was = []
+calls = [
+  "_emit [crib/memmirror.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.memmirror.MemoryMirror.start._Handler.on_moved",
+  "handler",
+  "memmirror",
+  "memory",
+  "mirror",
+  "moved",
+  "on",
+  "on_moved",
+  "start",
+]

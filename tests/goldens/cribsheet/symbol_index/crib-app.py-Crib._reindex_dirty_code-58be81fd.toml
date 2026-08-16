@@ -1,0 +1,46 @@
+symbol_ref = "crib/app.py#Crib._reindex_dirty_code"
+fqn = "crib.app.Crib._reindex_dirty_code"
+name = "_reindex_dirty_code"
+kind = "method"
+lang = "python"
+content_hash = "201ebef19ad72dc9"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def _reindex_dirty_code(self) -> dict[str, int]:"
+description = ""
+schema = 4
+line = 873
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_one [crib/app.py]",
+  "all [crib/codeindex.py]",
+  "is_populated [crib/codeindex.py]",
+  "project_dir [crib/paths.py]",
+  "projects [crib/app.py]",
+  "source_root [crib/codeindex.py]",
+]
+called_by = [
+  "reconcile_all [crib/app.py]",
+]
+references = [
+  "reconcile_all [crib/app.py]",
+]
+name_terms = [
+  "_reindex_dirty_code",
+  "app",
+  "code",
+  "crib",
+  "crib.app.Crib._reindex_dirty_code",
+  "dirty",
+  "reindex",
+]

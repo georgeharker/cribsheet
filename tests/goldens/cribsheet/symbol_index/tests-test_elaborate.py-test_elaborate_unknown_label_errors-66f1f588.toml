@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_elaborate.py#test_elaborate_unknown_label_errors"
+fqn = "tests.test_elaborate.test_elaborate_unknown_label_errors"
+name = "test_elaborate_unknown_label_errors"
+kind = "function"
+lang = "python"
+content_hash = "fe0bbfd556dc970a"
+file = "tests/test_elaborate.py"
+file_hash = "5cde1a0229322e89"
+signature = "def test_elaborate_unknown_label_errors(crib):"
+description = ""
+schema = 4
+line = 177
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_elaborate",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_elaborate.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "elaborate",
+  "errors",
+  "label",
+  "test",
+  "test_elaborate_unknown_label_errors",
+  "tests",
+  "tests.test_elaborate.test_elaborate_unknown_label_errors",
+  "unknown",
+]

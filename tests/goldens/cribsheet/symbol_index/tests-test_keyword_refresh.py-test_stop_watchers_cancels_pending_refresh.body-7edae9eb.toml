@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_keyword_refresh.py#test_stop_watchers_cancels_pending_refresh.body"
+fqn = "tests.test_keyword_refresh.test_stop_watchers_cancels_pending_refresh.body"
+name = "body"
+kind = "function"
+lang = "python"
+content_hash = "32766fd4da91e614"
+file = "tests/test_keyword_refresh.py"
+file_hash = "d758ff5010231936"
+signature = "async def body():"
+description = ""
+schema = 4
+line = 199
+mtime = 1786044759000000000
+container = [
+  "test_stop_watchers_cancels_pending_refresh",
+]
+scope = [
+  "tests",
+  "test_keyword_refresh",
+  "test_stop_watchers_cancels_pending_refresh",
+]
+symbol_was = []
+calls = [
+  "_arm [tests/test_keyword_refresh.py]",
+]
+called_by = [
+  "test_stop_watchers_cancels_pending_refresh [tests/test_keyword_refresh.py]",
+]
+references = [
+  "test_stop_watchers_cancels_pending_refresh [tests/test_keyword_refresh.py]",
+]
+name_terms = [
+  "body",
+  "cancels",
+  "keyword",
+  "pending",
+  "refresh",
+  "stop",
+  "test",
+  "tests",
+  "tests.test_keyword_refresh.test_stop_watchers_cancels_pending_refresh.body",
+  "watchers",
+]

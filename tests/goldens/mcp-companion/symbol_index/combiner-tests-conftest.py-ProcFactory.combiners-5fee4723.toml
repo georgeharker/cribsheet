@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/conftest.py#ProcFactory.combiners"
+fqn = "combiner.tests.conftest.ProcFactory.combiners"
+name = "combiners"
+kind = "field"
+lang = "python"
+content_hash = "c784b1349712759c"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "combiners: list[CombinerHandle] = field(default_factory=list)"
+description = ""
+schema = 4
+line = 272
+mtime = 1783544328000000000
+container = [
+  "ProcFactory",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "ProcFactory",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "start_combiner [combiner/tests/conftest.py]",
+  "teardown [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.ProcFactory.combiners",
+  "combiners",
+  "conftest",
+  "factory",
+  "proc",
+  "tests",
+]

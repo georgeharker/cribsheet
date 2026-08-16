@@ -1,0 +1,43 @@
+symbol_ref = "crib/codeindex.py#SymbolIndex._names_for"
+fqn = "crib.codeindex.SymbolIndex._names_for"
+name = "_names_for"
+kind = "method"
+lang = "python"
+content_hash = "95892fb319be9650"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def _names_for(self, entry: dict) -> list[str]:"
+description = ""
+schema = 4
+line = 1561
+mtime = 1786844518000000000
+container = [
+  "SymbolIndex",
+]
+scope = [
+  "crib",
+  "codeindex",
+  "SymbolIndex",
+]
+symbol_was = []
+calls = [
+  "bindings [crib/symbols.py]",
+  "legacy_ref_slug [crib/symbols.py]",
+  "ref_slug [crib/symbols.py]",
+]
+called_by = [
+  "write [crib/codeindex.py]",
+]
+references = [
+  "write [crib/codeindex.py]",
+]
+name_terms = [
+  "_names_for",
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex._names_for",
+  "for",
+  "index",
+  "names",
+  "symbol",
+]

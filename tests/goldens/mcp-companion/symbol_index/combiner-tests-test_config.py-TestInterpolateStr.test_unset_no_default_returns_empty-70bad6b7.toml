@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_config.py#TestInterpolateStr.test_unset_no_default_returns_empty"
+fqn = "combiner.tests.test_config.TestInterpolateStr.test_unset_no_default_returns_empty"
+name = "test_unset_no_default_returns_empty"
+kind = "method"
+lang = "python"
+content_hash = "97b33fd016febbf3"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_unset_no_default_returns_empty(self) -> None:"
+description = ""
+schema = 4
+line = 267
+mtime = 1782852601000000000
+container = [
+  "TestInterpolateStr",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+  "TestInterpolateStr",
+]
+symbol_was = []
+calls = [
+  "_interpolate_str [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateStr.test_unset_no_default_returns_empty",
+  "config",
+  "default",
+  "empty",
+  "interpolate",
+  "no",
+  "returns",
+  "str",
+  "test",
+  "test_unset_no_default_returns_empty",
+  "tests",
+  "unset",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "crib/app.py#Crib.apropos"
+fqn = "crib.app.Crib.apropos"
+name = "apropos"
+kind = "method"
+lang = "python"
+content_hash = "bc881fc6168bb430"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def apropos(self, query: str, project: str | None = None, k: int = 8,"
+description = ""
+schema = 4
+line = 1151
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "abspath [crib/notestore.py]",
+  "lookup [crib/app.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "note_apropos [crib/server.py]",
+]
+references = [
+  "note_apropos [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "apropos",
+  "crib",
+  "crib.app.Crib.apropos",
+]

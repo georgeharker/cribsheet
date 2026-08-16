@@ -1,0 +1,43 @@
+symbol_ref = "scripts/symstats.py#capture"
+fqn = "scripts.symstats.capture"
+name = "capture"
+kind = "function"
+lang = "python"
+content_hash = "d2d3e96bd10b58b3"
+file = "scripts/symstats.py"
+file_hash = "bc09f2e285e5b003"
+signature = "def capture(project: str) -> dict:"
+description = ""
+schema = 4
+line = 74
+mtime = 1786664729000000000
+container = []
+scope = [
+  "scripts",
+  "symstats",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_bindings [scripts/symstats.py]",
+  "_digest [scripts/symstats.py]",
+  "_entry_key [scripts/symstats.py]",
+  "_parse [crib/codeindex.py]",
+  "load [crib/notes.py]",
+  "project_dir [crib/paths.py]",
+  "ref_slug [crib/symbols.py]",
+  "resolve [crib/paths.py]",
+  "stored_schema [crib/codeindex.py]",
+]
+called_by = [
+  "main [scripts/symstats.py]",
+]
+references = [
+  "main [scripts/symstats.py]",
+]
+name_terms = [
+  "capture",
+  "scripts",
+  "scripts.symstats.capture",
+  "symstats",
+]

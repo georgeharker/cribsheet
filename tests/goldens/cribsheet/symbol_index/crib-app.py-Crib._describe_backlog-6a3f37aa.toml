@@ -1,0 +1,43 @@
+symbol_ref = "crib/app.py#Crib._describe_backlog"
+fqn = "crib.app.Crib._describe_backlog"
+name = "_describe_backlog"
+kind = "method"
+lang = "python"
+content_hash = "9bacff11dfa671a2"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def _describe_backlog(self) -> None:"
+description = ""
+schema = 4
+line = 381
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "all [crib/codeindex.py]",
+  "project_dir [crib/paths.py]",
+  "projects [crib/app.py]",
+  "source_root [crib/codeindex.py]",
+]
+called_by = [
+  "start_watchers [crib/app.py]",
+]
+references = [
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "_describe_backlog",
+  "app",
+  "backlog",
+  "crib",
+  "crib.app.Crib._describe_backlog",
+  "describe",
+]

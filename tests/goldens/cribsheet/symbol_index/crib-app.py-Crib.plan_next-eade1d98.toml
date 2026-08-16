@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.plan_next"
+fqn = "crib.app.Crib.plan_next"
+name = "plan_next"
+kind = "method"
+lang = "python"
+content_hash = "e073977f1578db64"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def plan_next(self, k: int = 5, project: str | None = None,"
+description = ""
+schema = 4
+line = 2330
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "plan_next [crib/designs.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "plan_next [crib/server.py]",
+]
+references = [
+  "plan_next [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.plan_next",
+  "next",
+  "plan",
+  "plan_next",
+]

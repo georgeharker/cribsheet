@@ -1,0 +1,35 @@
+symbol_ref = "lua/mcp_companion/init.lua#on"
+fqn = "mcp_companion.on"
+name = "on"
+kind = "function"
+lang = "lua"
+content_hash = "562b1cfdcb8df437"
+file = "lua/mcp_companion/init.lua"
+file_hash = "97d5bcda7db25914"
+signature = "function M.on(event, callback)"
+description = ""
+schema = 4
+line = 240
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/init.lua]",
+]
+references = [
+  "event [lua/mcp_companion/init.lua]",
+  "get_combiner [lua/mcp_companion/init.lua]",
+  "get_hub_instance [lua/mcp_companion/init.lua]",
+  "get_state [lua/mcp_companion/init.lua]",
+  "opts [lua/mcp_companion/init.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.on",
+  "on",
+]

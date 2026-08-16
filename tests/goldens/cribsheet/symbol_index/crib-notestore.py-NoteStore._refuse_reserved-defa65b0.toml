@@ -1,0 +1,41 @@
+symbol_ref = "crib/notestore.py#NoteStore._refuse_reserved"
+fqn = "crib.notestore.NoteStore._refuse_reserved"
+name = "_refuse_reserved"
+kind = "method"
+lang = "python"
+content_hash = "abb66bf41aed2a56"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "def _refuse_reserved(self, relpath: str) -> None:"
+description = ""
+schema = 4
+line = 148
+mtime = 1786564832000000000
+container = [
+  "NoteStore",
+]
+scope = [
+  "crib",
+  "notestore",
+  "NoteStore",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+]
+called_by = [
+  "abspath [crib/notestore.py]",
+]
+references = [
+  "abspath [crib/notestore.py]",
+]
+name_terms = [
+  "_refuse_reserved",
+  "crib",
+  "crib.notestore.NoteStore._refuse_reserved",
+  "note",
+  "notestore",
+  "refuse",
+  "reserved",
+  "store",
+]

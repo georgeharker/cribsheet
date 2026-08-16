@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#cmd_status"
+fqn = "combiner.mcp_combiner.ctl.cmd_status"
+name = "cmd_status"
+kind = "function"
+lang = "python"
+content_hash = "0598778b8b67f3c7"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "async def cmd_status(args: argparse.Namespace) -> int:"
+description = ""
+schema = 4
+line = 397
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = [
+  "_base_url [combiner/mcp_combiner/ctl.py]",
+  "_emit [combiner/mcp_combiner/ctl.py]",
+  "_rest [combiner/mcp_combiner/ctl.py]",
+]
+called_by = []
+references = [
+  "add_ctl_parsers [combiner/mcp_combiner/ctl.py]",
+]
+name_terms = [
+  "cmd",
+  "cmd_status",
+  "combiner",
+  "combiner.mcp_combiner.ctl.cmd_status",
+  "ctl",
+  "mcp",
+  "status",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "crib/cli.py#Verb.tool"
+fqn = "crib.cli.Verb.tool"
+name = "tool"
+kind = "field"
+lang = "python"
+content_hash = "d0829e81b97f8852"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "tool: str                                   # MCP tool name (daemon path)"
+description = ""
+schema = 4
+line = 1461
+mtime = 1786693579000000000
+container = [
+  "Verb",
+]
+scope = [
+  "crib",
+  "cli",
+  "Verb",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+  "_run_daemon [crib/cli.py]",
+  "crib_method [crib/cli.py]",
+  "test_reaffirm_replaced_verify_outright [tests/test_design_cli.py]",
+  "test_registry_and_mcp_surface_cover_each_other [tests/test_surface_parity.py]",
+  "test_registry_matches_mcp_tool_schemas [tests/test_surface_parity.py]",
+  "test_registry_policy_matches_the_server_declaration [tests/test_surface_parity.py]",
+]
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli.Verb.tool",
+  "tool",
+  "verb",
+]

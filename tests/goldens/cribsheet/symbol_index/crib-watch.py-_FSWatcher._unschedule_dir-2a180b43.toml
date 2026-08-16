@@ -1,0 +1,39 @@
+symbol_ref = "crib/watch.py#_FSWatcher._unschedule_dir"
+fqn = "crib.watch._FSWatcher._unschedule_dir"
+name = "_unschedule_dir"
+kind = "method"
+lang = "python"
+content_hash = "3a524c795314ec09"
+file = "crib/watch.py"
+file_hash = "c10c30739292eebe"
+signature = "def _unschedule_dir(self, d: str) -> None:"
+description = ""
+schema = 4
+line = 173
+mtime = 1786139638000000000
+container = [
+  "_FSWatcher",
+]
+scope = [
+  "crib",
+  "watch",
+  "_FSWatcher",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "watch_root [crib/watch.py]",
+]
+references = [
+  "watch_root [crib/watch.py]",
+]
+name_terms = [
+  "_unschedule_dir",
+  "crib",
+  "crib.watch._FSWatcher._unschedule_dir",
+  "dir",
+  "fs",
+  "unschedule",
+  "watch",
+  "watcher",
+]

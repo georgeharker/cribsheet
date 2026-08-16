@@ -1,0 +1,46 @@
+symbol_ref = "tests/test_describe_queue.py#test_inflight_describe_task_is_strongly_referenced.body"
+fqn = "tests.test_describe_queue.test_inflight_describe_task_is_strongly_referenced.body"
+name = "body"
+kind = "function"
+lang = "python"
+content_hash = "c1aa1b81c0b4e584"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "async def body():"
+description = ""
+schema = 4
+line = 133
+mtime = 1786664729000000000
+container = [
+  "test_inflight_describe_task_is_strongly_referenced",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "test_inflight_describe_task_is_strongly_referenced",
+]
+symbol_was = []
+calls = [
+  "DescribeQueue [crib/describe_queue.py]",
+  "_sym [tests/test_describe_queue.py]",
+  "enqueue [crib/describe_queue.py]",
+]
+called_by = [
+  "test_inflight_describe_task_is_strongly_referenced [tests/test_describe_queue.py]",
+]
+references = [
+  "test_inflight_describe_task_is_strongly_referenced [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "body",
+  "describe",
+  "inflight",
+  "is",
+  "queue",
+  "referenced",
+  "strongly",
+  "task",
+  "test",
+  "tests",
+  "tests.test_describe_queue.test_inflight_describe_task_is_strongly_referenced.body",
+]

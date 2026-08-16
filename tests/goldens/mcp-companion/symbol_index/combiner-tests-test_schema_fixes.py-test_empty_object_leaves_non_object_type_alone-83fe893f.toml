@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_schema_fixes.py#test_empty_object_leaves_non_object_type_alone"
+fqn = "combiner.tests.test_schema_fixes.test_empty_object_leaves_non_object_type_alone"
+name = "test_empty_object_leaves_non_object_type_alone"
+kind = "function"
+lang = "python"
+content_hash = "137a888e124ecc38"
+file = "combiner/tests/test_schema_fixes.py"
+file_hash = "96276dbde1199700"
+signature = "def test_empty_object_leaves_non_object_type_alone():"
+description = ""
+schema = 4
+line = 34
+mtime = 1783542616000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_schema_fixes",
+]
+symbol_was = []
+calls = [
+  "_apply_object_fixes [combiner/mcp_combiner/schemafix.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "alone",
+  "combiner",
+  "combiner.tests.test_schema_fixes.test_empty_object_leaves_non_object_type_alone",
+  "empty",
+  "fixes",
+  "leaves",
+  "non",
+  "object",
+  "schema",
+  "test",
+  "test_empty_object_leaves_non_object_type_alone",
+  "tests",
+  "type",
+]

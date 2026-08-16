@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_code_attribution.py#test_ambiguous_tail_match_is_dropped_never_guessed"
+fqn = "tests.test_code_attribution.test_ambiguous_tail_match_is_dropped_never_guessed"
+name = "test_ambiguous_tail_match_is_dropped_never_guessed"
+kind = "function"
+lang = "python"
+content_hash = "d5dc6bb2f01944e0"
+file = "tests/test_code_attribution.py"
+file_hash = "ff3c29a685f6f6d7"
+signature = "def test_ambiguous_tail_match_is_dropped_never_guessed():"
+description = ""
+schema = 4
+line = 72
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_attribution",
+]
+symbol_was = []
+calls = [
+  "match_meta [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "ambiguous",
+  "attribution",
+  "code",
+  "dropped",
+  "guessed",
+  "is",
+  "match",
+  "never",
+  "tail",
+  "test",
+  "test_ambiguous_tail_match_is_dropped_never_guessed",
+  "tests",
+  "tests.test_code_attribution.test_ambiguous_tail_match_is_dropped_never_guessed",
+]

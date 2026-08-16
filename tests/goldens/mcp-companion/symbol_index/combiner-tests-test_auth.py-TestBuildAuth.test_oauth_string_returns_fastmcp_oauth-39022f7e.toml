@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_auth.py#TestBuildAuth.test_oauth_string_returns_fastmcp_oauth"
+fqn = "combiner.tests.test_auth.TestBuildAuth.test_oauth_string_returns_fastmcp_oauth"
+name = "test_oauth_string_returns_fastmcp_oauth"
+kind = "method"
+lang = "python"
+content_hash = "cdf0bf06efc1fa0a"
+file = "combiner/tests/test_auth.py"
+file_hash = "2b3aa7eeeed5bf38"
+signature = "def test_oauth_string_returns_fastmcp_oauth(self, tmp_path: Path) -> None:"
+description = ""
+schema = 4
+line = 144
+mtime = 1782852601000000000
+container = [
+  "TestBuildAuth",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_auth",
+  "TestBuildAuth",
+]
+symbol_was = []
+calls = [
+  "build_auth [combiner/mcp_combiner/auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "build",
+  "combiner",
+  "combiner.tests.test_auth.TestBuildAuth.test_oauth_string_returns_fastmcp_oauth",
+  "fastmcp",
+  "oauth",
+  "returns",
+  "string",
+  "test",
+  "test_oauth_string_returns_fastmcp_oauth",
+  "tests",
+]

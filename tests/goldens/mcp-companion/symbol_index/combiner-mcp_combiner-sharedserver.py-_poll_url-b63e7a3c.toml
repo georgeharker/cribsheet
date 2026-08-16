@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/sharedserver.py#_poll_url"
+fqn = "combiner.mcp_combiner.sharedserver._poll_url"
+name = "_poll_url"
+kind = "function"
+lang = "python"
+content_hash = "cb1d753fabb07a11"
+file = "combiner/mcp_combiner/sharedserver.py"
+file_hash = "00df81a0a741c869"
+signature = "async def _poll_url(url: str, timeout: int) -> bool:"
+description = ""
+schema = 4
+line = 44
+mtime = 1782539642000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "sharedserver",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_start_one [combiner/mcp_combiner/sharedserver.py]",
+]
+references = [
+  "_start_one [combiner/mcp_combiner/sharedserver.py]",
+]
+name_terms = [
+  "_poll_url",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver._poll_url",
+  "mcp",
+  "poll",
+  "sharedserver",
+  "url",
+]

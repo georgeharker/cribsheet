@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_dim_recovery.py#test_dim_change_re_embeds_every_project_and_marks_the_gap.spy"
+fqn = "tests.test_dim_recovery.test_dim_change_re_embeds_every_project_and_marks_the_gap.spy"
+name = "spy"
+kind = "function"
+lang = "python"
+content_hash = "3338eee87d4ffed4"
+file = "tests/test_dim_recovery.py"
+file_hash = "5f6ffd4e573336e9"
+signature = "async def spy(project, relpath=None):            # capture status DURING the sweep"
+description = ""
+schema = 4
+line = 71
+mtime = 1786578262000000000
+container = [
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap",
+]
+scope = [
+  "tests",
+  "test_dim_recovery",
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap [tests/test_dim_recovery.py]",
+]
+name_terms = [
+  "and",
+  "change",
+  "dim",
+  "embeds",
+  "every",
+  "gap",
+  "marks",
+  "project",
+  "re",
+  "recovery",
+  "spy",
+  "test",
+  "tests",
+  "tests.test_dim_recovery.test_dim_change_re_embeds_every_project_and_marks_the_gap.spy",
+  "the",
+]

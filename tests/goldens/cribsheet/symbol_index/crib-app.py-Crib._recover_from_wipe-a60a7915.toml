@@ -1,0 +1,42 @@
+symbol_ref = "crib/app.py#Crib._recover_from_wipe"
+fqn = "crib.app.Crib._recover_from_wipe"
+name = "_recover_from_wipe"
+kind = "method"
+lang = "python"
+content_hash = "b756fb1565180ccf"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _recover_from_wipe(self, reason: str) -> None:"
+description = ""
+schema = 4
+line = 734
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "_indexed_projects [crib/app.py]",
+  "projects [crib/app.py]",
+  "reconcile_in_background [crib/app.py]",
+]
+called_by = [
+  "reindex [crib/app.py]",
+]
+references = [
+  "reindex [crib/app.py]",
+]
+name_terms = [
+  "_recover_from_wipe",
+  "app",
+  "crib",
+  "crib.app.Crib._recover_from_wipe",
+  "from",
+  "recover",
+  "wipe",
+]

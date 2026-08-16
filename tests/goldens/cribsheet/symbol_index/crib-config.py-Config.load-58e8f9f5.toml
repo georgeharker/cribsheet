@@ -1,0 +1,58 @@
+symbol_ref = "crib/config.py#Config.load"
+fqn = "crib.config.Config.load"
+name = "load"
+kind = "method"
+lang = "python"
+content_hash = "ea10a8fbe91d035b"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "@classmethod"
+description = ""
+schema = 4
+line = 273
+mtime = 1786564832000000000
+container = [
+  "Config",
+]
+scope = [
+  "crib",
+  "config",
+  "Config",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_table [crib/config.py]",
+  "_warn [crib/config.py]",
+  "_warn_unknown [crib/config.py]",
+]
+called_by = [
+  "_resolve_serve_endpoint [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+  "main [crib/cli.py]",
+  "open [crib/app.py]",
+  "test_broken_toml_names_the_file [tests/test_config_resilience.py]",
+  "test_every_table_tolerates_unknown_keys [tests/test_config_resilience.py]",
+  "test_known_keys_are_unaffected [tests/test_config_resilience.py]",
+  "test_unknown_key_in_a_table_warns_and_loads [tests/test_config_resilience.py]",
+  "test_unknown_top_level_key_warns_and_loads [tests/test_config_resilience.py]",
+  "test_wrong_shaped_values_warn_instead_of_raising [tests/test_config_resilience.py]",
+]
+references = [
+  "_resolve_serve_endpoint [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+  "main [crib/cli.py]",
+  "open [crib/app.py]",
+  "test_broken_toml_names_the_file [tests/test_config_resilience.py]",
+  "test_every_table_tolerates_unknown_keys [tests/test_config_resilience.py]",
+  "test_known_keys_are_unaffected [tests/test_config_resilience.py]",
+  "test_unknown_key_in_a_table_warns_and_loads [tests/test_config_resilience.py]",
+  "test_unknown_top_level_key_warns_and_loads [tests/test_config_resilience.py]",
+  "test_wrong_shaped_values_warn_instead_of_raising [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.load",
+  "load",
+]

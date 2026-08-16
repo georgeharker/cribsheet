@@ -1,0 +1,31 @@
+symbol_ref = "crib/cli.py#_PROJ"
+fqn = "crib.cli._PROJ"
+name = "_PROJ"
+kind = "constant"
+lang = "python"
+content_hash = "37f229c014f32534"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "_PROJ = \"project=None project_path=None\"          # the two selectors, on most tools"
+description = ""
+schema = 4
+line = 1548
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_PROJ",
+  "cli",
+  "crib",
+  "crib.cli._PROJ",
+  "proj",
+]

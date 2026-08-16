@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_repo_storage.py#test_store_relpath_resolves_against_the_repo_root"
+fqn = "tests.test_repo_storage.test_store_relpath_resolves_against_the_repo_root"
+name = "test_store_relpath_resolves_against_the_repo_root"
+kind = "function"
+lang = "python"
+content_hash = "50b2332d250113ae"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_store_relpath_resolves_against_the_repo_root(tmp_path):"
+description = ""
+schema = 4
+line = 63
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "find [crib/config.py]",
+  "repo_with_store [tests/test_repo_storage.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "against",
+  "relpath",
+  "repo",
+  "resolves",
+  "root",
+  "storage",
+  "store",
+  "test",
+  "test_store_relpath_resolves_against_the_repo_root",
+  "tests",
+  "tests.test_repo_storage.test_store_relpath_resolves_against_the_repo_root",
+  "the",
+]

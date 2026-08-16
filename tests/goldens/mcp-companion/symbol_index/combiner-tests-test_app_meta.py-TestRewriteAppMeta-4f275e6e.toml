@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_app_meta.py#TestRewriteAppMeta"
+fqn = "combiner.tests.test_app_meta.TestRewriteAppMeta"
+name = "TestRewriteAppMeta"
+kind = "class"
+lang = "python"
+content_hash = "98ce7565003e411c"
+file = "combiner/tests/test_app_meta.py"
+file_hash = "fc52f36639c3320a"
+signature = "class TestRewriteAppMeta:"
+description = ""
+schema = 4
+line = 57
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_app_meta",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestRewriteAppMeta",
+  "app",
+  "combiner",
+  "combiner.tests.test_app_meta.TestRewriteAppMeta",
+  "meta",
+  "rewrite",
+  "test",
+  "tests",
+]

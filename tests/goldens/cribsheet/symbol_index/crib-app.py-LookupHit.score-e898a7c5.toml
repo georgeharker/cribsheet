@@ -1,0 +1,37 @@
+symbol_ref = "crib/app.py#LookupHit.score"
+fqn = "crib.app.LookupHit.score"
+name = "score"
+kind = "field"
+lang = "python"
+content_hash = "97c1f7f62aaaa311"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "score: float"
+description = ""
+schema = 4
+line = 71
+mtime = 1786693579000000000
+container = [
+  "LookupHit",
+]
+scope = [
+  "crib",
+  "app",
+  "LookupHit",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_emit_human_one [crib/cli.py]",
+  "_similar [crib/app.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.LookupHit.score",
+  "hit",
+  "lookup",
+  "score",
+]

@@ -1,0 +1,43 @@
+symbol_ref = "crib/codequery.py#CodeQuery.lookup"
+fqn = "crib.codequery.CodeQuery.lookup"
+name = "lookup"
+kind = "method"
+lang = "python"
+content_hash = "efc755c8b5e89b12"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def lookup(self, proj: str, query: str, k: int = 8) -> list[dict[str, Any]]:"
+description = ""
+schema = 4
+line = 309
+mtime = 1786664729000000000
+container = [
+  "CodeQuery",
+]
+scope = [
+  "crib",
+  "codequery",
+  "CodeQuery",
+]
+symbol_was = []
+calls = [
+  "_lookup_one [crib/codequery.py]",
+  "check_k [crib/codequery.py]",
+  "check_query [crib/codequery.py]",
+  "project_refs [crib/refs.py]",
+  "reciprocal_rank_fusion [crib/retrieve.py]",
+]
+called_by = [
+  "code_lookup [crib/app.py]",
+]
+references = [
+  "code_lookup [crib/app.py]",
+]
+name_terms = [
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery.lookup",
+  "lookup",
+  "query",
+]

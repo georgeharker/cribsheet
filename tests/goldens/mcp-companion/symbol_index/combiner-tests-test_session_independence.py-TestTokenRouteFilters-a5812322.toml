@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestTokenRouteFilters"
+fqn = "combiner.tests.test_session_independence.TestTokenRouteFilters"
+name = "TestTokenRouteFilters"
+kind = "class"
+lang = "python"
+content_hash = "58933690d61f8ffc"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "class TestTokenRouteFilters:"
+description = ""
+schema = 4
+line = 240
+mtime = 1783541669000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestTokenRouteFilters",
+  "combiner",
+  "combiner.tests.test_session_independence.TestTokenRouteFilters",
+  "filters",
+  "independence",
+  "route",
+  "session",
+  "test",
+  "tests",
+  "token",
+]

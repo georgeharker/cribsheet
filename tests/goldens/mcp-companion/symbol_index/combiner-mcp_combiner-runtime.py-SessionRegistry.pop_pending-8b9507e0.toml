@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.pop_pending"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.pop_pending"
+name = "pop_pending"
+kind = "method"
+lang = "python"
+content_hash = "fae3043a4ef8ffa8"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def pop_pending(self, token: str) -> set[str] | None:"
+description = ""
+schema = 4
+line = 139
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "dispatch [combiner/mcp_combiner/asgi.py]",
+]
+references = [
+  "dispatch [combiner/mcp_combiner/asgi.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.pop_pending",
+  "mcp",
+  "pending",
+  "pop",
+  "pop_pending",
+  "registry",
+  "runtime",
+  "session",
+]

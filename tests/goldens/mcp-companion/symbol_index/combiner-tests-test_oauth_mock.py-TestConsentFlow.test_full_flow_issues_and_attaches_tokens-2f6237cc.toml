@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestConsentFlow.test_full_flow_issues_and_attaches_tokens"
+fqn = "combiner.tests.test_oauth_mock.TestConsentFlow.test_full_flow_issues_and_attaches_tokens"
+name = "test_full_flow_issues_and_attaches_tokens"
+kind = "method"
+lang = "python"
+content_hash = "a6da92cfbcef8997"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def test_full_flow_issues_and_attaches_tokens("
+description = ""
+schema = 4
+line = 203
+mtime = 1784495646000000000
+container = [
+  "TestConsentFlow",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "TestConsentFlow",
+]
+symbol_was = []
+calls = [
+  "_call_echo [combiner/tests/test_oauth_mock.py]",
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+  "authenticated_mcp_calls [combiner/mcp_combiner/mockserver.py]",
+  "token_requests_of [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "attaches",
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestConsentFlow.test_full_flow_issues_and_attaches_tokens",
+  "consent",
+  "flow",
+  "full",
+  "issues",
+  "mock",
+  "oauth",
+  "test",
+  "test_full_flow_issues_and_attaches_tokens",
+  "tests",
+  "tokens",
+]

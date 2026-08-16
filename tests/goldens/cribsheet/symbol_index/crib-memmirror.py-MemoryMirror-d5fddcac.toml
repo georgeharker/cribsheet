@@ -1,0 +1,33 @@
+symbol_ref = "crib/memmirror.py#MemoryMirror"
+fqn = "crib.memmirror.MemoryMirror"
+name = "MemoryMirror"
+kind = "class"
+lang = "python"
+content_hash = "4644e438d30c9c46"
+file = "crib/memmirror.py"
+file_hash = "9ff08381721a9203"
+signature = "class MemoryMirror:"
+description = ""
+schema = 4
+line = 26
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "memmirror",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "scenario [tests/test_claude_memory.py]",
+  "start_memory_mirror [crib/app.py]",
+]
+name_terms = [
+  "MemoryMirror",
+  "crib",
+  "crib.memmirror.MemoryMirror",
+  "memmirror",
+  "memory",
+  "mirror",
+]

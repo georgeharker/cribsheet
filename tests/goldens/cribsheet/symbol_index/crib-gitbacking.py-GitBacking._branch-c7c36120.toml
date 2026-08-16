@@ -1,0 +1,56 @@
+symbol_ref = "crib/gitbacking.py#GitBacking._branch"
+fqn = "crib.gitbacking.GitBacking._branch"
+name = "_branch"
+kind = "method"
+lang = "python"
+content_hash = "014b87e8a35f3ac1"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def _branch(self) -> str:"
+description = ""
+schema = 4
+line = 401
+mtime = 1785963011000000000
+container = [
+  "GitBacking",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "GitBacking",
+]
+symbol_was = []
+calls = [
+  "_local_default_branch [crib/gitbacking.py]",
+  "_remote_head_branch [crib/gitbacking.py]",
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "_pending_join [crib/gitbacking.py]",
+  "_remote_file [crib/gitbacking.py]",
+  "pull [crib/gitbacking.py]",
+  "push [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+  "state [crib/gitbacking.py]",
+  "test_empty_remote_still_falls_back_to_the_local_default [tests/test_sync.py]",
+  "test_unborn_head_takes_the_branch_from_the_remote [tests/test_sync.py]",
+]
+references = [
+  "_pending_join [crib/gitbacking.py]",
+  "_remote_file [crib/gitbacking.py]",
+  "pull [crib/gitbacking.py]",
+  "push [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+  "state [crib/gitbacking.py]",
+  "test_empty_remote_still_falls_back_to_the_local_default [tests/test_sync.py]",
+  "test_unborn_head_takes_the_branch_from_the_remote [tests/test_sync.py]",
+]
+name_terms = [
+  "_branch",
+  "backing",
+  "branch",
+  "crib",
+  "crib.gitbacking.GitBacking._branch",
+  "git",
+  "gitbacking",
+]

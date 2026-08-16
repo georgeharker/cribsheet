@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_code_graph.py#test_qualifying_the_name_resolves_and_answers"
+fqn = "tests.test_code_graph.test_qualifying_the_name_resolves_and_answers"
+name = "test_qualifying_the_name_resolves_and_answers"
+kind = "function"
+lang = "python"
+content_hash = "ea6eb9045d212872"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def test_qualifying_the_name_resolves_and_answers(crib, tmp_path):"
+description = ""
+schema = 4
+line = 252
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "_wrapper_and_op [tests/test_code_graph.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "answers",
+  "code",
+  "graph",
+  "name",
+  "qualifying",
+  "resolves",
+  "test",
+  "test_qualifying_the_name_resolves_and_answers",
+  "tests",
+  "tests.test_code_graph.test_qualifying_the_name_resolves_and_answers",
+  "the",
+]

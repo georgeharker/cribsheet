@@ -1,0 +1,40 @@
+symbol_ref = "crib/config.py#ChunkConfig.window_words"
+fqn = "crib.config.ChunkConfig.window_words"
+name = "window_words"
+kind = "field"
+lang = "python"
+content_hash = "0a53ddb8ddbe94ed"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "window_words: int = 320         # keep windows under the model's 512-token cap"
+description = ""
+schema = 4
+line = 63
+mtime = 1786564832000000000
+container = [
+  "ChunkConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "ChunkConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "cmd_info [crib/cli.py]",
+  "overlap_words [crib/config.py]",
+  "test_overlap_clamped_below_window [tests/test_chunk_config.py]",
+  "test_overlap_words_derived_from_ratio [tests/test_chunk_config.py]",
+]
+name_terms = [
+  "chunk",
+  "config",
+  "crib",
+  "crib.config.ChunkConfig.window_words",
+  "window",
+  "window_words",
+  "words",
+]

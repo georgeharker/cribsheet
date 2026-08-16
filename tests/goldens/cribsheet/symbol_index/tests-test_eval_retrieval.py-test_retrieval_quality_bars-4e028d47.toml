@@ -1,0 +1,32 @@
+symbol_ref = "tests/test_eval_retrieval.py#test_retrieval_quality_bars"
+fqn = "tests.test_eval_retrieval.test_retrieval_quality_bars"
+name = "test_retrieval_quality_bars"
+kind = "function"
+lang = "python"
+content_hash = "94fe5af944046783"
+file = "tests/test_eval_retrieval.py"
+file_hash = "0b2f115a800b669f"
+signature = "def test_retrieval_quality_bars():"
+description = ""
+schema = 4
+line = 19
+mtime = 1782843962000000000
+container = []
+scope = [
+  "tests",
+  "test_eval_retrieval",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "bars",
+  "eval",
+  "quality",
+  "retrieval",
+  "test",
+  "test_retrieval_quality_bars",
+  "tests",
+  "tests.test_eval_retrieval.test_retrieval_quality_bars",
+]

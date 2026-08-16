@@ -1,0 +1,35 @@
+symbol_ref = "crib/cli.py#_emit_write_result"
+fqn = "crib.cli._emit_write_result"
+name = "_emit_write_result"
+kind = "function"
+lang = "python"
+content_hash = "da1c76126786d3b3"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _emit_write_result(item: dict) -> None:"
+description = ""
+schema = 4
+line = 194
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_emit_human_one [crib/cli.py]",
+]
+references = [
+  "_emit_human_one [crib/cli.py]",
+]
+name_terms = [
+  "_emit_write_result",
+  "cli",
+  "crib",
+  "crib.cli._emit_write_result",
+  "emit",
+  "result",
+  "write",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/__main__.py#_add_serve_args"
+fqn = "combiner.mcp_combiner.__main__._add_serve_args"
+name = "_add_serve_args"
+kind = "function"
+lang = "python"
+content_hash = "46a3b9ceb5b236b0"
+file = "combiner/mcp_combiner/__main__.py"
+file_hash = "d4d263eede19a350"
+signature = "def _add_serve_args(parser: argparse.ArgumentParser) -> None:"
+description = ""
+schema = 4
+line = 48
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "__main__",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [combiner/mcp_combiner/__main__.py]",
+]
+references = [
+  "main [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "_add_serve_args",
+  "add",
+  "args",
+  "combiner",
+  "combiner.mcp_combiner.__main__._add_serve_args",
+  "main",
+  "mcp",
+  "serve",
+]

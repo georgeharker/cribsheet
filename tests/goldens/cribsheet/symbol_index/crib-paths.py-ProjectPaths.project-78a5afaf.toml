@@ -1,0 +1,34 @@
+symbol_ref = "crib/paths.py#ProjectPaths.project"
+fqn = "crib.paths.ProjectPaths.project"
+name = "project"
+kind = "field"
+lang = "python"
+content_hash = "72bf42a4f223d84d"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "project: str"
+description = ""
+schema = 4
+line = 149
+mtime = 1786564832000000000
+container = [
+  "ProjectPaths",
+]
+scope = [
+  "crib",
+  "paths",
+  "ProjectPaths",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_skip_if_unavailable [crib/app.py]",
+  "require [crib/paths.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.ProjectPaths.project",
+  "paths",
+  "project",
+]

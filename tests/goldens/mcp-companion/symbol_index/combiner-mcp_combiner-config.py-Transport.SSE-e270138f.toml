@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/config.py#Transport.SSE"
+fqn = "combiner.mcp_combiner.config.Transport.SSE"
+name = "SSE"
+kind = "constant"
+lang = "python"
+content_hash = "ef1a75c2837e19e3"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "SSE = \"sse\""
+description = ""
+schema = 4
+line = 43
+mtime = 1783633313000000000
+container = [
+  "Transport",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "Transport",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "build_http_transport [combiner/mcp_combiner/connections.py]",
+  "is_http_server [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "SSE",
+  "combiner",
+  "combiner.mcp_combiner.config.Transport.SSE",
+  "config",
+  "mcp",
+  "sse",
+  "transport",
+]

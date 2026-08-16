@@ -1,0 +1,41 @@
+symbol_ref = "crib/codequery.py#CodeQuery._proj_maps"
+fqn = "crib.codequery.CodeQuery._proj_maps"
+name = "_proj_maps"
+kind = "method"
+lang = "python"
+content_hash = "9452c313696701ec"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def _proj_maps(self, proj: str) -> tuple[dict[str, str], dict[tuple[str, str], str]]:"
+description = ""
+schema = 4
+line = 244
+mtime = 1786664729000000000
+container = [
+  "CodeQuery",
+]
+scope = [
+  "crib",
+  "codequery",
+  "CodeQuery",
+]
+symbol_was = []
+calls = [
+  "key [crib/symbols.py]",
+]
+called_by = [
+  "_neighbours [crib/codequery.py]",
+]
+references = [
+  "_neighbours [crib/codequery.py]",
+]
+name_terms = [
+  "_proj_maps",
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery._proj_maps",
+  "maps",
+  "proj",
+  "query",
+]

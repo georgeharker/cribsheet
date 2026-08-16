@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_merge.py#test_run_driver_routes_toml_clean"
+fqn = "tests.test_merge.test_run_driver_routes_toml_clean"
+name = "test_run_driver_routes_toml_clean"
+kind = "function"
+lang = "python"
+content_hash = "892de39fe08b2568"
+file = "tests/test_merge.py"
+file_hash = "3726dccae7cf8779"
+signature = "def test_run_driver_routes_toml_clean(tmp_path):"
+description = ""
+schema = 4
+line = 117
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_merge",
+]
+symbol_was = []
+calls = [
+  "_render [crib/codeindex.py]",
+  "run_driver [crib/merge.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "clean",
+  "driver",
+  "merge",
+  "routes",
+  "run",
+  "test",
+  "test_run_driver_routes_toml_clean",
+  "tests",
+  "tests.test_merge.test_run_driver_routes_toml_clean",
+  "toml",
+]

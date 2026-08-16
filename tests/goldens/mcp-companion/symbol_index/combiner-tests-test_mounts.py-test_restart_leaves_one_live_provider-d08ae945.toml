@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_mounts.py#test_restart_leaves_one_live_provider"
+fqn = "combiner.tests.test_mounts.test_restart_leaves_one_live_provider"
+name = "test_restart_leaves_one_live_provider"
+kind = "function"
+lang = "python"
+content_hash = "39da548549a791c5"
+file = "combiner/tests/test_mounts.py"
+file_hash = "5a0de1047967797a"
+signature = "async def test_restart_leaves_one_live_provider("
+description = ""
+schema = 4
+line = 88
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_mounts",
+]
+symbol_was = []
+calls = [
+  "FakeConnManager [combiner/tests/fakes.py]",
+  "FakeSSManager [combiner/tests/fakes.py]",
+  "_make_proxy [combiner/tests/test_mounts.py]",
+  "load [combiner/mcp_combiner/config.py]",
+  "mount_server_provider [combiner/mcp_combiner/mounts.py]",
+  "register_meta_tools [combiner/mcp_combiner/meta_tools.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_mounts.test_restart_leaves_one_live_provider",
+  "leaves",
+  "live",
+  "mounts",
+  "one",
+  "provider",
+  "restart",
+  "test",
+  "test_restart_leaves_one_live_provider",
+  "tests",
+]

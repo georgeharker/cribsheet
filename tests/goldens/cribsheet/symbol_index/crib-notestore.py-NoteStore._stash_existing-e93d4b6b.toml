@@ -1,0 +1,50 @@
+symbol_ref = "crib/notestore.py#NoteStore._stash_existing"
+fqn = "crib.notestore.NoteStore._stash_existing"
+name = "_stash_existing"
+kind = "method"
+lang = "python"
+content_hash = "86011c5877afc51d"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "def _stash_existing(self, project: str, relpath: str, path: Path,"
+description = ""
+schema = 4
+line = 176
+mtime = 1786564832000000000
+container = [
+  "NoteStore",
+]
+scope = [
+  "crib",
+  "notestore",
+  "NoteStore",
+]
+symbol_was = []
+calls = [
+  "derived_ulid [crib/util.py]",
+  "parse [crib/notes.py]",
+  "scan_id [crib/notes.py]",
+  "serialize [crib/notes.py]",
+  "stash [crib/versions.py]",
+  "versions_for [crib/notestore.py]",
+]
+called_by = [
+  "_requalify_facet_refs [crib/app.py]",
+  "delete [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+references = [
+  "_requalify_facet_refs [crib/app.py]",
+  "delete [crib/notestore.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "_stash_existing",
+  "crib",
+  "crib.notestore.NoteStore._stash_existing",
+  "existing",
+  "note",
+  "notestore",
+  "stash",
+  "store",
+]

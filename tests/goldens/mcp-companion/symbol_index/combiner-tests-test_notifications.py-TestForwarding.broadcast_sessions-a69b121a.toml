@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestForwarding.broadcast_sessions"
+fqn = "combiner.tests.test_notifications.TestForwarding.broadcast_sessions"
+name = "broadcast_sessions"
+kind = "method"
+lang = "python"
+content_hash = "25256e84548ea28e"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "@pytest.fixture"
+description = ""
+schema = 4
+line = 255
+mtime = 1784493613000000000
+container = [
+  "TestForwarding",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "TestForwarding",
+]
+symbol_was = []
+calls = [
+  "_FakeSession [combiner/tests/test_notifications.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "broadcast",
+  "broadcast_sessions",
+  "combiner",
+  "combiner.tests.test_notifications.TestForwarding.broadcast_sessions",
+  "forwarding",
+  "notifications",
+  "sessions",
+  "test",
+  "tests",
+]

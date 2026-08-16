@@ -1,0 +1,34 @@
+symbol_ref = "crib/chunk.py#Section.text"
+fqn = "crib.chunk.Section.text"
+name = "text"
+kind = "field"
+lang = "python"
+content_hash = "d20c3c4eb85ef28c"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "text: str"
+description = ""
+schema = 4
+line = 195
+mtime = 1786136167000000000
+container = [
+  "Section",
+]
+scope = [
+  "crib",
+  "chunk",
+  "Section",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_duplicate_headings_are_separate_sections_with_occurrences [tests/test_chunk_identity.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Section.text",
+  "section",
+  "text",
+]

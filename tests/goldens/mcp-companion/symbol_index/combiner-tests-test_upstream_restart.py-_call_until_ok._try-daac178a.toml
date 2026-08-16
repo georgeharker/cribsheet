@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_upstream_restart.py#_call_until_ok._try"
+fqn = "combiner.tests.test_upstream_restart._call_until_ok._try"
+name = "_try"
+kind = "function"
+lang = "python"
+content_hash = "75679c6acaa57484"
+file = "combiner/tests/test_upstream_restart.py"
+file_hash = "c3ceaa6ec420f1df"
+signature = "async def _try() -> str | None:"
+description = ""
+schema = 4
+line = 84
+mtime = 1783534978000000000
+container = [
+  "_call_until_ok",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_upstream_restart",
+  "_call_until_ok",
+]
+symbol_was = []
+calls = [
+  "_text [combiner/tests/test_upstream_restart.py]",
+]
+called_by = []
+references = [
+  "_call_until_ok [combiner/tests/test_upstream_restart.py]",
+]
+name_terms = [
+  "_try",
+  "call",
+  "combiner",
+  "combiner.tests.test_upstream_restart._call_until_ok._try",
+  "ok",
+  "restart",
+  "test",
+  "tests",
+  "try",
+  "until",
+  "upstream",
+]

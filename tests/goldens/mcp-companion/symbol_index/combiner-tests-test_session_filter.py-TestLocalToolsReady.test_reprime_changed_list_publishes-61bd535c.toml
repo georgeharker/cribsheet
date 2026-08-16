@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestLocalToolsReady.test_reprime_changed_list_publishes"
+fqn = "combiner.tests.test_session_filter.TestLocalToolsReady.test_reprime_changed_list_publishes"
+name = "test_reprime_changed_list_publishes"
+kind = "method"
+lang = "python"
+content_hash = "40e8e601aad4fbfd"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "async def test_reprime_changed_list_publishes(self, monkeypatch):"
+description = ""
+schema = 4
+line = 730
+mtime = 1784493613000000000
+container = [
+  "TestLocalToolsReady",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestLocalToolsReady",
+]
+symbol_was = []
+calls = [
+  "_cleanup [combiner/tests/test_session_filter.py]",
+  "_combiner_with_provider [combiner/tests/test_session_filter.py]",
+  "_tool [combiner/tests/test_session_filter.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "store_slice [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "changed",
+  "combiner",
+  "combiner.tests.test_session_filter.TestLocalToolsReady.test_reprime_changed_list_publishes",
+  "filter",
+  "list",
+  "local",
+  "publishes",
+  "ready",
+  "reprime",
+  "session",
+  "test",
+  "test_reprime_changed_list_publishes",
+  "tests",
+  "tools",
+]

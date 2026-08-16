@@ -1,0 +1,40 @@
+symbol_ref = "crib/paths.py#Paths.index_dir"
+fqn = "crib.paths.Paths.index_dir"
+name = "index_dir"
+kind = "field"
+lang = "python"
+content_hash = "13c067c0d7213a98"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "index_dir: Path"
+description = ""
+schema = 4
+line = 85
+mtime = 1786564832000000000
+container = [
+  "Paths",
+]
+scope = [
+  "crib",
+  "paths",
+  "Paths",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_build_store [crib/app.py]",
+  "_schema_marker [crib/app.py]",
+  "chroma_dir [crib/paths.py]",
+  "cmd_info [crib/cli.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.Paths.index_dir",
+  "dir",
+  "index",
+  "index_dir",
+  "paths",
+]

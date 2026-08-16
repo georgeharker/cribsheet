@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_chunk_identity.py#test_windowed_duplicate_sections_share_their_section_span"
+fqn = "tests.test_chunk_identity.test_windowed_duplicate_sections_share_their_section_span"
+name = "test_windowed_duplicate_sections_share_their_section_span"
+kind = "function"
+lang = "python"
+content_hash = "200546df3f723c3a"
+file = "tests/test_chunk_identity.py"
+file_hash = "0afd98c1ecf1279e"
+signature = "def test_windowed_duplicate_sections_share_their_section_span():"
+description = ""
+schema = 4
+line = 126
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_chunk_identity",
+]
+symbol_was = []
+calls = [
+  "chunk_note [crib/chunk.py]",
+  "section_line_map [crib/chunk.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chunk",
+  "duplicate",
+  "identity",
+  "section",
+  "sections",
+  "share",
+  "span",
+  "test",
+  "test_windowed_duplicate_sections_share_their_section_span",
+  "tests",
+  "tests.test_chunk_identity.test_windowed_duplicate_sections_share_their_section_span",
+  "their",
+  "windowed",
+]

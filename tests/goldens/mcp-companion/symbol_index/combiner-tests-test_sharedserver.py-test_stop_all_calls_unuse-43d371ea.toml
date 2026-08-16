@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_sharedserver.py#test_stop_all_calls_unuse"
+fqn = "combiner.tests.test_sharedserver.test_stop_all_calls_unuse"
+name = "test_stop_all_calls_unuse"
+kind = "function"
+lang = "python"
+content_hash = "2dd587ddae743c62"
+file = "combiner/tests/test_sharedserver.py"
+file_hash = "b47819ea6b71fce5"
+signature = "@pytest.mark.anyio"
+description = ""
+schema = 4
+line = 192
+mtime = 1782420032000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_sharedserver",
+]
+symbol_was = []
+calls = [
+  "SharedServerManager [combiner/mcp_combiner/sharedserver.py]",
+  "_make_config [combiner/tests/test_sharedserver.py]",
+  "_mock_async_process [combiner/tests/test_sharedserver.py]",
+  "stop_all [combiner/mcp_combiner/sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "all",
+  "calls",
+  "combiner",
+  "combiner.tests.test_sharedserver.test_stop_all_calls_unuse",
+  "sharedserver",
+  "stop",
+  "test",
+  "test_stop_all_calls_unuse",
+  "tests",
+  "unuse",
+]

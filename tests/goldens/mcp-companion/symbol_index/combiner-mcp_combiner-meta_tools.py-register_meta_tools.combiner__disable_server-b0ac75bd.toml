@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/meta_tools.py#register_meta_tools.combiner__disable_server"
+fqn = "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__disable_server"
+name = "combiner__disable_server"
+kind = "function"
+lang = "python"
+content_hash = "aad3fa38c7175da5"
+file = "combiner/mcp_combiner/meta_tools.py"
+file_hash = "8eb0757202928f82"
+signature = "@combiner.tool()"
+description = ""
+schema = 4
+line = 100
+mtime = 1784493613000000000
+container = [
+  "register_meta_tools",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "meta_tools",
+  "register_meta_tools",
+]
+symbol_was = []
+calls = [
+  "disconnect [combiner/mcp_combiner/connections.py]",
+  "drop_server_providers [combiner/mcp_combiner/mounts.py]",
+  "ensure_stopped [combiner/mcp_combiner/sharedserver.py]",
+  "has_connection [combiner/mcp_combiner/connections.py]",
+  "invalidate_tool_cache [combiner/mcp_combiner/toolcache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__disable_server",
+  "combiner__disable_server",
+  "disable",
+  "mcp",
+  "meta",
+  "register",
+  "server",
+  "tools",
+]

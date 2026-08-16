@@ -1,0 +1,40 @@
+symbol_ref = "crib/codeindex.py#_in_workspace"
+fqn = "crib.codeindex._in_workspace"
+name = "_in_workspace"
+kind = "function"
+lang = "python"
+content_hash = "c81c0dc411b47a74"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def _in_workspace(uri: str, root: Path) -> bool:"
+description = ""
+schema = 4
+line = 748
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = [
+  "uri_path [crib/codeindex.py]",
+]
+called_by = [
+  "_locate [crib/codeindex.py]",
+  "test_in_workspace_is_anchored_at_a_path_boundary [tests/test_code_attribution.py]",
+  "test_uri_path_percent_decodes [tests/test_code_attribution.py]",
+]
+references = [
+  "_locate [crib/codeindex.py]",
+  "test_in_workspace_is_anchored_at_a_path_boundary [tests/test_code_attribution.py]",
+  "test_uri_path_percent_decodes [tests/test_code_attribution.py]",
+]
+name_terms = [
+  "_in_workspace",
+  "codeindex",
+  "crib",
+  "crib.codeindex._in_workspace",
+  "in",
+  "workspace",
+]

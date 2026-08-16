@@ -1,0 +1,37 @@
+symbol_ref = "crib/config.py#Config.daemon"
+fqn = "crib.config.Config.daemon"
+name = "daemon"
+kind = "field"
+lang = "python"
+content_hash = "c35c21dd9da16114"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "daemon: DaemonConfig = field(default_factory=DaemonConfig)"
+description = ""
+schema = 4
+line = 257
+mtime = 1786564832000000000
+container = [
+  "Config",
+]
+scope = [
+  "crib",
+  "config",
+  "Config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_resolve_serve_endpoint [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+  "main [crib/cli.py]",
+  "test_every_table_tolerates_unknown_keys [tests/test_config_resilience.py]",
+  "test_known_keys_are_unaffected [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.daemon",
+  "daemon",
+]

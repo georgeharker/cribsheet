@@ -1,0 +1,35 @@
+symbol_ref = "crib/cli.py#Verb.emit"
+fqn = "crib.cli.Verb.emit"
+name = "emit"
+kind = "field"
+lang = "python"
+content_hash = "266c1f7b77930005"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "emit: Callable[[Any, Any], None]            # (result, parsed args) → stdout"
+description = ""
+schema = 4
+line = 1463
+mtime = 1786693579000000000
+container = [
+  "Verb",
+]
+scope = [
+  "crib",
+  "cli",
+  "Verb",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_run_daemon [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+]
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli.Verb.emit",
+  "emit",
+  "verb",
+]

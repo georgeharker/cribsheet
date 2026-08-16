@@ -1,0 +1,58 @@
+symbol_ref = "tests/test_repo_storage.py#run"
+fqn = "tests.test_repo_storage.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "44052857cf112194"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def run(coro):"
+description = ""
+schema = 4
+line = 53
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "(lambda) [tests/test_repo_storage.py]",
+  "test_adopt_and_release_are_idempotent [tests/test_repo_storage.py]",
+  "test_adopt_is_quiet_when_the_globs_stay_out_of_the_store [tests/test_repo_storage.py]",
+  "test_adopt_moves_the_data_tier_and_leaves_chunk_ids_alone [tests/test_repo_storage.py]",
+  "test_adopt_needs_the_store_key [tests/test_repo_storage.py]",
+  "test_adopt_refuses_to_merge_two_note_trees [tests/test_repo_storage.py]",
+  "test_adopt_warns_when_the_repos_globs_reach_into_the_store [tests/test_repo_storage.py]",
+  "test_memory_sync_refuses_for_an_adopted_project [tests/test_repo_storage.py]",
+  "test_release_moves_it_back_and_still_leaves_chunk_ids_alone [tests/test_repo_storage.py]",
+  "test_startup_reconcile_skips_an_unavailable_store [tests/test_repo_storage.py]",
+  "test_store_files_are_not_swept_as_code [tests/test_repo_storage.py]",
+  "test_store_notes_are_not_also_indexed_as_in_situ_docs [tests/test_repo_storage.py]",
+  "test_watcher_indexes_an_edit_inside_an_in_repo_store [tests/test_repo_storage.py]",
+]
+references = [
+  "test_adopt_and_release_are_idempotent [tests/test_repo_storage.py]",
+  "test_adopt_is_quiet_when_the_globs_stay_out_of_the_store [tests/test_repo_storage.py]",
+  "test_adopt_moves_the_data_tier_and_leaves_chunk_ids_alone [tests/test_repo_storage.py]",
+  "test_adopt_needs_the_store_key [tests/test_repo_storage.py]",
+  "test_adopt_refuses_to_merge_two_note_trees [tests/test_repo_storage.py]",
+  "test_adopt_warns_when_the_repos_globs_reach_into_the_store [tests/test_repo_storage.py]",
+  "test_memory_sync_refuses_for_an_adopted_project [tests/test_repo_storage.py]",
+  "test_release_moves_it_back_and_still_leaves_chunk_ids_alone [tests/test_repo_storage.py]",
+  "test_startup_reconcile_skips_an_unavailable_store [tests/test_repo_storage.py]",
+  "test_store_files_are_not_swept_as_code [tests/test_repo_storage.py]",
+  "test_store_notes_are_not_also_indexed_as_in_situ_docs [tests/test_repo_storage.py]",
+  "test_verbs_error_actionably_while_the_store_is_missing [tests/test_repo_storage.py]",
+  "test_watcher_indexes_an_edit_inside_an_in_repo_store [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "repo",
+  "run",
+  "storage",
+  "test",
+  "tests",
+  "tests.test_repo_storage.run",
+]

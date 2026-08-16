@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_design_cli.py#test_the_bare_noun_and_the_explicit_verb_are_the_same_call"
+fqn = "tests.test_design_cli.test_the_bare_noun_and_the_explicit_verb_are_the_same_call"
+name = "test_the_bare_noun_and_the_explicit_verb_are_the_same_call"
+kind = "function"
+lang = "python"
+content_hash = "ddb1d12d8f7ad6ad"
+file = "tests/test_design_cli.py"
+file_hash = "0f819c263d62afaf"
+signature = "def test_the_bare_noun_and_the_explicit_verb_are_the_same_call():"
+description = ""
+schema = 4
+line = 37
+mtime = 1785974065000000000
+container = []
+scope = [
+  "tests",
+  "test_design_cli",
+]
+symbol_was = []
+calls = [
+  "_call [tests/test_design_cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "are",
+  "bare",
+  "call",
+  "cli",
+  "design",
+  "explicit",
+  "noun",
+  "same",
+  "test",
+  "test_the_bare_noun_and_the_explicit_verb_are_the_same_call",
+  "tests",
+  "tests.test_design_cli.test_the_bare_noun_and_the_explicit_verb_are_the_same_call",
+  "the",
+  "verb",
+]

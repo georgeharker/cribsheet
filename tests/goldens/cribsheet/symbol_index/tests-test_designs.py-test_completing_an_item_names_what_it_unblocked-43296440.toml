@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_designs.py#test_completing_an_item_names_what_it_unblocked"
+fqn = "tests.test_designs.test_completing_an_item_names_what_it_unblocked"
+name = "test_completing_an_item_names_what_it_unblocked"
+kind = "function"
+lang = "python"
+content_hash = "fb9533c0128978c1"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_completing_an_item_names_what_it_unblocked(crib):"
+description = ""
+schema = 4
+line = 511
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "an",
+  "completing",
+  "designs",
+  "it",
+  "item",
+  "names",
+  "test",
+  "test_completing_an_item_names_what_it_unblocked",
+  "tests",
+  "tests.test_designs.test_completing_an_item_names_what_it_unblocked",
+  "unblocked",
+  "what",
+]

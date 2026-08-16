@@ -1,0 +1,37 @@
+symbol_ref = "lua/mcp_companion/ops.lua#notifier"
+fqn = "mcp_companion.ops.notifier"
+name = "notifier"
+kind = "function"
+lang = "lua"
+content_hash = "0d5273b2061eaf05"
+file = "lua/mcp_companion/ops.lua"
+file_hash = "7ca7520a63575997"
+signature = "local function notifier(opts)"
+description = ""
+schema = 4
+line = 17
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "ops",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.reload_config [lua/mcp_companion/ops.lua]",
+  "M.restart_server [lua/mcp_companion/ops.lua]",
+  "M.toggle_in_project [lua/mcp_companion/ops.lua]",
+  "M.toggle_server [lua/mcp_companion/ops.lua]",
+  "ops.lua [lua/mcp_companion/ops.lua]",
+]
+references = [
+  "notify [lua/mcp_companion/ops.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.ops.notifier",
+  "notifier",
+  "ops",
+]

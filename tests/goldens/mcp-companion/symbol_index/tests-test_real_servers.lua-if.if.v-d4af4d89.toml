@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_real_servers.lua#if.if.v"
+fqn = "tests.test_real_servers.if.if.v"
+name = "v"
+kind = "variable"
+lang = "lua"
+content_hash = "ebc8b74cda7e0908"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "for k, v in pairs(tools_tbl) do"
+description = ""
+schema = 4
+line = 577
+mtime = 1782853510000000000
+container = [
+  "if",
+  "if",
+  "for in",
+]
+scope = [
+  "tests",
+  "test_real_servers",
+  "if",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "if",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.if.v",
+  "v",
+]

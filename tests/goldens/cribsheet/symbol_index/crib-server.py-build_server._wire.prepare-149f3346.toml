@@ -1,0 +1,43 @@
+symbol_ref = "crib/server.py#build_server._wire.prepare"
+fqn = "crib.server.build_server._wire.prepare"
+name = "prepare"
+kind = "function"
+lang = "python"
+content_hash = "92a790280c96c2a2"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def prepare(args, kwargs):"
+description = ""
+schema = 4
+line = 314
+mtime = 1786693579000000000
+container = [
+  "build_server",
+  "_wire",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+  "_wire",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+]
+called_by = [
+  "run [crib/server.py]",
+  "run_sync [crib/server.py]",
+]
+references = [
+  "run [crib/server.py]",
+  "run_sync [crib/server.py]",
+]
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server._wire.prepare",
+  "prepare",
+  "server",
+  "wire",
+]

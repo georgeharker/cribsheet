@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#_make_upstream"
+fqn = "combiner.tests.test_notifications_e2e._make_upstream"
+name = "_make_upstream"
+kind = "function"
+lang = "python"
+content_hash = "9f8ba43da4fd275a"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "def _make_upstream() -> FastMCP:"
+description = ""
+schema = 4
+line = 83
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_forwarding_factory_wraps_a_real_proxy [combiner/tests/test_notifications_e2e.py]",
+  "test_list_changed_forwarded_through_proxy [combiner/tests/test_notifications_e2e.py]",
+  "test_per_chat_routes_to_requesting_session_only [combiner/tests/test_notifications_e2e.py]",
+  "test_resource_updated_delivered_namespaced [combiner/tests/test_notifications_e2e.py]",
+]
+references = [
+  "test_forwarding_factory_wraps_a_real_proxy [combiner/tests/test_notifications_e2e.py]",
+  "test_list_changed_forwarded_through_proxy [combiner/tests/test_notifications_e2e.py]",
+  "test_per_chat_routes_to_requesting_session_only [combiner/tests/test_notifications_e2e.py]",
+  "test_resource_updated_delivered_namespaced [combiner/tests/test_notifications_e2e.py]",
+]
+name_terms = [
+  "2",
+  "_make_upstream",
+  "combiner",
+  "combiner.tests.test_notifications_e2e._make_upstream",
+  "e",
+  "make",
+  "notifications",
+  "test",
+  "tests",
+  "upstream",
+]

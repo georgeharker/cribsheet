@@ -1,0 +1,32 @@
+symbol_ref = "crib/cli.py#_GROUP_HEADS"
+fqn = "crib.cli._GROUP_HEADS"
+name = "_GROUP_HEADS"
+kind = "constant"
+lang = "python"
+content_hash = "8b44160e0b6c3d9d"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "_GROUP_HEADS = {\"in-progress\": \"in progress\", \"ready\": \"ready\","
+description = ""
+schema = 4
+line = 705
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_emit_plan_list [crib/cli.py]",
+]
+name_terms = [
+  "_GROUP_HEADS",
+  "cli",
+  "crib",
+  "crib.cli._GROUP_HEADS",
+  "group",
+  "heads",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/config.py#HealthResponse.status"
+fqn = "combiner.mcp_combiner.config.HealthResponse.status"
+name = "status"
+kind = "field"
+lang = "python"
+content_hash = "c594d7f4767ccf4c"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "status: str = \"ok\""
+description = ""
+schema = 4
+line = 420
+mtime = 1783633313000000000
+container = [
+  "HealthResponse",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "HealthResponse",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "health_check [combiner/mcp_combiner/routes.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.HealthResponse.status",
+  "config",
+  "health",
+  "mcp",
+  "response",
+  "status",
+]

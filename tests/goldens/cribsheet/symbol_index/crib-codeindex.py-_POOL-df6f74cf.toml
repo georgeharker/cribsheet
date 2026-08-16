@@ -1,0 +1,36 @@
+symbol_ref = "crib/codeindex.py#_POOL"
+fqn = "crib.codeindex._POOL"
+name = "_POOL"
+kind = "constant"
+lang = "python"
+content_hash = "040df1b8f64cbf92"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "_POOL = LspSessionPool()"
+description = ""
+schema = 4
+line = 730
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_index_project_code [crib/codeindexer.py]",
+  "_on_code_change [crib/app.py]",
+  "close [crib/app.py]",
+  "extract_file [crib/codeindex.py]",
+  "status [crib/app.py]",
+  "test_on_code_change_pumps_watched_files_into_lsp_pool [tests/test_code_cache.py]",
+]
+name_terms = [
+  "_POOL",
+  "codeindex",
+  "crib",
+  "crib.codeindex._POOL",
+  "pool",
+]

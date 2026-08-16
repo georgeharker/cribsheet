@@ -1,0 +1,37 @@
+symbol_ref = "crib/versions.py#VersionRing"
+fqn = "crib.versions.VersionRing"
+name = "VersionRing"
+kind = "class"
+lang = "python"
+content_hash = "4fa1495e0bbbbd8e"
+file = "crib/versions.py"
+file_hash = "c84588155a74a02c"
+signature = "class VersionRing:"
+description = ""
+schema = 4
+line = 50
+mtime = 1785966856000000000
+container = []
+scope = [
+  "crib",
+  "versions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/notestore.py]",
+  "test_prune_only_counts_real_entries [tests/test_config_resilience.py]",
+  "test_ring_warns_once_per_dir [tests/test_config_resilience.py]",
+  "test_stray_file_in_a_ring_dir_does_not_break_writes [tests/test_config_resilience.py]",
+  "versions_for [crib/notestore.py]",
+]
+name_terms = [
+  "VersionRing",
+  "crib",
+  "crib.versions.VersionRing",
+  "ring",
+  "version",
+  "versions",
+]

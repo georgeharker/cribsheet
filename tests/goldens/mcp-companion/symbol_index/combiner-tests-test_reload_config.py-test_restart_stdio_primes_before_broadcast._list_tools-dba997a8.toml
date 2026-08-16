@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_reload_config.py#test_restart_stdio_primes_before_broadcast._list_tools"
+fqn = "combiner.tests.test_reload_config.test_restart_stdio_primes_before_broadcast._list_tools"
+name = "_list_tools"
+kind = "function"
+lang = "python"
+content_hash = "b1eed83646e8173b"
+file = "combiner/tests/test_reload_config.py"
+file_hash = "1ab3b3e0b48c7d3d"
+signature = "async def _list_tools(self: Any) -> list[Any]:"
+description = ""
+schema = 4
+line = 264
+mtime = 1784493613000000000
+container = [
+  "test_restart_stdio_primes_before_broadcast",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_reload_config",
+  "test_restart_stdio_primes_before_broadcast",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "_list_tools",
+  "before",
+  "broadcast",
+  "combiner",
+  "combiner.tests.test_reload_config.test_restart_stdio_primes_before_broadcast._list_tools",
+  "config",
+  "list",
+  "primes",
+  "reload",
+  "restart",
+  "stdio",
+  "test",
+  "tests",
+  "tools",
+]

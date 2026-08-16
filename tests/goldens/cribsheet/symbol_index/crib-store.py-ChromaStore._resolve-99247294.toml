@@ -1,0 +1,41 @@
+symbol_ref = "crib/store.py#ChromaStore._resolve"
+fqn = "crib.store.ChromaStore._resolve"
+name = "_resolve"
+kind = "method"
+lang = "python"
+content_hash = "8b0871f38319c4c5"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def _resolve(self) -> Any:"
+description = ""
+schema = 4
+line = 245
+mtime = 1786564832000000000
+container = [
+  "ChromaStore",
+]
+scope = [
+  "crib",
+  "store",
+  "ChromaStore",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "__init__ [crib/store.py]",
+  "_run [crib/store.py]",
+  "recreate [crib/store.py]",
+]
+references = [
+  "__init__ [crib/store.py]",
+  "_run [crib/store.py]",
+  "recreate [crib/store.py]",
+]
+name_terms = [
+  "_resolve",
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore._resolve",
+  "resolve",
+  "store",
+]

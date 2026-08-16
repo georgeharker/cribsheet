@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/nvim_proxy.py#_token_instances"
+fqn = "combiner.mcp_combiner.nvim_proxy._token_instances"
+name = "_token_instances"
+kind = "global"
+lang = "python"
+content_hash = "650cef4d0b5b2c3f"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+file_hash = "072f85ddbeb3b759"
+signature = "_token_instances: dict[str, str] = {}"
+description = ""
+schema = 4
+line = 56
+mtime = 1783022631000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "nvim_proxy",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_instance_for_session [combiner/mcp_combiner/nvim_proxy.py]",
+  "manage_nvim_bind [combiner/mcp_combiner/nvim_proxy.py]",
+  "manage_nvim_instances [combiner/mcp_combiner/nvim_proxy.py]",
+]
+name_terms = [
+  "_token_instances",
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy._token_instances",
+  "instances",
+  "mcp",
+  "nvim",
+  "proxy",
+  "token",
+]

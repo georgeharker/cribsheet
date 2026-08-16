@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/config.py#Transport.HTTP"
+fqn = "combiner.mcp_combiner.config.Transport.HTTP"
+name = "HTTP"
+kind = "constant"
+lang = "python"
+content_hash = "6f6c00cbd50c320c"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "HTTP = \"http\""
+description = ""
+schema = 4
+line = 42
+mtime = 1783633313000000000
+container = [
+  "Transport",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "Transport",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "is_http_server [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "HTTP",
+  "combiner",
+  "combiner.mcp_combiner.config.Transport.HTTP",
+  "config",
+  "http",
+  "mcp",
+  "transport",
+]

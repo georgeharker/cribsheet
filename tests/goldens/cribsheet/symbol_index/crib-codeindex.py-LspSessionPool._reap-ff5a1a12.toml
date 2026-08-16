@@ -1,0 +1,41 @@
+symbol_ref = "crib/codeindex.py#LspSessionPool._reap"
+fqn = "crib.codeindex.LspSessionPool._reap"
+name = "_reap"
+kind = "method"
+lang = "python"
+content_hash = "1a9c7a7a1cf142dd"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def _reap(self) -> None:"
+description = ""
+schema = 4
+line = 654
+mtime = 1786844518000000000
+container = [
+  "LspSessionPool",
+]
+scope = [
+  "crib",
+  "codeindex",
+  "LspSessionPool",
+]
+symbol_was = []
+calls = [
+  "close [crib/codeindex.py]",
+]
+called_by = [
+  "acquire [crib/codeindex.py]",
+]
+references = [
+  "acquire [crib/codeindex.py]",
+]
+name_terms = [
+  "_reap",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspSessionPool._reap",
+  "lsp",
+  "pool",
+  "reap",
+  "session",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_real_servers.lua#find_namespaced_by_pattern"
+fqn = "tests.test_real_servers.find_namespaced_by_pattern"
+name = "find_namespaced_by_pattern"
+kind = "function"
+lang = "lua"
+content_hash = "33b8ece690f00a8b"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local function find_namespaced_by_pattern(pattern)"
+description = ""
+schema = 4
+line = 406
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_real_servers",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_real_servers.lua [tests/test_real_servers.lua]",
+]
+references = [
+  "if [tests/test_real_servers.lua]",
+  "ns [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "by",
+  "find",
+  "find_namespaced_by_pattern",
+  "namespaced",
+  "pattern",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.find_namespaced_by_pattern",
+]

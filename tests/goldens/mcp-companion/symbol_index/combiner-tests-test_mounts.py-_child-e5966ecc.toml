@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_mounts.py#_child"
+fqn = "combiner.tests.test_mounts._child"
+name = "_child"
+kind = "function"
+lang = "python"
+content_hash = "1eab2121cc8265de"
+file = "combiner/tests/test_mounts.py"
+file_hash = "5a0de1047967797a"
+signature = "def _child(name: str = \"child\") -> FastMCP:"
+description = ""
+schema = 4
+line = 29
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_mounts",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_make_proxy [combiner/tests/test_mounts.py]",
+  "test_drop_only_targets_named_server [combiner/tests/test_mounts.py]",
+  "test_drop_removes_real_mount [combiner/tests/test_mounts.py]",
+  "test_drop_sniffs_mounts_that_bypassed_the_registry [combiner/tests/test_mounts.py]",
+  "test_remount_does_not_duplicate [combiner/tests/test_mounts.py]",
+]
+references = [
+  "_make_proxy [combiner/tests/test_mounts.py]",
+  "test_drop_only_targets_named_server [combiner/tests/test_mounts.py]",
+  "test_drop_removes_real_mount [combiner/tests/test_mounts.py]",
+  "test_drop_sniffs_mounts_that_bypassed_the_registry [combiner/tests/test_mounts.py]",
+  "test_remount_does_not_duplicate [combiner/tests/test_mounts.py]",
+]
+name_terms = [
+  "_child",
+  "child",
+  "combiner",
+  "combiner.tests.test_mounts._child",
+  "mounts",
+  "test",
+  "tests",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "scripts/eval_rigor.py#ROOT"
+fqn = "scripts.eval_rigor.ROOT"
+name = "ROOT"
+kind = "constant"
+lang = "python"
+content_hash = "ccf98307102c6636"
+file = "scripts/eval_rigor.py"
+file_hash = "352ea4b1e1221f95"
+signature = "ROOT = Path(__file__).resolve().parent.parent"
+description = ""
+schema = 4
+line = 23
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_rigor",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "SC [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "ROOT",
+  "eval",
+  "rigor",
+  "root",
+  "scripts",
+  "scripts.eval_rigor.ROOT",
+]

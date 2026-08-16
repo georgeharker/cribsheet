@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_rerank.py#test_code_rerank_same_blend_as_notes"
+fqn = "tests.test_rerank.test_code_rerank_same_blend_as_notes"
+name = "test_code_rerank_same_blend_as_notes"
+kind = "function"
+lang = "python"
+content_hash = "2474956ed87f58b4"
+file = "tests/test_rerank.py"
+file_hash = "29066147cbea547e"
+signature = "def test_code_rerank_same_blend_as_notes(crib, monkeypatch):"
+description = ""
+schema = 4
+line = 102
+mtime = 1783981122000000000
+container = []
+scope = [
+  "tests",
+  "test_rerank",
+]
+symbol_was = []
+calls = [
+  "_Fixed [tests/test_rerank.py]",
+  "_code_hits [tests/test_rerank.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "as",
+  "blend",
+  "code",
+  "notes",
+  "rerank",
+  "same",
+  "test",
+  "test_code_rerank_same_blend_as_notes",
+  "tests",
+  "tests.test_rerank.test_code_rerank_same_blend_as_notes",
+]

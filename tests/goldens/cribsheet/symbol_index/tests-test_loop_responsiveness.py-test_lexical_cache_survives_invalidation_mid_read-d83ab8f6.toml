@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_loop_responsiveness.py#test_lexical_cache_survives_invalidation_mid_read"
+fqn = "tests.test_loop_responsiveness.test_lexical_cache_survives_invalidation_mid_read"
+name = "test_lexical_cache_survives_invalidation_mid_read"
+kind = "function"
+lang = "python"
+content_hash = "5689cc415890e3d9"
+file = "tests/test_loop_responsiveness.py"
+file_hash = "3e5d3308dc33e6f4"
+signature = "def test_lexical_cache_survives_invalidation_mid_read(tmp_path):"
+description = ""
+schema = 4
+line = 181
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_loop_responsiveness",
+]
+symbol_was = []
+calls = [
+  "InMemoryStore [crib/store.py]",
+  "LexicalCache [crib/retrieve.py]",
+  "Record [crib/store.py]",
+  "get [crib/retrieve.py]",
+  "upsert [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "invalidation",
+  "lexical",
+  "loop",
+  "mid",
+  "read",
+  "responsiveness",
+  "survives",
+  "test",
+  "test_lexical_cache_survives_invalidation_mid_read",
+  "tests",
+  "tests.test_loop_responsiveness.test_lexical_cache_survives_invalidation_mid_read",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_describe_queue.py#test_burst_coalesces_to_one_focused_describe"
+fqn = "tests.test_describe_queue.test_burst_coalesces_to_one_focused_describe"
+name = "test_burst_coalesces_to_one_focused_describe"
+kind = "function"
+lang = "python"
+content_hash = "5a1375ae41137b73"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def test_burst_coalesces_to_one_focused_describe():"
+description = ""
+schema = 4
+line = 150
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = [
+  "body [tests/test_describe_queue.py]",
+  "run [tests/test_describe_queue.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "burst",
+  "coalesces",
+  "describe",
+  "focused",
+  "one",
+  "queue",
+  "test",
+  "test_burst_coalesces_to_one_focused_describe",
+  "tests",
+  "tests.test_describe_queue.test_burst_coalesces_to_one_focused_describe",
+  "to",
+]

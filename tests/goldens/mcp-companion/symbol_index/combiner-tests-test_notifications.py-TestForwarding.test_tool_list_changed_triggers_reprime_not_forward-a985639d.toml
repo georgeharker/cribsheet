@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestForwarding.test_tool_list_changed_triggers_reprime_not_forward"
+fqn = "combiner.tests.test_notifications.TestForwarding.test_tool_list_changed_triggers_reprime_not_forward"
+name = "test_tool_list_changed_triggers_reprime_not_forward"
+kind = "method"
+lang = "python"
+content_hash = "9d936c5bc84a02be"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "async def test_tool_list_changed_triggers_reprime_not_forward("
+description = ""
+schema = 4
+line = 307
+mtime = 1784493613000000000
+container = [
+  "TestForwarding",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "TestForwarding",
+]
+symbol_was = []
+calls = [
+  "_FakeClient [combiner/tests/test_notifications.py]",
+  "_FakeSession [combiner/tests/test_notifications.py]",
+  "_ResourceNotifyHandler [combiner/mcp_combiner/notifications.py]",
+  "_tools_changed [combiner/tests/test_notifications.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "changed",
+  "combiner",
+  "combiner.tests.test_notifications.TestForwarding.test_tool_list_changed_triggers_reprime_not_forward",
+  "forward",
+  "forwarding",
+  "list",
+  "not",
+  "notifications",
+  "reprime",
+  "test",
+  "test_tool_list_changed_triggers_reprime_not_forward",
+  "tests",
+  "tool",
+  "triggers",
+]

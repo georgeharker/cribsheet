@@ -1,0 +1,38 @@
+symbol_ref = "crib/config.py#expand_location"
+fqn = "crib.config.expand_location"
+name = "expand_location"
+kind = "function"
+lang = "python"
+content_hash = "81d8a7a550e075e1"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "def expand_location(token: str, locations: dict[str, str]) -> Path:"
+description = ""
+schema = 4
+line = 542
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "resolve_project_paths [crib/paths.py]",
+  "test_portable_path_named_root_beats_home_and_round_trips [tests/test_normalize.py]",
+  "test_symlinked_root_round_trips [tests/test_config_resilience.py]",
+]
+references = [
+  "resolve_project_paths [crib/paths.py]",
+  "test_portable_path_named_root_beats_home_and_round_trips [tests/test_normalize.py]",
+  "test_symlinked_root_round_trips [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.expand_location",
+  "expand",
+  "expand_location",
+  "location",
+]

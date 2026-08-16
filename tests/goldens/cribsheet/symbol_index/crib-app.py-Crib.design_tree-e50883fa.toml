@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.design_tree"
+fqn = "crib.app.Crib.design_tree"
+name = "design_tree"
+kind = "method"
+lang = "python"
+content_hash = "5592ab61a4fc7d60"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def design_tree(self, ref: str | None = None, direction: str = \"deps\","
+description = ""
+schema = 4
+line = 2251
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "design_tree [crib/designs.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "design_tree [crib/server.py]",
+]
+references = [
+  "design_tree [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.design_tree",
+  "design",
+  "design_tree",
+  "tree",
+]

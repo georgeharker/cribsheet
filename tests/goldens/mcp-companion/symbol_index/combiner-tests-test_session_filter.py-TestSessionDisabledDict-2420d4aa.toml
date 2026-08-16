@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestSessionDisabledDict"
+fqn = "combiner.tests.test_session_filter.TestSessionDisabledDict"
+name = "TestSessionDisabledDict"
+kind = "class"
+lang = "python"
+content_hash = "faef7330c475209a"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "class TestSessionDisabledDict:"
+description = ""
+schema = 4
+line = 55
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestSessionDisabledDict",
+  "combiner",
+  "combiner.tests.test_session_filter.TestSessionDisabledDict",
+  "dict",
+  "disabled",
+  "filter",
+  "session",
+  "test",
+  "tests",
+]

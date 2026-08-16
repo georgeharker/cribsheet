@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestAttach.test_survives_real_client_clone"
+fqn = "combiner.tests.test_notifications.TestAttach.test_survives_real_client_clone"
+name = "test_survives_real_client_clone"
+kind = "method"
+lang = "python"
+content_hash = "1cf5cc589acc25a0"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "def test_survives_real_client_clone(self) -> None:"
+description = ""
+schema = 4
+line = 133
+mtime = 1784493613000000000
+container = [
+  "TestAttach",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "TestAttach",
+]
+symbol_was = []
+calls = [
+  "attach_resource_forwarding [combiner/mcp_combiner/notifications.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "attach",
+  "client",
+  "clone",
+  "combiner",
+  "combiner.tests.test_notifications.TestAttach.test_survives_real_client_clone",
+  "notifications",
+  "real",
+  "survives",
+  "test",
+  "test_survives_real_client_clone",
+  "tests",
+]

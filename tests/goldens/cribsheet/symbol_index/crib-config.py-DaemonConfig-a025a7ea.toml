@@ -1,0 +1,33 @@
+symbol_ref = "crib/config.py#DaemonConfig"
+fqn = "crib.config.DaemonConfig"
+name = "DaemonConfig"
+kind = "class"
+lang = "python"
+content_hash = "a734ffc1a90471a7"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 233
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/client.py]",
+  "daemon [crib/config.py]",
+  "load [crib/config.py]",
+]
+name_terms = [
+  "DaemonConfig",
+  "config",
+  "crib",
+  "crib.config.DaemonConfig",
+  "daemon",
+]

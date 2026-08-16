@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/config.py#Transport.STDIO"
+fqn = "combiner.mcp_combiner.config.Transport.STDIO"
+name = "STDIO"
+kind = "constant"
+lang = "python"
+content_hash = "bec3801fcbc3cbad"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "STDIO = \"stdio\""
+description = ""
+schema = 4
+line = 41
+mtime = 1783633313000000000
+container = [
+  "Transport",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "Transport",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+  "transport [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "STDIO",
+  "combiner",
+  "combiner.mcp_combiner.config.Transport.STDIO",
+  "config",
+  "mcp",
+  "stdio",
+  "transport",
+]

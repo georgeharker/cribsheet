@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/conftest.py#mockserver_argv"
+fqn = "combiner.tests.conftest.mockserver_argv"
+name = "mockserver_argv"
+kind = "function"
+lang = "python"
+content_hash = "e16b60cfb874f968"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "def mockserver_argv("
+description = ""
+schema = 4
+line = 51
+mtime = 1783544328000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "sharedserver_def [combiner/tests/conftest.py]",
+  "start_http_mock [combiner/tests/conftest.py]",
+  "stdio_mock_entry [combiner/tests/conftest.py]",
+]
+references = [
+  "sharedserver_def [combiner/tests/conftest.py]",
+  "start_http_mock [combiner/tests/conftest.py]",
+  "stdio_mock_entry [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "argv",
+  "combiner",
+  "combiner.tests.conftest.mockserver_argv",
+  "conftest",
+  "mockserver",
+  "mockserver_argv",
+  "tests",
+]

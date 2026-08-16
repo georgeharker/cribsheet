@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/test_route_matrix.py#TestSharedServerRoute"
+fqn = "combiner.tests.test_route_matrix.TestSharedServerRoute"
+name = "TestSharedServerRoute"
+kind = "class"
+lang = "python"
+content_hash = "635c5b8fa3d946be"
+file = "combiner/tests/test_route_matrix.py"
+file_hash = "e02757ba8c7bf654"
+signature = "@requires_sharedserver"
+description = ""
+schema = 4
+line = 123
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_route_matrix",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestSharedServerRoute",
+  "combiner",
+  "combiner.tests.test_route_matrix.TestSharedServerRoute",
+  "matrix",
+  "route",
+  "server",
+  "shared",
+  "test",
+  "tests",
+]

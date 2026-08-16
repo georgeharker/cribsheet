@@ -1,0 +1,43 @@
+symbol_ref = "crib/section_index.py#SectionIndex"
+fqn = "crib.section_index.SectionIndex"
+name = "SectionIndex"
+kind = "class"
+lang = "python"
+content_hash = "ebc0f250472accc3"
+file = "crib/section_index.py"
+file_hash = "a65e5200b70d95a7"
+signature = "class SectionIndex:"
+description = ""
+schema = 4
+line = 130
+mtime = 1786044759000000000
+container = []
+scope = [
+  "crib",
+  "section_index",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_generate_index [crib/app.py]",
+  "_keyword_terms [crib/app.py]",
+  "_summary_terms [crib/app.py]",
+  "body [tests/test_keyword_refresh.py]",
+  "enrich [crib/app.py]",
+  "test_edit_then_quit_heals_on_startup [tests/test_keyword_refresh.py]",
+  "test_elaborate_bulk_path_covers_all_sections [tests/test_elaborate.py]",
+  "test_elaborate_writes_store_and_skips_existing [tests/test_elaborate.py]",
+  "test_section_index_escapes_newlines_and_writes_atomically [tests/test_code_integrity.py]",
+  "test_store_prune_drops_orphans_keeps_live_and_fresh [tests/test_elaborate.py]",
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+  "test_store_toml_is_deterministic [tests/test_elaborate.py]",
+  "test_summarize_writes_summary_index [tests/test_elaborate.py]",
+]
+name_terms = [
+  "SectionIndex",
+  "crib",
+  "crib.section_index.SectionIndex",
+  "index",
+  "section",
+]

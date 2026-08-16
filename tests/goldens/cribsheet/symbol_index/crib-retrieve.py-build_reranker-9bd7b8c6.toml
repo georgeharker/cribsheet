@@ -1,0 +1,37 @@
+symbol_ref = "crib/retrieve.py#build_reranker"
+fqn = "crib.retrieve.build_reranker"
+name = "build_reranker"
+kind = "function"
+lang = "python"
+content_hash = "ad12b33629db158c"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "def build_reranker(model_name: str):"
+description = ""
+schema = 4
+line = 243
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "retrieve",
+]
+symbol_was = []
+calls = [
+  "CrossEncoderReranker [crib/retrieve.py]",
+  "QwenReranker [crib/retrieve.py]",
+]
+called_by = [
+  "reranker [crib/app.py]",
+]
+references = [
+  "reranker [crib/app.py]",
+]
+name_terms = [
+  "build",
+  "build_reranker",
+  "crib",
+  "crib.retrieve.build_reranker",
+  "reranker",
+  "retrieve",
+]

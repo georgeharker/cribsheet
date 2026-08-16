@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_describe_queue.py#_DrivingLoop.create_task"
+fqn = "tests.test_describe_queue._DrivingLoop.create_task"
+name = "create_task"
+kind = "method"
+lang = "python"
+content_hash = "125970673b53dfad"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def create_task(self, coro):"
+description = ""
+schema = 4
+line = 92
+mtime = 1786664729000000000
+container = [
+  "_DrivingLoop",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "_DrivingLoop",
+]
+symbol_was = []
+calls = [
+  "_Task [tests/test_describe_queue.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "create",
+  "create_task",
+  "describe",
+  "driving",
+  "loop",
+  "queue",
+  "task",
+  "test",
+  "tests",
+  "tests.test_describe_queue._DrivingLoop.create_task",
+]

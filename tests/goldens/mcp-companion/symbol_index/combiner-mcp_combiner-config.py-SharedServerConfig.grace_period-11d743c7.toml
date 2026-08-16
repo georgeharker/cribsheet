@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/config.py#SharedServerConfig.grace_period"
+fqn = "combiner.mcp_combiner.config.SharedServerConfig.grace_period"
+name = "grace_period"
+kind = "field"
+lang = "python"
+content_hash = "865e296c58f46671"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "grace_period: str | None = None"
+description = ""
+schema = 4
+line = 90
+mtime = 1783633313000000000
+container = [
+  "SharedServerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "SharedServerConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_build_use_cmd [combiner/mcp_combiner/sharedserver.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "test_load_config_sharedserver_parsed [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.SharedServerConfig.grace_period",
+  "config",
+  "grace",
+  "grace_period",
+  "mcp",
+  "period",
+  "server",
+  "shared",
+]

@@ -1,0 +1,45 @@
+symbol_ref = "tests/test_code_integrity.py#test_garbage_frame_kills_the_reader_and_the_session_is_replaced_once"
+fqn = "tests.test_code_integrity.test_garbage_frame_kills_the_reader_and_the_session_is_replaced_once"
+name = "test_garbage_frame_kills_the_reader_and_the_session_is_replaced_once"
+kind = "function"
+lang = "python"
+content_hash = "e8fc7a0696600cc3"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_garbage_frame_kills_the_reader_and_the_session_is_replaced_once("
+description = ""
+schema = 4
+line = 281
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "LspSessionPool [crib/codeindex.py]",
+  "_fake_lsp [tests/test_code_integrity.py]",
+  "close_all [crib/codeindex.py]",
+  "extract_file [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "code",
+  "frame",
+  "garbage",
+  "integrity",
+  "is",
+  "kills",
+  "once",
+  "reader",
+  "replaced",
+  "session",
+  "test",
+  "test_garbage_frame_kills_the_reader_and_the_session_is_replaced_once",
+  "tests",
+  "tests.test_code_integrity.test_garbage_frame_kills_the_reader_and_the_session_is_replaced_once",
+  "the",
+]

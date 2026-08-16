@@ -1,0 +1,41 @@
+symbol_ref = "crib/codestore.py#_ResidentCode"
+fqn = "crib.codestore._ResidentCode"
+name = "_ResidentCode"
+kind = "class"
+lang = "python"
+content_hash = "9a8578f7c3e2d95c"
+file = "crib/codestore.py"
+file_hash = "85066097f15df7df"
+signature = "class _ResidentCode:"
+description = ""
+schema = 4
+line = 27
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codestore",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/codequery.py]",
+  "__init__ [crib/codestore.py]",
+  "__init__ [crib/refs.py]",
+  "_reload_code [crib/app.py]",
+  "_resident_code [crib/app.py]",
+  "reload [crib/codestore.py]",
+  "resident [crib/codestore.py]",
+  "resolve_symbol [crib/refs.py]",
+  "resolve_symbol_or_ref [crib/refs.py]",
+  "test_a_read_verb_never_mutates_the_resident_cache [tests/test_symbol_shape.py]",
+]
+name_terms = [
+  "_ResidentCode",
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore._ResidentCode",
+  "resident",
+]

@@ -1,0 +1,45 @@
+symbol_ref = "tests/test_project_resolution.py#test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project"
+fqn = "tests.test_project_resolution.test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project"
+name = "test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project"
+kind = "function"
+lang = "python"
+content_hash = "dafc88fb960ca6d7"
+file = "tests/test_project_resolution.py"
+file_hash = "4fafa653cef61a42"
+signature = "def test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project("
+description = ""
+schema = 4
+line = 207
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_project_resolution",
+]
+symbol_was = []
+calls = [
+  "_crib_repo [tests/test_project_resolution.py]",
+  "build_server [crib/server.py]",
+  "call [tests/test_project_resolution.py]",
+  "session_state [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "files",
+  "index",
+  "not",
+  "path",
+  "project",
+  "repo",
+  "resolution",
+  "sticky",
+  "symbols",
+  "test",
+  "test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project",
+  "tests",
+  "tests.test_project_resolution.test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project",
+  "the",
+  "under",
+]

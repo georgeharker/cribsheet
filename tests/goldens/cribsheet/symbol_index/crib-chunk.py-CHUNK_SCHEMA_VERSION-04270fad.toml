@@ -1,0 +1,35 @@
+symbol_ref = "crib/chunk.py#CHUNK_SCHEMA_VERSION"
+fqn = "crib.chunk.CHUNK_SCHEMA_VERSION"
+name = "CHUNK_SCHEMA_VERSION"
+kind = "constant"
+lang = "python"
+content_hash = "83fcfbd741cfe665"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "CHUNK_SCHEMA_VERSION = 3"
+description = ""
+schema = 4
+line = 22
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "chunk",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_record_chunk_schema [crib/app.py]",
+  "_retrieve [crib/app.py]",
+  "reconcile_in_background [crib/app.py]",
+  "status [crib/app.py]",
+]
+name_terms = [
+  "CHUNK_SCHEMA_VERSION",
+  "chunk",
+  "crib",
+  "crib.chunk.CHUNK_SCHEMA_VERSION",
+  "schema",
+  "version",
+]

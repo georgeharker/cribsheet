@@ -1,0 +1,48 @@
+symbol_ref = "crib/section_index.py#SectionIndex.read_terms"
+fqn = "crib.section_index.SectionIndex.read_terms"
+name = "read_terms"
+kind = "method"
+lang = "python"
+content_hash = "98d18ee9f328deef"
+file = "crib/section_index.py"
+file_hash = "a65e5200b70d95a7"
+signature = "def read_terms(self, label: str, section_hash: str) -> list[str]:"
+description = ""
+schema = 4
+line = 147
+mtime = 1786044759000000000
+container = [
+  "SectionIndex",
+]
+scope = [
+  "crib",
+  "section_index",
+  "SectionIndex",
+]
+symbol_was = []
+calls = [
+  "path [crib/section_index.py]",
+]
+called_by = [
+  "terms_for [crib/section_index.py]",
+  "test_elaborate_bulk_path_covers_all_sections [tests/test_elaborate.py]",
+  "test_elaborate_writes_store_and_skips_existing [tests/test_elaborate.py]",
+  "test_section_index_escapes_newlines_and_writes_atomically [tests/test_code_integrity.py]",
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+]
+references = [
+  "terms_for [crib/section_index.py]",
+  "test_elaborate_bulk_path_covers_all_sections [tests/test_elaborate.py]",
+  "test_elaborate_writes_store_and_skips_existing [tests/test_elaborate.py]",
+  "test_section_index_escapes_newlines_and_writes_atomically [tests/test_code_integrity.py]",
+  "test_store_roundtrip_and_labels [tests/test_elaborate.py]",
+]
+name_terms = [
+  "crib",
+  "crib.section_index.SectionIndex.read_terms",
+  "index",
+  "read",
+  "read_terms",
+  "section",
+  "terms",
+]

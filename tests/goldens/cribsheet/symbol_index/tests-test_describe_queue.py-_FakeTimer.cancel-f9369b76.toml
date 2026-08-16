@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_describe_queue.py#_FakeTimer.cancel"
+fqn = "tests.test_describe_queue._FakeTimer.cancel"
+name = "cancel"
+kind = "method"
+lang = "python"
+content_hash = "a079c7e6248be63a"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def cancel(self):"
+description = ""
+schema = 4
+line = 48
+mtime = 1786664729000000000
+container = [
+  "_FakeTimer",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "_FakeTimer",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cancel",
+  "describe",
+  "fake",
+  "queue",
+  "test",
+  "tests",
+  "tests.test_describe_queue._FakeTimer.cancel",
+  "timer",
+]

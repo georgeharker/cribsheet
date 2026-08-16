@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_describe_queue.py#_FakeTimer"
+fqn = "tests.test_describe_queue._FakeTimer"
+name = "_FakeTimer"
+kind = "class"
+lang = "python"
+content_hash = "cf0f2f74bbbd59fc"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "class _FakeTimer:"
+description = ""
+schema = 4
+line = 44
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "call_later [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "_FakeTimer",
+  "describe",
+  "fake",
+  "queue",
+  "test",
+  "tests",
+  "tests.test_describe_queue._FakeTimer",
+  "timer",
+]

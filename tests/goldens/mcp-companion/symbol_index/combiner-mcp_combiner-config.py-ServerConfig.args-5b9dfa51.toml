@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ServerConfig.args"
+fqn = "combiner.mcp_combiner.config.ServerConfig.args"
+name = "args"
+kind = "field"
+lang = "python"
+content_hash = "22ecf9129bc20d0d"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "args: list[str] = Field(default_factory=list)"
+description = ""
+schema = 4
+line = 263
+mtime = 1783633313000000000
+container = [
+  "ServerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ServerConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "test_server_config_from_dict_stdio [combiner/tests/test_config.py]",
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "args",
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.args",
+  "config",
+  "mcp",
+  "server",
+]

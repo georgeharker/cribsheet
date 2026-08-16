@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/fakes.py#FakeConnManager.is_auth_failed"
+fqn = "combiner.tests.fakes.FakeConnManager.is_auth_failed"
+name = "is_auth_failed"
+kind = "method"
+lang = "python"
+content_hash = "ec219cdc6a8dcc5d"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "def is_auth_failed(self, name: str) -> bool:"
+description = ""
+schema = 4
+line = 59
+mtime = 1783534978000000000
+container = [
+  "FakeConnManager",
+]
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+  "FakeConnManager",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.fakes.FakeConnManager.is_auth_failed",
+  "conn",
+  "failed",
+  "fake",
+  "fakes",
+  "is",
+  "is_auth_failed",
+  "manager",
+  "tests",
+]

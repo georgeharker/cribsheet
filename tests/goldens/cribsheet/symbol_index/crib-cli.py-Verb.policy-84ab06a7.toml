@@ -1,0 +1,36 @@
+symbol_ref = "crib/cli.py#Verb.policy"
+fqn = "crib.cli.Verb.policy"
+name = "policy"
+kind = "field"
+lang = "python"
+content_hash = "27582fd1308c4f45"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "policy: str = \"\"                            # server.TOOL_POLICY declaration"
+description = ""
+schema = 4
+line = 1468
+mtime = 1786693579000000000
+container = [
+  "Verb",
+]
+scope = [
+  "crib",
+  "cli",
+  "Verb",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+  "test_every_registry_row_declares_its_mcp_signature_and_policy [tests/test_surface_parity.py]",
+  "test_registry_policy_matches_the_server_declaration [tests/test_surface_parity.py]",
+]
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli.Verb.policy",
+  "policy",
+  "verb",
+]

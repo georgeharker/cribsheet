@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestEnforcePermission.test_allow_passes"
+fqn = "combiner.tests.test_permissions.TestEnforcePermission.test_allow_passes"
+name = "test_allow_passes"
+kind = "method"
+lang = "python"
+content_hash = "389bda6e68d9f40b"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "async def test_allow_passes(self) -> None:"
+description = ""
+schema = 4
+line = 220
+mtime = 1783633313000000000
+container = [
+  "TestEnforcePermission",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "TestEnforcePermission",
+]
+symbol_was = []
+calls = [
+  "_elicit_ctx [combiner/tests/test_permissions.py]",
+  "_rp [combiner/tests/test_permissions.py]",
+  "enforce [combiner/mcp_combiner/permissions.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "allow",
+  "combiner",
+  "combiner.tests.test_permissions.TestEnforcePermission.test_allow_passes",
+  "enforce",
+  "passes",
+  "permission",
+  "permissions",
+  "test",
+  "test_allow_passes",
+  "tests",
+]

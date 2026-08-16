@@ -1,0 +1,41 @@
+symbol_ref = "crib/chunk.py#Chunk.heading_path"
+fqn = "crib.chunk.Chunk.heading_path"
+name = "heading_path"
+kind = "field"
+lang = "python"
+content_hash = "f85787585f35cd8b"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "heading_path: list[str]"
+description = ""
+schema = 4
+line = 57
+mtime = 1786136167000000000
+container = [
+  "Chunk",
+]
+scope = [
+  "crib",
+  "chunk",
+  "Chunk",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_doc_sections [crib/designs.py]",
+  "chunk_id [crib/chunk.py]",
+  "index_text [crib/chunk.py]",
+  "metadata [crib/chunk.py]",
+  "section_hash [crib/chunk.py]",
+  "test_duplicate_headings_get_distinct_chunk_ids [tests/test_chunk_identity.py]",
+  "test_fenced_heading_does_not_split_either_walker [tests/test_chunk_identity.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.heading_path",
+  "heading",
+  "heading_path",
+  "path",
+]

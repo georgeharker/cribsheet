@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_code_integrity.py#test_undecodable_source_indexes_lossily_on_the_same_session"
+fqn = "tests.test_code_integrity.test_undecodable_source_indexes_lossily_on_the_same_session"
+name = "test_undecodable_source_indexes_lossily_on_the_same_session"
+kind = "function"
+lang = "python"
+content_hash = "305d7a8f1f658f5a"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_undecodable_source_indexes_lossily_on_the_same_session(tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 136
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "LspSessionPool [crib/codeindex.py]",
+  "_fake_lsp [tests/test_code_integrity.py]",
+  "acquire [crib/codeindex.py]",
+  "close_all [crib/codeindex.py]",
+  "extract_file [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "indexes",
+  "integrity",
+  "lossily",
+  "on",
+  "same",
+  "session",
+  "source",
+  "test",
+  "test_undecodable_source_indexes_lossily_on_the_same_session",
+  "tests",
+  "tests.test_code_integrity.test_undecodable_source_indexes_lossily_on_the_same_session",
+  "the",
+  "undecodable",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_config.py#TestInterpolateStr"
+fqn = "combiner.tests.test_config.TestInterpolateStr"
+name = "TestInterpolateStr"
+kind = "class"
+lang = "python"
+content_hash = "8a9f87face89ac2b"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "class TestInterpolateStr:"
+description = ""
+schema = 4
+line = 240
+mtime = 1782852601000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestInterpolateStr",
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateStr",
+  "config",
+  "interpolate",
+  "str",
+  "test",
+  "tests",
+]

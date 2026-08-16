@@ -1,0 +1,32 @@
+symbol_ref = "tests/test_real_servers.lua#_combiner_job"
+fqn = "tests.test_real_servers._combiner_job"
+name = "_combiner_job"
+kind = "global"
+lang = "lua"
+content_hash = "e0238d6838af61a7"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local _combiner_job = nil"
+description = ""
+schema = 4
+line = 20
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_real_servers",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_combiner_job",
+  "combiner",
+  "job",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers._combiner_job",
+]

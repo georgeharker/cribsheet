@@ -1,0 +1,42 @@
+symbol_ref = "crib/server.py#_write_project"
+fqn = "crib.server._write_project"
+name = "_write_project"
+kind = "function"
+lang = "python"
+content_hash = "00df9912dc2a4c8a"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def _write_project(crib: Crib, project: str | None, project_path: str | None) -> str:"
+description = ""
+schema = 4
+line = 115
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_cwd [crib/server.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "_write_project_elicit [crib/server.py]",
+  "resolve [crib/server.py]",
+  "test_write_project_requires_explicit_target [tests/test_project_resolution.py]",
+]
+references = [
+  "_write_project_elicit [crib/server.py]",
+  "resolve [crib/server.py]",
+  "test_write_project_requires_explicit_target [tests/test_project_resolution.py]",
+]
+name_terms = [
+  "_write_project",
+  "crib",
+  "crib.server._write_project",
+  "project",
+  "server",
+  "write",
+]

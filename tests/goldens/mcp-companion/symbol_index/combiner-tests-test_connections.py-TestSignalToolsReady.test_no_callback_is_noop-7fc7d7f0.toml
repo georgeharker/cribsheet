@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_connections.py#TestSignalToolsReady.test_no_callback_is_noop"
+fqn = "combiner.tests.test_connections.TestSignalToolsReady.test_no_callback_is_noop"
+name = "test_no_callback_is_noop"
+kind = "method"
+lang = "python"
+content_hash = "2a340dea798724a7"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def test_no_callback_is_noop(self):"
+description = ""
+schema = 4
+line = 82
+mtime = 1784493613000000000
+container = [
+  "TestSignalToolsReady",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestSignalToolsReady",
+]
+symbol_was = []
+calls = [
+  "ConnectionManager [combiner/mcp_combiner/connections.py]",
+  "_fake_conn [combiner/tests/test_connections.py]",
+  "_signal_tools_ready [combiner/mcp_combiner/connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "callback",
+  "combiner",
+  "combiner.tests.test_connections.TestSignalToolsReady.test_no_callback_is_noop",
+  "connections",
+  "is",
+  "no",
+  "noop",
+  "ready",
+  "signal",
+  "test",
+  "test_no_callback_is_noop",
+  "tests",
+  "tools",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#ToolCacheState.set_cache"
+fqn = "combiner.mcp_combiner.runtime.ToolCacheState.set_cache"
+name = "set_cache"
+kind = "method"
+lang = "python"
+content_hash = "5c386192de6dc61a"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def set_cache(self, tools: list[Tool], now: float) -> None:"
+description = ""
+schema = 4
+line = 199
+mtime = 1784493613000000000
+container = [
+  "ToolCacheState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "ToolCacheState",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "set_cache_if_current [combiner/mcp_combiner/runtime.py]",
+]
+references = [
+  "set_cache_if_current [combiner/mcp_combiner/runtime.py]",
+]
+name_terms = [
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.runtime.ToolCacheState.set_cache",
+  "mcp",
+  "runtime",
+  "set",
+  "set_cache",
+  "state",
+  "tool",
+]

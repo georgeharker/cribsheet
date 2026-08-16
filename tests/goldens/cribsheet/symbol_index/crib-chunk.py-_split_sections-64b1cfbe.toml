@@ -1,0 +1,47 @@
+symbol_ref = "crib/chunk.py#_split_sections"
+fqn = "crib.chunk._split_sections"
+name = "_split_sections"
+kind = "function"
+lang = "python"
+content_hash = "6f8f781c27c240ab"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "def _split_sections(body: str) -> list[Section]:"
+description = ""
+schema = 4
+line = 198
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "chunk",
+]
+symbol_was = []
+calls = [
+  "_scan [crib/chunk.py]",
+  "flush [crib/chunk.py]",
+]
+called_by = [
+  "chunk_note [crib/chunk.py]",
+  "test_code_fence_comments_are_not_headings [tests/test_elaborate.py]",
+  "test_duplicate_headings_are_separate_sections_with_occurrences [tests/test_chunk_identity.py]",
+  "test_fenced_duplicate_heading_does_not_bump_the_occurrence_counter [tests/test_chunk_identity.py]",
+  "test_fenced_heading_does_not_split_either_walker [tests/test_chunk_identity.py]",
+  "test_tilde_fence_tracked_too [tests/test_chunk_identity.py]",
+]
+references = [
+  "chunk_note [crib/chunk.py]",
+  "test_code_fence_comments_are_not_headings [tests/test_elaborate.py]",
+  "test_duplicate_headings_are_separate_sections_with_occurrences [tests/test_chunk_identity.py]",
+  "test_fenced_duplicate_heading_does_not_bump_the_occurrence_counter [tests/test_chunk_identity.py]",
+  "test_fenced_heading_does_not_split_either_walker [tests/test_chunk_identity.py]",
+  "test_tilde_fence_tracked_too [tests/test_chunk_identity.py]",
+]
+name_terms = [
+  "_split_sections",
+  "chunk",
+  "crib",
+  "crib.chunk._split_sections",
+  "sections",
+  "split",
+]

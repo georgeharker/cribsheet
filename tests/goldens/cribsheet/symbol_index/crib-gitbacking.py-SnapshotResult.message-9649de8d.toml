@@ -1,0 +1,38 @@
+symbol_ref = "crib/gitbacking.py#SnapshotResult.message"
+fqn = "crib.gitbacking.SnapshotResult.message"
+name = "message"
+kind = "field"
+lang = "python"
+content_hash = "7a0ea0ccc88226aa"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "message: str"
+description = ""
+schema = 4
+line = 96
+mtime = 1785963011000000000
+container = [
+  "SnapshotResult",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "SnapshotResult",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "snapshot [crib/gitbacking.py]",
+  "sync [crib/gitbacking.py]",
+  "test_snapshot_reports_commit_failure_structurally [tests/test_sync.py]",
+  "test_snapshot_with_nothing_to_do_is_ok_but_not_committed [tests/test_sync.py]",
+]
+name_terms = [
+  "crib",
+  "crib.gitbacking.SnapshotResult.message",
+  "gitbacking",
+  "message",
+  "result",
+  "snapshot",
+]

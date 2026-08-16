@@ -1,0 +1,36 @@
+symbol_ref = "crib/designs.py#Node.frontmatter"
+fqn = "crib.designs.Node.frontmatter"
+name = "frontmatter"
+kind = "field"
+lang = "python"
+content_hash = "083bf4f6422ac6de"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "frontmatter: dict[str, Any]"
+description = ""
+schema = 4
+line = 323
+mtime = 1786693579000000000
+container = [
+  "Node",
+]
+scope = [
+  "crib",
+  "designs",
+  "Node",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_load_graph [crib/designs.py]",
+  "_node [tests/test_designs.py]",
+  "facet_graph [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Node.frontmatter",
+  "designs",
+  "frontmatter",
+  "node",
+]

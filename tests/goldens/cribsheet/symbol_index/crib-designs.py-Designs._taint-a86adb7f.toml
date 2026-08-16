@@ -1,0 +1,56 @@
+symbol_ref = "crib/designs.py#Designs._taint"
+fqn = "crib.designs.Designs._taint"
+name = "_taint"
+kind = "method"
+lang = "python"
+content_hash = "d4ca52c67f21a441"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _taint(self, graph: Graph,"
+description = ""
+schema = 4
+line = 841
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_direct_taint [crib/designs.py]",
+  "chains [crib/designs.py]",
+  "propagates [crib/designs.py]",
+]
+called_by = [
+  "_rows [crib/designs.py]",
+  "_write_body [crib/designs.py]",
+  "annotate_hits [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_tree [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+  "tainted_designs [crib/designs.py]",
+]
+references = [
+  "_rows [crib/designs.py]",
+  "_write_body [crib/designs.py]",
+  "annotate_hits [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_tree [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+  "tainted_designs [crib/designs.py]",
+]
+name_terms = [
+  "_taint",
+  "crib",
+  "crib.designs.Designs._taint",
+  "designs",
+  "taint",
+]

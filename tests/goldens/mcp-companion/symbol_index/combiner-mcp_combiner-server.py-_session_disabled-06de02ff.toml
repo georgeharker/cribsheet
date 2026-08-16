@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/server.py#_session_disabled"
+fqn = "combiner.mcp_combiner.server._session_disabled"
+name = "_session_disabled"
+kind = "global"
+lang = "python"
+content_hash = "e6adf3a9df0cebb7"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "_session_disabled: dict[str, set[str]] = RUNTIME.sessions.disabled"
+description = ""
+schema = 4
+line = 127
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_reset_session_state [combiner/tests/test_session_filter.py]",
+  "test_clear_session [combiner/tests/test_session_filter.py]",
+  "test_delete_filter_connected_clears [combiner/tests/test_session_filter.py]",
+  "test_empty_by_default [combiner/tests/test_session_filter.py]",
+  "test_get_filter_connected [combiner/tests/test_session_filter.py]",
+  "test_missing_session_returns_none [combiner/tests/test_session_filter.py]",
+  "test_multiple_sessions_independent [combiner/tests/test_session_filter.py]",
+  "test_post_filter_connected_applies_immediately [combiner/tests/test_session_filter.py]",
+  "test_post_filter_connected_disable_single [combiner/tests/test_session_filter.py]",
+  "test_post_filter_connected_enable_single [combiner/tests/test_session_filter.py]",
+  "test_session_disabled_blocks_tools_lookup [combiner/tests/test_session_filter.py]",
+  "test_set_and_get [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_session_disabled",
+  "combiner",
+  "combiner.mcp_combiner.server._session_disabled",
+  "disabled",
+  "mcp",
+  "server",
+  "session",
+]

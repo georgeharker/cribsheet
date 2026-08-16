@@ -1,0 +1,44 @@
+symbol_ref = "crib/store.py#InMemoryStore._snapshot"
+fqn = "crib.store.InMemoryStore._snapshot"
+name = "_snapshot"
+kind = "method"
+lang = "python"
+content_hash = "5cc7b672ff0c2c3c"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def _snapshot(self) -> list[Record]:"
+description = ""
+schema = 4
+line = 96
+mtime = 1786564832000000000
+container = [
+  "InMemoryStore",
+]
+scope = [
+  "crib",
+  "store",
+  "InMemoryStore",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "current_dim [crib/store.py]",
+  "get_docs [crib/store.py]",
+  "get_meta [crib/store.py]",
+  "query [crib/store.py]",
+]
+references = [
+  "current_dim [crib/store.py]",
+  "get_docs [crib/store.py]",
+  "get_meta [crib/store.py]",
+  "query [crib/store.py]",
+]
+name_terms = [
+  "_snapshot",
+  "crib",
+  "crib.store.InMemoryStore._snapshot",
+  "in",
+  "memory",
+  "snapshot",
+  "store",
+]

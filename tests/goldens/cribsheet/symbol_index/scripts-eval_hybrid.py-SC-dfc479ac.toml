@@ -1,0 +1,32 @@
+symbol_ref = "scripts/eval_hybrid.py#SC"
+fqn = "scripts.eval_hybrid.SC"
+name = "SC"
+kind = "constant"
+lang = "python"
+content_hash = "3d657733d1436984"
+file = "scripts/eval_hybrid.py"
+file_hash = "7efc1218d091601c"
+signature = "SC = ROOT / \"scripts\" / \"eval_data\""
+description = ""
+schema = 4
+line = 36
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_hybrid",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "main [scripts/eval_hybrid.py]",
+]
+name_terms = [
+  "SC",
+  "eval",
+  "hybrid",
+  "sc",
+  "scripts",
+  "scripts.eval_hybrid.SC",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "crib/paths.py#_PROJECT_RE"
+fqn = "crib.paths._PROJECT_RE"
+name = "_PROJECT_RE"
+kind = "constant"
+lang = "python"
+content_hash = "94f91cfb55ce027f"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "_PROJECT_RE = re.compile(r\"^[A-Za-z0-9._-]+$\")"
+description = ""
+schema = 4
+line = 23
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "paths",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "check_project_name [crib/paths.py]",
+]
+name_terms = [
+  "_PROJECT_RE",
+  "crib",
+  "crib.paths._PROJECT_RE",
+  "paths",
+  "project",
+  "re",
+]

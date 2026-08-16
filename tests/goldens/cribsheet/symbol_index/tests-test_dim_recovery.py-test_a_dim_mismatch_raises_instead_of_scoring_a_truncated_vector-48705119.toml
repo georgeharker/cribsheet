@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_dim_recovery.py#test_a_dim_mismatch_raises_instead_of_scoring_a_truncated_vector"
+fqn = "tests.test_dim_recovery.test_a_dim_mismatch_raises_instead_of_scoring_a_truncated_vector"
+name = "test_a_dim_mismatch_raises_instead_of_scoring_a_truncated_vector"
+kind = "function"
+lang = "python"
+content_hash = "3e5a41cf21edec53"
+file = "tests/test_dim_recovery.py"
+file_hash = "5f6ffd4e573336e9"
+signature = "def test_a_dim_mismatch_raises_instead_of_scoring_a_truncated_vector():"
+description = ""
+schema = 4
+line = 133
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_dim_recovery",
+]
+symbol_was = []
+calls = [
+  "InMemoryStore [crib/store.py]",
+  "Record [crib/store.py]",
+  "query [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "dim",
+  "instead",
+  "mismatch",
+  "of",
+  "raises",
+  "recovery",
+  "scoring",
+  "test",
+  "test_a_dim_mismatch_raises_instead_of_scoring_a_truncated_vector",
+  "tests",
+  "tests.test_dim_recovery.test_a_dim_mismatch_raises_instead_of_scoring_a_truncated_vector",
+  "truncated",
+  "vector",
+]

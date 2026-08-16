@@ -1,0 +1,33 @@
+symbol_ref = "crib/claudemem.py#MemoryBindings"
+fqn = "crib.claudemem.MemoryBindings"
+name = "MemoryBindings"
+kind = "class"
+lang = "python"
+content_hash = "d85ae6d23c71b727"
+file = "crib/claudemem.py"
+file_hash = "f5d989e8add2ed0e"
+signature = "class MemoryBindings:"
+description = ""
+schema = 4
+line = 74
+mtime = 1782762348000000000
+container = []
+scope = [
+  "crib",
+  "claudemem",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/memmirror.py]",
+]
+name_terms = [
+  "MemoryBindings",
+  "bindings",
+  "claudemem",
+  "crib",
+  "crib.claudemem.MemoryBindings",
+  "memory",
+]

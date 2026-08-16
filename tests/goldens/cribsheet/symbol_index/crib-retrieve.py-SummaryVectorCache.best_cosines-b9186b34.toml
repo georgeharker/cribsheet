@@ -1,0 +1,44 @@
+symbol_ref = "crib/retrieve.py#SummaryVectorCache.best_cosines"
+fqn = "crib.retrieve.SummaryVectorCache.best_cosines"
+name = "best_cosines"
+kind = "method"
+lang = "python"
+content_hash = "10f79e65e1f85e4e"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "def best_cosines(self, project: str, labels: tuple[str, ...],"
+description = ""
+schema = 4
+line = 421
+mtime = 1786136167000000000
+container = [
+  "SummaryVectorCache",
+]
+scope = [
+  "crib",
+  "retrieve",
+  "SummaryVectorCache",
+]
+symbol_was = []
+calls = [
+  "get [crib/retrieve.py]",
+]
+called_by = [
+  "_retrieve [crib/app.py]",
+  "test_summary_alias_cache_ranks_section_by_rephrasing [tests/test_elaborate.py]",
+]
+references = [
+  "_retrieve [crib/app.py]",
+  "test_summary_alias_cache_ranks_section_by_rephrasing [tests/test_elaborate.py]",
+]
+name_terms = [
+  "best",
+  "best_cosines",
+  "cache",
+  "cosines",
+  "crib",
+  "crib.retrieve.SummaryVectorCache.best_cosines",
+  "retrieve",
+  "summary",
+  "vector",
+]

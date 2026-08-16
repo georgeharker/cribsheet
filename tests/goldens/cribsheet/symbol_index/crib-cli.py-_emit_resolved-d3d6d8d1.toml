@@ -1,0 +1,38 @@
+symbol_ref = "crib/cli.py#_emit_resolved"
+fqn = "crib.cli._emit_resolved"
+name = "_emit_resolved"
+kind = "function"
+lang = "python"
+content_hash = "edf8d6c072219ea1"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _emit_resolved(data: dict) -> None:"
+description = ""
+schema = 4
+line = 843
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_emit_code_dossier [crib/cli.py]",
+  "_emit_code_edges [crib/cli.py]",
+  "_emit_code_graph [crib/cli.py]",
+]
+references = [
+  "_emit_code_dossier [crib/cli.py]",
+  "_emit_code_edges [crib/cli.py]",
+  "_emit_code_graph [crib/cli.py]",
+]
+name_terms = [
+  "_emit_resolved",
+  "cli",
+  "crib",
+  "crib.cli._emit_resolved",
+  "emit",
+  "resolved",
+]

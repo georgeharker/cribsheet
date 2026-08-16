@@ -1,0 +1,37 @@
+symbol_ref = "crib/server.py#build_server.code_xref"
+fqn = "crib.server.build_server.code_xref"
+name = "code_xref"
+kind = "function"
+lang = "python"
+content_hash = "bd2e44d0d0fffa03"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"read\", echo=True)"
+description = ""
+schema = 4
+line = 726
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "code_xref [crib/app.py]",
+  "crib_tool [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "code",
+  "code_xref",
+  "crib",
+  "crib.server.build_server.code_xref",
+  "server",
+  "xref",
+]

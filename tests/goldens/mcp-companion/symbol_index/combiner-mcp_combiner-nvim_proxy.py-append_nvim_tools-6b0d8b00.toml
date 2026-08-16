@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/nvim_proxy.py#append_nvim_tools"
+fqn = "combiner.mcp_combiner.nvim_proxy.append_nvim_tools"
+name = "append_nvim_tools"
+kind = "function"
+lang = "python"
+content_hash = "faba96477935d3a2"
+file = "combiner/mcp_combiner/nvim_proxy.py"
+file_hash = "072f85ddbeb3b759"
+signature = "async def append_nvim_tools("
+description = ""
+schema = 4
+line = 206
+mtime = 1783022631000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "nvim_proxy",
+]
+symbol_was = []
+calls = [
+  "_build_nvim_tools [combiner/mcp_combiner/nvim_proxy.py]",
+  "ensure_manifest [combiner/mcp_combiner/nvim_channel.py]",
+  "get_nvim_channel [combiner/mcp_combiner/nvim_proxy.py]",
+]
+called_by = [
+  "on_list_tools [combiner/mcp_combiner/middleware.py]",
+]
+references = [
+  "on_list_tools [combiner/mcp_combiner/middleware.py]",
+]
+name_terms = [
+  "append",
+  "append_nvim_tools",
+  "combiner",
+  "combiner.mcp_combiner.nvim_proxy.append_nvim_tools",
+  "mcp",
+  "nvim",
+  "proxy",
+  "tools",
+]

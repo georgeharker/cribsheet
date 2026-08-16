@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_ManagedConnection._consec_failures"
+fqn = "combiner.mcp_combiner.connections._ManagedConnection._consec_failures"
+name = "_consec_failures"
+kind = "field"
+lang = "python"
+content_hash = "c9094f806b93778c"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_consec_failures: int = field(default=0, repr=False)"
+description = ""
+schema = 4
+line = 175
+mtime = 1784493613000000000
+container = [
+  "_ManagedConnection",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "_ManagedConnection",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_consec_failures",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection._consec_failures",
+  "connection",
+  "connections",
+  "consec",
+  "failures",
+  "managed",
+  "mcp",
+]

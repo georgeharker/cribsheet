@@ -1,0 +1,41 @@
+symbol_ref = "crib/store.py#_is_missing_collection"
+fqn = "crib.store._is_missing_collection"
+name = "_is_missing_collection"
+kind = "function"
+lang = "python"
+content_hash = "aa146ef075abdadf"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def _is_missing_collection(exc: Exception) -> bool:"
+description = ""
+schema = 4
+line = 219
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "store",
+]
+symbol_was = []
+calls = [
+  "_not_found_errors [crib/store.py]",
+]
+called_by = [
+  "_run [crib/store.py]",
+  "recreate [crib/store.py]",
+  "test_missing_collection_predicate [tests/test_store_chroma.py]",
+]
+references = [
+  "_run [crib/store.py]",
+  "recreate [crib/store.py]",
+  "test_missing_collection_predicate [tests/test_store_chroma.py]",
+]
+name_terms = [
+  "_is_missing_collection",
+  "collection",
+  "crib",
+  "crib.store._is_missing_collection",
+  "is",
+  "missing",
+  "store",
+]

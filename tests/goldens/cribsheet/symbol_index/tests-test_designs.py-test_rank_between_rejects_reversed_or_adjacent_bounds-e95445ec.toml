@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_designs.py#test_rank_between_rejects_reversed_or_adjacent_bounds"
+fqn = "tests.test_designs.test_rank_between_rejects_reversed_or_adjacent_bounds"
+name = "test_rank_between_rejects_reversed_or_adjacent_bounds"
+kind = "function"
+lang = "python"
+content_hash = "4fa10db44b4ef33c"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_rank_between_rejects_reversed_or_adjacent_bounds():"
+description = ""
+schema = 4
+line = 82
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "_rank_between [crib/designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "adjacent",
+  "between",
+  "bounds",
+  "designs",
+  "or",
+  "rank",
+  "rejects",
+  "reversed",
+  "test",
+  "test_rank_between_rejects_reversed_or_adjacent_bounds",
+  "tests",
+  "tests.test_designs.test_rank_between_rejects_reversed_or_adjacent_bounds",
+]

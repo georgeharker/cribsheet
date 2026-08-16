@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_auth.py#TestBuildAuth.test_invalid_string_auth"
+fqn = "combiner.tests.test_auth.TestBuildAuth.test_invalid_string_auth"
+name = "test_invalid_string_auth"
+kind = "method"
+lang = "python"
+content_hash = "89b3944e0cacf0a2"
+file = "combiner/tests/test_auth.py"
+file_hash = "2b3aa7eeeed5bf38"
+signature = "def test_invalid_string_auth(self) -> None:"
+description = ""
+schema = 4
+line = 115
+mtime = 1782852601000000000
+container = [
+  "TestBuildAuth",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_auth",
+  "TestBuildAuth",
+]
+symbol_was = []
+calls = [
+  "build_auth [combiner/mcp_combiner/auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "build",
+  "combiner",
+  "combiner.tests.test_auth.TestBuildAuth.test_invalid_string_auth",
+  "invalid",
+  "string",
+  "test",
+  "test_invalid_string_auth",
+  "tests",
+]

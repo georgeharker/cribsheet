@@ -1,0 +1,39 @@
+symbol_ref = "crib/cli.py#_emit_rebuilding_note._flag"
+fqn = "crib.cli._emit_rebuilding_note._flag"
+name = "_flag"
+kind = "function"
+lang = "python"
+content_hash = "26acc994ba05ab73"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _flag(h: Any) -> bool:"
+description = ""
+schema = 4
+line = 158
+mtime = 1786693579000000000
+container = [
+  "_emit_rebuilding_note",
+]
+scope = [
+  "crib",
+  "cli",
+  "_emit_rebuilding_note",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_emit_rebuilding_note [crib/cli.py]",
+]
+references = [
+  "_emit_rebuilding_note [crib/cli.py]",
+]
+name_terms = [
+  "_flag",
+  "cli",
+  "crib",
+  "crib.cli._emit_rebuilding_note._flag",
+  "emit",
+  "flag",
+  "note",
+  "rebuilding",
+]

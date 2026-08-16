@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestAllowedToDisabledConversion.test_allowed_empty_disables_all"
+fqn = "combiner.tests.test_session_filter.TestAllowedToDisabledConversion.test_allowed_empty_disables_all"
+name = "test_allowed_empty_disables_all"
+kind = "method"
+lang = "python"
+content_hash = "4190734289acb2af"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_allowed_empty_disables_all(self, client):"
+description = ""
+schema = 4
+line = 1352
+mtime = 1784493613000000000
+container = [
+  "TestAllowedToDisabledConversion",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestAllowedToDisabledConversion",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "all",
+  "allowed",
+  "combiner",
+  "combiner.tests.test_session_filter.TestAllowedToDisabledConversion.test_allowed_empty_disables_all",
+  "conversion",
+  "disabled",
+  "disables",
+  "empty",
+  "filter",
+  "session",
+  "test",
+  "test_allowed_empty_disables_all",
+  "tests",
+  "to",
+]

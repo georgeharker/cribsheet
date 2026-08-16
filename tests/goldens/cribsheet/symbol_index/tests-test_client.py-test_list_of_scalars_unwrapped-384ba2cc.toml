@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_client.py#test_list_of_scalars_unwrapped"
+fqn = "tests.test_client.test_list_of_scalars_unwrapped"
+name = "test_list_of_scalars_unwrapped"
+kind = "function"
+lang = "python"
+content_hash = "05b1c600f890c2f1"
+file = "tests/test_client.py"
+file_hash = "cd69a30eb66e1ea1"
+signature = "def test_list_of_scalars_unwrapped():"
+description = ""
+schema = 4
+line = 45
+mtime = 1782958917000000000
+container = []
+scope = [
+  "tests",
+  "test_client",
+]
+symbol_was = []
+calls = [
+  "_data [crib/client.py]",
+  "_res [tests/test_client.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "list",
+  "of",
+  "scalars",
+  "test",
+  "test_list_of_scalars_unwrapped",
+  "tests",
+  "tests.test_client.test_list_of_scalars_unwrapped",
+  "unwrapped",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/schemafix.py#_to_clean_tool"
+fqn = "combiner.mcp_combiner.schemafix._to_clean_tool"
+name = "_to_clean_tool"
+kind = "function"
+lang = "python"
+content_hash = "af0763486b80e30a"
+file = "combiner/mcp_combiner/schemafix.py"
+file_hash = "49870021f06866cb"
+signature = "def _to_clean_tool(tool: Tool) -> Tool:"
+description = ""
+schema = 4
+line = 91
+mtime = 1783542616000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "schemafix",
+]
+symbol_was = []
+calls = [
+  "_normalize_schema [combiner/mcp_combiner/schemafix.py]",
+  "_safe_json_clone [combiner/mcp_combiner/schemafix.py]",
+]
+called_by = [
+  "_sanitize_tools [combiner/mcp_combiner/schemafix.py]",
+]
+references = [
+  "_sanitize_tools [combiner/mcp_combiner/schemafix.py]",
+]
+name_terms = [
+  "_to_clean_tool",
+  "clean",
+  "combiner",
+  "combiner.mcp_combiner.schemafix._to_clean_tool",
+  "mcp",
+  "schemafix",
+  "to",
+  "tool",
+]

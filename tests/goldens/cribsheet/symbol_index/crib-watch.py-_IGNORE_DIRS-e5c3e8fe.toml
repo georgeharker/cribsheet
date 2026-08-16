@@ -1,0 +1,32 @@
+symbol_ref = "crib/watch.py#_IGNORE_DIRS"
+fqn = "crib.watch._IGNORE_DIRS"
+name = "_IGNORE_DIRS"
+kind = "constant"
+lang = "python"
+content_hash = "5e2f7da17b912b63"
+file = "crib/watch.py"
+file_hash = "c10c30739292eebe"
+signature = "_IGNORE_DIRS = {\".git\", \".versions\"}"
+description = ""
+schema = 4
+line = 23
+mtime = 1786139638000000000
+container = []
+scope = [
+  "crib",
+  "watch",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_ignored [crib/watch.py]",
+]
+name_terms = [
+  "_IGNORE_DIRS",
+  "crib",
+  "crib.watch._IGNORE_DIRS",
+  "dirs",
+  "ignore",
+  "watch",
+]

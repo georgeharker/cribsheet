@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockServer._register_builtins"
+fqn = "combiner.mcp_combiner.mockserver.MockServer._register_builtins"
+name = "_register_builtins"
+kind = "method"
+lang = "python"
+content_hash = "e1e8389c712c5d0b"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def _register_builtins(self) -> None:"
+description = ""
+schema = 4
+line = 407
+mtime = 1783622326000000000
+container = [
+  "MockServer",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockServer",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+]
+references = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "_register_builtins",
+  "builtins",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockServer._register_builtins",
+  "mcp",
+  "mock",
+  "mockserver",
+  "register",
+  "server",
+]

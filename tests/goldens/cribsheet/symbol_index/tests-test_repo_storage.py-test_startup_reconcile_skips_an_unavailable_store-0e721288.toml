@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_repo_storage.py#test_startup_reconcile_skips_an_unavailable_store"
+fqn = "tests.test_repo_storage.test_startup_reconcile_skips_an_unavailable_store"
+name = "test_startup_reconcile_skips_an_unavailable_store"
+kind = "function"
+lang = "python"
+content_hash = "9cab85d5d89153d7"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_startup_reconcile_skips_an_unavailable_store(crib, paths, capsys):"
+description = ""
+schema = 4
+line = 147
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "ProjectConfig [crib/config.py]",
+  "run [tests/test_repo_storage.py]",
+  "save [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "an",
+  "reconcile",
+  "repo",
+  "skips",
+  "startup",
+  "storage",
+  "store",
+  "test",
+  "test_startup_reconcile_skips_an_unavailable_store",
+  "tests",
+  "tests.test_repo_storage.test_startup_reconcile_skips_an_unavailable_store",
+  "unavailable",
+]

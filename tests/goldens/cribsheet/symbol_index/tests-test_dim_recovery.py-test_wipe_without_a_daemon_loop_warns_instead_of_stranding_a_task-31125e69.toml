@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_dim_recovery.py#test_wipe_without_a_daemon_loop_warns_instead_of_stranding_a_task"
+fqn = "tests.test_dim_recovery.test_wipe_without_a_daemon_loop_warns_instead_of_stranding_a_task"
+name = "test_wipe_without_a_daemon_loop_warns_instead_of_stranding_a_task"
+kind = "function"
+lang = "python"
+content_hash = "819b163ebe8057cd"
+file = "tests/test_dim_recovery.py"
+file_hash = "5f6ffd4e573336e9"
+signature = "def test_wipe_without_a_daemon_loop_warns_instead_of_stranding_a_task("
+description = ""
+schema = 4
+line = 115
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_dim_recovery",
+]
+symbol_was = []
+calls = [
+  "_flip_embedder [tests/test_dim_recovery.py]",
+  "run [tests/test_dim_recovery.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "daemon",
+  "dim",
+  "instead",
+  "loop",
+  "of",
+  "recovery",
+  "stranding",
+  "task",
+  "test",
+  "test_wipe_without_a_daemon_loop_warns_instead_of_stranding_a_task",
+  "tests",
+  "tests.test_dim_recovery.test_wipe_without_a_daemon_loop_warns_instead_of_stranding_a_task",
+  "warns",
+  "wipe",
+  "without",
+]

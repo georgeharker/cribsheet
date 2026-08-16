@@ -1,0 +1,46 @@
+symbol_ref = "crib/notestore.py#NoteStore.versions_for"
+fqn = "crib.notestore.NoteStore.versions_for"
+name = "versions_for"
+kind = "method"
+lang = "python"
+content_hash = "cee68c5cea807116"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "def versions_for(self, project: str) -> VersionRing:"
+description = ""
+schema = 4
+line = 106
+mtime = 1786564832000000000
+container = [
+  "NoteStore",
+]
+scope = [
+  "crib",
+  "notestore",
+  "NoteStore",
+]
+symbol_was = []
+calls = [
+  "VersionRing [crib/versions.py]",
+  "__call__ [crib/paths.py]",
+]
+called_by = [
+  "_stash_existing [crib/notestore.py]",
+  "list_versions [crib/notestore.py]",
+  "version_content [crib/notestore.py]",
+]
+references = [
+  "_stash_existing [crib/notestore.py]",
+  "list_versions [crib/notestore.py]",
+  "version_content [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.NoteStore.versions_for",
+  "for",
+  "note",
+  "notestore",
+  "store",
+  "versions",
+  "versions_for",
+]

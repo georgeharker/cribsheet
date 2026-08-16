@@ -1,0 +1,31 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#_source_bufnr"
+fqn = "mcp_companion.ui._source_bufnr"
+name = "_source_bufnr"
+kind = "global"
+lang = "lua"
+content_hash = "82e88af5f74fbfef"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "local _source_bufnr = nil"
+description = ""
+schema = 4
+line = 21
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "ui",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_source_bufnr",
+  "bufnr",
+  "companion",
+  "mcp",
+  "mcp_companion.ui._source_bufnr",
+  "source",
+  "ui",
+]

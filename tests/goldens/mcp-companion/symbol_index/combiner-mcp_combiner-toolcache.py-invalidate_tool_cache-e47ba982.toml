@@ -1,0 +1,48 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#invalidate_tool_cache"
+fqn = "combiner.mcp_combiner.toolcache.invalidate_tool_cache"
+name = "invalidate_tool_cache"
+kind = "function"
+lang = "python"
+content_hash = "88824792b2dcaaa4"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "def invalidate_tool_cache() -> None:"
+description = ""
+schema = 4
+line = 337
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = [
+  "clear_tool_cache [combiner/mcp_combiner/toolcache.py]",
+  "notify_tool_list_changed [combiner/mcp_combiner/toolcache.py]",
+]
+called_by = [
+  "combiner__disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+]
+references = [
+  "combiner__disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+]
+name_terms = [
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.toolcache.invalidate_tool_cache",
+  "invalidate",
+  "invalidate_tool_cache",
+  "mcp",
+  "tool",
+  "toolcache",
+]

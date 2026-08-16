@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.learning_edit"
+fqn = "crib.app.Crib.learning_edit"
+name = "learning_edit"
+kind = "method"
+lang = "python"
+content_hash = "bb477539fc2e878b"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def learning_edit(self, symbol: str, new_content: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 2088
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "edit [crib/learnings.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "learning_edit [crib/server.py]",
+]
+references = [
+  "learning_edit [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.learning_edit",
+  "edit",
+  "learning",
+  "learning_edit",
+]

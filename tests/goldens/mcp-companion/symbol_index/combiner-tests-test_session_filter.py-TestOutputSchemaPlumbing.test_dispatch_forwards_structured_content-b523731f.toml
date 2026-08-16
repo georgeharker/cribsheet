@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestOutputSchemaPlumbing.test_dispatch_forwards_structured_content"
+fqn = "combiner.tests.test_session_filter.TestOutputSchemaPlumbing.test_dispatch_forwards_structured_content"
+name = "test_dispatch_forwards_structured_content"
+kind = "method"
+lang = "python"
+content_hash = "be7d4afd7567a5f5"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_dispatch_forwards_structured_content(self):"
+description = ""
+schema = 4
+line = 1050
+mtime = 1784493613000000000
+container = [
+  "TestOutputSchemaPlumbing",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestOutputSchemaPlumbing",
+]
+symbol_was = []
+calls = [
+  "_dispatch_result_to_tool_result [combiner/mcp_combiner/nvim_proxy.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestOutputSchemaPlumbing.test_dispatch_forwards_structured_content",
+  "content",
+  "dispatch",
+  "filter",
+  "forwards",
+  "output",
+  "plumbing",
+  "schema",
+  "session",
+  "structured",
+  "test",
+  "test_dispatch_forwards_structured_content",
+  "tests",
+]

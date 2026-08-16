@@ -1,0 +1,33 @@
+symbol_ref = "scripts/eval_hybrid.py#RERANK_N"
+fqn = "scripts.eval_hybrid.RERANK_N"
+name = "RERANK_N"
+kind = "constant"
+lang = "python"
+content_hash = "6dd767e1c159f1fe"
+file = "scripts/eval_hybrid.py"
+file_hash = "7efc1218d091601c"
+signature = "RERANK_N = 20"
+description = ""
+schema = 4
+line = 38
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_hybrid",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "main [scripts/eval_hybrid.py]",
+]
+name_terms = [
+  "RERANK_N",
+  "eval",
+  "hybrid",
+  "n",
+  "rerank",
+  "scripts",
+  "scripts.eval_hybrid.RERANK_N",
+]

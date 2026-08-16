@@ -1,0 +1,35 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#icons.combiner_off"
+fqn = "mcp_companion.ui.icons.combiner_off"
+name = "combiner_off"
+kind = "field"
+lang = "lua"
+content_hash = "f3e95e7312126888"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "combiner_off = \"⬡\","
+description = ""
+schema = 4
+line = 40
+mtime = 1783545086000000000
+container = [
+  "icons",
+]
+scope = [
+  "mcp_companion",
+  "ui",
+  "icons",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner_off",
+  "companion",
+  "icons",
+  "mcp",
+  "mcp_companion.ui.icons.combiner_off",
+  "off",
+  "ui",
+]

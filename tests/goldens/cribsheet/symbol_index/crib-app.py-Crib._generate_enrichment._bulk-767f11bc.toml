@@ -1,0 +1,44 @@
+symbol_ref = "crib/app.py#Crib._generate_enrichment._bulk"
+fqn = "crib.app.Crib._generate_enrichment._bulk"
+name = "_bulk"
+kind = "function"
+lang = "python"
+content_hash = "ec803b1feac0ab96"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def _bulk(batch: list[tuple]) -> None:"
+description = ""
+schema = 4
+line = 2603
+mtime = 1786693579000000000
+container = [
+  "Crib",
+  "_generate_enrichment",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+  "_generate_enrichment",
+]
+symbol_was = []
+calls = [
+  "_match [crib/app.py]",
+  "_record [crib/app.py]",
+  "agenerate_structured [crib/generate.py]",
+]
+called_by = [
+  "_generate_enrichment [crib/app.py]",
+]
+references = [
+  "_generate_enrichment [crib/app.py]",
+]
+name_terms = [
+  "_bulk",
+  "app",
+  "bulk",
+  "crib",
+  "crib.app.Crib._generate_enrichment._bulk",
+  "enrichment",
+  "generate",
+]

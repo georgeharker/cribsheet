@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_reload_config.py#test_restart_http_down_defers_notification._connect_but_down"
+fqn = "combiner.tests.test_reload_config.test_restart_http_down_defers_notification._connect_but_down"
+name = "_connect_but_down"
+kind = "function"
+lang = "python"
+content_hash = "718944b5434a45d9"
+file = "combiner/tests/test_reload_config.py"
+file_hash = "1ab3b3e0b48c7d3d"
+signature = "async def _connect_but_down(_config: CombinerConfig, name: str, _srv: ServerConfig) -> None:"
+description = ""
+schema = 4
+line = 219
+mtime = 1784493613000000000
+container = [
+  "test_restart_http_down_defers_notification",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_reload_config",
+  "test_restart_http_down_defers_notification",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_restart_http_down_defers_notification [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "_connect_but_down",
+  "but",
+  "combiner",
+  "combiner.tests.test_reload_config.test_restart_http_down_defers_notification._connect_but_down",
+  "config",
+  "connect",
+  "defers",
+  "down",
+  "http",
+  "notification",
+  "reload",
+  "restart",
+  "test",
+  "tests",
+]

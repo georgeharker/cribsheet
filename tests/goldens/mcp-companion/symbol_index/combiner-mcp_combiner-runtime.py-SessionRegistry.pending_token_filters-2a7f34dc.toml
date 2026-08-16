@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.pending_token_filters"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.pending_token_filters"
+name = "pending_token_filters"
+kind = "field"
+lang = "python"
+content_hash = "6ed6ef531255cf44"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "pending_token_filters: dict[str, set[str]] = field(default_factory=dict)"
+description = ""
+schema = 4
+line = 58
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_pending_token_filters [combiner/mcp_combiner/server.py]",
+  "pending_for [combiner/mcp_combiner/runtime.py]",
+  "pop_pending [combiner/mcp_combiner/runtime.py]",
+  "reset [combiner/mcp_combiner/runtime.py]",
+  "set_pending [combiner/mcp_combiner/runtime.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.pending_token_filters",
+  "filters",
+  "mcp",
+  "pending",
+  "pending_token_filters",
+  "registry",
+  "runtime",
+  "session",
+  "token",
+]

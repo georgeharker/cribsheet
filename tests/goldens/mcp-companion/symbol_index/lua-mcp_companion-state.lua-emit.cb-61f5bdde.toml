@@ -1,0 +1,38 @@
+symbol_ref = "lua/mcp_companion/state.lua#emit.cb"
+fqn = "mcp_companion.state.emit.cb"
+name = "cb"
+kind = "function"
+lang = "lua"
+content_hash = "87d1ce66cb10eeda"
+file = "lua/mcp_companion/state.lua"
+file_hash = "0ebe5b76a6380351"
+signature = "for _, cb in ipairs(_event_subs[event] or {}) do"
+description = ""
+schema = 4
+line = 164
+mtime = 1782852601000000000
+container = [
+  "M.emit",
+  "for in",
+]
+scope = [
+  "mcp_companion",
+  "state",
+  "emit",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.emit [lua/mcp_companion/state.lua]",
+]
+references = [
+  "for in [lua/mcp_companion/state.lua]",
+]
+name_terms = [
+  "cb",
+  "companion",
+  "emit",
+  "mcp",
+  "mcp_companion.state.emit.cb",
+  "state",
+]

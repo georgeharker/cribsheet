@@ -1,0 +1,46 @@
+symbol_ref = "crib/indexer.py#IndexResult.upserted"
+fqn = "crib.indexer.IndexResult.upserted"
+name = "upserted"
+kind = "field"
+lang = "python"
+content_hash = "fc9ab43c6f50e4bb"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "upserted: int"
+description = ""
+schema = 4
+line = 40
+mtime = 1786578262000000000
+container = [
+  "IndexResult",
+]
+scope = [
+  "crib",
+  "indexer",
+  "IndexResult",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_add [crib/designs.py]",
+  "_index_locked [crib/indexer.py]",
+  "_plan [crib/indexer.py]",
+  "_save [crib/designs.py]",
+  "append [crib/learnings.py]",
+  "append_note [crib/app.py]",
+  "distill [crib/app.py]",
+  "edit [crib/learnings.py]",
+  "edit_note [crib/app.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "store_note [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.indexer.IndexResult.upserted",
+  "index",
+  "indexer",
+  "result",
+  "upserted",
+]

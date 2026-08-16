@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#ToolCacheState.failed_servers"
+fqn = "combiner.mcp_combiner.runtime.ToolCacheState.failed_servers"
+name = "failed_servers"
+kind = "field"
+lang = "python"
+content_hash = "f420ada2206d6f37"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "failed_servers: dict[str, str] = field(default_factory=dict)"
+description = ""
+schema = 4
+line = 191
+mtime = 1784493613000000000
+container = [
+  "ToolCacheState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "ToolCacheState",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_failed_servers [combiner/mcp_combiner/server.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "build_server_status [combiner/mcp_combiner/status.py]",
+  "clear_failure [combiner/mcp_combiner/runtime.py]",
+  "record_failure [combiner/mcp_combiner/runtime.py]",
+  "reset [combiner/mcp_combiner/runtime.py]",
+]
+name_terms = [
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.runtime.ToolCacheState.failed_servers",
+  "failed",
+  "failed_servers",
+  "mcp",
+  "runtime",
+  "servers",
+  "state",
+  "tool",
+]

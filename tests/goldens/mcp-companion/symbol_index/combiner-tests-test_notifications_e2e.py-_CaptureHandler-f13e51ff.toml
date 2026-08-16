@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#_CaptureHandler"
+fqn = "combiner.tests.test_notifications_e2e._CaptureHandler"
+name = "_CaptureHandler"
+kind = "class"
+lang = "python"
+content_hash = "0e02e3daab7792bf"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "class _CaptureHandler(MessageHandler):"
+description = ""
+schema = 4
+line = 105
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_list_changed_forwarded_through_proxy [combiner/tests/test_notifications_e2e.py]",
+  "test_per_chat_routes_to_requesting_session_only [combiner/tests/test_notifications_e2e.py]",
+]
+name_terms = [
+  "2",
+  "_CaptureHandler",
+  "capture",
+  "combiner",
+  "combiner.tests.test_notifications_e2e._CaptureHandler",
+  "e",
+  "handler",
+  "notifications",
+  "test",
+  "tests",
+]

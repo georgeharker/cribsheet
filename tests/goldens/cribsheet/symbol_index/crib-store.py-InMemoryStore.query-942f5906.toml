@@ -1,0 +1,44 @@
+symbol_ref = "crib/store.py#InMemoryStore.query"
+fqn = "crib.store.InMemoryStore.query"
+name = "query"
+kind = "method"
+lang = "python"
+content_hash = "1dbebebdffb6cd99"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def query(self, embedding: list[float], k: int,"
+description = ""
+schema = 4
+line = 127
+mtime = 1786564832000000000
+container = [
+  "InMemoryStore",
+]
+scope = [
+  "crib",
+  "store",
+  "InMemoryStore",
+]
+symbol_was = []
+calls = [
+  "Hit [crib/store.py]",
+  "_cosine [crib/store.py]",
+  "_matches [crib/store.py]",
+  "_snapshot [crib/store.py]",
+]
+called_by = [
+  "test_a_dim_mismatch_raises_instead_of_scoring_a_truncated_vector [tests/test_dim_recovery.py]",
+  "test_jsonstore_survives_concurrent_writers_and_readers [tests/test_loop_responsiveness.py]",
+]
+references = [
+  "test_a_dim_mismatch_raises_instead_of_scoring_a_truncated_vector [tests/test_dim_recovery.py]",
+  "test_jsonstore_survives_concurrent_writers_and_readers [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.InMemoryStore.query",
+  "in",
+  "memory",
+  "query",
+  "store",
+]

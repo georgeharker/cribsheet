@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_ManagedConnection._monitor_task"
+fqn = "combiner.mcp_combiner.connections._ManagedConnection._monitor_task"
+name = "_monitor_task"
+kind = "field"
+lang = "python"
+content_hash = "8310d9943a06fd2b"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_monitor_task: asyncio.Task[None] | None = field(default=None, repr=False)"
+description = ""
+schema = 4
+line = 148
+mtime = 1784493613000000000
+container = [
+  "_ManagedConnection",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "_ManagedConnection",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_teardown [combiner/mcp_combiner/connections.py]",
+  "connect [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_monitor_task",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection._monitor_task",
+  "connection",
+  "connections",
+  "managed",
+  "mcp",
+  "monitor",
+  "task",
+]

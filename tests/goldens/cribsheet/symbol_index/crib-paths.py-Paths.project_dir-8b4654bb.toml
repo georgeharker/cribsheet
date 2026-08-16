@@ -1,0 +1,95 @@
+symbol_ref = "crib/paths.py#Paths.project_dir"
+fqn = "crib.paths.Paths.project_dir"
+name = "project_dir"
+kind = "method"
+lang = "python"
+content_hash = "5a897ee586f3f669"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "def project_dir(self, project: str) -> Path:"
+description = ""
+schema = 4
+line = 112
+mtime = 1786564832000000000
+container = [
+  "Paths",
+]
+scope = [
+  "crib",
+  "paths",
+  "Paths",
+]
+symbol_was = []
+calls = [
+  "check_project_name [crib/paths.py]",
+]
+called_by = [
+  "_describe_and_patch [crib/codeindexer.py]",
+  "_describe_backlog [crib/app.py]",
+  "_generate_index [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_index_project_code [crib/codeindexer.py]",
+  "_registered_root [crib/app.py]",
+  "_reindex_dirty_code [crib/app.py]",
+  "_require_code_index [crib/app.py]",
+  "capture [scripts/symstats.py]",
+  "code_convert [crib/app.py]",
+  "code_indexed_projects [crib/app.py]",
+  "convert_notes [crib/learnings.py]",
+  "dir_sig [crib/codestore.py]",
+  "drop_file [crib/codestore.py]",
+  "enrich [crib/app.py]",
+  "index [scripts/snapshot_harness.py]",
+  "main [scripts/eval_code.py]",
+  "main [scripts/gen_notes_gold.py]",
+  "marks [crib/learnings.py]",
+  "notes_dir [crib/paths.py]",
+  "project_refs [crib/refs.py]",
+  "project_release [crib/app.py]",
+  "project_status [crib/app.py]",
+  "rehome [crib/learnings.py]",
+  "reload [crib/codestore.py]",
+  "report [crib/learnings.py]",
+  "resolve_symbol [crib/refs.py]",
+  "revalidate [crib/codestore.py]",
+  "start_watchers [crib/app.py]",
+]
+references = [
+  "_describe_and_patch [crib/codeindexer.py]",
+  "_describe_backlog [crib/app.py]",
+  "_generate_index [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_index_project_code [crib/codeindexer.py]",
+  "_registered_root [crib/app.py]",
+  "_reindex_dirty_code [crib/app.py]",
+  "_require_code_index [crib/app.py]",
+  "capture [scripts/symstats.py]",
+  "code_convert [crib/app.py]",
+  "code_indexed_projects [crib/app.py]",
+  "convert_notes [crib/learnings.py]",
+  "dir_sig [crib/codestore.py]",
+  "drop_file [crib/codestore.py]",
+  "enrich [crib/app.py]",
+  "index [scripts/snapshot_harness.py]",
+  "main [scripts/eval_code.py]",
+  "main [scripts/gen_notes_gold.py]",
+  "marks [crib/learnings.py]",
+  "notes_dir [crib/paths.py]",
+  "project_refs [crib/refs.py]",
+  "project_release [crib/app.py]",
+  "project_status [crib/app.py]",
+  "rehome [crib/learnings.py]",
+  "reload [crib/codestore.py]",
+  "report [crib/learnings.py]",
+  "resolve_symbol [crib/refs.py]",
+  "revalidate [crib/codestore.py]",
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.Paths.project_dir",
+  "dir",
+  "paths",
+  "project",
+  "project_dir",
+]

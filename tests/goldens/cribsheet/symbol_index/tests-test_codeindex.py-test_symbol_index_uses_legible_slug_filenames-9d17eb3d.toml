@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_codeindex.py#test_symbol_index_uses_legible_slug_filenames"
+fqn = "tests.test_codeindex.test_symbol_index_uses_legible_slug_filenames"
+name = "test_symbol_index_uses_legible_slug_filenames"
+kind = "function"
+lang = "python"
+content_hash = "0b62e5d814ddb8e2"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_symbol_index_uses_legible_slug_filenames(tmp_path):"
+description = ""
+schema = 4
+line = 41
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "by_fqname [crib/codeindex.py]",
+  "delete [crib/codeindex.py]",
+  "read [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "filenames",
+  "index",
+  "legible",
+  "slug",
+  "symbol",
+  "test",
+  "test_symbol_index_uses_legible_slug_filenames",
+  "tests",
+  "tests.test_codeindex.test_symbol_index_uses_legible_slug_filenames",
+  "uses",
+]

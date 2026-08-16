@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager._teardown"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager._teardown"
+name = "_teardown"
+kind = "method"
+lang = "python"
+content_hash = "3419abfc965bde2c"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "async def _teardown(self, conn: _ManagedConnection) -> None:"
+description = ""
+schema = 4
+line = 624
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "disconnect [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "disconnect [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_teardown",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager._teardown",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+  "teardown",
+]

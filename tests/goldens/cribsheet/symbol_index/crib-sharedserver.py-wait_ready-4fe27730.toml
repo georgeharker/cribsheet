@@ -1,0 +1,36 @@
+symbol_ref = "crib/sharedserver.py#wait_ready"
+fqn = "crib.sharedserver.wait_ready"
+name = "wait_ready"
+kind = "function"
+lang = "python"
+content_hash = "a56ce49d9f48e4df"
+file = "crib/sharedserver.py"
+file_hash = "ec64a3161821f01c"
+signature = "def wait_ready(probe, timeout: float = 30.0, interval: float = 0.3) -> None:"
+description = ""
+schema = 4
+line = 46
+mtime = 1782609751000000000
+container = []
+scope = [
+  "crib",
+  "sharedserver",
+]
+symbol_was = []
+calls = [
+  "SharedServerError [crib/sharedserver.py]",
+]
+called_by = [
+  "_build_shared_chroma [crib/app.py]",
+]
+references = [
+  "_build_shared_chroma [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.sharedserver.wait_ready",
+  "ready",
+  "sharedserver",
+  "wait",
+  "wait_ready",
+]

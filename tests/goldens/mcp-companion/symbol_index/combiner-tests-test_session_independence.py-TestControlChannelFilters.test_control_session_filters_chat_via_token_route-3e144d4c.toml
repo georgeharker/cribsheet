@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestControlChannelFilters.test_control_session_filters_chat_via_token_route"
+fqn = "combiner.tests.test_session_independence.TestControlChannelFilters.test_control_session_filters_chat_via_token_route"
+name = "test_control_session_filters_chat_via_token_route"
+kind = "method"
+lang = "python"
+content_hash = "dd68f8b1d5768ef7"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "@xfail_session_namespace_split"
+description = ""
+schema = 4
+line = 194
+mtime = 1783541669000000000
+container = [
+  "TestControlChannelFilters",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+  "TestControlChannelFilters",
+]
+symbol_was = []
+calls = [
+  "_header_client [combiner/tests/test_session_independence.py]",
+  "_rest [combiner/tests/test_session_independence.py]",
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "_text [combiner/tests/test_session_independence.py]",
+  "_token [combiner/tests/test_session_independence.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "channel",
+  "chat",
+  "combiner",
+  "combiner.tests.test_session_independence.TestControlChannelFilters.test_control_session_filters_chat_via_token_route",
+  "control",
+  "filters",
+  "independence",
+  "route",
+  "session",
+  "test",
+  "test_control_session_filters_chat_via_token_route",
+  "tests",
+  "token",
+  "via",
+]

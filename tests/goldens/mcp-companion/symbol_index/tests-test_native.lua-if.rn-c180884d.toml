@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_native.lua#if.rn"
+fqn = "tests.test_native.if.rn"
+name = "rn"
+kind = "variable"
+lang = "lua"
+content_hash = "f01912b4596fcf68"
+file = "tests/test_native.lua"
+file_hash = "68d141d843ba3fa4"
+signature = "local rn = native.dispatch(\"neovim_read_buffer\", { buffer = buf })"
+description = ""
+schema = 4
+line = 110
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+scope = [
+  "tests",
+  "test_native",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "native",
+  "rn",
+  "test",
+  "tests",
+  "tests.test_native.if.rn",
+]

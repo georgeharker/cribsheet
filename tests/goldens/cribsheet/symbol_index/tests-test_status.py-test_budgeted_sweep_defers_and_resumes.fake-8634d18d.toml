@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_status.py#test_budgeted_sweep_defers_and_resumes.fake"
+fqn = "tests.test_status.test_budgeted_sweep_defers_and_resumes.fake"
+name = "fake"
+kind = "function"
+lang = "python"
+content_hash = "a9b9c263515a75de"
+file = "tests/test_status.py"
+file_hash = "09906d8541a460d9"
+signature = "def fake(rt, rel, proj, patch_edges, existing=None, describe_mode=\"inline\", sweep=False):"
+description = ""
+schema = 4
+line = 93
+mtime = 1786664729000000000
+container = [
+  "test_budgeted_sweep_defers_and_resumes",
+]
+scope = [
+  "tests",
+  "test_status",
+  "test_budgeted_sweep_defers_and_resumes",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_budgeted_sweep_defers_and_resumes [tests/test_status.py]",
+]
+name_terms = [
+  "and",
+  "budgeted",
+  "defers",
+  "fake",
+  "resumes",
+  "status",
+  "sweep",
+  "test",
+  "tests",
+  "tests.test_status.test_budgeted_sweep_defers_and_resumes.fake",
+]

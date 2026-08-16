@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestLocalToolsReady.test_reprime_changed_list_publishes.list_tools"
+fqn = "combiner.tests.test_session_filter.TestLocalToolsReady.test_reprime_changed_list_publishes.list_tools"
+name = "list_tools"
+kind = "function"
+lang = "python"
+content_hash = "e19ebe1635a371a5"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "async def list_tools():"
+description = ""
+schema = 4
+line = 740
+mtime = 1784493613000000000
+container = [
+  "TestLocalToolsReady",
+  "test_reprime_changed_list_publishes",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestLocalToolsReady",
+  "test_reprime_changed_list_publishes",
+]
+symbol_was = []
+calls = [
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = [
+  "test_reprime_changed_list_publishes [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "changed",
+  "combiner",
+  "combiner.tests.test_session_filter.TestLocalToolsReady.test_reprime_changed_list_publishes.list_tools",
+  "filter",
+  "list",
+  "list_tools",
+  "local",
+  "publishes",
+  "ready",
+  "reprime",
+  "session",
+  "test",
+  "tests",
+  "tools",
+]

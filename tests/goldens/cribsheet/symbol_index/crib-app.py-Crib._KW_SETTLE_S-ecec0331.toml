@@ -1,0 +1,36 @@
+symbol_ref = "crib/app.py#Crib._KW_SETTLE_S"
+fqn = "crib.app.Crib._KW_SETTLE_S"
+name = "_KW_SETTLE_S"
+kind = "constant"
+lang = "python"
+content_hash = "218e8c63be76057e"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "_KW_SETTLE_S = 1.0                  # per-note debounce before the refresh fires"
+description = ""
+schema = 4
+line = 509
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_schedule_keyword_refresh [crib/app.py]",
+]
+name_terms = [
+  "_KW_SETTLE_S",
+  "app",
+  "crib",
+  "crib.app.Crib._KW_SETTLE_S",
+  "kw",
+  "s",
+  "settle",
+]

@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_connections.py#TestReconnectBackingRestart.test_restarts_backing_after_threshold.restart_backing"
+fqn = "combiner.tests.test_connections.TestReconnectBackingRestart.test_restarts_backing_after_threshold.restart_backing"
+name = "restart_backing"
+kind = "function"
+lang = "python"
+content_hash = "f9307cae467d2ec5"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def restart_backing(name: str) -> bool:"
+description = ""
+schema = 4
+line = 405
+mtime = 1784493613000000000
+container = [
+  "TestReconnectBackingRestart",
+  "test_restarts_backing_after_threshold",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestReconnectBackingRestart",
+  "test_restarts_backing_after_threshold",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_restarts_backing_after_threshold [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "after",
+  "backing",
+  "combiner",
+  "combiner.tests.test_connections.TestReconnectBackingRestart.test_restarts_backing_after_threshold.restart_backing",
+  "connections",
+  "reconnect",
+  "restart",
+  "restart_backing",
+  "restarts",
+  "test",
+  "tests",
+  "threshold",
+]

@@ -1,0 +1,31 @@
+symbol_ref = "combiner/mcp_combiner/server.py#_combiner_config"
+fqn = "combiner.mcp_combiner.server._combiner_config"
+name = "_combiner_config"
+kind = "global"
+lang = "python"
+content_hash = "29fbc704bfc8e368"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "_combiner_config: CombinerConfig | None = None"
+description = ""
+schema = 4
+line = 156
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_combiner_config",
+  "combiner",
+  "combiner.mcp_combiner.server._combiner_config",
+  "config",
+  "mcp",
+  "server",
+]

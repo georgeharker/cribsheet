@@ -1,0 +1,40 @@
+symbol_ref = "scripts/eval_fusion.py#_cands"
+fqn = "scripts.eval_fusion._cands"
+name = "_cands"
+kind = "function"
+lang = "python"
+content_hash = "05243b4c46502f8e"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def _cands(bm: list[float], k: int = 30) -> list[int]:"
+description = ""
+schema = 4
+line = 129
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_ltr_rows [scripts/eval_fusion.py]",
+  "fn [scripts/eval_fusion.py]",
+  "fn [scripts/eval_kw.py]",
+  "three_facets [scripts/eval_kw.py]",
+]
+references = [
+  "_ltr_rows [scripts/eval_fusion.py]",
+  "fn [scripts/eval_fusion.py]",
+  "fn [scripts/eval_kw.py]",
+  "three_facets [scripts/eval_kw.py]",
+]
+name_terms = [
+  "_cands",
+  "cands",
+  "eval",
+  "fusion",
+  "scripts",
+  "scripts.eval_fusion._cands",
+]

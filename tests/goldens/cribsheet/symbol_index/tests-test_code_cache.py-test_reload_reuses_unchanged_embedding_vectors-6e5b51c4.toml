@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_code_cache.py#test_reload_reuses_unchanged_embedding_vectors"
+fqn = "tests.test_code_cache.test_reload_reuses_unchanged_embedding_vectors"
+name = "test_reload_reuses_unchanged_embedding_vectors"
+kind = "function"
+lang = "python"
+content_hash = "368093301f01fc7a"
+file = "tests/test_code_cache.py"
+file_hash = "44f8f848adca2094"
+signature = "def test_reload_reuses_unchanged_embedding_vectors(crib):"
+description = ""
+schema = 4
+line = 59
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_cache",
+]
+symbol_was = []
+calls = [
+  "_write [tests/test_code_cache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "code",
+  "embedding",
+  "reload",
+  "reuses",
+  "test",
+  "test_reload_reuses_unchanged_embedding_vectors",
+  "tests",
+  "tests.test_code_cache.test_reload_reuses_unchanged_embedding_vectors",
+  "unchanged",
+  "vectors",
+]

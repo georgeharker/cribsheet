@@ -1,0 +1,33 @@
+symbol_ref = "crib/watch.py#_FSWatcher"
+fqn = "crib.watch._FSWatcher"
+name = "_FSWatcher"
+kind = "class"
+lang = "python"
+content_hash = "04823124f811f502"
+file = "crib/watch.py"
+file_hash = "c10c30739292eebe"
+signature = "class _FSWatcher:"
+description = ""
+schema = 4
+line = 91
+mtime = 1786139638000000000
+container = []
+scope = [
+  "crib",
+  "watch",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "CodeWatcher [crib/watch.py]",
+  "Watcher [crib/watch.py]",
+]
+name_terms = [
+  "_FSWatcher",
+  "crib",
+  "crib.watch._FSWatcher",
+  "fs",
+  "watch",
+  "watcher",
+]

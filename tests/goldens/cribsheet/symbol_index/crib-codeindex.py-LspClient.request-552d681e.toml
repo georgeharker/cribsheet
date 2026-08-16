@@ -1,0 +1,60 @@
+symbol_ref = "crib/codeindex.py#LspClient.request"
+fqn = "crib.codeindex.LspClient.request"
+name = "request"
+kind = "method"
+lang = "python"
+content_hash = "2102bd43593d4ed7"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def request(self, method: str, params: dict, timeout: float | None = None) -> Any:"
+description = ""
+schema = 4
+line = 461
+mtime = 1786844518000000000
+container = [
+  "LspClient",
+]
+scope = [
+  "crib",
+  "codeindex",
+  "LspClient",
+]
+symbol_was = []
+calls = [
+  "SessionError [crib/codeindex.py]",
+  "_default_request_timeout [crib/codeindex.py]",
+  "_mark_dead [crib/codeindex.py]",
+  "_send [crib/codeindex.py]",
+]
+called_by = [
+  "_extract [crib/codeindex.py]",
+  "_hierarchy_edges [crib/codeindex.py]",
+  "_hover_doc [crib/codeindex.py]",
+  "_reference_edges [crib/codeindex.py]",
+  "_symbol_entry [crib/codeindex.py]",
+  "_symbol_ranges [crib/codeindex.py]",
+  "close [crib/codeindex.py]",
+  "initialize [crib/codeindex.py]",
+  "test_dead_session_raises_immediately_and_leaks_no_response_slot [tests/test_code_integrity.py]",
+  "test_timed_out_request_pops_its_own_response_slot [tests/test_code_integrity.py]",
+]
+references = [
+  "_extract [crib/codeindex.py]",
+  "_hierarchy_edges [crib/codeindex.py]",
+  "_hover_doc [crib/codeindex.py]",
+  "_reference_edges [crib/codeindex.py]",
+  "_symbol_entry [crib/codeindex.py]",
+  "_symbol_ranges [crib/codeindex.py]",
+  "close [crib/codeindex.py]",
+  "initialize [crib/codeindex.py]",
+  "test_dead_session_raises_immediately_and_leaks_no_response_slot [tests/test_code_integrity.py]",
+  "test_timed_out_request_pops_its_own_response_slot [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "client",
+  "codeindex",
+  "crib",
+  "crib.codeindex.LspClient.request",
+  "lsp",
+  "request",
+]

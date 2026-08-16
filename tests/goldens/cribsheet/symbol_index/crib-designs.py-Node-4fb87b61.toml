@@ -1,0 +1,50 @@
+symbol_ref = "crib/designs.py#Node"
+fqn = "crib.designs.Node"
+name = "Node"
+kind = "class"
+lang = "python"
+content_hash = "1b7031744eca1fb1"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 311
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_cycles [crib/designs.py]",
+  "_dep_add [crib/designs.py]",
+  "_group [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_next [crib/designs.py]",
+  "_node [tests/test_designs.py]",
+  "_note [crib/designs.py]",
+  "_ordered [crib/designs.py]",
+  "_rank_for [crib/designs.py]",
+  "_recapture [crib/designs.py]",
+  "_recheck [crib/designs.py]",
+  "_rel_match [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_row [crib/designs.py]",
+  "_rows [crib/designs.py]",
+  "_save [crib/designs.py]",
+  "build [crib/designs.py]",
+  "nodes [crib/designs.py]",
+  "of_kind [crib/designs.py]",
+  "ref_of [crib/designs.py]",
+]
+name_terms = [
+  "Node",
+  "crib",
+  "crib.designs.Node",
+  "designs",
+  "node",
+]

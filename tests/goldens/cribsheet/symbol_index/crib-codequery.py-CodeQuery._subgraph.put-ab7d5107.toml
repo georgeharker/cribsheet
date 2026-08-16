@@ -1,0 +1,44 @@
+symbol_ref = "crib/codequery.py#CodeQuery._subgraph.put"
+fqn = "crib.codequery.CodeQuery._subgraph.put"
+name = "put"
+kind = "function"
+lang = "python"
+content_hash = "be2fcadcd171e174"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def put(p: str, e: dict, d: int) -> str:"
+description = ""
+schema = 4
+line = 675
+mtime = 1786664729000000000
+container = [
+  "CodeQuery",
+  "_subgraph",
+]
+scope = [
+  "crib",
+  "codequery",
+  "CodeQuery",
+  "_subgraph",
+]
+symbol_was = []
+calls = [
+  "display_name [crib/symbols.py]",
+  "key [crib/symbols.py]",
+  "nid [crib/codequery.py]",
+]
+called_by = [
+  "_subgraph [crib/codequery.py]",
+]
+references = [
+  "_subgraph [crib/codequery.py]",
+]
+name_terms = [
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery._subgraph.put",
+  "put",
+  "query",
+  "subgraph",
+]

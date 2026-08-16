@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_symbol_shape.py#test_no_module_but_symbols_knows_how_a_symbol_is_spelled"
+fqn = "tests.test_symbol_shape.test_no_module_but_symbols_knows_how_a_symbol_is_spelled"
+name = "test_no_module_but_symbols_knows_how_a_symbol_is_spelled"
+kind = "function"
+lang = "python"
+content_hash = "ee9345fe82a288ef"
+file = "tests/test_symbol_shape.py"
+file_hash = "cbe61056081f2393"
+signature = "@pytest.mark.parametrize(\"pattern, what\", ["
+description = ""
+schema = 4
+line = 100
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_shape",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "but",
+  "how",
+  "is",
+  "knows",
+  "module",
+  "no",
+  "shape",
+  "spelled",
+  "symbol",
+  "symbols",
+  "test",
+  "test_no_module_but_symbols_knows_how_a_symbol_is_spelled",
+  "tests",
+  "tests.test_symbol_shape.test_no_module_but_symbols_knows_how_a_symbol_is_spelled",
+]

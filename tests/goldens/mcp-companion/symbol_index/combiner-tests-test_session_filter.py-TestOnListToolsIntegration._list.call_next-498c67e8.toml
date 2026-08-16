@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestOnListToolsIntegration._list.call_next"
+fqn = "combiner.tests.test_session_filter.TestOnListToolsIntegration._list.call_next"
+name = "call_next"
+kind = "function"
+lang = "python"
+content_hash = "d1d48740db10f187"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "async def call_next(_ctx):"
+description = ""
+schema = 4
+line = 984
+mtime = 1784493613000000000
+container = [
+  "TestOnListToolsIntegration",
+  "_list",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestOnListToolsIntegration",
+  "_list",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_list [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "call",
+  "call_next",
+  "combiner",
+  "combiner.tests.test_session_filter.TestOnListToolsIntegration._list.call_next",
+  "filter",
+  "integration",
+  "list",
+  "next",
+  "on",
+  "session",
+  "test",
+  "tests",
+  "tools",
+]

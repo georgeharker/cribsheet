@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_symbol_migration.py#test_two_notes_claiming_one_symbol_collide_never_merge"
+fqn = "tests.test_symbol_migration.test_two_notes_claiming_one_symbol_collide_never_merge"
+name = "test_two_notes_claiming_one_symbol_collide_never_merge"
+kind = "function"
+lang = "python"
+content_hash = "3f9bf4d8cfe4df29"
+file = "tests/test_symbol_migration.py"
+file_hash = "f1bc5f45850c293a"
+signature = "def test_two_notes_claiming_one_symbol_collide_never_merge(crib):"
+description = ""
+schema = 4
+line = 136
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_migration",
+]
+symbol_was = []
+calls = [
+  "_legacy_note [tests/test_symbol_migration.py]",
+  "_seed [tests/test_symbol_migration.py]",
+  "run [tests/test_symbol_migration.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "claiming",
+  "collide",
+  "merge",
+  "migration",
+  "never",
+  "notes",
+  "one",
+  "symbol",
+  "test",
+  "test_two_notes_claiming_one_symbol_collide_never_merge",
+  "tests",
+  "tests.test_symbol_migration.test_two_notes_claiming_one_symbol_collide_never_merge",
+  "two",
+]

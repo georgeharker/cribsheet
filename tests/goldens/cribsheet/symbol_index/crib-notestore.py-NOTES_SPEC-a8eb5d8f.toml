@@ -1,0 +1,32 @@
+symbol_ref = "crib/notestore.py#NOTES_SPEC"
+fqn = "crib.notestore.NOTES_SPEC"
+name = "NOTES_SPEC"
+kind = "constant"
+lang = "python"
+content_hash = "67da3d3dd4bbb1a7"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "NOTES_SPEC = StoreSpec(\"notes\", \"notes\","
+description = ""
+schema = 4
+line = 52
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "notestore",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/notestore.py]",
+]
+name_terms = [
+  "NOTES_SPEC",
+  "crib",
+  "crib.notestore.NOTES_SPEC",
+  "notes",
+  "notestore",
+  "spec",
+]

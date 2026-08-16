@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/conftest.py#ProcFactory.track_shared"
+fqn = "combiner.tests.conftest.ProcFactory.track_shared"
+name = "track_shared"
+kind = "method"
+lang = "python"
+content_hash = "649db4d3084e5cdf"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "def track_shared(self, name: str) -> str:"
+description = ""
+schema = 4
+line = 276
+mtime = 1783544328000000000
+container = [
+  "ProcFactory",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "ProcFactory",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+]
+references = [
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.ProcFactory.track_shared",
+  "conftest",
+  "factory",
+  "proc",
+  "shared",
+  "tests",
+  "track",
+  "track_shared",
+]

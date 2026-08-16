@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_connections.py#TestMonitorRePrime.test_monitor_probe_gives_up_eventually.ping"
+fqn = "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_probe_gives_up_eventually.ping"
+name = "ping"
+kind = "function"
+lang = "python"
+content_hash = "1623496072a13161"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def ping():"
+description = ""
+schema = 4
+line = 184
+mtime = 1784493613000000000
+container = [
+  "TestMonitorRePrime",
+  "test_monitor_probe_gives_up_eventually",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestMonitorRePrime",
+  "test_monitor_probe_gives_up_eventually",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_monitor_probe_gives_up_eventually [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.test_connections.TestMonitorRePrime.test_monitor_probe_gives_up_eventually.ping",
+  "connections",
+  "eventually",
+  "gives",
+  "monitor",
+  "ping",
+  "prime",
+  "probe",
+  "re",
+  "test",
+  "tests",
+  "up",
+]

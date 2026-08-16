@@ -1,0 +1,45 @@
+symbol_ref = "scripts/codeindex/lsp_probe.py#Client.request"
+fqn = "scripts.codeindex.lsp_probe.Client.request"
+name = "request"
+kind = "method"
+lang = "python"
+content_hash = "fe1c317279bdad14"
+file = "scripts/codeindex/lsp_probe.py"
+file_hash = "014ef92d65f6717d"
+signature = "def request(self, method: str, params: dict, timeout: float = 30.0) -> Any:"
+description = ""
+schema = 4
+line = 81
+mtime = 1783033292000000000
+container = [
+  "Client",
+]
+scope = [
+  "scripts",
+  "codeindex",
+  "lsp_probe",
+  "Client",
+]
+symbol_was = []
+calls = [
+  "_send [scripts/codeindex/lsp_probe.py]",
+]
+called_by = [
+  "initialize [scripts/codeindex/lsp_probe.py]",
+  "main [scripts/codeindex/lsp_probe.py]",
+  "shutdown [scripts/codeindex/lsp_probe.py]",
+]
+references = [
+  "initialize [scripts/codeindex/lsp_probe.py]",
+  "main [scripts/codeindex/lsp_probe.py]",
+  "shutdown [scripts/codeindex/lsp_probe.py]",
+]
+name_terms = [
+  "client",
+  "codeindex",
+  "lsp",
+  "probe",
+  "request",
+  "scripts",
+  "scripts.codeindex.lsp_probe.Client.request",
+]

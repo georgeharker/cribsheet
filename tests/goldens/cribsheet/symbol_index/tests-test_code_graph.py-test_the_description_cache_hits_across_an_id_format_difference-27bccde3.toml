@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_code_graph.py#test_the_description_cache_hits_across_an_id_format_difference"
+fqn = "tests.test_code_graph.test_the_description_cache_hits_across_an_id_format_difference"
+name = "test_the_description_cache_hits_across_an_id_format_difference"
+kind = "function"
+lang = "python"
+content_hash = "37ddd050e7c6c074"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def test_the_description_cache_hits_across_an_id_format_difference(crib, tmp_path):"
+description = ""
+schema = 4
+line = 441
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "all [crib/codeindex.py]",
+  "set_source_root [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "across",
+  "an",
+  "cache",
+  "code",
+  "description",
+  "difference",
+  "format",
+  "graph",
+  "hits",
+  "id",
+  "test",
+  "test_the_description_cache_hits_across_an_id_format_difference",
+  "tests",
+  "tests.test_code_graph.test_the_description_cache_hits_across_an_id_format_difference",
+  "the",
+]

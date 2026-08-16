@@ -1,0 +1,54 @@
+symbol_ref = "crib/app.py#Crib.close"
+fqn = "crib.app.Crib.close"
+name = "close"
+kind = "method"
+lang = "python"
+content_hash = "18011380f9b947c6"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def close(self) -> None:"
+description = ""
+schema = 4
+line = 461
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "close_all [crib/codeindex.py]",
+  "stop_watchers [crib/app.py]",
+]
+called_by = [
+  "_reconcile [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+  "_serve_async [crib/server.py]",
+  "index [scripts/snapshot_harness.py]",
+  "main [scripts/eval_code.py]",
+  "main [scripts/eval_fusion.py]",
+  "main [scripts/eval_hybrid.py]",
+  "main [scripts/eval_kw.py]",
+  "main [scripts/eval_rigor.py]",
+]
+references = [
+  "_reconcile [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+  "_serve_async [crib/server.py]",
+  "index [scripts/snapshot_harness.py]",
+  "main [scripts/eval_code.py]",
+  "main [scripts/eval_fusion.py]",
+  "main [scripts/eval_hybrid.py]",
+  "main [scripts/eval_kw.py]",
+  "main [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "app",
+  "close",
+  "crib",
+  "crib.app.Crib.close",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.plan_graph"
+fqn = "crib.app.Crib.plan_graph"
+name = "plan_graph"
+kind = "method"
+lang = "python"
+content_hash = "4d4274d9ee677dd8"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def plan_graph(self, project: str | None = None, cwd: Path | None = None,"
+description = ""
+schema = 4
+line = 2265
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "facet_graph [crib/designs.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "plan_graph [crib/server.py]",
+]
+references = [
+  "plan_graph [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.plan_graph",
+  "graph",
+  "plan",
+  "plan_graph",
+]

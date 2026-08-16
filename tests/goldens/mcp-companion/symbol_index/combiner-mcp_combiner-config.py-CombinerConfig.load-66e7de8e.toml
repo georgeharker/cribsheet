@@ -1,0 +1,74 @@
+symbol_ref = "combiner/mcp_combiner/config.py#CombinerConfig.load"
+fqn = "combiner.mcp_combiner.config.CombinerConfig.load"
+name = "load"
+kind = "method"
+lang = "python"
+content_hash = "de858c747a0275cb"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "@classmethod"
+description = ""
+schema = 4
+line = 483
+mtime = 1783633313000000000
+container = [
+  "CombinerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "CombinerConfig",
+]
+symbol_was = []
+calls = [
+  "OAuthConfig [combiner/mcp_combiner/config.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "_config [combiner/tests/test_connections.py]",
+  "_make_combiner_app [combiner/tests/test_session_filter.py]",
+  "_make_config [combiner/tests/test_sharedserver.py]",
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+  "create_combiner [combiner/mcp_combiner/server.py]",
+  "harness [combiner/tests/test_reload_config.py]",
+  "test_combiner_config_oauth_defaults [combiner/tests/test_config.py]",
+  "test_enabled_servers [combiner/tests/test_config.py]",
+  "test_load_config [combiner/tests/test_config.py]",
+  "test_load_config_sharedserver_parsed [combiner/tests/test_config.py]",
+  "test_restart_leaves_one_live_provider [combiner/tests/test_mounts.py]",
+  "test_restart_stdio_empty_answer_keeps_slice_silent [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+  "test_server_status_no_sharedserver [combiner/tests/test_config.py]",
+  "test_server_status_sharedserver_name [combiner/tests/test_config.py]",
+  "test_start_all_no_sharedserver_config [combiner/tests/test_sharedserver.py]",
+  "test_to_fastmcp_config_http [combiner/tests/test_config.py]",
+  "test_to_fastmcp_config_stdio [combiner/tests/test_config.py]",
+]
+references = [
+  "_config [combiner/tests/test_connections.py]",
+  "_make_combiner_app [combiner/tests/test_session_filter.py]",
+  "_make_config [combiner/tests/test_sharedserver.py]",
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+  "create_combiner [combiner/mcp_combiner/server.py]",
+  "harness [combiner/tests/test_reload_config.py]",
+  "test_combiner_config_oauth_defaults [combiner/tests/test_config.py]",
+  "test_enabled_servers [combiner/tests/test_config.py]",
+  "test_load_config [combiner/tests/test_config.py]",
+  "test_load_config_sharedserver_parsed [combiner/tests/test_config.py]",
+  "test_restart_leaves_one_live_provider [combiner/tests/test_mounts.py]",
+  "test_restart_stdio_empty_answer_keeps_slice_silent [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+  "test_server_status_no_sharedserver [combiner/tests/test_config.py]",
+  "test_server_status_sharedserver_name [combiner/tests/test_config.py]",
+  "test_start_all_no_sharedserver_config [combiner/tests/test_sharedserver.py]",
+  "test_to_fastmcp_config_http [combiner/tests/test_config.py]",
+  "test_to_fastmcp_config_stdio [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.CombinerConfig.load",
+  "config",
+  "load",
+  "mcp",
+]

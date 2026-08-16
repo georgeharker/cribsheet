@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_real_servers.lua#ok_state"
+fqn = "tests.test_real_servers.ok_state"
+name = "ok_state"
+kind = "global"
+lang = "lua"
+content_hash = "b3b78f512bb8cb2e"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local ok_state, state = pcall(require, \"mcp_companion.state\")"
+description = ""
+schema = 4
+line = 192
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_real_servers",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "ok",
+  "ok_state",
+  "real",
+  "servers",
+  "state",
+  "test",
+  "tests",
+  "tests.test_real_servers.ok_state",
+]

@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_connections.py#TestMonitorHealthCheck.test_reconnects_after_threshold_consecutive_misses.always_fail"
+fqn = "combiner.tests.test_connections.TestMonitorHealthCheck.test_reconnects_after_threshold_consecutive_misses.always_fail"
+name = "always_fail"
+kind = "function"
+lang = "python"
+content_hash = "4b19880aac0be822"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def always_fail():"
+description = ""
+schema = 4
+line = 329
+mtime = 1784493613000000000
+container = [
+  "TestMonitorHealthCheck",
+  "test_reconnects_after_threshold_consecutive_misses",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestMonitorHealthCheck",
+  "test_reconnects_after_threshold_consecutive_misses",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_reconnects_after_threshold_consecutive_misses [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "after",
+  "always",
+  "always_fail",
+  "check",
+  "combiner",
+  "combiner.tests.test_connections.TestMonitorHealthCheck.test_reconnects_after_threshold_consecutive_misses.always_fail",
+  "connections",
+  "consecutive",
+  "fail",
+  "health",
+  "misses",
+  "monitor",
+  "reconnects",
+  "test",
+  "tests",
+  "threshold",
+]

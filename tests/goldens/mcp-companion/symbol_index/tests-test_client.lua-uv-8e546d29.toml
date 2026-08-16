@@ -1,0 +1,29 @@
+symbol_ref = "tests/test_client.lua#uv"
+fqn = "tests.test_client.uv"
+name = "uv"
+kind = "global"
+lang = "lua"
+content_hash = "0b6f8951ec8abbcf"
+file = "tests/test_client.lua"
+file_hash = "552db39e557a6e12"
+signature = "local uv = vim.uv"
+description = ""
+schema = 4
+line = 2
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_client",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "test",
+  "tests",
+  "tests.test_client.uv",
+  "uv",
+]

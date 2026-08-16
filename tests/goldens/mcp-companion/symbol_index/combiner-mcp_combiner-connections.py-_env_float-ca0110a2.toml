@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_env_float"
+fqn = "combiner.mcp_combiner.connections._env_float"
+name = "_env_float"
+kind = "function"
+lang = "python"
+content_hash = "a3e5d52539da26a8"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "def _env_float(name: str, default: float) -> float:"
+description = ""
+schema = 4
+line = 64
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "connections [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "_HEALTH_CHECK_INTERVAL [combiner/mcp_combiner/connections.py]",
+  "_HEALTH_PING_TIMEOUT [combiner/mcp_combiner/connections.py]",
+  "_INITIAL_BACKOFF [combiner/mcp_combiner/connections.py]",
+  "_MAX_BACKOFF [combiner/mcp_combiner/connections.py]",
+  "_MAX_BACKOFF_LOCAL [combiner/mcp_combiner/connections.py]",
+  "_TOOLS_PROBE_BACKOFF_MAX [combiner/mcp_combiner/connections.py]",
+  "_TOOLS_PROBE_GIVEUP [combiner/mcp_combiner/connections.py]",
+  "_TOOLS_READY_TIMEOUT [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_env_float",
+  "combiner",
+  "combiner.mcp_combiner.connections._env_float",
+  "connections",
+  "env",
+  "float",
+  "mcp",
+]

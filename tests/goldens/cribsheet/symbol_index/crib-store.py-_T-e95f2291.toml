@@ -1,0 +1,31 @@
+symbol_ref = "crib/store.py#_T"
+fqn = "crib.store._T"
+name = "_T"
+kind = "constant"
+lang = "python"
+content_hash = "c1e4586d907ab3b1"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "_T = TypeVar(\"_T\")"
+description = ""
+schema = 4
+line = 196
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "store",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_run [crib/store.py]",
+]
+name_terms = [
+  "_T",
+  "crib",
+  "crib.store._T",
+  "store",
+  "t",
+]

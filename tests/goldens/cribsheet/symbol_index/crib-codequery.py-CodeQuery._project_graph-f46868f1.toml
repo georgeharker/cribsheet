@@ -1,0 +1,49 @@
+symbol_ref = "crib/codequery.py#CodeQuery._project_graph"
+fqn = "crib.codequery.CodeQuery._project_graph"
+name = "_project_graph"
+kind = "method"
+lang = "python"
+content_hash = "8d6161c403adde02"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def _project_graph(self, proj: str, entries: list[dict], edge: str,"
+description = ""
+schema = 4
+line = 560
+mtime = 1786664729000000000
+container = [
+  "CodeQuery",
+]
+scope = [
+  "crib",
+  "codequery",
+  "CodeQuery",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_marked [crib/codequery.py]",
+  "decode_edge [crib/symbols.py]",
+  "display_name [crib/symbols.py]",
+  "encode_edge [crib/symbols.py]",
+  "frontier [crib/codequery.py]",
+  "key [crib/symbols.py]",
+  "marks [crib/learnings.py]",
+  "qualified_symbol [crib/symbols.py]",
+]
+called_by = [
+  "graph [crib/codequery.py]",
+]
+references = [
+  "graph [crib/codequery.py]",
+]
+name_terms = [
+  "_project_graph",
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery._project_graph",
+  "graph",
+  "project",
+  "query",
+]

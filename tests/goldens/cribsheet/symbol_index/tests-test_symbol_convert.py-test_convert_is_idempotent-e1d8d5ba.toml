@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_symbol_convert.py#test_convert_is_idempotent"
+fqn = "tests.test_symbol_convert.test_convert_is_idempotent"
+name = "test_convert_is_idempotent"
+kind = "function"
+lang = "python"
+content_hash = "e1be10cfa02cfa2a"
+file = "tests/test_symbol_convert.py"
+file_hash = "3cdbfd7f71b23e65"
+signature = "def test_convert_is_idempotent():"
+description = ""
+schema = 4
+line = 94
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_convert",
+]
+symbol_was = []
+calls = [
+  "convert_entry [crib/symconvert.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "convert",
+  "idempotent",
+  "is",
+  "symbol",
+  "test",
+  "test_convert_is_idempotent",
+  "tests",
+  "tests.test_symbol_convert.test_convert_is_idempotent",
+]

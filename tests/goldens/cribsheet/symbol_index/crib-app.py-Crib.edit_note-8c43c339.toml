@@ -1,0 +1,48 @@
+symbol_ref = "crib/app.py#Crib.edit_note"
+fqn = "crib.app.Crib.edit_note"
+name = "edit_note"
+kind = "method"
+lang = "python"
+content_hash = "6f4af5f6f4e21527"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def edit_note(self, relpath: str, new_content: str,"
+description = ""
+schema = 4
+line = 636
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "Note [crib/notes.py]",
+  "_write_note [crib/app.py]",
+  "abspath [crib/app.py]",
+  "load [crib/notes.py]",
+  "parse [crib/notes.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "_scenario [tests/test_notestore_snapshot.py]",
+  "note_edit [crib/server.py]",
+  "restore [crib/app.py]",
+]
+references = [
+  "_scenario [tests/test_notestore_snapshot.py]",
+  "note_edit [crib/server.py]",
+  "restore [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.edit_note",
+  "edit",
+  "edit_note",
+  "note",
+]

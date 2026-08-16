@@ -1,0 +1,55 @@
+symbol_ref = "crib/designs.py#Node.relpath"
+fqn = "crib.designs.Node.relpath"
+name = "relpath"
+kind = "field"
+lang = "python"
+content_hash = "b1f401c0f0bb3a24"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "relpath: str"
+description = ""
+schema = 4
+line = 316
+mtime = 1786693579000000000
+container = [
+  "Node",
+]
+scope = [
+  "crib",
+  "designs",
+  "Node",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_annotate [crib/designs.py]",
+  "_dep_add [crib/designs.py]",
+  "_forget [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_next [crib/designs.py]",
+  "_node [tests/test_designs.py]",
+  "_note [crib/designs.py]",
+  "_other_facet_hint [crib/designs.py]",
+  "_rel_match [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_row [crib/designs.py]",
+  "_save [crib/designs.py]",
+  "_write_body [crib/designs.py]",
+  "annotate_hits [crib/designs.py]",
+  "brief [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+  "ref_of [crib/designs.py]",
+  "tainted_designs [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Node.relpath",
+  "designs",
+  "node",
+  "relpath",
+]

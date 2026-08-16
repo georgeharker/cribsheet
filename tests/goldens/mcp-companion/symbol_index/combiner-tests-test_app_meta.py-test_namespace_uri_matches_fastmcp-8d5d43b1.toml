@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/test_app_meta.py#test_namespace_uri_matches_fastmcp"
+fqn = "combiner.tests.test_app_meta.test_namespace_uri_matches_fastmcp"
+name = "test_namespace_uri_matches_fastmcp"
+kind = "function"
+lang = "python"
+content_hash = "3a57a7c06c04accf"
+file = "combiner/tests/test_app_meta.py"
+file_hash = "fc52f36639c3320a"
+signature = "@pytest.mark.parametrize("
+description = ""
+schema = 4
+line = 36
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_app_meta",
+]
+symbol_was = []
+calls = [
+  "namespace_uri [combiner/mcp_combiner/toolcache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "app",
+  "combiner",
+  "combiner.tests.test_app_meta.test_namespace_uri_matches_fastmcp",
+  "fastmcp",
+  "matches",
+  "meta",
+  "namespace",
+  "test",
+  "test_namespace_uri_matches_fastmcp",
+  "tests",
+  "uri",
+]

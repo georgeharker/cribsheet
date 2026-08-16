@@ -1,0 +1,48 @@
+symbol_ref = "crib/config.py#ProjectConfig.save"
+fqn = "crib.config.ProjectConfig.save"
+name = "save"
+kind = "method"
+lang = "python"
+content_hash = "d970dd7f294b594e"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "def save(self, path: Path) -> None:"
+description = ""
+schema = 4
+line = 353
+mtime = 1786564832000000000
+container = [
+  "ProjectConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "ProjectConfig",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+  "test_a_store_that_is_not_on_this_machine_is_unavailable [tests/test_repo_storage.py]",
+  "test_resolves_to_the_store_when_the_stub_points_at_one [tests/test_repo_storage.py]",
+  "test_startup_reconcile_skips_an_unavailable_store [tests/test_repo_storage.py]",
+  "test_verbs_error_actionably_while_the_store_is_missing [tests/test_repo_storage.py]",
+  "test_watch_roots_skip_an_unavailable_store [tests/test_repo_storage.py]",
+]
+references = [
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+  "test_a_store_that_is_not_on_this_machine_is_unavailable [tests/test_repo_storage.py]",
+  "test_resolves_to_the_store_when_the_stub_points_at_one [tests/test_repo_storage.py]",
+  "test_startup_reconcile_skips_an_unavailable_store [tests/test_repo_storage.py]",
+  "test_verbs_error_actionably_while_the_store_is_missing [tests/test_repo_storage.py]",
+  "test_watch_roots_skip_an_unavailable_store [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.ProjectConfig.save",
+  "project",
+  "save",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_config.py#TestEnvCoercion.test_missing_env_defaults_empty"
+fqn = "combiner.tests.test_config.TestEnvCoercion.test_missing_env_defaults_empty"
+name = "test_missing_env_defaults_empty"
+kind = "method"
+lang = "python"
+content_hash = "ad301c60f8119c79"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_missing_env_defaults_empty(self) -> None:"
+description = ""
+schema = 4
+line = 183
+mtime = 1782852601000000000
+container = [
+  "TestEnvCoercion",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+  "TestEnvCoercion",
+]
+symbol_was = []
+calls = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "coercion",
+  "combiner",
+  "combiner.tests.test_config.TestEnvCoercion.test_missing_env_defaults_empty",
+  "config",
+  "defaults",
+  "empty",
+  "env",
+  "missing",
+  "test",
+  "test_missing_env_defaults_empty",
+  "tests",
+]

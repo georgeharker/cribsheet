@@ -1,0 +1,41 @@
+symbol_ref = "crib/server.py#_serve_async"
+fqn = "crib.server._serve_async"
+name = "_serve_async"
+kind = "function"
+lang = "python"
+content_hash = "272b5d432a238b4f"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "async def _serve_async(transport: str = \"stdio\", host: str = \"127.0.0.1\","
+description = ""
+schema = 4
+line = 1471
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = [
+  "build_server [crib/server.py]",
+  "close [crib/app.py]",
+  "open [crib/app.py]",
+  "reconcile_in_background [crib/app.py]",
+  "start_memory_mirror [crib/app.py]",
+  "start_watchers [crib/app.py]",
+]
+called_by = [
+  "main [crib/server.py]",
+]
+references = [
+  "main [crib/server.py]",
+]
+name_terms = [
+  "_serve_async",
+  "async",
+  "crib",
+  "crib.server._serve_async",
+  "serve",
+  "server",
+]

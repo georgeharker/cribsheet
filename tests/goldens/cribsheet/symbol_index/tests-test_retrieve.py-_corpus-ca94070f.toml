@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_retrieve.py#_corpus"
+fqn = "tests.test_retrieve._corpus"
+name = "_corpus"
+kind = "function"
+lang = "python"
+content_hash = "e2126f304f2d2edf"
+file = "tests/test_retrieve.py"
+file_hash = "e2f2cfadeca4f35a"
+signature = "def _corpus():"
+description = ""
+schema = 4
+line = 12
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_retrieve",
+]
+symbol_was = []
+calls = [
+  "tokenize [crib/retrieve.py]",
+]
+called_by = [
+  "test_bm25_ranks_exact_term_match_first [tests/test_retrieve.py]",
+  "test_bm25_unknown_terms_score_zero [tests/test_retrieve.py]",
+]
+references = [
+  "test_bm25_ranks_exact_term_match_first [tests/test_retrieve.py]",
+  "test_bm25_unknown_terms_score_zero [tests/test_retrieve.py]",
+]
+name_terms = [
+  "_corpus",
+  "corpus",
+  "retrieve",
+  "test",
+  "tests",
+  "tests.test_retrieve._corpus",
+]

@@ -1,0 +1,47 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#ToolCacheState.set_cache_if_current"
+fqn = "combiner.mcp_combiner.runtime.ToolCacheState.set_cache_if_current"
+name = "set_cache_if_current"
+kind = "method"
+lang = "python"
+content_hash = "eca82cd6fa01ce12"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def set_cache_if_current(self, tools: list[Tool], now: float, generation: int) -> bool:"
+description = ""
+schema = 4
+line = 203
+mtime = 1784493613000000000
+container = [
+  "ToolCacheState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "ToolCacheState",
+]
+symbol_was = []
+calls = [
+  "set_cache [combiner/mcp_combiner/runtime.py]",
+]
+called_by = [
+  "_do_fetch [combiner/mcp_combiner/middleware.py]",
+  "test_cache_fill_loses_to_mid_fetch_invalidation [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "_do_fetch [combiner/mcp_combiner/middleware.py]",
+  "test_cache_fill_loses_to_mid_fetch_invalidation [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.runtime.ToolCacheState.set_cache_if_current",
+  "current",
+  "if",
+  "mcp",
+  "runtime",
+  "set",
+  "set_cache_if_current",
+  "state",
+  "tool",
+]

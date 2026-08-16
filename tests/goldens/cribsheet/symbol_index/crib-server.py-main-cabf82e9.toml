@@ -1,0 +1,33 @@
+symbol_ref = "crib/server.py#main"
+fqn = "crib.server.main"
+name = "main"
+kind = "function"
+lang = "python"
+content_hash = "3bbd167e66878cf4"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def main(transport: str = \"stdio\", host: str = \"127.0.0.1\","
+description = ""
+schema = 4
+line = 1502
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = [
+  "_serve_async [crib/server.py]",
+]
+called_by = [
+  "main [crib/cli.py]",
+  "server [crib/server.py]",
+]
+references = []
+name_terms = [
+  "crib",
+  "crib.server.main",
+  "main",
+  "server",
+]

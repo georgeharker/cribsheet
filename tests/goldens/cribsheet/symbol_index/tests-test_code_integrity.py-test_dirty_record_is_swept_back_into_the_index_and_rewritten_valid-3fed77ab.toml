@@ -1,0 +1,46 @@
+symbol_ref = "tests/test_code_integrity.py#test_dirty_record_is_swept_back_into_the_index_and_rewritten_valid"
+fqn = "tests.test_code_integrity.test_dirty_record_is_swept_back_into_the_index_and_rewritten_valid"
+name = "test_dirty_record_is_swept_back_into_the_index_and_rewritten_valid"
+kind = "function"
+lang = "python"
+content_hash = "88335c8e3adf1ed3"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_dirty_record_is_swept_back_into_the_index_and_rewritten_valid("
+description = ""
+schema = 4
+line = 390
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_sym [tests/test_code_integrity.py]",
+  "set_source_root [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "back",
+  "code",
+  "dirty",
+  "index",
+  "integrity",
+  "into",
+  "is",
+  "record",
+  "rewritten",
+  "swept",
+  "test",
+  "test_dirty_record_is_swept_back_into_the_index_and_rewritten_valid",
+  "tests",
+  "tests.test_code_integrity.test_dirty_record_is_swept_back_into_the_index_and_rewritten_valid",
+  "the",
+  "valid",
+]

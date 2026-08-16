@@ -1,0 +1,42 @@
+symbol_ref = "crib/app.py#Crib.use_project"
+fqn = "crib.app.Crib.use_project"
+name = "use_project"
+kind = "method"
+lang = "python"
+content_hash = "66f18776dc7f217a"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def use_project(self, project: str) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 2884
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "check_project_name [crib/paths.py]",
+  "notes_dir [crib/app.py]",
+  "project_is_new [crib/app.py]",
+  "session_state [crib/session.py]",
+]
+called_by = [
+  "project_use [crib/server.py]",
+]
+references = [
+  "project_use [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.use_project",
+  "project",
+  "use",
+  "use_project",
+]

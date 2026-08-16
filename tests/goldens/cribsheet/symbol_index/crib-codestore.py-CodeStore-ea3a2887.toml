@@ -1,0 +1,33 @@
+symbol_ref = "crib/codestore.py#CodeStore"
+fqn = "crib.codestore.CodeStore"
+name = "CodeStore"
+kind = "class"
+lang = "python"
+content_hash = "a7c802c6d9bf3762"
+file = "crib/codestore.py"
+file_hash = "85066097f15df7df"
+signature = "class CodeStore:"
+description = ""
+schema = 4
+line = 101
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codestore",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/project_services.py]",
+]
+name_terms = [
+  "CodeStore",
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore.CodeStore",
+  "store",
+]

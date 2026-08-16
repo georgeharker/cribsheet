@@ -1,0 +1,51 @@
+symbol_ref = "crib/codeindex.py#SymbolIndex.is_populated"
+fqn = "crib.codeindex.SymbolIndex.is_populated"
+name = "is_populated"
+kind = "method"
+lang = "python"
+content_hash = "d01d2a1731d47997"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def is_populated(self) -> bool:"
+description = ""
+schema = 4
+line = 1687
+mtime = 1786844518000000000
+container = [
+  "SymbolIndex",
+]
+scope = [
+  "crib",
+  "codeindex",
+  "SymbolIndex",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_reindex_dirty_code [crib/app.py]",
+  "_require_code_index [crib/app.py]",
+  "code_indexed_projects [crib/app.py]",
+  "project_refs [crib/refs.py]",
+  "project_status [crib/app.py]",
+  "test_an_empty_store_is_never_stale [tests/test_code_graph.py]",
+  "test_only_a_DIFFERENT_recorded_version_is_stale [tests/test_code_graph.py]",
+]
+references = [
+  "_reindex_dirty_code [crib/app.py]",
+  "_require_code_index [crib/app.py]",
+  "code_indexed_projects [crib/app.py]",
+  "project_refs [crib/refs.py]",
+  "project_status [crib/app.py]",
+  "test_an_empty_store_is_never_stale [tests/test_code_graph.py]",
+  "test_only_a_DIFFERENT_recorded_version_is_stale [tests/test_code_graph.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex.is_populated",
+  "index",
+  "is",
+  "is_populated",
+  "populated",
+  "symbol",
+]

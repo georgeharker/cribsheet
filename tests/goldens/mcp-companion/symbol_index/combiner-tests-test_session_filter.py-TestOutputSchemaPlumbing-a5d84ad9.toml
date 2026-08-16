@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestOutputSchemaPlumbing"
+fqn = "combiner.tests.test_session_filter.TestOutputSchemaPlumbing"
+name = "TestOutputSchemaPlumbing"
+kind = "class"
+lang = "python"
+content_hash = "ccd92f578b55cf47"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "class TestOutputSchemaPlumbing:"
+description = ""
+schema = 4
+line = 1019
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestOutputSchemaPlumbing",
+  "combiner",
+  "combiner.tests.test_session_filter.TestOutputSchemaPlumbing",
+  "filter",
+  "output",
+  "plumbing",
+  "schema",
+  "session",
+  "test",
+  "tests",
+]

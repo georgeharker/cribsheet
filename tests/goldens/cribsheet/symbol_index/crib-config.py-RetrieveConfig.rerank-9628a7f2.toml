@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#RetrieveConfig.rerank"
+fqn = "crib.config.RetrieveConfig.rerank"
+name = "rerank"
+kind = "field"
+lang = "python"
+content_hash = "9b8e225fec51a3ec"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "rerank: bool = True"
+description = ""
+schema = 4
+line = 96
+mtime = 1786564832000000000
+container = [
+  "RetrieveConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "RetrieveConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "cmd_info [crib/cli.py]",
+  "code_lookup [crib/app.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.RetrieveConfig.rerank",
+  "rerank",
+  "retrieve",
+]

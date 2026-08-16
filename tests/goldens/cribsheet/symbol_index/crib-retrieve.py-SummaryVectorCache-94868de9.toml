@@ -1,0 +1,34 @@
+symbol_ref = "crib/retrieve.py#SummaryVectorCache"
+fqn = "crib.retrieve.SummaryVectorCache"
+name = "SummaryVectorCache"
+kind = "class"
+lang = "python"
+content_hash = "9d60caff6aaa4a85"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "class SummaryVectorCache:"
+description = ""
+schema = 4
+line = 343
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "retrieve",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/indexer.py]",
+  "test_summary_alias_cache_ranks_section_by_rephrasing [tests/test_elaborate.py]",
+]
+name_terms = [
+  "SummaryVectorCache",
+  "cache",
+  "crib",
+  "crib.retrieve.SummaryVectorCache",
+  "retrieve",
+  "summary",
+  "vector",
+]

@@ -1,0 +1,49 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestOnListToolsIntegration._inject_manifest"
+fqn = "combiner.tests.test_session_filter.TestOnListToolsIntegration._inject_manifest"
+name = "_inject_manifest"
+kind = "method"
+lang = "python"
+content_hash = "22fc49235f97de5b"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "@staticmethod"
+description = ""
+schema = 4
+line = 968
+mtime = 1784493613000000000
+container = [
+  "TestOnListToolsIntegration",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestOnListToolsIntegration",
+]
+symbol_was = []
+calls = [
+  "NvimChannelManager [combiner/mcp_combiner/nvim_channel.py]",
+]
+called_by = [
+  "test_neovim_list_schema_becomes_object_on_the_wire [combiner/tests/test_session_filter.py]",
+  "test_neovim_string_required_wrapped_on_the_wire [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "test_neovim_list_schema_becomes_object_on_the_wire [combiner/tests/test_session_filter.py]",
+  "test_neovim_string_required_wrapped_on_the_wire [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_inject_manifest",
+  "combiner",
+  "combiner.tests.test_session_filter.TestOnListToolsIntegration._inject_manifest",
+  "filter",
+  "inject",
+  "integration",
+  "list",
+  "manifest",
+  "on",
+  "session",
+  "test",
+  "tests",
+  "tools",
+]

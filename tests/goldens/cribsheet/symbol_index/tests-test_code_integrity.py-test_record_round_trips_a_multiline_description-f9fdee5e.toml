@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_code_integrity.py#test_record_round_trips_a_multiline_description"
+fqn = "tests.test_code_integrity.test_record_round_trips_a_multiline_description"
+name = "test_record_round_trips_a_multiline_description"
+kind = "function"
+lang = "python"
+content_hash = "c0308962978ec71a"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_record_round_trips_a_multiline_description():"
+description = ""
+schema = 4
+line = 350
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "_parse [crib/codeindex.py]",
+  "_render [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "code",
+  "description",
+  "integrity",
+  "multiline",
+  "record",
+  "round",
+  "test",
+  "test_record_round_trips_a_multiline_description",
+  "tests",
+  "tests.test_code_integrity.test_record_round_trips_a_multiline_description",
+  "trips",
+]

@@ -1,0 +1,46 @@
+symbol_ref = "tests/test_describe_queue.py#test_burst_coalesces_to_one_focused_describe.body"
+fqn = "tests.test_describe_queue.test_burst_coalesces_to_one_focused_describe.body"
+name = "body"
+kind = "function"
+lang = "python"
+content_hash = "659c6f70d4aeae73"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "async def body():"
+description = ""
+schema = 4
+line = 153
+mtime = 1786664729000000000
+container = [
+  "test_burst_coalesces_to_one_focused_describe",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "test_burst_coalesces_to_one_focused_describe",
+]
+symbol_was = []
+calls = [
+  "DescribeQueue [crib/describe_queue.py]",
+  "_sym [tests/test_describe_queue.py]",
+  "enqueue [crib/describe_queue.py]",
+]
+called_by = [
+  "test_burst_coalesces_to_one_focused_describe [tests/test_describe_queue.py]",
+]
+references = [
+  "test_burst_coalesces_to_one_focused_describe [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "body",
+  "burst",
+  "coalesces",
+  "describe",
+  "focused",
+  "one",
+  "queue",
+  "test",
+  "tests",
+  "tests.test_describe_queue.test_burst_coalesces_to_one_focused_describe.body",
+  "to",
+]

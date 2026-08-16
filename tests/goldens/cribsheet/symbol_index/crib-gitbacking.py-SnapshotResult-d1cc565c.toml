@@ -1,0 +1,32 @@
+symbol_ref = "crib/gitbacking.py#SnapshotResult"
+fqn = "crib.gitbacking.SnapshotResult"
+name = "SnapshotResult"
+kind = "class"
+lang = "python"
+content_hash = "e844fbdfc80e0d49"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 88
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "gitbacking",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "snapshot_result [crib/gitbacking.py]",
+]
+name_terms = [
+  "SnapshotResult",
+  "crib",
+  "crib.gitbacking.SnapshotResult",
+  "gitbacking",
+  "result",
+  "snapshot",
+]

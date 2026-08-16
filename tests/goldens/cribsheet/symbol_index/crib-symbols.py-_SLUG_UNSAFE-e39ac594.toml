@@ -1,0 +1,33 @@
+symbol_ref = "crib/symbols.py#_SLUG_UNSAFE"
+fqn = "crib.symbols._SLUG_UNSAFE"
+name = "_SLUG_UNSAFE"
+kind = "constant"
+lang = "python"
+content_hash = "1c18be71b9ee699c"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "_SLUG_UNSAFE = re.compile(r\"[^A-Za-z0-9._-]+\")"
+description = ""
+schema = 4
+line = 250
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "legacy_ref_slug [crib/symbols.py]",
+  "ref_slug [crib/symbols.py]",
+]
+name_terms = [
+  "_SLUG_UNSAFE",
+  "crib",
+  "crib.symbols._SLUG_UNSAFE",
+  "slug",
+  "symbols",
+  "unsafe",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "crib/chunk.py#_scan"
+fqn = "crib.chunk._scan"
+name = "_scan"
+kind = "function"
+lang = "python"
+content_hash = "42dc86a35dda7f32"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "def _scan(lines: Sequence[str], start: int = 0) -> Iterator[_Line]:"
+description = ""
+schema = 4
+line = 150
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "chunk",
+]
+symbol_was = []
+calls = [
+  "_Line [crib/chunk.py]",
+]
+called_by = [
+  "_split_sections [crib/chunk.py]",
+  "section_line_map [crib/chunk.py]",
+]
+references = [
+  "_split_sections [crib/chunk.py]",
+  "section_line_map [crib/chunk.py]",
+]
+name_terms = [
+  "_scan",
+  "chunk",
+  "crib",
+  "crib.chunk._scan",
+  "scan",
+]

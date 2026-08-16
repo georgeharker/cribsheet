@@ -1,0 +1,38 @@
+symbol_ref = "crib/cli.py#_emit_human_one"
+fqn = "crib.cli._emit_human_one"
+name = "_emit_human_one"
+kind = "function"
+lang = "python"
+content_hash = "20c1e4b157b2a6aa"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _emit_human_one(item: Any) -> None:"
+description = ""
+schema = 4
+line = 166
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "LookupHit [crib/app.py]",
+  "_emit_write_result [crib/cli.py]",
+]
+called_by = [
+  "_emit_human [crib/cli.py]",
+]
+references = [
+  "_emit_human [crib/cli.py]",
+]
+name_terms = [
+  "_emit_human_one",
+  "cli",
+  "crib",
+  "crib.cli._emit_human_one",
+  "emit",
+  "human",
+  "one",
+]

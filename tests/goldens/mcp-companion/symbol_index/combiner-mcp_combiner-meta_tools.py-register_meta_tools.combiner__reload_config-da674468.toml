@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/meta_tools.py#register_meta_tools.combiner__reload_config"
+fqn = "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__reload_config"
+name = "combiner__reload_config"
+kind = "function"
+lang = "python"
+content_hash = "997e8c9242a7f073"
+file = "combiner/mcp_combiner/meta_tools.py"
+file_hash = "8eb0757202928f82"
+signature = "@combiner.tool()"
+description = ""
+schema = 4
+line = 309
+mtime = 1784493613000000000
+container = [
+  "register_meta_tools",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "meta_tools",
+  "register_meta_tools",
+]
+symbol_was = []
+calls = [
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "_unmount_server [combiner/mcp_combiner/meta_tools.py]",
+  "invalidate_tool_cache [combiner/mcp_combiner/toolcache.py]",
+  "load [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools.combiner__reload_config",
+  "combiner__reload_config",
+  "config",
+  "mcp",
+  "meta",
+  "register",
+  "reload",
+  "tools",
+]

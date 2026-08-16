@@ -1,0 +1,50 @@
+symbol_ref = "combiner/mcp_combiner/nvim_channel.py#NvimChannelManager.deregister"
+fqn = "combiner.mcp_combiner.nvim_channel.NvimChannelManager.deregister"
+name = "deregister"
+kind = "method"
+lang = "python"
+content_hash = "28229b5b3e4741aa"
+file = "combiner/mcp_combiner/nvim_channel.py"
+file_hash = "78901790bbdc7457"
+signature = "def deregister(self, instance_id: str) -> None:"
+description = ""
+schema = 4
+line = 118
+mtime = 1782852601000000000
+container = [
+  "NvimChannelManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "nvim_channel",
+  "NvimChannelManager",
+]
+symbol_was = []
+calls = [
+  "NoInstanceError [combiner/mcp_combiner/nvim_channel.py]",
+  "_close [combiner/mcp_combiner/nvim_channel.py]",
+]
+called_by = [
+  "manage_nvim_instances [combiner/mcp_combiner/nvim_proxy.py]",
+  "test_dispatch_round_trip [combiner/tests/test_nvim_channel.py]",
+  "test_edit_round_trip_preserves_order [combiner/tests/test_nvim_channel.py]",
+  "test_manifest_captured_and_frozen [combiner/tests/test_nvim_channel.py]",
+  "test_unknown_tool_returns_is_error [combiner/tests/test_nvim_channel.py]",
+]
+references = [
+  "manage_nvim_instances [combiner/mcp_combiner/nvim_proxy.py]",
+  "test_dispatch_round_trip [combiner/tests/test_nvim_channel.py]",
+  "test_edit_round_trip_preserves_order [combiner/tests/test_nvim_channel.py]",
+  "test_manifest_captured_and_frozen [combiner/tests/test_nvim_channel.py]",
+  "test_unknown_tool_returns_is_error [combiner/tests/test_nvim_channel.py]",
+]
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager.deregister",
+  "deregister",
+  "manager",
+  "mcp",
+  "nvim",
+]

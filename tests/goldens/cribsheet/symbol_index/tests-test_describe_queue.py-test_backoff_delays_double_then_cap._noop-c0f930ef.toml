@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_describe_queue.py#test_backoff_delays_double_then_cap._noop"
+fqn = "tests.test_describe_queue.test_backoff_delays_double_then_cap._noop"
+name = "_noop"
+kind = "function"
+lang = "python"
+content_hash = "b2516b1f69a15358"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "async def _noop(*a):"
+description = ""
+schema = 4
+line = 73
+mtime = 1786664729000000000
+container = [
+  "test_backoff_delays_double_then_cap",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "test_backoff_delays_double_then_cap",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_backoff_delays_double_then_cap [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "_noop",
+  "backoff",
+  "cap",
+  "delays",
+  "describe",
+  "double",
+  "noop",
+  "queue",
+  "test",
+  "tests",
+  "tests.test_describe_queue.test_backoff_delays_double_then_cap._noop",
+  "then",
+]

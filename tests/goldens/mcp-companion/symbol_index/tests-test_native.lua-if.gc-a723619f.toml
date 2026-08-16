@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_native.lua#if.gc"
+fqn = "tests.test_native.if.gc"
+name = "gc"
+kind = "variable"
+lang = "lua"
+content_hash = "9368bb1440a64590"
+file = "tests/test_native.lua"
+file_hash = "68d141d843ba3fa4"
+signature = "local gc = rjson(native.dispatch(\"get_cursor\", {}))"
+description = ""
+schema = 4
+line = 269
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+scope = [
+  "tests",
+  "test_native",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "gc",
+  "if",
+  "native",
+  "test",
+  "tests",
+  "tests.test_native.if.gc",
+]

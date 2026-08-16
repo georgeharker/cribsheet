@@ -1,0 +1,36 @@
+symbol_ref = "combiner/tests/test_nvim_e2e.py#combiner_and_nvim"
+fqn = "combiner.tests.test_nvim_e2e.combiner_and_nvim"
+name = "combiner_and_nvim"
+kind = "function"
+lang = "python"
+content_hash = "079fcf40e61b56cb"
+file = "combiner/tests/test_nvim_e2e.py"
+file_hash = "45d9b468ec0b5858"
+signature = "@pytest.fixture"
+description = ""
+schema = 4
+line = 63
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_nvim_e2e",
+]
+symbol_was = []
+calls = [
+  "_poll_health [combiner/tests/test_nvim_e2e.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "2",
+  "and",
+  "combiner",
+  "combiner.tests.test_nvim_e2e.combiner_and_nvim",
+  "combiner_and_nvim",
+  "e",
+  "nvim",
+  "test",
+  "tests",
+]

@@ -1,0 +1,55 @@
+symbol_ref = "combiner/mcp_combiner/sharedserver.py#_build_use_cmd"
+fqn = "combiner.mcp_combiner.sharedserver._build_use_cmd"
+name = "_build_use_cmd"
+kind = "function"
+lang = "python"
+content_hash = "c2761a1e24fc587f"
+file = "combiner/mcp_combiner/sharedserver.py"
+file_hash = "00df81a0a741c869"
+signature = "def _build_use_cmd("
+description = ""
+schema = 4
+line = 81
+mtime = 1782539642000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "sharedserver",
+]
+symbol_was = []
+calls = [
+  "_interpolate_dict [combiner/mcp_combiner/config.py]",
+  "_interpolate_list [combiner/mcp_combiner/config.py]",
+  "_interpolate_str [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "_start_one [combiner/mcp_combiner/sharedserver.py]",
+  "test_build_use_cmd_basic [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_empty_env [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_explicit_pid [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_grace_period [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_includes_env [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_includes_pid [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_no_grace_period [combiner/tests/test_sharedserver.py]",
+]
+references = [
+  "_start_one [combiner/mcp_combiner/sharedserver.py]",
+  "test_build_use_cmd_basic [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_empty_env [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_explicit_pid [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_grace_period [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_includes_env [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_includes_pid [combiner/tests/test_sharedserver.py]",
+  "test_build_use_cmd_no_grace_period [combiner/tests/test_sharedserver.py]",
+]
+name_terms = [
+  "_build_use_cmd",
+  "build",
+  "cmd",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver._build_use_cmd",
+  "mcp",
+  "sharedserver",
+  "use",
+]

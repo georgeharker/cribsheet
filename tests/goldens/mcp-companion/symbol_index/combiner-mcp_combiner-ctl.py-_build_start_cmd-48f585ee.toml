@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#_build_start_cmd"
+fqn = "combiner.mcp_combiner.ctl._build_start_cmd"
+name = "_build_start_cmd"
+kind = "function"
+lang = "python"
+content_hash = "29752a82ae38765e"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "def _build_start_cmd("
+description = ""
+schema = 4
+line = 118
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "cmd_restart_combiner [combiner/mcp_combiner/ctl.py]",
+  "cmd_start [combiner/mcp_combiner/ctl.py]",
+  "test_build_start_cmd_attaches_pid_and_serve_argv [combiner/tests/test_ctl_lifecycle.py]",
+  "test_build_start_cmd_includes_log_file_when_set [combiner/tests/test_ctl_lifecycle.py]",
+  "test_build_start_cmd_omits_log_file_when_unset [combiner/tests/test_ctl_lifecycle.py]",
+]
+references = [
+  "cmd_restart_combiner [combiner/mcp_combiner/ctl.py]",
+  "cmd_start [combiner/mcp_combiner/ctl.py]",
+  "test_build_start_cmd_attaches_pid_and_serve_argv [combiner/tests/test_ctl_lifecycle.py]",
+  "test_build_start_cmd_includes_log_file_when_set [combiner/tests/test_ctl_lifecycle.py]",
+  "test_build_start_cmd_omits_log_file_when_unset [combiner/tests/test_ctl_lifecycle.py]",
+]
+name_terms = [
+  "_build_start_cmd",
+  "build",
+  "cmd",
+  "combiner",
+  "combiner.mcp_combiner.ctl._build_start_cmd",
+  "ctl",
+  "mcp",
+  "start",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_cc_tools.lua#if.start_err"
+fqn = "tests.test_cc_tools.if.start_err"
+name = "start_err"
+kind = "variable"
+lang = "lua"
+content_hash = "15ef4818249621e3"
+file = "tests/test_cc_tools.lua"
+file_hash = "3253ff527c66fcb1"
+signature = "local started, start_err = start_test_combiner(combiner_dir, fixture)"
+description = ""
+schema = 4
+line = 207
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+scope = [
+  "tests",
+  "test_cc_tools",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "else [tests/test_cc_tools.lua]",
+]
+name_terms = [
+  "cc",
+  "err",
+  "if",
+  "start",
+  "start_err",
+  "test",
+  "tests",
+  "tests.test_cc_tools.if.start_err",
+  "tools",
+]

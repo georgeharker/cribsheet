@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_symbol_migration.py#_legacy_toml"
+fqn = "tests.test_symbol_migration._legacy_toml"
+name = "_legacy_toml"
+kind = "function"
+lang = "python"
+content_hash = "5e45c4204adbf3e9"
+file = "tests/test_symbol_migration.py"
+file_hash = "f1bc5f45850c293a"
+signature = "def _legacy_toml(e):"
+description = ""
+schema = 4
+line = 37
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_migration",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_conversion_needs_no_converted_entry_store [tests/test_symbol_migration.py]",
+]
+references = [
+  "test_conversion_needs_no_converted_entry_store [tests/test_symbol_migration.py]",
+]
+name_terms = [
+  "_legacy_toml",
+  "legacy",
+  "migration",
+  "symbol",
+  "test",
+  "tests",
+  "tests.test_symbol_migration._legacy_toml",
+  "toml",
+]

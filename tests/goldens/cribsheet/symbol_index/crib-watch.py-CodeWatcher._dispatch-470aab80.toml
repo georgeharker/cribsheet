@@ -1,0 +1,38 @@
+symbol_ref = "crib/watch.py#CodeWatcher._dispatch"
+fqn = "crib.watch.CodeWatcher._dispatch"
+name = "_dispatch"
+kind = "method"
+lang = "python"
+content_hash = "77bffa105f2ace83"
+file = "crib/watch.py"
+file_hash = "c10c30739292eebe"
+signature = "async def _dispatch(self, project: str,"
+description = ""
+schema = 4
+line = 434
+mtime = 1786139638000000000
+container = [
+  "CodeWatcher",
+]
+scope = [
+  "crib",
+  "watch",
+  "CodeWatcher",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_flush [crib/watch.py]",
+]
+references = [
+  "_flush [crib/watch.py]",
+]
+name_terms = [
+  "_dispatch",
+  "code",
+  "crib",
+  "crib.watch.CodeWatcher._dispatch",
+  "dispatch",
+  "watch",
+  "watcher",
+]

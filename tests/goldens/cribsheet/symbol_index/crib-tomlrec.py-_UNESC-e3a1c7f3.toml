@@ -1,0 +1,31 @@
+symbol_ref = "crib/tomlrec.py#_UNESC"
+fqn = "crib.tomlrec._UNESC"
+name = "_UNESC"
+kind = "constant"
+lang = "python"
+content_hash = "df24ec5bf4ee3f73"
+file = "crib/tomlrec.py"
+file_hash = "f33317468899fcd5"
+signature = "_UNESC = {\"\\\\\": \"\\\\\", '\"': '\"', \"n\": \"\\n\", \"r\": \"\\r\", \"t\": \"\\t\","
+description = ""
+schema = 4
+line = 25
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "tomlrec",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "unesc [crib/tomlrec.py]",
+]
+name_terms = [
+  "_UNESC",
+  "crib",
+  "crib.tomlrec._UNESC",
+  "tomlrec",
+  "unesc",
+]

@@ -1,0 +1,54 @@
+symbol_ref = "crib/designs.py#source_label"
+fqn = "crib.designs.source_label"
+name = "source_label"
+kind = "function"
+lang = "python"
+content_hash = "1f1e991329c9099f"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def source_label(src: dict[str, Any]) -> str:"
+description = ""
+schema = 4
+line = 281
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_add [crib/designs.py]",
+  "_capture_sources [crib/designs.py]",
+  "_citing [crib/designs.py]",
+  "_recapture [crib/designs.py]",
+  "_source_cause [crib/designs.py]",
+  "_source_view [crib/designs.py]",
+  "brief [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_reaffirm [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+  "plan_reaffirm [crib/designs.py]",
+]
+references = [
+  "_add [crib/designs.py]",
+  "_capture_sources [crib/designs.py]",
+  "_citing [crib/designs.py]",
+  "_recapture [crib/designs.py]",
+  "_source_cause [crib/designs.py]",
+  "_source_view [crib/designs.py]",
+  "brief [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_reaffirm [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+  "plan_reaffirm [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.source_label",
+  "designs",
+  "label",
+  "source",
+  "source_label",
+]

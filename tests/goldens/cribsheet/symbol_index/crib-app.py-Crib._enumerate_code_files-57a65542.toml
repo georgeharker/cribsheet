@@ -1,0 +1,44 @@
+symbol_ref = "crib/app.py#Crib._enumerate_code_files"
+fqn = "crib.app.Crib._enumerate_code_files"
+name = "_enumerate_code_files"
+kind = "method"
+lang = "python"
+content_hash = "bda8f987e440a70e"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _enumerate_code_files(self, root: Path, globs: list[str]) -> list[Path]:"
+description = ""
+schema = 4
+line = 1347
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "_code_ignore [crib/app.py]",
+  "_nested_project_roots [crib/app.py]",
+  "content_lang [crib/codeindex.py]",
+  "find [crib/config.py]",
+  "load_grammar [crib/codeindex.py]",
+  "load_specs [crib/codeindex.py]",
+  "resolve_command [crib/codeindex.py]",
+]
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+]
+name_terms = [
+  "_enumerate_code_files",
+  "app",
+  "code",
+  "crib",
+  "crib.app.Crib._enumerate_code_files",
+  "enumerate",
+  "files",
+]

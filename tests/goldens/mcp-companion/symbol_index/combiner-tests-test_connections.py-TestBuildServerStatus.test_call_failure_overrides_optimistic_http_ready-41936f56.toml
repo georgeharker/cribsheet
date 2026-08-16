@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_connections.py#TestBuildServerStatus.test_call_failure_overrides_optimistic_http_ready"
+fqn = "combiner.tests.test_connections.TestBuildServerStatus.test_call_failure_overrides_optimistic_http_ready"
+name = "test_call_failure_overrides_optimistic_http_ready"
+kind = "method"
+lang = "python"
+content_hash = "dd97e71dd3c567b0"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "def test_call_failure_overrides_optimistic_http_ready(self):"
+description = ""
+schema = 4
+line = 637
+mtime = 1784493613000000000
+container = [
+  "TestBuildServerStatus",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestBuildServerStatus",
+]
+symbol_was = []
+calls = [
+  "ConnectionManager [combiner/mcp_combiner/connections.py]",
+  "_config [combiner/tests/test_connections.py]",
+  "_inject_conn [combiner/tests/test_connections.py]",
+  "build_server_status [combiner/mcp_combiner/status.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "call",
+  "combiner",
+  "combiner.tests.test_connections.TestBuildServerStatus.test_call_failure_overrides_optimistic_http_ready",
+  "connections",
+  "failure",
+  "http",
+  "optimistic",
+  "overrides",
+  "ready",
+  "server",
+  "status",
+  "test",
+  "test_call_failure_overrides_optimistic_http_ready",
+  "tests",
+]

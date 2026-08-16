@@ -1,0 +1,54 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager.has_connection"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager.has_connection"
+name = "has_connection"
+kind = "method"
+lang = "python"
+content_hash = "223f75922d37402a"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "def has_connection(self, name: str) -> bool:"
+description = ""
+schema = 4
+line = 239
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "_unmount_server [combiner/mcp_combiner/meta_tools.py]",
+  "build_server_status [combiner/mcp_combiner/status.py]",
+  "combiner__disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+]
+references = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "_unmount_server [combiner/mcp_combiner/meta_tools.py]",
+  "build_server_status [combiner/mcp_combiner/status.py]",
+  "combiner__disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.has_connection",
+  "connection",
+  "connections",
+  "has",
+  "has_connection",
+  "manager",
+  "mcp",
+]

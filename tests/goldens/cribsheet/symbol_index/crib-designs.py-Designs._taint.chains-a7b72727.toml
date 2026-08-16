@@ -1,0 +1,42 @@
+symbol_ref = "crib/designs.py#Designs._taint.chains"
+fqn = "crib.designs.Designs._taint.chains"
+name = "chains"
+kind = "function"
+lang = "python"
+content_hash = "c49e6c464bab0758"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def chains(nid: str, stack: list[str]) -> list[dict[str, Any]]:"
+description = ""
+schema = 4
+line = 875
+mtime = 1786693579000000000
+container = [
+  "Designs",
+  "_taint",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+  "_taint",
+]
+symbol_was = []
+calls = [
+  "chains [crib/designs.py]",
+  "propagates [crib/designs.py]",
+]
+called_by = [
+  "_taint [crib/designs.py]",
+  "chains [crib/designs.py]",
+]
+references = [
+  "_taint [crib/designs.py]",
+]
+name_terms = [
+  "chains",
+  "crib",
+  "crib.designs.Designs._taint.chains",
+  "designs",
+  "taint",
+]

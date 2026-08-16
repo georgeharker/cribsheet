@@ -1,0 +1,40 @@
+symbol_ref = "crib/store.py#Record"
+fqn = "crib.store.Record"
+name = "Record"
+kind = "class"
+lang = "python"
+content_hash = "39533e43b53ed61c"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 26
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "store",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/store.py]",
+  "_commit [crib/indexer.py]",
+  "_index_locked [crib/indexer.py]",
+  "_load [crib/store.py]",
+  "_rec [tests/test_store_chroma.py]",
+  "_snapshot [crib/store.py]",
+  "test_a_dim_mismatch_raises_instead_of_scoring_a_truncated_vector [tests/test_dim_recovery.py]",
+  "test_lexical_cache_survives_invalidation_mid_read [tests/test_loop_responsiveness.py]",
+  "upsert [crib/store.py]",
+  "writer [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "Record",
+  "crib",
+  "crib.store.Record",
+  "record",
+  "store",
+]

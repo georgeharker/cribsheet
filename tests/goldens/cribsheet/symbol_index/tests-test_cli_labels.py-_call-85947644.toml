@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_cli_labels.py#_call"
+fqn = "tests.test_cli_labels._call"
+name = "_call"
+kind = "function"
+lang = "python"
+content_hash = "7c6d80da16098aad"
+file = "tests/test_cli_labels.py"
+file_hash = "6fae42b1c5757b72"
+signature = "def _call(*argv):"
+description = ""
+schema = 4
+line = 35
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_cli_labels",
+]
+symbol_was = []
+calls = [
+  "_dispatch [crib/cli.py]",
+  "build_parser [crib/cli.py]",
+]
+called_by = [
+  "test_absent_flag_is_omitted_from_the_tool_call [tests/test_cli_labels.py]",
+  "test_explicit_empty_reaches_the_tool_call_as_no_labels [tests/test_cli_labels.py]",
+  "test_given_labels_pass_through [tests/test_cli_labels.py]",
+]
+references = [
+  "test_absent_flag_is_omitted_from_the_tool_call [tests/test_cli_labels.py]",
+  "test_explicit_empty_reaches_the_tool_call_as_no_labels [tests/test_cli_labels.py]",
+  "test_given_labels_pass_through [tests/test_cli_labels.py]",
+]
+name_terms = [
+  "_call",
+  "call",
+  "cli",
+  "labels",
+  "test",
+  "tests",
+  "tests.test_cli_labels._call",
+]

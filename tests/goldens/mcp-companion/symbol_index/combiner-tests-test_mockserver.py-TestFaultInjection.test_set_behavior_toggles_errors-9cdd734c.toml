@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestFaultInjection.test_set_behavior_toggles_errors"
+fqn = "combiner.tests.test_mockserver.TestFaultInjection.test_set_behavior_toggles_errors"
+name = "test_set_behavior_toggles_errors"
+kind = "method"
+lang = "python"
+content_hash = "c56c2918a7272718"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "async def test_set_behavior_toggles_errors(self) -> None:"
+description = ""
+schema = 4
+line = 197
+mtime = 1783534978000000000
+container = [
+  "TestFaultInjection",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+  "TestFaultInjection",
+]
+symbol_was = []
+calls = [
+  "MockServer [combiner/mcp_combiner/mockserver.py]",
+  "_text [combiner/tests/test_mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "behavior",
+  "combiner",
+  "combiner.tests.test_mockserver.TestFaultInjection.test_set_behavior_toggles_errors",
+  "errors",
+  "fault",
+  "injection",
+  "mockserver",
+  "set",
+  "test",
+  "test_set_behavior_toggles_errors",
+  "tests",
+  "toggles",
+]

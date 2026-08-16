@@ -1,0 +1,49 @@
+symbol_ref = "crib/indexer.py#IndexEngine._plan"
+fqn = "crib.indexer.IndexEngine._plan"
+name = "_plan"
+kind = "method"
+lang = "python"
+content_hash = "9a9160274a525fbe"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "def _plan(self, project: str, notes_dir: Path, relpath: str,"
+description = ""
+schema = 4
+line = 163
+mtime = 1786578262000000000
+container = [
+  "IndexEngine",
+]
+scope = [
+  "crib",
+  "indexer",
+  "IndexEngine",
+]
+symbol_was = []
+calls = [
+  "IndexResult [crib/indexer.py]",
+  "_Plan [crib/indexer.py]",
+  "_existing_meta [crib/indexer.py]",
+  "_meta_stable [crib/indexer.py]",
+  "chunk_note [crib/chunk.py]",
+  "delete [crib/store.py]",
+  "derived_ulid [crib/util.py]",
+  "ensure_id [crib/notes.py]",
+  "heal_file [crib/notes.py]",
+  "load [crib/notes.py]",
+  "metadata [crib/chunk.py]",
+  "save_atomic [crib/notes.py]",
+]
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+]
+name_terms = [
+  "_plan",
+  "crib",
+  "crib.indexer.IndexEngine._plan",
+  "engine",
+  "index",
+  "indexer",
+  "plan",
+]

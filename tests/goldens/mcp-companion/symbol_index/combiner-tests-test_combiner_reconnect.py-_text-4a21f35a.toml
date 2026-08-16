@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/test_combiner_reconnect.py#_text"
+fqn = "combiner.tests.test_combiner_reconnect._text"
+name = "_text"
+kind = "function"
+lang = "python"
+content_hash = "3776364cd23f233d"
+file = "combiner/tests/test_combiner_reconnect.py"
+file_hash = "0f559a1b56a92ac5"
+signature = "async def _text(client: Client, tool: str, args: dict) -> str:"
+description = ""
+schema = 4
+line = 41
+mtime = 1783535856000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_combiner_reconnect",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+]
+references = [
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+]
+name_terms = [
+  "_text",
+  "combiner",
+  "combiner.tests.test_combiner_reconnect._text",
+  "reconnect",
+  "test",
+  "tests",
+  "text",
+]

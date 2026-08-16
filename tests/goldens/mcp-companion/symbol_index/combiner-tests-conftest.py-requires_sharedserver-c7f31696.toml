@@ -1,0 +1,37 @@
+symbol_ref = "combiner/tests/conftest.py#requires_sharedserver"
+fqn = "combiner.tests.conftest.requires_sharedserver"
+name = "requires_sharedserver"
+kind = "global"
+lang = "python"
+content_hash = "8c80ae92a6fa957f"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "requires_sharedserver = pytest.mark.skipif("
+description = ""
+schema = 4
+line = 29
+mtime = 1783544328000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "TestSharedServerRoute [combiner/tests/test_route_matrix.py]",
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.requires_sharedserver",
+  "conftest",
+  "requires",
+  "requires_sharedserver",
+  "sharedserver",
+  "tests",
+]

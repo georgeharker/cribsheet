@@ -1,0 +1,54 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_RefreshOutcome"
+fqn = "combiner.mcp_combiner.auth._RefreshOutcome"
+name = "_RefreshOutcome"
+kind = "class"
+lang = "python"
+content_hash = "e6baec89f3d1601e"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "class _RefreshOutcome(enum.Enum):"
+description = ""
+schema = 4
+line = 55
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_drive_401 [combiner/tests/test_auth.py]",
+  "_initialize [combiner/mcp_combiner/auth.py]",
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+  "test_auth_error_leaves_tokens_for_sdk_to_handle [combiner/tests/test_auth.py]",
+  "test_first_request_forces_refresh [combiner/tests/test_auth.py]",
+  "test_initialize_sets_grace_window_on_network_error [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_auth_error_falls_through [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_network_error_propagates [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retries_quietly [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retry_still_401_propagates [combiner/tests/test_auth.py]",
+  "test_network_error_applies_grace_window [combiner/tests/test_auth.py]",
+  "test_network_error_does_not_shorten_distant_expiry [combiner/tests/test_auth.py]",
+  "test_network_error_extends_short_or_expired_token [combiner/tests/test_auth.py]",
+  "test_proactive_refresh_network_error_returns_outcome [combiner/tests/test_auth.py]",
+  "test_refresh_sends_right_token_and_stores_rotated [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_token_preserved_when_provider_omits_it [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_with_unknown_token_is_auth_error [combiner/tests/test_oauth_mock.py]",
+  "test_token_within_margin_triggers_refresh [combiner/tests/test_auth.py]",
+  "test_wake_up_forces_refresh_even_with_time_left [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "_RefreshOutcome",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._RefreshOutcome",
+  "mcp",
+  "outcome",
+  "refresh",
+]

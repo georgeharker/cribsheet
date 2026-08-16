@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.design_add"
+fqn = "crib.app.Crib.design_add"
+name = "design_add"
+kind = "method"
+lang = "python"
+content_hash = "b4a637752d1e6bf4"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def design_add(self, title: str, content: str,"
+description = ""
+schema = 4
+line = 2124
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "design_add [crib/designs.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "design_add [crib/server.py]",
+]
+references = [
+  "design_add [crib/server.py]",
+]
+name_terms = [
+  "add",
+  "app",
+  "crib",
+  "crib.app.Crib.design_add",
+  "design",
+  "design_add",
+]

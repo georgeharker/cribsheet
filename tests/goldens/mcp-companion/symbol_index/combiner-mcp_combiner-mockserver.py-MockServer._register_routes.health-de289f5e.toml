@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockServer._register_routes.health"
+fqn = "combiner.mcp_combiner.mockserver.MockServer._register_routes.health"
+name = "health"
+kind = "function"
+lang = "python"
+content_hash = "92fcbc726fcd37fa"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@mcp_srv.custom_route(\"/health\", methods=[\"GET\"])"
+description = ""
+schema = 4
+line = 520
+mtime = 1783622326000000000
+container = [
+  "MockServer",
+  "_register_routes",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockServer",
+  "_register_routes",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockServer._register_routes.health",
+  "health",
+  "mcp",
+  "mock",
+  "mockserver",
+  "register",
+  "routes",
+  "server",
+]

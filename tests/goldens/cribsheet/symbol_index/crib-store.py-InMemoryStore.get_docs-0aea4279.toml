@@ -1,0 +1,42 @@
+symbol_ref = "crib/store.py#InMemoryStore.get_docs"
+fqn = "crib.store.InMemoryStore.get_docs"
+name = "get_docs"
+kind = "method"
+lang = "python"
+content_hash = "73a21114865be31c"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def get_docs(self, where: dict[str, Any]"
+description = ""
+schema = 4
+line = 122
+mtime = 1786564832000000000
+container = [
+  "InMemoryStore",
+]
+scope = [
+  "crib",
+  "store",
+  "InMemoryStore",
+]
+symbol_was = []
+calls = [
+  "_matches [crib/store.py]",
+  "_snapshot [crib/store.py]",
+]
+called_by = [
+  "test_jsonstore_survives_concurrent_writers_and_readers [tests/test_loop_responsiveness.py]",
+]
+references = [
+  "test_jsonstore_survives_concurrent_writers_and_readers [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.InMemoryStore.get_docs",
+  "docs",
+  "get",
+  "get_docs",
+  "in",
+  "memory",
+  "store",
+]

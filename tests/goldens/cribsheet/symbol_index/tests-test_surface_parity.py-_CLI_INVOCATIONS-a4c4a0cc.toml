@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_surface_parity.py#_CLI_INVOCATIONS"
+fqn = "tests.test_surface_parity._CLI_INVOCATIONS"
+name = "_CLI_INVOCATIONS"
+kind = "constant"
+lang = "python"
+content_hash = "87e66088bde3fd39"
+file = "tests/test_surface_parity.py"
+file_hash = "0c4fc72b5f441359"
+signature = "_CLI_INVOCATIONS = {"
+description = ""
+schema = 4
+line = 113
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_surface_parity",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_cli_defaults_match_the_declared_mcp_defaults [tests/test_surface_parity.py]",
+]
+name_terms = [
+  "_CLI_INVOCATIONS",
+  "cli",
+  "invocations",
+  "parity",
+  "surface",
+  "test",
+  "tests",
+  "tests.test_surface_parity._CLI_INVOCATIONS",
+]

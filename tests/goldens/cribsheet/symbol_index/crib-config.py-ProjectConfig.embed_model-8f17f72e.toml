@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#ProjectConfig.embed_model"
+fqn = "crib.config.ProjectConfig.embed_model"
+name = "embed_model"
+kind = "field"
+lang = "python"
+content_hash = "7d4c2edd123a02ad"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "embed_model: str | None = None"
+description = ""
+schema = 4
+line = 326
+mtime = 1786564832000000000
+container = [
+  "ProjectConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "ProjectConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "load [crib/config.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.ProjectConfig.embed_model",
+  "embed",
+  "embed_model",
+  "model",
+  "project",
+]

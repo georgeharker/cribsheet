@@ -1,0 +1,40 @@
+symbol_ref = "crib/server.py#build_server.crib_tool.register"
+fqn = "crib.server.build_server.crib_tool.register"
+name = "register"
+kind = "function"
+lang = "python"
+content_hash = "372bd11c95303346"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def register(fn):"
+description = ""
+schema = 4
+line = 428
+mtime = 1786693579000000000
+container = [
+  "build_server",
+  "crib_tool",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+  "crib_tool",
+]
+symbol_was = []
+calls = [
+  "_user_facing [crib/server.py]",
+  "_wire [crib/server.py]",
+]
+called_by = []
+references = [
+  "crib_tool [crib/server.py]",
+]
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server.crib_tool.register",
+  "register",
+  "server",
+  "tool",
+]

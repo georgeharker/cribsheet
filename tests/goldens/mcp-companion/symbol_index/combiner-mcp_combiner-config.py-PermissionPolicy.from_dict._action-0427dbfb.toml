@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/config.py#PermissionPolicy.from_dict._action"
+fqn = "combiner.mcp_combiner.config.PermissionPolicy.from_dict._action"
+name = "_action"
+kind = "function"
+lang = "python"
+content_hash = "786509af53398d85"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def _action(key: str) -> PermissionAction | None:"
+description = ""
+schema = 4
+line = 174
+mtime = 1783633313000000000
+container = [
+  "PermissionPolicy",
+  "from_dict",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "PermissionPolicy",
+  "from_dict",
+]
+symbol_was = []
+calls = [
+  "PermissionAction [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "_action",
+  "action",
+  "combiner",
+  "combiner.mcp_combiner.config.PermissionPolicy.from_dict._action",
+  "config",
+  "dict",
+  "from",
+  "mcp",
+  "permission",
+  "policy",
+]

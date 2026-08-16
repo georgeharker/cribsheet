@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_describe_queue.py#test_backoff_delays_double_then_cap"
+fqn = "tests.test_describe_queue.test_backoff_delays_double_then_cap"
+name = "test_backoff_delays_double_then_cap"
+kind = "function"
+lang = "python"
+content_hash = "79dcb5483c3b92ae"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def test_backoff_delays_double_then_cap():"
+description = ""
+schema = 4
+line = 70
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = [
+  "DescribeQueue [crib/describe_queue.py]",
+  "_FakeLoop [tests/test_describe_queue.py]",
+  "_sym [tests/test_describe_queue.py]",
+  "enqueue [crib/describe_queue.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "backoff",
+  "cap",
+  "delays",
+  "describe",
+  "double",
+  "queue",
+  "test",
+  "test_backoff_delays_double_then_cap",
+  "tests",
+  "tests.test_describe_queue.test_backoff_delays_double_then_cap",
+  "then",
+]

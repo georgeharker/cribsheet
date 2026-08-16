@@ -1,0 +1,43 @@
+symbol_ref = "crib/app.py#Crib.project_migrate"
+fqn = "crib.app.Crib.project_migrate"
+name = "project_migrate"
+kind = "method"
+lang = "python"
+content_hash = "117c38c0f8d9522b"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def project_migrate(self, project: str | None = None,"
+description = ""
+schema = 4
+line = 1910
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "__call__ [crib/paths.py]",
+  "_migrate_legacy_layout [crib/app.py]",
+  "reindex [crib/app.py]",
+  "require [crib/paths.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "project_migrate [crib/server.py]",
+]
+references = [
+  "project_migrate [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.project_migrate",
+  "migrate",
+  "project",
+  "project_migrate",
+]

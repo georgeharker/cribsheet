@@ -1,0 +1,48 @@
+symbol_ref = "combiner/mcp_combiner/sharedserver.py#SharedServerManager.ensure_stopped"
+fqn = "combiner.mcp_combiner.sharedserver.SharedServerManager.ensure_stopped"
+name = "ensure_stopped"
+kind = "method"
+lang = "python"
+content_hash = "4b5f2c908f6eb583"
+file = "combiner/mcp_combiner/sharedserver.py"
+file_hash = "00df81a0a741c869"
+signature = "async def ensure_stopped(self, server_name: str) -> None:"
+description = ""
+schema = 4
+line = 273
+mtime = 1782539642000000000
+container = [
+  "SharedServerManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "sharedserver",
+  "SharedServerManager",
+]
+symbol_was = []
+calls = [
+  "_get_binary [combiner/mcp_combiner/sharedserver.py]",
+  "_stop_one [combiner/mcp_combiner/sharedserver.py]",
+  "resolve_shared_server [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "_unmount_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__disable_server [combiner/mcp_combiner/meta_tools.py]",
+]
+references = [
+  "_unmount_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__disable_server [combiner/mcp_combiner/meta_tools.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.SharedServerManager.ensure_stopped",
+  "ensure",
+  "ensure_stopped",
+  "manager",
+  "mcp",
+  "server",
+  "shared",
+  "sharedserver",
+  "stopped",
+]

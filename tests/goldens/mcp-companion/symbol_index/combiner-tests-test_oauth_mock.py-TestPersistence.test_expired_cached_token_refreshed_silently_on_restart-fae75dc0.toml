@@ -1,0 +1,49 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestPersistence.test_expired_cached_token_refreshed_silently_on_restart"
+fqn = "combiner.tests.test_oauth_mock.TestPersistence.test_expired_cached_token_refreshed_silently_on_restart"
+name = "test_expired_cached_token_refreshed_silently_on_restart"
+kind = "method"
+lang = "python"
+content_hash = "1b4b6867d344d41c"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def test_expired_cached_token_refreshed_silently_on_restart("
+description = ""
+schema = 4
+line = 444
+mtime = 1784495646000000000
+container = [
+  "TestPersistence",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "TestPersistence",
+]
+symbol_was = []
+calls = [
+  "_call_echo [combiner/tests/test_oauth_mock.py]",
+  "_expire_persisted_token [combiner/tests/test_oauth_mock.py]",
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+  "authenticated_mcp_calls [combiner/mcp_combiner/mockserver.py]",
+  "token_requests_of [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cached",
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestPersistence.test_expired_cached_token_refreshed_silently_on_restart",
+  "expired",
+  "mock",
+  "oauth",
+  "on",
+  "persistence",
+  "refreshed",
+  "restart",
+  "silently",
+  "test",
+  "test_expired_cached_token_refreshed_silently_on_restart",
+  "tests",
+  "token",
+]

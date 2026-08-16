@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ServerConfig.disabled"
+fqn = "combiner.mcp_combiner.config.ServerConfig.disabled"
+name = "disabled"
+kind = "field"
+lang = "python"
+content_hash = "111e1c99f4df610d"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "disabled: bool = False"
+description = ""
+schema = 4
+line = 268
+mtime = 1783633313000000000
+container = [
+  "ServerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ServerConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_config [combiner/tests/test_session_filter.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "build_server_status [combiner/mcp_combiner/status.py]",
+  "combiner__disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "get_enabled_servers [combiner/mcp_combiner/config.py]",
+  "get_server_status [combiner/mcp_combiner/config.py]",
+  "test_server_config_from_dict_stdio [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.disabled",
+  "config",
+  "disabled",
+  "mcp",
+  "server",
+]

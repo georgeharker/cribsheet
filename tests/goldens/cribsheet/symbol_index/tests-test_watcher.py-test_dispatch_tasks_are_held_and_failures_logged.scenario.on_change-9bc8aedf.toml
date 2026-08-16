@@ -1,0 +1,46 @@
+symbol_ref = "tests/test_watcher.py#test_dispatch_tasks_are_held_and_failures_logged.scenario.on_change"
+fqn = "tests.test_watcher.test_dispatch_tasks_are_held_and_failures_logged.scenario.on_change"
+name = "on_change"
+kind = "function"
+lang = "python"
+content_hash = "bf3c09dd34ae46ca"
+file = "tests/test_watcher.py"
+file_hash = "f95c6316824837fd"
+signature = "async def on_change(project, store, relpath):"
+description = ""
+schema = 4
+line = 213
+mtime = 1786139638000000000
+container = [
+  "test_dispatch_tasks_are_held_and_failures_logged",
+  "scenario",
+]
+scope = [
+  "tests",
+  "test_watcher",
+  "test_dispatch_tasks_are_held_and_failures_logged",
+  "scenario",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "scenario [tests/test_watcher.py]",
+]
+name_terms = [
+  "and",
+  "are",
+  "change",
+  "dispatch",
+  "failures",
+  "held",
+  "logged",
+  "on",
+  "on_change",
+  "scenario",
+  "tasks",
+  "test",
+  "tests",
+  "tests.test_watcher.test_dispatch_tasks_are_held_and_failures_logged.scenario.on_change",
+  "watcher",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "lua/mcp_companion/init.lua#get_hub_instance"
+fqn = "mcp_companion.get_hub_instance"
+name = "get_hub_instance"
+kind = "function"
+lang = "lua"
+content_hash = "6e137692b2ad1b7e"
+file = "lua/mcp_companion/init.lua"
+file_hash = "97d5bcda7db25914"
+signature = "function M.get_hub_instance()"
+description = ""
+schema = 4
+line = 232
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/init.lua]",
+]
+references = [
+  "event [lua/mcp_companion/init.lua]",
+  "get_combiner [lua/mcp_companion/init.lua]",
+  "get_state [lua/mcp_companion/init.lua]",
+  "opts [lua/mcp_companion/init.lua]",
+]
+name_terms = [
+  "companion",
+  "get",
+  "get_hub_instance",
+  "hub",
+  "instance",
+  "mcp",
+  "mcp_companion.get_hub_instance",
+]

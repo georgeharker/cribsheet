@@ -1,0 +1,55 @@
+symbol_ref = "crib/store.py#Store.get_meta"
+fqn = "crib.store.Store.get_meta"
+name = "get_meta"
+kind = "method"
+lang = "python"
+content_hash = "f6adcebf148b7161"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:"
+description = ""
+schema = 4
+line = 49
+mtime = 1786564832000000000
+container = [
+  "Store",
+]
+scope = [
+  "crib",
+  "store",
+  "Store",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_existing_meta [crib/indexer.py]",
+  "_indexed_projects [crib/app.py]",
+  "_indexed_relpaths [crib/app.py]",
+  "_indexed_sections [crib/designs.py]",
+  "_known_docs [crib/designs.py]",
+  "_snapshot [tests/test_notestore_snapshot.py]",
+  "project_forget [crib/app.py]",
+  "project_status [crib/app.py]",
+  "reindex [crib/notestore.py]",
+  "status [crib/app.py]",
+]
+references = [
+  "_existing_meta [crib/indexer.py]",
+  "_indexed_projects [crib/app.py]",
+  "_indexed_relpaths [crib/app.py]",
+  "_indexed_sections [crib/designs.py]",
+  "_known_docs [crib/designs.py]",
+  "_snapshot [tests/test_notestore_snapshot.py]",
+  "project_forget [crib/app.py]",
+  "project_status [crib/app.py]",
+  "reindex [crib/notestore.py]",
+  "status [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Store.get_meta",
+  "get",
+  "get_meta",
+  "meta",
+  "store",
+]

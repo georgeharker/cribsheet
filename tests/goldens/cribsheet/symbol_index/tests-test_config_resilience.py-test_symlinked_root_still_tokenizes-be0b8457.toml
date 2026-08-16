@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_config_resilience.py#test_symlinked_root_still_tokenizes"
+fqn = "tests.test_config_resilience.test_symlinked_root_still_tokenizes"
+name = "test_symlinked_root_still_tokenizes"
+kind = "function"
+lang = "python"
+content_hash = "41e8af6f48896e07"
+file = "tests/test_config_resilience.py"
+file_hash = "620aeb96b59e7b2d"
+signature = "def test_symlinked_root_still_tokenizes(tmp_path):"
+description = ""
+schema = 4
+line = 111
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_config_resilience",
+]
+symbol_was = []
+calls = [
+  "portable_path [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "config",
+  "resilience",
+  "root",
+  "still",
+  "symlinked",
+  "test",
+  "test_symlinked_root_still_tokenizes",
+  "tests",
+  "tests.test_config_resilience.test_symlinked_root_still_tokenizes",
+  "tokenizes",
+]

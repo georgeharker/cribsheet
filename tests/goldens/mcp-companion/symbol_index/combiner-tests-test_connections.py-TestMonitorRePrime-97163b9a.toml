@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/test_connections.py#TestMonitorRePrime"
+fqn = "combiner.tests.test_connections.TestMonitorRePrime"
+name = "TestMonitorRePrime"
+kind = "class"
+lang = "python"
+content_hash = "70c4d21bf3ff33f2"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "class TestMonitorRePrime:"
+description = ""
+schema = 4
+line = 111
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestMonitorRePrime",
+  "combiner",
+  "combiner.tests.test_connections.TestMonitorRePrime",
+  "connections",
+  "monitor",
+  "prime",
+  "re",
+  "test",
+  "tests",
+]

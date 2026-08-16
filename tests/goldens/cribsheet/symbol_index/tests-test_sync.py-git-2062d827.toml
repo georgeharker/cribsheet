@@ -1,0 +1,47 @@
+symbol_ref = "tests/test_sync.py#git"
+fqn = "tests.test_sync.git"
+name = "git"
+kind = "function"
+lang = "python"
+content_hash = "c7b278ed010ab7ad"
+file = "tests/test_sync.py"
+file_hash = "594e3dd701dbe999"
+signature = "def git(cwd: Path, *args: str) -> str:"
+description = ""
+schema = 4
+line = 15
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_sync",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_break_identity [tests/test_sync.py]",
+  "_machine [tests/test_sync.py]",
+  "master_remote [tests/test_sync.py]",
+  "test_init_writes_gitignore_and_remote [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_memory_bindings_is_gitignored [tests/test_sync.py]",
+  "test_setup_joins_a_master_remote_on_master [tests/test_sync.py]",
+  "test_sync_stops_when_the_commit_fails [tests/test_sync.py]",
+]
+references = [
+  "_break_identity [tests/test_sync.py]",
+  "_machine [tests/test_sync.py]",
+  "master_remote [tests/test_sync.py]",
+  "test_init_writes_gitignore_and_remote [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_memory_bindings_is_gitignored [tests/test_sync.py]",
+  "test_setup_joins_a_master_remote_on_master [tests/test_sync.py]",
+  "test_sync_stops_when_the_commit_fails [tests/test_sync.py]",
+]
+name_terms = [
+  "git",
+  "sync",
+  "test",
+  "tests",
+  "tests.test_sync.git",
+]

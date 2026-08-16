@@ -1,0 +1,39 @@
+symbol_ref = "scripts/eval_hybrid.py#main.P1"
+fqn = "scripts.eval_hybrid.main.P1"
+name = "P1"
+kind = "function"
+lang = "python"
+content_hash = "a4467eb8c1f783ef"
+file = "scripts/eval_hybrid.py"
+file_hash = "7efc1218d091601c"
+signature = "def P1(rs): return sum(1 for r in rs if r == 1) / len(rs)"
+description = ""
+schema = 4
+line = 149
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_hybrid",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_hybrid.py]",
+]
+references = [
+  "main [scripts/eval_hybrid.py]",
+]
+name_terms = [
+  "1",
+  "P1",
+  "eval",
+  "hybrid",
+  "main",
+  "p",
+  "scripts",
+  "scripts.eval_hybrid.main.P1",
+]

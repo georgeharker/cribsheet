@@ -1,0 +1,40 @@
+symbol_ref = "crib/notestore.py#NoteStore.resolved"
+fqn = "crib.notestore.NoteStore.resolved"
+name = "resolved"
+kind = "method"
+lang = "python"
+content_hash = "f14f72a5ed8367e5"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "def resolved(self, project: str) -> ProjectPaths:"
+description = ""
+schema = 4
+line = 77
+mtime = 1786564832000000000
+container = [
+  "NoteStore",
+]
+scope = [
+  "crib",
+  "notestore",
+  "NoteStore",
+]
+symbol_was = []
+calls = [
+  "__call__ [crib/paths.py]",
+  "require [crib/paths.py]",
+]
+called_by = [
+  "root [crib/notestore.py]",
+]
+references = [
+  "root [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.NoteStore.resolved",
+  "note",
+  "notestore",
+  "resolved",
+  "store",
+]

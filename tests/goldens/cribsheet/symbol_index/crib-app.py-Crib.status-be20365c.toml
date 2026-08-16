@@ -1,0 +1,44 @@
+symbol_ref = "crib/app.py#Crib.status"
+fqn = "crib.app.Crib.status"
+name = "status"
+kind = "method"
+lang = "python"
+content_hash = "428c14f68101ba2b"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def status(self) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 1958
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "__call__ [crib/paths.py]",
+  "get_meta [crib/store.py]",
+  "pillar_dir [crib/paths.py]",
+  "projects [crib/app.py]",
+  "state [crib/gitbacking.py]",
+  "stats [crib/codeindex.py]",
+  "stored_chunk_schema [crib/app.py]",
+  "tainted_designs [crib/designs.py]",
+]
+called_by = [
+  "status [crib/server.py]",
+]
+references = [
+  "status [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.status",
+  "status",
+]

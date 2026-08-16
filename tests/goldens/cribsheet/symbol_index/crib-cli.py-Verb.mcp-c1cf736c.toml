@@ -1,0 +1,36 @@
+symbol_ref = "crib/cli.py#Verb.mcp"
+fqn = "crib.cli.Verb.mcp"
+name = "mcp"
+kind = "field"
+lang = "python"
+content_hash = "bca550533f68ccbc"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "mcp: str | None = None                      # MCP params: \"query k=8 …\" (\"\" = none)"
+description = ""
+schema = 4
+line = 1467
+mtime = 1786693579000000000
+container = [
+  "Verb",
+]
+scope = [
+  "crib",
+  "cli",
+  "Verb",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+  "mcp_params [crib/cli.py]",
+  "test_every_registry_row_declares_its_mcp_signature_and_policy [tests/test_surface_parity.py]",
+]
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli.Verb.mcp",
+  "mcp",
+  "verb",
+]

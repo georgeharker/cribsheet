@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_ProbeOutcome.INVALID"
+fqn = "combiner.mcp_combiner.auth._ProbeOutcome.INVALID"
+name = "INVALID"
+kind = "constant"
+lang = "python"
+content_hash = "85b0629afdd2e4ae"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "INVALID = \"invalid\"  # Google rejects our token — real auth failure"
+description = ""
+schema = 4
+line = 73
+mtime = 1783622326000000000
+container = [
+  "_ProbeOutcome",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+  "_ProbeOutcome",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_probe_token_at [combiner/mcp_combiner/auth.py]",
+  "async_auth_flow [combiner/mcp_combiner/auth.py]",
+  "test_invalid_probe_with_refresh_auth_error_falls_through [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_network_error_propagates [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retries_quietly [combiner/tests/test_auth.py]",
+  "test_invalid_probe_with_refresh_success_retry_still_401_propagates [combiner/tests/test_auth.py]",
+  "test_probe_returns_invalid_on_401 [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "INVALID",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._ProbeOutcome.INVALID",
+  "invalid",
+  "mcp",
+  "outcome",
+  "probe",
+]

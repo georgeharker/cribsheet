@@ -1,0 +1,42 @@
+symbol_ref = "crib/indexer.py#IndexEngine._existing_meta"
+fqn = "crib.indexer.IndexEngine._existing_meta"
+name = "_existing_meta"
+kind = "method"
+lang = "python"
+content_hash = "c0010f1ad4fc705a"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "def _existing_meta(self, project: str, store: str, relpath: str) -> dict:"
+description = ""
+schema = 4
+line = 121
+mtime = 1786578262000000000
+container = [
+  "IndexEngine",
+]
+scope = [
+  "crib",
+  "indexer",
+  "IndexEngine",
+]
+symbol_was = []
+calls = [
+  "get_meta [crib/store.py]",
+]
+called_by = [
+  "_plan [crib/indexer.py]",
+]
+references = [
+  "_plan [crib/indexer.py]",
+  "forget [crib/indexer.py]",
+]
+name_terms = [
+  "_existing_meta",
+  "crib",
+  "crib.indexer.IndexEngine._existing_meta",
+  "engine",
+  "existing",
+  "index",
+  "indexer",
+  "meta",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "crib/cli.py#build_parser.source_arg"
+fqn = "crib.cli.build_parser.source_arg"
+name = "source_arg"
+kind = "function"
+lang = "python"
+content_hash = "8b4f9e6ef651a89c"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def source_arg(sp) -> None:"
+description = ""
+schema = 4
+line = 1139
+mtime = 1786693579000000000
+container = [
+  "build_parser",
+]
+scope = [
+  "crib",
+  "cli",
+  "build_parser",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "build_parser [crib/cli.py]",
+]
+references = [
+  "build_parser [crib/cli.py]",
+]
+name_terms = [
+  "arg",
+  "build",
+  "cli",
+  "crib",
+  "crib.cli.build_parser.source_arg",
+  "parser",
+  "source",
+  "source_arg",
+]

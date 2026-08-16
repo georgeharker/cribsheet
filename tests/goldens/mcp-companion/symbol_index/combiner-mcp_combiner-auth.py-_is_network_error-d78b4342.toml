@@ -1,0 +1,59 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_is_network_error"
+fqn = "combiner.mcp_combiner.auth._is_network_error"
+name = "_is_network_error"
+kind = "function"
+lang = "python"
+content_hash = "f33cd5178d0835f2"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "def _is_network_error(exc: BaseException) -> bool:"
+description = ""
+schema = 4
+line = 84
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_discover_oauth_metadata [combiner/mcp_combiner/auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "_probe_token_at [combiner/mcp_combiner/auth.py]",
+  "test_connection_error [combiner/tests/test_auth.py]",
+  "test_http_status_error_401_not_network [combiner/tests/test_auth.py]",
+  "test_httpx_connect_error [combiner/tests/test_auth.py]",
+  "test_httpx_read_timeout [combiner/tests/test_auth.py]",
+  "test_httpx_timeout [combiner/tests/test_auth.py]",
+  "test_os_error [combiner/tests/test_auth.py]",
+  "test_runtime_error_not_network [combiner/tests/test_auth.py]",
+  "test_timeout_error [combiner/tests/test_auth.py]",
+  "test_value_error_not_network [combiner/tests/test_auth.py]",
+]
+references = [
+  "_discover_oauth_metadata [combiner/mcp_combiner/auth.py]",
+  "_proactive_refresh [combiner/mcp_combiner/auth.py]",
+  "_probe_token_at [combiner/mcp_combiner/auth.py]",
+  "test_connection_error [combiner/tests/test_auth.py]",
+  "test_http_status_error_401_not_network [combiner/tests/test_auth.py]",
+  "test_httpx_connect_error [combiner/tests/test_auth.py]",
+  "test_httpx_read_timeout [combiner/tests/test_auth.py]",
+  "test_httpx_timeout [combiner/tests/test_auth.py]",
+  "test_os_error [combiner/tests/test_auth.py]",
+  "test_runtime_error_not_network [combiner/tests/test_auth.py]",
+  "test_timeout_error [combiner/tests/test_auth.py]",
+  "test_value_error_not_network [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "_is_network_error",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._is_network_error",
+  "error",
+  "is",
+  "mcp",
+  "network",
+]

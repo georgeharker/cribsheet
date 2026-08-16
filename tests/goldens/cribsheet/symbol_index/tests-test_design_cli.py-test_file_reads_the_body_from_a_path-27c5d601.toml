@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_design_cli.py#test_file_reads_the_body_from_a_path"
+fqn = "tests.test_design_cli.test_file_reads_the_body_from_a_path"
+name = "test_file_reads_the_body_from_a_path"
+kind = "function"
+lang = "python"
+content_hash = "86ef6e4c726e9d4a"
+file = "tests/test_design_cli.py"
+file_hash = "0f819c263d62afaf"
+signature = "def test_file_reads_the_body_from_a_path(tmp_path):"
+description = ""
+schema = 4
+line = 55
+mtime = 1785974065000000000
+container = []
+scope = [
+  "tests",
+  "test_design_cli",
+]
+symbol_was = []
+calls = [
+  "_call [tests/test_design_cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "body",
+  "cli",
+  "design",
+  "file",
+  "from",
+  "path",
+  "reads",
+  "test",
+  "test_file_reads_the_body_from_a_path",
+  "tests",
+  "tests.test_design_cli.test_file_reads_the_body_from_a_path",
+  "the",
+]

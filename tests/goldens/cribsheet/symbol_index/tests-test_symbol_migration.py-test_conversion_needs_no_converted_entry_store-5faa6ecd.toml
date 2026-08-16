@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_symbol_migration.py#test_conversion_needs_no_converted_entry_store"
+fqn = "tests.test_symbol_migration.test_conversion_needs_no_converted_entry_store"
+name = "test_conversion_needs_no_converted_entry_store"
+kind = "function"
+lang = "python"
+content_hash = "ecc469c9240de215"
+file = "tests/test_symbol_migration.py"
+file_hash = "f1bc5f45850c293a"
+signature = "def test_conversion_needs_no_converted_entry_store(crib):"
+description = ""
+schema = 4
+line = 110
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_migration",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_legacy_note [tests/test_symbol_migration.py]",
+  "_legacy_toml [tests/test_symbol_migration.py]",
+  "run [tests/test_symbol_migration.py]",
+  "write_atomic [crib/tomlrec.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "conversion",
+  "converted",
+  "entry",
+  "migration",
+  "needs",
+  "no",
+  "store",
+  "symbol",
+  "test",
+  "test_conversion_needs_no_converted_entry_store",
+  "tests",
+  "tests.test_symbol_migration.test_conversion_needs_no_converted_entry_store",
+]

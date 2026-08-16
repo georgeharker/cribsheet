@@ -1,0 +1,36 @@
+symbol_ref = "crib/store.py#ChromaStore.COLLECTION"
+fqn = "crib.store.ChromaStore.COLLECTION"
+name = "COLLECTION"
+kind = "constant"
+lang = "python"
+content_hash = "5fa0fed8518eea49"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "COLLECTION = \"crib_chunks\""
+description = ""
+schema = 4
+line = 239
+mtime = 1786564832000000000
+container = [
+  "ChromaStore",
+]
+scope = [
+  "crib",
+  "store",
+  "ChromaStore",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_resolve [crib/store.py]",
+  "recreate [crib/store.py]",
+]
+name_terms = [
+  "COLLECTION",
+  "chroma",
+  "collection",
+  "crib",
+  "crib.store.ChromaStore.COLLECTION",
+  "store",
+]

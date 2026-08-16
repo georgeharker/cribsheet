@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockServer._register_routes.stats"
+fqn = "combiner.mcp_combiner.mockserver.MockServer._register_routes.stats"
+name = "stats"
+kind = "function"
+lang = "python"
+content_hash = "b416a1b6a0415666"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@mcp_srv.custom_route(\"/stats\", methods=[\"GET\"])"
+description = ""
+schema = 4
+line = 526
+mtime = 1783622326000000000
+container = [
+  "MockServer",
+  "_register_routes",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockServer",
+  "_register_routes",
+]
+symbol_was = []
+calls = [
+  "snapshot [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockServer._register_routes.stats",
+  "mcp",
+  "mock",
+  "mockserver",
+  "register",
+  "routes",
+  "server",
+  "stats",
+]

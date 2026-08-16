@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/mounts.py#get_server_providers"
+fqn = "combiner.mcp_combiner.mounts.get_server_providers"
+name = "get_server_providers"
+kind = "function"
+lang = "python"
+content_hash = "84ee8154e0ce00ed"
+file = "combiner/mcp_combiner/mounts.py"
+file_hash = "6bd48bfe5deb1fbd"
+signature = "def get_server_providers(combiner: FastMCP, server_name: str) -> list[Any]:"
+description = ""
+schema = 4
+line = 77
+mtime = 1783452495000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mounts",
+]
+symbol_was = []
+calls = [
+  "_registry [combiner/mcp_combiner/mounts.py]",
+]
+called_by = [
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+]
+references = [
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mounts.get_server_providers",
+  "get",
+  "get_server_providers",
+  "mcp",
+  "mounts",
+  "providers",
+  "server",
+]

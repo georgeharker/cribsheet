@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_describe_queue.py#_FakeLoop.call_later"
+fqn = "tests.test_describe_queue._FakeLoop.call_later"
+name = "call_later"
+kind = "method"
+lang = "python"
+content_hash = "403341448a38ce23"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def call_later(self, delay, cb, *a):"
+description = ""
+schema = 4
+line = 62
+mtime = 1786664729000000000
+container = [
+  "_FakeLoop",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "_FakeLoop",
+]
+symbol_was = []
+calls = [
+  "_FakeTimer [tests/test_describe_queue.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "call",
+  "call_later",
+  "describe",
+  "fake",
+  "later",
+  "loop",
+  "queue",
+  "test",
+  "tests",
+  "tests.test_describe_queue._FakeLoop.call_later",
+]

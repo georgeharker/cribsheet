@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_designs.py#test_a_single_item_add_keeps_its_shape"
+fqn = "tests.test_designs.test_a_single_item_add_keeps_its_shape"
+name = "test_a_single_item_add_keeps_its_shape"
+kind = "function"
+lang = "python"
+content_hash = "9b3311c729716088"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_a_single_item_add_keeps_its_shape(crib):"
+description = ""
+schema = 4
+line = 561
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "add",
+  "designs",
+  "item",
+  "its",
+  "keeps",
+  "shape",
+  "single",
+  "test",
+  "test_a_single_item_add_keeps_its_shape",
+  "tests",
+  "tests.test_designs.test_a_single_item_add_keeps_its_shape",
+]

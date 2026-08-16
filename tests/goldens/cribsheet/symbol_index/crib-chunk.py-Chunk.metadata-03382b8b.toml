@@ -1,0 +1,41 @@
+symbol_ref = "crib/chunk.py#Chunk.metadata"
+fqn = "crib.chunk.Chunk.metadata"
+name = "metadata"
+kind = "method"
+lang = "python"
+content_hash = "a3d3bb9b46dd304d"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "def metadata(self, title: str | None, tags: list[str], source: str,"
+description = ""
+schema = 4
+line = 108
+mtime = 1786136167000000000
+container = [
+  "Chunk",
+]
+scope = [
+  "crib",
+  "chunk",
+  "Chunk",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_plan [crib/indexer.py]",
+  "test_line_map_keys_match_chunk_identity [tests/test_chunk_identity.py]",
+  "test_occurrence_reaches_metadata_but_not_the_heading_path [tests/test_chunk_identity.py]",
+  "test_store_reaches_metadata [tests/test_chunk_identity.py]",
+]
+references = [
+  "_plan [crib/indexer.py]",
+  "test_line_map_keys_match_chunk_identity [tests/test_chunk_identity.py]",
+  "test_occurrence_reaches_metadata_but_not_the_heading_path [tests/test_chunk_identity.py]",
+  "test_store_reaches_metadata [tests/test_chunk_identity.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.metadata",
+  "metadata",
+]

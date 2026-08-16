@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_code_attribution.py#test_uri_path_percent_decodes"
+fqn = "tests.test_code_attribution.test_uri_path_percent_decodes"
+name = "test_uri_path_percent_decodes"
+kind = "function"
+lang = "python"
+content_hash = "c0b36bd72820d246"
+file = "tests/test_code_attribution.py"
+file_hash = "ff3c29a685f6f6d7"
+signature = "def test_uri_path_percent_decodes(tmp_path):"
+description = ""
+schema = 4
+line = 215
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_attribution",
+]
+symbol_was = []
+calls = [
+  "_in_workspace [crib/codeindex.py]",
+  "_rel [crib/codeindex.py]",
+  "uri_path [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "attribution",
+  "code",
+  "decodes",
+  "path",
+  "percent",
+  "test",
+  "test_uri_path_percent_decodes",
+  "tests",
+  "tests.test_code_attribution.test_uri_path_percent_decodes",
+  "uri",
+]

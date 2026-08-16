@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.plan_forget"
+fqn = "crib.app.Crib.plan_forget"
+name = "plan_forget"
+kind = "method"
+lang = "python"
+content_hash = "9ecd50964341a971"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def plan_forget(self, ref: str, force: bool = False,"
+description = ""
+schema = 4
+line = 2311
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "plan_forget [crib/designs.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "plan_forget [crib/server.py]",
+]
+references = [
+  "plan_forget [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.plan_forget",
+  "forget",
+  "plan",
+  "plan_forget",
+]

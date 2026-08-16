@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_ManagedConnection.srv"
+fqn = "combiner.mcp_combiner.connections._ManagedConnection.srv"
+name = "srv"
+kind = "field"
+lang = "python"
+content_hash = "c88b382615ba7418"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "srv: ServerConfig"
+description = ""
+schema = 4
+line = 137
+mtime = 1784493613000000000
+container = [
+  "_ManagedConnection",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "_ManagedConnection",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_open [combiner/mcp_combiner/connections.py]",
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+  "connect [combiner/mcp_combiner/connections.py]",
+  "connect_all [combiner/mcp_combiner/connections.py]",
+  "get_auth [combiner/mcp_combiner/connections.py]",
+  "register [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection.srv",
+  "connection",
+  "connections",
+  "managed",
+  "mcp",
+  "srv",
+]

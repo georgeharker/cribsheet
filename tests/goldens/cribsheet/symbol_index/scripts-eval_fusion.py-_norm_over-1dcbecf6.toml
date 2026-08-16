@@ -1,0 +1,39 @@
+symbol_ref = "scripts/eval_fusion.py#_norm_over"
+fqn = "scripts.eval_fusion._norm_over"
+name = "_norm_over"
+kind = "function"
+lang = "python"
+content_hash = "5a850bbd41170b4d"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def _norm_over(vals: list[float], cand: list[int]) -> dict[int, float]:"
+description = ""
+schema = 4
+line = 135
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "fn [scripts/eval_fusion.py]",
+  "fn [scripts/eval_kw.py]",
+  "three_facets [scripts/eval_kw.py]",
+]
+references = [
+  "fn [scripts/eval_fusion.py]",
+  "fn [scripts/eval_kw.py]",
+  "three_facets [scripts/eval_kw.py]",
+]
+name_terms = [
+  "_norm_over",
+  "eval",
+  "fusion",
+  "norm",
+  "over",
+  "scripts",
+  "scripts.eval_fusion._norm_over",
+]

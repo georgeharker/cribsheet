@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_symbol_convert.py#_legacy_toml"
+fqn = "tests.test_symbol_convert._legacy_toml"
+name = "_legacy_toml"
+kind = "function"
+lang = "python"
+content_hash = "5e45c4204adbf3e9"
+file = "tests/test_symbol_convert.py"
+file_hash = "3cdbfd7f71b23e65"
+signature = "def _legacy_toml(e):"
+description = ""
+schema = 4
+line = 32
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_convert",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_seed_legacy_store [tests/test_symbol_convert.py]",
+  "test_colliding_records_convert_one_and_report_the_rest [tests/test_symbol_convert.py]",
+]
+references = [
+  "_seed_legacy_store [tests/test_symbol_convert.py]",
+  "test_colliding_records_convert_one_and_report_the_rest [tests/test_symbol_convert.py]",
+]
+name_terms = [
+  "_legacy_toml",
+  "convert",
+  "legacy",
+  "symbol",
+  "test",
+  "tests",
+  "tests.test_symbol_convert._legacy_toml",
+  "toml",
+]

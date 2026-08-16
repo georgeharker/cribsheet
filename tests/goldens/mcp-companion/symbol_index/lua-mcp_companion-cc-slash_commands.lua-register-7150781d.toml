@@ -1,0 +1,34 @@
+symbol_ref = "lua/mcp_companion/cc/slash_commands.lua#register"
+fqn = "mcp_companion.cc.slash_commands.register"
+name = "register"
+kind = "function"
+lang = "lua"
+content_hash = "565fb2d195ee1d3d"
+file = "lua/mcp_companion/cc/slash_commands.lua"
+file_hash = "61b0e049f4a83de0"
+signature = "function M.register()"
+description = ""
+schema = 4
+line = 24
+mtime = 1782852601000000000
+container = []
+scope = [
+  "mcp_companion",
+  "cc",
+  "slash_commands",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "slash_commands.lua [lua/mcp_companion/cc/slash_commands.lua]",
+]
+references = []
+name_terms = [
+  "cc",
+  "commands",
+  "companion",
+  "mcp",
+  "mcp_companion.cc.slash_commands.register",
+  "register",
+  "slash",
+]

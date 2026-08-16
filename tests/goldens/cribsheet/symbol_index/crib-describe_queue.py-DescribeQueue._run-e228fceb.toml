@@ -1,0 +1,39 @@
+symbol_ref = "crib/describe_queue.py#DescribeQueue._run"
+fqn = "crib.describe_queue.DescribeQueue._run"
+name = "_run"
+kind = "method"
+lang = "python"
+content_hash = "d530247d6193bcb7"
+file = "crib/describe_queue.py"
+file_hash = "305c34e160ae74c1"
+signature = "async def _run(self, project: str, root: Path, relpath: str,"
+description = ""
+schema = 4
+line = 102
+mtime = 1786664729000000000
+container = [
+  "DescribeQueue",
+]
+scope = [
+  "crib",
+  "describe_queue",
+  "DescribeQueue",
+]
+symbol_was = []
+calls = [
+  "_arm [crib/describe_queue.py]",
+]
+called_by = [
+  "_fire [crib/describe_queue.py]",
+]
+references = [
+  "_fire [crib/describe_queue.py]",
+]
+name_terms = [
+  "_run",
+  "crib",
+  "crib.describe_queue.DescribeQueue._run",
+  "describe",
+  "queue",
+  "run",
+]

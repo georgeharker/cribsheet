@@ -1,0 +1,36 @@
+symbol_ref = "crib/util.py#new_ulid"
+fqn = "crib.util.new_ulid"
+name = "new_ulid"
+kind = "function"
+lang = "python"
+content_hash = "fb2ef4547e2427b7"
+file = "crib/util.py"
+file_hash = "c8fb8142505bcf40"
+signature = "def new_ulid() -> str:"
+description = ""
+schema = 4
+line = 51
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "util",
+]
+symbol_was = []
+calls = [
+  "_b32 [crib/util.py]",
+]
+called_by = [
+  "ensure_id [crib/notes.py]",
+]
+references = [
+  "ensure_id [crib/notes.py]",
+]
+name_terms = [
+  "crib",
+  "crib.util.new_ulid",
+  "new",
+  "new_ulid",
+  "ulid",
+  "util",
+]

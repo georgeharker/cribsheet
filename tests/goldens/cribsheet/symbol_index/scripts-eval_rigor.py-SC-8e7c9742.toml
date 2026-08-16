@@ -1,0 +1,33 @@
+symbol_ref = "scripts/eval_rigor.py#SC"
+fqn = "scripts.eval_rigor.SC"
+name = "SC"
+kind = "constant"
+lang = "python"
+content_hash = "3d657733d1436984"
+file = "scripts/eval_rigor.py"
+file_hash = "352ea4b1e1221f95"
+signature = "SC = ROOT / \"scripts\" / \"eval_data\""
+description = ""
+schema = 4
+line = 27
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_rigor",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "GLARGE [scripts/eval_rigor.py]",
+  "KWS [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "SC",
+  "eval",
+  "rigor",
+  "sc",
+  "scripts",
+  "scripts.eval_rigor.SC",
+]

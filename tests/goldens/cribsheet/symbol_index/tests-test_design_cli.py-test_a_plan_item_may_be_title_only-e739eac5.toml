@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_design_cli.py#test_a_plan_item_may_be_title_only"
+fqn = "tests.test_design_cli.test_a_plan_item_may_be_title_only"
+name = "test_a_plan_item_may_be_title_only"
+kind = "function"
+lang = "python"
+content_hash = "0eb6da7f4a19639d"
+file = "tests/test_design_cli.py"
+file_hash = "0f819c263d62afaf"
+signature = "def test_a_plan_item_may_be_title_only(monkeypatch):"
+description = ""
+schema = 4
+line = 88
+mtime = 1785974065000000000
+container = []
+scope = [
+  "tests",
+  "test_design_cli",
+]
+symbol_was = []
+calls = [
+  "_call [tests/test_design_cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "be",
+  "cli",
+  "design",
+  "item",
+  "may",
+  "only",
+  "plan",
+  "test",
+  "test_a_plan_item_may_be_title_only",
+  "tests",
+  "tests.test_design_cli.test_a_plan_item_may_be_title_only",
+  "title",
+]

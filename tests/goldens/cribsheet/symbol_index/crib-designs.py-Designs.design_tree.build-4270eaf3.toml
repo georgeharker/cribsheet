@@ -1,0 +1,43 @@
+symbol_ref = "crib/designs.py#Designs.design_tree.build"
+fqn = "crib.designs.Designs.design_tree.build"
+name = "build"
+kind = "function"
+lang = "python"
+content_hash = "1f48ab92e7997d20"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def build(node: Node, seen: frozenset[str], level: int) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 1401
+mtime = 1786693579000000000
+container = [
+  "Designs",
+  "design_tree",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+  "design_tree",
+]
+symbol_was = []
+calls = [
+  "brief [crib/designs.py]",
+  "build [crib/designs.py]",
+]
+called_by = [
+  "build [crib/designs.py]",
+  "design_tree [crib/designs.py]",
+]
+references = [
+  "design_tree [crib/designs.py]",
+]
+name_terms = [
+  "build",
+  "crib",
+  "crib.designs.Designs.design_tree.build",
+  "design",
+  "designs",
+  "tree",
+]

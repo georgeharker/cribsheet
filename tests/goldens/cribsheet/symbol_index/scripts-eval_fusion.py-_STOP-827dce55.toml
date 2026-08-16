@@ -1,0 +1,34 @@
+symbol_ref = "scripts/eval_fusion.py#_STOP"
+fqn = "scripts.eval_fusion._STOP"
+name = "_STOP"
+kind = "constant"
+lang = "python"
+content_hash = "f0e4debedb50b194"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "_STOP = {\"the\", \"a\", \"an\", \"that\", \"to\", \"of\", \"for\", \"and\", \"or\", \"in\", \"on\", \"by\", \"its\","
+description = ""
+schema = 4
+line = 77
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "q [scripts/eval_fusion.py]",
+  "signals [scripts/eval_hybrid.py]",
+  "signals [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "_STOP",
+  "eval",
+  "fusion",
+  "scripts",
+  "scripts.eval_fusion._STOP",
+  "stop",
+]

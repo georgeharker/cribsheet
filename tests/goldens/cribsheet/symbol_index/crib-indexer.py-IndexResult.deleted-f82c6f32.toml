@@ -1,0 +1,38 @@
+symbol_ref = "crib/indexer.py#IndexResult.deleted"
+fqn = "crib.indexer.IndexResult.deleted"
+name = "deleted"
+kind = "field"
+lang = "python"
+content_hash = "39a6c75510f446a7"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "deleted: int"
+description = ""
+schema = 4
+line = 41
+mtime = 1786578262000000000
+container = [
+  "IndexResult",
+]
+scope = [
+  "crib",
+  "indexer",
+  "IndexResult",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "_plan [crib/indexer.py]",
+  "delete [crib/notestore.py]",
+  "reindex [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.indexer.IndexResult.deleted",
+  "deleted",
+  "index",
+  "indexer",
+  "result",
+]

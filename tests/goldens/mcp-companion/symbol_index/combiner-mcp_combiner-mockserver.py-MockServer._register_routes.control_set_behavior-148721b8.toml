@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockServer._register_routes.control_set_behavior"
+fqn = "combiner.mcp_combiner.mockserver.MockServer._register_routes.control_set_behavior"
+name = "control_set_behavior"
+kind = "function"
+lang = "python"
+content_hash = "3885f46636e9c021"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@mcp_srv.custom_route(\"/control/behavior/{name}\", methods=[\"POST\"])"
+description = ""
+schema = 4
+line = 559
+mtime = 1783622326000000000
+container = [
+  "MockServer",
+  "_register_routes",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockServer",
+  "_register_routes",
+]
+symbol_was = []
+calls = [
+  "set_behavior [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "behavior",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockServer._register_routes.control_set_behavior",
+  "control",
+  "control_set_behavior",
+  "mcp",
+  "mock",
+  "mockserver",
+  "register",
+  "routes",
+  "server",
+  "set",
+]

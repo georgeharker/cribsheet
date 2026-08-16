@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_connections.py#TestLifecycleState.test_ready_when_connected_and_tools_ready"
+fqn = "combiner.tests.test_connections.TestLifecycleState.test_ready_when_connected_and_tools_ready"
+name = "test_ready_when_connected_and_tools_ready"
+kind = "method"
+lang = "python"
+content_hash = "6785fef10206d4b8"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "def test_ready_when_connected_and_tools_ready(self):"
+description = ""
+schema = 4
+line = 541
+mtime = 1784493613000000000
+container = [
+  "TestLifecycleState",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestLifecycleState",
+]
+symbol_was = []
+calls = [
+  "ConnectionManager [combiner/mcp_combiner/connections.py]",
+  "_inject_conn [combiner/tests/test_connections.py]",
+  "lifecycle_state [combiner/mcp_combiner/connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "combiner",
+  "combiner.tests.test_connections.TestLifecycleState.test_ready_when_connected_and_tools_ready",
+  "connected",
+  "connections",
+  "lifecycle",
+  "ready",
+  "state",
+  "test",
+  "test_ready_when_connected_and_tools_ready",
+  "tests",
+  "tools",
+  "when",
+]

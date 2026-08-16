@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_mounts.py#test_drop_only_targets_named_server"
+fqn = "combiner.tests.test_mounts.test_drop_only_targets_named_server"
+name = "test_drop_only_targets_named_server"
+kind = "function"
+lang = "python"
+content_hash = "190a8fd4b806194d"
+file = "combiner/tests/test_mounts.py"
+file_hash = "5a0de1047967797a"
+signature = "def test_drop_only_targets_named_server() -> None:"
+description = ""
+schema = 4
+line = 53
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_mounts",
+]
+symbol_was = []
+calls = [
+  "_child [combiner/tests/test_mounts.py]",
+  "drop_server_providers [combiner/mcp_combiner/mounts.py]",
+  "mount_server_provider [combiner/mcp_combiner/mounts.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_mounts.test_drop_only_targets_named_server",
+  "drop",
+  "mounts",
+  "named",
+  "only",
+  "server",
+  "targets",
+  "test",
+  "test_drop_only_targets_named_server",
+  "tests",
+]

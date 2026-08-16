@@ -1,0 +1,32 @@
+symbol_ref = "crib/embed.py#_EMBED_GATE"
+fqn = "crib.embed._EMBED_GATE"
+name = "_EMBED_GATE"
+kind = "constant"
+lang = "python"
+content_hash = "6dcaa379fb4a3349"
+file = "crib/embed.py"
+file_hash = "46323c76e4ac82a3"
+signature = "_EMBED_GATE = threading.Semaphore(1)"
+description = ""
+schema = 4
+line = 37
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "embed",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "embed_batch [crib/embed.py]",
+  "embed_query_batch [crib/embed.py]",
+]
+name_terms = [
+  "_EMBED_GATE",
+  "crib",
+  "crib.embed._EMBED_GATE",
+  "embed",
+  "gate",
+]

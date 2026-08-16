@@ -1,0 +1,32 @@
+symbol_ref = "scripts/eval_kw.py#ROOT"
+fqn = "scripts.eval_kw.ROOT"
+name = "ROOT"
+kind = "constant"
+lang = "python"
+content_hash = "ccf98307102c6636"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "ROOT = Path(__file__).resolve().parent.parent"
+description = ""
+schema = 4
+line = 17
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_kw",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "KWS [scripts/eval_kw.py]",
+]
+name_terms = [
+  "ROOT",
+  "eval",
+  "kw",
+  "root",
+  "scripts",
+  "scripts.eval_kw.ROOT",
+]

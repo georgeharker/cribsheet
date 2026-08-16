@@ -1,0 +1,35 @@
+symbol_ref = "crib/cli.py#_emit_design_check"
+fqn = "crib.cli._emit_design_check"
+name = "_emit_design_check"
+kind = "function"
+lang = "python"
+content_hash = "a36c39692774610e"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _emit_design_check(data: Any, args: Any) -> None:"
+description = ""
+schema = 4
+line = 575
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_E_dcheck [crib/cli.py]",
+]
+references = [
+  "_E_dcheck [crib/cli.py]",
+]
+name_terms = [
+  "_emit_design_check",
+  "check",
+  "cli",
+  "crib",
+  "crib.cli._emit_design_check",
+  "design",
+  "emit",
+]

@@ -1,0 +1,34 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_BACKOFF_MULTIPLIER"
+fqn = "combiner.mcp_combiner.connections._BACKOFF_MULTIPLIER"
+name = "_BACKOFF_MULTIPLIER"
+kind = "constant"
+lang = "python"
+content_hash = "62f1ca5bb1364e01"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_BACKOFF_MULTIPLIER = 2.0"
+description = ""
+schema = 4
+line = 86
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_BACKOFF_MULTIPLIER",
+  "backoff",
+  "combiner",
+  "combiner.mcp_combiner.connections._BACKOFF_MULTIPLIER",
+  "connections",
+  "mcp",
+  "multiplier",
+]

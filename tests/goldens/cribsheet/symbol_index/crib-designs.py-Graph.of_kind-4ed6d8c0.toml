@@ -1,0 +1,52 @@
+symbol_ref = "crib/designs.py#Graph.of_kind"
+fqn = "crib.designs.Graph.of_kind"
+name = "of_kind"
+kind = "method"
+lang = "python"
+content_hash = "60058a3f6b9ec1c8"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def of_kind(self, kind: str) -> list[Node]:"
+description = ""
+schema = 4
+line = 348
+mtime = 1786693579000000000
+container = [
+  "Graph",
+]
+scope = [
+  "crib",
+  "designs",
+  "Graph",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_citing [crib/designs.py]",
+  "_ordered [crib/designs.py]",
+  "_rank_for [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "design_tree [crib/designs.py]",
+  "plan_next [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+]
+references = [
+  "_citing [crib/designs.py]",
+  "_ordered [crib/designs.py]",
+  "_rank_for [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "design_tree [crib/designs.py]",
+  "plan_next [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Graph.of_kind",
+  "designs",
+  "graph",
+  "kind",
+  "of",
+  "of_kind",
+]

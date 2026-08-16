@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#RetrieveConfig.rrf_k"
+fqn = "crib.config.RetrieveConfig.rrf_k"
+name = "rrf_k"
+kind = "field"
+lang = "python"
+content_hash = "8af86c7aee029a8a"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "rrf_k: int = 60"
+description = ""
+schema = 4
+line = 95
+mtime = 1786564832000000000
+container = [
+  "RetrieveConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "RetrieveConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "cmd_info [crib/cli.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.RetrieveConfig.rrf_k",
+  "k",
+  "retrieve",
+  "rrf",
+  "rrf_k",
+]

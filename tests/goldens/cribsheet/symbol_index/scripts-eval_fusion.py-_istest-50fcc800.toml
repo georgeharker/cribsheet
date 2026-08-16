@@ -1,0 +1,34 @@
+symbol_ref = "scripts/eval_fusion.py#_istest"
+fqn = "scripts.eval_fusion._istest"
+name = "_istest"
+kind = "function"
+lang = "python"
+content_hash = "bc309fa36cca832e"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def _istest(f: str) -> bool:"
+description = ""
+schema = 4
+line = 88
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "__init__ [scripts/eval_fusion.py]",
+]
+references = [
+  "__init__ [scripts/eval_fusion.py]",
+]
+name_terms = [
+  "_istest",
+  "eval",
+  "fusion",
+  "istest",
+  "scripts",
+  "scripts.eval_fusion._istest",
+]

@@ -1,0 +1,60 @@
+symbol_ref = "combiner/tests/test_mockserver.py#_spec"
+fqn = "combiner.tests.test_mockserver._spec"
+name = "_spec"
+kind = "function"
+lang = "python"
+content_hash = "c72ec4948ddf3e62"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "def _spec(entries: list[dict]) -> list[ToolSpec]:"
+description = ""
+schema = 4
+line = 20
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+]
+symbol_was = []
+calls = [
+  "parse_tool_specs [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = [
+  "test_bad_template_falls_back_to_json_dump [combiner/tests/test_mockserver.py]",
+  "test_error_mode_after_n [combiner/tests/test_mockserver.py]",
+  "test_error_mode_first_n [combiner/tests/test_mockserver.py]",
+  "test_malformed_schema_published_verbatim [combiner/tests/test_mockserver.py]",
+  "test_missing_name_rejected [combiner/tests/test_mockserver.py]",
+  "test_output_schema_published_verbatim [combiner/tests/test_mockserver.py]",
+  "test_params_shorthand_builds_object_schema [combiner/tests/test_mockserver.py]",
+  "test_raw_input_schema_wins_and_is_kept_verbatim [combiner/tests/test_mockserver.py]",
+  "test_scripted_fifo_then_template_fallback [combiner/tests/test_mockserver.py]",
+  "test_template_computed_keys [combiner/tests/test_mockserver.py]",
+  "test_unknown_error_mode_rejected [combiner/tests/test_mockserver.py]",
+  "test_unknown_param_type_rejected [combiner/tests/test_mockserver.py]",
+]
+references = [
+  "test_bad_template_falls_back_to_json_dump [combiner/tests/test_mockserver.py]",
+  "test_error_mode_after_n [combiner/tests/test_mockserver.py]",
+  "test_error_mode_first_n [combiner/tests/test_mockserver.py]",
+  "test_malformed_schema_published_verbatim [combiner/tests/test_mockserver.py]",
+  "test_missing_name_rejected [combiner/tests/test_mockserver.py]",
+  "test_output_schema_published_verbatim [combiner/tests/test_mockserver.py]",
+  "test_params_shorthand_builds_object_schema [combiner/tests/test_mockserver.py]",
+  "test_raw_input_schema_wins_and_is_kept_verbatim [combiner/tests/test_mockserver.py]",
+  "test_scripted_fifo_then_template_fallback [combiner/tests/test_mockserver.py]",
+  "test_template_computed_keys [combiner/tests/test_mockserver.py]",
+  "test_unknown_error_mode_rejected [combiner/tests/test_mockserver.py]",
+  "test_unknown_param_type_rejected [combiner/tests/test_mockserver.py]",
+]
+name_terms = [
+  "_spec",
+  "combiner",
+  "combiner.tests.test_mockserver._spec",
+  "mockserver",
+  "spec",
+  "test",
+  "tests",
+]

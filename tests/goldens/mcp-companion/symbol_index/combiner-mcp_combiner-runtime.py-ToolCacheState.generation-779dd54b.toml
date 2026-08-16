@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#ToolCacheState.generation"
+fqn = "combiner.mcp_combiner.runtime.ToolCacheState.generation"
+name = "generation"
+kind = "field"
+lang = "python"
+content_hash = "aefee15bd43871e8"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "generation: int = 0"
+description = ""
+schema = 4
+line = 195
+mtime = 1784493613000000000
+container = [
+  "ToolCacheState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "ToolCacheState",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_do_fetch [combiner/mcp_combiner/middleware.py]",
+  "set_cache_if_current [combiner/mcp_combiner/runtime.py]",
+  "test_cache_fill_loses_to_mid_fetch_invalidation [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.runtime.ToolCacheState.generation",
+  "generation",
+  "mcp",
+  "runtime",
+  "state",
+  "tool",
+]

@@ -1,0 +1,44 @@
+symbol_ref = "crib/learnings.py#Learnings.edit"
+fqn = "crib.learnings.Learnings.edit"
+name = "edit"
+kind = "method"
+lang = "python"
+content_hash = "b1d7b004213d6c30"
+file = "crib/learnings.py"
+file_hash = "977a14d62df88945"
+signature = "async def edit(self, proj: str, symbol: str, new_content: str) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 195
+mtime = 1786664729000000000
+container = [
+  "Learnings",
+]
+scope = [
+  "crib",
+  "learnings",
+  "Learnings",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "abspath [crib/notestore.py]",
+  "key [crib/symbols.py]",
+  "load [crib/notes.py]",
+  "relpath [crib/learnings.py]",
+  "resolution [crib/refs.py]",
+  "resolve_symbol [crib/refs.py]",
+  "write [crib/notestore.py]",
+]
+called_by = [
+  "learning_edit [crib/app.py]",
+]
+references = [
+  "learning_edit [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.learnings.Learnings.edit",
+  "edit",
+  "learnings",
+]

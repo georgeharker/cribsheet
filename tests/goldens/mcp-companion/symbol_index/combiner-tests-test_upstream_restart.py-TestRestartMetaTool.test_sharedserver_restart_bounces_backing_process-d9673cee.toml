@@ -1,0 +1,54 @@
+symbol_ref = "combiner/tests/test_upstream_restart.py#TestRestartMetaTool.test_sharedserver_restart_bounces_backing_process"
+fqn = "combiner.tests.test_upstream_restart.TestRestartMetaTool.test_sharedserver_restart_bounces_backing_process"
+name = "test_sharedserver_restart_bounces_backing_process"
+kind = "method"
+lang = "python"
+content_hash = "105a76b6b07e9f36"
+file = "combiner/tests/test_upstream_restart.py"
+file_hash = "c3ceaa6ec420f1df"
+signature = "@requires_sharedserver"
+description = ""
+schema = 4
+line = 139
+mtime = 1783534978000000000
+container = [
+  "TestRestartMetaTool",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_upstream_restart",
+  "TestRestartMetaTool",
+]
+symbol_was = []
+calls = [
+  "_restart [combiner/tests/test_upstream_restart.py]",
+  "_text [combiner/tests/test_upstream_restart.py]",
+  "_whoami [combiner/tests/test_upstream_restart.py]",
+  "free_port [combiner/tests/conftest.py]",
+  "sharedserver_def [combiner/tests/conftest.py]",
+  "sharedserver_mock_entry [combiner/tests/conftest.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+  "track_shared [combiner/tests/conftest.py]",
+  "unique_shared_name [combiner/tests/conftest.py]",
+  "wait_server_state [combiner/tests/conftest.py]",
+  "write_servers_config [combiner/tests/conftest.py]",
+  "write_tools_spec [combiner/tests/conftest.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "backing",
+  "bounces",
+  "combiner",
+  "combiner.tests.test_upstream_restart.TestRestartMetaTool.test_sharedserver_restart_bounces_backing_process",
+  "meta",
+  "process",
+  "restart",
+  "sharedserver",
+  "test",
+  "test_sharedserver_restart_bounces_backing_process",
+  "tests",
+  "tool",
+  "upstream",
+]

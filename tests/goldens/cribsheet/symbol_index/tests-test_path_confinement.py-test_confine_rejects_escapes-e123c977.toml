@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_path_confinement.py#test_confine_rejects_escapes"
+fqn = "tests.test_path_confinement.test_confine_rejects_escapes"
+name = "test_confine_rejects_escapes"
+kind = "function"
+lang = "python"
+content_hash = "e6588ba0c9be4a66"
+file = "tests/test_path_confinement.py"
+file_hash = "ca5f375c4fa4dfa2"
+signature = "@pytest.mark.parametrize(\"bad\", [\"../x.md\", \"a/../../x.md\", \"..\", \"\"])"
+description = ""
+schema = 4
+line = 36
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_path_confinement",
+]
+symbol_was = []
+calls = [
+  "confine [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "confine",
+  "confinement",
+  "escapes",
+  "path",
+  "rejects",
+  "test",
+  "test_confine_rejects_escapes",
+  "tests",
+  "tests.test_path_confinement.test_confine_rejects_escapes",
+]

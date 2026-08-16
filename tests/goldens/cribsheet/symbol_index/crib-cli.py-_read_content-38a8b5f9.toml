@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#_read_content"
+fqn = "crib.cli._read_content"
+name = "_read_content"
+kind = "function"
+lang = "python"
+content_hash = "3fbe176731ee32c5"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _read_content(value: str) -> str:"
+description = ""
+schema = 4
+line = 25
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "(lambda) [crib/cli.py]",
+]
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_read_content",
+  "cli",
+  "content",
+  "crib",
+  "crib.cli._read_content",
+  "read",
+]

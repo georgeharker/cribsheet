@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_core_loop.py#crib"
+fqn = "tests.test_core_loop.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+content_hash = "0d6178554d68e311"
+file = "tests/test_core_loop.py"
+file_hash = "1351f07bad0f5656"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 19
+mtime = 1782930371000000000
+container = []
+scope = [
+  "tests",
+  "test_core_loop",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "core",
+  "crib",
+  "loop",
+  "test",
+  "tests",
+  "tests.test_core_loop.crib",
+]

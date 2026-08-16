@@ -1,0 +1,34 @@
+symbol_ref = "crib/config.py#Config.chunk"
+fqn = "crib.config.Config.chunk"
+name = "chunk"
+kind = "field"
+lang = "python"
+content_hash = "0058542eeb914c05"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "chunk: ChunkConfig = field(default_factory=ChunkConfig)"
+description = ""
+schema = 4
+line = 253
+mtime = 1786564832000000000
+container = [
+  "Config",
+]
+scope = [
+  "crib",
+  "config",
+  "Config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "cmd_info [crib/cli.py]",
+]
+name_terms = [
+  "chunk",
+  "config",
+  "crib",
+  "crib.config.Config.chunk",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_route_matrix.py#TestStdioRoute"
+fqn = "combiner.tests.test_route_matrix.TestStdioRoute"
+name = "TestStdioRoute"
+kind = "class"
+lang = "python"
+content_hash = "c04b72078dd812c3"
+file = "combiner/tests/test_route_matrix.py"
+file_hash = "e02757ba8c7bf654"
+signature = "class TestStdioRoute:"
+description = ""
+schema = 4
+line = 45
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_route_matrix",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestStdioRoute",
+  "combiner",
+  "combiner.tests.test_route_matrix.TestStdioRoute",
+  "matrix",
+  "route",
+  "stdio",
+  "test",
+  "tests",
+]

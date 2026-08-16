@@ -1,0 +1,51 @@
+symbol_ref = "combiner/tests/test_combiner_reconnect.py#TestCombinerRestartReattach.test_reattaches_to_longlived_http_upstream"
+fqn = "combiner.tests.test_combiner_reconnect.TestCombinerRestartReattach.test_reattaches_to_longlived_http_upstream"
+name = "test_reattaches_to_longlived_http_upstream"
+kind = "method"
+lang = "python"
+content_hash = "ed16bb344fcbab6d"
+file = "combiner/tests/test_combiner_reconnect.py"
+file_hash = "0f559a1b56a92ac5"
+signature = "async def test_reattaches_to_longlived_http_upstream("
+description = ""
+schema = 4
+line = 47
+mtime = 1783535856000000000
+container = [
+  "TestCombinerRestartReattach",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_combiner_reconnect",
+  "TestCombinerRestartReattach",
+]
+symbol_was = []
+calls = [
+  "_text [combiner/tests/test_combiner_reconnect.py]",
+  "http_mock_entry [combiner/tests/conftest.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+  "start_http_mock [combiner/tests/conftest.py]",
+  "stats [combiner/tests/conftest.py]",
+  "terminate [combiner/tests/conftest.py]",
+  "wait_server_state [combiner/tests/conftest.py]",
+  "write_servers_config [combiner/tests/conftest.py]",
+  "write_tools_spec [combiner/tests/conftest.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_combiner_reconnect.TestCombinerRestartReattach.test_reattaches_to_longlived_http_upstream",
+  "http",
+  "longlived",
+  "reattach",
+  "reattaches",
+  "reconnect",
+  "restart",
+  "test",
+  "test_reattaches_to_longlived_http_upstream",
+  "tests",
+  "to",
+  "upstream",
+]

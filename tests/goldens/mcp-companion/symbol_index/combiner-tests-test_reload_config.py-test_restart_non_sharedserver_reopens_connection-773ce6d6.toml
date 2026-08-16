@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_reload_config.py#test_restart_non_sharedserver_reopens_connection"
+fqn = "combiner.tests.test_reload_config.test_restart_non_sharedserver_reopens_connection"
+name = "test_restart_non_sharedserver_reopens_connection"
+kind = "function"
+lang = "python"
+content_hash = "d7f27f91b093bba1"
+file = "combiner/tests/test_reload_config.py"
+file_hash = "1ab3b3e0b48c7d3d"
+signature = "async def test_restart_non_sharedserver_reopens_connection(harness: dict[str, Any]) -> None:"
+description = ""
+schema = 4
+line = 189
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_reload_config",
+]
+symbol_was = []
+calls = [
+  "_http [combiner/tests/test_reload_config.py]",
+  "_namespaces [combiner/tests/test_reload_config.py]",
+  "_write [combiner/tests/test_reload_config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_reload_config.test_restart_non_sharedserver_reopens_connection",
+  "config",
+  "connection",
+  "non",
+  "reload",
+  "reopens",
+  "restart",
+  "sharedserver",
+  "test",
+  "test_restart_non_sharedserver_reopens_connection",
+  "tests",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "crib/sources.py#SourceRoots.upsert"
+fqn = "crib.sources.SourceRoots.upsert"
+name = "upsert"
+kind = "method"
+lang = "python"
+content_hash = "9176d94f6695f368"
+file = "crib/sources.py"
+file_hash = "c8bfac9ab4947657"
+signature = "def upsert(self, prefix: str, root: str | Path) -> None:"
+description = ""
+schema = 4
+line = 42
+mtime = 1786140485000000000
+container = [
+  "SourceRoots",
+]
+scope = [
+  "crib",
+  "sources",
+  "SourceRoots",
+]
+symbol_was = []
+calls = [
+  "_save [crib/sources.py]",
+]
+called_by = [
+  "index_docs_insitu [crib/app.py]",
+]
+references = [
+  "index_docs_insitu [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.sources.SourceRoots.upsert",
+  "roots",
+  "source",
+  "sources",
+  "upsert",
+]

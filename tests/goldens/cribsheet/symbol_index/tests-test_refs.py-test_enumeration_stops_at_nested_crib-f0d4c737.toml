@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_refs.py#test_enumeration_stops_at_nested_crib"
+fqn = "tests.test_refs.test_enumeration_stops_at_nested_crib"
+name = "test_enumeration_stops_at_nested_crib"
+kind = "function"
+lang = "python"
+content_hash = "259ac5559286a611"
+file = "tests/test_refs.py"
+file_hash = "c2372f74f28bca49"
+signature = "def test_enumeration_stops_at_nested_crib(crib, tmp_path):"
+description = ""
+schema = 4
+line = 134
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_refs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "at",
+  "crib",
+  "enumeration",
+  "nested",
+  "refs",
+  "stops",
+  "test",
+  "test_enumeration_stops_at_nested_crib",
+  "tests",
+  "tests.test_refs.test_enumeration_stops_at_nested_crib",
+]

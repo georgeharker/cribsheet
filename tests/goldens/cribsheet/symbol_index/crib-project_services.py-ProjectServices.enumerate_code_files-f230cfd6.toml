@@ -1,0 +1,39 @@
+symbol_ref = "crib/project_services.py#ProjectServices.enumerate_code_files"
+fqn = "crib.project_services.ProjectServices.enumerate_code_files"
+name = "enumerate_code_files"
+kind = "method"
+lang = "python"
+content_hash = "7b1311b7943bae0a"
+file = "crib/project_services.py"
+file_hash = "ee0d42b046b625a5"
+signature = "def enumerate_code_files(self, root: Path, globs: list[str]) -> list[Path]:"
+description = ""
+schema = 4
+line = 47
+mtime = 1783530318000000000
+container = [
+  "ProjectServices",
+]
+scope = [
+  "crib",
+  "project_services",
+  "ProjectServices",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_index_project_code [crib/codeindexer.py]",
+]
+references = [
+  "_index_project_code [crib/codeindexer.py]",
+]
+name_terms = [
+  "code",
+  "crib",
+  "crib.project_services.ProjectServices.enumerate_code_files",
+  "enumerate",
+  "enumerate_code_files",
+  "files",
+  "project",
+  "services",
+]

@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/test_upstream_restart.py#TestRestartMetaTool"
+fqn = "combiner.tests.test_upstream_restart.TestRestartMetaTool"
+name = "TestRestartMetaTool"
+kind = "class"
+lang = "python"
+content_hash = "2c416b9da13a6af1"
+file = "combiner/tests/test_upstream_restart.py"
+file_hash = "c3ceaa6ec420f1df"
+signature = "class TestRestartMetaTool:"
+description = ""
+schema = 4
+line = 94
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_upstream_restart",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestRestartMetaTool",
+  "combiner",
+  "combiner.tests.test_upstream_restart.TestRestartMetaTool",
+  "meta",
+  "restart",
+  "test",
+  "tests",
+  "tool",
+  "upstream",
+]

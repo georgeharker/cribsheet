@@ -1,0 +1,42 @@
+symbol_ref = "crib/learnings.py#Learnings.read"
+fqn = "crib.learnings.Learnings.read"
+name = "read"
+kind = "method"
+lang = "python"
+content_hash = "556d9a67e6d7d102"
+file = "crib/learnings.py"
+file_hash = "977a14d62df88945"
+signature = "def read(self, proj: str, symbol: str) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 485
+mtime = 1786664729000000000
+container = [
+  "Learnings",
+]
+scope = [
+  "crib",
+  "learnings",
+  "Learnings",
+]
+symbol_was = []
+calls = [
+  "abspath [crib/notestore.py]",
+  "key [crib/symbols.py]",
+  "load [crib/notes.py]",
+  "relpath [crib/learnings.py]",
+  "resolution [crib/refs.py]",
+  "resolve_symbol [crib/refs.py]",
+]
+called_by = [
+  "learning_read [crib/app.py]",
+]
+references = [
+  "learning_read [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.learnings.Learnings.read",
+  "learnings",
+  "read",
+]

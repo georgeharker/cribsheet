@@ -1,0 +1,31 @@
+symbol_ref = "tests/test_client.lua#tcp1"
+fqn = "tests.test_client.tcp1"
+name = "tcp1"
+kind = "global"
+lang = "lua"
+content_hash = "3ed5c28ee16f3d85"
+file = "tests/test_client.lua"
+file_hash = "552db39e557a6e12"
+signature = "local tcp1 = assert(uv.new_tcp())"
+description = ""
+schema = 4
+line = 4
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_client",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "1",
+  "client",
+  "tcp",
+  "tcp1",
+  "test",
+  "tests",
+  "tests.test_client.tcp1",
+]

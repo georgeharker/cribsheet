@@ -1,0 +1,43 @@
+symbol_ref = "crib/app.py#Crib._requalify_facet_refs"
+fqn = "crib.app.Crib._requalify_facet_refs"
+name = "_requalify_facet_refs"
+kind = "method"
+lang = "python"
+content_hash = "906fe1a024d9851e"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _requalify_facet_refs(self, proj: str) -> list[str]:"
+description = ""
+schema = 4
+line = 1780
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "_stash_existing [crib/notestore.py]",
+  "load [crib/notes.py]",
+  "root [crib/notestore.py]",
+  "save_atomic [crib/notes.py]",
+]
+called_by = [
+  "_migrate_legacy_layout [crib/app.py]",
+]
+references = [
+  "_migrate_legacy_layout [crib/app.py]",
+]
+name_terms = [
+  "_requalify_facet_refs",
+  "app",
+  "crib",
+  "crib.app.Crib._requalify_facet_refs",
+  "facet",
+  "refs",
+  "requalify",
+]

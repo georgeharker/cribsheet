@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_repo_storage.py#test_adopt_needs_the_store_key"
+fqn = "tests.test_repo_storage.test_adopt_needs_the_store_key"
+name = "test_adopt_needs_the_store_key"
+kind = "function"
+lang = "python"
+content_hash = "67220809d2821fe0"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_adopt_needs_the_store_key(crib, tmp_path):"
+description = ""
+schema = 4
+line = 236
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_repo_storage.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "adopt",
+  "key",
+  "needs",
+  "repo",
+  "storage",
+  "store",
+  "test",
+  "test_adopt_needs_the_store_key",
+  "tests",
+  "tests.test_repo_storage.test_adopt_needs_the_store_key",
+  "the",
+]

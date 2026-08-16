@@ -1,0 +1,41 @@
+symbol_ref = "crib/store.py#Store.get_docs"
+fqn = "crib.store.Store.get_docs"
+name = "get_docs"
+kind = "method"
+lang = "python"
+content_hash = "b11e91b688dd925b"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def get_docs(self, where: dict[str, Any]"
+description = ""
+schema = 4
+line = 52
+mtime = 1786564832000000000
+container = [
+  "Store",
+]
+scope = [
+  "crib",
+  "store",
+  "Store",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_generate_enrichment [crib/app.py]",
+  "_retrieve [crib/app.py]",
+  "get [crib/retrieve.py]",
+]
+references = [
+  "_generate_enrichment [crib/app.py]",
+  "_retrieve [crib/app.py]",
+  "get [crib/retrieve.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Store.get_docs",
+  "docs",
+  "get",
+  "get_docs",
+  "store",
+]

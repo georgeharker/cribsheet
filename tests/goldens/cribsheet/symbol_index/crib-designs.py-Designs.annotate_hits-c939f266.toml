@@ -1,0 +1,42 @@
+symbol_ref = "crib/designs.py#Designs.annotate_hits"
+fqn = "crib.designs.Designs.annotate_hits"
+name = "annotate_hits"
+kind = "method"
+lang = "python"
+content_hash = "00d565ca5c623a73"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def annotate_hits(self, proj: str, hits: list[dict[str, Any]],"
+description = ""
+schema = 4
+line = 946
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_load_graph [crib/designs.py]",
+  "_taint [crib/designs.py]",
+]
+called_by = [
+  "design_lookup [crib/app.py]",
+  "plan_lookup [crib/app.py]",
+]
+references = [
+  "design_lookup [crib/app.py]",
+  "plan_lookup [crib/app.py]",
+]
+name_terms = [
+  "annotate",
+  "annotate_hits",
+  "crib",
+  "crib.designs.Designs.annotate_hits",
+  "designs",
+  "hits",
+]

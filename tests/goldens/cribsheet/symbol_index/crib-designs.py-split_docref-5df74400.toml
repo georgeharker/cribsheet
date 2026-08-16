@@ -1,0 +1,38 @@
+symbol_ref = "crib/designs.py#split_docref"
+fqn = "crib.designs.split_docref"
+name = "split_docref"
+kind = "function"
+lang = "python"
+content_hash = "9d545d7b1ff417b7"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def split_docref(ref: str) -> tuple[str, str]:"
+description = ""
+schema = 4
+line = 92
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_doc_abspath [crib/designs.py]",
+  "_indexed_sections [crib/designs.py]",
+  "_tail_match [crib/designs.py]",
+]
+references = [
+  "_doc_abspath [crib/designs.py]",
+  "_indexed_sections [crib/designs.py]",
+  "_tail_match [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.split_docref",
+  "designs",
+  "docref",
+  "split",
+  "split_docref",
+]

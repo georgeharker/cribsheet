@@ -1,0 +1,36 @@
+symbol_ref = "crib/refs.py#UnknownSymbol"
+fqn = "crib.refs.UnknownSymbol"
+name = "UnknownSymbol"
+kind = "class"
+lang = "python"
+content_hash = "90f077ae8a18bf1e"
+file = "crib/refs.py"
+file_hash = "d39b1d18c0921167"
+signature = "class UnknownSymbol(CribUserError):"
+description = ""
+schema = 4
+line = 30
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "refs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "forget [crib/learnings.py]",
+  "graph [crib/codequery.py]",
+  "resolve_symbol [crib/refs.py]",
+  "resolve_symbol_or_ref [crib/refs.py]",
+  "test_symbol_errors_are_user_errors_and_still_value_errors [tests/test_code_graph.py]",
+]
+name_terms = [
+  "UnknownSymbol",
+  "crib",
+  "crib.refs.UnknownSymbol",
+  "refs",
+  "symbol",
+  "unknown",
+]

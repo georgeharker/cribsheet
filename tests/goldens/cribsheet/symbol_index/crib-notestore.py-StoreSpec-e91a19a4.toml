@@ -1,0 +1,37 @@
+symbol_ref = "crib/notestore.py#StoreSpec"
+fqn = "crib.notestore.StoreSpec"
+name = "StoreSpec"
+kind = "class"
+lang = "python"
+content_hash = "603ece598035c67a"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "@dataclass(frozen=True)"
+description = ""
+schema = 4
+line = 36
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "notestore",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "DESIGN_SPEC [crib/notestore.py]",
+  "LEARNINGS_SPEC [crib/notestore.py]",
+  "NOTES_SPEC [crib/notestore.py]",
+  "PLANS_SPEC [crib/notestore.py]",
+  "__init__ [crib/notestore.py]",
+  "test_reserved_prefixes_are_refused_with_the_facet_verb_named [tests/test_pillar_stores.py]",
+]
+name_terms = [
+  "StoreSpec",
+  "crib",
+  "crib.notestore.StoreSpec",
+  "notestore",
+  "spec",
+  "store",
+]

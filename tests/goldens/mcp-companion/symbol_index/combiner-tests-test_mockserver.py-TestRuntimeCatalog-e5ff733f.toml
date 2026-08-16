@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestRuntimeCatalog"
+fqn = "combiner.tests.test_mockserver.TestRuntimeCatalog"
+name = "TestRuntimeCatalog"
+kind = "class"
+lang = "python"
+content_hash = "796971c19a370469"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "class TestRuntimeCatalog:"
+description = ""
+schema = 4
+line = 207
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestRuntimeCatalog",
+  "catalog",
+  "combiner",
+  "combiner.tests.test_mockserver.TestRuntimeCatalog",
+  "mockserver",
+  "runtime",
+  "test",
+  "tests",
+]

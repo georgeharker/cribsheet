@@ -1,0 +1,54 @@
+symbol_ref = "crib/learnings.py#Learnings.relpath"
+fqn = "crib.learnings.Learnings.relpath"
+name = "relpath"
+kind = "method"
+lang = "python"
+content_hash = "e2f0f2702dc86a2a"
+file = "crib/learnings.py"
+file_hash = "977a14d62df88945"
+signature = "def relpath(self, proj: str, entry: dict[str, Any]) -> str:"
+description = ""
+schema = 4
+line = 83
+mtime = 1786664729000000000
+container = [
+  "Learnings",
+]
+scope = [
+  "crib",
+  "learnings",
+  "Learnings",
+]
+symbol_was = []
+calls = [
+  "abspath [crib/notestore.py]",
+  "bindings [crib/symbols.py]",
+  "key [crib/symbols.py]",
+  "legacy_ref_slug [crib/symbols.py]",
+  "notes_by_binding [crib/learnings.py]",
+  "ref_slug [crib/symbols.py]",
+]
+called_by = [
+  "append [crib/learnings.py]",
+  "attach [crib/learnings.py]",
+  "edit [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+]
+references = [
+  "append [crib/learnings.py]",
+  "attach [crib/learnings.py]",
+  "edit [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+]
+name_terms = [
+  "crib",
+  "crib.learnings.Learnings.relpath",
+  "learnings",
+  "relpath",
+]

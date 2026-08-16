@@ -1,0 +1,40 @@
+symbol_ref = "scripts/snapshot_harness.py#_load"
+fqn = "scripts.snapshot_harness._load"
+name = "_load"
+kind = "function"
+lang = "python"
+content_hash = "67d3e75c91bdd975"
+file = "scripts/snapshot_harness.py"
+file_hash = "60b46810ead50638"
+signature = "def _load(sym_dir: Path) -> dict[str, dict]:"
+description = ""
+schema = 4
+line = 62
+mtime = 1783498271000000000
+container = []
+scope = [
+  "scripts",
+  "snapshot_harness",
+]
+symbol_was = []
+calls = [
+  "_parse [crib/codeindex.py]",
+]
+called_by = [
+  "capture [scripts/snapshot_harness.py]",
+  "compare [scripts/snapshot_harness.py]",
+  "idempotency [scripts/snapshot_harness.py]",
+]
+references = [
+  "capture [scripts/snapshot_harness.py]",
+  "compare [scripts/snapshot_harness.py]",
+  "idempotency [scripts/snapshot_harness.py]",
+]
+name_terms = [
+  "_load",
+  "harness",
+  "load",
+  "scripts",
+  "scripts.snapshot_harness._load",
+  "snapshot",
+]

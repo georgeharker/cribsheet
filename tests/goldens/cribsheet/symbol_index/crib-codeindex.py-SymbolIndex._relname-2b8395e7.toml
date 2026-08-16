@@ -1,0 +1,42 @@
+symbol_ref = "crib/codeindex.py#SymbolIndex._relname"
+fqn = "crib.codeindex.SymbolIndex._relname"
+name = "_relname"
+kind = "method"
+lang = "python"
+content_hash = "2813c4e0bb05ec99"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def _relname(self, ref: str) -> str:"
+description = ""
+schema = 4
+line = 1558
+mtime = 1786844518000000000
+container = [
+  "SymbolIndex",
+]
+scope = [
+  "crib",
+  "codeindex",
+  "SymbolIndex",
+]
+symbol_was = []
+calls = [
+  "ref_slug [crib/symbols.py]",
+]
+called_by = [
+  "_path [crib/codeindex.py]",
+  "code_convert [crib/app.py]",
+]
+references = [
+  "_path [crib/codeindex.py]",
+  "code_convert [crib/app.py]",
+]
+name_terms = [
+  "_relname",
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex._relname",
+  "index",
+  "relname",
+  "symbol",
+]

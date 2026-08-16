@@ -1,0 +1,43 @@
+symbol_ref = "crib/describe_queue.py#DescribeQueue._fire"
+fqn = "crib.describe_queue.DescribeQueue._fire"
+name = "_fire"
+kind = "method"
+lang = "python"
+content_hash = "cb6b61dd95a6d6ce"
+file = "crib/describe_queue.py"
+file_hash = "305c34e160ae74c1"
+signature = "def _fire(self, key: tuple[str, str]) -> None:"
+description = ""
+schema = 4
+line = 92
+mtime = 1786664729000000000
+container = [
+  "DescribeQueue",
+]
+scope = [
+  "crib",
+  "describe_queue",
+  "DescribeQueue",
+]
+symbol_was = []
+calls = [
+  "_run [crib/describe_queue.py]",
+  "spawn [crib/util.py]",
+]
+called_by = [
+  "test_failed_describe_backs_off_instead_of_restarting_at_zero [tests/test_describe_queue.py]",
+  "test_successful_describe_clears_the_entry [tests/test_describe_queue.py]",
+]
+references = [
+  "_arm [crib/describe_queue.py]",
+  "test_failed_describe_backs_off_instead_of_restarting_at_zero [tests/test_describe_queue.py]",
+  "test_successful_describe_clears_the_entry [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "_fire",
+  "crib",
+  "crib.describe_queue.DescribeQueue._fire",
+  "describe",
+  "fire",
+  "queue",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "crib/config.py#Config.versions_keep"
+fqn = "crib.config.Config.versions_keep"
+name = "versions_keep"
+kind = "field"
+lang = "python"
+content_hash = "8556d9ca34ad9dc9"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "versions_keep: int = 20"
+description = ""
+schema = 4
+line = 265
+mtime = 1786564832000000000
+container = [
+  "Config",
+]
+scope = [
+  "crib",
+  "config",
+  "Config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "load [crib/config.py]",
+  "test_unknown_top_level_key_warns_and_loads [tests/test_config_resilience.py]",
+  "test_wrong_shaped_values_warn_instead_of_raising [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.versions_keep",
+  "keep",
+  "versions",
+  "versions_keep",
+]

@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/conftest.py#FAST_TIMING_ENV"
+fqn = "combiner.tests.conftest.FAST_TIMING_ENV"
+name = "FAST_TIMING_ENV"
+kind = "constant"
+lang = "python"
+content_hash = "ff27d3c267bd0dac"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "FAST_TIMING_ENV = {"
+description = ""
+schema = 4
+line = 35
+mtime = 1783544328000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_crash_reconnects_when_back [combiner/tests/test_upstream_restart.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_restart_bounces_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_crash_recovers [combiner/tests/test_upstream_restart.py]",
+]
+name_terms = [
+  "FAST_TIMING_ENV",
+  "combiner",
+  "combiner.tests.conftest.FAST_TIMING_ENV",
+  "conftest",
+  "env",
+  "fast",
+  "tests",
+  "timing",
+]

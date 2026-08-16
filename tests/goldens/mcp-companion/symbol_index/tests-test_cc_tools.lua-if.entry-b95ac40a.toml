@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_cc_tools.lua#if.entry"
+fqn = "tests.test_cc_tools.if.entry"
+name = "entry"
+kind = "variable"
+lang = "lua"
+content_hash = "275187f433c27595"
+file = "tests/test_cc_tools.lua"
+file_hash = "3253ff527c66fcb1"
+signature = "local entry = tools_tbl[test_key]"
+description = ""
+schema = 4
+line = 400
+mtime = 1782853510000000000
+container = [
+  "if",
+]
+scope = [
+  "tests",
+  "test_cc_tools",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cc",
+  "entry",
+  "if",
+  "test",
+  "tests",
+  "tests.test_cc_tools.if.entry",
+  "tools",
+]

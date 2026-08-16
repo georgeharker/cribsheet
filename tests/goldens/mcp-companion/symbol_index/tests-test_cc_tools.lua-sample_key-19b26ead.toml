@@ -1,0 +1,32 @@
+symbol_ref = "tests/test_cc_tools.lua#sample_key"
+fqn = "tests.test_cc_tools.sample_key"
+name = "sample_key"
+kind = "global"
+lang = "lua"
+content_hash = "a46bc82948f2662a"
+file = "tests/test_cc_tools.lua"
+file_hash = "3253ff527c66fcb1"
+signature = "local sample_key = registered_names[1]"
+description = ""
+schema = 4
+line = 328
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_cc_tools",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cc",
+  "key",
+  "sample",
+  "sample_key",
+  "test",
+  "tests",
+  "tests.test_cc_tools.sample_key",
+  "tools",
+]

@@ -1,0 +1,35 @@
+symbol_ref = "crib/store.py#Hit.metadata"
+fqn = "crib.store.Hit.metadata"
+name = "metadata"
+kind = "field"
+lang = "python"
+content_hash = "93da61fa692adf8d"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "metadata: dict[str, Any]"
+description = ""
+schema = 4
+line = 38
+mtime = 1786564832000000000
+container = [
+  "Hit",
+]
+scope = [
+  "crib",
+  "store",
+  "Hit",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_retrieve [crib/app.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Hit.metadata",
+  "hit",
+  "metadata",
+  "store",
+]

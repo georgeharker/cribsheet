@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/conftest.py#CombinerHandle.wait_server_state._state"
+fqn = "combiner.tests.conftest.CombinerHandle.wait_server_state._state"
+name = "_state"
+kind = "function"
+lang = "python"
+content_hash = "c5e638f17f91b70e"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "async def _state() -> dict[str, Any] | None:"
+description = ""
+schema = 4
+line = 190
+mtime = 1783544328000000000
+container = [
+  "CombinerHandle",
+  "wait_server_state",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "CombinerHandle",
+  "wait_server_state",
+]
+symbol_was = []
+calls = [
+  "health [combiner/tests/conftest.py]",
+]
+called_by = []
+references = [
+  "wait_server_state [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "_state",
+  "combiner",
+  "combiner.tests.conftest.CombinerHandle.wait_server_state._state",
+  "conftest",
+  "handle",
+  "server",
+  "state",
+  "tests",
+  "wait",
+]

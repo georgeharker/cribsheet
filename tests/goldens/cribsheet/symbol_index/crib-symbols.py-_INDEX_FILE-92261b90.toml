@@ -1,0 +1,32 @@
+symbol_ref = "crib/symbols.py#_INDEX_FILE"
+fqn = "crib.symbols._INDEX_FILE"
+name = "_INDEX_FILE"
+kind = "constant"
+lang = "python"
+content_hash = "860da542153bb282"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "_INDEX_FILE = {\"rust\": \"mod\", \"lua\": \"init\", \"python\": \"__init__\"}"
+description = ""
+schema = 4
+line = 135
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_path_scope [crib/symbols.py]",
+]
+name_terms = [
+  "_INDEX_FILE",
+  "crib",
+  "crib.symbols._INDEX_FILE",
+  "file",
+  "index",
+  "symbols",
+]

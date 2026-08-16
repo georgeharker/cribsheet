@@ -1,0 +1,34 @@
+symbol_ref = "combiner/mcp_combiner/permissions.py#_ELICIT_OPTIONS"
+fqn = "combiner.mcp_combiner.permissions._ELICIT_OPTIONS"
+name = "_ELICIT_OPTIONS"
+kind = "constant"
+lang = "python"
+content_hash = "74a43af2b2a18cbe"
+file = "combiner/mcp_combiner/permissions.py"
+file_hash = "a8b8b27efa667303"
+signature = "_ELICIT_OPTIONS = [\"Allow once\", \"Allow for session\", \"Deny\"]"
+description = ""
+schema = 4
+line = 34
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "permissions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_elicit [combiner/mcp_combiner/permissions.py]",
+]
+name_terms = [
+  "_ELICIT_OPTIONS",
+  "combiner",
+  "combiner.mcp_combiner.permissions._ELICIT_OPTIONS",
+  "elicit",
+  "mcp",
+  "options",
+  "permissions",
+]

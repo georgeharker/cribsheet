@@ -1,0 +1,41 @@
+symbol_ref = "crib/symbols.py#fqn"
+fqn = "crib.symbols.fqn"
+name = "fqn"
+kind = "function"
+lang = "python"
+content_hash = "e73a1ffbddb3ff30"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def fqn(scope: Sequence[str], name: str, lang: str = \"\", path: str = \"\","
+description = ""
+schema = 4
+line = 378
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = [
+  "fqname_sep [crib/symbols.py]",
+  "symbol_ref [crib/symbols.py]",
+]
+called_by = [
+  "_sym [tests/test_code_graph.py]",
+  "_symbol_entry [crib/codeindex.py]",
+  "fqn_of [crib/symbols.py]",
+  "normalize_identity [crib/codeindex.py]",
+]
+references = [
+  "_sym [tests/test_code_graph.py]",
+  "_symbol_entry [crib/codeindex.py]",
+  "fqn_of [crib/symbols.py]",
+  "normalize_identity [crib/codeindex.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.fqn",
+  "fqn",
+  "symbols",
+]

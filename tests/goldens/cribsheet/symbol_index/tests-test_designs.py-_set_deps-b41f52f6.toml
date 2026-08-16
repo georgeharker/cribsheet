@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_designs.py#_set_deps"
+fqn = "tests.test_designs._set_deps"
+name = "_set_deps"
+kind = "function"
+lang = "python"
+content_hash = "50f2e471f7966112"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def _set_deps(crib, ref: str, deps: list[str], kind: str = \"plan\") -> None:"
+description = ""
+schema = 4
+line = 40
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = [
+  "test_a_dangling_dep_is_visible_but_never_wedges_the_plan [tests/test_designs.py]",
+  "test_plan_next_mixed_dep_matrix [tests/test_designs.py]",
+]
+references = [
+  "test_a_dangling_dep_is_visible_but_never_wedges_the_plan [tests/test_designs.py]",
+  "test_plan_next_mixed_dep_matrix [tests/test_designs.py]",
+]
+name_terms = [
+  "_set_deps",
+  "deps",
+  "designs",
+  "set",
+  "test",
+  "tests",
+  "tests.test_designs._set_deps",
+]

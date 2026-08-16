@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/sharedserver.py#SharedServerManager._stop_one"
+fqn = "combiner.mcp_combiner.sharedserver.SharedServerManager._stop_one"
+name = "_stop_one"
+kind = "method"
+lang = "python"
+content_hash = "61ff68ddd11de25e"
+file = "combiner/mcp_combiner/sharedserver.py"
+file_hash = "00df81a0a741c869"
+signature = "async def _stop_one(self, binary: str, name: str) -> None:"
+description = ""
+schema = 4
+line = 367
+mtime = 1782539642000000000
+container = [
+  "SharedServerManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "sharedserver",
+  "SharedServerManager",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "ensure_stopped [combiner/mcp_combiner/sharedserver.py]",
+  "stop_all [combiner/mcp_combiner/sharedserver.py]",
+]
+references = [
+  "ensure_stopped [combiner/mcp_combiner/sharedserver.py]",
+  "stop_all [combiner/mcp_combiner/sharedserver.py]",
+]
+name_terms = [
+  "_stop_one",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.SharedServerManager._stop_one",
+  "manager",
+  "mcp",
+  "one",
+  "server",
+  "shared",
+  "sharedserver",
+  "stop",
+]

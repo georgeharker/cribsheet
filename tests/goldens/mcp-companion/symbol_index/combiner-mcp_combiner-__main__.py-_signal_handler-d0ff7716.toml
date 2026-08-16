@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/__main__.py#_signal_handler"
+fqn = "combiner.mcp_combiner.__main__._signal_handler"
+name = "_signal_handler"
+kind = "function"
+lang = "python"
+content_hash = "c32c52ac0976cb84"
+file = "combiner/mcp_combiner/__main__.py"
+file_hash = "d4d263eede19a350"
+signature = "def _signal_handler(signum: int, frame: types.FrameType | None) -> None:"
+description = ""
+schema = 4
+line = 32
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "__main__",
+]
+symbol_was = []
+calls = [
+  "cleanup [combiner/mcp_combiner/sharedserver.py]",
+]
+called_by = []
+references = [
+  "_serve [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "_signal_handler",
+  "combiner",
+  "combiner.mcp_combiner.__main__._signal_handler",
+  "handler",
+  "main",
+  "mcp",
+  "signal",
+]

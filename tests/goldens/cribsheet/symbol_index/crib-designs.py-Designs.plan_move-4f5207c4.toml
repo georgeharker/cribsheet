@@ -1,0 +1,43 @@
+symbol_ref = "crib/designs.py#Designs.plan_move"
+fqn = "crib.designs.Designs.plan_move"
+name = "plan_move"
+kind = "method"
+lang = "python"
+content_hash = "a0eb0e033f277e73"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "async def plan_move(self, proj: str, ref: str, after: str | None = None,"
+description = ""
+schema = 4
+line = 1684
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_load_graph [crib/designs.py]",
+  "_rank_for [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_save [crib/designs.py]",
+]
+called_by = [
+  "plan_move [crib/app.py]",
+]
+references = [
+  "plan_move [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs.plan_move",
+  "designs",
+  "move",
+  "plan",
+  "plan_move",
+]

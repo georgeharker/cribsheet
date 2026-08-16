@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_chunk_identity.py#test_fenced_heading_does_not_split_either_walker"
+fqn = "tests.test_chunk_identity.test_fenced_heading_does_not_split_either_walker"
+name = "test_fenced_heading_does_not_split_either_walker"
+kind = "function"
+lang = "python"
+content_hash = "9c03e839544ef846"
+file = "tests/test_chunk_identity.py"
+file_hash = "0afd98c1ecf1279e"
+signature = "def test_fenced_heading_does_not_split_either_walker():"
+description = ""
+schema = 4
+line = 141
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_chunk_identity",
+]
+symbol_was = []
+calls = [
+  "_split_sections [crib/chunk.py]",
+  "chunk_note [crib/chunk.py]",
+  "section_line_map [crib/chunk.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chunk",
+  "does",
+  "either",
+  "fenced",
+  "heading",
+  "identity",
+  "not",
+  "split",
+  "test",
+  "test_fenced_heading_does_not_split_either_walker",
+  "tests",
+  "tests.test_chunk_identity.test_fenced_heading_does_not_split_either_walker",
+  "walker",
+]

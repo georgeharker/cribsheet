@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_project_resolution.py#crib"
+fqn = "tests.test_project_resolution.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+content_hash = "843661f7d5a24b5e"
+file = "tests/test_project_resolution.py"
+file_hash = "4fafa653cef61a42"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 17
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_project_resolution",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "project",
+  "resolution",
+  "test",
+  "tests",
+  "tests.test_project_resolution.crib",
+]

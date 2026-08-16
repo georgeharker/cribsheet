@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_auth.py#TestUpstream401Suppression.test_non_401_lets_sdk_flow_complete.fake_super_flow"
+fqn = "combiner.tests.test_auth.TestUpstream401Suppression.test_non_401_lets_sdk_flow_complete.fake_super_flow"
+name = "fake_super_flow"
+kind = "function"
+lang = "python"
+content_hash = "1ee153146fa210aa"
+file = "combiner/tests/test_auth.py"
+file_hash = "2b3aa7eeeed5bf38"
+signature = "async def fake_super_flow(self_inner, request):"
+description = ""
+schema = 4
+line = 1143
+mtime = 1782852601000000000
+container = [
+  "TestUpstream401Suppression",
+  "test_non_401_lets_sdk_flow_complete",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_auth",
+  "TestUpstream401Suppression",
+  "test_non_401_lets_sdk_flow_complete",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_non_401_lets_sdk_flow_complete [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "401",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression.test_non_401_lets_sdk_flow_complete.fake_super_flow",
+  "complete",
+  "fake",
+  "fake_super_flow",
+  "flow",
+  "lets",
+  "non",
+  "sdk",
+  "super",
+  "suppression",
+  "test",
+  "tests",
+  "upstream",
+]

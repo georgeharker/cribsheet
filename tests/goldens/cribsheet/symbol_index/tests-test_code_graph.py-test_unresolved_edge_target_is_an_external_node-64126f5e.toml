@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_code_graph.py#test_unresolved_edge_target_is_an_external_node"
+fqn = "tests.test_code_graph.test_unresolved_edge_target_is_an_external_node"
+name = "test_unresolved_edge_target_is_an_external_node"
+kind = "function"
+lang = "python"
+content_hash = "ebbe402dfef72f57"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def test_unresolved_edge_target_is_an_external_node(crib, tmp_path):"
+description = ""
+schema = 4
+line = 137
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "_diamond [tests/test_code_graph.py]",
+  "_edge_set [tests/test_code_graph.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "an",
+  "code",
+  "edge",
+  "external",
+  "graph",
+  "is",
+  "node",
+  "target",
+  "test",
+  "test_unresolved_edge_target_is_an_external_node",
+  "tests",
+  "tests.test_code_graph.test_unresolved_edge_target_is_an_external_node",
+  "unresolved",
+]

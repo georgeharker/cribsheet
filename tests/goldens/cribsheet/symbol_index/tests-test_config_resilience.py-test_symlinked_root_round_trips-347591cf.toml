@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_config_resilience.py#test_symlinked_root_round_trips"
+fqn = "tests.test_config_resilience.test_symlinked_root_round_trips"
+name = "test_symlinked_root_round_trips"
+kind = "function"
+lang = "python"
+content_hash = "43217ba95b319555"
+file = "tests/test_config_resilience.py"
+file_hash = "620aeb96b59e7b2d"
+signature = "def test_symlinked_root_round_trips(tmp_path):"
+description = ""
+schema = 4
+line = 132
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_config_resilience",
+]
+symbol_was = []
+calls = [
+  "expand_location [crib/config.py]",
+  "portable_path [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "config",
+  "resilience",
+  "root",
+  "round",
+  "symlinked",
+  "test",
+  "test_symlinked_root_round_trips",
+  "tests",
+  "tests.test_config_resilience.test_symlinked_root_round_trips",
+  "trips",
+]

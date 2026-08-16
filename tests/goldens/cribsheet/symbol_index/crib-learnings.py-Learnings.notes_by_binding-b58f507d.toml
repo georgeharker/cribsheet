@@ -1,0 +1,45 @@
+symbol_ref = "crib/learnings.py#Learnings.notes_by_binding"
+fqn = "crib.learnings.Learnings.notes_by_binding"
+name = "notes_by_binding"
+kind = "method"
+lang = "python"
+content_hash = "a7e593ae4ae38d29"
+file = "crib/learnings.py"
+file_hash = "977a14d62df88945"
+signature = "def notes_by_binding(self, proj: str) -> dict[str, str]:"
+description = ""
+schema = 4
+line = 47
+mtime = 1786664729000000000
+container = [
+  "Learnings",
+]
+scope = [
+  "crib",
+  "learnings",
+  "Learnings",
+]
+symbol_was = []
+calls = [
+  "load [crib/notes.py]",
+  "root [crib/notestore.py]",
+]
+called_by = [
+  "attach [crib/learnings.py]",
+  "rel_for_binding [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+]
+references = [
+  "attach [crib/learnings.py]",
+  "rel_for_binding [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+]
+name_terms = [
+  "binding",
+  "by",
+  "crib",
+  "crib.learnings.Learnings.notes_by_binding",
+  "learnings",
+  "notes",
+  "notes_by_binding",
+]

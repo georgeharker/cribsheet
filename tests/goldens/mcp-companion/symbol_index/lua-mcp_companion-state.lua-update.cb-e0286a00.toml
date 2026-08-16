@@ -1,0 +1,38 @@
+symbol_ref = "lua/mcp_companion/state.lua#update.cb"
+fqn = "mcp_companion.state.update.cb"
+name = "cb"
+kind = "function"
+lang = "lua"
+content_hash = "90464d51277da21b"
+file = "lua/mcp_companion/state.lua"
+file_hash = "0ebe5b76a6380351"
+signature = "for _, cb in ipairs(_subscribers.all or {}) do"
+description = ""
+schema = 4
+line = 114
+mtime = 1782852601000000000
+container = [
+  "M.update",
+  "for in",
+]
+scope = [
+  "mcp_companion",
+  "state",
+  "update",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.update [lua/mcp_companion/state.lua]",
+]
+references = [
+  "for in [lua/mcp_companion/state.lua]",
+]
+name_terms = [
+  "cb",
+  "companion",
+  "mcp",
+  "mcp_companion.state.update.cb",
+  "state",
+  "update",
+]

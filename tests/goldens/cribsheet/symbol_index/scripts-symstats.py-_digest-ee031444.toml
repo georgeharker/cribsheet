@@ -1,0 +1,33 @@
+symbol_ref = "scripts/symstats.py#_digest"
+fqn = "scripts.symstats._digest"
+name = "_digest"
+kind = "function"
+lang = "python"
+content_hash = "6f9d50f97c6411ec"
+file = "scripts/symstats.py"
+file_hash = "bc09f2e285e5b003"
+signature = "def _digest(pairs: list[tuple[str, str]]) -> str:"
+description = ""
+schema = 4
+line = 44
+mtime = 1786664729000000000
+container = []
+scope = [
+  "scripts",
+  "symstats",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "capture [scripts/symstats.py]",
+]
+references = [
+  "capture [scripts/symstats.py]",
+]
+name_terms = [
+  "_digest",
+  "digest",
+  "scripts",
+  "scripts.symstats._digest",
+  "symstats",
+]

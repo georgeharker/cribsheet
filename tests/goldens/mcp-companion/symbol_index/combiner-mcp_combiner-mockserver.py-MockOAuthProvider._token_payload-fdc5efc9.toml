@@ -1,0 +1,49 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthProvider._token_payload"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthProvider._token_payload"
+name = "_token_payload"
+kind = "method"
+lang = "python"
+content_hash = "18ea9690428aead7"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def _token_payload(self, grant_type: str, *, issue_refresh: bool) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 722
+mtime = 1783622326000000000
+container = [
+  "MockOAuthProvider",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthProvider",
+]
+symbol_was = []
+calls = [
+  "IssuedTokens [combiner/mcp_combiner/mockserver.py]",
+  "_mint_access [combiner/mcp_combiner/mockserver.py]",
+  "_mint_refresh [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = [
+  "_grant_authorization_code [combiner/mcp_combiner/mockserver.py]",
+  "_grant_refresh_token [combiner/mcp_combiner/mockserver.py]",
+]
+references = [
+  "_grant_authorization_code [combiner/mcp_combiner/mockserver.py]",
+  "_grant_refresh_token [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "_token_payload",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthProvider._token_payload",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "payload",
+  "provider",
+  "token",
+]

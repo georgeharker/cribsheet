@@ -1,0 +1,32 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#oauth_mock"
+fqn = "combiner.tests.test_oauth_mock.oauth_mock"
+name = "oauth_mock"
+kind = "function"
+lang = "python"
+content_hash = "735379f0a3f34ded"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "@pytest.fixture"
+description = ""
+schema = 4
+line = 110
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_oauth_mock.oauth_mock",
+  "mock",
+  "oauth",
+  "oauth_mock",
+  "test",
+  "tests",
+]

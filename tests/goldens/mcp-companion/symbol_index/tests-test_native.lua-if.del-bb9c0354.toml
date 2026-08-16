@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_native.lua#if.del"
+fqn = "tests.test_native.if.del"
+name = "del"
+kind = "variable"
+lang = "lua"
+content_hash = "3d7be23dc1f27116"
+file = "tests/test_native.lua"
+file_hash = "68d141d843ba3fa4"
+signature = "local del = rjson(native.dispatch(\"delete_items\", { paths = { tmp .. \".out\" } }))"
+description = ""
+schema = 4
+line = 180
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+scope = [
+  "tests",
+  "test_native",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "del",
+  "if",
+  "native",
+  "test",
+  "tests",
+  "tests.test_native.if.del",
+]

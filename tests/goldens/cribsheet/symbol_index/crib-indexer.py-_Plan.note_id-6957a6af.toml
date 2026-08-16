@@ -1,0 +1,37 @@
+symbol_ref = "crib/indexer.py#_Plan.note_id"
+fqn = "crib.indexer._Plan.note_id"
+name = "note_id"
+kind = "field"
+lang = "python"
+content_hash = "f5df6f0a2d7f4eb2"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "note_id: str | None = None"
+description = ""
+schema = 4
+line = 52
+mtime = 1786578262000000000
+container = [
+  "_Plan",
+]
+scope = [
+  "crib",
+  "indexer",
+  "_Plan",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "_plan [crib/indexer.py]",
+]
+name_terms = [
+  "crib",
+  "crib.indexer._Plan.note_id",
+  "id",
+  "indexer",
+  "note",
+  "note_id",
+  "plan",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "crib/config.py#EmbedConfig"
+fqn = "crib.config.EmbedConfig"
+name = "EmbedConfig"
+kind = "class"
+lang = "python"
+content_hash = "a76f948f17787276"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 40
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_resolve_query_prefix [crib/embed.py]",
+  "build_embedder [crib/embed.py]",
+  "embed [crib/config.py]",
+  "load [crib/config.py]",
+  "test_bge_en_gets_query_instruction_by_default [tests/test_embed.py]",
+  "test_custom_prefix_wins [tests/test_embed.py]",
+  "test_explicit_empty_prefix_disables_instruction [tests/test_embed.py]",
+  "test_hash_fallback_still_applies_to_an_empty_store [tests/test_embed.py]",
+  "test_non_bge_models_get_no_instruction [tests/test_embed.py]",
+]
+name_terms = [
+  "EmbedConfig",
+  "config",
+  "crib",
+  "crib.config.EmbedConfig",
+  "embed",
+]

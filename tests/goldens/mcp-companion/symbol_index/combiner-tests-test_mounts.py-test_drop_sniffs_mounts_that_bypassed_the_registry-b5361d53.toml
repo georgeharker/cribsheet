@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_mounts.py#test_drop_sniffs_mounts_that_bypassed_the_registry"
+fqn = "combiner.tests.test_mounts.test_drop_sniffs_mounts_that_bypassed_the_registry"
+name = "test_drop_sniffs_mounts_that_bypassed_the_registry"
+kind = "function"
+lang = "python"
+content_hash = "ddb289b8eb0e107d"
+file = "combiner/tests/test_mounts.py"
+file_hash = "5a0de1047967797a"
+signature = "def test_drop_sniffs_mounts_that_bypassed_the_registry() -> None:"
+description = ""
+schema = 4
+line = 78
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_mounts",
+]
+symbol_was = []
+calls = [
+  "_child [combiner/tests/test_mounts.py]",
+  "drop_server_providers [combiner/mcp_combiner/mounts.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "bypassed",
+  "combiner",
+  "combiner.tests.test_mounts.test_drop_sniffs_mounts_that_bypassed_the_registry",
+  "drop",
+  "mounts",
+  "registry",
+  "sniffs",
+  "test",
+  "test_drop_sniffs_mounts_that_bypassed_the_registry",
+  "tests",
+  "that",
+  "the",
+]

@@ -1,0 +1,34 @@
+symbol_ref = "crib/embed.py#_auto_device"
+fqn = "crib.embed._auto_device"
+name = "_auto_device"
+kind = "function"
+lang = "python"
+content_hash = "0e28caf6556c2d03"
+file = "crib/embed.py"
+file_hash = "46323c76e4ac82a3"
+signature = "def _auto_device() -> str:"
+description = ""
+schema = 4
+line = 113
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "embed",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "__init__ [crib/embed.py]",
+]
+references = [
+  "__init__ [crib/embed.py]",
+]
+name_terms = [
+  "_auto_device",
+  "auto",
+  "crib",
+  "crib.embed._auto_device",
+  "device",
+  "embed",
+]

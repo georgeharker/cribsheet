@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_app_meta.py#TestNamespaceAppMeta"
+fqn = "combiner.tests.test_app_meta.TestNamespaceAppMeta"
+name = "TestNamespaceAppMeta"
+kind = "class"
+lang = "python"
+content_hash = "d8b6f797cc3132db"
+file = "combiner/tests/test_app_meta.py"
+file_hash = "fc52f36639c3320a"
+signature = "class TestNamespaceAppMeta:"
+description = ""
+schema = 4
+line = 92
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_app_meta",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestNamespaceAppMeta",
+  "app",
+  "combiner",
+  "combiner.tests.test_app_meta.TestNamespaceAppMeta",
+  "meta",
+  "namespace",
+  "test",
+  "tests",
+]

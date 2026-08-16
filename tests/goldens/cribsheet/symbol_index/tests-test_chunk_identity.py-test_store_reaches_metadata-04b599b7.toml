@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_chunk_identity.py#test_store_reaches_metadata"
+fqn = "tests.test_chunk_identity.test_store_reaches_metadata"
+name = "test_store_reaches_metadata"
+kind = "function"
+lang = "python"
+content_hash = "bab15453767bb957"
+file = "tests/test_chunk_identity.py"
+file_hash = "0afd98c1ecf1279e"
+signature = "def test_store_reaches_metadata():"
+description = ""
+schema = 4
+line = 92
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_chunk_identity",
+]
+symbol_was = []
+calls = [
+  "chunk_note [crib/chunk.py]",
+  "metadata [crib/chunk.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chunk",
+  "identity",
+  "metadata",
+  "reaches",
+  "store",
+  "test",
+  "test_store_reaches_metadata",
+  "tests",
+  "tests.test_chunk_identity.test_store_reaches_metadata",
+]

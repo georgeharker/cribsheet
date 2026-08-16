@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#CombinerRuntime.config"
+fqn = "combiner.mcp_combiner.runtime.CombinerRuntime.config"
+name = "config"
+kind = "field"
+lang = "python"
+content_hash = "fc26fa9face5c768"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "config: CombinerConfig | None = None"
+description = ""
+schema = 4
+line = 269
+mtime = 1784493613000000000
+container = [
+  "CombinerRuntime",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "CombinerRuntime",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_config [combiner/tests/test_app_meta.py]",
+  "_filter_tools [combiner/mcp_combiner/toolcache.py]",
+  "_find_server_for_tool [combiner/mcp_combiner/toolcache.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "_namespace_app_meta [combiner/mcp_combiner/middleware.py]",
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "setup_method [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.CombinerRuntime.config",
+  "config",
+  "mcp",
+  "runtime",
+]

@@ -1,0 +1,46 @@
+symbol_ref = "crib/designs.py#Designs.design_read"
+fqn = "crib.designs.Designs.design_read"
+name = "design_read"
+kind = "method"
+lang = "python"
+content_hash = "18a39e1e964ec793"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def design_read(self, proj: str, ref: str) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 1117
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_annotate [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_next [crib/designs.py]",
+  "_note [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_source_view [crib/designs.py]",
+  "_taint [crib/designs.py]",
+  "brief [crib/designs.py]",
+]
+called_by = [
+  "design_read [crib/app.py]",
+]
+references = [
+  "design_read [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs.design_read",
+  "design",
+  "design_read",
+  "designs",
+  "read",
+]

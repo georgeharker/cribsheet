@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestRuntimeCatalog.test_add_replaces_existing"
+fqn = "combiner.tests.test_mockserver.TestRuntimeCatalog.test_add_replaces_existing"
+name = "test_add_replaces_existing"
+kind = "method"
+lang = "python"
+content_hash = "5a570abd687384f3"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "async def test_add_replaces_existing(self) -> None:"
+description = ""
+schema = 4
+line = 218
+mtime = 1783534978000000000
+container = [
+  "TestRuntimeCatalog",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+  "TestRuntimeCatalog",
+]
+symbol_was = []
+calls = [
+  "MockServer [combiner/mcp_combiner/mockserver.py]",
+  "_text [combiner/tests/test_mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "add",
+  "catalog",
+  "combiner",
+  "combiner.tests.test_mockserver.TestRuntimeCatalog.test_add_replaces_existing",
+  "existing",
+  "mockserver",
+  "replaces",
+  "runtime",
+  "test",
+  "test_add_replaces_existing",
+  "tests",
+]

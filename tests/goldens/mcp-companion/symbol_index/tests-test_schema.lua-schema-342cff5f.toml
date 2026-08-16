@@ -1,0 +1,31 @@
+symbol_ref = "tests/test_schema.lua#schema"
+fqn = "tests.test_schema.schema"
+name = "schema"
+kind = "global"
+lang = "lua"
+content_hash = "670f05fd8bc3a6d5"
+file = "tests/test_schema.lua"
+file_hash = "14d3153c02a2760c"
+signature = "local ok_mod, schema = pcall(require, \"mcp_companion.schema\")"
+description = ""
+schema = 4
+line = 34
+mtime = 1783013405000000000
+container = []
+scope = [
+  "tests",
+  "test_schema",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "else [tests/test_schema.lua]",
+  "out [tests/test_schema.lua]",
+]
+name_terms = [
+  "schema",
+  "test",
+  "tests",
+  "tests.test_schema.schema",
+]

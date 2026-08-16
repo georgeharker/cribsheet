@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_symbol_convert.py#crib"
+fqn = "tests.test_symbol_convert.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+content_hash = "2d1487a6b16f49f6"
+file = "tests/test_symbol_convert.py"
+file_hash = "3cdbfd7f71b23e65"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 108
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_convert",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "convert",
+  "crib",
+  "symbol",
+  "test",
+  "tests",
+  "tests.test_symbol_convert.crib",
+]

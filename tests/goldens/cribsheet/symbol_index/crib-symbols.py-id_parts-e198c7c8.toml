@@ -1,0 +1,34 @@
+symbol_ref = "crib/symbols.py#id_parts"
+fqn = "crib.symbols.id_parts"
+name = "id_parts"
+kind = "function"
+lang = "python"
+content_hash = "d58c2df45229936d"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def id_parts(ref: str) -> tuple[str, str]:"
+description = ""
+schema = 4
+line = 341
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "candidates [crib/learnings.py]",
+]
+references = [
+  "candidates [crib/learnings.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.id_parts",
+  "id",
+  "id_parts",
+  "parts",
+  "symbols",
+]

@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_describe_queue.py#_sym"
+fqn = "tests.test_describe_queue._sym"
+name = "_sym"
+kind = "function"
+lang = "python"
+content_hash = "fdfcc2c42a08545d"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def _sym(fq, h, body):"
+description = ""
+schema = 4
+line = 37
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "body [tests/test_describe_queue.py]",
+  "test_backoff_delays_double_then_cap [tests/test_describe_queue.py]",
+  "test_describe_and_patch_patches_then_clobber_guards [tests/test_describe_queue.py]",
+  "test_failed_describe_backs_off_instead_of_restarting_at_zero [tests/test_describe_queue.py]",
+  "test_successful_describe_clears_the_entry [tests/test_describe_queue.py]",
+]
+references = [
+  "body [tests/test_describe_queue.py]",
+  "test_backoff_delays_double_then_cap [tests/test_describe_queue.py]",
+  "test_describe_and_patch_patches_then_clobber_guards [tests/test_describe_queue.py]",
+  "test_failed_describe_backs_off_instead_of_restarting_at_zero [tests/test_describe_queue.py]",
+  "test_successful_describe_clears_the_entry [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "_sym",
+  "describe",
+  "queue",
+  "sym",
+  "test",
+  "tests",
+  "tests.test_describe_queue._sym",
+]

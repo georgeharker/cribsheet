@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_normalize.py#test_portable_path_collapses_two_machines"
+fqn = "tests.test_normalize.test_portable_path_collapses_two_machines"
+name = "test_portable_path_collapses_two_machines"
+kind = "function"
+lang = "python"
+content_hash = "afc124c33eb66a93"
+file = "tests/test_normalize.py"
+file_hash = "ed0e928f3ffb7bef"
+signature = "def test_portable_path_collapses_two_machines():"
+description = ""
+schema = 4
+line = 26
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_normalize",
+]
+symbol_was = []
+calls = [
+  "portable_path [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "collapses",
+  "machines",
+  "normalize",
+  "path",
+  "portable",
+  "test",
+  "test_portable_path_collapses_two_machines",
+  "tests",
+  "tests.test_normalize.test_portable_path_collapses_two_machines",
+  "two",
+]

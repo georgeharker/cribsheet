@@ -1,0 +1,72 @@
+symbol_ref = "tests/test_design_sources.py#run"
+fqn = "tests.test_design_sources.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "44052857cf112194"
+file = "tests/test_design_sources.py"
+file_hash = "f89b5a94b236ce9c"
+signature = "def run(coro):"
+description = ""
+schema = 4
+line = 59
+mtime = 1786137963000000000
+container = []
+scope = [
+  "tests",
+  "test_design_sources",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_rewrite [tests/test_design_sources.py]",
+  "crib [tests/test_design_sources.py]",
+  "test_a_batch_item_carries_its_own_sources [tests/test_design_sources.py]",
+  "test_a_changed_source_never_blocks_work [tests/test_design_sources.py]",
+  "test_a_finished_item_flags_revisit_rather_than_re_opening [tests/test_design_sources.py]",
+  "test_a_headingless_doc_is_its_own_section [tests/test_design_sources.py]",
+  "test_a_proposal_is_listed_distinctly_and_queued_for_promotion [tests/test_design_sources.py]",
+  "test_a_renamed_heading_is_its_own_change_kind [tests/test_design_sources.py]",
+  "test_a_source_checks_its_own_section_only [tests/test_design_sources.py]",
+  "test_a_source_must_name_a_section_not_a_whole_doc [tests/test_design_sources.py]",
+  "test_a_source_resolves_by_unique_heading_suffix [tests/test_design_sources.py]",
+  "test_an_ambiguous_or_absent_heading_lists_the_candidates [tests/test_design_sources.py]",
+  "test_design_add_still_lands_active [tests/test_design_sources.py]",
+  "test_design_edit_can_restate_the_citations [tests/test_design_sources.py]",
+  "test_import_returns_sections_hashes_citations_and_the_procedure [tests/test_design_sources.py]",
+  "test_promote_seeds_checked_fresh_and_refuses_a_non_proposal [tests/test_design_sources.py]",
+  "test_proposed_dep_rule_matrix [tests/test_design_sources.py]",
+  "test_reaffirm_does_not_paper_over_a_vanished_section [tests/test_design_sources.py]",
+  "test_reaffirm_re_records_source_hashes_alongside_dep_hashes [tests/test_design_sources.py]",
+  "test_sources_check_against_the_file_by_any_route [tests/test_design_sources.py]",
+]
+references = [
+  "_rewrite [tests/test_design_sources.py]",
+  "crib [tests/test_design_sources.py]",
+  "test_a_batch_item_carries_its_own_sources [tests/test_design_sources.py]",
+  "test_a_changed_source_never_blocks_work [tests/test_design_sources.py]",
+  "test_a_finished_item_flags_revisit_rather_than_re_opening [tests/test_design_sources.py]",
+  "test_a_headingless_doc_is_its_own_section [tests/test_design_sources.py]",
+  "test_a_proposal_is_listed_distinctly_and_queued_for_promotion [tests/test_design_sources.py]",
+  "test_a_renamed_heading_is_its_own_change_kind [tests/test_design_sources.py]",
+  "test_a_source_checks_its_own_section_only [tests/test_design_sources.py]",
+  "test_a_source_must_name_a_section_not_a_whole_doc [tests/test_design_sources.py]",
+  "test_a_source_resolves_by_unique_heading_suffix [tests/test_design_sources.py]",
+  "test_an_ambiguous_or_absent_heading_lists_the_candidates [tests/test_design_sources.py]",
+  "test_design_add_still_lands_active [tests/test_design_sources.py]",
+  "test_design_edit_can_restate_the_citations [tests/test_design_sources.py]",
+  "test_import_returns_sections_hashes_citations_and_the_procedure [tests/test_design_sources.py]",
+  "test_promote_seeds_checked_fresh_and_refuses_a_non_proposal [tests/test_design_sources.py]",
+  "test_proposed_dep_rule_matrix [tests/test_design_sources.py]",
+  "test_reaffirm_does_not_paper_over_a_vanished_section [tests/test_design_sources.py]",
+  "test_reaffirm_re_records_source_hashes_alongside_dep_hashes [tests/test_design_sources.py]",
+  "test_sources_check_against_the_file_by_any_route [tests/test_design_sources.py]",
+]
+name_terms = [
+  "design",
+  "run",
+  "sources",
+  "test",
+  "tests",
+  "tests.test_design_sources.run",
+]

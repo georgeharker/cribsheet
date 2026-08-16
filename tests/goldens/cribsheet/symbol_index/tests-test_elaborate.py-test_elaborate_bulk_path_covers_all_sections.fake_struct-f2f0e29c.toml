@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_elaborate.py#test_elaborate_bulk_path_covers_all_sections.fake_struct"
+fqn = "tests.test_elaborate.test_elaborate_bulk_path_covers_all_sections.fake_struct"
+name = "fake_struct"
+kind = "function"
+lang = "python"
+content_hash = "66777ae0b8fbe73b"
+file = "tests/test_elaborate.py"
+file_hash = "5cde1a0229322e89"
+signature = "async def fake_struct(cfg, system, user, schema, purpose=\"elaborate\","
+description = ""
+schema = 4
+line = 238
+mtime = 1786578262000000000
+container = [
+  "test_elaborate_bulk_path_covers_all_sections",
+]
+scope = [
+  "tests",
+  "test_elaborate",
+  "test_elaborate_bulk_path_covers_all_sections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_elaborate_bulk_path_covers_all_sections [tests/test_elaborate.py]",
+]
+name_terms = [
+  "all",
+  "bulk",
+  "covers",
+  "elaborate",
+  "fake",
+  "fake_struct",
+  "path",
+  "sections",
+  "struct",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_elaborate_bulk_path_covers_all_sections.fake_struct",
+]

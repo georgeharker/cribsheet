@@ -1,0 +1,32 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestAttach"
+fqn = "combiner.tests.test_notifications.TestAttach"
+name = "TestAttach"
+kind = "class"
+lang = "python"
+content_hash = "e156f38cf74f91db"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "class TestAttach:"
+description = ""
+schema = 4
+line = 111
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestAttach",
+  "attach",
+  "combiner",
+  "combiner.tests.test_notifications.TestAttach",
+  "notifications",
+  "test",
+  "tests",
+]

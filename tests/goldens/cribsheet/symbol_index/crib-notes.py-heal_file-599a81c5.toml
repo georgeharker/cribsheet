@@ -1,0 +1,38 @@
+symbol_ref = "crib/notes.py#heal_file"
+fqn = "crib.notes.heal_file"
+name = "heal_file"
+kind = "function"
+lang = "python"
+content_hash = "95dc6b1ce79ae452"
+file = "crib/notes.py"
+file_hash = "6e2385b754de60b6"
+signature = "def heal_file(path: Path) -> bool:"
+description = ""
+schema = 4
+line = 154
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "notes",
+]
+symbol_was = []
+calls = [
+  "normalize_text [crib/notes.py]",
+]
+called_by = [
+  "_plan [crib/indexer.py]",
+  "test_heal_file_rewrites_only_when_dirty [tests/test_normalize.py]",
+]
+references = [
+  "_plan [crib/indexer.py]",
+  "test_heal_file_rewrites_only_when_dirty [tests/test_normalize.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notes.heal_file",
+  "file",
+  "heal",
+  "heal_file",
+  "notes",
+]

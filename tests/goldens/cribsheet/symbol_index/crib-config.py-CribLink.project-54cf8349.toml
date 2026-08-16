@@ -1,0 +1,44 @@
+symbol_ref = "crib/config.py#CribLink.project"
+fqn = "crib.config.CribLink.project"
+name = "project"
+kind = "field"
+lang = "python"
+content_hash = "72bf42a4f223d84d"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "project: str"
+description = ""
+schema = 4
+line = 369
+mtime = 1786564832000000000
+container = [
+  "CribLink",
+]
+scope = [
+  "crib",
+  "config",
+  "CribLink",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_ensure_crib [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_parse [crib/config.py]",
+  "_warn_store_glob_overlap [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "project_adopt [crib/app.py]",
+  "ref_edge_ctx [crib/refs.py]",
+  "resolve_project [crib/config.py]",
+  "test_good_crib_still_parses [tests/test_config_resilience.py]",
+  "test_store_that_escapes_the_repo_is_refused [tests/test_repo_storage.py]",
+  "test_walk_continues_past_a_malformed_crib [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.project",
+  "link",
+  "project",
+]

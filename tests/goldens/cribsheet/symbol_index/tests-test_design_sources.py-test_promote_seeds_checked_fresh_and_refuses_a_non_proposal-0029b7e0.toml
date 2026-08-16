@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_design_sources.py#test_promote_seeds_checked_fresh_and_refuses_a_non_proposal"
+fqn = "tests.test_design_sources.test_promote_seeds_checked_fresh_and_refuses_a_non_proposal"
+name = "test_promote_seeds_checked_fresh_and_refuses_a_non_proposal"
+kind = "function"
+lang = "python"
+content_hash = "9295c77e64a28dfb"
+file = "tests/test_design_sources.py"
+file_hash = "f89b5a94b236ce9c"
+signature = "def test_promote_seeds_checked_fresh_and_refuses_a_non_proposal(crib):"
+description = ""
+schema = 4
+line = 232
+mtime = 1786137963000000000
+container = []
+scope = [
+  "tests",
+  "test_design_sources",
+]
+symbol_was = []
+calls = [
+  "_rewrite [tests/test_design_sources.py]",
+  "run [tests/test_design_sources.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "and",
+  "checked",
+  "design",
+  "fresh",
+  "non",
+  "promote",
+  "proposal",
+  "refuses",
+  "seeds",
+  "sources",
+  "test",
+  "test_promote_seeds_checked_fresh_and_refuses_a_non_proposal",
+  "tests",
+  "tests.test_design_sources.test_promote_seeds_checked_fresh_and_refuses_a_non_proposal",
+]

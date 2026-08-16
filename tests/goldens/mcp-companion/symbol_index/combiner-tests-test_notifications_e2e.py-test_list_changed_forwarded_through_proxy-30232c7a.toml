@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#test_list_changed_forwarded_through_proxy"
+fqn = "combiner.tests.test_notifications_e2e.test_list_changed_forwarded_through_proxy"
+name = "test_list_changed_forwarded_through_proxy"
+kind = "function"
+lang = "python"
+content_hash = "8d5e86a6add88140"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "async def test_list_changed_forwarded_through_proxy() -> None:"
+description = ""
+schema = 4
+line = 184
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+]
+symbol_was = []
+calls = [
+  "_CaptureHandler [combiner/tests/test_notifications_e2e.py]",
+  "_forwarding_proxy [combiner/tests/test_notifications_e2e.py]",
+  "_make_upstream [combiner/tests/test_notifications_e2e.py]",
+  "_settle [combiner/tests/test_notifications_e2e.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "2",
+  "changed",
+  "combiner",
+  "combiner.tests.test_notifications_e2e.test_list_changed_forwarded_through_proxy",
+  "e",
+  "forwarded",
+  "list",
+  "notifications",
+  "proxy",
+  "test",
+  "test_list_changed_forwarded_through_proxy",
+  "tests",
+  "through",
+]

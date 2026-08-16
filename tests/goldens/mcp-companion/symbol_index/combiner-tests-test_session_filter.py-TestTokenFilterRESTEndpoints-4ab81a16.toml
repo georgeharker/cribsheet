@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestTokenFilterRESTEndpoints"
+fqn = "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints"
+name = "TestTokenFilterRESTEndpoints"
+kind = "class"
+lang = "python"
+content_hash = "5bd39d277b5fd82b"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "class TestTokenFilterRESTEndpoints:"
+description = ""
+schema = 4
+line = 1142
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestTokenFilterRESTEndpoints",
+  "combiner",
+  "combiner.tests.test_session_filter.TestTokenFilterRESTEndpoints",
+  "endpoints",
+  "filter",
+  "rest",
+  "session",
+  "test",
+  "tests",
+  "token",
+]

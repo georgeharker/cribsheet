@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_normalize.py#test_heal_file_rewrites_only_when_dirty"
+fqn = "tests.test_normalize.test_heal_file_rewrites_only_when_dirty"
+name = "test_heal_file_rewrites_only_when_dirty"
+kind = "function"
+lang = "python"
+content_hash = "4e4d881f33bdc2ef"
+file = "tests/test_normalize.py"
+file_hash = "ed0e928f3ffb7bef"
+signature = "def test_heal_file_rewrites_only_when_dirty(tmp_path):"
+description = ""
+schema = 4
+line = 104
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_normalize",
+]
+symbol_was = []
+calls = [
+  "heal_file [crib/notes.py]",
+  "load [crib/notes.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "dirty",
+  "file",
+  "heal",
+  "normalize",
+  "only",
+  "rewrites",
+  "test",
+  "test_heal_file_rewrites_only_when_dirty",
+  "tests",
+  "tests.test_normalize.test_heal_file_rewrites_only_when_dirty",
+  "when",
+]

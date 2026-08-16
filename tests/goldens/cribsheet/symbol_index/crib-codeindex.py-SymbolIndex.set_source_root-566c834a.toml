@@ -1,0 +1,68 @@
+symbol_ref = "crib/codeindex.py#SymbolIndex.set_source_root"
+fqn = "crib.codeindex.SymbolIndex.set_source_root"
+name = "set_source_root"
+kind = "method"
+lang = "python"
+content_hash = "c261c732160807a1"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def set_source_root(self, root: Path) -> None:"
+description = ""
+schema = 4
+line = 1701
+mtime = 1786844518000000000
+container = [
+  "SymbolIndex",
+]
+scope = [
+  "crib",
+  "codeindex",
+  "SymbolIndex",
+]
+symbol_was = []
+calls = [
+  "write_atomic [crib/tomlrec.py]",
+]
+called_by = [
+  "_diamond [tests/test_code_graph.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_register [tests/test_project_resolution.py]",
+  "_rust_ish [tests/test_code_graph.py]",
+  "_seed_two_symbols [tests/test_code_integrity.py]",
+  "_two_projects [tests/test_refs.py]",
+  "_wrapper_and_op [tests/test_code_graph.py]",
+  "test_a_file_scoped_language_groups_by_its_file [tests/test_code_graph.py]",
+  "test_backlog_reindexes_only_blank_described_files [tests/test_describe_queue.py]",
+  "test_deletion_gate_stays_permissive_for_a_pre_file_hash_index [tests/test_code_integrity.py]",
+  "test_dirty_record_is_swept_back_into_the_index_and_rewritten_valid [tests/test_code_integrity.py]",
+  "test_reconcile_rebuilds_merge_dirtied_files [tests/test_code_cache.py]",
+  "test_revalidate_reindexes_merge_dirtied_file [tests/test_code_cache.py]",
+  "test_the_description_cache_hits_across_an_id_format_difference [tests/test_code_graph.py]",
+]
+references = [
+  "_diamond [tests/test_code_graph.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_register [tests/test_project_resolution.py]",
+  "_rust_ish [tests/test_code_graph.py]",
+  "_seed_two_symbols [tests/test_code_integrity.py]",
+  "_two_projects [tests/test_refs.py]",
+  "_wrapper_and_op [tests/test_code_graph.py]",
+  "test_a_file_scoped_language_groups_by_its_file [tests/test_code_graph.py]",
+  "test_backlog_reindexes_only_blank_described_files [tests/test_describe_queue.py]",
+  "test_deletion_gate_stays_permissive_for_a_pre_file_hash_index [tests/test_code_integrity.py]",
+  "test_dirty_record_is_swept_back_into_the_index_and_rewritten_valid [tests/test_code_integrity.py]",
+  "test_reconcile_rebuilds_merge_dirtied_files [tests/test_code_cache.py]",
+  "test_revalidate_reindexes_merge_dirtied_file [tests/test_code_cache.py]",
+  "test_the_description_cache_hits_across_an_id_format_difference [tests/test_code_graph.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex.set_source_root",
+  "index",
+  "root",
+  "set",
+  "set_source_root",
+  "source",
+  "symbol",
+]

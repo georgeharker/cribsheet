@@ -1,0 +1,64 @@
+symbol_ref = "crib/notestore.py#NoteStore.root"
+fqn = "crib.notestore.NoteStore.root"
+name = "root"
+kind = "method"
+lang = "python"
+content_hash = "50cba69436a5a66b"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "def root(self, project: str) -> Path:"
+description = ""
+schema = 4
+line = 83
+mtime = 1786564832000000000
+container = [
+  "NoteStore",
+]
+scope = [
+  "crib",
+  "notestore",
+  "NoteStore",
+]
+symbol_was = []
+calls = [
+  "pillar_dir [crib/paths.py]",
+  "resolved [crib/notestore.py]",
+]
+called_by = [
+  "_known_docs [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_requalify_facet_refs [crib/app.py]",
+  "_unique_relpath [crib/designs.py]",
+  "abspath [crib/notestore.py]",
+  "attach [crib/learnings.py]",
+  "convert_notes [crib/learnings.py]",
+  "dir [crib/notestore.py]",
+  "marks [crib/learnings.py]",
+  "notes_by_binding [crib/learnings.py]",
+  "notes_root [crib/notestore.py]",
+  "project_forget [crib/app.py]",
+  "report [crib/learnings.py]",
+]
+references = [
+  "_known_docs [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_requalify_facet_refs [crib/app.py]",
+  "_unique_relpath [crib/designs.py]",
+  "abspath [crib/notestore.py]",
+  "attach [crib/learnings.py]",
+  "convert_notes [crib/learnings.py]",
+  "dir [crib/notestore.py]",
+  "marks [crib/learnings.py]",
+  "notes_by_binding [crib/learnings.py]",
+  "notes_root [crib/notestore.py]",
+  "project_forget [crib/app.py]",
+  "report [crib/learnings.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.NoteStore.root",
+  "note",
+  "notestore",
+  "root",
+  "store",
+]

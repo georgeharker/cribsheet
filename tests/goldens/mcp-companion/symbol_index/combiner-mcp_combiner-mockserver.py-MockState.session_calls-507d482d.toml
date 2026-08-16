@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockState.session_calls"
+fqn = "combiner.mcp_combiner.mockserver.MockState.session_calls"
+name = "session_calls"
+kind = "field"
+lang = "python"
+content_hash = "55e62f8b70f96440"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "session_calls: dict[str, int] = field(default_factory=dict)"
+description = ""
+schema = 4
+line = 159
+mtime = 1783622326000000000
+container = [
+  "MockState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockState",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "mock__stats [combiner/mcp_combiner/mockserver.py]",
+  "record_call [combiner/mcp_combiner/mockserver.py]",
+  "snapshot [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "calls",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockState.session_calls",
+  "mcp",
+  "mock",
+  "mockserver",
+  "session",
+  "session_calls",
+  "state",
+]

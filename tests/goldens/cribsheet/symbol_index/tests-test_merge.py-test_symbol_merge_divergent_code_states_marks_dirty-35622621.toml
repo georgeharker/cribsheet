@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_merge.py#test_symbol_merge_divergent_code_states_marks_dirty"
+fqn = "tests.test_merge.test_symbol_merge_divergent_code_states_marks_dirty"
+name = "test_symbol_merge_divergent_code_states_marks_dirty"
+kind = "function"
+lang = "python"
+content_hash = "1ad42a7033dbaaf4"
+file = "tests/test_merge.py"
+file_hash = "3726dccae7cf8779"
+signature = "def test_symbol_merge_divergent_code_states_marks_dirty():"
+description = ""
+schema = 4
+line = 94
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_merge",
+]
+symbol_was = []
+calls = [
+  "_parse [crib/codeindex.py]",
+  "_render [crib/codeindex.py]",
+  "merge_symbol_texts [crib/merge.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "dirty",
+  "divergent",
+  "marks",
+  "merge",
+  "states",
+  "symbol",
+  "test",
+  "test_symbol_merge_divergent_code_states_marks_dirty",
+  "tests",
+  "tests.test_merge.test_symbol_merge_divergent_code_states_marks_dirty",
+]

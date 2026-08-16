@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_auth.py#TestProactiveRefreshNetworkHandling.test_initialize_sets_grace_window_on_network_error"
+fqn = "combiner.tests.test_auth.TestProactiveRefreshNetworkHandling.test_initialize_sets_grace_window_on_network_error"
+name = "test_initialize_sets_grace_window_on_network_error"
+kind = "method"
+lang = "python"
+content_hash = "63b56d905c0bb73c"
+file = "combiner/tests/test_auth.py"
+file_hash = "2b3aa7eeeed5bf38"
+signature = "@pytest.mark.anyio"
+description = ""
+schema = 4
+line = 314
+mtime = 1782852601000000000
+container = [
+  "TestProactiveRefreshNetworkHandling",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_auth",
+  "TestProactiveRefreshNetworkHandling",
+]
+symbol_was = []
+calls = [
+  "_make_oauth [combiner/tests/test_auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestProactiveRefreshNetworkHandling.test_initialize_sets_grace_window_on_network_error",
+  "error",
+  "grace",
+  "handling",
+  "initialize",
+  "network",
+  "on",
+  "proactive",
+  "refresh",
+  "sets",
+  "test",
+  "test_initialize_sets_grace_window_on_network_error",
+  "tests",
+  "window",
+]

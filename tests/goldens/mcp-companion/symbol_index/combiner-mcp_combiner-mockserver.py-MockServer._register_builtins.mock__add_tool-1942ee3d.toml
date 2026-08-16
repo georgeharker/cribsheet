@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockServer._register_builtins.mock__add_tool"
+fqn = "combiner.mcp_combiner.mockserver.MockServer._register_builtins.mock__add_tool"
+name = "mock__add_tool"
+kind = "function"
+lang = "python"
+content_hash = "af8103266d256323"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@mcp_srv.tool("
+description = ""
+schema = 4
+line = 455
+mtime = 1783622326000000000
+container = [
+  "MockServer",
+  "_register_builtins",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockServer",
+  "_register_builtins",
+]
+symbol_was = []
+calls = [
+  "add_tool [combiner/mcp_combiner/mockserver.py]",
+  "from_dict [combiner/mcp_combiner/mockserver.py]",
+  "record_call [combiner/mcp_combiner/mockserver.py]",
+  "record_session [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "add",
+  "builtins",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockServer._register_builtins.mock__add_tool",
+  "mcp",
+  "mock",
+  "mock__add_tool",
+  "mockserver",
+  "register",
+  "server",
+  "tool",
+]

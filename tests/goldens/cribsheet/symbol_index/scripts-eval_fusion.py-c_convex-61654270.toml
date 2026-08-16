@@ -1,0 +1,35 @@
+symbol_ref = "scripts/eval_fusion.py#c_convex"
+fqn = "scripts.eval_fusion.c_convex"
+name = "c_convex"
+kind = "function"
+lang = "python"
+content_hash = "0aee07429f952291"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def c_convex(alpha):"
+description = ""
+schema = 4
+line = 159
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "build [scripts/eval_fusion.py]",
+]
+references = [
+  "build [scripts/eval_fusion.py]",
+]
+name_terms = [
+  "c",
+  "c_convex",
+  "convex",
+  "eval",
+  "fusion",
+  "scripts",
+  "scripts.eval_fusion.c_convex",
+]

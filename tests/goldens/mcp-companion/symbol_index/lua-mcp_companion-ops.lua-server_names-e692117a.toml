@@ -1,0 +1,47 @@
+symbol_ref = "lua/mcp_companion/ops.lua#server_names"
+fqn = "mcp_companion.ops.server_names"
+name = "server_names"
+kind = "function"
+lang = "lua"
+content_hash = "9cbd8a6bb82b1ff8"
+file = "lua/mcp_companion/ops.lua"
+file_hash = "7ca7520a63575997"
+signature = "function M.server_names()"
+description = ""
+schema = 4
+line = 61
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "ops",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M._save_project_config [lua/mcp_companion/cc/init.lua]",
+  "M.open [lua/mcp_companion/ui/init.lua]",
+  "M.setup [lua/mcp_companion/init.lua]",
+  "M.toggle_in_project [lua/mcp_companion/ops.lua]",
+  "ops.lua [lua/mcp_companion/ops.lua]",
+  "test_ops.lua [tests/test_ops.lua]",
+]
+references = [
+  "_save_project_config [lua/mcp_companion/cc/init.lua]",
+  "done [lua/mcp_companion/ops.lua]",
+  "known [lua/mcp_companion/ops.lua]",
+  "names [tests/test_ops.lua]",
+  "open [lua/mcp_companion/ui/init.lua]",
+  "opts [lua/mcp_companion/ops.lua]",
+  "server_name [lua/mcp_companion/ops.lua]",
+  "setup [lua/mcp_companion/init.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.ops.server_names",
+  "names",
+  "ops",
+  "server",
+  "server_names",
+]

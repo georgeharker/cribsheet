@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_project_resolution.py#test_write_project_elicits_when_target_omitted._Accepted"
+fqn = "tests.test_project_resolution.test_write_project_elicits_when_target_omitted._Accepted"
+name = "_Accepted"
+kind = "class"
+lang = "python"
+content_hash = "f394c6dc9bf1aaf5"
+file = "tests/test_project_resolution.py"
+file_hash = "4fafa653cef61a42"
+signature = "class _Accepted:                       # mimics fastmcp AcceptedElicitation"
+description = ""
+schema = 4
+line = 65
+mtime = 1785959234000000000
+container = [
+  "test_write_project_elicits_when_target_omitted",
+]
+scope = [
+  "tests",
+  "test_project_resolution",
+  "test_write_project_elicits_when_target_omitted",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "elicit [tests/test_project_resolution.py]",
+]
+name_terms = [
+  "_Accepted",
+  "accepted",
+  "elicits",
+  "omitted",
+  "project",
+  "resolution",
+  "target",
+  "test",
+  "tests",
+  "tests.test_project_resolution.test_write_project_elicits_when_target_omitted._Accepted",
+  "when",
+  "write",
+]

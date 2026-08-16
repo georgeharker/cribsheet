@@ -1,0 +1,30 @@
+symbol_ref = "tests/test_grammar_enum.py#run"
+fqn = "tests.test_grammar_enum.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "44052857cf112194"
+file = "tests/test_grammar_enum.py"
+file_hash = "8ffe2e1b34e0351c"
+signature = "def run(coro):"
+description = ""
+schema = 4
+line = 26
+mtime = 1783476730000000000
+container = []
+scope = [
+  "tests",
+  "test_grammar_enum",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "enum",
+  "grammar",
+  "run",
+  "test",
+  "tests",
+  "tests.test_grammar_enum.run",
+]

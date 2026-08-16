@@ -1,0 +1,40 @@
+symbol_ref = "crib/cli.py#Verb.mcp_params"
+fqn = "crib.cli.Verb.mcp_params"
+name = "mcp_params"
+kind = "method"
+lang = "python"
+content_hash = "6105d3145803f01d"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def mcp_params(self) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 1473
+mtime = 1786693579000000000
+container = [
+  "Verb",
+]
+scope = [
+  "crib",
+  "cli",
+  "Verb",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_cli_defaults_match_the_declared_mcp_defaults [tests/test_surface_parity.py]",
+  "test_registry_matches_mcp_tool_schemas [tests/test_surface_parity.py]",
+]
+references = [
+  "test_cli_defaults_match_the_declared_mcp_defaults [tests/test_surface_parity.py]",
+  "test_registry_matches_mcp_tool_schemas [tests/test_surface_parity.py]",
+]
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli.Verb.mcp_params",
+  "mcp",
+  "mcp_params",
+  "params",
+  "verb",
+]

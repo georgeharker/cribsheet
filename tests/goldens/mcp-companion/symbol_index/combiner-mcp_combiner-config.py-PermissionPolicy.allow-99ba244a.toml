@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/config.py#PermissionPolicy.allow"
+fqn = "combiner.mcp_combiner.config.PermissionPolicy.allow"
+name = "allow"
+kind = "field"
+lang = "python"
+content_hash = "283ebb54842e5210"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "allow: list[str] = Field(default_factory=list)"
+description = ""
+schema = 4
+line = 159
+mtime = 1783633313000000000
+container = [
+  "PermissionPolicy",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "PermissionPolicy",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "test_parses_fields [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "allow",
+  "combiner",
+  "combiner.mcp_combiner.config.PermissionPolicy.allow",
+  "config",
+  "mcp",
+  "permission",
+  "policy",
+]

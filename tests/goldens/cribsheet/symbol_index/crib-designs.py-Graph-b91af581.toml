@@ -1,0 +1,41 @@
+symbol_ref = "crib/designs.py#Graph"
+fqn = "crib.designs.Graph"
+name = "Graph"
+kind = "class"
+lang = "python"
+content_hash = "9ad301a6a2ee551e"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 343
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_annotate [crib/designs.py]",
+  "_direct_taint [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_ordered [crib/designs.py]",
+  "_rank_for [crib/designs.py]",
+  "_recheck [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_row [crib/designs.py]",
+  "_rows [crib/designs.py]",
+  "_taint [crib/designs.py]",
+  "_taint [tests/test_designs.py]",
+]
+name_terms = [
+  "Graph",
+  "crib",
+  "crib.designs.Graph",
+  "designs",
+  "graph",
+]

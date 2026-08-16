@@ -1,0 +1,35 @@
+symbol_ref = "crib/cli.py#_emit_code_learning"
+fqn = "crib.cli._emit_code_learning"
+name = "_emit_code_learning"
+kind = "function"
+lang = "python"
+content_hash = "df6747de84d690bb"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _emit_code_learning(data: Any, verb: str, as_json: bool) -> None:"
+description = ""
+schema = 4
+line = 464
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "(lambda) [crib/cli.py]",
+]
+references = [
+  "_E_learning [crib/cli.py]",
+]
+name_terms = [
+  "_emit_code_learning",
+  "cli",
+  "code",
+  "crib",
+  "crib.cli._emit_code_learning",
+  "emit",
+  "learning",
+]

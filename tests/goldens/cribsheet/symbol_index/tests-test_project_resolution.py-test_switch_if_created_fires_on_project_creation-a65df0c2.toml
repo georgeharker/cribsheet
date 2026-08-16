@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_project_resolution.py#test_switch_if_created_fires_on_project_creation"
+fqn = "tests.test_project_resolution.test_switch_if_created_fires_on_project_creation"
+name = "test_switch_if_created_fires_on_project_creation"
+kind = "function"
+lang = "python"
+content_hash = "b6803fcf853b7072"
+file = "tests/test_project_resolution.py"
+file_hash = "4fafa653cef61a42"
+signature = "def test_switch_if_created_fires_on_project_creation(crib, tmp_path):"
+description = ""
+schema = 4
+line = 192
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_project_resolution",
+]
+symbol_was = []
+calls = [
+  "_switch_if_created [crib/server.py]",
+  "session_state [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "created",
+  "creation",
+  "fires",
+  "if",
+  "on",
+  "project",
+  "resolution",
+  "switch",
+  "test",
+  "test_switch_if_created_fires_on_project_creation",
+  "tests",
+  "tests.test_project_resolution.test_switch_if_created_fires_on_project_creation",
+]

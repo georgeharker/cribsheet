@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/routes.py#register_routes.lookup_session_token"
+fqn = "combiner.mcp_combiner.routes.register_routes.lookup_session_token"
+name = "lookup_session_token"
+kind = "function"
+lang = "python"
+content_hash = "60f406821750d25d"
+file = "combiner/mcp_combiner/routes.py"
+file_hash = "51ce6733e6f93928"
+signature = "@combiner.custom_route(\"/sessions/token/{token}\", methods=[\"GET\"])"
+description = ""
+schema = 4
+line = 216
+mtime = 1783548694000000000
+container = [
+  "register_routes",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "routes",
+  "register_routes",
+]
+symbol_was = []
+calls = [
+  "session_for_token [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.routes.register_routes.lookup_session_token",
+  "lookup",
+  "lookup_session_token",
+  "mcp",
+  "register",
+  "routes",
+  "session",
+  "token",
+]

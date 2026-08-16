@@ -1,0 +1,31 @@
+symbol_ref = "crib/chunk.py#Chunk"
+fqn = "crib.chunk.Chunk"
+name = "Chunk"
+kind = "class"
+lang = "python"
+content_hash = "c9d4083fa0778968"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 52
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "chunk",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "chunk_note [crib/chunk.py]",
+  "to_embed [crib/indexer.py]",
+]
+name_terms = [
+  "Chunk",
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk",
+]

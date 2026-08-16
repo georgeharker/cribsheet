@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#_b_lookup"
+fqn = "crib.cli._b_lookup"
+name = "_b_lookup"
+kind = "function"
+lang = "python"
+content_hash = "733b5688e60c4885"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _b_lookup(a: Any) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 1507
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_split_labels [crib/cli.py]",
+]
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_b_lookup",
+  "b",
+  "cli",
+  "crib",
+  "crib.cli._b_lookup",
+  "lookup",
+]

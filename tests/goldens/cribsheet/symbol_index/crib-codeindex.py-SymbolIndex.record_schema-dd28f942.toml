@@ -1,0 +1,47 @@
+symbol_ref = "crib/codeindex.py#SymbolIndex.record_schema"
+fqn = "crib.codeindex.SymbolIndex.record_schema"
+name = "record_schema"
+kind = "method"
+lang = "python"
+content_hash = "4122b9abe4acf565"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def record_schema(self) -> None:"
+description = ""
+schema = 4
+line = 1546
+mtime = 1786844518000000000
+container = [
+  "SymbolIndex",
+]
+scope = [
+  "crib",
+  "codeindex",
+  "SymbolIndex",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_index_project_code [crib/codeindexer.py]",
+  "code_convert [crib/app.py]",
+  "test_an_indexed_entry_carries_its_language_scope [tests/test_code_graph.py]",
+  "test_only_a_DIFFERENT_recorded_version_is_stale [tests/test_code_graph.py]",
+  "test_the_stamp_is_invisible_to_the_entry_reader [tests/test_code_graph.py]",
+]
+references = [
+  "_index_project_code [crib/codeindexer.py]",
+  "code_convert [crib/app.py]",
+  "test_an_indexed_entry_carries_its_language_scope [tests/test_code_graph.py]",
+  "test_only_a_DIFFERENT_recorded_version_is_stale [tests/test_code_graph.py]",
+  "test_the_stamp_is_invisible_to_the_entry_reader [tests/test_code_graph.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex.record_schema",
+  "index",
+  "record",
+  "record_schema",
+  "schema",
+  "symbol",
+]

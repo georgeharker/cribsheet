@@ -1,0 +1,65 @@
+symbol_ref = "crib/server.py#_cwd"
+fqn = "crib.server._cwd"
+name = "_cwd"
+kind = "function"
+lang = "python"
+content_hash = "401670826c54b2e8"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def _cwd(project_path: str | None) -> Path | None:"
+description = ""
+schema = 4
+line = 29
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_resolve [crib/server.py]",
+  "_write_project [crib/server.py]",
+  "code_convert [crib/server.py]",
+  "code_index [crib/server.py]",
+  "design_graph [crib/server.py]",
+  "learning_migrate [crib/server.py]",
+  "note_import [crib/server.py]",
+  "note_import_memory [crib/server.py]",
+  "plan_graph [crib/server.py]",
+  "project_adopt [crib/server.py]",
+  "project_current [crib/server.py]",
+  "project_forget [crib/server.py]",
+  "project_index [crib/server.py]",
+  "project_migrate [crib/server.py]",
+  "project_release [crib/server.py]",
+  "project_setup [crib/server.py]",
+  "project_status [crib/server.py]",
+]
+references = [
+  "_resolve [crib/server.py]",
+  "_write_project [crib/server.py]",
+  "code_convert [crib/server.py]",
+  "code_index [crib/server.py]",
+  "design_graph [crib/server.py]",
+  "learning_migrate [crib/server.py]",
+  "note_import [crib/server.py]",
+  "note_import_memory [crib/server.py]",
+  "plan_graph [crib/server.py]",
+  "project_adopt [crib/server.py]",
+  "project_current [crib/server.py]",
+  "project_forget [crib/server.py]",
+  "project_index [crib/server.py]",
+  "project_migrate [crib/server.py]",
+  "project_release [crib/server.py]",
+  "project_setup [crib/server.py]",
+  "project_status [crib/server.py]",
+]
+name_terms = [
+  "_cwd",
+  "crib",
+  "crib.server._cwd",
+  "cwd",
+  "server",
+]

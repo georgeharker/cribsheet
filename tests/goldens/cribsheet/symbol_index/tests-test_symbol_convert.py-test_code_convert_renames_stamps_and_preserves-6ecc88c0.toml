@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_symbol_convert.py#test_code_convert_renames_stamps_and_preserves"
+fqn = "tests.test_symbol_convert.test_code_convert_renames_stamps_and_preserves"
+name = "test_code_convert_renames_stamps_and_preserves"
+kind = "function"
+lang = "python"
+content_hash = "18c76afcaf3c6cac"
+file = "tests/test_symbol_convert.py"
+file_hash = "3cdbfd7f71b23e65"
+signature = "def test_code_convert_renames_stamps_and_preserves(crib):"
+description = ""
+schema = 4
+line = 138
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_convert",
+]
+symbol_was = []
+calls = [
+  "_seed_legacy_store [tests/test_symbol_convert.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "code",
+  "convert",
+  "preserves",
+  "renames",
+  "stamps",
+  "symbol",
+  "test",
+  "test_code_convert_renames_stamps_and_preserves",
+  "tests",
+  "tests.test_symbol_convert.test_code_convert_renames_stamps_and_preserves",
+]

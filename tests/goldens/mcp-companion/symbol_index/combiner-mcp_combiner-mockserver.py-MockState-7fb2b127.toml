@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockState"
+fqn = "combiner.mcp_combiner.mockserver.MockState"
+name = "MockState"
+kind = "class"
+lang = "python"
+content_hash = "c3861d1e9d0666f5"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 148
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+  "_state [combiner/mcp_combiner/mockserver.py]",
+  "build_server [combiner/mcp_combiner/mockserver.py]",
+  "from_spec [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "MockState",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockState",
+  "mcp",
+  "mock",
+  "mockserver",
+  "state",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_retrieve.py#test_bm25_unknown_terms_score_zero"
+fqn = "tests.test_retrieve.test_bm25_unknown_terms_score_zero"
+name = "test_bm25_unknown_terms_score_zero"
+kind = "function"
+lang = "python"
+content_hash = "277693416b7f9523"
+file = "tests/test_retrieve.py"
+file_hash = "e2f2cfadeca4f35a"
+signature = "def test_bm25_unknown_terms_score_zero():"
+description = ""
+schema = 4
+line = 26
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_retrieve",
+]
+symbol_was = []
+calls = [
+  "BM25 [crib/retrieve.py]",
+  "_corpus [tests/test_retrieve.py]",
+  "scores [crib/retrieve.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "25",
+  "bm",
+  "retrieve",
+  "score",
+  "terms",
+  "test",
+  "test_bm25_unknown_terms_score_zero",
+  "tests",
+  "tests.test_retrieve.test_bm25_unknown_terms_score_zero",
+  "unknown",
+  "zero",
+]

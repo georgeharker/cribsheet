@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_pillar_stores.py#test_retrieval_scoping_holds_before_and_after_the_schema_marker"
+fqn = "tests.test_pillar_stores.test_retrieval_scoping_holds_before_and_after_the_schema_marker"
+name = "test_retrieval_scoping_holds_before_and_after_the_schema_marker"
+kind = "function"
+lang = "python"
+content_hash = "b2be6b9419b8dbbd"
+file = "tests/test_pillar_stores.py"
+file_hash = "1a0ecd183d71d1ba"
+signature = "def test_retrieval_scoping_holds_before_and_after_the_schema_marker(crib):"
+description = ""
+schema = 4
+line = 96
+mtime = 1786138910000000000
+container = []
+scope = [
+  "tests",
+  "test_pillar_stores",
+]
+symbol_was = []
+calls = [
+  "_note [tests/test_pillar_stores.py]",
+  "run [tests/test_pillar_stores.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "after",
+  "and",
+  "before",
+  "holds",
+  "marker",
+  "pillar",
+  "retrieval",
+  "schema",
+  "scoping",
+  "stores",
+  "test",
+  "test_retrieval_scoping_holds_before_and_after_the_schema_marker",
+  "tests",
+  "tests.test_pillar_stores.test_retrieval_scoping_holds_before_and_after_the_schema_marker",
+  "the",
+]

@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestForwardingFactory.test_per_chat_without_context_falls_back_to_broadcast"
+fqn = "combiner.tests.test_notifications.TestForwardingFactory.test_per_chat_without_context_falls_back_to_broadcast"
+name = "test_per_chat_without_context_falls_back_to_broadcast"
+kind = "method"
+lang = "python"
+content_hash = "4c45f63df99757d8"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "async def test_per_chat_without_context_falls_back_to_broadcast(self) -> None:"
+description = ""
+schema = 4
+line = 208
+mtime = 1784493613000000000
+container = [
+  "TestForwardingFactory",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "TestForwardingFactory",
+]
+symbol_was = []
+calls = [
+  "_resolve [combiner/tests/test_notifications.py]",
+  "forwarding_factory [combiner/mcp_combiner/notifications.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "back",
+  "broadcast",
+  "chat",
+  "combiner",
+  "combiner.tests.test_notifications.TestForwardingFactory.test_per_chat_without_context_falls_back_to_broadcast",
+  "context",
+  "factory",
+  "falls",
+  "forwarding",
+  "notifications",
+  "per",
+  "test",
+  "test_per_chat_without_context_falls_back_to_broadcast",
+  "tests",
+  "to",
+  "without",
+]

@@ -1,0 +1,31 @@
+symbol_ref = "scripts/eval_fusion.py#_LTR_FEATS"
+fqn = "scripts.eval_fusion._LTR_FEATS"
+name = "_LTR_FEATS"
+kind = "constant"
+lang = "python"
+content_hash = "28268e572882d4b7"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "_LTR_FEATS = (\"cos\", \"bn\", \"bd\", \"cov\", \"auth\", \"test\")"
+description = ""
+schema = 4
+line = 261
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_LTR_FEATS",
+  "eval",
+  "feats",
+  "fusion",
+  "ltr",
+  "scripts",
+  "scripts.eval_fusion._LTR_FEATS",
+]

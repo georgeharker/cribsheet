@@ -1,0 +1,42 @@
+symbol_ref = "scripts/eval_kw.py#main.c_3rrf"
+fqn = "scripts.eval_kw.main.c_3rrf"
+name = "c_3rrf"
+kind = "function"
+lang = "python"
+content_hash = "d5c09b34d230f8cb"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def c_3rrf(feat, proj, q, qf, qv, k):"
+description = ""
+schema = 4
+line = 133
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+]
+symbol_was = []
+calls = [
+  "order_from [scripts/eval_fusion.py]",
+  "reciprocal_rank_fusion [crib/retrieve.py]",
+  "three_facets [scripts/eval_kw.py]",
+]
+called_by = []
+references = [
+  "main [scripts/eval_kw.py]",
+]
+name_terms = [
+  "3",
+  "c",
+  "c_3rrf",
+  "eval",
+  "kw",
+  "main",
+  "rrf",
+  "scripts",
+  "scripts.eval_kw.main.c_3rrf",
+]

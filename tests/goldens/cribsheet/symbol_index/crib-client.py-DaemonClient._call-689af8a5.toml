@@ -1,0 +1,40 @@
+symbol_ref = "crib/client.py#DaemonClient._call"
+fqn = "crib.client.DaemonClient._call"
+name = "_call"
+kind = "method"
+lang = "python"
+content_hash = "2599bc8c60f85741"
+file = "crib/client.py"
+file_hash = "ae625d126a9c20ef"
+signature = "async def _call(self, tool: str, args: dict[str, Any]) -> Any:"
+description = ""
+schema = 4
+line = 82
+mtime = 1782958917000000000
+container = [
+  "DaemonClient",
+]
+scope = [
+  "crib",
+  "client",
+  "DaemonClient",
+]
+symbol_was = []
+calls = [
+  "_data [crib/client.py]",
+  "_wait_ready [crib/client.py]",
+]
+called_by = [
+  "call [crib/client.py]",
+]
+references = [
+  "call [crib/client.py]",
+]
+name_terms = [
+  "_call",
+  "call",
+  "client",
+  "crib",
+  "crib.client.DaemonClient._call",
+  "daemon",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "crib/client.py#DaemonClient"
+fqn = "crib.client.DaemonClient"
+name = "DaemonClient"
+kind = "class"
+lang = "python"
+content_hash = "6c3aff83d9aecb67"
+file = "crib/client.py"
+file_hash = "ae625d126a9c20ef"
+signature = "class DaemonClient:"
+description = ""
+schema = 4
+line = 50
+mtime = 1782958917000000000
+container = []
+scope = [
+  "crib",
+  "client",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__enter__ [crib/client.py]",
+  "_reconcile [crib/cli.py]",
+  "_run_daemon [crib/cli.py]",
+]
+name_terms = [
+  "DaemonClient",
+  "client",
+  "crib",
+  "crib.client.DaemonClient",
+  "daemon",
+]

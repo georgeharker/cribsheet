@@ -1,0 +1,40 @@
+symbol_ref = "crib/memmirror.py#MemoryMirror._match"
+fqn = "crib.memmirror.MemoryMirror._match"
+name = "_match"
+kind = "method"
+lang = "python"
+content_hash = "94b6f58980ab9aaa"
+file = "crib/memmirror.py"
+file_hash = "9ff08381721a9203"
+signature = "def _match(self, raw_path: str) -> tuple[Path, str] | None:"
+description = ""
+schema = 4
+line = 100
+mtime = 1785959234000000000
+container = [
+  "MemoryMirror",
+]
+scope = [
+  "crib",
+  "memmirror",
+  "MemoryMirror",
+]
+symbol_was = []
+calls = [
+  "resolve_path [crib/claudemem.py]",
+]
+called_by = [
+  "_emit [crib/memmirror.py]",
+]
+references = [
+  "_emit [crib/memmirror.py]",
+]
+name_terms = [
+  "_match",
+  "crib",
+  "crib.memmirror.MemoryMirror._match",
+  "match",
+  "memmirror",
+  "memory",
+  "mirror",
+]

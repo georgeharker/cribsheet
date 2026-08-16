@@ -1,0 +1,36 @@
+symbol_ref = "crib/retrieve.py#QwenReranker._PREFIX"
+fqn = "crib.retrieve.QwenReranker._PREFIX"
+name = "_PREFIX"
+kind = "constant"
+lang = "python"
+content_hash = "cf995cd60af6dffa"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "_PREFIX = (\"<|im_start|>system\\nJudge whether the Document meets the \""
+description = ""
+schema = 4
+line = 210
+mtime = 1786136167000000000
+container = [
+  "QwenReranker",
+]
+scope = [
+  "crib",
+  "retrieve",
+  "QwenReranker",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "scores [crib/retrieve.py]",
+]
+name_terms = [
+  "_PREFIX",
+  "crib",
+  "crib.retrieve.QwenReranker._PREFIX",
+  "prefix",
+  "qwen",
+  "reranker",
+  "retrieve",
+]

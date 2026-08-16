@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_session.py#test_session_state_falls_back_to_default_without_context"
+fqn = "tests.test_session.test_session_state_falls_back_to_default_without_context"
+name = "test_session_state_falls_back_to_default_without_context"
+kind = "function"
+lang = "python"
+content_hash = "d1a0cda6d573355e"
+file = "tests/test_session.py"
+file_hash = "bef48c1ca7e1ebb9"
+signature = "def test_session_state_falls_back_to_default_without_context():"
+description = ""
+schema = 4
+line = 116
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_session",
+]
+symbol_was = []
+calls = [
+  "session_state [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "back",
+  "context",
+  "default",
+  "falls",
+  "session",
+  "state",
+  "test",
+  "test_session_state_falls_back_to_default_without_context",
+  "tests",
+  "tests.test_session.test_session_state_falls_back_to_default_without_context",
+  "to",
+  "without",
+]

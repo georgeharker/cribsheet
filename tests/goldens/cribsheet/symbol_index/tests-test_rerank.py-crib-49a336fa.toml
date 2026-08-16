@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_rerank.py#crib"
+fqn = "tests.test_rerank.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+content_hash = "7cc724f811a7b3bf"
+file = "tests/test_rerank.py"
+file_hash = "29066147cbea547e"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 41
+mtime = 1783981122000000000
+container = []
+scope = [
+  "tests",
+  "test_rerank",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "rerank",
+  "test",
+  "tests",
+  "tests.test_rerank.crib",
+]

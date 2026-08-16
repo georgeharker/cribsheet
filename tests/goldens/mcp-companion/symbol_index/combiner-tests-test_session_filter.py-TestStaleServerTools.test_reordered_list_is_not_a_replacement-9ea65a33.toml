@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestStaleServerTools.test_reordered_list_is_not_a_replacement"
+fqn = "combiner.tests.test_session_filter.TestStaleServerTools.test_reordered_list_is_not_a_replacement"
+name = "test_reordered_list_is_not_a_replacement"
+kind = "method"
+lang = "python"
+content_hash = "cb977882066a761e"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_reordered_list_is_not_a_replacement(self):"
+description = ""
+schema = 4
+line = 532
+mtime = 1784493613000000000
+container = [
+  "TestStaleServerTools",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestStaleServerTools",
+]
+symbol_was = []
+calls = [
+  "_tool [combiner/tests/test_session_filter.py]",
+  "store_slice [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools.test_reordered_list_is_not_a_replacement",
+  "filter",
+  "is",
+  "list",
+  "not",
+  "reordered",
+  "replacement",
+  "server",
+  "session",
+  "stale",
+  "test",
+  "test_reordered_list_is_not_a_replacement",
+  "tests",
+  "tools",
+]

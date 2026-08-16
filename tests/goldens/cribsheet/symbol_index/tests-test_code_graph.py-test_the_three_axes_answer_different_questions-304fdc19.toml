@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_code_graph.py#test_the_three_axes_answer_different_questions"
+fqn = "tests.test_code_graph.test_the_three_axes_answer_different_questions"
+name = "test_the_three_axes_answer_different_questions"
+kind = "function"
+lang = "python"
+content_hash = "b0e1e2972a5ab5c6"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def test_the_three_axes_answer_different_questions(crib, tmp_path):"
+description = ""
+schema = 4
+line = 623
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "_diamond [tests/test_code_graph.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "answer",
+  "axes",
+  "code",
+  "different",
+  "graph",
+  "questions",
+  "test",
+  "test_the_three_axes_answer_different_questions",
+  "tests",
+  "tests.test_code_graph.test_the_three_axes_answer_different_questions",
+  "the",
+  "three",
+]

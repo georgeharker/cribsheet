@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_codeindex.py#test_describe_rows_accepts_both_shapes"
+fqn = "tests.test_codeindex.test_describe_rows_accepts_both_shapes"
+name = "test_describe_rows_accepts_both_shapes"
+kind = "function"
+lang = "python"
+content_hash = "d630d526848feff9"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_describe_rows_accepts_both_shapes():"
+description = ""
+schema = 4
+line = 233
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "_describe_rows [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "accepts",
+  "both",
+  "codeindex",
+  "describe",
+  "rows",
+  "shapes",
+  "test",
+  "test_describe_rows_accepts_both_shapes",
+  "tests",
+  "tests.test_codeindex.test_describe_rows_accepts_both_shapes",
+]

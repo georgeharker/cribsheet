@@ -1,0 +1,40 @@
+symbol_ref = "scripts/codeindex/lsp_probe.py#Client._reader"
+fqn = "scripts.codeindex.lsp_probe.Client._reader"
+name = "_reader"
+kind = "method"
+lang = "python"
+content_hash = "8a584773f4fc699e"
+file = "scripts/codeindex/lsp_probe.py"
+file_hash = "014ef92d65f6717d"
+signature = "def _reader(self) -> None:"
+description = ""
+schema = 4
+line = 43
+mtime = 1783033292000000000
+container = [
+  "Client",
+]
+scope = [
+  "scripts",
+  "codeindex",
+  "lsp_probe",
+  "Client",
+]
+symbol_was = []
+calls = [
+  "_on_request [scripts/codeindex/lsp_probe.py]",
+]
+called_by = []
+references = [
+  "__init__ [scripts/codeindex/lsp_probe.py]",
+]
+name_terms = [
+  "_reader",
+  "client",
+  "codeindex",
+  "lsp",
+  "probe",
+  "reader",
+  "scripts",
+  "scripts.codeindex.lsp_probe.Client._reader",
+]

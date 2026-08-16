@@ -1,0 +1,38 @@
+symbol_ref = "scripts/symstats.py#_entry_key"
+fqn = "scripts.symstats._entry_key"
+name = "_entry_key"
+kind = "function"
+lang = "python"
+content_hash = "d85188e4f4a89e76"
+file = "scripts/symstats.py"
+file_hash = "bc09f2e285e5b003"
+signature = "def _entry_key(e: dict) -> str:"
+description = ""
+schema = 4
+line = 56
+mtime = 1786664729000000000
+container = []
+scope = [
+  "scripts",
+  "symstats",
+]
+symbol_was = []
+calls = [
+  "symbol_ref [crib/symbols.py]",
+]
+called_by = [
+  "_bindings [scripts/symstats.py]",
+  "capture [scripts/symstats.py]",
+]
+references = [
+  "_bindings [scripts/symstats.py]",
+  "capture [scripts/symstats.py]",
+]
+name_terms = [
+  "_entry_key",
+  "entry",
+  "key",
+  "scripts",
+  "scripts.symstats._entry_key",
+  "symstats",
+]

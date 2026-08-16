@@ -1,0 +1,36 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestMetaToolFilterIsolation"
+fqn = "combiner.tests.test_session_independence.TestMetaToolFilterIsolation"
+name = "TestMetaToolFilterIsolation"
+kind = "class"
+lang = "python"
+content_hash = "763a8433720ee2a3"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "class TestMetaToolFilterIsolation:"
+description = ""
+schema = 4
+line = 127
+mtime = 1783541669000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestMetaToolFilterIsolation",
+  "combiner",
+  "combiner.tests.test_session_independence.TestMetaToolFilterIsolation",
+  "filter",
+  "independence",
+  "isolation",
+  "meta",
+  "session",
+  "test",
+  "tests",
+  "tool",
+]

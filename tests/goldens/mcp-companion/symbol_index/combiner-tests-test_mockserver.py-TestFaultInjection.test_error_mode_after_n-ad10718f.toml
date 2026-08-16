@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestFaultInjection.test_error_mode_after_n"
+fqn = "combiner.tests.test_mockserver.TestFaultInjection.test_error_mode_after_n"
+name = "test_error_mode_after_n"
+kind = "method"
+lang = "python"
+content_hash = "46704046db42ef1e"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "async def test_error_mode_after_n(self) -> None:"
+description = ""
+schema = 4
+line = 176
+mtime = 1783534978000000000
+container = [
+  "TestFaultInjection",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+  "TestFaultInjection",
+]
+symbol_was = []
+calls = [
+  "MockServer [combiner/mcp_combiner/mockserver.py]",
+  "_spec [combiner/tests/test_mockserver.py]",
+  "_text [combiner/tests/test_mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "after",
+  "combiner",
+  "combiner.tests.test_mockserver.TestFaultInjection.test_error_mode_after_n",
+  "error",
+  "fault",
+  "injection",
+  "mockserver",
+  "mode",
+  "n",
+  "test",
+  "test_error_mode_after_n",
+  "tests",
+]

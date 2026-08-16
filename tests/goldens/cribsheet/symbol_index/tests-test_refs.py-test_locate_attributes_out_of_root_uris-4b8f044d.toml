@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_refs.py#test_locate_attributes_out_of_root_uris"
+fqn = "tests.test_refs.test_locate_attributes_out_of_root_uris"
+name = "test_locate_attributes_out_of_root_uris"
+kind = "function"
+lang = "python"
+content_hash = "4ae2484cc5d8f25a"
+file = "tests/test_refs.py"
+file_hash = "c2372f74f28bca49"
+signature = "def test_locate_attributes_out_of_root_uris(tmp_path):"
+description = ""
+schema = 4
+line = 108
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_refs",
+]
+symbol_was = []
+calls = [
+  "_locate [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "attributes",
+  "locate",
+  "of",
+  "out",
+  "refs",
+  "root",
+  "test",
+  "test_locate_attributes_out_of_root_uris",
+  "tests",
+  "tests.test_refs.test_locate_attributes_out_of_root_uris",
+  "uris",
+]

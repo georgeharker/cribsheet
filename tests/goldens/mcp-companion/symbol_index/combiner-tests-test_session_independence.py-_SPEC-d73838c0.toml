@@ -1,0 +1,37 @@
+symbol_ref = "combiner/tests/test_session_independence.py#_SPEC"
+fqn = "combiner.tests.test_session_independence._SPEC"
+name = "_SPEC"
+kind = "constant"
+lang = "python"
+content_hash = "12a30bdae079e715"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "_SPEC = ["
+description = ""
+schema = 4
+line = 45
+mtime = 1783541669000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "test_isolate_true_gives_each_chat_its_own_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_non_isolated_chats_share_one_upstream_session [combiner/tests/test_session_independence.py]",
+]
+name_terms = [
+  "_SPEC",
+  "combiner",
+  "combiner.tests.test_session_independence._SPEC",
+  "independence",
+  "session",
+  "spec",
+  "test",
+  "tests",
+]

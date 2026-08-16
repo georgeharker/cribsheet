@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestTokenSessionMapping.test_token_sessions_appear_in_sessions_listing"
+fqn = "combiner.tests.test_session_independence.TestTokenSessionMapping.test_token_sessions_appear_in_sessions_listing"
+name = "test_token_sessions_appear_in_sessions_listing"
+kind = "method"
+lang = "python"
+content_hash = "fb76891e6b956624"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "@xfail_session_namespace_split"
+description = ""
+schema = 4
+line = 111
+mtime = 1783541669000000000
+container = [
+  "TestTokenSessionMapping",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+  "TestTokenSessionMapping",
+]
+symbol_was = []
+calls = [
+  "_header_client [combiner/tests/test_session_independence.py]",
+  "_rest [combiner/tests/test_session_independence.py]",
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "_text [combiner/tests/test_session_independence.py]",
+  "_token [combiner/tests/test_session_independence.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "appear",
+  "combiner",
+  "combiner.tests.test_session_independence.TestTokenSessionMapping.test_token_sessions_appear_in_sessions_listing",
+  "in",
+  "independence",
+  "listing",
+  "mapping",
+  "session",
+  "sessions",
+  "test",
+  "test_token_sessions_appear_in_sessions_listing",
+  "tests",
+  "token",
+]

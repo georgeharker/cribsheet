@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_notestore_snapshot.py#_STABLE"
+fqn = "tests.test_notestore_snapshot._STABLE"
+name = "_STABLE"
+kind = "constant"
+lang = "python"
+content_hash = "2fff375abadd72b5"
+file = "tests/test_notestore_snapshot.py"
+file_hash = "b2c5a3e37c7b0a55"
+signature = "_STABLE = (\"relpath\", \"heading\", \"content_hash\", \"title\", \"source\")"
+description = ""
+schema = 4
+line = 36
+mtime = 1783525700000000000
+container = []
+scope = [
+  "tests",
+  "test_notestore_snapshot",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_snapshot [tests/test_notestore_snapshot.py]",
+]
+name_terms = [
+  "_STABLE",
+  "notestore",
+  "snapshot",
+  "stable",
+  "test",
+  "tests",
+  "tests.test_notestore_snapshot._STABLE",
+]

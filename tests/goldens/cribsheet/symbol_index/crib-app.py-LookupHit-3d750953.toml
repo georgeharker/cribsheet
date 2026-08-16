@@ -1,0 +1,33 @@
+symbol_ref = "crib/app.py#LookupHit"
+fqn = "crib.app.LookupHit"
+name = "LookupHit"
+kind = "class"
+lang = "python"
+content_hash = "d30aee8f21db5ede"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 64
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "app",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_emit_human_one [crib/cli.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "LookupHit",
+  "app",
+  "crib",
+  "crib.app.LookupHit",
+  "hit",
+  "lookup",
+]

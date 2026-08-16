@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_path_confinement.py#test_restore_refuses_a_traversing_version_name"
+fqn = "tests.test_path_confinement.test_restore_refuses_a_traversing_version_name"
+name = "test_restore_refuses_a_traversing_version_name"
+kind = "function"
+lang = "python"
+content_hash = "18f6bd5539c780a1"
+file = "tests/test_path_confinement.py"
+file_hash = "ca5f375c4fa4dfa2"
+signature = "def test_restore_refuses_a_traversing_version_name(crib, tmp_path):"
+description = ""
+schema = 4
+line = 112
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_path_confinement",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_path_confinement.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "confinement",
+  "name",
+  "path",
+  "refuses",
+  "restore",
+  "test",
+  "test_restore_refuses_a_traversing_version_name",
+  "tests",
+  "tests.test_path_confinement.test_restore_refuses_a_traversing_version_name",
+  "traversing",
+  "version",
+]

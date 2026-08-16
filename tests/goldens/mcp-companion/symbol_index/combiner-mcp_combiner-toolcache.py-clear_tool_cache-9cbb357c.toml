@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#clear_tool_cache"
+fqn = "combiner.mcp_combiner.toolcache.clear_tool_cache"
+name = "clear_tool_cache"
+kind = "function"
+lang = "python"
+content_hash = "3c0081a1d3cb63c8"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "def clear_tool_cache() -> None:"
+description = ""
+schema = 4
+line = 190
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = [
+  "clear_cache [combiner/mcp_combiner/fastvalidate.py]",
+  "clear_cache [combiner/mcp_combiner/runtime.py]",
+]
+called_by = [
+  "_on_upstream_tools_ready [combiner/mcp_combiner/toolcache.py]",
+  "_prime_gated [combiner/mcp_combiner/toolcache.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+  "invalidate_tool_cache [combiner/mcp_combiner/toolcache.py]",
+]
+references = [
+  "_on_upstream_tools_ready [combiner/mcp_combiner/toolcache.py]",
+  "_prime_gated [combiner/mcp_combiner/toolcache.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+  "invalidate_tool_cache [combiner/mcp_combiner/toolcache.py]",
+]
+name_terms = [
+  "cache",
+  "clear",
+  "clear_tool_cache",
+  "combiner",
+  "combiner.mcp_combiner.toolcache.clear_tool_cache",
+  "mcp",
+  "tool",
+  "toolcache",
+]

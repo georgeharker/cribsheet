@@ -1,0 +1,35 @@
+symbol_ref = "crib/paths.py#Paths.notes_dir"
+fqn = "crib.paths.Paths.notes_dir"
+name = "notes_dir"
+kind = "method"
+lang = "python"
+content_hash = "997e683a52fbe9d3"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "def notes_dir(self, project: str) -> Path:"
+description = ""
+schema = 4
+line = 125
+mtime = 1786564832000000000
+container = [
+  "Paths",
+]
+scope = [
+  "crib",
+  "paths",
+  "Paths",
+]
+symbol_was = []
+calls = [
+  "project_dir [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.paths.Paths.notes_dir",
+  "dir",
+  "notes",
+  "notes_dir",
+  "paths",
+]

@@ -1,0 +1,52 @@
+symbol_ref = "crib/config.py#CribLink.store_dir"
+fqn = "crib.config.CribLink.store_dir"
+name = "store_dir"
+kind = "method"
+lang = "python"
+content_hash = "278fde46ecf31f63"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "@property"
+description = ""
+schema = 4
+line = 386
+mtime = 1786564832000000000
+container = [
+  "CribLink",
+]
+scope = [
+  "crib",
+  "config",
+  "CribLink",
+]
+symbol_was = []
+calls = [
+  "confine [crib/paths.py]",
+]
+called_by = [
+  "_enumerate_code_files [crib/app.py]",
+  "_parse [crib/config.py]",
+  "in_store [crib/config.py]",
+  "project_adopt [crib/app.py]",
+  "test_missing_store_key_is_simply_absent [tests/test_repo_storage.py]",
+  "test_store_relpath_resolves_against_the_repo_root [tests/test_repo_storage.py]",
+  "test_store_that_escapes_the_repo_is_refused [tests/test_repo_storage.py]",
+]
+references = [
+  "_enumerate_code_files [crib/app.py]",
+  "_parse [crib/config.py]",
+  "in_store [crib/config.py]",
+  "project_adopt [crib/app.py]",
+  "test_missing_store_key_is_simply_absent [tests/test_repo_storage.py]",
+  "test_store_relpath_resolves_against_the_repo_root [tests/test_repo_storage.py]",
+  "test_store_that_escapes_the_repo_is_refused [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.store_dir",
+  "dir",
+  "link",
+  "store",
+  "store_dir",
+]

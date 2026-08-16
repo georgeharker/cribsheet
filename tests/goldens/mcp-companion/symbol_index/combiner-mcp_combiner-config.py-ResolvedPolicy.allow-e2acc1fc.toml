@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ResolvedPolicy.allow"
+fqn = "combiner.mcp_combiner.config.ResolvedPolicy.allow"
+name = "allow"
+kind = "field"
+lang = "python"
+content_hash = "8ac022bae0423577"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "allow: tuple[str, ...]"
+description = ""
+schema = 4
+line = 200
+mtime = 1783633313000000000
+container = [
+  "ResolvedPolicy",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ResolvedPolicy",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+  "_rp [combiner/tests/test_permissions.py]",
+  "resolve [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "allow",
+  "combiner",
+  "combiner.mcp_combiner.config.ResolvedPolicy.allow",
+  "config",
+  "mcp",
+  "policy",
+  "resolved",
+]

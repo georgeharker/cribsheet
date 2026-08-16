@@ -1,0 +1,32 @@
+symbol_ref = "combiner/tests/test_upstream_restart.py#pytestmark"
+fqn = "combiner.tests.test_upstream_restart.pytestmark"
+name = "pytestmark"
+kind = "global"
+lang = "python"
+content_hash = "d2ca828675f797eb"
+file = "combiner/tests/test_upstream_restart.py"
+file_hash = "c3ceaa6ec420f1df"
+signature = "pytestmark = pytest.mark.e2e"
+description = ""
+schema = 4
+line = 43
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_upstream_restart",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_upstream_restart.pytestmark",
+  "pytestmark",
+  "restart",
+  "test",
+  "tests",
+  "upstream",
+]

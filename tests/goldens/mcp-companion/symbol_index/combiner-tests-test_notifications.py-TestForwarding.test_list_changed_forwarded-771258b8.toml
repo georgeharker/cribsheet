@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestForwarding.test_list_changed_forwarded"
+fqn = "combiner.tests.test_notifications.TestForwarding.test_list_changed_forwarded"
+name = "test_list_changed_forwarded"
+kind = "method"
+lang = "python"
+content_hash = "8e7b6d279941031d"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "async def test_list_changed_forwarded(self) -> None:"
+description = ""
+schema = 4
+line = 300
+mtime = 1784493613000000000
+container = [
+  "TestForwarding",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "TestForwarding",
+]
+symbol_was = []
+calls = [
+  "_FakeClient [combiner/tests/test_notifications.py]",
+  "_FakeSession [combiner/tests/test_notifications.py]",
+  "_ResourceNotifyHandler [combiner/mcp_combiner/notifications.py]",
+  "_list_changed [combiner/tests/test_notifications.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "changed",
+  "combiner",
+  "combiner.tests.test_notifications.TestForwarding.test_list_changed_forwarded",
+  "forwarded",
+  "forwarding",
+  "list",
+  "notifications",
+  "test",
+  "test_list_changed_forwarded",
+  "tests",
+]

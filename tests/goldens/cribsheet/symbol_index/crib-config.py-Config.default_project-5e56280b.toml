@@ -1,0 +1,39 @@
+symbol_ref = "crib/config.py#Config.default_project"
+fqn = "crib.config.Config.default_project"
+name = "default_project"
+kind = "field"
+lang = "python"
+content_hash = "b820ec6b05c5e2bf"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "default_project: str = \"default\""
+description = ""
+schema = 4
+line = 251
+mtime = 1786564832000000000
+container = [
+  "Config",
+]
+scope = [
+  "crib",
+  "config",
+  "Config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_resolve [crib/server.py]",
+  "cmd_info [crib/cli.py]",
+  "current_project [crib/app.py]",
+  "resolve_project [crib/config.py]",
+  "test_unknown_top_level_key_warns_and_loads [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.default_project",
+  "default",
+  "default_project",
+  "project",
+]

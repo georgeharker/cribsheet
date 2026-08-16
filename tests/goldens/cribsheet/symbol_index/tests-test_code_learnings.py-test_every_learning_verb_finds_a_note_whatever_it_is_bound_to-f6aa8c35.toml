@@ -1,0 +1,47 @@
+symbol_ref = "tests/test_code_learnings.py#test_every_learning_verb_finds_a_note_whatever_it_is_bound_to"
+fqn = "tests.test_code_learnings.test_every_learning_verb_finds_a_note_whatever_it_is_bound_to"
+name = "test_every_learning_verb_finds_a_note_whatever_it_is_bound_to"
+kind = "function"
+lang = "python"
+content_hash = "ee1da2e96fe65631"
+file = "tests/test_code_learnings.py"
+file_hash = "2cacd018989edacf"
+signature = "@pytest.mark.parametrize(\"binding\", ["
+description = ""
+schema = 4
+line = 293
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_learnings",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_note_bound_to [tests/test_code_learnings.py]",
+  "_seed_symbol [tests/test_code_learnings.py]",
+  "all [crib/codeindex.py]",
+  "run [tests/test_code_learnings.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "bound",
+  "code",
+  "every",
+  "finds",
+  "is",
+  "it",
+  "learning",
+  "learnings",
+  "note",
+  "test",
+  "test_every_learning_verb_finds_a_note_whatever_it_is_bound_to",
+  "tests",
+  "tests.test_code_learnings.test_every_learning_verb_finds_a_note_whatever_it_is_bound_to",
+  "to",
+  "verb",
+  "whatever",
+]

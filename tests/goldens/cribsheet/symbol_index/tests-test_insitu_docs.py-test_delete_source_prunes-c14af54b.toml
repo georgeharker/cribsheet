@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_insitu_docs.py#test_delete_source_prunes"
+fqn = "tests.test_insitu_docs.test_delete_source_prunes"
+name = "test_delete_source_prunes"
+kind = "function"
+lang = "python"
+content_hash = "278740a7ac8fc434"
+file = "tests/test_insitu_docs.py"
+file_hash = "17deff7174bfef2a"
+signature = "def test_delete_source_prunes(crib, tmp_path):"
+description = ""
+schema = 4
+line = 83
+mtime = 1783476730000000000
+container = []
+scope = [
+  "tests",
+  "test_insitu_docs",
+]
+symbol_was = []
+calls = [
+  "_repo [tests/test_insitu_docs.py]",
+  "run [tests/test_insitu_docs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "delete",
+  "docs",
+  "insitu",
+  "prunes",
+  "source",
+  "test",
+  "test_delete_source_prunes",
+  "tests",
+  "tests.test_insitu_docs.test_delete_source_prunes",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "crib/store.py#InMemoryStore.upsert"
+fqn = "crib.store.InMemoryStore.upsert"
+name = "upsert"
+kind = "method"
+lang = "python"
+content_hash = "1777336753c8e15d"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def upsert(self, records: list[Record]) -> None:"
+description = ""
+schema = 4
+line = 102
+mtime = 1786564832000000000
+container = [
+  "InMemoryStore",
+]
+scope = [
+  "crib",
+  "store",
+  "InMemoryStore",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_a_dim_mismatch_raises_instead_of_scoring_a_truncated_vector [tests/test_dim_recovery.py]",
+  "test_lexical_cache_survives_invalidation_mid_read [tests/test_loop_responsiveness.py]",
+  "upsert [crib/store.py]",
+]
+references = [
+  "test_a_dim_mismatch_raises_instead_of_scoring_a_truncated_vector [tests/test_dim_recovery.py]",
+  "test_lexical_cache_survives_invalidation_mid_read [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.InMemoryStore.upsert",
+  "in",
+  "memory",
+  "store",
+  "upsert",
+]

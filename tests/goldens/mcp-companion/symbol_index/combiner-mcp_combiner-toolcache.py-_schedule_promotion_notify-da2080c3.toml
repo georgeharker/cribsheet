@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#_schedule_promotion_notify"
+fqn = "combiner.mcp_combiner.toolcache._schedule_promotion_notify"
+name = "_schedule_promotion_notify"
+kind = "function"
+lang = "python"
+content_hash = "f23481506ebf487d"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "def _schedule_promotion_notify(servers: list[str]) -> None:"
+description = ""
+schema = 4
+line = 303
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = [
+  "notify_tool_list_changed [combiner/mcp_combiner/toolcache.py]",
+]
+called_by = [
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+]
+references = [
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+]
+name_terms = [
+  "_schedule_promotion_notify",
+  "combiner",
+  "combiner.mcp_combiner.toolcache._schedule_promotion_notify",
+  "mcp",
+  "notify",
+  "promotion",
+  "schedule",
+  "toolcache",
+]

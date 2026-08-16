@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_designs.py#test_dep_add_refuses_to_create_a_cycle"
+fqn = "tests.test_designs.test_dep_add_refuses_to_create_a_cycle"
+name = "test_dep_add_refuses_to_create_a_cycle"
+kind = "function"
+lang = "python"
+content_hash = "e0a80606a9f8e3ea"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_dep_add_refuses_to_create_a_cycle(crib):"
+description = ""
+schema = 4
+line = 103
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "add",
+  "create",
+  "cycle",
+  "dep",
+  "designs",
+  "refuses",
+  "test",
+  "test_dep_add_refuses_to_create_a_cycle",
+  "tests",
+  "tests.test_designs.test_dep_add_refuses_to_create_a_cycle",
+  "to",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "crib/codequery.py#GRAPH_SHAPES"
+fqn = "crib.codequery.GRAPH_SHAPES"
+name = "GRAPH_SHAPES"
+kind = "constant"
+lang = "python"
+content_hash = "e844ae6a19d49fd3"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "GRAPH_SHAPES = (\"tree\", \"edges\")"
+description = ""
+schema = 4
+line = 61
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "graph [crib/codequery.py]",
+]
+name_terms = [
+  "GRAPH_SHAPES",
+  "codequery",
+  "crib",
+  "crib.codequery.GRAPH_SHAPES",
+  "graph",
+  "shapes",
+]

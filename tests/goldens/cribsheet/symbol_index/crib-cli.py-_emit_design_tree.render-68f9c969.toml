@@ -1,0 +1,42 @@
+symbol_ref = "crib/cli.py#_emit_design_tree.render"
+fqn = "crib.cli._emit_design_tree.render"
+name = "render"
+kind = "function"
+lang = "python"
+content_hash = "aca13ba7803937e4"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def render(node: dict, prefix: str) -> None:"
+description = ""
+schema = 4
+line = 563
+mtime = 1786693579000000000
+container = [
+  "_emit_design_tree",
+]
+scope = [
+  "crib",
+  "cli",
+  "_emit_design_tree",
+]
+symbol_was = []
+calls = [
+  "label [crib/cli.py]",
+  "render [crib/cli.py]",
+]
+called_by = [
+  "_emit_design_tree [crib/cli.py]",
+  "render [crib/cli.py]",
+]
+references = [
+  "_emit_design_tree [crib/cli.py]",
+]
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli._emit_design_tree.render",
+  "design",
+  "emit",
+  "render",
+  "tree",
+]

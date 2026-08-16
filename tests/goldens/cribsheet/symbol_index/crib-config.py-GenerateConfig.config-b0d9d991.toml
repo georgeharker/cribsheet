@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#GenerateConfig.config"
+fqn = "crib.config.GenerateConfig.config"
+name = "config"
+kind = "field"
+lang = "python"
+content_hash = "7c122b78e30da45c"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "config: str | None = None"
+description = ""
+schema = 4
+line = 184
+mtime = 1786564832000000000
+container = [
+  "GenerateConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "GenerateConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_resolve_embed_config [crib/app.py]",
+  "resolve_provider [crib/generate.py]",
+  "test_resolve_provider_by_profile_and_purpose [tests/test_elaborate.py]",
+  "test_resolve_provider_missing_selection_errors [tests/test_elaborate.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.GenerateConfig.config",
+  "generate",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_ManagedConnection._backoff"
+fqn = "combiner.mcp_combiner.connections._ManagedConnection._backoff"
+name = "_backoff"
+kind = "field"
+lang = "python"
+content_hash = "296004579d73f398"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_backoff: float = field(default=_INITIAL_BACKOFF, repr=False)"
+description = ""
+schema = 4
+line = 150
+mtime = 1784493613000000000
+container = [
+  "_ManagedConnection",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "_ManagedConnection",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_backoff",
+  "backoff",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection._backoff",
+  "connection",
+  "connections",
+  "managed",
+  "mcp",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_HEALTH_FAILURES_BEFORE_RECONNECT"
+fqn = "combiner.mcp_combiner.connections._HEALTH_FAILURES_BEFORE_RECONNECT"
+name = "_HEALTH_FAILURES_BEFORE_RECONNECT"
+kind = "constant"
+lang = "python"
+content_hash = "439e6f2279b150b9"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_HEALTH_FAILURES_BEFORE_RECONNECT = _env_int(\"MCP_COMBINER_HEALTH_FAILURES\", 3)"
+description = ""
+schema = 4
+line = 110
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+  "test_ping_timeout_and_failures_are_env_configurable [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "_HEALTH_FAILURES_BEFORE_RECONNECT",
+  "before",
+  "combiner",
+  "combiner.mcp_combiner.connections._HEALTH_FAILURES_BEFORE_RECONNECT",
+  "connections",
+  "failures",
+  "health",
+  "mcp",
+  "reconnect",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_rerank.py#_hits"
+fqn = "tests.test_rerank._hits"
+name = "_hits"
+kind = "function"
+lang = "python"
+content_hash = "d54e02699c1c9f1f"
+file = "tests/test_rerank.py"
+file_hash = "29066147cbea547e"
+signature = "def _hits(scores):"
+description = ""
+schema = 4
+line = 56
+mtime = 1783981122000000000
+container = []
+scope = [
+  "tests",
+  "test_rerank",
+]
+symbol_was = []
+calls = [
+  "Hit [crib/store.py]",
+]
+called_by = [
+  "test_rerank_decisive_preference_dethrones_close_head [tests/test_rerank.py]",
+  "test_rerank_influence_is_bounded [tests/test_rerank.py]",
+  "test_rerank_reorders_head_only [tests/test_rerank.py]",
+]
+references = [
+  "test_rerank_decisive_preference_dethrones_close_head [tests/test_rerank.py]",
+  "test_rerank_influence_is_bounded [tests/test_rerank.py]",
+  "test_rerank_reorders_head_only [tests/test_rerank.py]",
+]
+name_terms = [
+  "_hits",
+  "hits",
+  "rerank",
+  "test",
+  "tests",
+  "tests.test_rerank._hits",
+]

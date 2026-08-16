@@ -1,0 +1,38 @@
+symbol_ref = "crib/server.py#build_server.code_index"
+fqn = "crib.server.build_server.code_index"
+name = "code_index"
+kind = "function"
+lang = "python"
+content_hash = "11f26c5cb74a4ec2"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"source\")"
+description = ""
+schema = 4
+line = 602
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "_cwd [crib/server.py]",
+  "code_index [crib/app.py]",
+  "crib_tool [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "code",
+  "code_index",
+  "crib",
+  "crib.server.build_server.code_index",
+  "index",
+  "server",
+]

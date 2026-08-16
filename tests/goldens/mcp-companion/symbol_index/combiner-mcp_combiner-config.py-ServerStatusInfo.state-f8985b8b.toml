@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ServerStatusInfo.state"
+fqn = "combiner.mcp_combiner.config.ServerStatusInfo.state"
+name = "state"
+kind = "field"
+lang = "python"
+content_hash = "4c463a1cbf827877"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "state: str = \"unknown\""
+description = ""
+schema = 4
+line = 410
+mtime = 1783633313000000000
+container = [
+  "ServerStatusInfo",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ServerStatusInfo",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_call_failure_overrides_optimistic_http_ready [combiner/tests/test_connections.py]",
+  "test_disabled_server_reports_disabled [combiner/tests/test_connections.py]",
+  "test_http_server_reflects_connection_lifecycle [combiner/tests/test_connections.py]",
+  "test_stdio_crash_reports_disconnected [combiner/tests/test_connections.py]",
+  "test_stdio_server_tristate [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerStatusInfo.state",
+  "config",
+  "info",
+  "mcp",
+  "server",
+  "state",
+  "status",
+]

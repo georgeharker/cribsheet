@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#_rest"
+fqn = "combiner.mcp_combiner.ctl._rest"
+name = "_rest"
+kind = "function"
+lang = "python"
+content_hash = "c693a781e153abf0"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "async def _rest("
+description = ""
+schema = 4
+line = 36
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = [
+  "_base_url [combiner/mcp_combiner/ctl.py]",
+]
+called_by = [
+  "cmd_health [combiner/mcp_combiner/ctl.py]",
+  "cmd_session [combiner/mcp_combiner/ctl.py]",
+  "cmd_status [combiner/mcp_combiner/ctl.py]",
+]
+references = [
+  "cmd_health [combiner/mcp_combiner/ctl.py]",
+  "cmd_session [combiner/mcp_combiner/ctl.py]",
+  "cmd_status [combiner/mcp_combiner/ctl.py]",
+]
+name_terms = [
+  "_rest",
+  "combiner",
+  "combiner.mcp_combiner.ctl._rest",
+  "ctl",
+  "mcp",
+  "rest",
+]

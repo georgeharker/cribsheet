@@ -1,0 +1,45 @@
+symbol_ref = "crib/notestore.py#NoteStore.reindex"
+fqn = "crib.notestore.NoteStore.reindex"
+name = "reindex"
+kind = "method"
+lang = "python"
+content_hash = "a6a00d181ef4233f"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "async def reindex(self, project: str, relpath: str | None = None) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 279
+mtime = 1786564832000000000
+container = [
+  "NoteStore",
+]
+scope = [
+  "crib",
+  "notestore",
+  "NoteStore",
+]
+symbol_was = []
+calls = [
+  "dir [crib/notestore.py]",
+  "get_meta [crib/store.py]",
+  "index_file [crib/indexer.py]",
+]
+called_by = [
+  "convert_notes [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "reindex [crib/app.py]",
+]
+references = [
+  "convert_notes [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "reindex [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.NoteStore.reindex",
+  "note",
+  "notestore",
+  "reindex",
+  "store",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_config_resilience.py#test_broken_toml_names_the_file"
+fqn = "tests.test_config_resilience.test_broken_toml_names_the_file"
+name = "test_broken_toml_names_the_file"
+kind = "function"
+lang = "python"
+content_hash = "4d0ca9f658111cc7"
+file = "tests/test_config_resilience.py"
+file_hash = "620aeb96b59e7b2d"
+signature = "def test_broken_toml_names_the_file(tmp_path):"
+description = ""
+schema = 4
+line = 62
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_config_resilience",
+]
+symbol_was = []
+calls = [
+  "_cfg [tests/test_config_resilience.py]",
+  "load [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "broken",
+  "config",
+  "file",
+  "names",
+  "resilience",
+  "test",
+  "test_broken_toml_names_the_file",
+  "tests",
+  "tests.test_config_resilience.test_broken_toml_names_the_file",
+  "the",
+  "toml",
+]

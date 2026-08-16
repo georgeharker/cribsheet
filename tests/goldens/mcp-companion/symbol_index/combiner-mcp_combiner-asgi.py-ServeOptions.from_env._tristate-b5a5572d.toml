@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/asgi.py#ServeOptions.from_env._tristate"
+fqn = "combiner.mcp_combiner.asgi.ServeOptions.from_env._tristate"
+name = "_tristate"
+kind = "function"
+lang = "python"
+content_hash = "63711b497cc2a054"
+file = "combiner/mcp_combiner/asgi.py"
+file_hash = "1ff2dd1d6ee7f6d0"
+signature = "def _tristate(name: str) -> bool | None:"
+description = ""
+schema = 4
+line = 66
+mtime = 1783548694000000000
+container = [
+  "ServeOptions",
+  "from_env",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "asgi",
+  "ServeOptions",
+  "from_env",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "from_env [combiner/mcp_combiner/asgi.py]",
+]
+references = [
+  "from_env [combiner/mcp_combiner/asgi.py]",
+]
+name_terms = [
+  "_tristate",
+  "asgi",
+  "combiner",
+  "combiner.mcp_combiner.asgi.ServeOptions.from_env._tristate",
+  "env",
+  "from",
+  "mcp",
+  "options",
+  "serve",
+  "tristate",
+]

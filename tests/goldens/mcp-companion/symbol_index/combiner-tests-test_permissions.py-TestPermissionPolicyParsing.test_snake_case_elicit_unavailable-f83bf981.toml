@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestPermissionPolicyParsing.test_snake_case_elicit_unavailable"
+fqn = "combiner.tests.test_permissions.TestPermissionPolicyParsing.test_snake_case_elicit_unavailable"
+name = "test_snake_case_elicit_unavailable"
+kind = "method"
+lang = "python"
+content_hash = "6251a711e4f22f4c"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "def test_snake_case_elicit_unavailable(self) -> None:"
+description = ""
+schema = 4
+line = 66
+mtime = 1783633313000000000
+container = [
+  "TestPermissionPolicyParsing",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "TestPermissionPolicyParsing",
+]
+symbol_was = []
+calls = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "case",
+  "combiner",
+  "combiner.tests.test_permissions.TestPermissionPolicyParsing.test_snake_case_elicit_unavailable",
+  "elicit",
+  "parsing",
+  "permission",
+  "permissions",
+  "policy",
+  "snake",
+  "test",
+  "test_snake_case_elicit_unavailable",
+  "tests",
+  "unavailable",
+]

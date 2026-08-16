@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_design_cli.py#test_reaffirm_replaced_verify_outright"
+fqn = "tests.test_design_cli.test_reaffirm_replaced_verify_outright"
+name = "test_reaffirm_replaced_verify_outright"
+kind = "function"
+lang = "python"
+content_hash = "884e0d63a2376075"
+file = "tests/test_design_cli.py"
+file_hash = "0f819c263d62afaf"
+signature = "def test_reaffirm_replaced_verify_outright():"
+description = ""
+schema = 4
+line = 142
+mtime = 1785974065000000000
+container = []
+scope = [
+  "tests",
+  "test_design_cli",
+]
+symbol_was = []
+calls = [
+  "build_parser [crib/cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cli",
+  "design",
+  "outright",
+  "reaffirm",
+  "replaced",
+  "test",
+  "test_reaffirm_replaced_verify_outright",
+  "tests",
+  "tests.test_design_cli.test_reaffirm_replaced_verify_outright",
+  "verify",
+]

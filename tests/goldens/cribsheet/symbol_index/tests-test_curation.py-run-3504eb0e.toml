@@ -1,0 +1,49 @@
+symbol_ref = "tests/test_curation.py#run"
+fqn = "tests.test_curation.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "44052857cf112194"
+file = "tests/test_curation.py"
+file_hash = "f61c123d8750454b"
+signature = "def run(coro):"
+description = ""
+schema = 4
+line = 23
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_curation",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_a_read_for_a_typod_project_does_not_create_it [tests/test_curation.py]",
+  "test_an_id_less_note_still_reaches_the_version_ring [tests/test_curation.py]",
+  "test_move_across_projects_preserves_id [tests/test_curation.py]",
+  "test_move_onto_itself_is_refused_by_RESOLVED_path [tests/test_curation.py]",
+  "test_move_rejects_clobber_and_noop [tests/test_curation.py]",
+  "test_reconcile_reports_duplicate_ids_from_an_interrupted_move [tests/test_curation.py]",
+  "test_relpath_is_predictable_then_collision_suffixed [tests/test_curation.py]",
+  "test_similar_field_present_and_excludes_self [tests/test_curation.py]",
+  "test_store_reports_created_for_new_project [tests/test_curation.py]",
+]
+references = [
+  "test_a_read_for_a_typod_project_does_not_create_it [tests/test_curation.py]",
+  "test_an_id_less_note_still_reaches_the_version_ring [tests/test_curation.py]",
+  "test_move_across_projects_preserves_id [tests/test_curation.py]",
+  "test_move_onto_itself_is_refused_by_RESOLVED_path [tests/test_curation.py]",
+  "test_move_rejects_clobber_and_noop [tests/test_curation.py]",
+  "test_reconcile_reports_duplicate_ids_from_an_interrupted_move [tests/test_curation.py]",
+  "test_relpath_is_predictable_then_collision_suffixed [tests/test_curation.py]",
+  "test_similar_field_present_and_excludes_self [tests/test_curation.py]",
+  "test_store_reports_created_for_new_project [tests/test_curation.py]",
+]
+name_terms = [
+  "curation",
+  "run",
+  "test",
+  "tests",
+  "tests.test_curation.run",
+]

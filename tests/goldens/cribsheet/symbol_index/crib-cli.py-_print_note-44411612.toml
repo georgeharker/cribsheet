@@ -1,0 +1,36 @@
+symbol_ref = "crib/cli.py#_print_note"
+fqn = "crib.cli._print_note"
+name = "_print_note"
+kind = "function"
+lang = "python"
+content_hash = "dd5faf21e2842d95"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _print_note(text: str, as_json: bool) -> None:"
+description = ""
+schema = 4
+line = 125
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_render_markdown [crib/cli.py]",
+]
+called_by = [
+  "_E_note [crib/cli.py]",
+]
+references = [
+  "_E_note [crib/cli.py]",
+]
+name_terms = [
+  "_print_note",
+  "cli",
+  "crib",
+  "crib.cli._print_note",
+  "note",
+  "print",
+]

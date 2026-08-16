@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_watcher.py#test_decode_path_to_project_relpath"
+fqn = "tests.test_watcher.test_decode_path_to_project_relpath"
+name = "test_decode_path_to_project_relpath"
+kind = "function"
+lang = "python"
+content_hash = "a7e98a6b21d3f375"
+file = "tests/test_watcher.py"
+file_hash = "f95c6316824837fd"
+signature = "def test_decode_path_to_project_relpath(tmp_path):"
+description = ""
+schema = 4
+line = 19
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_watcher",
+]
+symbol_was = []
+calls = [
+  "decode [crib/watch.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "decode",
+  "path",
+  "project",
+  "relpath",
+  "test",
+  "test_decode_path_to_project_relpath",
+  "tests",
+  "tests.test_watcher.test_decode_path_to_project_relpath",
+  "to",
+  "watcher",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_notifications.py#_FakeSession"
+fqn = "combiner.tests.test_notifications._FakeSession"
+name = "_FakeSession"
+kind = "class"
+lang = "python"
+content_hash = "91f0f891781a979b"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "class _FakeSession(_SessionBase):"
+description = ""
+schema = 4
+line = 63
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "broadcast_sessions [combiner/tests/test_notifications.py]",
+  "test_dead_target_is_skipped_not_broadcast [combiner/tests/test_notifications.py]",
+  "test_list_changed_forwarded [combiner/tests/test_notifications.py]",
+  "test_no_resource_notification_is_passthrough [combiner/tests/test_notifications.py]",
+  "test_tool_list_changed_triggers_reprime_not_forward [combiner/tests/test_notifications.py]",
+  "test_updated_broadcasts_when_no_target [combiner/tests/test_notifications.py]",
+  "test_updated_forward_namespaced_to_target [combiner/tests/test_notifications.py]",
+]
+name_terms = [
+  "_FakeSession",
+  "combiner",
+  "combiner.tests.test_notifications._FakeSession",
+  "fake",
+  "notifications",
+  "session",
+  "test",
+  "tests",
+]

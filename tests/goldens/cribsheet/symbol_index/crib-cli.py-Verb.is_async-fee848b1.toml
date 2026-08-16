@@ -1,0 +1,37 @@
+symbol_ref = "crib/cli.py#Verb.is_async"
+fqn = "crib.cli.Verb.is_async"
+name = "is_async"
+kind = "field"
+lang = "python"
+content_hash = "6c251549812948ca"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "is_async: bool = False                      # in-process wraps in asyncio.run"
+description = ""
+schema = 4
+line = 1465
+mtime = 1786693579000000000
+container = [
+  "Verb",
+]
+scope = [
+  "crib",
+  "cli",
+  "Verb",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "VERBS [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+]
+name_terms = [
+  "async",
+  "cli",
+  "crib",
+  "crib.cli.Verb.is_async",
+  "is",
+  "is_async",
+  "verb",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_malformed_notes.py#test_forget_still_recovers_a_corrupt_note"
+fqn = "tests.test_malformed_notes.test_forget_still_recovers_a_corrupt_note"
+name = "test_forget_still_recovers_a_corrupt_note"
+kind = "function"
+lang = "python"
+content_hash = "8bad73c414648bfa"
+file = "tests/test_malformed_notes.py"
+file_hash = "e46dac071f53c31f"
+signature = "def test_forget_still_recovers_a_corrupt_note(crib):"
+description = ""
+schema = 4
+line = 85
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_malformed_notes",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_malformed_notes.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "corrupt",
+  "forget",
+  "malformed",
+  "note",
+  "notes",
+  "recovers",
+  "still",
+  "test",
+  "test_forget_still_recovers_a_corrupt_note",
+  "tests",
+  "tests.test_malformed_notes.test_forget_still_recovers_a_corrupt_note",
+]

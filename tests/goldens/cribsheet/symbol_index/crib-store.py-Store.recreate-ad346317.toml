@@ -1,0 +1,35 @@
+symbol_ref = "crib/store.py#Store.recreate"
+fqn = "crib.store.Store.recreate"
+name = "recreate"
+kind = "method"
+lang = "python"
+content_hash = "ed817d58a63f4a4f"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def recreate(self) -> None:"
+description = ""
+schema = 4
+line = 63
+mtime = 1786564832000000000
+container = [
+  "Store",
+]
+scope = [
+  "crib",
+  "store",
+  "Store",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_maybe_recreate_for_dim [crib/app.py]",
+]
+references = [
+  "_maybe_recreate_for_dim [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Store.recreate",
+  "recreate",
+  "store",
+]

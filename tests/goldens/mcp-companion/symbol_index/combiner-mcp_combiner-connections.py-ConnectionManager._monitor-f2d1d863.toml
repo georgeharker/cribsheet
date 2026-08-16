@@ -1,0 +1,53 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager._monitor"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager._monitor"
+name = "_monitor"
+kind = "method"
+lang = "python"
+content_hash = "964e8c1b8b4bd1d6"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "async def _monitor(self, conn: _ManagedConnection) -> None:"
+description = ""
+schema = 4
+line = 698
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = [
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+  "_signal_tools_ready [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "connect [combiner/mcp_combiner/connections.py]",
+  "test_monitor_probe_gives_up_eventually [combiner/tests/test_connections.py]",
+  "test_monitor_reconnects_when_prime_fails_on_stale_session [combiner/tests/test_connections.py]",
+  "test_monitor_reprimes_connected_but_not_ready [combiner/tests/test_connections.py]",
+  "test_reconnects_after_threshold_consecutive_misses [combiner/tests/test_connections.py]",
+  "test_transient_ping_miss_does_not_reconnect [combiner/tests/test_connections.py]",
+]
+references = [
+  "connect [combiner/mcp_combiner/connections.py]",
+  "test_monitor_probe_gives_up_eventually [combiner/tests/test_connections.py]",
+  "test_monitor_reconnects_when_prime_fails_on_stale_session [combiner/tests/test_connections.py]",
+  "test_monitor_reprimes_connected_but_not_ready [combiner/tests/test_connections.py]",
+  "test_reconnects_after_threshold_consecutive_misses [combiner/tests/test_connections.py]",
+  "test_transient_ping_miss_does_not_reconnect [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "_monitor",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager._monitor",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+  "monitor",
+]

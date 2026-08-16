@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager.connect_all"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager.connect_all"
+name = "connect_all"
+kind = "method"
+lang = "python"
+content_hash = "0d410a8e2f1947d6"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "async def connect_all(self, config: CombinerConfig) -> None:"
+description = ""
+schema = 4
+line = 433
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = [
+  "_connect_one [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "all",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.connect_all",
+  "connect",
+  "connect_all",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+]

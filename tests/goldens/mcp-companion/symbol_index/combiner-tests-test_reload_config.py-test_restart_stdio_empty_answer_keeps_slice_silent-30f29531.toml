@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_reload_config.py#test_restart_stdio_empty_answer_keeps_slice_silent"
+fqn = "combiner.tests.test_reload_config.test_restart_stdio_empty_answer_keeps_slice_silent"
+name = "test_restart_stdio_empty_answer_keeps_slice_silent"
+kind = "function"
+lang = "python"
+content_hash = "93b030de56337a08"
+file = "combiner/tests/test_reload_config.py"
+file_hash = "1ab3b3e0b48c7d3d"
+signature = "async def test_restart_stdio_empty_answer_keeps_slice_silent("
+description = ""
+schema = 4
+line = 304
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_reload_config",
+]
+symbol_was = []
+calls = [
+  "FakeCombiner [combiner/tests/fakes.py]",
+  "FakeConnManager [combiner/tests/fakes.py]",
+  "FakeSSManager [combiner/tests/fakes.py]",
+  "_write [combiner/tests/test_reload_config.py]",
+  "load [combiner/mcp_combiner/config.py]",
+  "mount_server_provider [combiner/mcp_combiner/mounts.py]",
+  "register_meta_tools [combiner/mcp_combiner/meta_tools.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "answer",
+  "combiner",
+  "combiner.tests.test_reload_config.test_restart_stdio_empty_answer_keeps_slice_silent",
+  "config",
+  "empty",
+  "keeps",
+  "reload",
+  "restart",
+  "silent",
+  "slice",
+  "stdio",
+  "test",
+  "test_restart_stdio_empty_answer_keeps_slice_silent",
+  "tests",
+]

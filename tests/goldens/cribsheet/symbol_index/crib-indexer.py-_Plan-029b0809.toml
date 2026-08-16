@@ -1,0 +1,31 @@
+symbol_ref = "crib/indexer.py#_Plan"
+fqn = "crib.indexer._Plan"
+name = "_Plan"
+kind = "class"
+lang = "python"
+content_hash = "6bcd78f0ee9f35c3"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 45
+mtime = 1786578262000000000
+container = []
+scope = [
+  "crib",
+  "indexer",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_plan [crib/indexer.py]",
+]
+name_terms = [
+  "_Plan",
+  "crib",
+  "crib.indexer._Plan",
+  "indexer",
+  "plan",
+]

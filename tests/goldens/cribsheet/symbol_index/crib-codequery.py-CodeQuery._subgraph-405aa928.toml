@@ -1,0 +1,46 @@
+symbol_ref = "crib/codequery.py#CodeQuery._subgraph"
+fqn = "crib.codequery.CodeQuery._subgraph"
+name = "_subgraph"
+kind = "method"
+lang = "python"
+content_hash = "0b70837e42cd8013"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def _subgraph(self, proj: str, root: dict, root_proj: str, edge: str,"
+description = ""
+schema = 4
+line = 655
+mtime = 1786664729000000000
+container = [
+  "CodeQuery",
+]
+scope = [
+  "crib",
+  "codequery",
+  "CodeQuery",
+]
+symbol_was = []
+calls = [
+  "_marked [crib/codequery.py]",
+  "decode_edge [crib/symbols.py]",
+  "key [crib/symbols.py]",
+  "marks [crib/learnings.py]",
+  "nid [crib/codequery.py]",
+  "put [crib/codequery.py]",
+  "put_external [crib/codequery.py]",
+]
+called_by = [
+  "graph [crib/codequery.py]",
+]
+references = [
+  "graph [crib/codequery.py]",
+]
+name_terms = [
+  "_subgraph",
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery._subgraph",
+  "query",
+  "subgraph",
+]

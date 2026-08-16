@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_designs.py#test_status_counts_stale_decisions_per_project"
+fqn = "tests.test_designs.test_status_counts_stale_decisions_per_project"
+name = "test_status_counts_stale_decisions_per_project"
+kind = "function"
+lang = "python"
+content_hash = "c0b03bed843ac7b0"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_status_counts_stale_decisions_per_project(crib):"
+description = ""
+schema = 4
+line = 412
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "counts",
+  "decisions",
+  "designs",
+  "per",
+  "project",
+  "stale",
+  "status",
+  "test",
+  "test_status_counts_stale_decisions_per_project",
+  "tests",
+  "tests.test_designs.test_status_counts_stale_decisions_per_project",
+]

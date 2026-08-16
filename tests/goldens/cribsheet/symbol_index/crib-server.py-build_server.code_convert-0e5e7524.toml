@@ -1,0 +1,38 @@
+symbol_ref = "crib/server.py#build_server.code_convert"
+fqn = "crib.server.build_server.code_convert"
+name = "code_convert"
+kind = "function"
+lang = "python"
+content_hash = "4e9e23734a204790"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@crib_tool(\"write\")"
+description = ""
+schema = 4
+line = 892
+mtime = 1786693579000000000
+container = [
+  "build_server",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+]
+symbol_was = []
+calls = [
+  "_cwd [crib/server.py]",
+  "code_convert [crib/app.py]",
+  "crib_tool [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "code",
+  "code_convert",
+  "convert",
+  "crib",
+  "crib.server.build_server.code_convert",
+  "server",
+]

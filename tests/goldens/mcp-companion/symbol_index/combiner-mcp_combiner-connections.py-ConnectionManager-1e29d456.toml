@@ -1,0 +1,69 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager"
+name = "ConnectionManager"
+kind = "class"
+lang = "python"
+content_hash = "0de00b4403002b04"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "class ConnectionManager:"
+description = ""
+schema = 4
+line = 183
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_conn_manager [combiner/mcp_combiner/server.py]",
+  "_effective_isolate [combiner/mcp_combiner/proxyfactory.py]",
+  "_inject_conn [combiner/tests/test_connections.py]",
+  "build_server_status [combiner/mcp_combiner/status.py]",
+  "conn_manager [combiner/mcp_combiner/runtime.py]",
+  "create_combiner [combiner/mcp_combiner/server.py]",
+  "register_meta_tools [combiner/mcp_combiner/meta_tools.py]",
+  "register_routes [combiner/mcp_combiner/routes.py]",
+  "test_auth_failed_takes_precedence [combiner/tests/test_connections.py]",
+  "test_call_failure_overrides_optimistic_http_ready [combiner/tests/test_connections.py]",
+  "test_callback_exception_is_swallowed [combiner/tests/test_connections.py]",
+  "test_connected_when_tools_not_ready [combiner/tests/test_connections.py]",
+  "test_disabled_server_reports_disabled [combiner/tests/test_connections.py]",
+  "test_disconnected_when_client_not_connected [combiner/tests/test_connections.py]",
+  "test_disconnected_when_no_client [combiner/tests/test_connections.py]",
+  "test_does_not_signal_when_list_fails [combiner/tests/test_connections.py]",
+  "test_empty_answer_defers_ready [combiner/tests/test_connections.py]",
+  "test_http_server_reflects_connection_lifecycle [combiner/tests/test_connections.py]",
+  "test_local_backoff_capped [combiner/tests/test_connections.py]",
+  "test_mark_tools_unready_downgrades_ready_to_connected [combiner/tests/test_connections.py]",
+  "test_mark_tools_unready_unknown_is_noop [combiner/tests/test_connections.py]",
+  "test_monitor_probe_gives_up_eventually [combiner/tests/test_connections.py]",
+  "test_monitor_reconnects_when_prime_fails_on_stale_session [combiner/tests/test_connections.py]",
+  "test_monitor_reprimes_connected_but_not_ready [combiner/tests/test_connections.py]",
+  "test_no_callback_is_noop [combiner/tests/test_connections.py]",
+  "test_no_client_is_noop [combiner/tests/test_connections.py]",
+  "test_no_restart_without_shared_server [combiner/tests/test_connections.py]",
+  "test_ready_when_connected_and_tools_ready [combiner/tests/test_connections.py]",
+  "test_reconnects_after_threshold_consecutive_misses [combiner/tests/test_connections.py]",
+  "test_restarts_backing_after_threshold [combiner/tests/test_connections.py]",
+  "test_signals_ready_when_list_succeeds [combiner/tests/test_connections.py]",
+  "test_stdio_crash_reports_disconnected [combiner/tests/test_connections.py]",
+  "test_stdio_server_tristate [combiner/tests/test_connections.py]",
+  "test_success_resets_failure_counter [combiner/tests/test_connections.py]",
+  "test_transient_ping_miss_does_not_reconnect [combiner/tests/test_connections.py]",
+  "test_unknown_when_not_managed [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "ConnectionManager",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager",
+  "connection",
+  "connections",
+  "manager",
+  "mcp",
+]

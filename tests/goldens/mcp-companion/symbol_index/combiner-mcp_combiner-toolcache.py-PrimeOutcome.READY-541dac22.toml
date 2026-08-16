@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#PrimeOutcome.READY"
+fqn = "combiner.mcp_combiner.toolcache.PrimeOutcome.READY"
+name = "READY"
+kind = "constant"
+lang = "python"
+content_hash = "71c5ebdb2e0ac3eb"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "READY = \"ready\""
+description = ""
+schema = 4
+line = 42
+mtime = 1784493613000000000
+container = [
+  "PrimeOutcome",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+  "PrimeOutcome",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_prime_gated [combiner/mcp_combiner/toolcache.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "test_prime_empty_then_populated_publishes_once [combiner/tests/test_session_filter.py]",
+  "test_prime_retries_stores_then_invalidates [combiner/tests/test_session_filter.py]",
+  "test_reprime_changed_list_publishes [combiner/tests/test_session_filter.py]",
+  "test_reprime_unchanged_list_is_silent [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "READY",
+  "combiner",
+  "combiner.mcp_combiner.toolcache.PrimeOutcome.READY",
+  "mcp",
+  "outcome",
+  "prime",
+  "ready",
+  "toolcache",
+]

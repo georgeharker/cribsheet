@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_store_chroma.py#chromadb"
+fqn = "tests.test_store_chroma.chromadb"
+name = "chromadb"
+kind = "global"
+lang = "python"
+content_hash = "03b543bee1e912bc"
+file = "tests/test_store_chroma.py"
+file_hash = "c9d58563fea059fc"
+signature = "chromadb = pytest.importorskip(\"chromadb\")"
+description = ""
+schema = 4
+line = 15
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_store_chroma",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_missing_collection_predicate [tests/test_store_chroma.py]",
+  "test_retry_happens_only_once [tests/test_store_chroma.py]",
+]
+name_terms = [
+  "chroma",
+  "chromadb",
+  "store",
+  "test",
+  "tests",
+  "tests.test_store_chroma.chromadb",
+]

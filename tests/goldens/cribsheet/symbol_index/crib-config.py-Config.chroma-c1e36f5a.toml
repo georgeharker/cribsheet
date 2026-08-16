@@ -1,0 +1,35 @@
+symbol_ref = "crib/config.py#Config.chroma"
+fqn = "crib.config.Config.chroma"
+name = "chroma"
+kind = "field"
+lang = "python"
+content_hash = "8fd03669f85a0f24"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "chroma: ChromaConfig = field(default_factory=ChromaConfig)"
+description = ""
+schema = 4
+line = 256
+mtime = 1786564832000000000
+container = [
+  "Config",
+]
+scope = [
+  "crib",
+  "config",
+  "Config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_build_shared_chroma [crib/app.py]",
+  "_build_store [crib/app.py]",
+  "cmd_info [crib/cli.py]",
+]
+name_terms = [
+  "chroma",
+  "config",
+  "crib",
+  "crib.config.Config.chroma",
+]

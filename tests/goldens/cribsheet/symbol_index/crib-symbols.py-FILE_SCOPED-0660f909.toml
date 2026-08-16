@@ -1,0 +1,33 @@
+symbol_ref = "crib/symbols.py#FILE_SCOPED"
+fqn = "crib.symbols.FILE_SCOPED"
+name = "FILE_SCOPED"
+kind = "constant"
+lang = "python"
+content_hash = "a8ef420526072bb5"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "FILE_SCOPED = frozenset({\"c\", \"zsh\", \"sh\", \"bash\", \"fish\", \"make\"})"
+description = ""
+schema = 4
+line = 131
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "fqn [crib/symbols.py]",
+  "scope_of [crib/symbols.py]",
+]
+name_terms = [
+  "FILE_SCOPED",
+  "crib",
+  "crib.symbols.FILE_SCOPED",
+  "file",
+  "scoped",
+  "symbols",
+]

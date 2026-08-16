@@ -1,0 +1,40 @@
+symbol_ref = "crib/learnings.py#Learnings.candidates"
+fqn = "crib.learnings.Learnings.candidates"
+name = "candidates"
+kind = "method"
+lang = "python"
+content_hash = "aac163e19898a2d9"
+file = "crib/learnings.py"
+file_hash = "977a14d62df88945"
+signature = "def candidates(self, fm: dict[str, Any], entries: list[dict[str, Any]],"
+description = ""
+schema = 4
+line = 397
+mtime = 1786664729000000000
+container = [
+  "Learnings",
+]
+scope = [
+  "crib",
+  "learnings",
+  "Learnings",
+]
+symbol_was = []
+calls = [
+  "bindings [crib/symbols.py]",
+  "id_parts [crib/symbols.py]",
+  "key [crib/symbols.py]",
+  "tail [crib/symbols.py]",
+]
+called_by = [
+  "rehome [crib/learnings.py]",
+]
+references = [
+  "rehome [crib/learnings.py]",
+]
+name_terms = [
+  "candidates",
+  "crib",
+  "crib.learnings.Learnings.candidates",
+  "learnings",
+]

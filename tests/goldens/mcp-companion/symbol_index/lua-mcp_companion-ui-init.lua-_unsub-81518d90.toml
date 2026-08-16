@@ -1,0 +1,30 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#_unsub"
+fqn = "mcp_companion.ui._unsub"
+name = "_unsub"
+kind = "global"
+lang = "lua"
+content_hash = "f0d9cf27564ca00f"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "local _unsub = nil"
+description = ""
+schema = 4
+line = 12
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "ui",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_unsub",
+  "companion",
+  "mcp",
+  "mcp_companion.ui._unsub",
+  "ui",
+  "unsub",
+]

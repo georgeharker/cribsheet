@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_curation.py#test_move_onto_itself_is_refused_by_RESOLVED_path"
+fqn = "tests.test_curation.test_move_onto_itself_is_refused_by_RESOLVED_path"
+name = "test_move_onto_itself_is_refused_by_RESOLVED_path"
+kind = "function"
+lang = "python"
+content_hash = "958afffd2f209b60"
+file = "tests/test_curation.py"
+file_hash = "f61c123d8750454b"
+signature = "def test_move_onto_itself_is_refused_by_RESOLVED_path(crib):"
+description = ""
+schema = 4
+line = 66
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_curation",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_curation.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "by",
+  "curation",
+  "is",
+  "itself",
+  "move",
+  "onto",
+  "path",
+  "refused",
+  "resolved",
+  "test",
+  "test_move_onto_itself_is_refused_by_RESOLVED_path",
+  "tests",
+  "tests.test_curation.test_move_onto_itself_is_refused_by_RESOLVED_path",
+]

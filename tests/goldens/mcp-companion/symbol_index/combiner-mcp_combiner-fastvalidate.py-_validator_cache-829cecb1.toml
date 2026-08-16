@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/fastvalidate.py#_validator_cache"
+fqn = "combiner.mcp_combiner.fastvalidate._validator_cache"
+name = "_validator_cache"
+kind = "global"
+lang = "python"
+content_hash = "d839aecd90604859"
+file = "combiner/mcp_combiner/fastvalidate.py"
+file_hash = "c78d5e6efce28ebe"
+signature = "_validator_cache: dict[int, tuple[object, Any]] = {}"
+description = ""
+schema = 4
+line = 44
+mtime = 1782420032000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "fastvalidate",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_get_validator [combiner/mcp_combiner/fastvalidate.py]",
+  "clear_cache [combiner/mcp_combiner/fastvalidate.py]",
+]
+name_terms = [
+  "_validator_cache",
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.fastvalidate._validator_cache",
+  "fastvalidate",
+  "mcp",
+  "validator",
+]

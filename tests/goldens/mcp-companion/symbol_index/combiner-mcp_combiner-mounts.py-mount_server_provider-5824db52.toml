@@ -1,0 +1,58 @@
+symbol_ref = "combiner/mcp_combiner/mounts.py#mount_server_provider"
+fqn = "combiner.mcp_combiner.mounts.mount_server_provider"
+name = "mount_server_provider"
+kind = "function"
+lang = "python"
+content_hash = "b2e9300440772d49"
+file = "combiner/mcp_combiner/mounts.py"
+file_hash = "6bd48bfe5deb1fbd"
+signature = "def mount_server_provider(combiner: FastMCP, proxy: Any, server_name: str) -> None:"
+description = ""
+schema = 4
+line = 51
+mtime = 1783452495000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mounts",
+]
+symbol_was = []
+calls = [
+  "_registry [combiner/mcp_combiner/mounts.py]",
+  "drop_server_providers [combiner/mcp_combiner/mounts.py]",
+]
+called_by = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "harness [combiner/tests/test_reload_config.py]",
+  "test_drop_only_targets_named_server [combiner/tests/test_mounts.py]",
+  "test_drop_removes_real_mount [combiner/tests/test_mounts.py]",
+  "test_remount_does_not_duplicate [combiner/tests/test_mounts.py]",
+  "test_restart_leaves_one_live_provider [combiner/tests/test_mounts.py]",
+  "test_restart_stdio_empty_answer_keeps_slice_silent [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+]
+references = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "_mount_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__enable_server [combiner/mcp_combiner/meta_tools.py]",
+  "harness [combiner/tests/test_reload_config.py]",
+  "test_drop_only_targets_named_server [combiner/tests/test_mounts.py]",
+  "test_drop_removes_real_mount [combiner/tests/test_mounts.py]",
+  "test_remount_does_not_duplicate [combiner/tests/test_mounts.py]",
+  "test_restart_leaves_one_live_provider [combiner/tests/test_mounts.py]",
+  "test_restart_stdio_empty_answer_keeps_slice_silent [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mounts.mount_server_provider",
+  "mcp",
+  "mount",
+  "mount_server_provider",
+  "mounts",
+  "provider",
+  "server",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_designs.py#test_a_ref_does_not_leak_across_facets"
+fqn = "tests.test_designs.test_a_ref_does_not_leak_across_facets"
+name = "test_a_ref_does_not_leak_across_facets"
+kind = "function"
+lang = "python"
+content_hash = "b34f2f6d2bc120f9"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_a_ref_does_not_leak_across_facets(crib):"
+description = ""
+schema = 4
+line = 212
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "across",
+  "designs",
+  "does",
+  "facets",
+  "leak",
+  "not",
+  "ref",
+  "test",
+  "test_a_ref_does_not_leak_across_facets",
+  "tests",
+  "tests.test_designs.test_a_ref_does_not_leak_across_facets",
+]

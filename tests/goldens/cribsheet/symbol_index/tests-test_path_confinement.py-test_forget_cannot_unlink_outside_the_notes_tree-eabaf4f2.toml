@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_path_confinement.py#test_forget_cannot_unlink_outside_the_notes_tree"
+fqn = "tests.test_path_confinement.test_forget_cannot_unlink_outside_the_notes_tree"
+name = "test_forget_cannot_unlink_outside_the_notes_tree"
+kind = "function"
+lang = "python"
+content_hash = "a982a0ee27d0ecf2"
+file = "tests/test_path_confinement.py"
+file_hash = "ca5f375c4fa4dfa2"
+signature = "def test_forget_cannot_unlink_outside_the_notes_tree(crib, tmp_path):"
+description = ""
+schema = 4
+line = 85
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_path_confinement",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_path_confinement.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cannot",
+  "confinement",
+  "forget",
+  "notes",
+  "outside",
+  "path",
+  "test",
+  "test_forget_cannot_unlink_outside_the_notes_tree",
+  "tests",
+  "tests.test_path_confinement.test_forget_cannot_unlink_outside_the_notes_tree",
+  "the",
+  "tree",
+  "unlink",
+]

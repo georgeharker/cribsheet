@@ -1,0 +1,45 @@
+symbol_ref = "scripts/eval_fusion.py#Feat.q"
+fqn = "scripts.eval_fusion.Feat.q"
+name = "q"
+kind = "method"
+lang = "python"
+content_hash = "ebd50b116aa1aa1e"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def q(self, query: str) -> dict:"
+description = ""
+schema = 4
+line = 119
+mtime = 1783981122000000000
+container = [
+  "Feat",
+]
+scope = [
+  "scripts",
+  "eval_fusion",
+  "Feat",
+]
+symbol_was = []
+calls = [
+  "scores [crib/retrieve.py]",
+]
+called_by = [
+  "main [scripts/eval_fusion.py]",
+  "main [scripts/eval_kw.py]",
+  "signals [scripts/eval_hybrid.py]",
+  "signals [scripts/eval_rigor.py]",
+]
+references = [
+  "main [scripts/eval_fusion.py]",
+  "main [scripts/eval_kw.py]",
+  "signals [scripts/eval_hybrid.py]",
+  "signals [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "eval",
+  "feat",
+  "fusion",
+  "q",
+  "scripts",
+  "scripts.eval_fusion.Feat.q",
+]

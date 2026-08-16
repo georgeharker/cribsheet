@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/mounts.py#_registry"
+fqn = "combiner.mcp_combiner.mounts._registry"
+name = "_registry"
+kind = "function"
+lang = "python"
+content_hash = "9b8eac973a7a2fe1"
+file = "combiner/mcp_combiner/mounts.py"
+file_hash = "6bd48bfe5deb1fbd"
+signature = "def _registry(combiner: Any) -> dict[str, list[object]]:"
+description = ""
+schema = 4
+line = 28
+mtime = 1783452495000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mounts",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_combiner_with_provider [combiner/tests/test_session_filter.py]",
+  "drop_server_providers [combiner/mcp_combiner/mounts.py]",
+  "get_server_providers [combiner/mcp_combiner/mounts.py]",
+  "mount_server_provider [combiner/mcp_combiner/mounts.py]",
+]
+references = [
+  "_combiner_with_provider [combiner/tests/test_session_filter.py]",
+  "drop_server_providers [combiner/mcp_combiner/mounts.py]",
+  "get_server_providers [combiner/mcp_combiner/mounts.py]",
+  "mount_server_provider [combiner/mcp_combiner/mounts.py]",
+]
+name_terms = [
+  "_registry",
+  "combiner",
+  "combiner.mcp_combiner.mounts._registry",
+  "mcp",
+  "mounts",
+  "registry",
+]

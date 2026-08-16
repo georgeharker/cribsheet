@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_rerank.py#_PromoteLast"
+fqn = "tests.test_rerank._PromoteLast"
+name = "_PromoteLast"
+kind = "class"
+lang = "python"
+content_hash = "60e2eeb52c701bea"
+file = "tests/test_rerank.py"
+file_hash = "29066147cbea547e"
+signature = "class _PromoteLast:"
+description = ""
+schema = 4
+line = 34
+mtime = 1783981122000000000
+container = []
+scope = [
+  "tests",
+  "test_rerank",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_rerank_promotes_through_lookup [tests/test_rerank.py]",
+]
+name_terms = [
+  "_PromoteLast",
+  "last",
+  "promote",
+  "rerank",
+  "test",
+  "tests",
+  "tests.test_rerank._PromoteLast",
+]

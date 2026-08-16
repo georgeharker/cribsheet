@@ -1,0 +1,42 @@
+symbol_ref = "crib/designs.py#_rank_between"
+fqn = "crib.designs._rank_between"
+name = "_rank_between"
+kind = "function"
+lang = "python"
+content_hash = "613709d98b18a9e0"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _rank_between(a: str | None = None, b: str | None = None) -> str:"
+description = ""
+schema = 4
+line = 213
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+]
+called_by = [
+  "_rank_for [crib/designs.py]",
+  "test_rank_between_is_strictly_between [tests/test_designs.py]",
+  "test_rank_between_property_over_random_insertions [tests/test_designs.py]",
+  "test_rank_between_rejects_reversed_or_adjacent_bounds [tests/test_designs.py]",
+]
+references = [
+  "_rank_for [crib/designs.py]",
+  "test_rank_between_is_strictly_between [tests/test_designs.py]",
+  "test_rank_between_property_over_random_insertions [tests/test_designs.py]",
+  "test_rank_between_rejects_reversed_or_adjacent_bounds [tests/test_designs.py]",
+]
+name_terms = [
+  "_rank_between",
+  "between",
+  "crib",
+  "crib.designs._rank_between",
+  "designs",
+  "rank",
+]

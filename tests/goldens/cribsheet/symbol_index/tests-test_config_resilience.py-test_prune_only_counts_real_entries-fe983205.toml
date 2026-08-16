@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_config_resilience.py#test_prune_only_counts_real_entries"
+fqn = "tests.test_config_resilience.test_prune_only_counts_real_entries"
+name = "test_prune_only_counts_real_entries"
+kind = "function"
+lang = "python"
+content_hash = "5d9833ad2467dca8"
+file = "tests/test_config_resilience.py"
+file_hash = "620aeb96b59e7b2d"
+signature = "def test_prune_only_counts_real_entries(tmp_path):"
+description = ""
+schema = 4
+line = 170
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_config_resilience",
+]
+symbol_was = []
+calls = [
+  "VersionRing [crib/versions.py]",
+  "list [crib/versions.py]",
+  "stash [crib/versions.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "config",
+  "counts",
+  "entries",
+  "only",
+  "prune",
+  "real",
+  "resilience",
+  "test",
+  "test_prune_only_counts_real_entries",
+  "tests",
+  "tests.test_config_resilience.test_prune_only_counts_real_entries",
+]

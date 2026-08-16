@@ -1,0 +1,45 @@
+symbol_ref = "tests/test_dim_recovery.py#test_dim_change_re_embeds_every_project_and_marks_the_gap"
+fqn = "tests.test_dim_recovery.test_dim_change_re_embeds_every_project_and_marks_the_gap"
+name = "test_dim_change_re_embeds_every_project_and_marks_the_gap"
+kind = "function"
+lang = "python"
+content_hash = "0f90fb1e35ade641"
+file = "tests/test_dim_recovery.py"
+file_hash = "5f6ffd4e573336e9"
+signature = "def test_dim_change_re_embeds_every_project_and_marks_the_gap(crib, tmp_path):"
+description = ""
+schema = 4
+line = 58
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_dim_recovery",
+]
+symbol_was = []
+calls = [
+  "_flip_embedder [tests/test_dim_recovery.py]",
+  "_insitu_chunks [tests/test_dim_recovery.py]",
+  "_repo_with_docs [tests/test_dim_recovery.py]",
+  "body [tests/test_dim_recovery.py]",
+  "run [tests/test_dim_recovery.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "change",
+  "dim",
+  "embeds",
+  "every",
+  "gap",
+  "marks",
+  "project",
+  "re",
+  "recovery",
+  "test",
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap",
+  "tests",
+  "tests.test_dim_recovery.test_dim_change_re_embeds_every_project_and_marks_the_gap",
+  "the",
+]

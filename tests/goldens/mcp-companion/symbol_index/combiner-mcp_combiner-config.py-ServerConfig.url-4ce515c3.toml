@@ -1,0 +1,49 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ServerConfig.url"
+fqn = "combiner.mcp_combiner.config.ServerConfig.url"
+name = "url"
+kind = "field"
+lang = "python"
+content_hash = "e931415adc4d904f"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "url: str | None = None"
+description = ""
+schema = 4
+line = 266
+mtime = 1783633313000000000
+container = [
+  "ServerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ServerConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_config [combiner/tests/test_app_meta.py]",
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_is_local_upstream [combiner/mcp_combiner/connections.py]",
+  "_make_disconnected_client [combiner/mcp_combiner/connections.py]",
+  "build_http_transport [combiner/mcp_combiner/connections.py]",
+  "ensure_started [combiner/mcp_combiner/sharedserver.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "get_auth [combiner/mcp_combiner/connections.py]",
+  "get_server_status [combiner/mcp_combiner/config.py]",
+  "restart [combiner/mcp_combiner/sharedserver.py]",
+  "start_all [combiner/mcp_combiner/sharedserver.py]",
+  "test_server_config_from_dict_http [combiner/tests/test_config.py]",
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.url",
+  "config",
+  "mcp",
+  "server",
+  "url",
+]

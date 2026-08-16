@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_auth.py#TestBearerAuth.test_injects_header"
+fqn = "combiner.tests.test_auth.TestBearerAuth.test_injects_header"
+name = "test_injects_header"
+kind = "method"
+lang = "python"
+content_hash = "be7763d2f582e8e6"
+file = "combiner/tests/test_auth.py"
+file_hash = "2b3aa7eeeed5bf38"
+signature = "def test_injects_header(self) -> None:"
+description = ""
+schema = 4
+line = 86
+mtime = 1782852601000000000
+container = [
+  "TestBearerAuth",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_auth",
+  "TestBearerAuth",
+]
+symbol_was = []
+calls = [
+  "_BearerAuth [combiner/mcp_combiner/auth.py]",
+  "auth_flow [combiner/mcp_combiner/auth.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "bearer",
+  "combiner",
+  "combiner.tests.test_auth.TestBearerAuth.test_injects_header",
+  "header",
+  "injects",
+  "test",
+  "test_injects_header",
+  "tests",
+]

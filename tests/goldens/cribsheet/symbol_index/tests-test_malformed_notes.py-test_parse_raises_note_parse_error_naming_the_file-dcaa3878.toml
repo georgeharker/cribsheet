@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_malformed_notes.py#test_parse_raises_note_parse_error_naming_the_file"
+fqn = "tests.test_malformed_notes.test_parse_raises_note_parse_error_naming_the_file"
+name = "test_parse_raises_note_parse_error_naming_the_file"
+kind = "function"
+lang = "python"
+content_hash = "07d9a4d80e1906a4"
+file = "tests/test_malformed_notes.py"
+file_hash = "e46dac071f53c31f"
+signature = "def test_parse_raises_note_parse_error_naming_the_file():"
+description = ""
+schema = 4
+line = 38
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_malformed_notes",
+]
+symbol_was = []
+calls = [
+  "parse [crib/notes.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "error",
+  "file",
+  "malformed",
+  "naming",
+  "note",
+  "notes",
+  "parse",
+  "raises",
+  "test",
+  "test_parse_raises_note_parse_error_naming_the_file",
+  "tests",
+  "tests.test_malformed_notes.test_parse_raises_note_parse_error_naming_the_file",
+  "the",
+]

@@ -1,0 +1,83 @@
+symbol_ref = "crib/codeindex.py#SymbolIndex.all"
+fqn = "crib.codeindex.SymbolIndex.all"
+name = "all"
+kind = "method"
+lang = "python"
+content_hash = "b09c024d2e3ebf0b"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def all(self) -> list[dict]:"
+description = ""
+schema = 4
+line = 1660
+mtime = 1786844518000000000
+container = [
+  "SymbolIndex",
+]
+scope = [
+  "crib",
+  "codeindex",
+  "SymbolIndex",
+]
+symbol_was = []
+calls = [
+  "_parse [crib/codeindex.py]",
+]
+called_by = [
+  "_describe_backlog [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_index_project_code [crib/codeindexer.py]",
+  "_reindex_dirty_code [crib/app.py]",
+  "by_fqname [crib/codeindex.py]",
+  "code_indexed_projects [crib/app.py]",
+  "convert_notes [crib/learnings.py]",
+  "drop_file [crib/codestore.py]",
+  "main [scripts/eval_code.py]",
+  "marks [crib/learnings.py]",
+  "project_status [crib/app.py]",
+  "rehome [crib/learnings.py]",
+  "reload [crib/codestore.py]",
+  "report [crib/learnings.py]",
+  "test_a_single_file_index_writes_into_a_store_of_another_shape [tests/test_code_graph.py]",
+  "test_an_indexed_entry_carries_its_language_scope [tests/test_code_graph.py]",
+  "test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale [tests/test_describe_queue.py]",
+  "test_deletion_gate_stays_permissive_for_a_pre_file_hash_index [tests/test_code_integrity.py]",
+  "test_every_learning_verb_finds_a_note_whatever_it_is_bound_to [tests/test_code_learnings.py]",
+  "test_partial_extract_reconfirms_before_trusting_shrink [tests/test_code_cache.py]",
+  "test_the_description_cache_hits_across_an_id_format_difference [tests/test_code_graph.py]",
+  "test_the_stamp_is_invisible_to_the_entry_reader [tests/test_code_graph.py]",
+  "test_unparseable_symbol_record_is_dropped_from_all [tests/test_code_integrity.py]",
+]
+references = [
+  "_describe_backlog [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_index_project_code [crib/codeindexer.py]",
+  "_reindex_dirty_code [crib/app.py]",
+  "by_fqname [crib/codeindex.py]",
+  "code_indexed_projects [crib/app.py]",
+  "convert_notes [crib/learnings.py]",
+  "drop_file [crib/codestore.py]",
+  "main [scripts/eval_code.py]",
+  "marks [crib/learnings.py]",
+  "project_status [crib/app.py]",
+  "rehome [crib/learnings.py]",
+  "reload [crib/codestore.py]",
+  "report [crib/learnings.py]",
+  "test_a_single_file_index_writes_into_a_store_of_another_shape [tests/test_code_graph.py]",
+  "test_an_indexed_entry_carries_its_language_scope [tests/test_code_graph.py]",
+  "test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale [tests/test_describe_queue.py]",
+  "test_deletion_gate_stays_permissive_for_a_pre_file_hash_index [tests/test_code_integrity.py]",
+  "test_every_learning_verb_finds_a_note_whatever_it_is_bound_to [tests/test_code_learnings.py]",
+  "test_partial_extract_reconfirms_before_trusting_shrink [tests/test_code_cache.py]",
+  "test_the_description_cache_hits_across_an_id_format_difference [tests/test_code_graph.py]",
+  "test_the_stamp_is_invisible_to_the_entry_reader [tests/test_code_graph.py]",
+  "test_unparseable_symbol_record_is_dropped_from_all [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "all",
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex.all",
+  "index",
+  "symbol",
+]

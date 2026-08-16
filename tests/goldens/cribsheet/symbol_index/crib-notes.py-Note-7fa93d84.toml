@@ -1,0 +1,47 @@
+symbol_ref = "crib/notes.py#Note"
+fqn = "crib.notes.Note"
+name = "Note"
+kind = "class"
+lang = "python"
+content_hash = "a6f0c35899641fc9"
+file = "crib/notes.py"
+file_hash = "6e2385b754de60b6"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 33
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "notes",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_add [crib/designs.py]",
+  "_legacy_note [tests/test_symbol_migration.py]",
+  "_note [crib/designs.py]",
+  "_note [tests/test_pillar_stores.py]",
+  "_note_bound_to [tests/test_code_learnings.py]",
+  "_write_note [crib/app.py]",
+  "append [crib/learnings.py]",
+  "append_note [crib/app.py]",
+  "edit_note [crib/app.py]",
+  "ensure_id [crib/notes.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "load [crib/notes.py]",
+  "move [crib/notestore.py]",
+  "save_atomic [crib/notes.py]",
+  "store_note [crib/app.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "Note",
+  "crib",
+  "crib.notes.Note",
+  "note",
+  "notes",
+]

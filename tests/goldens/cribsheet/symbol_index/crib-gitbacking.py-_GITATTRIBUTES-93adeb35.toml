@@ -1,0 +1,31 @@
+symbol_ref = "crib/gitbacking.py#_GITATTRIBUTES"
+fqn = "crib.gitbacking._GITATTRIBUTES"
+name = "_GITATTRIBUTES"
+kind = "constant"
+lang = "python"
+content_hash = "b7aa8e915fe99f69"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "_GITATTRIBUTES = \"*.md merge=cribnote\\n**/symbol_index/*.toml merge=cribnote\\n\""
+description = ""
+schema = 4
+line = 38
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "gitbacking",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_ensure_gitattributes [crib/gitbacking.py]",
+]
+name_terms = [
+  "_GITATTRIBUTES",
+  "crib",
+  "crib.gitbacking._GITATTRIBUTES",
+  "gitattributes",
+  "gitbacking",
+]

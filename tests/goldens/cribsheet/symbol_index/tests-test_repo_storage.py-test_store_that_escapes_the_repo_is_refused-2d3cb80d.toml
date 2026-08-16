@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_repo_storage.py#test_store_that_escapes_the_repo_is_refused"
+fqn = "tests.test_repo_storage.test_store_that_escapes_the_repo_is_refused"
+name = "test_store_that_escapes_the_repo_is_refused"
+kind = "function"
+lang = "python"
+content_hash = "1edd4aecd71d2616"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "@pytest.mark.parametrize(\"bad\", [\"/etc/crib\", \"../outside\", \"sub/../../out\"])"
+description = ""
+schema = 4
+line = 78
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "CribLink [crib/config.py]",
+  "find [crib/config.py]",
+  "repo_with_store [tests/test_repo_storage.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "escapes",
+  "is",
+  "refused",
+  "repo",
+  "storage",
+  "store",
+  "test",
+  "test_store_that_escapes_the_repo_is_refused",
+  "tests",
+  "tests.test_repo_storage.test_store_that_escapes_the_repo_is_refused",
+  "that",
+  "the",
+]

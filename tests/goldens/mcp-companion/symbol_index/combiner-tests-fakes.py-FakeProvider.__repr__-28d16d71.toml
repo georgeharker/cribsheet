@@ -1,0 +1,36 @@
+symbol_ref = "combiner/tests/fakes.py#FakeProvider.__repr__"
+fqn = "combiner.tests.fakes.FakeProvider.__repr__"
+name = "__repr__"
+kind = "method"
+lang = "python"
+content_hash = "74160559e688ee2b"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "def __repr__(self) -> str:  # pragma: no cover - trivial"
+description = ""
+schema = 4
+line = 22
+mtime = 1783534978000000000
+container = [
+  "FakeProvider",
+]
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+  "FakeProvider",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "__repr__",
+  "combiner",
+  "combiner.tests.fakes.FakeProvider.__repr__",
+  "fake",
+  "fakes",
+  "provider",
+  "repr",
+  "tests",
+]

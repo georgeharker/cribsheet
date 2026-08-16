@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_keyword_refresh.py#test_edit_then_quit_heals_on_startup._hashes"
+fqn = "tests.test_keyword_refresh.test_edit_then_quit_heals_on_startup._hashes"
+name = "_hashes"
+kind = "function"
+lang = "python"
+content_hash = "66170f1f1e15472d"
+file = "tests/test_keyword_refresh.py"
+file_hash = "d758ff5010231936"
+signature = "def _hashes():"
+description = ""
+schema = 4
+line = 168
+mtime = 1786044759000000000
+container = [
+  "test_edit_then_quit_heals_on_startup",
+]
+scope = [
+  "tests",
+  "test_keyword_refresh",
+  "test_edit_then_quit_heals_on_startup",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "body [tests/test_keyword_refresh.py]",
+]
+references = [
+  "body [tests/test_keyword_refresh.py]",
+]
+name_terms = [
+  "_hashes",
+  "edit",
+  "hashes",
+  "heals",
+  "keyword",
+  "on",
+  "quit",
+  "refresh",
+  "startup",
+  "test",
+  "tests",
+  "tests.test_keyword_refresh.test_edit_then_quit_heals_on_startup._hashes",
+  "then",
+]

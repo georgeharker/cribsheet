@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#CribLink.import_into"
+fqn = "crib.config.CribLink.import_into"
+name = "import_into"
+kind = "field"
+lang = "python"
+content_hash = "4a1c1ebb5f0ea7de"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "import_into: str | None = None"
+description = ""
+schema = 4
+line = 373
+mtime = 1786564832000000000
+container = [
+  "CribLink",
+]
+scope = [
+  "crib",
+  "config",
+  "CribLink",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_parse [crib/config.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.import_into",
+  "import",
+  "import_into",
+  "into",
+  "link",
+]

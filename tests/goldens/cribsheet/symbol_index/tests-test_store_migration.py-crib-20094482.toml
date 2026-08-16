@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_store_migration.py#crib"
+fqn = "tests.test_store_migration.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+content_hash = "843661f7d5a24b5e"
+file = "tests/test_store_migration.py"
+file_hash = "a18552bb17863360"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 22
+mtime = 1786140093000000000
+container = []
+scope = [
+  "tests",
+  "test_store_migration",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "migration",
+  "store",
+  "test",
+  "tests",
+  "tests.test_store_migration.crib",
+]

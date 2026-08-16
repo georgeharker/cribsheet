@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_connections.py#TestReconnectBackingRestart.test_success_resets_failure_counter.succeeding_open"
+fqn = "combiner.tests.test_connections.TestReconnectBackingRestart.test_success_resets_failure_counter.succeeding_open"
+name = "succeeding_open"
+kind = "function"
+lang = "python"
+content_hash = "03d34d9c9b16521b"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def succeeding_open(c):"
+description = ""
+schema = 4
+line = 460
+mtime = 1784493613000000000
+container = [
+  "TestReconnectBackingRestart",
+  "test_success_resets_failure_counter",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestReconnectBackingRestart",
+  "test_success_resets_failure_counter",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_success_resets_failure_counter [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "backing",
+  "combiner",
+  "combiner.tests.test_connections.TestReconnectBackingRestart.test_success_resets_failure_counter.succeeding_open",
+  "connections",
+  "counter",
+  "failure",
+  "open",
+  "reconnect",
+  "resets",
+  "restart",
+  "succeeding",
+  "succeeding_open",
+  "success",
+  "test",
+  "tests",
+]

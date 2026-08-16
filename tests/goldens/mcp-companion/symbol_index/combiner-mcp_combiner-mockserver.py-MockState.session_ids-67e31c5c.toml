@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockState.session_ids"
+fqn = "combiner.mcp_combiner.mockserver.MockState.session_ids"
+name = "session_ids"
+kind = "field"
+lang = "python"
+content_hash = "cf734a138ea7a47e"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "session_ids: list[str] = field(default_factory=list)"
+description = ""
+schema = 4
+line = 160
+mtime = 1783622326000000000
+container = [
+  "MockState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockState",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "record_call [combiner/mcp_combiner/mockserver.py]",
+  "snapshot [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockState.session_ids",
+  "ids",
+  "mcp",
+  "mock",
+  "mockserver",
+  "session",
+  "session_ids",
+  "state",
+]

@@ -1,0 +1,34 @@
+symbol_ref = "crib/paths.py#ProjectPathResolver"
+fqn = "crib.paths.ProjectPathResolver"
+name = "ProjectPathResolver"
+kind = "class"
+lang = "python"
+content_hash = "ed810736b5f12b95"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "class ProjectPathResolver:"
+description = ""
+schema = 4
+line = 215
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "paths",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/notestore.py]",
+]
+name_terms = [
+  "ProjectPathResolver",
+  "crib",
+  "crib.paths.ProjectPathResolver",
+  "path",
+  "paths",
+  "project",
+  "resolver",
+]

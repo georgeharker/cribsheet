@@ -1,0 +1,38 @@
+symbol_ref = "lua/mcp_companion/native/winpick.lua#list_has"
+fqn = "mcp_companion.native.winpick.list_has"
+name = "list_has"
+kind = "function"
+lang = "lua"
+content_hash = "c7a8770eee1f6034"
+file = "lua/mcp_companion/native/winpick.lua"
+file_hash = "6bf70fc950ff8924"
+signature = "local function list_has(list, v)"
+description = ""
+schema = 4
+line = 66
+mtime = 1782852601000000000
+container = []
+scope = [
+  "mcp_companion",
+  "native",
+  "winpick",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.is_code_win [lua/mcp_companion/native/winpick.lua]",
+  "winpick.lua [lua/mcp_companion/native/winpick.lua]",
+]
+references = [
+  "if [lua/mcp_companion/native/winpick.lua]",
+]
+name_terms = [
+  "companion",
+  "has",
+  "list",
+  "list_has",
+  "mcp",
+  "mcp_companion.native.winpick.list_has",
+  "native",
+  "winpick",
+]

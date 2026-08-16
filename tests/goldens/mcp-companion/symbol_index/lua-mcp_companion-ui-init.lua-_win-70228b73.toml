@@ -1,0 +1,30 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#_win"
+fqn = "mcp_companion.ui._win"
+name = "_win"
+kind = "global"
+lang = "lua"
+content_hash = "60fdc1353df59710"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "local _win = nil"
+description = ""
+schema = 4
+line = 10
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "ui",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_win",
+  "companion",
+  "mcp",
+  "mcp_companion.ui._win",
+  "ui",
+  "win",
+]

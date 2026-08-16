@@ -1,0 +1,49 @@
+symbol_ref = "crib/paths.py#check_project_name"
+fqn = "crib.paths.check_project_name"
+name = "check_project_name"
+kind = "function"
+lang = "python"
+content_hash = "70bf8fc0f9a2b8f8"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "def check_project_name(project: str) -> str:"
+description = ""
+schema = 4
+line = 26
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "paths",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+]
+called_by = [
+  "project_adopt [crib/app.py]",
+  "project_dir [crib/paths.py]",
+  "resolve_project [crib/config.py]",
+  "resolve_project_paths [crib/paths.py]",
+  "test_check_project_name_allows_ordinary_names [tests/test_path_confinement.py]",
+  "test_check_project_name_rejects_paths [tests/test_path_confinement.py]",
+  "use_project [crib/app.py]",
+]
+references = [
+  "project_adopt [crib/app.py]",
+  "project_dir [crib/paths.py]",
+  "resolve_project [crib/config.py]",
+  "resolve_project_paths [crib/paths.py]",
+  "test_check_project_name_allows_ordinary_names [tests/test_path_confinement.py]",
+  "test_check_project_name_rejects_paths [tests/test_path_confinement.py]",
+  "use_project [crib/app.py]",
+]
+name_terms = [
+  "check",
+  "check_project_name",
+  "crib",
+  "crib.paths.check_project_name",
+  "name",
+  "paths",
+  "project",
+]

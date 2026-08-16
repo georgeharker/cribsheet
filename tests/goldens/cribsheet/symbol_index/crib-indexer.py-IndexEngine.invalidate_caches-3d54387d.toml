@@ -1,0 +1,47 @@
+symbol_ref = "crib/indexer.py#IndexEngine.invalidate_caches"
+fqn = "crib.indexer.IndexEngine.invalidate_caches"
+name = "invalidate_caches"
+kind = "method"
+lang = "python"
+content_hash = "0b5451efd1963141"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "def invalidate_caches(self, project: str) -> None:"
+description = ""
+schema = 4
+line = 79
+mtime = 1786578262000000000
+container = [
+  "IndexEngine",
+]
+scope = [
+  "crib",
+  "indexer",
+  "IndexEngine",
+]
+symbol_was = []
+calls = [
+  "invalidate [crib/retrieve.py]",
+]
+called_by = [
+  "_generate_enrichment [crib/app.py]",
+  "_index_locked [crib/indexer.py]",
+  "forget [crib/indexer.py]",
+  "project_forget [crib/app.py]",
+]
+references = [
+  "_generate_enrichment [crib/app.py]",
+  "_index_locked [crib/indexer.py]",
+  "forget [crib/indexer.py]",
+  "project_forget [crib/app.py]",
+]
+name_terms = [
+  "caches",
+  "crib",
+  "crib.indexer.IndexEngine.invalidate_caches",
+  "engine",
+  "index",
+  "indexer",
+  "invalidate",
+  "invalidate_caches",
+]

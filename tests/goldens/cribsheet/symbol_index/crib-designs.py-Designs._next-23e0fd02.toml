@@ -1,0 +1,40 @@
+symbol_ref = "crib/designs.py#Designs._next"
+fqn = "crib.designs.Designs._next"
+name = "_next"
+kind = "method"
+lang = "python"
+content_hash = "94804e7549f595f2"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _next(self, node: Node,"
+description = ""
+schema = 4
+line = 911
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_write_body [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_read [crib/designs.py]",
+]
+references = [
+  "_write_body [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "design_read [crib/designs.py]",
+]
+name_terms = [
+  "_next",
+  "crib",
+  "crib.designs.Designs._next",
+  "designs",
+  "next",
+]

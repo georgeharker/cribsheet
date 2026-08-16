@@ -1,0 +1,37 @@
+symbol_ref = "scripts/eval_fusion.py#c_bm25f"
+fqn = "scripts.eval_fusion.c_bm25f"
+name = "c_bm25f"
+kind = "function"
+lang = "python"
+content_hash = "ab8b34bde8bf29ac"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def c_bm25f(wn, wd, ws, wdense):"
+description = ""
+schema = 4
+line = 181
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "build [scripts/eval_fusion.py]",
+]
+references = [
+  "build [scripts/eval_fusion.py]",
+]
+name_terms = [
+  "25",
+  "bm",
+  "c",
+  "c_bm25f",
+  "eval",
+  "f",
+  "fusion",
+  "scripts",
+  "scripts.eval_fusion.c_bm25f",
+]

@@ -1,0 +1,79 @@
+symbol_ref = "crib/errors.py#CribUserError"
+fqn = "crib.errors.CribUserError"
+name = "CribUserError"
+kind = "class"
+lang = "python"
+content_hash = "9fc6aafdd03231ab"
+file = "crib/errors.py"
+file_hash = "e5110904ba675e3f"
+signature = "class CribUserError(ValueError):"
+description = ""
+schema = 4
+line = 27
+mtime = 1786564090000000000
+container = []
+scope = [
+  "crib",
+  "errors",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "AmbiguousSymbol [crib/refs.py]",
+  "UnknownSymbol [crib/refs.py]",
+  "_cosine [crib/store.py]",
+  "_ensure_crib [crib/app.py]",
+  "_generate_index [crib/app.py]",
+  "_project_graph [crib/codequery.py]",
+  "_rank_between [crib/designs.py]",
+  "_read_project_elicit [crib/server.py]",
+  "_refuse_reserved [crib/notestore.py]",
+  "_refuse_source [crib/notestore.py]",
+  "_require_code_index [crib/app.py]",
+  "_resolve_doc [crib/designs.py]",
+  "_user_errors [crib/cli.py]",
+  "_write_project [crib/server.py]",
+  "check_k [crib/codequery.py]",
+  "check_project_name [crib/paths.py]",
+  "check_query [crib/codequery.py]",
+  "check_relpath [crib/paths.py]",
+  "code_index [crib/codeindexer.py]",
+  "confine [crib/paths.py]",
+  "distill [crib/app.py]",
+  "edit [crib/learnings.py]",
+  "enrich [crib/app.py]",
+  "forget [crib/learnings.py]",
+  "graph [crib/codequery.py]",
+  "import_claude_memory [crib/app.py]",
+  "import_files [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "load [crib/config.py]",
+  "lookup [crib/app.py]",
+  "move [crib/notestore.py]",
+  "prepare [crib/server.py]",
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+  "reaffirm [crib/learnings.py]",
+  "rehome [crib/learnings.py]",
+  "require [crib/paths.py]",
+  "resolve_symbol [crib/refs.py]",
+  "run [crib/server.py]",
+  "run_sync [crib/server.py]",
+  "test_a_constraint_that_excludes_everything_says_so [tests/test_code_graph.py]",
+  "test_a_path_constraint_makes_an_ambiguous_name_unique [tests/test_code_graph.py]",
+  "test_constraints_do_not_weaken_unique_or_refuse [tests/test_code_graph.py]",
+  "test_module_is_no_longer_an_axis [tests/test_code_graph.py]",
+  "test_symbol_errors_are_user_errors_and_still_value_errors [tests/test_code_graph.py]",
+  "test_the_refusal_names_the_axis_that_would_separate_them [tests/test_code_graph.py]",
+  "test_whole_project_export_scopes_by_path_prefix [tests/test_code_graph.py]",
+  "version_content [crib/notestore.py]",
+]
+name_terms = [
+  "CribUserError",
+  "crib",
+  "crib.errors.CribUserError",
+  "error",
+  "errors",
+  "user",
+]

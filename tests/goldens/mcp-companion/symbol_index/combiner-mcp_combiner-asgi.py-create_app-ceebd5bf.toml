@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/asgi.py#create_app"
+fqn = "combiner.mcp_combiner.asgi.create_app"
+name = "create_app"
+kind = "function"
+lang = "python"
+content_hash = "a6e1674dd61aff7b"
+file = "combiner/mcp_combiner/asgi.py"
+file_hash = "1ff2dd1d6ee7f6d0"
+signature = "def create_app(options: ServeOptions | None = None) -> Starlette:"
+description = ""
+schema = 4
+line = 234
+mtime = 1783548694000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "asgi",
+]
+symbol_was = []
+calls = [
+  "create_combiner [combiner/mcp_combiner/server.py]",
+  "from_env [combiner/mcp_combiner/asgi.py]",
+  "register_for_cleanup [combiner/mcp_combiner/sharedserver.py]",
+]
+called_by = [
+  "_serve [combiner/mcp_combiner/__main__.py]",
+]
+references = [
+  "_serve [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "app",
+  "asgi",
+  "combiner",
+  "combiner.mcp_combiner.asgi.create_app",
+  "create",
+  "create_app",
+  "mcp",
+]

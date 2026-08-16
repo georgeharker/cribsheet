@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_real_servers.lua#if.if.entry"
+fqn = "tests.test_real_servers.if.if.entry"
+name = "entry"
+kind = "variable"
+lang = "lua"
+content_hash = "a8edc6cab9bbb746"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local entry = tools_tbl[test_key]"
+description = ""
+schema = 4
+line = 587
+mtime = 1782853510000000000
+container = [
+  "if",
+  "if",
+]
+scope = [
+  "tests",
+  "test_real_servers",
+  "if",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "entry",
+  "if",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.if.entry",
+]

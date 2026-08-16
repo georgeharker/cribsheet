@@ -1,0 +1,37 @@
+symbol_ref = "lua/mcp_companion/native/winpick.lua#DEFAULTS.ignore_filetypes"
+fqn = "mcp_companion.native.winpick.DEFAULTS.ignore_filetypes"
+name = "ignore_filetypes"
+kind = "field"
+lang = "lua"
+content_hash = "69e1fae7e53f5880"
+file = "lua/mcp_companion/native/winpick.lua"
+file_hash = "6bf70fc950ff8924"
+signature = "ignore_filetypes = {"
+description = ""
+schema = 4
+line = 17
+mtime = 1782852601000000000
+container = [
+  "DEFAULTS",
+]
+scope = [
+  "mcp_companion",
+  "native",
+  "winpick",
+  "DEFAULTS",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "companion",
+  "defaults",
+  "filetypes",
+  "ignore",
+  "ignore_filetypes",
+  "mcp",
+  "mcp_companion.native.winpick.DEFAULTS.ignore_filetypes",
+  "native",
+  "winpick",
+]

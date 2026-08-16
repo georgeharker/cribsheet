@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestEnforcePermission.test_elicit_allow_for_session_caches"
+fqn = "combiner.tests.test_permissions.TestEnforcePermission.test_elicit_allow_for_session_caches"
+name = "test_elicit_allow_for_session_caches"
+kind = "method"
+lang = "python"
+content_hash = "388d5f46634fb09d"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "async def test_elicit_allow_for_session_caches(self) -> None:"
+description = ""
+schema = 4
+line = 240
+mtime = 1783633313000000000
+container = [
+  "TestEnforcePermission",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "TestEnforcePermission",
+]
+symbol_was = []
+calls = [
+  "_elicit_ctx [combiner/tests/test_permissions.py]",
+  "_rp [combiner/tests/test_permissions.py]",
+  "enforce [combiner/mcp_combiner/permissions.py]",
+  "is_granted [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "allow",
+  "caches",
+  "combiner",
+  "combiner.tests.test_permissions.TestEnforcePermission.test_elicit_allow_for_session_caches",
+  "elicit",
+  "enforce",
+  "for",
+  "permission",
+  "permissions",
+  "session",
+  "test",
+  "test_elicit_allow_for_session_caches",
+  "tests",
+]

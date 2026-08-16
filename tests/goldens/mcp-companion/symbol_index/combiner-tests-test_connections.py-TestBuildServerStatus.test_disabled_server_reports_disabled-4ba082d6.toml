@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_connections.py#TestBuildServerStatus.test_disabled_server_reports_disabled"
+fqn = "combiner.tests.test_connections.TestBuildServerStatus.test_disabled_server_reports_disabled"
+name = "test_disabled_server_reports_disabled"
+kind = "method"
+lang = "python"
+content_hash = "f3293f32e0a96bf3"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "def test_disabled_server_reports_disabled(self):"
+description = ""
+schema = 4
+line = 582
+mtime = 1784493613000000000
+container = [
+  "TestBuildServerStatus",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestBuildServerStatus",
+]
+symbol_was = []
+calls = [
+  "ConnectionManager [combiner/mcp_combiner/connections.py]",
+  "_config [combiner/tests/test_connections.py]",
+  "build_server_status [combiner/mcp_combiner/status.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "combiner",
+  "combiner.tests.test_connections.TestBuildServerStatus.test_disabled_server_reports_disabled",
+  "connections",
+  "disabled",
+  "reports",
+  "server",
+  "status",
+  "test",
+  "test_disabled_server_reports_disabled",
+  "tests",
+]

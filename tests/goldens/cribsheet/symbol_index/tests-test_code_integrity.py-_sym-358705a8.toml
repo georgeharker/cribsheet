@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_code_integrity.py#_sym"
+fqn = "tests.test_code_integrity._sym"
+name = "_sym"
+kind = "function"
+lang = "python"
+content_hash = "3e103a43fa06856d"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def _sym(fq: str, file_hash: str, *, file: str = \"m.py\") -> dict:"
+description = ""
+schema = 4
+line = 125
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "(lambda) [tests/test_code_integrity.py]",
+  "_seed_two_symbols [tests/test_code_integrity.py]",
+  "test_deletion_gate_stays_permissive_for_a_pre_file_hash_index [tests/test_code_integrity.py]",
+  "test_dirty_record_is_swept_back_into_the_index_and_rewritten_valid [tests/test_code_integrity.py]",
+]
+references = [
+  "_seed_two_symbols [tests/test_code_integrity.py]",
+  "test_changed_file_hash_lets_a_real_removal_through [tests/test_code_integrity.py]",
+  "test_deletion_gate_stays_permissive_for_a_pre_file_hash_index [tests/test_code_integrity.py]",
+  "test_dirty_record_is_swept_back_into_the_index_and_rewritten_valid [tests/test_code_integrity.py]",
+  "test_unchanged_file_hash_withholds_deletion_and_marks_dirty [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "_sym",
+  "code",
+  "integrity",
+  "sym",
+  "test",
+  "tests",
+  "tests.test_code_integrity._sym",
+]

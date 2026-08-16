@@ -1,0 +1,34 @@
+symbol_ref = "crib/retrieve.py#CrossEncoderReranker.scores"
+fqn = "crib.retrieve.CrossEncoderReranker.scores"
+name = "scores"
+kind = "method"
+lang = "python"
+content_hash = "34e69eea52475984"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "def scores(self, query: str, documents: list[str]) -> list[float]:"
+description = ""
+schema = 4
+line = 196
+mtime = 1786136167000000000
+container = [
+  "CrossEncoderReranker",
+]
+scope = [
+  "crib",
+  "retrieve",
+  "CrossEncoderReranker",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.retrieve.CrossEncoderReranker.scores",
+  "cross",
+  "encoder",
+  "reranker",
+  "retrieve",
+  "scores",
+]

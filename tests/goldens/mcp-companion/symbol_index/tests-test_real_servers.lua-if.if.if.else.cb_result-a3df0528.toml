@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_real_servers.lua#if.if.if.else.cb_result"
+fqn = "tests.test_real_servers.if.if.if.else.cb_result"
+name = "cb_result"
+kind = "variable"
+lang = "lua"
+content_hash = "ba6988eebcc4fee4"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local cb_result = nil"
+description = ""
+schema = 4
+line = 600
+mtime = 1782853510000000000
+container = [
+  "if",
+  "if",
+  "if",
+  "else",
+]
+scope = [
+  "tests",
+  "test_real_servers",
+  "if",
+  "if",
+  "if",
+  "else",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "cb",
+  "cb_result",
+  "else",
+  "if",
+  "real",
+  "result",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.if.if.else.cb_result",
+]

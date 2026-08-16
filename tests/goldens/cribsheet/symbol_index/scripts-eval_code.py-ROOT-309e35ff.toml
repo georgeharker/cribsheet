@@ -1,0 +1,30 @@
+symbol_ref = "scripts/eval_code.py#ROOT"
+fqn = "scripts.eval_code.ROOT"
+name = "ROOT"
+kind = "constant"
+lang = "python"
+content_hash = "ccf98307102c6636"
+file = "scripts/eval_code.py"
+file_hash = "b641517d69fd6e49"
+signature = "ROOT = Path(__file__).resolve().parent.parent"
+description = ""
+schema = 4
+line = 19
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_code",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "ROOT",
+  "code",
+  "eval",
+  "root",
+  "scripts",
+  "scripts.eval_code.ROOT",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_code_integrity.py#test_changed_file_hash_lets_a_real_removal_through"
+fqn = "tests.test_code_integrity.test_changed_file_hash_lets_a_real_removal_through"
+name = "test_changed_file_hash_lets_a_real_removal_through"
+kind = "function"
+lang = "python"
+content_hash = "e1cfc006624f3296"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_changed_file_hash_lets_a_real_removal_through(crib, tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 240
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "_seed_two_symbols [tests/test_code_integrity.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "changed",
+  "code",
+  "file",
+  "hash",
+  "integrity",
+  "lets",
+  "real",
+  "removal",
+  "test",
+  "test_changed_file_hash_lets_a_real_removal_through",
+  "tests",
+  "tests.test_code_integrity.test_changed_file_hash_lets_a_real_removal_through",
+  "through",
+]

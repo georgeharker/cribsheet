@@ -1,0 +1,32 @@
+symbol_ref = "crib/config.py#RetrieveConfig"
+fqn = "crib.config.RetrieveConfig"
+name = "RetrieveConfig"
+kind = "class"
+lang = "python"
+content_hash = "594f62ed352e4a6b"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 81
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "load [crib/config.py]",
+  "retrieve [crib/config.py]",
+]
+name_terms = [
+  "RetrieveConfig",
+  "config",
+  "crib",
+  "crib.config.RetrieveConfig",
+  "retrieve",
+]

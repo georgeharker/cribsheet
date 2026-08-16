@@ -1,0 +1,33 @@
+symbol_ref = "combiner/mcp_combiner/server.py#logger"
+fqn = "combiner.mcp_combiner.server.logger"
+name = "logger"
+kind = "global"
+lang = "python"
+content_hash = "c666b26bcad9f2ca"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "logger = logging.getLogger(\"mcp-combiner\")"
+description = ""
+schema = 4
+line = 51
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "create_combiner [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.server.logger",
+  "logger",
+  "mcp",
+  "server",
+]

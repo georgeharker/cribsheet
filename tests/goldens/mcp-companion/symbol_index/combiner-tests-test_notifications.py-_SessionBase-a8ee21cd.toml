@@ -1,0 +1,36 @@
+symbol_ref = "combiner/tests/test_notifications.py#_SessionBase"
+fqn = "combiner.tests.test_notifications._SessionBase"
+name = "_SessionBase"
+kind = "global"
+lang = "python"
+content_hash = "2721f0b6c0a81f2b"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "_SessionBase = object"
+description = ""
+schema = 4
+line = 48
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_CaptureSession [combiner/tests/test_notifications_e2e.py]",
+  "_FakeSession [combiner/tests/test_notifications.py]",
+]
+name_terms = [
+  "_SessionBase",
+  "base",
+  "combiner",
+  "combiner.tests.test_notifications._SessionBase",
+  "notifications",
+  "session",
+  "test",
+  "tests",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "combiner/tests/test_route_matrix.py#pytestmark"
+fqn = "combiner.tests.test_route_matrix.pytestmark"
+name = "pytestmark"
+kind = "global"
+lang = "python"
+content_hash = "d2ca828675f797eb"
+file = "combiner/tests/test_route_matrix.py"
+file_hash = "e02757ba8c7bf654"
+signature = "pytestmark = pytest.mark.e2e"
+description = ""
+schema = 4
+line = 28
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_route_matrix",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_route_matrix.pytestmark",
+  "matrix",
+  "pytestmark",
+  "route",
+  "test",
+  "tests",
+]

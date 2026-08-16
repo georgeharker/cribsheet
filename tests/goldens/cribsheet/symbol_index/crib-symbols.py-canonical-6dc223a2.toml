@@ -1,0 +1,35 @@
+symbol_ref = "crib/symbols.py#canonical"
+fqn = "crib.symbols.canonical"
+name = "canonical"
+kind = "function"
+lang = "python"
+content_hash = "678f0360fa801650"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def canonical(entry: dict[str, Any]) -> tuple[list[str], list[str]]:"
+description = ""
+schema = 4
+line = 458
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = [
+  "_own_segments [crib/symbols.py]",
+  "declared_tail [crib/symbols.py]",
+]
+called_by = [
+  "match_entry [crib/symbols.py]",
+]
+references = [
+  "match_entry [crib/symbols.py]",
+]
+name_terms = [
+  "canonical",
+  "crib",
+  "crib.symbols.canonical",
+  "symbols",
+]

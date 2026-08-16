@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#_graph_symbol"
+fqn = "crib.cli._graph_symbol"
+name = "_graph_symbol"
+kind = "function"
+lang = "python"
+content_hash = "2471833f15dd7959"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _graph_symbol(args: argparse.Namespace) -> str | None:"
+description = ""
+schema = 4
+line = 825
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "(lambda) [crib/cli.py]",
+]
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_graph_symbol",
+  "cli",
+  "crib",
+  "crib.cli._graph_symbol",
+  "graph",
+  "symbol",
+]

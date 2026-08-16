@@ -1,0 +1,36 @@
+symbol_ref = "crib/symbols.py#encode_loc"
+fqn = "crib.symbols.encode_loc"
+name = "encode_loc"
+kind = "function"
+lang = "python"
+content_hash = "bfa146373d641c19"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def encode_loc(project: str | None, relpath: str) -> str:"
+description = ""
+schema = 4
+line = 196
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_group_key [crib/codequery.py]",
+  "_locate [crib/codeindex.py]",
+]
+references = [
+  "_group_key [crib/codequery.py]",
+  "_locate [crib/codeindex.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.encode_loc",
+  "encode",
+  "encode_loc",
+  "loc",
+  "symbols",
+]

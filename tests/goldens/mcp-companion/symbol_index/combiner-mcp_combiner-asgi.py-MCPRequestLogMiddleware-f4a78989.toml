@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/asgi.py#MCPRequestLogMiddleware"
+fqn = "combiner.mcp_combiner.asgi.MCPRequestLogMiddleware"
+name = "MCPRequestLogMiddleware"
+kind = "class"
+lang = "python"
+content_hash = "ed50c85b72bd31cf"
+file = "combiner/mcp_combiner/asgi.py"
+file_hash = "1ff2dd1d6ee7f6d0"
+signature = "class MCPRequestLogMiddleware(BaseHTTPMiddleware):"
+description = ""
+schema = 4
+line = 196
+mtime = 1783548694000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "asgi",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "create_app [combiner/mcp_combiner/asgi.py]",
+]
+name_terms = [
+  "MCPRequestLogMiddleware",
+  "asgi",
+  "combiner",
+  "combiner.mcp_combiner.asgi.MCPRequestLogMiddleware",
+  "log",
+  "mcp",
+  "middleware",
+  "request",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_describe_queue.py#_FakeLoop.call_soon_threadsafe"
+fqn = "tests.test_describe_queue._FakeLoop.call_soon_threadsafe"
+name = "call_soon_threadsafe"
+kind = "method"
+lang = "python"
+content_hash = "6009d9d46146c593"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def call_soon_threadsafe(self, cb, *a):"
+description = ""
+schema = 4
+line = 59
+mtime = 1786664729000000000
+container = [
+  "_FakeLoop",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "_FakeLoop",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "call",
+  "call_soon_threadsafe",
+  "describe",
+  "fake",
+  "loop",
+  "queue",
+  "soon",
+  "test",
+  "tests",
+  "tests.test_describe_queue._FakeLoop.call_soon_threadsafe",
+  "threadsafe",
+]

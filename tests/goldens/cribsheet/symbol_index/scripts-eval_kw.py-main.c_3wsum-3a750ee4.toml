@@ -1,0 +1,40 @@
+symbol_ref = "scripts/eval_kw.py#main.c_3wsum"
+fqn = "scripts.eval_kw.main.c_3wsum"
+name = "c_3wsum"
+kind = "function"
+lang = "python"
+content_hash = "fde440511ff924b2"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def c_3wsum(wd, wn, wk):"
+description = ""
+schema = 4
+line = 142
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_kw.py]",
+]
+references = [
+  "main [scripts/eval_kw.py]",
+]
+name_terms = [
+  "3",
+  "c",
+  "c_3wsum",
+  "eval",
+  "kw",
+  "main",
+  "scripts",
+  "scripts.eval_kw.main.c_3wsum",
+  "wsum",
+]

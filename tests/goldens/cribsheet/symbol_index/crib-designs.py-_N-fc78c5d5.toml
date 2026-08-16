@@ -1,0 +1,31 @@
+symbol_ref = "crib/designs.py#_N"
+fqn = "crib.designs._N"
+name = "_N"
+kind = "constant"
+lang = "python"
+content_hash = "f53561dc7ea01275"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "_N = len(_ALPHA)"
+description = ""
+schema = 4
+line = 112
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_rank_between [crib/designs.py]",
+]
+name_terms = [
+  "_N",
+  "crib",
+  "crib.designs._N",
+  "designs",
+  "n",
+]

@@ -1,0 +1,49 @@
+symbol_ref = "combiner/mcp_combiner/nvim_channel.py#NvimChannelManager.call"
+fqn = "combiner.mcp_combiner.nvim_channel.NvimChannelManager.call"
+name = "call"
+kind = "method"
+lang = "python"
+content_hash = "5cda09dcf072814f"
+file = "combiner/mcp_combiner/nvim_channel.py"
+file_hash = "78901790bbdc7457"
+signature = "async def call("
+description = ""
+schema = 4
+line = 145
+mtime = 1782852601000000000
+container = [
+  "NvimChannelManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "nvim_channel",
+  "NvimChannelManager",
+]
+symbol_was = []
+calls = [
+  "_enqueue [combiner/mcp_combiner/nvim_channel.py]",
+]
+called_by = [
+  "call_nvim_tool [combiner/mcp_combiner/nvim_proxy.py]",
+  "test_call_unregistered_instance_raises [combiner/tests/test_nvim_channel.py]",
+  "test_dispatch_round_trip [combiner/tests/test_nvim_channel.py]",
+  "test_edit_round_trip_preserves_order [combiner/tests/test_nvim_channel.py]",
+  "test_unknown_tool_returns_is_error [combiner/tests/test_nvim_channel.py]",
+]
+references = [
+  "call_nvim_tool [combiner/mcp_combiner/nvim_proxy.py]",
+  "test_call_unregistered_instance_raises [combiner/tests/test_nvim_channel.py]",
+  "test_dispatch_round_trip [combiner/tests/test_nvim_channel.py]",
+  "test_edit_round_trip_preserves_order [combiner/tests/test_nvim_channel.py]",
+  "test_unknown_tool_returns_is_error [combiner/tests/test_nvim_channel.py]",
+]
+name_terms = [
+  "call",
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager.call",
+  "manager",
+  "mcp",
+  "nvim",
+]

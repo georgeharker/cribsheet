@@ -1,0 +1,38 @@
+symbol_ref = "crib/cli.py#_emit_apropos"
+fqn = "crib.cli._emit_apropos"
+name = "_emit_apropos"
+kind = "function"
+lang = "python"
+content_hash = "a1852b5239458db8"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _emit_apropos(hits: Any, as_json: bool) -> None:"
+description = ""
+schema = 4
+line = 109
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_emit [crib/cli.py]",
+  "_emit_rebuilding_note [crib/cli.py]",
+  "_render_markdown [crib/cli.py]",
+]
+called_by = [
+  "_E_apropos [crib/cli.py]",
+]
+references = [
+  "_E_apropos [crib/cli.py]",
+]
+name_terms = [
+  "_emit_apropos",
+  "apropos",
+  "cli",
+  "crib",
+  "crib.cli._emit_apropos",
+  "emit",
+]

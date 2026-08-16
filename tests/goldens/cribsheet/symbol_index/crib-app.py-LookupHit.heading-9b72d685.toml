@@ -1,0 +1,37 @@
+symbol_ref = "crib/app.py#LookupHit.heading"
+fqn = "crib.app.LookupHit.heading"
+name = "heading"
+kind = "field"
+lang = "python"
+content_hash = "dca488648c4c6f7b"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "heading: str"
+description = ""
+schema = 4
+line = 68
+mtime = 1786693579000000000
+container = [
+  "LookupHit",
+]
+scope = [
+  "crib",
+  "app",
+  "LookupHit",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_emit_human_one [crib/cli.py]",
+  "_similar [crib/app.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.LookupHit.heading",
+  "heading",
+  "hit",
+  "lookup",
+]

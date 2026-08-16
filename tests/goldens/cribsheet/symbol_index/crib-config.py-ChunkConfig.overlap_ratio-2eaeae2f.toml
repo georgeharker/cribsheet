@@ -1,0 +1,39 @@
+symbol_ref = "crib/config.py#ChunkConfig.overlap_ratio"
+fqn = "crib.config.ChunkConfig.overlap_ratio"
+name = "overlap_ratio"
+kind = "field"
+lang = "python"
+content_hash = "eaca03cfa513f7ef"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "overlap_ratio: float = 0.20     # 0.0–<1.0; 0.20 => 64-word overlap at 320"
+description = ""
+schema = 4
+line = 64
+mtime = 1786564832000000000
+container = [
+  "ChunkConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "ChunkConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "cmd_info [crib/cli.py]",
+  "overlap_words [crib/config.py]",
+  "test_overlap_clamped_below_window [tests/test_chunk_config.py]",
+  "test_overlap_words_derived_from_ratio [tests/test_chunk_config.py]",
+]
+name_terms = [
+  "chunk",
+  "config",
+  "crib",
+  "crib.config.ChunkConfig.overlap_ratio",
+  "overlap",
+  "overlap_ratio",
+  "ratio",
+]

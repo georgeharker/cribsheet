@@ -1,0 +1,36 @@
+symbol_ref = "crib/section_index.py#SectionIndex.prune"
+fqn = "crib.section_index.SectionIndex.prune"
+name = "prune"
+kind = "method"
+lang = "python"
+content_hash = "f38628f87b1e30ce"
+file = "crib/section_index.py"
+file_hash = "a65e5200b70d95a7"
+signature = "def prune(self, label: str, live: set[str], before: float | None = None) -> int:"
+description = ""
+schema = 4
+line = 173
+mtime = 1786044759000000000
+container = [
+  "SectionIndex",
+]
+scope = [
+  "crib",
+  "section_index",
+  "SectionIndex",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_store_prune_drops_orphans_keeps_live_and_fresh [tests/test_elaborate.py]",
+]
+references = [
+  "test_store_prune_drops_orphans_keeps_live_and_fresh [tests/test_elaborate.py]",
+]
+name_terms = [
+  "crib",
+  "crib.section_index.SectionIndex.prune",
+  "index",
+  "prune",
+  "section",
+]

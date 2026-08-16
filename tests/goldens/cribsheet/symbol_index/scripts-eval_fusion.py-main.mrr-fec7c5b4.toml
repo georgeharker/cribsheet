@@ -1,0 +1,37 @@
+symbol_ref = "scripts/eval_fusion.py#main.mrr"
+fqn = "scripts.eval_fusion.main.mrr"
+name = "mrr"
+kind = "function"
+lang = "python"
+content_hash = "794bf22c777746f8"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def mrr(rs): return sum((1 / r) for r in rs if r) / len(rs)"
+description = ""
+schema = 4
+line = 368
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_fusion",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_fusion.py]",
+]
+references = [
+  "main [scripts/eval_fusion.py]",
+]
+name_terms = [
+  "eval",
+  "fusion",
+  "main",
+  "mrr",
+  "scripts",
+  "scripts.eval_fusion.main.mrr",
+]

@@ -1,0 +1,64 @@
+symbol_ref = "tests/test_sync.py#_machine"
+fqn = "tests.test_sync._machine"
+name = "_machine"
+kind = "function"
+lang = "python"
+content_hash = "ccf639da6da9f668"
+file = "tests/test_sync.py"
+file_hash = "594e3dd701dbe999"
+signature = "def _machine(tmp_path: Path, name: str, remote: Path) -> GitBacking:"
+description = ""
+schema = 4
+line = 28
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_sync",
+]
+symbol_was = []
+calls = [
+  "GitBacking [crib/gitbacking.py]",
+  "git [tests/test_sync.py]",
+  "init [crib/gitbacking.py]",
+]
+called_by = [
+  "test_a_timeout_surfaces_as_a_failed_run_not_a_hang [tests/test_sync.py]",
+  "test_body_conflict_surfaces_but_header_is_healed [tests/test_sync.py]",
+  "test_daemon_side_backing_refuses_network_git [tests/test_sync.py]",
+  "test_empty_remote_still_falls_back_to_the_local_default [tests/test_sync.py]",
+  "test_frontmatter_only_conflict_auto_resolves [tests/test_sync.py]",
+  "test_git_runs_are_bounded_and_get_no_stdin [tests/test_sync.py]",
+  "test_init_writes_gitignore_and_remote [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_memory_bindings_is_gitignored [tests/test_sync.py]",
+  "test_pull_reports_conflicts_without_pushing [tests/test_sync.py]",
+  "test_snapshot_reports_commit_failure_structurally [tests/test_sync.py]",
+  "test_snapshot_with_nothing_to_do_is_ok_but_not_committed [tests/test_sync.py]",
+  "test_sync_round_trips_between_two_machines [tests/test_sync.py]",
+  "test_sync_stops_when_the_commit_fails [tests/test_sync.py]",
+]
+references = [
+  "test_a_timeout_surfaces_as_a_failed_run_not_a_hang [tests/test_sync.py]",
+  "test_body_conflict_surfaces_but_header_is_healed [tests/test_sync.py]",
+  "test_daemon_side_backing_refuses_network_git [tests/test_sync.py]",
+  "test_empty_remote_still_falls_back_to_the_local_default [tests/test_sync.py]",
+  "test_frontmatter_only_conflict_auto_resolves [tests/test_sync.py]",
+  "test_git_runs_are_bounded_and_get_no_stdin [tests/test_sync.py]",
+  "test_init_writes_gitignore_and_remote [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_memory_bindings_is_gitignored [tests/test_sync.py]",
+  "test_pull_reports_conflicts_without_pushing [tests/test_sync.py]",
+  "test_snapshot_reports_commit_failure_structurally [tests/test_sync.py]",
+  "test_snapshot_with_nothing_to_do_is_ok_but_not_committed [tests/test_sync.py]",
+  "test_sync_round_trips_between_two_machines [tests/test_sync.py]",
+  "test_sync_stops_when_the_commit_fails [tests/test_sync.py]",
+]
+name_terms = [
+  "_machine",
+  "machine",
+  "sync",
+  "test",
+  "tests",
+  "tests.test_sync._machine",
+]

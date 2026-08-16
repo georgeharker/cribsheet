@@ -1,0 +1,35 @@
+symbol_ref = "scripts/eval_fusion.py#_logistic_fit"
+fqn = "scripts.eval_fusion._logistic_fit"
+name = "_logistic_fit"
+kind = "function"
+lang = "python"
+content_hash = "062adee8e07738ba"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def _logistic_fit(X, y, iters=300, lr=0.3, l2=1e-3):"
+description = ""
+schema = 4
+line = 277
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "ltr_eval [scripts/eval_fusion.py]",
+]
+references = [
+  "ltr_eval [scripts/eval_fusion.py]",
+]
+name_terms = [
+  "_logistic_fit",
+  "eval",
+  "fit",
+  "fusion",
+  "logistic",
+  "scripts",
+  "scripts.eval_fusion._logistic_fit",
+]

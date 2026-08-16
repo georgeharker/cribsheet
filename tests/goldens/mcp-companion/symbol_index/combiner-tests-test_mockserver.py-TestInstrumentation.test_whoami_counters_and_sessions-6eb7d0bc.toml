@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestInstrumentation.test_whoami_counters_and_sessions"
+fqn = "combiner.tests.test_mockserver.TestInstrumentation.test_whoami_counters_and_sessions"
+name = "test_whoami_counters_and_sessions"
+kind = "method"
+lang = "python"
+content_hash = "7217c95b2fdb41f2"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "async def test_whoami_counters_and_sessions(self) -> None:"
+description = ""
+schema = 4
+line = 237
+mtime = 1783534978000000000
+container = [
+  "TestInstrumentation",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+  "TestInstrumentation",
+]
+symbol_was = []
+calls = [
+  "MockServer [combiner/mcp_combiner/mockserver.py]",
+  "_text [combiner/tests/test_mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "combiner",
+  "combiner.tests.test_mockserver.TestInstrumentation.test_whoami_counters_and_sessions",
+  "counters",
+  "instrumentation",
+  "mockserver",
+  "sessions",
+  "test",
+  "test_whoami_counters_and_sessions",
+  "tests",
+  "whoami",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "crib/designs.py#Designs._row"
+fqn = "crib.designs.Designs._row"
+name = "_row"
+kind = "method"
+lang = "python"
+content_hash = "58518203afb5e13c"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _row(self, graph: Graph, node: Node, tainted: dict[str, Any],"
+description = ""
+schema = 4
+line = 1762
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_group [crib/designs.py]",
+  "brief [crib/designs.py]",
+]
+called_by = [
+  "_rows [crib/designs.py]",
+]
+references = [
+  "_rows [crib/designs.py]",
+]
+name_terms = [
+  "_row",
+  "crib",
+  "crib.designs.Designs._row",
+  "designs",
+  "row",
+]

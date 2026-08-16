@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#_from_editor"
+fqn = "crib.cli._from_editor"
+name = "_from_editor"
+kind = "function"
+lang = "python"
+content_hash = "aa44dd7eefc42ded"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _from_editor(what: str) -> str:"
+description = ""
+schema = 4
+line = 34
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_body [crib/cli.py]",
+]
+references = [
+  "_body [crib/cli.py]",
+]
+name_terms = [
+  "_from_editor",
+  "cli",
+  "crib",
+  "crib.cli._from_editor",
+  "editor",
+  "from",
+]

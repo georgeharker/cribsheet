@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.design_check"
+fqn = "crib.app.Crib.design_check"
+name = "design_check"
+kind = "method"
+lang = "python"
+content_hash = "efc6da6a49b18f62"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def design_check(self, ref: str | None = None, project: str | None = None,"
+description = ""
+schema = 4
+line = 2213
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "design_check [crib/designs.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "design_check [crib/server.py]",
+]
+references = [
+  "design_check [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "check",
+  "crib",
+  "crib.app.Crib.design_check",
+  "design",
+  "design_check",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "crib/cli.py#_sym_loc"
+fqn = "crib.cli._sym_loc"
+name = "_sym_loc"
+kind = "function"
+lang = "python"
+content_hash = "69d6f14ef907af89"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _sym_loc(d: dict, gap: str = \"  \") -> str:"
+description = ""
+schema = 4
+line = 222
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_emit_code_edges [crib/cli.py]",
+  "render_symbol [crib/cli.py]",
+]
+references = [
+  "_emit_code_edges [crib/cli.py]",
+  "render_symbol [crib/cli.py]",
+]
+name_terms = [
+  "_sym_loc",
+  "cli",
+  "crib",
+  "crib.cli._sym_loc",
+  "loc",
+  "sym",
+]

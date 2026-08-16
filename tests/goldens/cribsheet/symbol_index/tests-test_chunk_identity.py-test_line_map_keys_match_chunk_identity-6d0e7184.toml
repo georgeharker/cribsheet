@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_chunk_identity.py#test_line_map_keys_match_chunk_identity"
+fqn = "tests.test_chunk_identity.test_line_map_keys_match_chunk_identity"
+name = "test_line_map_keys_match_chunk_identity"
+kind = "function"
+lang = "python"
+content_hash = "3ce89e156f55daae"
+file = "tests/test_chunk_identity.py"
+file_hash = "0afd98c1ecf1279e"
+signature = "def test_line_map_keys_match_chunk_identity():"
+description = ""
+schema = 4
+line = 116
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_chunk_identity",
+]
+symbol_was = []
+calls = [
+  "chunk_note [crib/chunk.py]",
+  "metadata [crib/chunk.py]",
+  "section_key [crib/chunk.py]",
+  "section_line_map [crib/chunk.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chunk",
+  "identity",
+  "keys",
+  "line",
+  "map",
+  "match",
+  "test",
+  "test_line_map_keys_match_chunk_identity",
+  "tests",
+  "tests.test_chunk_identity.test_line_map_keys_match_chunk_identity",
+]

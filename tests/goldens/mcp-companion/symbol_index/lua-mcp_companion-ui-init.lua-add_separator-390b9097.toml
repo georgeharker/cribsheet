@@ -1,0 +1,40 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#add_separator"
+fqn = "mcp_companion.ui.add_separator"
+name = "add_separator"
+kind = "function"
+lang = "lua"
+content_hash = "d48df4c171c0d372"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "local function add_separator(width)"
+description = ""
+schema = 4
+line = 116
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "ui",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "build_logs_view [lua/mcp_companion/ui/init.lua]",
+  "build_status_view [lua/mcp_companion/ui/init.lua]",
+  "init.lua [lua/mcp_companion/ui/init.lua]",
+]
+references = [
+  "build_logs_view [lua/mcp_companion/ui/init.lua]",
+  "build_status_view [lua/mcp_companion/ui/init.lua]",
+  "elseif [lua/mcp_companion/ui/init.lua]",
+  "if [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "add",
+  "add_separator",
+  "companion",
+  "mcp",
+  "mcp_companion.ui.add_separator",
+  "separator",
+  "ui",
+]

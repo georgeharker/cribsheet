@@ -1,0 +1,37 @@
+symbol_ref = "crib/app.py#Crib._similar"
+fqn = "crib.app.Crib._similar"
+name = "_similar"
+kind = "method"
+lang = "python"
+content_hash = "b79d88486ad18921"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _similar(self, proj: str, content: str, exclude: str,"
+description = ""
+schema = 4
+line = 575
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "lookup [crib/app.py]",
+]
+called_by = []
+references = [
+  "design_add [crib/app.py]",
+  "store_note [crib/app.py]",
+]
+name_terms = [
+  "_similar",
+  "app",
+  "crib",
+  "crib.app.Crib._similar",
+  "similar",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#_partition_by_server"
+fqn = "combiner.mcp_combiner.toolcache._partition_by_server"
+name = "_partition_by_server"
+kind = "function"
+lang = "python"
+content_hash = "31191448e995c7d1"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "def _partition_by_server(tools: list[Tool]) -> tuple[dict[str, list[Tool]], list[Tool]]:"
+description = ""
+schema = 4
+line = 209
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = [
+  "_find_server_for_tool [combiner/mcp_combiner/toolcache.py]",
+]
+called_by = [
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+]
+references = [
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+]
+name_terms = [
+  "_partition_by_server",
+  "by",
+  "combiner",
+  "combiner.mcp_combiner.toolcache._partition_by_server",
+  "mcp",
+  "partition",
+  "server",
+  "toolcache",
+]

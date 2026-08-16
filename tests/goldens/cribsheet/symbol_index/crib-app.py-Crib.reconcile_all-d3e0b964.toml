@@ -1,0 +1,51 @@
+symbol_ref = "crib/app.py#Crib.reconcile_all"
+fqn = "crib.app.Crib.reconcile_all"
+name = "reconcile_all"
+kind = "method"
+lang = "python"
+content_hash = "d4e28e4dd2d56796"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def reconcile_all(self) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 776
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "__call__ [crib/paths.py]",
+  "_indexed_projects [crib/app.py]",
+  "_record_chunk_schema [crib/app.py]",
+  "_registered_root [crib/app.py]",
+  "_reindex_dirty_code [crib/app.py]",
+  "_resweep_insitu [crib/app.py]",
+  "_skip_if_unavailable [crib/app.py]",
+  "projects [crib/app.py]",
+  "reindex [crib/app.py]",
+]
+called_by = [
+  "_reconcile [crib/cli.py]",
+  "_reconcile_background [crib/app.py]",
+  "project_reconcile [crib/server.py]",
+]
+references = [
+  "_reconcile [crib/cli.py]",
+  "_reconcile_background [crib/app.py]",
+  "project_reconcile [crib/server.py]",
+]
+name_terms = [
+  "all",
+  "app",
+  "crib",
+  "crib.app.Crib.reconcile_all",
+  "reconcile",
+  "reconcile_all",
+]

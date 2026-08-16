@@ -1,0 +1,37 @@
+symbol_ref = "combiner/tests/conftest.py#CombinerHandle.proc"
+fqn = "combiner.tests.conftest.CombinerHandle.proc"
+name = "proc"
+kind = "field"
+lang = "python"
+content_hash = "44f914534e3f1062"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "proc: subprocess.Popen[bytes]"
+description = ""
+schema = 4
+line = 159
+mtime = 1783544328000000000
+container = [
+  "CombinerHandle",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "CombinerHandle",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "start_combiner [combiner/tests/conftest.py]",
+  "terminate [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.CombinerHandle.proc",
+  "conftest",
+  "handle",
+  "proc",
+  "tests",
+]

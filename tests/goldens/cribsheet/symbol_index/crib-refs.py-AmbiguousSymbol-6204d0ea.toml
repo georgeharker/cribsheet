@@ -1,0 +1,34 @@
+symbol_ref = "crib/refs.py#AmbiguousSymbol"
+fqn = "crib.refs.AmbiguousSymbol"
+name = "AmbiguousSymbol"
+kind = "class"
+lang = "python"
+content_hash = "e22517585b548392"
+file = "crib/refs.py"
+file_hash = "d39b1d18c0921167"
+signature = "class AmbiguousSymbol(CribUserError):"
+description = ""
+schema = 4
+line = 41
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "refs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "resolve_symbol [crib/refs.py]",
+  "resolve_symbol_or_ref [crib/refs.py]",
+  "test_symbol_errors_are_user_errors_and_still_value_errors [tests/test_code_graph.py]",
+]
+name_terms = [
+  "AmbiguousSymbol",
+  "ambiguous",
+  "crib",
+  "crib.refs.AmbiguousSymbol",
+  "refs",
+  "symbol",
+]

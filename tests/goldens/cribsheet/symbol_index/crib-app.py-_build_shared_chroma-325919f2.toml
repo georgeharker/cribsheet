@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#_build_shared_chroma"
+fqn = "crib.app._build_shared_chroma"
+name = "_build_shared_chroma"
+kind = "function"
+lang = "python"
+content_hash = "bbdc390f44e30272"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _build_shared_chroma(paths: Paths, config: Config) -> tuple[Store, Callable[[], None]]:"
+description = ""
+schema = 4
+line = 2949
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "app",
+]
+symbol_was = []
+calls = [
+  "shared [crib/store.py]",
+  "unuse [crib/sharedserver.py]",
+  "use [crib/sharedserver.py]",
+  "wait_ready [crib/sharedserver.py]",
+]
+called_by = [
+  "_build_store [crib/app.py]",
+]
+references = [
+  "_build_store [crib/app.py]",
+]
+name_terms = [
+  "_build_shared_chroma",
+  "app",
+  "build",
+  "chroma",
+  "crib",
+  "crib.app._build_shared_chroma",
+  "shared",
+]

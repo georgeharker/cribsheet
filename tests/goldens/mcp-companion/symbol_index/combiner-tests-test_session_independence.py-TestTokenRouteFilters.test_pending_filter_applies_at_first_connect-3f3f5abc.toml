@@ -1,0 +1,49 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestTokenRouteFilters.test_pending_filter_applies_at_first_connect"
+fqn = "combiner.tests.test_session_independence.TestTokenRouteFilters.test_pending_filter_applies_at_first_connect"
+name = "test_pending_filter_applies_at_first_connect"
+kind = "method"
+lang = "python"
+content_hash = "b22ec0f9e6bb41f7"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "@xfail_session_namespace_split"
+description = ""
+schema = 4
+line = 305
+mtime = 1783541669000000000
+container = [
+  "TestTokenRouteFilters",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+  "TestTokenRouteFilters",
+]
+symbol_was = []
+calls = [
+  "_header_client [combiner/tests/test_session_independence.py]",
+  "_rest [combiner/tests/test_session_independence.py]",
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "_token [combiner/tests/test_session_independence.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "applies",
+  "at",
+  "combiner",
+  "combiner.tests.test_session_independence.TestTokenRouteFilters.test_pending_filter_applies_at_first_connect",
+  "connect",
+  "filter",
+  "filters",
+  "first",
+  "independence",
+  "pending",
+  "route",
+  "session",
+  "test",
+  "test_pending_filter_applies_at_first_connect",
+  "tests",
+  "token",
+]

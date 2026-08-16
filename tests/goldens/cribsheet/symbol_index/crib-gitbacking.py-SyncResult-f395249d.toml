@@ -1,0 +1,35 @@
+symbol_ref = "crib/gitbacking.py#SyncResult"
+fqn = "crib.gitbacking.SyncResult"
+name = "SyncResult"
+kind = "class"
+lang = "python"
+content_hash = "66da0a29800db253"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 77
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "gitbacking",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "pull [crib/gitbacking.py]",
+  "push [crib/gitbacking.py]",
+  "setup [crib/gitbacking.py]",
+  "sync [crib/gitbacking.py]",
+]
+name_terms = [
+  "SyncResult",
+  "crib",
+  "crib.gitbacking.SyncResult",
+  "gitbacking",
+  "result",
+  "sync",
+]

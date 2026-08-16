@@ -1,0 +1,37 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#NAMESPACED"
+fqn = "combiner.tests.test_notifications_e2e.NAMESPACED"
+name = "NAMESPACED"
+kind = "constant"
+lang = "python"
+content_hash = "ac4f693ae6140409"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "NAMESPACED = str(AnyUrl(Namespace(\"svg-mcp\")._transform_uri(WIDGET_URI)))"
+description = ""
+schema = 4
+line = 62
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_per_chat_routes_to_requesting_session_only [combiner/tests/test_notifications_e2e.py]",
+  "test_resource_updated_delivered_namespaced [combiner/tests/test_notifications_e2e.py]",
+]
+name_terms = [
+  "2",
+  "NAMESPACED",
+  "combiner",
+  "combiner.tests.test_notifications_e2e.NAMESPACED",
+  "e",
+  "namespaced",
+  "notifications",
+  "test",
+  "tests",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/notifications.py#forwarding_factory.wrapped"
+fqn = "combiner.mcp_combiner.notifications.forwarding_factory.wrapped"
+name = "wrapped"
+kind = "function"
+lang = "python"
+content_hash = "2c3e64fdb7c7fafb"
+file = "combiner/mcp_combiner/notifications.py"
+file_hash = "3a02dac6027ca8f5"
+signature = "def wrapped() -> Any:"
+description = ""
+schema = 4
+line = 251
+mtime = 1784493613000000000
+container = [
+  "forwarding_factory",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "notifications",
+  "forwarding_factory",
+]
+symbol_was = []
+calls = [
+  "_finish [combiner/mcp_combiner/notifications.py]",
+  "_target [combiner/mcp_combiner/notifications.py]",
+  "attach_resource_forwarding [combiner/mcp_combiner/notifications.py]",
+]
+called_by = []
+references = [
+  "forwarding_factory [combiner/mcp_combiner/notifications.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.notifications.forwarding_factory.wrapped",
+  "factory",
+  "forwarding",
+  "mcp",
+  "notifications",
+  "wrapped",
+]

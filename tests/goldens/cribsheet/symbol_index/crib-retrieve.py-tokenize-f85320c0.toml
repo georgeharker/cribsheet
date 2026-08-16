@@ -1,0 +1,60 @@
+symbol_ref = "crib/retrieve.py#tokenize"
+fqn = "crib.retrieve.tokenize"
+name = "tokenize"
+kind = "function"
+lang = "python"
+content_hash = "3e23907d009491dd"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "def tokenize(text: str) -> list[str]:"
+description = ""
+schema = 4
+line = 43
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "retrieve",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "(lambda) [scripts/eval_fusion.py]",
+  "_corpus [tests/test_retrieve.py]",
+  "_lexical_tf [crib/retrieve.py]",
+  "_lookup_one [crib/codequery.py]",
+  "_prepare [crib/codestore.py]",
+  "_retrieve [crib/app.py]",
+  "main [scripts/eval_hybrid.py]",
+  "main [scripts/eval_rigor.py]",
+  "signals [scripts/eval_hybrid.py]",
+  "signals [scripts/eval_rigor.py]",
+  "test_bm25_ranks_exact_term_match_first [tests/test_retrieve.py]",
+  "test_bm25_unknown_terms_score_zero [tests/test_retrieve.py]",
+  "test_downweight_scales_elaboration_contribution [tests/test_elaborate.py]",
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+  "test_subtokens_let_spaced_query_match_a_solid_identifier [tests/test_retrieve.py]",
+]
+references = [
+  "__init__ [scripts/eval_fusion.py]",
+  "_corpus [tests/test_retrieve.py]",
+  "_lexical_tf [crib/retrieve.py]",
+  "_lookup_one [crib/codequery.py]",
+  "_prepare [crib/codestore.py]",
+  "_retrieve [crib/app.py]",
+  "main [scripts/eval_hybrid.py]",
+  "main [scripts/eval_rigor.py]",
+  "signals [scripts/eval_hybrid.py]",
+  "signals [scripts/eval_rigor.py]",
+  "test_bm25_ranks_exact_term_match_first [tests/test_retrieve.py]",
+  "test_bm25_unknown_terms_score_zero [tests/test_retrieve.py]",
+  "test_downweight_scales_elaboration_contribution [tests/test_elaborate.py]",
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+  "test_subtokens_let_spaced_query_match_a_solid_identifier [tests/test_retrieve.py]",
+]
+name_terms = [
+  "crib",
+  "crib.retrieve.tokenize",
+  "retrieve",
+  "tokenize",
+]

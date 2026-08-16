@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#PrimeOutcome.EMPTY"
+fqn = "combiner.mcp_combiner.toolcache.PrimeOutcome.EMPTY"
+name = "EMPTY"
+kind = "constant"
+lang = "python"
+content_hash = "679f847caef6f488"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "EMPTY = \"empty\""
+description = ""
+schema = 4
+line = 46
+mtime = 1784493613000000000
+container = [
+  "PrimeOutcome",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+  "PrimeOutcome",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "test_prime_empty_answer_preserves_confirmed_slice [combiner/tests/test_session_filter.py]",
+  "test_prime_empty_answers_retry_until_timeout [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "EMPTY",
+  "combiner",
+  "combiner.mcp_combiner.toolcache.PrimeOutcome.EMPTY",
+  "empty",
+  "mcp",
+  "outcome",
+  "prime",
+  "toolcache",
+]

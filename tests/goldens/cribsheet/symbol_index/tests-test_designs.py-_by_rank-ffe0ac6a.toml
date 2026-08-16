@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_designs.py#_by_rank"
+fqn = "tests.test_designs._by_rank"
+name = "_by_rank"
+kind = "function"
+lang = "python"
+content_hash = "475d7e8191b33bc8"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def _by_rank(rows):"
+description = ""
+schema = 4
+line = 244
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_plan_add_takes_a_batch_with_intra_batch_deps [tests/test_designs.py]",
+  "test_plan_move_reorders_without_touching_deps [tests/test_designs.py]",
+]
+references = [
+  "test_plan_add_takes_a_batch_with_intra_batch_deps [tests/test_designs.py]",
+  "test_plan_move_reorders_without_touching_deps [tests/test_designs.py]",
+]
+name_terms = [
+  "_by_rank",
+  "by",
+  "designs",
+  "rank",
+  "test",
+  "tests",
+  "tests.test_designs._by_rank",
+]

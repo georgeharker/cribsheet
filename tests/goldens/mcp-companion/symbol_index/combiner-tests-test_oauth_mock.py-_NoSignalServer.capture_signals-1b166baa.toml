@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#_NoSignalServer.capture_signals"
+fqn = "combiner.tests.test_oauth_mock._NoSignalServer.capture_signals"
+name = "capture_signals"
+kind = "method"
+lang = "python"
+content_hash = "d2a0fa64f5cbe922"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "@contextlib.contextmanager"
+description = ""
+schema = 4
+line = 76
+mtime = 1784495646000000000
+container = [
+  "_NoSignalServer",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "_NoSignalServer",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "capture",
+  "capture_signals",
+  "combiner",
+  "combiner.tests.test_oauth_mock._NoSignalServer.capture_signals",
+  "mock",
+  "no",
+  "oauth",
+  "server",
+  "signal",
+  "signals",
+  "test",
+  "tests",
+]

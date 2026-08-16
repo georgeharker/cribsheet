@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager.get_auth"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager.get_auth"
+name = "get_auth"
+kind = "method"
+lang = "python"
+content_hash = "8e471dbc19387a9c"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "def get_auth(self, name: str) -> httpx.Auth | None:"
+description = ""
+schema = 4
+line = 298
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = [
+  "build_auth [combiner/mcp_combiner/auth.py]",
+]
+called_by = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.get_auth",
+  "connection",
+  "connections",
+  "get",
+  "get_auth",
+  "manager",
+  "mcp",
+]

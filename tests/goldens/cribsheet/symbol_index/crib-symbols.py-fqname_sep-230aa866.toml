@@ -1,0 +1,44 @@
+symbol_ref = "crib/symbols.py#fqname_sep"
+fqn = "crib.symbols.fqname_sep"
+name = "fqname_sep"
+kind = "function"
+lang = "python"
+content_hash = "f34094d8f943c88c"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def fqname_sep(lang: str) -> str:"
+description = ""
+schema = 4
+line = 46
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_group_key [crib/codequery.py]",
+  "_own_segments [crib/symbols.py]",
+  "declared_tail [crib/symbols.py]",
+  "display_name [crib/symbols.py]",
+  "fqn [crib/symbols.py]",
+  "segments [crib/symbols.py]",
+]
+references = [
+  "_group_key [crib/codequery.py]",
+  "_own_segments [crib/symbols.py]",
+  "declared_tail [crib/symbols.py]",
+  "display_name [crib/symbols.py]",
+  "fqn [crib/symbols.py]",
+  "segments [crib/symbols.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.fqname_sep",
+  "fqname",
+  "fqname_sep",
+  "sep",
+  "symbols",
+]

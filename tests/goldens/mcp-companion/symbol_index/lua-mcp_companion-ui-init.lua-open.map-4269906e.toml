@@ -1,0 +1,37 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#open.map"
+fqn = "mcp_companion.ui.open.map"
+name = "map"
+kind = "function"
+lang = "lua"
+content_hash = "986b63fa5745df4c"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "local function map(key, fn, desc)"
+description = ""
+schema = 4
+line = 473
+mtime = 1783545086000000000
+container = [
+  "M.open",
+]
+scope = [
+  "mcp_companion",
+  "ui",
+  "open",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.open [lua/mcp_companion/ui/init.lua]",
+]
+references = [
+  "open [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "companion",
+  "map",
+  "mcp",
+  "mcp_companion.ui.open.map",
+  "open",
+  "ui",
+]

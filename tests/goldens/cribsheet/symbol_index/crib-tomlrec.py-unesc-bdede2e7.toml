@@ -1,0 +1,35 @@
+symbol_ref = "crib/tomlrec.py#unesc"
+fqn = "crib.tomlrec.unesc"
+name = "unesc"
+kind = "function"
+lang = "python"
+content_hash = "2ec57a85a4dbcfcb"
+file = "crib/tomlrec.py"
+file_hash = "f33317468899fcd5"
+signature = "def unesc(s: str) -> str:"
+description = ""
+schema = 4
+line = 45
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "tomlrec",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_escape_round_trips_and_always_yields_valid_toml [tests/test_code_integrity.py]",
+  "unquote [crib/tomlrec.py]",
+]
+references = [
+  "_unesc [crib/codeindex.py]",
+  "test_escape_round_trips_and_always_yields_valid_toml [tests/test_code_integrity.py]",
+  "unquote [crib/tomlrec.py]",
+]
+name_terms = [
+  "crib",
+  "crib.tomlrec.unesc",
+  "tomlrec",
+  "unesc",
+]

@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestStaleServerTools.test_auth_failed_server_tools_dropped"
+fqn = "combiner.tests.test_session_filter.TestStaleServerTools.test_auth_failed_server_tools_dropped"
+name = "test_auth_failed_server_tools_dropped"
+kind = "method"
+lang = "python"
+content_hash = "ac92f9596f3bf315"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_auth_failed_server_tools_dropped(self):"
+description = ""
+schema = 4
+line = 458
+mtime = 1784493613000000000
+container = [
+  "TestStaleServerTools",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestStaleServerTools",
+]
+symbol_was = []
+calls = [
+  "_config [combiner/tests/test_session_filter.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "_names [combiner/tests/test_session_filter.py]",
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools.test_auth_failed_server_tools_dropped",
+  "dropped",
+  "failed",
+  "filter",
+  "server",
+  "session",
+  "stale",
+  "test",
+  "test_auth_failed_server_tools_dropped",
+  "tests",
+  "tools",
+]

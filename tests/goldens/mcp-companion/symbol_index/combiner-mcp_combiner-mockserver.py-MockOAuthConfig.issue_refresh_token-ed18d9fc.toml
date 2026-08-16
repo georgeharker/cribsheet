@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthConfig.issue_refresh_token"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthConfig.issue_refresh_token"
+name = "issue_refresh_token"
+kind = "field"
+lang = "python"
+content_hash = "c69e547dc8ae1913"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "issue_refresh_token: bool = True"
+description = ""
+schema = 4
+line = 590
+mtime = 1783622326000000000
+container = [
+  "MockOAuthConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_grant_authorization_code [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthConfig.issue_refresh_token",
+  "config",
+  "issue",
+  "issue_refresh_token",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "refresh",
+  "token",
+]

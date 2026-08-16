@@ -1,0 +1,50 @@
+symbol_ref = "crib/codeindex.py#match_meta"
+fqn = "crib.codeindex.match_meta"
+name = "match_meta"
+kind = "function"
+lang = "python"
+content_hash = "4f91553b5dd08eb9"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def match_meta(fqname: str, metas: dict[str, Any]) -> tuple[str, list[str]]:"
+description = ""
+schema = 4
+line = 1406
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = [
+  "_split [crib/codeindex.py]",
+  "suffix_of [crib/symbols.py]",
+  "tail [crib/symbols.py]",
+]
+called_by = [
+  "_describe_and_patch [crib/codeindexer.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "test_ambiguous_tail_match_is_dropped_never_guessed [tests/test_code_attribution.py]",
+  "test_exact_fqname_beats_any_fallback [tests/test_code_attribution.py]",
+  "test_longest_qualified_suffix_wins [tests/test_code_attribution.py]",
+  "test_rust_fqnames_tail_match_on_double_colon [tests/test_code_attribution.py]",
+  "test_same_named_methods_get_their_own_descriptions [tests/test_code_attribution.py]",
+]
+references = [
+  "_describe_and_patch [crib/codeindexer.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "test_ambiguous_tail_match_is_dropped_never_guessed [tests/test_code_attribution.py]",
+  "test_exact_fqname_beats_any_fallback [tests/test_code_attribution.py]",
+  "test_longest_qualified_suffix_wins [tests/test_code_attribution.py]",
+  "test_rust_fqnames_tail_match_on_double_colon [tests/test_code_attribution.py]",
+  "test_same_named_methods_get_their_own_descriptions [tests/test_code_attribution.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.match_meta",
+  "match",
+  "match_meta",
+  "meta",
+]

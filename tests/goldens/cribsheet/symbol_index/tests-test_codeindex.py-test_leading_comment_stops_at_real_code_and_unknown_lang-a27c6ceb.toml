@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_codeindex.py#test_leading_comment_stops_at_real_code_and_unknown_lang"
+fqn = "tests.test_codeindex.test_leading_comment_stops_at_real_code_and_unknown_lang"
+name = "test_leading_comment_stops_at_real_code_and_unknown_lang"
+kind = "function"
+lang = "python"
+content_hash = "5255e2fedc0bd15a"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_leading_comment_stops_at_real_code_and_unknown_lang():"
+description = ""
+schema = 4
+line = 159
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "_leading_comment [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "at",
+  "code",
+  "codeindex",
+  "comment",
+  "lang",
+  "leading",
+  "real",
+  "stops",
+  "test",
+  "test_leading_comment_stops_at_real_code_and_unknown_lang",
+  "tests",
+  "tests.test_codeindex.test_leading_comment_stops_at_real_code_and_unknown_lang",
+  "unknown",
+]

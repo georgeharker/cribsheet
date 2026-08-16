@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/config.py#_merge_policies.pick"
+fqn = "combiner.mcp_combiner.config._merge_policies.pick"
+name = "pick"
+kind = "function"
+lang = "python"
+content_hash = "61cd2c93f936e6ee"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def pick("
+description = ""
+schema = 4
+line = 233
+mtime = 1783633313000000000
+container = [
+  "_merge_policies",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "_merge_policies",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+]
+references = [
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config._merge_policies.pick",
+  "config",
+  "mcp",
+  "merge",
+  "pick",
+  "policies",
+]

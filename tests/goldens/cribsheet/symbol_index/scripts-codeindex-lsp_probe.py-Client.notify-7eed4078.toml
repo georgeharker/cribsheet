@@ -1,0 +1,45 @@
+symbol_ref = "scripts/codeindex/lsp_probe.py#Client.notify"
+fqn = "scripts.codeindex.lsp_probe.Client.notify"
+name = "notify"
+kind = "method"
+lang = "python"
+content_hash = "f220695e1bfe0907"
+file = "scripts/codeindex/lsp_probe.py"
+file_hash = "014ef92d65f6717d"
+signature = "def notify(self, method: str, params: dict) -> None:"
+description = ""
+schema = 4
+line = 95
+mtime = 1783033292000000000
+container = [
+  "Client",
+]
+scope = [
+  "scripts",
+  "codeindex",
+  "lsp_probe",
+  "Client",
+]
+symbol_was = []
+calls = [
+  "_send [scripts/codeindex/lsp_probe.py]",
+]
+called_by = [
+  "did_open [scripts/codeindex/lsp_probe.py]",
+  "initialize [scripts/codeindex/lsp_probe.py]",
+  "shutdown [scripts/codeindex/lsp_probe.py]",
+]
+references = [
+  "did_open [scripts/codeindex/lsp_probe.py]",
+  "initialize [scripts/codeindex/lsp_probe.py]",
+  "shutdown [scripts/codeindex/lsp_probe.py]",
+]
+name_terms = [
+  "client",
+  "codeindex",
+  "lsp",
+  "notify",
+  "probe",
+  "scripts",
+  "scripts.codeindex.lsp_probe.Client.notify",
+]

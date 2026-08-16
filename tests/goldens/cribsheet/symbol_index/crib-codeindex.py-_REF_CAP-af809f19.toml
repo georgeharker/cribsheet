@@ -1,0 +1,32 @@
+symbol_ref = "crib/codeindex.py#_REF_CAP"
+fqn = "crib.codeindex._REF_CAP"
+name = "_REF_CAP"
+kind = "constant"
+lang = "python"
+content_hash = "bd6b750277e300f6"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "_REF_CAP = 80  # references resolved per symbol — bounds worst-case on hot helpers"
+description = ""
+schema = 4
+line = 842
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_reference_edges [crib/codeindex.py]",
+]
+name_terms = [
+  "_REF_CAP",
+  "cap",
+  "codeindex",
+  "crib",
+  "crib.codeindex._REF_CAP",
+  "ref",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "crib/codeindexer.py#CodeIndexer._deletion_allowed"
+fqn = "crib.codeindexer.CodeIndexer._deletion_allowed"
+name = "_deletion_allowed"
+kind = "method"
+lang = "python"
+content_hash = "1e68aaddea846ab7"
+file = "crib/codeindexer.py"
+file_hash = "8848838a57e51f0a"
+signature = "@staticmethod"
+description = ""
+schema = 4
+line = 345
+mtime = 1786664729000000000
+container = [
+  "CodeIndexer",
+]
+scope = [
+  "crib",
+  "codeindexer",
+  "CodeIndexer",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+name_terms = [
+  "_deletion_allowed",
+  "allowed",
+  "code",
+  "codeindexer",
+  "crib",
+  "crib.codeindexer.CodeIndexer._deletion_allowed",
+  "deletion",
+  "indexer",
+]

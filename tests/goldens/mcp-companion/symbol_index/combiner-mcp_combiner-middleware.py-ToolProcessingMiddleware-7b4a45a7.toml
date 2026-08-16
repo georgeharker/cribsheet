@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/middleware.py#ToolProcessingMiddleware"
+fqn = "combiner.mcp_combiner.middleware.ToolProcessingMiddleware"
+name = "ToolProcessingMiddleware"
+kind = "class"
+lang = "python"
+content_hash = "8b377f567c6f625b"
+file = "combiner/mcp_combiner/middleware.py"
+file_hash = "6dee47cf65146f20"
+signature = "class ToolProcessingMiddleware(Middleware):"
+description = ""
+schema = 4
+line = 105
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "middleware",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_list [combiner/tests/test_session_filter.py]",
+  "create_combiner [combiner/mcp_combiner/server.py]",
+  "setup_method [combiner/tests/test_session_filter.py]",
+  "teardown_method [combiner/tests/test_session_filter.py]",
+  "test_concurrent_misses_coalesce [combiner/tests/test_session_filter.py]",
+  "test_failure_does_not_wedge_inflight [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "ToolProcessingMiddleware",
+  "combiner",
+  "combiner.mcp_combiner.middleware.ToolProcessingMiddleware",
+  "mcp",
+  "middleware",
+  "processing",
+  "tool",
+]

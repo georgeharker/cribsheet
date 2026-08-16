@@ -1,0 +1,48 @@
+symbol_ref = "crib/refs.py#resolution"
+fqn = "crib.refs.resolution"
+name = "resolution"
+kind = "function"
+lang = "python"
+content_hash = "aa886d3b0d5e55a9"
+file = "crib/refs.py"
+file_hash = "d39b1d18c0921167"
+signature = "def resolution(entry: dict[str, Any], query: str,"
+description = ""
+schema = 4
+line = 48
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "refs",
+]
+symbol_was = []
+calls = [
+  "fqn_of [crib/symbols.py]",
+  "key [crib/symbols.py]",
+  "match_entry [crib/symbols.py]",
+]
+called_by = [
+  "append [crib/learnings.py]",
+  "dossier [crib/codequery.py]",
+  "edit [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "graph [crib/codequery.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+]
+references = [
+  "append [crib/learnings.py]",
+  "dossier [crib/codequery.py]",
+  "edit [crib/learnings.py]",
+  "forget [crib/learnings.py]",
+  "graph [crib/codequery.py]",
+  "read [crib/learnings.py]",
+  "reaffirm [crib/learnings.py]",
+]
+name_terms = [
+  "crib",
+  "crib.refs.resolution",
+  "refs",
+  "resolution",
+]

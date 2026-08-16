@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/asgi.py#TokenRewriteMiddleware.dispatch"
+fqn = "combiner.mcp_combiner.asgi.TokenRewriteMiddleware.dispatch"
+name = "dispatch"
+kind = "method"
+lang = "python"
+content_hash = "1b146b11bc104dc7"
+file = "combiner/mcp_combiner/asgi.py"
+file_hash = "1ff2dd1d6ee7f6d0"
+signature = "async def dispatch("
+description = ""
+schema = 4
+line = 98
+mtime = 1783548694000000000
+container = [
+  "TokenRewriteMiddleware",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "asgi",
+  "TokenRewriteMiddleware",
+]
+symbol_was = []
+calls = [
+  "map_token [combiner/mcp_combiner/runtime.py]",
+  "pop_pending [combiner/mcp_combiner/runtime.py]",
+  "session_for_token [combiner/mcp_combiner/runtime.py]",
+  "set_disabled [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "asgi",
+  "combiner",
+  "combiner.mcp_combiner.asgi.TokenRewriteMiddleware.dispatch",
+  "dispatch",
+  "mcp",
+  "middleware",
+  "rewrite",
+  "token",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "scripts/eval_fusion.py#c_convex.fn"
+fqn = "scripts.eval_fusion.c_convex.fn"
+name = "fn"
+kind = "function"
+lang = "python"
+content_hash = "2cb588f255908068"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def fn(crib, proj, q, feat, qf, k):"
+description = ""
+schema = 4
+line = 160
+mtime = 1783981122000000000
+container = [
+  "c_convex",
+]
+scope = [
+  "scripts",
+  "eval_fusion",
+  "c_convex",
+]
+symbol_was = []
+calls = [
+  "_cands [scripts/eval_fusion.py]",
+  "_norm_over [scripts/eval_fusion.py]",
+  "mm [scripts/eval_fusion.py]",
+  "order_from [scripts/eval_fusion.py]",
+]
+called_by = []
+references = [
+  "c_convex [scripts/eval_fusion.py]",
+]
+name_terms = [
+  "c",
+  "convex",
+  "eval",
+  "fn",
+  "fusion",
+  "scripts",
+  "scripts.eval_fusion.c_convex.fn",
+]

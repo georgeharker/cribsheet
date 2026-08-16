@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_BACKING_RESTART_AFTER"
+fqn = "combiner.mcp_combiner.connections._BACKING_RESTART_AFTER"
+name = "_BACKING_RESTART_AFTER"
+kind = "constant"
+lang = "python"
+content_hash = "324a5a7529c965b4"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_BACKING_RESTART_AFTER = 3"
+description = ""
+schema = 4
+line = 90
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_reconnect [combiner/mcp_combiner/connections.py]",
+  "test_no_restart_without_shared_server [combiner/tests/test_connections.py]",
+  "test_restarts_backing_after_threshold [combiner/tests/test_connections.py]",
+  "test_success_resets_failure_counter [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "_BACKING_RESTART_AFTER",
+  "after",
+  "backing",
+  "combiner",
+  "combiner.mcp_combiner.connections._BACKING_RESTART_AFTER",
+  "connections",
+  "mcp",
+  "restart",
+]

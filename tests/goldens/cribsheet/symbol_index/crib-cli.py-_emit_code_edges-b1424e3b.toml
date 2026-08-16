@@ -1,0 +1,40 @@
+symbol_ref = "crib/cli.py#_emit_code_edges"
+fqn = "crib.cli._emit_code_edges"
+name = "_emit_code_edges"
+kind = "function"
+lang = "python"
+content_hash = "ce75646252ee0cd2"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _emit_code_edges(data: dict, args: argparse.Namespace) -> None:"
+description = ""
+schema = 4
+line = 854
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_emit_resolved [crib/cli.py]",
+  "_sym_loc [crib/cli.py]",
+  "_sym_name [crib/cli.py]",
+  "_sym_tags [crib/cli.py]",
+]
+called_by = [
+  "_emit_code_graph [crib/cli.py]",
+]
+references = [
+  "_emit_code_graph [crib/cli.py]",
+]
+name_terms = [
+  "_emit_code_edges",
+  "cli",
+  "code",
+  "crib",
+  "crib.cli._emit_code_edges",
+  "edges",
+  "emit",
+]

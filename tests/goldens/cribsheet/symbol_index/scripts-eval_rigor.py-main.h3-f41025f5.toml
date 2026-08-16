@@ -1,0 +1,39 @@
+symbol_ref = "scripts/eval_rigor.py#main.h3"
+fqn = "scripts.eval_rigor.main.h3"
+name = "h3"
+kind = "function"
+lang = "python"
+content_hash = "10106f23d6cdf60c"
+file = "scripts/eval_rigor.py"
+file_hash = "352ea4b1e1221f95"
+signature = "def h3(rs): return sum(1 for r in rs if r and r <= 3) / len(rs)"
+description = ""
+schema = 4
+line = 138
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_rigor",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_rigor.py]",
+]
+references = [
+  "main [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "3",
+  "eval",
+  "h",
+  "h3",
+  "main",
+  "rigor",
+  "scripts",
+  "scripts.eval_rigor.main.h3",
+]

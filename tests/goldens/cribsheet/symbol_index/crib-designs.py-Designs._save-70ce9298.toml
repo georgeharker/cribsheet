@@ -1,0 +1,58 @@
+symbol_ref = "crib/designs.py#Designs._save"
+fqn = "crib.designs.Designs._save"
+name = "_save"
+kind = "method"
+lang = "python"
+content_hash = "9218f6f66840114b"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "async def _save(self, proj: str, node: Node, fm: dict[str, Any],"
+description = ""
+schema = 4
+line = 986
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_store [crib/designs.py]",
+  "_today [crib/designs.py]",
+  "abspath [crib/notestore.py]",
+  "load [crib/notes.py]",
+  "write [crib/notestore.py]",
+]
+called_by = [
+  "_dep_add [crib/designs.py]",
+  "_dep_remove [crib/designs.py]",
+  "_write_body [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_reaffirm [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+  "plan_move [crib/designs.py]",
+  "plan_reaffirm [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+]
+references = [
+  "_dep_add [crib/designs.py]",
+  "_dep_remove [crib/designs.py]",
+  "_write_body [crib/designs.py]",
+  "design_promote [crib/designs.py]",
+  "design_reaffirm [crib/designs.py]",
+  "design_supersede [crib/designs.py]",
+  "plan_move [crib/designs.py]",
+  "plan_reaffirm [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+]
+name_terms = [
+  "_save",
+  "crib",
+  "crib.designs.Designs._save",
+  "designs",
+  "save",
+]

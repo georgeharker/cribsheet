@@ -1,0 +1,41 @@
+symbol_ref = "crib/app.py#Crib._reconcile_memory_dir"
+fqn = "crib.app.Crib._reconcile_memory_dir"
+name = "_reconcile_memory_dir"
+kind = "method"
+lang = "python"
+content_hash = "60dcad402eee0c9f"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def _reconcile_memory_dir(self, proj: str, prefix: str,"
+description = ""
+schema = 4
+line = 2844
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "index_file [crib/indexer.py]",
+  "notes_dir [crib/app.py]",
+]
+called_by = [
+  "import_claude_memory [crib/app.py]",
+]
+references = [
+  "import_claude_memory [crib/app.py]",
+]
+name_terms = [
+  "_reconcile_memory_dir",
+  "app",
+  "crib",
+  "crib.app.Crib._reconcile_memory_dir",
+  "dir",
+  "memory",
+  "reconcile",
+]

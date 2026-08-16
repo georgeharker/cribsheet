@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_lexical_cache.py#test_cache_is_per_project"
+fqn = "tests.test_lexical_cache.test_cache_is_per_project"
+name = "test_cache_is_per_project"
+kind = "function"
+lang = "python"
+content_hash = "3e372f2c20f52ee9"
+file = "tests/test_lexical_cache.py"
+file_hash = "b9aadb3266daf858"
+signature = "def test_cache_is_per_project(crib):"
+description = ""
+schema = 4
+line = 48
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_lexical_cache",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_lexical_cache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "is",
+  "lexical",
+  "per",
+  "project",
+  "test",
+  "test_cache_is_per_project",
+  "tests",
+  "tests.test_lexical_cache.test_cache_is_per_project",
+]

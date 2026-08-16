@@ -1,0 +1,47 @@
+symbol_ref = "scripts/eval_hybrid.py#main"
+fqn = "scripts.eval_hybrid.main"
+name = "main"
+kind = "function"
+lang = "python"
+content_hash = "e56fa568dec131a5"
+file = "scripts/eval_hybrid.py"
+file_hash = "7efc1218d091601c"
+signature = "def main(argv=None) -> int:"
+description = ""
+schema = 4
+line = 45
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_hybrid",
+]
+symbol_was = []
+calls = [
+  "BM25 [crib/retrieve.py]",
+  "Feat [scripts/eval_fusion.py]",
+  "MRR [scripts/eval_hybrid.py]",
+  "P1 [scripts/eval_hybrid.py]",
+  "R3 [scripts/eval_hybrid.py]",
+  "_subtokens [crib/retrieve.py]",
+  "add_exact [scripts/eval_hybrid.py]",
+  "close [crib/app.py]",
+  "minmax_dict [scripts/eval_hybrid.py]",
+  "open [crib/app.py]",
+  "rank_of [scripts/eval_hybrid.py]",
+  "rec [scripts/eval_hybrid.py]",
+  "reciprocal_rank_fusion [crib/retrieve.py]",
+  "signals [scripts/eval_hybrid.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = [
+  "eval_hybrid [scripts/eval_hybrid.py]",
+]
+references = []
+name_terms = [
+  "eval",
+  "hybrid",
+  "main",
+  "scripts",
+  "scripts.eval_hybrid.main",
+]

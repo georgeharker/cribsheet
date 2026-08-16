@@ -1,0 +1,41 @@
+symbol_ref = "crib/app.py#Crib._move_tree"
+fqn = "crib.app.Crib._move_tree"
+name = "_move_tree"
+kind = "method"
+lang = "python"
+content_hash = "372982689af49db1"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "@staticmethod"
+description = ""
+schema = 4
+line = 1540
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_move_ring [crib/app.py]",
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+]
+references = [
+  "_move_ring [crib/app.py]",
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+]
+name_terms = [
+  "_move_tree",
+  "app",
+  "crib",
+  "crib.app.Crib._move_tree",
+  "move",
+  "tree",
+]

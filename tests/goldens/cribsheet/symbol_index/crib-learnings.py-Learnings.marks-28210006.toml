@@ -1,0 +1,47 @@
+symbol_ref = "crib/learnings.py#Learnings.marks"
+fqn = "crib.learnings.Learnings.marks"
+name = "marks"
+kind = "method"
+lang = "python"
+content_hash = "53153451b7265e98"
+file = "crib/learnings.py"
+file_hash = "977a14d62df88945"
+signature = "def marks(self, proj: str) -> set[str]:"
+description = ""
+schema = 4
+line = 126
+mtime = 1786664729000000000
+container = [
+  "Learnings",
+]
+scope = [
+  "crib",
+  "learnings",
+  "Learnings",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "all [crib/codeindex.py]",
+  "bindings [crib/symbols.py]",
+  "key [crib/symbols.py]",
+  "load [crib/notes.py]",
+  "project_dir [crib/paths.py]",
+  "root [crib/notestore.py]",
+]
+called_by = [
+  "_project_graph [crib/codequery.py]",
+  "_subgraph [crib/codequery.py]",
+  "graph [crib/codequery.py]",
+]
+references = [
+  "_project_graph [crib/codequery.py]",
+  "_subgraph [crib/codequery.py]",
+  "graph [crib/codequery.py]",
+]
+name_terms = [
+  "crib",
+  "crib.learnings.Learnings.marks",
+  "learnings",
+  "marks",
+]

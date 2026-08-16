@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestResponses.test_bad_template_falls_back_to_json_dump"
+fqn = "combiner.tests.test_mockserver.TestResponses.test_bad_template_falls_back_to_json_dump"
+name = "test_bad_template_falls_back_to_json_dump"
+kind = "method"
+lang = "python"
+content_hash = "336976951ac97fa5"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "async def test_bad_template_falls_back_to_json_dump(self) -> None:"
+description = ""
+schema = 4
+line = 142
+mtime = 1783534978000000000
+container = [
+  "TestResponses",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+  "TestResponses",
+]
+symbol_was = []
+calls = [
+  "MockServer [combiner/mcp_combiner/mockserver.py]",
+  "_spec [combiner/tests/test_mockserver.py]",
+  "_text [combiner/tests/test_mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "back",
+  "bad",
+  "combiner",
+  "combiner.tests.test_mockserver.TestResponses.test_bad_template_falls_back_to_json_dump",
+  "dump",
+  "falls",
+  "json",
+  "mockserver",
+  "responses",
+  "template",
+  "test",
+  "test_bad_template_falls_back_to_json_dump",
+  "tests",
+  "to",
+]

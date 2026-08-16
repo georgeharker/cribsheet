@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestTokenSessions.test_empty_by_default"
+fqn = "combiner.tests.test_session_filter.TestTokenSessions.test_empty_by_default"
+name = "test_empty_by_default"
+kind = "method"
+lang = "python"
+content_hash = "1aa1f7c6ca0c97af"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_empty_by_default(self):"
+description = ""
+schema = 4
+line = 108
+mtime = 1784493613000000000
+container = [
+  "TestTokenSessions",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestTokenSessions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "by",
+  "combiner",
+  "combiner.tests.test_session_filter.TestTokenSessions.test_empty_by_default",
+  "default",
+  "empty",
+  "filter",
+  "session",
+  "sessions",
+  "test",
+  "test_empty_by_default",
+  "tests",
+  "token",
+]

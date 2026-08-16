@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_code_integrity.py#test_file_read_error_reports_the_file_skipped.boom"
+fqn = "tests.test_code_integrity.test_file_read_error_reports_the_file_skipped.boom"
+name = "boom"
+kind = "function"
+lang = "python"
+content_hash = "119ea75f159cbef1"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def boom(*a, **k):"
+description = ""
+schema = 4
+line = 180
+mtime = 1786664729000000000
+container = [
+  "test_file_read_error_reports_the_file_skipped",
+]
+scope = [
+  "tests",
+  "test_code_integrity",
+  "test_file_read_error_reports_the_file_skipped",
+]
+symbol_was = []
+calls = [
+  "FileReadError [crib/codeindex.py]",
+]
+called_by = []
+references = [
+  "test_file_read_error_reports_the_file_skipped [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "boom",
+  "code",
+  "error",
+  "file",
+  "integrity",
+  "read",
+  "reports",
+  "skipped",
+  "test",
+  "tests",
+  "tests.test_code_integrity.test_file_read_error_reports_the_file_skipped.boom",
+  "the",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "crib/app.py#Crib.plan_dep_remove"
+fqn = "crib.app.Crib.plan_dep_remove"
+name = "plan_dep_remove"
+kind = "method"
+lang = "python"
+content_hash = "54d3efafc28e7ddb"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def plan_dep_remove(self, ref: str, dep_ref: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 2305
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "plan_dep_remove [crib/designs.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "plan_dep_remove [crib/server.py]",
+]
+references = [
+  "plan_dep_remove [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.plan_dep_remove",
+  "dep",
+  "plan",
+  "plan_dep_remove",
+  "remove",
+]

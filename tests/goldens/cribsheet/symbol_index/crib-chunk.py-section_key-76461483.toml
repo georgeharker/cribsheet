@@ -1,0 +1,48 @@
+symbol_ref = "crib/chunk.py#section_key"
+fqn = "crib.chunk.section_key"
+name = "section_key"
+kind = "function"
+lang = "python"
+content_hash = "ce21efb184eefb5d"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "def section_key(heading_path: Sequence[str] | str, occurrence: int = 1) -> str:"
+description = ""
+schema = 4
+line = 36
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "chunk",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_doc_sections [crib/designs.py]",
+  "_generate_enrichment [crib/app.py]",
+  "_indexed_sections [crib/designs.py]",
+  "chunk_id [crib/chunk.py]",
+  "lookup [crib/app.py]",
+  "section_line_map [crib/chunk.py]",
+  "test_first_occurrence_id_unchanged_from_the_bare_breadcrumb [tests/test_chunk_identity.py]",
+  "test_line_map_keys_match_chunk_identity [tests/test_chunk_identity.py]",
+]
+references = [
+  "_doc_sections [crib/designs.py]",
+  "_generate_enrichment [crib/app.py]",
+  "_indexed_sections [crib/designs.py]",
+  "chunk_id [crib/chunk.py]",
+  "lookup [crib/app.py]",
+  "section_line_map [crib/chunk.py]",
+  "test_first_occurrence_id_unchanged_from_the_bare_breadcrumb [tests/test_chunk_identity.py]",
+  "test_line_map_keys_match_chunk_identity [tests/test_chunk_identity.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.section_key",
+  "key",
+  "section",
+  "section_key",
+]

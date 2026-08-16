@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestSpecParsing.test_missing_name_rejected"
+fqn = "combiner.tests.test_mockserver.TestSpecParsing.test_missing_name_rejected"
+name = "test_missing_name_rejected"
+kind = "method"
+lang = "python"
+content_hash = "959325d801fbbdfd"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "def test_missing_name_rejected(self) -> None:"
+description = ""
+schema = 4
+line = 30
+mtime = 1783534978000000000
+container = [
+  "TestSpecParsing",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+  "TestSpecParsing",
+]
+symbol_was = []
+calls = [
+  "_spec [combiner/tests/test_mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_mockserver.TestSpecParsing.test_missing_name_rejected",
+  "missing",
+  "mockserver",
+  "name",
+  "parsing",
+  "rejected",
+  "spec",
+  "test",
+  "test_missing_name_rejected",
+  "tests",
+]

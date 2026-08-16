@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_designs.py#test_an_unverified_dep_edge_is_tainted"
+fqn = "tests.test_designs.test_an_unverified_dep_edge_is_tainted"
+name = "test_an_unverified_dep_edge_is_tainted"
+kind = "function"
+lang = "python"
+content_hash = "3cc367f42ecf3f76"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_an_unverified_dep_edge_is_tainted(crib):"
+description = ""
+schema = 4
+line = 137
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "_node [tests/test_designs.py]",
+  "_taint [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "an",
+  "dep",
+  "designs",
+  "edge",
+  "is",
+  "tainted",
+  "test",
+  "test_an_unverified_dep_edge_is_tainted",
+  "tests",
+  "tests.test_designs.test_an_unverified_dep_edge_is_tainted",
+  "unverified",
+]

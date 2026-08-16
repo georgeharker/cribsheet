@@ -1,0 +1,48 @@
+symbol_ref = "crib/store.py#ChromaStore.embedded"
+fqn = "crib.store.ChromaStore.embedded"
+name = "embedded"
+kind = "method"
+lang = "python"
+content_hash = "15146b54deb9131f"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "@classmethod"
+description = ""
+schema = 4
+line = 284
+mtime = 1786564832000000000
+container = [
+  "ChromaStore",
+]
+scope = [
+  "crib",
+  "store",
+  "ChromaStore",
+]
+symbol_was = []
+calls = [
+  "__init__ [crib/store.py]",
+]
+called_by = [
+  "_build_store [crib/app.py]",
+  "test_op_propagates_non_not_found_failures [tests/test_store_chroma.py]",
+  "test_recreate_after_dim_change_across_handles [tests/test_store_chroma.py]",
+  "test_recreate_propagates_non_not_found_failures [tests/test_store_chroma.py]",
+  "test_retry_happens_only_once [tests/test_store_chroma.py]",
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+references = [
+  "_build_store [crib/app.py]",
+  "test_op_propagates_non_not_found_failures [tests/test_store_chroma.py]",
+  "test_recreate_after_dim_change_across_handles [tests/test_store_chroma.py]",
+  "test_recreate_propagates_non_not_found_failures [tests/test_store_chroma.py]",
+  "test_retry_happens_only_once [tests/test_store_chroma.py]",
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+name_terms = [
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore.embedded",
+  "embedded",
+  "store",
+]

@@ -1,0 +1,51 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#_emit"
+fqn = "combiner.mcp_combiner.ctl._emit"
+name = "_emit"
+kind = "function"
+lang = "python"
+content_hash = "c63b20bb410dcb79"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "def _emit(args: argparse.Namespace, data: Any) -> None:"
+description = ""
+schema = 4
+line = 61
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "cmd_call [combiner/mcp_combiner/ctl.py]",
+  "cmd_disable [combiner/mcp_combiner/ctl.py]",
+  "cmd_enable [combiner/mcp_combiner/ctl.py]",
+  "cmd_health [combiner/mcp_combiner/ctl.py]",
+  "cmd_reload [combiner/mcp_combiner/ctl.py]",
+  "cmd_restart_server [combiner/mcp_combiner/ctl.py]",
+  "cmd_session [combiner/mcp_combiner/ctl.py]",
+  "cmd_status [combiner/mcp_combiner/ctl.py]",
+  "cmd_tools [combiner/mcp_combiner/ctl.py]",
+]
+references = [
+  "cmd_call [combiner/mcp_combiner/ctl.py]",
+  "cmd_disable [combiner/mcp_combiner/ctl.py]",
+  "cmd_enable [combiner/mcp_combiner/ctl.py]",
+  "cmd_health [combiner/mcp_combiner/ctl.py]",
+  "cmd_reload [combiner/mcp_combiner/ctl.py]",
+  "cmd_restart_server [combiner/mcp_combiner/ctl.py]",
+  "cmd_session [combiner/mcp_combiner/ctl.py]",
+  "cmd_status [combiner/mcp_combiner/ctl.py]",
+  "cmd_tools [combiner/mcp_combiner/ctl.py]",
+]
+name_terms = [
+  "_emit",
+  "combiner",
+  "combiner.mcp_combiner.ctl._emit",
+  "ctl",
+  "emit",
+  "mcp",
+]

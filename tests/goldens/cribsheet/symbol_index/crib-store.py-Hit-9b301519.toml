@@ -1,0 +1,34 @@
+symbol_ref = "crib/store.py#Hit"
+fqn = "crib.store.Hit"
+name = "Hit"
+kind = "class"
+lang = "python"
+content_hash = "f58578c0e4883e63"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 34
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "store",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_hits [tests/test_rerank.py]",
+  "_rerank [crib/app.py]",
+  "_retrieve [crib/app.py]",
+  "query [crib/store.py]",
+]
+name_terms = [
+  "Hit",
+  "crib",
+  "crib.store.Hit",
+  "hit",
+  "store",
+]

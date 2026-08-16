@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestStaleServerTools.test_replacement_publishes"
+fqn = "combiner.tests.test_session_filter.TestStaleServerTools.test_replacement_publishes"
+name = "test_replacement_publishes"
+kind = "method"
+lang = "python"
+content_hash = "7df77a8f9e6d3f00"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_replacement_publishes(self, monkeypatch):"
+description = ""
+schema = 4
+line = 517
+mtime = 1784493613000000000
+container = [
+  "TestStaleServerTools",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestStaleServerTools",
+]
+symbol_was = []
+calls = [
+  "_config [combiner/tests/test_session_filter.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools.test_replacement_publishes",
+  "filter",
+  "publishes",
+  "replacement",
+  "server",
+  "session",
+  "stale",
+  "test",
+  "test_replacement_publishes",
+  "tests",
+  "tools",
+]

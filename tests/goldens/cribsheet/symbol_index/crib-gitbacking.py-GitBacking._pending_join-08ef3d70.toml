@@ -1,0 +1,42 @@
+symbol_ref = "crib/gitbacking.py#GitBacking._pending_join"
+fqn = "crib.gitbacking.GitBacking._pending_join"
+name = "_pending_join"
+kind = "method"
+lang = "python"
+content_hash = "e30e1c460f36fb2a"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def _pending_join(self) -> bool:"
+description = ""
+schema = 4
+line = 132
+mtime = 1785963011000000000
+container = [
+  "GitBacking",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "GitBacking",
+]
+symbol_was = []
+calls = [
+  "_branch [crib/gitbacking.py]",
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "_remote_file [crib/gitbacking.py]",
+]
+references = [
+  "_remote_file [crib/gitbacking.py]",
+]
+name_terms = [
+  "_pending_join",
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking._pending_join",
+  "git",
+  "gitbacking",
+  "join",
+  "pending",
+]

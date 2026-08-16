@@ -1,0 +1,40 @@
+symbol_ref = "scripts/eval_rigor.py#main._leaf"
+fqn = "scripts.eval_rigor.main._leaf"
+name = "_leaf"
+kind = "function"
+lang = "python"
+content_hash = "89236f78c675b90b"
+file = "scripts/eval_rigor.py"
+file_hash = "352ea4b1e1221f95"
+signature = "def _leaf(x):"
+description = ""
+schema = 4
+line = 102
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_rigor",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_rigor.py]",
+  "rank_exact [scripts/eval_rigor.py]",
+]
+references = [
+  "main [scripts/eval_rigor.py]",
+  "rank_exact [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "_leaf",
+  "eval",
+  "leaf",
+  "main",
+  "rigor",
+  "scripts",
+  "scripts.eval_rigor.main._leaf",
+]

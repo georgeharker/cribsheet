@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthProvider.register_routes.authorize"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthProvider.register_routes.authorize"
+name = "authorize"
+kind = "function"
+lang = "python"
+content_hash = "700ab0761a0f9521"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@mcp.custom_route(\"/oauth/authorize\", methods=[\"GET\"])"
+description = ""
+schema = 4
+line = 794
+mtime = 1783622326000000000
+container = [
+  "MockOAuthProvider",
+  "register_routes",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthProvider",
+  "register_routes",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "auth",
+  "authorize",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthProvider.register_routes.authorize",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "provider",
+  "register",
+  "routes",
+]

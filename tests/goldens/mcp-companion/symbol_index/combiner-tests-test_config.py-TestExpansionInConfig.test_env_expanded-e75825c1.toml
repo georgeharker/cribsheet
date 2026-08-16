@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_config.py#TestExpansionInConfig.test_env_expanded"
+fqn = "combiner.tests.test_config.TestExpansionInConfig.test_env_expanded"
+name = "test_env_expanded"
+kind = "method"
+lang = "python"
+content_hash = "f9adfb8217710155"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_env_expanded(self) -> None:"
+description = ""
+schema = 4
+line = 350
+mtime = 1782852601000000000
+container = [
+  "TestExpansionInConfig",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+  "TestExpansionInConfig",
+]
+symbol_was = []
+calls = [
+  "CombinerConfig [combiner/mcp_combiner/config.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.TestExpansionInConfig.test_env_expanded",
+  "config",
+  "env",
+  "expanded",
+  "expansion",
+  "in",
+  "test",
+  "test_env_expanded",
+  "tests",
+]

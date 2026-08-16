@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_describe_queue.py#_DrivingLoop._Task.add_done_callback"
+fqn = "tests.test_describe_queue._DrivingLoop._Task.add_done_callback"
+name = "add_done_callback"
+kind = "method"
+lang = "python"
+content_hash = "ff29509ab840882e"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def add_done_callback(self, cb):"
+description = ""
+schema = 4
+line = 89
+mtime = 1786664729000000000
+container = [
+  "_DrivingLoop",
+  "_Task",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "_DrivingLoop",
+  "_Task",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "add",
+  "add_done_callback",
+  "callback",
+  "describe",
+  "done",
+  "driving",
+  "loop",
+  "queue",
+  "task",
+  "test",
+  "tests",
+  "tests.test_describe_queue._DrivingLoop._Task.add_done_callback",
+]

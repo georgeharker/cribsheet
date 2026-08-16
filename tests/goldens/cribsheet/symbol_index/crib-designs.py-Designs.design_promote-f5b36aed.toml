@@ -1,0 +1,46 @@
+symbol_ref = "crib/designs.py#Designs.design_promote"
+fqn = "crib.designs.Designs.design_promote"
+name = "design_promote"
+kind = "method"
+lang = "python"
+content_hash = "ca8465f626bb7b92"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "async def design_promote(self, proj: str, ref: str) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 1349
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_load_graph [crib/designs.py]",
+  "_recapture [crib/designs.py]",
+  "_recheck [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_save [crib/designs.py]",
+  "brief [crib/designs.py]",
+  "source_label [crib/designs.py]",
+]
+called_by = [
+  "design_promote [crib/app.py]",
+]
+references = [
+  "design_promote [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Designs.design_promote",
+  "design",
+  "design_promote",
+  "designs",
+  "promote",
+]

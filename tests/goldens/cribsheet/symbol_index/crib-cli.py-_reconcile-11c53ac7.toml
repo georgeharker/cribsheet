@@ -1,0 +1,40 @@
+symbol_ref = "crib/cli.py#_reconcile"
+fqn = "crib.cli._reconcile"
+name = "_reconcile"
+kind = "function"
+lang = "python"
+content_hash = "8f7c327a78c5db66"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _reconcile(cfg: Any) -> Any:"
+description = ""
+schema = 4
+line = 2006
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "DaemonClient [crib/client.py]",
+  "available [crib/sharedserver.py]",
+  "call [crib/client.py]",
+  "close [crib/app.py]",
+  "open [crib/app.py]",
+  "reconcile_all [crib/app.py]",
+]
+called_by = [
+  "_run_git [crib/cli.py]",
+]
+references = [
+  "_run_git [crib/cli.py]",
+]
+name_terms = [
+  "_reconcile",
+  "cli",
+  "crib",
+  "crib.cli._reconcile",
+  "reconcile",
+]

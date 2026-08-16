@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_code_graph.py#test_a_constraint_that_excludes_everything_says_so"
+fqn = "tests.test_code_graph.test_a_constraint_that_excludes_everything_says_so"
+name = "test_a_constraint_that_excludes_everything_says_so"
+kind = "function"
+lang = "python"
+content_hash = "b3f474035e9a6ab9"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def test_a_constraint_that_excludes_everything_says_so(crib, tmp_path):"
+description = ""
+schema = 4
+line = 599
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "_wrapper_and_op [tests/test_code_graph.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "code",
+  "constraint",
+  "everything",
+  "excludes",
+  "graph",
+  "says",
+  "so",
+  "test",
+  "test_a_constraint_that_excludes_everything_says_so",
+  "tests",
+  "tests.test_code_graph.test_a_constraint_that_excludes_everything_says_so",
+  "that",
+]

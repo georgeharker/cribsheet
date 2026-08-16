@@ -1,0 +1,31 @@
+symbol_ref = "crib/symbols.py#tail"
+fqn = "crib.symbols.tail"
+name = "tail"
+kind = "function"
+lang = "python"
+content_hash = "ed5eecdf3a9e138b"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def tail(fq: str) -> str:"
+description = ""
+schema = 4
+line = 64
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "candidates [crib/learnings.py]",
+  "match_meta [crib/codeindex.py]",
+]
+references = []
+name_terms = [
+  "crib",
+  "crib.symbols.tail",
+  "symbols",
+  "tail",
+]

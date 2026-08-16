@@ -1,0 +1,40 @@
+symbol_ref = "crib/cli.py#_emit_design_tree.label"
+fqn = "crib.cli._emit_design_tree.label"
+name = "label"
+kind = "function"
+lang = "python"
+content_hash = "cc8e735876debec1"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def label(n: dict) -> str:"
+description = ""
+schema = 4
+line = 553
+mtime = 1786693579000000000
+container = [
+  "_emit_design_tree",
+]
+scope = [
+  "crib",
+  "cli",
+  "_emit_design_tree",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_emit_design_tree [crib/cli.py]",
+  "render [crib/cli.py]",
+]
+references = [
+  "_emit_design_tree [crib/cli.py]",
+  "render [crib/cli.py]",
+]
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli._emit_design_tree.label",
+  "design",
+  "emit",
+  "label",
+  "tree",
+]

@@ -1,0 +1,46 @@
+symbol_ref = "tests/test_store_migration.py#_legacy_layout"
+fqn = "tests.test_store_migration._legacy_layout"
+name = "_legacy_layout"
+kind = "function"
+lang = "python"
+content_hash = "2e15904e6e027c83"
+file = "tests/test_store_migration.py"
+file_hash = "a18552bb17863360"
+signature = "def _legacy_layout(crib, proj=\"p\"):"
+description = ""
+schema = 4
+line = 34
+mtime = 1786140093000000000
+container = []
+scope = [
+  "tests",
+  "test_store_migration",
+]
+symbol_was = []
+calls = [
+  "_body_hash [crib/designs.py]",
+  "chunk_note [crib/chunk.py]",
+  "run [tests/test_store_migration.py]",
+]
+called_by = [
+  "test_full_reindex_self_heals_a_pulled_straggler [tests/test_store_migration.py]",
+  "test_migrate_is_idempotent [tests/test_store_migration.py]",
+  "test_migrate_moves_requalifies_and_reindexes [tests/test_store_migration.py]",
+  "test_migrate_skips_collisions_and_reports [tests/test_store_migration.py]",
+]
+references = [
+  "test_full_reindex_self_heals_a_pulled_straggler [tests/test_store_migration.py]",
+  "test_migrate_is_idempotent [tests/test_store_migration.py]",
+  "test_migrate_moves_requalifies_and_reindexes [tests/test_store_migration.py]",
+  "test_migrate_skips_collisions_and_reports [tests/test_store_migration.py]",
+]
+name_terms = [
+  "_legacy_layout",
+  "layout",
+  "legacy",
+  "migration",
+  "store",
+  "test",
+  "tests",
+  "tests.test_store_migration._legacy_layout",
+]

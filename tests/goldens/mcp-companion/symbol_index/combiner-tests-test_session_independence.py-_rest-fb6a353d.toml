@@ -1,0 +1,51 @@
+symbol_ref = "combiner/tests/test_session_independence.py#_rest"
+fqn = "combiner.tests.test_session_independence._rest"
+name = "_rest"
+kind = "function"
+lang = "python"
+content_hash = "3034806fe9122280"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "async def _rest(combiner: CombinerHandle, method: str, path: str, body: dict | None = None) -> dict:"
+description = ""
+schema = 4
+line = 69
+mtime = 1783541669000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_allowed_servers_inverts_and_applies [combiner/tests/test_session_independence.py]",
+  "test_concurrent_clients_get_distinct_sessions [combiner/tests/test_session_independence.py]",
+  "test_control_session_filters_chat_via_token_route [combiner/tests/test_session_independence.py]",
+  "test_pending_filter_applies_at_first_connect [combiner/tests/test_session_independence.py]",
+  "test_pending_filter_bookkeeping_before_connect [combiner/tests/test_session_independence.py]",
+  "test_token_filter_actually_filters [combiner/tests/test_session_independence.py]",
+  "test_token_filter_bookkeeping [combiner/tests/test_session_independence.py]",
+  "test_token_sessions_appear_in_sessions_listing [combiner/tests/test_session_independence.py]",
+]
+references = [
+  "test_allowed_servers_inverts_and_applies [combiner/tests/test_session_independence.py]",
+  "test_concurrent_clients_get_distinct_sessions [combiner/tests/test_session_independence.py]",
+  "test_control_session_filters_chat_via_token_route [combiner/tests/test_session_independence.py]",
+  "test_pending_filter_applies_at_first_connect [combiner/tests/test_session_independence.py]",
+  "test_pending_filter_bookkeeping_before_connect [combiner/tests/test_session_independence.py]",
+  "test_token_filter_actually_filters [combiner/tests/test_session_independence.py]",
+  "test_token_filter_bookkeeping [combiner/tests/test_session_independence.py]",
+  "test_token_sessions_appear_in_sessions_listing [combiner/tests/test_session_independence.py]",
+]
+name_terms = [
+  "_rest",
+  "combiner",
+  "combiner.tests.test_session_independence._rest",
+  "independence",
+  "rest",
+  "session",
+  "test",
+  "tests",
+]

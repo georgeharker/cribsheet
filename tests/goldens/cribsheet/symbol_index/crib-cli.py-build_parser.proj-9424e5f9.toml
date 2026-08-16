@@ -1,0 +1,37 @@
+symbol_ref = "crib/cli.py#build_parser.proj"
+fqn = "crib.cli.build_parser.proj"
+name = "proj"
+kind = "function"
+lang = "python"
+content_hash = "c466203380b7c4ec"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def proj(sp):  # shared project selectors"
+description = ""
+schema = 4
+line = 947
+mtime = 1786693579000000000
+container = [
+  "build_parser",
+]
+scope = [
+  "crib",
+  "cli",
+  "build_parser",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "build_parser [crib/cli.py]",
+]
+references = [
+  "build_parser [crib/cli.py]",
+]
+name_terms = [
+  "build",
+  "cli",
+  "crib",
+  "crib.cli.build_parser.proj",
+  "parser",
+  "proj",
+]

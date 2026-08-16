@@ -1,0 +1,42 @@
+symbol_ref = "lua/mcp_companion/combiner/sessions.lua#_filter_url"
+fqn = "mcp_companion.combiner.sessions._filter_url"
+name = "_filter_url"
+kind = "function"
+lang = "lua"
+content_hash = "ff60c1f7d841d82f"
+file = "lua/mcp_companion/combiner/sessions.lua"
+file_hash = "5781075c8921f508"
+signature = "local function _filter_url(token)"
+description = ""
+schema = 4
+line = 17
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "combiner",
+  "sessions",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.clear_filter [lua/mcp_companion/combiner/sessions.lua]",
+  "M.get_filter [lua/mcp_companion/combiner/sessions.lua]",
+  "M.set_filter [lua/mcp_companion/combiner/sessions.lua]",
+  "sessions.lua [lua/mcp_companion/combiner/sessions.lua]",
+]
+references = [
+  "clear_filter [lua/mcp_companion/combiner/sessions.lua]",
+  "get_filter [lua/mcp_companion/combiner/sessions.lua]",
+  "set_filter [lua/mcp_companion/combiner/sessions.lua]",
+]
+name_terms = [
+  "_filter_url",
+  "combiner",
+  "companion",
+  "filter",
+  "mcp",
+  "mcp_companion.combiner.sessions._filter_url",
+  "sessions",
+  "url",
+]

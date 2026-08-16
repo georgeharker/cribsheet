@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_claude_memory.py#env"
+fqn = "tests.test_claude_memory.env"
+name = "env"
+kind = "function"
+lang = "python"
+content_hash = "4db85f020ad57633"
+file = "tests/test_claude_memory.py"
+file_hash = "f5a685193106ac4d"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 40
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_claude_memory",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "harness_memory_dir [crib/claudemem.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "claude",
+  "env",
+  "memory",
+  "test",
+  "tests",
+  "tests.test_claude_memory.env",
+]

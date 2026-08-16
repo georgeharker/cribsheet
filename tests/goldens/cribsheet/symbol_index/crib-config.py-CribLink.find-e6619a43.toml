@@ -1,0 +1,74 @@
+symbol_ref = "crib/config.py#CribLink.find"
+fqn = "crib.config.CribLink.find"
+name = "find"
+kind = "method"
+lang = "python"
+content_hash = "936c9ac49d2726fc"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "@classmethod"
+description = ""
+schema = 4
+line = 424
+mtime = 1786564832000000000
+container = [
+  "CribLink",
+]
+scope = [
+  "crib",
+  "config",
+  "CribLink",
+]
+symbol_was = []
+calls = [
+  "_parse [crib/config.py]",
+]
+called_by = [
+  "_ensure_crib [crib/app.py]",
+  "_enumerate_code_files [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_link [crib/watch.py]",
+  "_matches_doc_globs [crib/watch.py]",
+  "index_docs_insitu [crib/app.py]",
+  "project_adopt [crib/app.py]",
+  "project_refs [crib/refs.py]",
+  "project_status [crib/app.py]",
+  "ref_edge_ctx [crib/refs.py]",
+  "resolve_project [crib/config.py]",
+  "test_criblink_parses_refs [tests/test_refs.py]",
+  "test_good_crib_still_parses [tests/test_config_resilience.py]",
+  "test_malformed_crib_is_treated_as_absent [tests/test_config_resilience.py]",
+  "test_missing_store_key_is_simply_absent [tests/test_repo_storage.py]",
+  "test_scalar_list_fields_are_tolerated [tests/test_config_resilience.py]",
+  "test_store_relpath_resolves_against_the_repo_root [tests/test_repo_storage.py]",
+  "test_store_that_escapes_the_repo_is_refused [tests/test_repo_storage.py]",
+  "test_walk_continues_past_a_malformed_crib [tests/test_config_resilience.py]",
+]
+references = [
+  "_ensure_crib [crib/app.py]",
+  "_enumerate_code_files [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_link [crib/watch.py]",
+  "_matches_doc_globs [crib/watch.py]",
+  "index_docs_insitu [crib/app.py]",
+  "project_adopt [crib/app.py]",
+  "project_refs [crib/refs.py]",
+  "project_status [crib/app.py]",
+  "ref_edge_ctx [crib/refs.py]",
+  "resolve_project [crib/config.py]",
+  "test_criblink_parses_refs [tests/test_refs.py]",
+  "test_good_crib_still_parses [tests/test_config_resilience.py]",
+  "test_malformed_crib_is_treated_as_absent [tests/test_config_resilience.py]",
+  "test_missing_store_key_is_simply_absent [tests/test_repo_storage.py]",
+  "test_scalar_list_fields_are_tolerated [tests/test_config_resilience.py]",
+  "test_store_relpath_resolves_against_the_repo_root [tests/test_repo_storage.py]",
+  "test_store_that_escapes_the_repo_is_refused [tests/test_repo_storage.py]",
+  "test_walk_continues_past_a_malformed_crib [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.find",
+  "find",
+  "link",
+]

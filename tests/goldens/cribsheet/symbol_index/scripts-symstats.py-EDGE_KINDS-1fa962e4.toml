@@ -1,0 +1,32 @@
+symbol_ref = "scripts/symstats.py#EDGE_KINDS"
+fqn = "scripts.symstats.EDGE_KINDS"
+name = "EDGE_KINDS"
+kind = "constant"
+lang = "python"
+content_hash = "0bc7acdf0fa275a6"
+file = "scripts/symstats.py"
+file_hash = "bc09f2e285e5b003"
+signature = "EDGE_KINDS = (\"calls\", \"called_by\", \"references\")"
+description = ""
+schema = 4
+line = 41
+mtime = 1786664729000000000
+container = []
+scope = [
+  "scripts",
+  "symstats",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "capture [scripts/symstats.py]",
+]
+name_terms = [
+  "EDGE_KINDS",
+  "edge",
+  "kinds",
+  "scripts",
+  "scripts.symstats.EDGE_KINDS",
+  "symstats",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#CombinerRuntime.boot_id"
+fqn = "combiner.mcp_combiner.runtime.CombinerRuntime.boot_id"
+name = "boot_id"
+kind = "field"
+lang = "python"
+content_hash = "b9e9b70865e01351"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "boot_id: str = field(default_factory=lambda: uuid.uuid4().hex)"
+description = ""
+schema = 4
+line = 279
+mtime = 1784493613000000000
+container = [
+  "CombinerRuntime",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "CombinerRuntime",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_COMBINER_BOOT_ID [combiner/mcp_combiner/server.py]",
+  "health_check [combiner/mcp_combiner/routes.py]",
+]
+name_terms = [
+  "boot",
+  "boot_id",
+  "combiner",
+  "combiner.mcp_combiner.runtime.CombinerRuntime.boot_id",
+  "id",
+  "mcp",
+  "runtime",
+]

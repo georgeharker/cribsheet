@@ -1,0 +1,42 @@
+symbol_ref = "scripts/eval_kw.py#main.c_covpc_wrap"
+fqn = "scripts.eval_kw.main.c_covpc_wrap"
+name = "c_covpc_wrap"
+kind = "function"
+lang = "python"
+content_hash = "984c3084129a07b7"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def c_covpc_wrap(a):"
+description = ""
+schema = 4
+line = 96
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+]
+symbol_was = []
+calls = [
+  "c_covpc [scripts/eval_fusion.py]",
+]
+called_by = [
+  "main [scripts/eval_kw.py]",
+]
+references = [
+  "main [scripts/eval_kw.py]",
+]
+name_terms = [
+  "c",
+  "c_covpc_wrap",
+  "covpc",
+  "eval",
+  "kw",
+  "main",
+  "scripts",
+  "scripts.eval_kw.main.c_covpc_wrap",
+  "wrap",
+]

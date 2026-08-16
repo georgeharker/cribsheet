@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_describe_queue.py#test_failed_describe_backs_off_instead_of_restarting_at_zero.boom"
+fqn = "tests.test_describe_queue.test_failed_describe_backs_off_instead_of_restarting_at_zero.boom"
+name = "boom"
+kind = "function"
+lang = "python"
+content_hash = "f714124119765a51"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "async def boom(*a):"
+description = ""
+schema = 4
+line = 105
+mtime = 1786664729000000000
+container = [
+  "test_failed_describe_backs_off_instead_of_restarting_at_zero",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "test_failed_describe_backs_off_instead_of_restarting_at_zero",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_failed_describe_backs_off_instead_of_restarting_at_zero [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "at",
+  "backs",
+  "boom",
+  "describe",
+  "failed",
+  "instead",
+  "of",
+  "off",
+  "queue",
+  "restarting",
+  "test",
+  "tests",
+  "tests.test_describe_queue.test_failed_describe_backs_off_instead_of_restarting_at_zero.boom",
+  "zero",
+]

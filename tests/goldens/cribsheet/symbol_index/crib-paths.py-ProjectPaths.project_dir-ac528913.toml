@@ -1,0 +1,41 @@
+symbol_ref = "crib/paths.py#ProjectPaths.project_dir"
+fqn = "crib.paths.ProjectPaths.project_dir"
+name = "project_dir"
+kind = "field"
+lang = "python"
+content_hash = "ababab95f249281c"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "project_dir: Path                   # global `projects/<name>` (stub or full)"
+description = ""
+schema = 4
+line = 150
+mtime = 1786564832000000000
+container = [
+  "ProjectPaths",
+]
+scope = [
+  "crib",
+  "paths",
+  "ProjectPaths",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_keyword_terms [crib/app.py]",
+  "_summary_terms [crib/app.py]",
+  "config_file [crib/paths.py]",
+  "project_forget [crib/app.py]",
+  "source_roots [crib/notestore.py]",
+  "status [crib/app.py]",
+  "test_resolves_to_the_store_when_the_stub_points_at_one [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.ProjectPaths.project_dir",
+  "dir",
+  "paths",
+  "project",
+  "project_dir",
+]

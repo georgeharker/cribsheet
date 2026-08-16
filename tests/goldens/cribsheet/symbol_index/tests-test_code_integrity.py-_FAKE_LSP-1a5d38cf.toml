@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_code_integrity.py#_FAKE_LSP"
+fqn = "tests.test_code_integrity._FAKE_LSP"
+name = "_FAKE_LSP"
+kind = "constant"
+lang = "python"
+content_hash = "c0e4f5029e9717e8"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "_FAKE_LSP = r'''"
+description = ""
+schema = 4
+line = 40
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_fake_lsp [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "_FAKE_LSP",
+  "code",
+  "fake",
+  "integrity",
+  "lsp",
+  "test",
+  "tests",
+  "tests.test_code_integrity._FAKE_LSP",
+]

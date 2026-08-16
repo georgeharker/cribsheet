@@ -1,0 +1,32 @@
+symbol_ref = "crib/codequery.py#CodeQuery"
+fqn = "crib.codequery.CodeQuery"
+name = "CodeQuery"
+kind = "class"
+lang = "python"
+content_hash = "df253d2035bbb97e"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "class CodeQuery:"
+description = ""
+schema = 4
+line = 199
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+]
+name_terms = [
+  "CodeQuery",
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery",
+  "query",
+]

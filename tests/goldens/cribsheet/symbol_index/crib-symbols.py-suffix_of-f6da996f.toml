@@ -1,0 +1,34 @@
+symbol_ref = "crib/symbols.py#suffix_of"
+fqn = "crib.symbols.suffix_of"
+name = "suffix_of"
+kind = "function"
+lang = "python"
+content_hash = "c816fb66177d8daa"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def suffix_of(fq: str, partial: str) -> bool:"
+description = ""
+schema = 4
+line = 85
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "match_meta [crib/codeindex.py]",
+]
+references = [
+  "match_meta [crib/codeindex.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.suffix_of",
+  "of",
+  "suffix",
+  "suffix_of",
+  "symbols",
+]

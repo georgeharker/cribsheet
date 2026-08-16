@@ -1,0 +1,37 @@
+symbol_ref = "crib/codeindex.py#_rel"
+fqn = "crib.codeindex._rel"
+name = "_rel"
+kind = "function"
+lang = "python"
+content_hash = "bb4d63bdc39758c2"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def _rel(uri: str, root: Path) -> str:"
+description = ""
+schema = 4
+line = 814
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = [
+  "uri_path [crib/codeindex.py]",
+]
+called_by = [
+  "_locate [crib/codeindex.py]",
+  "test_uri_path_percent_decodes [tests/test_code_attribution.py]",
+]
+references = [
+  "_locate [crib/codeindex.py]",
+  "test_uri_path_percent_decodes [tests/test_code_attribution.py]",
+]
+name_terms = [
+  "_rel",
+  "codeindex",
+  "crib",
+  "crib.codeindex._rel",
+  "rel",
+]

@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ServerConfig.transport"
+fqn = "combiner.mcp_combiner.config.ServerConfig.transport"
+name = "transport"
+kind = "field"
+lang = "python"
+content_hash = "ff75e274b02c326f"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "transport: Transport = Transport.STDIO"
+description = ""
+schema = 4
+line = 265
+mtime = 1783633313000000000
+container = [
+  "ServerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ServerConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "build_http_transport [combiner/mcp_combiner/connections.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "get_server_status [combiner/mcp_combiner/config.py]",
+  "is_http_server [combiner/mcp_combiner/connections.py]",
+  "is_http_server [combiner/tests/fakes.py]",
+  "test_server_config_from_dict_http [combiner/tests/test_config.py]",
+  "test_server_config_from_dict_stdio [combiner/tests/test_config.py]",
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.transport",
+  "config",
+  "mcp",
+  "server",
+  "transport",
+]

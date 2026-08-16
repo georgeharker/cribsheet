@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthProvider.register_routes"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthProvider.register_routes"
+name = "register_routes"
+kind = "method"
+lang = "python"
+content_hash = "de42c7fc9e901771"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def register_routes(self, mcp: FastMCP) -> None:"
+description = ""
+schema = 4
+line = 740
+mtime = 1783622326000000000
+container = [
+  "MockOAuthProvider",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthProvider",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+]
+references = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthProvider.register_routes",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "provider",
+  "register",
+  "register_routes",
+  "routes",
+]

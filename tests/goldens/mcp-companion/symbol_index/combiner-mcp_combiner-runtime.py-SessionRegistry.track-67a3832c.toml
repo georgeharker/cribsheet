@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.track"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.track"
+name = "track"
+kind = "method"
+lang = "python"
+content_hash = "02211d0c28d29c26"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def track(self, session: ServerSession) -> bool:"
+description = ""
+schema = 4
+line = 62
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "on_request [combiner/mcp_combiner/middleware.py]",
+]
+references = [
+  "on_request [combiner/mcp_combiner/middleware.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.track",
+  "mcp",
+  "registry",
+  "runtime",
+  "session",
+  "track",
+]

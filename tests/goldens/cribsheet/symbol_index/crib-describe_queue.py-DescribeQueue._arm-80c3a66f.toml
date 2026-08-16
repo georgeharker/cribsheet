@@ -1,0 +1,40 @@
+symbol_ref = "crib/describe_queue.py#DescribeQueue._arm"
+fqn = "crib.describe_queue.DescribeQueue._arm"
+name = "_arm"
+kind = "method"
+lang = "python"
+content_hash = "d90eb063d38e55fb"
+file = "crib/describe_queue.py"
+file_hash = "305c34e160ae74c1"
+signature = "def _arm(self, project: str, root: Path, relpath: str,"
+description = ""
+schema = 4
+line = 70
+mtime = 1786664729000000000
+container = [
+  "DescribeQueue",
+]
+scope = [
+  "crib",
+  "describe_queue",
+  "DescribeQueue",
+]
+symbol_was = []
+calls = [
+  "_Entry [crib/describe_queue.py]",
+]
+called_by = [
+  "_run [crib/describe_queue.py]",
+]
+references = [
+  "_run [crib/describe_queue.py]",
+  "enqueue [crib/describe_queue.py]",
+]
+name_terms = [
+  "_arm",
+  "arm",
+  "crib",
+  "crib.describe_queue.DescribeQueue._arm",
+  "describe",
+  "queue",
+]

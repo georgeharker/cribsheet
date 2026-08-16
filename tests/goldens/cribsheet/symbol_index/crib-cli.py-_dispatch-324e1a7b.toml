@@ -1,0 +1,43 @@
+symbol_ref = "crib/cli.py#_dispatch"
+fqn = "crib.cli._dispatch"
+name = "_dispatch"
+kind = "function"
+lang = "python"
+content_hash = "a443776dcd320d18"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _dispatch(args: Any) -> tuple[Verb, dict[str, Any]]:"
+description = ""
+schema = 4
+line = 1900
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_resolve_verb [crib/cli.py]",
+]
+called_by = [
+  "_call [tests/test_cli_labels.py]",
+  "_call [tests/test_design_cli.py]",
+  "_run_daemon [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+  "test_cli_defaults_match_the_declared_mcp_defaults [tests/test_surface_parity.py]",
+]
+references = [
+  "_call [tests/test_cli_labels.py]",
+  "_call [tests/test_design_cli.py]",
+  "_run_daemon [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+  "test_cli_defaults_match_the_declared_mcp_defaults [tests/test_surface_parity.py]",
+]
+name_terms = [
+  "_dispatch",
+  "cli",
+  "crib",
+  "crib.cli._dispatch",
+  "dispatch",
+]

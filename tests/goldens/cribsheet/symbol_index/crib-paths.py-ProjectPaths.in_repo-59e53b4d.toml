@@ -1,0 +1,54 @@
+symbol_ref = "crib/paths.py#ProjectPaths.in_repo"
+fqn = "crib.paths.ProjectPaths.in_repo"
+name = "in_repo"
+kind = "method"
+lang = "python"
+content_hash = "ec070739f033b539"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "@property"
+description = ""
+schema = 4
+line = 160
+mtime = 1786564832000000000
+container = [
+  "ProjectPaths",
+]
+scope = [
+  "crib",
+  "paths",
+  "ProjectPaths",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_in_repo_guard [crib/cli.py]",
+  "_in_repo_store_roots [crib/app.py]",
+  "project_adopt [crib/app.py]",
+  "project_list [crib/app.py]",
+  "project_release [crib/app.py]",
+  "status [crib/app.py]",
+  "test_a_store_that_is_not_on_this_machine_is_unavailable [tests/test_repo_storage.py]",
+  "test_resolves_to_the_global_layout_by_default [tests/test_repo_storage.py]",
+  "test_resolves_to_the_store_when_the_stub_points_at_one [tests/test_repo_storage.py]",
+]
+references = [
+  "_in_repo_guard [crib/cli.py]",
+  "_in_repo_store_roots [crib/app.py]",
+  "project_adopt [crib/app.py]",
+  "project_list [crib/app.py]",
+  "project_release [crib/app.py]",
+  "status [crib/app.py]",
+  "test_a_store_that_is_not_on_this_machine_is_unavailable [tests/test_repo_storage.py]",
+  "test_resolves_to_the_global_layout_by_default [tests/test_repo_storage.py]",
+  "test_resolves_to_the_store_when_the_stub_points_at_one [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.ProjectPaths.in_repo",
+  "in",
+  "in_repo",
+  "paths",
+  "project",
+  "repo",
+]

@@ -1,0 +1,51 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestLocalToolsReady.test_prime_empty_then_populated_publishes_once.list_tools"
+fqn = "combiner.tests.test_session_filter.TestLocalToolsReady.test_prime_empty_then_populated_publishes_once.list_tools"
+name = "list_tools"
+kind = "function"
+lang = "python"
+content_hash = "7965ab82080775af"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "async def list_tools():"
+description = ""
+schema = 4
+line = 671
+mtime = 1784493613000000000
+container = [
+  "TestLocalToolsReady",
+  "test_prime_empty_then_populated_publishes_once",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestLocalToolsReady",
+  "test_prime_empty_then_populated_publishes_once",
+]
+symbol_was = []
+calls = [
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = [
+  "test_prime_empty_then_populated_publishes_once [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestLocalToolsReady.test_prime_empty_then_populated_publishes_once.list_tools",
+  "empty",
+  "filter",
+  "list",
+  "list_tools",
+  "local",
+  "once",
+  "populated",
+  "prime",
+  "publishes",
+  "ready",
+  "session",
+  "test",
+  "tests",
+  "then",
+  "tools",
+]

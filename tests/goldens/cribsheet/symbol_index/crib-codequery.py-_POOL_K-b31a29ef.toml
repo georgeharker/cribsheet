@@ -1,0 +1,32 @@
+symbol_ref = "crib/codequery.py#_POOL_K"
+fqn = "crib.codequery._POOL_K"
+name = "_POOL_K"
+kind = "constant"
+lang = "python"
+content_hash = "ba0c50f5319adf1d"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "_POOL_K = 50        # top-K per source for the union candidate pool (min-max support)"
+description = ""
+schema = 4
+line = 47
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_lookup_one [crib/codequery.py]",
+]
+name_terms = [
+  "_POOL_K",
+  "codequery",
+  "crib",
+  "crib.codequery._POOL_K",
+  "k",
+  "pool",
+]

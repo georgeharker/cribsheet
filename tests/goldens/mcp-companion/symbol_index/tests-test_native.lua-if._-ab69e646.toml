@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_native.lua#if._"
+fqn = "tests.test_native.if._"
+name = "_"
+kind = "variable"
+lang = "lua"
+content_hash = "e54bffb6a664d06e"
+file = "tests/test_native.lua"
+file_hash = "68d141d843ba3fa4"
+signature = "for _, srv in pairs(native.manifest()) do"
+description = ""
+schema = 4
+line = 64
+mtime = 1783022631000000000
+container = [
+  "if",
+  "for in",
+]
+scope = [
+  "tests",
+  "test_native",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_",
+  "if",
+  "native",
+  "test",
+  "tests",
+  "tests.test_native.if._",
+]

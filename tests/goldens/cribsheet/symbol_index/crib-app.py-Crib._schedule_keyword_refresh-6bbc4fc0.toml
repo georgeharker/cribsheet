@@ -1,0 +1,38 @@
+symbol_ref = "crib/app.py#Crib._schedule_keyword_refresh"
+fqn = "crib.app.Crib._schedule_keyword_refresh"
+name = "_schedule_keyword_refresh"
+kind = "method"
+lang = "python"
+content_hash = "435cd641862f6977"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _schedule_keyword_refresh(self, project: str, relpath: str) -> None:"
+description = ""
+schema = 4
+line = 511
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_write_note [crib/app.py]",
+]
+references = [
+  "_write_note [crib/app.py]",
+]
+name_terms = [
+  "_schedule_keyword_refresh",
+  "app",
+  "crib",
+  "crib.app.Crib._schedule_keyword_refresh",
+  "keyword",
+  "refresh",
+  "schedule",
+]

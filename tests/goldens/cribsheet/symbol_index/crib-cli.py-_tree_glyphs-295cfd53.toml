@@ -1,0 +1,36 @@
+symbol_ref = "crib/cli.py#_tree_glyphs"
+fqn = "crib.cli._tree_glyphs"
+name = "_tree_glyphs"
+kind = "function"
+lang = "python"
+content_hash = "b993564dd55a29e8"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _tree_glyphs(ascii_mode: bool) -> tuple[str, str, str, str]:"
+description = ""
+schema = 4
+line = 532
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_emit_code_graph [crib/cli.py]",
+  "_emit_design_tree [crib/cli.py]",
+]
+references = [
+  "_emit_code_graph [crib/cli.py]",
+  "_emit_design_tree [crib/cli.py]",
+]
+name_terms = [
+  "_tree_glyphs",
+  "cli",
+  "crib",
+  "crib.cli._tree_glyphs",
+  "glyphs",
+  "tree",
+]

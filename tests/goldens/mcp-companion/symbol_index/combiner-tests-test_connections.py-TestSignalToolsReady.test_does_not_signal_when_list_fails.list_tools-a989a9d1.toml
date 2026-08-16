@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_connections.py#TestSignalToolsReady.test_does_not_signal_when_list_fails.list_tools"
+fqn = "combiner.tests.test_connections.TestSignalToolsReady.test_does_not_signal_when_list_fails.list_tools"
+name = "list_tools"
+kind = "function"
+lang = "python"
+content_hash = "77e04007490a1aec"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def list_tools():"
+description = ""
+schema = 4
+line = 67
+mtime = 1784493613000000000
+container = [
+  "TestSignalToolsReady",
+  "test_does_not_signal_when_list_fails",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestSignalToolsReady",
+  "test_does_not_signal_when_list_fails",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_does_not_signal_when_list_fails [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.test_connections.TestSignalToolsReady.test_does_not_signal_when_list_fails.list_tools",
+  "connections",
+  "does",
+  "fails",
+  "list",
+  "list_tools",
+  "not",
+  "ready",
+  "signal",
+  "test",
+  "tests",
+  "tools",
+  "when",
+]

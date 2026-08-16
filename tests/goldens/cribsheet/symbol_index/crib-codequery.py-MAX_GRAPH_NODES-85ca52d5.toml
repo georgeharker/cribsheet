@@ -1,0 +1,33 @@
+symbol_ref = "crib/codequery.py#MAX_GRAPH_NODES"
+fqn = "crib.codequery.MAX_GRAPH_NODES"
+name = "MAX_GRAPH_NODES"
+kind = "constant"
+lang = "python"
+content_hash = "d727083aba88473b"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "MAX_GRAPH_NODES = 5000"
+description = ""
+schema = 4
+line = 72
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_project_graph [crib/codequery.py]",
+]
+name_terms = [
+  "MAX_GRAPH_NODES",
+  "codequery",
+  "crib",
+  "crib.codequery.MAX_GRAPH_NODES",
+  "graph",
+  "max",
+  "nodes",
+]

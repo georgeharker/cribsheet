@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_code_learnings.py#test_append_creates_then_appends_dated_entries"
+fqn = "tests.test_code_learnings.test_append_creates_then_appends_dated_entries"
+name = "test_append_creates_then_appends_dated_entries"
+kind = "function"
+lang = "python"
+content_hash = "fb83339bbc3d37d5"
+file = "tests/test_code_learnings.py"
+file_hash = "2cacd018989edacf"
+signature = "def test_append_creates_then_appends_dated_entries(crib):"
+description = ""
+schema = 4
+line = 40
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_learnings",
+]
+symbol_was = []
+calls = [
+  "_seed_symbol [tests/test_code_learnings.py]",
+  "run [tests/test_code_learnings.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "append",
+  "appends",
+  "code",
+  "creates",
+  "dated",
+  "entries",
+  "learnings",
+  "test",
+  "test_append_creates_then_appends_dated_entries",
+  "tests",
+  "tests.test_code_learnings.test_append_creates_then_appends_dated_entries",
+  "then",
+]

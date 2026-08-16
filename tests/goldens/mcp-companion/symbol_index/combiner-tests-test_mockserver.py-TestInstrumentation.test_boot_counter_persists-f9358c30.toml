@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestInstrumentation.test_boot_counter_persists"
+fqn = "combiner.tests.test_mockserver.TestInstrumentation.test_boot_counter_persists"
+name = "test_boot_counter_persists"
+kind = "method"
+lang = "python"
+content_hash = "4be44ac4277a5ebc"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "async def test_boot_counter_persists(self, tmp_path: Path) -> None:"
+description = ""
+schema = 4
+line = 247
+mtime = 1783534978000000000
+container = [
+  "TestInstrumentation",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+  "TestInstrumentation",
+]
+symbol_was = []
+calls = [
+  "MockServer [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "boot",
+  "combiner",
+  "combiner.tests.test_mockserver.TestInstrumentation.test_boot_counter_persists",
+  "counter",
+  "instrumentation",
+  "mockserver",
+  "persists",
+  "test",
+  "test_boot_counter_persists",
+  "tests",
+]

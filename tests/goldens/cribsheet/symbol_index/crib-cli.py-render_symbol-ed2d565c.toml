@@ -1,0 +1,44 @@
+symbol_ref = "crib/cli.py#render_symbol"
+fqn = "crib.cli.render_symbol"
+name = "render_symbol"
+kind = "function"
+lang = "python"
+content_hash = "fd0a858581aab7a4"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def render_symbol(d: dict, style: str = \"inline\", ascii_mode: bool = False) -> str:"
+description = ""
+schema = 4
+line = 244
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_sym_loc [crib/cli.py]",
+  "_sym_name [crib/cli.py]",
+  "_sym_tags [crib/cli.py]",
+]
+called_by = [
+  "_emit_code [crib/cli.py]",
+  "_emit_code_dossier [crib/cli.py]",
+  "_emit_code_graph [crib/cli.py]",
+  "render [crib/cli.py]",
+]
+references = [
+  "_emit_code [crib/cli.py]",
+  "_emit_code_dossier [crib/cli.py]",
+  "_emit_code_graph [crib/cli.py]",
+  "render [crib/cli.py]",
+]
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli.render_symbol",
+  "render",
+  "render_symbol",
+  "symbol",
+]

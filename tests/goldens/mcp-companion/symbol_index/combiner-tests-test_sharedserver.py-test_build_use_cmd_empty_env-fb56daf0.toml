@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_sharedserver.py#test_build_use_cmd_empty_env"
+fqn = "combiner.tests.test_sharedserver.test_build_use_cmd_empty_env"
+name = "test_build_use_cmd_empty_env"
+kind = "function"
+lang = "python"
+content_hash = "52ff3c699bc268bf"
+file = "combiner/tests/test_sharedserver.py"
+file_hash = "b47819ea6b71fce5"
+signature = "def test_build_use_cmd_empty_env() -> None:"
+description = ""
+schema = 4
+line = 108
+mtime = 1782420032000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_sharedserver",
+]
+symbol_was = []
+calls = [
+  "_build_use_cmd [combiner/mcp_combiner/sharedserver.py]",
+  "_make_ss [combiner/tests/test_sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "cmd",
+  "combiner",
+  "combiner.tests.test_sharedserver.test_build_use_cmd_empty_env",
+  "empty",
+  "env",
+  "sharedserver",
+  "test",
+  "test_build_use_cmd_empty_env",
+  "tests",
+  "use",
+]

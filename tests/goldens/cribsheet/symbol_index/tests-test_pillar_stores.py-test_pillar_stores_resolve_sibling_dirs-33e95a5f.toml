@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_pillar_stores.py#test_pillar_stores_resolve_sibling_dirs"
+fqn = "tests.test_pillar_stores.test_pillar_stores_resolve_sibling_dirs"
+name = "test_pillar_stores_resolve_sibling_dirs"
+kind = "function"
+lang = "python"
+content_hash = "248b820e3880cc3f"
+file = "tests/test_pillar_stores.py"
+file_hash = "1a0ecd183d71d1ba"
+signature = "def test_pillar_stores_resolve_sibling_dirs(crib):"
+description = ""
+schema = 4
+line = 36
+mtime = 1786138910000000000
+container = []
+scope = [
+  "tests",
+  "test_pillar_stores",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "dirs",
+  "pillar",
+  "resolve",
+  "sibling",
+  "stores",
+  "test",
+  "test_pillar_stores_resolve_sibling_dirs",
+  "tests",
+  "tests.test_pillar_stores.test_pillar_stores_resolve_sibling_dirs",
+]

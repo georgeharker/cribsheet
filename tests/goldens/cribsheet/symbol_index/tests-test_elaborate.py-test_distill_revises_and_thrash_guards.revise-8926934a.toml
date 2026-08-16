@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_elaborate.py#test_distill_revises_and_thrash_guards.revise"
+fqn = "tests.test_elaborate.test_distill_revises_and_thrash_guards.revise"
+name = "revise"
+kind = "function"
+lang = "python"
+content_hash = "4efd0fe6dcf9c8d8"
+file = "tests/test_elaborate.py"
+file_hash = "5cde1a0229322e89"
+signature = "async def revise(cfg, system, user, purpose=\"distill\", timeout=None):"
+description = ""
+schema = 4
+line = 290
+mtime = 1786578262000000000
+container = [
+  "test_distill_revises_and_thrash_guards",
+]
+scope = [
+  "tests",
+  "test_elaborate",
+  "test_distill_revises_and_thrash_guards",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_distill_revises_and_thrash_guards [tests/test_elaborate.py]",
+]
+name_terms = [
+  "and",
+  "distill",
+  "elaborate",
+  "guards",
+  "revise",
+  "revises",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_distill_revises_and_thrash_guards.revise",
+  "thrash",
+]

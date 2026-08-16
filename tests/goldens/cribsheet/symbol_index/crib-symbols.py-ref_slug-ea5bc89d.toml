@@ -1,0 +1,52 @@
+symbol_ref = "crib/symbols.py#ref_slug"
+fqn = "crib.symbols.ref_slug"
+name = "ref_slug"
+kind = "function"
+lang = "python"
+content_hash = "ce3241981a2dc770"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def ref_slug(ref: str) -> str:"
+description = ""
+schema = 4
+line = 253
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_legacy_note [tests/test_symbol_migration.py]",
+  "_names_for [crib/codeindex.py]",
+  "_relname [crib/codeindex.py]",
+  "capture [scripts/symstats.py]",
+  "convert_notes [crib/learnings.py]",
+  "rel_for_binding [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+  "test_learning_slug_clean_fqn_verbatim [tests/test_codeindex.py]",
+  "test_learning_slug_disambiguates_case_on_case_insensitive_filesystems [tests/test_codeindex.py]",
+  "test_learning_slug_munges_unsafe_and_disambiguates [tests/test_codeindex.py]",
+]
+references = [
+  "_legacy_note [tests/test_symbol_migration.py]",
+  "_names_for [crib/codeindex.py]",
+  "_relname [crib/codeindex.py]",
+  "capture [scripts/symstats.py]",
+  "convert_notes [crib/learnings.py]",
+  "rel_for_binding [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+  "test_learning_slug_clean_fqn_verbatim [tests/test_codeindex.py]",
+  "test_learning_slug_disambiguates_case_on_case_insensitive_filesystems [tests/test_codeindex.py]",
+  "test_learning_slug_munges_unsafe_and_disambiguates [tests/test_codeindex.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.ref_slug",
+  "ref",
+  "ref_slug",
+  "slug",
+  "symbols",
+]

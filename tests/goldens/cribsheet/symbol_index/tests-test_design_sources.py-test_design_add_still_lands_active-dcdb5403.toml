@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_design_sources.py#test_design_add_still_lands_active"
+fqn = "tests.test_design_sources.test_design_add_still_lands_active"
+name = "test_design_add_still_lands_active"
+kind = "function"
+lang = "python"
+content_hash = "aa203b68a8754e48"
+file = "tests/test_design_sources.py"
+file_hash = "f89b5a94b236ce9c"
+signature = "def test_design_add_still_lands_active(crib):"
+description = ""
+schema = 4
+line = 261
+mtime = 1786137963000000000
+container = []
+scope = [
+  "tests",
+  "test_design_sources",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_design_sources.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "active",
+  "add",
+  "design",
+  "lands",
+  "sources",
+  "still",
+  "test",
+  "test_design_add_still_lands_active",
+  "tests",
+  "tests.test_design_sources.test_design_add_still_lands_active",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_designs.py#test_plan_next_excludes_claimed_items_and_prescribes_the_loop"
+fqn = "tests.test_designs.test_plan_next_excludes_claimed_items_and_prescribes_the_loop"
+name = "test_plan_next_excludes_claimed_items_and_prescribes_the_loop"
+kind = "function"
+lang = "python"
+content_hash = "7bb1fb246375bbb9"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_plan_next_excludes_claimed_items_and_prescribes_the_loop(crib):"
+description = ""
+schema = 4
+line = 501
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "_titles [tests/test_designs.py]",
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "claimed",
+  "designs",
+  "excludes",
+  "items",
+  "loop",
+  "next",
+  "plan",
+  "prescribes",
+  "test",
+  "test_plan_next_excludes_claimed_items_and_prescribes_the_loop",
+  "tests",
+  "tests.test_designs.test_plan_next_excludes_claimed_items_and_prescribes_the_loop",
+  "the",
+]

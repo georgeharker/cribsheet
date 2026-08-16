@@ -1,0 +1,52 @@
+symbol_ref = "crib/app.py#Crib.code_convert"
+fqn = "crib.app.Crib.code_convert"
+name = "code_convert"
+kind = "method"
+lang = "python"
+content_hash = "5dd167ab606a384b"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def code_convert(self, project: str | None = None,"
+description = ""
+schema = 4
+line = 1831
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_parts [crib/app.py]",
+  "_relname [crib/codeindex.py]",
+  "bump_epoch [crib/codestore.py]",
+  "convert_entry [crib/symconvert.py]",
+  "convertible [crib/symconvert.py]",
+  "key [crib/symbols.py]",
+  "lock [crib/codestore.py]",
+  "preserved [crib/symconvert.py]",
+  "project_dir [crib/paths.py]",
+  "record_schema [crib/codeindex.py]",
+  "records [crib/codeindex.py]",
+  "resolve_project [crib/app.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = [
+  "code_convert [crib/server.py]",
+]
+references = [
+  "code_convert [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "code",
+  "code_convert",
+  "convert",
+  "crib",
+  "crib.app.Crib.code_convert",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "crib/notestore.py#PLANS_SPEC"
+fqn = "crib.notestore.PLANS_SPEC"
+name = "PLANS_SPEC"
+kind = "constant"
+lang = "python"
+content_hash = "f322dafd7ae1a7d6"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "PLANS_SPEC = StoreSpec(\"plans\", \"plans\", facet=\"plan\")"
+description = ""
+schema = 4
+line = 56
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "notestore",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+]
+name_terms = [
+  "PLANS_SPEC",
+  "crib",
+  "crib.notestore.PLANS_SPEC",
+  "notestore",
+  "plans",
+  "spec",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestOnListToolsIntegration.setup_method"
+fqn = "combiner.tests.test_session_filter.TestOnListToolsIntegration.setup_method"
+name = "setup_method"
+kind = "method"
+lang = "python"
+content_hash = "f48d2494c1556ed5"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def setup_method(self):"
+description = ""
+schema = 4
+line = 946
+mtime = 1784493613000000000
+container = [
+  "TestOnListToolsIntegration",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestOnListToolsIntegration",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestOnListToolsIntegration.setup_method",
+  "filter",
+  "integration",
+  "list",
+  "method",
+  "on",
+  "session",
+  "setup",
+  "setup_method",
+  "test",
+  "tests",
+  "tools",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "crib/retrieve.py#QwenReranker.scores"
+fqn = "crib.retrieve.QwenReranker.scores"
+name = "scores"
+kind = "method"
+lang = "python"
+content_hash = "b71e6aed614864b9"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "def scores(self, query: str, documents: list[str]) -> list[float]:"
+description = ""
+schema = 4
+line = 227
+mtime = 1786136167000000000
+container = [
+  "QwenReranker",
+]
+scope = [
+  "crib",
+  "retrieve",
+  "QwenReranker",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "crib.retrieve.QwenReranker.scores",
+  "qwen",
+  "reranker",
+  "retrieve",
+  "scores",
+]

@@ -1,0 +1,41 @@
+symbol_ref = "scripts/eval_fusion.py#c_covpc.fn"
+fqn = "scripts.eval_fusion.c_covpc.fn"
+name = "fn"
+kind = "function"
+lang = "python"
+content_hash = "b1e677b0d4a614ee"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def fn(crib, proj, q, feat, qf, k):"
+description = ""
+schema = 4
+line = 172
+mtime = 1783981122000000000
+container = [
+  "c_covpc",
+]
+scope = [
+  "scripts",
+  "eval_fusion",
+  "c_covpc",
+]
+symbol_was = []
+calls = [
+  "_cands [scripts/eval_fusion.py]",
+  "_norm_over [scripts/eval_fusion.py]",
+  "mm [scripts/eval_fusion.py]",
+  "order_from [scripts/eval_fusion.py]",
+]
+called_by = []
+references = [
+  "c_covpc [scripts/eval_fusion.py]",
+]
+name_terms = [
+  "c",
+  "covpc",
+  "eval",
+  "fn",
+  "fusion",
+  "scripts",
+  "scripts.eval_fusion.c_covpc.fn",
+]

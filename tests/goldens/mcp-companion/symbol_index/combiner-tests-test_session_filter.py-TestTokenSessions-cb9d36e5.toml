@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestTokenSessions"
+fqn = "combiner.tests.test_session_filter.TestTokenSessions"
+name = "TestTokenSessions"
+kind = "class"
+lang = "python"
+content_hash = "96e6141347fb5a3d"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "class TestTokenSessions:"
+description = ""
+schema = 4
+line = 99
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestTokenSessions",
+  "combiner",
+  "combiner.tests.test_session_filter.TestTokenSessions",
+  "filter",
+  "session",
+  "sessions",
+  "test",
+  "tests",
+  "token",
+]

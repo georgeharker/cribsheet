@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_loop_responsiveness.py#test_status_reports_background_reconcile"
+fqn = "tests.test_loop_responsiveness.test_status_reports_background_reconcile"
+name = "test_status_reports_background_reconcile"
+kind = "function"
+lang = "python"
+content_hash = "ff341bb9483f0d7b"
+file = "tests/test_loop_responsiveness.py"
+file_hash = "3e5d3308dc33e6f4"
+signature = "def test_status_reports_background_reconcile(slow_crib):"
+description = ""
+schema = 4
+line = 122
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_loop_responsiveness",
+]
+symbol_was = []
+calls = [
+  "main [tests/test_loop_responsiveness.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "background",
+  "loop",
+  "reconcile",
+  "reports",
+  "responsiveness",
+  "status",
+  "test",
+  "test_status_reports_background_reconcile",
+  "tests",
+  "tests.test_loop_responsiveness.test_status_reports_background_reconcile",
+]

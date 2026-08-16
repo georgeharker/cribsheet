@@ -1,0 +1,49 @@
+symbol_ref = "crib/app.py#Crib.reindex"
+fqn = "crib.app.Crib.reindex"
+name = "reindex"
+kind = "method"
+lang = "python"
+content_hash = "ac334319ac5dca08"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def reindex(self, relpath: str | None = None, project: str | None = None,"
+description = ""
+schema = 4
+line = 673
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "_maybe_recreate_for_dim [crib/app.py]",
+  "_migrate_legacy_layout [crib/app.py]",
+  "_recover_from_wipe [crib/app.py]",
+  "reindex [crib/notestore.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "note_reindex [crib/server.py]",
+  "project_adopt [crib/app.py]",
+  "project_migrate [crib/app.py]",
+  "project_release [crib/app.py]",
+  "reconcile_all [crib/app.py]",
+]
+references = [
+  "note_reindex [crib/server.py]",
+  "project_adopt [crib/app.py]",
+  "project_migrate [crib/app.py]",
+  "project_release [crib/app.py]",
+  "reconcile_all [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.reindex",
+  "reindex",
+]

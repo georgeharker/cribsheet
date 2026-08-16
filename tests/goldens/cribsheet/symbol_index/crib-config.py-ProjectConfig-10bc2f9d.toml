@@ -1,0 +1,40 @@
+symbol_ref = "crib/config.py#ProjectConfig"
+fqn = "crib.config.ProjectConfig"
+name = "ProjectConfig"
+kind = "class"
+lang = "python"
+content_hash = "a49913ffd4b4dfe1"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 322
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "load [crib/config.py]",
+  "project_adopt [crib/app.py]",
+  "project_config [crib/app.py]",
+  "project_release [crib/app.py]",
+  "resolve_project_paths [crib/paths.py]",
+  "test_a_store_that_is_not_on_this_machine_is_unavailable [tests/test_repo_storage.py]",
+  "test_resolves_to_the_store_when_the_stub_points_at_one [tests/test_repo_storage.py]",
+  "test_startup_reconcile_skips_an_unavailable_store [tests/test_repo_storage.py]",
+  "test_verbs_error_actionably_while_the_store_is_missing [tests/test_repo_storage.py]",
+  "test_watch_roots_skip_an_unavailable_store [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "ProjectConfig",
+  "config",
+  "crib",
+  "crib.config.ProjectConfig",
+  "project",
+]

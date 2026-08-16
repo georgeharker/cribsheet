@@ -1,0 +1,42 @@
+symbol_ref = "crib/codequery.py#check_k"
+fqn = "crib.codequery.check_k"
+name = "check_k"
+kind = "function"
+lang = "python"
+content_hash = "7cbd479963486e59"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def check_k(k: int, name: str = \"k\") -> int:"
+description = ""
+schema = 4
+line = 185
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+]
+called_by = [
+  "code_lookup [crib/app.py]",
+  "graph [crib/codequery.py]",
+  "lookup [crib/app.py]",
+  "lookup [crib/codequery.py]",
+]
+references = [
+  "code_lookup [crib/app.py]",
+  "graph [crib/codequery.py]",
+  "lookup [crib/app.py]",
+  "lookup [crib/codequery.py]",
+]
+name_terms = [
+  "check",
+  "check_k",
+  "codequery",
+  "crib",
+  "crib.codequery.check_k",
+  "k",
+]

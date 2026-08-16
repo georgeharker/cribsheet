@@ -1,0 +1,34 @@
+symbol_ref = "combiner/mcp_combiner/asgi.py#_TOKEN_RE"
+fqn = "combiner.mcp_combiner.asgi._TOKEN_RE"
+name = "_TOKEN_RE"
+kind = "constant"
+lang = "python"
+content_hash = "e598c90c1fb1f12c"
+file = "combiner/mcp_combiner/asgi.py"
+file_hash = "1ff2dd1d6ee7f6d0"
+signature = "_TOKEN_RE = re.compile(r\"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$\")"
+description = ""
+schema = 4
+line = 34
+mtime = 1783548694000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "asgi",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "dispatch [combiner/mcp_combiner/asgi.py]",
+]
+name_terms = [
+  "_TOKEN_RE",
+  "asgi",
+  "combiner",
+  "combiner.mcp_combiner.asgi._TOKEN_RE",
+  "mcp",
+  "re",
+  "token",
+]

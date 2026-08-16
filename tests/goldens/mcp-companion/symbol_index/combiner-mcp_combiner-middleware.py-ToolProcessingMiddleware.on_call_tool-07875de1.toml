@@ -1,0 +1,52 @@
+symbol_ref = "combiner/mcp_combiner/middleware.py#ToolProcessingMiddleware.on_call_tool"
+fqn = "combiner.mcp_combiner.middleware.ToolProcessingMiddleware.on_call_tool"
+name = "on_call_tool"
+kind = "method"
+lang = "python"
+content_hash = "6499938d346cd19d"
+file = "combiner/mcp_combiner/middleware.py"
+file_hash = "6dee47cf65146f20"
+signature = "async def on_call_tool("
+description = ""
+schema = 4
+line = 315
+mtime = 1784493613000000000
+container = [
+  "ToolProcessingMiddleware",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "middleware",
+  "ToolProcessingMiddleware",
+]
+symbol_was = []
+calls = [
+  "OAuthConfig [combiner/mcp_combiner/config.py]",
+  "_find_server_for_tool [combiner/mcp_combiner/toolcache.py]",
+  "_is_transport_dead [combiner/mcp_combiner/toolcache.py]",
+  "call_nvim_tool [combiner/mcp_combiner/nvim_proxy.py]",
+  "clear_failure [combiner/mcp_combiner/runtime.py]",
+  "clear_oauth_cache [combiner/mcp_combiner/auth.py]",
+  "disabled_for [combiner/mcp_combiner/runtime.py]",
+  "effective_policy [combiner/mcp_combiner/config.py]",
+  "enforce [combiner/mcp_combiner/permissions.py]",
+  "is_active [combiner/mcp_combiner/config.py]",
+  "is_nvim_tool [combiner/mcp_combiner/nvim_proxy.py]",
+  "is_stale_client_error [combiner/mcp_combiner/auth.py]",
+  "mark_tools_unready [combiner/mcp_combiner/connections.py]",
+  "record_failure [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "call",
+  "combiner",
+  "combiner.mcp_combiner.middleware.ToolProcessingMiddleware.on_call_tool",
+  "mcp",
+  "middleware",
+  "on",
+  "on_call_tool",
+  "processing",
+  "tool",
+]

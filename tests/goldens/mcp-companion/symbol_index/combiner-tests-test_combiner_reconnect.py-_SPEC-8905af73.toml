@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/test_combiner_reconnect.py#_SPEC"
+fqn = "combiner.tests.test_combiner_reconnect._SPEC"
+name = "_SPEC"
+kind = "constant"
+lang = "python"
+content_hash = "12a30bdae079e715"
+file = "combiner/tests/test_combiner_reconnect.py"
+file_hash = "0f559a1b56a92ac5"
+signature = "_SPEC = ["
+description = ""
+schema = 4
+line = 36
+mtime = 1783535856000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_combiner_reconnect",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+]
+name_terms = [
+  "_SPEC",
+  "combiner",
+  "combiner.tests.test_combiner_reconnect._SPEC",
+  "reconnect",
+  "spec",
+  "test",
+  "tests",
+]

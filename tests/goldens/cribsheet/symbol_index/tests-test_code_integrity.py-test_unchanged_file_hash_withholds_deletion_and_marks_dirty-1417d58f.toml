@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_code_integrity.py#test_unchanged_file_hash_withholds_deletion_and_marks_dirty"
+fqn = "tests.test_code_integrity.test_unchanged_file_hash_withholds_deletion_and_marks_dirty"
+name = "test_unchanged_file_hash_withholds_deletion_and_marks_dirty"
+kind = "function"
+lang = "python"
+content_hash = "9ae242599fd2d7e6"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_unchanged_file_hash_withholds_deletion_and_marks_dirty("
+description = ""
+schema = 4
+line = 217
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "_seed_two_symbols [tests/test_code_integrity.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "code",
+  "deletion",
+  "dirty",
+  "file",
+  "hash",
+  "integrity",
+  "marks",
+  "test",
+  "test_unchanged_file_hash_withholds_deletion_and_marks_dirty",
+  "tests",
+  "tests.test_code_integrity.test_unchanged_file_hash_withholds_deletion_and_marks_dirty",
+  "unchanged",
+  "withholds",
+]

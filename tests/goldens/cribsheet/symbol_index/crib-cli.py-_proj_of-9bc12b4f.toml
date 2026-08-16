@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#_proj_of"
+fqn = "crib.cli._proj_of"
+name = "_proj_of"
+kind = "function"
+lang = "python"
+content_hash = "a2e5b9abde925cff"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _proj_of(a: Any) -> str | None:"
+description = ""
+schema = 4
+line = 1542
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "(lambda) [crib/cli.py]",
+]
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_proj_of",
+  "cli",
+  "crib",
+  "crib.cli._proj_of",
+  "of",
+  "proj",
+]

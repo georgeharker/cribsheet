@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestPersistence"
+fqn = "combiner.tests.test_oauth_mock.TestPersistence"
+name = "TestPersistence"
+kind = "class"
+lang = "python"
+content_hash = "1392018892261bcf"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "class TestPersistence:"
+description = ""
+schema = 4
+line = 389
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestPersistence",
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestPersistence",
+  "mock",
+  "oauth",
+  "persistence",
+  "test",
+  "tests",
+]

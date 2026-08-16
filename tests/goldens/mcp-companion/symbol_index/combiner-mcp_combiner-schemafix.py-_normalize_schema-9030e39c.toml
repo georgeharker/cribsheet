@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/schemafix.py#_normalize_schema"
+fqn = "combiner.mcp_combiner.schemafix._normalize_schema"
+name = "_normalize_schema"
+kind = "function"
+lang = "python"
+content_hash = "13083dee900aa54e"
+file = "combiner/mcp_combiner/schemafix.py"
+file_hash = "49870021f06866cb"
+signature = "def _normalize_schema(schema: object) -> object:"
+description = ""
+schema = 4
+line = 183
+mtime = 1783542616000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "schemafix",
+]
+symbol_was = []
+calls = [
+  "_normalize_schema [combiner/mcp_combiner/schemafix.py]",
+]
+called_by = [
+  "_apply_schema_fixes [combiner/mcp_combiner/schemafix.py]",
+  "_normalize_schema [combiner/mcp_combiner/schemafix.py]",
+  "_to_clean_tool [combiner/mcp_combiner/schemafix.py]",
+]
+references = [
+  "_apply_schema_fixes [combiner/mcp_combiner/schemafix.py]",
+  "_to_clean_tool [combiner/mcp_combiner/schemafix.py]",
+]
+name_terms = [
+  "_normalize_schema",
+  "combiner",
+  "combiner.mcp_combiner.schemafix._normalize_schema",
+  "mcp",
+  "normalize",
+  "schema",
+  "schemafix",
+]

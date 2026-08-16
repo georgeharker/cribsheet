@@ -1,0 +1,41 @@
+symbol_ref = "crib/designs.py#Designs._citing"
+fqn = "crib.designs.Designs._citing"
+name = "_citing"
+kind = "method"
+lang = "python"
+content_hash = "4c4f44f95bfa5701"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _citing(self, proj: str, relpath: str, kind: str) -> list[dict[str, Any]]:"
+description = ""
+schema = 4
+line = 1886
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_load_graph [crib/designs.py]",
+  "brief [crib/designs.py]",
+  "of_kind [crib/designs.py]",
+  "source_label [crib/designs.py]",
+]
+called_by = [
+  "_import [crib/designs.py]",
+]
+references = [
+  "_import [crib/designs.py]",
+]
+name_terms = [
+  "_citing",
+  "citing",
+  "crib",
+  "crib.designs.Designs._citing",
+  "designs",
+]

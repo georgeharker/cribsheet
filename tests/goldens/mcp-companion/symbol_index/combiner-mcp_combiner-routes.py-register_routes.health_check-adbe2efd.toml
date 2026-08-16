@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/routes.py#register_routes.health_check"
+fqn = "combiner.mcp_combiner.routes.register_routes.health_check"
+name = "health_check"
+kind = "function"
+lang = "python"
+content_hash = "1d5fec31427322ed"
+file = "combiner/mcp_combiner/routes.py"
+file_hash = "51ce6733e6f93928"
+signature = "@combiner.custom_route(\"/health\", methods=[\"GET\"])"
+description = ""
+schema = 4
+line = 40
+mtime = 1783548694000000000
+container = [
+  "register_routes",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "routes",
+  "register_routes",
+]
+symbol_was = []
+calls = [
+  "HealthResponse [combiner/mcp_combiner/config.py]",
+  "build_server_status [combiner/mcp_combiner/status.py]",
+  "is_auth_failed [combiner/mcp_combiner/connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "check",
+  "combiner",
+  "combiner.mcp_combiner.routes.register_routes.health_check",
+  "health",
+  "health_check",
+  "mcp",
+  "register",
+  "routes",
+]

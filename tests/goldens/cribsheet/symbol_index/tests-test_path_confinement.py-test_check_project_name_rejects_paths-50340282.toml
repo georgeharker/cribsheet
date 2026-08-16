@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_path_confinement.py#test_check_project_name_rejects_paths"
+fqn = "tests.test_path_confinement.test_check_project_name_rejects_paths"
+name = "test_check_project_name_rejects_paths"
+kind = "function"
+lang = "python"
+content_hash = "19a5e36c9cdada2d"
+file = "tests/test_path_confinement.py"
+file_hash = "ca5f375c4fa4dfa2"
+signature = "@pytest.mark.parametrize(\"bad\", [\"../evil\", \"a/b\", \"\", \".\", \"..\", \"with space\", \"/abs\"])"
+description = ""
+schema = 4
+line = 58
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_path_confinement",
+]
+symbol_was = []
+calls = [
+  "check_project_name [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "check",
+  "confinement",
+  "name",
+  "path",
+  "paths",
+  "project",
+  "rejects",
+  "test",
+  "test_check_project_name_rejects_paths",
+  "tests",
+  "tests.test_path_confinement.test_check_project_name_rejects_paths",
+]

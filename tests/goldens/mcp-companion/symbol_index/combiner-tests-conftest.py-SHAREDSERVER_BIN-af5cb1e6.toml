@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/conftest.py#SHAREDSERVER_BIN"
+fqn = "combiner.tests.conftest.SHAREDSERVER_BIN"
+name = "SHAREDSERVER_BIN"
+kind = "constant"
+lang = "python"
+content_hash = "f199c0187c1a478c"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "SHAREDSERVER_BIN = shutil.which(\"sharedserver\")"
+description = ""
+schema = 4
+line = 27
+mtime = 1783544328000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "requires_sharedserver [combiner/tests/conftest.py]",
+  "teardown [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "SHAREDSERVER_BIN",
+  "bin",
+  "combiner",
+  "combiner.tests.conftest.SHAREDSERVER_BIN",
+  "conftest",
+  "sharedserver",
+  "tests",
+]

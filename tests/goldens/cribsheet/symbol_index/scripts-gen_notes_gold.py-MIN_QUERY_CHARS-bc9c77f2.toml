@@ -1,0 +1,35 @@
+symbol_ref = "scripts/gen_notes_gold.py#MIN_QUERY_CHARS"
+fqn = "scripts.gen_notes_gold.MIN_QUERY_CHARS"
+name = "MIN_QUERY_CHARS"
+kind = "constant"
+lang = "python"
+content_hash = "b0e70adeee53a939"
+file = "scripts/gen_notes_gold.py"
+file_hash = "c163aa3d44ca5940"
+signature = "MIN_QUERY_CHARS = 8          # drop fragments too short to be a plausible query"
+description = ""
+schema = 4
+line = 37
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "gen_notes_gold",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "main [scripts/gen_notes_gold.py]",
+]
+name_terms = [
+  "MIN_QUERY_CHARS",
+  "chars",
+  "gen",
+  "gold",
+  "min",
+  "notes",
+  "query",
+  "scripts",
+  "scripts.gen_notes_gold.MIN_QUERY_CHARS",
+]

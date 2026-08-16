@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_native.lua#if.sr"
+fqn = "tests.test_native.if.sr"
+name = "sr"
+kind = "variable"
+lang = "lua"
+content_hash = "c6983af332a1486a"
+file = "tests/test_native.lua"
+file_hash = "68d141d843ba3fa4"
+signature = "local sr = native.dispatch(\"set_buffer_lines\", { buffer = buf, start_line = 2, end_line = 2, lines = { \"BETA\" } })"
+description = ""
+schema = 4
+line = 129
+mtime = 1783022631000000000
+container = [
+  "if",
+]
+scope = [
+  "tests",
+  "test_native",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "native",
+  "sr",
+  "test",
+  "tests",
+  "tests.test_native.if.sr",
+]

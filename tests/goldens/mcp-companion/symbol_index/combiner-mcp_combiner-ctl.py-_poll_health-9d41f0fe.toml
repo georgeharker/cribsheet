@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#_poll_health"
+fqn = "combiner.mcp_combiner.ctl._poll_health"
+name = "_poll_health"
+kind = "function"
+lang = "python"
+content_hash = "0a7986133198e9b9"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "async def _poll_health(host: str, port: int, timeout: float) -> bool:"
+description = ""
+schema = 4
+line = 151
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "cmd_restart_combiner [combiner/mcp_combiner/ctl.py]",
+  "cmd_start [combiner/mcp_combiner/ctl.py]",
+]
+references = [
+  "cmd_restart_combiner [combiner/mcp_combiner/ctl.py]",
+  "cmd_start [combiner/mcp_combiner/ctl.py]",
+]
+name_terms = [
+  "_poll_health",
+  "combiner",
+  "combiner.mcp_combiner.ctl._poll_health",
+  "ctl",
+  "health",
+  "mcp",
+  "poll",
+]

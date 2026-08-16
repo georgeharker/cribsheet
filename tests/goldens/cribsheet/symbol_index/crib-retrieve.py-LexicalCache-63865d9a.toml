@@ -1,0 +1,35 @@
+symbol_ref = "crib/retrieve.py#LexicalCache"
+fqn = "crib.retrieve.LexicalCache"
+name = "LexicalCache"
+kind = "class"
+lang = "python"
+content_hash = "81ff1c8de1f9c374"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "class LexicalCache:"
+description = ""
+schema = 4
+line = 251
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "retrieve",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/indexer.py]",
+  "test_downweight_scales_elaboration_contribution [tests/test_elaborate.py]",
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+  "test_lexical_cache_survives_invalidation_mid_read [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "LexicalCache",
+  "cache",
+  "crib",
+  "crib.retrieve.LexicalCache",
+  "lexical",
+  "retrieve",
+]

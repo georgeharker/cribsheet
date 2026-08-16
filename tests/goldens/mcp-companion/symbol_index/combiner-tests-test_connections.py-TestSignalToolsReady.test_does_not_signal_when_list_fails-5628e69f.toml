@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_connections.py#TestSignalToolsReady.test_does_not_signal_when_list_fails"
+fqn = "combiner.tests.test_connections.TestSignalToolsReady.test_does_not_signal_when_list_fails"
+name = "test_does_not_signal_when_list_fails"
+kind = "method"
+lang = "python"
+content_hash = "ead1a72646e56e06"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def test_does_not_signal_when_list_fails(self):"
+description = ""
+schema = 4
+line = 63
+mtime = 1784493613000000000
+container = [
+  "TestSignalToolsReady",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestSignalToolsReady",
+]
+symbol_was = []
+calls = [
+  "ConnectionManager [combiner/mcp_combiner/connections.py]",
+  "_fake_conn [combiner/tests/test_connections.py]",
+  "_signal_tools_ready [combiner/mcp_combiner/connections.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_connections.TestSignalToolsReady.test_does_not_signal_when_list_fails",
+  "connections",
+  "does",
+  "fails",
+  "list",
+  "not",
+  "ready",
+  "signal",
+  "test",
+  "test_does_not_signal_when_list_fails",
+  "tests",
+  "tools",
+  "when",
+]

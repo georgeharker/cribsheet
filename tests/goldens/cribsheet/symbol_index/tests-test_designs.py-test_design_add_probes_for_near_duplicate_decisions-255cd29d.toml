@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_designs.py#test_design_add_probes_for_near_duplicate_decisions"
+fqn = "tests.test_designs.test_design_add_probes_for_near_duplicate_decisions"
+name = "test_design_add_probes_for_near_duplicate_decisions"
+kind = "function"
+lang = "python"
+content_hash = "69d6daed007318e8"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_design_add_probes_for_near_duplicate_decisions(crib):"
+description = ""
+schema = 4
+line = 360
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "add",
+  "decisions",
+  "design",
+  "designs",
+  "duplicate",
+  "for",
+  "near",
+  "probes",
+  "test",
+  "test_design_add_probes_for_near_duplicate_decisions",
+  "tests",
+  "tests.test_designs.test_design_add_probes_for_near_duplicate_decisions",
+]

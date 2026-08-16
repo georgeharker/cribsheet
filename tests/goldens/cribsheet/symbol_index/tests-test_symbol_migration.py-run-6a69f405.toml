@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_symbol_migration.py#run"
+fqn = "tests.test_symbol_migration.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "44052857cf112194"
+file = "tests/test_symbol_migration.py"
+file_hash = "f1bc5f45850c293a"
+signature = "def run(coro):"
+description = ""
+schema = 4
+line = 33
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_migration",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_an_unmappable_note_is_an_orphan_and_untouched [tests/test_symbol_migration.py]",
+  "test_apply_rebinds_renames_and_keeps_history [tests/test_symbol_migration.py]",
+  "test_conversion_needs_no_converted_entry_store [tests/test_symbol_migration.py]",
+  "test_converted_notes_are_searchable [tests/test_symbol_migration.py]",
+  "test_dry_run_classifies_and_writes_nothing [tests/test_symbol_migration.py]",
+  "test_two_notes_claiming_one_symbol_collide_never_merge [tests/test_symbol_migration.py]",
+]
+references = [
+  "test_an_unmappable_note_is_an_orphan_and_untouched [tests/test_symbol_migration.py]",
+  "test_apply_rebinds_renames_and_keeps_history [tests/test_symbol_migration.py]",
+  "test_conversion_needs_no_converted_entry_store [tests/test_symbol_migration.py]",
+  "test_converted_notes_are_searchable [tests/test_symbol_migration.py]",
+  "test_dry_run_classifies_and_writes_nothing [tests/test_symbol_migration.py]",
+  "test_two_notes_claiming_one_symbol_collide_never_merge [tests/test_symbol_migration.py]",
+]
+name_terms = [
+  "migration",
+  "run",
+  "symbol",
+  "test",
+  "tests",
+  "tests.test_symbol_migration.run",
+]

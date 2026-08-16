@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestStaleServerTools.test_present_server_gains_confirmed_slice"
+fqn = "combiner.tests.test_session_filter.TestStaleServerTools.test_present_server_gains_confirmed_slice"
+name = "test_present_server_gains_confirmed_slice"
+kind = "method"
+lang = "python"
+content_hash = "a42725a1c057c41f"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_present_server_gains_confirmed_slice(self):"
+description = ""
+schema = 4
+line = 490
+mtime = 1784493613000000000
+container = [
+  "TestStaleServerTools",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestStaleServerTools",
+]
+symbol_was = []
+calls = [
+  "_config [combiner/tests/test_session_filter.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools.test_present_server_gains_confirmed_slice",
+  "confirmed",
+  "filter",
+  "gains",
+  "present",
+  "server",
+  "session",
+  "slice",
+  "stale",
+  "test",
+  "test_present_server_gains_confirmed_slice",
+  "tests",
+  "tools",
+]

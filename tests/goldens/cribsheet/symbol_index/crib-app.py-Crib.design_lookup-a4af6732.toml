@@ -1,0 +1,41 @@
+symbol_ref = "crib/app.py#Crib.design_lookup"
+fqn = "crib.app.Crib.design_lookup"
+name = "design_lookup"
+kind = "method"
+lang = "python"
+content_hash = "d2d4f0a961aa1df1"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def design_lookup(self, query: str, project: str | None = None, k: int = 8,"
+description = ""
+schema = 4
+line = 2170
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "annotate_hits [crib/designs.py]",
+  "lookup [crib/app.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "design_lookup [crib/server.py]",
+]
+references = [
+  "design_lookup [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.design_lookup",
+  "design",
+  "design_lookup",
+  "lookup",
+]

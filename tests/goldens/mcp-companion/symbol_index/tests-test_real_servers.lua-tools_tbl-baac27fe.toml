@@ -1,0 +1,32 @@
+symbol_ref = "tests/test_real_servers.lua#tools_tbl"
+fqn = "tests.test_real_servers.tools_tbl"
+name = "tools_tbl"
+kind = "global"
+lang = "lua"
+content_hash = "9c612057a5a4f9b2"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local tools_tbl = nil"
+description = ""
+schema = 4
+line = 513
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_real_servers",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "real",
+  "servers",
+  "tbl",
+  "test",
+  "tests",
+  "tests.test_real_servers.tools_tbl",
+  "tools",
+  "tools_tbl",
+]

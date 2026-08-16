@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/fakes.py#FakeSSManager"
+fqn = "combiner.tests.fakes.FakeSSManager"
+name = "FakeSSManager"
+kind = "class"
+lang = "python"
+content_hash = "93f375e5e86d92c8"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "class FakeSSManager:"
+description = ""
+schema = 4
+line = 77
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "harness [combiner/tests/test_reload_config.py]",
+  "test_restart_leaves_one_live_provider [combiner/tests/test_mounts.py]",
+  "test_restart_stdio_empty_answer_keeps_slice_silent [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "FakeSSManager",
+  "combiner",
+  "combiner.tests.fakes.FakeSSManager",
+  "fake",
+  "fakes",
+  "manager",
+  "ss",
+  "tests",
+]

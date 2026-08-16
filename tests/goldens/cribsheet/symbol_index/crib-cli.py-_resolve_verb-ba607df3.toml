@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#_resolve_verb"
+fqn = "crib.cli._resolve_verb"
+name = "_resolve_verb"
+kind = "function"
+lang = "python"
+content_hash = "eb2d52b3f0ea92b6"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _resolve_verb(args: Any) -> tuple[Verb, dict[str, Any]]:"
+description = ""
+schema = 4
+line = 1878
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_dispatch [crib/cli.py]",
+]
+references = [
+  "_dispatch [crib/cli.py]",
+]
+name_terms = [
+  "_resolve_verb",
+  "cli",
+  "crib",
+  "crib.cli._resolve_verb",
+  "resolve",
+  "verb",
+]

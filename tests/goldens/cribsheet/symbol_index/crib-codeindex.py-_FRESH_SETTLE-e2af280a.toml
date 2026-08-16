@@ -1,0 +1,33 @@
+symbol_ref = "crib/codeindex.py#_FRESH_SETTLE"
+fqn = "crib.codeindex._FRESH_SETTLE"
+name = "_FRESH_SETTLE"
+kind = "constant"
+lang = "python"
+content_hash = "0e9dfb8579d77fe9"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "_FRESH_SETTLE = 1.5"
+description = ""
+schema = 4
+line = 926
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_extract [crib/codeindex.py]",
+  "test_settle_policy_defaults_but_an_explicit_value_wins [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "_FRESH_SETTLE",
+  "codeindex",
+  "crib",
+  "crib.codeindex._FRESH_SETTLE",
+  "fresh",
+  "settle",
+]

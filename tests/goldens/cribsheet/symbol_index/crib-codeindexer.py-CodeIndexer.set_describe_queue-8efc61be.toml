@@ -1,0 +1,40 @@
+symbol_ref = "crib/codeindexer.py#CodeIndexer.set_describe_queue"
+fqn = "crib.codeindexer.CodeIndexer.set_describe_queue"
+name = "set_describe_queue"
+kind = "method"
+lang = "python"
+content_hash = "3566f4d600fa8962"
+file = "crib/codeindexer.py"
+file_hash = "8848838a57e51f0a"
+signature = "def set_describe_queue(self, q: Any) -> None:"
+description = ""
+schema = 4
+line = 54
+mtime = 1786664729000000000
+container = [
+  "CodeIndexer",
+]
+scope = [
+  "crib",
+  "codeindexer",
+  "CodeIndexer",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "start_watchers [crib/app.py]",
+]
+references = [
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "code",
+  "codeindexer",
+  "crib",
+  "crib.codeindexer.CodeIndexer.set_describe_queue",
+  "describe",
+  "indexer",
+  "queue",
+  "set",
+  "set_describe_queue",
+]

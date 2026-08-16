@@ -1,0 +1,38 @@
+symbol_ref = "lua/mcp_companion/native/channel.lua#post_bind"
+fqn = "mcp_companion.native.channel.post_bind"
+name = "post_bind"
+kind = "function"
+lang = "lua"
+content_hash = "4be1ed9828be09d1"
+file = "lua/mcp_companion/native/channel.lua"
+file_hash = "1ed98336baf8a3f0"
+signature = "local function post_bind(token)"
+description = ""
+schema = 4
+line = 75
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "native",
+  "channel",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "channel.lua [lua/mcp_companion/native/channel.lua]",
+]
+references = [
+  "if [lua/mcp_companion/native/channel.lua]",
+  "start [lua/mcp_companion/native/channel.lua]",
+]
+name_terms = [
+  "bind",
+  "channel",
+  "companion",
+  "mcp",
+  "mcp_companion.native.channel.post_bind",
+  "native",
+  "post",
+  "post_bind",
+]

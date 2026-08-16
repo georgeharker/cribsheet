@@ -1,0 +1,32 @@
+symbol_ref = "combiner/mcp_combiner/server.py#_notification_tasks"
+fqn = "combiner.mcp_combiner.server._notification_tasks"
+name = "_notification_tasks"
+kind = "global"
+lang = "python"
+content_hash = "1897e3fdd06c9ebe"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "_notification_tasks: set[asyncio.Task[None]] = RUNTIME.notification_tasks"
+description = ""
+schema = 4
+line = 152
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_notification_tasks",
+  "combiner",
+  "combiner.mcp_combiner.server._notification_tasks",
+  "mcp",
+  "notification",
+  "server",
+  "tasks",
+]

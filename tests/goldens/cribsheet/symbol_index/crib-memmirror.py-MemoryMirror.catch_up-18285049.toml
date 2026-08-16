@@ -1,0 +1,43 @@
+symbol_ref = "crib/memmirror.py#MemoryMirror.catch_up"
+fqn = "crib.memmirror.MemoryMirror.catch_up"
+name = "catch_up"
+kind = "method"
+lang = "python"
+content_hash = "ff457d0b25fcffcf"
+file = "crib/memmirror.py"
+file_hash = "9ff08381721a9203"
+signature = "async def catch_up(self) -> None:"
+description = ""
+schema = 4
+line = 42
+mtime = 1785959234000000000
+container = [
+  "MemoryMirror",
+]
+scope = [
+  "crib",
+  "memmirror",
+  "MemoryMirror",
+]
+symbol_was = []
+calls = [
+  "all [crib/claudemem.py]",
+]
+called_by = [
+  "scenario [tests/test_claude_memory.py]",
+  "start_memory_mirror [crib/app.py]",
+]
+references = [
+  "scenario [tests/test_claude_memory.py]",
+  "start_memory_mirror [crib/app.py]",
+]
+name_terms = [
+  "catch",
+  "catch_up",
+  "crib",
+  "crib.memmirror.MemoryMirror.catch_up",
+  "memmirror",
+  "memory",
+  "mirror",
+  "up",
+]

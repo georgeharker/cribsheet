@@ -1,0 +1,46 @@
+symbol_ref = "crib/codeindexer.py#CodeIndexer._describe_and_patch"
+fqn = "crib.codeindexer.CodeIndexer._describe_and_patch"
+name = "_describe_and_patch"
+kind = "method"
+lang = "python"
+content_hash = "b37a4fbd4fef66e7"
+file = "crib/codeindexer.py"
+file_hash = "8848838a57e51f0a"
+signature = "async def _describe_and_patch(self, proj: str, root: Path, rel: str,"
+description = ""
+schema = 4
+line = 386
+mtime = 1786664729000000000
+container = [
+  "CodeIndexer",
+]
+scope = [
+  "crib",
+  "codeindexer",
+  "CodeIndexer",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "bump_epoch [crib/codestore.py]",
+  "lock [crib/codestore.py]",
+  "match_meta [crib/codeindex.py]",
+  "project_dir [crib/paths.py]",
+  "read [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = [
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "_describe_and_patch",
+  "and",
+  "code",
+  "codeindexer",
+  "crib",
+  "crib.codeindexer.CodeIndexer._describe_and_patch",
+  "describe",
+  "indexer",
+  "patch",
+]

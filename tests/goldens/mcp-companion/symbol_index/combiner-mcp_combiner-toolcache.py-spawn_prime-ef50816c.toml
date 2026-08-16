@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#spawn_prime"
+fqn = "combiner.mcp_combiner.toolcache.spawn_prime"
+name = "spawn_prime"
+kind = "function"
+lang = "python"
+content_hash = "4772be286960e3b8"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "def spawn_prime(combiner: FastMCP, name: str) -> asyncio.Task[PrimeOutcome]:"
+description = ""
+schema = 4
+line = 452
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = [
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+]
+called_by = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.toolcache.spawn_prime",
+  "mcp",
+  "prime",
+  "spawn",
+  "spawn_prime",
+  "toolcache",
+]

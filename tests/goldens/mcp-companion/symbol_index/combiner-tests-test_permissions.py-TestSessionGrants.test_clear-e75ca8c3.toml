@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestSessionGrants.test_clear"
+fqn = "combiner.tests.test_permissions.TestSessionGrants.test_clear"
+name = "test_clear"
+kind = "method"
+lang = "python"
+content_hash = "2a33fcd981c5654e"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "def test_clear(self) -> None:"
+description = ""
+schema = 4
+line = 178
+mtime = 1783633313000000000
+container = [
+  "TestSessionGrants",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "TestSessionGrants",
+]
+symbol_was = []
+calls = [
+  "SessionRegistry [combiner/mcp_combiner/runtime.py]",
+  "clear_granted [combiner/mcp_combiner/runtime.py]",
+  "grant [combiner/mcp_combiner/runtime.py]",
+  "is_granted [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "clear",
+  "combiner",
+  "combiner.tests.test_permissions.TestSessionGrants.test_clear",
+  "grants",
+  "permissions",
+  "session",
+  "test",
+  "test_clear",
+  "tests",
+]

@@ -1,0 +1,45 @@
+symbol_ref = "crib/learnings.py#Learnings.attach"
+fqn = "crib.learnings.Learnings.attach"
+name = "attach"
+kind = "method"
+lang = "python"
+content_hash = "cf05eced62599a9d"
+file = "crib/learnings.py"
+file_hash = "977a14d62df88945"
+signature = "def attach(self, proj: str,"
+description = ""
+schema = 4
+line = 101
+mtime = 1786664729000000000
+container = [
+  "Learnings",
+]
+scope = [
+  "crib",
+  "learnings",
+  "Learnings",
+]
+symbol_was = []
+calls = [
+  "bindings [crib/symbols.py]",
+  "load [crib/notes.py]",
+  "notes_by_binding [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+  "root [crib/notestore.py]",
+]
+called_by = [
+  "_lookup_one [crib/codequery.py]",
+  "dossier [crib/codequery.py]",
+  "xref [crib/codequery.py]",
+]
+references = [
+  "_lookup_one [crib/codequery.py]",
+  "dossier [crib/codequery.py]",
+  "xref [crib/codequery.py]",
+]
+name_terms = [
+  "attach",
+  "crib",
+  "crib.learnings.Learnings.attach",
+  "learnings",
+]

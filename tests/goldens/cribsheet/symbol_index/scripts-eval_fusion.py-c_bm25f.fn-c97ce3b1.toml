@@ -1,0 +1,43 @@
+symbol_ref = "scripts/eval_fusion.py#c_bm25f.fn"
+fqn = "scripts.eval_fusion.c_bm25f.fn"
+name = "fn"
+kind = "function"
+lang = "python"
+content_hash = "0b6cf2513b7fc515"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def fn(crib, proj, q, feat, qf, k):"
+description = ""
+schema = 4
+line = 183
+mtime = 1783981122000000000
+container = [
+  "c_bm25f",
+]
+scope = [
+  "scripts",
+  "eval_fusion",
+  "c_bm25f",
+]
+symbol_was = []
+calls = [
+  "_cands [scripts/eval_fusion.py]",
+  "_norm_over [scripts/eval_fusion.py]",
+  "mm [scripts/eval_fusion.py]",
+  "order_from [scripts/eval_fusion.py]",
+]
+called_by = []
+references = [
+  "c_bm25f [scripts/eval_fusion.py]",
+]
+name_terms = [
+  "25",
+  "bm",
+  "c",
+  "eval",
+  "f",
+  "fn",
+  "fusion",
+  "scripts",
+  "scripts.eval_fusion.c_bm25f.fn",
+]

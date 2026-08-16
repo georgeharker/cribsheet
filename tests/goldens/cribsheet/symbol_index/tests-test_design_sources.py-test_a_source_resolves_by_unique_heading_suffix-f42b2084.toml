@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_design_sources.py#test_a_source_resolves_by_unique_heading_suffix"
+fqn = "tests.test_design_sources.test_a_source_resolves_by_unique_heading_suffix"
+name = "test_a_source_resolves_by_unique_heading_suffix"
+kind = "function"
+lang = "python"
+content_hash = "dc5c46b37202dc08"
+file = "tests/test_design_sources.py"
+file_hash = "f89b5a94b236ce9c"
+signature = "def test_a_source_resolves_by_unique_heading_suffix(crib):"
+description = ""
+schema = 4
+line = 78
+mtime = 1786137963000000000
+container = []
+scope = [
+  "tests",
+  "test_design_sources",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_design_sources.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "by",
+  "design",
+  "heading",
+  "resolves",
+  "source",
+  "sources",
+  "suffix",
+  "test",
+  "test_a_source_resolves_by_unique_heading_suffix",
+  "tests",
+  "tests.test_design_sources.test_a_source_resolves_by_unique_heading_suffix",
+  "unique",
+]

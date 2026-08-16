@@ -1,0 +1,47 @@
+symbol_ref = "crib/app.py#Crib._registered_root"
+fqn = "crib.app.Crib._registered_root"
+name = "_registered_root"
+kind = "method"
+lang = "python"
+content_hash = "22b3de9862256e32"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _registered_root(self, project: str | None) -> Path | None:"
+description = ""
+schema = 4
+line = 1388
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_source_roots [crib/app.py]",
+  "all [crib/sources.py]",
+  "project_dir [crib/paths.py]",
+  "source_root [crib/codeindex.py]",
+]
+called_by = [
+  "_ensure_crib [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "reconcile_all [crib/app.py]",
+]
+references = [
+  "_ensure_crib [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "reconcile_all [crib/app.py]",
+]
+name_terms = [
+  "_registered_root",
+  "app",
+  "crib",
+  "crib.app.Crib._registered_root",
+  "registered",
+  "root",
+]

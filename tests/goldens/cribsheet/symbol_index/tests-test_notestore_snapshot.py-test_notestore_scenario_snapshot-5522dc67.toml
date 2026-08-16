@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_notestore_snapshot.py#test_notestore_scenario_snapshot"
+fqn = "tests.test_notestore_snapshot.test_notestore_scenario_snapshot"
+name = "test_notestore_scenario_snapshot"
+kind = "function"
+lang = "python"
+content_hash = "a76da827934c583f"
+file = "tests/test_notestore_snapshot.py"
+file_hash = "b2c5a3e37c7b0a55"
+signature = "def test_notestore_scenario_snapshot(crib):"
+description = ""
+schema = 4
+line = 79
+mtime = 1783525700000000000
+container = []
+scope = [
+  "tests",
+  "test_notestore_snapshot",
+]
+symbol_was = []
+calls = [
+  "_scenario [tests/test_notestore_snapshot.py]",
+  "_snapshot [tests/test_notestore_snapshot.py]",
+  "run [tests/test_notestore_snapshot.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "notestore",
+  "scenario",
+  "snapshot",
+  "test",
+  "test_notestore_scenario_snapshot",
+  "tests",
+  "tests.test_notestore_snapshot.test_notestore_scenario_snapshot",
+]

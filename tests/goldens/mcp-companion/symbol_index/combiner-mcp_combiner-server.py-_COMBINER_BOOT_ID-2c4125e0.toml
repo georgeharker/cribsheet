@@ -1,0 +1,32 @@
+symbol_ref = "combiner/mcp_combiner/server.py#_COMBINER_BOOT_ID"
+fqn = "combiner.mcp_combiner.server._COMBINER_BOOT_ID"
+name = "_COMBINER_BOOT_ID"
+kind = "constant"
+lang = "python"
+content_hash = "a3985cd600eed2f3"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "_COMBINER_BOOT_ID = RUNTIME.boot_id"
+description = ""
+schema = 4
+line = 147
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_COMBINER_BOOT_ID",
+  "boot",
+  "combiner",
+  "combiner.mcp_combiner.server._COMBINER_BOOT_ID",
+  "id",
+  "mcp",
+  "server",
+]

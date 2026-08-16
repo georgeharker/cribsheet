@@ -1,0 +1,36 @@
+symbol_ref = "crib/embed.py#embed_query_batch"
+fqn = "crib.embed.embed_query_batch"
+name = "embed_query_batch"
+kind = "function"
+lang = "python"
+content_hash = "70f631412d177580"
+file = "crib/embed.py"
+file_hash = "46323c76e4ac82a3"
+signature = "def embed_query_batch(embedder: Embedder, texts: list[str]) -> list[list[float]]:"
+description = ""
+schema = 4
+line = 46
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "embed",
+]
+symbol_was = []
+calls = [
+  "embed_query [crib/embed.py]",
+]
+called_by = [
+  "lookup [crib/app.py]",
+]
+references = [
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "batch",
+  "crib",
+  "crib.embed.embed_query_batch",
+  "embed",
+  "embed_query_batch",
+  "query",
+]

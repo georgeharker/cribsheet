@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_chunk_identity.py#test_tilde_fence_tracked_too"
+fqn = "tests.test_chunk_identity.test_tilde_fence_tracked_too"
+name = "test_tilde_fence_tracked_too"
+kind = "function"
+lang = "python"
+content_hash = "86115160a425ed9d"
+file = "tests/test_chunk_identity.py"
+file_hash = "0afd98c1ecf1279e"
+signature = "def test_tilde_fence_tracked_too():"
+description = ""
+schema = 4
+line = 177
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_chunk_identity",
+]
+symbol_was = []
+calls = [
+  "_split_sections [crib/chunk.py]",
+  "section_line_map [crib/chunk.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chunk",
+  "fence",
+  "identity",
+  "test",
+  "test_tilde_fence_tracked_too",
+  "tests",
+  "tests.test_chunk_identity.test_tilde_fence_tracked_too",
+  "tilde",
+  "too",
+  "tracked",
+]

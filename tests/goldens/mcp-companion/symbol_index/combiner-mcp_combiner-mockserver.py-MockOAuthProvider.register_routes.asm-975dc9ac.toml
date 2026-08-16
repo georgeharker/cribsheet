@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthProvider.register_routes.asm"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthProvider.register_routes.asm"
+name = "asm"
+kind = "function"
+lang = "python"
+content_hash = "3975ba5d4b7ec4c0"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "async def asm(request: Request) -> JSONResponse:"
+description = ""
+schema = 4
+line = 765
+mtime = 1783622326000000000
+container = [
+  "MockOAuthProvider",
+  "register_routes",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthProvider",
+  "register_routes",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "register_routes [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "asm",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthProvider.register_routes.asm",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "provider",
+  "register",
+  "routes",
+]

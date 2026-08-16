@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.design_import"
+fqn = "crib.app.Crib.design_import"
+name = "design_import"
+kind = "method"
+lang = "python"
+content_hash = "e886b71dcb8e8bd3"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def design_import(self, relpath: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 2239
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "design_import [crib/designs.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "design_import [crib/server.py]",
+]
+references = [
+  "design_import [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.design_import",
+  "design",
+  "design_import",
+  "import",
+]

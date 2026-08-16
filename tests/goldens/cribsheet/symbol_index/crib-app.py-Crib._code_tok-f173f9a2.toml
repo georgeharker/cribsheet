@@ -1,0 +1,35 @@
+symbol_ref = "crib/app.py#Crib._code_tok"
+fqn = "crib.app.Crib._code_tok"
+name = "_code_tok"
+kind = "method"
+lang = "python"
+content_hash = "40e354b8362d555c"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _code_tok(self, proj: str) -> tuple[str, Any]:"
+description = ""
+schema = 4
+line = 1258
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "tok [crib/codestore.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "_code_tok",
+  "app",
+  "code",
+  "crib",
+  "crib.app.Crib._code_tok",
+  "tok",
+]

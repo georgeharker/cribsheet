@@ -1,0 +1,45 @@
+symbol_ref = "crib/versions.py#VersionRing.list"
+fqn = "crib.versions.VersionRing.list"
+name = "list"
+kind = "method"
+lang = "python"
+content_hash = "d95d447639435220"
+file = "crib/versions.py"
+file_hash = "c84588155a74a02c"
+signature = "def list(self, note_id: str) -> list[VersionEntry]:"
+description = ""
+schema = 4
+line = 85
+mtime = 1785966856000000000
+container = [
+  "VersionRing",
+]
+scope = [
+  "crib",
+  "versions",
+  "VersionRing",
+]
+symbol_was = []
+calls = [
+  "VersionEntry [crib/versions.py]",
+  "_note_dir [crib/versions.py]",
+  "_ring_files [crib/versions.py]",
+]
+called_by = [
+  "list_versions [crib/notestore.py]",
+  "test_prune_only_counts_real_entries [tests/test_config_resilience.py]",
+  "test_stray_file_in_a_ring_dir_does_not_break_writes [tests/test_config_resilience.py]",
+]
+references = [
+  "list_versions [crib/notestore.py]",
+  "test_prune_only_counts_real_entries [tests/test_config_resilience.py]",
+  "test_stray_file_in_a_ring_dir_does_not_break_writes [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "crib",
+  "crib.versions.VersionRing.list",
+  "list",
+  "ring",
+  "version",
+  "versions",
+]

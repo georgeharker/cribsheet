@@ -1,0 +1,37 @@
+symbol_ref = "scripts/eval_hybrid.py#main.rec"
+fqn = "scripts.eval_hybrid.main.rec"
+name = "rec"
+kind = "function"
+lang = "python"
+content_hash = "7cb4661760d44685"
+file = "scripts/eval_hybrid.py"
+file_hash = "7efc1218d091601c"
+signature = "def rec(repo, strat, r):"
+description = ""
+schema = 4
+line = 119
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_hybrid",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_hybrid.py]",
+]
+references = [
+  "main [scripts/eval_hybrid.py]",
+]
+name_terms = [
+  "eval",
+  "hybrid",
+  "main",
+  "rec",
+  "scripts",
+  "scripts.eval_hybrid.main.rec",
+]

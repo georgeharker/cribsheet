@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_connections.py#TestMonitorHealthCheck.test_reconnects_after_threshold_consecutive_misses.fake_reconnect"
+fqn = "combiner.tests.test_connections.TestMonitorHealthCheck.test_reconnects_after_threshold_consecutive_misses.fake_reconnect"
+name = "fake_reconnect"
+kind = "function"
+lang = "python"
+content_hash = "223b9df9cdc3c898"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def fake_reconnect(_conn):"
+description = ""
+schema = 4
+line = 344
+mtime = 1784493613000000000
+container = [
+  "TestMonitorHealthCheck",
+  "test_reconnects_after_threshold_consecutive_misses",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestMonitorHealthCheck",
+  "test_reconnects_after_threshold_consecutive_misses",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_reconnects_after_threshold_consecutive_misses [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "after",
+  "check",
+  "combiner",
+  "combiner.tests.test_connections.TestMonitorHealthCheck.test_reconnects_after_threshold_consecutive_misses.fake_reconnect",
+  "connections",
+  "consecutive",
+  "fake",
+  "fake_reconnect",
+  "health",
+  "misses",
+  "monitor",
+  "reconnect",
+  "reconnects",
+  "test",
+  "tests",
+  "threshold",
+]

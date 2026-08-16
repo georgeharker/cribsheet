@@ -1,0 +1,32 @@
+symbol_ref = "crib/symbols.py#_PATH_ROOTS"
+fqn = "crib.symbols._PATH_ROOTS"
+name = "_PATH_ROOTS"
+kind = "constant"
+lang = "python"
+content_hash = "9159ef1dfd5095c0"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "_PATH_ROOTS = {\"python\": (\"src\",), \"lua\": (\"lua\",), \"go\": (\"src\",)}"
+description = ""
+schema = 4
+line = 133
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_path_scope [crib/symbols.py]",
+]
+name_terms = [
+  "_PATH_ROOTS",
+  "crib",
+  "crib.symbols._PATH_ROOTS",
+  "path",
+  "roots",
+  "symbols",
+]

@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_insitu_docs.py#run"
+fqn = "tests.test_insitu_docs.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "44052857cf112194"
+file = "tests/test_insitu_docs.py"
+file_hash = "17deff7174bfef2a"
+signature = "def run(coro):"
+description = ""
+schema = 4
+line = 26
+mtime = 1783476730000000000
+container = []
+scope = [
+  "tests",
+  "test_insitu_docs",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_delete_source_prunes [tests/test_insitu_docs.py]",
+  "test_edit_source_reindexes [tests/test_insitu_docs.py]",
+  "test_index_insitu_no_copy_and_resolves_to_source [tests/test_insitu_docs.py]",
+  "test_read_returns_repo_bytes [tests/test_insitu_docs.py]",
+  "test_sweep_prunes_out_of_glob_docs [tests/test_insitu_docs.py]",
+  "test_watcher_dispatch_reindexes_doc [tests/test_insitu_docs.py]",
+]
+references = [
+  "test_delete_source_prunes [tests/test_insitu_docs.py]",
+  "test_edit_source_reindexes [tests/test_insitu_docs.py]",
+  "test_index_insitu_no_copy_and_resolves_to_source [tests/test_insitu_docs.py]",
+  "test_read_returns_repo_bytes [tests/test_insitu_docs.py]",
+  "test_sweep_prunes_out_of_glob_docs [tests/test_insitu_docs.py]",
+  "test_watcher_dispatch_reindexes_doc [tests/test_insitu_docs.py]",
+]
+name_terms = [
+  "docs",
+  "insitu",
+  "run",
+  "test",
+  "tests",
+  "tests.test_insitu_docs.run",
+]

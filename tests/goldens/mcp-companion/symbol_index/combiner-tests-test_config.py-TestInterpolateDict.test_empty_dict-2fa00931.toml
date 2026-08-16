@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_config.py#TestInterpolateDict.test_empty_dict"
+fqn = "combiner.tests.test_config.TestInterpolateDict.test_empty_dict"
+name = "test_empty_dict"
+kind = "method"
+lang = "python"
+content_hash = "bde3f7c98cb772ae"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_empty_dict(self) -> None:"
+description = ""
+schema = 4
+line = 327
+mtime = 1782852601000000000
+container = [
+  "TestInterpolateDict",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+  "TestInterpolateDict",
+]
+symbol_was = []
+calls = [
+  "_interpolate_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateDict.test_empty_dict",
+  "config",
+  "dict",
+  "empty",
+  "interpolate",
+  "test",
+  "test_empty_dict",
+  "tests",
+]

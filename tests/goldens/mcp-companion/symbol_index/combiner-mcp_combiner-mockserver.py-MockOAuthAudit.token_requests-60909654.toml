@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthAudit.token_requests"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthAudit.token_requests"
+name = "token_requests"
+kind = "field"
+lang = "python"
+content_hash = "3013e763f1ffbc3f"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "token_requests: list[TokenRequest] = field(default_factory=list)"
+description = ""
+schema = 4
+line = 643
+mtime = 1783622326000000000
+container = [
+  "MockOAuthAudit",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthAudit",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "token [combiner/mcp_combiner/mockserver.py]",
+  "token_requests_of [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "audit",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthAudit.token_requests",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "requests",
+  "token",
+  "token_requests",
+]

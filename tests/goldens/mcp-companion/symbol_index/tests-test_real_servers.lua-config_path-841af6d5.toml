@@ -1,0 +1,32 @@
+symbol_ref = "tests/test_real_servers.lua#config_path"
+fqn = "tests.test_real_servers.config_path"
+name = "config_path"
+kind = "global"
+lang = "lua"
+content_hash = "4c4b0b1fb1be13cd"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local config_path = find_config(plugin_root)"
+description = ""
+schema = 4
+line = 224
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_real_servers",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "config",
+  "config_path",
+  "path",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.config_path",
+]

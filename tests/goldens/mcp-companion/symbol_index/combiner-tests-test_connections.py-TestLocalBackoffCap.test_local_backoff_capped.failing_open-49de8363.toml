@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_connections.py#TestLocalBackoffCap.test_local_backoff_capped.failing_open"
+fqn = "combiner.tests.test_connections.TestLocalBackoffCap.test_local_backoff_capped.failing_open"
+name = "failing_open"
+kind = "function"
+lang = "python"
+content_hash = "88d079c42a0bc0f5"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def failing_open(conn):"
+description = ""
+schema = 4
+line = 497
+mtime = 1784493613000000000
+container = [
+  "TestLocalBackoffCap",
+  "test_local_backoff_capped",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestLocalBackoffCap",
+  "test_local_backoff_capped",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_local_backoff_capped [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "backoff",
+  "cap",
+  "capped",
+  "combiner",
+  "combiner.tests.test_connections.TestLocalBackoffCap.test_local_backoff_capped.failing_open",
+  "connections",
+  "failing",
+  "failing_open",
+  "local",
+  "open",
+  "test",
+  "tests",
+]

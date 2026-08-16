@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#ToolSpec.output_schema"
+fqn = "combiner.mcp_combiner.mockserver.ToolSpec.output_schema"
+name = "output_schema"
+kind = "field"
+lang = "python"
+content_hash = "856d6f3bfd18e7ef"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "output_schema: dict[str, Any] | None = None"
+description = ""
+schema = 4
+line = 91
+mtime = 1783622326000000000
+container = [
+  "ToolSpec",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "ToolSpec",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/mockserver.py]",
+  "from_spec [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.ToolSpec.output_schema",
+  "mcp",
+  "mockserver",
+  "output",
+  "output_schema",
+  "schema",
+  "spec",
+  "tool",
+]

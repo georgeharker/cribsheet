@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_elaborate.py#test_section_hash_invariant_to_windowing"
+fqn = "tests.test_elaborate.test_section_hash_invariant_to_windowing"
+name = "test_section_hash_invariant_to_windowing"
+kind = "function"
+lang = "python"
+content_hash = "e2fc96af3b9da913"
+file = "tests/test_elaborate.py"
+file_hash = "5cde1a0229322e89"
+signature = "def test_section_hash_invariant_to_windowing():"
+description = ""
+schema = 4
+line = 119
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_elaborate",
+]
+symbol_was = []
+calls = [
+  "chunk_note [crib/chunk.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "elaborate",
+  "hash",
+  "invariant",
+  "section",
+  "test",
+  "test_section_hash_invariant_to_windowing",
+  "tests",
+  "tests.test_elaborate.test_section_hash_invariant_to_windowing",
+  "to",
+  "windowing",
+]

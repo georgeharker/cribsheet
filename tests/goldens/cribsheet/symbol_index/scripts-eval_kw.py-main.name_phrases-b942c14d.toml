@@ -1,0 +1,41 @@
+symbol_ref = "scripts/eval_kw.py#main.name_phrases"
+fqn = "scripts.eval_kw.main.name_phrases"
+name = "name_phrases"
+kind = "function"
+lang = "python"
+content_hash = "81763cdd77967636"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def name_phrases(fq: str) -> list[str]:"
+description = ""
+schema = 4
+line = 52
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+]
+symbol_was = []
+calls = [
+  "_subtokens [crib/retrieve.py]",
+]
+called_by = [
+  "main [scripts/eval_kw.py]",
+]
+references = [
+  "main [scripts/eval_kw.py]",
+]
+name_terms = [
+  "eval",
+  "kw",
+  "main",
+  "name",
+  "name_phrases",
+  "phrases",
+  "scripts",
+  "scripts.eval_kw.main.name_phrases",
+]

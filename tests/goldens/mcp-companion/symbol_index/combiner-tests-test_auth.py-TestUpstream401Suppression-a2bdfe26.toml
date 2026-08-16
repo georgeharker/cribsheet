@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/test_auth.py#TestUpstream401Suppression"
+fqn = "combiner.tests.test_auth.TestUpstream401Suppression"
+name = "TestUpstream401Suppression"
+kind = "class"
+lang = "python"
+content_hash = "65eef3fd596f110f"
+file = "combiner/tests/test_auth.py"
+file_hash = "2b3aa7eeeed5bf38"
+signature = "class TestUpstream401Suppression:"
+description = ""
+schema = 4
+line = 609
+mtime = 1782852601000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_auth",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "401",
+  "TestUpstream401Suppression",
+  "auth",
+  "combiner",
+  "combiner.tests.test_auth.TestUpstream401Suppression",
+  "suppression",
+  "test",
+  "tests",
+  "upstream",
+]

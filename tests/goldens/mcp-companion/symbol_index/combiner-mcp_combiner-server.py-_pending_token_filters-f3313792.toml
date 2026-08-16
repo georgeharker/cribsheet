@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/server.py#_pending_token_filters"
+fqn = "combiner.mcp_combiner.server._pending_token_filters"
+name = "_pending_token_filters"
+kind = "global"
+lang = "python"
+content_hash = "3c4afb419b2f81e2"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "_pending_token_filters: dict[str, set[str]] = RUNTIME.sessions.pending_token_filters"
+description = ""
+schema = 4
+line = 140
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_reset_session_state [combiner/tests/test_session_filter.py]",
+  "test_clear_pending [combiner/tests/test_session_filter.py]",
+  "test_delete_filter_pending_clears [combiner/tests/test_session_filter.py]",
+  "test_empty_by_default [combiner/tests/test_session_filter.py]",
+  "test_get_filter_pending_with_state [combiner/tests/test_session_filter.py]",
+  "test_missing_token_returns_none [combiner/tests/test_session_filter.py]",
+  "test_multiple_tokens_independent [combiner/tests/test_session_filter.py]",
+  "test_post_filter_pending_disabled_servers [combiner/tests/test_session_filter.py]",
+  "test_post_filter_pending_empty_clears [combiner/tests/test_session_filter.py]",
+  "test_set_and_get [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_pending_token_filters",
+  "combiner",
+  "combiner.mcp_combiner.server._pending_token_filters",
+  "filters",
+  "mcp",
+  "pending",
+  "server",
+  "token",
+]

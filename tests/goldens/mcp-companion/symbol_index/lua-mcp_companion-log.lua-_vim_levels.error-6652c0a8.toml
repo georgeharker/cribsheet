@@ -1,0 +1,34 @@
+symbol_ref = "lua/mcp_companion/log.lua#_vim_levels.error"
+fqn = "mcp_companion.log._vim_levels.error"
+name = "error"
+kind = "field"
+lang = "lua"
+content_hash = "2a984bc2559a1c95"
+file = "lua/mcp_companion/log.lua"
+file_hash = "f3bd5b8862285163"
+signature = "error = vim.log.levels.ERROR,"
+description = ""
+schema = 4
+line = 14
+mtime = 1782852601000000000
+container = [
+  "_vim_levels",
+]
+scope = [
+  "mcp_companion",
+  "log",
+  "_vim_levels",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "companion",
+  "error",
+  "levels",
+  "log",
+  "mcp",
+  "mcp_companion.log._vim_levels.error",
+  "vim",
+]

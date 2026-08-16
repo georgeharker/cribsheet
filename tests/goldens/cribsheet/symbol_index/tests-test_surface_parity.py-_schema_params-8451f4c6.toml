@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_surface_parity.py#_schema_params"
+fqn = "tests.test_surface_parity._schema_params"
+name = "_schema_params"
+kind = "function"
+lang = "python"
+content_hash = "ad0426d24620c7a8"
+file = "tests/test_surface_parity.py"
+file_hash = "0c4fc72b5f441359"
+signature = "def _schema_params(tool) -> dict[str, object]:"
+description = ""
+schema = 4
+line = 58
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_surface_parity",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_registry_matches_mcp_tool_schemas [tests/test_surface_parity.py]",
+]
+references = [
+  "test_registry_matches_mcp_tool_schemas [tests/test_surface_parity.py]",
+]
+name_terms = [
+  "_schema_params",
+  "params",
+  "parity",
+  "schema",
+  "surface",
+  "test",
+  "tests",
+  "tests.test_surface_parity._schema_params",
+]

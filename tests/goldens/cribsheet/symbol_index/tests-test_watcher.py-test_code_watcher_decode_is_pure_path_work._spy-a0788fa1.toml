@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_watcher.py#test_code_watcher_decode_is_pure_path_work._spy"
+fqn = "tests.test_watcher.test_code_watcher_decode_is_pure_path_work._spy"
+name = "_spy"
+kind = "function"
+lang = "python"
+content_hash = "60b2a07273d21b05"
+file = "tests/test_watcher.py"
+file_hash = "f95c6316824837fd"
+signature = "def _spy(name, fn):"
+description = ""
+schema = 4
+line = 80
+mtime = 1786139638000000000
+container = [
+  "test_code_watcher_decode_is_pure_path_work",
+]
+scope = [
+  "tests",
+  "test_watcher",
+  "test_code_watcher_decode_is_pure_path_work",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_code_watcher_decode_is_pure_path_work [tests/test_watcher.py]",
+]
+references = [
+  "test_code_watcher_decode_is_pure_path_work [tests/test_watcher.py]",
+]
+name_terms = [
+  "_spy",
+  "code",
+  "decode",
+  "is",
+  "path",
+  "pure",
+  "spy",
+  "test",
+  "tests",
+  "tests.test_watcher.test_code_watcher_decode_is_pure_path_work._spy",
+  "watcher",
+  "work",
+]

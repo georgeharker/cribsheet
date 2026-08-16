@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_claude_memory.py#run"
+fqn = "tests.test_claude_memory.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "44052857cf112194"
+file = "tests/test_claude_memory.py"
+file_hash = "f5a685193106ac4d"
+signature = "def run(coro):"
+description = ""
+schema = 4
+line = 53
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_claude_memory",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_mirror_catch_up_names_a_binding_that_failed [tests/test_claude_memory.py]",
+  "test_resync_is_idempotent_and_reconciles_deletes [tests/test_claude_memory.py]",
+  "test_sync_mirrors_indexes_and_tags [tests/test_claude_memory.py]",
+]
+references = [
+  "test_mirror_catch_up_names_a_binding_that_failed [tests/test_claude_memory.py]",
+  "test_resync_is_idempotent_and_reconciles_deletes [tests/test_claude_memory.py]",
+  "test_sync_mirrors_indexes_and_tags [tests/test_claude_memory.py]",
+]
+name_terms = [
+  "claude",
+  "memory",
+  "run",
+  "test",
+  "tests",
+  "tests.test_claude_memory.run",
+]

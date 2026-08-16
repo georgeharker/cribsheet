@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_store_migration.py#test_migrate_moves_requalifies_and_reindexes"
+fqn = "tests.test_store_migration.test_migrate_moves_requalifies_and_reindexes"
+name = "test_migrate_moves_requalifies_and_reindexes"
+kind = "function"
+lang = "python"
+content_hash = "0085725a0b1db7e4"
+file = "tests/test_store_migration.py"
+file_hash = "a18552bb17863360"
+signature = "def test_migrate_moves_requalifies_and_reindexes(crib):"
+description = ""
+schema = 4
+line = 69
+mtime = 1786140093000000000
+container = []
+scope = [
+  "tests",
+  "test_store_migration",
+]
+symbol_was = []
+calls = [
+  "_legacy_layout [tests/test_store_migration.py]",
+  "run [tests/test_store_migration.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "migrate",
+  "migration",
+  "moves",
+  "reindexes",
+  "requalifies",
+  "store",
+  "test",
+  "test_migrate_moves_requalifies_and_reindexes",
+  "tests",
+  "tests.test_store_migration.test_migrate_moves_requalifies_and_reindexes",
+]

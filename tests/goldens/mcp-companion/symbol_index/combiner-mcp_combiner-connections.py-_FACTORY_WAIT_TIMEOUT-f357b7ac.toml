@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_FACTORY_WAIT_TIMEOUT"
+fqn = "combiner.mcp_combiner.connections._FACTORY_WAIT_TIMEOUT"
+name = "_FACTORY_WAIT_TIMEOUT"
+kind = "constant"
+lang = "python"
+content_hash = "6044702172fefefe"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_FACTORY_WAIT_TIMEOUT = 60.0  # seconds"
+description = ""
+schema = 4
+line = 115
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "wait_ready [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_FACTORY_WAIT_TIMEOUT",
+  "combiner",
+  "combiner.mcp_combiner.connections._FACTORY_WAIT_TIMEOUT",
+  "connections",
+  "factory",
+  "mcp",
+  "timeout",
+  "wait",
+]

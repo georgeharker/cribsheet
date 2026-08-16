@@ -1,0 +1,38 @@
+symbol_ref = "crib/gitbacking.py#SnapshotResult.committed"
+fqn = "crib.gitbacking.SnapshotResult.committed"
+name = "committed"
+kind = "field"
+lang = "python"
+content_hash = "2908b61188194446"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "committed: bool"
+description = ""
+schema = 4
+line = 95
+mtime = 1785963011000000000
+container = [
+  "SnapshotResult",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "SnapshotResult",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "sync [crib/gitbacking.py]",
+  "test_daemon_side_backing_refuses_network_git [tests/test_sync.py]",
+  "test_snapshot_reports_commit_failure_structurally [tests/test_sync.py]",
+  "test_snapshot_with_nothing_to_do_is_ok_but_not_committed [tests/test_sync.py]",
+]
+name_terms = [
+  "committed",
+  "crib",
+  "crib.gitbacking.SnapshotResult.committed",
+  "gitbacking",
+  "result",
+  "snapshot",
+]

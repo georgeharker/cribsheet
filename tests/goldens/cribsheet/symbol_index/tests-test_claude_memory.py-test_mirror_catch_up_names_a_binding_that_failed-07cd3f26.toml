@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_claude_memory.py#test_mirror_catch_up_names_a_binding_that_failed"
+fqn = "tests.test_claude_memory.test_mirror_catch_up_names_a_binding_that_failed"
+name = "test_mirror_catch_up_names_a_binding_that_failed"
+kind = "function"
+lang = "python"
+content_hash = "ee4441ac5d75c3b7"
+file = "tests/test_claude_memory.py"
+file_hash = "f5a685193106ac4d"
+signature = "def test_mirror_catch_up_names_a_binding_that_failed(env, capsys):"
+description = ""
+schema = 4
+line = 114
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_claude_memory",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_claude_memory.py]",
+  "scenario [tests/test_claude_memory.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "binding",
+  "catch",
+  "claude",
+  "failed",
+  "memory",
+  "mirror",
+  "names",
+  "test",
+  "test_mirror_catch_up_names_a_binding_that_failed",
+  "tests",
+  "tests.test_claude_memory.test_mirror_catch_up_names_a_binding_that_failed",
+  "that",
+  "up",
+]

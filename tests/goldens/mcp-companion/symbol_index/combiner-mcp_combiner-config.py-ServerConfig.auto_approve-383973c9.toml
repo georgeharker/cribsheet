@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ServerConfig.auto_approve"
+fqn = "combiner.mcp_combiner.config.ServerConfig.auto_approve"
+name = "auto_approve"
+kind = "field"
+lang = "python"
+content_hash = "f4706276d278d8fe"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "auto_approve: list[str] = Field(default_factory=list)"
+description = ""
+schema = 4
+line = 269
+mtime = 1783633313000000000
+container = [
+  "ServerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ServerConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "effective_policy [combiner/mcp_combiner/config.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "get_server_status [combiner/mcp_combiner/config.py]",
+  "test_auto_approve_false_becomes_empty [combiner/tests/test_config.py]",
+  "test_auto_approve_list [combiner/tests/test_config.py]",
+  "test_auto_approve_missing_defaults_empty [combiner/tests/test_config.py]",
+  "test_auto_approve_null_becomes_empty [combiner/tests/test_config.py]",
+  "test_auto_approve_true_becomes_wildcard [combiner/tests/test_config.py]",
+  "test_effective_policy_via_combiner_config [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "approve",
+  "auto",
+  "auto_approve",
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.auto_approve",
+  "config",
+  "mcp",
+  "server",
+]

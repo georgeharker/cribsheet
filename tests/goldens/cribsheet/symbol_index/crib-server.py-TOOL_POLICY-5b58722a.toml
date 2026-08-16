@@ -1,0 +1,34 @@
+symbol_ref = "crib/server.py#TOOL_POLICY"
+fqn = "crib.server.TOOL_POLICY"
+name = "TOOL_POLICY"
+kind = "constant"
+lang = "python"
+content_hash = "5987752fb22604f7"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "TOOL_POLICY: dict[str, str] = {}"
+description = ""
+schema = 4
+line = 211
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "register [crib/server.py]",
+  "test_every_mcp_tool_declares_a_resolution_policy [tests/test_surface_parity.py]",
+  "test_registry_policy_matches_the_server_declaration [tests/test_surface_parity.py]",
+]
+name_terms = [
+  "TOOL_POLICY",
+  "crib",
+  "crib.server.TOOL_POLICY",
+  "policy",
+  "server",
+  "tool",
+]

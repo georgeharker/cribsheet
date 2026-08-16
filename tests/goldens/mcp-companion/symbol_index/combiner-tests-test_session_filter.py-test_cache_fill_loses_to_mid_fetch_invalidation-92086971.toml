@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_session_filter.py#test_cache_fill_loses_to_mid_fetch_invalidation"
+fqn = "combiner.tests.test_session_filter.test_cache_fill_loses_to_mid_fetch_invalidation"
+name = "test_cache_fill_loses_to_mid_fetch_invalidation"
+kind = "function"
+lang = "python"
+content_hash = "85d12db9e7cd7cb9"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_cache_fill_loses_to_mid_fetch_invalidation():"
+description = ""
+schema = 4
+line = 753
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+]
+symbol_was = []
+calls = [
+  "clear_cache [combiner/mcp_combiner/runtime.py]",
+  "set_cache_if_current [combiner/mcp_combiner/runtime.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cache",
+  "combiner",
+  "combiner.tests.test_session_filter.test_cache_fill_loses_to_mid_fetch_invalidation",
+  "fetch",
+  "fill",
+  "filter",
+  "invalidation",
+  "loses",
+  "mid",
+  "session",
+  "test",
+  "test_cache_fill_loses_to_mid_fetch_invalidation",
+  "tests",
+  "to",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "crib/app.py#Crib._LEGACY_FACET_DIRS"
+fqn = "crib.app.Crib._LEGACY_FACET_DIRS"
+name = "_LEGACY_FACET_DIRS"
+kind = "constant"
+lang = "python"
+content_hash = "e88624c00520a06c"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "_LEGACY_FACET_DIRS = {\"design\": \"design\", \"plans\": \"plans\","
+description = ""
+schema = 4
+line = 1737
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_migrate_legacy_layout [crib/app.py]",
+  "_requalify_facet_refs [crib/app.py]",
+]
+name_terms = [
+  "_LEGACY_FACET_DIRS",
+  "app",
+  "crib",
+  "crib.app.Crib._LEGACY_FACET_DIRS",
+  "dirs",
+  "facet",
+  "legacy",
+]

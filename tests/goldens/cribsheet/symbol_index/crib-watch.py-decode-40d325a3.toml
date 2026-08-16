@@ -1,0 +1,38 @@
+symbol_ref = "crib/watch.py#decode"
+fqn = "crib.watch.decode"
+name = "decode"
+kind = "function"
+lang = "python"
+content_hash = "2ac011bb8c6578fd"
+file = "crib/watch.py"
+file_hash = "c10c30739292eebe"
+signature = "def decode(projects_dir: Path, raw_path: str) -> tuple[str, str, str] | None:"
+description = ""
+schema = 4
+line = 48
+mtime = 1786139638000000000
+container = []
+scope = [
+  "crib",
+  "watch",
+]
+symbol_was = []
+calls = [
+  "_ignored [crib/watch.py]",
+]
+called_by = [
+  "_decode [crib/watch.py]",
+  "test_decode_covers_every_pillar_sibling [tests/test_watcher.py]",
+  "test_decode_path_to_project_relpath [tests/test_watcher.py]",
+]
+references = [
+  "_decode [crib/watch.py]",
+  "test_decode_covers_every_pillar_sibling [tests/test_watcher.py]",
+  "test_decode_path_to_project_relpath [tests/test_watcher.py]",
+]
+name_terms = [
+  "crib",
+  "crib.watch.decode",
+  "decode",
+  "watch",
+]

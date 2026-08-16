@@ -1,0 +1,41 @@
+symbol_ref = "crib/paths.py#ProjectPaths.store_root"
+fqn = "crib.paths.ProjectPaths.store_root"
+name = "store_root"
+kind = "field"
+lang = "python"
+content_hash = "1e8044d2209b00d8"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "store_root: Path | None = None      # the in-repo store dir, when adopted"
+description = ""
+schema = 4
+line = 156
+mtime = 1786564832000000000
+container = [
+  "ProjectPaths",
+]
+scope = [
+  "crib",
+  "paths",
+  "ProjectPaths",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_in_repo_guard [crib/cli.py]",
+  "in_repo [crib/paths.py]",
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+  "require [crib/paths.py]",
+  "resolve_project_paths [crib/paths.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.ProjectPaths.store_root",
+  "paths",
+  "project",
+  "root",
+  "store",
+  "store_root",
+]

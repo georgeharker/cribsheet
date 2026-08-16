@@ -1,0 +1,49 @@
+symbol_ref = "crib/app.py#Crib._retrieve"
+fqn = "crib.app.Crib._retrieve"
+name = "_retrieve"
+kind = "method"
+lang = "python"
+content_hash = "b3e8a5cd93493507"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _retrieve(self, proj: str, query: str, vec: list[float], topn: int,"
+description = ""
+schema = 4
+line = 944
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "Hit [crib/store.py]",
+  "_mm [crib/app.py]",
+  "_rerank [crib/app.py]",
+  "best_cosines [crib/retrieve.py]",
+  "coverage [crib/retrieve.py]",
+  "embed_batch [crib/embed.py]",
+  "get [crib/retrieve.py]",
+  "get_docs [crib/store.py]",
+  "query [crib/store.py]",
+  "scores [crib/retrieve.py]",
+  "stored_chunk_schema [crib/app.py]",
+  "tokenize [crib/retrieve.py]",
+]
+called_by = [
+  "lookup [crib/app.py]",
+]
+references = [
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "_retrieve",
+  "app",
+  "crib",
+  "crib.app.Crib._retrieve",
+  "retrieve",
+]

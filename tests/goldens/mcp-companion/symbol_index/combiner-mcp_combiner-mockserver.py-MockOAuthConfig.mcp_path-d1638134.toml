@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthConfig.mcp_path"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthConfig.mcp_path"
+name = "mcp_path"
+kind = "field"
+lang = "python"
+content_hash = "ff551048fa224494"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "mcp_path: str = \"/mcp\""
+description = ""
+schema = 4
+line = 612
+mtime = 1783622326000000000
+container = [
+  "MockOAuthConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_is_protected [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthConfig.mcp_path",
+  "config",
+  "mcp",
+  "mcp_path",
+  "mock",
+  "mockserver",
+  "o",
+  "path",
+]

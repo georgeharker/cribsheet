@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_ProbeOutcome.UNKNOWN"
+fqn = "combiner.mcp_combiner.auth._ProbeOutcome.UNKNOWN"
+name = "UNKNOWN"
+kind = "constant"
+lang = "python"
+content_hash = "4af68f95289e6489"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "UNKNOWN = \"unknown\"  # Couldn't tell (network error, 5xx, etc.)"
+description = ""
+schema = 4
+line = 74
+mtime = 1783622326000000000
+container = [
+  "_ProbeOutcome",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+  "_ProbeOutcome",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_probe_token_at [combiner/mcp_combiner/auth.py]",
+  "test_401_propagated_when_probe_unknown [combiner/tests/test_auth.py]",
+  "test_probe_returns_unknown_on_5xx [combiner/tests/test_auth.py]",
+  "test_probe_returns_unknown_on_network_error [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "UNKNOWN",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._ProbeOutcome.UNKNOWN",
+  "mcp",
+  "outcome",
+  "probe",
+  "unknown",
+]

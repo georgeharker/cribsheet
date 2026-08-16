@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_designs.py#test_cycle_detection_finds_each_cycle_once"
+fqn = "tests.test_designs.test_cycle_detection_finds_each_cycle_once"
+name = "test_cycle_detection_finds_each_cycle_once"
+kind = "function"
+lang = "python"
+content_hash = "ca1e593a26140f4e"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_cycle_detection_finds_each_cycle_once():"
+description = ""
+schema = 4
+line = 91
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "_cycles [crib/designs.py]",
+  "_node [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cycle",
+  "designs",
+  "detection",
+  "each",
+  "finds",
+  "once",
+  "test",
+  "test_cycle_detection_finds_each_cycle_once",
+  "tests",
+  "tests.test_designs.test_cycle_detection_finds_each_cycle_once",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "crib/designs.py#Node.body_hash"
+fqn = "crib.designs.Node.body_hash"
+name = "body_hash"
+kind = "field"
+lang = "python"
+content_hash = "4b5bd6b31cf36739"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "body_hash: str"
+description = ""
+schema = 4
+line = 322
+mtime = 1786693579000000000
+container = [
+  "Node",
+]
+scope = [
+  "crib",
+  "designs",
+  "Node",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_add [crib/designs.py]",
+  "_direct_taint [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_node [tests/test_designs.py]",
+  "_recheck [crib/designs.py]",
+]
+name_terms = [
+  "body",
+  "body_hash",
+  "crib",
+  "crib.designs.Node.body_hash",
+  "designs",
+  "hash",
+  "node",
+]

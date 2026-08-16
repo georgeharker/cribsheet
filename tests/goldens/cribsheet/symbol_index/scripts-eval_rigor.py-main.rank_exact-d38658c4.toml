@@ -1,0 +1,41 @@
+symbol_ref = "scripts/eval_rigor.py#main.rank_exact"
+fqn = "scripts.eval_rigor.main.rank_exact"
+name = "rank_exact"
+kind = "function"
+lang = "python"
+content_hash = "59f823aca2ff1b1b"
+file = "scripts/eval_rigor.py"
+file_hash = "352ea4b1e1221f95"
+signature = "def rank_exact(f, order, rel, tset):"
+description = ""
+schema = 4
+line = 95
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_rigor",
+  "main",
+]
+symbol_was = []
+calls = [
+  "_leaf [scripts/eval_rigor.py]",
+]
+called_by = [
+  "main [scripts/eval_rigor.py]",
+]
+references = [
+  "main [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "eval",
+  "exact",
+  "main",
+  "rank",
+  "rank_exact",
+  "rigor",
+  "scripts",
+  "scripts.eval_rigor.main.rank_exact",
+]

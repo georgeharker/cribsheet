@@ -1,0 +1,36 @@
+symbol_ref = "combiner/mcp_combiner/server.py#_failed_servers"
+fqn = "combiner.mcp_combiner.server._failed_servers"
+name = "_failed_servers"
+kind = "global"
+lang = "python"
+content_hash = "e6772085b1c51029"
+file = "combiner/mcp_combiner/server.py"
+file_hash = "17281050737f90e9"
+signature = "_failed_servers: dict[str, str] = RUNTIME.tools.failed_servers  # server_name -> error message"
+description = ""
+schema = 4
+line = 74
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "server",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_call_failure_overrides_optimistic_http_ready [combiner/tests/test_connections.py]",
+  "test_failed_server_tools_dropped [combiner/tests/test_session_filter.py]",
+  "test_stdio_crash_reports_disconnected [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "_failed_servers",
+  "combiner",
+  "combiner.mcp_combiner.server._failed_servers",
+  "failed",
+  "mcp",
+  "server",
+  "servers",
+]

@@ -1,0 +1,31 @@
+symbol_ref = "tests/test_client.lua#session_id"
+fqn = "tests.test_client.session_id"
+name = "session_id"
+kind = "global"
+lang = "lua"
+content_hash = "e78c64779aacddc8"
+file = "tests/test_client.lua"
+file_hash = "552db39e557a6e12"
+signature = "local session_id = nil"
+description = ""
+schema = 4
+line = 5
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_client",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "client",
+  "id",
+  "session",
+  "session_id",
+  "test",
+  "tests",
+  "tests.test_client.session_id",
+]

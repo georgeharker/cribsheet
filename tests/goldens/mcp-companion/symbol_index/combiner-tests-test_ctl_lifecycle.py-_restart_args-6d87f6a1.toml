@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_ctl_lifecycle.py#_restart_args"
+fqn = "combiner.tests.test_ctl_lifecycle._restart_args"
+name = "_restart_args"
+kind = "function"
+lang = "python"
+content_hash = "8e14181611b71b79"
+file = "combiner/tests/test_ctl_lifecycle.py"
+file_hash = "561e3360d44bd010"
+signature = "def _restart_args(**kw: object) -> argparse.Namespace:"
+description = ""
+schema = 4
+line = 88
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_ctl_lifecycle",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_restart_combiner_pid_defaults_to_parent_shell [combiner/tests/test_ctl_lifecycle.py]",
+  "test_restart_proceeds_with_force [combiner/tests/test_ctl_lifecycle.py]",
+  "test_restart_refuses_when_other_clients_and_no_force [combiner/tests/test_ctl_lifecycle.py]",
+  "test_restart_sole_client_needs_no_force [combiner/tests/test_ctl_lifecycle.py]",
+]
+references = [
+  "test_restart_combiner_pid_defaults_to_parent_shell [combiner/tests/test_ctl_lifecycle.py]",
+  "test_restart_proceeds_with_force [combiner/tests/test_ctl_lifecycle.py]",
+  "test_restart_refuses_when_other_clients_and_no_force [combiner/tests/test_ctl_lifecycle.py]",
+  "test_restart_sole_client_needs_no_force [combiner/tests/test_ctl_lifecycle.py]",
+]
+name_terms = [
+  "_restart_args",
+  "args",
+  "combiner",
+  "combiner.tests.test_ctl_lifecycle._restart_args",
+  "ctl",
+  "lifecycle",
+  "restart",
+  "test",
+  "tests",
+]

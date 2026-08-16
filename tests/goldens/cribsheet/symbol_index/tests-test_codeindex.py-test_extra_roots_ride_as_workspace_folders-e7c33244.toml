@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_codeindex.py#test_extra_roots_ride_as_workspace_folders"
+fqn = "tests.test_codeindex.test_extra_roots_ride_as_workspace_folders"
+name = "test_extra_roots_ride_as_workspace_folders"
+kind = "function"
+lang = "python"
+content_hash = "eea73d76ab453cf7"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_extra_roots_ride_as_workspace_folders(tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 484
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "LspSessionPool [crib/codeindex.py]",
+  "_fake_lsp [tests/test_codeindex.py]",
+  "acquire [crib/codeindex.py]",
+  "close_all [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "as",
+  "codeindex",
+  "extra",
+  "folders",
+  "ride",
+  "roots",
+  "test",
+  "test_extra_roots_ride_as_workspace_folders",
+  "tests",
+  "tests.test_codeindex.test_extra_roots_ride_as_workspace_folders",
+  "workspace",
+]

@@ -1,0 +1,45 @@
+symbol_ref = "crib/server.py#build_server._wire.run_sync"
+fqn = "crib.server.build_server._wire.run_sync"
+name = "run_sync"
+kind = "function"
+lang = "python"
+content_hash = "19847203c2ef9013"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "@functools.wraps(fn)"
+description = ""
+schema = 4
+line = 362
+mtime = 1786693579000000000
+container = [
+  "build_server",
+  "_wire",
+]
+scope = [
+  "crib",
+  "server",
+  "build_server",
+  "_wire",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "finish [crib/server.py]",
+  "prepare [crib/server.py]",
+  "projects [crib/app.py]",
+  "resolve [crib/server.py]",
+]
+called_by = []
+references = [
+  "_wire [crib/server.py]",
+]
+name_terms = [
+  "build",
+  "crib",
+  "crib.server.build_server._wire.run_sync",
+  "run",
+  "run_sync",
+  "server",
+  "sync",
+  "wire",
+]

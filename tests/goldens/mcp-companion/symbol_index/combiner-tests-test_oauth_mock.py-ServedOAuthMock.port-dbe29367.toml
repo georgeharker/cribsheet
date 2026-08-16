@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#ServedOAuthMock.port"
+fqn = "combiner.tests.test_oauth_mock.ServedOAuthMock.port"
+name = "port"
+kind = "field"
+lang = "python"
+content_hash = "eb01bc87e46c1dd5"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "port: int"
+description = ""
+schema = 4
+line = 103
+mtime = 1784495646000000000
+container = [
+  "ServedOAuthMock",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "ServedOAuthMock",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "make [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_oauth_mock.ServedOAuthMock.port",
+  "mock",
+  "o",
+  "oauth",
+  "port",
+  "served",
+  "test",
+  "tests",
+]

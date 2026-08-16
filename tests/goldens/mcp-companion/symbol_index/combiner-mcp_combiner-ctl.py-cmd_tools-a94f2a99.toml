@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#cmd_tools"
+fqn = "combiner.mcp_combiner.ctl.cmd_tools"
+name = "cmd_tools"
+kind = "function"
+lang = "python"
+content_hash = "e09522303edf9654"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "async def cmd_tools(args: argparse.Namespace) -> int:"
+description = ""
+schema = 4
+line = 456
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = [
+  "_base_url [combiner/mcp_combiner/ctl.py]",
+  "_emit [combiner/mcp_combiner/ctl.py]",
+]
+called_by = []
+references = [
+  "add_ctl_parsers [combiner/mcp_combiner/ctl.py]",
+]
+name_terms = [
+  "cmd",
+  "cmd_tools",
+  "combiner",
+  "combiner.mcp_combiner.ctl.cmd_tools",
+  "ctl",
+  "mcp",
+  "tools",
+]

@@ -1,0 +1,55 @@
+symbol_ref = "crib/session.py#session_state"
+fqn = "crib.session.session_state"
+name = "session_state"
+kind = "function"
+lang = "python"
+content_hash = "6a4e561390ca9104"
+file = "crib/session.py"
+file_hash = "62abc565a376f242"
+signature = "def session_state() -> SessionState:"
+description = ""
+schema = 4
+line = 89
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "session",
+]
+symbol_was = []
+calls = [
+  "SessionState [crib/session.py]",
+]
+called_by = [
+  "_read_project_elicit [crib/server.py]",
+  "_resolve [crib/server.py]",
+  "_switch_if_created [crib/server.py]",
+  "current_project [crib/app.py]",
+  "test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project [tests/test_project_resolution.py]",
+  "test_no_path_falls_back_to_session [tests/test_project_resolution.py]",
+  "test_project_path_defers_to_crib_not_sticky [tests/test_project_resolution.py]",
+  "test_session_state_falls_back_to_default_without_context [tests/test_session.py]",
+  "test_switch_if_created_fires_on_project_creation [tests/test_project_resolution.py]",
+  "test_write_project_requires_explicit_target [tests/test_project_resolution.py]",
+  "use_project [crib/app.py]",
+]
+references = [
+  "_read_project_elicit [crib/server.py]",
+  "_resolve [crib/server.py]",
+  "_switch_if_created [crib/server.py]",
+  "current_project [crib/app.py]",
+  "test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project [tests/test_project_resolution.py]",
+  "test_no_path_falls_back_to_session [tests/test_project_resolution.py]",
+  "test_project_path_defers_to_crib_not_sticky [tests/test_project_resolution.py]",
+  "test_session_state_falls_back_to_default_without_context [tests/test_session.py]",
+  "test_switch_if_created_fires_on_project_creation [tests/test_project_resolution.py]",
+  "test_write_project_requires_explicit_target [tests/test_project_resolution.py]",
+  "use_project [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.session.session_state",
+  "session",
+  "session_state",
+  "state",
+]

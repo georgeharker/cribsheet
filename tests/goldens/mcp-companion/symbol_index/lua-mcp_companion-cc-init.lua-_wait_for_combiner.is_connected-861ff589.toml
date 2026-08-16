@@ -1,0 +1,42 @@
+symbol_ref = "lua/mcp_companion/cc/init.lua#_wait_for_combiner.is_connected"
+fqn = "mcp_companion.cc._wait_for_combiner.is_connected"
+name = "is_connected"
+kind = "function"
+lang = "lua"
+content_hash = "c40a94ccd2c32a2c"
+file = "lua/mcp_companion/cc/init.lua"
+file_hash = "1b8dbb9be27d6a5b"
+signature = "local function is_connected()"
+description = ""
+schema = 4
+line = 792
+mtime = 1783545086000000000
+container = [
+  "M._wait_for_combiner",
+]
+scope = [
+  "mcp_companion",
+  "cc",
+  "_wait_for_combiner",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M._wait_for_combiner [lua/mcp_companion/cc/init.lua]",
+]
+references = [
+  "if [lua/mcp_companion/cc/init.lua]",
+  "ok [lua/mcp_companion/cc/init.lua]",
+]
+name_terms = [
+  "cc",
+  "combiner",
+  "companion",
+  "connected",
+  "for",
+  "is",
+  "is_connected",
+  "mcp",
+  "mcp_companion.cc._wait_for_combiner.is_connected",
+  "wait",
+]

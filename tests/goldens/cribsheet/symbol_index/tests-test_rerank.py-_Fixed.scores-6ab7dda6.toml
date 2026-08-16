@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_rerank.py#_Fixed.scores"
+fqn = "tests.test_rerank._Fixed.scores"
+name = "scores"
+kind = "method"
+lang = "python"
+content_hash = "0d24d251e179945b"
+file = "tests/test_rerank.py"
+file_hash = "29066147cbea547e"
+signature = "def scores(self, query, documents):"
+description = ""
+schema = 4
+line = 30
+mtime = 1783981122000000000
+container = [
+  "_Fixed",
+]
+scope = [
+  "tests",
+  "test_rerank",
+  "_Fixed",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "fixed",
+  "rerank",
+  "scores",
+  "test",
+  "tests",
+  "tests.test_rerank._Fixed.scores",
+]

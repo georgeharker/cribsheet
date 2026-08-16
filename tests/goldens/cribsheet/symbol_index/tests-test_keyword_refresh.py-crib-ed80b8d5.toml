@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_keyword_refresh.py#crib"
+fqn = "tests.test_keyword_refresh.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+content_hash = "3b43ce8744c6b87a"
+file = "tests/test_keyword_refresh.py"
+file_hash = "d758ff5010231936"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 16
+mtime = 1786044759000000000
+container = []
+scope = [
+  "tests",
+  "test_keyword_refresh",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "keyword",
+  "refresh",
+  "test",
+  "tests",
+  "tests.test_keyword_refresh.crib",
+]

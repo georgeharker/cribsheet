@@ -1,0 +1,39 @@
+symbol_ref = "crib/paths.py#ProjectPaths.versions_dir"
+fqn = "crib.paths.ProjectPaths.versions_dir"
+name = "versions_dir"
+kind = "field"
+lang = "python"
+content_hash = "8b1f54a94e7a95c4"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "versions_dir: Path"
+description = ""
+schema = 4
+line = 152
+mtime = 1786564832000000000
+container = [
+  "ProjectPaths",
+]
+scope = [
+  "crib",
+  "paths",
+  "ProjectPaths",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "project_release [crib/app.py]",
+  "test_resolves_to_the_global_layout_by_default [tests/test_repo_storage.py]",
+  "test_resolves_to_the_store_when_the_stub_points_at_one [tests/test_repo_storage.py]",
+  "versions_for [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.ProjectPaths.versions_dir",
+  "dir",
+  "paths",
+  "project",
+  "versions",
+  "versions_dir",
+]

@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_real_servers.lua#ok_log"
+fqn = "tests.test_real_servers.ok_log"
+name = "ok_log"
+kind = "global"
+lang = "lua"
+content_hash = "c792d4f3b4271f5f"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local ok_log, _log = pcall(require, \"mcp_companion.log\")"
+description = ""
+schema = 4
+line = 178
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_real_servers",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "log",
+  "ok",
+  "ok_log",
+  "real",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.ok_log",
+]

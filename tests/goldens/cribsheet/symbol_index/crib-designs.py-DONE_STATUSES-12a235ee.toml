@@ -1,0 +1,35 @@
+symbol_ref = "crib/designs.py#DONE_STATUSES"
+fqn = "crib.designs.DONE_STATUSES"
+name = "DONE_STATUSES"
+kind = "constant"
+lang = "python"
+content_hash = "f3a2a35f60867120"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "DONE_STATUSES = (\"done\", \"verified\")"
+description = ""
+schema = 4
+line = 109
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_group [crib/designs.py]",
+  "_row [crib/designs.py]",
+  "plan_list [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+]
+name_terms = [
+  "DONE_STATUSES",
+  "crib",
+  "crib.designs.DONE_STATUSES",
+  "designs",
+  "done",
+  "statuses",
+]

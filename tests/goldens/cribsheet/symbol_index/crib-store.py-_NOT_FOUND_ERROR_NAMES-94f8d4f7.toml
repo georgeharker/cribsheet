@@ -1,0 +1,34 @@
+symbol_ref = "crib/store.py#_NOT_FOUND_ERROR_NAMES"
+fqn = "crib.store._NOT_FOUND_ERROR_NAMES"
+name = "_NOT_FOUND_ERROR_NAMES"
+kind = "constant"
+lang = "python"
+content_hash = "15756a97d0797745"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "_NOT_FOUND_ERROR_NAMES = (\"NotFoundError\", \"InvalidCollectionException\")"
+description = ""
+schema = 4
+line = 202
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "store",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_not_found_errors [crib/store.py]",
+]
+name_terms = [
+  "_NOT_FOUND_ERROR_NAMES",
+  "crib",
+  "crib.store._NOT_FOUND_ERROR_NAMES",
+  "error",
+  "found",
+  "names",
+  "not",
+  "store",
+]

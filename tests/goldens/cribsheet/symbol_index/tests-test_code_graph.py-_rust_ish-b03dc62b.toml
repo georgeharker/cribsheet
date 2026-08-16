@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_code_graph.py#_rust_ish"
+fqn = "tests.test_code_graph._rust_ish"
+name = "_rust_ish"
+kind = "function"
+lang = "python"
+content_hash = "e47218e744972351"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def _rust_ish(crib, tmp_path):"
+description = ""
+schema = 4
+line = 275
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_sym [tests/test_code_graph.py]",
+  "set_source_root [crib/codeindex.py]",
+]
+called_by = [
+  "test_a_bare_name_resolves_under_a_non_dot_separator [tests/test_code_graph.py]",
+  "test_a_scope_constraint_narrows_the_same_way [tests/test_code_graph.py]",
+  "test_group_depth_makes_the_axis_coarser [tests/test_code_graph.py]",
+]
+references = [
+  "test_a_bare_name_resolves_under_a_non_dot_separator [tests/test_code_graph.py]",
+  "test_a_scope_constraint_narrows_the_same_way [tests/test_code_graph.py]",
+  "test_group_depth_makes_the_axis_coarser [tests/test_code_graph.py]",
+]
+name_terms = [
+  "_rust_ish",
+  "code",
+  "graph",
+  "ish",
+  "rust",
+  "test",
+  "tests",
+  "tests.test_code_graph._rust_ish",
+]

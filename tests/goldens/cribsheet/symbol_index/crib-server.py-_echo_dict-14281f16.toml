@@ -1,0 +1,38 @@
+symbol_ref = "crib/server.py#_echo_dict"
+fqn = "crib.server._echo_dict"
+name = "_echo_dict"
+kind = "function"
+lang = "python"
+content_hash = "66403334f92d3adc"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "def _echo_dict(out: Any, res: ProjectResolution) -> Any:"
+description = ""
+schema = 4
+line = 59
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = [
+  "echo [crib/session.py]",
+]
+called_by = [
+  "finish [crib/server.py]",
+  "test_an_adopting_call_reports_it [tests/test_surface_parity.py]",
+]
+references = [
+  "finish [crib/server.py]",
+  "test_an_adopting_call_reports_it [tests/test_surface_parity.py]",
+]
+name_terms = [
+  "_echo_dict",
+  "crib",
+  "crib.server._echo_dict",
+  "dict",
+  "echo",
+  "server",
+]

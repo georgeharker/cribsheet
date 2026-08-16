@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestResolvedPolicyPrecedence.test_deny_beats_elicit_beats_allow"
+fqn = "combiner.tests.test_permissions.TestResolvedPolicyPrecedence.test_deny_beats_elicit_beats_allow"
+name = "test_deny_beats_elicit_beats_allow"
+kind = "method"
+lang = "python"
+content_hash = "c038dc665ce00a3d"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "def test_deny_beats_elicit_beats_allow(self) -> None:"
+description = ""
+schema = 4
+line = 91
+mtime = 1783633313000000000
+container = [
+  "TestResolvedPolicyPrecedence",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+  "TestResolvedPolicyPrecedence",
+]
+symbol_was = []
+calls = [
+  "_rp [combiner/tests/test_permissions.py]",
+  "resolve [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "allow",
+  "beats",
+  "combiner",
+  "combiner.tests.test_permissions.TestResolvedPolicyPrecedence.test_deny_beats_elicit_beats_allow",
+  "deny",
+  "elicit",
+  "permissions",
+  "policy",
+  "precedence",
+  "resolved",
+  "test",
+  "test_deny_beats_elicit_beats_allow",
+  "tests",
+]

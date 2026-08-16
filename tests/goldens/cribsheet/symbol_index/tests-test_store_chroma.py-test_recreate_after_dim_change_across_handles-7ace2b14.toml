@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_store_chroma.py#test_recreate_after_dim_change_across_handles"
+fqn = "tests.test_store_chroma.test_recreate_after_dim_change_across_handles"
+name = "test_recreate_after_dim_change_across_handles"
+kind = "function"
+lang = "python"
+content_hash = "3de9497a8186fced"
+file = "tests/test_store_chroma.py"
+file_hash = "c9d58563fea059fc"
+signature = "def test_recreate_after_dim_change_across_handles(chroma_dir):"
+description = ""
+schema = 4
+line = 51
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_store_chroma",
+]
+symbol_was = []
+calls = [
+  "_rec [tests/test_store_chroma.py]",
+  "current_dim [crib/store.py]",
+  "embedded [crib/store.py]",
+  "recreate [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "across",
+  "after",
+  "change",
+  "chroma",
+  "dim",
+  "handles",
+  "recreate",
+  "store",
+  "test",
+  "test_recreate_after_dim_change_across_handles",
+  "tests",
+  "tests.test_store_chroma.test_recreate_after_dim_change_across_handles",
+]

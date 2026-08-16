@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_elaborate.py#test_store_prune_drops_orphans_keeps_live_and_fresh"
+fqn = "tests.test_elaborate.test_store_prune_drops_orphans_keeps_live_and_fresh"
+name = "test_store_prune_drops_orphans_keeps_live_and_fresh"
+kind = "function"
+lang = "python"
+content_hash = "f8a66c393e83e4bc"
+file = "tests/test_elaborate.py"
+file_hash = "5cde1a0229322e89"
+signature = "def test_store_prune_drops_orphans_keeps_live_and_fresh(tmp_path):"
+description = ""
+schema = 4
+line = 53
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_elaborate",
+]
+symbol_was = []
+calls = [
+  "SectionIndex [crib/section_index.py]",
+  "has [crib/section_index.py]",
+  "prune [crib/section_index.py]",
+  "write [crib/section_index.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "drops",
+  "elaborate",
+  "fresh",
+  "keeps",
+  "live",
+  "orphans",
+  "prune",
+  "store",
+  "test",
+  "test_store_prune_drops_orphans_keeps_live_and_fresh",
+  "tests",
+  "tests.test_elaborate.test_store_prune_drops_orphans_keeps_live_and_fresh",
+]

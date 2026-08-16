@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#_E_learning"
+fqn = "crib.cli._E_learning"
+name = "_E_learning"
+kind = "function"
+lang = "python"
+content_hash = "dc8fbeb9c9364210"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _E_learning(verb): return lambda d, a: _emit_code_learning(d, verb, a.json)"
+description = ""
+schema = 4
+line = 1503
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "cli [crib/cli.py]",
+]
+references = [
+  "VERBS [crib/cli.py]",
+]
+name_terms = [
+  "_E_learning",
+  "cli",
+  "crib",
+  "crib.cli._E_learning",
+  "e",
+  "learning",
+]

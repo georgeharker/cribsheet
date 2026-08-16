@@ -1,0 +1,38 @@
+symbol_ref = "lua/mcp_companion/combiner/client.lua#_parse_http_response"
+fqn = "mcp_companion.combiner.client._parse_http_response"
+name = "_parse_http_response"
+kind = "function"
+lang = "lua"
+content_hash = "4c74c822e04e9b5d"
+file = "lua/mcp_companion/combiner/client.lua"
+file_hash = "f8af10d7cbc68062"
+signature = "local function _parse_http_response(raw)"
+description = ""
+schema = 4
+line = 107
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "combiner",
+  "client",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "client.lua [lua/mcp_companion/combiner/client.lua]",
+]
+references = [
+  "_http_request [lua/mcp_companion/combiner/client.lua]",
+]
+name_terms = [
+  "_parse_http_response",
+  "client",
+  "combiner",
+  "companion",
+  "http",
+  "mcp",
+  "mcp_companion.combiner.client._parse_http_response",
+  "parse",
+  "response",
+]

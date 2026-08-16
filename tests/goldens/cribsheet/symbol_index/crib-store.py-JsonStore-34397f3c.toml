@@ -1,0 +1,32 @@
+symbol_ref = "crib/store.py#JsonStore"
+fqn = "crib.store.JsonStore"
+name = "JsonStore"
+kind = "class"
+lang = "python"
+content_hash = "9ada038449426d0e"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "class JsonStore(InMemoryStore):"
+description = ""
+schema = 4
+line = 146
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "store",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_build_store [crib/app.py]",
+  "test_jsonstore_survives_concurrent_writers_and_readers [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "JsonStore",
+  "crib",
+  "crib.store.JsonStore",
+  "json",
+  "store",
+]

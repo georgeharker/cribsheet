@@ -1,0 +1,29 @@
+symbol_ref = "crib/__init__.py#__version__"
+fqn = "crib.__version__"
+name = "__version__"
+kind = "global"
+lang = "python"
+content_hash = "c84879a7ccf5b886"
+file = "crib/__init__.py"
+file_hash = "b26187f4f2fd8457"
+signature = "__version__ = \"0+unknown\""
+description = ""
+schema = 4
+line = 19
+mtime = 1786578262000000000
+container = []
+scope = [
+  "crib",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "build_parser [crib/cli.py]",
+]
+name_terms = [
+  "__version__",
+  "crib",
+  "crib.__version__",
+  "version",
+]

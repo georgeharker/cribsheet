@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestForwardingFactory.test_async_factory_is_preserved.afactory"
+fqn = "combiner.tests.test_notifications.TestForwardingFactory.test_async_factory_is_preserved.afactory"
+name = "afactory"
+kind = "function"
+lang = "python"
+content_hash = "424fbfec7a7ab71c"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "async def afactory() -> Any:"
+description = ""
+schema = 4
+line = 201
+mtime = 1784493613000000000
+container = [
+  "TestForwardingFactory",
+  "test_async_factory_is_preserved",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "TestForwardingFactory",
+  "test_async_factory_is_preserved",
+]
+symbol_was = []
+calls = [
+  "_fresh_client [combiner/tests/test_notifications.py]",
+]
+called_by = []
+references = [
+  "test_async_factory_is_preserved [combiner/tests/test_notifications.py]",
+]
+name_terms = [
+  "afactory",
+  "async",
+  "combiner",
+  "combiner.tests.test_notifications.TestForwardingFactory.test_async_factory_is_preserved.afactory",
+  "factory",
+  "forwarding",
+  "is",
+  "notifications",
+  "preserved",
+  "test",
+  "tests",
+]

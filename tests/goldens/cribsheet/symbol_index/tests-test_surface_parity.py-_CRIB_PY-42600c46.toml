@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_surface_parity.py#_CRIB_PY"
+fqn = "tests.test_surface_parity._CRIB_PY"
+name = "_CRIB_PY"
+kind = "constant"
+lang = "python"
+content_hash = "fb3124448de94979"
+file = "tests/test_surface_parity.py"
+file_hash = "0c4fc72b5f441359"
+signature = "_CRIB_PY = sorted((Path(__file__).resolve().parent.parent / \"crib\").glob(\"*.py\"))"
+description = ""
+schema = 4
+line = 40
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_surface_parity",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_no_retired_command_names_in_user_facing_strings [tests/test_surface_parity.py]",
+  "test_no_retired_tool_names_in_strings [tests/test_surface_parity.py]",
+]
+name_terms = [
+  "_CRIB_PY",
+  "crib",
+  "parity",
+  "py",
+  "surface",
+  "test",
+  "tests",
+  "tests.test_surface_parity._CRIB_PY",
+]

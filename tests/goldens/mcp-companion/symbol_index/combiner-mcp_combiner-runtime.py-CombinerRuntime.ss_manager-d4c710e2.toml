@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#CombinerRuntime.ss_manager"
+fqn = "combiner.mcp_combiner.runtime.CombinerRuntime.ss_manager"
+name = "ss_manager"
+kind = "field"
+lang = "python"
+content_hash = "6fa49db94d92aff2"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "ss_manager: SharedServerManager | None = None"
+description = ""
+schema = 4
+line = 272
+mtime = 1784493613000000000
+container = [
+  "CombinerRuntime",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "CombinerRuntime",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.CombinerRuntime.ss_manager",
+  "manager",
+  "mcp",
+  "runtime",
+  "ss",
+  "ss_manager",
+]

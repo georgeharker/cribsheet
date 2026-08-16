@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/test_ctl_lifecycle.py#test_resolve_config_explicit_wins"
+fqn = "combiner.tests.test_ctl_lifecycle.test_resolve_config_explicit_wins"
+name = "test_resolve_config_explicit_wins"
+kind = "function"
+lang = "python"
+content_hash = "eec83fd085bb4da4"
+file = "combiner/tests/test_ctl_lifecycle.py"
+file_hash = "561e3360d44bd010"
+signature = "def test_resolve_config_explicit_wins() -> None:"
+description = ""
+schema = 4
+line = 69
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_ctl_lifecycle",
+]
+symbol_was = []
+calls = [
+  "_resolve_config [combiner/mcp_combiner/ctl.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_ctl_lifecycle.test_resolve_config_explicit_wins",
+  "config",
+  "ctl",
+  "explicit",
+  "lifecycle",
+  "resolve",
+  "test",
+  "test_resolve_config_explicit_wins",
+  "tests",
+  "wins",
+]

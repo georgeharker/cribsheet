@@ -1,0 +1,45 @@
+symbol_ref = "lua/mcp_companion/native/init.lua#_publish"
+fqn = "mcp_companion.native._publish"
+name = "_publish"
+kind = "function"
+lang = "lua"
+content_hash = "388382cc4b736cff"
+file = "lua/mcp_companion/native/init.lua"
+file_hash = "731c163c944cc384"
+signature = "local function _publish()"
+description = ""
+schema = 4
+line = 63
+mtime = 1783022631000000000
+container = []
+scope = [
+  "mcp_companion",
+  "native",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.add_prompt [lua/mcp_companion/native/init.lua]",
+  "M.add_resource [lua/mcp_companion/native/init.lua]",
+  "M.add_resource_template [lua/mcp_companion/native/init.lua]",
+  "M.add_server [lua/mcp_companion/native/init.lua]",
+  "M.add_tool [lua/mcp_companion/native/init.lua]",
+  "M.setup [lua/mcp_companion/native/init.lua]",
+  "init.lua [lua/mcp_companion/native/init.lua]",
+]
+references = [
+  "add_prompt [lua/mcp_companion/native/init.lua]",
+  "add_resource [lua/mcp_companion/native/init.lua]",
+  "add_resource_template [lua/mcp_companion/native/init.lua]",
+  "add_server [lua/mcp_companion/native/init.lua]",
+  "add_tool [lua/mcp_companion/native/init.lua]",
+  "setup [lua/mcp_companion/native/init.lua]",
+]
+name_terms = [
+  "_publish",
+  "companion",
+  "mcp",
+  "mcp_companion.native._publish",
+  "native",
+  "publish",
+]

@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_project.lua#script_dir"
+fqn = "tests.test_project.script_dir"
+name = "script_dir"
+kind = "function"
+lang = "lua"
+content_hash = "7c0b29fe9030c357"
+file = "tests/test_project.lua"
+file_hash = "a8e547beff4cb5d7"
+signature = "local function script_dir()"
+description = ""
+schema = 4
+line = 8
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_project",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_project.lua [tests/test_project.lua]",
+]
+references = [
+  "repo_root [tests/test_project.lua]",
+]
+name_terms = [
+  "dir",
+  "project",
+  "script",
+  "script_dir",
+  "test",
+  "tests",
+  "tests.test_project.script_dir",
+]

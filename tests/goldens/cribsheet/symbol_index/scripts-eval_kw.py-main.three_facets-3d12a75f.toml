@@ -1,0 +1,45 @@
+symbol_ref = "scripts/eval_kw.py#main.three_facets"
+fqn = "scripts.eval_kw.main.three_facets"
+name = "three_facets"
+kind = "function"
+lang = "python"
+content_hash = "22cfc0f888fe9c01"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def three_facets(feat, proj, qf, qv):"
+description = ""
+schema = 4
+line = 122
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+]
+symbol_was = []
+calls = [
+  "_cands [scripts/eval_fusion.py]",
+  "_norm_over [scripts/eval_fusion.py]",
+  "kw_maxsim [scripts/eval_kw.py]",
+]
+called_by = [
+  "c_3rrf [scripts/eval_kw.py]",
+  "fn [scripts/eval_kw.py]",
+]
+references = [
+  "c_3rrf [scripts/eval_kw.py]",
+  "fn [scripts/eval_kw.py]",
+]
+name_terms = [
+  "eval",
+  "facets",
+  "kw",
+  "main",
+  "scripts",
+  "scripts.eval_kw.main.three_facets",
+  "three",
+  "three_facets",
+]

@@ -1,0 +1,43 @@
+symbol_ref = "crib/app.py#Crib._note_ring_ids"
+fqn = "crib.app.Crib._note_ring_ids"
+name = "_note_ring_ids"
+kind = "method"
+lang = "python"
+content_hash = "4280a7a9d8bc3d3e"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _note_ring_ids(self, project: str, notes_root: Path) -> list[str]:"
+description = ""
+schema = 4
+line = 1522
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "derived_ulid [crib/util.py]",
+  "scan_id [crib/notes.py]",
+]
+called_by = [
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+]
+references = [
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+]
+name_terms = [
+  "_note_ring_ids",
+  "app",
+  "crib",
+  "crib.app.Crib._note_ring_ids",
+  "ids",
+  "note",
+  "ring",
+]

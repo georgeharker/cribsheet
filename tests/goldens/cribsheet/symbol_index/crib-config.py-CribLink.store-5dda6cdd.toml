@@ -1,0 +1,39 @@
+symbol_ref = "crib/config.py#CribLink.store"
+fqn = "crib.config.CribLink.store"
+name = "store"
+kind = "field"
+lang = "python"
+content_hash = "a3b5140f2c405e98"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "store: str | None = None"
+description = ""
+schema = 4
+line = 379
+mtime = 1786564832000000000
+container = [
+  "CribLink",
+]
+scope = [
+  "crib",
+  "config",
+  "CribLink",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_parse [crib/config.py]",
+  "project_adopt [crib/app.py]",
+  "store_dir [crib/config.py]",
+  "test_missing_store_key_is_simply_absent [tests/test_repo_storage.py]",
+  "test_store_relpath_resolves_against_the_repo_root [tests/test_repo_storage.py]",
+  "test_store_that_escapes_the_repo_is_refused [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.store",
+  "link",
+  "store",
+]

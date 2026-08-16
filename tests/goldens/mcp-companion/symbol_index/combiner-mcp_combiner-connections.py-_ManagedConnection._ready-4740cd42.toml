@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_ManagedConnection._ready"
+fqn = "combiner.mcp_combiner.connections._ManagedConnection._ready"
+name = "_ready"
+kind = "field"
+lang = "python"
+content_hash = "e010761deabd8072"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_ready: asyncio.Event = field(default_factory=asyncio.Event, repr=False)"
+description = ""
+schema = 4
+line = 159
+mtime = 1784493613000000000
+container = [
+  "_ManagedConnection",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "_ManagedConnection",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_connect_one [combiner/mcp_combiner/connections.py]",
+  "_factory [combiner/mcp_combiner/connections.py]",
+  "connect [combiner/mcp_combiner/connections.py]",
+  "wait_ready [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_ready",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection._ready",
+  "connection",
+  "connections",
+  "managed",
+  "mcp",
+  "ready",
+]

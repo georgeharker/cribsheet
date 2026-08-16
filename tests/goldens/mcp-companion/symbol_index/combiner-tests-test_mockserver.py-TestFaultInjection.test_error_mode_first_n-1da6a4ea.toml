@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_mockserver.py#TestFaultInjection.test_error_mode_first_n"
+fqn = "combiner.tests.test_mockserver.TestFaultInjection.test_error_mode_first_n"
+name = "test_error_mode_first_n"
+kind = "method"
+lang = "python"
+content_hash = "78a570cd9a382498"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "async def test_error_mode_first_n(self) -> None:"
+description = ""
+schema = 4
+line = 154
+mtime = 1783534978000000000
+container = [
+  "TestFaultInjection",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+  "TestFaultInjection",
+]
+symbol_was = []
+calls = [
+  "MockServer [combiner/mcp_combiner/mockserver.py]",
+  "_spec [combiner/tests/test_mockserver.py]",
+  "_text [combiner/tests/test_mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_mockserver.TestFaultInjection.test_error_mode_first_n",
+  "error",
+  "fault",
+  "first",
+  "injection",
+  "mockserver",
+  "mode",
+  "n",
+  "test",
+  "test_error_mode_first_n",
+  "tests",
+]

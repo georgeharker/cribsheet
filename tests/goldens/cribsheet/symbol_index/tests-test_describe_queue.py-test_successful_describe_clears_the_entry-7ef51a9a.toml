@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_describe_queue.py#test_successful_describe_clears_the_entry"
+fqn = "tests.test_describe_queue.test_successful_describe_clears_the_entry"
+name = "test_successful_describe_clears_the_entry"
+kind = "function"
+lang = "python"
+content_hash = "17a39dc70558a67e"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def test_successful_describe_clears_the_entry():"
+description = ""
+schema = 4
+line = 117
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = [
+  "DescribeQueue [crib/describe_queue.py]",
+  "_DrivingLoop [tests/test_describe_queue.py]",
+  "_fire [crib/describe_queue.py]",
+  "_sym [tests/test_describe_queue.py]",
+  "enqueue [crib/describe_queue.py]",
+  "pending_files [crib/describe_queue.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "clears",
+  "describe",
+  "entry",
+  "queue",
+  "successful",
+  "test",
+  "test_successful_describe_clears_the_entry",
+  "tests",
+  "tests.test_describe_queue.test_successful_describe_clears_the_entry",
+  "the",
+]

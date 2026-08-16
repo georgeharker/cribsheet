@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#test_forwarding_factory_wraps_a_real_proxy"
+fqn = "combiner.tests.test_notifications_e2e.test_forwarding_factory_wraps_a_real_proxy"
+name = "test_forwarding_factory_wraps_a_real_proxy"
+kind = "function"
+lang = "python"
+content_hash = "e88c1353dc42e099"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "def test_forwarding_factory_wraps_a_real_proxy() -> None:"
+description = ""
+schema = 4
+line = 146
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+]
+symbol_was = []
+calls = [
+  "_forwarding_proxy [combiner/tests/test_notifications_e2e.py]",
+  "_make_upstream [combiner/tests/test_notifications_e2e.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "2",
+  "a",
+  "combiner",
+  "combiner.tests.test_notifications_e2e.test_forwarding_factory_wraps_a_real_proxy",
+  "e",
+  "factory",
+  "forwarding",
+  "notifications",
+  "proxy",
+  "real",
+  "test",
+  "test_forwarding_factory_wraps_a_real_proxy",
+  "tests",
+  "wraps",
+]

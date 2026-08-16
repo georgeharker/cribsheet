@@ -1,0 +1,36 @@
+symbol_ref = "crib/designs.py#_suffix_match"
+fqn = "crib.designs._suffix_match"
+name = "_suffix_match"
+kind = "function"
+lang = "python"
+content_hash = "ca0be168c196ef28"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _suffix_match(key: str, suffix: str) -> bool:"
+description = ""
+schema = 4
+line = 203
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_match_heading [crib/designs.py]",
+  "_section_hash [crib/designs.py]",
+]
+references = [
+  "_match_heading [crib/designs.py]",
+  "_section_hash [crib/designs.py]",
+]
+name_terms = [
+  "_suffix_match",
+  "crib",
+  "crib.designs._suffix_match",
+  "designs",
+  "match",
+  "suffix",
+]

@@ -1,0 +1,31 @@
+symbol_ref = "combiner/tests/test_combiner_reconnect.py#pytestmark"
+fqn = "combiner.tests.test_combiner_reconnect.pytestmark"
+name = "pytestmark"
+kind = "global"
+lang = "python"
+content_hash = "d2ca828675f797eb"
+file = "combiner/tests/test_combiner_reconnect.py"
+file_hash = "0f559a1b56a92ac5"
+signature = "pytestmark = pytest.mark.e2e"
+description = ""
+schema = 4
+line = 34
+mtime = 1783535856000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_combiner_reconnect",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_combiner_reconnect.pytestmark",
+  "pytestmark",
+  "reconnect",
+  "test",
+  "tests",
+]

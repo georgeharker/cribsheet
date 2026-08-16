@@ -1,0 +1,48 @@
+symbol_ref = "combiner/mcp_combiner/config.py#_merge_policies"
+fqn = "combiner.mcp_combiner.config._merge_policies"
+name = "_merge_policies"
+kind = "function"
+lang = "python"
+content_hash = "ce5a566f9c278f98"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def _merge_policies("
+description = ""
+schema = 4
+line = 220
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+]
+symbol_was = []
+calls = [
+  "ResolvedPolicy [combiner/mcp_combiner/config.py]",
+  "pick [combiner/mcp_combiner/config.py]",
+  "union [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "effective_policy [combiner/mcp_combiner/config.py]",
+  "test_auto_approve_folds_into_allow [combiner/tests/test_permissions.py]",
+  "test_off_by_default [combiner/tests/test_permissions.py]",
+  "test_pattern_sets_are_unioned [combiner/tests/test_permissions.py]",
+  "test_server_overrides_global_scalars [combiner/tests/test_permissions.py]",
+]
+references = [
+  "effective_policy [combiner/mcp_combiner/config.py]",
+  "test_auto_approve_folds_into_allow [combiner/tests/test_permissions.py]",
+  "test_off_by_default [combiner/tests/test_permissions.py]",
+  "test_pattern_sets_are_unioned [combiner/tests/test_permissions.py]",
+  "test_server_overrides_global_scalars [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "_merge_policies",
+  "combiner",
+  "combiner.mcp_combiner.config._merge_policies",
+  "config",
+  "mcp",
+  "merge",
+  "policies",
+]

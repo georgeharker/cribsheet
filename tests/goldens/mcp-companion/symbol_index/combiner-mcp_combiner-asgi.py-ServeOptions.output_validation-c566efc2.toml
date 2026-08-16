@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/asgi.py#ServeOptions.output_validation"
+fqn = "combiner.mcp_combiner.asgi.ServeOptions.output_validation"
+name = "output_validation"
+kind = "field"
+lang = "python"
+content_hash = "4647959b588355df"
+file = "combiner/mcp_combiner/asgi.py"
+file_hash = "1ff2dd1d6ee7f6d0"
+signature = "output_validation: bool | None = None"
+description = ""
+schema = 4
+line = 57
+mtime = 1783548694000000000
+container = [
+  "ServeOptions",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "asgi",
+  "ServeOptions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_serve [combiner/mcp_combiner/__main__.py]",
+  "create_app [combiner/mcp_combiner/asgi.py]",
+  "from_env [combiner/mcp_combiner/asgi.py]",
+]
+name_terms = [
+  "asgi",
+  "combiner",
+  "combiner.mcp_combiner.asgi.ServeOptions.output_validation",
+  "mcp",
+  "options",
+  "output",
+  "output_validation",
+  "serve",
+  "validation",
+]

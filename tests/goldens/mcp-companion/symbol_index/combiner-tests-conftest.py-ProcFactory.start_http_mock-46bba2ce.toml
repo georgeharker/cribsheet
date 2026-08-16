@@ -1,0 +1,59 @@
+symbol_ref = "combiner/tests/conftest.py#ProcFactory.start_http_mock"
+fqn = "combiner.tests.conftest.ProcFactory.start_http_mock"
+name = "start_http_mock"
+kind = "method"
+lang = "python"
+content_hash = "bbac0ba2fbe784c3"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "async def start_http_mock("
+description = ""
+schema = 4
+line = 313
+mtime = 1783544328000000000
+container = [
+  "ProcFactory",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "ProcFactory",
+]
+symbol_was = []
+calls = [
+  "MockHandle [combiner/tests/conftest.py]",
+  "free_port [combiner/tests/conftest.py]",
+  "mockserver_argv [combiner/tests/conftest.py]",
+  "wait_healthy [combiner/tests/conftest.py]",
+]
+called_by = [
+  "test_health_reports_transport_states [combiner/tests/test_route_matrix.py]",
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_crash_reconnects_when_back [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_isolate_true_gives_each_chat_its_own_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_non_isolated_chats_share_one_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+]
+references = [
+  "test_health_reports_transport_states [combiner/tests/test_route_matrix.py]",
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_crash_reconnects_when_back [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_isolate_true_gives_each_chat_its_own_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_non_isolated_chats_share_one_upstream_session [combiner/tests/test_session_independence.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.ProcFactory.start_http_mock",
+  "conftest",
+  "factory",
+  "http",
+  "mock",
+  "proc",
+  "start",
+  "start_http_mock",
+  "tests",
+]

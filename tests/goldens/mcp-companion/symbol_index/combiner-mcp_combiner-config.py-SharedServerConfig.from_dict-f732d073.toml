@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/config.py#SharedServerConfig.from_dict"
+fqn = "combiner.mcp_combiner.config.SharedServerConfig.from_dict"
+name = "from_dict"
+kind = "method"
+lang = "python"
+content_hash = "fc22aec7d54e0d13"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "@classmethod"
+description = ""
+schema = 4
+line = 100
+mtime = 1783633313000000000
+container = [
+  "SharedServerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "SharedServerConfig",
+]
+symbol_was = []
+calls = [
+  "_warn_unknown_keys [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "load [combiner/mcp_combiner/config.py]",
+  "test_sharedserver_config_unknown_key_warns [combiner/tests/test_config.py]",
+]
+references = [
+  "load [combiner/mcp_combiner/config.py]",
+  "test_sharedserver_config_unknown_key_warns [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.SharedServerConfig.from_dict",
+  "config",
+  "dict",
+  "from",
+  "from_dict",
+  "mcp",
+  "server",
+  "shared",
+]

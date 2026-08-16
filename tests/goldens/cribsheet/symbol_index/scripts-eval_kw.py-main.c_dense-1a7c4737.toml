@@ -1,0 +1,41 @@
+symbol_ref = "scripts/eval_kw.py#main.c_dense"
+fqn = "scripts.eval_kw.main.c_dense"
+name = "c_dense"
+kind = "function"
+lang = "python"
+content_hash = "f437fcc01b19efbd"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def c_dense(feat, proj, q, qf, qv, k):"
+description = ""
+schema = 4
+line = 78
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+]
+symbol_was = []
+calls = [
+  "order_from [scripts/eval_fusion.py]",
+]
+called_by = [
+  "main [scripts/eval_kw.py]",
+]
+references = [
+  "main [scripts/eval_kw.py]",
+]
+name_terms = [
+  "c",
+  "c_dense",
+  "dense",
+  "eval",
+  "kw",
+  "main",
+  "scripts",
+  "scripts.eval_kw.main.c_dense",
+]

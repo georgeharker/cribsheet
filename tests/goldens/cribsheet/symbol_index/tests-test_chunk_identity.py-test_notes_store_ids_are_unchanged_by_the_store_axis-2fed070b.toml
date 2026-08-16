@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_chunk_identity.py#test_notes_store_ids_are_unchanged_by_the_store_axis"
+fqn = "tests.test_chunk_identity.test_notes_store_ids_are_unchanged_by_the_store_axis"
+name = "test_notes_store_ids_are_unchanged_by_the_store_axis"
+kind = "function"
+lang = "python"
+content_hash = "77615aee4ef6084f"
+file = "tests/test_chunk_identity.py"
+file_hash = "0afd98c1ecf1279e"
+signature = "def test_notes_store_ids_are_unchanged_by_the_store_axis():"
+description = ""
+schema = 4
+line = 72
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_chunk_identity",
+]
+symbol_was = []
+calls = [
+  "chunk_note [crib/chunk.py]",
+  "sha1_hex [crib/util.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "are",
+  "axis",
+  "by",
+  "chunk",
+  "identity",
+  "ids",
+  "notes",
+  "store",
+  "test",
+  "test_notes_store_ids_are_unchanged_by_the_store_axis",
+  "tests",
+  "tests.test_chunk_identity.test_notes_store_ids_are_unchanged_by_the_store_axis",
+  "the",
+  "unchanged",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "crib/notes.py#ensure_id"
+fqn = "crib.notes.ensure_id"
+name = "ensure_id"
+kind = "function"
+lang = "python"
+content_hash = "bbb5077fdea62723"
+file = "crib/notes.py"
+file_hash = "6e2385b754de60b6"
+signature = "def ensure_id(note: Note) -> bool:"
+description = ""
+schema = 4
+line = 179
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "notes",
+]
+symbol_was = []
+calls = [
+  "new_ulid [crib/util.py]",
+]
+called_by = [
+  "_plan [crib/indexer.py]",
+  "write [crib/notestore.py]",
+]
+references = [
+  "_plan [crib/indexer.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notes.ensure_id",
+  "ensure",
+  "ensure_id",
+  "id",
+  "notes",
+]

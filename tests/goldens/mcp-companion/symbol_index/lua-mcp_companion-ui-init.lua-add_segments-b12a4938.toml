@@ -1,0 +1,42 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#add_segments"
+fqn = "mcp_companion.ui.add_segments"
+name = "add_segments"
+kind = "function"
+lang = "lua"
+content_hash = "7dd746b1124c358e"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "local function add_segments(segments, action, server_name)"
+description = ""
+schema = 4
+line = 101
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "ui",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "build_logs_view [lua/mcp_companion/ui/init.lua]",
+  "build_status_view [lua/mcp_companion/ui/init.lua]",
+  "init.lua [lua/mcp_companion/ui/init.lua]",
+  "render_combiner [lua/mcp_companion/ui/init.lua]",
+  "render_server [lua/mcp_companion/ui/init.lua]",
+]
+references = [
+  "build_logs_view [lua/mcp_companion/ui/init.lua]",
+  "build_status_view [lua/mcp_companion/ui/init.lua]",
+  "render_combiner [lua/mcp_companion/ui/init.lua]",
+  "render_server [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "add",
+  "add_segments",
+  "companion",
+  "mcp",
+  "mcp_companion.ui.add_segments",
+  "segments",
+  "ui",
+]

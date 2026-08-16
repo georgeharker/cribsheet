@@ -1,0 +1,43 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockServer._register_builtins.mock__sleep"
+fqn = "combiner.mcp_combiner.mockserver.MockServer._register_builtins.mock__sleep"
+name = "mock__sleep"
+kind = "function"
+lang = "python"
+content_hash = "6c062153a87c09b1"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@mcp_srv.tool("
+description = ""
+schema = 4
+line = 431
+mtime = 1783622326000000000
+container = [
+  "MockServer",
+  "_register_builtins",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockServer",
+  "_register_builtins",
+]
+symbol_was = []
+calls = [
+  "record_call [combiner/mcp_combiner/mockserver.py]",
+  "record_session [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "builtins",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockServer._register_builtins.mock__sleep",
+  "mcp",
+  "mock",
+  "mock__sleep",
+  "mockserver",
+  "register",
+  "server",
+  "sleep",
+]

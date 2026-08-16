@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_code_integrity.py#test_escape_round_trips_and_always_yields_valid_toml"
+fqn = "tests.test_code_integrity.test_escape_round_trips_and_always_yields_valid_toml"
+name = "test_escape_round_trips_and_always_yields_valid_toml"
+kind = "function"
+lang = "python"
+content_hash = "413c276602d3971f"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_escape_round_trips_and_always_yields_valid_toml():"
+description = ""
+schema = 4
+line = 335
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "esc [crib/tomlrec.py]",
+  "unesc [crib/tomlrec.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "always",
+  "and",
+  "code",
+  "escape",
+  "integrity",
+  "round",
+  "test",
+  "test_escape_round_trips_and_always_yields_valid_toml",
+  "tests",
+  "tests.test_code_integrity.test_escape_round_trips_and_always_yields_valid_toml",
+  "toml",
+  "trips",
+  "valid",
+  "yields",
+]

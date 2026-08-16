@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestOnListToolsIntegration._list"
+fqn = "combiner.tests.test_session_filter.TestOnListToolsIntegration._list"
+name = "_list"
+kind = "method"
+lang = "python"
+content_hash = "c0fa01d3010ceb14"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "async def _list(self):"
+description = ""
+schema = 4
+line = 977
+mtime = 1784493613000000000
+container = [
+  "TestOnListToolsIntegration",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestOnListToolsIntegration",
+]
+symbol_was = []
+calls = [
+  "ToolProcessingMiddleware [combiner/mcp_combiner/middleware.py]",
+  "on_list_tools [combiner/mcp_combiner/middleware.py]",
+]
+called_by = [
+  "test_neovim_list_schema_becomes_object_on_the_wire [combiner/tests/test_session_filter.py]",
+  "test_neovim_string_required_wrapped_on_the_wire [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "test_neovim_list_schema_becomes_object_on_the_wire [combiner/tests/test_session_filter.py]",
+  "test_neovim_string_required_wrapped_on_the_wire [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_list",
+  "combiner",
+  "combiner.tests.test_session_filter.TestOnListToolsIntegration._list",
+  "filter",
+  "integration",
+  "list",
+  "on",
+  "session",
+  "test",
+  "tests",
+  "tools",
+]

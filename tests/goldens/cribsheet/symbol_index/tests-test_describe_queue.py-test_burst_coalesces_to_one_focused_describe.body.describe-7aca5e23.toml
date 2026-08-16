@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_describe_queue.py#test_burst_coalesces_to_one_focused_describe.body.describe"
+fqn = "tests.test_describe_queue.test_burst_coalesces_to_one_focused_describe.body.describe"
+name = "describe"
+kind = "function"
+lang = "python"
+content_hash = "48f5f0322136d0c4"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "async def describe(proj, root, rel, pending):"
+description = ""
+schema = 4
+line = 154
+mtime = 1786664729000000000
+container = [
+  "test_burst_coalesces_to_one_focused_describe",
+  "body",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "test_burst_coalesces_to_one_focused_describe",
+  "body",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "body [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "body",
+  "burst",
+  "coalesces",
+  "describe",
+  "focused",
+  "one",
+  "queue",
+  "test",
+  "tests",
+  "tests.test_describe_queue.test_burst_coalesces_to_one_focused_describe.body.describe",
+  "to",
+]

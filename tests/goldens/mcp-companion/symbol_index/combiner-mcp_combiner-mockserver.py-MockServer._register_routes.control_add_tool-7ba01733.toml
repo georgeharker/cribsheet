@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockServer._register_routes.control_add_tool"
+fqn = "combiner.mcp_combiner.mockserver.MockServer._register_routes.control_add_tool"
+name = "control_add_tool"
+kind = "function"
+lang = "python"
+content_hash = "03aa0b58f6fa4776"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@mcp_srv.custom_route(\"/control/tools\", methods=[\"POST\"])"
+description = ""
+schema = 4
+line = 532
+mtime = 1783622326000000000
+container = [
+  "MockServer",
+  "_register_routes",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockServer",
+  "_register_routes",
+]
+symbol_was = []
+calls = [
+  "add_tool [combiner/mcp_combiner/mockserver.py]",
+  "from_dict [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "add",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockServer._register_routes.control_add_tool",
+  "control",
+  "control_add_tool",
+  "mcp",
+  "mock",
+  "mockserver",
+  "register",
+  "routes",
+  "server",
+  "tool",
+]

@@ -1,0 +1,54 @@
+symbol_ref = "combiner/tests/conftest.py#free_port"
+fqn = "combiner.tests.conftest.free_port"
+name = "free_port"
+kind = "function"
+lang = "python"
+content_hash = "b277d6c530342c24"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "def free_port() -> int:"
+description = ""
+schema = 4
+line = 43
+mtime = 1783544328000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "make [combiner/tests/test_oauth_mock.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+  "start_http_mock [combiner/tests/conftest.py]",
+  "test_health_reports_transport_states [combiner/tests/test_route_matrix.py]",
+  "test_nvim_e2e [combiner/tests/test_nvim_e2e.py]",
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_tokenless_client_must_name_instance [combiner/tests/test_nvim_e2e.py]",
+]
+references = [
+  "_PORT [combiner/tests/test_nvim_e2e.py]",
+  "make [combiner/tests/test_oauth_mock.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+  "start_http_mock [combiner/tests/conftest.py]",
+  "test_health_reports_transport_states [combiner/tests/test_route_matrix.py]",
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_tokenless_client_must_name_instance [combiner/tests/test_nvim_e2e.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.free_port",
+  "conftest",
+  "free",
+  "free_port",
+  "port",
+  "tests",
+]

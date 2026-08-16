@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_describe_queue.py#test_failed_describe_reenqueues_as_retry.body.describe"
+fqn = "tests.test_describe_queue.test_failed_describe_reenqueues_as_retry.body.describe"
+name = "describe"
+kind = "function"
+lang = "python"
+content_hash = "c8103f038fa0a6d1"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "async def describe(proj, root, rel, pending):"
+description = ""
+schema = 4
+line = 171
+mtime = 1786664729000000000
+container = [
+  "test_failed_describe_reenqueues_as_retry",
+  "body",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "test_failed_describe_reenqueues_as_retry",
+  "body",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "body [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "as",
+  "body",
+  "describe",
+  "failed",
+  "queue",
+  "reenqueues",
+  "retry",
+  "test",
+  "tests",
+  "tests.test_describe_queue.test_failed_describe_reenqueues_as_retry.body.describe",
+]

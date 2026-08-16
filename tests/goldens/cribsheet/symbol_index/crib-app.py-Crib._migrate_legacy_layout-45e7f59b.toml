@@ -1,0 +1,44 @@
+symbol_ref = "crib/app.py#Crib._migrate_legacy_layout"
+fqn = "crib.app.Crib._migrate_legacy_layout"
+name = "_migrate_legacy_layout"
+kind = "method"
+lang = "python"
+content_hash = "b652c529ad56d9f0"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _migrate_legacy_layout(self, proj: str) -> dict[str, Any]:"
+description = ""
+schema = 4
+line = 1740
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "__call__ [crib/paths.py]",
+  "_requalify_facet_refs [crib/app.py]",
+  "pillar_dir [crib/paths.py]",
+]
+called_by = [
+  "project_migrate [crib/app.py]",
+  "reindex [crib/app.py]",
+]
+references = [
+  "project_migrate [crib/app.py]",
+  "reindex [crib/app.py]",
+]
+name_terms = [
+  "_migrate_legacy_layout",
+  "app",
+  "crib",
+  "crib.app.Crib._migrate_legacy_layout",
+  "layout",
+  "legacy",
+  "migrate",
+]

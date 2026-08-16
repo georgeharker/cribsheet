@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_sync.py#test_unborn_head_takes_the_branch_from_the_remote"
+fqn = "tests.test_sync.test_unborn_head_takes_the_branch_from_the_remote"
+name = "test_unborn_head_takes_the_branch_from_the_remote"
+kind = "function"
+lang = "python"
+content_hash = "e040e29bf53a82e4"
+file = "tests/test_sync.py"
+file_hash = "594e3dd701dbe999"
+signature = "def test_unborn_head_takes_the_branch_from_the_remote(tmp_path, master_remote):"
+description = ""
+schema = 4
+line = 228
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_sync",
+]
+symbol_was = []
+calls = [
+  "GitBacking [crib/gitbacking.py]",
+  "_branch [crib/gitbacking.py]",
+  "init [crib/gitbacking.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "branch",
+  "from",
+  "head",
+  "remote",
+  "sync",
+  "takes",
+  "test",
+  "test_unborn_head_takes_the_branch_from_the_remote",
+  "tests",
+  "tests.test_sync.test_unborn_head_takes_the_branch_from_the_remote",
+  "the",
+  "unborn",
+]

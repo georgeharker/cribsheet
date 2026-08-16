@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#WIDGET_URI"
+fqn = "combiner.tests.test_notifications_e2e.WIDGET_URI"
+name = "WIDGET_URI"
+kind = "constant"
+lang = "python"
+content_hash = "99a222b35cae8d53"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "WIDGET_URI = \"ui://svg-mcp/preview\""
+description = ""
+schema = 4
+line = 59
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "NAMESPACED [combiner/tests/test_notifications_e2e.py]",
+  "edit [combiner/tests/test_notifications_e2e.py]",
+  "widget [combiner/tests/test_notifications_e2e.py]",
+]
+name_terms = [
+  "2",
+  "WIDGET_URI",
+  "combiner",
+  "combiner.tests.test_notifications_e2e.WIDGET_URI",
+  "e",
+  "notifications",
+  "test",
+  "tests",
+  "uri",
+  "widget",
+]

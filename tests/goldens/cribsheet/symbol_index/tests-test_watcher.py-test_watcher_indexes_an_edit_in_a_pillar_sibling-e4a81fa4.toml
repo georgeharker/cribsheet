@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_watcher.py#test_watcher_indexes_an_edit_in_a_pillar_sibling"
+fqn = "tests.test_watcher.test_watcher_indexes_an_edit_in_a_pillar_sibling"
+name = "test_watcher_indexes_an_edit_in_a_pillar_sibling"
+kind = "function"
+lang = "python"
+content_hash = "a7253ce6d7b1e1f8"
+file = "tests/test_watcher.py"
+file_hash = "f95c6316824837fd"
+signature = "def test_watcher_indexes_an_edit_in_a_pillar_sibling(tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 177
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_watcher",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+  "scenario [tests/test_watcher.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "an",
+  "edit",
+  "in",
+  "indexes",
+  "pillar",
+  "sibling",
+  "test",
+  "test_watcher_indexes_an_edit_in_a_pillar_sibling",
+  "tests",
+  "tests.test_watcher.test_watcher_indexes_an_edit_in_a_pillar_sibling",
+  "watcher",
+]

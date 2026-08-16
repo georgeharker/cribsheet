@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_code_graph.py#test_tree_duplicates_or_truncates_the_shared_node"
+fqn = "tests.test_code_graph.test_tree_duplicates_or_truncates_the_shared_node"
+name = "test_tree_duplicates_or_truncates_the_shared_node"
+kind = "function"
+lang = "python"
+content_hash = "4a7c193861901ceb"
+file = "tests/test_code_graph.py"
+file_hash = "d2857703168a00f6"
+signature = "def test_tree_duplicates_or_truncates_the_shared_node(crib, tmp_path):"
+description = ""
+schema = 4
+line = 87
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_graph",
+]
+symbol_was = []
+calls = [
+  "_diamond [tests/test_code_graph.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "duplicates",
+  "graph",
+  "node",
+  "or",
+  "shared",
+  "test",
+  "test_tree_duplicates_or_truncates_the_shared_node",
+  "tests",
+  "tests.test_code_graph.test_tree_duplicates_or_truncates_the_shared_node",
+  "the",
+  "tree",
+  "truncates",
+]

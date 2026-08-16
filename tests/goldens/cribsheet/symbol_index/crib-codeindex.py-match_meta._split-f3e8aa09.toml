@@ -1,0 +1,38 @@
+symbol_ref = "crib/codeindex.py#match_meta._split"
+fqn = "crib.codeindex.match_meta._split"
+name = "_split"
+kind = "function"
+lang = "python"
+content_hash = "d08353c6679c3f1a"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def _split(v: Any) -> tuple[str, list[str]]:"
+description = ""
+schema = 4
+line = 1429
+mtime = 1786844518000000000
+container = [
+  "match_meta",
+]
+scope = [
+  "crib",
+  "codeindex",
+  "match_meta",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "match_meta [crib/codeindex.py]",
+]
+references = [
+  "match_meta [crib/codeindex.py]",
+]
+name_terms = [
+  "_split",
+  "codeindex",
+  "crib",
+  "crib.codeindex.match_meta._split",
+  "match",
+  "meta",
+  "split",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "crib/config.py#DaemonConfig.host"
+fqn = "crib.config.DaemonConfig.host"
+name = "host"
+kind = "field"
+lang = "python"
+content_hash = "22092ea10990ba9e"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "host: str = \"127.0.0.1\""
+description = ""
+schema = 4
+line = 244
+mtime = 1786564832000000000
+container = [
+  "DaemonConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "DaemonConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/client.py]",
+  "_command [crib/client.py]",
+  "_resolve_serve_endpoint [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.DaemonConfig.host",
+  "daemon",
+  "host",
+]

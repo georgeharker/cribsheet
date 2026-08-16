@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/conftest.py#CombinerHandle.port"
+fqn = "combiner.tests.conftest.CombinerHandle.port"
+name = "port"
+kind = "field"
+lang = "python"
+content_hash = "eb01bc87e46c1dd5"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "port: int"
+description = ""
+schema = 4
+line = 160
+mtime = 1783544328000000000
+container = [
+  "CombinerHandle",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "CombinerHandle",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "base_url [combiner/tests/conftest.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+  "test_reattaches_to_longlived_http_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_reattaches_to_longlived_sharedserver_upstream [combiner/tests/test_combiner_reconnect.py]",
+  "test_stale_session_gets_clean_error_not_hang [combiner/tests/test_combiner_reconnect.py]",
+  "wait_healthy [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.CombinerHandle.port",
+  "conftest",
+  "handle",
+  "port",
+  "tests",
+]

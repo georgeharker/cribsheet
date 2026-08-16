@@ -1,0 +1,46 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestTokenRouteFilters.test_token_filter_bookkeeping"
+fqn = "combiner.tests.test_session_independence.TestTokenRouteFilters.test_token_filter_bookkeeping"
+name = "test_token_filter_bookkeeping"
+kind = "method"
+lang = "python"
+content_hash = "c6e91306b5cf7735"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "async def test_token_filter_bookkeeping(self, procs: ProcFactory, tmp_path: Path) -> None:"
+description = ""
+schema = 4
+line = 244
+mtime = 1783541669000000000
+container = [
+  "TestTokenRouteFilters",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+  "TestTokenRouteFilters",
+]
+symbol_was = []
+calls = [
+  "_header_client [combiner/tests/test_session_independence.py]",
+  "_rest [combiner/tests/test_session_independence.py]",
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "_text [combiner/tests/test_session_independence.py]",
+  "_token [combiner/tests/test_session_independence.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "bookkeeping",
+  "combiner",
+  "combiner.tests.test_session_independence.TestTokenRouteFilters.test_token_filter_bookkeeping",
+  "filter",
+  "filters",
+  "independence",
+  "route",
+  "session",
+  "test",
+  "test_token_filter_bookkeeping",
+  "tests",
+  "token",
+]

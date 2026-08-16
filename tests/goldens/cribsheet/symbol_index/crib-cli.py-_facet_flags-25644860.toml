@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#_facet_flags"
+fqn = "crib.cli._facet_flags"
+name = "_facet_flags"
+kind = "function"
+lang = "python"
+content_hash = "b99aeb31832fe5c8"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _facet_flags(row: Any) -> str:"
+description = ""
+schema = 4
+line = 526
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_emit_design_read [crib/cli.py]",
+]
+references = [
+  "_emit_design_read [crib/cli.py]",
+]
+name_terms = [
+  "_facet_flags",
+  "cli",
+  "crib",
+  "crib.cli._facet_flags",
+  "facet",
+  "flags",
+]

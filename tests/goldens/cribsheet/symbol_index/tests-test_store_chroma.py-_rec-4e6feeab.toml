@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_store_chroma.py#_rec"
+fqn = "tests.test_store_chroma._rec"
+name = "_rec"
+kind = "function"
+lang = "python"
+content_hash = "d14d3cc469b55bf1"
+file = "tests/test_store_chroma.py"
+file_hash = "c9d58563fea059fc"
+signature = "def _rec(rid: str, dim: int = 4) -> Record:"
+description = ""
+schema = 4
+line = 18
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_store_chroma",
+]
+symbol_was = []
+calls = [
+  "Record [crib/store.py]",
+]
+called_by = [
+  "test_op_propagates_non_not_found_failures [tests/test_store_chroma.py]",
+  "test_recreate_after_dim_change_across_handles [tests/test_store_chroma.py]",
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+references = [
+  "test_op_propagates_non_not_found_failures [tests/test_store_chroma.py]",
+  "test_recreate_after_dim_change_across_handles [tests/test_store_chroma.py]",
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+name_terms = [
+  "_rec",
+  "chroma",
+  "rec",
+  "store",
+  "test",
+  "tests",
+  "tests.test_store_chroma._rec",
+]

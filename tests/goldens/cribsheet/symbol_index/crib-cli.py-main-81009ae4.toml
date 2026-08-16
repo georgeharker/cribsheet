@@ -1,0 +1,47 @@
+symbol_ref = "crib/cli.py#main"
+fqn = "crib.cli.main"
+name = "main"
+kind = "function"
+lang = "python"
+content_hash = "00b16fc7c848c944"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def main(argv: list[str] | None = None) -> int:"
+description = ""
+schema = 4
+line = 2051
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = [
+  "_resolve_serve_endpoint [crib/cli.py]",
+  "_run_daemon [crib/cli.py]",
+  "_run_git [crib/cli.py]",
+  "_run_inprocess [crib/cli.py]",
+  "_user_errors [crib/cli.py]",
+  "available [crib/sharedserver.py]",
+  "build_parser [crib/cli.py]",
+  "cmd_info [crib/cli.py]",
+  "load [crib/config.py]",
+  "main [crib/server.py]",
+  "resolve [crib/paths.py]",
+  "run_driver [crib/merge.py]",
+]
+called_by = [
+  "__main__ [crib/__main__.py]",
+  "cli [crib/cli.py]",
+  "test_memory_sync_refuses_for_an_adopted_project [tests/test_repo_storage.py]",
+]
+references = [
+  "test_memory_sync_refuses_for_an_adopted_project [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "cli",
+  "crib",
+  "crib.cli.main",
+  "main",
+]

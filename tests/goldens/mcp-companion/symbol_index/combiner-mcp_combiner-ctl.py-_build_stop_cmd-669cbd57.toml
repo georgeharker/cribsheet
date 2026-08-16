@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#_build_stop_cmd"
+fqn = "combiner.mcp_combiner.ctl._build_stop_cmd"
+name = "_build_stop_cmd"
+kind = "function"
+lang = "python"
+content_hash = "174693bea278a419"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "def _build_stop_cmd(binary: str, *, name: str, pid: int) -> list[str]:"
+description = ""
+schema = 4
+line = 146
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "cmd_stop [combiner/mcp_combiner/ctl.py]",
+  "test_build_stop_cmd [combiner/tests/test_ctl_lifecycle.py]",
+]
+references = [
+  "cmd_stop [combiner/mcp_combiner/ctl.py]",
+  "test_build_stop_cmd [combiner/tests/test_ctl_lifecycle.py]",
+]
+name_terms = [
+  "_build_stop_cmd",
+  "build",
+  "cmd",
+  "combiner",
+  "combiner.mcp_combiner.ctl._build_stop_cmd",
+  "ctl",
+  "mcp",
+  "stop",
+]

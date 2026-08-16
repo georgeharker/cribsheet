@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_make_disconnected_client"
+fqn = "combiner.mcp_combiner.connections._make_disconnected_client"
+name = "_make_disconnected_client"
+kind = "function"
+lang = "python"
+content_hash = "9be3ae432f8600bc"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "def _make_disconnected_client("
+description = ""
+schema = 4
+line = 904
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = [
+  "attach_resource_forwarding [combiner/mcp_combiner/notifications.py]",
+  "build_auth [combiner/mcp_combiner/auth.py]",
+  "build_http_transport [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+references = [
+  "_open [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_make_disconnected_client",
+  "client",
+  "combiner",
+  "combiner.mcp_combiner.connections._make_disconnected_client",
+  "connections",
+  "disconnected",
+  "make",
+  "mcp",
+]

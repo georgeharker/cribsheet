@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_project_resolution.py#test_mismatched_path_without_registered_root_errors"
+fqn = "tests.test_project_resolution.test_mismatched_path_without_registered_root_errors"
+name = "test_mismatched_path_without_registered_root_errors"
+kind = "function"
+lang = "python"
+content_hash = "0f1998f5c82c4c72"
+file = "tests/test_project_resolution.py"
+file_hash = "4fafa653cef61a42"
+signature = "def test_mismatched_path_without_registered_root_errors(crib, tmp_path):"
+description = ""
+schema = 4
+line = 156
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_project_resolution",
+]
+symbol_was = []
+calls = [
+  "_crib_repo [tests/test_project_resolution.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "errors",
+  "mismatched",
+  "path",
+  "project",
+  "registered",
+  "resolution",
+  "root",
+  "test",
+  "test_mismatched_path_without_registered_root_errors",
+  "tests",
+  "tests.test_project_resolution.test_mismatched_path_without_registered_root_errors",
+  "without",
+]

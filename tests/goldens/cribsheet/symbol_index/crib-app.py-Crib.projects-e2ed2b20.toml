@@ -1,0 +1,63 @@
+symbol_ref = "crib/app.py#Crib.projects"
+fqn = "crib.app.Crib.projects"
+name = "projects"
+kind = "method"
+lang = "python"
+content_hash = "47b57d735951c208"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def projects(self) -> list[str]:"
+description = ""
+schema = 4
+line = 2878
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_describe_backlog [crib/app.py]",
+  "_in_repo_store_roots [crib/app.py]",
+  "_keyword_backlog [crib/app.py]",
+  "_read_project_elicit [crib/server.py]",
+  "_recover_from_wipe [crib/app.py]",
+  "_reindex_dirty_code [crib/app.py]",
+  "code_indexed_projects [crib/app.py]",
+  "current_project [crib/app.py]",
+  "project_index [crib/app.py]",
+  "project_list [crib/app.py]",
+  "project_setup [crib/app.py]",
+  "reconcile_all [crib/app.py]",
+  "run_sync [crib/server.py]",
+  "start_watchers [crib/app.py]",
+  "status [crib/app.py]",
+]
+references = [
+  "_describe_backlog [crib/app.py]",
+  "_in_repo_store_roots [crib/app.py]",
+  "_keyword_backlog [crib/app.py]",
+  "_read_project_elicit [crib/server.py]",
+  "_recover_from_wipe [crib/app.py]",
+  "_reindex_dirty_code [crib/app.py]",
+  "code_indexed_projects [crib/app.py]",
+  "current_project [crib/app.py]",
+  "project_index [crib/app.py]",
+  "project_list [crib/app.py]",
+  "project_setup [crib/app.py]",
+  "reconcile_all [crib/app.py]",
+  "run_sync [crib/server.py]",
+  "start_watchers [crib/app.py]",
+  "status [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.projects",
+  "projects",
+]

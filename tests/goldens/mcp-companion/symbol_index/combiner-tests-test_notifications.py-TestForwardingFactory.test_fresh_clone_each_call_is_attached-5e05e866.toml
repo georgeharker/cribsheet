@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_notifications.py#TestForwardingFactory.test_fresh_clone_each_call_is_attached"
+fqn = "combiner.tests.test_notifications.TestForwardingFactory.test_fresh_clone_each_call_is_attached"
+name = "test_fresh_clone_each_call_is_attached"
+kind = "method"
+lang = "python"
+content_hash = "cca0d4d6805df381"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "async def test_fresh_clone_each_call_is_attached(self) -> None:"
+description = ""
+schema = 4
+line = 191
+mtime = 1784493613000000000
+container = [
+  "TestForwardingFactory",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+  "TestForwardingFactory",
+]
+symbol_was = []
+calls = [
+  "_resolve [combiner/tests/test_notifications.py]",
+  "forwarding_factory [combiner/mcp_combiner/notifications.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "attached",
+  "call",
+  "clone",
+  "combiner",
+  "combiner.tests.test_notifications.TestForwardingFactory.test_fresh_clone_each_call_is_attached",
+  "each",
+  "factory",
+  "forwarding",
+  "fresh",
+  "is",
+  "notifications",
+  "test",
+  "test_fresh_clone_each_call_is_attached",
+  "tests",
+]

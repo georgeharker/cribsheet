@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_connections.py#TestMonitorHealthCheck.test_transient_ping_miss_does_not_reconnect.flaky_ping"
+fqn = "combiner.tests.test_connections.TestMonitorHealthCheck.test_transient_ping_miss_does_not_reconnect.flaky_ping"
+name = "flaky_ping"
+kind = "function"
+lang = "python"
+content_hash = "d34596594b63a8a7"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "async def flaky_ping():"
+description = ""
+schema = 4
+line = 276
+mtime = 1784493613000000000
+container = [
+  "TestMonitorHealthCheck",
+  "test_transient_ping_miss_does_not_reconnect",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestMonitorHealthCheck",
+  "test_transient_ping_miss_does_not_reconnect",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_transient_ping_miss_does_not_reconnect [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "check",
+  "combiner",
+  "combiner.tests.test_connections.TestMonitorHealthCheck.test_transient_ping_miss_does_not_reconnect.flaky_ping",
+  "connections",
+  "does",
+  "flaky",
+  "flaky_ping",
+  "health",
+  "miss",
+  "monitor",
+  "not",
+  "ping",
+  "reconnect",
+  "test",
+  "tests",
+  "transient",
+]

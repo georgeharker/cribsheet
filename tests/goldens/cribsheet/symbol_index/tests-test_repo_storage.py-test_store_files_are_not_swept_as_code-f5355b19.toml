@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_repo_storage.py#test_store_files_are_not_swept_as_code"
+fqn = "tests.test_repo_storage.test_store_files_are_not_swept_as_code"
+name = "test_store_files_are_not_swept_as_code"
+kind = "function"
+lang = "python"
+content_hash = "fd003272ed4915dd"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_store_files_are_not_swept_as_code(crib, tmp_path):"
+description = ""
+schema = 4
+line = 271
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "repo_with_store [tests/test_repo_storage.py]",
+  "run [tests/test_repo_storage.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "are",
+  "as",
+  "code",
+  "files",
+  "not",
+  "repo",
+  "storage",
+  "store",
+  "swept",
+  "test",
+  "test_store_files_are_not_swept_as_code",
+  "tests",
+  "tests.test_repo_storage.test_store_files_are_not_swept_as_code",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "crib/app.py#Crib._schema_marker"
+fqn = "crib.app.Crib._schema_marker"
+name = "_schema_marker"
+kind = "method"
+lang = "python"
+content_hash = "97e99cf579040410"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "@property"
+description = ""
+schema = 4
+line = 759
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_record_chunk_schema [crib/app.py]",
+  "stored_chunk_schema [crib/app.py]",
+]
+references = [
+  "_record_chunk_schema [crib/app.py]",
+  "stored_chunk_schema [crib/app.py]",
+]
+name_terms = [
+  "_schema_marker",
+  "app",
+  "crib",
+  "crib.app.Crib._schema_marker",
+  "marker",
+  "schema",
+]

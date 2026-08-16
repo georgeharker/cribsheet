@@ -1,0 +1,43 @@
+symbol_ref = "crib/app.py#Crib.distill"
+fqn = "crib.app.Crib.distill"
+name = "distill"
+kind = "method"
+lang = "python"
+content_hash = "5b46718b9d9f6f51"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def distill(self, relpath: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 1173
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_write_note [crib/app.py]",
+  "abspath [crib/app.py]",
+  "agenerate [crib/generate.py]",
+  "load [crib/notes.py]",
+  "project_config [crib/app.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "note_distill [crib/server.py]",
+]
+references = [
+  "note_distill [crib/server.py]",
+]
+name_terms = [
+  "app",
+  "crib",
+  "crib.app.Crib.distill",
+  "distill",
+]

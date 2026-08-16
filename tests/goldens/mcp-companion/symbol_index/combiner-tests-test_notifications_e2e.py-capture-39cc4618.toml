@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#capture"
+fqn = "combiner.tests.test_notifications_e2e.capture"
+name = "capture"
+kind = "function"
+lang = "python"
+content_hash = "6072d8671ac82dab"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "@pytest.fixture"
+description = ""
+schema = 4
+line = 124
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+]
+symbol_was = []
+calls = [
+  "_CaptureSession [combiner/tests/test_notifications_e2e.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "2",
+  "capture",
+  "combiner",
+  "combiner.tests.test_notifications_e2e.capture",
+  "e",
+  "notifications",
+  "test",
+  "tests",
+]

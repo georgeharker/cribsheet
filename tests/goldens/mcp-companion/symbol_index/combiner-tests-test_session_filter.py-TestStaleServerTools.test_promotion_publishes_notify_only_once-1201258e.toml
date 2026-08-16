@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestStaleServerTools.test_promotion_publishes_notify_only_once"
+fqn = "combiner.tests.test_session_filter.TestStaleServerTools.test_promotion_publishes_notify_only_once"
+name = "test_promotion_publishes_notify_only_once"
+kind = "method"
+lang = "python"
+content_hash = "d39b13632a841e8e"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_promotion_publishes_notify_only_once(self, monkeypatch):"
+description = ""
+schema = 4
+line = 500
+mtime = 1784493613000000000
+container = [
+  "TestStaleServerTools",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestStaleServerTools",
+]
+symbol_was = []
+calls = [
+  "_config [combiner/tests/test_session_filter.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestStaleServerTools.test_promotion_publishes_notify_only_once",
+  "filter",
+  "notify",
+  "once",
+  "only",
+  "promotion",
+  "publishes",
+  "server",
+  "session",
+  "stale",
+  "test",
+  "test_promotion_publishes_notify_only_once",
+  "tests",
+  "tools",
+]

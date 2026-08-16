@@ -1,0 +1,38 @@
+symbol_ref = "crib/session.py#ProjectResolution"
+fqn = "crib.session.ProjectResolution"
+name = "ProjectResolution"
+kind = "class"
+lang = "python"
+content_hash = "83b02ed84c742b50"
+file = "crib/session.py"
+file_hash = "62abc565a376f242"
+signature = "@dataclass(frozen=True)"
+description = ""
+schema = 4
+line = 20
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "session",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_echo_dict [crib/server.py]",
+  "_echo_list [crib/server.py]",
+  "_read_project_elicit [crib/server.py]",
+  "_resolve [crib/server.py]",
+  "resolve_session_project [crib/session.py]",
+  "test_an_adopting_call_reports_it [tests/test_surface_parity.py]",
+  "test_the_empty_result_marker_is_the_key_the_cli_renders [tests/test_surface_parity.py]",
+]
+name_terms = [
+  "ProjectResolution",
+  "crib",
+  "crib.session.ProjectResolution",
+  "project",
+  "resolution",
+  "session",
+]

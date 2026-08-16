@@ -1,0 +1,63 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#RUNTIME"
+fqn = "combiner.mcp_combiner.runtime.RUNTIME"
+name = "RUNTIME"
+kind = "constant"
+lang = "python"
+content_hash = "a9109c89b507508c"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "RUNTIME = CombinerRuntime()"
+description = ""
+schema = 4
+line = 288
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_COMBINER_BOOT_ID [combiner/mcp_combiner/server.py]",
+  "_active_sessions [combiner/mcp_combiner/server.py]",
+  "_failed_servers [combiner/mcp_combiner/server.py]",
+  "_filter_tools [combiner/mcp_combiner/toolcache.py]",
+  "_finalize_schemas [combiner/mcp_combiner/schemafix.py]",
+  "_find_server_for_tool [combiner/mcp_combiner/toolcache.py]",
+  "_forward [combiner/mcp_combiner/notifications.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "_notification_tasks [combiner/mcp_combiner/server.py]",
+  "_notify_session_by_id [combiner/mcp_combiner/toolcache.py]",
+  "_notify_tool_list_changed [combiner/mcp_combiner/toolcache.py]",
+  "_on_upstream_tools_ready [combiner/mcp_combiner/toolcache.py]",
+  "_pending_token_filters [combiner/mcp_combiner/server.py]",
+  "_prime_tasks [combiner/mcp_combiner/server.py]",
+  "_server_tool_cache [combiner/mcp_combiner/server.py]",
+  "_server_tool_seen [combiner/mcp_combiner/server.py]",
+  "_session_disabled [combiner/mcp_combiner/server.py]",
+  "_token_sessions [combiner/mcp_combiner/server.py]",
+  "build_server_status [combiner/mcp_combiner/status.py]",
+  "capture [combiner/tests/test_notifications_e2e.py]",
+  "clear_tool_cache [combiner/mcp_combiner/toolcache.py]",
+  "create_combiner [combiner/mcp_combiner/server.py]",
+  "dispatch [combiner/mcp_combiner/asgi.py]",
+  "health_check [combiner/mcp_combiner/routes.py]",
+  "list_sessions [combiner/mcp_combiner/routes.py]",
+  "lookup_session_token [combiner/mcp_combiner/routes.py]",
+  "manage_session_filter [combiner/mcp_combiner/routes.py]",
+  "manage_token_filter [combiner/mcp_combiner/routes.py]",
+  "notify_tool_list_changed [combiner/mcp_combiner/toolcache.py]",
+  "prime_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "reset [combiner/mcp_combiner/runtime.py]",
+  "spawn_prime [combiner/mcp_combiner/toolcache.py]",
+]
+name_terms = [
+  "RUNTIME",
+  "combiner",
+  "combiner.mcp_combiner.runtime.RUNTIME",
+  "mcp",
+  "runtime",
+]

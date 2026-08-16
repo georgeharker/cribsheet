@@ -1,0 +1,35 @@
+symbol_ref = "crib/util.py#spawn._done"
+fqn = "crib.util.spawn._done"
+name = "_done"
+kind = "function"
+lang = "python"
+content_hash = "955d1e2846b97fe0"
+file = "crib/util.py"
+file_hash = "c8fb8142505bcf40"
+signature = "def _done(t: asyncio.Task) -> None:"
+description = ""
+schema = 4
+line = 29
+mtime = 1785959234000000000
+container = [
+  "spawn",
+]
+scope = [
+  "crib",
+  "util",
+  "spawn",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "spawn [crib/util.py]",
+]
+name_terms = [
+  "_done",
+  "crib",
+  "crib.util.spawn._done",
+  "done",
+  "spawn",
+  "util",
+]

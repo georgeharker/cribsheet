@@ -1,0 +1,39 @@
+symbol_ref = "crib/codeindex.py#SymbolIndex.records"
+fqn = "crib.codeindex.SymbolIndex.records"
+name = "records"
+kind = "method"
+lang = "python"
+content_hash = "36ce3ef7698230f1"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def records(self) -> list[tuple[Path, dict]]:"
+description = ""
+schema = 4
+line = 1674
+mtime = 1786844518000000000
+container = [
+  "SymbolIndex",
+]
+scope = [
+  "crib",
+  "codeindex",
+  "SymbolIndex",
+]
+symbol_was = []
+calls = [
+  "_parse [crib/codeindex.py]",
+]
+called_by = [
+  "code_convert [crib/app.py]",
+]
+references = [
+  "code_convert [crib/app.py]",
+]
+name_terms = [
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex.records",
+  "index",
+  "records",
+  "symbol",
+]

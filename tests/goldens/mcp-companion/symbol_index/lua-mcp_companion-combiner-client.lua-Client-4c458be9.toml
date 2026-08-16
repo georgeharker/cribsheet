@@ -1,0 +1,31 @@
+symbol_ref = "lua/mcp_companion/combiner/client.lua#Client"
+fqn = "mcp_companion.combiner.client.Client"
+name = "Client"
+kind = "class"
+lang = "lua"
+content_hash = "6eed989870d964ae"
+file = "lua/mcp_companion/combiner/client.lua"
+file_hash = "f8af10d7cbc68062"
+signature = "local Client = {}"
+description = ""
+schema = 4
+line = 33
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "combiner",
+  "client",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "Client",
+  "client",
+  "combiner",
+  "companion",
+  "mcp",
+  "mcp_companion.combiner.client.Client",
+]

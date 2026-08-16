@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_dim_recovery.py#test_a_reindex_that_wipes_the_store_drops_the_derived_caches"
+fqn = "tests.test_dim_recovery.test_a_reindex_that_wipes_the_store_drops_the_derived_caches"
+name = "test_a_reindex_that_wipes_the_store_drops_the_derived_caches"
+kind = "function"
+lang = "python"
+content_hash = "02ccb9cf4f75e0d7"
+file = "tests/test_dim_recovery.py"
+file_hash = "5f6ffd4e573336e9"
+signature = "def test_a_reindex_that_wipes_the_store_drops_the_derived_caches(crib):"
+description = ""
+schema = 4
+line = 146
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_dim_recovery",
+]
+symbol_was = []
+calls = [
+  "_flip_embedder [tests/test_dim_recovery.py]",
+  "run [tests/test_dim_recovery.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "caches",
+  "derived",
+  "dim",
+  "drops",
+  "recovery",
+  "reindex",
+  "store",
+  "test",
+  "test_a_reindex_that_wipes_the_store_drops_the_derived_caches",
+  "tests",
+  "tests.test_dim_recovery.test_a_reindex_that_wipes_the_store_drops_the_derived_caches",
+  "that",
+  "the",
+  "wipes",
+]

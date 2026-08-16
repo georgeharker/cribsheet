@@ -1,0 +1,35 @@
+symbol_ref = "crib/versions.py#VersionEntry.seq"
+fqn = "crib.versions.VersionEntry.seq"
+name = "seq"
+kind = "field"
+lang = "python"
+content_hash = "623d485e4b43c148"
+file = "crib/versions.py"
+file_hash = "c84588155a74a02c"
+signature = "seq: int"
+description = ""
+schema = 4
+line = 27
+mtime = 1785966856000000000
+container = [
+  "VersionEntry",
+]
+scope = [
+  "crib",
+  "versions",
+  "VersionEntry",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_stray_file_in_a_ring_dir_does_not_break_writes [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "crib",
+  "crib.versions.VersionEntry.seq",
+  "entry",
+  "seq",
+  "version",
+  "versions",
+]

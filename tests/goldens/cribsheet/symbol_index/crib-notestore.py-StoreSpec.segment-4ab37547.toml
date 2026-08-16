@@ -1,0 +1,35 @@
+symbol_ref = "crib/notestore.py#StoreSpec.segment"
+fqn = "crib.notestore.StoreSpec.segment"
+name = "segment"
+kind = "field"
+lang = "python"
+content_hash = "6d5ae5d09600e174"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "segment: str"
+description = ""
+schema = 4
+line = 44
+mtime = 1786564832000000000
+container = [
+  "StoreSpec",
+]
+scope = [
+  "crib",
+  "notestore",
+  "StoreSpec",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "root [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.StoreSpec.segment",
+  "notestore",
+  "segment",
+  "spec",
+  "store",
+]

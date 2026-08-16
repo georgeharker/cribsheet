@@ -1,0 +1,29 @@
+symbol_ref = "lua/mcp_companion/config.lua#_config"
+fqn = "mcp_companion.config._config"
+name = "_config"
+kind = "global"
+lang = "lua"
+content_hash = "2d271e354d15cd3d"
+file = "lua/mcp_companion/config.lua"
+file_hash = "46bbdd9400b51d71"
+signature = "local _config = nil"
+description = ""
+schema = 4
+line = 244
+mtime = 1784442696000000000
+container = []
+scope = [
+  "mcp_companion",
+  "config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_config",
+  "companion",
+  "config",
+  "mcp",
+  "mcp_companion.config._config",
+]

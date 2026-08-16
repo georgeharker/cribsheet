@@ -1,0 +1,50 @@
+symbol_ref = "combiner/mcp_combiner/notifications.py#forwarding_factory"
+fqn = "combiner.mcp_combiner.notifications.forwarding_factory"
+name = "forwarding_factory"
+kind = "function"
+lang = "python"
+content_hash = "626d6142a86404af"
+file = "combiner/mcp_combiner/notifications.py"
+file_hash = "3a02dac6027ca8f5"
+signature = "def forwarding_factory(factory: Any, server_name: str, *, per_chat: bool) -> Any:"
+description = ""
+schema = 4
+line = 218
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "notifications",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_forwarding_proxy [combiner/tests/test_notifications_e2e.py]",
+  "test_async_factory_is_preserved [combiner/tests/test_notifications.py]",
+  "test_fresh_clone_each_call_is_attached [combiner/tests/test_notifications.py]",
+  "test_per_chat_without_context_falls_back_to_broadcast [combiner/tests/test_notifications.py]",
+  "test_real_fastmcp_proxy_via_public_constructor [combiner/tests/test_notifications.py]",
+  "test_wrapped_factory_output_is_attached [combiner/tests/test_notifications.py]",
+]
+references = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_forwarding_proxy [combiner/tests/test_notifications_e2e.py]",
+  "test_async_factory_is_preserved [combiner/tests/test_notifications.py]",
+  "test_fresh_clone_each_call_is_attached [combiner/tests/test_notifications.py]",
+  "test_per_chat_without_context_falls_back_to_broadcast [combiner/tests/test_notifications.py]",
+  "test_real_fastmcp_proxy_via_public_constructor [combiner/tests/test_notifications.py]",
+  "test_wrapped_factory_output_is_attached [combiner/tests/test_notifications.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.notifications.forwarding_factory",
+  "factory",
+  "forwarding",
+  "forwarding_factory",
+  "mcp",
+  "notifications",
+]

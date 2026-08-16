@@ -1,0 +1,39 @@
+symbol_ref = "scripts/eval_fusion.py#target_rank"
+fqn = "scripts.eval_fusion.target_rank"
+name = "target_rank"
+kind = "function"
+lang = "python"
+content_hash = "a560812098586ef8"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def target_rank(fqs, targets):"
+description = ""
+schema = 4
+line = 328
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = [
+  "_match [scripts/eval_fusion.py]",
+]
+called_by = [
+  "main [scripts/eval_fusion.py]",
+  "main [scripts/eval_kw.py]",
+]
+references = [
+  "main [scripts/eval_fusion.py]",
+  "main [scripts/eval_kw.py]",
+]
+name_terms = [
+  "eval",
+  "fusion",
+  "rank",
+  "scripts",
+  "scripts.eval_fusion.target_rank",
+  "target",
+  "target_rank",
+]

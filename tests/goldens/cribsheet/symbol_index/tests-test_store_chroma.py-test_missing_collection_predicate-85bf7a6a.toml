@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_store_chroma.py#test_missing_collection_predicate"
+fqn = "tests.test_store_chroma.test_missing_collection_predicate"
+name = "test_missing_collection_predicate"
+kind = "function"
+lang = "python"
+content_hash = "2c98c81b8e2484f3"
+file = "tests/test_store_chroma.py"
+file_hash = "c9d58563fea059fc"
+signature = "def test_missing_collection_predicate():"
+description = ""
+schema = 4
+line = 113
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_store_chroma",
+]
+symbol_was = []
+calls = [
+  "_is_missing_collection [crib/store.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chroma",
+  "collection",
+  "missing",
+  "predicate",
+  "store",
+  "test",
+  "test_missing_collection_predicate",
+  "tests",
+  "tests.test_store_chroma.test_missing_collection_predicate",
+]

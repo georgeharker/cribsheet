@@ -1,0 +1,39 @@
+symbol_ref = "scripts/eval_code.py#main"
+fqn = "scripts.eval_code.main"
+name = "main"
+kind = "function"
+lang = "python"
+content_hash = "8787a8e83a715c02"
+file = "scripts/eval_code.py"
+file_hash = "b641517d69fd6e49"
+signature = "def main(argv: list[str] | None = None) -> int:"
+description = ""
+schema = 4
+line = 33
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_code",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_hit_rank [scripts/eval_code.py]",
+  "all [crib/codeindex.py]",
+  "close [crib/app.py]",
+  "code_lookup [crib/app.py]",
+  "open [crib/app.py]",
+  "project_dir [crib/paths.py]",
+]
+called_by = [
+  "eval_code [scripts/eval_code.py]",
+]
+references = []
+name_terms = [
+  "code",
+  "eval",
+  "main",
+  "scripts",
+  "scripts.eval_code.main",
+]

@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_symbol_shape.py#_CODE_FAMILY"
+fqn = "tests.test_symbol_shape._CODE_FAMILY"
+name = "_CODE_FAMILY"
+kind = "constant"
+lang = "python"
+content_hash = "11affd745048c6c8"
+file = "tests/test_symbol_shape.py"
+file_hash = "cbe61056081f2393"
+signature = "_CODE_FAMILY = (\"codeindex.py\", \"codeindexer.py\", \"codestore.py\", \"codequery.py\","
+description = ""
+schema = 4
+line = 83
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_shape",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_no_code_module_splits_a_reference_by_hand [tests/test_symbol_shape.py]",
+]
+name_terms = [
+  "_CODE_FAMILY",
+  "code",
+  "family",
+  "shape",
+  "symbol",
+  "test",
+  "tests",
+  "tests.test_symbol_shape._CODE_FAMILY",
+]

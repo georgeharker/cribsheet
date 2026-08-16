@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/asgi.py#TokenRewriteMiddleware"
+fqn = "combiner.mcp_combiner.asgi.TokenRewriteMiddleware"
+name = "TokenRewriteMiddleware"
+kind = "class"
+lang = "python"
+content_hash = "23a65f30dfa4fcc0"
+file = "combiner/mcp_combiner/asgi.py"
+file_hash = "1ff2dd1d6ee7f6d0"
+signature = "class TokenRewriteMiddleware(BaseHTTPMiddleware):"
+description = ""
+schema = 4
+line = 86
+mtime = 1783548694000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "asgi",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "create_app [combiner/mcp_combiner/asgi.py]",
+]
+name_terms = [
+  "TokenRewriteMiddleware",
+  "asgi",
+  "combiner",
+  "combiner.mcp_combiner.asgi.TokenRewriteMiddleware",
+  "mcp",
+  "middleware",
+  "rewrite",
+  "token",
+]

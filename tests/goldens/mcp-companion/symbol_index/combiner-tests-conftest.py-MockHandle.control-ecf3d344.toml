@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/conftest.py#MockHandle.control"
+fqn = "combiner.tests.conftest.MockHandle.control"
+name = "control"
+kind = "method"
+lang = "python"
+content_hash = "9274d5a7d964a55c"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "async def control(self, method: str, path: str, body: Any = None) -> Any:"
+description = ""
+schema = 4
+line = 232
+mtime = 1783544328000000000
+container = [
+  "MockHandle",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "MockHandle",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.MockHandle.control",
+  "conftest",
+  "control",
+  "handle",
+  "mock",
+  "tests",
+]

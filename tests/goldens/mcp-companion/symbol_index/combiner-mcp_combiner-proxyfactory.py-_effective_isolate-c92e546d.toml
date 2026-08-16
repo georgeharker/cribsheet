@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/proxyfactory.py#_effective_isolate"
+fqn = "combiner.mcp_combiner.proxyfactory._effective_isolate"
+name = "_effective_isolate"
+kind = "function"
+lang = "python"
+content_hash = "5f7728e655f0ab7e"
+file = "combiner/mcp_combiner/proxyfactory.py"
+file_hash = "1092ffabcd4f650e"
+signature = "def _effective_isolate(srv: ServerConfig) -> bool:"
+description = ""
+schema = 4
+line = 36
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "proxyfactory",
+]
+symbol_was = []
+calls = [
+  "is_http_server [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+]
+references = [
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+]
+name_terms = [
+  "_effective_isolate",
+  "combiner",
+  "combiner.mcp_combiner.proxyfactory._effective_isolate",
+  "effective",
+  "isolate",
+  "mcp",
+  "proxyfactory",
+]

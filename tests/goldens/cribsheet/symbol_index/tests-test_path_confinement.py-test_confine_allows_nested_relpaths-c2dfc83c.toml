@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_path_confinement.py#test_confine_allows_nested_relpaths"
+fqn = "tests.test_path_confinement.test_confine_allows_nested_relpaths"
+name = "test_confine_allows_nested_relpaths"
+kind = "function"
+lang = "python"
+content_hash = "a68fb741855c826f"
+file = "tests/test_path_confinement.py"
+file_hash = "ca5f375c4fa4dfa2"
+signature = "def test_confine_allows_nested_relpaths(tmp_path):"
+description = ""
+schema = 4
+line = 31
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_path_confinement",
+]
+symbol_was = []
+calls = [
+  "confine [crib/paths.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "allows",
+  "confine",
+  "confinement",
+  "nested",
+  "path",
+  "relpaths",
+  "test",
+  "test_confine_allows_nested_relpaths",
+  "tests",
+  "tests.test_path_confinement.test_confine_allows_nested_relpaths",
+]

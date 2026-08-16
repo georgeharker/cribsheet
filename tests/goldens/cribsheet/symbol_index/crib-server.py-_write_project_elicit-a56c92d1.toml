@@ -1,0 +1,39 @@
+symbol_ref = "crib/server.py#_write_project_elicit"
+fqn = "crib.server._write_project_elicit"
+name = "_write_project_elicit"
+kind = "function"
+lang = "python"
+content_hash = "cc8ac05669add73f"
+file = "crib/server.py"
+file_hash = "1e9bef7eb37f7eb2"
+signature = "async def _write_project_elicit(crib: Crib, project: str | None,"
+description = ""
+schema = 4
+line = 133
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "server",
+]
+symbol_was = []
+calls = [
+  "_write_project [crib/server.py]",
+]
+called_by = [
+  "run [crib/server.py]",
+  "test_write_project_elicits_when_target_omitted [tests/test_project_resolution.py]",
+]
+references = [
+  "run [crib/server.py]",
+  "test_write_project_elicits_when_target_omitted [tests/test_project_resolution.py]",
+]
+name_terms = [
+  "_write_project_elicit",
+  "crib",
+  "crib.server._write_project_elicit",
+  "elicit",
+  "project",
+  "server",
+  "write",
+]

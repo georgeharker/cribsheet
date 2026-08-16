@@ -1,0 +1,41 @@
+symbol_ref = "scripts/eval_kw.py#main.with_rerank.fn"
+fqn = "scripts.eval_kw.main.with_rerank.fn"
+name = "fn"
+kind = "function"
+lang = "python"
+content_hash = "7c9e44b364c06923"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def fn(feat, proj, q, qf, qv, k):"
+description = ""
+schema = 4
+line = 152
+mtime = 1783981122000000000
+container = [
+  "main",
+  "with_rerank",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+  "with_rerank",
+]
+symbol_was = []
+calls = [
+  "reciprocal_rank_fusion [crib/retrieve.py]",
+]
+called_by = []
+references = [
+  "with_rerank [scripts/eval_kw.py]",
+]
+name_terms = [
+  "eval",
+  "fn",
+  "kw",
+  "main",
+  "rerank",
+  "scripts",
+  "scripts.eval_kw.main.with_rerank.fn",
+  "with",
+]

@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestBuildNvimTools"
+fqn = "combiner.tests.test_session_filter.TestBuildNvimTools"
+name = "TestBuildNvimTools"
+kind = "class"
+lang = "python"
+content_hash = "51d05b8859f28113"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "class TestBuildNvimTools:"
+description = ""
+schema = 4
+line = 917
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestBuildNvimTools",
+  "build",
+  "combiner",
+  "combiner.tests.test_session_filter.TestBuildNvimTools",
+  "filter",
+  "nvim",
+  "session",
+  "test",
+  "tests",
+  "tools",
+]

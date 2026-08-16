@@ -1,0 +1,36 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#render_combiner"
+fqn = "mcp_companion.ui.render_combiner"
+name = "render_combiner"
+kind = "function"
+lang = "lua"
+content_hash = "7bbd646106f09a70"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "local function render_combiner(state)"
+description = ""
+schema = 4
+line = 122
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "ui",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "build_status_view [lua/mcp_companion/ui/init.lua]",
+  "init.lua [lua/mcp_companion/ui/init.lua]",
+]
+references = [
+  "build_status_view [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "combiner",
+  "companion",
+  "mcp",
+  "mcp_companion.ui.render_combiner",
+  "render",
+  "render_combiner",
+  "ui",
+]

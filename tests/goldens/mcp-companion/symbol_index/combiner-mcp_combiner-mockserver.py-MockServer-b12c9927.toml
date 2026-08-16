@@ -1,0 +1,49 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockServer"
+fqn = "combiner.mcp_combiner.mockserver.MockServer"
+name = "MockServer"
+kind = "class"
+lang = "python"
+content_hash = "081388b50a0ce560"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "class MockServer:"
+description = ""
+schema = 4
+line = 335
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "build_server [combiner/mcp_combiner/mockserver.py]",
+  "test_add_call_remove [combiner/tests/test_mockserver.py]",
+  "test_add_replaces_existing [combiner/tests/test_mockserver.py]",
+  "test_bad_template_falls_back_to_json_dump [combiner/tests/test_mockserver.py]",
+  "test_boot_counter_persists [combiner/tests/test_mockserver.py]",
+  "test_echo_add_parity [combiner/tests/test_mockserver.py]",
+  "test_error_mode_after_n [combiner/tests/test_mockserver.py]",
+  "test_error_mode_first_n [combiner/tests/test_mockserver.py]",
+  "test_instrumentation_tools_present [combiner/tests/test_mockserver.py]",
+  "test_malformed_schema_published_verbatim [combiner/tests/test_mockserver.py]",
+  "test_output_schema_published_verbatim [combiner/tests/test_mockserver.py]",
+  "test_push_responses [combiner/tests/test_mockserver.py]",
+  "test_scripted_fifo_then_template_fallback [combiner/tests/test_mockserver.py]",
+  "test_set_behavior_toggles_errors [combiner/tests/test_mockserver.py]",
+  "test_template_computed_keys [combiner/tests/test_mockserver.py]",
+  "test_whoami_counters_and_sessions [combiner/tests/test_mockserver.py]",
+]
+name_terms = [
+  "MockServer",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockServer",
+  "mcp",
+  "mock",
+  "mockserver",
+  "server",
+]

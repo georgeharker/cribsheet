@@ -1,0 +1,42 @@
+symbol_ref = "crib/app.py#Crib._on_code_change"
+fqn = "crib.app.Crib._on_code_change"
+name = "_on_code_change"
+kind = "method"
+lang = "python"
+content_hash = "8b019a857039cde8"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def _on_code_change("
+description = ""
+schema = 4
+line = 323
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "abspath [crib/app.py]",
+  "index_file [crib/indexer.py]",
+  "notes_dir [crib/app.py]",
+  "notify_changes [crib/codeindex.py]",
+  "src_relpath [crib/sources.py]",
+]
+called_by = []
+references = [
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "_on_code_change",
+  "app",
+  "change",
+  "code",
+  "crib",
+  "crib.app.Crib._on_code_change",
+  "on",
+]

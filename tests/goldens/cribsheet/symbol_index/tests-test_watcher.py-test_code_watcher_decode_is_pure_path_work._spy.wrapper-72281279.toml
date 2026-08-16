@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_watcher.py#test_code_watcher_decode_is_pure_path_work._spy.wrapper"
+fqn = "tests.test_watcher.test_code_watcher_decode_is_pure_path_work._spy.wrapper"
+name = "wrapper"
+kind = "function"
+lang = "python"
+content_hash = "f88a56816f260346"
+file = "tests/test_watcher.py"
+file_hash = "f95c6316824837fd"
+signature = "def wrapper(self, *a, **k):"
+description = ""
+schema = 4
+line = 81
+mtime = 1786139638000000000
+container = [
+  "test_code_watcher_decode_is_pure_path_work",
+  "_spy",
+]
+scope = [
+  "tests",
+  "test_watcher",
+  "test_code_watcher_decode_is_pure_path_work",
+  "_spy",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_spy [tests/test_watcher.py]",
+]
+name_terms = [
+  "code",
+  "decode",
+  "is",
+  "path",
+  "pure",
+  "spy",
+  "test",
+  "tests",
+  "tests.test_watcher.test_code_watcher_decode_is_pure_path_work._spy.wrapper",
+  "watcher",
+  "work",
+  "wrapper",
+]

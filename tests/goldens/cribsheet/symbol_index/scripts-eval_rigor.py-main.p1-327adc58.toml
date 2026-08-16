@@ -1,0 +1,39 @@
+symbol_ref = "scripts/eval_rigor.py#main.p1"
+fqn = "scripts.eval_rigor.main.p1"
+name = "p1"
+kind = "function"
+lang = "python"
+content_hash = "a6be9b4c1490e279"
+file = "scripts/eval_rigor.py"
+file_hash = "352ea4b1e1221f95"
+signature = "def p1(rs): return sum(1 for r in rs if r == 1) / len(rs)"
+description = ""
+schema = 4
+line = 139
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_rigor",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_rigor.py]",
+]
+references = [
+  "main [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "1",
+  "eval",
+  "main",
+  "p",
+  "p1",
+  "rigor",
+  "scripts",
+  "scripts.eval_rigor.main.p1",
+]

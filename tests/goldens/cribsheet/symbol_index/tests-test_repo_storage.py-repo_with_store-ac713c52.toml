@@ -1,0 +1,60 @@
+symbol_ref = "tests/test_repo_storage.py#repo_with_store"
+fqn = "tests.test_repo_storage.repo_with_store"
+name = "repo_with_store"
+kind = "function"
+lang = "python"
+content_hash = "d88e63a4ae6b309a"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def repo_with_store(tmp_path, project=\"p\", store=\".crib-store\", docs=()):"
+description = ""
+schema = 4
+line = 43
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_adopt_and_release_are_idempotent [tests/test_repo_storage.py]",
+  "test_adopt_is_quiet_when_the_globs_stay_out_of_the_store [tests/test_repo_storage.py]",
+  "test_adopt_moves_the_data_tier_and_leaves_chunk_ids_alone [tests/test_repo_storage.py]",
+  "test_adopt_refuses_to_merge_two_note_trees [tests/test_repo_storage.py]",
+  "test_adopt_warns_when_the_repos_globs_reach_into_the_store [tests/test_repo_storage.py]",
+  "test_code_watcher_skips_saves_inside_the_store [tests/test_repo_storage.py]",
+  "test_memory_sync_refuses_for_an_adopted_project [tests/test_repo_storage.py]",
+  "test_release_moves_it_back_and_still_leaves_chunk_ids_alone [tests/test_repo_storage.py]",
+  "test_store_files_are_not_swept_as_code [tests/test_repo_storage.py]",
+  "test_store_notes_are_not_also_indexed_as_in_situ_docs [tests/test_repo_storage.py]",
+  "test_store_relpath_resolves_against_the_repo_root [tests/test_repo_storage.py]",
+  "test_store_that_escapes_the_repo_is_refused [tests/test_repo_storage.py]",
+  "test_watcher_indexes_an_edit_inside_an_in_repo_store [tests/test_repo_storage.py]",
+]
+references = [
+  "test_adopt_and_release_are_idempotent [tests/test_repo_storage.py]",
+  "test_adopt_is_quiet_when_the_globs_stay_out_of_the_store [tests/test_repo_storage.py]",
+  "test_adopt_moves_the_data_tier_and_leaves_chunk_ids_alone [tests/test_repo_storage.py]",
+  "test_adopt_refuses_to_merge_two_note_trees [tests/test_repo_storage.py]",
+  "test_adopt_warns_when_the_repos_globs_reach_into_the_store [tests/test_repo_storage.py]",
+  "test_code_watcher_skips_saves_inside_the_store [tests/test_repo_storage.py]",
+  "test_memory_sync_refuses_for_an_adopted_project [tests/test_repo_storage.py]",
+  "test_release_moves_it_back_and_still_leaves_chunk_ids_alone [tests/test_repo_storage.py]",
+  "test_store_files_are_not_swept_as_code [tests/test_repo_storage.py]",
+  "test_store_notes_are_not_also_indexed_as_in_situ_docs [tests/test_repo_storage.py]",
+  "test_store_relpath_resolves_against_the_repo_root [tests/test_repo_storage.py]",
+  "test_store_that_escapes_the_repo_is_refused [tests/test_repo_storage.py]",
+  "test_watcher_indexes_an_edit_inside_an_in_repo_store [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "repo",
+  "repo_with_store",
+  "storage",
+  "store",
+  "test",
+  "tests",
+  "tests.test_repo_storage.repo_with_store",
+  "with",
+]

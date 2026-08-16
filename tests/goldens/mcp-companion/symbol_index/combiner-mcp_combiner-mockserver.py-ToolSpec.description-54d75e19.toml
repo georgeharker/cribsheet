@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#ToolSpec.description"
+fqn = "combiner.mcp_combiner.mockserver.ToolSpec.description"
+name = "description"
+kind = "field"
+lang = "python"
+content_hash = "34fd7ec562d9514c"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "description: str = \"\""
+description = ""
+schema = 4
+line = 89
+mtime = 1783622326000000000
+container = [
+  "ToolSpec",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "ToolSpec",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "from_dict [combiner/mcp_combiner/mockserver.py]",
+  "from_spec [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.ToolSpec.description",
+  "description",
+  "mcp",
+  "mockserver",
+  "spec",
+  "tool",
+]

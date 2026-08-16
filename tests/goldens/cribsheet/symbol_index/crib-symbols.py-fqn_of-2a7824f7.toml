@@ -1,0 +1,44 @@
+symbol_ref = "crib/symbols.py#fqn_of"
+fqn = "crib.symbols.fqn_of"
+name = "fqn_of"
+kind = "function"
+lang = "python"
+content_hash = "b167b70d35fa69f7"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def fqn_of(entry: dict[str, Any]) -> str:"
+description = ""
+schema = 4
+line = 414
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = [
+  "fqn [crib/symbols.py]",
+  "scope_of [crib/symbols.py]",
+]
+called_by = [
+  "_index_code_file [crib/codeindexer.py]",
+  "_rerank_code [crib/app.py]",
+  "convert_notes [crib/learnings.py]",
+  "display_name [crib/symbols.py]",
+  "resolution [crib/refs.py]",
+]
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+  "convert_notes [crib/learnings.py]",
+  "display_name [crib/symbols.py]",
+  "resolution [crib/refs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.fqn_of",
+  "fqn",
+  "fqn_of",
+  "of",
+  "symbols",
+]

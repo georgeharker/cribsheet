@@ -1,0 +1,39 @@
+symbol_ref = "scripts/eval_fusion.py#main.p1"
+fqn = "scripts.eval_fusion.main.p1"
+name = "p1"
+kind = "function"
+lang = "python"
+content_hash = "10a2aa15333cf862"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def p1(rs): return sum(1 for r in rs if r == 1) / len(rs)"
+description = ""
+schema = 4
+line = 367
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_fusion",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_fusion.py]",
+]
+references = [
+  "main [scripts/eval_fusion.py]",
+]
+name_terms = [
+  "1",
+  "eval",
+  "fusion",
+  "main",
+  "p",
+  "p1",
+  "scripts",
+  "scripts.eval_fusion.main.p1",
+]

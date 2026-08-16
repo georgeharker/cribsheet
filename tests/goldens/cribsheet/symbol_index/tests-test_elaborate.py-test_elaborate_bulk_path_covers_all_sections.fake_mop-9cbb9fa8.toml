@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_elaborate.py#test_elaborate_bulk_path_covers_all_sections.fake_mop"
+fqn = "tests.test_elaborate.test_elaborate_bulk_path_covers_all_sections.fake_mop"
+name = "fake_mop"
+kind = "function"
+lang = "python"
+content_hash = "feb79bd59bfe5d22"
+file = "tests/test_elaborate.py"
+file_hash = "5cde1a0229322e89"
+signature = "async def fake_mop(cfg, system, user, purpose=\"elaborate\", timeout=None):"
+description = ""
+schema = 4
+line = 246
+mtime = 1786578262000000000
+container = [
+  "test_elaborate_bulk_path_covers_all_sections",
+]
+scope = [
+  "tests",
+  "test_elaborate",
+  "test_elaborate_bulk_path_covers_all_sections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_elaborate_bulk_path_covers_all_sections [tests/test_elaborate.py]",
+]
+name_terms = [
+  "all",
+  "bulk",
+  "covers",
+  "elaborate",
+  "fake",
+  "fake_mop",
+  "mop",
+  "path",
+  "sections",
+  "test",
+  "tests",
+  "tests.test_elaborate.test_elaborate_bulk_path_covers_all_sections.fake_mop",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "crib/codequery.py#_group_key"
+fqn = "crib.codequery._group_key"
+name = "_group_key"
+kind = "function"
+lang = "python"
+content_hash = "66b38b5d480d7dc8"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def _group_key(n: dict[str, Any], proj: str, axis: str, depth: int) -> str:"
+description = ""
+schema = 4
+line = 87
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "codequery",
+]
+symbol_was = []
+calls = [
+  "encode_loc [crib/symbols.py]",
+  "fqname_sep [crib/symbols.py]",
+  "qualified_symbol [crib/symbols.py]",
+]
+called_by = [
+  "_rollup [crib/codequery.py]",
+]
+references = [
+  "_rollup [crib/codequery.py]",
+]
+name_terms = [
+  "_group_key",
+  "codequery",
+  "crib",
+  "crib.codequery._group_key",
+  "group",
+  "key",
+]

@@ -1,0 +1,46 @@
+symbol_ref = "lua/mcp_companion/native/winpick.lua#code_buf"
+fqn = "mcp_companion.native.winpick.code_buf"
+name = "code_buf"
+kind = "function"
+lang = "lua"
+content_hash = "d8cff40baee09601"
+file = "lua/mcp_companion/native/winpick.lua"
+file_hash = "6bf70fc950ff8924"
+signature = "function M.code_buf()"
+description = ""
+schema = 4
+line = 126
+mtime = 1782852601000000000
+container = []
+scope = [
+  "mcp_companion",
+  "native",
+  "winpick",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.code_buf [lua/mcp_companion/native/winpick.lua]",
+  "buffers.lua [lua/mcp_companion/native/neovim/buffers.lua]",
+  "diagnostics.lua [lua/mcp_companion/native/neovim/diagnostics.lua]",
+  "winpick.lua [lua/mcp_companion/native/winpick.lua]",
+]
+references = [
+  "code_win [lua/mcp_companion/native/winpick.lua]",
+  "cw [lua/mcp_companion/native/winpick.lua]",
+  "else [tests/test_native.lua]",
+  "if [lua/mcp_companion/native/winpick.lua]",
+  "if [tests/test_native.lua]",
+  "path [lua/mcp_companion/native/winpick.lua]",
+  "win [lua/mcp_companion/native/winpick.lua]",
+]
+name_terms = [
+  "buf",
+  "code",
+  "code_buf",
+  "companion",
+  "mcp",
+  "mcp_companion.native.winpick.code_buf",
+  "native",
+  "winpick",
+]

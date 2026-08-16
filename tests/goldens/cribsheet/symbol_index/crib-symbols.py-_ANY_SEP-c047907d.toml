@@ -1,0 +1,35 @@
+symbol_ref = "crib/symbols.py#_ANY_SEP"
+fqn = "crib.symbols._ANY_SEP"
+name = "_ANY_SEP"
+kind = "constant"
+lang = "python"
+content_hash = "5eb801b7690a2486"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "_ANY_SEP = re.compile(r\"::|\\.\")"
+description = ""
+schema = 4
+line = 43
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "match_entry [crib/symbols.py]",
+  "scope_matches [crib/symbols.py]",
+  "segments [crib/symbols.py]",
+  "tail [crib/symbols.py]",
+]
+name_terms = [
+  "_ANY_SEP",
+  "any",
+  "crib",
+  "crib.symbols._ANY_SEP",
+  "sep",
+  "symbols",
+]

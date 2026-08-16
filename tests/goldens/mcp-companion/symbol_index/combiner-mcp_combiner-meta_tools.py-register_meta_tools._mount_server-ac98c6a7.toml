@@ -1,0 +1,53 @@
+symbol_ref = "combiner/mcp_combiner/meta_tools.py#register_meta_tools._mount_server"
+fqn = "combiner.mcp_combiner.meta_tools.register_meta_tools._mount_server"
+name = "_mount_server"
+kind = "function"
+lang = "python"
+content_hash = "aa528f836ef92cc1"
+file = "combiner/mcp_combiner/meta_tools.py"
+file_hash = "8eb0757202928f82"
+signature = "async def _mount_server(server_name: str, srv: ServerConfig) -> FastMCP:"
+description = ""
+schema = 4
+line = 162
+mtime = 1784493613000000000
+container = [
+  "register_meta_tools",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "meta_tools",
+  "register_meta_tools",
+]
+symbol_was = []
+calls = [
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "connect [combiner/mcp_combiner/connections.py]",
+  "ensure_started [combiner/mcp_combiner/sharedserver.py]",
+  "has_connection [combiner/mcp_combiner/connections.py]",
+  "is_auth_failed [combiner/mcp_combiner/connections.py]",
+  "is_http_server [combiner/mcp_combiner/connections.py]",
+  "mount_server_provider [combiner/mcp_combiner/mounts.py]",
+  "register [combiner/mcp_combiner/connections.py]",
+  "reset_auth_failure [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+]
+references = [
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+]
+name_terms = [
+  "_mount_server",
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools._mount_server",
+  "mcp",
+  "meta",
+  "mount",
+  "register",
+  "server",
+  "tools",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "crib/watch.py#CodeWatcher._decode"
+fqn = "crib.watch.CodeWatcher._decode"
+name = "_decode"
+kind = "method"
+lang = "python"
+content_hash = "8c5bb36b70cdfb2a"
+file = "crib/watch.py"
+file_hash = "c10c30739292eebe"
+signature = "def _decode(self, raw_path: str, deleted: bool) -> tuple[str, str, str, bool, str] | None:"
+description = ""
+schema = 4
+line = 328
+mtime = 1786139638000000000
+container = [
+  "CodeWatcher",
+]
+scope = [
+  "crib",
+  "watch",
+  "CodeWatcher",
+]
+symbol_was = []
+calls = [
+  "_code_exts [crib/watch.py]",
+]
+called_by = [
+  "test_code_watcher_decode_is_pure_path_work [tests/test_watcher.py]",
+]
+references = [
+  "test_code_watcher_decode_is_pure_path_work [tests/test_watcher.py]",
+]
+name_terms = [
+  "_decode",
+  "code",
+  "crib",
+  "crib.watch.CodeWatcher._decode",
+  "decode",
+  "watch",
+  "watcher",
+]

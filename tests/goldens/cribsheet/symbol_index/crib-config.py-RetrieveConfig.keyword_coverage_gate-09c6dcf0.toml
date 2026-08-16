@@ -1,0 +1,37 @@
+symbol_ref = "crib/config.py#RetrieveConfig.keyword_coverage_gate"
+fqn = "crib.config.RetrieveConfig.keyword_coverage_gate"
+name = "keyword_coverage_gate"
+kind = "field"
+lang = "python"
+content_hash = "3c1aefbf4cba1adc"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "keyword_coverage_gate: bool = False"
+description = ""
+schema = 4
+line = 153
+mtime = 1786564832000000000
+container = [
+  "RetrieveConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "RetrieveConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_retrieve [crib/app.py]",
+]
+name_terms = [
+  "config",
+  "coverage",
+  "crib",
+  "crib.config.RetrieveConfig.keyword_coverage_gate",
+  "gate",
+  "keyword",
+  "keyword_coverage_gate",
+  "retrieve",
+]

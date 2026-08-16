@@ -1,0 +1,68 @@
+symbol_ref = "combiner/mcp_combiner/config.py#_interpolate_str"
+fqn = "combiner.mcp_combiner.config._interpolate_str"
+name = "_interpolate_str"
+kind = "function"
+lang = "python"
+content_hash = "074bd204f304222b"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def _interpolate_str(value: str) -> str:"
+description = ""
+schema = 4
+line = 624
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+]
+symbol_was = []
+calls = [
+  "_interpolate [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "_build_use_cmd [combiner/mcp_combiner/sharedserver.py]",
+  "_is_local_upstream [combiner/mcp_combiner/connections.py]",
+  "build_http_transport [combiner/mcp_combiner/connections.py]",
+  "test_default_empty_string [combiner/tests/test_config.py]",
+  "test_default_with_special_chars [combiner/tests/test_config.py]",
+  "test_embedded_in_string [combiner/tests/test_config.py]",
+  "test_empty_string [combiner/tests/test_config.py]",
+  "test_env_prefix [combiner/tests/test_config.py]",
+  "test_env_prefix_with_default [combiner/tests/test_config.py]",
+  "test_multiple_vars [combiner/tests/test_config.py]",
+  "test_no_vars_passthrough [combiner/tests/test_config.py]",
+  "test_simple_var [combiner/tests/test_config.py]",
+  "test_unset_no_default_returns_empty [combiner/tests/test_config.py]",
+  "test_var_with_default_set [combiner/tests/test_config.py]",
+  "test_var_with_default_unset [combiner/tests/test_config.py]",
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+references = [
+  "_build_use_cmd [combiner/mcp_combiner/sharedserver.py]",
+  "_is_local_upstream [combiner/mcp_combiner/connections.py]",
+  "build_http_transport [combiner/mcp_combiner/connections.py]",
+  "test_default_empty_string [combiner/tests/test_config.py]",
+  "test_default_with_special_chars [combiner/tests/test_config.py]",
+  "test_embedded_in_string [combiner/tests/test_config.py]",
+  "test_empty_string [combiner/tests/test_config.py]",
+  "test_env_prefix [combiner/tests/test_config.py]",
+  "test_env_prefix_with_default [combiner/tests/test_config.py]",
+  "test_multiple_vars [combiner/tests/test_config.py]",
+  "test_no_vars_passthrough [combiner/tests/test_config.py]",
+  "test_simple_var [combiner/tests/test_config.py]",
+  "test_unset_no_default_returns_empty [combiner/tests/test_config.py]",
+  "test_var_with_default_set [combiner/tests/test_config.py]",
+  "test_var_with_default_unset [combiner/tests/test_config.py]",
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "_interpolate_str",
+  "combiner",
+  "combiner.mcp_combiner.config._interpolate_str",
+  "config",
+  "interpolate",
+  "mcp",
+  "str",
+]

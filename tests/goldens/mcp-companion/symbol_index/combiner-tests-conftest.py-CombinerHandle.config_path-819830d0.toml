@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/conftest.py#CombinerHandle.config_path"
+fqn = "combiner.tests.conftest.CombinerHandle.config_path"
+name = "config_path"
+kind = "field"
+lang = "python"
+content_hash = "5da603f2edf33a01"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "config_path: Path"
+description = ""
+schema = 4
+line = 161
+mtime = 1783544328000000000
+container = [
+  "CombinerHandle",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "CombinerHandle",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "start_combiner [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.CombinerHandle.config_path",
+  "config",
+  "config_path",
+  "conftest",
+  "handle",
+  "path",
+  "tests",
+]

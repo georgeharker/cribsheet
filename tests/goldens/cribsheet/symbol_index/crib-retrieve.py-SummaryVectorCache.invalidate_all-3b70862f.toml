@@ -1,0 +1,40 @@
+symbol_ref = "crib/retrieve.py#SummaryVectorCache.invalidate_all"
+fqn = "crib.retrieve.SummaryVectorCache.invalidate_all"
+name = "invalidate_all"
+kind = "method"
+lang = "python"
+content_hash = "48e0ecd4ed2fdf24"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "def invalidate_all(self) -> None:"
+description = ""
+schema = 4
+line = 378
+mtime = 1786136167000000000
+container = [
+  "SummaryVectorCache",
+]
+scope = [
+  "crib",
+  "retrieve",
+  "SummaryVectorCache",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "invalidate_all_caches [crib/indexer.py]",
+]
+references = [
+  "invalidate_all_caches [crib/indexer.py]",
+]
+name_terms = [
+  "all",
+  "cache",
+  "crib",
+  "crib.retrieve.SummaryVectorCache.invalidate_all",
+  "invalidate",
+  "invalidate_all",
+  "retrieve",
+  "summary",
+  "vector",
+]

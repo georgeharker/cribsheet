@@ -1,0 +1,55 @@
+symbol_ref = "crib/retrieve.py#BM25.scores"
+fqn = "crib.retrieve.BM25.scores"
+name = "scores"
+kind = "method"
+lang = "python"
+content_hash = "cf5d1a3383dd25ea"
+file = "crib/retrieve.py"
+file_hash = "5d9351789edf6d7e"
+signature = "def scores(self, query: list[str]) -> list[float]:"
+description = ""
+schema = 4
+line = 97
+mtime = 1786136167000000000
+container = [
+  "BM25",
+]
+scope = [
+  "crib",
+  "retrieve",
+  "BM25",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_lookup_one [crib/codequery.py]",
+  "_retrieve [crib/app.py]",
+  "q [scripts/eval_fusion.py]",
+  "signals [scripts/eval_hybrid.py]",
+  "signals [scripts/eval_rigor.py]",
+  "test_bm25_ranks_exact_term_match_first [tests/test_retrieve.py]",
+  "test_bm25_unknown_terms_score_zero [tests/test_retrieve.py]",
+  "test_downweight_scales_elaboration_contribution [tests/test_elaborate.py]",
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+  "test_subtokens_let_spaced_query_match_a_solid_identifier [tests/test_retrieve.py]",
+]
+references = [
+  "_lookup_one [crib/codequery.py]",
+  "_retrieve [crib/app.py]",
+  "q [scripts/eval_fusion.py]",
+  "signals [scripts/eval_hybrid.py]",
+  "signals [scripts/eval_rigor.py]",
+  "test_bm25_ranks_exact_term_match_first [tests/test_retrieve.py]",
+  "test_bm25_unknown_terms_score_zero [tests/test_retrieve.py]",
+  "test_downweight_scales_elaboration_contribution [tests/test_elaborate.py]",
+  "test_lexical_cache_folds_elaboration_terms [tests/test_elaborate.py]",
+  "test_subtokens_let_spaced_query_match_a_solid_identifier [tests/test_retrieve.py]",
+]
+name_terms = [
+  "25",
+  "bm",
+  "crib",
+  "crib.retrieve.BM25.scores",
+  "retrieve",
+  "scores",
+]

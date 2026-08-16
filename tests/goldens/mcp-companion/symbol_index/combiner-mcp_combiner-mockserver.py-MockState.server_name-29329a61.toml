@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockState.server_name"
+fqn = "combiner.mcp_combiner.mockserver.MockState.server_name"
+name = "server_name"
+kind = "field"
+lang = "python"
+content_hash = "2e4d8b9fe5276091"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "server_name: str"
+description = ""
+schema = 4
+line = 152
+mtime = 1783622326000000000
+container = [
+  "MockState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockState",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+  "health [combiner/mcp_combiner/mockserver.py]",
+  "snapshot [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockState.server_name",
+  "mcp",
+  "mock",
+  "mockserver",
+  "name",
+  "server",
+  "server_name",
+  "state",
+]

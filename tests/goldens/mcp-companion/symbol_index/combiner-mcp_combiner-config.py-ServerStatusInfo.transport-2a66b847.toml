@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ServerStatusInfo.transport"
+fqn = "combiner.mcp_combiner.config.ServerStatusInfo.transport"
+name = "transport"
+kind = "field"
+lang = "python"
+content_hash = "2568caf04fc5ff4f"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "transport: Transport"
+description = ""
+schema = 4
+line = 401
+mtime = 1783633313000000000
+container = [
+  "ServerStatusInfo",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ServerStatusInfo",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "get_server_status [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerStatusInfo.transport",
+  "config",
+  "info",
+  "mcp",
+  "server",
+  "status",
+  "transport",
+]

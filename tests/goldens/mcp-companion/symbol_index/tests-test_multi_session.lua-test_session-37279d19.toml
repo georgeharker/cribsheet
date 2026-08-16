@@ -1,0 +1,32 @@
+symbol_ref = "tests/test_multi_session.lua#test_session"
+fqn = "tests.test_multi_session.test_session"
+name = "test_session"
+kind = "function"
+lang = "lua"
+content_hash = "0c9ad67b5185ac13"
+file = "tests/test_multi_session.lua"
+file_hash = "a0267ae6f276d977"
+signature = "local function test_session(label, on_done)"
+description = ""
+schema = 4
+line = 4
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_multi_session",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_multi_session.lua [tests/test_multi_session.lua]",
+]
+references = []
+name_terms = [
+  "multi",
+  "session",
+  "test",
+  "test_session",
+  "tests",
+  "tests.test_multi_session.test_session",
+]

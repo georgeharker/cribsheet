@@ -1,0 +1,58 @@
+symbol_ref = "crib/app.py#Crib.import_claude_memory"
+fqn = "crib.app.Crib.import_claude_memory"
+name = "import_claude_memory"
+kind = "method"
+lang = "python"
+content_hash = "97bb1f35ef26b199"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def import_claude_memory(self, project: str | None = None,"
+description = ""
+schema = 4
+line = 2782
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "Note [crib/notes.py]",
+  "_reconcile_memory_dir [crib/app.py]",
+  "abspath [crib/app.py]",
+  "claude_config_dir [crib/claudemem.py]",
+  "derived_ulid [crib/util.py]",
+  "find_harness_root [crib/claudemem.py]",
+  "harness_memory_dir [crib/claudemem.py]",
+  "hostslug [crib/claudemem.py]",
+  "index_file [crib/indexer.py]",
+  "load [crib/notes.py]",
+  "notes_dir [crib/app.py]",
+  "parse [crib/notes.py]",
+  "project_is_new [crib/app.py]",
+  "resolve_project [crib/app.py]",
+  "save_atomic [crib/notes.py]",
+  "upsert [crib/claudemem.py]",
+]
+called_by = [
+  "note_import_memory [crib/server.py]",
+  "sync [crib/app.py]",
+]
+references = [
+  "note_import_memory [crib/server.py]",
+  "sync [crib/app.py]",
+]
+name_terms = [
+  "app",
+  "claude",
+  "crib",
+  "crib.app.Crib.import_claude_memory",
+  "import",
+  "import_claude_memory",
+  "memory",
+]

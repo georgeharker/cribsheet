@@ -1,0 +1,40 @@
+symbol_ref = "lua/mcp_companion/cc/session_commands.lua#_sync_cc_tool_group"
+fqn = "mcp_companion.cc.session_commands._sync_cc_tool_group"
+name = "_sync_cc_tool_group"
+kind = "function"
+lang = "lua"
+content_hash = "274722e5e8e0d887"
+file = "lua/mcp_companion/cc/session_commands.lua"
+file_hash = "70b271c7f95add3d"
+signature = "local function _sync_cc_tool_group(chat, server_name, is_disabling)"
+description = ""
+schema = 4
+line = 36
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "cc",
+  "session_commands",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.toggle_server_for_session [lua/mcp_companion/cc/session_commands.lua]",
+  "session_commands.lua [lua/mcp_companion/cc/session_commands.lua]",
+]
+references = [
+  "toggle_server_for_session [lua/mcp_companion/cc/session_commands.lua]",
+]
+name_terms = [
+  "_sync_cc_tool_group",
+  "cc",
+  "commands",
+  "companion",
+  "group",
+  "mcp",
+  "mcp_companion.cc.session_commands._sync_cc_tool_group",
+  "session",
+  "sync",
+  "tool",
+]

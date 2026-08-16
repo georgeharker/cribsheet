@@ -1,0 +1,49 @@
+symbol_ref = "scripts/eval_kw.py#main"
+fqn = "scripts.eval_kw.main"
+name = "main"
+kind = "function"
+lang = "python"
+content_hash = "baccffeca02ce4c2"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def main() -> int:"
+description = ""
+schema = 4
+line = 34
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_kw",
+]
+symbol_was = []
+calls = [
+  "Feat [scripts/eval_fusion.py]",
+  "_uniq [scripts/eval_kw.py]",
+  "c_3wsum [scripts/eval_kw.py]",
+  "c_all [scripts/eval_kw.py]",
+  "c_covpc_wrap [scripts/eval_kw.py]",
+  "c_dense [scripts/eval_kw.py]",
+  "close [crib/app.py]",
+  "embed [crib/embed.py]",
+  "embed_query [crib/embed.py]",
+  "mrr [scripts/eval_kw.py]",
+  "name_phrases [scripts/eval_kw.py]",
+  "open [crib/app.py]",
+  "p1 [scripts/eval_kw.py]",
+  "q [scripts/eval_fusion.py]",
+  "r3 [scripts/eval_kw.py]",
+  "target_rank [scripts/eval_fusion.py]",
+  "with_rerank [scripts/eval_kw.py]",
+]
+called_by = [
+  "eval_kw [scripts/eval_kw.py]",
+]
+references = []
+name_terms = [
+  "eval",
+  "kw",
+  "main",
+  "scripts",
+  "scripts.eval_kw.main",
+]

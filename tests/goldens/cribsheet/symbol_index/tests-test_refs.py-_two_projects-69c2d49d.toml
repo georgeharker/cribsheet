@@ -1,0 +1,47 @@
+symbol_ref = "tests/test_refs.py#_two_projects"
+fqn = "tests.test_refs._two_projects"
+name = "_two_projects"
+kind = "function"
+lang = "python"
+content_hash = "30584ded06c0706e"
+file = "tests/test_refs.py"
+file_hash = "c2372f74f28bca49"
+signature = "def _two_projects(crib, tmp_path):"
+description = ""
+schema = 4
+line = 35
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_refs",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_sym [tests/test_refs.py]",
+  "set_source_root [crib/codeindex.py]",
+]
+called_by = [
+  "test_dossier_crosses_into_ref_and_annotates_edges [tests/test_refs.py]",
+  "test_graph_hops_across_qualified_edges [tests/test_refs.py]",
+  "test_lookup_fans_out_and_tags_projects [tests/test_refs.py]",
+  "test_project_refs_resolve_local_roots [tests/test_refs.py]",
+  "test_xref_falls_through_to_ref_project [tests/test_refs.py]",
+]
+references = [
+  "test_dossier_crosses_into_ref_and_annotates_edges [tests/test_refs.py]",
+  "test_graph_hops_across_qualified_edges [tests/test_refs.py]",
+  "test_lookup_fans_out_and_tags_projects [tests/test_refs.py]",
+  "test_project_refs_resolve_local_roots [tests/test_refs.py]",
+  "test_xref_falls_through_to_ref_project [tests/test_refs.py]",
+]
+name_terms = [
+  "_two_projects",
+  "projects",
+  "refs",
+  "test",
+  "tests",
+  "tests.test_refs._two_projects",
+  "two",
+]

@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/routes.py#register_routes"
+fqn = "combiner.mcp_combiner.routes.register_routes"
+name = "register_routes"
+kind = "function"
+lang = "python"
+content_hash = "6e4e04898db8250a"
+file = "combiner/mcp_combiner/routes.py"
+file_hash = "51ce6733e6f93928"
+signature = "def register_routes("
+description = ""
+schema = 4
+line = 32
+mtime = 1783548694000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "routes",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "create_combiner [combiner/mcp_combiner/server.py]",
+]
+references = [
+  "create_combiner [combiner/mcp_combiner/server.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.routes.register_routes",
+  "mcp",
+  "register",
+  "register_routes",
+  "routes",
+]

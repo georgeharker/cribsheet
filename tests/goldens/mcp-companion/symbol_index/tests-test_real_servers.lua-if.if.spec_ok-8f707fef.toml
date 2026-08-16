@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_real_servers.lua#if.if.spec_ok"
+fqn = "tests.test_real_servers.if.if.spec_ok"
+name = "spec_ok"
+kind = "variable"
+lang = "lua"
+content_hash = "3cf6ca159ca3e6a0"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local spec_ok, spec = pcall(entry.callback)"
+description = ""
+schema = 4
+line = 588
+mtime = 1782853510000000000
+container = [
+  "if",
+  "if",
+]
+scope = [
+  "tests",
+  "test_real_servers",
+  "if",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_real_servers.lua]",
+]
+name_terms = [
+  "if",
+  "ok",
+  "real",
+  "servers",
+  "spec",
+  "spec_ok",
+  "test",
+  "tests",
+  "tests.test_real_servers.if.if.spec_ok",
+]

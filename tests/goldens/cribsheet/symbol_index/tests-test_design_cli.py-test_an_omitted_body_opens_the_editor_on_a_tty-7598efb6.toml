@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_design_cli.py#test_an_omitted_body_opens_the_editor_on_a_tty"
+fqn = "tests.test_design_cli.test_an_omitted_body_opens_the_editor_on_a_tty"
+name = "test_an_omitted_body_opens_the_editor_on_a_tty"
+kind = "function"
+lang = "python"
+content_hash = "6a91fc30d310340a"
+file = "tests/test_design_cli.py"
+file_hash = "0f819c263d62afaf"
+signature = "@pytest.mark.parametrize(\"argv, key\", ["
+description = ""
+schema = 4
+line = 66
+mtime = 1785974065000000000
+container = []
+scope = [
+  "tests",
+  "test_design_cli",
+]
+symbol_was = []
+calls = [
+  "_call [tests/test_design_cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "an",
+  "body",
+  "cli",
+  "design",
+  "editor",
+  "omitted",
+  "on",
+  "opens",
+  "test",
+  "test_an_omitted_body_opens_the_editor_on_a_tty",
+  "tests",
+  "tests.test_design_cli.test_an_omitted_body_opens_the_editor_on_a_tty",
+  "the",
+  "tty",
+]

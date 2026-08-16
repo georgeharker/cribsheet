@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#_notify_tool_list_changed"
+fqn = "combiner.mcp_combiner.toolcache._notify_tool_list_changed"
+name = "_notify_tool_list_changed"
+kind = "function"
+lang = "python"
+content_hash = "bb962155c4c9bbf6"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "async def _notify_tool_list_changed() -> None:"
+description = ""
+schema = 4
+line = 65
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = [
+  "sessions [combiner/mcp_combiner/runtime.py]",
+]
+called_by = [
+  "notify_tool_list_changed [combiner/mcp_combiner/toolcache.py]",
+]
+references = [
+  "create_combiner [combiner/mcp_combiner/server.py]",
+  "notify_tool_list_changed [combiner/mcp_combiner/toolcache.py]",
+]
+name_terms = [
+  "_notify_tool_list_changed",
+  "changed",
+  "combiner",
+  "combiner.mcp_combiner.toolcache._notify_tool_list_changed",
+  "list",
+  "mcp",
+  "notify",
+  "tool",
+  "toolcache",
+]

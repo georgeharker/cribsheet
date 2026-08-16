@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_loop_responsiveness.py#MAX_GAP"
+fqn = "tests.test_loop_responsiveness.MAX_GAP"
+name = "MAX_GAP"
+kind = "constant"
+lang = "python"
+content_hash = "64ac849b8fc3b166"
+file = "tests/test_loop_responsiveness.py"
+file_hash = "3e5d3308dc33e6f4"
+signature = "MAX_GAP = 0.1       # acceptance bar: loop gap during a big write"
+description = ""
+schema = 4
+line = 25
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_loop_responsiveness",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_reindex_sweep_does_not_stall_the_loop [tests/test_loop_responsiveness.py]",
+  "test_store_note_does_not_stall_the_loop [tests/test_loop_responsiveness.py]",
+]
+name_terms = [
+  "MAX_GAP",
+  "gap",
+  "loop",
+  "max",
+  "responsiveness",
+  "test",
+  "tests",
+  "tests.test_loop_responsiveness.MAX_GAP",
+]

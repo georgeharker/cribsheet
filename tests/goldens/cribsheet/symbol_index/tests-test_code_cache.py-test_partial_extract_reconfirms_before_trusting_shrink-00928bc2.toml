@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_code_cache.py#test_partial_extract_reconfirms_before_trusting_shrink"
+fqn = "tests.test_code_cache.test_partial_extract_reconfirms_before_trusting_shrink"
+name = "test_partial_extract_reconfirms_before_trusting_shrink"
+kind = "function"
+lang = "python"
+content_hash = "8e5b2a2ab2c8d9bd"
+file = "tests/test_code_cache.py"
+file_hash = "44f8f848adca2094"
+signature = "def test_partial_extract_reconfirms_before_trusting_shrink(crib, tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 240
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_cache",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_write [tests/test_code_cache.py]",
+  "all [crib/codeindex.py]",
+  "by_fqname [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "before",
+  "cache",
+  "code",
+  "extract",
+  "partial",
+  "reconfirms",
+  "shrink",
+  "test",
+  "test_partial_extract_reconfirms_before_trusting_shrink",
+  "tests",
+  "tests.test_code_cache.test_partial_extract_reconfirms_before_trusting_shrink",
+  "trusting",
+]

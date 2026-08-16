@@ -1,0 +1,35 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#icons.error"
+fqn = "mcp_companion.ui.icons.error"
+name = "error"
+kind = "field"
+lang = "lua"
+content_hash = "e77a0dcfaf9485e2"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "error = \"✗\","
+description = ""
+schema = 4
+line = 31
+mtime = 1783545086000000000
+container = [
+  "icons",
+]
+scope = [
+  "mcp_companion",
+  "ui",
+  "icons",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "elseif [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "companion",
+  "error",
+  "icons",
+  "mcp",
+  "mcp_companion.ui.icons.error",
+  "ui",
+]

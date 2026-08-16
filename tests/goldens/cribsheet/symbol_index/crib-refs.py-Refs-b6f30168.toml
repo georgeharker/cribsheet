@@ -1,0 +1,33 @@
+symbol_ref = "crib/refs.py#Refs"
+fqn = "crib.refs.Refs"
+name = "Refs"
+kind = "class"
+lang = "python"
+content_hash = "41611281ed6098a1"
+file = "crib/refs.py"
+file_hash = "d39b1d18c0921167"
+signature = "class Refs:"
+description = ""
+schema = 4
+line = 83
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "refs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/codequery.py]",
+  "__init__ [crib/learnings.py]",
+  "__init__ [crib/project_services.py]",
+]
+name_terms = [
+  "Refs",
+  "crib",
+  "crib.refs.Refs",
+  "refs",
+]

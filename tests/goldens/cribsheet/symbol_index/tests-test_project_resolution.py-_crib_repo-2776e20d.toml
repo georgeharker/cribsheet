@@ -1,0 +1,50 @@
+symbol_ref = "tests/test_project_resolution.py#_crib_repo"
+fqn = "tests.test_project_resolution._crib_repo"
+name = "_crib_repo"
+kind = "function"
+lang = "python"
+content_hash = "7dd20a266da3c2f3"
+file = "tests/test_project_resolution.py"
+file_hash = "4fafa653cef61a42"
+signature = "def _crib_repo(tmp_path, name, project=None):"
+description = ""
+schema = 4
+line = 105
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_project_resolution",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project [tests/test_project_resolution.py]",
+  "test_create_refuses_dirname_collision_with_existing_project [tests/test_project_resolution.py]",
+  "test_incidental_cwd_of_other_repo_defers_to_registered_root [tests/test_project_resolution.py]",
+  "test_mismatched_path_without_registered_root_errors [tests/test_project_resolution.py]",
+  "test_named_project_end_to_end_index_uses_registered_root [tests/test_project_resolution.py]",
+  "test_named_project_resolves_registered_root [tests/test_project_resolution.py]",
+  "test_stale_registration_errors [tests/test_project_resolution.py]",
+  "test_unknown_project_with_no_path_errors_not_cwd [tests/test_project_resolution.py]",
+]
+references = [
+  "test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project [tests/test_project_resolution.py]",
+  "test_create_refuses_dirname_collision_with_existing_project [tests/test_project_resolution.py]",
+  "test_incidental_cwd_of_other_repo_defers_to_registered_root [tests/test_project_resolution.py]",
+  "test_mismatched_path_without_registered_root_errors [tests/test_project_resolution.py]",
+  "test_named_project_end_to_end_index_uses_registered_root [tests/test_project_resolution.py]",
+  "test_named_project_resolves_registered_root [tests/test_project_resolution.py]",
+  "test_stale_registration_errors [tests/test_project_resolution.py]",
+  "test_unknown_project_with_no_path_errors_not_cwd [tests/test_project_resolution.py]",
+]
+name_terms = [
+  "_crib_repo",
+  "crib",
+  "project",
+  "repo",
+  "resolution",
+  "test",
+  "tests",
+  "tests.test_project_resolution._crib_repo",
+]

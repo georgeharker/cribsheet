@@ -1,0 +1,57 @@
+symbol_ref = "crib/config.py#portable_path"
+fqn = "crib.config.portable_path"
+name = "portable_path"
+kind = "function"
+lang = "python"
+content_hash = "8901ab3b1d9b9bcf"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "def portable_path(p: str | Path, locations: dict[str, str]) -> str:"
+description = ""
+schema = 4
+line = 522
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "config",
+]
+symbol_was = []
+calls = [
+  "_location_roots [crib/config.py]",
+  "_resolved [crib/config.py]",
+]
+called_by = [
+  "import_files [crib/app.py]",
+  "project_adopt [crib/app.py]",
+  "test_longest_root_still_wins [tests/test_config_resilience.py]",
+  "test_portable_path_collapses_two_machines [tests/test_normalize.py]",
+  "test_portable_path_named_root_beats_home_and_round_trips [tests/test_normalize.py]",
+  "test_portable_path_unmatched_falls_back_to_string [tests/test_normalize.py]",
+  "test_portable_path_uses_home_when_under_it [tests/test_normalize.py]",
+  "test_symlinked_path_under_a_real_root [tests/test_config_resilience.py]",
+  "test_symlinked_root_round_trips [tests/test_config_resilience.py]",
+  "test_symlinked_root_still_tokenizes [tests/test_config_resilience.py]",
+  "test_unmatched_path_still_falls_back [tests/test_config_resilience.py]",
+]
+references = [
+  "import_files [crib/app.py]",
+  "project_adopt [crib/app.py]",
+  "test_longest_root_still_wins [tests/test_config_resilience.py]",
+  "test_portable_path_collapses_two_machines [tests/test_normalize.py]",
+  "test_portable_path_named_root_beats_home_and_round_trips [tests/test_normalize.py]",
+  "test_portable_path_unmatched_falls_back_to_string [tests/test_normalize.py]",
+  "test_portable_path_uses_home_when_under_it [tests/test_normalize.py]",
+  "test_symlinked_path_under_a_real_root [tests/test_config_resilience.py]",
+  "test_symlinked_root_round_trips [tests/test_config_resilience.py]",
+  "test_symlinked_root_still_tokenizes [tests/test_config_resilience.py]",
+  "test_unmatched_path_still_falls_back [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.portable_path",
+  "path",
+  "portable",
+  "portable_path",
+]

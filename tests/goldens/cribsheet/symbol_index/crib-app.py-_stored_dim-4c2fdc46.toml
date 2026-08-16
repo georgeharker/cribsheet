@@ -1,0 +1,36 @@
+symbol_ref = "crib/app.py#_stored_dim"
+fqn = "crib.app._stored_dim"
+name = "_stored_dim"
+kind = "function"
+lang = "python"
+content_hash = "e7109aac0e1f3cf4"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _stored_dim(store: Store) -> int | None:"
+description = ""
+schema = 4
+line = 109
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "app",
+]
+symbol_was = []
+calls = [
+  "current_dim [crib/store.py]",
+]
+called_by = [
+  "__init__ [crib/app.py]",
+]
+references = [
+  "__init__ [crib/app.py]",
+]
+name_terms = [
+  "_stored_dim",
+  "app",
+  "crib",
+  "crib.app._stored_dim",
+  "dim",
+  "stored",
+]

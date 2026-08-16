@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestConsentFlow"
+fqn = "combiner.tests.test_oauth_mock.TestConsentFlow"
+name = "TestConsentFlow"
+kind = "class"
+lang = "python"
+content_hash = "4b785da3fca96088"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "class TestConsentFlow:"
+description = ""
+schema = 4
+line = 199
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestConsentFlow",
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestConsentFlow",
+  "consent",
+  "flow",
+  "mock",
+  "oauth",
+  "test",
+  "tests",
+]

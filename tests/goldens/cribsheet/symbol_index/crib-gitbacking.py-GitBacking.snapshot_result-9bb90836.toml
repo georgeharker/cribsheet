@@ -1,0 +1,52 @@
+symbol_ref = "crib/gitbacking.py#GitBacking.snapshot_result"
+fqn = "crib.gitbacking.GitBacking.snapshot_result"
+name = "snapshot_result"
+kind = "method"
+lang = "python"
+content_hash = "30b2d217530332dd"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def snapshot_result(self, message: str | None = None) -> SnapshotResult:"
+description = ""
+schema = 4
+line = 215
+mtime = 1785963011000000000
+container = [
+  "GitBacking",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "GitBacking",
+]
+symbol_was = []
+calls = [
+  "SnapshotResult [crib/gitbacking.py]",
+  "_ensure_repo_config [crib/gitbacking.py]",
+  "_msg [crib/gitbacking.py]",
+  "_run [crib/gitbacking.py]",
+]
+called_by = [
+  "snapshot [crib/gitbacking.py]",
+  "sync [crib/gitbacking.py]",
+  "test_daemon_side_backing_refuses_network_git [tests/test_sync.py]",
+  "test_snapshot_reports_commit_failure_structurally [tests/test_sync.py]",
+  "test_snapshot_with_nothing_to_do_is_ok_but_not_committed [tests/test_sync.py]",
+]
+references = [
+  "snapshot [crib/gitbacking.py]",
+  "sync [crib/gitbacking.py]",
+  "test_daemon_side_backing_refuses_network_git [tests/test_sync.py]",
+  "test_snapshot_reports_commit_failure_structurally [tests/test_sync.py]",
+  "test_snapshot_with_nothing_to_do_is_ok_but_not_committed [tests/test_sync.py]",
+]
+name_terms = [
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking.snapshot_result",
+  "git",
+  "gitbacking",
+  "result",
+  "snapshot",
+  "snapshot_result",
+]

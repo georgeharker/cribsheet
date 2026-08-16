@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_path_confinement.py#test_read_and_locate_refuse_to_escape_the_notes_tree"
+fqn = "tests.test_path_confinement.test_read_and_locate_refuse_to_escape_the_notes_tree"
+name = "test_read_and_locate_refuse_to_escape_the_notes_tree"
+kind = "function"
+lang = "python"
+content_hash = "a67d1e48c11e192e"
+file = "tests/test_path_confinement.py"
+file_hash = "ca5f375c4fa4dfa2"
+signature = "def test_read_and_locate_refuse_to_escape_the_notes_tree(crib, tmp_path):"
+description = ""
+schema = 4
+line = 75
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_path_confinement",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "confinement",
+  "escape",
+  "locate",
+  "notes",
+  "path",
+  "read",
+  "refuse",
+  "test",
+  "test_read_and_locate_refuse_to_escape_the_notes_tree",
+  "tests",
+  "tests.test_path_confinement.test_read_and_locate_refuse_to_escape_the_notes_tree",
+  "the",
+  "to",
+  "tree",
+]

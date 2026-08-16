@@ -1,0 +1,47 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ResolvedPolicy.is_active"
+fqn = "combiner.mcp_combiner.config.ResolvedPolicy.is_active"
+name = "is_active"
+kind = "method"
+lang = "python"
+content_hash = "be8dd2f9e91853a2"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def is_active(self) -> bool:"
+description = ""
+schema = 4
+line = 205
+mtime = 1783633313000000000
+container = [
+  "ResolvedPolicy",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ResolvedPolicy",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "test_is_active [combiner/tests/test_permissions.py]",
+  "test_off_by_default [combiner/tests/test_permissions.py]",
+  "test_unknown_server_is_global_only [combiner/tests/test_permissions.py]",
+]
+references = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "test_is_active [combiner/tests/test_permissions.py]",
+  "test_off_by_default [combiner/tests/test_permissions.py]",
+  "test_unknown_server_is_global_only [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "active",
+  "combiner",
+  "combiner.mcp_combiner.config.ResolvedPolicy.is_active",
+  "config",
+  "is",
+  "is_active",
+  "mcp",
+  "policy",
+  "resolved",
+]

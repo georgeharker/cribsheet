@@ -1,0 +1,32 @@
+symbol_ref = "crib/cli.py#_EDITOR_HINT"
+fqn = "crib.cli._EDITOR_HINT"
+name = "_EDITOR_HINT"
+kind = "constant"
+lang = "python"
+content_hash = "61ee2798ce85932f"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "_EDITOR_HINT = ("
+description = ""
+schema = 4
+line = 29
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_from_editor [crib/cli.py]",
+]
+name_terms = [
+  "_EDITOR_HINT",
+  "cli",
+  "crib",
+  "crib.cli._EDITOR_HINT",
+  "editor",
+  "hint",
+]

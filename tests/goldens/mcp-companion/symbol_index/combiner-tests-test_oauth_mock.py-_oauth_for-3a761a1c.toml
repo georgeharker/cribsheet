@@ -1,0 +1,55 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#_oauth_for"
+fqn = "combiner.tests.test_oauth_mock._oauth_for"
+name = "_oauth_for"
+kind = "function"
+lang = "python"
+content_hash = "8efebb6ef499f520"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "def _oauth_for(mock: ServedOAuthMock, token_dir: Path, **kw: object) -> _RefreshTokenOAuth:"
+description = ""
+schema = 4
+line = 181
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+]
+symbol_was = []
+calls = [
+  "build_auth [combiner/mcp_combiner/auth.py]",
+]
+called_by = [
+  "test_cache_without_persisted_expiry_bootstraps_one_refresh [combiner/tests/test_oauth_mock.py]",
+  "test_expired_cached_token_refreshed_silently_on_restart [combiner/tests/test_oauth_mock.py]",
+  "test_expired_token_refreshed_and_new_bearer_attached [combiner/tests/test_oauth_mock.py]",
+  "test_full_flow_issues_and_attaches_tokens [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_sends_right_token_and_stores_rotated [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_token_preserved_when_provider_omits_it [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_with_unknown_token_is_auth_error [combiner/tests/test_oauth_mock.py]",
+  "test_unauthenticated_call_is_rejected_then_recovers [combiner/tests/test_oauth_mock.py]",
+  "test_valid_cached_token_reused_without_new_consent [combiner/tests/test_oauth_mock.py]",
+]
+references = [
+  "test_cache_without_persisted_expiry_bootstraps_one_refresh [combiner/tests/test_oauth_mock.py]",
+  "test_expired_cached_token_refreshed_silently_on_restart [combiner/tests/test_oauth_mock.py]",
+  "test_expired_token_refreshed_and_new_bearer_attached [combiner/tests/test_oauth_mock.py]",
+  "test_full_flow_issues_and_attaches_tokens [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_sends_right_token_and_stores_rotated [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_token_preserved_when_provider_omits_it [combiner/tests/test_oauth_mock.py]",
+  "test_refresh_with_unknown_token_is_auth_error [combiner/tests/test_oauth_mock.py]",
+  "test_unauthenticated_call_is_rejected_then_recovers [combiner/tests/test_oauth_mock.py]",
+  "test_valid_cached_token_reused_without_new_consent [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "_oauth_for",
+  "combiner",
+  "combiner.tests.test_oauth_mock._oauth_for",
+  "for",
+  "mock",
+  "oauth",
+  "test",
+  "tests",
+]

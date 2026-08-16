@@ -1,0 +1,33 @@
+symbol_ref = "crib/designs.py#_DOCREF_STORES"
+fqn = "crib.designs._DOCREF_STORES"
+name = "_DOCREF_STORES"
+kind = "constant"
+lang = "python"
+content_hash = "a72fec4179be80da"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "_DOCREF_STORES = (\"design\", \"plans\")"
+description = ""
+schema = 4
+line = 89
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_resolve_doc [crib/designs.py]",
+  "split_docref [crib/designs.py]",
+]
+name_terms = [
+  "_DOCREF_STORES",
+  "crib",
+  "crib.designs._DOCREF_STORES",
+  "designs",
+  "docref",
+  "stores",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestTokenSessions.test_multiple_tokens_independent"
+fqn = "combiner.tests.test_session_filter.TestTokenSessions.test_multiple_tokens_independent"
+name = "test_multiple_tokens_independent"
+kind = "method"
+lang = "python"
+content_hash = "0e990858aaa8dbc1"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_multiple_tokens_independent(self):"
+description = ""
+schema = 4
+line = 124
+mtime = 1784493613000000000
+container = [
+  "TestTokenSessions",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestTokenSessions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_session_filter.TestTokenSessions.test_multiple_tokens_independent",
+  "filter",
+  "independent",
+  "multiple",
+  "session",
+  "sessions",
+  "test",
+  "test_multiple_tokens_independent",
+  "tests",
+  "token",
+  "tokens",
+]

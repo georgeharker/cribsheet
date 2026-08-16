@@ -1,0 +1,35 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#icons.collapse"
+fqn = "mcp_companion.ui.icons.collapse"
+name = "collapse"
+kind = "field"
+lang = "lua"
+content_hash = "91f1f5cc4fe1c249"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "collapse = \"▾\","
+description = ""
+schema = 4
+line = 37
+mtime = 1783545086000000000
+container = [
+  "icons",
+]
+scope = [
+  "mcp_companion",
+  "ui",
+  "icons",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "arrow [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "collapse",
+  "companion",
+  "icons",
+  "mcp",
+  "mcp_companion.ui.icons.collapse",
+  "ui",
+]

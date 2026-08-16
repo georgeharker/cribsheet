@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_native.lua#if.t"
+fqn = "tests.test_native.if.t"
+name = "t"
+kind = "variable"
+lang = "lua"
+content_hash = "5adb2155757b79f8"
+file = "tests/test_native.lua"
+file_hash = "68d141d843ba3fa4"
+signature = "for _, t in ipairs(srv.tools or {}) do"
+description = ""
+schema = 4
+line = 65
+mtime = 1783022631000000000
+container = [
+  "if",
+  "for in",
+  "for in",
+]
+scope = [
+  "tests",
+  "test_native",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "if [tests/test_native.lua]",
+]
+name_terms = [
+  "if",
+  "native",
+  "t",
+  "test",
+  "tests",
+  "tests.test_native.if.t",
+]

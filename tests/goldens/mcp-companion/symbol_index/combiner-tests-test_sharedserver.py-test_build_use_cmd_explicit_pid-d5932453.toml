@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/test_sharedserver.py#test_build_use_cmd_explicit_pid"
+fqn = "combiner.tests.test_sharedserver.test_build_use_cmd_explicit_pid"
+name = "test_build_use_cmd_explicit_pid"
+kind = "function"
+lang = "python"
+content_hash = "47ab5a1c14f8bd29"
+file = "combiner/tests/test_sharedserver.py"
+file_hash = "b47819ea6b71fce5"
+signature = "def test_build_use_cmd_explicit_pid() -> None:"
+description = ""
+schema = 4
+line = 100
+mtime = 1782420032000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_sharedserver",
+]
+symbol_was = []
+calls = [
+  "_build_use_cmd [combiner/mcp_combiner/sharedserver.py]",
+  "_make_ss [combiner/tests/test_sharedserver.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "build",
+  "cmd",
+  "combiner",
+  "combiner.tests.test_sharedserver.test_build_use_cmd_explicit_pid",
+  "explicit",
+  "pid",
+  "sharedserver",
+  "test",
+  "test_build_use_cmd_explicit_pid",
+  "tests",
+  "use",
+]

@@ -1,0 +1,43 @@
+symbol_ref = "scripts/codeindex/lsp_probe.py#Client.did_open"
+fqn = "scripts.codeindex.lsp_probe.Client.did_open"
+name = "did_open"
+kind = "method"
+lang = "python"
+content_hash = "f5e6758105dcdfd7"
+file = "scripts/codeindex/lsp_probe.py"
+file_hash = "014ef92d65f6717d"
+signature = "def did_open(self, path: Path) -> str:"
+description = ""
+schema = 4
+line = 115
+mtime = 1783033292000000000
+container = [
+  "Client",
+]
+scope = [
+  "scripts",
+  "codeindex",
+  "lsp_probe",
+  "Client",
+]
+symbol_was = []
+calls = [
+  "notify [scripts/codeindex/lsp_probe.py]",
+]
+called_by = [
+  "main [scripts/codeindex/lsp_probe.py]",
+]
+references = [
+  "main [scripts/codeindex/lsp_probe.py]",
+]
+name_terms = [
+  "client",
+  "codeindex",
+  "did",
+  "did_open",
+  "lsp",
+  "open",
+  "probe",
+  "scripts",
+  "scripts.codeindex.lsp_probe.Client.did_open",
+]

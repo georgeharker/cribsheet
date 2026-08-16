@@ -1,0 +1,48 @@
+symbol_ref = "combiner/mcp_combiner/config.py#PermissionAction.DENY"
+fqn = "combiner.mcp_combiner.config.PermissionAction.DENY"
+name = "DENY"
+kind = "constant"
+lang = "python"
+content_hash = "bca92cca1fd9ef6d"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "DENY = \"deny\""
+description = ""
+schema = 4
+line = 133
+mtime = 1783633313000000000
+container = [
+  "PermissionAction",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "PermissionAction",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+  "_rp [combiner/tests/test_permissions.py]",
+  "enforce [combiner/mcp_combiner/permissions.py]",
+  "resolve [combiner/mcp_combiner/config.py]",
+  "test_deny_beats_elicit_beats_allow [combiner/tests/test_permissions.py]",
+  "test_effective_policy_via_combiner_config [combiner/tests/test_permissions.py]",
+  "test_elicit_unavailable_fallback_deny [combiner/tests/test_permissions.py]",
+  "test_off_by_default [combiner/tests/test_permissions.py]",
+  "test_pattern_sets_are_unioned [combiner/tests/test_permissions.py]",
+  "test_server_overrides_global_scalars [combiner/tests/test_permissions.py]",
+  "test_snake_case_elicit_unavailable [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "DENY",
+  "action",
+  "combiner",
+  "combiner.mcp_combiner.config.PermissionAction.DENY",
+  "config",
+  "deny",
+  "mcp",
+  "permission",
+]

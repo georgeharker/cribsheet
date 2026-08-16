@@ -1,0 +1,54 @@
+symbol_ref = "combiner/mcp_combiner/mounts.py#drop_server_providers"
+fqn = "combiner.mcp_combiner.mounts.drop_server_providers"
+name = "drop_server_providers"
+kind = "function"
+lang = "python"
+content_hash = "46f16d678506a96d"
+file = "combiner/mcp_combiner/mounts.py"
+file_hash = "6bd48bfe5deb1fbd"
+signature = "def drop_server_providers(combiner: FastMCP, server_name: str) -> int:"
+description = ""
+schema = 4
+line = 88
+mtime = 1783452495000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mounts",
+]
+symbol_was = []
+calls = [
+  "_registry [combiner/mcp_combiner/mounts.py]",
+  "_sniff_namespace [combiner/mcp_combiner/mounts.py]",
+]
+called_by = [
+  "_unmount_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+  "mount_server_provider [combiner/mcp_combiner/mounts.py]",
+  "test_drop_only_targets_named_server [combiner/tests/test_mounts.py]",
+  "test_drop_removes_real_mount [combiner/tests/test_mounts.py]",
+  "test_drop_sniffs_mounts_that_bypassed_the_registry [combiner/tests/test_mounts.py]",
+  "test_remount_does_not_duplicate [combiner/tests/test_mounts.py]",
+]
+references = [
+  "_unmount_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__disable_server [combiner/mcp_combiner/meta_tools.py]",
+  "combiner__restart_server [combiner/mcp_combiner/meta_tools.py]",
+  "mount_server_provider [combiner/mcp_combiner/mounts.py]",
+  "test_drop_only_targets_named_server [combiner/tests/test_mounts.py]",
+  "test_drop_removes_real_mount [combiner/tests/test_mounts.py]",
+  "test_drop_sniffs_mounts_that_bypassed_the_registry [combiner/tests/test_mounts.py]",
+  "test_remount_does_not_duplicate [combiner/tests/test_mounts.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.mounts.drop_server_providers",
+  "drop",
+  "drop_server_providers",
+  "mcp",
+  "mounts",
+  "providers",
+  "server",
+]

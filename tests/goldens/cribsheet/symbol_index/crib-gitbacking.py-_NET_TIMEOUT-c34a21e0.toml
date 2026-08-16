@@ -1,0 +1,33 @@
+symbol_ref = "crib/gitbacking.py#_NET_TIMEOUT"
+fqn = "crib.gitbacking._NET_TIMEOUT"
+name = "_NET_TIMEOUT"
+kind = "constant"
+lang = "python"
+content_hash = "5cce9528e59f90d4"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "_NET_TIMEOUT = 120.0"
+description = ""
+schema = 4
+line = 51
+mtime = 1785963011000000000
+container = []
+scope = [
+  "crib",
+  "gitbacking",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_run [crib/gitbacking.py]",
+  "test_git_runs_are_bounded_and_get_no_stdin [tests/test_sync.py]",
+]
+name_terms = [
+  "_NET_TIMEOUT",
+  "crib",
+  "crib.gitbacking._NET_TIMEOUT",
+  "gitbacking",
+  "net",
+  "timeout",
+]

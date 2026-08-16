@@ -1,0 +1,34 @@
+symbol_ref = "crib/designs.py#_parse_sources"
+fqn = "crib.designs._parse_sources"
+name = "_parse_sources"
+kind = "function"
+lang = "python"
+content_hash = "90d3ec656351c92a"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _parse_sources(raw: Any) -> list[dict[str, Any]]:"
+description = ""
+schema = 4
+line = 248
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_load_graph [crib/designs.py]",
+]
+references = [
+  "_load_graph [crib/designs.py]",
+]
+name_terms = [
+  "_parse_sources",
+  "crib",
+  "crib.designs._parse_sources",
+  "designs",
+  "parse",
+  "sources",
+]

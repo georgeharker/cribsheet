@@ -1,0 +1,74 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#build_auth"
+fqn = "combiner.mcp_combiner.auth.build_auth"
+name = "build_auth"
+kind = "function"
+lang = "python"
+content_hash = "7d89aa246300ac7a"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "def build_auth("
+description = ""
+schema = 4
+line = 968
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+]
+symbol_was = []
+calls = [
+  "_BearerAuth [combiner/mcp_combiner/auth.py]",
+  "_build_oauth [combiner/mcp_combiner/auth.py]",
+]
+called_by = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_make_disconnected_client [combiner/mcp_combiner/connections.py]",
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+  "get_auth [combiner/mcp_combiner/connections.py]",
+  "test_bearer_dict [combiner/tests/test_auth.py]",
+  "test_bearer_non_string_raises [combiner/tests/test_auth.py]",
+  "test_cache_tokens_true_creates_directory [combiner/tests/test_auth.py]",
+  "test_invalid_dict_keys [combiner/tests/test_auth.py]",
+  "test_invalid_string_auth [combiner/tests/test_auth.py]",
+  "test_invalid_type [combiner/tests/test_auth.py]",
+  "test_none_returns_none [combiner/tests/test_auth.py]",
+  "test_oauth_dict_non_dict_opts [combiner/tests/test_auth.py]",
+  "test_oauth_dict_requires_url [combiner/tests/test_auth.py]",
+  "test_oauth_dict_returns_fastmcp_oauth [combiner/tests/test_auth.py]",
+  "test_oauth_string_requires_url [combiner/tests/test_auth.py]",
+  "test_oauth_string_returns_fastmcp_oauth [combiner/tests/test_auth.py]",
+  "test_oauth_uses_encrypted_storage [combiner/tests/test_auth.py]",
+  "test_oauth_with_client_id [combiner/tests/test_auth.py]",
+]
+references = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_make_disconnected_client [combiner/mcp_combiner/connections.py]",
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+  "get_auth [combiner/mcp_combiner/connections.py]",
+  "test_bearer_dict [combiner/tests/test_auth.py]",
+  "test_bearer_non_string_raises [combiner/tests/test_auth.py]",
+  "test_cache_tokens_true_creates_directory [combiner/tests/test_auth.py]",
+  "test_invalid_dict_keys [combiner/tests/test_auth.py]",
+  "test_invalid_string_auth [combiner/tests/test_auth.py]",
+  "test_invalid_type [combiner/tests/test_auth.py]",
+  "test_none_returns_none [combiner/tests/test_auth.py]",
+  "test_oauth_dict_non_dict_opts [combiner/tests/test_auth.py]",
+  "test_oauth_dict_requires_url [combiner/tests/test_auth.py]",
+  "test_oauth_dict_returns_fastmcp_oauth [combiner/tests/test_auth.py]",
+  "test_oauth_string_requires_url [combiner/tests/test_auth.py]",
+  "test_oauth_string_returns_fastmcp_oauth [combiner/tests/test_auth.py]",
+  "test_oauth_uses_encrypted_storage [combiner/tests/test_auth.py]",
+  "test_oauth_with_client_id [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "auth",
+  "build",
+  "build_auth",
+  "combiner",
+  "combiner.mcp_combiner.auth.build_auth",
+  "mcp",
+]

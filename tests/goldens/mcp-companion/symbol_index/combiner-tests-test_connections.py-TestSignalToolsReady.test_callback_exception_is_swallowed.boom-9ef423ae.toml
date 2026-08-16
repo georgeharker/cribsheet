@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_connections.py#TestSignalToolsReady.test_callback_exception_is_swallowed.boom"
+fqn = "combiner.tests.test_connections.TestSignalToolsReady.test_callback_exception_is_swallowed.boom"
+name = "boom"
+kind = "function"
+lang = "python"
+content_hash = "ffca734fc5fb4235"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "def boom(_name):"
+description = ""
+schema = 4
+line = 103
+mtime = 1784493613000000000
+container = [
+  "TestSignalToolsReady",
+  "test_callback_exception_is_swallowed",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+  "TestSignalToolsReady",
+  "test_callback_exception_is_swallowed",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_callback_exception_is_swallowed [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "boom",
+  "callback",
+  "combiner",
+  "combiner.tests.test_connections.TestSignalToolsReady.test_callback_exception_is_swallowed.boom",
+  "connections",
+  "exception",
+  "is",
+  "ready",
+  "signal",
+  "swallowed",
+  "test",
+  "tests",
+  "tools",
+]

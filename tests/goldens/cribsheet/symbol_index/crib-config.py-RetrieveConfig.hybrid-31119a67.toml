@@ -1,0 +1,36 @@
+symbol_ref = "crib/config.py#RetrieveConfig.hybrid"
+fqn = "crib.config.RetrieveConfig.hybrid"
+name = "hybrid"
+kind = "field"
+lang = "python"
+content_hash = "bc76273411635394"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "hybrid: bool = True"
+description = ""
+schema = 4
+line = 94
+mtime = 1786564832000000000
+container = [
+  "RetrieveConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "RetrieveConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "cmd_info [crib/cli.py]",
+  "lookup [crib/app.py]",
+  "test_every_table_tolerates_unknown_keys [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.RetrieveConfig.hybrid",
+  "hybrid",
+  "retrieve",
+]

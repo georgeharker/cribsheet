@@ -1,0 +1,38 @@
+symbol_ref = "crib/cli.py#_sym_name"
+fqn = "crib.cli._sym_name"
+name = "_sym_name"
+kind = "function"
+lang = "python"
+content_hash = "ce3a8ef352688334"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _sym_name(d: dict) -> str:"
+description = ""
+schema = 4
+line = 215
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_emit_code_edges [crib/cli.py]",
+  "_emit_code_rehome [crib/cli.py]",
+  "render_symbol [crib/cli.py]",
+]
+references = [
+  "_emit_code_edges [crib/cli.py]",
+  "_emit_code_rehome [crib/cli.py]",
+  "render_symbol [crib/cli.py]",
+]
+name_terms = [
+  "_sym_name",
+  "cli",
+  "crib",
+  "crib.cli._sym_name",
+  "name",
+  "sym",
+]

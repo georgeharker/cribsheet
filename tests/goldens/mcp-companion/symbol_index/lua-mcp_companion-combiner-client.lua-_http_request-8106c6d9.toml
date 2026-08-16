@@ -1,0 +1,63 @@
+symbol_ref = "lua/mcp_companion/combiner/client.lua#_http_request"
+fqn = "mcp_companion.combiner.client._http_request"
+name = "_http_request"
+kind = "function"
+lang = "lua"
+content_hash = "962197c7759281c4"
+file = "lua/mcp_companion/combiner/client.lua"
+file_hash = "f8af10d7cbc68062"
+signature = "function Client:_http_request(method, path, body, timeout_ms, callback)"
+description = ""
+schema = 4
+line = 225
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "combiner",
+  "client",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "Client.new [lua/mcp_companion/combiner/client.lua]",
+  "M._create_client [lua/mcp_companion/combiner/init.lua]",
+  "M.new_per_chat_client [lua/mcp_companion/combiner/init.lua]",
+  "client.lua [lua/mcp_companion/combiner/client.lua]",
+  "test_multi_session.lua [tests/test_multi_session.lua]",
+  "test_session [tests/test_multi_session.lua]",
+]
+references = [
+  "_cleanup_sse [lua/mcp_companion/combiner/client.lua]",
+  "_process_sse_buffer [lua/mcp_companion/combiner/client.lua]",
+  "_schedule_sse_reconnect [lua/mcp_companion/combiner/client.lua]",
+  "_start_sse [lua/mcp_companion/combiner/client.lua]",
+  "_stop_polling [lua/mcp_companion/combiner/client.lua]",
+  "_stop_sse [lua/mcp_companion/combiner/client.lua]",
+  "_update_server_state [lua/mcp_companion/combiner/client.lua]",
+  "callback [lua/mcp_companion/combiner/client.lua]",
+  "client [lua/mcp_companion/combiner/init.lua]",
+  "client [tests/test_multi_session.lua]",
+  "config [lua/mcp_companion/combiner/client.lua]",
+  "disconnect [lua/mcp_companion/combiner/client.lua]",
+  "if [tests/test_cc_tools.lua]",
+  "if [tests/test_real_servers.lua]",
+  "interval_ms [lua/mcp_companion/combiner/client.lua]",
+  "method [lua/mcp_companion/combiner/client.lua]",
+  "msg [lua/mcp_companion/combiner/client.lua]",
+  "name [lua/mcp_companion/combiner/client.lua]",
+  "new [lua/mcp_companion/combiner/client.lua]",
+  "new_per_chat_client [lua/mcp_companion/combiner/init.lua]",
+  "server_name [lua/mcp_companion/combiner/client.lua]",
+  "uri [lua/mcp_companion/combiner/client.lua]",
+]
+name_terms = [
+  "_http_request",
+  "client",
+  "combiner",
+  "companion",
+  "http",
+  "mcp",
+  "mcp_companion.combiner.client._http_request",
+  "request",
+]

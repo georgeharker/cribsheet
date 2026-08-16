@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_config.py#TestInterpolateDict"
+fqn = "combiner.tests.test_config.TestInterpolateDict"
+name = "TestInterpolateDict"
+kind = "class"
+lang = "python"
+content_hash = "c0ca6f8c8fbcc5da"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "class TestInterpolateDict:"
+description = ""
+schema = 4
+line = 314
+mtime = 1782852601000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestInterpolateDict",
+  "combiner",
+  "combiner.tests.test_config.TestInterpolateDict",
+  "config",
+  "dict",
+  "interpolate",
+  "test",
+  "tests",
+]

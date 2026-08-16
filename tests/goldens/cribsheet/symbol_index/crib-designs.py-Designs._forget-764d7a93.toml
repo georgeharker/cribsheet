@@ -1,0 +1,45 @@
+symbol_ref = "crib/designs.py#Designs._forget"
+fqn = "crib.designs.Designs._forget"
+name = "_forget"
+kind = "method"
+lang = "python"
+content_hash = "3198420d1b706e49"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "async def _forget(self, proj: str, kind: str, ref: str,"
+description = ""
+schema = 4
+line = 1084
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_load_graph [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_store [crib/designs.py]",
+  "brief [crib/designs.py]",
+  "delete [crib/notestore.py]",
+]
+called_by = [
+  "design_forget [crib/designs.py]",
+  "plan_forget [crib/designs.py]",
+]
+references = [
+  "design_forget [crib/designs.py]",
+  "plan_forget [crib/designs.py]",
+]
+name_terms = [
+  "_forget",
+  "crib",
+  "crib.designs.Designs._forget",
+  "designs",
+  "forget",
+]

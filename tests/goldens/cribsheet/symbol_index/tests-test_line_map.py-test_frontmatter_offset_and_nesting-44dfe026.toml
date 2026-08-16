@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_line_map.py#test_frontmatter_offset_and_nesting"
+fqn = "tests.test_line_map.test_frontmatter_offset_and_nesting"
+name = "test_frontmatter_offset_and_nesting"
+kind = "function"
+lang = "python"
+content_hash = "be797d31c7fe1a13"
+file = "tests/test_line_map.py"
+file_hash = "cf0850bca15c741f"
+signature = "def test_frontmatter_offset_and_nesting():"
+description = ""
+schema = 4
+line = 38
+mtime = 1782631409000000000
+container = []
+scope = [
+  "tests",
+  "test_line_map",
+]
+symbol_was = []
+calls = [
+  "section_line_map [crib/chunk.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "frontmatter",
+  "line",
+  "map",
+  "nesting",
+  "offset",
+  "test",
+  "test_frontmatter_offset_and_nesting",
+  "tests",
+  "tests.test_line_map.test_frontmatter_offset_and_nesting",
+]

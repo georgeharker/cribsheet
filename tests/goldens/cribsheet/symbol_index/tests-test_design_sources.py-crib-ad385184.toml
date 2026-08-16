@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_design_sources.py#crib"
+fqn = "tests.test_design_sources.crib"
+name = "crib"
+kind = "function"
+lang = "python"
+content_hash = "0b13e3e1d6d0fa43"
+file = "tests/test_design_sources.py"
+file_hash = "f89b5a94b236ce9c"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 49
+mtime = 1786137963000000000
+container = []
+scope = [
+  "tests",
+  "test_design_sources",
+]
+symbol_was = []
+calls = [
+  "Config [crib/config.py]",
+  "Crib [crib/app.py]",
+  "InMemoryStore [crib/store.py]",
+  "ensure [crib/paths.py]",
+  "resolve [crib/paths.py]",
+  "run [tests/test_design_sources.py]",
+  "store_note [crib/app.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "design",
+  "sources",
+  "test",
+  "tests",
+  "tests.test_design_sources.crib",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_designs.py#test_taint_survives_a_plain_file_edit"
+fqn = "tests.test_designs.test_taint_survives_a_plain_file_edit"
+name = "test_taint_survives_a_plain_file_edit"
+kind = "function"
+lang = "python"
+content_hash = "4aca8bf4685d4a7d"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def test_taint_survives_a_plain_file_edit(crib):"
+description = ""
+schema = 4
+line = 144
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "run [tests/test_designs.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "designs",
+  "edit",
+  "file",
+  "plain",
+  "survives",
+  "taint",
+  "test",
+  "test_taint_survives_a_plain_file_edit",
+  "tests",
+  "tests.test_designs.test_taint_survives_a_plain_file_edit",
+]

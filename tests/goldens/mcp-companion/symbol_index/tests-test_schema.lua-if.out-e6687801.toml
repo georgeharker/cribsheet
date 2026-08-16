@@ -1,0 +1,34 @@
+symbol_ref = "tests/test_schema.lua#if.out"
+fqn = "tests.test_schema.if.out"
+name = "out"
+kind = "variable"
+lang = "lua"
+content_hash = "e57fac2d4f7fb8fc"
+file = "tests/test_schema.lua"
+file_hash = "14d3153c02a2760c"
+signature = "local out = schema.normalize({"
+description = ""
+schema = 4
+line = 101
+mtime = 1783013405000000000
+container = [
+  "if",
+  "do end",
+]
+scope = [
+  "tests",
+  "test_schema",
+  "if",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "if",
+  "out",
+  "schema",
+  "test",
+  "tests",
+  "tests.test_schema.if.out",
+]

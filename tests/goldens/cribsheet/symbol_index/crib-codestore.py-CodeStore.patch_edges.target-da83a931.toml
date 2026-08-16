@@ -1,0 +1,43 @@
+symbol_ref = "crib/codestore.py#CodeStore.patch_edges.target"
+fqn = "crib.codestore.CodeStore.patch_edges.target"
+name = "target"
+kind = "function"
+lang = "python"
+content_hash = "0d85b158cd430903"
+file = "crib/codestore.py"
+file_hash = "85066097f15df7df"
+signature = "def target(name: str, file: str) -> dict | None:"
+description = ""
+schema = 4
+line = 304
+mtime = 1786664729000000000
+container = [
+  "CodeStore",
+  "patch_edges",
+]
+scope = [
+  "crib",
+  "codestore",
+  "CodeStore",
+  "patch_edges",
+]
+symbol_was = []
+calls = [
+  "match_entry [crib/symbols.py]",
+]
+called_by = [
+  "patch_edges [crib/codestore.py]",
+]
+references = [
+  "patch_edges [crib/codestore.py]",
+]
+name_terms = [
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore.CodeStore.patch_edges.target",
+  "edges",
+  "patch",
+  "store",
+  "target",
+]

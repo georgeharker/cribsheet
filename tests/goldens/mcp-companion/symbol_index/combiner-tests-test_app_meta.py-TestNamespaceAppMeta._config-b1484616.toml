@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_app_meta.py#TestNamespaceAppMeta._config"
+fqn = "combiner.tests.test_app_meta.TestNamespaceAppMeta._config"
+name = "_config"
+kind = "method"
+lang = "python"
+content_hash = "95e46be3537b38f5"
+file = "combiner/tests/test_app_meta.py"
+file_hash = "fc52f36639c3320a"
+signature = "@pytest.fixture"
+description = ""
+schema = 4
+line = 93
+mtime = 1783629928000000000
+container = [
+  "TestNamespaceAppMeta",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_app_meta",
+  "TestNamespaceAppMeta",
+]
+symbol_was = []
+calls = [
+  "CombinerConfig [combiner/mcp_combiner/config.py]",
+  "ServerConfig [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "_config",
+  "app",
+  "combiner",
+  "combiner.tests.test_app_meta.TestNamespaceAppMeta._config",
+  "config",
+  "meta",
+  "namespace",
+  "test",
+  "tests",
+]

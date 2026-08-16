@@ -1,0 +1,42 @@
+symbol_ref = "crib/designs.py#Designs._section_hash"
+fqn = "crib.designs.Designs._section_hash"
+name = "_section_hash"
+kind = "method"
+lang = "python"
+content_hash = "a90c1066c316d512"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _section_hash(self, proj: str, src: dict[str, Any],"
+description = ""
+schema = 4
+line = 602
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_doc_index [crib/designs.py]",
+  "_suffix_match [crib/designs.py]",
+]
+called_by = [
+  "_load_graph [crib/designs.py]",
+  "_recapture [crib/designs.py]",
+]
+references = [
+  "_load_graph [crib/designs.py]",
+  "_recapture [crib/designs.py]",
+]
+name_terms = [
+  "_section_hash",
+  "crib",
+  "crib.designs.Designs._section_hash",
+  "designs",
+  "hash",
+  "section",
+]

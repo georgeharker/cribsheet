@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/schemafix.py#_normalize_tool_schema"
+fqn = "combiner.mcp_combiner.schemafix._normalize_tool_schema"
+name = "_normalize_tool_schema"
+kind = "function"
+lang = "python"
+content_hash = "41bc40e17c5fb1df"
+file = "combiner/mcp_combiner/schemafix.py"
+file_hash = "49870021f06866cb"
+signature = "def _normalize_tool_schema(tool: Tool, fixes: frozenset[str]) -> Tool:"
+description = ""
+schema = 4
+line = 260
+mtime = 1783542616000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "schemafix",
+]
+symbol_was = []
+calls = [
+  "_apply_schema_fixes [combiner/mcp_combiner/schemafix.py]",
+  "_safe_json_clone [combiner/mcp_combiner/schemafix.py]",
+]
+called_by = [
+  "_finalize_schemas [combiner/mcp_combiner/schemafix.py]",
+  "test_normalize_preserves_output_schema_on_rebuild [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "_finalize_schemas [combiner/mcp_combiner/schemafix.py]",
+  "test_normalize_preserves_output_schema_on_rebuild [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_normalize_tool_schema",
+  "combiner",
+  "combiner.mcp_combiner.schemafix._normalize_tool_schema",
+  "mcp",
+  "normalize",
+  "schema",
+  "schemafix",
+  "tool",
+]

@@ -1,0 +1,50 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#ServedOAuthMock.mcp_url"
+fqn = "combiner.tests.test_oauth_mock.ServedOAuthMock.mcp_url"
+name = "mcp_url"
+kind = "method"
+lang = "python"
+content_hash = "767f01ac525d370b"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "@property"
+description = ""
+schema = 4
+line = 105
+mtime = 1784495646000000000
+container = [
+  "ServedOAuthMock",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "ServedOAuthMock",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_call_echo [combiner/tests/test_oauth_mock.py]",
+  "_drop_persisted_expiry [combiner/tests/test_oauth_mock.py]",
+  "_expire_persisted_token [combiner/tests/test_oauth_mock.py]",
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+]
+references = [
+  "_call_echo [combiner/tests/test_oauth_mock.py]",
+  "_drop_persisted_expiry [combiner/tests/test_oauth_mock.py]",
+  "_expire_persisted_token [combiner/tests/test_oauth_mock.py]",
+  "_oauth_for [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.tests.test_oauth_mock.ServedOAuthMock.mcp_url",
+  "mcp",
+  "mcp_url",
+  "mock",
+  "o",
+  "oauth",
+  "served",
+  "test",
+  "tests",
+  "url",
+]

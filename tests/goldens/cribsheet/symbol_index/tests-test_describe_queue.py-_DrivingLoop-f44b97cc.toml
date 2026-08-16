@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_describe_queue.py#_DrivingLoop"
+fqn = "tests.test_describe_queue._DrivingLoop"
+name = "_DrivingLoop"
+kind = "class"
+lang = "python"
+content_hash = "b0162af07d24380c"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "class _DrivingLoop(_FakeLoop):"
+description = ""
+schema = 4
+line = 83
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_failed_describe_backs_off_instead_of_restarting_at_zero [tests/test_describe_queue.py]",
+  "test_successful_describe_clears_the_entry [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "_DrivingLoop",
+  "describe",
+  "driving",
+  "loop",
+  "queue",
+  "test",
+  "tests",
+  "tests.test_describe_queue._DrivingLoop",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_codeindex.py#test_local_name_reduces_rust_impl_to_type"
+fqn = "tests.test_codeindex.test_local_name_reduces_rust_impl_to_type"
+name = "test_local_name_reduces_rust_impl_to_type"
+kind = "function"
+lang = "python"
+content_hash = "40d7072b52ce772f"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_local_name_reduces_rust_impl_to_type():"
+description = ""
+schema = 4
+line = 29
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "local_name [crib/symbols.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "codeindex",
+  "impl",
+  "local",
+  "name",
+  "reduces",
+  "rust",
+  "test",
+  "test_local_name_reduces_rust_impl_to_type",
+  "tests",
+  "tests.test_codeindex.test_local_name_reduces_rust_impl_to_type",
+  "to",
+  "type",
+]

@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_repo_storage.py#test_watcher_indexes_an_edit_inside_an_in_repo_store.scenario"
+fqn = "tests.test_repo_storage.test_watcher_indexes_an_edit_inside_an_in_repo_store.scenario"
+name = "scenario"
+kind = "function"
+lang = "python"
+content_hash = "caed959914fb21c7"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "async def scenario():"
+description = ""
+schema = 4
+line = 325
+mtime = 1786139638000000000
+container = [
+  "test_watcher_indexes_an_edit_inside_an_in_repo_store",
+]
+scope = [
+  "tests",
+  "test_repo_storage",
+  "test_watcher_indexes_an_edit_inside_an_in_repo_store",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_watcher_indexes_an_edit_inside_an_in_repo_store [tests/test_repo_storage.py]",
+]
+references = [
+  "test_watcher_indexes_an_edit_inside_an_in_repo_store [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "an",
+  "edit",
+  "in",
+  "indexes",
+  "inside",
+  "repo",
+  "scenario",
+  "storage",
+  "store",
+  "test",
+  "tests",
+  "tests.test_repo_storage.test_watcher_indexes_an_edit_inside_an_in_repo_store.scenario",
+  "watcher",
+]

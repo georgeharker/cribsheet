@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/asgi.py#ServeOptions.host"
+fqn = "combiner.mcp_combiner.asgi.ServeOptions.host"
+name = "host"
+kind = "field"
+lang = "python"
+content_hash = "22092ea10990ba9e"
+file = "combiner/mcp_combiner/asgi.py"
+file_hash = "1ff2dd1d6ee7f6d0"
+signature = "host: str = \"127.0.0.1\""
+description = ""
+schema = 4
+line = 50
+mtime = 1783548694000000000
+container = [
+  "ServeOptions",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "asgi",
+  "ServeOptions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_serve [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "asgi",
+  "combiner",
+  "combiner.mcp_combiner.asgi.ServeOptions.host",
+  "host",
+  "mcp",
+  "options",
+  "serve",
+]

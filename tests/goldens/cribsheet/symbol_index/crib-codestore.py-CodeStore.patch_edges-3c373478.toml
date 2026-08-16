@@ -1,0 +1,45 @@
+symbol_ref = "crib/codestore.py#CodeStore.patch_edges"
+fqn = "crib.codestore.CodeStore.patch_edges"
+name = "patch_edges"
+kind = "method"
+lang = "python"
+content_hash = "baf1622e7ac9f9de"
+file = "crib/codestore.py"
+file_hash = "85066097f15df7df"
+signature = "@staticmethod"
+description = ""
+schema = 4
+line = 271
+mtime = 1786664729000000000
+container = [
+  "CodeStore",
+]
+scope = [
+  "crib",
+  "codestore",
+  "CodeStore",
+]
+symbol_was = []
+calls = [
+  "decode_edge [crib/symbols.py]",
+  "edge_is_from [crib/symbols.py]",
+  "encode_edge [crib/symbols.py]",
+  "key [crib/symbols.py]",
+  "target [crib/codestore.py]",
+]
+called_by = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+references = [
+  "_index_code_file [crib/codeindexer.py]",
+]
+name_terms = [
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore.CodeStore.patch_edges",
+  "edges",
+  "patch",
+  "patch_edges",
+  "store",
+]

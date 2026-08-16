@@ -1,0 +1,38 @@
+symbol_ref = "crib/config.py#CribLink.paths"
+fqn = "crib.config.CribLink.paths"
+name = "paths"
+kind = "field"
+lang = "python"
+content_hash = "3b096b6e665d43c1"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "paths: list[str] = field(default_factory=list)"
+description = ""
+schema = 4
+line = 370
+mtime = 1786564832000000000
+container = [
+  "CribLink",
+]
+scope = [
+  "crib",
+  "config",
+  "CribLink",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_parse [crib/config.py]",
+  "_warn_store_glob_overlap [crib/app.py]",
+  "project_status [crib/app.py]",
+  "test_good_crib_still_parses [tests/test_config_resilience.py]",
+  "test_scalar_list_fields_are_tolerated [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.paths",
+  "link",
+  "paths",
+]

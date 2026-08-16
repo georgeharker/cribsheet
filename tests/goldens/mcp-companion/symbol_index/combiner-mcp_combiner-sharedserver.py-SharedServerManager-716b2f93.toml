@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/sharedserver.py#SharedServerManager"
+fqn = "combiner.mcp_combiner.sharedserver.SharedServerManager"
+name = "SharedServerManager"
+kind = "class"
+lang = "python"
+content_hash = "3bbee4c7416eadec"
+file = "combiner/mcp_combiner/sharedserver.py"
+file_hash = "00df81a0a741c869"
+signature = "class SharedServerManager:"
+description = ""
+schema = 4
+line = 119
+mtime = 1782539642000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "sharedserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_manager [combiner/mcp_combiner/sharedserver.py]",
+  "create_combiner [combiner/mcp_combiner/server.py]",
+  "register_for_cleanup [combiner/mcp_combiner/sharedserver.py]",
+  "register_meta_tools [combiner/mcp_combiner/meta_tools.py]",
+  "ss_manager [combiner/mcp_combiner/runtime.py]",
+  "test_health_poll_timeout_warns_but_continues [combiner/tests/test_sharedserver.py]",
+  "test_start_all_calls_sharedserver_use [combiner/tests/test_sharedserver.py]",
+  "test_start_all_no_sharedserver_config [combiner/tests/test_sharedserver.py]",
+  "test_start_all_skips_on_nonzero_exit [combiner/tests/test_sharedserver.py]",
+  "test_start_all_skips_when_binary_missing [combiner/tests/test_sharedserver.py]",
+  "test_stop_all_calls_unuse [combiner/tests/test_sharedserver.py]",
+  "test_stop_all_noop_when_nothing_started [combiner/tests/test_sharedserver.py]",
+]
+name_terms = [
+  "SharedServerManager",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.SharedServerManager",
+  "manager",
+  "mcp",
+  "server",
+  "shared",
+  "sharedserver",
+]

@@ -1,0 +1,42 @@
+symbol_ref = "crib/app.py#Crib._schedule_keyword_refresh._refresh"
+fqn = "crib.app.Crib._schedule_keyword_refresh._refresh"
+name = "_refresh"
+kind = "function"
+lang = "python"
+content_hash = "39779c1145f0eb9b"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def _refresh() -> None:"
+description = ""
+schema = 4
+line = 531
+mtime = 1786693579000000000
+container = [
+  "Crib",
+  "_schedule_keyword_refresh",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+  "_schedule_keyword_refresh",
+]
+symbol_was = []
+calls = [
+  "enrich [crib/app.py]",
+]
+called_by = [
+  "_fire [crib/app.py]",
+]
+references = [
+  "_fire [crib/app.py]",
+]
+name_terms = [
+  "_refresh",
+  "app",
+  "crib",
+  "crib.app.Crib._schedule_keyword_refresh._refresh",
+  "keyword",
+  "refresh",
+  "schedule",
+]

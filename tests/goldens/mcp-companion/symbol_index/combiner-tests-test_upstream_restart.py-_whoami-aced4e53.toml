@@ -1,0 +1,49 @@
+symbol_ref = "combiner/tests/test_upstream_restart.py#_whoami"
+fqn = "combiner.tests.test_upstream_restart._whoami"
+name = "_whoami"
+kind = "function"
+lang = "python"
+content_hash = "e558f62466d51650"
+file = "combiner/tests/test_upstream_restart.py"
+file_hash = "c3ceaa6ec420f1df"
+signature = "async def _whoami(client: Client, server: str = \"mockup\") -> dict:"
+description = ""
+schema = 4
+line = 55
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_upstream_restart",
+]
+symbol_was = []
+calls = [
+  "_text [combiner/tests/test_upstream_restart.py]",
+]
+called_by = [
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_crash_reconnects_when_back [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_restart_bounces_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_crash_recovers [combiner/tests/test_upstream_restart.py]",
+]
+references = [
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_http_upstream_crash_reconnects_when_back [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_crash_escalates_to_backing_restart [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_restart_bounces_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_upstream_crash_recovers [combiner/tests/test_upstream_restart.py]",
+]
+name_terms = [
+  "_whoami",
+  "combiner",
+  "combiner.tests.test_upstream_restart._whoami",
+  "restart",
+  "test",
+  "tests",
+  "upstream",
+  "whoami",
+]

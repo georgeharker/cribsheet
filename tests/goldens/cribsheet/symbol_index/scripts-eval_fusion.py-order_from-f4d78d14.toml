@@ -1,0 +1,45 @@
+symbol_ref = "scripts/eval_fusion.py#order_from"
+fqn = "scripts.eval_fusion.order_from"
+name = "order_from"
+kind = "function"
+lang = "python"
+content_hash = "545397b690d7b816"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "def order_from(scores: dict[int, float], k: int) -> list[int]:"
+description = ""
+schema = 4
+line = 145
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_ltr_rows [scripts/eval_fusion.py]",
+  "c_3rrf [scripts/eval_kw.py]",
+  "c_dense [scripts/eval_kw.py]",
+  "fn [scripts/eval_fusion.py]",
+  "fn [scripts/eval_kw.py]",
+  "main [scripts/eval_rigor.py]",
+]
+references = [
+  "_ltr_rows [scripts/eval_fusion.py]",
+  "c_3rrf [scripts/eval_kw.py]",
+  "c_dense [scripts/eval_kw.py]",
+  "fn [scripts/eval_fusion.py]",
+  "fn [scripts/eval_kw.py]",
+  "main [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "eval",
+  "from",
+  "fusion",
+  "order",
+  "order_from",
+  "scripts",
+  "scripts.eval_fusion.order_from",
+]

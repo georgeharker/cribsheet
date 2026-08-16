@@ -1,0 +1,35 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_TOOLS_READY_TIMEOUT"
+fqn = "combiner.mcp_combiner.connections._TOOLS_READY_TIMEOUT"
+name = "_TOOLS_READY_TIMEOUT"
+kind = "constant"
+lang = "python"
+content_hash = "1c0e90cfef95eb2a"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_TOOLS_READY_TIMEOUT = _env_float(\"MCP_COMBINER_TOOLS_READY_TIMEOUT\", 30.0)"
+description = ""
+schema = 4
+line = 112
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_signal_tools_ready [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_TOOLS_READY_TIMEOUT",
+  "combiner",
+  "combiner.mcp_combiner.connections._TOOLS_READY_TIMEOUT",
+  "connections",
+  "mcp",
+  "ready",
+  "timeout",
+  "tools",
+]

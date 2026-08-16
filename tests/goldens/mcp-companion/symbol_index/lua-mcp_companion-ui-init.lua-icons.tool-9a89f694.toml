@@ -1,0 +1,36 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#icons.tool"
+fqn = "mcp_companion.ui.icons.tool"
+name = "tool"
+kind = "field"
+lang = "lua"
+content_hash = "7fe362ef4e1e7d0a"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "tool = \"⚡\","
+description = ""
+schema = 4
+line = 33
+mtime = 1783545086000000000
+container = [
+  "icons",
+]
+scope = [
+  "mcp_companion",
+  "ui",
+  "icons",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "else [lua/mcp_companion/ui/init.lua]",
+  "if [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "companion",
+  "icons",
+  "mcp",
+  "mcp_companion.ui.icons.tool",
+  "tool",
+  "ui",
+]

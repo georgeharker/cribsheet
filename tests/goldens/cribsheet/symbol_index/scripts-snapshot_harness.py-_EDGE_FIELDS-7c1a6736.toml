@@ -1,0 +1,33 @@
+symbol_ref = "scripts/snapshot_harness.py#_EDGE_FIELDS"
+fqn = "scripts.snapshot_harness._EDGE_FIELDS"
+name = "_EDGE_FIELDS"
+kind = "constant"
+lang = "python"
+content_hash = "c9a37720fd641e96"
+file = "scripts/snapshot_harness.py"
+file_hash = "60b46810ead50638"
+signature = "_EDGE_FIELDS = {\"references\", \"calls\", \"called_by\"}"
+description = ""
+schema = 4
+line = 144
+mtime = 1783498271000000000
+container = []
+scope = [
+  "scripts",
+  "snapshot_harness",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "compare [scripts/snapshot_harness.py]",
+]
+name_terms = [
+  "_EDGE_FIELDS",
+  "edge",
+  "fields",
+  "harness",
+  "scripts",
+  "scripts.snapshot_harness._EDGE_FIELDS",
+  "snapshot",
+]

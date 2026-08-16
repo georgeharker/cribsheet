@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_surface_parity.py#test_an_adopting_call_reports_it"
+fqn = "tests.test_surface_parity.test_an_adopting_call_reports_it"
+name = "test_an_adopting_call_reports_it"
+kind = "function"
+lang = "python"
+content_hash = "a913794ef64939f7"
+file = "tests/test_surface_parity.py"
+file_hash = "0c4fc72b5f441359"
+signature = "def test_an_adopting_call_reports_it(capsys):"
+description = ""
+schema = 4
+line = 247
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_surface_parity",
+]
+symbol_was = []
+calls = [
+  "ProjectResolution [crib/session.py]",
+  "_echo_dict [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "adopting",
+  "an",
+  "call",
+  "it",
+  "parity",
+  "reports",
+  "surface",
+  "test",
+  "test_an_adopting_call_reports_it",
+  "tests",
+  "tests.test_surface_parity.test_an_adopting_call_reports_it",
+]

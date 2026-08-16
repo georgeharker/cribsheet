@@ -1,0 +1,41 @@
+symbol_ref = "crib/designs.py#Designs._note_dep_ids"
+fqn = "crib.designs.Designs._note_dep_ids"
+name = "_note_dep_ids"
+kind = "method"
+lang = "python"
+content_hash = "3f7e6d279c69ba15"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _note_dep_ids(self, proj: str, ids: set[str]) -> set[str]:"
+description = ""
+schema = 4
+line = 1723
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "notes_root [crib/notestore.py]",
+  "scan_id [crib/notes.py]",
+]
+called_by = [
+  "_rows [crib/designs.py]",
+]
+references = [
+  "_rows [crib/designs.py]",
+]
+name_terms = [
+  "_note_dep_ids",
+  "crib",
+  "crib.designs.Designs._note_dep_ids",
+  "dep",
+  "designs",
+  "ids",
+  "note",
+]

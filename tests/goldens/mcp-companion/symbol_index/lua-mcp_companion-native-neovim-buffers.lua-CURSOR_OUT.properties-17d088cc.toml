@@ -1,0 +1,38 @@
+symbol_ref = "lua/mcp_companion/native/neovim/buffers.lua#CURSOR_OUT.properties"
+fqn = "mcp_companion.native.neovim.buffers.CURSOR_OUT.properties"
+name = "properties"
+kind = "field"
+lang = "lua"
+content_hash = "f8a596455e448024"
+file = "lua/mcp_companion/native/neovim/buffers.lua"
+file_hash = "aa9fe88bab71f23c"
+signature = "properties = {"
+description = ""
+schema = 4
+line = 17
+mtime = 1783022818000000000
+container = [
+  "CURSOR_OUT",
+]
+scope = [
+  "mcp_companion",
+  "native",
+  "neovim",
+  "buffers",
+  "CURSOR_OUT",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "buffers",
+  "companion",
+  "cursor",
+  "mcp",
+  "mcp_companion.native.neovim.buffers.CURSOR_OUT.properties",
+  "native",
+  "neovim",
+  "out",
+  "properties",
+]

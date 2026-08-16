@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/config.py#_interpolate._replace"
+fqn = "combiner.mcp_combiner.config._interpolate._replace"
+name = "_replace"
+kind = "function"
+lang = "python"
+content_hash = "25de75555fdcaace"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def _replace(m: re.Match[str]) -> str:"
+description = ""
+schema = 4
+line = 609
+mtime = 1783633313000000000
+container = [
+  "_interpolate",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "_interpolate",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_interpolate [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "_replace",
+  "combiner",
+  "combiner.mcp_combiner.config._interpolate._replace",
+  "config",
+  "interpolate",
+  "mcp",
+  "replace",
+]

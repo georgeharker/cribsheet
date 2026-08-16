@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_config_resilience.py#test_wrong_shaped_values_warn_instead_of_raising"
+fqn = "tests.test_config_resilience.test_wrong_shaped_values_warn_instead_of_raising"
+name = "test_wrong_shaped_values_warn_instead_of_raising"
+kind = "function"
+lang = "python"
+content_hash = "706dec9819b0f007"
+file = "tests/test_config_resilience.py"
+file_hash = "620aeb96b59e7b2d"
+signature = "def test_wrong_shaped_values_warn_instead_of_raising(tmp_path, capsys):"
+description = ""
+schema = 4
+line = 54
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_config_resilience",
+]
+symbol_was = []
+calls = [
+  "_cfg [tests/test_config_resilience.py]",
+  "load [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "config",
+  "instead",
+  "of",
+  "raising",
+  "resilience",
+  "shaped",
+  "test",
+  "test_wrong_shaped_values_warn_instead_of_raising",
+  "tests",
+  "tests.test_config_resilience.test_wrong_shaped_values_warn_instead_of_raising",
+  "values",
+  "warn",
+  "wrong",
+]

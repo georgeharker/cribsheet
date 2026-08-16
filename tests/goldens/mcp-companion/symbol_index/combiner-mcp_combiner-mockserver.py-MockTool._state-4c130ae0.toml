@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockTool._state"
+fqn = "combiner.mcp_combiner.mockserver.MockTool._state"
+name = "_state"
+kind = "field"
+lang = "python"
+content_hash = "c178a29466ec9f25"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "_state: MockState = PrivateAttr()"
+description = ""
+schema = 4
+line = 245
+mtime = 1783622326000000000
+container = [
+  "MockTool",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockTool",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "run [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "_state",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockTool._state",
+  "mcp",
+  "mock",
+  "mockserver",
+  "state",
+  "tool",
+]

@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/auth.py#_REFRESH_MARGIN_SECONDS"
+fqn = "combiner.mcp_combiner.auth._REFRESH_MARGIN_SECONDS"
+name = "_REFRESH_MARGIN_SECONDS"
+kind = "constant"
+lang = "python"
+content_hash = "2b7589fa3ecbcc18"
+file = "combiner/mcp_combiner/auth.py"
+file_hash = "0297755a0c19a71d"
+signature = "_REFRESH_MARGIN_SECONDS = 120.0"
+description = ""
+schema = 4
+line = 113
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "auth",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_preflight_refresh_if_needed [combiner/mcp_combiner/auth.py]",
+  "test_auth_error_leaves_tokens_for_sdk_to_handle [combiner/tests/test_auth.py]",
+  "test_network_error_applies_grace_window [combiner/tests/test_auth.py]",
+  "test_token_well_inside_margin_is_left_alone [combiner/tests/test_auth.py]",
+  "test_token_within_margin_triggers_refresh [combiner/tests/test_auth.py]",
+]
+name_terms = [
+  "_REFRESH_MARGIN_SECONDS",
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.auth._REFRESH_MARGIN_SECONDS",
+  "margin",
+  "mcp",
+  "refresh",
+  "seconds",
+]

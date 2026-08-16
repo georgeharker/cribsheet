@@ -1,0 +1,47 @@
+symbol_ref = "combiner/mcp_combiner/config.py#OAuthConfig.cache_tokens"
+fqn = "combiner.mcp_combiner.config.OAuthConfig.cache_tokens"
+name = "cache_tokens"
+kind = "field"
+lang = "python"
+content_hash = "9db89384b6772993"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "cache_tokens: bool = True"
+description = ""
+schema = 4
+line = 440
+mtime = 1783633313000000000
+container = [
+  "OAuthConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "OAuthConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_make_disconnected_client [combiner/mcp_combiner/connections.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "get_auth [combiner/mcp_combiner/connections.py]",
+  "test_combiner_config_oauth_defaults [combiner/tests/test_config.py]",
+  "test_oauth_config_defaults [combiner/tests/test_config.py]",
+  "test_oauth_config_from_dict_defaults [combiner/tests/test_config.py]",
+  "test_oauth_config_from_dict_disable_cache [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "auth",
+  "cache",
+  "cache_tokens",
+  "combiner",
+  "combiner.mcp_combiner.config.OAuthConfig.cache_tokens",
+  "config",
+  "mcp",
+  "o",
+  "tokens",
+]

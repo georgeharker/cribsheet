@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#_CaptureHandler.on_resource_updated"
+fqn = "combiner.tests.test_notifications_e2e._CaptureHandler.on_resource_updated"
+name = "on_resource_updated"
+kind = "method"
+lang = "python"
+content_hash = "a3bd572cb7d69e1b"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "async def on_resource_updated(self, message: mcp.types.ResourceUpdatedNotification) -> None:"
+description = ""
+schema = 4
+line = 115
+mtime = 1783629928000000000
+container = [
+  "_CaptureHandler",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+  "_CaptureHandler",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "2",
+  "capture",
+  "combiner",
+  "combiner.tests.test_notifications_e2e._CaptureHandler.on_resource_updated",
+  "e",
+  "handler",
+  "notifications",
+  "on",
+  "on_resource_updated",
+  "resource",
+  "test",
+  "tests",
+  "updated",
+]

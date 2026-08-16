@@ -1,0 +1,39 @@
+symbol_ref = "combiner/tests/conftest.py#MockHandle.terminate"
+fqn = "combiner.tests.conftest.MockHandle.terminate"
+name = "terminate"
+kind = "method"
+lang = "python"
+content_hash = "e15e051a2fd35368"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "def terminate(self, timeout: float = 10.0) -> None:"
+description = ""
+schema = 4
+line = 246
+mtime = 1783544328000000000
+container = [
+  "MockHandle",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "MockHandle",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "teardown [combiner/tests/conftest.py]",
+]
+references = [
+  "teardown [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.MockHandle.terminate",
+  "conftest",
+  "handle",
+  "mock",
+  "terminate",
+  "tests",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_retrieve.py#test_rrf_union_includes_all_ids"
+fqn = "tests.test_retrieve.test_rrf_union_includes_all_ids"
+name = "test_rrf_union_includes_all_ids"
+kind = "function"
+lang = "python"
+content_hash = "f0c809f1adb9d506"
+file = "tests/test_retrieve.py"
+file_hash = "e2f2cfadeca4f35a"
+signature = "def test_rrf_union_includes_all_ids():"
+description = ""
+schema = 4
+line = 64
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_retrieve",
+]
+symbol_was = []
+calls = [
+  "reciprocal_rank_fusion [crib/retrieve.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "all",
+  "ids",
+  "includes",
+  "retrieve",
+  "rrf",
+  "test",
+  "test_rrf_union_includes_all_ids",
+  "tests",
+  "tests.test_retrieve.test_rrf_union_includes_all_ids",
+  "union",
+]

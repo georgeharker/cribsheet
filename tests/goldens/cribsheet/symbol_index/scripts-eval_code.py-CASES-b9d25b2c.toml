@@ -1,0 +1,32 @@
+symbol_ref = "scripts/eval_code.py#CASES"
+fqn = "scripts.eval_code.CASES"
+name = "CASES"
+kind = "constant"
+lang = "python"
+content_hash = "99fe33a3b4bf4531"
+file = "scripts/eval_code.py"
+file_hash = "b641517d69fd6e49"
+signature = "CASES = Path(__file__).resolve().parent / \"eval_code.cases.json\""
+description = ""
+schema = 4
+line = 21
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_code",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "main [scripts/eval_code.py]",
+]
+name_terms = [
+  "CASES",
+  "cases",
+  "code",
+  "eval",
+  "scripts",
+  "scripts.eval_code.CASES",
+]

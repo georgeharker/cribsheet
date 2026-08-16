@@ -1,0 +1,34 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestBearerLifecycle"
+fqn = "combiner.tests.test_oauth_mock.TestBearerLifecycle"
+name = "TestBearerLifecycle"
+kind = "class"
+lang = "python"
+content_hash = "229ddcfa3e08a5dd"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "class TestBearerLifecycle:"
+description = ""
+schema = 4
+line = 356
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestBearerLifecycle",
+  "bearer",
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestBearerLifecycle",
+  "lifecycle",
+  "mock",
+  "oauth",
+  "test",
+  "tests",
+]

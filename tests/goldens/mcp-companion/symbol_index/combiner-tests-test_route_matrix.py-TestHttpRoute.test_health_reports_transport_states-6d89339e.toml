@@ -1,0 +1,48 @@
+symbol_ref = "combiner/tests/test_route_matrix.py#TestHttpRoute.test_health_reports_transport_states"
+fqn = "combiner.tests.test_route_matrix.TestHttpRoute.test_health_reports_transport_states"
+name = "test_health_reports_transport_states"
+kind = "method"
+lang = "python"
+content_hash = "2d873a007591dbb2"
+file = "combiner/tests/test_route_matrix.py"
+file_hash = "e02757ba8c7bf654"
+signature = "async def test_health_reports_transport_states("
+description = ""
+schema = 4
+line = 101
+mtime = 1783534978000000000
+container = [
+  "TestHttpRoute",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_route_matrix",
+  "TestHttpRoute",
+]
+symbol_was = []
+calls = [
+  "free_port [combiner/tests/conftest.py]",
+  "health [combiner/tests/conftest.py]",
+  "http_mock_entry [combiner/tests/conftest.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+  "start_http_mock [combiner/tests/conftest.py]",
+  "wait_server_state [combiner/tests/conftest.py]",
+  "write_servers_config [combiner/tests/conftest.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_route_matrix.TestHttpRoute.test_health_reports_transport_states",
+  "health",
+  "http",
+  "matrix",
+  "reports",
+  "route",
+  "states",
+  "test",
+  "test_health_reports_transport_states",
+  "tests",
+  "transport",
+]

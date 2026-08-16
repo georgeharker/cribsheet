@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#cmd_start"
+fqn = "combiner.mcp_combiner.ctl.cmd_start"
+name = "cmd_start"
+kind = "function"
+lang = "python"
+content_hash = "25e78b6191a16be9"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "async def cmd_start(args: argparse.Namespace) -> int:"
+description = ""
+schema = 4
+line = 169
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = [
+  "_build_start_cmd [combiner/mcp_combiner/ctl.py]",
+  "_combiner_serve_argv [combiner/mcp_combiner/ctl.py]",
+  "_poll_health [combiner/mcp_combiner/ctl.py]",
+  "_require_binary [combiner/mcp_combiner/sharedserver.py]",
+  "_resolve_config [combiner/mcp_combiner/ctl.py]",
+]
+called_by = []
+references = [
+  "add_ctl_parsers [combiner/mcp_combiner/ctl.py]",
+]
+name_terms = [
+  "cmd",
+  "cmd_start",
+  "combiner",
+  "combiner.mcp_combiner.ctl.cmd_start",
+  "ctl",
+  "mcp",
+  "start",
+]

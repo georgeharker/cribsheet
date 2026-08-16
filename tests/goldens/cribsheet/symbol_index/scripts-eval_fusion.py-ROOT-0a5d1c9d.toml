@@ -1,0 +1,30 @@
+symbol_ref = "scripts/eval_fusion.py#ROOT"
+fqn = "scripts.eval_fusion.ROOT"
+name = "ROOT"
+kind = "constant"
+lang = "python"
+content_hash = "ccf98307102c6636"
+file = "scripts/eval_fusion.py"
+file_hash = "f772dafe52a1c76b"
+signature = "ROOT = Path(__file__).resolve().parent.parent"
+description = ""
+schema = 4
+line = 30
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_fusion",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "ROOT",
+  "eval",
+  "fusion",
+  "root",
+  "scripts",
+  "scripts.eval_fusion.ROOT",
+]

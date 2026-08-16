@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_pillar_stores.py#test_facet_sweep_drops_only_its_own_orphans"
+fqn = "tests.test_pillar_stores.test_facet_sweep_drops_only_its_own_orphans"
+name = "test_facet_sweep_drops_only_its_own_orphans"
+kind = "function"
+lang = "python"
+content_hash = "350ba0e4232d1378"
+file = "tests/test_pillar_stores.py"
+file_hash = "1a0ecd183d71d1ba"
+signature = "def test_facet_sweep_drops_only_its_own_orphans(crib):"
+description = ""
+schema = 4
+line = 85
+mtime = 1786138910000000000
+container = []
+scope = [
+  "tests",
+  "test_pillar_stores",
+]
+symbol_was = []
+calls = [
+  "_note [tests/test_pillar_stores.py]",
+  "run [tests/test_pillar_stores.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "drops",
+  "facet",
+  "its",
+  "only",
+  "orphans",
+  "own",
+  "pillar",
+  "stores",
+  "sweep",
+  "test",
+  "test_facet_sweep_drops_only_its_own_orphans",
+  "tests",
+  "tests.test_pillar_stores.test_facet_sweep_drops_only_its_own_orphans",
+]

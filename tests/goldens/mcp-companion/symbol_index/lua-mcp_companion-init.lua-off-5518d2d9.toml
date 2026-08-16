@@ -1,0 +1,35 @@
+symbol_ref = "lua/mcp_companion/init.lua#off"
+fqn = "mcp_companion.off"
+name = "off"
+kind = "function"
+lang = "lua"
+content_hash = "284f5c7527ca8469"
+file = "lua/mcp_companion/init.lua"
+file_hash = "97d5bcda7db25914"
+signature = "function M.off(event, callback)"
+description = ""
+schema = 4
+line = 247
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/init.lua]",
+]
+references = [
+  "event [lua/mcp_companion/init.lua]",
+  "get_combiner [lua/mcp_companion/init.lua]",
+  "get_hub_instance [lua/mcp_companion/init.lua]",
+  "get_state [lua/mcp_companion/init.lua]",
+  "opts [lua/mcp_companion/init.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.off",
+  "off",
+]

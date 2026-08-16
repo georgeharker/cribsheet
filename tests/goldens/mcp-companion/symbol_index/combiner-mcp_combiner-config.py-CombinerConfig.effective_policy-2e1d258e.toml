@@ -1,0 +1,45 @@
+symbol_ref = "combiner/mcp_combiner/config.py#CombinerConfig.effective_policy"
+fqn = "combiner.mcp_combiner.config.CombinerConfig.effective_policy"
+name = "effective_policy"
+kind = "method"
+lang = "python"
+content_hash = "40d5d861ed1ea6e9"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def effective_policy(self, server_name: str) -> ResolvedPolicy:"
+description = ""
+schema = 4
+line = 516
+mtime = 1783633313000000000
+container = [
+  "CombinerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "CombinerConfig",
+]
+symbol_was = []
+calls = [
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "test_effective_policy_via_combiner_config [combiner/tests/test_permissions.py]",
+  "test_unknown_server_is_global_only [combiner/tests/test_permissions.py]",
+]
+references = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+  "test_effective_policy_via_combiner_config [combiner/tests/test_permissions.py]",
+  "test_unknown_server_is_global_only [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.CombinerConfig.effective_policy",
+  "config",
+  "effective",
+  "effective_policy",
+  "mcp",
+  "policy",
+]

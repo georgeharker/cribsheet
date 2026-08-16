@@ -1,0 +1,35 @@
+symbol_ref = "crib/gitbacking.py#SyncResult.committed"
+fqn = "crib.gitbacking.SyncResult.committed"
+name = "committed"
+kind = "field"
+lang = "python"
+content_hash = "2908b61188194446"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "committed: bool"
+description = ""
+schema = 4
+line = 80
+mtime = 1785963011000000000
+container = [
+  "SyncResult",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "SyncResult",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_sync_stops_when_the_commit_fails [tests/test_sync.py]",
+]
+name_terms = [
+  "committed",
+  "crib",
+  "crib.gitbacking.SyncResult.committed",
+  "gitbacking",
+  "result",
+  "sync",
+]

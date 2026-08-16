@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_codeindex.py#test_learning_slug_clean_fqn_verbatim"
+fqn = "tests.test_codeindex.test_learning_slug_clean_fqn_verbatim"
+name = "test_learning_slug_clean_fqn_verbatim"
+kind = "function"
+lang = "python"
+content_hash = "82ed58c97356cd43"
+file = "tests/test_codeindex.py"
+file_hash = "17de81f653637318"
+signature = "def test_learning_slug_clean_fqn_verbatim():"
+description = ""
+schema = 4
+line = 202
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_codeindex",
+]
+symbol_was = []
+calls = [
+  "ref_slug [crib/symbols.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "clean",
+  "codeindex",
+  "fqn",
+  "learning",
+  "slug",
+  "test",
+  "test_learning_slug_clean_fqn_verbatim",
+  "tests",
+  "tests.test_codeindex.test_learning_slug_clean_fqn_verbatim",
+  "verbatim",
+]

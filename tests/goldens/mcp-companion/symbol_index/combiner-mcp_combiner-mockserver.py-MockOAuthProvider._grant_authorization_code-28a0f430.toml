@@ -1,0 +1,47 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthProvider._grant_authorization_code"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthProvider._grant_authorization_code"
+name = "_grant_authorization_code"
+kind = "method"
+lang = "python"
+content_hash = "8f037608dff4dc49"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "def _grant_authorization_code(self, form: dict[str, str]) -> JSONResponse:"
+description = ""
+schema = 4
+line = 844
+mtime = 1783622326000000000
+container = [
+  "MockOAuthProvider",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthProvider",
+]
+symbol_was = []
+calls = [
+  "_s256_challenge [combiner/mcp_combiner/mockserver.py]",
+  "_token_payload [combiner/mcp_combiner/mockserver.py]",
+]
+called_by = [
+  "token [combiner/mcp_combiner/mockserver.py]",
+]
+references = [
+  "token [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "_grant_authorization_code",
+  "auth",
+  "authorization",
+  "code",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthProvider._grant_authorization_code",
+  "grant",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "provider",
+]

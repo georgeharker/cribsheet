@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_dim_recovery.py#run"
+fqn = "tests.test_dim_recovery.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "44052857cf112194"
+file = "tests/test_dim_recovery.py"
+file_hash = "5f6ffd4e573336e9"
+signature = "def run(coro):"
+description = ""
+schema = 4
+line = 32
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_dim_recovery",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_a_reindex_that_wipes_the_store_drops_the_derived_caches [tests/test_dim_recovery.py]",
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap [tests/test_dim_recovery.py]",
+  "test_no_dim_change_no_recovery [tests/test_dim_recovery.py]",
+  "test_wipe_without_a_daemon_loop_warns_instead_of_stranding_a_task [tests/test_dim_recovery.py]",
+]
+references = [
+  "test_a_reindex_that_wipes_the_store_drops_the_derived_caches [tests/test_dim_recovery.py]",
+  "test_dim_change_re_embeds_every_project_and_marks_the_gap [tests/test_dim_recovery.py]",
+  "test_no_dim_change_no_recovery [tests/test_dim_recovery.py]",
+  "test_wipe_without_a_daemon_loop_warns_instead_of_stranding_a_task [tests/test_dim_recovery.py]",
+]
+name_terms = [
+  "dim",
+  "recovery",
+  "run",
+  "test",
+  "tests",
+  "tests.test_dim_recovery.run",
+]

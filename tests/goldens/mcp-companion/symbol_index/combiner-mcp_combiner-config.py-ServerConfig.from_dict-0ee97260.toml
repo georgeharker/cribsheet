@@ -1,0 +1,90 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ServerConfig.from_dict"
+fqn = "combiner.mcp_combiner.config.ServerConfig.from_dict"
+name = "from_dict"
+kind = "method"
+lang = "python"
+content_hash = "8a5963d416f5db32"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "@classmethod"
+description = ""
+schema = 4
+line = 319
+mtime = 1783633313000000000
+container = [
+  "ServerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ServerConfig",
+]
+symbol_was = []
+calls = [
+  "Transport [combiner/mcp_combiner/config.py]",
+  "_warn_unknown_keys [combiner/mcp_combiner/config.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "load [combiner/mcp_combiner/config.py]",
+  "test_args_expanded [combiner/tests/test_config.py]",
+  "test_auto_approve_false_becomes_empty [combiner/tests/test_config.py]",
+  "test_auto_approve_list [combiner/tests/test_config.py]",
+  "test_auto_approve_missing_defaults_empty [combiner/tests/test_config.py]",
+  "test_auto_approve_null_becomes_empty [combiner/tests/test_config.py]",
+  "test_auto_approve_true_becomes_wildcard [combiner/tests/test_config.py]",
+  "test_bool_value_coerced_to_str [combiner/tests/test_config.py]",
+  "test_command_expanded [combiner/tests/test_config.py]",
+  "test_default_fallback_in_config [combiner/tests/test_config.py]",
+  "test_env_expanded [combiner/tests/test_config.py]",
+  "test_float_value_coerced_to_str [combiner/tests/test_config.py]",
+  "test_headers_expanded [combiner/tests/test_config.py]",
+  "test_int_value_coerced_to_str [combiner/tests/test_config.py]",
+  "test_missing_env_defaults_empty [combiner/tests/test_config.py]",
+  "test_raw_config_not_mutated [combiner/tests/test_config.py]",
+  "test_server_config_from_dict_http [combiner/tests/test_config.py]",
+  "test_server_config_from_dict_stdio [combiner/tests/test_config.py]",
+  "test_server_config_isolate_absent_is_none [combiner/tests/test_config.py]",
+  "test_server_config_isolate_false_explicit [combiner/tests/test_config.py]",
+  "test_server_config_isolate_true [combiner/tests/test_config.py]",
+  "test_server_config_unknown_key_warns [combiner/tests/test_config.py]",
+  "test_string_value_passes_through [combiner/tests/test_config.py]",
+  "test_url_expanded [combiner/tests/test_config.py]",
+]
+references = [
+  "load [combiner/mcp_combiner/config.py]",
+  "test_args_expanded [combiner/tests/test_config.py]",
+  "test_auto_approve_false_becomes_empty [combiner/tests/test_config.py]",
+  "test_auto_approve_list [combiner/tests/test_config.py]",
+  "test_auto_approve_missing_defaults_empty [combiner/tests/test_config.py]",
+  "test_auto_approve_null_becomes_empty [combiner/tests/test_config.py]",
+  "test_auto_approve_true_becomes_wildcard [combiner/tests/test_config.py]",
+  "test_bool_value_coerced_to_str [combiner/tests/test_config.py]",
+  "test_command_expanded [combiner/tests/test_config.py]",
+  "test_default_fallback_in_config [combiner/tests/test_config.py]",
+  "test_env_expanded [combiner/tests/test_config.py]",
+  "test_float_value_coerced_to_str [combiner/tests/test_config.py]",
+  "test_headers_expanded [combiner/tests/test_config.py]",
+  "test_int_value_coerced_to_str [combiner/tests/test_config.py]",
+  "test_missing_env_defaults_empty [combiner/tests/test_config.py]",
+  "test_raw_config_not_mutated [combiner/tests/test_config.py]",
+  "test_server_config_from_dict_http [combiner/tests/test_config.py]",
+  "test_server_config_from_dict_stdio [combiner/tests/test_config.py]",
+  "test_server_config_isolate_absent_is_none [combiner/tests/test_config.py]",
+  "test_server_config_isolate_false_explicit [combiner/tests/test_config.py]",
+  "test_server_config_isolate_true [combiner/tests/test_config.py]",
+  "test_server_config_unknown_key_warns [combiner/tests/test_config.py]",
+  "test_string_value_passes_through [combiner/tests/test_config.py]",
+  "test_url_expanded [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.from_dict",
+  "config",
+  "dict",
+  "from",
+  "from_dict",
+  "mcp",
+  "server",
+]

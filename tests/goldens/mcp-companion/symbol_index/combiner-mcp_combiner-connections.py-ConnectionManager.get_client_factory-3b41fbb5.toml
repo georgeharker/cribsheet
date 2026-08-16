@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#ConnectionManager.get_client_factory"
+fqn = "combiner.mcp_combiner.connections.ConnectionManager.get_client_factory"
+name = "get_client_factory"
+kind = "method"
+lang = "python"
+content_hash = "64c4688d0bb1f6fd"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "def get_client_factory(self, name: str) -> Callable[[], HttpClient]:"
+description = ""
+schema = 4
+line = 256
+mtime = 1784493613000000000
+container = [
+  "ConnectionManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "ConnectionManager",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+]
+references = [
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+]
+name_terms = [
+  "client",
+  "combiner",
+  "combiner.mcp_combiner.connections.ConnectionManager.get_client_factory",
+  "connection",
+  "connections",
+  "factory",
+  "get",
+  "get_client_factory",
+  "manager",
+  "mcp",
+]

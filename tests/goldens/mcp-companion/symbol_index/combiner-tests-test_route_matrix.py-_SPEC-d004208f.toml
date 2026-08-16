@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/test_route_matrix.py#_SPEC"
+fqn = "combiner.tests.test_route_matrix._SPEC"
+name = "_SPEC"
+kind = "constant"
+lang = "python"
+content_hash = "14764f1f5b2a6a7b"
+file = "combiner/tests/test_route_matrix.py"
+file_hash = "e02757ba8c7bf654"
+signature = "_SPEC = ["
+description = ""
+schema = 4
+line = 30
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_route_matrix",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_http_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_malformed_schema_survives_combiner [combiner/tests/test_route_matrix.py]",
+  "test_sharedserver_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+  "test_stdio_upstream_round_trip [combiner/tests/test_route_matrix.py]",
+]
+name_terms = [
+  "_SPEC",
+  "combiner",
+  "combiner.tests.test_route_matrix._SPEC",
+  "matrix",
+  "route",
+  "spec",
+  "test",
+  "tests",
+]

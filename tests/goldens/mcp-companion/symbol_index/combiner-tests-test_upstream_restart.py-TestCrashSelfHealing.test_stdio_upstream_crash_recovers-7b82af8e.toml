@@ -1,0 +1,49 @@
+symbol_ref = "combiner/tests/test_upstream_restart.py#TestCrashSelfHealing.test_stdio_upstream_crash_recovers"
+fqn = "combiner.tests.test_upstream_restart.TestCrashSelfHealing.test_stdio_upstream_crash_recovers"
+name = "test_stdio_upstream_crash_recovers"
+kind = "method"
+lang = "python"
+content_hash = "5067fabdb2749fb7"
+file = "combiner/tests/test_upstream_restart.py"
+file_hash = "c3ceaa6ec420f1df"
+signature = "async def test_stdio_upstream_crash_recovers(self, procs: ProcFactory, tmp_path: Path) -> None:"
+description = ""
+schema = 4
+line = 198
+mtime = 1783534978000000000
+container = [
+  "TestCrashSelfHealing",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_upstream_restart",
+  "TestCrashSelfHealing",
+]
+symbol_was = []
+calls = [
+  "_call_until_ok [combiner/tests/test_upstream_restart.py]",
+  "_wait_pid_gone [combiner/tests/test_upstream_restart.py]",
+  "_whoami [combiner/tests/test_upstream_restart.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+  "stdio_mock_entry [combiner/tests/conftest.py]",
+  "wait_server_state [combiner/tests/conftest.py]",
+  "write_servers_config [combiner/tests/conftest.py]",
+  "write_tools_spec [combiner/tests/conftest.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_upstream_restart.TestCrashSelfHealing.test_stdio_upstream_crash_recovers",
+  "crash",
+  "healing",
+  "recovers",
+  "restart",
+  "self",
+  "stdio",
+  "test",
+  "test_stdio_upstream_crash_recovers",
+  "tests",
+  "upstream",
+]

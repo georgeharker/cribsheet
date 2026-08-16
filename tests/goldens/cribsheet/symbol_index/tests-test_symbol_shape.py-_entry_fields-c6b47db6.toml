@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_symbol_shape.py#_entry_fields"
+fqn = "tests.test_symbol_shape._entry_fields"
+name = "_entry_fields"
+kind = "function"
+lang = "python"
+content_hash = "87cc1ac460c881d4"
+file = "tests/test_symbol_shape.py"
+file_hash = "cbe61056081f2393"
+signature = "def _entry_fields() -> set[str]:"
+description = ""
+schema = 4
+line = 28
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_shape",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_the_persist_allow_list_covers_every_declared_field [tests/test_symbol_shape.py]",
+]
+references = [
+  "test_the_persist_allow_list_covers_every_declared_field [tests/test_symbol_shape.py]",
+]
+name_terms = [
+  "_entry_fields",
+  "entry",
+  "fields",
+  "shape",
+  "symbol",
+  "test",
+  "tests",
+  "tests.test_symbol_shape._entry_fields",
+]

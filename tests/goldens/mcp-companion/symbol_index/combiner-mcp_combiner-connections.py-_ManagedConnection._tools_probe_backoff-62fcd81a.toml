@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/connections.py#_ManagedConnection._tools_probe_backoff"
+fqn = "combiner.mcp_combiner.connections._ManagedConnection._tools_probe_backoff"
+name = "_tools_probe_backoff"
+kind = "field"
+lang = "python"
+content_hash = "12d1f50ee0bc7072"
+file = "combiner/mcp_combiner/connections.py"
+file_hash = "e595d2b4db163289"
+signature = "_tools_probe_backoff: float = field(default=0.0, repr=False)"
+description = ""
+schema = 4
+line = 168
+mtime = 1784493613000000000
+container = [
+  "_ManagedConnection",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "connections",
+  "_ManagedConnection",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_monitor [combiner/mcp_combiner/connections.py]",
+]
+name_terms = [
+  "_tools_probe_backoff",
+  "backoff",
+  "combiner",
+  "combiner.mcp_combiner.connections._ManagedConnection._tools_probe_backoff",
+  "connection",
+  "connections",
+  "managed",
+  "mcp",
+  "probe",
+  "tools",
+]

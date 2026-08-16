@@ -1,0 +1,34 @@
+symbol_ref = "crib/notes.py#_FENCE"
+fqn = "crib.notes._FENCE"
+name = "_FENCE"
+kind = "constant"
+lang = "python"
+content_hash = "1035cd20d259f30f"
+file = "crib/notes.py"
+file_hash = "6e2385b754de60b6"
+signature = "_FENCE = \"---\""
+description = ""
+schema = 4
+line = 15
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "notes",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "normalize_text [crib/notes.py]",
+  "parse [crib/notes.py]",
+  "scan_id [crib/notes.py]",
+  "serialize [crib/notes.py]",
+]
+name_terms = [
+  "_FENCE",
+  "crib",
+  "crib.notes._FENCE",
+  "fence",
+  "notes",
+]

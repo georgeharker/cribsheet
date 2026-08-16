@@ -1,0 +1,46 @@
+symbol_ref = "crib/session.py#SessionState"
+fqn = "crib.session.SessionState"
+name = "SessionState"
+kind = "class"
+lang = "python"
+content_hash = "45a78875a1c6e06d"
+file = "crib/session.py"
+file_hash = "62abc565a376f242"
+signature = "class SessionState:"
+description = ""
+schema = 4
+line = 78
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "session",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_DEFAULT [crib/session.py]",
+  "_SESSIONS [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+  "session_state [crib/session.py]",
+  "test_a_bare_default_never_adopts [tests/test_session.py]",
+  "test_a_later_path_answers_for_itself_and_re_homes_nothing [tests/test_session.py]",
+  "test_a_path_deciding_nothing_falls_through_to_the_sticky_project [tests/test_session.py]",
+  "test_a_path_that_resolves_to_the_bare_default_is_not_tagged_path [tests/test_session.py]",
+  "test_an_explicit_path_beats_the_sticky_project [tests/test_session.py]",
+  "test_an_unanchored_read_refuses_with_the_recovery_in_the_message [tests/test_session.py]",
+  "test_each_path_bearing_call_resolves_its_own_path [tests/test_session.py]",
+  "test_explicit_arg_overrides_without_touching_session [tests/test_session.py]",
+  "test_only_the_no_cwd_fallthrough_is_unanchored [tests/test_session.py]",
+  "test_session_state_falls_back_to_default_without_context [tests/test_session.py]",
+  "test_the_first_path_adopts_and_says_so [tests/test_session.py]",
+  "test_the_sticky_project_is_used_when_no_selector_is_given [tests/test_session.py]",
+]
+name_terms = [
+  "SessionState",
+  "crib",
+  "crib.session.SessionState",
+  "session",
+  "state",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "crib/symbols.py#edge_is_from"
+fqn = "crib.symbols.edge_is_from"
+name = "edge_is_from"
+kind = "function"
+lang = "python"
+content_hash = "6fd361e3b2c4126c"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def edge_is_from(ref: str, relpath: str) -> bool:"
+description = ""
+schema = 4
+line = 231
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "drop_file [crib/codestore.py]",
+  "patch_edges [crib/codestore.py]",
+]
+references = [
+  "drop_file [crib/codestore.py]",
+  "patch_edges [crib/codestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.edge_is_from",
+  "edge",
+  "edge_is_from",
+  "from",
+  "is",
+  "symbols",
+]

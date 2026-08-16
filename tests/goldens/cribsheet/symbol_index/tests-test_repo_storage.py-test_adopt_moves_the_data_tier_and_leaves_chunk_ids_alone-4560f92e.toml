@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_repo_storage.py#test_adopt_moves_the_data_tier_and_leaves_chunk_ids_alone"
+fqn = "tests.test_repo_storage.test_adopt_moves_the_data_tier_and_leaves_chunk_ids_alone"
+name = "test_adopt_moves_the_data_tier_and_leaves_chunk_ids_alone"
+kind = "function"
+lang = "python"
+content_hash = "ced956b47cfb6587"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_adopt_moves_the_data_tier_and_leaves_chunk_ids_alone(crib, paths, tmp_path):"
+description = ""
+schema = 4
+line = 161
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "chunk_ids [tests/test_repo_storage.py]",
+  "repo_with_store [tests/test_repo_storage.py]",
+  "run [tests/test_repo_storage.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "adopt",
+  "alone",
+  "and",
+  "chunk",
+  "data",
+  "ids",
+  "leaves",
+  "moves",
+  "repo",
+  "storage",
+  "test",
+  "test_adopt_moves_the_data_tier_and_leaves_chunk_ids_alone",
+  "tests",
+  "tests.test_repo_storage.test_adopt_moves_the_data_tier_and_leaves_chunk_ids_alone",
+  "the",
+  "tier",
+]

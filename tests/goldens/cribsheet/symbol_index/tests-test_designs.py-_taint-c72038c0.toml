@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_designs.py#_taint"
+fqn = "tests.test_designs._taint"
+name = "_taint"
+kind = "function"
+lang = "python"
+content_hash = "5fffd1a018256147"
+file = "tests/test_designs.py"
+file_hash = "78b1d7810d9200c0"
+signature = "def _taint(crib, nodes):"
+description = ""
+schema = 4
+line = 114
+mtime = 1786693579000000000
+container = []
+scope = [
+  "tests",
+  "test_designs",
+]
+symbol_was = []
+calls = [
+  "Graph [crib/designs.py]",
+]
+called_by = [
+  "test_an_unverified_dep_edge_is_tainted [tests/test_designs.py]",
+  "test_taint_is_direct_transitive_and_missing_dep [tests/test_designs.py]",
+]
+references = [
+  "test_an_unverified_dep_edge_is_tainted [tests/test_designs.py]",
+  "test_taint_is_direct_transitive_and_missing_dep [tests/test_designs.py]",
+]
+name_terms = [
+  "_taint",
+  "designs",
+  "taint",
+  "test",
+  "tests",
+  "tests.test_designs._taint",
+]

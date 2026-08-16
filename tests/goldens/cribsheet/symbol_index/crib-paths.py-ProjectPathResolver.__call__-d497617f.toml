@@ -1,0 +1,55 @@
+symbol_ref = "crib/paths.py#ProjectPathResolver.__call__"
+fqn = "crib.paths.ProjectPathResolver.__call__"
+name = "__call__"
+kind = "method"
+lang = "python"
+content_hash = "aa8f055d0225cd69"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "def __call__(self, project: str) -> ProjectPaths:"
+description = ""
+schema = 4
+line = 227
+mtime = 1786564832000000000
+container = [
+  "ProjectPathResolver",
+]
+scope = [
+  "crib",
+  "paths",
+  "ProjectPathResolver",
+]
+symbol_was = []
+calls = [
+  "resolve_project_paths [crib/paths.py]",
+]
+called_by = [
+  "_in_repo_store_roots [crib/app.py]",
+  "_keyword_backlog [crib/app.py]",
+  "_keyword_terms [crib/app.py]",
+  "_migrate_legacy_layout [crib/app.py]",
+  "_summary_terms [crib/app.py]",
+  "project_adopt [crib/app.py]",
+  "project_config [crib/app.py]",
+  "project_forget [crib/app.py]",
+  "project_is_new [crib/app.py]",
+  "project_list [crib/app.py]",
+  "project_migrate [crib/app.py]",
+  "project_release [crib/app.py]",
+  "reconcile_all [crib/app.py]",
+  "resolved [crib/notestore.py]",
+  "source_roots [crib/notestore.py]",
+  "status [crib/app.py]",
+  "versions_for [crib/notestore.py]",
+]
+references = []
+name_terms = [
+  "__call__",
+  "call",
+  "crib",
+  "crib.paths.ProjectPathResolver.__call__",
+  "path",
+  "paths",
+  "project",
+  "resolver",
+]

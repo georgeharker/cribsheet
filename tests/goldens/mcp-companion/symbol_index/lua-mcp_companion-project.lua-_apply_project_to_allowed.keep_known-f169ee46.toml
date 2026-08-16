@@ -1,0 +1,42 @@
+symbol_ref = "lua/mcp_companion/project.lua#_apply_project_to_allowed.keep_known"
+fqn = "mcp_companion.project._apply_project_to_allowed.keep_known"
+name = "keep_known"
+kind = "function"
+lang = "lua"
+content_hash = "750356c1761533b8"
+file = "lua/mcp_companion/project.lua"
+file_hash = "0edf3620225b6e81"
+signature = "local function keep_known(list, field)"
+description = ""
+schema = 4
+line = 285
+mtime = 1782852601000000000
+container = [
+  "M._apply_project_to_allowed",
+]
+scope = [
+  "mcp_companion",
+  "project",
+  "_apply_project_to_allowed",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M._apply_project_to_allowed [lua/mcp_companion/project.lua]",
+]
+references = [
+  "_ [lua/mcp_companion/project.lua]",
+  "if [lua/mcp_companion/project.lua]",
+]
+name_terms = [
+  "allowed",
+  "apply",
+  "companion",
+  "keep",
+  "keep_known",
+  "known",
+  "mcp",
+  "mcp_companion.project._apply_project_to_allowed.keep_known",
+  "project",
+  "to",
+]

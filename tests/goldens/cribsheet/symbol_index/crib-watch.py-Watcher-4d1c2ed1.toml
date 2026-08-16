@@ -1,0 +1,33 @@
+symbol_ref = "crib/watch.py#Watcher"
+fqn = "crib.watch.Watcher"
+name = "Watcher"
+kind = "class"
+lang = "python"
+content_hash = "985cd6a2d12ee474"
+file = "crib/watch.py"
+file_hash = "c10c30739292eebe"
+signature = "class Watcher(_FSWatcher):"
+description = ""
+schema = 4
+line = 209
+mtime = 1786139638000000000
+container = []
+scope = [
+  "crib",
+  "watch",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "scenario [tests/test_watcher.py]",
+  "start_watchers [crib/app.py]",
+]
+name_terms = [
+  "Watcher",
+  "crib",
+  "crib.watch.Watcher",
+  "watch",
+  "watcher",
+]

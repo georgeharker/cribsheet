@@ -1,0 +1,40 @@
+symbol_ref = "crib/paths.py#ProjectPaths.data_root"
+fqn = "crib.paths.ProjectPaths.data_root"
+name = "data_root"
+kind = "field"
+lang = "python"
+content_hash = "249fc16539c44376"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "data_root: Path                     # dir holding the pillar stores (notes/,"
+description = ""
+schema = 4
+line = 153
+mtime = 1786564832000000000
+container = [
+  "ProjectPaths",
+]
+scope = [
+  "crib",
+  "paths",
+  "ProjectPaths",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_in_repo_store_roots [crib/app.py]",
+  "pillar_dir [crib/paths.py]",
+  "resolve_project_paths [crib/paths.py]",
+  "test_resolves_to_the_global_layout_by_default [tests/test_repo_storage.py]",
+  "test_resolves_to_the_store_when_the_stub_points_at_one [tests/test_repo_storage.py]",
+]
+name_terms = [
+  "crib",
+  "crib.paths.ProjectPaths.data_root",
+  "data",
+  "data_root",
+  "paths",
+  "project",
+  "root",
+]

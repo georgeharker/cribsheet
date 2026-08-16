@@ -1,0 +1,39 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#CombinerRuntime.notification_tasks"
+fqn = "combiner.mcp_combiner.runtime.CombinerRuntime.notification_tasks"
+name = "notification_tasks"
+kind = "field"
+lang = "python"
+content_hash = "608602b16ed1d999"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "notification_tasks: set[asyncio.Task[None]] = field(default_factory=set)"
+description = ""
+schema = 4
+line = 283
+mtime = 1784493613000000000
+container = [
+  "CombinerRuntime",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "CombinerRuntime",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_notification_tasks [combiner/mcp_combiner/server.py]",
+  "notify_tool_list_changed [combiner/mcp_combiner/toolcache.py]",
+  "reset [combiner/mcp_combiner/runtime.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.CombinerRuntime.notification_tasks",
+  "mcp",
+  "notification",
+  "notification_tasks",
+  "runtime",
+  "tasks",
+]

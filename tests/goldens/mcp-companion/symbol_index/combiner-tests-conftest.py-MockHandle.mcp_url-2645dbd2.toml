@@ -1,0 +1,37 @@
+symbol_ref = "combiner/tests/conftest.py#MockHandle.mcp_url"
+fqn = "combiner.tests.conftest.MockHandle.mcp_url"
+name = "mcp_url"
+kind = "method"
+lang = "python"
+content_hash = "767f01ac525d370b"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "@property"
+description = ""
+schema = 4
+line = 222
+mtime = 1783544328000000000
+container = [
+  "MockHandle",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "MockHandle",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.MockHandle.mcp_url",
+  "conftest",
+  "handle",
+  "mcp",
+  "mcp_url",
+  "mock",
+  "tests",
+  "url",
+]

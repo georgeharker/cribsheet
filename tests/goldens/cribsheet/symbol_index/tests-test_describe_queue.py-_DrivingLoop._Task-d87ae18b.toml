@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_describe_queue.py#_DrivingLoop._Task"
+fqn = "tests.test_describe_queue._DrivingLoop._Task"
+name = "_Task"
+kind = "class"
+lang = "python"
+content_hash = "0e46422bce0173af"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "class _Task:"
+description = ""
+schema = 4
+line = 88
+mtime = 1786664729000000000
+container = [
+  "_DrivingLoop",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "_DrivingLoop",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "create_task [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "_Task",
+  "describe",
+  "driving",
+  "loop",
+  "queue",
+  "task",
+  "test",
+  "tests",
+  "tests.test_describe_queue._DrivingLoop._Task",
+]

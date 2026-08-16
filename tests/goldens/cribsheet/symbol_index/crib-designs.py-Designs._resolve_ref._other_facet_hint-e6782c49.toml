@@ -1,0 +1,45 @@
+symbol_ref = "crib/designs.py#Designs._resolve_ref._other_facet_hint"
+fqn = "crib.designs.Designs._resolve_ref._other_facet_hint"
+name = "_other_facet_hint"
+kind = "function"
+lang = "python"
+content_hash = "e7f91edad78545f6"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _other_facet_hint() -> None:"
+description = ""
+schema = 4
+line = 731
+mtime = 1786693579000000000
+container = [
+  "Designs",
+  "_resolve_ref",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+  "_resolve_ref",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_resolve_ref [crib/designs.py]",
+]
+called_by = [
+  "_resolve_ref [crib/designs.py]",
+]
+references = [
+  "_resolve_ref [crib/designs.py]",
+]
+name_terms = [
+  "_other_facet_hint",
+  "crib",
+  "crib.designs.Designs._resolve_ref._other_facet_hint",
+  "designs",
+  "facet",
+  "hint",
+  "other",
+  "ref",
+  "resolve",
+]

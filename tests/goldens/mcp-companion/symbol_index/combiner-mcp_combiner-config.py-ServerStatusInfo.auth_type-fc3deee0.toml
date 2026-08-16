@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ServerStatusInfo.auth_type"
+fqn = "combiner.mcp_combiner.config.ServerStatusInfo.auth_type"
+name = "auth_type"
+kind = "field"
+lang = "python"
+content_hash = "72f0dc47644e261c"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "auth_type: str | None = None"
+description = ""
+schema = 4
+line = 406
+mtime = 1783633313000000000
+container = [
+  "ServerStatusInfo",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ServerStatusInfo",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "get_server_status [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "auth",
+  "auth_type",
+  "combiner",
+  "combiner.mcp_combiner.config.ServerStatusInfo.auth_type",
+  "config",
+  "info",
+  "mcp",
+  "server",
+  "status",
+  "type",
+]

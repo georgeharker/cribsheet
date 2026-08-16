@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_upstream_restart.py#_text"
+fqn = "combiner.tests.test_upstream_restart._text"
+name = "_text"
+kind = "function"
+lang = "python"
+content_hash = "3776364cd23f233d"
+file = "combiner/tests/test_upstream_restart.py"
+file_hash = "c3ceaa6ec420f1df"
+signature = "async def _text(client: Client, tool: str, args: dict) -> str:"
+description = ""
+schema = 4
+line = 50
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_upstream_restart",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_restart [combiner/tests/test_upstream_restart.py]",
+  "_try [combiner/tests/test_upstream_restart.py]",
+  "_whoami [combiner/tests/test_upstream_restart.py]",
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_restart_bounces_process [combiner/tests/test_upstream_restart.py]",
+]
+references = [
+  "_restart [combiner/tests/test_upstream_restart.py]",
+  "_try [combiner/tests/test_upstream_restart.py]",
+  "_whoami [combiner/tests/test_upstream_restart.py]",
+  "test_http_restart_reconnects_same_process [combiner/tests/test_upstream_restart.py]",
+  "test_sharedserver_restart_bounces_backing_process [combiner/tests/test_upstream_restart.py]",
+  "test_stdio_restart_bounces_process [combiner/tests/test_upstream_restart.py]",
+]
+name_terms = [
+  "_text",
+  "combiner",
+  "combiner.tests.test_upstream_restart._text",
+  "restart",
+  "test",
+  "tests",
+  "text",
+  "upstream",
+]

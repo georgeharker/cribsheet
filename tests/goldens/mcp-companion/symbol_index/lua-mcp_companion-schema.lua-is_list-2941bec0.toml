@@ -1,0 +1,37 @@
+symbol_ref = "lua/mcp_companion/schema.lua#is_list"
+fqn = "mcp_companion.schema.is_list"
+name = "is_list"
+kind = "function"
+lang = "lua"
+content_hash = "6bf51d36a1be5629"
+file = "lua/mcp_companion/schema.lua"
+file_hash = "aae999ba7dcb96af"
+signature = "local function is_list(t)"
+description = ""
+schema = 4
+line = 23
+mtime = 1783013405000000000
+container = []
+scope = [
+  "mcp_companion",
+  "schema",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.normalize [lua/mcp_companion/schema.lua]",
+  "preserve_objects [lua/mcp_companion/schema.lua]",
+  "schema.lua [lua/mcp_companion/schema.lua]",
+]
+references = [
+  "if [lua/mcp_companion/schema.lua]",
+]
+name_terms = [
+  "companion",
+  "is",
+  "is_list",
+  "list",
+  "mcp",
+  "mcp_companion.schema.is_list",
+  "schema",
+]

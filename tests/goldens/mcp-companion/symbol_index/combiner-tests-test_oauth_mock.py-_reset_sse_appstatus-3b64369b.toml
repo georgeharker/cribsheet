@@ -1,0 +1,35 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#_reset_sse_appstatus"
+fqn = "combiner.tests.test_oauth_mock._reset_sse_appstatus"
+name = "_reset_sse_appstatus"
+kind = "function"
+lang = "python"
+content_hash = "d591fae0c7962607"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "@pytest.fixture(autouse=True)"
+description = ""
+schema = 4
+line = 81
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "_reset_sse_appstatus",
+  "appstatus",
+  "combiner",
+  "combiner.tests.test_oauth_mock._reset_sse_appstatus",
+  "mock",
+  "oauth",
+  "reset",
+  "sse",
+  "test",
+  "tests",
+]

@@ -1,0 +1,52 @@
+symbol_ref = "combiner/mcp_combiner/status.py#build_server_status"
+fqn = "combiner.mcp_combiner.status.build_server_status"
+name = "build_server_status"
+kind = "function"
+lang = "python"
+content_hash = "ea89c9b72492813b"
+file = "combiner/mcp_combiner/status.py"
+file_hash = "abd7f6c34588a039"
+signature = "def build_server_status("
+description = ""
+schema = 4
+line = 19
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "status",
+]
+symbol_was = []
+calls = [
+  "get_server_status [combiner/mcp_combiner/config.py]",
+  "has_connection [combiner/mcp_combiner/connections.py]",
+  "lifecycle_state [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "combiner__status [combiner/mcp_combiner/meta_tools.py]",
+  "health_check [combiner/mcp_combiner/routes.py]",
+  "test_call_failure_overrides_optimistic_http_ready [combiner/tests/test_connections.py]",
+  "test_disabled_server_reports_disabled [combiner/tests/test_connections.py]",
+  "test_http_server_reflects_connection_lifecycle [combiner/tests/test_connections.py]",
+  "test_stdio_crash_reports_disconnected [combiner/tests/test_connections.py]",
+  "test_stdio_server_tristate [combiner/tests/test_connections.py]",
+]
+references = [
+  "combiner__status [combiner/mcp_combiner/meta_tools.py]",
+  "health_check [combiner/mcp_combiner/routes.py]",
+  "test_call_failure_overrides_optimistic_http_ready [combiner/tests/test_connections.py]",
+  "test_disabled_server_reports_disabled [combiner/tests/test_connections.py]",
+  "test_http_server_reflects_connection_lifecycle [combiner/tests/test_connections.py]",
+  "test_stdio_crash_reports_disconnected [combiner/tests/test_connections.py]",
+  "test_stdio_server_tristate [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "build",
+  "build_server_status",
+  "combiner",
+  "combiner.mcp_combiner.status.build_server_status",
+  "mcp",
+  "server",
+  "status",
+]

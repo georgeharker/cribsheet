@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_repo_storage.py#test_memory_sync_refuses_for_an_adopted_project"
+fqn = "tests.test_repo_storage.test_memory_sync_refuses_for_an_adopted_project"
+name = "test_memory_sync_refuses_for_an_adopted_project"
+kind = "function"
+lang = "python"
+content_hash = "9d1ea8644b22a624"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_memory_sync_refuses_for_an_adopted_project(crib, config, paths, tmp_path,"
+description = ""
+schema = 4
+line = 357
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "main [crib/cli.py]",
+  "repo_with_store [tests/test_repo_storage.py]",
+  "run [tests/test_repo_storage.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "adopted",
+  "an",
+  "for",
+  "memory",
+  "project",
+  "refuses",
+  "repo",
+  "storage",
+  "sync",
+  "test",
+  "test_memory_sync_refuses_for_an_adopted_project",
+  "tests",
+  "tests.test_repo_storage.test_memory_sync_refuses_for_an_adopted_project",
+]

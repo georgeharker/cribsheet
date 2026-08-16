@@ -1,0 +1,32 @@
+symbol_ref = "tests/test_surface_parity.py#tools"
+fqn = "tests.test_surface_parity.tools"
+name = "tools"
+kind = "function"
+lang = "python"
+content_hash = "5abeb0ad9dfedf09"
+file = "tests/test_surface_parity.py"
+file_hash = "0c4fc72b5f441359"
+signature = "@pytest.fixture()"
+description = ""
+schema = 4
+line = 51
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_surface_parity",
+]
+symbol_was = []
+calls = [
+  "build_server [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "parity",
+  "surface",
+  "test",
+  "tests",
+  "tests.test_surface_parity.tools",
+  "tools",
+]

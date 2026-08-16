@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_project_resolution.py#test_unknown_project_with_no_path_errors_not_cwd"
+fqn = "tests.test_project_resolution.test_unknown_project_with_no_path_errors_not_cwd"
+name = "test_unknown_project_with_no_path_errors_not_cwd"
+kind = "function"
+lang = "python"
+content_hash = "c82b053df1847e15"
+file = "tests/test_project_resolution.py"
+file_hash = "4fafa653cef61a42"
+signature = "def test_unknown_project_with_no_path_errors_not_cwd(crib, monkeypatch, tmp_path):"
+description = ""
+schema = 4
+line = 136
+mtime = 1785959234000000000
+container = []
+scope = [
+  "tests",
+  "test_project_resolution",
+]
+symbol_was = []
+calls = [
+  "_crib_repo [tests/test_project_resolution.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cwd",
+  "errors",
+  "no",
+  "not",
+  "path",
+  "project",
+  "resolution",
+  "test",
+  "test_unknown_project_with_no_path_errors_not_cwd",
+  "tests",
+  "tests.test_project_resolution.test_unknown_project_with_no_path_errors_not_cwd",
+  "unknown",
+  "with",
+]

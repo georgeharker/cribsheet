@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_design_cli.py#test_an_omitted_body_reads_stdin_in_a_pipeline"
+fqn = "tests.test_design_cli.test_an_omitted_body_reads_stdin_in_a_pipeline"
+name = "test_an_omitted_body_reads_stdin_in_a_pipeline"
+kind = "function"
+lang = "python"
+content_hash = "a00c3c5a452bf88a"
+file = "tests/test_design_cli.py"
+file_hash = "0f819c263d62afaf"
+signature = "def test_an_omitted_body_reads_stdin_in_a_pipeline(monkeypatch):"
+description = ""
+schema = 4
+line = 80
+mtime = 1785974065000000000
+container = []
+scope = [
+  "tests",
+  "test_design_cli",
+]
+symbol_was = []
+calls = [
+  "_call [tests/test_design_cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "an",
+  "body",
+  "cli",
+  "design",
+  "in",
+  "omitted",
+  "pipeline",
+  "reads",
+  "stdin",
+  "test",
+  "test_an_omitted_body_reads_stdin_in_a_pipeline",
+  "tests",
+  "tests.test_design_cli.test_an_omitted_body_reads_stdin_in_a_pipeline",
+]

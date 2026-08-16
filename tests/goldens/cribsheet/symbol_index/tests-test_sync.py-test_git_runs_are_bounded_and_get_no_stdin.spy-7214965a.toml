@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_sync.py#test_git_runs_are_bounded_and_get_no_stdin.spy"
+fqn = "tests.test_sync.test_git_runs_are_bounded_and_get_no_stdin.spy"
+name = "spy"
+kind = "function"
+lang = "python"
+content_hash = "03686ef570398824"
+file = "tests/test_sync.py"
+file_hash = "594e3dd701dbe999"
+signature = "def spy(cmd, **kw):"
+description = ""
+schema = 4
+line = 258
+mtime = 1785963011000000000
+container = [
+  "test_git_runs_are_bounded_and_get_no_stdin",
+]
+scope = [
+  "tests",
+  "test_sync",
+  "test_git_runs_are_bounded_and_get_no_stdin",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_git_runs_are_bounded_and_get_no_stdin [tests/test_sync.py]",
+]
+name_terms = [
+  "and",
+  "are",
+  "bounded",
+  "get",
+  "git",
+  "no",
+  "runs",
+  "spy",
+  "stdin",
+  "sync",
+  "test",
+  "tests",
+  "tests.test_sync.test_git_runs_are_bounded_and_get_no_stdin.spy",
+]

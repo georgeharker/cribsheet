@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/conftest.py#MockHandle.wait_healthy"
+fqn = "combiner.tests.conftest.MockHandle.wait_healthy"
+name = "wait_healthy"
+kind = "method"
+lang = "python"
+content_hash = "ac188dce8feda431"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "async def wait_healthy(self, timeout: float = 30.0) -> None:"
+description = ""
+schema = 4
+line = 238
+mtime = 1783544328000000000
+container = [
+  "MockHandle",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "MockHandle",
+]
+symbol_was = []
+calls = [
+  "poll_until [combiner/tests/conftest.py]",
+]
+called_by = [
+  "start_http_mock [combiner/tests/conftest.py]",
+]
+references = [
+  "start_http_mock [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.conftest.MockHandle.wait_healthy",
+  "conftest",
+  "handle",
+  "healthy",
+  "mock",
+  "tests",
+  "wait",
+  "wait_healthy",
+]

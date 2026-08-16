@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_keyword_refresh.py#_arm.fake_enrich"
+fqn = "tests.test_keyword_refresh._arm.fake_enrich"
+name = "fake_enrich"
+kind = "function"
+lang = "python"
+content_hash = "ea9e4d0b20ac6be4"
+file = "tests/test_keyword_refresh.py"
+file_hash = "d758ff5010231936"
+signature = "async def fake_enrich(relpath=None, project=None, **kw):"
+description = ""
+schema = 4
+line = 27
+mtime = 1786044759000000000
+container = [
+  "_arm",
+]
+scope = [
+  "tests",
+  "test_keyword_refresh",
+  "_arm",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_arm [tests/test_keyword_refresh.py]",
+]
+name_terms = [
+  "arm",
+  "enrich",
+  "fake",
+  "fake_enrich",
+  "keyword",
+  "refresh",
+  "test",
+  "tests",
+  "tests.test_keyword_refresh._arm.fake_enrich",
+]

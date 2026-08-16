@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_pillar_stores.py#test_notes_full_reindex_never_drops_facet_chunks"
+fqn = "tests.test_pillar_stores.test_notes_full_reindex_never_drops_facet_chunks"
+name = "test_notes_full_reindex_never_drops_facet_chunks"
+kind = "function"
+lang = "python"
+content_hash = "e8dd12e8485238d2"
+file = "tests/test_pillar_stores.py"
+file_hash = "1a0ecd183d71d1ba"
+signature = "def test_notes_full_reindex_never_drops_facet_chunks(crib):"
+description = ""
+schema = 4
+line = 69
+mtime = 1786138910000000000
+container = []
+scope = [
+  "tests",
+  "test_pillar_stores",
+]
+symbol_was = []
+calls = [
+  "_note [tests/test_pillar_stores.py]",
+  "run [tests/test_pillar_stores.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chunks",
+  "drops",
+  "facet",
+  "full",
+  "never",
+  "notes",
+  "pillar",
+  "reindex",
+  "stores",
+  "test",
+  "test_notes_full_reindex_never_drops_facet_chunks",
+  "tests",
+  "tests.test_pillar_stores.test_notes_full_reindex_never_drops_facet_chunks",
+]

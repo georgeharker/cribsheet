@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_lexical_cache.py#run"
+fqn = "tests.test_lexical_cache.run"
+name = "run"
+kind = "function"
+lang = "python"
+content_hash = "44052857cf112194"
+file = "tests/test_lexical_cache.py"
+file_hash = "b9aadb3266daf858"
+signature = "def run(coro):"
+description = ""
+schema = 4
+line = 23
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_lexical_cache",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_a_store_wipe_invalidates_every_projects_cache [tests/test_lexical_cache.py]",
+  "test_cache_is_per_project [tests/test_lexical_cache.py]",
+  "test_cache_is_reused_until_a_write [tests/test_lexical_cache.py]",
+  "test_chunks_without_a_store_key_count_as_notes [tests/test_lexical_cache.py]",
+  "test_corpora_are_per_pillar_store [tests/test_lexical_cache.py]",
+  "test_write_invalidates_then_rebuilds [tests/test_lexical_cache.py]",
+]
+references = [
+  "test_a_store_wipe_invalidates_every_projects_cache [tests/test_lexical_cache.py]",
+  "test_cache_is_per_project [tests/test_lexical_cache.py]",
+  "test_cache_is_reused_until_a_write [tests/test_lexical_cache.py]",
+  "test_chunks_without_a_store_key_count_as_notes [tests/test_lexical_cache.py]",
+  "test_corpora_are_per_pillar_store [tests/test_lexical_cache.py]",
+  "test_write_invalidates_then_rebuilds [tests/test_lexical_cache.py]",
+]
+name_terms = [
+  "cache",
+  "lexical",
+  "run",
+  "test",
+  "tests",
+  "tests.test_lexical_cache.run",
+]

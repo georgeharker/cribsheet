@@ -1,0 +1,35 @@
+symbol_ref = "crib/indexer.py#_Plan.result"
+fqn = "crib.indexer._Plan.result"
+name = "result"
+kind = "field"
+lang = "python"
+content_hash = "e12f9188af499519"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "result: IndexResult | None = None"
+description = ""
+schema = 4
+line = 56
+mtime = 1786578262000000000
+container = [
+  "_Plan",
+]
+scope = [
+  "crib",
+  "indexer",
+  "_Plan",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "_plan [crib/indexer.py]",
+]
+name_terms = [
+  "crib",
+  "crib.indexer._Plan.result",
+  "indexer",
+  "plan",
+  "result",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "combiner/tests/test_notifications.py#_list_changed"
+fqn = "combiner.tests.test_notifications._list_changed"
+name = "_list_changed"
+kind = "function"
+lang = "python"
+content_hash = "b65a190b0ae04fc5"
+file = "combiner/tests/test_notifications.py"
+file_hash = "4d5b556bb23069b9"
+signature = "def _list_changed() -> ServerNotification:"
+description = ""
+schema = 4
+line = 84
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_list_changed_forwarded [combiner/tests/test_notifications.py]",
+]
+references = [
+  "test_list_changed_forwarded [combiner/tests/test_notifications.py]",
+]
+name_terms = [
+  "_list_changed",
+  "changed",
+  "combiner",
+  "combiner.tests.test_notifications._list_changed",
+  "list",
+  "notifications",
+  "test",
+  "tests",
+]

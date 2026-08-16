@@ -1,0 +1,44 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestCoerceObjectSchemas.test_uncoercible_required_dropped"
+fqn = "combiner.tests.test_session_filter.TestCoerceObjectSchemas.test_uncoercible_required_dropped"
+name = "test_uncoercible_required_dropped"
+kind = "method"
+lang = "python"
+content_hash = "238b2e5a75dee2d0"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_uncoercible_required_dropped(self):"
+description = ""
+schema = 4
+line = 843
+mtime = 1784493613000000000
+container = [
+  "TestCoerceObjectSchemas",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestCoerceObjectSchemas",
+]
+symbol_was = []
+calls = [
+  "_coerce_object_schemas [combiner/mcp_combiner/schemafix.py]",
+  "_tool [combiner/tests/test_session_filter.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "coerce",
+  "combiner",
+  "combiner.tests.test_session_filter.TestCoerceObjectSchemas.test_uncoercible_required_dropped",
+  "dropped",
+  "filter",
+  "object",
+  "required",
+  "schemas",
+  "session",
+  "test",
+  "test_uncoercible_required_dropped",
+  "tests",
+  "uncoercible",
+]

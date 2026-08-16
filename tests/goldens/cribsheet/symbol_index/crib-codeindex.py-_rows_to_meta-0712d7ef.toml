@@ -1,0 +1,45 @@
+symbol_ref = "crib/codeindex.py#_rows_to_meta"
+fqn = "crib.codeindex._rows_to_meta"
+name = "_rows_to_meta"
+kind = "function"
+lang = "python"
+content_hash = "05b2fdd644b04cb7"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "def _rows_to_meta(data: Any) -> dict[str, dict[str, Any]]:"
+description = ""
+schema = 4
+line = 1347
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = [
+  "_describe_rows [crib/codeindex.py]",
+]
+called_by = [
+  "describe_file [crib/codeindex.py]",
+  "describe_symbols [crib/codeindex.py]",
+  "test_duplicate_describe_rows_do_not_clobber [tests/test_code_attribution.py]",
+  "test_rust_fqnames_tail_match_on_double_colon [tests/test_code_attribution.py]",
+  "test_same_named_methods_get_their_own_descriptions [tests/test_code_attribution.py]",
+]
+references = [
+  "describe_file [crib/codeindex.py]",
+  "describe_symbols [crib/codeindex.py]",
+  "test_duplicate_describe_rows_do_not_clobber [tests/test_code_attribution.py]",
+  "test_rust_fqnames_tail_match_on_double_colon [tests/test_code_attribution.py]",
+  "test_same_named_methods_get_their_own_descriptions [tests/test_code_attribution.py]",
+]
+name_terms = [
+  "_rows_to_meta",
+  "codeindex",
+  "crib",
+  "crib.codeindex._rows_to_meta",
+  "meta",
+  "rows",
+  "to",
+]

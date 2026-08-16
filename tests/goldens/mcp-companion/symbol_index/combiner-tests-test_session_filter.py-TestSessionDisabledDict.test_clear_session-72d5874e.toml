@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestSessionDisabledDict.test_clear_session"
+fqn = "combiner.tests.test_session_filter.TestSessionDisabledDict.test_clear_session"
+name = "test_clear_session"
+kind = "method"
+lang = "python"
+content_hash = "c6f8756e7b756c4d"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_clear_session(self):"
+description = ""
+schema = 4
+line = 80
+mtime = 1784493613000000000
+container = [
+  "TestSessionDisabledDict",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestSessionDisabledDict",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "clear",
+  "combiner",
+  "combiner.tests.test_session_filter.TestSessionDisabledDict.test_clear_session",
+  "dict",
+  "disabled",
+  "filter",
+  "session",
+  "test",
+  "test_clear_session",
+  "tests",
+]

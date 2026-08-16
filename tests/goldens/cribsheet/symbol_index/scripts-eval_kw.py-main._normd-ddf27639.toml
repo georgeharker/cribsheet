@@ -1,0 +1,38 @@
+symbol_ref = "scripts/eval_kw.py#main._normd"
+fqn = "scripts.eval_kw.main._normd"
+name = "_normd"
+kind = "function"
+lang = "python"
+content_hash = "38696c1e65c7ea05"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def _normd(d):"
+description = ""
+schema = 4
+line = 115
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "fn [scripts/eval_kw.py]",
+]
+references = [
+  "fn [scripts/eval_kw.py]",
+]
+name_terms = [
+  "_normd",
+  "eval",
+  "kw",
+  "main",
+  "normd",
+  "scripts",
+  "scripts.eval_kw.main._normd",
+]

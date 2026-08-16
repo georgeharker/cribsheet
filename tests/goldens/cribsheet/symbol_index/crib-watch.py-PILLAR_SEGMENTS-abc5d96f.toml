@@ -1,0 +1,35 @@
+symbol_ref = "crib/watch.py#PILLAR_SEGMENTS"
+fqn = "crib.watch.PILLAR_SEGMENTS"
+name = "PILLAR_SEGMENTS"
+kind = "constant"
+lang = "python"
+content_hash = "c8d789cdf5647b99"
+file = "crib/watch.py"
+file_hash = "c10c30739292eebe"
+signature = "PILLAR_SEGMENTS = (\"notes\", \"design\", \"plans\", \"learnings\")"
+description = ""
+schema = 4
+line = 45
+mtime = 1786139638000000000
+container = []
+scope = [
+  "crib",
+  "watch",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "decode [crib/watch.py]",
+  "decode_store [crib/watch.py]",
+  "project_adopt [crib/app.py]",
+  "project_release [crib/app.py]",
+]
+name_terms = [
+  "PILLAR_SEGMENTS",
+  "crib",
+  "crib.watch.PILLAR_SEGMENTS",
+  "pillar",
+  "segments",
+  "watch",
+]

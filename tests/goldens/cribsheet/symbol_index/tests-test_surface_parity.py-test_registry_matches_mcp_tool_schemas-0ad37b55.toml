@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_surface_parity.py#test_registry_matches_mcp_tool_schemas"
+fqn = "tests.test_surface_parity.test_registry_matches_mcp_tool_schemas"
+name = "test_registry_matches_mcp_tool_schemas"
+kind = "function"
+lang = "python"
+content_hash = "4fac7c7bb0e08060"
+file = "tests/test_surface_parity.py"
+file_hash = "0c4fc72b5f441359"
+signature = "def test_registry_matches_mcp_tool_schemas(tools):"
+description = ""
+schema = 4
+line = 80
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_surface_parity",
+]
+symbol_was = []
+calls = [
+  "_schema_params [tests/test_surface_parity.py]",
+  "mcp_params [crib/cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "matches",
+  "mcp",
+  "parity",
+  "registry",
+  "schemas",
+  "surface",
+  "test",
+  "test_registry_matches_mcp_tool_schemas",
+  "tests",
+  "tests.test_surface_parity.test_registry_matches_mcp_tool_schemas",
+  "tool",
+]

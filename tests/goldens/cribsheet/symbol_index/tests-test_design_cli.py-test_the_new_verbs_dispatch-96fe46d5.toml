@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_design_cli.py#test_the_new_verbs_dispatch"
+fqn = "tests.test_design_cli.test_the_new_verbs_dispatch"
+name = "test_the_new_verbs_dispatch"
+kind = "function"
+lang = "python"
+content_hash = "018190b46b3377f4"
+file = "tests/test_design_cli.py"
+file_hash = "0f819c263d62afaf"
+signature = "@pytest.mark.parametrize(\"argv, tool, call\", ["
+description = ""
+schema = 4
+line = 130
+mtime = 1785974065000000000
+container = []
+scope = [
+  "tests",
+  "test_design_cli",
+]
+symbol_was = []
+calls = [
+  "_call [tests/test_design_cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cli",
+  "design",
+  "dispatch",
+  "new",
+  "test",
+  "test_the_new_verbs_dispatch",
+  "tests",
+  "tests.test_design_cli.test_the_new_verbs_dispatch",
+  "the",
+  "verbs",
+]

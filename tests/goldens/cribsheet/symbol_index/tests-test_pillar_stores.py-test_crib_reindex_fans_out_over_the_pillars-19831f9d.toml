@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_pillar_stores.py#test_crib_reindex_fans_out_over_the_pillars"
+fqn = "tests.test_pillar_stores.test_crib_reindex_fans_out_over_the_pillars"
+name = "test_crib_reindex_fans_out_over_the_pillars"
+kind = "function"
+lang = "python"
+content_hash = "f6712d7e2e68957e"
+file = "tests/test_pillar_stores.py"
+file_hash = "1a0ecd183d71d1ba"
+signature = "def test_crib_reindex_fans_out_over_the_pillars(crib):"
+description = ""
+schema = 4
+line = 114
+mtime = 1786138910000000000
+container = []
+scope = [
+  "tests",
+  "test_pillar_stores",
+]
+symbol_was = []
+calls = [
+  "_note [tests/test_pillar_stores.py]",
+  "run [tests/test_pillar_stores.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "crib",
+  "fans",
+  "out",
+  "over",
+  "pillar",
+  "pillars",
+  "reindex",
+  "stores",
+  "test",
+  "test_crib_reindex_fans_out_over_the_pillars",
+  "tests",
+  "tests.test_pillar_stores.test_crib_reindex_fans_out_over_the_pillars",
+  "the",
+]

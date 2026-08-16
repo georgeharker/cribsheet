@@ -1,0 +1,33 @@
+symbol_ref = "crib/codeindex.py#_REUSE_SETTLE"
+fqn = "crib.codeindex._REUSE_SETTLE"
+name = "_REUSE_SETTLE"
+kind = "constant"
+lang = "python"
+content_hash = "ce3063b9d728636d"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "_REUSE_SETTLE = 0.3"
+description = ""
+schema = 4
+line = 922
+mtime = 1786844518000000000
+container = []
+scope = [
+  "crib",
+  "codeindex",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_extract [crib/codeindex.py]",
+  "test_settle_policy_defaults_but_an_explicit_value_wins [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "_REUSE_SETTLE",
+  "codeindex",
+  "crib",
+  "crib.codeindex._REUSE_SETTLE",
+  "reuse",
+  "settle",
+]

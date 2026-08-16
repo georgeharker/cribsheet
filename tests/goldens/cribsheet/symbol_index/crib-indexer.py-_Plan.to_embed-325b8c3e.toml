@@ -1,0 +1,37 @@
+symbol_ref = "crib/indexer.py#_Plan.to_embed"
+fqn = "crib.indexer._Plan.to_embed"
+name = "to_embed"
+kind = "field"
+lang = "python"
+content_hash = "cf82653973ef4f07"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "to_embed: list[tuple[Chunk, dict]] = field(default_factory=list)"
+description = ""
+schema = 4
+line = 53
+mtime = 1786578262000000000
+container = [
+  "_Plan",
+]
+scope = [
+  "crib",
+  "indexer",
+  "_Plan",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "_plan [crib/indexer.py]",
+]
+name_terms = [
+  "crib",
+  "crib.indexer._Plan.to_embed",
+  "embed",
+  "indexer",
+  "plan",
+  "to",
+  "to_embed",
+]

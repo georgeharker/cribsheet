@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#ToolSpec"
+fqn = "combiner.mcp_combiner.mockserver.ToolSpec"
+name = "ToolSpec"
+kind = "class"
+lang = "python"
+content_hash = "3637b02ff06ebe1c"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "@dataclass"
+description = ""
+schema = 4
+line = 84
+mtime = 1783622326000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [combiner/mcp_combiner/mockserver.py]",
+  "_add [combiner/mcp_combiner/mockserver.py]",
+  "_default_specs [combiner/mcp_combiner/mockserver.py]",
+  "_spec [combiner/mcp_combiner/mockserver.py]",
+  "_spec [combiner/tests/test_mockserver.py]",
+  "add_tool [combiner/mcp_combiner/mockserver.py]",
+  "build_server [combiner/mcp_combiner/mockserver.py]",
+  "control_add_tool [combiner/mcp_combiner/mockserver.py]",
+  "from_dict [combiner/mcp_combiner/mockserver.py]",
+  "from_spec [combiner/mcp_combiner/mockserver.py]",
+  "main [combiner/mcp_combiner/mockserver.py]",
+  "mock__add_tool [combiner/mcp_combiner/mockserver.py]",
+  "parse_tool_specs [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "ToolSpec",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.ToolSpec",
+  "mcp",
+  "mockserver",
+  "spec",
+  "tool",
+]

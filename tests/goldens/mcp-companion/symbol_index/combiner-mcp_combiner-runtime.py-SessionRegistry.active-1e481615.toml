@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.active"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.active"
+name = "active"
+kind = "field"
+lang = "python"
+content_hash = "a05664bb69e1d6a5"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "active: weakref.WeakSet[ServerSession] = field(default_factory=weakref.WeakSet)"
+description = ""
+schema = 4
+line = 49
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_active_sessions [combiner/mcp_combiner/server.py]",
+  "broadcast_sessions [combiner/tests/test_notifications.py]",
+  "capture [combiner/tests/test_notifications_e2e.py]",
+  "reset [combiner/mcp_combiner/runtime.py]",
+  "sessions [combiner/mcp_combiner/runtime.py]",
+  "track [combiner/mcp_combiner/runtime.py]",
+]
+name_terms = [
+  "active",
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.active",
+  "mcp",
+  "registry",
+  "runtime",
+  "session",
+]

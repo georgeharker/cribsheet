@@ -1,0 +1,49 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#SessionRegistry.is_granted"
+fqn = "combiner.mcp_combiner.runtime.SessionRegistry.is_granted"
+name = "is_granted"
+kind = "method"
+lang = "python"
+content_hash = "d4a0d9ad5e3fea86"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def is_granted(self, session_id: str, key: str) -> bool:"
+description = ""
+schema = 4
+line = 111
+mtime = 1784493613000000000
+container = [
+  "SessionRegistry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "SessionRegistry",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "enforce [combiner/mcp_combiner/permissions.py]",
+  "test_clear [combiner/tests/test_permissions.py]",
+  "test_elicit_allow_for_session_caches [combiner/tests/test_permissions.py]",
+  "test_elicit_allow_once_passes_without_caching [combiner/tests/test_permissions.py]",
+  "test_grant_and_check [combiner/tests/test_permissions.py]",
+]
+references = [
+  "enforce [combiner/mcp_combiner/permissions.py]",
+  "test_clear [combiner/tests/test_permissions.py]",
+  "test_elicit_allow_for_session_caches [combiner/tests/test_permissions.py]",
+  "test_elicit_allow_once_passes_without_caching [combiner/tests/test_permissions.py]",
+  "test_grant_and_check [combiner/tests/test_permissions.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.runtime.SessionRegistry.is_granted",
+  "granted",
+  "is",
+  "is_granted",
+  "mcp",
+  "registry",
+  "runtime",
+  "session",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "scripts/eval_kw.py#main.c_covpc_wrap.fn"
+fqn = "scripts.eval_kw.main.c_covpc_wrap.fn"
+name = "fn"
+kind = "function"
+lang = "python"
+content_hash = "a14924bb9921f202"
+file = "scripts/eval_kw.py"
+file_hash = "326686ac4ed4afe0"
+signature = "def fn(feat, proj, q, qf, qv, k):"
+description = ""
+schema = 4
+line = 98
+mtime = 1783981122000000000
+container = [
+  "main",
+  "c_covpc_wrap",
+]
+scope = [
+  "scripts",
+  "eval_kw",
+  "main",
+  "c_covpc_wrap",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "c_covpc_wrap [scripts/eval_kw.py]",
+]
+name_terms = [
+  "c",
+  "covpc",
+  "eval",
+  "fn",
+  "kw",
+  "main",
+  "scripts",
+  "scripts.eval_kw.main.c_covpc_wrap.fn",
+  "wrap",
+]

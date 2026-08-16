@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/nvim_channel.py#NvimChannelManager.manifest"
+fqn = "combiner.mcp_combiner.nvim_channel.NvimChannelManager.manifest"
+name = "manifest"
+kind = "method"
+lang = "python"
+content_hash = "e0011d47ec095c65"
+file = "combiner/mcp_combiner/nvim_channel.py"
+file_hash = "78901790bbdc7457"
+signature = "def manifest(self) -> dict[str, Any] | None:"
+description = ""
+schema = 4
+line = 194
+mtime = 1782852601000000000
+container = [
+  "NvimChannelManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "nvim_channel",
+  "NvimChannelManager",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_manifest_captured_and_frozen [combiner/tests/test_nvim_channel.py]",
+  "test_manifest_none_until_an_instance_connects [combiner/tests/test_nvim_channel.py]",
+]
+references = [
+  "test_manifest_captured_and_frozen [combiner/tests/test_nvim_channel.py]",
+  "test_manifest_none_until_an_instance_connects [combiner/tests/test_nvim_channel.py]",
+]
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager.manifest",
+  "manager",
+  "manifest",
+  "mcp",
+  "nvim",
+]

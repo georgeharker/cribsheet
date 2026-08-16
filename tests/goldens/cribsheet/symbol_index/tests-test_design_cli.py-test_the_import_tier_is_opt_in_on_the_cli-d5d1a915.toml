@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_design_cli.py#test_the_import_tier_is_opt_in_on_the_cli"
+fqn = "tests.test_design_cli.test_the_import_tier_is_opt_in_on_the_cli"
+name = "test_the_import_tier_is_opt_in_on_the_cli"
+kind = "function"
+lang = "python"
+content_hash = "06370529bf22904a"
+file = "tests/test_design_cli.py"
+file_hash = "0f819c263d62afaf"
+signature = "def test_the_import_tier_is_opt_in_on_the_cli():"
+description = ""
+schema = 4
+line = 125
+mtime = 1785974065000000000
+container = []
+scope = [
+  "tests",
+  "test_design_cli",
+]
+symbol_was = []
+calls = [
+  "_call [tests/test_design_cli.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "cli",
+  "design",
+  "import",
+  "in",
+  "is",
+  "on",
+  "opt",
+  "test",
+  "test_the_import_tier_is_opt_in_on_the_cli",
+  "tests",
+  "tests.test_design_cli.test_the_import_tier_is_opt_in_on_the_cli",
+  "the",
+  "tier",
+]

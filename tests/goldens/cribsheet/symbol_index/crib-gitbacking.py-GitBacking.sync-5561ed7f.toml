@@ -1,0 +1,58 @@
+symbol_ref = "crib/gitbacking.py#GitBacking.sync"
+fqn = "crib.gitbacking.GitBacking.sync"
+name = "sync"
+kind = "method"
+lang = "python"
+content_hash = "7aafd9f48392e8d6"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def sync(self, message: str | None = None) -> SyncResult:"
+description = ""
+schema = 4
+line = 372
+mtime = 1785963011000000000
+container = [
+  "GitBacking",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "GitBacking",
+]
+symbol_was = []
+calls = [
+  "SyncResult [crib/gitbacking.py]",
+  "pull [crib/gitbacking.py]",
+  "push [crib/gitbacking.py]",
+  "snapshot_result [crib/gitbacking.py]",
+]
+called_by = [
+  "_run_git [crib/cli.py]",
+  "test_body_conflict_surfaces_but_header_is_healed [tests/test_sync.py]",
+  "test_daemon_side_backing_refuses_network_git [tests/test_sync.py]",
+  "test_frontmatter_only_conflict_auto_resolves [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_memory_bindings_is_gitignored [tests/test_sync.py]",
+  "test_pull_reports_conflicts_without_pushing [tests/test_sync.py]",
+  "test_sync_round_trips_between_two_machines [tests/test_sync.py]",
+  "test_sync_stops_when_the_commit_fails [tests/test_sync.py]",
+]
+references = [
+  "_run_git [crib/cli.py]",
+  "test_body_conflict_surfaces_but_header_is_healed [tests/test_sync.py]",
+  "test_daemon_side_backing_refuses_network_git [tests/test_sync.py]",
+  "test_frontmatter_only_conflict_auto_resolves [tests/test_sync.py]",
+  "test_join_seeds_shared_files_from_the_remote [tests/test_sync.py]",
+  "test_memory_bindings_is_gitignored [tests/test_sync.py]",
+  "test_pull_reports_conflicts_without_pushing [tests/test_sync.py]",
+  "test_sync_round_trips_between_two_machines [tests/test_sync.py]",
+  "test_sync_stops_when_the_commit_fails [tests/test_sync.py]",
+]
+name_terms = [
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking.sync",
+  "git",
+  "gitbacking",
+  "sync",
+]

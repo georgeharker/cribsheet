@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_surface_parity.py#test_registry_policy_matches_the_server_declaration"
+fqn = "tests.test_surface_parity.test_registry_policy_matches_the_server_declaration"
+name = "test_registry_policy_matches_the_server_declaration"
+kind = "function"
+lang = "python"
+content_hash = "5393fde5b500554c"
+file = "tests/test_surface_parity.py"
+file_hash = "0c4fc72b5f441359"
+signature = "def test_registry_policy_matches_the_server_declaration(tools):"
+description = ""
+schema = 4
+line = 87
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_surface_parity",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "declaration",
+  "matches",
+  "parity",
+  "policy",
+  "registry",
+  "server",
+  "surface",
+  "test",
+  "test_registry_policy_matches_the_server_declaration",
+  "tests",
+  "tests.test_surface_parity.test_registry_policy_matches_the_server_declaration",
+  "the",
+]

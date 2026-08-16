@@ -1,0 +1,42 @@
+symbol_ref = "crib/versions.py#VersionRing.read"
+fqn = "crib.versions.VersionRing.read"
+name = "read"
+kind = "method"
+lang = "python"
+content_hash = "779a149045d0d92b"
+file = "crib/versions.py"
+file_hash = "c84588155a74a02c"
+signature = "def read(self, note_id: str, name: str) -> str:"
+description = ""
+schema = 4
+line = 93
+mtime = 1785966856000000000
+container = [
+  "VersionRing",
+]
+scope = [
+  "crib",
+  "versions",
+  "VersionRing",
+]
+symbol_was = []
+calls = [
+  "_note_dir [crib/versions.py]",
+  "confine [crib/paths.py]",
+]
+called_by = [
+  "test_stray_file_in_a_ring_dir_does_not_break_writes [tests/test_config_resilience.py]",
+  "version_content [crib/notestore.py]",
+]
+references = [
+  "test_stray_file_in_a_ring_dir_does_not_break_writes [tests/test_config_resilience.py]",
+  "version_content [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.versions.VersionRing.read",
+  "read",
+  "ring",
+  "version",
+  "versions",
+]

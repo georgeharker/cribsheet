@@ -1,0 +1,40 @@
+symbol_ref = "crib/claudemem.py#MemoryBindings.upsert"
+fqn = "crib.claudemem.MemoryBindings.upsert"
+name = "upsert"
+kind = "method"
+lang = "python"
+content_hash = "378425ab7328cfdf"
+file = "crib/claudemem.py"
+file_hash = "f5d989e8add2ed0e"
+signature = "def upsert(self, root: Path, project: str) -> None:"
+description = ""
+schema = 4
+line = 93
+mtime = 1782762348000000000
+container = [
+  "MemoryBindings",
+]
+scope = [
+  "crib",
+  "claudemem",
+  "MemoryBindings",
+]
+symbol_was = []
+calls = [
+  "all [crib/claudemem.py]",
+  "resolve_path [crib/claudemem.py]",
+]
+called_by = [
+  "import_claude_memory [crib/app.py]",
+]
+references = [
+  "import_claude_memory [crib/app.py]",
+]
+name_terms = [
+  "bindings",
+  "claudemem",
+  "crib",
+  "crib.claudemem.MemoryBindings.upsert",
+  "memory",
+  "upsert",
+]

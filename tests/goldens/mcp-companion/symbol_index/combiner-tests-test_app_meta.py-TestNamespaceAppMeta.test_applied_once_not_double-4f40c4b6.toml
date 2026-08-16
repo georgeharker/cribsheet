@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_app_meta.py#TestNamespaceAppMeta.test_applied_once_not_double"
+fqn = "combiner.tests.test_app_meta.TestNamespaceAppMeta.test_applied_once_not_double"
+name = "test_applied_once_not_double"
+kind = "method"
+lang = "python"
+content_hash = "6af9e2bd7af1704e"
+file = "combiner/tests/test_app_meta.py"
+file_hash = "fc52f36639c3320a"
+signature = "def test_applied_once_not_double(self, _config: None) -> None:"
+description = ""
+schema = 4
+line = 137
+mtime = 1783629928000000000
+container = [
+  "TestNamespaceAppMeta",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_app_meta",
+  "TestNamespaceAppMeta",
+]
+symbol_was = []
+calls = [
+  "_namespace_app_meta [combiner/mcp_combiner/middleware.py]",
+  "_tool [combiner/tests/test_app_meta.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "app",
+  "applied",
+  "combiner",
+  "combiner.tests.test_app_meta.TestNamespaceAppMeta.test_applied_once_not_double",
+  "double",
+  "meta",
+  "namespace",
+  "not",
+  "once",
+  "test",
+  "test_applied_once_not_double",
+  "tests",
+]

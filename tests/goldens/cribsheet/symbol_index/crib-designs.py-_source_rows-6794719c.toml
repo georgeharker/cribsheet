@@ -1,0 +1,38 @@
+symbol_ref = "crib/designs.py#_source_rows"
+fqn = "crib.designs._source_rows"
+name = "_source_rows"
+kind = "function"
+lang = "python"
+content_hash = "5a146b7b5ae12472"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _source_rows(sources: list[dict[str, Any]]) -> list[dict[str, Any]]:"
+description = ""
+schema = 4
+line = 273
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_add [crib/designs.py]",
+  "_write_body [crib/designs.py]",
+  "design_append [crib/designs.py]",
+]
+references = [
+  "_add [crib/designs.py]",
+  "_write_body [crib/designs.py]",
+  "design_append [crib/designs.py]",
+]
+name_terms = [
+  "_source_rows",
+  "crib",
+  "crib.designs._source_rows",
+  "designs",
+  "rows",
+  "source",
+]

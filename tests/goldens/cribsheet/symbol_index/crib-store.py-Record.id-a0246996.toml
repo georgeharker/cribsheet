@@ -1,0 +1,39 @@
+symbol_ref = "crib/store.py#Record.id"
+fqn = "crib.store.Record.id"
+name = "id"
+kind = "field"
+lang = "python"
+content_hash = "815fab59afaac4c9"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "id: str"
+description = ""
+schema = 4
+line = 28
+mtime = 1786564832000000000
+container = [
+  "Record",
+]
+scope = [
+  "crib",
+  "store",
+  "Record",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "_load [crib/store.py]",
+  "get_docs [crib/store.py]",
+  "get_meta [crib/store.py]",
+  "query [crib/store.py]",
+  "upsert [crib/store.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Record.id",
+  "id",
+  "record",
+  "store",
+]

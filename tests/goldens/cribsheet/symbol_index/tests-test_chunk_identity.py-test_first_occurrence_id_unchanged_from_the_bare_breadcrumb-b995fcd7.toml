@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_chunk_identity.py#test_first_occurrence_id_unchanged_from_the_bare_breadcrumb"
+fqn = "tests.test_chunk_identity.test_first_occurrence_id_unchanged_from_the_bare_breadcrumb"
+name = "test_first_occurrence_id_unchanged_from_the_bare_breadcrumb"
+kind = "function"
+lang = "python"
+content_hash = "de19b70687b75039"
+file = "tests/test_chunk_identity.py"
+file_hash = "0afd98c1ecf1279e"
+signature = "def test_first_occurrence_id_unchanged_from_the_bare_breadcrumb():"
+description = ""
+schema = 4
+line = 61
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_chunk_identity",
+]
+symbol_was = []
+calls = [
+  "chunk_note [crib/chunk.py]",
+  "section_key [crib/chunk.py]",
+  "sha1_hex [crib/util.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "bare",
+  "breadcrumb",
+  "chunk",
+  "first",
+  "from",
+  "id",
+  "identity",
+  "occurrence",
+  "test",
+  "test_first_occurrence_id_unchanged_from_the_bare_breadcrumb",
+  "tests",
+  "tests.test_chunk_identity.test_first_occurrence_id_unchanged_from_the_bare_breadcrumb",
+  "the",
+  "unchanged",
+]

@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/runtime.py#ToolCacheState.record_failure"
+fqn = "combiner.mcp_combiner.runtime.ToolCacheState.record_failure"
+name = "record_failure"
+kind = "method"
+lang = "python"
+content_hash = "10fa218b54acb4a9"
+file = "combiner/mcp_combiner/runtime.py"
+file_hash = "7ae0187122d31ae0"
+signature = "def record_failure(self, server: str, message: str) -> None:"
+description = ""
+schema = 4
+line = 250
+mtime = 1784493613000000000
+container = [
+  "ToolCacheState",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "runtime",
+  "ToolCacheState",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+]
+references = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+]
+name_terms = [
+  "cache",
+  "combiner",
+  "combiner.mcp_combiner.runtime.ToolCacheState.record_failure",
+  "failure",
+  "mcp",
+  "record",
+  "record_failure",
+  "runtime",
+  "state",
+  "tool",
+]

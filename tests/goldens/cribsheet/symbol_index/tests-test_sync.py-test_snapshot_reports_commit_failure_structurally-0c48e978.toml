@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_sync.py#test_snapshot_reports_commit_failure_structurally"
+fqn = "tests.test_sync.test_snapshot_reports_commit_failure_structurally"
+name = "test_snapshot_reports_commit_failure_structurally"
+kind = "function"
+lang = "python"
+content_hash = "9fd2288abf269254"
+file = "tests/test_sync.py"
+file_hash = "594e3dd701dbe999"
+signature = "def test_snapshot_reports_commit_failure_structurally(tmp_path, remote, monkeypatch):"
+description = ""
+schema = 4
+line = 170
+mtime = 1785963011000000000
+container = []
+scope = [
+  "tests",
+  "test_sync",
+]
+symbol_was = []
+calls = [
+  "_break_identity [tests/test_sync.py]",
+  "_machine [tests/test_sync.py]",
+  "_note [tests/test_sync.py]",
+  "snapshot_result [crib/gitbacking.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "commit",
+  "failure",
+  "reports",
+  "snapshot",
+  "structurally",
+  "sync",
+  "test",
+  "test_snapshot_reports_commit_failure_structurally",
+  "tests",
+  "tests.test_sync.test_snapshot_reports_commit_failure_structurally",
+]

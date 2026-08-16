@@ -1,0 +1,35 @@
+symbol_ref = "crib/chunk.py#_Line.text"
+fqn = "crib.chunk._Line.text"
+name = "text"
+kind = "field"
+lang = "python"
+content_hash = "d20c3c4eb85ef28c"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "text: str"
+description = ""
+schema = 4
+line = 145
+mtime = 1786136167000000000
+container = [
+  "_Line",
+]
+scope = [
+  "crib",
+  "chunk",
+  "_Line",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_split_sections [crib/chunk.py]",
+  "section_line_map [crib/chunk.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk._Line.text",
+  "line",
+  "text",
+]

@@ -1,0 +1,43 @@
+symbol_ref = "crib/config.py#CribLink.root"
+fqn = "crib.config.CribLink.root"
+name = "root"
+kind = "field"
+lang = "python"
+content_hash = "69f8dd1808923094"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "root: Path | None = None  # dir the .crib was found in"
+description = ""
+schema = 4
+line = 374
+mtime = 1786564832000000000
+container = [
+  "CribLink",
+]
+scope = [
+  "crib",
+  "config",
+  "CribLink",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_ensure_crib [crib/app.py]",
+  "_index_code_file [crib/codeindexer.py]",
+  "_parse [crib/config.py]",
+  "_warn_store_glob_overlap [crib/app.py]",
+  "index_docs_insitu [crib/app.py]",
+  "project_adopt [crib/app.py]",
+  "project_status [crib/app.py]",
+  "store_dir [crib/config.py]",
+  "test_store_that_escapes_the_repo_is_refused [tests/test_repo_storage.py]",
+  "test_walk_continues_past_a_malformed_crib [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.root",
+  "link",
+  "root",
+]

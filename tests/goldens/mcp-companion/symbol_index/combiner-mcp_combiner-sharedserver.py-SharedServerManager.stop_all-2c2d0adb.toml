@@ -1,0 +1,51 @@
+symbol_ref = "combiner/mcp_combiner/sharedserver.py#SharedServerManager.stop_all"
+fqn = "combiner.mcp_combiner.sharedserver.SharedServerManager.stop_all"
+name = "stop_all"
+kind = "method"
+lang = "python"
+content_hash = "f9457d21760d548e"
+file = "combiner/mcp_combiner/sharedserver.py"
+file_hash = "00df81a0a741c869"
+signature = "async def stop_all(self) -> None:"
+description = ""
+schema = 4
+line = 344
+mtime = 1782539642000000000
+container = [
+  "SharedServerManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "sharedserver",
+  "SharedServerManager",
+]
+symbol_was = []
+calls = [
+  "_get_binary [combiner/mcp_combiner/sharedserver.py]",
+  "_stop_one [combiner/mcp_combiner/sharedserver.py]",
+]
+called_by = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "cleanup [combiner/mcp_combiner/sharedserver.py]",
+  "test_stop_all_calls_unuse [combiner/tests/test_sharedserver.py]",
+  "test_stop_all_noop_when_nothing_started [combiner/tests/test_sharedserver.py]",
+]
+references = [
+  "_lifespan [combiner/mcp_combiner/server.py]",
+  "cleanup [combiner/mcp_combiner/sharedserver.py]",
+  "test_stop_all_calls_unuse [combiner/tests/test_sharedserver.py]",
+  "test_stop_all_noop_when_nothing_started [combiner/tests/test_sharedserver.py]",
+]
+name_terms = [
+  "all",
+  "combiner",
+  "combiner.mcp_combiner.sharedserver.SharedServerManager.stop_all",
+  "manager",
+  "mcp",
+  "server",
+  "shared",
+  "sharedserver",
+  "stop",
+  "stop_all",
+]

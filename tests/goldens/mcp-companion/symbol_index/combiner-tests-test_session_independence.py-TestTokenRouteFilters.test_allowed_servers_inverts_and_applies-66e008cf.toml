@@ -1,0 +1,49 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestTokenRouteFilters.test_allowed_servers_inverts_and_applies"
+fqn = "combiner.tests.test_session_independence.TestTokenRouteFilters.test_allowed_servers_inverts_and_applies"
+name = "test_allowed_servers_inverts_and_applies"
+kind = "method"
+lang = "python"
+content_hash = "d478dea83fb0c2eb"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "@xfail_session_namespace_split"
+description = ""
+schema = 4
+line = 278
+mtime = 1783541669000000000
+container = [
+  "TestTokenRouteFilters",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+  "TestTokenRouteFilters",
+]
+symbol_was = []
+calls = [
+  "_header_client [combiner/tests/test_session_independence.py]",
+  "_rest [combiner/tests/test_session_independence.py]",
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "_text [combiner/tests/test_session_independence.py]",
+  "_token [combiner/tests/test_session_independence.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "allowed",
+  "and",
+  "applies",
+  "combiner",
+  "combiner.tests.test_session_independence.TestTokenRouteFilters.test_allowed_servers_inverts_and_applies",
+  "filters",
+  "independence",
+  "inverts",
+  "route",
+  "servers",
+  "session",
+  "test",
+  "test_allowed_servers_inverts_and_applies",
+  "tests",
+  "token",
+]

@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#_CaptureHandler.on_resource_list_changed"
+fqn = "combiner.tests.test_notifications_e2e._CaptureHandler.on_resource_list_changed"
+name = "on_resource_list_changed"
+kind = "method"
+lang = "python"
+content_hash = "cdf9f599891d817a"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "async def on_resource_list_changed("
+description = ""
+schema = 4
+line = 118
+mtime = 1783629928000000000
+container = [
+  "_CaptureHandler",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+  "_CaptureHandler",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "2",
+  "capture",
+  "changed",
+  "combiner",
+  "combiner.tests.test_notifications_e2e._CaptureHandler.on_resource_list_changed",
+  "e",
+  "handler",
+  "list",
+  "notifications",
+  "on",
+  "on_resource_list_changed",
+  "resource",
+  "test",
+  "tests",
+]

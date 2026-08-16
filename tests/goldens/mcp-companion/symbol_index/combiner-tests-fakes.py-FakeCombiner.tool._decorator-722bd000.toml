@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/fakes.py#FakeCombiner.tool._decorator"
+fqn = "combiner.tests.fakes.FakeCombiner.tool._decorator"
+name = "_decorator"
+kind = "function"
+lang = "python"
+content_hash = "3bbb6ca2f2cc35b9"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "def _decorator(fn: Any) -> Any:"
+description = ""
+schema = 4
+line = 34
+mtime = 1783534978000000000
+container = [
+  "FakeCombiner",
+  "tool",
+]
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+  "FakeCombiner",
+  "tool",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "tool [combiner/tests/fakes.py]",
+]
+name_terms = [
+  "_decorator",
+  "combiner",
+  "combiner.tests.fakes.FakeCombiner.tool._decorator",
+  "decorator",
+  "fake",
+  "fakes",
+  "tests",
+  "tool",
+]

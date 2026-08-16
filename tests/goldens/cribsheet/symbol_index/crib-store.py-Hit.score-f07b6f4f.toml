@@ -1,0 +1,36 @@
+symbol_ref = "crib/store.py#Hit.score"
+fqn = "crib.store.Hit.score"
+name = "score"
+kind = "field"
+lang = "python"
+content_hash = "f753b0030cc1d08f"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "score: float  # cosine similarity, higher = closer"
+description = ""
+schema = 4
+line = 39
+mtime = 1786564832000000000
+container = [
+  "Hit",
+]
+scope = [
+  "crib",
+  "store",
+  "Hit",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_rerank [crib/app.py]",
+  "_retrieve [crib/app.py]",
+  "lookup [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.store.Hit.score",
+  "hit",
+  "score",
+  "store",
+]

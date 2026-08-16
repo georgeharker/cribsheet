@@ -1,0 +1,65 @@
+symbol_ref = "tests/test_code_learnings.py#_seed_symbol"
+fqn = "tests.test_code_learnings._seed_symbol"
+name = "_seed_symbol"
+kind = "function"
+lang = "python"
+content_hash = "99bbe30e1c149255"
+file = "tests/test_code_learnings.py"
+file_hash = "2cacd018989edacf"
+signature = "def _seed_symbol(crib, project, fqname=\"pkg.Mod.foo\", content_hash=\"aaaa1111\","
+description = ""
+schema = 4
+line = 30
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_learnings",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = [
+  "test_append_creates_then_appends_dated_entries [tests/test_code_learnings.py]",
+  "test_code_graph_marks_nodes_with_learnings [tests/test_code_learnings.py]",
+  "test_code_tools_self_diagnose_unindexed_project [tests/test_code_learnings.py]",
+  "test_every_learning_verb_finds_a_note_whatever_it_is_bound_to [tests/test_code_learnings.py]",
+  "test_forget_removes_an_orphan [tests/test_code_learnings.py]",
+  "test_forget_removes_learning [tests/test_code_learnings.py]",
+  "test_graph_validates_its_boundaries [tests/test_code_learnings.py]",
+  "test_join_surfaces_learning_and_flags_staleness [tests/test_code_learnings.py]",
+  "test_learnings_report_and_orphan_lifecycle [tests/test_code_learnings.py]",
+  "test_project_forget_clears_index_but_keeps_learnings [tests/test_code_learnings.py]",
+  "test_reaffirm_clears_stale_without_touching_body [tests/test_code_learnings.py]",
+  "test_rehome_refuses_to_overwrite_an_existing_learning [tests/test_code_learnings.py]",
+  "test_the_glyph_marks_the_node_whatever_the_note_is_bound_to [tests/test_code_learnings.py]",
+  "test_unknown_and_ambiguous_symbols_raise [tests/test_code_learnings.py]",
+]
+references = [
+  "test_append_creates_then_appends_dated_entries [tests/test_code_learnings.py]",
+  "test_code_graph_marks_nodes_with_learnings [tests/test_code_learnings.py]",
+  "test_code_tools_self_diagnose_unindexed_project [tests/test_code_learnings.py]",
+  "test_every_learning_verb_finds_a_note_whatever_it_is_bound_to [tests/test_code_learnings.py]",
+  "test_forget_removes_an_orphan [tests/test_code_learnings.py]",
+  "test_forget_removes_learning [tests/test_code_learnings.py]",
+  "test_graph_validates_its_boundaries [tests/test_code_learnings.py]",
+  "test_join_surfaces_learning_and_flags_staleness [tests/test_code_learnings.py]",
+  "test_learnings_report_and_orphan_lifecycle [tests/test_code_learnings.py]",
+  "test_project_forget_clears_index_but_keeps_learnings [tests/test_code_learnings.py]",
+  "test_reaffirm_clears_stale_without_touching_body [tests/test_code_learnings.py]",
+  "test_rehome_refuses_to_overwrite_an_existing_learning [tests/test_code_learnings.py]",
+  "test_the_glyph_marks_the_node_whatever_the_note_is_bound_to [tests/test_code_learnings.py]",
+  "test_unknown_and_ambiguous_symbols_raise [tests/test_code_learnings.py]",
+]
+name_terms = [
+  "_seed_symbol",
+  "code",
+  "learnings",
+  "seed",
+  "symbol",
+  "test",
+  "tests",
+  "tests.test_code_learnings._seed_symbol",
+]

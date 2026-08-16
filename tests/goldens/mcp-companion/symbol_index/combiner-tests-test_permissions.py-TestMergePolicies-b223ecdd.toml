@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_permissions.py#TestMergePolicies"
+fqn = "combiner.tests.test_permissions.TestMergePolicies"
+name = "TestMergePolicies"
+kind = "class"
+lang = "python"
+content_hash = "9a8e2eedfe4dde23"
+file = "combiner/tests/test_permissions.py"
+file_hash = "00fd92d14a8a0952"
+signature = "class TestMergePolicies:"
+description = ""
+schema = 4
+line = 110
+mtime = 1783633313000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_permissions",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestMergePolicies",
+  "combiner",
+  "combiner.tests.test_permissions.TestMergePolicies",
+  "merge",
+  "permissions",
+  "policies",
+  "test",
+  "tests",
+]

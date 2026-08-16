@@ -1,0 +1,31 @@
+symbol_ref = "crib/learnings.py#Learnings"
+fqn = "crib.learnings.Learnings"
+name = "Learnings"
+kind = "class"
+lang = "python"
+content_hash = "9db3ae06afb9fb18"
+file = "crib/learnings.py"
+file_hash = "977a14d62df88945"
+signature = "class Learnings:"
+description = ""
+schema = 4
+line = 39
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "learnings",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "__init__ [crib/app.py]",
+  "__init__ [crib/codequery.py]",
+]
+name_terms = [
+  "Learnings",
+  "crib",
+  "crib.learnings.Learnings",
+  "learnings",
+]

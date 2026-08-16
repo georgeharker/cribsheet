@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_describe_queue.py#test_empty_keyword_attempt_is_durable_no_retry.describe"
+fqn = "tests.test_describe_queue.test_empty_keyword_attempt_is_durable_no_retry.describe"
+name = "describe"
+kind = "function"
+lang = "python"
+content_hash = "c8fc09284da1c0b1"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def describe(cfg, r, rel):"
+description = ""
+schema = 4
+line = 252
+mtime = 1786664729000000000
+container = [
+  "test_empty_keyword_attempt_is_durable_no_retry",
+]
+scope = [
+  "tests",
+  "test_describe_queue",
+  "test_empty_keyword_attempt_is_durable_no_retry",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_empty_keyword_attempt_is_durable_no_retry [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "attempt",
+  "describe",
+  "durable",
+  "empty",
+  "is",
+  "keyword",
+  "no",
+  "queue",
+  "retry",
+  "test",
+  "tests",
+  "tests.test_describe_queue.test_empty_keyword_attempt_is_durable_no_retry.describe",
+]

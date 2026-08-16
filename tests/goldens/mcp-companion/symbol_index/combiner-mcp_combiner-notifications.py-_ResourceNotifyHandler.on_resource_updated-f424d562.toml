@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/notifications.py#_ResourceNotifyHandler.on_resource_updated"
+fqn = "combiner.mcp_combiner.notifications._ResourceNotifyHandler.on_resource_updated"
+name = "on_resource_updated"
+kind = "method"
+lang = "python"
+content_hash = "dbd359384c2e2b38"
+file = "combiner/mcp_combiner/notifications.py"
+file_hash = "3a02dac6027ca8f5"
+signature = "async def on_resource_updated("
+description = ""
+schema = 4
+line = 101
+mtime = 1784493613000000000
+container = [
+  "_ResourceNotifyHandler",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "notifications",
+  "_ResourceNotifyHandler",
+]
+symbol_was = []
+calls = [
+  "_forward [combiner/mcp_combiner/notifications.py]",
+  "namespace_uri [combiner/mcp_combiner/toolcache.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.notifications._ResourceNotifyHandler.on_resource_updated",
+  "handler",
+  "mcp",
+  "notifications",
+  "notify",
+  "on",
+  "on_resource_updated",
+  "resource",
+  "updated",
+]

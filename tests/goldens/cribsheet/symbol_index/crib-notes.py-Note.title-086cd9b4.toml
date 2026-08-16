@@ -1,0 +1,36 @@
+symbol_ref = "crib/notes.py#Note.title"
+fqn = "crib.notes.Note.title"
+name = "title"
+kind = "method"
+lang = "python"
+content_hash = "cdf7c08837dc6c33"
+file = "crib/notes.py"
+file_hash = "6e2385b754de60b6"
+signature = "@property"
+description = ""
+schema = 4
+line = 43
+mtime = 1785959234000000000
+container = [
+  "Note",
+]
+scope = [
+  "crib",
+  "notes",
+  "Note",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_plan [crib/indexer.py]",
+]
+references = [
+  "_plan [crib/indexer.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notes.Note.title",
+  "note",
+  "notes",
+  "title",
+]

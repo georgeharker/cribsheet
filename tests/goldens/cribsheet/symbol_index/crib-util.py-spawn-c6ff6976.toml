@@ -1,0 +1,38 @@
+symbol_ref = "crib/util.py#spawn"
+fqn = "crib.util.spawn"
+name = "spawn"
+kind = "function"
+lang = "python"
+content_hash = "9937e44d999ce7bb"
+file = "crib/util.py"
+file_hash = "c8fb8142505bcf40"
+signature = "def spawn(loop: asyncio.AbstractEventLoop, coro: Coroutine[Any, Any, Any],"
+description = ""
+schema = 4
+line = 15
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "util",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_fire [crib/describe_queue.py]",
+  "_fire [crib/memmirror.py]",
+  "_fire [crib/watch.py]",
+  "_flush [crib/watch.py]",
+]
+references = [
+  "_fire [crib/describe_queue.py]",
+  "_fire [crib/memmirror.py]",
+  "_fire [crib/watch.py]",
+  "_flush [crib/watch.py]",
+]
+name_terms = [
+  "crib",
+  "crib.util.spawn",
+  "spawn",
+  "util",
+]

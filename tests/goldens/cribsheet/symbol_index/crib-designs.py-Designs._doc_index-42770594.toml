@@ -1,0 +1,39 @@
+symbol_ref = "crib/designs.py#Designs._doc_index"
+fqn = "crib.designs.Designs._doc_index"
+name = "_doc_index"
+kind = "method"
+lang = "python"
+content_hash = "353cd9cde11dd684"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _doc_index(self, proj: str, relpath: str,"
+description = ""
+schema = 4
+line = 592
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_doc_sections [crib/designs.py]",
+]
+called_by = [
+  "_section_hash [crib/designs.py]",
+]
+references = [
+  "_section_hash [crib/designs.py]",
+]
+name_terms = [
+  "_doc_index",
+  "crib",
+  "crib.designs.Designs._doc_index",
+  "designs",
+  "doc",
+  "index",
+]

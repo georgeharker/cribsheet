@@ -1,0 +1,43 @@
+symbol_ref = "crib/gitbacking.py#GitBacking.state"
+fqn = "crib.gitbacking.GitBacking.state"
+name = "state"
+kind = "method"
+lang = "python"
+content_hash = "06752df82355ebda"
+file = "crib/gitbacking.py"
+file_hash = "c9457a4c8487c733"
+signature = "def state(self) -> dict:"
+description = ""
+schema = 4
+line = 193
+mtime = 1785963011000000000
+container = [
+  "GitBacking",
+]
+scope = [
+  "crib",
+  "gitbacking",
+  "GitBacking",
+]
+symbol_was = []
+calls = [
+  "_branch [crib/gitbacking.py]",
+  "_run [crib/gitbacking.py]",
+  "current_remote [crib/gitbacking.py]",
+]
+called_by = [
+  "status [crib/app.py]",
+  "test_git_runs_are_bounded_and_get_no_stdin [tests/test_sync.py]",
+]
+references = [
+  "status [crib/app.py]",
+  "test_git_runs_are_bounded_and_get_no_stdin [tests/test_sync.py]",
+]
+name_terms = [
+  "backing",
+  "crib",
+  "crib.gitbacking.GitBacking.state",
+  "git",
+  "gitbacking",
+  "state",
+]

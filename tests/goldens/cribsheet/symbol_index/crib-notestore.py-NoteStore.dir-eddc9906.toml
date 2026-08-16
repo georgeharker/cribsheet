@@ -1,0 +1,51 @@
+symbol_ref = "crib/notestore.py#NoteStore.dir"
+fqn = "crib.notestore.NoteStore.dir"
+name = "dir"
+kind = "method"
+lang = "python"
+content_hash = "80d22dbc045cda30"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "def dir(self, project: str) -> Path:"
+description = ""
+schema = 4
+line = 99
+mtime = 1786564832000000000
+container = [
+  "NoteStore",
+]
+scope = [
+  "crib",
+  "notestore",
+  "NoteStore",
+]
+symbol_was = []
+calls = [
+  "root [crib/notestore.py]",
+]
+called_by = [
+  "_on_fs_change [crib/app.py]",
+  "delete [crib/notestore.py]",
+  "move [crib/notestore.py]",
+  "notes_dir [crib/app.py]",
+  "reindex [crib/notestore.py]",
+  "scenario [tests/test_watcher.py]",
+  "write [crib/notestore.py]",
+]
+references = [
+  "_on_fs_change [crib/app.py]",
+  "delete [crib/notestore.py]",
+  "move [crib/notestore.py]",
+  "notes_dir [crib/app.py]",
+  "reindex [crib/notestore.py]",
+  "scenario [tests/test_watcher.py]",
+  "write [crib/notestore.py]",
+]
+name_terms = [
+  "crib",
+  "crib.notestore.NoteStore.dir",
+  "dir",
+  "note",
+  "notestore",
+  "store",
+]

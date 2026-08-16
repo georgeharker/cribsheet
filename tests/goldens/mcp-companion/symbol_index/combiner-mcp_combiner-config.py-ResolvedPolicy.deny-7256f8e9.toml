@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ResolvedPolicy.deny"
+fqn = "combiner.mcp_combiner.config.ResolvedPolicy.deny"
+name = "deny"
+kind = "field"
+lang = "python"
+content_hash = "dcb14e6c108b641d"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "deny: tuple[str, ...]"
+description = ""
+schema = 4
+line = 201
+mtime = 1783633313000000000
+container = [
+  "ResolvedPolicy",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ResolvedPolicy",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+  "_rp [combiner/tests/test_permissions.py]",
+  "is_active [combiner/mcp_combiner/config.py]",
+  "resolve [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ResolvedPolicy.deny",
+  "config",
+  "deny",
+  "mcp",
+  "policy",
+  "resolved",
+]

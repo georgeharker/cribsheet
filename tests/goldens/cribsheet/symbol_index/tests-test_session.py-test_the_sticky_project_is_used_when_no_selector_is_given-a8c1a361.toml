@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_session.py#test_the_sticky_project_is_used_when_no_selector_is_given"
+fqn = "tests.test_session.test_the_sticky_project_is_used_when_no_selector_is_given"
+name = "test_the_sticky_project_is_used_when_no_selector_is_given"
+kind = "function"
+lang = "python"
+content_hash = "c8520c9b5a0ffdaf"
+file = "tests/test_session.py"
+file_hash = "bef48c1ca7e1ebb9"
+signature = "def test_the_sticky_project_is_used_when_no_selector_is_given():"
+description = ""
+schema = 4
+line = 52
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_session",
+]
+symbol_was = []
+calls = [
+  "SessionState [crib/session.py]",
+  "resolve_session_project [crib/session.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "given",
+  "is",
+  "no",
+  "project",
+  "selector",
+  "session",
+  "sticky",
+  "test",
+  "test_the_sticky_project_is_used_when_no_selector_is_given",
+  "tests",
+  "tests.test_session.test_the_sticky_project_is_used_when_no_selector_is_given",
+  "the",
+  "used",
+  "when",
+]

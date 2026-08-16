@@ -1,0 +1,41 @@
+symbol_ref = "tests/test_design_sources.py#test_a_headingless_doc_is_its_own_section"
+fqn = "tests.test_design_sources.test_a_headingless_doc_is_its_own_section"
+name = "test_a_headingless_doc_is_its_own_section"
+kind = "function"
+lang = "python"
+content_hash = "dd8b18ce2f1c8669"
+file = "tests/test_design_sources.py"
+file_hash = "f89b5a94b236ce9c"
+signature = "def test_a_headingless_doc_is_its_own_section(crib):"
+description = ""
+schema = 4
+line = 108
+mtime = 1786137963000000000
+container = []
+scope = [
+  "tests",
+  "test_design_sources",
+]
+symbol_was = []
+calls = [
+  "_kinds [tests/test_design_sources.py]",
+  "_rewrite [tests/test_design_sources.py]",
+  "run [tests/test_design_sources.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "a",
+  "design",
+  "doc",
+  "headingless",
+  "is",
+  "its",
+  "own",
+  "section",
+  "sources",
+  "test",
+  "test_a_headingless_doc_is_its_own_section",
+  "tests",
+  "tests.test_design_sources.test_a_headingless_doc_is_its_own_section",
+]

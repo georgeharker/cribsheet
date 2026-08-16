@@ -1,0 +1,33 @@
+symbol_ref = "crib/paths.py#_resolve"
+fqn = "crib.paths._resolve"
+name = "_resolve"
+kind = "function"
+lang = "python"
+content_hash = "eb2de9c49b370b9b"
+file = "crib/paths.py"
+file_hash = "c7e6a0f90fafb264"
+signature = "def _resolve(env_override: str, xdg_var: str, xdg_default: str) -> Path:"
+description = ""
+schema = 4
+line = 73
+mtime = 1786564832000000000
+container = []
+scope = [
+  "crib",
+  "paths",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "resolve [crib/paths.py]",
+]
+references = [
+  "resolve [crib/paths.py]",
+]
+name_terms = [
+  "_resolve",
+  "crib",
+  "crib.paths._resolve",
+  "paths",
+  "resolve",
+]

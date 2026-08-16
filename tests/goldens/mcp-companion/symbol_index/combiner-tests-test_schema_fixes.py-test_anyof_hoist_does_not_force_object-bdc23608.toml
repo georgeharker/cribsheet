@@ -1,0 +1,40 @@
+symbol_ref = "combiner/tests/test_schema_fixes.py#test_anyof_hoist_does_not_force_object"
+fqn = "combiner.tests.test_schema_fixes.test_anyof_hoist_does_not_force_object"
+name = "test_anyof_hoist_does_not_force_object"
+kind = "function"
+lang = "python"
+content_hash = "97c81b354085bc5e"
+file = "combiner/tests/test_schema_fixes.py"
+file_hash = "96276dbde1199700"
+signature = "def test_anyof_hoist_does_not_force_object():"
+description = ""
+schema = 4
+line = 66
+mtime = 1783542616000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_schema_fixes",
+]
+symbol_was = []
+calls = [
+  "_apply_schema_fixes [combiner/mcp_combiner/schemafix.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "anyof",
+  "combiner",
+  "combiner.tests.test_schema_fixes.test_anyof_hoist_does_not_force_object",
+  "does",
+  "fixes",
+  "force",
+  "hoist",
+  "not",
+  "object",
+  "schema",
+  "test",
+  "test_anyof_hoist_does_not_force_object",
+  "tests",
+]

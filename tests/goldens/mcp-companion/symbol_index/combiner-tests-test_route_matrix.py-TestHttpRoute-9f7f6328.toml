@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_route_matrix.py#TestHttpRoute"
+fqn = "combiner.tests.test_route_matrix.TestHttpRoute"
+name = "TestHttpRoute"
+kind = "class"
+lang = "python"
+content_hash = "33549755eb986f9f"
+file = "combiner/tests/test_route_matrix.py"
+file_hash = "e02757ba8c7bf654"
+signature = "class TestHttpRoute:"
+description = ""
+schema = 4
+line = 81
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_route_matrix",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestHttpRoute",
+  "combiner",
+  "combiner.tests.test_route_matrix.TestHttpRoute",
+  "http",
+  "matrix",
+  "route",
+  "test",
+  "tests",
+]

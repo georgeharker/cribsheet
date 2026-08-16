@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#TestPersistence._expire_persisted_token"
+fqn = "combiner.tests.test_oauth_mock.TestPersistence._expire_persisted_token"
+name = "_expire_persisted_token"
+kind = "method"
+lang = "python"
+content_hash = "394f8406e8930921"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def _expire_persisted_token(self, mock: ServedOAuthMock, token_dir: Path) -> None:"
+description = ""
+schema = 4
+line = 394
+mtime = 1784495646000000000
+container = [
+  "TestPersistence",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "TestPersistence",
+]
+symbol_was = []
+calls = [
+  "create_encrypted_store [combiner/mcp_combiner/auth.py]",
+]
+called_by = [
+  "test_expired_cached_token_refreshed_silently_on_restart [combiner/tests/test_oauth_mock.py]",
+]
+references = [
+  "test_expired_cached_token_refreshed_silently_on_restart [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "_expire_persisted_token",
+  "combiner",
+  "combiner.tests.test_oauth_mock.TestPersistence._expire_persisted_token",
+  "expire",
+  "mock",
+  "oauth",
+  "persisted",
+  "persistence",
+  "test",
+  "tests",
+  "token",
+]

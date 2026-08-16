@@ -1,0 +1,38 @@
+symbol_ref = "crib/app.py#Crib._rerank"
+fqn = "crib.app.Crib._rerank"
+name = "_rerank"
+kind = "method"
+lang = "python"
+content_hash = "4a2dd4ef37eb8aef"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _rerank(self, query: str, hits: list[Hit]) -> list[Hit]:"
+description = ""
+schema = 4
+line = 924
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "_min_max [crib/app.py]",
+]
+called_by = [
+  "_retrieve [crib/app.py]",
+]
+references = [
+  "_retrieve [crib/app.py]",
+]
+name_terms = [
+  "_rerank",
+  "app",
+  "crib",
+  "crib.app.Crib._rerank",
+  "rerank",
+]

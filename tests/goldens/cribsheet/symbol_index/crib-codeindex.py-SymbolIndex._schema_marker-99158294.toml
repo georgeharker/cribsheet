@@ -1,0 +1,47 @@
+symbol_ref = "crib/codeindex.py#SymbolIndex._schema_marker"
+fqn = "crib.codeindex.SymbolIndex._schema_marker"
+name = "_schema_marker"
+kind = "method"
+lang = "python"
+content_hash = "791402d818c91d3f"
+file = "crib/codeindex.py"
+file_hash = "e492333263b876b0"
+signature = "@property"
+description = ""
+schema = 4
+line = 1532
+mtime = 1786844518000000000
+container = [
+  "SymbolIndex",
+]
+scope = [
+  "crib",
+  "codeindex",
+  "SymbolIndex",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "record_schema [crib/codeindex.py]",
+  "stored_schema [crib/codeindex.py]",
+  "test_a_single_file_index_writes_into_a_store_of_another_shape [tests/test_code_graph.py]",
+  "test_an_empty_store_is_never_stale [tests/test_code_graph.py]",
+  "test_only_a_DIFFERENT_recorded_version_is_stale [tests/test_code_graph.py]",
+]
+references = [
+  "record_schema [crib/codeindex.py]",
+  "stored_schema [crib/codeindex.py]",
+  "test_a_single_file_index_writes_into_a_store_of_another_shape [tests/test_code_graph.py]",
+  "test_an_empty_store_is_never_stale [tests/test_code_graph.py]",
+  "test_only_a_DIFFERENT_recorded_version_is_stale [tests/test_code_graph.py]",
+]
+name_terms = [
+  "_schema_marker",
+  "codeindex",
+  "crib",
+  "crib.codeindex.SymbolIndex._schema_marker",
+  "index",
+  "marker",
+  "schema",
+  "symbol",
+]

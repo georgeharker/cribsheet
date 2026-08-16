@@ -1,0 +1,39 @@
+symbol_ref = "scripts/analyze_consult.py#_parse_transcript"
+fqn = "scripts.analyze_consult._parse_transcript"
+name = "_parse_transcript"
+kind = "function"
+lang = "python"
+content_hash = "dd9badbe4b517c63"
+file = "scripts/analyze_consult.py"
+file_hash = "4e68de40abb91ec4"
+signature = "def _parse_transcript(path: Path) -> dict:"
+description = ""
+schema = 4
+line = 79
+mtime = 1783033314000000000
+container = []
+scope = [
+  "scripts",
+  "analyze_consult",
+]
+symbol_was = []
+calls = [
+  "_classify [scripts/analyze_consult.py]",
+]
+called_by = [
+  "_load [scripts/analyze_consult.py]",
+  "main [scripts/analyze_consult.py]",
+]
+references = [
+  "_load [scripts/analyze_consult.py]",
+  "main [scripts/analyze_consult.py]",
+]
+name_terms = [
+  "_parse_transcript",
+  "analyze",
+  "consult",
+  "parse",
+  "scripts",
+  "scripts.analyze_consult._parse_transcript",
+  "transcript",
+]

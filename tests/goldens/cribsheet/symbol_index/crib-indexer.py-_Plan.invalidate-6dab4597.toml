@@ -1,0 +1,35 @@
+symbol_ref = "crib/indexer.py#_Plan.invalidate"
+fqn = "crib.indexer._Plan.invalidate"
+name = "invalidate"
+kind = "field"
+lang = "python"
+content_hash = "4250ec708f3b7a86"
+file = "crib/indexer.py"
+file_hash = "8f9c9e7949f2b348"
+signature = "invalidate: bool = False"
+description = ""
+schema = 4
+line = 57
+mtime = 1786578262000000000
+container = [
+  "_Plan",
+]
+scope = [
+  "crib",
+  "indexer",
+  "_Plan",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_index_locked [crib/indexer.py]",
+  "_plan [crib/indexer.py]",
+]
+name_terms = [
+  "crib",
+  "crib.indexer._Plan.invalidate",
+  "indexer",
+  "invalidate",
+  "plan",
+]

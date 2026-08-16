@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_describe_queue.py#test_llm_down_backfill_preserves_description"
+fqn = "tests.test_describe_queue.test_llm_down_backfill_preserves_description"
+name = "test_llm_down_backfill_preserves_description"
+kind = "function"
+lang = "python"
+content_hash = "85fd1d06ce70de52"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def test_llm_down_backfill_preserves_description(crib, tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 264
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_entry [tests/test_describe_queue.py]",
+  "read [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "backfill",
+  "describe",
+  "description",
+  "down",
+  "llm",
+  "preserves",
+  "queue",
+  "test",
+  "test_llm_down_backfill_preserves_description",
+  "tests",
+  "tests.test_describe_queue.test_llm_down_backfill_preserves_description",
+]

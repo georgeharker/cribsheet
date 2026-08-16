@@ -1,0 +1,31 @@
+symbol_ref = "crib/designs.py#_GROUPS"
+fqn = "crib.designs._GROUPS"
+name = "_GROUPS"
+kind = "constant"
+lang = "python"
+content_hash = "f909bff404bbc6d0"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "_GROUPS = (\"in-progress\", \"ready\", \"blocked\", \"done\")"
+description = ""
+schema = 4
+line = 124
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "plan_list [crib/designs.py]",
+]
+name_terms = [
+  "_GROUPS",
+  "crib",
+  "crib.designs._GROUPS",
+  "designs",
+  "groups",
+]

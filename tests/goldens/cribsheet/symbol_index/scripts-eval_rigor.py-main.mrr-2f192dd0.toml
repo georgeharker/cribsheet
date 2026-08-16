@@ -1,0 +1,37 @@
+symbol_ref = "scripts/eval_rigor.py#main.mrr"
+fqn = "scripts.eval_rigor.main.mrr"
+name = "mrr"
+kind = "function"
+lang = "python"
+content_hash = "20bcc77e7feae64e"
+file = "scripts/eval_rigor.py"
+file_hash = "352ea4b1e1221f95"
+signature = "def mrr(rs): return sum((1 / r) for r in rs if r) / len(rs)"
+description = ""
+schema = 4
+line = 140
+mtime = 1783981122000000000
+container = [
+  "main",
+]
+scope = [
+  "scripts",
+  "eval_rigor",
+  "main",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "main [scripts/eval_rigor.py]",
+]
+references = [
+  "main [scripts/eval_rigor.py]",
+]
+name_terms = [
+  "eval",
+  "main",
+  "mrr",
+  "rigor",
+  "scripts",
+  "scripts.eval_rigor.main.mrr",
+]

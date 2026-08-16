@@ -1,0 +1,44 @@
+symbol_ref = "tests/test_client.py#_res"
+fqn = "tests.test_client._res"
+name = "_res"
+kind = "function"
+lang = "python"
+content_hash = "7f7b57337795f8c9"
+file = "tests/test_client.py"
+file_hash = "cd69a30eb66e1ea1"
+signature = "def _res(*, data=None, structured_content=None, content=None):"
+description = ""
+schema = 4
+line = 25
+mtime = 1782958917000000000
+container = []
+scope = [
+  "tests",
+  "test_client",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_falls_back_to_data_when_no_structured_content [tests/test_client.py]",
+  "test_falls_back_to_text_content_when_data_absent [tests/test_client.py]",
+  "test_list_of_scalars_unwrapped [tests/test_client.py]",
+  "test_lookup_prefers_structured_content_over_empty_data [tests/test_client.py]",
+  "test_scalar_result_envelope_is_unwrapped [tests/test_client.py]",
+  "test_write_dict_passthrough_not_unwrapped [tests/test_client.py]",
+]
+references = [
+  "test_falls_back_to_data_when_no_structured_content [tests/test_client.py]",
+  "test_falls_back_to_text_content_when_data_absent [tests/test_client.py]",
+  "test_list_of_scalars_unwrapped [tests/test_client.py]",
+  "test_lookup_prefers_structured_content_over_empty_data [tests/test_client.py]",
+  "test_scalar_result_envelope_is_unwrapped [tests/test_client.py]",
+  "test_write_dict_passthrough_not_unwrapped [tests/test_client.py]",
+]
+name_terms = [
+  "_res",
+  "client",
+  "res",
+  "test",
+  "tests",
+  "tests.test_client._res",
+]

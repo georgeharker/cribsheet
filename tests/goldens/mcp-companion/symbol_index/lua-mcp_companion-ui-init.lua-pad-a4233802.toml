@@ -1,0 +1,35 @@
+symbol_ref = "lua/mcp_companion/ui/init.lua#pad"
+fqn = "mcp_companion.ui.pad"
+name = "pad"
+kind = "function"
+lang = "lua"
+content_hash = "ecb5d133566844dd"
+file = "lua/mcp_companion/ui/init.lua"
+file_hash = "e26b6b31102be1ee"
+signature = "local function pad(s, w)"
+description = ""
+schema = 4
+line = 63
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "ui",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/ui/init.lua]",
+  "render_server [lua/mcp_companion/ui/init.lua]",
+]
+references = [
+  "for in [lua/mcp_companion/ui/init.lua]",
+  "header_segments [lua/mcp_companion/ui/init.lua]",
+]
+name_terms = [
+  "companion",
+  "mcp",
+  "mcp_companion.ui.pad",
+  "pad",
+  "ui",
+]

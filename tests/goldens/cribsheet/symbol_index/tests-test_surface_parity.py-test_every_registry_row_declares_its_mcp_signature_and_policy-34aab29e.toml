@@ -1,0 +1,39 @@
+symbol_ref = "tests/test_surface_parity.py#test_every_registry_row_declares_its_mcp_signature_and_policy"
+fqn = "tests.test_surface_parity.test_every_registry_row_declares_its_mcp_signature_and_policy"
+name = "test_every_registry_row_declares_its_mcp_signature_and_policy"
+kind = "function"
+lang = "python"
+content_hash = "ea60ba1e05372c06"
+file = "tests/test_surface_parity.py"
+file_hash = "0c4fc72b5f441359"
+signature = "def test_every_registry_row_declares_its_mcp_signature_and_policy():"
+description = ""
+schema = 4
+line = 74
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_surface_parity",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "declares",
+  "every",
+  "its",
+  "mcp",
+  "parity",
+  "policy",
+  "registry",
+  "row",
+  "signature",
+  "surface",
+  "test",
+  "test_every_registry_row_declares_its_mcp_signature_and_policy",
+  "tests",
+  "tests.test_surface_parity.test_every_registry_row_declares_its_mcp_signature_and_policy",
+]

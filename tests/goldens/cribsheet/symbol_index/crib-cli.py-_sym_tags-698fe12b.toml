@@ -1,0 +1,38 @@
+symbol_ref = "crib/cli.py#_sym_tags"
+fqn = "crib.cli._sym_tags"
+name = "_sym_tags"
+kind = "function"
+lang = "python"
+content_hash = "d2a1de2e85855126"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _sym_tags(d: dict, ascii_mode: bool = False) -> str:"
+description = ""
+schema = 4
+line = 230
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_emit_code_edges [crib/cli.py]",
+  "_emit_code_graph [crib/cli.py]",
+  "render_symbol [crib/cli.py]",
+]
+references = [
+  "_emit_code_edges [crib/cli.py]",
+  "_emit_code_graph [crib/cli.py]",
+  "render_symbol [crib/cli.py]",
+]
+name_terms = [
+  "_sym_tags",
+  "cli",
+  "crib",
+  "crib.cli._sym_tags",
+  "sym",
+  "tags",
+]

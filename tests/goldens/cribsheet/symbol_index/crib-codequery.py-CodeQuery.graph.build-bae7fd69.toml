@@ -1,0 +1,46 @@
+symbol_ref = "crib/codequery.py#CodeQuery.graph.build"
+fqn = "crib.codequery.CodeQuery.graph.build"
+name = "build"
+kind = "function"
+lang = "python"
+content_hash = "94bf0d22bf71f864"
+file = "crib/codequery.py"
+file_hash = "b835b3d2b3bf8a83"
+signature = "def build(e: dict, p: str, d: int) -> dict:"
+description = ""
+schema = 4
+line = 520
+mtime = 1786664729000000000
+container = [
+  "CodeQuery",
+  "graph",
+]
+scope = [
+  "crib",
+  "codequery",
+  "CodeQuery",
+  "graph",
+]
+symbol_was = []
+calls = [
+  "_nf [crib/codequery.py]",
+  "build [crib/codequery.py]",
+  "decode_edge [crib/symbols.py]",
+  "key [crib/symbols.py]",
+]
+called_by = [
+  "build [crib/codequery.py]",
+  "graph [crib/codequery.py]",
+]
+references = [
+  "graph [crib/codequery.py]",
+]
+name_terms = [
+  "build",
+  "code",
+  "codequery",
+  "crib",
+  "crib.codequery.CodeQuery.graph.build",
+  "graph",
+  "query",
+]

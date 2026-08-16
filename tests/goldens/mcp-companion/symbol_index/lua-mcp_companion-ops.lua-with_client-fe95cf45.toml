@@ -1,0 +1,40 @@
+symbol_ref = "lua/mcp_companion/ops.lua#with_client"
+fqn = "mcp_companion.ops.with_client"
+name = "with_client"
+kind = "function"
+lang = "lua"
+content_hash = "71f79346ef1fa4b5"
+file = "lua/mcp_companion/ops.lua"
+file_hash = "7ca7520a63575997"
+signature = "local function with_client(notify, done, fn)"
+description = ""
+schema = 4
+line = 30
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "ops",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M.reload_config [lua/mcp_companion/ops.lua]",
+  "M.restart_server [lua/mcp_companion/ops.lua]",
+  "M.toggle_server [lua/mcp_companion/ops.lua]",
+  "ops.lua [lua/mcp_companion/ops.lua]",
+]
+references = [
+  "reload_config [lua/mcp_companion/ops.lua]",
+  "restart_server [lua/mcp_companion/ops.lua]",
+  "toggle_server [lua/mcp_companion/ops.lua]",
+]
+name_terms = [
+  "client",
+  "companion",
+  "mcp",
+  "mcp_companion.ops.with_client",
+  "ops",
+  "with",
+  "with_client",
+]

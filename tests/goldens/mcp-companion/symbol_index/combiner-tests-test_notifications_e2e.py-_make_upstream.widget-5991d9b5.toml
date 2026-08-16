@@ -1,0 +1,38 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#_make_upstream.widget"
+fqn = "combiner.tests.test_notifications_e2e._make_upstream.widget"
+name = "widget"
+kind = "function"
+lang = "python"
+content_hash = "eb72fa0afb98a488"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "@up.resource(WIDGET_URI)"
+description = ""
+schema = 4
+line = 88
+mtime = 1783629928000000000
+container = [
+  "_make_upstream",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+  "_make_upstream",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "2",
+  "combiner",
+  "combiner.tests.test_notifications_e2e._make_upstream.widget",
+  "e",
+  "make",
+  "notifications",
+  "test",
+  "tests",
+  "upstream",
+  "widget",
+]

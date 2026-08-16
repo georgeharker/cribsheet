@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_rerank.py#test_rerank_promotes_through_lookup"
+fqn = "tests.test_rerank.test_rerank_promotes_through_lookup"
+name = "test_rerank_promotes_through_lookup"
+kind = "function"
+lang = "python"
+content_hash = "ea5b1eb9fbea263a"
+file = "tests/test_rerank.py"
+file_hash = "29066147cbea547e"
+signature = "def test_rerank_promotes_through_lookup(crib):"
+description = ""
+schema = 4
+line = 85
+mtime = 1783981122000000000
+container = []
+scope = [
+  "tests",
+  "test_rerank",
+]
+symbol_was = []
+calls = [
+  "_PromoteLast [tests/test_rerank.py]",
+  "run [tests/test_rerank.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "lookup",
+  "promotes",
+  "rerank",
+  "test",
+  "test_rerank_promotes_through_lookup",
+  "tests",
+  "tests.test_rerank.test_rerank_promotes_through_lookup",
+  "through",
+]

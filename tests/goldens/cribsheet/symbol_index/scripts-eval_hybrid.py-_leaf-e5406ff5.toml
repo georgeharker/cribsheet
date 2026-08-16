@@ -1,0 +1,34 @@
+symbol_ref = "scripts/eval_hybrid.py#_leaf"
+fqn = "scripts.eval_hybrid._leaf"
+name = "_leaf"
+kind = "function"
+lang = "python"
+content_hash = "651488e737f54700"
+file = "scripts/eval_hybrid.py"
+file_hash = "7efc1218d091601c"
+signature = "def _leaf(x):"
+description = ""
+schema = 4
+line = 41
+mtime = 1783981122000000000
+container = []
+scope = [
+  "scripts",
+  "eval_hybrid",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "(lambda) [scripts/eval_hybrid.py]",
+]
+references = [
+  "main [scripts/eval_hybrid.py]",
+]
+name_terms = [
+  "_leaf",
+  "eval",
+  "hybrid",
+  "leaf",
+  "scripts",
+  "scripts.eval_hybrid._leaf",
+]

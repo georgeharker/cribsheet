@@ -1,0 +1,36 @@
+symbol_ref = "combiner/tests/fakes.py#FakeCombiner"
+fqn = "combiner.tests.fakes.FakeCombiner"
+name = "FakeCombiner"
+kind = "class"
+lang = "python"
+content_hash = "dea77ec65ed702cf"
+file = "combiner/tests/fakes.py"
+file_hash = "3bc89d0dfa037e68"
+signature = "class FakeCombiner:"
+description = ""
+schema = 4
+line = 26
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "fakes",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_namespaces [combiner/tests/test_reload_config.py]",
+  "harness [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_empty_answer_keeps_slice_silent [combiner/tests/test_reload_config.py]",
+  "test_restart_stdio_primes_before_broadcast [combiner/tests/test_reload_config.py]",
+]
+name_terms = [
+  "FakeCombiner",
+  "combiner",
+  "combiner.tests.fakes.FakeCombiner",
+  "fake",
+  "fakes",
+  "tests",
+]

@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_nvim_channel.py#test_manifest_captured_and_frozen"
+fqn = "combiner.tests.test_nvim_channel.test_manifest_captured_and_frozen"
+name = "test_manifest_captured_and_frozen"
+kind = "function"
+lang = "python"
+content_hash = "699d3d508872fbe1"
+file = "combiner/tests/test_nvim_channel.py"
+file_hash = "182e2a76d8efddf4"
+signature = "async def test_manifest_captured_and_frozen(nvim_instance: str) -> None:"
+description = ""
+schema = 4
+line = 143
+mtime = 1783022631000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_nvim_channel",
+]
+symbol_was = []
+calls = [
+  "NvimChannelManager [combiner/mcp_combiner/nvim_channel.py]",
+  "deregister [combiner/mcp_combiner/nvim_channel.py]",
+  "ensure_manifest [combiner/mcp_combiner/nvim_channel.py]",
+  "manifest [combiner/mcp_combiner/nvim_channel.py]",
+  "register [combiner/mcp_combiner/nvim_channel.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "captured",
+  "channel",
+  "combiner",
+  "combiner.tests.test_nvim_channel.test_manifest_captured_and_frozen",
+  "frozen",
+  "manifest",
+  "nvim",
+  "test",
+  "test_manifest_captured_and_frozen",
+  "tests",
+]

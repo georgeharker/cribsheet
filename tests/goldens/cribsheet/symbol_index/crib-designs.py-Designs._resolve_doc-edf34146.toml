@@ -1,0 +1,46 @@
+symbol_ref = "crib/designs.py#Designs._resolve_doc"
+fqn = "crib.designs.Designs._resolve_doc"
+name = "_resolve_doc"
+kind = "method"
+lang = "python"
+content_hash = "9c93f4d8b3d05d79"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _resolve_doc(self, proj: str, ref: str) -> str:"
+description = ""
+schema = 4
+line = 492
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_doc_exists [crib/designs.py]",
+  "_known_docs [crib/designs.py]",
+  "_tail_match [crib/designs.py]",
+  "all [crib/sources.py]",
+  "source_roots [crib/notestore.py]",
+]
+called_by = [
+  "_import [crib/designs.py]",
+  "_resolve_source [crib/designs.py]",
+]
+references = [
+  "_import [crib/designs.py]",
+  "_resolve_source [crib/designs.py]",
+]
+name_terms = [
+  "_resolve_doc",
+  "crib",
+  "crib.designs.Designs._resolve_doc",
+  "designs",
+  "doc",
+  "resolve",
+]

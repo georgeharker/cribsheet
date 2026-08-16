@@ -1,0 +1,46 @@
+symbol_ref = "crib/notestore.py#NoteStore._ring_id"
+fqn = "crib.notestore.NoteStore._ring_id"
+name = "_ring_id"
+kind = "method"
+lang = "python"
+content_hash = "108c490f8a1ad0f2"
+file = "crib/notestore.py"
+file_hash = "2a56e29a90778bc0"
+signature = "def _ring_id(self, project: str, relpath: str) -> str | None:"
+description = ""
+schema = 4
+line = 337
+mtime = 1786564832000000000
+container = [
+  "NoteStore",
+]
+scope = [
+  "crib",
+  "notestore",
+  "NoteStore",
+]
+symbol_was = []
+calls = [
+  "abspath [crib/notestore.py]",
+  "derived_ulid [crib/util.py]",
+  "parse [crib/notes.py]",
+  "scan_id [crib/notes.py]",
+]
+called_by = [
+  "list_versions [crib/notestore.py]",
+  "version_content [crib/notestore.py]",
+]
+references = [
+  "list_versions [crib/notestore.py]",
+  "version_content [crib/notestore.py]",
+]
+name_terms = [
+  "_ring_id",
+  "crib",
+  "crib.notestore.NoteStore._ring_id",
+  "id",
+  "note",
+  "notestore",
+  "ring",
+  "store",
+]

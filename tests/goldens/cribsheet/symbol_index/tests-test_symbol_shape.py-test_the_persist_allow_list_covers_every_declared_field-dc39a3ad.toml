@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_symbol_shape.py#test_the_persist_allow_list_covers_every_declared_field"
+fqn = "tests.test_symbol_shape.test_the_persist_allow_list_covers_every_declared_field"
+name = "test_the_persist_allow_list_covers_every_declared_field"
+kind = "function"
+lang = "python"
+content_hash = "b59db44fd908408d"
+file = "tests/test_symbol_shape.py"
+file_hash = "cbe61056081f2393"
+signature = "def test_the_persist_allow_list_covers_every_declared_field():"
+description = ""
+schema = 4
+line = 53
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_symbol_shape",
+]
+symbol_was = []
+calls = [
+  "_entry_fields [tests/test_symbol_shape.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "allow",
+  "covers",
+  "declared",
+  "every",
+  "field",
+  "list",
+  "persist",
+  "shape",
+  "symbol",
+  "test",
+  "test_the_persist_allow_list_covers_every_declared_field",
+  "tests",
+  "tests.test_symbol_shape.test_the_persist_allow_list_covers_every_declared_field",
+  "the",
+]

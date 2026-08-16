@@ -1,0 +1,37 @@
+symbol_ref = "combiner/tests/test_nvim_e2e.py#_COMBINER_DIR"
+fqn = "combiner.tests.test_nvim_e2e._COMBINER_DIR"
+name = "_COMBINER_DIR"
+kind = "constant"
+lang = "python"
+content_hash = "d48ec847e2bc565b"
+file = "combiner/tests/test_nvim_e2e.py"
+file_hash = "45d9b468ec0b5858"
+signature = "_COMBINER_DIR = _REPO_ROOT / \"combiner\""
+description = ""
+schema = 4
+line = 34
+mtime = 1784495646000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_nvim_e2e",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "combiner_and_nvim [combiner/tests/test_nvim_e2e.py]",
+  "test_tokenless_client_must_name_instance [combiner/tests/test_nvim_e2e.py]",
+]
+name_terms = [
+  "2",
+  "_COMBINER_DIR",
+  "combiner",
+  "combiner.tests.test_nvim_e2e._COMBINER_DIR",
+  "dir",
+  "e",
+  "nvim",
+  "test",
+  "tests",
+]

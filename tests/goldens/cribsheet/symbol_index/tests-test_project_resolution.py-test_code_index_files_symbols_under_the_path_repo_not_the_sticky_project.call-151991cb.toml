@@ -1,0 +1,47 @@
+symbol_ref = "tests/test_project_resolution.py#test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project.call"
+fqn = "tests.test_project_resolution.test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project.call"
+name = "call"
+kind = "function"
+lang = "python"
+content_hash = "55233960fe69f388"
+file = "tests/test_project_resolution.py"
+file_hash = "4fafa653cef61a42"
+signature = "async def call():"
+description = ""
+schema = 4
+line = 225
+mtime = 1785959234000000000
+container = [
+  "test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project",
+]
+scope = [
+  "tests",
+  "test_project_resolution",
+  "test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project [tests/test_project_resolution.py]",
+]
+references = [
+  "test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project [tests/test_project_resolution.py]",
+]
+name_terms = [
+  "call",
+  "code",
+  "files",
+  "index",
+  "not",
+  "path",
+  "project",
+  "repo",
+  "resolution",
+  "sticky",
+  "symbols",
+  "test",
+  "tests",
+  "tests.test_project_resolution.test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project.call",
+  "the",
+  "under",
+]

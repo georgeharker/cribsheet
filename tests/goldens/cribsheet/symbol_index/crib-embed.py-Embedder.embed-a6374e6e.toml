@@ -1,0 +1,37 @@
+symbol_ref = "crib/embed.py#Embedder.embed"
+fqn = "crib.embed.Embedder.embed"
+name = "embed"
+kind = "method"
+lang = "python"
+content_hash = "7173dfb05729a4c3"
+file = "crib/embed.py"
+file_hash = "46323c76e4ac82a3"
+signature = "def embed(self, texts: list[str]) -> list[list[float]]:"
+description = ""
+schema = 4
+line = 22
+mtime = 1785963011000000000
+container = [
+  "Embedder",
+]
+scope = [
+  "crib",
+  "embed",
+  "Embedder",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "embed_batch [crib/embed.py]",
+  "main [scripts/eval_kw.py]",
+]
+references = [
+  "embed_batch [crib/embed.py]",
+  "main [scripts/eval_kw.py]",
+]
+name_terms = [
+  "crib",
+  "crib.embed.Embedder.embed",
+  "embed",
+  "embedder",
+]

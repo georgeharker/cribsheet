@@ -1,0 +1,44 @@
+symbol_ref = "combiner/mcp_combiner/config.py#PermissionPolicy.from_dict._patterns"
+fqn = "combiner.mcp_combiner.config.PermissionPolicy.from_dict._patterns"
+name = "_patterns"
+kind = "function"
+lang = "python"
+content_hash = "dfc911d66cc7634e"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "def _patterns(*keys: str) -> list[str]:"
+description = ""
+schema = 4
+line = 180
+mtime = 1783633313000000000
+container = [
+  "PermissionPolicy",
+  "from_dict",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "PermissionPolicy",
+  "from_dict",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+references = [
+  "from_dict [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "_patterns",
+  "combiner",
+  "combiner.mcp_combiner.config.PermissionPolicy.from_dict._patterns",
+  "config",
+  "dict",
+  "from",
+  "mcp",
+  "patterns",
+  "permission",
+  "policy",
+]

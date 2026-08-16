@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/nvim_channel.py#NvimChannelManager.instance_ids"
+fqn = "combiner.mcp_combiner.nvim_channel.NvimChannelManager.instance_ids"
+name = "instance_ids"
+kind = "method"
+lang = "python"
+content_hash = "0b6030ccbde399d5"
+file = "combiner/mcp_combiner/nvim_channel.py"
+file_hash = "78901790bbdc7457"
+signature = "def instance_ids(self) -> list[str]:"
+description = ""
+schema = 4
+line = 136
+mtime = 1782852601000000000
+container = [
+  "NvimChannelManager",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "nvim_channel",
+  "NvimChannelManager",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "call_nvim_tool [combiner/mcp_combiner/nvim_proxy.py]",
+]
+references = [
+  "call_nvim_tool [combiner/mcp_combiner/nvim_proxy.py]",
+]
+name_terms = [
+  "channel",
+  "combiner",
+  "combiner.mcp_combiner.nvim_channel.NvimChannelManager.instance_ids",
+  "ids",
+  "instance",
+  "instance_ids",
+  "manager",
+  "mcp",
+  "nvim",
+]

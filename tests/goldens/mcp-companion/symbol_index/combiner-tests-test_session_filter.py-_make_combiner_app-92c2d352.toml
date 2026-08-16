@@ -1,0 +1,41 @@
+symbol_ref = "combiner/tests/test_session_filter.py#_make_combiner_app"
+fqn = "combiner.tests.test_session_filter._make_combiner_app"
+name = "_make_combiner_app"
+kind = "function"
+lang = "python"
+content_hash = "73e3c9c6c0323969"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def _make_combiner_app():"
+description = ""
+schema = 4
+line = 27
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+]
+symbol_was = []
+calls = [
+  "create_combiner [combiner/mcp_combiner/server.py]",
+  "load [combiner/mcp_combiner/config.py]",
+]
+called_by = [
+  "client [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "client [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_make_combiner_app",
+  "app",
+  "combiner",
+  "combiner.tests.test_session_filter._make_combiner_app",
+  "filter",
+  "make",
+  "session",
+  "test",
+  "tests",
+]

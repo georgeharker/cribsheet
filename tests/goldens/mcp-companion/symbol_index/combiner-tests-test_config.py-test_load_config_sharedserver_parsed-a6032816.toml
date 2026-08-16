@@ -1,0 +1,36 @@
+symbol_ref = "combiner/tests/test_config.py#test_load_config_sharedserver_parsed"
+fqn = "combiner.tests.test_config.test_load_config_sharedserver_parsed"
+name = "test_load_config_sharedserver_parsed"
+kind = "function"
+lang = "python"
+content_hash = "aac8e90c26cba4cf"
+file = "combiner/tests/test_config.py"
+file_hash = "fe102bcc3d7b1b8e"
+signature = "def test_load_config_sharedserver_parsed() -> None:"
+description = ""
+schema = 4
+line = 35
+mtime = 1782852601000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_config",
+]
+symbol_was = []
+calls = [
+  "load [combiner/mcp_combiner/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "combiner",
+  "combiner.tests.test_config.test_load_config_sharedserver_parsed",
+  "config",
+  "load",
+  "parsed",
+  "sharedserver",
+  "test",
+  "test_load_config_sharedserver_parsed",
+  "tests",
+]

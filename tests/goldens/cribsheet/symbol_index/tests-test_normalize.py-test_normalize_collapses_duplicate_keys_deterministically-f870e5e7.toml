@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_normalize.py#test_normalize_collapses_duplicate_keys_deterministically"
+fqn = "tests.test_normalize.test_normalize_collapses_duplicate_keys_deterministically"
+name = "test_normalize_collapses_duplicate_keys_deterministically"
+kind = "function"
+lang = "python"
+content_hash = "fd3765a4157df4d6"
+file = "tests/test_normalize.py"
+file_hash = "ed0e928f3ffb7bef"
+signature = "def test_normalize_collapses_duplicate_keys_deterministically():"
+description = ""
+schema = 4
+line = 72
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_normalize",
+]
+symbol_was = []
+calls = [
+  "normalize_text [crib/notes.py]",
+  "parse [crib/notes.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "collapses",
+  "deterministically",
+  "duplicate",
+  "keys",
+  "normalize",
+  "test",
+  "test_normalize_collapses_duplicate_keys_deterministically",
+  "tests",
+  "tests.test_normalize.test_normalize_collapses_duplicate_keys_deterministically",
+]

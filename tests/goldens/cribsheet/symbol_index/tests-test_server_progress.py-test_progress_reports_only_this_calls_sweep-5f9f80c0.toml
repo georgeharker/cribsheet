@@ -1,0 +1,38 @@
+symbol_ref = "tests/test_server_progress.py#test_progress_reports_only_this_calls_sweep"
+fqn = "tests.test_server_progress.test_progress_reports_only_this_calls_sweep"
+name = "test_progress_reports_only_this_calls_sweep"
+kind = "function"
+lang = "python"
+content_hash = "36c30f3cd0417694"
+file = "tests/test_server_progress.py"
+file_hash = "eb2fa9d1ba7041e5"
+signature = "def test_progress_reports_only_this_calls_sweep(crib, monkeypatch):"
+description = ""
+schema = 4
+line = 54
+mtime = 1783981122000000000
+container = []
+scope = [
+  "tests",
+  "test_server_progress",
+]
+symbol_was = []
+calls = [
+  "body [tests/test_server_progress.py]",
+  "build_server [crib/server.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "calls",
+  "only",
+  "progress",
+  "reports",
+  "server",
+  "sweep",
+  "test",
+  "test_progress_reports_only_this_calls_sweep",
+  "tests",
+  "tests.test_server_progress.test_progress_reports_only_this_calls_sweep",
+  "this",
+]

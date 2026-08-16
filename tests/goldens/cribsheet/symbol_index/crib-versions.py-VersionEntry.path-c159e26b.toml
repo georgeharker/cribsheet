@@ -1,0 +1,37 @@
+symbol_ref = "crib/versions.py#VersionEntry.path"
+fqn = "crib.versions.VersionEntry.path"
+name = "path"
+kind = "field"
+lang = "python"
+content_hash = "847e53703f96abe4"
+file = "crib/versions.py"
+file_hash = "c84588155a74a02c"
+signature = "path: Path"
+description = ""
+schema = 4
+line = 29
+mtime = 1785966856000000000
+container = [
+  "VersionEntry",
+]
+scope = [
+  "crib",
+  "versions",
+  "VersionEntry",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "test_prune_only_counts_real_entries [tests/test_config_resilience.py]",
+  "test_ring_warns_once_per_dir [tests/test_config_resilience.py]",
+  "test_stray_file_in_a_ring_dir_does_not_break_writes [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "crib",
+  "crib.versions.VersionEntry.path",
+  "entry",
+  "path",
+  "version",
+  "versions",
+]

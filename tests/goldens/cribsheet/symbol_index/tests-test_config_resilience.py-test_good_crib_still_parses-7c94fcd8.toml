@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_config_resilience.py#test_good_crib_still_parses"
+fqn = "tests.test_config_resilience.test_good_crib_still_parses"
+name = "test_good_crib_still_parses"
+kind = "function"
+lang = "python"
+content_hash = "01873a0376ef8c2a"
+file = "tests/test_config_resilience.py"
+file_hash = "620aeb96b59e7b2d"
+signature = "def test_good_crib_still_parses(tmp_path):"
+description = ""
+schema = 4
+line = 95
+mtime = 1786578262000000000
+container = []
+scope = [
+  "tests",
+  "test_config_resilience",
+]
+symbol_was = []
+calls = [
+  "find [crib/config.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "config",
+  "crib",
+  "good",
+  "parses",
+  "resilience",
+  "still",
+  "test",
+  "test_good_crib_still_parses",
+  "tests",
+  "tests.test_config_resilience.test_good_crib_still_parses",
+]

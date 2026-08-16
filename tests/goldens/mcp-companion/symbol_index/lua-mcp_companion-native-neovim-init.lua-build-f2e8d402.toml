@@ -1,0 +1,36 @@
+symbol_ref = "lua/mcp_companion/native/neovim/init.lua#build"
+fqn = "mcp_companion.native.neovim.build"
+name = "build"
+kind = "function"
+lang = "lua"
+content_hash = "57a94f7cbd188094"
+file = "lua/mcp_companion/native/neovim/init.lua"
+file_hash = "06b2106af40854f7"
+signature = "function M.build(opts)"
+description = ""
+schema = 4
+line = 11
+mtime = 1782852601000000000
+container = []
+scope = [
+  "mcp_companion",
+  "native",
+  "neovim",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "init.lua [lua/mcp_companion/native/neovim/init.lua]",
+]
+references = [
+  "if [lua/mcp_companion/native/init.lua]",
+  "opts [lua/mcp_companion/native/neovim/init.lua]",
+]
+name_terms = [
+  "build",
+  "companion",
+  "mcp",
+  "mcp_companion.native.neovim.build",
+  "native",
+  "neovim",
+]

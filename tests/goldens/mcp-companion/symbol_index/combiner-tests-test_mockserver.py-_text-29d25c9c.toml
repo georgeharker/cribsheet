@@ -1,0 +1,56 @@
+symbol_ref = "combiner/tests/test_mockserver.py#_text"
+fqn = "combiner.tests.test_mockserver._text"
+name = "_text"
+kind = "function"
+lang = "python"
+content_hash = "3776364cd23f233d"
+file = "combiner/tests/test_mockserver.py"
+file_hash = "ceb1e1b64cb66d15"
+signature = "async def _text(client: Client, tool: str, args: dict) -> str:"
+description = ""
+schema = 4
+line = 24
+mtime = 1783534978000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_mockserver",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_add_call_remove [combiner/tests/test_mockserver.py]",
+  "test_add_replaces_existing [combiner/tests/test_mockserver.py]",
+  "test_bad_template_falls_back_to_json_dump [combiner/tests/test_mockserver.py]",
+  "test_echo_add_parity [combiner/tests/test_mockserver.py]",
+  "test_error_mode_after_n [combiner/tests/test_mockserver.py]",
+  "test_error_mode_first_n [combiner/tests/test_mockserver.py]",
+  "test_push_responses [combiner/tests/test_mockserver.py]",
+  "test_scripted_fifo_then_template_fallback [combiner/tests/test_mockserver.py]",
+  "test_set_behavior_toggles_errors [combiner/tests/test_mockserver.py]",
+  "test_template_computed_keys [combiner/tests/test_mockserver.py]",
+  "test_whoami_counters_and_sessions [combiner/tests/test_mockserver.py]",
+]
+references = [
+  "test_add_call_remove [combiner/tests/test_mockserver.py]",
+  "test_add_replaces_existing [combiner/tests/test_mockserver.py]",
+  "test_bad_template_falls_back_to_json_dump [combiner/tests/test_mockserver.py]",
+  "test_echo_add_parity [combiner/tests/test_mockserver.py]",
+  "test_error_mode_after_n [combiner/tests/test_mockserver.py]",
+  "test_error_mode_first_n [combiner/tests/test_mockserver.py]",
+  "test_push_responses [combiner/tests/test_mockserver.py]",
+  "test_scripted_fifo_then_template_fallback [combiner/tests/test_mockserver.py]",
+  "test_set_behavior_toggles_errors [combiner/tests/test_mockserver.py]",
+  "test_template_computed_keys [combiner/tests/test_mockserver.py]",
+  "test_whoami_counters_and_sessions [combiner/tests/test_mockserver.py]",
+]
+name_terms = [
+  "_text",
+  "combiner",
+  "combiner.tests.test_mockserver._text",
+  "mockserver",
+  "test",
+  "tests",
+  "text",
+]

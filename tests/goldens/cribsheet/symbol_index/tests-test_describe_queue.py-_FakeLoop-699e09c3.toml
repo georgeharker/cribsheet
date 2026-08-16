@@ -1,0 +1,35 @@
+symbol_ref = "tests/test_describe_queue.py#_FakeLoop"
+fqn = "tests.test_describe_queue._FakeLoop"
+name = "_FakeLoop"
+kind = "class"
+lang = "python"
+content_hash = "b9be348312ec1456"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "class _FakeLoop:"
+description = ""
+schema = 4
+line = 52
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_DrivingLoop [tests/test_describe_queue.py]",
+  "test_backoff_delays_double_then_cap [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "_FakeLoop",
+  "describe",
+  "fake",
+  "loop",
+  "queue",
+  "test",
+  "tests",
+  "tests.test_describe_queue._FakeLoop",
+]

@@ -1,0 +1,33 @@
+symbol_ref = "combiner/tests/test_connections.py#TestLifecycleState"
+fqn = "combiner.tests.test_connections.TestLifecycleState"
+name = "TestLifecycleState"
+kind = "class"
+lang = "python"
+content_hash = "2ba5cba9b6af4a94"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "class TestLifecycleState:"
+description = ""
+schema = 4
+line = 532
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "TestLifecycleState",
+  "combiner",
+  "combiner.tests.test_connections.TestLifecycleState",
+  "connections",
+  "lifecycle",
+  "state",
+  "test",
+  "tests",
+]

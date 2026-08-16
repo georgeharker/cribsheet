@@ -1,0 +1,49 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestTokenSessionMapping.test_concurrent_clients_get_distinct_sessions"
+fqn = "combiner.tests.test_session_independence.TestTokenSessionMapping.test_concurrent_clients_get_distinct_sessions"
+name = "test_concurrent_clients_get_distinct_sessions"
+kind = "method"
+lang = "python"
+content_hash = "cdf43ac758685adf"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "async def test_concurrent_clients_get_distinct_sessions("
+description = ""
+schema = 4
+line = 88
+mtime = 1783541669000000000
+container = [
+  "TestTokenSessionMapping",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+  "TestTokenSessionMapping",
+]
+symbol_was = []
+calls = [
+  "_header_client [combiner/tests/test_session_independence.py]",
+  "_rest [combiner/tests/test_session_independence.py]",
+  "_start_stdio_combiner [combiner/tests/test_session_independence.py]",
+  "_text [combiner/tests/test_session_independence.py]",
+  "_token [combiner/tests/test_session_independence.py]",
+  "_url_client [combiner/tests/test_session_independence.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "clients",
+  "combiner",
+  "combiner.tests.test_session_independence.TestTokenSessionMapping.test_concurrent_clients_get_distinct_sessions",
+  "concurrent",
+  "distinct",
+  "get",
+  "independence",
+  "mapping",
+  "session",
+  "sessions",
+  "test",
+  "test_concurrent_clients_get_distinct_sessions",
+  "tests",
+  "token",
+]

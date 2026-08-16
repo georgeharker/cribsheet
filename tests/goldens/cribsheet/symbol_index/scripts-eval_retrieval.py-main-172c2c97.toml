@@ -1,0 +1,35 @@
+symbol_ref = "scripts/eval_retrieval.py#main"
+fqn = "scripts.eval_retrieval.main"
+name = "main"
+kind = "function"
+lang = "python"
+content_hash = "c39ab83cda111245"
+file = "scripts/eval_retrieval.py"
+file_hash = "fbbe367f0bc2d09b"
+signature = "def main(argv: list[str] | None = None) -> int:"
+description = ""
+schema = 4
+line = 234
+mtime = 1786044759000000000
+container = []
+scope = [
+  "scripts",
+  "eval_retrieval",
+]
+symbol_was = []
+calls = [
+  "_run_lift [scripts/eval_retrieval.py]",
+  "evaluate [scripts/eval_retrieval.py]",
+  "report [scripts/eval_retrieval.py]",
+]
+called_by = [
+  "eval_retrieval [scripts/eval_retrieval.py]",
+]
+references = []
+name_terms = [
+  "eval",
+  "main",
+  "retrieval",
+  "scripts",
+  "scripts.eval_retrieval.main",
+]

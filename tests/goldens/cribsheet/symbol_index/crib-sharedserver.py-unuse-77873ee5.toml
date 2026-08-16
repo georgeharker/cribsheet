@@ -1,0 +1,37 @@
+symbol_ref = "crib/sharedserver.py#unuse"
+fqn = "crib.sharedserver.unuse"
+name = "unuse"
+kind = "function"
+lang = "python"
+content_hash = "d56d14d61501732c"
+file = "crib/sharedserver.py"
+file_hash = "ec64a3161821f01c"
+signature = "def unuse(name: str) -> None:"
+description = ""
+schema = 4
+line = 40
+mtime = 1782609751000000000
+container = []
+scope = [
+  "crib",
+  "sharedserver",
+]
+symbol_was = []
+calls = [
+  "available [crib/sharedserver.py]",
+]
+called_by = [
+  "(lambda) [crib/app.py]",
+  "__exit__ [crib/client.py]",
+  "_build_shared_chroma [crib/app.py]",
+]
+references = [
+  "__exit__ [crib/client.py]",
+  "_build_shared_chroma [crib/app.py]",
+]
+name_terms = [
+  "crib",
+  "crib.sharedserver.unuse",
+  "sharedserver",
+  "unuse",
+]

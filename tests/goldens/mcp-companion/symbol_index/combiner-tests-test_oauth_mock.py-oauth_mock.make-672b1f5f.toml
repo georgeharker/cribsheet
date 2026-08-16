@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_oauth_mock.py#oauth_mock.make"
+fqn = "combiner.tests.test_oauth_mock.oauth_mock.make"
+name = "make"
+kind = "function"
+lang = "python"
+content_hash = "26f77a415c830086"
+file = "combiner/tests/test_oauth_mock.py"
+file_hash = "d65e26a544e7e3ed"
+signature = "async def make(config: MockOAuthConfig | None = None) -> ServedOAuthMock:"
+description = ""
+schema = 4
+line = 119
+mtime = 1784495646000000000
+container = [
+  "oauth_mock",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_oauth_mock",
+  "oauth_mock",
+]
+symbol_was = []
+calls = [
+  "MockOAuthProvider [combiner/mcp_combiner/mockserver.py]",
+  "ServedOAuthMock [combiner/tests/test_oauth_mock.py]",
+  "_NoSignalServer [combiner/tests/test_oauth_mock.py]",
+  "build_server [combiner/mcp_combiner/mockserver.py]",
+  "free_port [combiner/tests/conftest.py]",
+  "guard [combiner/mcp_combiner/mockserver.py]",
+  "poll_until [combiner/tests/conftest.py]",
+]
+called_by = []
+references = [
+  "oauth_mock [combiner/tests/test_oauth_mock.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.tests.test_oauth_mock.oauth_mock.make",
+  "make",
+  "mock",
+  "oauth",
+  "test",
+  "tests",
+]

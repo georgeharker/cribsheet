@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/middleware.py#ToolProcessingMiddleware._do_fetch"
+fqn = "combiner.mcp_combiner.middleware.ToolProcessingMiddleware._do_fetch"
+name = "_do_fetch"
+kind = "method"
+lang = "python"
+content_hash = "abd4be8cf1c9ac7d"
+file = "combiner/mcp_combiner/middleware.py"
+file_hash = "6dee47cf65146f20"
+signature = "async def _do_fetch("
+description = ""
+schema = 4
+line = 232
+mtime = 1784493613000000000
+container = [
+  "ToolProcessingMiddleware",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "middleware",
+  "ToolProcessingMiddleware",
+]
+symbol_was = []
+calls = [
+  "_filter_tools [combiner/mcp_combiner/toolcache.py]",
+  "_merge_stale_server_tools [combiner/mcp_combiner/toolcache.py]",
+  "_sanitize_tools [combiner/mcp_combiner/schemafix.py]",
+  "set_cache_if_current [combiner/mcp_combiner/runtime.py]",
+]
+called_by = [
+  "_fetch_or_join [combiner/mcp_combiner/middleware.py]",
+]
+references = [
+  "_fetch_or_join [combiner/mcp_combiner/middleware.py]",
+]
+name_terms = [
+  "_do_fetch",
+  "combiner",
+  "combiner.mcp_combiner.middleware.ToolProcessingMiddleware._do_fetch",
+  "do",
+  "fetch",
+  "mcp",
+  "middleware",
+  "processing",
+  "tool",
+]

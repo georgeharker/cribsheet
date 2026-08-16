@@ -1,0 +1,31 @@
+symbol_ref = "crib/symconvert.py#REMOVED"
+fqn = "crib.symconvert.REMOVED"
+name = "REMOVED"
+kind = "constant"
+lang = "python"
+content_hash = "ee27c9d281921b2c"
+file = "crib/symconvert.py"
+file_hash = "ffd3514e85111d6e"
+signature = "REMOVED = (\"fqname\", \"module\", \"parent\")"
+description = ""
+schema = 4
+line = 33
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symconvert",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "preserved [crib/symconvert.py]",
+]
+name_terms = [
+  "REMOVED",
+  "crib",
+  "crib.symconvert.REMOVED",
+  "removed",
+  "symconvert",
+]

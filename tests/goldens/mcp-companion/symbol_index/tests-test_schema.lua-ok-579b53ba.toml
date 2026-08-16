@@ -1,0 +1,33 @@
+symbol_ref = "tests/test_schema.lua#ok"
+fqn = "tests.test_schema.ok"
+name = "ok"
+kind = "function"
+lang = "lua"
+content_hash = "7455c1e12778334c"
+file = "tests/test_schema.lua"
+file_hash = "14d3153c02a2760c"
+signature = "local function ok(name)"
+description = ""
+schema = 4
+line = 13
+mtime = 1783013405000000000
+container = []
+scope = [
+  "tests",
+  "test_schema",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_schema.lua [tests/test_schema.lua]",
+]
+references = [
+  "if [tests/test_schema.lua]",
+]
+name_terms = [
+  "ok",
+  "schema",
+  "test",
+  "tests",
+  "tests.test_schema.ok",
+]

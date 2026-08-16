@@ -1,0 +1,41 @@
+symbol_ref = "crib/codestore.py#CodeStore.freshness"
+fqn = "crib.codestore.CodeStore.freshness"
+name = "freshness"
+kind = "method"
+lang = "python"
+content_hash = "ae48cbea407378c6"
+file = "crib/codestore.py"
+file_hash = "85066097f15df7df"
+signature = "def freshness(self) -> str:"
+description = ""
+schema = 4
+line = 139
+mtime = 1786664729000000000
+container = [
+  "CodeStore",
+]
+scope = [
+  "crib",
+  "codestore",
+  "CodeStore",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_code_freshness [crib/app.py]",
+  "resident [crib/codestore.py]",
+  "tok [crib/codestore.py]",
+]
+references = [
+  "_code_freshness [crib/app.py]",
+  "resident [crib/codestore.py]",
+  "tok [crib/codestore.py]",
+]
+name_terms = [
+  "code",
+  "codestore",
+  "crib",
+  "crib.codestore.CodeStore.freshness",
+  "freshness",
+  "store",
+]

@@ -1,0 +1,32 @@
+symbol_ref = "tests/test_real_servers.lua#section"
+fqn = "tests.test_real_servers.section"
+name = "section"
+kind = "function"
+lang = "lua"
+content_hash = "263d99dec04ed11f"
+file = "tests/test_real_servers.lua"
+file_hash = "a3c582f2d70b950e"
+signature = "local function section(title)"
+description = ""
+schema = 4
+line = 37
+mtime = 1782853510000000000
+container = []
+scope = [
+  "tests",
+  "test_real_servers",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_real_servers.lua [tests/test_real_servers.lua]",
+]
+references = []
+name_terms = [
+  "real",
+  "section",
+  "servers",
+  "test",
+  "tests",
+  "tests.test_real_servers.section",
+]

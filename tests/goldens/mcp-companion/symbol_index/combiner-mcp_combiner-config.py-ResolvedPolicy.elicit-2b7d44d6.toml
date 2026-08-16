@@ -1,0 +1,40 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ResolvedPolicy.elicit"
+fqn = "combiner.mcp_combiner.config.ResolvedPolicy.elicit"
+name = "elicit"
+kind = "field"
+lang = "python"
+content_hash = "38d7b1da1d605f12"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "elicit: tuple[str, ...]"
+description = ""
+schema = 4
+line = 202
+mtime = 1783633313000000000
+container = [
+  "ResolvedPolicy",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ResolvedPolicy",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_merge_policies [combiner/mcp_combiner/config.py]",
+  "_rp [combiner/tests/test_permissions.py]",
+  "is_active [combiner/mcp_combiner/config.py]",
+  "resolve [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.ResolvedPolicy.elicit",
+  "config",
+  "elicit",
+  "mcp",
+  "policy",
+  "resolved",
+]

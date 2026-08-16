@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_notifications_e2e.py#_settle"
+fqn = "combiner.tests.test_notifications_e2e._settle"
+name = "_settle"
+kind = "function"
+lang = "python"
+content_hash = "ebb449912703240d"
+file = "combiner/tests/test_notifications_e2e.py"
+file_hash = "545387915a0f8bda"
+signature = "async def _settle(pred: Callable[[], bool]) -> None:"
+description = ""
+schema = 4
+line = 136
+mtime = 1783629928000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_notifications_e2e",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_list_changed_forwarded_through_proxy [combiner/tests/test_notifications_e2e.py]",
+  "test_per_chat_routes_to_requesting_session_only [combiner/tests/test_notifications_e2e.py]",
+  "test_resource_updated_delivered_namespaced [combiner/tests/test_notifications_e2e.py]",
+]
+references = [
+  "test_list_changed_forwarded_through_proxy [combiner/tests/test_notifications_e2e.py]",
+  "test_per_chat_routes_to_requesting_session_only [combiner/tests/test_notifications_e2e.py]",
+  "test_resource_updated_delivered_namespaced [combiner/tests/test_notifications_e2e.py]",
+]
+name_terms = [
+  "2",
+  "_settle",
+  "combiner",
+  "combiner.tests.test_notifications_e2e._settle",
+  "e",
+  "notifications",
+  "settle",
+  "test",
+  "tests",
+]

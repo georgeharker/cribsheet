@@ -1,0 +1,47 @@
+symbol_ref = "combiner/tests/test_connections.py#_fake_conn"
+fqn = "combiner.tests.test_connections._fake_conn"
+name = "_fake_conn"
+kind = "function"
+lang = "python"
+content_hash = "57fb3676f85f81a9"
+file = "combiner/tests/test_connections.py"
+file_hash = "3fee9f805226d8c4"
+signature = "def _fake_conn(name: str, client: object) -> SimpleNamespace:"
+description = ""
+schema = 4
+line = 25
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "tests",
+  "test_connections",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_callback_exception_is_swallowed [combiner/tests/test_connections.py]",
+  "test_does_not_signal_when_list_fails [combiner/tests/test_connections.py]",
+  "test_empty_answer_defers_ready [combiner/tests/test_connections.py]",
+  "test_no_callback_is_noop [combiner/tests/test_connections.py]",
+  "test_no_client_is_noop [combiner/tests/test_connections.py]",
+  "test_signals_ready_when_list_succeeds [combiner/tests/test_connections.py]",
+]
+references = [
+  "test_callback_exception_is_swallowed [combiner/tests/test_connections.py]",
+  "test_does_not_signal_when_list_fails [combiner/tests/test_connections.py]",
+  "test_empty_answer_defers_ready [combiner/tests/test_connections.py]",
+  "test_no_callback_is_noop [combiner/tests/test_connections.py]",
+  "test_no_client_is_noop [combiner/tests/test_connections.py]",
+  "test_signals_ready_when_list_succeeds [combiner/tests/test_connections.py]",
+]
+name_terms = [
+  "_fake_conn",
+  "combiner",
+  "combiner.tests.test_connections._fake_conn",
+  "conn",
+  "connections",
+  "fake",
+  "test",
+  "tests",
+]

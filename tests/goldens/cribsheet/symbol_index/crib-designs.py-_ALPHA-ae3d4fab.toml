@@ -1,0 +1,32 @@
+symbol_ref = "crib/designs.py#_ALPHA"
+fqn = "crib.designs._ALPHA"
+name = "_ALPHA"
+kind = "constant"
+lang = "python"
+content_hash = "e4b8c393db48d098"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "_ALPHA = \"abcdefghijklmnopqrstuvwxyz\""
+description = ""
+schema = 4
+line = 111
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_N [crib/designs.py]",
+  "_rank_between [crib/designs.py]",
+]
+name_terms = [
+  "_ALPHA",
+  "alpha",
+  "crib",
+  "crib.designs._ALPHA",
+  "designs",
+]

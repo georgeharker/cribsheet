@@ -1,0 +1,40 @@
+symbol_ref = "crib/designs.py#Designs._match_heading"
+fqn = "crib.designs.Designs._match_heading"
+name = "_match_heading"
+kind = "method"
+lang = "python"
+content_hash = "018511fad63c82b1"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _match_heading(self, relpath: str, rows: list[dict[str, Any]],"
+description = ""
+schema = 4
+line = 619
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "CribUserError [crib/errors.py]",
+  "_suffix_match [crib/designs.py]",
+]
+called_by = [
+  "_resolve_source [crib/designs.py]",
+]
+references = [
+  "_resolve_source [crib/designs.py]",
+]
+name_terms = [
+  "_match_heading",
+  "crib",
+  "crib.designs.Designs._match_heading",
+  "designs",
+  "heading",
+  "match",
+]

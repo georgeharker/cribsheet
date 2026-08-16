@@ -1,0 +1,36 @@
+symbol_ref = "crib/tomlrec.py#esc"
+fqn = "crib.tomlrec.esc"
+name = "esc"
+kind = "function"
+lang = "python"
+content_hash = "e7f9b9094e689cfb"
+file = "crib/tomlrec.py"
+file_hash = "f33317468899fcd5"
+signature = "def esc(s: str) -> str:"
+description = ""
+schema = 4
+line = 29
+mtime = 1785959234000000000
+container = []
+scope = [
+  "crib",
+  "tomlrec",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_render [crib/codeindex.py]",
+  "_render_toml [crib/section_index.py]",
+  "test_escape_round_trips_and_always_yields_valid_toml [tests/test_code_integrity.py]",
+]
+references = [
+  "_esc [crib/codeindex.py]",
+  "_esc [crib/section_index.py]",
+  "test_escape_round_trips_and_always_yields_valid_toml [tests/test_code_integrity.py]",
+]
+name_terms = [
+  "crib",
+  "crib.tomlrec.esc",
+  "esc",
+  "tomlrec",
+]

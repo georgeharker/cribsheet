@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_repo_storage.py#test_code_watcher_skips_saves_inside_the_store"
+fqn = "tests.test_repo_storage.test_code_watcher_skips_saves_inside_the_store"
+name = "test_code_watcher_skips_saves_inside_the_store"
+kind = "function"
+lang = "python"
+content_hash = "da9a2d4727a41447"
+file = "tests/test_repo_storage.py"
+file_hash = "56fef76333c7c989"
+signature = "def test_code_watcher_skips_saves_inside_the_store(tmp_path):"
+description = ""
+schema = 4
+line = 284
+mtime = 1786139638000000000
+container = []
+scope = [
+  "tests",
+  "test_repo_storage",
+]
+symbol_was = []
+calls = [
+  "_resolve_batch [crib/watch.py]",
+  "repo_with_store [tests/test_repo_storage.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "code",
+  "inside",
+  "repo",
+  "saves",
+  "skips",
+  "storage",
+  "store",
+  "test",
+  "test_code_watcher_skips_saves_inside_the_store",
+  "tests",
+  "tests.test_repo_storage.test_code_watcher_skips_saves_inside_the_store",
+  "the",
+  "watcher",
+]

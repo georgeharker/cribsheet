@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/config.py#FastMCPServerEntry.transport"
+fqn = "combiner.mcp_combiner.config.FastMCPServerEntry.transport"
+name = "transport"
+kind = "field"
+lang = "python"
+content_hash = "efbdf2cd555d4f9f"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "transport: str | None = None"
+description = ""
+schema = 4
+line = 388
+mtime = 1783633313000000000
+container = [
+  "FastMCPServerEntry",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "FastMCPServerEntry",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "to_fastmcp_config [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.FastMCPServerEntry.transport",
+  "config",
+  "entry",
+  "fast",
+  "mcp",
+  "server",
+  "transport",
+]

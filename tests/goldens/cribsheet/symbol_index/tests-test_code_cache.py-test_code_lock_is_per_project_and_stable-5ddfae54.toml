@@ -1,0 +1,36 @@
+symbol_ref = "tests/test_code_cache.py#test_code_lock_is_per_project_and_stable"
+fqn = "tests.test_code_cache.test_code_lock_is_per_project_and_stable"
+name = "test_code_lock_is_per_project_and_stable"
+kind = "function"
+lang = "python"
+content_hash = "c3d44d9c25412059"
+file = "tests/test_code_cache.py"
+file_hash = "44f8f848adca2094"
+signature = "def test_code_lock_is_per_project_and_stable(crib):"
+description = ""
+schema = 4
+line = 190
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_cache",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "and",
+  "cache",
+  "code",
+  "is",
+  "lock",
+  "per",
+  "project",
+  "stable",
+  "test",
+  "test_code_lock_is_per_project_and_stable",
+  "tests",
+  "tests.test_code_cache.test_code_lock_is_per_project_and_stable",
+]

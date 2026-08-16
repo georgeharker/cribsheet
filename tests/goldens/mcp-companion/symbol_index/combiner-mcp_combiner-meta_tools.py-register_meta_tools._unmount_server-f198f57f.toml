@@ -1,0 +1,46 @@
+symbol_ref = "combiner/mcp_combiner/meta_tools.py#register_meta_tools._unmount_server"
+fqn = "combiner.mcp_combiner.meta_tools.register_meta_tools._unmount_server"
+name = "_unmount_server"
+kind = "function"
+lang = "python"
+content_hash = "31292a4f9752b30e"
+file = "combiner/mcp_combiner/meta_tools.py"
+file_hash = "8eb0757202928f82"
+signature = "async def _unmount_server(server_name: str) -> None:"
+description = ""
+schema = 4
+line = 150
+mtime = 1784493613000000000
+container = [
+  "register_meta_tools",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "meta_tools",
+  "register_meta_tools",
+]
+symbol_was = []
+calls = [
+  "disconnect [combiner/mcp_combiner/connections.py]",
+  "drop_server_providers [combiner/mcp_combiner/mounts.py]",
+  "ensure_stopped [combiner/mcp_combiner/sharedserver.py]",
+  "has_connection [combiner/mcp_combiner/connections.py]",
+]
+called_by = [
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+]
+references = [
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+]
+name_terms = [
+  "_unmount_server",
+  "combiner",
+  "combiner.mcp_combiner.meta_tools.register_meta_tools._unmount_server",
+  "mcp",
+  "meta",
+  "register",
+  "server",
+  "tools",
+  "unmount",
+]

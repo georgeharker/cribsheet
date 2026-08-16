@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_code_integrity.py#test_broken_record_is_marked_dirty_not_partially_parsed"
+fqn = "tests.test_code_integrity.test_broken_record_is_marked_dirty_not_partially_parsed"
+name = "test_broken_record_is_marked_dirty_not_partially_parsed"
+kind = "function"
+lang = "python"
+content_hash = "6f8a117769ca70ca"
+file = "tests/test_code_integrity.py"
+file_hash = "87bf60487c8f583b"
+signature = "def test_broken_record_is_marked_dirty_not_partially_parsed(tmp_path):"
+description = ""
+schema = 4
+line = 369
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_code_integrity",
+]
+symbol_was = []
+calls = [
+  "SymbolIndex [crib/codeindex.py]",
+  "_parse [crib/codeindex.py]",
+  "write [crib/codeindex.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "broken",
+  "code",
+  "dirty",
+  "integrity",
+  "is",
+  "marked",
+  "not",
+  "parsed",
+  "partially",
+  "record",
+  "test",
+  "test_broken_record_is_marked_dirty_not_partially_parsed",
+  "tests",
+  "tests.test_code_integrity.test_broken_record_is_marked_dirty_not_partially_parsed",
+]

@@ -1,0 +1,42 @@
+symbol_ref = "tests/test_describe_queue.py#_entry"
+fqn = "tests.test_describe_queue._entry"
+name = "_entry"
+kind = "function"
+lang = "python"
+content_hash = "ff38c0e6c64e656d"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def _entry(fq, h, body):"
+description = ""
+schema = 4
+line = 190
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "(lambda) [tests/test_describe_queue.py]",
+  "test_backlog_reindexes_only_blank_described_files [tests/test_describe_queue.py]",
+  "test_describe_and_patch_patches_then_clobber_guards [tests/test_describe_queue.py]",
+  "test_llm_down_backfill_preserves_description [tests/test_describe_queue.py]",
+]
+references = [
+  "test_backlog_reindexes_only_blank_described_files [tests/test_describe_queue.py]",
+  "test_defer_keeps_unchanged_blanks_changed_and_enqueues_only_stale [tests/test_describe_queue.py]",
+  "test_describe_and_patch_patches_then_clobber_guards [tests/test_describe_queue.py]",
+  "test_empty_keyword_attempt_is_durable_no_retry [tests/test_describe_queue.py]",
+  "test_llm_down_backfill_preserves_description [tests/test_describe_queue.py]",
+]
+name_terms = [
+  "_entry",
+  "describe",
+  "entry",
+  "queue",
+  "test",
+  "tests",
+  "tests.test_describe_queue._entry",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "crib/store.py#ChromaStore.set_meta"
+fqn = "crib.store.ChromaStore.set_meta"
+name = "set_meta"
+kind = "method"
+lang = "python"
+content_hash = "9101a7311a49dd4a"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:"
+description = ""
+schema = 4
+line = 310
+mtime = 1786564832000000000
+container = [
+  "ChromaStore",
+]
+scope = [
+  "crib",
+  "store",
+  "ChromaStore",
+]
+symbol_was = []
+calls = [
+  "_run [crib/store.py]",
+]
+called_by = [
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+references = [
+  "test_second_handle_survives_recreate [tests/test_store_chroma.py]",
+]
+name_terms = [
+  "chroma",
+  "crib",
+  "crib.store.ChromaStore.set_meta",
+  "meta",
+  "set",
+  "set_meta",
+  "store",
+]

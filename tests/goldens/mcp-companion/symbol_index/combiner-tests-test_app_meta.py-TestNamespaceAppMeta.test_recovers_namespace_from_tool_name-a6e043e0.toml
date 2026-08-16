@@ -1,0 +1,43 @@
+symbol_ref = "combiner/tests/test_app_meta.py#TestNamespaceAppMeta.test_recovers_namespace_from_tool_name"
+fqn = "combiner.tests.test_app_meta.TestNamespaceAppMeta.test_recovers_namespace_from_tool_name"
+name = "test_recovers_namespace_from_tool_name"
+kind = "method"
+lang = "python"
+content_hash = "af71c8869776abff"
+file = "combiner/tests/test_app_meta.py"
+file_hash = "fc52f36639c3320a"
+signature = "def test_recovers_namespace_from_tool_name(self, _config: None) -> None:"
+description = ""
+schema = 4
+line = 118
+mtime = 1783629928000000000
+container = [
+  "TestNamespaceAppMeta",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_app_meta",
+  "TestNamespaceAppMeta",
+]
+symbol_was = []
+calls = [
+  "_namespace_app_meta [combiner/mcp_combiner/middleware.py]",
+  "_tool [combiner/tests/test_app_meta.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "app",
+  "combiner",
+  "combiner.tests.test_app_meta.TestNamespaceAppMeta.test_recovers_namespace_from_tool_name",
+  "from",
+  "meta",
+  "name",
+  "namespace",
+  "recovers",
+  "test",
+  "test_recovers_namespace_from_tool_name",
+  "tests",
+  "tool",
+]

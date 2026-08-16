@@ -1,0 +1,34 @@
+symbol_ref = "crib/sharedserver.py#SharedServerError"
+fqn = "crib.sharedserver.SharedServerError"
+name = "SharedServerError"
+kind = "class"
+lang = "python"
+content_hash = "3683909e263ea8f8"
+file = "crib/sharedserver.py"
+file_hash = "ec64a3161821f01c"
+signature = "class SharedServerError(RuntimeError):"
+description = ""
+schema = 4
+line = 16
+mtime = 1782609751000000000
+container = []
+scope = [
+  "crib",
+  "sharedserver",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "use [crib/sharedserver.py]",
+  "wait_ready [crib/sharedserver.py]",
+]
+name_terms = [
+  "SharedServerError",
+  "crib",
+  "crib.sharedserver.SharedServerError",
+  "error",
+  "server",
+  "shared",
+  "sharedserver",
+]

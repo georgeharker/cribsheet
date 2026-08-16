@@ -1,0 +1,36 @@
+symbol_ref = "crib/designs.py#_source_cause"
+fqn = "crib.designs._source_cause"
+name = "_source_cause"
+kind = "function"
+lang = "python"
+content_hash = "e59ba43635c60fbd"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "def _source_cause(src: dict[str, Any]) -> dict[str, Any] | None:"
+description = ""
+schema = 4
+line = 286
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "designs",
+]
+symbol_was = []
+calls = [
+  "source_label [crib/designs.py]",
+]
+called_by = [
+  "_direct_taint [crib/designs.py]",
+]
+references = [
+  "_direct_taint [crib/designs.py]",
+]
+name_terms = [
+  "_source_cause",
+  "cause",
+  "crib",
+  "crib.designs._source_cause",
+  "designs",
+  "source",
+]

@@ -1,0 +1,31 @@
+symbol_ref = "crib/chunk.py#_HEADING"
+fqn = "crib.chunk._HEADING"
+name = "_HEADING"
+kind = "constant"
+lang = "python"
+content_hash = "b94849f8c42e90d2"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "_HEADING = re.compile(r\"^(#{1,6})\\s+(.*)$\")"
+description = ""
+schema = 4
+line = 12
+mtime = 1786136167000000000
+container = []
+scope = [
+  "crib",
+  "chunk",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_scan [crib/chunk.py]",
+]
+name_terms = [
+  "_HEADING",
+  "chunk",
+  "crib",
+  "crib.chunk._HEADING",
+  "heading",
+]

@@ -1,0 +1,45 @@
+symbol_ref = "lua/mcp_companion/combiner/sessions.lua#clear_filter"
+fqn = "mcp_companion.combiner.sessions.clear_filter"
+name = "clear_filter"
+kind = "function"
+lang = "lua"
+content_hash = "a8952aa74abca92e"
+file = "lua/mcp_companion/combiner/sessions.lua"
+file_hash = "5781075c8921f508"
+signature = "function M.clear_filter(token, done)"
+description = ""
+schema = 4
+line = 73
+mtime = 1783545086000000000
+container = []
+scope = [
+  "mcp_companion",
+  "combiner",
+  "sessions",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "M._apply_token_filter [lua/mcp_companion/cc/init.lua]",
+  "M._cleanup_session_filter [lua/mcp_companion/cc/init.lua]",
+  "M._save_project_config [lua/mcp_companion/cc/init.lua]",
+  "sessions.lua [lua/mcp_companion/combiner/sessions.lua]",
+]
+references = [
+  "_apply_token_filter [lua/mcp_companion/cc/init.lua]",
+  "_cleanup_session_filter [lua/mcp_companion/cc/init.lua]",
+  "_save_project_config [lua/mcp_companion/cc/init.lua]",
+  "data [lua/mcp_companion/combiner/sessions.lua]",
+  "if [lua/mcp_companion/cc/session_commands.lua]",
+  "token [lua/mcp_companion/combiner/sessions.lua]",
+]
+name_terms = [
+  "clear",
+  "clear_filter",
+  "combiner",
+  "companion",
+  "filter",
+  "mcp",
+  "mcp_companion.combiner.sessions.clear_filter",
+  "sessions",
+]

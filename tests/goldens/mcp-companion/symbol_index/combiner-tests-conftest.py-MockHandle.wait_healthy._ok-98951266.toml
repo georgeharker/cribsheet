@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/conftest.py#MockHandle.wait_healthy._ok"
+fqn = "combiner.tests.conftest.MockHandle.wait_healthy._ok"
+name = "_ok"
+kind = "function"
+lang = "python"
+content_hash = "a299c7b7d64fb8d0"
+file = "combiner/tests/conftest.py"
+file_hash = "b58d5da87a2c2117"
+signature = "async def _ok() -> bool:"
+description = ""
+schema = 4
+line = 239
+mtime = 1783544328000000000
+container = [
+  "MockHandle",
+  "wait_healthy",
+]
+scope = [
+  "combiner",
+  "tests",
+  "conftest",
+  "MockHandle",
+  "wait_healthy",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "wait_healthy [combiner/tests/conftest.py]",
+]
+name_terms = [
+  "_ok",
+  "combiner",
+  "combiner.tests.conftest.MockHandle.wait_healthy._ok",
+  "conftest",
+  "handle",
+  "healthy",
+  "mock",
+  "ok",
+  "tests",
+  "wait",
+]

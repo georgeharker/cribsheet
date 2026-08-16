@@ -1,0 +1,34 @@
+symbol_ref = "crib/cli.py#_prompt_remote"
+fqn = "crib.cli._prompt_remote"
+name = "_prompt_remote"
+kind = "function"
+lang = "python"
+content_hash = "44c0727598549aa8"
+file = "crib/cli.py"
+file_hash = "173e64d173637fca"
+signature = "def _prompt_remote() -> str | None:"
+description = ""
+schema = 4
+line = 1996
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "cli",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_run_git [crib/cli.py]",
+]
+references = [
+  "_run_git [crib/cli.py]",
+]
+name_terms = [
+  "_prompt_remote",
+  "cli",
+  "crib",
+  "crib.cli._prompt_remote",
+  "prompt",
+  "remote",
+]

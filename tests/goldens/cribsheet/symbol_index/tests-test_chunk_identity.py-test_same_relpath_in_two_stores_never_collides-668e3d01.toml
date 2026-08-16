@@ -1,0 +1,40 @@
+symbol_ref = "tests/test_chunk_identity.py#test_same_relpath_in_two_stores_never_collides"
+fqn = "tests.test_chunk_identity.test_same_relpath_in_two_stores_never_collides"
+name = "test_same_relpath_in_two_stores_never_collides"
+kind = "function"
+lang = "python"
+content_hash = "a4a4a9bc03c44224"
+file = "tests/test_chunk_identity.py"
+file_hash = "0afd98c1ecf1279e"
+signature = "def test_same_relpath_in_two_stores_never_collides():"
+description = ""
+schema = 4
+line = 81
+mtime = 1786136167000000000
+container = []
+scope = [
+  "tests",
+  "test_chunk_identity",
+]
+symbol_was = []
+calls = [
+  "chunk_note [crib/chunk.py]",
+  "sha1_hex [crib/util.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chunk",
+  "collides",
+  "identity",
+  "in",
+  "never",
+  "relpath",
+  "same",
+  "stores",
+  "test",
+  "test_same_relpath_in_two_stores_never_collides",
+  "tests",
+  "tests.test_chunk_identity.test_same_relpath_in_two_stores_never_collides",
+  "two",
+]

@@ -1,0 +1,40 @@
+symbol_ref = "crib/app.py#Crib.learning_add"
+fqn = "crib.app.Crib.learning_add"
+name = "learning_add"
+kind = "method"
+lang = "python"
+content_hash = "c5c9d2983099c441"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "async def learning_add(self, symbol: str, text: str, project: str | None = None,"
+description = ""
+schema = 4
+line = 2083
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = [
+  "append [crib/learnings.py]",
+  "resolve_project [crib/app.py]",
+]
+called_by = [
+  "learning_add [crib/server.py]",
+]
+references = [
+  "learning_add [crib/server.py]",
+]
+name_terms = [
+  "add",
+  "app",
+  "crib",
+  "crib.app.Crib.learning_add",
+  "learning",
+  "learning_add",
+]

@@ -1,0 +1,43 @@
+symbol_ref = "crib/symbols.py#legacy_ref_slug"
+fqn = "crib.symbols.legacy_ref_slug"
+name = "legacy_ref_slug"
+kind = "function"
+lang = "python"
+content_hash = "023e13c680fbd76d"
+file = "crib/symbols.py"
+file_hash = "b18eac474c9e6a6f"
+signature = "def legacy_ref_slug(binding: str) -> str:"
+description = ""
+schema = 4
+line = 271
+mtime = 1786664729000000000
+container = []
+scope = [
+  "crib",
+  "symbols",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_names_for [crib/codeindex.py]",
+  "_path [crib/codeindex.py]",
+  "rel_for_binding [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+  "test_learning_slug_disambiguates_case_on_case_insensitive_filesystems [tests/test_codeindex.py]",
+]
+references = [
+  "_names_for [crib/codeindex.py]",
+  "_path [crib/codeindex.py]",
+  "rel_for_binding [crib/learnings.py]",
+  "relpath [crib/learnings.py]",
+  "test_learning_slug_disambiguates_case_on_case_insensitive_filesystems [tests/test_codeindex.py]",
+]
+name_terms = [
+  "crib",
+  "crib.symbols.legacy_ref_slug",
+  "legacy",
+  "legacy_ref_slug",
+  "ref",
+  "slug",
+  "symbols",
+]

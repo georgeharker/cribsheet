@@ -1,0 +1,34 @@
+symbol_ref = "crib/config.py#GenerateConfig.bulk"
+fqn = "crib.config.GenerateConfig.bulk"
+name = "bulk"
+kind = "field"
+lang = "python"
+content_hash = "4bbc49feb352412a"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "bulk: bool = True"
+description = ""
+schema = 4
+line = 210
+mtime = 1786564832000000000
+container = [
+  "GenerateConfig",
+]
+scope = [
+  "crib",
+  "config",
+  "GenerateConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_generate_enrichment [crib/app.py]",
+]
+name_terms = [
+  "bulk",
+  "config",
+  "crib",
+  "crib.config.GenerateConfig.bulk",
+  "generate",
+]

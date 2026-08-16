@@ -1,0 +1,56 @@
+symbol_ref = "combiner/tests/test_session_independence.py#TestIsolatedUpstreamSessions.test_isolate_true_gives_each_chat_its_own_upstream_session"
+fqn = "combiner.tests.test_session_independence.TestIsolatedUpstreamSessions.test_isolate_true_gives_each_chat_its_own_upstream_session"
+name = "test_isolate_true_gives_each_chat_its_own_upstream_session"
+kind = "method"
+lang = "python"
+content_hash = "dd62b11ed6b78bf2"
+file = "combiner/tests/test_session_independence.py"
+file_hash = "c489b6a73085c471"
+signature = "async def test_isolate_true_gives_each_chat_its_own_upstream_session("
+description = ""
+schema = 4
+line = 319
+mtime = 1783541669000000000
+container = [
+  "TestIsolatedUpstreamSessions",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_independence",
+  "TestIsolatedUpstreamSessions",
+]
+symbol_was = []
+calls = [
+  "_header_client [combiner/tests/test_session_independence.py]",
+  "_text [combiner/tests/test_session_independence.py]",
+  "_token [combiner/tests/test_session_independence.py]",
+  "http_mock_entry [combiner/tests/conftest.py]",
+  "start_combiner [combiner/tests/conftest.py]",
+  "start_http_mock [combiner/tests/conftest.py]",
+  "stats [combiner/tests/conftest.py]",
+  "wait_server_state [combiner/tests/conftest.py]",
+  "write_servers_config [combiner/tests/conftest.py]",
+  "write_tools_spec [combiner/tests/conftest.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "chat",
+  "combiner",
+  "combiner.tests.test_session_independence.TestIsolatedUpstreamSessions.test_isolate_true_gives_each_chat_its_own_upstream_session",
+  "each",
+  "gives",
+  "independence",
+  "isolate",
+  "isolated",
+  "its",
+  "own",
+  "session",
+  "sessions",
+  "test",
+  "test_isolate_true_gives_each_chat_its_own_upstream_session",
+  "tests",
+  "true",
+  "upstream",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "crib/app.py#Crib.DEDUPE_WARN_SCORE"
+fqn = "crib.app.Crib.DEDUPE_WARN_SCORE"
+name = "DEDUPE_WARN_SCORE"
+kind = "constant"
+lang = "python"
+content_hash = "fedb06975f6238fb"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "DEDUPE_WARN_SCORE = 0.85"
+description = ""
+schema = 4
+line = 558
+mtime = 1786693579000000000
+container = [
+  "Crib",
+]
+scope = [
+  "crib",
+  "app",
+  "Crib",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_similar [crib/app.py]",
+]
+name_terms = [
+  "DEDUPE_WARN_SCORE",
+  "app",
+  "crib",
+  "crib.app.Crib.DEDUPE_WARN_SCORE",
+  "dedupe",
+  "score",
+  "warn",
+]

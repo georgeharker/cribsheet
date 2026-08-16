@@ -1,0 +1,37 @@
+symbol_ref = "tests/test_describe_queue.py#test_empty_keyword_attempt_is_durable_no_retry"
+fqn = "tests.test_describe_queue.test_empty_keyword_attempt_is_durable_no_retry"
+name = "test_empty_keyword_attempt_is_durable_no_retry"
+kind = "function"
+lang = "python"
+content_hash = "cb20704c023df681"
+file = "tests/test_describe_queue.py"
+file_hash = "00bf9abe70ff5d7b"
+signature = "def test_empty_keyword_attempt_is_durable_no_retry(crib, tmp_path, monkeypatch):"
+description = ""
+schema = 4
+line = 240
+mtime = 1786664729000000000
+container = []
+scope = [
+  "tests",
+  "test_describe_queue",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "attempt",
+  "describe",
+  "durable",
+  "empty",
+  "is",
+  "keyword",
+  "no",
+  "queue",
+  "retry",
+  "test",
+  "test_empty_keyword_attempt_is_durable_no_retry",
+  "tests",
+  "tests.test_describe_queue.test_empty_keyword_attempt_is_durable_no_retry",
+]

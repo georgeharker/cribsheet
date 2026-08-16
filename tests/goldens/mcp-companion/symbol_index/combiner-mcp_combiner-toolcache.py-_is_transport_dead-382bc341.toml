@@ -1,0 +1,37 @@
+symbol_ref = "combiner/mcp_combiner/toolcache.py#_is_transport_dead"
+fqn = "combiner.mcp_combiner.toolcache._is_transport_dead"
+name = "_is_transport_dead"
+kind = "function"
+lang = "python"
+content_hash = "4c31a0b4cb851e13"
+file = "combiner/mcp_combiner/toolcache.py"
+file_hash = "58c132ed58366346"
+signature = "def _is_transport_dead(exc: BaseException) -> bool:"
+description = ""
+schema = 4
+line = 143
+mtime = 1784493613000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "toolcache",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+]
+references = [
+  "on_call_tool [combiner/mcp_combiner/middleware.py]",
+]
+name_terms = [
+  "_is_transport_dead",
+  "combiner",
+  "combiner.mcp_combiner.toolcache._is_transport_dead",
+  "dead",
+  "is",
+  "mcp",
+  "toolcache",
+  "transport",
+]

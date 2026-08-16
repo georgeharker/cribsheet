@@ -1,0 +1,54 @@
+symbol_ref = "crib/designs.py#Node.deps"
+fqn = "crib.designs.Node.deps"
+name = "deps"
+kind = "field"
+lang = "python"
+content_hash = "032f50bd50c143e9"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "deps: list[str]"
+description = ""
+schema = 4
+line = 319
+mtime = 1786693579000000000
+container = [
+  "Node",
+]
+scope = [
+  "crib",
+  "designs",
+  "Node",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_dep_add [crib/designs.py]",
+  "_dep_remove [crib/designs.py]",
+  "_direct_taint [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_node [tests/test_designs.py]",
+  "_ordered [crib/designs.py]",
+  "_recheck [crib/designs.py]",
+  "_row [crib/designs.py]",
+  "_rows [crib/designs.py]",
+  "_taint [crib/designs.py]",
+  "annotate_hits [crib/designs.py]",
+  "brief [crib/designs.py]",
+  "build [crib/designs.py]",
+  "chains [crib/designs.py]",
+  "design_list [crib/designs.py]",
+  "design_read [crib/designs.py]",
+  "design_tree [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+  "plan_move [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+  "visit [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Node.deps",
+  "deps",
+  "designs",
+  "node",
+]

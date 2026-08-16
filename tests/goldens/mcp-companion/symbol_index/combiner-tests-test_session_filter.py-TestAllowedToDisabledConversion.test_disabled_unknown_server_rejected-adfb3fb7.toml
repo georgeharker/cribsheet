@@ -1,0 +1,42 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestAllowedToDisabledConversion.test_disabled_unknown_server_rejected"
+fqn = "combiner.tests.test_session_filter.TestAllowedToDisabledConversion.test_disabled_unknown_server_rejected"
+name = "test_disabled_unknown_server_rejected"
+kind = "method"
+lang = "python"
+content_hash = "d0c2a13b159ed54b"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "def test_disabled_unknown_server_rejected(self, client):"
+description = ""
+schema = 4
+line = 1383
+mtime = 1784493613000000000
+container = [
+  "TestAllowedToDisabledConversion",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestAllowedToDisabledConversion",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = []
+name_terms = [
+  "allowed",
+  "combiner",
+  "combiner.tests.test_session_filter.TestAllowedToDisabledConversion.test_disabled_unknown_server_rejected",
+  "conversion",
+  "disabled",
+  "filter",
+  "rejected",
+  "server",
+  "session",
+  "test",
+  "test_disabled_unknown_server_rejected",
+  "tests",
+  "to",
+  "unknown",
+]

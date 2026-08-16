@@ -1,0 +1,37 @@
+symbol_ref = "crib/config.py#Config.embed"
+fqn = "crib.config.Config.embed"
+name = "embed"
+kind = "field"
+lang = "python"
+content_hash = "9c16e5fd92d2165b"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "embed: EmbedConfig = field(default_factory=EmbedConfig)"
+description = ""
+schema = 4
+line = 252
+mtime = 1786564832000000000
+container = [
+  "Config",
+]
+scope = [
+  "crib",
+  "config",
+  "Config",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_resolve_embed_config [crib/app.py]",
+  "cmd_info [crib/cli.py]",
+  "status [crib/app.py]",
+  "test_unknown_key_in_a_table_warns_and_loads [tests/test_config_resilience.py]",
+  "test_wrong_shaped_values_warn_instead_of_raising [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.Config.embed",
+  "embed",
+]

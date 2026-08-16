@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/config.py#CombinerConfig.oauth"
+fqn = "combiner.mcp_combiner.config.CombinerConfig.oauth"
+name = "oauth"
+kind = "field"
+lang = "python"
+content_hash = "f86166980a3a9f04"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "oauth: OAuthConfig = Field(default_factory=OAuthConfig)"
+description = ""
+schema = 4
+line = 476
+mtime = 1783633313000000000
+container = [
+  "CombinerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "CombinerConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_make_disconnected_client [combiner/mcp_combiner/connections.py]",
+  "combiner__reload_config [combiner/mcp_combiner/meta_tools.py]",
+  "create_combiner [combiner/mcp_combiner/server.py]",
+  "get_auth [combiner/mcp_combiner/connections.py]",
+  "load [combiner/mcp_combiner/config.py]",
+  "test_combiner_config_oauth_defaults [combiner/tests/test_config.py]",
+]
+name_terms = [
+  "combiner",
+  "combiner.mcp_combiner.config.CombinerConfig.oauth",
+  "config",
+  "mcp",
+  "oauth",
+]

@@ -1,0 +1,51 @@
+symbol_ref = "crib/designs.py#Node.kind"
+fqn = "crib.designs.Node.kind"
+name = "kind"
+kind = "field"
+lang = "python"
+content_hash = "f29c66bbf9fb3e55"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "kind: str                                   # \"design\" | \"plan\""
+description = ""
+schema = 4
+line = 315
+mtime = 1786693579000000000
+container = [
+  "Node",
+]
+scope = [
+  "crib",
+  "designs",
+  "Node",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_dep_remove [crib/designs.py]",
+  "_forget [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_node [tests/test_designs.py]",
+  "_note [crib/designs.py]",
+  "_rel_match [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_row [crib/designs.py]",
+  "_save [crib/designs.py]",
+  "_write_body [crib/designs.py]",
+  "annotate_hits [crib/designs.py]",
+  "brief [crib/designs.py]",
+  "design_check [crib/designs.py]",
+  "facet_graph [crib/designs.py]",
+  "of_kind [crib/designs.py]",
+  "plan_status [crib/designs.py]",
+  "ref_of [crib/designs.py]",
+  "tainted_designs [crib/designs.py]",
+]
+name_terms = [
+  "crib",
+  "crib.designs.Node.kind",
+  "designs",
+  "kind",
+  "node",
+]

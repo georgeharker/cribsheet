@@ -1,0 +1,41 @@
+symbol_ref = "combiner/mcp_combiner/mockserver.py#MockOAuthConfig.require_bearer"
+fqn = "combiner.mcp_combiner.mockserver.MockOAuthConfig.require_bearer"
+name = "require_bearer"
+kind = "field"
+lang = "python"
+content_hash = "c0c5a805d5c6d79d"
+file = "combiner/mcp_combiner/mockserver.py"
+file_hash = "7a1dfab10385f791"
+signature = "require_bearer: bool = True"
+description = ""
+schema = 4
+line = 609
+mtime = 1783622326000000000
+container = [
+  "MockOAuthConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "mockserver",
+  "MockOAuthConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "wrapped [combiner/mcp_combiner/mockserver.py]",
+]
+name_terms = [
+  "auth",
+  "bearer",
+  "combiner",
+  "combiner.mcp_combiner.mockserver.MockOAuthConfig.require_bearer",
+  "config",
+  "mcp",
+  "mock",
+  "mockserver",
+  "o",
+  "require",
+  "require_bearer",
+]

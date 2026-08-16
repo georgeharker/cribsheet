@@ -1,0 +1,43 @@
+symbol_ref = "tests/test_pillar_stores.py#test_facet_write_lands_in_the_sibling_dir_with_store_metadata"
+fqn = "tests.test_pillar_stores.test_facet_write_lands_in_the_sibling_dir_with_store_metadata"
+name = "test_facet_write_lands_in_the_sibling_dir_with_store_metadata"
+kind = "function"
+lang = "python"
+content_hash = "3d33f5143ddba482"
+file = "tests/test_pillar_stores.py"
+file_hash = "1a0ecd183d71d1ba"
+signature = "def test_facet_write_lands_in_the_sibling_dir_with_store_metadata(crib):"
+description = ""
+schema = 4
+line = 44
+mtime = 1786138910000000000
+container = []
+scope = [
+  "tests",
+  "test_pillar_stores",
+]
+symbol_was = []
+calls = [
+  "_note [tests/test_pillar_stores.py]",
+  "run [tests/test_pillar_stores.py]",
+]
+called_by = []
+references = []
+name_terms = [
+  "dir",
+  "facet",
+  "in",
+  "lands",
+  "metadata",
+  "pillar",
+  "sibling",
+  "store",
+  "stores",
+  "test",
+  "test_facet_write_lands_in_the_sibling_dir_with_store_metadata",
+  "tests",
+  "tests.test_pillar_stores.test_facet_write_lands_in_the_sibling_dir_with_store_metadata",
+  "the",
+  "with",
+  "write",
+]

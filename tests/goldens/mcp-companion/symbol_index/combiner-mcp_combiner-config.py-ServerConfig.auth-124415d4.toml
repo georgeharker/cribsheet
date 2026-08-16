@@ -1,0 +1,42 @@
+symbol_ref = "combiner/mcp_combiner/config.py#ServerConfig.auth"
+fqn = "combiner.mcp_combiner.config.ServerConfig.auth"
+name = "auth"
+kind = "field"
+lang = "python"
+content_hash = "c48de086b3dae4c9"
+file = "combiner/mcp_combiner/config.py"
+file_hash = "8e56fc788c8bbbdd"
+signature = "auth: dict[str, Any] | str | None = None"
+description = ""
+schema = 4
+line = 270
+mtime = 1783633313000000000
+container = [
+  "ServerConfig",
+]
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "config",
+  "ServerConfig",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_create_isolated_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_create_server_proxy [combiner/mcp_combiner/proxyfactory.py]",
+  "_make_disconnected_client [combiner/mcp_combiner/connections.py]",
+  "_needs_oauth [combiner/mcp_combiner/proxyfactory.py]",
+  "from_dict [combiner/mcp_combiner/config.py]",
+  "get_auth [combiner/mcp_combiner/connections.py]",
+  "get_server_status [combiner/mcp_combiner/config.py]",
+]
+name_terms = [
+  "auth",
+  "combiner",
+  "combiner.mcp_combiner.config.ServerConfig.auth",
+  "config",
+  "mcp",
+  "server",
+]

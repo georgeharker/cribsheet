@@ -1,0 +1,48 @@
+symbol_ref = "crib/designs.py#Designs._write_body"
+fqn = "crib.designs.Designs._write_body"
+name = "_write_body"
+kind = "method"
+lang = "python"
+content_hash = "029f2f61d172c160"
+file = "crib/designs.py"
+file_hash = "1d9e643a32cfe250"
+signature = "async def _write_body(self, proj: str, ref: str, rewrite: Any,"
+description = ""
+schema = 4
+line = 1150
+mtime = 1786693579000000000
+container = [
+  "Designs",
+]
+scope = [
+  "crib",
+  "designs",
+  "Designs",
+]
+symbol_was = []
+calls = [
+  "_capture_sources [crib/designs.py]",
+  "_load_graph [crib/designs.py]",
+  "_next [crib/designs.py]",
+  "_note [crib/designs.py]",
+  "_resolve_ref [crib/designs.py]",
+  "_save [crib/designs.py]",
+  "_source_rows [crib/designs.py]",
+  "_taint [crib/designs.py]",
+]
+called_by = [
+  "design_append [crib/designs.py]",
+  "design_edit [crib/designs.py]",
+]
+references = [
+  "design_append [crib/designs.py]",
+  "design_edit [crib/designs.py]",
+]
+name_terms = [
+  "_write_body",
+  "body",
+  "crib",
+  "crib.designs.Designs._write_body",
+  "designs",
+  "write",
+]

@@ -1,0 +1,37 @@
+symbol_ref = "crib/config.py#CribLink.refs"
+fqn = "crib.config.CribLink.refs"
+name = "refs"
+kind = "field"
+lang = "python"
+content_hash = "fe3bb7e2edc9be20"
+file = "crib/config.py"
+file_hash = "a61c03ecc26490a4"
+signature = "refs: list[str] = field(default_factory=list)"
+description = ""
+schema = 4
+line = 384
+mtime = 1786564832000000000
+container = [
+  "CribLink",
+]
+scope = [
+  "crib",
+  "config",
+  "CribLink",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_parse [crib/config.py]",
+  "project_refs [crib/refs.py]",
+  "test_criblink_parses_refs [tests/test_refs.py]",
+  "test_good_crib_still_parses [tests/test_config_resilience.py]",
+]
+name_terms = [
+  "config",
+  "crib",
+  "crib.config.CribLink.refs",
+  "link",
+  "refs",
+]

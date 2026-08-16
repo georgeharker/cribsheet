@@ -1,0 +1,34 @@
+symbol_ref = "crib/section_index.py#KEYWORD_PROMPTS"
+fqn = "crib.section_index.KEYWORD_PROMPTS"
+name = "KEYWORD_PROMPTS"
+kind = "constant"
+lang = "python"
+content_hash = "ba60472b512cd624"
+file = "crib/section_index.py"
+file_hash = "a65e5200b70d95a7"
+signature = "KEYWORD_PROMPTS: dict[str, str] = {"
+description = ""
+schema = 4
+line = 29
+mtime = 1786044759000000000
+container = []
+scope = [
+  "crib",
+  "section_index",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "elaborate [crib/app.py]",
+  "enrich [crib/app.py]",
+]
+name_terms = [
+  "KEYWORD_PROMPTS",
+  "crib",
+  "crib.section_index.KEYWORD_PROMPTS",
+  "index",
+  "keyword",
+  "prompts",
+  "section",
+]

@@ -1,0 +1,36 @@
+symbol_ref = "crib/app.py#_min_max"
+fqn = "crib.app._min_max"
+name = "_min_max"
+kind = "function"
+lang = "python"
+content_hash = "218a23e424b4a657"
+file = "crib/app.py"
+file_hash = "002a71bb4fab5162"
+signature = "def _min_max(vals: list[float]) -> list[float]:"
+description = ""
+schema = 4
+line = 120
+mtime = 1786693579000000000
+container = []
+scope = [
+  "crib",
+  "app",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "_rerank [crib/app.py]",
+  "_rerank_code [crib/app.py]",
+]
+references = [
+  "_rerank [crib/app.py]",
+  "_rerank_code [crib/app.py]",
+]
+name_terms = [
+  "_min_max",
+  "app",
+  "crib",
+  "crib.app._min_max",
+  "max",
+  "min",
+]

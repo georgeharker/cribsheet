@@ -1,0 +1,37 @@
+symbol_ref = "crib/store.py#InMemoryStore.set_meta"
+fqn = "crib.store.InMemoryStore.set_meta"
+name = "set_meta"
+kind = "method"
+lang = "python"
+content_hash = "c28e8c1a0b9086c6"
+file = "crib/store.py"
+file_hash = "55444147017cf87b"
+signature = "def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:"
+description = ""
+schema = 4
+line = 112
+mtime = 1786564832000000000
+container = [
+  "InMemoryStore",
+]
+scope = [
+  "crib",
+  "store",
+  "InMemoryStore",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "set_meta [crib/store.py]",
+]
+references = []
+name_terms = [
+  "crib",
+  "crib.store.InMemoryStore.set_meta",
+  "in",
+  "memory",
+  "meta",
+  "set",
+  "set_meta",
+  "store",
+]

@@ -1,0 +1,38 @@
+symbol_ref = "combiner/mcp_combiner/ctl.py#add_ctl_parsers"
+fqn = "combiner.mcp_combiner.ctl.add_ctl_parsers"
+name = "add_ctl_parsers"
+kind = "function"
+lang = "python"
+content_hash = "1e7a14c3cf16d25c"
+file = "combiner/mcp_combiner/ctl.py"
+file_hash = "9674789e702ffb26"
+signature = "def add_ctl_parsers(subparsers: \"argparse._SubParsersAction[argparse.ArgumentParser]\") -> None:"
+description = ""
+schema = 4
+line = 504
+mtime = 1783720426000000000
+container = []
+scope = [
+  "combiner",
+  "mcp_combiner",
+  "ctl",
+]
+symbol_was = []
+calls = [
+  "_common [combiner/mcp_combiner/ctl.py]",
+]
+called_by = [
+  "main [combiner/mcp_combiner/__main__.py]",
+]
+references = [
+  "main [combiner/mcp_combiner/__main__.py]",
+]
+name_terms = [
+  "add",
+  "add_ctl_parsers",
+  "combiner",
+  "combiner.mcp_combiner.ctl.add_ctl_parsers",
+  "ctl",
+  "mcp",
+  "parsers",
+]

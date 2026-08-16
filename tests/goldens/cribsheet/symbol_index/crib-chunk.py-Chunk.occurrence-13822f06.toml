@@ -1,0 +1,38 @@
+symbol_ref = "crib/chunk.py#Chunk.occurrence"
+fqn = "crib.chunk.Chunk.occurrence"
+name = "occurrence"
+kind = "field"
+lang = "python"
+content_hash = "a3ac413829b18cfb"
+file = "crib/chunk.py"
+file_hash = "3ccffed4df088583"
+signature = "occurrence: int = 1"
+description = ""
+schema = 4
+line = 67
+mtime = 1786136167000000000
+container = [
+  "Chunk",
+]
+scope = [
+  "crib",
+  "chunk",
+  "Chunk",
+]
+symbol_was = []
+calls = []
+called_by = []
+references = [
+  "_doc_sections [crib/designs.py]",
+  "chunk_id [crib/chunk.py]",
+  "chunk_note [crib/chunk.py]",
+  "metadata [crib/chunk.py]",
+  "test_duplicate_headings_get_distinct_chunk_ids [tests/test_chunk_identity.py]",
+  "test_windowed_duplicate_sections_share_their_section_span [tests/test_chunk_identity.py]",
+]
+name_terms = [
+  "chunk",
+  "crib",
+  "crib.chunk.Chunk.occurrence",
+  "occurrence",
+]

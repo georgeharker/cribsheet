@@ -1,0 +1,45 @@
+symbol_ref = "combiner/tests/test_session_filter.py#TestOutputSchemaPlumbing._out"
+fqn = "combiner.tests.test_session_filter.TestOutputSchemaPlumbing._out"
+name = "_out"
+kind = "method"
+lang = "python"
+content_hash = "6048402dcde05520"
+file = "combiner/tests/test_session_filter.py"
+file_hash = "e6ae8e712f60f096"
+signature = "@staticmethod"
+description = ""
+schema = 4
+line = 1023
+mtime = 1784493613000000000
+container = [
+  "TestOutputSchemaPlumbing",
+]
+scope = [
+  "combiner",
+  "tests",
+  "test_session_filter",
+  "TestOutputSchemaPlumbing",
+]
+symbol_was = []
+calls = []
+called_by = [
+  "test_build_nvim_tools_carries_output_schema [combiner/tests/test_session_filter.py]",
+  "test_normalize_preserves_output_schema_on_rebuild [combiner/tests/test_session_filter.py]",
+]
+references = [
+  "test_build_nvim_tools_carries_output_schema [combiner/tests/test_session_filter.py]",
+  "test_normalize_preserves_output_schema_on_rebuild [combiner/tests/test_session_filter.py]",
+]
+name_terms = [
+  "_out",
+  "combiner",
+  "combiner.tests.test_session_filter.TestOutputSchemaPlumbing._out",
+  "filter",
+  "out",
+  "output",
+  "plumbing",
+  "schema",
+  "session",
+  "test",
+  "tests",
+]
