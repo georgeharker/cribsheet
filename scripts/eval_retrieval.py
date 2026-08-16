@@ -21,6 +21,7 @@ Exit codes (so it doubles as a regression gate):
 from __future__ import annotations
 
 import argparse
+import atexit
 import json
 import shutil
 import subprocess
@@ -31,16 +32,127 @@ from typing import Any
 DEFAULT_CASES = Path(__file__).resolve().parent / "eval_retrieval.cases.json"
 
 
+def _labels(spec: str | None) -> list[str] | None:
+    """`--keywords a,b` → ["a","b"]; `""` → [] ("no labels", turning a default-on
+    index OFF); None → None ("use the config default"). Mirrors `cli._split_labels`
+    — the empty-vs-absent distinction is what lets a lift baseline disable an index,
+    and collapsing the two reports every lift as a Δ0 null."""
+    if spec is None:
+        return None
+    return [s.strip() for s in spec.split(",") if s.strip()]
+
+
+class _DaemonSession:
+    """ONE event loop and ONE open connection, held for the whole run.
+
+    Two layers of per-call cost are being removed here, and they are different sizes.
+    The big one was a `crib` SUBPROCESS per query — ~1.4s of CPU in Python imports
+    against a retrieval that is a rounding error beside it. The small one is that
+    `DaemonClient.call` is itself per-call: it opens a fastmcp `Client` and spins an
+    `asyncio.run` every time. Keeping both open across the run removes the second.
+
+    This is not micro-optimisation for its own sake. At the subprocess cost the
+    n=1876 gold set was a ~66-minute pass, so in practice it never ran and a
+    31-phrasing hand set — with about 2 effective samples for the effects being
+    measured — stood in as the retrieval gate."""
+
+    def __init__(self, cfg: Any) -> None:
+        import asyncio
+
+        from fastmcp import Client
+
+        from crib.client import DaemonClient
+        # DaemonClient owns the LIFECYCLE: sharedserver.use() starts the daemon if it
+        # isn't up. Keep it entered for the whole run so the daemon isn't reaped
+        # mid-sweep, and let its own `call` make the first request — that path waits
+        # for readiness, which a raw Client would not.
+        self._dc = DaemonClient(cfg)
+        self._dc.__enter__()
+        self._loop = asyncio.new_event_loop()
+        self._client = Client(self._dc.url)
+        self._entered = False
+
+    def _ensure(self) -> None:
+        if not self._entered:
+            self._loop.run_until_complete(self._client.__aenter__())
+            self._entered = True
+
+    def call_ready(self, tool: str, args: dict[str, Any]) -> Any:
+        """First call — goes through DaemonClient so it waits for readiness."""
+        return self._dc.call(tool, args)
+
+    def call(self, tool: str, args: dict[str, Any]) -> Any:
+        from crib.client import _data
+        self._ensure()
+        args = {k: v for k, v in args.items() if v is not None}
+        return _data(self._loop.run_until_complete(
+            self._client.call_tool(tool, args)))
+
+    def close(self) -> None:
+        try:
+            if self._entered:
+                self._loop.run_until_complete(
+                    self._client.__aexit__(None, None, None))
+        except Exception:
+            pass
+        finally:
+            try:
+                self._loop.close()
+            finally:
+                self._dc.__exit__(None, None, None)
+
+
+_SESSION: Any = None
+_SESSION_TRIED = False
+
+
+def _session() -> Any:
+    """The shared session, or None when there is no reachable daemon (or no
+    importable `crib`) — callers then fall back to one subprocess per query."""
+    global _SESSION, _SESSION_TRIED
+    if _SESSION_TRIED:
+        return _SESSION
+    _SESSION_TRIED = True
+    try:
+        from crib.config import Config
+        from crib.paths import Paths
+        _SESSION = _DaemonSession(Config.load(Paths.resolve().config_file).daemon)
+        atexit.register(_SESSION.close)
+    except Exception:
+        _SESSION = None
+    return _SESSION
+
+
 def run_lookup(query: str, project: str, k: int, crib: str,
                no_daemon: bool = False,
                keywords: str | None = None,
                keyword_weight: float | None = None,
                summaries: str | None = None,
                summary_weight: float | None = None) -> list[dict[str, Any]]:
-    """One ``crib --json lookup`` call → its ranked hits (top-first).
+    """One lookup → its ranked hits (top-first).
 
     ``keywords``/``keyword_weight`` drive BM25 keyword_index; ``summaries``/
-    ``summary_weight`` the dense summary_index aliases — the lift knobs (§3)."""
+    ``summary_weight`` the dense summary_index aliases — the lift knobs (§3).
+
+    Served by the shared daemon connection when there is one; `--no-daemon` (and an
+    unreachable daemon) fall back to one `crib --json lookup` subprocess per query.
+    Both paths build the SAME call, so the numbers are comparable across them."""
+    client = None if no_daemon else _session()
+    if client is not None:
+        call: dict[str, Any] = {"query": query, "project": project, "k": k,
+                                "tags": None}
+        if keywords is not None:
+            call["keyword_labels"] = _labels(keywords)
+        if keyword_weight is not None:
+            call["keyword_weight"] = keyword_weight
+        if summaries is not None:
+            call["summary_labels"] = _labels(summaries)
+        if summary_weight is not None:
+            call["summary_weight"] = summary_weight
+        try:
+            return client.call("note_lookup", call)
+        except Exception as e:
+            raise RuntimeError(f"daemon lookup failed: {e}") from e
     cmd = [crib, *(["--no-daemon"] if no_daemon else []),
            "--json", "note", "lookup", query, "-p", project, "-k", str(k)]
     if keywords is not None:
@@ -135,6 +247,52 @@ def evaluate(spec: dict[str, Any], k: int, recall_k: int, crib: str,
                 }
             )
     return rows
+
+
+def seeded_check(spec: dict[str, Any], k: int, crib: str,
+                 no_daemon: bool) -> str | None:
+    """None if the store holds content for the projects under test, else the reason.
+
+    ASKS THE STORE, rather than inferring emptiness from query results. `status`
+    reports per-project `notes`/`designs`/`plans`/`doc_chunks` in ONE call, so an
+    unseeded run is named precisely ("project 'x' holds no content") instead of being
+    guessed at from misses — and a genuinely hard query set can never be mistaken for
+    an empty store, which a results-based probe cannot promise.
+
+    Falls back to probing a few real lookups when there is no daemon to ask (that
+    path has no cheap oracle, so it infers: a seeded store hits on at least one of
+    five phrasings, and five consecutive misses is not a corpus, it is an empty
+    store)."""
+    projects = {need.get("project") or spec.get("project", "default")
+                for need in load_needs(spec)}
+    session = None if no_daemon else _session()
+    if session is not None:
+        try:
+            rows = session.call_ready("status", {}).get("projects") or []
+        except Exception as e:
+            return f"cannot reach the crib daemon: {e}"
+        counts = {r.get("project"): r for r in rows}
+        for proj in sorted(projects):
+            row = counts.get(proj)
+            if row is None:
+                return (f"project {proj!r} is not in the store "
+                        f"(known: {', '.join(sorted(filter(None, counts))) or 'none'})")
+            held = sum(int(row.get(f) or 0)
+                       for f in ("notes", "designs", "plans", "doc_chunks"))
+            if held == 0:
+                return f"project {proj!r} holds no content (`crib import` to seed it)"
+        return None
+
+    seen = 0
+    for need in load_needs(spec):
+        project = need.get("project") or spec.get("project", "default")
+        for query in need["queries"]:
+            if run_lookup(query, project, k, crib, no_daemon):
+                return None
+            seen += 1
+            if seen >= 5:
+                return "the first 5 queries returned 0 hits — is the project seeded?"
+    return None                      # fewer than 5 phrasings: nothing to conclude
 
 
 def report(rows: list[dict[str, Any]], recall_k: int) -> tuple[float, float]:
@@ -236,49 +394,43 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--cases", type=Path, default=DEFAULT_CASES, help="labeled cases JSON")
     ap.add_argument("--k", type=int, default=8, help="hits to request per query")
     ap.add_argument("--recall-k", type=int, default=3, help="cutoff for recall@k")
-    # Bars are regression floors just under the honest current baseline, not aspirations.
-    # Original baseline (MRR 0.809 / recall@3 0.963, n=27, 2026-06-30) no longer holds: as
-    # of 2026-07-08 recall@3 sits at a stable 0.839 (MRR ~0.77, n=31) with the retrieval
-    # code provably unchanged (retrieve.py / Crib.lookup: 0 lines on codestore-refactor).
-    # It's not a regression — the 0.963 run predates a data/model/config state that the
-    # enrichment-regen + full-reindex levers don't restore; the 5 misses are the hardest
-    # paraphrase of each need expecting a specific doc heading, landing at rank 4-6.
-    # recall@3 re-baselined 0.9 -> 0.83 to track reality; raise it if a reranker / summary
-    # config lifts those tail phrasings back over rank 3. As of 2026-07-09, after the
-    # session's enrichment-regen + full-reindex, the state shifted again: recall@3 rose to
-    # ~0.87 but MRR settled at ~0.73 (rankings flattened — more hits, fewer at rank 1), so
-    # the MRR floor is re-baselined 0.75 -> 0.72 to match. Neither is a retrieval-code
-    # change; both track the current data/enrichment state.
-    # 2026-07-13 (score-fusion + rerank-on-by-default landing): measured 0.710 MRR /
-    # 0.839 recall@3 on the restarted daemon — rerank's isolated lift is +0.012 MRR /
-    # +0.033 recall@3, but the notes corpus has drifted since 0.72 was set (the same
-    # four "weak phrasing" needs drag it). MRR floor re-baselined 0.72 -> 0.70 to track
-    # reality; raise it back if a summary_index / embedder upgrade lifts the tail.
-    # Later same day (aliases max-merge live, summary_labels on): MRR 0.720, but
-    # recall@3 0.806 — storing ONE on-topic finding note displaced a top-3 phrasing
-    # (this hand set is corpus-fragile by design; see eval_data/notes_gold_large.json
-    # for the real instrument). recall floor re-baselined 0.83 -> 0.80.
-    # 2026-08-06 (`asks` added to the default summary_labels): the doc2query alias
-    # label was generated but not being retrieved over. Switching it on measured, on
-    # the n=1876 gold set with only summary_labels varying:
-    #     summary          MRR 0.6370   recall@3 0.7004
-    #     summary + asks   MRR 0.7165   recall@3 0.7830   (+0.0795 / +0.0826)
-    # and additive rather than a reshuffle — 160 queries INTO top-3 vs 5 out (all
-    # 3 -> 4). On THIS hand set, daemon restarted so the config is live: MRR 0.716 /
-    # recall@3 0.839.
-    # MRR floor raised 0.70 -> 0.71: that is the one that bites, because a silent
-    # revert to summary-only scores 0.705 / 0.774 and USED to pass the 0.70 MRR bar.
-    # recall stays at 0.80, NOT 0.83, deliberately. 0.839 is an idle-machine number:
-    # under the full pytest run it measures 0.806, and the entire 0.033 gap is one
-    # query (an `invocation` phrasing, 2/3 -> 1/3 = 1/31) flipping across the rank-3
-    # boundary as the time-budgeted reranker degrades under CPU contention. A 0.83
-    # floor would therefore fail in CI while passing locally — and 0.80 already
-    # catches the regression that matters, since summary-only's 0.774 is below it.
-    # These floors track the hand set. The large gold set is harder and scores lower
-    # in absolute terms (0.7830 recall@3 even with asks), so pass --bar-recall when
-    # running --cases eval_data/notes_gold_large.json or it will fail spuriously.
-    ap.add_argument("--bar-mrr", type=float, default=0.71, help="fail under this MRR")
-    ap.add_argument("--bar-recall", type=float, default=0.80, help="fail under this recall@k")
+    # SMOKE FLOORS, not a quality gate. The default cases file is a 31-phrasing hand
+    # set, and 31 samples cannot carry a floor tuned finer than one sample: ONE query
+    # crossing rank 3 moves recall by 3.2%. Every floor here was once tuned to ~0.01
+    # (recall 0.9 -> 0.83 -> 0.80, MRR 0.75 -> 0.72 -> 0.70 -> 0.71), which is three
+    # times finer than the instrument resolves — so each "re-baseline to track reality"
+    # was fitting noise, and the last one then encoded that noise as a named regression
+    # signature ("summary-only scores 0.705/0.774, so 0.71 catches a silent revert").
+    #
+    # What that cost, measured: `asks` is worth +0.0795 MRR / +0.0826 recall@3 on the
+    # n=1876 gold set (2026-08-06, varying only summary_labels) — 160 queries INTO
+    # top-3 against 5 out. On THIS set its isolated lift is +0.000/+0.000, because only
+    # 2 of 31 phrasings are affected at all and they cancel (vocab-gap 4->3 in,
+    # quarantine 3->4 out). Same rate of influence as the large set (6.5% vs 8.8%),
+    # ~2 effective samples, direction a coin flip. The 0.71 floor was reading that
+    # coin flip.
+    #
+    # So these are set where they only catch GROSS breakage — an empty store, a
+    # misconfigured project, retrieval returning nothing useful — and the per-need
+    # table below is what this set is actually good for: eyeballing which phrasings
+    # are weak. Do NOT re-tune these by ±0.01; a change smaller than 3.2% on n=31
+    # means nothing.
+    #
+    # THE REAL GATE is the large set, which has the power to resolve these effects:
+    #
+    #     python scripts/eval_retrieval.py --cases scripts/eval_data/notes_gold_large.json \
+    #         --bar-mrr 0.69 --bar-recall 0.75
+    #
+    # Baseline there (n=1876, 180 needs, ~13 min on the daemon):
+    #     2026-08-06   MRR 0.7165   recall@3 0.7830
+    #     2026-08-15   MRR 0.711    recall@3 0.779
+    # Unchanged: SE on recall at n=1876, p~0.78 is ~0.010, so both deltas sit inside
+    # one standard error. Floors of 0.69 / 0.75 sit ~2 SE below — far enough not to
+    # trip on sampling, close enough to catch a real loss (dropping `asks` costs
+    # -0.0795 / -0.0826, which is 8 SE and cannot hide). Re-tune THOSE only on a move
+    # bigger than ~0.02, and record the measurement when you do.
+    ap.add_argument("--bar-mrr", type=float, default=0.60, help="fail under this MRR")
+    ap.add_argument("--bar-recall", type=float, default=0.60, help="fail under this recall@k")
     ap.add_argument("--crib", default="crib", help="crib executable")
     ap.add_argument("--no-daemon", action="store_true",
                     help="run each crib call in-process (fresh code, bypasses the warm daemon)")
@@ -307,6 +459,14 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     spec = json.loads(args.cases.read_text())
+
+    try:
+        why = seeded_check(spec, args.k, args.crib, args.no_daemon)
+    except RuntimeError as e:
+        why = str(e)
+    if why:
+        print(f"error: {why}", file=sys.stderr)
+        return 2
 
     if args.lift is not None or args.lift_summaries is not None:
         return _run_lift(spec, args)
