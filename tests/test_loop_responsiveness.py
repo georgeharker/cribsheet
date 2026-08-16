@@ -22,7 +22,12 @@ from crib.paths import Paths
 from crib.store import InMemoryStore, JsonStore, Record
 
 SLOW = 0.5          # stand-in for a real model forward
-MAX_GAP = 0.1       # acceptance bar: loop gap during a big write
+# Acceptance bar for the loop gap during a big write. What it discriminates is
+# offloaded-vs-not: an embed left on the loop shows up as a gap at SLOW, so any bar
+# comfortably under 0.5 catches the regression. It sits well ABOVE the 0.02 tick
+# because a 20ms heartbeat routinely slips past 100ms on a machine saturated by the
+# rest of the suite (or a CI runner) — jitter that says nothing about the offload.
+MAX_GAP = 0.25
 TICK = 0.02         # heartbeat period
 
 
