@@ -1,0 +1,51 @@
+name: Retrieval quality (large set)
+
+# The n=1876 gold set — the retrieval gate with enough statistical power to mean
+# something. Deliberately NOT part of `CI`, and deliberately not on a hosted runner.
+#
+# WHY IT CANNOT RUN ON A GITHUB-HOSTED RUNNER. The gate measures retrieval over a
+# seeded crib store, and that store is not reconstructible from this repo:
+#   - 47 of the 180 needs target notes that live only in the private ~/.crib store;
+#     the repo has no copy, so those queries can only ever miss.
+#   - the `summary`/`asks` dense aliases the score depends on are LLM-generated
+#     (`crib summarize`), which a runner can neither afford nor authenticate.
+# A hosted run would therefore measure an empty store. The harness detects that and
+# exits 2 (skip), but a skip dressed as a green check is worse than no check.
+#
+# So this targets a runner that HAS the store — the machine crib actually runs on.
+# Until such a runner is registered, the job simply is never dispatched; it burns no
+# hosted minutes and posts no misleading status. Add a `schedule:` trigger once a
+# runner exists — not before, or scheduled runs queue forever waiting for one.
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: "Runner label with a seeded crib store"
+        default: "self-hosted"
+        required: false
+
+jobs:
+  eval:
+    name: retrieval quality (n=1876)
+    runs-on: ${{ inputs.runner || 'self-hosted' }}
+    # ~13 min on a warm daemon; the default 360 is plenty, but a cold/unseeded box
+    # should give up rather than sit there.
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install (project + dev group, from uv.lock)
+        run: uv sync
+
+      # CRIB_EVAL_LARGE flips the opt-in test on. It still SKIPS (not fails) if the
+      # store turns out to be unseeded, so a runner that lost its data reports honestly
+      # instead of reporting a retrieval regression that did not happen.
+      - name: Large-set quality bars
+        env:
+          CRIB_EVAL_LARGE: "1"
+        run: uv run pytest tests/test_eval_retrieval.py::test_retrieval_quality_bars_large -q -rs
