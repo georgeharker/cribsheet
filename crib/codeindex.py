@@ -120,6 +120,19 @@ def _config_dir() -> Path:
                                os.path.expanduser("~/.config/crib")))
 
 
+def _default_request_timeout() -> float:
+    """Seconds to wait for an LSP reply, from `CRIB_LSP_TIMEOUT` (default 30).
+
+    A knob rather than a constant because the right value is a property of the
+    machine, not of the protocol: a cold basedpyright answering its first
+    `callHierarchy` needs well over 30s on a 2-core runner. An unparseable value
+    falls back to the default rather than crashing the indexer over a typo."""
+    try:
+        return float(os.environ.get("CRIB_LSP_TIMEOUT", "") or 30.0)
+    except ValueError:
+        return 30.0
+
+
 def load_specs() -> dict[str, dict[str, Any]]:
     """Merged LSP specs: `~/.config/crib/lsp.json` (user, iterated FIRST so it wins
     selection) ⊕ the shipped defaults. Same `.lsp.json` schema as Claude Code."""
@@ -445,10 +458,18 @@ class LspClient:
                 return {}
         return s
 
-    def request(self, method: str, params: dict, timeout: float = 30.0) -> Any:
+    def request(self, method: str, params: dict, timeout: float | None = None) -> Any:
         """Send a request and wait for its reply. Raises `SessionError` — never a
         bare TimeoutError — so the caller's discard/retry path is driven by ONE
-        exception type, and immediately (no 30s wait) once the reader has died."""
+        exception type, and immediately (no 30s wait) once the reader has died.
+
+        `timeout=None` takes the default from `CRIB_LSP_TIMEOUT`. 30s is comfortable
+        for a warm server on a developer machine but not for a cold one on slow or
+        few-core hardware — a 2-core CI runner and a Pi both miss it on the first
+        `callHierarchy` request, which is a machine speed difference and not a
+        failure worth asserting on."""
+        if timeout is None:
+            timeout = _default_request_timeout()
         with self._lock:
             dead = self._dead
         if dead:

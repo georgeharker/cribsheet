@@ -37,4 +37,9 @@ jobs:
       # store and a warm daemon, neither of which exists on a runner; its harness exits
       # 2 there and the test skips itself. Everything else is a plain unit test.
       - name: Tests (pytest)
+        # A runner is slower and has fewer cores than a developer machine, and the
+        # code-index tests wait on a cold basedpyright; the stock 30s LSP timeout is
+        # not enough for its first callHierarchy reply here.
+        env:
+          CRIB_LSP_TIMEOUT: "180"
         run: uv run pytest -q
