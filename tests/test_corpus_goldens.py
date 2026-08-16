@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -40,8 +41,13 @@ pytestmark = pytest.mark.skipif(
 def test_corpus_golden_structurally_identical(project):
     golden = _GOLDENS / project
     assert (golden / "meta").exists(), f"no committed golden for {project}"
+    # sys.executable, NOT bare "python": the harness imports `crib`, so it has to run
+    # in the interpreter pytest is running in. A PATH lookup picks whichever venv
+    # happens to be active, which is a different interpreter as soon as one shell has
+    # a venv activated and `uv run` redirects to the project's own.
     r = subprocess.run(
-        ["python", str(_ROOT / "scripts" / "snapshot_harness.py"), "compare", str(golden)],
+        [sys.executable, str(_ROOT / "scripts" / "snapshot_harness.py"),
+         "compare", str(golden)],
         capture_output=True, text=True, cwd=str(_ROOT))
     assert r.returncode == 0, (
         f"{project} STRUCTURALLY drifted from its golden:\n{r.stdout[-2000:]}")
