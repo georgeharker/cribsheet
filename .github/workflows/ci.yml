@@ -23,6 +23,13 @@ jobs:
         with:
           python-version: "3.13"
 
+      # tests/test_sync.py asserts GitBacking falls back to the *local* default branch.
+      # A runner's git has no init.defaultBranch set, so it falls back to "master" and
+      # the assertion fails on a difference in the runner's git config rather than in
+      # the code. Configure the default the project actually uses.
+      - name: Configure git defaults
+        run: git config --global init.defaultBranch main
+
       - name: Install (project + dev group, from uv.lock)
         run: uv sync
 

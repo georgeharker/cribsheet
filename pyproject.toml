@@ -41,7 +41,13 @@ st = ["sentence-transformers>=2.2"]
 [dependency-groups]
 # Test tooling only. The suite drives asyncio through `asyncio.run()` rather than
 # pytest-asyncio markers, so no async plugin is needed.
-dev = ["pytest>=8"]
+#
+# basedpyright is not optional for the code-index tests: the indexer extracts symbols
+# by driving a real LSP server (SERVERS in crib/codeindex.py tries ty, then
+# basedpyright, then pyright for .py), and with none installed it extracts nothing and
+# those tests fail rather than skip. Pinning the fallback here is what makes a bare
+# runner behave like a developer machine.
+dev = ["pytest>=8", "basedpyright>=1.19"]
 
 [project.scripts]
 crib = "crib.cli:main"
