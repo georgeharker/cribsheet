@@ -33,6 +33,12 @@ jobs:
       - name: Install (project + dev group, from uv.lock)
         run: uv sync
 
+      # Lint before the suite: it takes a second and its failures are unambiguous,
+      # so a style break reports as a style break rather than as whatever the tests
+      # happen to say three minutes later.
+      - name: Lint (ruff)
+        run: uv run ruff check .
+
       # The retrieval quality gate (tests/test_eval_retrieval.py) needs a seeded crib
       # store and a warm daemon, neither of which exists on a runner; its harness exits
       # 2 there and the test skips itself. Everything else is a plain unit test.
