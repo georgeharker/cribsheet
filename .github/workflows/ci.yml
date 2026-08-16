@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    # Explicit name: the check-run name is what branch protection matches on, and the
+    # bare job id "check" is also used by vendored-drift.yml.
+    name: tests
+    runs-on: ubuntu-latest
+    steps:
+      # vendor/llmkit is deliberately NOT checked out: it is a reading copy for the
+      # in-tree xref / code index, while the code under test imports `llmkit` from the
+      # published polyllmkit wheel. Fetching it would only lint-and-collect a second
+      # copy of the same package.
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install (project + dev group, from uv.lock)
+        run: uv sync
+
+      # The retrieval quality gate (tests/test_eval_retrieval.py) needs a seeded crib
+      # store and a warm daemon, neither of which exists on a runner; its harness exits
+      # 2 there and the test skips itself. Everything else is a plain unit test.
+      - name: Tests (pytest)
+        run: uv run pytest -q

@@ -38,6 +38,11 @@ dependencies = [
 #                                         https://download.pytorch.org/whl/cpu
 st = ["sentence-transformers>=2.2"]
 
+[dependency-groups]
+# Test tooling only. The suite drives asyncio through `asyncio.run()` rather than
+# pytest-asyncio markers, so no async plugin is needed.
+dev = ["pytest>=8"]
+
 [project.scripts]
 crib = "crib.cli:main"
 
