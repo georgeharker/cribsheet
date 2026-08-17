@@ -109,6 +109,16 @@ your `opencode.json`:
 Full options are in the plugin's [README](https://github.com/georgeharker/cribsheet/blob/main/plugins/opencode/README.md); the
 `MCP_COMBINER` switch below applies to it too.
 
+**On Pi?** [Pi](https://pi.dev) needs **[`pi-mcp-adapter`](https://pi.dev/packages/pi-mcp-adapter)**
+(`pi install npm:pi-mcp-adapter`) plus the `@geohar/pi-cribsheet` extension in
+[`plugins/pi`](https://github.com/georgeharker/cribsheet/tree/main/plugins/pi), which does the same three things
+(MCP server on `:7732`, `/crib` command, reach-for-crib directive). Point the adapter at
+crib with a one-line `mcp.json` ([`plugins/pi/mcp.json.example`](https://github.com/georgeharker/cribsheet/tree/main/plugins/pi/mcp.json.example))
+and load the extension via `~/.pi/agent/extensions/` or `settings.json`. Full options
+(`PI_CRIBSHEET_*`) are in the plugin's [README](https://github.com/georgeharker/cribsheet/blob/main/plugins/pi/README.md);
+the `MCP_COMBINER` switch below applies to it too (combiner-served → directive + `/crib`
+only).
+
 **The plugin writes to your user-scope MCP config** (`claude mcp add|remove`) rather
 than declaring a server in its manifest — that is what lets one plugin serve both
 deployments, and it means crib appears in `claude mcp list` as a user server you can

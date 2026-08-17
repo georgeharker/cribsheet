@@ -1,0 +1,56 @@
+{
+    "name": "@geohar/pi-cribsheet",
+    "version": "0.9.1",
+    "description": "Pi extension: run the crib (cribsheet) memory + code-index MCP server via sharedserver, inject the reach-for-crib directive, and ship the /crib recall command. Pairs with pi-mcp-adapter.",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "pi": {
+        "extensions": [
+            "./src/index.ts"
+        ]
+    },
+    "files": [
+        "src",
+        "dist",
+        "instructions.txt",
+        "mcp.json.example",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "clean": "rm -rf dist",
+        "typecheck": "tsc --noEmit",
+        "prepack": "node -e \"require('fs').copyFileSync('../../CLAUDE.md.example', './instructions.txt')\"",
+        "prepublishOnly": "npm run clean && npm run build"
+    },
+    "keywords": [
+        "pi",
+        "pi-extension",
+        "pi-mono",
+        "mcp",
+        "cribsheet",
+        "crib",
+        "memory",
+        "sharedserver",
+        "extension"
+    ],
+    "author": "George Harker <george@georgeharker.com>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/georgeharker/cribsheet.git",
+        "directory": "plugins/pi"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "devDependencies": {
+        "@types/node": "^22.0.0",
+        "typescript": "^5.6.0"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}

@@ -1,0 +1,140 @@
+# Memory (cribsheet)
+
+<!-- Canonical reach-for-crib directive. Copy into your global
+     $CLAUDE_CONFIG_DIR/CLAUDE.md, or let a cribsheet plugin inject it each session
+     (the plugins symlink this file). It directs *approach*; the MCP tool
+     descriptions carry the mechanics. -->
+
+Five rules. Each fires on a **cue you can catch yourself in the middle of**, not on
+a topic you have to remember to think about. That's deliberate: you will not remember
+to "consult memory" — but you can notice your own hand reaching for `grep`.
+
+Rules 4 and 5 are the ones you will walk past most, because their cues don't feel like
+actions: settling a design question and writing a todo list both feel like *thinking*,
+not like *reaching for a tool*. Watch for them anyway.
+
+### 1. About to grep? That's the cue.
+
+`grep` / `rg` / `Glob`, or opening a file to see what it does, is a **stop sign, not
+an action**. At that exact moment:
+
+| your next move was | do this instead |
+|---|---|
+| grep for a symbol — by name, or by hunch | `code_lookup "what it does, in your own words"` — answers by intent, across files |
+| open the file to understand a symbol | `code_dossier <symbol>` — signature, description, callers, callees, references, in one call |
+| chain greps to trace a caller | `code_xref` / `code_graph` |
+| *(repo isn't indexed)* | `project_index` — one call, and the **expected first step**, not a dead end |
+
+grep is the **fallback for when the index misses**. It is never the opening move.
+There is no shortcut around indexing; the utility *is* the index.
+
+**Catch yourself:** if you've read three files to answer one question, this rule
+already fired and you walked past it. Stop where you are, `code_lookup`, redo it.
+
+### 2. About to answer from your own knowledge? Look it up first.
+
+Cue: you're about to explain a project, a past decision, or a convention — or open a
+codebase cold. `lookup` / `apropos` **before** you answer, not after. What's stored may
+be more current than what you'd reconstruct, and *you can't tell which from the inside*:
+a confident reconstruction feels exactly like a correct one.
+
+### 3. Just understood something? Store it before you move on.
+
+Cue: the "ah, *that's* why" moment — a convention, a gotcha, a contract. The
+moment passes; the note has to be written inside it. `lookup` first, then `append`/`edit`
+over creating a near-duplicate.
+
+**Not a decision, and not a task.** Those have their own verbs — rules 4 and 5. If what
+you just understood is *why we chose this*, `note_store` is the wrong verb: it takes the
+prose and silently drops the edges, which were the part worth keeping.
+
+Writes need an explicit `project=` — they do **not** inherit your current project. Name
+the project the fact is *about*: the repo you're in, or `default` (or that tool's own
+project) for cross-cutting knowledge like a CLI or editor convention. Say where it landed.
+To pin a hard-won insight about a symbol: `code_append <symbol> "…"`.
+
+### 4. Just settled a question — or about to explain why? Use the decision graph.
+
+Cue: a design question stopped being open. "Chunks are keyed by X." "Writes must name
+their project." It's the moment the arguing stops — and it feels like you merely
+*finished thinking*, which is exactly why this rule gets walked past.
+
+Decisions have their **own verbs**. Use those, not `note_*`: a note holds the prose,
+but only the facet knows what a decision rests on, what rests on it, and what your
+change just invalidated. That last part is the whole point.
+
+| your next move was | do this instead |
+|---|---|
+| a question just got settled, and it has consequences | `design_add <title> <rationale>` with `--dep` on what it builds on |
+| the new decision *replaces* an existing one | `design_supersede` — a second `design_add` leaves both standing and both findable |
+| explain *why* it's built this way | `design_lookup "<query>"` **before** reconstructing it from the code — hits flag stale decisions |
+| read / cite a decision | `design_read <ref>` — body **plus** deps, dependents, and whether either moved |
+| change a decision, or code that implements one | `design_check` **first** — then `design_edit`/`design_append`, whose result lists what you just tainted |
+| propose an architecture change | `design_tree` (or `--dependents`) — see what rests on it before you move it |
+
+- **Adding is SILENT — so check what it lands next to.** `design_add` seeds its
+  `checked` state from its deps as they read right now, so a new decision is
+  born verified and nothing gains taint just because it appeared. The graph will
+  hold two decisions that flatly contradict each other and never say a word: it
+  tracks the edges you declared, not agreement. So `design_lookup` the area
+  first, and read the `similar` list the result hands back. Restates an existing
+  decision → `design_append`/`design_edit` **that one**. Replaces it →
+  `design_supersede`. Changes the ground under other work → `design_check`,
+  which is the only verb that answers "what did I just break".
+- **A dep is a promise**: *if that changes, reconsider this.* A plain note can't
+  make that promise; the graph can. Every edge checks — there is no "just for
+  reference" edge that lets an origin change silently.
+- **Each stale decision** comes back with the chain explaining *why*, what kind of
+  change did it, when, and the verb to run. After reconsidering, `design_reaffirm`
+  marks it current. Taint means *a dep moved*, not *you were wrong* — reaffirming
+  is the cheap, normal ending, so don't treat it as a crisis. When it genuinely no
+  longer holds, `design_supersede`.
+- **A hit marked `tainted`** is a decision whose ground shifted and nobody
+  re-read. Don't quietly reason from it — `design_read` it first.
+
+**Catch yourself:** if you've just written a paragraph explaining why something is
+built the way it is, you either read that out of the graph or you owe it to the
+graph. Same for "let's go with X" — that's a `design_add`, not a sentence.
+
+### 5. About to write a todo list — in a file, in chat, or in your head? That's the cue.
+
+`plan_add` instead. An in-chat list dies with the chat and a list in your head dies
+with the context window; a plan item outlives both. One call takes the whole batch,
+and deps can point at earlier items in the same batch.
+
+- **`plan_lookup` before you add — it may already be planned.** Another session,
+  or another agent, may have written the item you're about to write. An item
+  that duplicates a `done` one is louder than a duplicate: either the work
+  regressed or you've mis-scoped this, and both are worth knowing *before* a
+  second entry exists.
+- **`--dep` the DECISION an item rests on, not just the items before it.** Deps
+  mix, and they block differently: a **plan** dep blocks until it's done; a
+  **design** dep blocks while it's *tainted*; a **note** dep never blocks. So an
+  item that declares the decision it implements drops out of `plan_next` the
+  moment that decision's ground moves — the work stops looking actionable
+  exactly when it stops being safe to do. That is the plan facet's version of
+  "check it didn't break", and it is the only one that fires without you asking.
+- **`plan_status` as you go, not at the end** — `in-progress` is a *claim* other
+  agents can see, and marking one `done` tells you what it just unblocked.
+- **`plan_next` is the "where was I" call** — run it when you pick work back up, and
+  any future session (yours or another agent's) gets exactly what's actionable now.
+
+**Catch yourself:** if you've just typed "first I'll… then I'll…", or reached for a
+scratch todo list, this rule already fired.
+
+### Importing a doc (either facet)
+
+Asked to capture a DESIGN.md, a spec, or a plan file? `design_import` / `plan_import`
+that doc, then follow the procedure it returns. They run no model and write nothing —
+they hand you the doc's exact citable sections, what already draws on it, and the
+steps. *You* read and judge. Each entry cites the **section** it came from
+(`--source "DESIGN.md#10.3 Fusion"`, never the whole file), so a later edit to that
+passage re-checks exactly what was drawn from it. Extracted decisions land
+`proposed`: they gate work and taint nothing until a human confirms them with
+`design_promote`.
+
+<!-- Project selection for *reads*: code tools act on ONE current project — set it once
+     with `use_project <name>`, or it's inferred from `project_path` on your first code
+     call; reads then need no project args. To read a *different* project you must name it
+     (`project=` / `project_path=`). `project_path` means "which repo I mean" — it is not
+     your shell cwd. -->
