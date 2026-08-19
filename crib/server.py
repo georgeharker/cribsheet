@@ -1494,7 +1494,22 @@ async def _serve_async(transport: str = "stdio", host: str = "127.0.0.1",
         if transport == "stdio":
             await mcp.run_async(transport="stdio")
         else:
-            await mcp.run_async(transport="http", host=host, port=port)
+            # Optional inbound bearer auth on /mcp (off unless CRIBSHEET_AUTH_TOKEN
+            # is set). inbound_auth.py is vendored byte-identical from mcp-companion's
+            # combiner — no dependency on it. /health stays open.
+            from starlette.middleware import Middleware
+
+            from crib.inbound_auth import BearerAuthMiddleware, resolve_auth_token
+
+            _mw: list[Middleware] = []
+            _tok = resolve_auth_token("CRIBSHEET_AUTH_TOKEN")
+            if _tok:
+                _mw.append(
+                    Middleware(
+                        BearerAuthMiddleware, token=_tok, is_protected=lambda p: p != "/health"
+                    )
+                )
+            await mcp.run_async(transport="http", host=host, port=port, middleware=_mw)
     finally:
         crib.close()
 

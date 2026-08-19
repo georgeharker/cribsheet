@@ -244,6 +244,23 @@ runs), so it's fast; `--no-daemon` runs in-process, `--json` gives machine outpu
   [`docs/lsp.json.example`](docs/lsp.json.example),
   [`docs/generate.toml.example`](docs/generate.toml.example).
 
+## Authentication (optional)
+
+When crib runs as an **HTTP daemon** (`crib serve --http` / behind a bridge) its
+`/mcp` endpoint is **unauthenticated by default** — fine on loopback, but open the
+moment you bind beyond `127.0.0.1`, or on a shared machine. Set
+**`CRIBSHEET_AUTH_TOKEN`** and every request to `/mcp` must present
+`Authorization: Bearer <token>`; a missing/wrong token gets a plain `401` (no
+`WWW-Authenticate`, so standards clients don't drift into OAuth). Unset ⇒ open
+(unchanged); `/health` stays open.
+
+The `crib` CLI presents the same token automatically when it's set, so nothing
+changes for local use. When crib runs behind the
+[mcp-combiner](https://github.com/georgeharker/mcp-companion), give the combiner
+the token in crib's `servers.json` entry:
+`{"auth": {"bearer": "${CRIBSHEET_AUTH_TOKEN}"}}`. (The gate is
+`crib/inbound_auth.py`, vendored byte-identical from the combiner.)
+
 ## How it works
 
 The short version: every write funnels through one idempotent, content-hash-gated

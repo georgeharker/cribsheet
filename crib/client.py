@@ -14,6 +14,7 @@ set `[daemon].enabled = false`) to fall back to in-process `Crib.open()`.
 from __future__ import annotations
 
 import asyncio
+import os
 import time
 from typing import Any
 
@@ -79,21 +80,35 @@ class DaemonClient:
         args = {k: v for k, v in arguments.items() if v is not None}
         return asyncio.run(self._call(tool, args))
 
-    async def _call(self, tool: str, args: dict[str, Any]) -> Any:
+    def _make_client(self) -> Any:
+        """A fastmcp Client for the daemon, presenting the inbound bearer when the
+        daemon is locked down (CRIBSHEET_AUTH_TOKEN). This is the direct CLI ↔
+        daemon path; the combiner reaches the same daemon over its own
+        (separately-configured via servers.json) authenticated connection."""
         from fastmcp import Client  # lazy: keeps the package importable without it
 
-        await self._wait_ready(Client)
-        async with Client(self.url) as client:
+        tok = (os.environ.get("CRIBSHEET_AUTH_TOKEN") or "").strip()
+        if tok:
+            from fastmcp.client.transports.http import StreamableHttpTransport
+
+            return Client(
+                StreamableHttpTransport(self.url, headers={"Authorization": f"Bearer {tok}"})
+            )
+        return Client(self.url)
+
+    async def _call(self, tool: str, args: dict[str, Any]) -> Any:
+        await self._wait_ready()
+        async with self._make_client() as client:
             return _data(await client.call_tool(tool, args))
 
-    async def _wait_ready(self, Client: Any) -> None:
+    async def _wait_ready(self) -> None:
         """Poll until the daemon answers — it may still be starting if we (not
         Claude's MCP host) just launched it."""
         deadline = time.monotonic() + self.ready_timeout
         last: Exception | None = None
         while time.monotonic() < deadline:
             try:
-                async with Client(self.url) as client:
+                async with self._make_client() as client:
                     await client.ping()
                 return
             except Exception as e:  # noqa: BLE001 — any error means not-ready-yet
