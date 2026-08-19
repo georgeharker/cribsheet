@@ -1,6 +1,6 @@
 {
     "name": "@geohar/pi-cribsheet",
-    "version": "0.9.2",
+    "version": "0.10.0",
     "description": "Pi extension: run the crib (cribsheet) memory + code-index MCP server via sharedserver, inject the reach-for-crib directive, and ship the /crib recall command. Pairs with pi-mcp-adapter.",
     "type": "module",
     "main": "dist/index.js",
