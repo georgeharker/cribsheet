@@ -25,7 +25,8 @@
 // The sharedserver resolution is ported faithfully from plugins/opencode/src/index.ts.
 
 import { spawnSync } from "node:child_process"
-import { existsSync, readFileSync } from "node:fs"
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
+import { homedir } from "node:os"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import type {
@@ -158,12 +159,17 @@ export default function cribsheet(pi: ExtensionAPI): void {
     // ── /crib command: recall memory + code index, then steer the model ──
     if (wantCommand) {
         pi.registerCommand("crib", {
-            description: "Consult crib (recall memory + code index); verb: system-prompt shows the directive",
+            description:
+                "Consult crib (recall memory + code index); verbs: system-prompt (show the directive), install-config [path] (write mcp.json)",
             getArgumentCompletions: (prefix) => completeVerbs(prefix),
             handler: async (args, ctx) => {
                 const arg = args.trim()
                 if (arg === "system-prompt") {
                     showDirective(ctx, "cribsheet", CRIB_DIRECTIVE, wantInstructions)
+                    return
+                }
+                if (arg === "install-config" || arg.startsWith("install-config ")) {
+                    installConfig(ctx, arg.slice("install-config".length).trim() || undefined)
                     return
                 }
                 const topic = arg
@@ -284,11 +290,96 @@ export default function cribsheet(pi: ExtensionAPI): void {
 // Slash-command verbs. `system-prompt` shows the directive this extension injects — the
 // show-command pattern from pi-custom-system-prompt, since `before_agent_start`
 // injections are per-turn and never appear in Pi's own `/system-prompt` (base only).
-const COMMAND_VERBS = ["system-prompt"]
+const COMMAND_VERBS = ["system-prompt", "install-config"]
 function completeVerbs(prefix: string): AutocompleteItem[] | null {
     const p = prefix.trim()
     const matches = COMMAND_VERBS.filter((v) => v.startsWith(p))
     return matches.length ? matches.map((v) => ({ value: v, label: v })) : null
+}
+
+// ── /crib install-config: write the pi-mcp-adapter mcp.json entry ──
+// A USER-INVOKED write — merge the cribsheet entry into pi-mcp-adapter's mcp.json,
+// wired for crib's optional inbound bearer auth:
+//
+//   { "url": "…/mcp", "auth": "bearer", "bearerTokenEnv": "CRIBSHEET_AUTH_TOKEN" }
+//
+// - auth:"bearer" → the adapter attaches `Authorization: Bearer <token>` (it gates the
+//   header on `auth === "bearer"`, NOT on bearerTokenEnv alone), AND makes
+//   supportsOAuth() false so a wrong/missing token surfaces as an honest 401 rather
+//   than a Dynamic-Client-Registration 404.
+// - bearerTokenEnv → names the env var the token is read from at connect (nothing
+//   written to disk). The backend enforces only when CRIBSHEET_AUTH_TOKEN is set on ITS
+//   side; unset ⇒ open, the env var is unset here too so no header is sent. The one
+//   shape is correct whether or not auth is enabled. Ported from mcp-companion's
+//   /mcp-combiner install-config.
+
+function expandHome(p: string): string {
+    if (p === "~") return homedir()
+    if (p.startsWith("~/")) return join(homedir(), p.slice(2))
+    return p
+}
+
+/** The URL the adapter should reach cribsheet at — 127.0.0.1:<port>/mcp with the same
+ *  port defaults the backend serves on ($PI_CRIBSHEET_PORT, else 7732). */
+function defaultCribUrl(): string {
+    let port = DEFAULT_PORT
+    const raw = env("PI_CRIBSHEET_PORT")
+    if (raw !== undefined) {
+        const n = Number(raw)
+        if (Number.isInteger(n) && n > 0) port = n
+    }
+    return `http://127.0.0.1:${port}/mcp`
+}
+
+function installConfig(ctx: ExtensionCommandContext, pathArg?: string): void {
+    const target = pathArg ? expandHome(pathArg) : join(homedir(), ".config", "mcp", "mcp.json")
+    const key = DEFAULT_NAME
+
+    // Read + parse existing (tolerate absence; refuse to clobber non-JSON).
+    let doc: Record<string, unknown> = {}
+    if (existsSync(target)) {
+        try {
+            const parsed = JSON.parse(readFileSync(target, "utf8"))
+            if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+                ctx.ui?.notify?.(`cribsheet: ${target} is not a JSON object; not overwriting`, "error")
+                return
+            }
+            doc = parsed as Record<string, unknown>
+        } catch (e) {
+            ctx.ui?.notify?.(`cribsheet: ${target} is not valid JSON; not overwriting (${e})`, "error")
+            return
+        }
+    }
+
+    const servers = (doc.mcpServers ??= {}) as Record<string, Record<string, unknown>>
+    const prev = (servers[key] ?? {}) as Record<string, unknown>
+    const before = JSON.stringify(prev)
+    // Preserve any existing url and other fields; only ensure the auth-wiring keys.
+    servers[key] = {
+        ...prev,
+        url: typeof prev.url === "string" && prev.url ? prev.url : defaultCribUrl(),
+        auth: "bearer",
+        bearerTokenEnv: "CRIBSHEET_AUTH_TOKEN",
+    }
+    const existed = before !== "{}" && Object.keys(prev).length > 0
+    const changed = before !== JSON.stringify(servers[key])
+
+    try {
+        mkdirSync(dirname(target), { recursive: true })
+        writeFileSync(target, `${JSON.stringify(doc, null, 2)}\n`, "utf8")
+    } catch (e) {
+        ctx.ui?.notify?.(`cribsheet: failed to write ${target} (${e})`, "error")
+        return
+    }
+
+    const what = !existed ? "added" : changed ? "updated" : "already configured"
+    ctx.ui?.notify?.(
+        `cribsheet: ${what} "${key}" in ${target}\n` +
+            `Sends "Authorization: Bearer $CRIBSHEET_AUTH_TOKEN" when that env var is set ` +
+            `(auth:"bearer" both sends the token and suppresses OAuth probing). ` +
+            `Run /reload so pi-mcp-adapter re-reads mcp.json.`,
+        "info",
+    )
 }
 
 const SHOW_LIMIT = 1600
