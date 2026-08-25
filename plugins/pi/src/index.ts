@@ -36,6 +36,7 @@ import type {
     ExtensionContext,
     SessionShutdownEvent,
 } from "./pi.js"
+import { installCribPlanSource } from "./plan-source.js"
 import { resolveSharedserver } from "./sharedserver-resolve.js"
 
 const DEFAULT_PORT = 7732
@@ -136,7 +137,10 @@ function detach() {
     if (!attachment) return
     const { binary, name } = attachment
     attachment = null
-    spawnSync(binary, ["unuse", name, "--pid", String(process.pid)], { stdio: "ignore", env: process.env })
+    spawnSync(binary, ["unuse", name, "--pid", String(process.pid)], {
+        stdio: "ignore",
+        env: process.env,
+    })
 }
 
 // ── the extension ──────────────────────────────────────────────────
@@ -202,12 +206,22 @@ export default function cribsheet(pi: ExtensionAPI): void {
                     `Memory — semantic recall (crib note apropos):\n${memory}\n\n` +
                     `Code index — symbols by concept or name (crib code lookup):\n${code}`
                 pi.sendMessage(
-                    { customType: "crib-recall", content, display: true, details: { topic } },
+                    {
+                        customType: "crib-recall",
+                        content,
+                        display: true,
+                        details: { topic },
+                    },
                     { triggerTurn: true, deliverAs: "steer" },
                 )
             },
         })
     }
+
+    // The crib PLAN SOURCE emits `plan:snapshot` events for a plan sidebar. Independent of
+    // server management (it reads via the crib CLI over the in-process bus), so it runs
+    // whether or not this plugin launches the backend — register it before the early return.
+    installCribPlanSource(pi, { resolveCrib })
 
     // Combiner-served or manage=false: nothing to launch (crib runs elsewhere). The
     // directive + command above still apply.
@@ -265,7 +279,10 @@ export default function cribsheet(pi: ExtensionAPI): void {
         useArgs.push("--", crib.cmd, ...crib.args, ...serve)
 
         installProcessCleanup()
-        const result = spawnSync(binary, useArgs, { stdio: "pipe", env: process.env })
+        const result = spawnSync(binary, useArgs, {
+            stdio: "pipe",
+            env: process.env,
+        })
         if (result.error) {
             log("error", `${name}: failed to spawn sharedserver (${result.error.message})`)
             return
@@ -372,7 +389,7 @@ function installConfig(ctx: ExtensionCommandContext, pathArg?: string): void {
         return
     }
 
-    const what = !existed ? "added" : changed ? "updated" : "already configured"
+    const what = existed ? changed ? "updated" : "already configured" : "added"
     ctx.ui?.notify?.(
         `cribsheet: ${what} "${key}" in ${target}\n` +
             `Sends "Authorization: Bearer $CRIBSHEET_AUTH_TOKEN" when that env var is set ` +
