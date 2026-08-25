@@ -136,7 +136,7 @@ def _print_note(text: str, as_json: bool) -> None:
 def _emit(obj: Any, as_json: bool) -> None:
     if as_json:
         def default(o):
-            return asdict(o) if is_dataclass(o) else str(o)
+            return asdict(o) if is_dataclass(o) and not isinstance(o, type) else str(o)
         print(json.dumps(obj, indent=2, default=default))
         return
     _emit_human(obj)
@@ -1870,8 +1870,11 @@ VERBS = {
 
 
 def _cwd_of(args: Any) -> Path:
-    """The caller's project anchor: -P/--project-path overrides the actual cwd."""
-    return (Path(args.project_path).expanduser()
+    """The caller's project anchor: -P/--project-path overrides the actual cwd.
+
+    Resolve to an absolute path client-side: the daemon anchors a relative path
+    against its own cwd, so an unresolved `-P .` would silently select `default`."""
+    return (Path(args.project_path).expanduser().resolve()
             if getattr(args, "project_path", None) else Path.cwd())
 
 
