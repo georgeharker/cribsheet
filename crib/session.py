@@ -38,6 +38,7 @@ class ProjectResolution:
     first path-bearing call of a session. That decides where every later
     selector-less call lands, including writes, so it is always reported even
     though ``path`` is caller-directed and otherwise quiet."""
+
     project: str
     via: str
     session_set: bool = False
@@ -48,6 +49,23 @@ class ProjectResolution:
     # a daemon restart every chat lands exactly here, believing it still has the
     # project it adopted before the restart.
     unanchored: bool = False
+    # A caller-supplied `project_path` that no `.crib` anchors: resolution fell
+    # through to the bare default even though the caller POINTED at a repo. The
+    # complement of `unanchored` in the fallthrough (a path was given vs none was),
+    # and nearly always a missing `.crib` rather than intent — so it is surfaced on
+    # every read, not just the echo tools. On the MCP face an agent's `project_path`
+    # is always deliberate; the CLI (which auto-fills cwd) owns this advisory itself.
+    path_unmatched: bool = False
+
+    @property
+    def unlinked_message(self) -> str:
+        return (
+            f"UNLINKED PATH: the project_path you gave is not linked to a crib "
+            f"project (no `.crib` there or in a parent) — answered from "
+            f"{self.project!r}. If you meant a specific project, pass project=<name>, "
+            f"or add a `.crib` (`project: <name>`) at the repo root / run "
+            f"project_setup."
+        )
 
     @property
     def implicit(self) -> bool:
@@ -66,12 +84,15 @@ class ProjectResolution:
                 f"UNANCHORED: nothing names a project for this session — answered "
                 f"from {self.project!r}. If that is not where you meant to look, "
                 f"pass project= or project_path= once to anchor the session "
-                f"(sessions reset when the daemon restarts).")
+                f"(sessions reset when the daemon restarts)."
+            )
         if self.session_set:
             out["session_project_set"] = self.project
-            out["note"] = (f"this call also made {self.project!r} the session's "
-                           f"current project — later calls that name no project "
-                           f"will use it. `use_project` to change it.")
+            out["note"] = (
+                f"this call also made {self.project!r} the session's "
+                f"current project — later calls that name no project "
+                f"will use it. `use_project` to change it."
+            )
         return out
 
 
@@ -83,7 +104,7 @@ class SessionState:
 
 
 _SESSIONS: "WeakKeyDictionary[Any, SessionState]" = WeakKeyDictionary()
-_DEFAULT = SessionState()   # non-request contexts: in-process CLI, tests
+_DEFAULT = SessionState()  # non-request contexts: in-process CLI, tests
 
 
 def session_state() -> SessionState:
@@ -91,6 +112,7 @@ def session_state() -> SessionState:
     Returns the shared default when there's no active MCP context."""
     try:
         from fastmcp.server.dependencies import get_context
+
         session = get_context().session
     except Exception:  # noqa: BLE001 — no request context (CLI/tests)
         return _DEFAULT
@@ -101,9 +123,13 @@ def session_state() -> SessionState:
     return st
 
 
-def resolve_session_project(state: SessionState, project_arg: str | None,
-                            cwd: Any, seed: Callable[[Any], str],
-                            default: str | None = None) -> ProjectResolution:
+def resolve_session_project(
+    state: SessionState,
+    project_arg: str | None,
+    cwd: Any,
+    seed: Callable[[Any], str],
+    default: str | None = None,
+) -> ProjectResolution:
     """Pick the project for a call (DESIGN §15 precedence), reporting the branch
     (`ProjectResolution.via`) so a caller can echo how it resolved:
 
@@ -149,4 +175,6 @@ def resolve_session_project(state: SessionState, project_arg: str | None,
     #     knows NOTHING; its own startup directory is meaningless to every chat,
     #     so any answer is a guess. `unanchored` marks it, and the server layer
     #     ASKS (elicitation) or REFUSES actionably rather than answering.
-    return ProjectResolution(seed(cwd), "seed", unanchored=cwd is None)
+    return ProjectResolution(
+        seed(cwd), "seed", unanchored=cwd is None, path_unmatched=cwd is not None
+    )

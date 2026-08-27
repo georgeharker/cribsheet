@@ -82,3 +82,8 @@ select = ["E4", "E7", "E9", "F"]
 # builders in crib/cli.py and the fixture setup in tests put one logical ROW on one
 # line, and the shape is what makes those tables readable.
 ignore = ["E702"]
+
+[tool.ruff.format]
+# `ruff format` is the formatter of record (pi-lens picks it up from this table's
+# presence). Left at defaults, pinned here so the contract is explicit rather than
+# implied and the tree stays reproducibly formatted across ruff versions.

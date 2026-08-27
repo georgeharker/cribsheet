@@ -389,7 +389,7 @@ function installConfig(ctx: ExtensionCommandContext, pathArg?: string): void {
         return
     }
 
-    const what = existed ? changed ? "updated" : "already configured" : "added"
+    const what = existed ? (changed ? "updated" : "already configured") : "added"
     ctx.ui?.notify?.(
         `cribsheet: ${what} "${key}" in ${target}\n` +
             `Sends "Authorization: Bearer $CRIBSHEET_AUTH_TOKEN" when that env var is set ` +

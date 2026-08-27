@@ -28,7 +28,8 @@ def _read_content(value: str) -> str:
 
 _EDITOR_HINT = (
     "# Write the body below. Lines starting with '#' are ignored, and an empty\n"
-    "# file aborts.\n")
+    "# file aborts.\n"
+)
 
 
 def _from_editor(what: str) -> str:
@@ -41,6 +42,7 @@ def _from_editor(what: str) -> str:
     import os
     import subprocess
     import tempfile
+
     editor = os.environ.get("EDITOR") or os.environ.get("VISUAL") or "vi"
     with tempfile.NamedTemporaryFile("w+", suffix=".md", delete=False) as fh:
         fh.write(f"\n{_EDITOR_HINT}# ({what})\n")
@@ -50,15 +52,19 @@ def _from_editor(what: str) -> str:
         text = path.read_text()
     finally:
         path.unlink(missing_ok=True)
-    body = "\n".join(ln for ln in text.splitlines()
-                     if not ln.startswith("#")).strip()
+    body = "\n".join(ln for ln in text.splitlines() if not ln.startswith("#")).strip()
     if not body:
         raise SystemExit(f"crib: empty body — {what} aborted")
     return body
 
 
-def _body(value: str | None, file: str | None = None, *,
-          what: str = "body", default: str | None = None) -> str:
+def _body(
+    value: str | None,
+    file: str | None = None,
+    *,
+    what: str = "body",
+    default: str | None = None,
+) -> str:
     """Body text for a write verb, from whichever way the caller wants to give it:
     `--file <path>`, `-` (stdin), the positional argument, or — when it's omitted
     at a terminal — `$EDITOR`. Omitted with stdin NOT a tty means a pipeline: read
@@ -70,7 +76,7 @@ def _body(value: str | None, file: str | None = None, *,
     if value is not None:
         return value
     if default is not None:
-        return default              # optional body (a plan item may be title-only)
+        return default  # optional body (a plan item may be title-only)
     if sys.stdin.isatty() and sys.stdout.isatty():
         return _from_editor(what)
     return sys.stdin.read()
@@ -95,6 +101,7 @@ def _render_markdown(text: str) -> None:
     $CRIB_THEME_FILE). Falls back to raw text if the `render` extra
     (llmkit[md]) isn't installed."""
     import os
+
     try:
         from llmkit.md.render.cli import _load_theme
         from rich.console import Console
@@ -113,8 +120,9 @@ def _emit_apropos(hits: Any, as_json: bool) -> None:
         _emit(hits, True)
         return
     for h in hits:
-        loc = (f":{h.get('line_start')}-{h.get('line_end')}"
-               if h.get("line_start") else "")
+        loc = (
+            f":{h.get('line_start')}-{h.get('line_end')}" if h.get("line_start") else ""
+        )
         head = f" — {h['heading']}" if h.get("heading") else ""
         stale = "  ⚠︎ stale decision (a dep moved)" if h.get("tainted") else ""
         print(f"\n[{h.get('score', 0.0):.3f}] {h.get('relpath', '')}{loc}{head}{stale}")
@@ -135,8 +143,10 @@ def _print_note(text: str, as_json: bool) -> None:
 
 def _emit(obj: Any, as_json: bool) -> None:
     if as_json:
+
         def default(o):
             return asdict(o) if is_dataclass(o) and not isinstance(o, type) else str(o)
+
         print(json.dumps(obj, indent=2, default=default))
         return
     _emit_human(obj)
@@ -155,33 +165,50 @@ def _emit_rebuilding_note(hits: Any) -> None:
     """One line when a hit says its project is still being re-embedded after a store
     wipe (embedder change) — otherwise a short result set reads as "that's all there
     is" instead of "the index isn't back yet"."""
+
     def _flag(h: Any) -> bool:
-        return bool(h.get("index_rebuilding") if isinstance(h, dict)
-                    else getattr(h, "index_rebuilding", False))
+        return bool(
+            h.get("index_rebuilding")
+            if isinstance(h, dict)
+            else getattr(h, "index_rebuilding", False)
+        )
+
     if isinstance(hits, list) and any(_flag(h) for h in hits):
-        print("⚠︎ index rebuilding: this project is still re-embedding "
-              "(see `crib status`) — results are incomplete")
+        print(
+            "⚠︎ index rebuilding: this project is still re-embedding "
+            "(see `crib status`) — results are incomplete"
+        )
 
 
 def _emit_human_one(item: Any) -> None:
     from .app import LookupHit
+
     # Normalize a daemon's dict-shaped lookup hit to the same fields as the
     # in-process LookupHit dataclass so both render identically.
     if isinstance(item, dict) and "score" in item and "snippet" in item:
         item = LookupHit(
-            project=item.get("project", ""), relpath=item.get("relpath", ""),
-            heading=item.get("heading", ""), title=item.get("title", ""),
-            snippet=item.get("snippet", ""), score=item.get("score", 0.0),
-            line_start=item.get("line_start"), line_end=item.get("line_end"),
+            project=item.get("project", ""),
+            relpath=item.get("relpath", ""),
+            heading=item.get("heading", ""),
+            title=item.get("title", ""),
+            snippet=item.get("snippet", ""),
+            score=item.get("score", 0.0),
+            line_start=item.get("line_start"),
+            line_end=item.get("line_end"),
             index_rebuilding=bool(item.get("index_rebuilding")),
-            tainted=bool(item.get("tainted")))
+            tainted=bool(item.get("tainted")),
+        )
     if isinstance(item, LookupHit):
         loc = f":{item.line_start}-{item.line_end}" if item.line_start else ""
         head = f"  {item.heading}" if item.heading else ""
         first = item.snippet.splitlines()[0][:100] if item.snippet else ""
         # a stale DECISION says so on the hit itself: the moment you retrieve it is
         # the moment the warning can still change what you do with it
-        stale = f"  {_TAINT} stale (a dep moved — `crib design read`)" if item.tainted else ""
+        stale = (
+            f"  {_TAINT} stale (a dep moved — `crib design read`)"
+            if item.tainted
+            else ""
+        )
         print(f"[{item.score:.3f}] {item.relpath}{loc}{head}{stale}\n    {first}")
     elif isinstance(item, dict) and ("relpath" in item or "from" in item):
         _emit_write_result(item)
@@ -193,18 +220,20 @@ def _emit_human_one(item: Any) -> None:
 
 def _emit_write_result(item: dict) -> None:
     """Echo a write/move result so the target namespace is never silent."""
-    if "from" in item:                          # move
+    if "from" in item:  # move
         f, t = item["from"], item["to"]
         print(f"moved  {f['project']}/{f['relpath']}  →  {t['project']}/{t['relpath']}")
-    else:                                        # store/append/edit/forget
+    else:  # store/append/edit/forget
         proj, rel = item.get("project", "?"), item.get("relpath", "")
         verb = "removed" if item.get("removed") else "→ stored in"
         print(f"{verb}  {proj}/{rel}")
     if item.get("created"):
         print(f"  (created project '{item.get('project') or item['to']['project']}')")
     for s in item.get("similar") or []:
-        print(f"  ⚠︎ similar [{s['score']:.3f}]: {s['relpath']}"
-              + (f" — {s['heading']}" if s.get("heading") else ""))
+        print(
+            f"  ⚠︎ similar [{s['score']:.3f}]: {s['relpath']}"
+            + (f" — {s['heading']}" if s.get("heading") else "")
+        )
 
 
 # ── how a symbol looks, in one place ─────────────────────────────────────────
@@ -212,11 +241,13 @@ def _emit_write_result(item: dict) -> None:
 # renders as meant eight consistent edits. The atoms are shared; `render_symbol`
 # composes the shapes that actually differ.
 
+
 def _sym_name(d: dict) -> str:
     """The symbol's rendered name. `id` where the payload is a graph node (it may be
     cross-project or external), the qualified name everywhere else."""
-    return str(d.get("fqn") or d.get("id") or d.get("symbol_ref")
-               or d.get("symbol") or "")
+    return str(
+        d.get("fqn") or d.get("id") or d.get("symbol_ref") or d.get("symbol") or ""
+    )
 
 
 def _sym_loc(d: dict, gap: str = "  ") -> str:
@@ -244,10 +275,10 @@ def _sym_tags(d: dict, ascii_mode: bool = False) -> str:
 def render_symbol(d: dict, style: str = "inline", ascii_mode: bool = False) -> str:
     """One symbol, rendered for `style`:
 
-      `inline` — name, kind, location (xref, dossier)
-      `title`  — name and kind only, for a header that appends its own context
-      `hit`    — a ranked-list row (kind column, then name and location)
-      `tree`   — a graph row: name, flags, location
+    `inline` — name, kind, location (xref, dossier)
+    `title`  — name and kind only, for a header that appends its own context
+    `hit`    — a ranked-list row (kind column, then name and location)
+    `tree`   — a graph row: name, flags, location
     """
     name, kind = _sym_name(d), d.get("kind", "")
     if style == "title":
@@ -266,27 +297,42 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
         return
     # implicit-resolution diagnostic (server echoes it on an empty sticky/seeded
     # result — see server._echo_list); render the note, not a blank hit row.
-    if isinstance(data, list) and len(data) == 1 and isinstance(data[0], dict) \
-            and data[0].get("note") and "resolved_project" in data[0]:
-        print(f"(0 matches) {data[0]['note']}"); return
+    if (
+        isinstance(data, list)
+        and len(data) == 1
+        and isinstance(data[0], dict)
+        and data[0].get("note")
+        and "resolved_project" in data[0]
+    ):
+        print(f"(0 matches) {data[0]['note']}")
+        return
     if verb == "code-index":
         if not isinstance(data, dict):
-            print(data); return
+            print(data)
+            return
         if data.get("skipped"):
-            print(f"{data.get('file', '')}: {data['skipped']}"); return
-        err = (f"  (descriptions_error: {data['descriptions_error']})"
-               if data.get("descriptions_error") else "")
-        print(f"{data.get('file', '')}: {data.get('symbols', 0)} symbols, "
-              f"{data.get('described', 0)} described{err}")
+            print(f"{data.get('file', '')}: {data['skipped']}")
+            return
+        err = (
+            f"  (descriptions_error: {data['descriptions_error']})"
+            if data.get("descriptions_error")
+            else ""
+        )
+        print(
+            f"{data.get('file', '')}: {data.get('symbols', 0)} symbols, "
+            f"{data.get('described', 0)} described{err}"
+        )
         if data.get("store"):
             print(f"  → {data['store']}")
     elif verb == "code-lookup":
         if not data:
-            print("(no matches — is this project code-indexed?)"); return
+            print("(no matches — is this project code-indexed?)")
+            return
         for h in data:
-            refs = len(h.get('references') or [])
-            cg = (f"  {len(h.get('called_by') or [])}←/{len(h.get('calls') or [])}→"
-                  + (f"/{refs}⇐" if refs else ""))
+            refs = len(h.get("references") or [])
+            cg = f"  {len(h.get('called_by') or [])}←/{len(h.get('calls') or [])}→" + (
+                f"/{refs}⇐" if refs else ""
+            )
             print(f"[{h.get('rank', '?')}] {render_symbol(h, 'hit')}{cg}")
             if h.get("description"):
                 print(f"      {h['description']}")
@@ -294,14 +340,17 @@ def _emit_code(data: Any, verb: str, as_json: bool) -> None:
                 _print_learning(h["learning"], "      ")
     elif verb == "code-xref":
         if not data:
-            print("(symbol not found in the symbol_index)"); return
+            print("(symbol not found in the symbol_index)")
+            return
         for e in data:
             print(render_symbol(e))
             for c in e.get("called_by") or []:
                 print(f"   ← {c}")
             for c in e.get("calls") or []:
                 print(f"   → {c}")
-            for c in e.get("references") or []:      # ⇐ = referenced by (broader than a call)
+            for c in (
+                e.get("references") or []
+            ):  # ⇐ = referenced by (broader than a call)
                 print(f"   ⇐ {c}")
             if e.get("learning"):
                 _print_learning(e["learning"], "   ")
@@ -316,8 +365,10 @@ def _emit_status(d: Any, as_json: bool) -> None:
     print(f"{'store':10} {d.get('store')}  embed: {d.get('embed_model')}")
     g = d.get("git") or {}
     if g.get("enabled"):
-        parts = [g.get("remote") or "no remote",
-                 "clean" if not g.get("dirty") else f"{g['dirty']} uncommitted"]
+        parts = [
+            g.get("remote") or "no remote",
+            "clean" if not g.get("dirty") else f"{g['dirty']} uncommitted",
+        ]
         if "ahead" in g:
             parts.append(f"↑{g['ahead']} ↓{g['behind']}")
         print(f"{'git':10} " + "  ".join(parts))
@@ -328,15 +379,20 @@ def _emit_status(d: Any, as_json: bool) -> None:
     for s in d.get("lsp_sessions") or []:
         state = "busy" if s.get("busy") else f"idle {s.get('idle_s', 0):.0f}s"
         alive = "" if s.get("alive") else "  DEAD"
-        print(f"{'lsp':10} {s.get('server')}  {s.get('root')}  "
-              f"pid {s.get('pid')}  {state}{alive}")
+        print(
+            f"{'lsp':10} {s.get('server')}  {s.get('root')}  "
+            f"pid {s.get('pid')}  {state}{alive}"
+        )
     if d.get("reconciling"):
         why = f" ({d['reconcile_reason']})" if d.get("reconcile_reason") else ""
-        print(f"{'reconcile':10} in progress{why}: "
-              f"{d.get('reconcile_remaining', '?')} project(s) to go")
+        print(
+            f"{'reconcile':10} in progress{why}: "
+            f"{d.get('reconcile_remaining', '?')} project(s) to go"
+        )
     if d.get("index_rebuilding"):
-        print(f"{'rebuilding':10} not re-embedded yet: "
-              f"{', '.join(d['index_rebuilding'])}")
+        print(
+            f"{'rebuilding':10} not re-embedded yet: {', '.join(d['index_rebuilding'])}"
+        )
     for proj, sw in (d.get("sweeps") or {}).items():
         print(f"{'sweep':10} {proj}: {sw.get('done', 0)}/{sw.get('total', 0)} files")
     for proj, files in (d.get("indexing") or {}).items():
@@ -348,12 +404,17 @@ def _emit_status(d: Any, as_json: bool) -> None:
         for p in projs:
             # stale decisions ride along on the inventory line: an ambient count
             # nobody has to think to ask for (`crib design check` says which)
-            stale = (f"  ⚠︎ {p['design_tainted']} stale decision(s)"
-                     if p.get("design_tainted") else "")
-            print(f"  {p['project']:{w}}  notes {p['notes']:4}  "
-                  f"designs {p.get('designs', 0):3}  plans {p.get('plans', 0):3}  "
-                  f"docs {p['doc_chunks']:4}  symbols {p['symbols']:5}  "
-                  f"learnings {p['learnings']:3}{stale}")
+            stale = (
+                f"  ⚠︎ {p['design_tainted']} stale decision(s)"
+                if p.get("design_tainted")
+                else ""
+            )
+            print(
+                f"  {p['project']:{w}}  notes {p['notes']:4}  "
+                f"designs {p.get('designs', 0):3}  plans {p.get('plans', 0):3}  "
+                f"docs {p['doc_chunks']:4}  symbols {p['symbols']:5}  "
+                f"learnings {p['learnings']:3}{stale}"
+            )
 
 
 def _emit_projects(rows: Any, as_json: bool) -> None:
@@ -361,10 +422,12 @@ def _emit_projects(rows: Any, as_json: bool) -> None:
     a repo — and loudly when that repo isn't on this machine, since such a project
     reads as empty everywhere else."""
     if as_json:
-        print(json.dumps(rows, indent=2, default=str)); return
+        print(json.dumps(rows, indent=2, default=str))
+        return
     for r in rows or []:
         if not isinstance(r, dict):
-            print(r); continue
+            print(r)
+            continue
         line = r.get("project", "")
         if r.get("store_root"):
             line += f"   in-repo: {r['store_root']}"
@@ -376,40 +439,58 @@ def _emit_projects(rows: Any, as_json: bool) -> None:
 def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
     """Human summary for `crib project <verb>`."""
     if as_json:
-        print(json.dumps(d, indent=2, default=str)); return
+        print(json.dumps(d, indent=2, default=str))
+        return
     if not isinstance(d, dict):
-        print(d); return
+        print(d)
+        return
     proj = d.get("project", "")
     if verb == "migrate":
         if not d.get("changed") and not d.get("skipped"):
-            print(f"{proj}: layout already current — nothing to migrate"); return
-        print(f"{proj}: moved {len(d.get('moved') or [])} facet note(s) to the "
-              f"sibling pillar stores; requalified "
-              f"{len(d.get('refs_rewritten') or [])} citation(s)")
+            print(f"{proj}: layout already current — nothing to migrate")
+            return
+        print(
+            f"{proj}: moved {len(d.get('moved') or [])} facet note(s) to the "
+            f"sibling pillar stores; requalified "
+            f"{len(d.get('refs_rewritten') or [])} citation(s)"
+        )
         for s in d.get("skipped") or []:
-            print(f"  ! collision left in place: {s['from']} → {s['to']} "
-                  f"(resolve by hand, re-run migrate)")
+            print(
+                f"  ! collision left in place: {s['from']} → {s['to']} "
+                f"(resolve by hand, re-run migrate)"
+            )
         rec = d.get("reconciled") or {}
-        print(f"  reconcile: {rec.get('changed', 0)} changed, "
-              f"{rec.get('removed', 0)} removed")
+        print(
+            f"  reconcile: {rec.get('changed', 0)} changed, "
+            f"{rec.get('removed', 0)} removed"
+        )
         return
     if verb in ("adopt", "release"):
         if not d.get("changed"):
-            print(d.get("message") or f"{proj}: nothing to do"); return
+            print(d.get("message") or f"{proj}: nothing to do")
+            return
         where = ("→ " + d["store"]) if verb == "adopt" else "→ the global store"
-        print(f"{proj}: moved {d.get('notes_moved', 0)} note(s) + "
-              f"{d.get('versions_moved', 0)} version(s) {where}")
+        print(
+            f"{proj}: moved {d.get('notes_moved', 0)} note(s) + "
+            f"{d.get('versions_moved', 0)} version(s) {where}"
+        )
         if verb == "adopt":
-            print(f"  recorded as {d.get('store_root', '')}  "
-                  f"(commit the notes with this repo)")
+            print(
+                f"  recorded as {d.get('store_root', '')}  "
+                f"(commit the notes with this repo)"
+            )
         rec = d.get("reconciled") or {}
-        print(f"  reconcile: {rec.get('changed', 0)} changed, "
-              f"{rec.get('removed', 0)} removed  (0/0 = ids unchanged, as expected)")
+        print(
+            f"  reconcile: {rec.get('changed', 0)} changed, "
+            f"{rec.get('removed', 0)} removed  (0/0 = ids unchanged, as expected)"
+        )
         return
     if verb == "status":
         state = "indexed" if d.get("indexed") else "NOT indexed"
-        print(f"{proj}: {state} — {d.get('symbols', 0)} symbols "
-              f"in {d.get('files', 0)} files")
+        print(
+            f"{proj}: {state} — {d.get('symbols', 0)} symbols "
+            f"in {d.get('files', 0)} files"
+        )
         kinds = d.get("kinds") or {}
         if kinds:
             print("  " + ", ".join(f"{k}:{n}" for k, n in sorted(kinds.items())))
@@ -417,14 +498,22 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
             print(f"  paths: {', '.join(d['paths'])}")
         return
     if verb == "forget":
-        print(f"{proj}: cleared {d.get('symbols_removed', 0)} symbols"
-              + (f", {d['learnings_removed']} learnings" if d.get("learnings_removed") else ""))
+        print(
+            f"{proj}: cleared {d.get('symbols_removed', 0)} symbols"
+            + (
+                f", {d['learnings_removed']} learnings"
+                if d.get("learnings_removed")
+                else ""
+            )
+        )
         return
     # setup / index
     made = "  (created .crib)" if d.get("crib_created") else ""
     docs = f", {d['docs_imported']} docs imported" if d.get("docs_imported") else ""
-    print(f"{proj}: indexed {d.get('files_indexed', 0)}/{d.get('files_seen', 0)} files, "
-          f"{d.get('symbols', 0)} symbols, {d.get('described', 0)} described{docs}{made}")
+    print(
+        f"{proj}: indexed {d.get('files_indexed', 0)}/{d.get('files_seen', 0)} files, "
+        f"{d.get('symbols', 0)} symbols, {d.get('described', 0)} described{docs}{made}"
+    )
     errs = d.get("errors") or []
     if errs:
         print(f"  {len(errs)} file(s) errored (first: {errs[0].get('file', '')})")
@@ -433,9 +522,11 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
 def _emit_code_dossier(d: Any, as_json: bool) -> None:
     """Full single-symbol view: header + description + annotated neighbours + learning."""
     if as_json:
-        print(json.dumps(d, indent=2, default=str)); return
+        print(json.dumps(d, indent=2, default=str))
+        return
     if not d or not d.get("symbol_ref"):
-        print("(symbol not found — is this project code-indexed?)"); return
+        print("(symbol not found — is this project code-indexed?)")
+        return
     print(render_symbol(d))
     _emit_resolved(d)
     if d.get("signature"):
@@ -464,28 +555,37 @@ def _print_learning(learning: dict, indent: str) -> None:
 def _emit_code_learning(data: Any, verb: str, as_json: bool) -> None:
     """Confirmation/print for the symbol-learning verbs (append/edit/forget/read)."""
     if as_json:
-        print(json.dumps(data, indent=2, default=str)); return
+        print(json.dumps(data, indent=2, default=str))
+        return
     sym, rel = data.get("symbol", ""), data.get("relpath", "")
     if verb == "learning-read":
         if not data.get("found"):
-            print(f"(no learning for {sym})"); return
-        print(f"# {sym}  [{rel}]\n{(data.get('body') or '').strip()}"); return
-    if verb == "learning-forget":
-        print(f"forgot {sym}  ({rel})"); return
-    if verb == "learning-reaffirm":
-        print(f"reaffirmed {sym} (cleared ⚠︎ stale)  → {rel}"); return
-    if verb == "learning-add":
-        print(f"{'created' if data.get('created') else 'appended'} learning: {sym}  → {rel}")
+            print(f"(no learning for {sym})")
+            return
+        print(f"# {sym}  [{rel}]\n{(data.get('body') or '').strip()}")
         return
-    print(f"edited learning: {sym}  → {rel}")   # learning-edit
+    if verb == "learning-forget":
+        print(f"forgot {sym}  ({rel})")
+        return
+    if verb == "learning-reaffirm":
+        print(f"reaffirmed {sym} (cleared ⚠︎ stale)  → {rel}")
+        return
+    if verb == "learning-add":
+        print(
+            f"{'created' if data.get('created') else 'appended'} learning: {sym}  → {rel}"
+        )
+        return
+    print(f"edited learning: {sym}  → {rel}")  # learning-edit
 
 
 def _emit_code_report(rows: Any, as_json: bool) -> None:
     """Health report for attached learnings (ok/moved/orphan)."""
     if as_json:
-        print(json.dumps(rows, indent=2, default=str)); return
+        print(json.dumps(rows, indent=2, default=str))
+        return
     if not rows:
-        print("(no learnings recorded)"); return
+        print("(no learnings recorded)")
+        return
     icon = {"ok": "·", "moved": "~", "orphan": "✗"}
     for r in rows:
         st = r.get("status", "")
@@ -497,24 +597,30 @@ def _emit_code_report(rows: Any, as_json: bool) -> None:
         print(line)
     bad = sum(1 for r in rows if r.get("status") != "ok")
     if bad:
-        print(f"\n{bad} need attention — `crib learning rehome <fqn>` for suggestions, "
-              f"or `crib learning forget <fqn>`")
+        print(
+            f"\n{bad} need attention — `crib learning rehome <fqn>` for suggestions, "
+            f"or `crib learning forget <fqn>`"
+        )
 
 
 def _emit_code_rehome(data: Any, as_json: bool) -> None:
     """Ranked rehome candidates (no target) or a move confirmation."""
     if as_json:
-        print(json.dumps(data, indent=2, default=str)); return
+        print(json.dumps(data, indent=2, default=str))
+        return
     if "candidates" in data:
         print(f"rehome {data.get('old', '')} → candidates:")
         cands = data.get("candidates") or []
         if not cands:
-            print("  (none — `crib learning forget` if it's truly gone)"); return
+            print("  (none — `crib learning forget` if it's truly gone)")
+            return
         for c in cands:
             print(f"  [{c.get('score', '')}] {_sym_name(c)}   {c.get('file', '')}")
         print(f"\nconfirm: crib learning rehome {data.get('old', '')} <symbol>")
         return
-    print(f"rehomed {data.get('old', '')} → {data.get('new', '')}  ({data.get('relpath', '')})")
+    print(
+        f"rehomed {data.get('old', '')} → {data.get('new', '')}  ({data.get('relpath', '')})"
+    )
 
 
 _TAINT = "⚠︎"
@@ -525,8 +631,9 @@ _PROPOSED = "?"
 
 def _facet_flags(row: Any) -> str:
     """The glyphs a design row carries — stale, and/or awaiting promotion."""
-    return ((f" {_TAINT}" if row.get("tainted") else "")
-            + (f" {_PROPOSED}" if row.get("status") == "proposed" else ""))
+    return (f" {_TAINT}" if row.get("tainted") else "") + (
+        f" {_PROPOSED}" if row.get("status") == "proposed" else ""
+    )
 
 
 def _tree_glyphs(ascii_mode: bool) -> tuple[str, str, str, str]:
@@ -541,10 +648,12 @@ def _emit_design_tree(data: Any, args: Any) -> None:
     """Design dependency tree, in the `code graph` pstree style. `↑` marks a DAG
     node already shown, `⚠︎` a tainted one, `✗` a dangling dep id."""
     if getattr(args, "json", False):
-        print(json.dumps(data, indent=2, default=str)); return
+        print(json.dumps(data, indent=2, default=str))
+        return
     roots = (data or {}).get("roots") or []
     if not roots:
-        print("(no design decisions — `crib design add <title> <body>`)"); return
+        print("(no design decisions — `crib design add <title> <body>`)")
+        return
     ascii_mode = getattr(args, "ascii", False)
     branch, last, vert, blank = _tree_glyphs(ascii_mode)
     arrow = ">" if ascii_mode else ("▸" if data.get("direction") == "deps" else "◂")
@@ -553,11 +662,18 @@ def _emit_design_tree(data: Any, args: Any) -> None:
     def label(n: dict) -> str:
         if n.get("missing"):
             return f"{n.get('title', '')}  (dangling id)"
-        flags = ((f" {taint}" if n.get("tainted") else "")
-                 + (f" {_PROPOSED}" if n.get("status") == "proposed" else "")
-                 + (" ↑" if n.get("repeat") else ""))
-        state = ("  [superseded]" if n.get("status") == "superseded"
-                 else "  [proposed]" if n.get("status") == "proposed" else "")
+        flags = (
+            (f" {taint}" if n.get("tainted") else "")
+            + (f" {_PROPOSED}" if n.get("status") == "proposed" else "")
+            + (" ↑" if n.get("repeat") else "")
+        )
+        state = (
+            "  [superseded]"
+            if n.get("status") == "superseded"
+            else "  [proposed]"
+            if n.get("status") == "proposed"
+            else ""
+        )
         return f"{n.get('title', '')}{state}{flags}   {n.get('relpath', '')}"
 
     def render(node: dict, prefix: str) -> None:
@@ -576,7 +692,8 @@ def _emit_design_check(data: Any, args: Any) -> None:
     """Tainted decisions: the chain that explains each, WHAT changed and when, and
     the verb to run next — a flag with no prescribed follow-up is a dead end."""
     if getattr(args, "json", False):
-        print(json.dumps(data, indent=2, default=str)); return
+        print(json.dumps(data, indent=2, default=str))
+        return
     rows = (data or {}).get("tainted") or []
     proposed = (data or {}).get("proposed") or []
     for cyc in (data or {}).get("cycles") or []:
@@ -585,7 +702,8 @@ def _emit_design_check(data: Any, args: Any) -> None:
         print(f"{_PROPOSED} {p.get('title', '')}   {p.get('relpath', '')}")
         print(f"    → {p.get('next', '')}")
     if not rows:
-        print(f"✓ {data.get('designs', 0)} decision(s), none stale"); return
+        print(f"✓ {data.get('designs', 0)} decision(s), none stale")
+        return
     for r in rows:
         print(f"{_TAINT} {r.get('title', '')}   {r.get('relpath', '')}")
         for c in r.get("causes") or []:
@@ -600,48 +718,66 @@ def _emit_design_check(data: Any, args: Any) -> None:
             if len(p.get("chain") or []) > 1:
                 print(f"      via {chain}")
         print(f"    → {r.get('next', '')}")
-    print(f"\n{len(rows)} of {data.get('designs', 0)} decision(s) need re-reading — "
-          f"`crib design read <ref>`, then `crib design reaffirm <ref>` "
-          f"(taint means a dep moved, not that the decision is wrong)")
+    print(
+        f"\n{len(rows)} of {data.get('designs', 0)} decision(s) need re-reading — "
+        f"`crib design read <ref>`, then `crib design reaffirm <ref>` "
+        f"(taint means a dep moved, not that the decision is wrong)"
+    )
 
 
 def _emit_facet_hits(hits: Any, args: Any) -> None:
     """`design lookup` / `plan lookup`: a locator line per hit carrying the facet
     state that decides whether to trust it — status, taint, edge counts."""
     if getattr(args, "json", False):
-        print(json.dumps(hits, indent=2, default=str)); return
+        print(json.dumps(hits, indent=2, default=str))
+        return
     if not hits:
-        print("(no matches)"); return
+        print("(no matches)")
+        return
     for h in hits:
-        loc = (f":{h.get('line_start')}-{h.get('line_end')}"
-               if h.get("line_start") else "")
+        loc = (
+            f":{h.get('line_start')}-{h.get('line_end')}" if h.get("line_start") else ""
+        )
         st = f"  [{h['status']}]" if h.get("status") else ""
-        edges = (f"  {h.get('deps', 0)}▸/{h.get('dependents', 0)}◂"
-                 if "deps" in h else "")
+        edges = (
+            f"  {h.get('deps', 0)}▸/{h.get('dependents', 0)}◂" if "deps" in h else ""
+        )
         stale = f"  {_TAINT} stale" if h.get("tainted") else ""
-        print(f"[{h.get('score', 0.0):.3f}] {h.get('title', '')}{st}{edges}{stale}"
-              f"   {h.get('relpath', '')}{loc}")
+        print(
+            f"[{h.get('score', 0.0):.3f}] {h.get('title', '')}{st}{edges}{stale}"
+            f"   {h.get('relpath', '')}{loc}"
+        )
         first = (h.get("snippet") or "").splitlines()
         if first:
             print(f"    {first[0][:100]}")
     if any(h.get("tainted") for h in hits):
-        print(f"\n{_TAINT} a stale decision is one whose ground moved and nobody "
-              f"re-read — `crib design read <ref>` before relying on it")
+        print(
+            f"\n{_TAINT} a stale decision is one whose ground moved and nobody "
+            f"re-read — `crib design read <ref>` before relying on it"
+        )
 
 
 def _emit_design_read(data: Any, args: Any) -> None:
     """A decision's dossier: header, taint, body, then the annotated edges — the
     `code dossier` layout, so the two read the same way."""
     if getattr(args, "json", False):
-        print(json.dumps(data, indent=2, default=str)); return
+        print(json.dumps(data, indent=2, default=str))
+        return
     if not isinstance(data, dict):
-        print(data); return
-    state = ("  [superseded]" if data.get("status") == "superseded"
-             else f"  [proposed {_PROPOSED}]" if data.get("status") == "proposed"
-             else "")
+        print(data)
+        return
+    state = (
+        "  [superseded]"
+        if data.get("status") == "superseded"
+        else f"  [proposed {_PROPOSED}]"
+        if data.get("status") == "proposed"
+        else ""
+    )
     flag = f"  {_TAINT} STALE" if data.get("tainted") else ""
-    print(f"{data.get('title', '')}{state}{flag}   {data.get('relpath', '')}"
-          f"   (updated {data.get('updated', '?')})")
+    print(
+        f"{data.get('title', '')}{state}{flag}   {data.get('relpath', '')}"
+        f"   (updated {data.get('updated', '?')})"
+    )
     for c in data.get("causes") or []:
         print(f"  • [{c.get('change_kind', '?')}] {c.get('reason', '')}")
     for p in data.get("paths") or []:
@@ -658,8 +794,10 @@ def _emit_design_read(data: Any, args: Any) -> None:
         print(f"  {arrow}")
         for r in rows:
             st = f"  [{r['status']}]" if r.get("status") else ""
-            print(f"     {r.get('title', '')}{st}{_facet_flags(r)}"
-                  f"   {r.get('relpath', '')}")
+            print(
+                f"     {r.get('title', '')}{st}{_facet_flags(r)}"
+                f"   {r.get('relpath', '')}"
+            )
     # attribution: where this came FROM, and whether that passage still reads
     # the way it did (`changed`/`missing` are what taints it)
     sources = data.get("sources") or []
@@ -673,37 +811,56 @@ def _emit_design_read(data: Any, args: Any) -> None:
 def _emit_design_list(data: Any, args: Any) -> None:
     """Flat decision table: taint, title, edge counts, relpath."""
     if getattr(args, "json", False):
-        print(json.dumps(data, indent=2, default=str)); return
+        print(json.dumps(data, indent=2, default=str))
+        return
     for cyc in (data or {}).get("cycles") or []:
         print(f"✗ dependency CYCLE: {' → '.join(cyc)}")
     rows = (data or {}).get("designs") or []
     if not rows:
-        print("(no decisions"
-              + (" are stale — ✓)" if data.get("filtered")
-                 else " — `crib design add <title>`)"))
+        print(
+            "(no decisions"
+            + (
+                " are stale — ✓)"
+                if data.get("filtered")
+                else " — `crib design add <title>`)"
+            )
+        )
         return
     for r in rows:
-        mark = (_TAINT if r.get("tainted")
-                else _PROPOSED if r.get("status") == "proposed" else " ")
+        mark = (
+            _TAINT
+            if r.get("tainted")
+            else _PROPOSED
+            if r.get("status") == "proposed"
+            else " "
+        )
         sup = "  [superseded]" if r.get("status") == "superseded" else ""
         cited = f"   §{r['sources']}" if r.get("sources") else ""
-        print(f"{mark} {r.get('title', '')}{sup}"
-              f"   {r.get('deps', 0)}▸/{r.get('dependents', 0)}◂{cited}"
-              f"   {r.get('relpath', '')}")
+        print(
+            f"{mark} {r.get('title', '')}{sup}"
+            f"   {r.get('deps', 0)}▸/{r.get('dependents', 0)}◂{cited}"
+            f"   {r.get('relpath', '')}"
+        )
     stale, proposed = data.get("tainted", 0), data.get("proposed", 0)
     tail = ""
     if not data.get("filtered"):
-        tail = ((f", {stale} stale — `crib design check`" if stale else "")
-                + (f", {proposed} proposed {_PROPOSED} — `crib design promote <ref>`"
-                   if proposed else ""))
+        tail = (f", {stale} stale — `crib design check`" if stale else "") + (
+            f", {proposed} proposed {_PROPOSED} — `crib design promote <ref>`"
+            if proposed
+            else ""
+        )
     print(f"\n{len(rows)} of {data.get('total', 0)} decision(s){tail}")
 
 
 _PLAN_GLYPH = {"todo": "·", "in-progress": "▶", "done": "✓", "verified": "✓✓"}
 
 
-_GROUP_HEADS = {"in-progress": "in progress", "ready": "ready",
-                "blocked": "blocked", "done": "done"}
+_GROUP_HEADS = {
+    "in-progress": "in progress",
+    "ready": "ready",
+    "blocked": "blocked",
+    "done": "done",
+}
 
 
 def _emit_plan_list(data: Any, args: Any) -> None:
@@ -711,13 +868,16 @@ def _emit_plan_list(data: Any, args: Any) -> None:
     naming what it waits on), then done — not a graph dump. `⊘` marks a
     derived-blocked item."""
     if getattr(args, "json", False):
-        print(json.dumps(data, indent=2, default=str)); return
+        print(json.dumps(data, indent=2, default=str))
+        return
     for cyc in (data or {}).get("cycles") or []:
         print(f"✗ dependency CYCLE: {' → '.join(cyc)}")
     items = (data or {}).get("items") or []
     if not items:
-        print("(nothing to do — `crib plan add <title>`"
-              + (", `--all` shows finished items)" if data.get("hidden") else ")"))
+        print(
+            "(nothing to do — `crib plan add <title>`"
+            + (", `--all` shows finished items)" if data.get("hidden") else ")")
+        )
         return
     group = None
     for it in items:
@@ -725,8 +885,10 @@ def _emit_plan_list(data: Any, args: Any) -> None:
             group = it["group"]
             print(f"\n{_GROUP_HEADS.get(group, group)}:")
         mark = "⊘" if it.get("blocked") else _PLAN_GLYPH.get(it.get("status", ""), "·")
-        print(f"{mark:2} {it.get('status', ''):12} {it.get('title', '')}"
-              f"   {it.get('relpath', '')}")
+        print(
+            f"{mark:2} {it.get('status', ''):12} {it.get('title', '')}"
+            f"   {it.get('relpath', '')}"
+        )
         for b in it.get("blocked_by") or []:
             ref = b.get("ref") or b.get("title", "") if isinstance(b, dict) else b
             st = f" ({b['status']})" if isinstance(b, dict) and b.get("status") else ""
@@ -737,7 +899,7 @@ def _emit_plan_list(data: Any, args: Any) -> None:
         # a finished item whose source moved: reported, never re-opened
         for why in it.get("revisit") or []:
             print(f"     {_TAINT} revisit: {why}")
-    for it in items:                      # the per-item loop the ready ones carry
+    for it in items:  # the per-item loop the ready ones carry
         if it.get("next"):
             print(f"\n→ {it['next']}")
             break
@@ -750,15 +912,19 @@ def _emit_design_import(data: Any, args: Any) -> None:
     the verb wrote nothing and ran no model), then the citable sections and
     whatever already draws on this doc."""
     if getattr(args, "json", False):
-        print(json.dumps(data, indent=2, default=str)); return
+        print(json.dumps(data, indent=2, default=str))
+        return
     if not isinstance(data, dict):
-        print(data); return
+        print(data)
+        return
     print(f"{data.get('relpath', '')}   ({data.get('path', '')})\n")
     print(data.get("instruction", "").rstrip())
     existing = data.get("existing") or []
     if existing:
-        print(f"\nalready drawing on this doc ({len(existing)}) — extend these "
-              f"rather than forking:")
+        print(
+            f"\nalready drawing on this doc ({len(existing)}) — extend these "
+            f"rather than forking:"
+        )
         for e in existing:
             print(f"  · {e.get('title', '')}   {e.get('relpath', '')}")
             for c in e.get("cites") or []:
@@ -775,21 +941,27 @@ def _emit_design_write(data: Any, args: Any) -> None:
     """Confirmation for the design/plan write verbs — and, crucially, the CAUSAL
     CONSEQUENCES the verb reports: what the write just tainted, or unblocked."""
     if getattr(args, "json", False):
-        print(json.dumps(data, indent=2, default=str)); return
+        print(json.dumps(data, indent=2, default=str))
+        return
     if not isinstance(data, dict):
-        print(data); return
-    if data.get("removed") is not None:          # forget
+        print(data)
+        return
+    if data.get("removed") is not None:  # forget
         print(f"removed  {data.get('project', '')}/{data.get('relpath', '')}")
         for d in data.get("dependents") or []:
-            print(f"  {_TAINT} now tainted: {d.get('title', '')}  ({d.get('relpath', '')})")
+            print(
+                f"  {_TAINT} now tainted: {d.get('title', '')}  ({d.get('relpath', '')})"
+            )
         return
-    if data.get("added", 0) > 1:                 # a plan batch
+    if data.get("added", 0) > 1:  # a plan batch
         print(f"→ {data.get('project', '')}: added {data['added']} item(s)")
         for it in data.get("items") or []:
             print(f"   · {it.get('title', '')}   {it.get('relpath', '')}")
         return
-    print(f"→ {data.get('project', '')}/{data.get('relpath', '')}  "
-          f"{data.get('title', '')}")
+    print(
+        f"→ {data.get('project', '')}/{data.get('relpath', '')}  "
+        f"{data.get('title', '')}"
+    )
     for key in ("status", "rank", "dep_title", "superseded_by"):
         if data.get(key):
             print(f"  {key}: {data[key]}")
@@ -806,9 +978,11 @@ def _emit_design_write(data: Any, args: Any) -> None:
     for u in data.get("unblocked") or []:
         print(f"  ✓ unblocked: {u.get('title', '')}  ({u.get('ref', '')})")
     for s in data.get("similar") or []:
-        print(f"  {_TAINT} similar decision [{s['score']:.3f}]: {s['relpath']}"
-              + (f" — {s['heading']}" if s.get("heading") else "")
-              + "  (append to it rather than forking the graph?)")
+        print(
+            f"  {_TAINT} similar decision [{s['score']:.3f}]: {s['relpath']}"
+            + (f" — {s['heading']}" if s.get("heading") else "")
+            + "  (append to it rather than forking the graph?)"
+        )
     if data.get("missing"):
         print(f"  ✗ missing dep(s): {', '.join(data['missing'])}")
     if data.get("next"):
@@ -827,15 +1001,19 @@ def _graph_symbol(args: argparse.Namespace) -> str | None:
     if getattr(args, "all_symbols", False):
         return None
     if not getattr(args, "symbol", None):
-        raise SystemExit("crib code graph: give a SYMBOL, or --all for the "
-                         "whole project")
+        raise SystemExit(
+            "crib code graph: give a SYMBOL, or --all for the whole project"
+        )
     return str(args.symbol)
 
 
 def _graph_shape(args: argparse.Namespace) -> str | None:
     """--edges / --group-by / --all all mean the edge list; otherwise the tree."""
-    if (getattr(args, "edges", False) or getattr(args, "group_by", None)
-            or getattr(args, "all_symbols", False)):
+    if (
+        getattr(args, "edges", False)
+        or getattr(args, "group_by", None)
+        or getattr(args, "all_symbols", False)
+    ):
         return "edges"
     return None
 
@@ -857,12 +1035,15 @@ def _emit_code_edges(data: dict, args: argparse.Namespace) -> None:
     ascii_mode = getattr(args, "ascii", False)
     arrow = "->" if ascii_mode else "→"
     nodes, edges = data.get("nodes") or [], data.get("edges") or []
-    scope = (f"{data['root']}  [{data['direction']}, depth {data['depth']}]"
-             if data.get("scope") != "project"
-             else f"{data.get('project', '')}  [all symbols, {data['direction']}]")
+    scope = (
+        f"{data['root']}  [{data['direction']}, depth {data['depth']}]"
+        if data.get("scope") != "project"
+        else f"{data.get('project', '')}  [all symbols, {data['direction']}]"
+    )
     grouped = data.get("group_by") == "module"
-    print(f"{scope}  {len(nodes)} {'modules' if grouped else 'nodes'}, "
-          f"{len(edges)} edges")
+    print(
+        f"{scope}  {len(nodes)} {'modules' if grouped else 'nodes'}, {len(edges)} edges"
+    )
     _emit_resolved(data)
     indeg: dict[str, int] = {}
     for e in edges:
@@ -872,8 +1053,9 @@ def _emit_code_edges(data: dict, args: argparse.Namespace) -> None:
     for n in nodes:
         d = f"{n['depth']}  " if "depth" in n else ""
         extra = f"   ×{n['symbols']}" if grouped else ""
-        print(f"  {d}{_sym_name(n)}{extra}{_sym_loc(n, '   ')}"
-              f"{_sym_tags(n, ascii_mode)}")
+        print(
+            f"  {d}{_sym_name(n)}{extra}{_sym_loc(n, '   ')}{_sym_tags(n, ascii_mode)}"
+        )
     print("\nedges:")
     for e in edges:
         w = f"  ×{e['weight']}" if "weight" in e else ""
@@ -889,18 +1071,22 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
     """pstree-style call graph (modeled on zdot's hook graph). `--json` = raw tree.
     `↑` marks a DAG node already shown; `·ext` an edge target outside the index."""
     if getattr(args, "json", False):
-        print(json.dumps(tree, indent=2, default=str)); return
+        print(json.dumps(tree, indent=2, default=str))
+        return
     if not tree:
-        print("(symbol not found — is this project code-indexed?)"); return
+        print("(symbol not found — is this project code-indexed?)")
+        return
     if tree.get("shape") == "edges":
-        _emit_code_edges(tree, args); return
+        _emit_code_edges(tree, args)
+        return
     direction = _graph_direction(args)
     ascii_mode = getattr(args, "ascii", False)
     arrows = {"callees": (">", "▸"), "callers": ("<", "◂"), "references": ("=", "⇐")}
     arrow = arrows[direction][0 if ascii_mode else 1]
     branch, last, vert, blank = _tree_glyphs(ascii_mode)
-    print(f"{render_symbol(tree, 'title')}   [{direction}]"
-          f"{_sym_tags(tree, ascii_mode)}")
+    print(
+        f"{render_symbol(tree, 'title')}   [{direction}]{_sym_tags(tree, ascii_mode)}"
+    )
     _emit_resolved(tree)
 
     def render(node: dict, prefix: str) -> None:
@@ -908,8 +1094,7 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
         for i, c in enumerate(kids):
             islast = i == len(kids) - 1
             conn = last if islast else branch
-            print(f"{prefix}{conn}{arrow} "
-                  f"{render_symbol(c, 'tree', ascii_mode)}")
+            print(f"{prefix}{conn}{arrow} {render_symbol(c, 'tree', ascii_mode)}")
             render(c, prefix + (blank if islast else vert))
 
     render(tree, "")
@@ -918,15 +1103,22 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
 def _narrowers(sp: Any) -> None:
     """The axes a caller can narrow an ambiguous symbol on, shared by the verbs that
     resolve one — declared once so they cannot drift apart."""
-    sp.add_argument("--path", default="",
-                    help="a trailing run of the file path (state.rs, core/state.rs)")
-    sp.add_argument("--scope", default="",
-                    help="a trailing run of the language's own scope (ServerState)")
+    sp.add_argument(
+        "--path",
+        default="",
+        help="a trailing run of the file path (state.rs, core/state.rs)",
+    )
+    sp.add_argument(
+        "--scope",
+        default="",
+        help="a trailing run of the language's own scope (ServerState)",
+    )
     sp.add_argument("--lang", default="", help="exact language of the symbol")
 
 
 def build_parser() -> argparse.ArgumentParser:
     from . import __version__
+
     p = argparse.ArgumentParser(prog="crib", description="markdown memory")
     p.add_argument("--version", action="version", version=f"crib {__version__}")
     p.add_argument("--mcp", action="store_true", help="run the MCP server")
@@ -934,51 +1126,76 @@ def build_parser() -> argparse.ArgumentParser:
     # transport options (apply to --mcp and `serve`; also pick the daemon the CLI
     # attaches to). Default to None so config `[daemon]` (host/port) wins unless
     # the user overrides on the command line.
-    p.add_argument("--http", action="store_true",
-                   help="serve MCP over HTTP instead of stdio")
+    p.add_argument(
+        "--http", action="store_true", help="serve MCP over HTTP instead of stdio"
+    )
     p.add_argument("--host", default=None, help="HTTP host (bind, or daemon to attach)")
-    p.add_argument("--port", type=int, default=None,
-                   help="HTTP port (bind, or daemon to attach)")
+    p.add_argument(
+        "--port", type=int, default=None, help="HTTP port (bind, or daemon to attach)"
+    )
     # CLI verbs attach to the warm daemon by default; --no-daemon runs in-process.
-    p.add_argument("--no-daemon", action="store_true",
-                   help="run the verb in-process instead of via the daemon")
+    p.add_argument(
+        "--no-daemon",
+        action="store_true",
+        help="run the verb in-process instead of via the daemon",
+    )
     sub = p.add_subparsers(dest="cmd")
 
     def proj(sp):  # shared project selectors
-        sp.add_argument("-p", "--project")            # by NAME
-        sp.add_argument("-P", "--project-path",       # by PATH (resolve .crib from here
-                        dest="project_path")          # instead of the actual cwd)
+        sp.add_argument("-p", "--project")  # by NAME
+        sp.add_argument(
+            "-P",
+            "--project-path",  # by PATH (resolve .crib from here
+            dest="project_path",
+        )  # instead of the actual cwd)
 
     sv = sub.add_parser("serve", help="run the MCP server (stdio or --http)")
     sv.add_argument("--http", action="store_true")
     sv.add_argument("--host", default=None)
     sv.add_argument("--port", type=int, default=None)
     sub.add_parser("info", help="show resolved paths and available backends")
-    sub.add_parser("status", help="health summary: projects (notes/docs/code/"
-                                  "learnings), git sync, LSP sessions, indexing")
+    sub.add_parser(
+        "status",
+        help="health summary: projects (notes/docs/code/"
+        "learnings), git sync, LSP sessions, indexing",
+    )
 
     # `crib project <verb>` — whole-project lifecycle (superset of code + notes)
-    pj = sub.add_parser("project", help="onboard/index a whole repo (setup/index/"
-                                        "status/forget)")
+    pj = sub.add_parser(
+        "project", help="onboard/index a whole repo (setup/index/status/forget)"
+    )
     pjsub = pj.add_subparsers(dest="project_verb")
-    for _v, _h in (("setup", "ensure .crib + import docs + index all code"),
-                   ("index", "(re)index the repo's code + in-situ docs from its .crib"),
-                   ("status", "is it indexed? counts, kinds, .crib paths")):
+    for _v, _h in (
+        ("setup", "ensure .crib + import docs + index all code"),
+        ("index", "(re)index the repo's code + in-situ docs from its .crib"),
+        ("status", "is it indexed? counts, kinds, .crib paths"),
+    ):
         _sp = pjsub.add_parser(_v, help=_h)
         proj(_sp)
-    for _v, _h in (("adopt", "move this project's notes INTO the repo "
-                             "(needs `store:` in its .crib)"),
-                   ("release", "move an adopted project's notes back to the "
-                               "global store"),
-                   ("migrate", "move legacy notes/{design,plans,code-learnings} "
-                               "into the sibling pillar stores (idempotent; every "
-                               "full reindex also self-heals)")):
+    for _v, _h in (
+        (
+            "adopt",
+            "move this project's notes INTO the repo (needs `store:` in its .crib)",
+        ),
+        ("release", "move an adopted project's notes back to the global store"),
+        (
+            "migrate",
+            "move legacy notes/{design,plans,code-learnings} "
+            "into the sibling pillar stores (idempotent; every "
+            "full reindex also self-heals)",
+        ),
+    ):
         _sp = pjsub.add_parser(_v, help=_h)
         proj(_sp)
-    _pf = pjsub.add_parser("forget", help="clear the code index (keeps learnings/notes)")
+    _pf = pjsub.add_parser(
+        "forget", help="clear the code index (keeps learnings/notes)"
+    )
     proj(_pf)
-    _pf.add_argument("--with-learnings", action="store_true",
-                     help="also drop attached learnings (default: keep them)")
+    _pf.add_argument(
+        "--with-learnings",
+        action="store_true",
+        help="also drop attached learnings (default: keep them)",
+    )
     pjsub.add_parser("list", help="list projects (separate memory namespaces)")
     _pu = pjsub.add_parser("use", help="set this session's current project")
     _pu.add_argument("project")
@@ -991,136 +1208,221 @@ def build_parser() -> argparse.ArgumentParser:
     notesub = n_note.add_subparsers(dest="note_verb", required=True)
     n_code = sub.add_parser("code", help="code symbol index: search + navigate")
     codesub = n_code.add_subparsers(dest="code_verb", required=True)
-    n_learn = sub.add_parser("learning",
-                             help="durable learnings attached to code symbols")
+    n_learn = sub.add_parser(
+        "learning", help="durable learnings attached to code symbols"
+    )
     learnsub = n_learn.add_subparsers(dest="learning_verb", required=True)
 
     s = notesub.add_parser("lookup", aliases=["search"], help="semantic search")
-    s.add_argument("query"); proj(s)
+    s.add_argument("query")
+    proj(s)
     s.add_argument("-k", type=int, default=8)
     s.add_argument("--tag", action="append", dest="tags")
-    s.add_argument("--keywords",
-                   help="comma-separated keyword_index labels to fold into BM25 "
-                        "for this query (overrides [retrieve].keyword_labels)")
-    s.add_argument("--keyword-weight", type=float, default=None, dest="keyword_weight",
-                   help="weight of keyword_index tokens vs body in BM25 "
-                        "(overrides [retrieve].keyword_weight)")
-    s.add_argument("--summaries",
-                   help="comma-separated summary_index labels to fold in as dense "
-                        "alias vectors (overrides [retrieve].summary_labels)")
-    s.add_argument("--summary-weight", type=float, default=None, dest="summary_weight",
-                   help="RRF fusion weight of the summary alias ranking "
-                        "(overrides [retrieve].summary_weight)")
-    s.add_argument("-a", "--render", action="store_true",
-                   help="render each matched section as markdown (like `apropos`) "
-                        "instead of compact locator lines")
+    s.add_argument(
+        "--keywords",
+        help="comma-separated keyword_index labels to fold into BM25 "
+        "for this query (overrides [retrieve].keyword_labels)",
+    )
+    s.add_argument(
+        "--keyword-weight",
+        type=float,
+        default=None,
+        dest="keyword_weight",
+        help="weight of keyword_index tokens vs body in BM25 "
+        "(overrides [retrieve].keyword_weight)",
+    )
+    s.add_argument(
+        "--summaries",
+        help="comma-separated summary_index labels to fold in as dense "
+        "alias vectors (overrides [retrieve].summary_labels)",
+    )
+    s.add_argument(
+        "--summary-weight",
+        type=float,
+        default=None,
+        dest="summary_weight",
+        help="RRF fusion weight of the summary alias ranking "
+        "(overrides [retrieve].summary_weight)",
+    )
+    s.add_argument(
+        "-a",
+        "--render",
+        action="store_true",
+        help="render each matched section as markdown (like `apropos`) "
+        "instead of compact locator lines",
+    )
 
-    s = notesub.add_parser("apropos", aliases=["a"],
-                       help="semantic search, rendering each full matched section "
-                            "(alias for `search --render`)")
-    s.add_argument("query"); proj(s)
+    s = notesub.add_parser(
+        "apropos",
+        aliases=["a"],
+        help="semantic search, rendering each full matched section "
+        "(alias for `search --render`)",
+    )
+    s.add_argument("query")
+    proj(s)
     # k matches `lookup`/the MCP tool/the Crib default (8) — `note lookup --render`
     # routes HERE, so a different default made the same rendered view return 5 or 8
     # hits depending on how you spelled it.
     s.add_argument("-k", type=int, default=8)
     s.add_argument("--tag", action="append", dest="tags")
 
-    s = codesub.add_parser("lookup",
-                       help="find a code symbol by concept OR name (hybrid dense+kw)")
-    s.add_argument("query"); proj(s)
+    s = codesub.add_parser(
+        "lookup", help="find a code symbol by concept OR name (hybrid dense+kw)"
+    )
+    s.add_argument("query")
+    proj(s)
     s.add_argument("-k", type=int, default=8)
 
-    s = codesub.add_parser("xref",
-                       help="a symbol's callers/callees/references from the symbol_index")
-    s.add_argument("symbol"); proj(s)
+    s = codesub.add_parser(
+        "xref", help="a symbol's callers/callees/references from the symbol_index"
+    )
+    s.add_argument("symbol")
+    proj(s)
 
-    s = codesub.add_parser("dossier",
-                       help="everything about one symbol (+ neighbour descriptions)")
-    s.add_argument("symbol"); proj(s)
+    s = codesub.add_parser(
+        "dossier", help="everything about one symbol (+ neighbour descriptions)"
+    )
+    s.add_argument("symbol")
+    proj(s)
     _narrowers(s)
 
-    s = codesub.add_parser("graph",
-                       help="call graph around a symbol — pstree, edge list, or "
-                            "whole-project export")
+    s = codesub.add_parser(
+        "graph",
+        help="call graph around a symbol — pstree, edge list, or whole-project export",
+    )
     s.add_argument("symbol", nargs="?", help="omit with --all for the whole project")
     proj(s)
-    s.add_argument("--callers", action="store_true",
-                   help="what CALLS the symbol (default: what it calls)")
-    s.add_argument("--references", action="store_true",
-                   help="everywhere the symbol is REFERENCED (broader than calls)")
+    s.add_argument(
+        "--callers",
+        action="store_true",
+        help="what CALLS the symbol (default: what it calls)",
+    )
+    s.add_argument(
+        "--references",
+        action="store_true",
+        help="everywhere the symbol is REFERENCED (broader than calls)",
+    )
     s.add_argument("--depth", type=int, default=6)
     s.add_argument("--ascii", action="store_true", help="ASCII glyphs, no box-drawing")
-    s.add_argument("--edges", action="store_true",
-                   help="deduplicated node+edge subgraph instead of a tree "
-                        "(convergence stays visible; feeds a layout tool)")
-    s.add_argument("--group-by", choices=list(GRAPH_GROUPINGS), default=None,
-                   dest="group_by",
-                   help="roll symbol edges up onto one axis: file, dir or scope")
-    s.add_argument("--group-depth", type=int, default=0, dest="group_depth",
-                   help="how coarse: dirs/scope segments to keep (0 = all)")
-    s.add_argument("--all", action="store_true", dest="all_symbols",
-                   help="the WHOLE project: every symbol, every edge, no depth bound")
-    s.add_argument("--under", default="",
-                   help="whole-project only: export just the files under this path "
-                        "prefix (boundary-crossing edges keep truncated frontier "
-                        "nodes)")
-    s.add_argument("--exclude", default="",
-                   help="whole-project only: drop files under this path prefix "
-                        "before export")
+    s.add_argument(
+        "--edges",
+        action="store_true",
+        help="deduplicated node+edge subgraph instead of a tree "
+        "(convergence stays visible; feeds a layout tool)",
+    )
+    s.add_argument(
+        "--group-by",
+        choices=list(GRAPH_GROUPINGS),
+        default=None,
+        dest="group_by",
+        help="roll symbol edges up onto one axis: file, dir or scope",
+    )
+    s.add_argument(
+        "--group-depth",
+        type=int,
+        default=0,
+        dest="group_depth",
+        help="how coarse: dirs/scope segments to keep (0 = all)",
+    )
+    s.add_argument(
+        "--all",
+        action="store_true",
+        dest="all_symbols",
+        help="the WHOLE project: every symbol, every edge, no depth bound",
+    )
+    s.add_argument(
+        "--under",
+        default="",
+        help="whole-project only: export just the files under this path "
+        "prefix (boundary-crossing edges keep truncated frontier "
+        "nodes)",
+    )
+    s.add_argument(
+        "--exclude",
+        default="",
+        help="whole-project only: drop files under this path prefix before export",
+    )
     _narrowers(s)
 
-    s = codesub.add_parser("index",
-                       help="index a source file: symbols + call graph + descriptions")
-    s.add_argument("path"); proj(s)
+    s = codesub.add_parser(
+        "index", help="index a source file: symbols + call graph + descriptions"
+    )
+    s.add_argument("path")
+    proj(s)
 
-    s = codesub.add_parser("convert",
-                       help="convert the symbol store to the current shape in place "
-                            "(no LSP/LLM; dry run without --apply)")
-    s.add_argument("--apply", action="store_true"); proj(s)
+    s = codesub.add_parser(
+        "convert",
+        help="convert the symbol store to the current shape in place "
+        "(no LSP/LLM; dry run without --apply)",
+    )
+    s.add_argument("--apply", action="store_true")
+    proj(s)
 
-    s = learnsub.add_parser("add",
-                       help="attach a durable learning to a code symbol ('-' reads stdin)")
-    s.add_argument("symbol"); s.add_argument("text"); proj(s)
+    s = learnsub.add_parser(
+        "add", help="attach a durable learning to a code symbol ('-' reads stdin)"
+    )
+    s.add_argument("symbol")
+    s.add_argument("text")
+    proj(s)
 
-    s = learnsub.add_parser("edit",
-                       help="rewrite a symbol's learning body ('-' reads stdin)")
-    s.add_argument("symbol"); s.add_argument("text"); proj(s)
+    s = learnsub.add_parser(
+        "edit", help="rewrite a symbol's learning body ('-' reads stdin)"
+    )
+    s.add_argument("symbol")
+    s.add_argument("text")
+    proj(s)
 
-    s = learnsub.add_parser("forget",
-                       help="remove a symbol's learning (recoverable; works on orphans)")
-    s.add_argument("symbol"); proj(s)
+    s = learnsub.add_parser(
+        "forget", help="remove a symbol's learning (recoverable; works on orphans)"
+    )
+    s.add_argument("symbol")
+    proj(s)
 
     s = learnsub.add_parser("read", help="print a symbol's attached learning")
-    s.add_argument("symbol"); proj(s)
-
-    s = learnsub.add_parser("reaffirm",
-                       help="clear a learning's ⚠︎ stale flag without rewriting it")
-    s.add_argument("symbol"); proj(s)
-
-    s = learnsub.add_parser("migrate",
-                       help="re-attach learnings to the current symbol identity "
-                            "(dry run unless --apply)")
+    s.add_argument("symbol")
     proj(s)
-    s.add_argument("--apply", action="store_true",
-                   help="write the plan out; without it nothing is changed")
 
-    s = learnsub.add_parser("report",
-                       help="health report for attached learnings (ok/moved/orphan)")
+    s = learnsub.add_parser(
+        "reaffirm", help="clear a learning's ⚠︎ stale flag without rewriting it"
+    )
+    s.add_argument("symbol")
     proj(s)
-    s.add_argument("--orphans", action="store_true",
-                   help="only the actionable ones (moved/orphan)")
 
-    s = learnsub.add_parser("rehome",
-                       help="re-point an orphaned learning (no target = ranked suggestions)")
-    s.add_argument("old"); s.add_argument("new", nargs="?"); proj(s)
+    s = learnsub.add_parser(
+        "migrate",
+        help="re-attach learnings to the current symbol identity "
+        "(dry run unless --apply)",
+    )
+    proj(s)
+    s.add_argument(
+        "--apply",
+        action="store_true",
+        help="write the plan out; without it nothing is changed",
+    )
+
+    s = learnsub.add_parser(
+        "report", help="health report for attached learnings (ok/moved/orphan)"
+    )
+    proj(s)
+    s.add_argument(
+        "--orphans", action="store_true", help="only the actionable ones (moved/orphan)"
+    )
+
+    s = learnsub.add_parser(
+        "rehome", help="re-point an orphaned learning (no target = ranked suggestions)"
+    )
+    s.add_argument("old")
+    s.add_argument("new", nargs="?")
+    proj(s)
 
     # `crib design <verb>` / `crib plan <verb>` — decisions and work items, both
     # notes with a dependency graph (crib/designs.py). The FACET is the interface:
     # read/edit/lookup have their own verbs here, because only they speak edges.
     # Bare `crib design` / `crib plan` mean `list`, as bare `crib project` means
     # `status` — the orienting read is what you want when you type just the noun.
-    n_design = sub.add_parser("design",
-                              help="design decisions + their dependency graph")
+    n_design = sub.add_parser(
+        "design", help="design decisions + their dependency graph"
+    )
     designsub = n_design.add_subparsers(dest="design_verb")
     n_plan = sub.add_parser("plan", help="persistent, resumable plan items")
     plansub = n_plan.add_subparsers(dest="plan_verb")
@@ -1128,8 +1430,11 @@ def build_parser() -> argparse.ArgumentParser:
     # the three ways to give a body: positional, `-` for stdin, `--file`; omitted
     # at a terminal opens $EDITOR (shell-quoting prose is the worst friction here)
     def body_args(sp, what: str) -> None:
-        sp.add_argument("content", nargs="?",
-                        help=f"{what} ('-' reads stdin; omitted opens $EDITOR)")
+        sp.add_argument(
+            "content",
+            nargs="?",
+            help=f"{what} ('-' reads stdin; omitted opens $EDITOR)",
+        )
         sp.add_argument("--file", dest="file", help=f"read the {what} from a file")
 
     # `--source doc#heading` — where a decision/item came FROM. Attribution edges
@@ -1137,139 +1442,232 @@ def build_parser() -> argparse.ArgumentParser:
     # authoring verbs rather than getting a facet of their own. A source names a
     # SECTION: a bare doc is refused (unless the doc has no headings at all).
     def source_arg(sp) -> None:
-        sp.add_argument("--source", action="append", dest="sources",
-                        metavar="DOC#HEADING",
-                        help="doc SECTION this was drawn from (repeatable)")
+        sp.add_argument(
+            "--source",
+            action="append",
+            dest="sources",
+            metavar="DOC#HEADING",
+            help="doc SECTION this was drawn from (repeatable)",
+        )
 
-    s = designsub.add_parser("add",
-                       help="record a design decision (body: arg, '-', --file or $EDITOR)")
-    s.add_argument("title"); body_args(s, "the decision, why, what was rejected")
+    s = designsub.add_parser(
+        "add", help="record a design decision (body: arg, '-', --file or $EDITOR)"
+    )
+    s.add_argument("title")
+    body_args(s, "the decision, why, what was rejected")
     proj(s)
-    s.add_argument("--dep", action="append", dest="deps",
-                   help="a decision this one builds on (repeatable)")
+    s.add_argument(
+        "--dep",
+        action="append",
+        dest="deps",
+        help="a decision this one builds on (repeatable)",
+    )
     source_arg(s)
-    s.add_argument("--proposed", action="store_true",
-                   help="land it in the import tier (taints nothing until promoted)")
+    s.add_argument(
+        "--proposed",
+        action="store_true",
+        help="land it in the import tier (taints nothing until promoted)",
+    )
 
-    s = designsub.add_parser("read",
-                       help="a decision's dossier: body + annotated edges + taint")
-    s.add_argument("ref"); proj(s)
+    s = designsub.add_parser(
+        "read", help="a decision's dossier: body + annotated edges + taint"
+    )
+    s.add_argument("ref")
+    proj(s)
 
-    s = designsub.add_parser("edit",
-                       help="rewrite a decision; lists what the change tainted")
-    s.add_argument("ref"); body_args(s, "the new body"); proj(s); source_arg(s)
+    s = designsub.add_parser(
+        "edit", help="rewrite a decision; lists what the change tainted"
+    )
+    s.add_argument("ref")
+    body_args(s, "the new body")
+    proj(s)
+    source_arg(s)
 
-    s = designsub.add_parser("append",
-                       help="extend a decision; lists what the change tainted")
-    s.add_argument("ref"); body_args(s, "the text to append"); proj(s)
-    s.add_argument("--source", action="append", default=[],
-                   help="ADD a doc-section citation (doc.md#Heading; repeatable; "
-                        "existing citations keep their capture-time hashes)")
+    s = designsub.add_parser(
+        "append", help="extend a decision; lists what the change tainted"
+    )
+    s.add_argument("ref")
+    body_args(s, "the text to append")
+    proj(s)
+    s.add_argument(
+        "--source",
+        action="append",
+        default=[],
+        help="ADD a doc-section citation (doc.md#Heading; repeatable; "
+        "existing citations keep their capture-time hashes)",
+    )
 
-    s = designsub.add_parser("lookup", aliases=["search"],
-                       help="semantic search over DECISIONS (hits flag stale ones)")
-    s.add_argument("query"); proj(s)
+    s = designsub.add_parser(
+        "lookup",
+        aliases=["search"],
+        help="semantic search over DECISIONS (hits flag stale ones)",
+    )
+    s.add_argument("query")
+    proj(s)
     s.add_argument("-k", type=int, default=8)
 
-    s = designsub.add_parser("list",
-                       help="every decision as a table (--tainted filters to stale)")
+    s = designsub.add_parser(
+        "list", help="every decision as a table (--tainted filters to stale)"
+    )
     proj(s)
-    s.add_argument("--tainted", action="store_true",
-                   help="only decisions that need re-reading")
+    s.add_argument(
+        "--tainted", action="store_true", help="only decisions that need re-reading"
+    )
 
-    for _v, _h in (("dep-add", "declare that a decision builds on another"),
-                   ("dep-remove", "drop a dependency edge between decisions")):
+    for _v, _h in (
+        ("dep-add", "declare that a decision builds on another"),
+        ("dep-remove", "drop a dependency edge between decisions"),
+    ):
         _s = designsub.add_parser(_v, help=_h)
-        _s.add_argument("ref"); _s.add_argument("dep_ref", metavar="dep"); proj(_s)
+        _s.add_argument("ref")
+        _s.add_argument("dep_ref", metavar="dep")
+        proj(_s)
 
-    s = designsub.add_parser("forget",
-                       help="delete a decision (refuses while dependents exist)")
-    s.add_argument("ref"); proj(s)
-    s.add_argument("--force", action="store_true",
-                   help="delete anyway, leaving dependents tainted")
+    s = designsub.add_parser(
+        "forget", help="delete a decision (refuses while dependents exist)"
+    )
+    s.add_argument("ref")
+    proj(s)
+    s.add_argument(
+        "--force", action="store_true", help="delete anyway, leaving dependents tainted"
+    )
 
-    s = designsub.add_parser("check",
-                       help="which decisions are stale w.r.t. what they build on")
-    s.add_argument("ref", nargs="?"); proj(s)
+    s = designsub.add_parser(
+        "check", help="which decisions are stale w.r.t. what they build on"
+    )
+    s.add_argument("ref", nargs="?")
+    proj(s)
 
-    s = designsub.add_parser("reaffirm",
-                       help="re-record a decision's dep hashes (you re-read it)")
-    s.add_argument("ref"); proj(s)
+    s = designsub.add_parser(
+        "reaffirm", help="re-record a decision's dep hashes (you re-read it)"
+    )
+    s.add_argument("ref")
+    proj(s)
 
-    s = designsub.add_parser("tree",
-                       help="dependency tree around a decision (taint-flagged)")
-    s.add_argument("ref", nargs="?"); proj(s)
-    s.add_argument("--dependents", action="store_true",
-                   help="what builds ON this (default: what this builds on)")
+    s = designsub.add_parser(
+        "tree", help="dependency tree around a decision (taint-flagged)"
+    )
+    s.add_argument("ref", nargs="?")
+    proj(s)
+    s.add_argument(
+        "--dependents",
+        action="store_true",
+        help="what builds ON this (default: what this builds on)",
+    )
     s.add_argument("--depth", type=int, default=6)
     s.add_argument("--ascii", action="store_true", help="ASCII glyphs, no box-drawing")
 
-    s = designsub.add_parser("graph",
-                       help="the decision map as {nodes, edges} (taint-flagged; "
-                            "same shape as `code graph --edges`)")
+    s = designsub.add_parser(
+        "graph",
+        help="the decision map as {nodes, edges} (taint-flagged; "
+        "same shape as `code graph --edges`)",
+    )
     proj(s)
-    s.add_argument("--sources", action="store_true",
-                   help="add doc-section attribution nodes + `source` edges")
+    s.add_argument(
+        "--sources",
+        action="store_true",
+        help="add doc-section attribution nodes + `source` edges",
+    )
 
-    s = designsub.add_parser("supersede",
-                       help="mark a decision superseded + taint its dependents")
-    s.add_argument("ref"); s.add_argument("by", nargs="?"); proj(s)
+    s = designsub.add_parser(
+        "supersede", help="mark a decision superseded + taint its dependents"
+    )
+    s.add_argument("ref")
+    s.add_argument("by", nargs="?")
+    proj(s)
 
-    s = designsub.add_parser("promote",
-                       help="proposed → active (an extracted decision, confirmed)")
-    s.add_argument("ref"); proj(s)
+    s = designsub.add_parser(
+        "promote", help="proposed → active (an extracted decision, confirmed)"
+    )
+    s.add_argument("ref")
+    proj(s)
 
     for _sub, _what in ((designsub, "decisions"), (plansub, "actionable work")):
-        _s = _sub.add_parser("import",
-                       help=f"prepare a doc for extraction into {_what} (writes nothing)")
+        _s = _sub.add_parser(
+            "import", help=f"prepare a doc for extraction into {_what} (writes nothing)"
+        )
         _s.add_argument("doc", help="note relpath, or a repo path indexed in situ")
         proj(_s)
 
-    s = plansub.add_parser("graph",
-                       help="the plan as {nodes, edges}, including the decisions "
-                            "items rest on")
+    s = plansub.add_parser(
+        "graph",
+        help="the plan as {nodes, edges}, including the decisions items rest on",
+    )
     proj(s)
-    s.add_argument("--sources", action="store_true",
-                   help="add doc-section attribution nodes + `source` edges")
+    s.add_argument(
+        "--sources",
+        action="store_true",
+        help="add doc-section attribution nodes + `source` edges",
+    )
 
-    s = plansub.add_parser("add",
-                       help="add plan item(s) — body optional, `--item` adds more")
-    s.add_argument("title"); body_args(s, "the item's detail (optional)"); proj(s)
-    s.add_argument("--dep", action="append", dest="deps",
-                   help="an item this one must follow (repeatable)")
+    s = plansub.add_parser(
+        "add", help="add plan item(s) — body optional, `--item` adds more"
+    )
+    s.add_argument("title")
+    body_args(s, "the item's detail (optional)")
+    proj(s)
+    s.add_argument(
+        "--dep",
+        action="append",
+        dest="deps",
+        help="an item this one must follow (repeatable)",
+    )
     source_arg(s)
-    s.add_argument("--item", action="append", dest="extra_items", metavar="TITLE",
-                   help="another title-only item, added after this one (repeatable)")
-    s.add_argument("--after"); s.add_argument("--before")
+    s.add_argument(
+        "--item",
+        action="append",
+        dest="extra_items",
+        metavar="TITLE",
+        help="another title-only item, added after this one (repeatable)",
+    )
+    s.add_argument("--after")
+    s.add_argument("--before")
 
-    s = plansub.add_parser("lookup", aliases=["search"],
-                       help="semantic search over PLAN ITEMS")
-    s.add_argument("query"); proj(s)
+    s = plansub.add_parser(
+        "lookup", aliases=["search"], help="semantic search over PLAN ITEMS"
+    )
+    s.add_argument("query")
+    proj(s)
     s.add_argument("-k", type=int, default=8)
 
-    s = plansub.add_parser("reaffirm",
-                       help="re-record an item's dep/source hashes — its ground "
-                            "moved, you re-read it, it still stands")
-    s.add_argument("ref"); proj(s)
+    s = plansub.add_parser(
+        "reaffirm",
+        help="re-record an item's dep/source hashes — its ground "
+        "moved, you re-read it, it still stands",
+    )
+    s.add_argument("ref")
+    proj(s)
 
-    s = plansub.add_parser("status",
-                       help="set an item's status (todo/in-progress/done/verified)")
-    s.add_argument("ref"); s.add_argument("status"); proj(s)
+    s = plansub.add_parser(
+        "status", help="set an item's status (todo/in-progress/done/verified)"
+    )
+    s.add_argument("ref")
+    s.add_argument("status")
+    proj(s)
 
-    for _v, _h in (("dep-add", "declare that an item must follow another"),
-                   ("dep-remove", "drop a must-precede edge between items")):
+    for _v, _h in (
+        ("dep-add", "declare that an item must follow another"),
+        ("dep-remove", "drop a must-precede edge between items"),
+    ):
         _s = plansub.add_parser(_v, help=_h)
-        _s.add_argument("ref"); _s.add_argument("dep_ref", metavar="dep"); proj(_s)
+        _s.add_argument("ref")
+        _s.add_argument("dep_ref", metavar="dep")
+        proj(_s)
 
-    s = plansub.add_parser("forget",
-                       help="delete a plan item (refuses while dependents exist)")
-    s.add_argument("ref"); proj(s)
-    s.add_argument("--force", action="store_true",
-                   help="delete anyway, leaving dependents tainted")
+    s = plansub.add_parser(
+        "forget", help="delete a plan item (refuses while dependents exist)"
+    )
+    s.add_argument("ref")
+    proj(s)
+    s.add_argument(
+        "--force", action="store_true", help="delete anyway, leaving dependents tainted"
+    )
 
     s = plansub.add_parser("move", help="re-order an item (rank only; deps untouched)")
-    s.add_argument("ref"); proj(s)
-    s.add_argument("--after"); s.add_argument("--before")
+    s.add_argument("ref")
+    proj(s)
+    s.add_argument("--after")
+    s.add_argument("--before")
 
     s = plansub.add_parser("list", help="the plan in execution order (topo + rank)")
     proj(s)
@@ -1280,85 +1678,116 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("-k", type=int, default=5)
 
     s = notesub.add_parser("read", help="print a note's raw markdown")
-    s.add_argument("relpath"); proj(s)
+    s.add_argument("relpath")
+    proj(s)
 
     s = notesub.add_parser("locate", help="print a note's on-disk path")
-    s.add_argument("relpath"); proj(s)
+    s.add_argument("relpath")
+    proj(s)
 
     s = notesub.add_parser("store", help="create a new note ('-' reads stdin)")
-    s.add_argument("content"); proj(s)
+    s.add_argument("content")
+    proj(s)
     s.add_argument("--title")
     s.add_argument("--tag", action="append", dest="tags")
 
     s = notesub.add_parser("append", help="append to a note ('-' reads stdin)")
-    s.add_argument("relpath"); s.add_argument("content"); proj(s)
+    s.add_argument("relpath")
+    s.add_argument("content")
+    proj(s)
     s.add_argument("--heading")
 
     s = notesub.add_parser("edit", help="replace a note's content (stdin by default)")
-    s.add_argument("relpath"); s.add_argument("content", nargs="?", default="-"); proj(s)
+    s.add_argument("relpath")
+    s.add_argument("content", nargs="?", default="-")
+    proj(s)
 
     s = notesub.add_parser("forget", help="delete a note (recoverable via the ring)")
-    s.add_argument("relpath"); proj(s)
+    s.add_argument("relpath")
+    proj(s)
 
     s = notesub.add_parser("move", help="move/rename a note across projects (keeps id)")
-    s.add_argument("relpath"); proj(s)
+    s.add_argument("relpath")
+    proj(s)
     s.add_argument("--to-project", dest="to_project")
     s.add_argument("--to-relpath", dest="to_relpath")
 
     s = notesub.add_parser("reindex", help="reindex a note or whole project")
-    s.add_argument("relpath", nargs="?"); proj(s)
-
+    s.add_argument("relpath", nargs="?")
+    proj(s)
 
     s = notesub.add_parser("versions", help="list recoverable versions of a note")
-    s.add_argument("relpath"); proj(s)
+    s.add_argument("relpath")
+    proj(s)
 
     s = notesub.add_parser("restore", help="restore a prior version of a note")
-    s.add_argument("relpath"); s.add_argument("version"); proj(s)
+    s.add_argument("relpath")
+    s.add_argument("version")
+    proj(s)
 
-    s = notesub.add_parser("import",
-                       help="copy explicit files into memory as crib-owned notes")
+    s = notesub.add_parser(
+        "import", help="copy explicit files into memory as crib-owned notes"
+    )
     s.add_argument("paths", nargs="+", help="files to copy into memory")
     proj(s)
 
-    s = notesub.add_parser("import-memory",
-                       help="mirror Claude Code's harness memory into a crib project")
+    s = notesub.add_parser(
+        "import-memory", help="mirror Claude Code's harness memory into a crib project"
+    )
     proj(s)
 
-    s = notesub.add_parser("distill",
-                       help="LLM-revise a note in place (compress/dedupe/normalize)")
-    s.add_argument("relpath"); proj(s)
+    s = notesub.add_parser(
+        "distill", help="LLM-revise a note in place (compress/dedupe/normalize)"
+    )
+    s.add_argument("relpath")
+    proj(s)
 
     # elaborate (keyword_index/BM25) and summarize (summary_index/dense aliases)
     # share one arg shape — label + optional note + --overwrite — differing only in
     # which section-index they populate; the two prompts/dispatch split downstream.
     for _v, _h in (
-        ("elaborate", "keyword_index: generate BM25 search terms per section "
-                      "(keywords/questions/phrase/…) for a note or project"),
-        ("summarize", "summary_index: generate dense alias rephrasings per "
-                      "section for a note or project")):
+        (
+            "elaborate",
+            "keyword_index: generate BM25 search terms per section "
+            "(keywords/questions/phrase/…) for a note or project",
+        ),
+        (
+            "summarize",
+            "summary_index: generate dense alias rephrasings per "
+            "section for a note or project",
+        ),
+    ):
         _s = notesub.add_parser(_v, help=_h)
         _s.add_argument("label")
-        _s.add_argument("relpath", nargs="?"); proj(_s)
-        _s.add_argument("--overwrite", action="store_true",
-                        help="regenerate even if it already exists")
+        _s.add_argument("relpath", nargs="?")
+        proj(_s)
+        _s.add_argument(
+            "--overwrite",
+            action="store_true",
+            help="regenerate even if it already exists",
+        )
 
     # `crib memory <verb>` — the whole memory store's git lifecycle. These act on
     # the entire data tree (every project's notes + learnings), not a note or a
     # project, so they live under their own top-level noun, over `GitBacking`.
-    n_memory = sub.add_parser("memory",
-                              help="the memory store's git lifecycle: snapshot + sync")
+    n_memory = sub.add_parser(
+        "memory", help="the memory store's git lifecycle: snapshot + sync"
+    )
     memsub = n_memory.add_subparsers(dest="memory_verb", required=True)
 
     s = memsub.add_parser("snapshot", help="git checkpoint of the whole data tree")
     s.add_argument("-m", "--message")
 
-    s = memsub.add_parser("setup",
-                       help="join the shared memory repo on this machine "
-                            "(set remote + frontmatter merge driver, then pull)")
+    s = memsub.add_parser(
+        "setup",
+        help="join the shared memory repo on this machine "
+        "(set remote + frontmatter merge driver, then pull)",
+    )
     s.add_argument("--remote", help="git remote URL to join (prompted if omitted)")
 
-    s = memsub.add_parser("sync",
-                       help="share memory via git: commit + pull + push, then reindex")
+    s = memsub.add_parser(
+        "sync", help="share memory via git: commit + pull + push, then reindex"
+    )
     s.add_argument("-m", "--message")
     s.add_argument("--remote", help="bootstrap: git init + set origin to this URL")
     memsub.add_parser("push", help="push local commits to the remote")
@@ -1370,9 +1799,9 @@ def build_parser() -> argparse.ArgumentParser:
     # internal: invoked by git as the cribnote merge driver (DESIGN §14). No
     # help= → kept out of the listed commands (still a valid hidden subcommand).
     s = sub.add_parser("merge-driver")
-    s.add_argument("base")        # %O ancestor
-    s.add_argument("current")     # %A ours / output file
-    s.add_argument("other")       # %B theirs
+    s.add_argument("base")  # %O ancestor
+    s.add_argument("current")  # %A ours / output file
+    s.add_argument("other")  # %B theirs
     s.add_argument("pathname", nargs="?")  # %P (informational)
 
     return p
@@ -1390,8 +1819,8 @@ def cmd_info(as_json: bool) -> None:
     backends = {
         "chromadb": importlib.util.find_spec("chromadb") is not None,
         "fastembed": importlib.util.find_spec("fastembed") is not None,
-        "sentence_transformers":
-            importlib.util.find_spec("sentence_transformers") is not None,
+        "sentence_transformers": importlib.util.find_spec("sentence_transformers")
+        is not None,
         "fastmcp": importlib.util.find_spec("fastmcp") is not None,
         "watchdog": importlib.util.find_spec("watchdog") is not None,
         "sharedserver": shutil.which("sharedserver") is not None,
@@ -1408,8 +1837,10 @@ def cmd_info(as_json: bool) -> None:
             "overlap_words": config.chunk.overlap_words,
         },
         "retrieve": {
-            "hybrid": config.retrieve.hybrid, "rrf_k": config.retrieve.rrf_k,
-            "rerank": config.retrieve.rerank, "rerank_model": config.retrieve.rerank_model,
+            "hybrid": config.retrieve.hybrid,
+            "rrf_k": config.retrieve.rrf_k,
+            "rerank": config.retrieve.rerank,
+            "rerank_model": config.retrieve.rerank_model,
         },
         "chroma_mode": config.chroma.mode,
         "default_project": config.default_project,
@@ -1424,17 +1855,29 @@ def cmd_info(as_json: bool) -> None:
     if as_json:
         print(json.dumps(info, indent=2))
         return
-    for k in ("config_dir", "data_dir", "index_dir", "embed_model",
-              "chroma_mode", "default_project"):
+    for k in (
+        "config_dir",
+        "data_dir",
+        "index_dir",
+        "embed_model",
+        "chroma_mode",
+        "default_project",
+    ):
         print(f"{k:18} {info[k]}")
     ck = config.chunk
-    print(f"{'chunk':18} {ck.window_words}w window, "
-          f"{ck.overlap_words}w overlap ({ck.overlap_ratio:.0%})")
+    print(
+        f"{'chunk':18} {ck.window_words}w window, "
+        f"{ck.overlap_words}w overlap ({ck.overlap_ratio:.0%})"
+    )
     rt = config.retrieve
     rr = f" + rerank ({rt.rerank_model.split('/')[-1]})" if rt.rerank else ""
-    print(f"{'retrieve':18} {'hybrid (dense+BM25, RRF)' if rt.hybrid else 'dense only'}{rr}")
-    print(f"{'daemon':18} {'on' if d.enabled else 'off'}  "
-          f"http://{d.host}:{d.port}/mcp  ({d.name}, grace {d.grace_period})")
+    print(
+        f"{'retrieve':18} {'hybrid (dense+BM25, RRF)' if rt.hybrid else 'dense only'}{rr}"
+    )
+    print(
+        f"{'daemon':18} {'on' if d.enabled else 'off'}  "
+        f"http://{d.host}:{d.port}/mcp  ({d.name}, grace {d.grace_period})"
+    )
     print("backends:")
     for name, ok in backends.items():
         print(f"  {'✓' if ok else '✗'} {name}")
@@ -1458,14 +1901,14 @@ def cmd_info(as_json: bool) -> None:
 # `apropos k` split was 5 vs 8) or a policy can't drift on one face only.
 @dataclass(frozen=True)
 class Verb:
-    tool: str                                   # MCP tool name (daemon path)
-    build: Callable[[Any], dict[str, Any]]      # parsed args → logical call params
-    emit: Callable[[Any, Any], None]            # (result, parsed args) → stdout
-    method: str = ""                            # Crib method (in-process); "" ⇒ tool
-    is_async: bool = False                      # in-process wraps in asyncio.run
-    wants_cwd: bool = True                       # append project_path / cwd
-    mcp: str | None = None                      # MCP params: "query k=8 …" ("" = none)
-    policy: str = ""                            # server.TOOL_POLICY declaration
+    tool: str  # MCP tool name (daemon path)
+    build: Callable[[Any], dict[str, Any]]  # parsed args → logical call params
+    emit: Callable[[Any, Any], None]  # (result, parsed args) → stdout
+    method: str = ""  # Crib method (in-process); "" ⇒ tool
+    is_async: bool = False  # in-process wraps in asyncio.run
+    wants_cwd: bool = True  # append project_path / cwd
+    mcp: str | None = None  # MCP params: "query k=8 …" ("" = none)
+    policy: str = ""  # server.TOOL_POLICY declaration
 
     def crib_method(self) -> str:
         return self.method or self.tool
@@ -1481,27 +1924,88 @@ class Verb:
 
 
 # emit adapters — normalize every emitter to the same (data, args) signature
-def _E(d, a): _emit(d, a.json)                                   # generic
-def _E_raw(d, a): print(d)                                      # verbatim (locate/snapshot)
-def _E_note(d, a): _print_note(d, a.json)
-def _E_apropos(d, a): _emit_apropos(d, a.json)
-def _E_status(d, a): _emit_status(d, a.json)
-def _E_dossier(d, a): _emit_code_dossier(d, a.json)
-def _E_report(d, a): _emit_code_report(d, a.json)
-def _E_rehome(d, a): _emit_code_rehome(d, a.json)
-def _E_graph(d, a): _emit_code_graph(d, a)
-def _E_dtree(d, a): _emit_design_tree(d, a)
-def _E_dcheck(d, a): _emit_design_check(d, a)
-def _E_dread(d, a): _emit_design_read(d, a)
-def _E_dlist(d, a): _emit_design_list(d, a)
-def _E_facet(d, a): _emit_facet_hits(d, a)
-def _E_plans(d, a): _emit_plan_list(d, a)
-def _E_dwrite(d, a): _emit_design_write(d, a)
-def _E_dimport(d, a): _emit_design_import(d, a)
-def _E_projects(d, a): _emit_projects(d, a.json)
-def _E_code(verb): return lambda d, a: _emit_code(d, verb, a.json)
-def _E_learning(verb): return lambda d, a: _emit_code_learning(d, verb, a.json)
-def _E_project(verb): return lambda d, a: _emit_project(d, verb, a.json)
+def _E(d, a):
+    _emit(d, a.json)  # generic
+
+
+def _E_raw(d, a):
+    print(d)  # verbatim (locate/snapshot)
+
+
+def _E_note(d, a):
+    _print_note(d, a.json)
+
+
+def _E_apropos(d, a):
+    _emit_apropos(d, a.json)
+
+
+def _E_status(d, a):
+    _emit_status(d, a.json)
+
+
+def _E_dossier(d, a):
+    _emit_code_dossier(d, a.json)
+
+
+def _E_report(d, a):
+    _emit_code_report(d, a.json)
+
+
+def _E_rehome(d, a):
+    _emit_code_rehome(d, a.json)
+
+
+def _E_graph(d, a):
+    _emit_code_graph(d, a)
+
+
+def _E_dtree(d, a):
+    _emit_design_tree(d, a)
+
+
+def _E_dcheck(d, a):
+    _emit_design_check(d, a)
+
+
+def _E_dread(d, a):
+    _emit_design_read(d, a)
+
+
+def _E_dlist(d, a):
+    _emit_design_list(d, a)
+
+
+def _E_facet(d, a):
+    _emit_facet_hits(d, a)
+
+
+def _E_plans(d, a):
+    _emit_plan_list(d, a)
+
+
+def _E_dwrite(d, a):
+    _emit_design_write(d, a)
+
+
+def _E_dimport(d, a):
+    _emit_design_import(d, a)
+
+
+def _E_projects(d, a):
+    _emit_projects(d, a.json)
+
+
+def _E_code(verb):
+    return lambda d, a: _emit_code(d, verb, a.json)
+
+
+def _E_learning(verb):
+    return lambda d, a: _emit_code_learning(d, verb, a.json)
+
+
+def _E_project(verb):
+    return lambda d, a: _emit_project(d, verb, a.json)
 
 
 def _b_lookup(a: Any) -> dict[str, Any]:
@@ -1533,9 +2037,12 @@ def _plan_items(a: Any) -> list[dict[str, Any]] | None:
     extra = getattr(a, "extra_items", None)
     if not extra:
         return None
-    first = {"title": a.title, "deps": a.deps,
-             "content": _body(a.content, a.file, default=""),
-             "sources": getattr(a, "sources", None)}
+    first = {
+        "title": a.title,
+        "deps": a.deps,
+        "content": _body(a.content, a.file, default=""),
+        "sources": getattr(a, "sources", None),
+    }
     return [first, *({"title": t} for t in extra)]
 
 
@@ -1545,316 +2052,695 @@ def _proj_of(a: Any) -> str | None:
     return getattr(a, "project", None)
 
 
-_PROJ = "project=None project_path=None"          # the two selectors, on most tools
+_PROJ = "project=None project_path=None"  # the two selectors, on most tools
 
 VERBS: dict[str, Verb] = {
     # notes: search / read
-    "note lookup": Verb("lookup", _b_lookup, _E, policy="read",
-                        mcp=f"query {_PROJ} k=8 tags=None keyword_labels=None "
-                            "keyword_weight=None summary_labels=None summary_weight=None"),
-    "note apropos": Verb("apropos", lambda a: {"query": a.query, "project": a.project,
-                                          "k": a.k, "tags": a.tags}, _E_apropos,
-                    policy="read", mcp=f"query {_PROJ} k=8 tags=None"),
-    "note read": Verb("read", lambda a: {"relpath": a.relpath, "project": a.project},
-                 _E_note, method="read_note", policy="read", mcp=f"relpath {_PROJ}"),
-    "note locate": Verb("locate", lambda a: {"relpath": a.relpath, "project": a.project},
-                   _E_raw, policy="read", mcp=f"relpath {_PROJ}"),
+    "note lookup": Verb(
+        "lookup",
+        _b_lookup,
+        _E,
+        policy="read",
+        mcp=f"query {_PROJ} k=8 tags=None keyword_labels=None "
+        "keyword_weight=None summary_labels=None summary_weight=None",
+    ),
+    "note apropos": Verb(
+        "apropos",
+        lambda a: {"query": a.query, "project": a.project, "k": a.k, "tags": a.tags},
+        _E_apropos,
+        policy="read",
+        mcp=f"query {_PROJ} k=8 tags=None",
+    ),
+    "note read": Verb(
+        "read",
+        lambda a: {"relpath": a.relpath, "project": a.project},
+        _E_note,
+        method="read_note",
+        policy="read",
+        mcp=f"relpath {_PROJ}",
+    ),
+    "note locate": Verb(
+        "locate",
+        lambda a: {"relpath": a.relpath, "project": a.project},
+        _E_raw,
+        policy="read",
+        mcp=f"relpath {_PROJ}",
+    ),
     # notes: write
-    "note store": Verb("store", lambda a: {"content": _read_content(a.content),
-                                      "title": a.title, "project": a.project,
-                                      "tags": a.tags}, _E, method="store_note",
-                  is_async=True, policy="write",
-                  mcp=f"content {_PROJ} title=None tags=None"),
-    "note append": Verb("append", lambda a: {"relpath": a.relpath,
-                                        "content": _read_content(a.content),
-                                        "heading": a.heading, "project": a.project},
-                   _E, method="append_note", is_async=True, policy="write",
-                   mcp=f"relpath content {_PROJ} heading=None"),
-    "note edit": Verb("edit", lambda a: {"relpath": a.relpath,
-                                    "new_content": _read_content(a.content),
-                                    "project": a.project}, _E,
-                 method="edit_note", is_async=True, policy="write",
-                 mcp=f"relpath new_content {_PROJ}"),
-    "note forget": Verb("forget", lambda a: {"relpath": a.relpath, "project": a.project},
-                   _E, is_async=True, policy="write", mcp=f"relpath {_PROJ}"),
-    "note move": Verb("move", lambda a: {"relpath": a.relpath, "to_project": a.to_project,
-                                    "to_relpath": a.to_relpath, "project": a.project},
-                 _E, method="move_note", is_async=True, policy="write",
-                 mcp=f"relpath {_PROJ} to_project=None to_relpath=None"),
-    "note reindex": Verb("reindex", lambda a: {"relpath": a.relpath, "project": a.project},
-                    _E, is_async=True, policy="read", mcp=f"relpath=None {_PROJ}"),
-    "project reconcile": Verb("reconcile", lambda a: {}, _E, method="reconcile_all",
-                      is_async=True, wants_cwd=False, policy="none", mcp=""),
-    "note versions": Verb("versions", lambda a: {"relpath": a.relpath, "project": a.project},
-                     _E, method="list_versions", policy="read", mcp=f"relpath {_PROJ}"),
-    "note restore": Verb("restore", lambda a: {"relpath": a.relpath, "version": a.version,
-                                          "project": a.project}, _E, is_async=True,
-                    policy="read", mcp=f"relpath version {_PROJ}"),
-    "note import": Verb("import", lambda a: {"paths": a.paths, "project": a.project},
-                   _E, method="import_files", is_async=True, policy="source",
-                   mcp=f"paths {_PROJ}"),
-    "note import-memory": Verb("import_memory", lambda a: {"project": a.project}, _E,
-                          method="import_claude_memory", is_async=True,
-                          policy="source", mcp=_PROJ),
-    "note distill": Verb("distill", lambda a: {"relpath": a.relpath, "project": a.project},
-                    _E, is_async=True, policy="read", mcp=f"relpath {_PROJ}"),
-    "note elaborate": Verb("elaborate", lambda a: {"label": a.label, "relpath": a.relpath,
-                                              "project": a.project,
-                                              "overwrite": a.overwrite}, _E,
-                      is_async=True, policy="read",
-                      mcp=f"label relpath=None {_PROJ} overwrite=False"),
-    "note summarize": Verb("summarize", lambda a: {"label": a.label, "relpath": a.relpath,
-                                              "project": a.project,
-                                              "overwrite": a.overwrite}, _E,
-                      is_async=True, policy="read",
-                      mcp=f"label relpath=None {_PROJ} overwrite=False"),
-    "memory snapshot": Verb("snapshot", lambda a: {"message": a.message}, _E_raw,
-                     wants_cwd=False, policy="none", mcp="message=None"),
-    "memory history": Verb("history", lambda a: {"relpath": a.relpath}, _E,
-                     wants_cwd=False, policy="none", mcp="relpath=None"),
-    "project list": Verb("projects", lambda a: {}, _E_projects,
-                         method="project_list", wants_cwd=False,
-                         policy="none", mcp=""),
-    "project use": Verb("use_project", lambda a: {"project": a.project}, _E,
-                        method="use_project", wants_cwd=False, policy="session",
-                        mcp="project"),
-    "project current": Verb("current_project", lambda a: {}, _E,
-                            method="current_project", policy="session",
-                            mcp="project_path=None"),
-    "status": Verb("status", lambda a: {}, _E_status, wants_cwd=False,
-                   policy="none", mcp=""),
+    "note store": Verb(
+        "store",
+        lambda a: {
+            "content": _read_content(a.content),
+            "title": a.title,
+            "project": a.project,
+            "tags": a.tags,
+        },
+        _E,
+        method="store_note",
+        is_async=True,
+        policy="write",
+        mcp=f"content {_PROJ} title=None tags=None",
+    ),
+    "note append": Verb(
+        "append",
+        lambda a: {
+            "relpath": a.relpath,
+            "content": _read_content(a.content),
+            "heading": a.heading,
+            "project": a.project,
+        },
+        _E,
+        method="append_note",
+        is_async=True,
+        policy="write",
+        mcp=f"relpath content {_PROJ} heading=None",
+    ),
+    "note edit": Verb(
+        "edit",
+        lambda a: {
+            "relpath": a.relpath,
+            "new_content": _read_content(a.content),
+            "project": a.project,
+        },
+        _E,
+        method="edit_note",
+        is_async=True,
+        policy="write",
+        mcp=f"relpath new_content {_PROJ}",
+    ),
+    "note forget": Verb(
+        "forget",
+        lambda a: {"relpath": a.relpath, "project": a.project},
+        _E,
+        is_async=True,
+        policy="write",
+        mcp=f"relpath {_PROJ}",
+    ),
+    "note move": Verb(
+        "move",
+        lambda a: {
+            "relpath": a.relpath,
+            "to_project": a.to_project,
+            "to_relpath": a.to_relpath,
+            "project": a.project,
+        },
+        _E,
+        method="move_note",
+        is_async=True,
+        policy="write",
+        mcp=f"relpath {_PROJ} to_project=None to_relpath=None",
+    ),
+    "note reindex": Verb(
+        "reindex",
+        lambda a: {"relpath": a.relpath, "project": a.project},
+        _E,
+        is_async=True,
+        policy="read",
+        mcp=f"relpath=None {_PROJ}",
+    ),
+    "project reconcile": Verb(
+        "reconcile",
+        lambda a: {},
+        _E,
+        method="reconcile_all",
+        is_async=True,
+        wants_cwd=False,
+        policy="none",
+        mcp="",
+    ),
+    "note versions": Verb(
+        "versions",
+        lambda a: {"relpath": a.relpath, "project": a.project},
+        _E,
+        method="list_versions",
+        policy="read",
+        mcp=f"relpath {_PROJ}",
+    ),
+    "note restore": Verb(
+        "restore",
+        lambda a: {"relpath": a.relpath, "version": a.version, "project": a.project},
+        _E,
+        is_async=True,
+        policy="read",
+        mcp=f"relpath version {_PROJ}",
+    ),
+    "note import": Verb(
+        "import",
+        lambda a: {"paths": a.paths, "project": a.project},
+        _E,
+        method="import_files",
+        is_async=True,
+        policy="source",
+        mcp=f"paths {_PROJ}",
+    ),
+    "note import-memory": Verb(
+        "import_memory",
+        lambda a: {"project": a.project},
+        _E,
+        method="import_claude_memory",
+        is_async=True,
+        policy="source",
+        mcp=_PROJ,
+    ),
+    "note distill": Verb(
+        "distill",
+        lambda a: {"relpath": a.relpath, "project": a.project},
+        _E,
+        is_async=True,
+        policy="read",
+        mcp=f"relpath {_PROJ}",
+    ),
+    "note elaborate": Verb(
+        "elaborate",
+        lambda a: {
+            "label": a.label,
+            "relpath": a.relpath,
+            "project": a.project,
+            "overwrite": a.overwrite,
+        },
+        _E,
+        is_async=True,
+        policy="read",
+        mcp=f"label relpath=None {_PROJ} overwrite=False",
+    ),
+    "note summarize": Verb(
+        "summarize",
+        lambda a: {
+            "label": a.label,
+            "relpath": a.relpath,
+            "project": a.project,
+            "overwrite": a.overwrite,
+        },
+        _E,
+        is_async=True,
+        policy="read",
+        mcp=f"label relpath=None {_PROJ} overwrite=False",
+    ),
+    "memory snapshot": Verb(
+        "snapshot",
+        lambda a: {"message": a.message},
+        _E_raw,
+        wants_cwd=False,
+        policy="none",
+        mcp="message=None",
+    ),
+    "memory history": Verb(
+        "history",
+        lambda a: {"relpath": a.relpath},
+        _E,
+        wants_cwd=False,
+        policy="none",
+        mcp="relpath=None",
+    ),
+    "project list": Verb(
+        "projects",
+        lambda a: {},
+        _E_projects,
+        method="project_list",
+        wants_cwd=False,
+        policy="none",
+        mcp="",
+    ),
+    "project use": Verb(
+        "use_project",
+        lambda a: {"project": a.project},
+        _E,
+        method="use_project",
+        wants_cwd=False,
+        policy="session",
+        mcp="project",
+    ),
+    "project current": Verb(
+        "current_project",
+        lambda a: {},
+        _E,
+        method="current_project",
+        policy="session",
+        mcp="project_path=None",
+    ),
+    "status": Verb(
+        "status", lambda a: {}, _E_status, wants_cwd=False, policy="none", mcp=""
+    ),
     # project lifecycle (whole repo) — repo-scoped, hence the `source` policy
-    "project setup": Verb("project_setup", lambda a: {"project": _proj_of(a)},
-                          _E_project("setup"), is_async=True, policy="source",
-                          mcp=_PROJ),
-    "project index": Verb("project_index", lambda a: {"project": _proj_of(a)},
-                          _E_project("index"), is_async=True, policy="source",
-                          mcp=f"{_PROJ} budget_s=None"),
-    "project status": Verb("project_status", lambda a: {"project": _proj_of(a)},
-                           _E_project("status"), policy="source", mcp=_PROJ),
-    "project forget": Verb("project_forget",
-                           lambda a: {"project": _proj_of(a),
-                                      "with_learnings": getattr(a, "with_learnings",
-                                                                False)},
-                           _E_project("forget"), policy="source",
-                           mcp=f"{_PROJ} with_learnings=False"),
+    "project setup": Verb(
+        "project_setup",
+        lambda a: {"project": _proj_of(a)},
+        _E_project("setup"),
+        is_async=True,
+        policy="source",
+        mcp=_PROJ,
+    ),
+    "project index": Verb(
+        "project_index",
+        lambda a: {"project": _proj_of(a)},
+        _E_project("index"),
+        is_async=True,
+        policy="source",
+        mcp=f"{_PROJ} budget_s=None",
+    ),
+    "project status": Verb(
+        "project_status",
+        lambda a: {"project": _proj_of(a)},
+        _E_project("status"),
+        policy="source",
+        mcp=_PROJ,
+    ),
+    "project forget": Verb(
+        "project_forget",
+        lambda a: {
+            "project": _proj_of(a),
+            "with_learnings": getattr(a, "with_learnings", False),
+        },
+        _E_project("forget"),
+        policy="source",
+        mcp=f"{_PROJ} with_learnings=False",
+    ),
     # in-repo storage: move a project's notes into / out of the repo that owns them
-    "project adopt": Verb("project_adopt", lambda a: {"project": _proj_of(a)},
-                          _E_project("adopt"), is_async=True, policy="source",
-                          mcp=_PROJ),
-    "project release": Verb("project_release", lambda a: {"project": _proj_of(a)},
-                            _E_project("release"), is_async=True, policy="source",
-                            mcp=_PROJ),
-    "project migrate": Verb("project_migrate", lambda a: {"project": _proj_of(a)},
-                            _E_project("migrate"), is_async=True, policy="source",
-                            mcp=_PROJ),
+    "project adopt": Verb(
+        "project_adopt",
+        lambda a: {"project": _proj_of(a)},
+        _E_project("adopt"),
+        is_async=True,
+        policy="source",
+        mcp=_PROJ,
+    ),
+    "project release": Verb(
+        "project_release",
+        lambda a: {"project": _proj_of(a)},
+        _E_project("release"),
+        is_async=True,
+        policy="source",
+        mcp=_PROJ,
+    ),
+    "project migrate": Verb(
+        "project_migrate",
+        lambda a: {"project": _proj_of(a)},
+        _E_project("migrate"),
+        is_async=True,
+        policy="source",
+        mcp=_PROJ,
+    ),
     # code index
-    "code lookup": Verb("code_lookup", lambda a: {"query": a.query,
-                                                 "project": a.project, "k": a.k},
-                        _E_code("code-lookup"), policy="read",
-                        mcp=f"query {_PROJ} k=8"),
-    "code xref": Verb("code_xref", lambda a: {"symbol": a.symbol, "project": a.project},
-                      _E_code("code-xref"), policy="read", mcp=f"symbol {_PROJ}"),
-    "code dossier": Verb("code_dossier", lambda a: {"symbol": a.symbol,
-                                                   "project": a.project,
-                                                   "path": a.path, "scope": a.scope,
-                                                   "lang": a.lang}, _E_dossier,
-                         policy="read",
-                         mcp=f"symbol {_PROJ} path='' scope='' lang=''"),
-    "code graph": Verb("code_graph", lambda a: {"symbol": _graph_symbol(a),
-                                               "direction": _graph_direction(a),
-                                               "depth": a.depth, "project": a.project,
-                                               "shape": _graph_shape(a),
-                                               "group_by": a.group_by,
-                                               "group_depth": a.group_depth,
-                                               "path": a.path, "scope": a.scope,
-                                               "lang": a.lang,
-                                               "under": a.under,
-                                               "exclude": a.exclude},
-                       _E_graph, policy="read",
-                       mcp=f"symbol=None {_PROJ} direction='callees' depth=6 "
-                           "shape=None group_by=None group_depth=0 "
-                           "path='' scope='' lang='' under='' exclude=''"),
-    "code index": Verb("code_index",
-                       lambda a: {"path": str(Path(a.path).expanduser().resolve()),
-                                  "project": a.project},
-                       _E_code("code-index"), is_async=True, policy="source",
-                       mcp=f"path {_PROJ}"),
-    "code convert": Verb("code_convert",
-                         lambda a: {"project": a.project, "apply": a.apply},
-                         _E, is_async=True, policy="write",
-                         mcp=f"{_PROJ} apply=False"),
+    "code lookup": Verb(
+        "code_lookup",
+        lambda a: {"query": a.query, "project": a.project, "k": a.k},
+        _E_code("code-lookup"),
+        policy="read",
+        mcp=f"query {_PROJ} k=8",
+    ),
+    "code xref": Verb(
+        "code_xref",
+        lambda a: {"symbol": a.symbol, "project": a.project},
+        _E_code("code-xref"),
+        policy="read",
+        mcp=f"symbol {_PROJ}",
+    ),
+    "code dossier": Verb(
+        "code_dossier",
+        lambda a: {
+            "symbol": a.symbol,
+            "project": a.project,
+            "path": a.path,
+            "scope": a.scope,
+            "lang": a.lang,
+        },
+        _E_dossier,
+        policy="read",
+        mcp=f"symbol {_PROJ} path='' scope='' lang=''",
+    ),
+    "code graph": Verb(
+        "code_graph",
+        lambda a: {
+            "symbol": _graph_symbol(a),
+            "direction": _graph_direction(a),
+            "depth": a.depth,
+            "project": a.project,
+            "shape": _graph_shape(a),
+            "group_by": a.group_by,
+            "group_depth": a.group_depth,
+            "path": a.path,
+            "scope": a.scope,
+            "lang": a.lang,
+            "under": a.under,
+            "exclude": a.exclude,
+        },
+        _E_graph,
+        policy="read",
+        mcp=f"symbol=None {_PROJ} direction='callees' depth=6 "
+        "shape=None group_by=None group_depth=0 "
+        "path='' scope='' lang='' under='' exclude=''",
+    ),
+    "code index": Verb(
+        "code_index",
+        lambda a: {
+            "path": str(Path(a.path).expanduser().resolve()),
+            "project": a.project,
+        },
+        _E_code("code-index"),
+        is_async=True,
+        policy="source",
+        mcp=f"path {_PROJ}",
+    ),
+    "code convert": Verb(
+        "code_convert",
+        lambda a: {"project": a.project, "apply": a.apply},
+        _E,
+        is_async=True,
+        policy="write",
+        mcp=f"{_PROJ} apply=False",
+    ),
     # code learnings — `read` policy BY INTENT (a learning is about a symbol in the
     # project you're in); see the exception block above `_write_project` in server.py
-    "learning add": Verb("learning_add", lambda a: {"symbol": a.symbol,
-                                                 "text": _read_content(a.text),
-                                                 "project": a.project},
-                        _E_learning("learning-add"), is_async=True, policy="read",
-                        mcp=f"symbol text {_PROJ}"),
-    "learning edit": Verb("learning_edit", lambda a: {"symbol": a.symbol,
-                                             "new_content": _read_content(a.text),
-                                             "project": a.project},
-                      _E_learning("learning-edit"), is_async=True, policy="read",
-                      mcp=f"symbol new_content {_PROJ}"),
-    "learning forget": Verb("learning_forget", lambda a: {"symbol": a.symbol,
-                                                 "project": a.project},
-                        _E_learning("learning-forget"), is_async=True, policy="read",
-                        mcp=f"symbol {_PROJ}"),
-    "learning read": Verb("learning_read", lambda a: {"symbol": a.symbol, "project": a.project},
-                      _E_learning("learning-read"), policy="read", mcp=f"symbol {_PROJ}"),
-    "learning reaffirm": Verb("learning_reaffirm", lambda a: {"symbol": a.symbol,
-                                                     "project": a.project},
-                          _E_learning("learning-reaffirm"), is_async=True, policy="read",
-                          mcp=f"symbol {_PROJ}"),
-    "learning migrate": Verb("learning_migrate",
-                             lambda a: {"project": a.project, "apply": a.apply},
-                             _E, is_async=True, policy="read",
-                             mcp=f"{_PROJ} apply=False"),
-    "learning report": Verb("learning_report", lambda a: {"project": a.project,
-                                                       "orphans_only": a.orphans},
-                           _E_report, policy="read",
-                           mcp=f"{_PROJ} orphans_only=False"),
-    "learning rehome": Verb("learning_rehome", lambda a: {"old_fqn": a.old, "new_fqn": a.new,
-                                                 "project": a.project}, _E_rehome,
-                        is_async=True, policy="read",
-                        mcp=f"old_fqn {_PROJ} new_fqn=None"),
+    "learning add": Verb(
+        "learning_add",
+        lambda a: {
+            "symbol": a.symbol,
+            "text": _read_content(a.text),
+            "project": a.project,
+        },
+        _E_learning("learning-add"),
+        is_async=True,
+        policy="read",
+        mcp=f"symbol text {_PROJ}",
+    ),
+    "learning edit": Verb(
+        "learning_edit",
+        lambda a: {
+            "symbol": a.symbol,
+            "new_content": _read_content(a.text),
+            "project": a.project,
+        },
+        _E_learning("learning-edit"),
+        is_async=True,
+        policy="read",
+        mcp=f"symbol new_content {_PROJ}",
+    ),
+    "learning forget": Verb(
+        "learning_forget",
+        lambda a: {"symbol": a.symbol, "project": a.project},
+        _E_learning("learning-forget"),
+        is_async=True,
+        policy="read",
+        mcp=f"symbol {_PROJ}",
+    ),
+    "learning read": Verb(
+        "learning_read",
+        lambda a: {"symbol": a.symbol, "project": a.project},
+        _E_learning("learning-read"),
+        policy="read",
+        mcp=f"symbol {_PROJ}",
+    ),
+    "learning reaffirm": Verb(
+        "learning_reaffirm",
+        lambda a: {"symbol": a.symbol, "project": a.project},
+        _E_learning("learning-reaffirm"),
+        is_async=True,
+        policy="read",
+        mcp=f"symbol {_PROJ}",
+    ),
+    "learning migrate": Verb(
+        "learning_migrate",
+        lambda a: {"project": a.project, "apply": a.apply},
+        _E,
+        is_async=True,
+        policy="read",
+        mcp=f"{_PROJ} apply=False",
+    ),
+    "learning report": Verb(
+        "learning_report",
+        lambda a: {"project": a.project, "orphans_only": a.orphans},
+        _E_report,
+        policy="read",
+        mcp=f"{_PROJ} orphans_only=False",
+    ),
+    "learning rehome": Verb(
+        "learning_rehome",
+        lambda a: {"old_fqn": a.old, "new_fqn": a.new, "project": a.project},
+        _E_rehome,
+        is_async=True,
+        policy="read",
+        mcp=f"old_fqn {_PROJ} new_fqn=None",
+    ),
     # design decisions + plan items (crib/designs.py). The two `add` verbs CREATE a
     # durable fact → `write` policy (name the project); every other verb is keyed by
     # a ref that only resolves inside one project → `read`, the learnings exception.
     # The FACET carries its own read/write/search verbs (`design read/edit/append/
     # lookup/list`) — the note verbs can't speak edges, so they aren't the way in.
-    "design add": Verb("design_add", lambda a: {"title": a.title,
-                                                "content": _body(
-                                                    a.content, a.file,
-                                                    what="the decision + rationale"),
-                                                "deps": a.deps, "project": a.project,
-                                                "sources": a.sources,
-                                                "proposed": a.proposed},
-                       _E_dwrite, is_async=True, policy="write",
-                       mcp=f"title content deps=None {_PROJ} sources=None "
-                           "proposed=False"),
-    "design read": Verb("design_read", lambda a: {"ref": a.ref,
-                                                  "project": a.project},
-                        _E_dread, policy="read", mcp=f"ref {_PROJ}"),
-    "design edit": Verb("design_edit",
-                        lambda a: {"ref": a.ref,
-                                   "new_content": _body(a.content, a.file,
-                                                        what="the new body"),
-                                   "project": a.project, "sources": a.sources},
-                        _E_dwrite, is_async=True, policy="read",
-                        mcp=f"ref new_content {_PROJ} sources=None"),
-    "design append": Verb("design_append",
-                          lambda a: {"ref": a.ref,
-                                     "content": _body(a.content, a.file,
-                                                      what="the text to append"),
-                                     "project": a.project,
-                                     "sources": a.source or None},
-                          _E_dwrite, is_async=True, policy="read",
-                          mcp=f"ref content {_PROJ} sources=None"),
-    "design lookup": Verb("design_lookup", lambda a: {"query": a.query, "k": a.k,
-                                                      "project": a.project},
-                          _E_facet, policy="read", mcp=f"query {_PROJ} k=8"),
-    "design list": Verb("design_list",
-                        lambda a: {"tainted": getattr(a, "tainted", False),
-                                   "project": _proj_of(a)},
-                        _E_dlist, policy="read", mcp=f"{_PROJ} tainted=False"),
-    "design dep-add": Verb("design_dep_add", lambda a: {"ref": a.ref,
-                                                        "dep_ref": a.dep_ref,
-                                                        "project": a.project},
-                           _E_dwrite, is_async=True, policy="read",
-                           mcp=f"ref dep_ref {_PROJ}"),
-    "design dep-remove": Verb("design_dep_remove", lambda a: {"ref": a.ref,
-                                                              "dep_ref": a.dep_ref,
-                                                              "project": a.project},
-                              _E_dwrite, is_async=True, policy="read",
-                              mcp=f"ref dep_ref {_PROJ}"),
-    "design forget": Verb("design_forget", lambda a: {"ref": a.ref, "force": a.force,
-                                                      "project": a.project},
-                          _E_dwrite, is_async=True, policy="read",
-                          mcp=f"ref {_PROJ} force=False"),
-    "design check": Verb("design_check", lambda a: {"ref": a.ref, "project": a.project},
-                         _E_dcheck, policy="read", mcp=f"{_PROJ} ref=None"),
-    "design reaffirm": Verb("design_reaffirm", lambda a: {"ref": a.ref,
-                                                          "project": a.project},
-                            _E_dwrite, is_async=True, policy="read",
-                            mcp=f"ref {_PROJ}"),
-    "design tree": Verb("design_tree",
-                        lambda a: {"ref": a.ref, "project": a.project,
-                                   "direction": ("dependents" if a.dependents
-                                                 else "deps"), "depth": a.depth},
-                        _E_dtree, policy="read",
-                        mcp=f"{_PROJ} ref=None direction='deps' depth=6"),
-    "design graph": Verb("design_graph",
-                         lambda a: {"project": a.project, "sources": a.sources},
-                         _E, policy="read", mcp=f"{_PROJ} sources=False"),
-    "plan graph": Verb("plan_graph",
-                       lambda a: {"project": a.project, "sources": a.sources},
-                       _E, policy="read", mcp=f"{_PROJ} sources=False"),
-    "design supersede": Verb("design_supersede", lambda a: {"ref": a.ref,
-                                                            "by_ref": a.by,
-                                                            "project": a.project},
-                             _E_dwrite, is_async=True, policy="read",
-                             mcp=f"ref {_PROJ} by_ref=None"),
+    "design add": Verb(
+        "design_add",
+        lambda a: {
+            "title": a.title,
+            "content": _body(a.content, a.file, what="the decision + rationale"),
+            "deps": a.deps,
+            "project": a.project,
+            "sources": a.sources,
+            "proposed": a.proposed,
+        },
+        _E_dwrite,
+        is_async=True,
+        policy="write",
+        mcp=f"title content deps=None {_PROJ} sources=None proposed=False",
+    ),
+    "design read": Verb(
+        "design_read",
+        lambda a: {"ref": a.ref, "project": a.project},
+        _E_dread,
+        policy="read",
+        mcp=f"ref {_PROJ}",
+    ),
+    "design edit": Verb(
+        "design_edit",
+        lambda a: {
+            "ref": a.ref,
+            "new_content": _body(a.content, a.file, what="the new body"),
+            "project": a.project,
+            "sources": a.sources,
+        },
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref new_content {_PROJ} sources=None",
+    ),
+    "design append": Verb(
+        "design_append",
+        lambda a: {
+            "ref": a.ref,
+            "content": _body(a.content, a.file, what="the text to append"),
+            "project": a.project,
+            "sources": a.source or None,
+        },
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref content {_PROJ} sources=None",
+    ),
+    "design lookup": Verb(
+        "design_lookup",
+        lambda a: {"query": a.query, "k": a.k, "project": a.project},
+        _E_facet,
+        policy="read",
+        mcp=f"query {_PROJ} k=8",
+    ),
+    "design list": Verb(
+        "design_list",
+        lambda a: {"tainted": getattr(a, "tainted", False), "project": _proj_of(a)},
+        _E_dlist,
+        policy="read",
+        mcp=f"{_PROJ} tainted=False",
+    ),
+    "design dep-add": Verb(
+        "design_dep_add",
+        lambda a: {"ref": a.ref, "dep_ref": a.dep_ref, "project": a.project},
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref dep_ref {_PROJ}",
+    ),
+    "design dep-remove": Verb(
+        "design_dep_remove",
+        lambda a: {"ref": a.ref, "dep_ref": a.dep_ref, "project": a.project},
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref dep_ref {_PROJ}",
+    ),
+    "design forget": Verb(
+        "design_forget",
+        lambda a: {"ref": a.ref, "force": a.force, "project": a.project},
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref {_PROJ} force=False",
+    ),
+    "design check": Verb(
+        "design_check",
+        lambda a: {"ref": a.ref, "project": a.project},
+        _E_dcheck,
+        policy="read",
+        mcp=f"{_PROJ} ref=None",
+    ),
+    "design reaffirm": Verb(
+        "design_reaffirm",
+        lambda a: {"ref": a.ref, "project": a.project},
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref {_PROJ}",
+    ),
+    "design tree": Verb(
+        "design_tree",
+        lambda a: {
+            "ref": a.ref,
+            "project": a.project,
+            "direction": ("dependents" if a.dependents else "deps"),
+            "depth": a.depth,
+        },
+        _E_dtree,
+        policy="read",
+        mcp=f"{_PROJ} ref=None direction='deps' depth=6",
+    ),
+    "design graph": Verb(
+        "design_graph",
+        lambda a: {"project": a.project, "sources": a.sources},
+        _E,
+        policy="read",
+        mcp=f"{_PROJ} sources=False",
+    ),
+    "plan graph": Verb(
+        "plan_graph",
+        lambda a: {"project": a.project, "sources": a.sources},
+        _E,
+        policy="read",
+        mcp=f"{_PROJ} sources=False",
+    ),
+    "design supersede": Verb(
+        "design_supersede",
+        lambda a: {"ref": a.ref, "by_ref": a.by, "project": a.project},
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref {_PROJ} by_ref=None",
+    ),
     # source attribution + the import tier: `import` prepares a doc (and writes
     # nothing), `promote` is the human act that ends the quarantine. Both are
     # keyed inside one project, so both take the `read` policy like the rest.
-    "design promote": Verb("design_promote", lambda a: {"ref": a.ref,
-                                                        "project": a.project},
-                           _E_dwrite, is_async=True, policy="read",
-                           mcp=f"ref {_PROJ}"),
-    "design import": Verb("design_import", lambda a: {"relpath": a.doc,
-                                                      "project": a.project},
-                          _E_dimport, policy="read", mcp=f"relpath {_PROJ}"),
-    "plan import": Verb("plan_import", lambda a: {"relpath": a.doc,
-                                                  "project": a.project},
-                        _E_dimport, policy="read", mcp=f"relpath {_PROJ}"),
-    "plan add": Verb("plan_add", lambda a: {"title": a.title,
-                                            # a plan item's body is OPTIONAL —
-                                            # title-only is a normal whole item, so
-                                            # an omitted body must not open $EDITOR
-                                            "content": _body(a.content, a.file,
-                                                             default=""),
-                                            "deps": a.deps, "after": a.after,
-                                            "before": a.before,
-                                            "items": _plan_items(a),
-                                            "project": a.project,
-                                            "sources": a.sources},
-                     _E_dwrite, is_async=True, policy="write",
-                     mcp=f"title=None content='' {_PROJ} deps=None after=None "
-                         "before=None items=None sources=None"),
-    "plan lookup": Verb("plan_lookup", lambda a: {"query": a.query, "k": a.k,
-                                                  "project": a.project},
-                        _E_facet, policy="read", mcp=f"query {_PROJ} k=8"),
-    "plan reaffirm": Verb("plan_reaffirm",
-                          lambda a: {"ref": a.ref, "project": a.project},
-                          _E, is_async=True, policy="read", mcp=f"ref {_PROJ}"),
-    "plan status": Verb("plan_status", lambda a: {"ref": a.ref, "status": a.status,
-                                                  "project": a.project},
-                        _E_dwrite, is_async=True, policy="read",
-                        mcp=f"ref status {_PROJ}"),
-    "plan dep-add": Verb("plan_dep_add", lambda a: {"ref": a.ref, "dep_ref": a.dep_ref,
-                                                    "project": a.project},
-                         _E_dwrite, is_async=True, policy="read",
-                         mcp=f"ref dep_ref {_PROJ}"),
-    "plan dep-remove": Verb("plan_dep_remove", lambda a: {"ref": a.ref,
-                                                          "dep_ref": a.dep_ref,
-                                                          "project": a.project},
-                            _E_dwrite, is_async=True, policy="read",
-                            mcp=f"ref dep_ref {_PROJ}"),
-    "plan forget": Verb("plan_forget", lambda a: {"ref": a.ref, "force": a.force,
-                                                  "project": a.project},
-                        _E_dwrite, is_async=True, policy="read",
-                        mcp=f"ref {_PROJ} force=False"),
-    "plan move": Verb("plan_move", lambda a: {"ref": a.ref, "after": a.after,
-                                              "before": a.before,
-                                              "project": a.project},
-                      _E_dwrite, is_async=True, policy="read",
-                      mcp=f"ref {_PROJ} after=None before=None"),
-    "plan list": Verb("plan_list", lambda a: {"all": getattr(a, "all", False),
-                                              "project": _proj_of(a)},
-                      _E_plans, policy="read", mcp=f"{_PROJ} all=False"),
-    "plan next": Verb("plan_next", lambda a: {"k": a.k, "project": a.project},
-                      _E_plans, policy="read", mcp=f"{_PROJ} k=5"),
+    "design promote": Verb(
+        "design_promote",
+        lambda a: {"ref": a.ref, "project": a.project},
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref {_PROJ}",
+    ),
+    "design import": Verb(
+        "design_import",
+        lambda a: {"relpath": a.doc, "project": a.project},
+        _E_dimport,
+        policy="read",
+        mcp=f"relpath {_PROJ}",
+    ),
+    "plan import": Verb(
+        "plan_import",
+        lambda a: {"relpath": a.doc, "project": a.project},
+        _E_dimport,
+        policy="read",
+        mcp=f"relpath {_PROJ}",
+    ),
+    "plan add": Verb(
+        "plan_add",
+        lambda a: {
+            "title": a.title,
+            # a plan item's body is OPTIONAL —
+            # title-only is a normal whole item, so
+            # an omitted body must not open $EDITOR
+            "content": _body(a.content, a.file, default=""),
+            "deps": a.deps,
+            "after": a.after,
+            "before": a.before,
+            "items": _plan_items(a),
+            "project": a.project,
+            "sources": a.sources,
+        },
+        _E_dwrite,
+        is_async=True,
+        policy="write",
+        mcp=f"title=None content='' {_PROJ} deps=None after=None "
+        "before=None items=None sources=None",
+    ),
+    "plan lookup": Verb(
+        "plan_lookup",
+        lambda a: {"query": a.query, "k": a.k, "project": a.project},
+        _E_facet,
+        policy="read",
+        mcp=f"query {_PROJ} k=8",
+    ),
+    "plan reaffirm": Verb(
+        "plan_reaffirm",
+        lambda a: {"ref": a.ref, "project": a.project},
+        _E,
+        is_async=True,
+        policy="read",
+        mcp=f"ref {_PROJ}",
+    ),
+    "plan status": Verb(
+        "plan_status",
+        lambda a: {"ref": a.ref, "status": a.status, "project": a.project},
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref status {_PROJ}",
+    ),
+    "plan dep-add": Verb(
+        "plan_dep_add",
+        lambda a: {"ref": a.ref, "dep_ref": a.dep_ref, "project": a.project},
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref dep_ref {_PROJ}",
+    ),
+    "plan dep-remove": Verb(
+        "plan_dep_remove",
+        lambda a: {"ref": a.ref, "dep_ref": a.dep_ref, "project": a.project},
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref dep_ref {_PROJ}",
+    ),
+    "plan forget": Verb(
+        "plan_forget",
+        lambda a: {"ref": a.ref, "force": a.force, "project": a.project},
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref {_PROJ} force=False",
+    ),
+    "plan move": Verb(
+        "plan_move",
+        lambda a: {
+            "ref": a.ref,
+            "after": a.after,
+            "before": a.before,
+            "project": a.project,
+        },
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref {_PROJ} after=None before=None",
+    ),
+    "plan list": Verb(
+        "plan_list",
+        lambda a: {"all": getattr(a, "all", False), "project": _proj_of(a)},
+        _E_plans,
+        policy="read",
+        mcp=f"{_PROJ} all=False",
+    ),
+    "plan next": Verb(
+        "plan_next",
+        lambda a: {"k": a.k, "project": a.project},
+        _E_plans,
+        policy="read",
+        mcp=f"{_PROJ} k=5",
+    ),
 }
 
 
@@ -1863,8 +2749,9 @@ VERBS: dict[str, Verb] = {
 # underscored (`note lookup` → `note_lookup`), the Crib method stays the old tool name
 # (or the explicit `method=`). Split them here so no row needs editing (Verb is frozen).
 VERBS = {
-    _key: replace(_v, method=_v.method or _v.tool,
-                  tool=_key.replace(" ", "_").replace("-", "_"))
+    _key: replace(
+        _v, method=_v.method or _v.tool, tool=_key.replace(" ", "_").replace("-", "_")
+    )
     for _key, _v in VERBS.items()
 }
 
@@ -1874,8 +2761,11 @@ def _cwd_of(args: Any) -> Path:
 
     Resolve to an absolute path client-side: the daemon anchors a relative path
     against its own cwd, so an unresolved `-P .` would silently select `default`."""
-    return (Path(args.project_path).expanduser().resolve()
-            if getattr(args, "project_path", None) else Path.cwd())
+    return (
+        Path(args.project_path).expanduser().resolve()
+        if getattr(args, "project_path", None)
+        else Path.cwd()
+    )
 
 
 def _resolve_verb(args: Any) -> tuple[Verb, dict[str, Any]]:
@@ -1885,7 +2775,7 @@ def _resolve_verb(args: Any) -> tuple[Verb, dict[str, Any]]:
     `note lookup --render` to the apropos section-rendering path."""
     noun = args.cmd
     sub = getattr(args, f"{noun}_verb", None)
-    if sub is None:                                    # flat top-level verb (status)
+    if sub is None:  # flat top-level verb (status)
         entry = VERBS[noun]
         return entry, entry.build(args)
     sub = {"search": "lookup", "a": "apropos"}.get(sub, sub)
@@ -1918,6 +2808,44 @@ def _resolve_serve_endpoint(args: Any) -> tuple[str, int]:
     return (args.host or cfg.daemon.host, args.port or cfg.daemon.port)
 
 
+def _unlinked_path_message(args: Any, entry: Verb, cfg: Any) -> str | None:
+    """The advisory text when an explicit -P/--project-path names a directory that
+    no `.crib` anchors (else None) — the call answers from the default project,
+    which is that path's DOCUMENTED fallback but almost always a missing `.crib`
+    rather than intent (see DESIGN: 'An explicit selector never loses'). A bare cwd
+    (no -P) is deliberate, so this is gated on `args.project_path` being set."""
+    if not (entry.wants_cwd and getattr(args, "project_path", None)):
+        return None
+    from .config import CribLink
+
+    path = _cwd_of(args)
+    if CribLink.find(path) is not None:  # a `.crib` decides the project — no surprise
+        return None
+    return (
+        f"crib: -P {args.project_path} is not linked to a crib project (no `.crib` "
+        f"in {path} or a parent) — answering from '{cfg.default_project}'. Did you "
+        f"mean `-p <name>`, or to link this repo: "
+        f"`crib project setup -P {args.project_path}`?"
+    )
+
+
+def _apply_unlinked_advisory(args: Any, msg: str | None, data: Any) -> Any:
+    """Surface the unlinked-path advisory coherently across output modes. Under
+    `--json` a stderr-only warning is HAZARDOUS: a stdout-parsing consumer reads a
+    legit-looking empty result (`items: []`) and never learns it answered from the
+    default project. So put the message IN the payload (`unlinked_project_path`) for
+    `--json`, and on stderr for a human. Also drops the daemon's own copy of the key
+    so the CLI is its single owner — daemon and in-process paths then behave
+    identically (the in-process path never sees the server key)."""
+    if isinstance(data, dict):
+        data.pop("unlinked_project_path", None)  # the CLI owns this, not the daemon
+        if msg and getattr(args, "json", False):
+            data["unlinked_project_path"] = msg
+    if msg:
+        print(msg, file=sys.stderr)
+    return data
+
+
 def _run_daemon(args: Any, cfg: Any) -> None:
     """Run a verb via the warm daemon: build the call, ship the caller's cwd as
     `project_path`, call the MCP tool, and emit — all off one registry row."""
@@ -1926,9 +2854,10 @@ def _run_daemon(args: Any, cfg: Any) -> None:
     entry, call = _dispatch(args)
     if entry.wants_cwd:
         call["project_path"] = str(_cwd_of(args))
+    msg = _unlinked_path_message(args, entry, cfg)
     with DaemonClient(cfg.daemon) as client:
         data = client.call(entry.tool, call)
-    entry.emit(data, args)
+    entry.emit(_apply_unlinked_advisory(args, msg, data), args)
 
 
 def _in_repo_guard(paths: Any, cfg: Any, cwd: Path) -> str | None:
@@ -1942,17 +2871,20 @@ def _in_repo_guard(paths: Any, cfg: Any, cwd: Path) -> str | None:
     two git histories of one file. Refuse and name the owner."""
     from .config import resolve_project
     from .paths import resolve_project_paths
+
     try:
         proj = resolve_project(cfg, None, cwd)
         pp = resolve_project_paths(paths, cfg, proj)
     except ValueError:
-        return None                          # unresolvable project: not our error
+        return None  # unresolvable project: not our error
     if not pp.in_repo:
         return None
-    return (f"crib memory: notes for {proj} live in {pp.store_root}; commit them "
-            f"with that repo's git. (The global memory store no longer carries "
-            f"them — `crib project release {proj}` moves them back if you want "
-            f"crib to sync them again.)")
+    return (
+        f"crib memory: notes for {proj} live in {pp.store_root}; commit them "
+        f"with that repo's git. (The global memory store no longer carries "
+        f"them — `crib project release {proj}` moves them back if you want "
+        f"crib to sync them again.)"
+    )
 
 
 def _run_git(args: Any, cfg: Any) -> int:
@@ -1962,7 +2894,7 @@ def _run_git(args: Any, cfg: Any) -> int:
     from .gitbacking import GitBacking
     from .paths import Paths
 
-    verb = getattr(args, "memory_verb", None)        # `crib memory setup/sync/push/pull`
+    verb = getattr(args, "memory_verb", None)  # `crib memory setup/sync/push/pull`
     # setup runs on a fresh machine where the data dir may not exist yet
     paths = Paths.resolve().ensure() if verb == "setup" else Paths.resolve()
     if (refusal := _in_repo_guard(paths, cfg, _cwd_of(args))) is not None:
@@ -1971,10 +2903,14 @@ def _run_git(args: Any, cfg: Any) -> int:
     git = GitBacking(paths.data_dir)
 
     if verb == "setup":
-        remote = getattr(args, "remote", None) or git.current_remote() or _prompt_remote()
+        remote = (
+            getattr(args, "remote", None) or git.current_remote() or _prompt_remote()
+        )
         if not remote:
-            print("crib memory setup: no remote given (pass --remote <url>)",
-                  file=sys.stderr)
+            print(
+                "crib memory setup: no remote given (pass --remote <url>)",
+                file=sys.stderr,
+            )
             return 1
         print(f"joining {remote} …")
         res = git.setup(remote)
@@ -1990,7 +2926,7 @@ def _run_git(args: Any, cfg: Any) -> int:
     print(res.message)
     if res.conflicts:
         return 1
-    if res.changed:                       # a pull rewrote notes → index must follow
+    if res.changed:  # a pull rewrote notes → index must follow
         print("reindexing pulled changes…")
         print(f"  {_reconcile(cfg)}")
     return 0 if res.ok else 1
@@ -2010,8 +2946,10 @@ def _reconcile(cfg: Any) -> Any:
     """Run reconcile via the warm daemon if available, else in-process."""
     if cfg.daemon.enabled:
         from . import sharedserver
+
         if sharedserver.available():
             from .client import DaemonClient
+
             with DaemonClient(cfg.daemon) as client:
                 return client.call("project_reconcile", {})
     crib = Crib.open()
@@ -2021,18 +2959,19 @@ def _reconcile(cfg: Any) -> Any:
         crib.close()
 
 
-def _run_inprocess(args: Any) -> None:
+def _run_inprocess(args: Any, cfg: Any) -> None:
     """Run a verb in-process against a Crib instance: same registry row as the
     daemon path, but call the Crib `method` with `cwd=<Path>` and wrap async ones
     in `asyncio.run` (the daemon does this awaiting server-side)."""
     entry, call = _dispatch(args)
     if entry.wants_cwd:
         call["cwd"] = _cwd_of(args)
+    msg = _unlinked_path_message(args, entry, cfg)
     crib = Crib.open()
     try:
         method = getattr(crib, entry.crib_method())
         data = asyncio.run(method(**call)) if entry.is_async else method(**call)
-        entry.emit(data, args)
+        entry.emit(_apply_unlinked_advisory(args, msg, data), args)
     finally:
         crib.close()
 
@@ -2043,22 +2982,24 @@ def _user_errors() -> tuple[type[BaseException], ...]:
     conditions — see `errors.py`). Two entries, one idea; a new user-error subclass
     needs no change here."""
     from .errors import CribUserError
+
     out: tuple[type[BaseException], ...] = (CribUserError,)
     try:
         from fastmcp.exceptions import ToolError
-    except ImportError:                       # fastmcp absent ⇒ no daemon path
+    except ImportError:  # fastmcp absent ⇒ no daemon path
         return out
     return (*out, ToolError)
 
 
 def main(argv: list[str] | None = None) -> int:
     import sys as _sys
-    args = build_parser().parse_args(
-        list(argv if argv is not None else _sys.argv[1:]))
+
+    args = build_parser().parse_args(list(argv if argv is not None else _sys.argv[1:]))
 
     if args.mcp or args.cmd == "serve":
         host, port = _resolve_serve_endpoint(args)
         from .server import main as serve
+
         transport = "http" if args.http else "stdio"
         serve(transport, host, port)
         return 0
@@ -2071,13 +3012,18 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "merge-driver":
         # git invokes this per-file during a merge — stay light, no config/daemon
         from .merge import run_driver
+
         return run_driver(args.base, args.current, args.other)
     # a noun with no verb (`crib note`) → point at its subcommands. `design`/`plan`
     # are NOT here: a bare one is a real command (`list`), per _BARE_NOUN_DEFAULT.
-    if args.cmd in ("note", "code", "learning") and \
-            getattr(args, f"{args.cmd}_verb", None) is None:
-        print(f"crib {args.cmd}: choose a subcommand (try `crib {args.cmd} --help`)",
-              file=sys.stderr)
+    if (
+        args.cmd in ("note", "code", "learning")
+        and getattr(args, f"{args.cmd}_verb", None) is None
+    ):
+        print(
+            f"crib {args.cmd}: choose a subcommand (try `crib {args.cmd} --help`)",
+            file=sys.stderr,
+        )
         return 2
 
     from .config import Config
@@ -2085,27 +3031,42 @@ def main(argv: list[str] | None = None) -> int:
 
     cfg = Config.load(Paths.resolve().config_file)
     if args.cmd == "memory" and getattr(args, "memory_verb", None) in (
-            "setup", "sync", "push", "pull"):
+        "setup",
+        "sync",
+        "push",
+        "pull",
+    ):
         return _run_git(args, cfg)
     try:
         if cfg.daemon.enabled and not args.no_daemon:
             from . import sharedserver
+
             if not sharedserver.available():
-                print("crib: daemon mode requires the 'sharedserver' binary on PATH "
-                      "(install it, set [daemon].enabled = false, or pass --no-daemon)",
-                      file=sys.stderr)
+                print(
+                    "crib: daemon mode requires the 'sharedserver' binary on PATH "
+                    "(install it, set [daemon].enabled = false, or pass --no-daemon)",
+                    file=sys.stderr,
+                )
                 return 1
             _run_daemon(args, cfg)
         else:
-            _run_inprocess(args)
+            _run_inprocess(args, cfg)
     except _user_errors() as e:
         # An ambiguous symbol is an ordinary, expected answer (≈12% of bare names),
         # not a crash — a traceback buries the candidate list under stack frames.
         # Safe to swallow on the daemon path too: those frames are fastmcp client
         # plumbing, and the real stack is in the daemon's log, not here.
-        msg = str(e).split(": ", 1)[-1] if str(e).startswith("Error calling tool") \
+        msg = (
+            str(e).split(": ", 1)[-1]
+            if str(e).startswith("Error calling tool")
             else str(e)
+        )
         print(f"crib: {msg}", file=sys.stderr)
+        # Under --json a stderr-only refusal leaves stdout EMPTY, so a stdout-parsing
+        # consumer gets an unparseable blank with no reason. Emit the error as JSON
+        # too (stderr stays the human channel; exit code is still 2).
+        if getattr(args, "json", False):
+            print(json.dumps({"error": msg}))
         return 2
     return 0
 

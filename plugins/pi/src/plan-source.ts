@@ -88,6 +88,24 @@ export function graphToSnapshot(graph: CribGraph, seq: number): PlanSnapshot {
     return { ns: "cribsheet", seq, project: graph.project, items }
 }
 
+/** A stable, volatile-field-free fingerprint of a snapshot's MEANINGFUL shape, so the
+ *  source emits only when the plan actually changed — not on every turn that merely
+ *  touches it (e.g. a re-status that bumps `updated`, or a no-op mutation). Excludes
+ *  `seq`, `updated`, and `ulid`; sorts items and deps so order churn isn't a change. */
+export function planDigest(snapshot: PlanSnapshot): string {
+    const items = snapshot.items
+        .map((i) => ({
+            id: i.id,
+            title: i.title,
+            kind: i.kind,
+            status: i.status ?? null,
+            tainted: i.tainted === true,
+            deps: [...i.deps].sort((a, b) => a.localeCompare(b)),
+        }))
+        .sort((a, b) => a.id.localeCompare(b.id))
+    return JSON.stringify({ project: snapshot.project ?? null, items })
+}
+
 // ── crib plan MUTATION tools (reads are ignored) ───────────────────
 // Tools arrive combiner/client-PREFIXED (e.g. cribsheet_plan_add, or the longer
 // mcp__…-combiner__cribsheet_plan_add), so match on the TAIL, with a separator
@@ -134,6 +152,11 @@ export function installCribPlanSource(pi: ExtensionAPI, opts: PlanSourceOptions)
     let seq = 0
     let dirty = false
     let lastCwd: string | undefined
+    // Fingerprint of the last EMITTED snapshot: a re-pull whose meaningful shape is
+    // unchanged does not re-emit (the trigger is dirty-tracking, but a mutation can
+    // land on the same content — a duplicate add, a re-status to the same value — and
+    // a stale slice self-heals on the next real change anyway).
+    let lastDigest: string | undefined
     // Guard against overlapping pulls (a burst of turn_end + a slow crib).
     let pulling = false
 
@@ -158,7 +181,12 @@ export function installCribPlanSource(pi: ExtensionAPI, opts: PlanSourceOptions)
             } catch {
                 return
             }
-            pi.events.emit("plan:snapshot", graphToSnapshot(graph, seq++))
+            const snapshot = graphToSnapshot(graph, seq)
+            const digest = planDigest(snapshot)
+            if (digest === lastDigest) return // unchanged — don't re-emit the same plan
+            lastDigest = digest
+            seq++
+            pi.events.emit("plan:snapshot", snapshot)
         } catch {
             // best effort; a dropped snapshot self-heals on the next trigger
         } finally {
