@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "trust-internal-data": {
+      "disable": ["unchecked-throwing-call-python"]
+    }
+  }
+}

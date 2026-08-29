@@ -63,7 +63,9 @@ reindexes, hash-taint catches drift) cannot do.
 
 from __future__ import annotations
 
+import contextlib
 import datetime
+import sys
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
@@ -525,22 +527,25 @@ class Designs:
         holds (including docs indexed in situ) plus each pillar tree on disk.
         Non-notes docs read QUALIFIED (`design:foo.md`) — the docref spelling."""
         out: set[str] = set()
+        # PLUGGABLE-BACKEND boundary: the vector store (Chroma/Json/…) sits behind
+        # an interface, so we don't own the exception types `get_meta` can raise.
+        # An unreachable store here must NARROW the doc set (a degraded citation
+        # search), not fail the read — hence the deliberate broad catch, reported.
         try:
             for meta in self.notestore.store.get_meta({"project": proj}).values():
                 rp = str(meta.get("relpath") or "")
                 if rp:
                     out.add(format_docref(str(meta.get("store") or "notes"), rp))
-        except Exception:  # noqa: BLE001 — an unreachable store narrows the search, not fails it
-            pass
+        except Exception as e:  # noqa: BLE001 — backend boundary, see above
+            print(f"[crib] known-docs: store meta unavailable: {e}", file=sys.stderr)
         for name, store in self._doc_stores.items():
-            try:
+            # a missing/unreadable pillar dir just contributes no docs
+            with contextlib.suppress(OSError, ValueError):
                 root = store.root(proj)
                 out |= {
                     format_docref(name, p.relative_to(root).as_posix())
                     for p in root.rglob("*.md")
                 }
-            except (OSError, ValueError):
-                pass
         return out
 
     def _resolve_doc(self, proj: str, ref: str) -> str:
@@ -2047,10 +2052,11 @@ class Designs:
         rows: list[dict[str, Any]] = []
         by_index: dict[str, str] = {}  # "#1" → the id it created
         prev: str | None = None
-        for i, item in enumerate(batch, 1):
-            if not isinstance(item, dict):  # a bare string is the obvious shorthand
-                item = {"title": str(item)}
-            raw_deps = item.get("deps") if item.get("deps") is not None else []
+        for i, raw in enumerate(batch, 1):
+            # a bare string is the obvious shorthand; normalize to a typed dict so
+            # deps/sources below read as their declared types, not `Any | str`
+            item: dict[str, Any] = raw if isinstance(raw, dict) else {"title": str(raw)}
+            raw_deps: list[str] = item.get("deps") or []
             # "#n" resolves against THIS batch; anything else is an ordinary ref
             item_deps = [by_index[d] if d in by_index else d for d in raw_deps]
             unknown = [d for d in raw_deps if d.startswith("#") and d not in by_index]
@@ -2459,10 +2465,9 @@ class Designs:
         ]
         existing = self._citing(proj, doc, kind)
         path = ""
-        try:
+        # best-effort absolute path; a doc that doesn't resolve just omits it
+        with contextlib.suppress(OSError, ValueError):
             path = str(self._doc_abspath(proj, doc))
-        except (OSError, ValueError):
-            pass
         return {
             "project": proj,
             "kind": kind,

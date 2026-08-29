@@ -95,15 +95,18 @@ def _resolve_embed_config(config: Config) -> Any:
     miss (no profile, no `embed` key, unreadable config)."""
     profile = os.environ.get("CRIB_PROFILE") or config.generate.profile
     if profile and config.generate.config:
-        try:
+        # llmkit is optional and we don't own its config schema; the realistic
+        # failures are it being absent (ImportError), an unreadable config file
+        # (OSError), or a missing/malformed profile (KeyError/ValueError). Any of
+        # those means "no usable profile" → fall back to the declared embed. A
+        # genuinely unexpected error is left to surface, not hidden.
+        with contextlib.suppress(ImportError, OSError, KeyError, ValueError):
             from llmkit.bridge import load
 
             conf = load(str(Path(config.generate.config).expanduser()))
             spec = conf.select(profile, "embed")
             if spec:
                 return replace(config.embed, model=spec)
-        except Exception:  # noqa: BLE001 — profile embed is best-effort; fall back
-            pass
     return config.embed
 
 
@@ -375,10 +378,17 @@ class Crib:
         for root, events in by_root.items():
             _POOL.notify_changes(Path(root), events)
         if len(changes) > CODE_BATCH_FALLBACK:
+            # OUTER RUNNER (filesystem-watch callback): the OS calls us here at a
+            # top-level event boundary, so an exception escaping would tear down the
+            # watch loop and silently stop all indexing — hence the deliberate broad
+            # catch. We do NOT swallow it: report it and let the next event retry.
             try:
                 await asyncio.to_thread(self._revalidate, project)
-            except Exception:  # noqa: BLE001 — never let a watcher event crash the loop
-                pass
+            except Exception as e:  # noqa: BLE001 — outer runner, see above
+                print(
+                    f"[crib] watch revalidate failed for {project!r}: {e}",
+                    file=sys.stderr,
+                )
             return
         for relpath, (root, deleted) in changes.items():
             try:
@@ -416,8 +426,12 @@ class Crib:
                         None,
                         "defer",
                     )
-            except Exception:  # noqa: BLE001 — one bad file never aborts the batch
-                pass
+            except Exception as e:  # noqa: BLE001 — per-file batch boundary, see below
+                # OUTER RUNNER (per-file indexing batch): one malformed/unreadable
+                # file must not abort the whole change batch, so each file is
+                # isolated with a broad catch on purpose — but we report which file
+                # failed rather than swallowing it.
+                print(f"[crib] index batch: skipped {relpath!r}: {e}", file=sys.stderr)
 
     def _register_code_root(self, project: str, root: str | Path) -> None:
         """Watch a repo's source root as soon as it's indexed (so a mid-session
@@ -449,14 +463,24 @@ class Crib:
                     }
                 )
                 for rel in files:
-                    try:  # inline: describe now, no queue
+                    try:  # inline: describe now, no queue — per-file boundary
                         await asyncio.to_thread(
                             self._index_code_file_tracked, root, rel, name, True
                         )
-                    except Exception:  # noqa: BLE001 — one bad file never aborts catch-up
-                        pass
-            except Exception:  # noqa: BLE001 — best-effort; missing/odd index is fine
-                pass
+                    except Exception as e:  # noqa: BLE001 — see comment below
+                        print(
+                            f"[crib] enrichment catch-up: skipped {rel!r}: {e}",
+                            file=sys.stderr,
+                        )
+            except Exception as e:  # noqa: BLE001 — per-project catch-up boundary
+                # OUTER RUNNER (startup catch-up over every project): a missing or
+                # odd SymbolIndex for one project must not stop the others, so the
+                # per-project body is isolated with a deliberate broad catch — and
+                # reported, not swallowed.
+                print(
+                    f"[crib] enrichment catch-up skipped {name!r}: {e}",
+                    file=sys.stderr,
+                )
 
     async def _keyword_backlog(self) -> None:
         """Notes counterpart of `_describe_backlog`: catch the keyword_index AND
@@ -1121,6 +1145,9 @@ class Crib:
         # Python so retrieval never goes dark between upgrade and sweep.
         stamped = self.stored_chunk_schema() >= CHUNK_SCHEMA_VERSION
         where = {"project": proj, "store": store} if stamped else {"project": proj}
+        # `where` is a vector-store filter dict (Chroma/Json metadata predicate),
+        # not a SQL string; there is no SQL here.
+        # pi-lens-ignore: python-sql-injection
         dense = self.store.query(vec, k=topn, where=where)
         if not stamped:
             dense = [
@@ -1364,14 +1391,13 @@ class Crib:
         for h in self.lookup(query, project, k, tags, dedupe="section", cwd=cwd):
             section = h.snippet
             if h.line_start and h.line_end:
-                try:
+                # a moved/unreadable/short file just keeps the snippet fallback
+                with contextlib.suppress(OSError, ValueError):
                     src = self.pillars.get(h.store, self.notestore).abspath(
                         proj, h.relpath
                     )
                     lines = src.read_text().splitlines()
                     section = "\n".join(lines[h.line_start - 1 : h.line_end])
-                except (OSError, ValueError):
-                    pass
             out.append({**vars(h), "section": section})
         return out
 
@@ -1919,6 +1945,8 @@ class Crib:
         "index everything, including these notes" does NOT, and adoption is the
         moment that became true. Silently-ignored config is the kind that gets
         rewritten to "fix" a problem it never had."""
+        if link.root is None:  # a found link always has a root; be explicit for None
+            return []
         hits = [
             p
             for p in (*link.doc_patterns, *link.paths)
@@ -1948,7 +1976,7 @@ class Crib:
         Idempotent: adopting an already-adopted project at the same store is a
         no-op."""
         link = CribLink.find(cwd or Path.cwd())
-        if link is None:
+        if link is None or link.root is None:
             raise CribUserError(
                 "no `.crib` at or above this directory — an adopt needs the repo "
                 "that will carry the notes (add a `.crib` with `project:` and "
@@ -2114,7 +2142,9 @@ class Crib:
     # like the chunk-schema story) — which is also what heals old-layout files a
     # lagging, not-yet-upgraded machine pushes into the synced data repo.
 
-    # legacy subdir under notes/ → the pillar store that owns it now
+    # legacy subdir under notes/ → the pillar store that owns it now.
+    # read-only constant lookup table, intentionally shared (never mutated).
+    # pi-lens-ignore: python-mutable-class-attr
     _LEGACY_FACET_DIRS = {
         "design": "design",
         "plans": "plans",
@@ -3141,13 +3171,24 @@ class Crib:
         The per-section mop-up sweeps the bulk-missed tail per facet (plain-text
         `parse_terms`, the proven path). Bounded-concurrent, per-call timeout,
         error-isolated; off the write path."""
-        from .generate import agenerate, agenerate_structured, resolve_provider
+        from .generate import (
+            GenerationError,
+            agenerate,
+            agenerate_structured,
+            resolve_provider,
+        )
         from .section_index import parse_terms
 
-        try:  # record the resolved provider for provenance
+        # provenance only (the resolved model name for the record); the real
+        # generation below surfaces its own errors, so a resolution failure here
+        # just falls back to the configured name.
+        try:
             _p = resolve_provider(self.config.generate, purpose)
             model = _p.model or _p.adapter or ""
-        except Exception:  # noqa: BLE001 — provenance only; generation reports real errors
+        # FP: the rule matches the `or` in the except BODY, not the exception
+        # spec (which is a plain tuple of types, not a boolean expression).
+        # pi-lens-ignore: no-boolean-in-except
+        except (GenerationError, KeyError, ValueError, AttributeError):
             model = self.config.generate.model or self.config.generate.adapter
 
         # Group chunks into their sections (section_hash), reconstructing the full
@@ -3165,11 +3206,9 @@ class Crib:
                     section_line_maps[rp] = {}
             span = section_line_maps[rp].get(heading)
             if span:
-                try:
+                with contextlib.suppress(OSError):
                     lines = self.abspath(proj, rp).read_text().splitlines()
                     return "\n".join(lines[span[0] - 1 : span[1]])
-                except OSError:
-                    pass
             return fallback
 
         pass_start = time.time()  # prune guard: spare entries written mid-pass
@@ -3755,12 +3794,11 @@ def _build_store(
     if mode == "shared":
         return _build_shared_chroma(paths, config)
     if mode == "embedded":
-        try:
+        # chromadb absent → fall through to the dependency-free persistent store
+        with contextlib.suppress(ImportError):
             from .store import ChromaStore
 
             return ChromaStore.embedded(str(paths.chroma_dir)), None
-        except ImportError:
-            pass  # fall through to the dependency-free persistent store
     # mode == "json", or embedded requested but chromadb unavailable
     return JsonStore(paths.index_dir / "store.json"), None
 
