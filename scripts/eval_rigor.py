@@ -109,7 +109,7 @@ def main(argv=None) -> int:
     for p, rel, q, tset in items:
         f, dense, gated = signals(p, q)
         d_order = order_from(dense, 60)
-        g_order = sorted(gated, key=gated.get, reverse=True)[:60]
+        g_order = sorted(gated, key=lambda k: gated[k], reverse=True)[:60]
         blend = {i: mm(dense).get(i, 0) + args.w * mm(gated).get(i, 0) for i in range(f.n)}
         b_order = order_from(blend, 60)
         rd = rank_exact(f, d_order, rel, tset)

@@ -134,8 +134,8 @@ def main() -> int:
         from crib.retrieve import reciprocal_rank_fusion
         name, kw, dense = three_facets(feat, proj, qf, qv)
         lists = [[str(i) for i in order_from(dense, 40)],
-                 [str(i) for i in sorted(name, key=name.get, reverse=True)[:40]],
-                 [str(i) for i in sorted(kw, key=kw.get, reverse=True)[:40]]]
+                 [str(i) for i in sorted(name, key=lambda i: name[i], reverse=True)[:40]],
+                 [str(i) for i in sorted(kw, key=lambda i: kw[i], reverse=True)[:40]]]
         fused = reciprocal_rank_fusion(lists)
         return [feat.by[feat.ids[int(x)]]["fqname"] for x in fused[:k]]
 
