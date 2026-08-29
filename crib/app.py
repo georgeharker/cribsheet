@@ -2848,6 +2848,41 @@ class Crib:
             self.resolve_project(project, cwd), ref, status
         )
 
+    def plan_read(
+        self, ref: str, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
+        """A plan item's dossier: body, status, annotated edges, derived blocking
+        + taint — the plan-side design_read."""
+        return self.designs.plan_read(self.resolve_project(project, cwd), ref)
+
+    async def plan_edit(
+        self,
+        ref: str,
+        new_content: str,
+        project: str | None = None,
+        sources: list[Any] | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
+        """Rewrite a plan item's body through the facet; result names what it
+        tainted. `sources`, when given, replaces its citations."""
+        return await self.designs.plan_edit(
+            self.resolve_project(project, cwd), ref, new_content, sources
+        )
+
+    async def plan_append(
+        self,
+        ref: str,
+        content: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+        sources: list[Any] | None = None,
+    ) -> dict[str, Any]:
+        """Extend a plan item's body through the facet; result names what it
+        tainted. `sources` ADDS citations, never replaces."""
+        return await self.designs.plan_append(
+            self.resolve_project(project, cwd), ref, content, sources
+        )
+
     async def plan_dep_add(
         self,
         ref: str,

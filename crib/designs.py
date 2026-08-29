@@ -1192,14 +1192,14 @@ class Designs:
         graph = self._load_graph(proj)
         dep_nodes = [self._resolve_ref(graph, r) for r in (deps or [])]
         relpath = self._unique_relpath(proj, kind, _slug(title))
-        # A new decision is born VERIFIED: it was written against the deps as they
-        # read right now, so seeding `checked` says exactly that (a fresh note
-        # showing up already tainted would be noise, not signal).
-        checked = (
-            {"checked": {n.id: n.body_hash for n in dep_nodes}}
-            if kind == "design"
-            else {}
-        )
+        # A new note is born VERIFIED, decision OR plan item: it was written
+        # against the deps as they read right now, so seeding `checked` says
+        # exactly that (a fresh note showing up already tainted would be noise, not
+        # signal). Seeding plans too is what lets an EDIT's taint diff mean
+        # something — otherwise every plan dependent is born tainted and
+        # `plan_edit`'s `newly_tainted` could never fire. A dep added LATER
+        # (`_dep_add`) still starts unverified on purpose; this is the create path.
+        checked = {"checked": {n.id: n.body_hash for n in dep_nodes}}
         # Same story for `sources`: the citation records the section hash AS
         # CAPTURED, so the entry is born current with the doc it was drawn from
         # and starts checking against it from the next edit onward.
@@ -1383,11 +1383,13 @@ class Designs:
         rewrite: Any,
         sources: list[Any] | None = None,
         precaptured: bool = False,
+        kind: str = "design",
     ) -> dict[str, Any]:
-        """The edge-aware write path shared by `design_edit`/`design_append`:
-        snapshot the taint state, write the new body through the locked index
-        path, then diff — so the answer to "I changed this" is "…and here is what
-        that just put out of date", computed against the PRE-edit state.
+        """The edge-aware write path shared by the edit/append verbs of BOTH
+        facets (`kind` selects which): snapshot the taint state, write the new
+        body through the locked index path, then diff — so the answer to "I
+        changed this" is "…and here is what that just put out of date", computed
+        against the PRE-edit state.
 
         Hash-taint remains the safety net for a raw file edit; this is the
         encouraged path because only it can name the consequences in the same
@@ -1396,10 +1398,10 @@ class Designs:
         `sources`, when given, REPLACES the recorded citations (re-captured at
         their current hashes) — the decision is being restated, so what it was
         drawn from is restated with it. Omitted, they are left untouched.
-        `precaptured` marks rows already in stored form (design_append's additive
+        `precaptured` marks rows already in stored form (the append verbs' additive
         merge, where existing citations must KEEP their capture-time hashes)."""
         graph = self._load_graph(proj)
-        node = self._resolve_ref(graph, ref, "design")
+        node = self._resolve_ref(graph, ref, kind)
         before = set(self._taint(graph))
         note = self._note(proj, node)
         fm: dict[str, Any] = {}
@@ -1433,7 +1435,7 @@ class Designs:
         if newly:
             res["next"] = (
                 f"{len(newly)} dependent(s) now read as out of date with this — "
-                f"`design_read <ref>` each, then `design_reaffirm <ref>` where it "
+                f"`{kind}_read <ref>` each, then `{kind}_reaffirm <ref>` where it "
                 f"still holds"
             )
         return res
@@ -1461,26 +1463,109 @@ class Designs:
         hash they were CAPTURED at (their whole meaning); only the new ones are
         hashed as the doc reads now. `design_edit(sources=)` remains the
         replace-everything spelling."""
-        merged: list[Any] | None = None
-        if sources:
-            graph = self._load_graph(proj)
-            node = self._resolve_ref(graph, ref, "design")
-            kept = [
-                {k: v for k, v in s.items() if k != "current"} for s in node.sources
-            ]
-            have = {(s.get("ref"), s.get("heading")) for s in kept}
-            new = [
-                r
-                for r in _source_rows(self._capture_sources(proj, sources))
-                if (r.get("ref"), r.get("heading")) not in have
-            ]
-            merged = kept + new
+        merged = self._append_sources(proj, ref, "design", sources)
         return await self._write_body(
             proj,
             ref,
             lambda body: body.rstrip() + "\n\n" + (content or "").strip() + "\n",
             sources=None if merged is None else merged,
             precaptured=merged is not None,
+        )
+
+    def _append_sources(
+        self, proj: str, ref: str, kind: str, sources: list[Any] | None
+    ) -> list[Any] | None:
+        """Merge new citations onto a node's existing ones (deduped by section),
+        the additive semantics the append verbs share: existing rows KEEP their
+        capture-time hashes, only the new ones are hashed as the doc reads now.
+        Returns None when there is nothing to add — leave the citations untouched."""
+        if not sources:
+            return None
+        graph = self._load_graph(proj)
+        node = self._resolve_ref(graph, ref, kind)
+        kept = [{k: v for k, v in s.items() if k != "current"} for s in node.sources]
+        have = {(s.get("ref"), s.get("heading")) for s in kept}
+        new = [
+            r
+            for r in _source_rows(self._capture_sources(proj, sources))
+            if (r.get("ref"), r.get("heading")) not in have
+        ]
+        return kept + new
+
+    def plan_read(self, proj: str, ref: str) -> dict[str, Any]:
+        """A plan item's dossier: body, status, every edge annotated, its DERIVED
+        blocking (the mixed-dep rule `plan_next` gates on), and its own taint.
+
+        The `design_read` of the plan facet, with the one thing a plan item lives
+        or dies by that a decision has no analog for — `blocked_by`: what it is
+        waiting on right now, and why (an unfinished plan dep, a tainted or
+        proposed design dep). A finished item whose cited source moved carries
+        `revisit`; the graph reports it, it never re-opens the status."""
+        graph = self._load_graph(proj)
+        node = self._resolve_ref(graph, ref, "plan")
+        gating = self._taint(graph, sources=False)
+        full = self._taint(graph)
+        unresolved = {d for d in node.deps if d not in graph.nodes}
+        note_ids = self._note_dep_ids(proj, unresolved) if unresolved else set()
+        row = self._row(graph, node, gating, note_ids, full)
+        note = self._note(proj, node)
+        out = {
+            "project": proj,
+            **node.brief(),
+            "body": note.body.strip(),
+            "deps": [self._annotate(graph, full, d) for d in node.deps],
+            "dependents": [
+                self._annotate(graph, full, d)
+                for d in graph.dependents.get(node.id, [])
+            ],
+            "sources": [self._source_view(s) for s in node.sources],
+            "blocked": row["blocked"],
+            "blocked_by": row["blocked_by"],
+            "note_deps": row["note_deps"],
+            "missing_deps": row["missing_deps"],
+            "tainted": node.id in full,
+        }
+        if row.get("revisit"):
+            out["revisit"] = row["revisit"]
+            out["next"] = row["next"]
+        return out
+
+    async def plan_edit(
+        self, proj: str, ref: str, new_content: str, sources: list[Any] | None = None
+    ) -> dict[str, Any]:
+        """Replace a plan item's body through the facet, answering with the
+        dependents the change just tainted — the plan-side `design_edit`.
+        `sources` replaces its citations."""
+        return await self._write_body(
+            proj,
+            ref,
+            lambda _: (new_content or "").strip() + "\n",
+            sources,
+            kind="plan",
+        )
+
+    async def plan_append(
+        self, proj: str, ref: str, content: str, sources: list[Any] | None = None
+    ) -> dict[str, Any]:
+        """Extend a plan item's body through the facet, answering with the
+        dependents the change just tainted — the plan-side `design_append`.
+
+        A plan body is OPTIONAL, so an append onto a title-only item just SETS the
+        body rather than prepending blank lines. `sources` ADDS citations (deduped
+        by section), existing ones keeping their capture-time hashes."""
+        merged = self._append_sources(proj, ref, "plan", sources)
+
+        def rewrite(body: str) -> str:
+            text = (content or "").strip() + "\n"
+            return body.rstrip() + "\n\n" + text if body.strip() else text
+
+        return await self._write_body(
+            proj,
+            ref,
+            rewrite,
+            sources=None if merged is None else merged,
+            precaptured=merged is not None,
+            kind="plan",
         )
 
     def design_list(self, proj: str, tainted: bool = False) -> dict[str, Any]:

@@ -1535,6 +1535,69 @@ def build_server(crib: Crib | None = None):
         return await crib.plan_status(ref, status, project)
 
     @crib_tool("read")
+    def plan_read(
+        ref: str, project: str | None = None, project_path: str | None = None
+    ) -> dict[str, Any]:
+        """A plan item's DOSSIER in one call — body, status, every dep and dependent
+        annotated, and the one thing a plan item lives or dies by: `blocked_by`,
+        what it is waiting on right now and why. The `plan_list` picture for ONE
+        item, plus its body; the plan-facet twin of `design_read`.
+
+        CUE: about to pick up, cite, or change a plan item. Do this INSTEAD of
+        `note_read` on a path under `plans/` — same prose, plus what it waits on,
+        what waits on it, and whether either moved under you.
+
+        CONTRACT (mixed deps): a **plan** dep blocks until done/verified; a
+        **design** dep blocks while TAINTED or PROPOSED; a **note** dep never
+        blocks. A finished item whose cited source moved carries `revisit` — the
+        graph reports it, it never re-opens the status. Resolves its project like a
+        read."""
+        return crib.plan_read(ref, project)
+
+    @crib_tool("read")
+    async def plan_edit(
+        ref: str,
+        new_content: str,
+        project: str | None = None,
+        sources: list[str] | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        """Rewrite a plan item's body THROUGH THE FACET, and get back what the
+        change tainted: `newly_tainted` lists every item that now reads as out of
+        date, computed against the pre-edit state. The plan-side `design_edit`.
+
+        CUE: changing a plan item's detail. PREFER THIS OVER `note_edit` for
+        anything under `plans/` — `note_edit` writes the same bytes but tells you
+        nothing about the items that depended on this one. Read it first
+        (`plan_read`).
+
+        CONTRACT: hash-taint is the safety net for edits made by any other route,
+        so nothing is lost by editing a plan item as a raw file — but only this
+        path names the consequences in the same breath. `sources`, when given,
+        REPLACES the item's citations; omitted, they are left alone. Resolves its
+        project like a read, as `plan_status` does."""
+        return await crib.plan_edit(ref, new_content, project, sources)
+
+    @crib_tool("read")
+    async def plan_append(
+        ref: str,
+        content: str,
+        project: str | None = None,
+        project_path: str | None = None,
+        sources: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Extend a plan item's body through the facet — the same edge-aware answer
+        as `plan_edit` (`newly_tainted`), for when new detail EXTENDS an item
+        rather than replacing it. The plan-side `design_append`.
+
+        A plan body is OPTIONAL, so appending onto a title-only item just SETS the
+        body rather than prepending blank lines. `sources` ADDS doc-section
+        citations (deduped; existing ones keep their capture-time hashes) — the
+        post-hoc wire for the item-first, doc-later sequence. Resolves its project
+        like a read, as `plan_status` does."""
+        return await crib.plan_append(ref, content, project, sources=sources)
+
+    @crib_tool("read")
     def plan_lookup(
         query: str,
         project: str | None = None,

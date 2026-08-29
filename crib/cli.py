@@ -907,6 +907,55 @@ def _emit_plan_list(data: Any, args: Any) -> None:
         print(f"\n({data['hidden']} finished item(s) hidden — --all to show)")
 
 
+def _emit_plan_read(data: Any, args: Any) -> None:
+    """A plan item's dossier: header + status, what it's blocked on, the body,
+    then the annotated edges — the `design read` layout, adapted to the plan
+    facet's derived blocking."""
+    if getattr(args, "json", False):
+        print(json.dumps(data, indent=2, default=str))
+        return
+    if not isinstance(data, dict):
+        print(data)
+        return
+    status = data.get("status", "")
+    mark = "⊘" if data.get("blocked") else _PLAN_GLYPH.get(status, "·")
+    flag = f"  {_TAINT} STALE" if data.get("tainted") else ""
+    print(
+        f"{mark} {data.get('title', '')}  [{status}]{flag}   "
+        f"{data.get('relpath', '')}   (updated {data.get('updated', '?')})"
+    )
+    for b in data.get("blocked_by") or []:
+        st = f" ({b['status']})" if isinstance(b, dict) and b.get("status") else ""
+        kind = f"{b['kind']} " if isinstance(b, dict) and b.get("kind") else ""
+        ref = b.get("ref") or b.get("title", "") if isinstance(b, dict) else b
+        print(f"  ← waiting on {kind}{ref}{st}")
+    if data.get("missing_deps"):
+        print(f"  ✗ missing dep(s): {', '.join(data['missing_deps'])}")
+    for why in data.get("revisit") or []:
+        print(f"  {_TAINT} revisit: {why}")
+    if data.get("next"):
+        print(f"  → {data['next']}")
+    print()
+    _render_markdown((data.get("body") or "").strip() + "\n")
+    for label, arrow in (("deps", "▸ waits on"), ("dependents", "◂ blocks")):
+        rows = data.get(label) or []
+        if not rows:
+            continue
+        print(f"  {arrow}")
+        for r in rows:
+            st = f"  [{r['status']}]" if r.get("status") else ""
+            print(
+                f"     {r.get('title', '')}{st}{_facet_flags(r)}"
+                f"   {r.get('relpath', '')}"
+            )
+    sources = data.get("sources") or []
+    if sources and isinstance(sources[0], dict):
+        print("  § drawn from")
+        for s in sources:
+            mk = {"changed": _TAINT, "missing": "✗"}.get(s.get("state", ""), " ")
+            print(f"    {mk} {s.get('label', '')}  [{s.get('state', '')}]")
+
+
 def _emit_design_import(data: Any, args: Any) -> None:
     """A doc prepared for extraction: the PROCEDURE first (it is the payload —
     the verb wrote nothing and ran no model), then the citable sections and
@@ -1645,6 +1694,34 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("status")
     proj(s)
 
+    s = plansub.add_parser(
+        "read", help="an item's dossier: body + status + what it's blocked on"
+    )
+    s.add_argument("ref")
+    proj(s)
+
+    s = plansub.add_parser(
+        "edit", help="rewrite an item's body; lists what the change tainted"
+    )
+    s.add_argument("ref")
+    body_args(s, "the new body")
+    proj(s)
+    source_arg(s)
+
+    s = plansub.add_parser(
+        "append", help="extend an item's body; lists what the change tainted"
+    )
+    s.add_argument("ref")
+    body_args(s, "the text to append")
+    proj(s)
+    s.add_argument(
+        "--source",
+        action="append",
+        default=[],
+        help="ADD a doc-section citation (doc.md#Heading; repeatable; "
+        "existing citations keep their capture-time hashes)",
+    )
+
     for _v, _h in (
         ("dep-add", "declare that an item must follow another"),
         ("dep-remove", "drop a must-precede edge between items"),
@@ -1982,6 +2059,10 @@ def _E_facet(d, a):
 
 def _E_plans(d, a):
     _emit_plan_list(d, a)
+
+
+def _E_pread(d, a):
+    _emit_plan_read(d, a)
 
 
 def _E_dwrite(d, a):
@@ -2689,6 +2770,39 @@ VERBS: dict[str, Verb] = {
         is_async=True,
         policy="read",
         mcp=f"ref status {_PROJ}",
+    ),
+    "plan read": Verb(
+        "plan_read",
+        lambda a: {"ref": a.ref, "project": a.project},
+        _E_pread,
+        policy="read",
+        mcp=f"ref {_PROJ}",
+    ),
+    "plan edit": Verb(
+        "plan_edit",
+        lambda a: {
+            "ref": a.ref,
+            "new_content": _body(a.content, a.file, what="the new body"),
+            "project": a.project,
+            "sources": a.sources,
+        },
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref new_content {_PROJ} sources=None",
+    ),
+    "plan append": Verb(
+        "plan_append",
+        lambda a: {
+            "ref": a.ref,
+            "content": _body(a.content, a.file, what="the text to append"),
+            "project": a.project,
+            "sources": a.source or None,
+        },
+        _E_dwrite,
+        is_async=True,
+        policy="read",
+        mcp=f"ref content {_PROJ} sources=None",
     ),
     "plan dep-add": Verb(
         "plan_dep_add",
