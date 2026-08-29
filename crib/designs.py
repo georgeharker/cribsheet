@@ -93,12 +93,13 @@ def split_docref(ref: str) -> tuple[str, str]:
     """`"design:foo.md"` → `("design", "foo.md")`; unqualified → `("notes", ref)`."""
     for name in _DOCREF_STORES:
         if ref.startswith(name + ":"):
-            return name, ref[len(name) + 1:]
+            return name, ref[len(name) + 1 :]
     return "notes", ref
 
 
 def format_docref(store: str, relpath: str) -> str:
     return relpath if store == "notes" else f"{store}:{relpath}"
+
 
 # `proposed` is the IMPORT tier: extracted, not yet blessed (see the module
 # docstring). It is a first-class status rather than a tag because it changes
@@ -116,8 +117,13 @@ _N = len(_ALPHA)
 # re-reading the reaffirm actually needs. The last two are the SOURCE family: the
 # cited section moved, or the heading it named is gone.
 SOURCE_KINDS = ("source-changed", "source-missing")
-CHANGE_KINDS = ("dep-edited", "dep-superseded", "dep-deleted", "new-unverified-edge",
-                *SOURCE_KINDS)
+CHANGE_KINDS = (
+    "dep-edited",
+    "dep-superseded",
+    "dep-deleted",
+    "new-unverified-edge",
+    *SOURCE_KINDS,
+)
 
 # How `plan_list` presents the plan: the working set first, the graph second.
 # The order of this tuple IS the rendering order.
@@ -185,7 +191,7 @@ def _group(node: Node, blocked: bool) -> str:
     if node.status in DONE_STATUSES:
         return "done"
     if node.status == "in-progress":
-        return "in-progress"        # claimed: shown first even when blocked
+        return "in-progress"  # claimed: shown first even when blocked
     return "blocked" if blocked else "ready"
 
 
@@ -207,7 +213,7 @@ def _suffix_match(key: str, suffix: str) -> bool:
     citation stays short without becoming ambiguous by accident."""
     want = [p.strip().lower() for p in suffix.split("/") if p.strip()]
     have = [p.strip().lower() for p in key.split("/") if p.strip()]
-    return bool(want) and len(want) <= len(have) and have[-len(want):] == want
+    return bool(want) and len(want) <= len(have) and have[-len(want) :] == want
 
 
 def _rank_between(a: str | None = None, b: str | None = None) -> str:
@@ -237,11 +243,12 @@ def _rank_between(a: str | None = None, b: str | None = None) -> str:
         out.append(c)
         if i < len(hi):
             if c < hi[i]:
-                hi = ""                 # already strictly below: hi stops binding
-            elif i + 1 == len(hi):      # matched hi exactly; anything deeper is >
+                hi = ""  # already strictly below: hi stops binding
+            elif i + 1 == len(hi):  # matched hi exactly; anything deeper is >
                 raise CribUserError(
                     f"no rank fits between {a!r} and {b!r} — they are adjacent "
-                    f"(a rank ending in 'a' leaves no gap below it)")
+                    f"(a rank ending in 'a' leaves no gap below it)"
+                )
         i += 1
 
 
@@ -265,17 +272,31 @@ def _parse_sources(raw: Any) -> list[dict[str, Any]]:
         if not ref:
             continue
         heading = str(item.get("heading") or "").strip()
-        out.append({"ref": ref, "heading": heading or None,
-                    "hash": str(item.get("hash") or "")})
+        out.append(
+            {
+                "ref": ref,
+                "heading": heading or None,
+                "hash": str(item.get("hash") or ""),
+            }
+        )
     return out
 
 
 def _source_rows(sources: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """The frontmatter form of `sources` — the recorded fields only, so the
     live `current` hash resolved on load never leaks back into the file."""
-    return [{k: v for k, v in (("ref", s["ref"]), ("heading", s.get("heading")),
-                               ("hash", s.get("hash") or "")) if v}
-            for s in sources]
+    return [
+        {
+            k: v
+            for k, v in (
+                ("ref", s["ref"]),
+                ("heading", s.get("heading")),
+                ("hash", s.get("hash") or ""),
+            )
+            if v
+        }
+        for s in sources
+    ]
 
 
 def source_label(src: dict[str, Any]) -> str:
@@ -296,23 +317,32 @@ def _source_cause(src: dict[str, Any]) -> dict[str, Any] | None:
     current, recorded = src.get("current"), src.get("hash") or ""
     if current is None:
         kind = "source-missing"
-        reason = (f"the cited source {label} is gone — the heading was renamed or "
-                  f"removed, or the doc no longer resolves")
+        reason = (
+            f"the cited source {label} is gone — the heading was renamed or "
+            f"removed, or the doc no longer resolves"
+        )
     elif recorded and recorded != current:
         kind = "source-changed"
         reason = f"{label} changed since this was drawn from it"
     else:
         return None
-    return {"dep": None, "dep_title": label, "dep_updated": None,
-            "source": src["ref"], "heading": src.get("heading"),
-            "change_kind": kind, "reason": reason}
+    return {
+        "dep": None,
+        "dep_title": label,
+        "dep_updated": None,
+        "source": src["ref"],
+        "heading": src.get("heading"),
+        "change_kind": kind,
+        "reason": reason,
+    }
 
 
 @dataclass
 class Node:
     """One design/plan note, loaded from its frontmatter + body."""
+
     id: str
-    kind: str                                   # "design" | "plan"
+    kind: str  # "design" | "plan"
     relpath: str
     title: str
     status: str
@@ -330,9 +360,15 @@ class Node:
     sources: list[dict[str, Any]] = field(default_factory=list)
 
     def brief(self) -> dict[str, Any]:
-        out = {"id": self.id, "kind": self.kind, "relpath": self.relpath,
-               "title": self.title, "status": self.status, "deps": list(self.deps),
-               "updated": self.updated}
+        out = {
+            "id": self.id,
+            "kind": self.kind,
+            "relpath": self.relpath,
+            "title": self.title,
+            "status": self.status,
+            "deps": list(self.deps),
+            "updated": self.updated,
+        }
         if self.sources:
             out["sources"] = [source_label(s) for s in self.sources]
         if self.kind == "plan":
@@ -365,9 +401,9 @@ def _cycles(nodes: dict[str, Node]) -> list[list[str]]:
         stack.append(nid)
         for dep in nodes[nid].deps:
             if dep not in nodes:
-                continue                        # dangling: a warning, not a cycle
+                continue  # dangling: a warning, not a cycle
             if colour[dep] == GREY:
-                cyc = stack[stack.index(dep):] + [dep]
+                cyc = stack[stack.index(dep) :] + [dep]
                 # normalize the rotation so one cycle isn't reported once per entry
                 key = tuple(sorted(cyc[:-1]))
                 if key not in seen:
@@ -385,8 +421,13 @@ def _cycles(nodes: dict[str, Node]) -> list[list[str]]:
 
 
 class Designs:
-    def __init__(self, paths: Paths, design_store: NoteStore,
-                 plan_store: NoteStore, notestore: NoteStore) -> None:
+    def __init__(
+        self,
+        paths: Paths,
+        design_store: NoteStore,
+        plan_store: NoteStore,
+        notestore: NoteStore,
+    ) -> None:
         self.paths = paths
         # The two pillar stores this facet OWNS, by kind — plus the notes store,
         # read-only here, for citation resolution (a decision cites plain notes
@@ -395,8 +436,11 @@ class Designs:
         self.notestore = notestore
         # docref store name → NoteStore (note the kind/store spelling difference:
         # kind "plan" lives in the store named "plans")
-        self._doc_stores = {"notes": notestore, "design": design_store,
-                            "plans": plan_store}
+        self._doc_stores = {
+            "notes": notestore,
+            "design": design_store,
+            "plans": plan_store,
+        }
 
     def _store(self, kind: str) -> NoteStore:
         return self._stores[kind]
@@ -426,23 +470,31 @@ class Designs:
                 try:
                     fm, body = notes.parse(path.read_text(), path)
                 except (OSError, UnicodeDecodeError, notes.NoteParseError):
-                    continue            # one broken note must not blind the graph
+                    continue  # one broken note must not blind the graph
                 nid = str(fm.get("id") or "")
                 if not nid:
-                    continue            # not indexed yet (no id stamped)
+                    continue  # not indexed yet (no id stamped)
                 deps = [str(x) for x in (fm.get("deps") or [])]
                 checked = {str(k): str(v) for k, v in (fm.get("checked") or {}).items()}
                 sources = _parse_sources(fm.get("sources"))
                 for src in sources:
                     src["current"] = self._section_hash(proj, src, docs)
                 graph.nodes[nid] = Node(
-                    id=nid, kind=kind, relpath=path.name,
+                    id=nid,
+                    kind=kind,
+                    relpath=path.name,
                     title=str(fm.get("title") or path.stem),
-                    status=str(fm.get("status")
-                               or ("active" if kind == "design" else "todo")),
-                    deps=deps, checked=checked, rank=str(fm.get("rank") or ""),
-                    body_hash=_body_hash(body), frontmatter=fm,
-                    updated=str(fm.get("updated") or ""), sources=sources)
+                    status=str(
+                        fm.get("status") or ("active" if kind == "design" else "todo")
+                    ),
+                    deps=deps,
+                    checked=checked,
+                    rank=str(fm.get("rank") or ""),
+                    body_hash=_body_hash(body),
+                    frontmatter=fm,
+                    updated=str(fm.get("updated") or ""),
+                    sources=sources,
+                )
         for node in graph.nodes.values():
             for dep in node.deps:
                 graph.dependents.setdefault(dep, []).append(node.id)
@@ -466,7 +518,7 @@ class Designs:
         try:
             return self._doc_abspath(proj, relpath).exists()
         except (OSError, ValueError):
-            return False                    # escaping/unresolvable relpath
+            return False  # escaping/unresolvable relpath
 
     def _known_docs(self, proj: str) -> set[str]:
         """Every doc reference crib can cite in this project: what the index
@@ -483,8 +535,10 @@ class Designs:
         for name, store in self._doc_stores.items():
             try:
                 root = store.root(proj)
-                out |= {format_docref(name, p.relative_to(root).as_posix())
-                        for p in root.rglob("*.md")}
+                out |= {
+                    format_docref(name, p.relative_to(root).as_posix())
+                    for p in root.rglob("*.md")
+                }
             except (OSError, ValueError):
                 pass
         return out
@@ -501,15 +555,17 @@ class Designs:
             raise CribUserError(
                 "name the doc: a note relpath, a qualified facet ref "
                 "(`design:foo.md`), or a repo-relative path to a doc indexed in "
-                "situ (`DESIGN.md`, `docs/plans/foo.md`)")
+                "situ (`DESIGN.md`, `docs/plans/foo.md`)"
+            )
         if self._doc_exists(proj, ref):
             return ref
         # legacy alias: the pre-split spelling `design/x.md` names `design:x.md`
         for name in _DOCREF_STORES:
             if ref.startswith(name + "/"):
-                alias = f"{name}:{ref[len(name) + 1:]}"
+                alias = f"{name}:{ref[len(name) + 1 :]}"
                 if self._doc_exists(proj, alias):
                     return alias
+
         def _tail_match(rp: str) -> bool:
             if rp == ref or rp.endswith("/" + ref):
                 return True
@@ -518,11 +574,14 @@ class Designs:
                 return False
             # a facet doc also answers to its store-relative tail, and to the
             # legacy `design/…` spelling of it
-            want = ref[len(store) + 1:] if ref.startswith(store + "/") else ref
+            want = ref[len(store) + 1 :] if ref.startswith(store + "/") else ref
             return rel == want or rel.endswith("/" + want)
 
-        matches = {prefix + ref for prefix in self.notestore.source_roots(proj).all()
-                   if self._doc_exists(proj, prefix + ref)}
+        matches = {
+            prefix + ref
+            for prefix in self.notestore.source_roots(proj).all()
+            if self._doc_exists(proj, prefix + ref)
+        }
         matches |= {rp for rp in self._known_docs(proj) if _tail_match(rp)}
         if len(matches) == 1:
             return matches.pop()
@@ -530,7 +589,8 @@ class Designs:
             raise CribUserError(
                 f"no doc matches {ref!r} — pass a note relpath, or a path under a "
                 f"repo whose docs are indexed in situ (those read "
-                f"`sources/<repo>/<path>`)")
+                f"`sources/<repo>/<path>`)"
+            )
         listing = ", ".join(sorted(matches)[:8])
         raise CribUserError(f"ambiguous doc {ref!r} — {len(matches)} match: {listing}")
 
@@ -542,17 +602,23 @@ class Designs:
         source and a retrieval hit never disagree about what the doc says."""
         store, rel = split_docref(relpath)
         try:
-            metas = {cid: m for cid, m in self.notestore.store.get_meta(
-                         {"project": proj, "relpath": rel}).items()
-                     if (str(m.get("store") or "notes")) == store}
+            metas = {
+                cid: m
+                for cid, m in self.notestore.store.get_meta(
+                    {"project": proj, "relpath": rel}
+                ).items()
+                if (str(m.get("store") or "notes")) == store
+            }
         except Exception:  # noqa: BLE001 — fall back to hashing the text ourselves
             return {}
         out: dict[str, str] = {}
         for meta in metas.values():
             sh = str(meta.get("section_hash") or "")
             if sh:
-                key = section_key(str(meta.get("heading_path") or ""),
-                                  int(meta.get("occurrence", 1) or 1))
+                key = section_key(
+                    str(meta.get("heading_path") or ""),
+                    int(meta.get("occurrence", 1) or 1),
+                )
                 out[key] = sh
         return out
 
@@ -570,37 +636,54 @@ class Designs:
         except (OSError, ValueError, UnicodeDecodeError):
             # unreadable (an in-situ doc whose repo isn't on this machine): the
             # index still knows the sections, just not their order
-            return [{"heading_path": k, "key": k, "section_hash": h,
-                     "words": 0, "preview": "", "indexed": True}
-                    for k, h in sorted(indexed.items())]
+            return [
+                {
+                    "heading_path": k,
+                    "key": k,
+                    "section_hash": h,
+                    "words": 0,
+                    "preview": "",
+                    "indexed": True,
+                }
+                for k, h in sorted(indexed.items())
+            ]
         _, body = notes.parse(text, relpath)
         rows: list[dict[str, Any]] = []
         for c in chunk_note(proj, relpath, "", body):
             if c.window_idx:
-                continue                    # one row per SECTION, not per window
+                continue  # one row per SECTION, not per window
             key = section_key(c.heading_path, c.occurrence)
             words = c.section_text.split()
-            rows.append({"heading_path": "/".join(c.heading_path), "key": key,
-                         "section_hash": indexed.get(key) or c.section_hash,
-                         # `preview` is the section's first words VERBATIM and
-                         # `words` its length — locators, not a summary; nothing
-                         # here reads the content for meaning
-                         "words": len(words), "preview": " ".join(words[:24]),
-                         "indexed": key in indexed})
+            rows.append(
+                {
+                    "heading_path": "/".join(c.heading_path),
+                    "key": key,
+                    "section_hash": indexed.get(key) or c.section_hash,
+                    # `preview` is the section's first words VERBATIM and
+                    # `words` its length — locators, not a summary; nothing
+                    # here reads the content for meaning
+                    "words": len(words),
+                    "preview": " ".join(words[:24]),
+                    "indexed": key in indexed,
+                }
+            )
         return rows
 
-    def _doc_index(self, proj: str, relpath: str,
-                   cache: dict[str, dict[str, str]]) -> dict[str, str]:
+    def _doc_index(
+        self, proj: str, relpath: str, cache: dict[str, dict[str, str]]
+    ) -> dict[str, str]:
         """`{section_key: hash}` for a doc. The `""` key is the section BEFORE the
         first heading — which, in a doc with no headings at all, is the whole
         body: the only case a citation may name a doc rather than a section."""
         if relpath not in cache:
-            cache[relpath] = {r["key"]: r["section_hash"]
-                              for r in self._doc_sections(proj, relpath)}
+            cache[relpath] = {
+                r["key"]: r["section_hash"] for r in self._doc_sections(proj, relpath)
+            }
         return cache[relpath]
 
-    def _section_hash(self, proj: str, src: dict[str, Any],
-                      cache: dict[str, dict[str, str]]) -> str | None:
+    def _section_hash(
+        self, proj: str, src: dict[str, Any], cache: dict[str, dict[str, str]]
+    ) -> str | None:
         """What the cited section hashes to RIGHT NOW — None when it is gone
         (heading renamed or removed, or the doc itself no longer resolves)."""
         try:
@@ -616,16 +699,22 @@ class Designs:
         hits = [k for k in idx if k and _suffix_match(k, heading)]
         return idx[hits[0]] if len(hits) == 1 else None
 
-    def _match_heading(self, relpath: str, rows: list[dict[str, Any]],
-                       suffix: str) -> dict[str, Any]:
+    def _match_heading(
+        self, relpath: str, rows: list[dict[str, Any]], suffix: str
+    ) -> dict[str, Any]:
         """The one section whose heading path ends with `suffix` — the resolution
         behind `--source "docs/DESIGN.md#10.3 Retrieval"`. Segment-wise first,
         then a substring match on the last segment; ambiguity at either tier
         lists the candidates rather than picking one."""
-        for hits in ([r for r in rows if _suffix_match(r["key"], suffix)],
-                     [r for r in rows
-                      if suffix.strip().lower()
-                      in r["heading_path"].rsplit("/", 1)[-1].lower()]):
+        for hits in (
+            [r for r in rows if _suffix_match(r["key"], suffix)],
+            [
+                r
+                for r in rows
+                if suffix.strip().lower()
+                in r["heading_path"].rsplit("/", 1)[-1].lower()
+            ],
+        ):
             if len(hits) == 1:
                 return hits[0]
             if len(hits) > 1:
@@ -633,11 +722,12 @@ class Designs:
                 raise CribUserError(
                     f"ambiguous source heading {suffix!r} in {relpath} — "
                     f"{len(hits)} sections match: {listing}. Cite more of the "
-                    f"heading path (`--source \"{relpath}#<one of those>\"`)")
+                    f'heading path (`--source "{relpath}#<one of those>"`)'
+                )
         listing = ", ".join(r["key"] for r in rows[:12]) or "(none — no headings)"
         raise CribUserError(
-            f"no section of {relpath} matches {suffix!r} — its headings are: "
-            f"{listing}")
+            f"no section of {relpath} matches {suffix!r} — its headings are: {listing}"
+        )
 
     def _resolve_source(self, proj: str, spec: Any) -> dict[str, Any]:
         """One `--source` spec → a recorded citation `{ref, heading, hash}`.
@@ -662,21 +752,26 @@ class Designs:
         rows = self._doc_sections(proj, relpath)
         if suffix.strip():
             row = self._match_heading(relpath, rows, suffix)
-            return {"ref": relpath, "heading": row["heading_path"],
-                    "hash": row["section_hash"]}
+            return {
+                "ref": relpath,
+                "heading": row["heading_path"],
+                "hash": row["section_hash"],
+            }
         headed = [r for r in rows if r["key"]]
         if headed:
             listing = ", ".join(r["key"] for r in headed[:12])
             raise CribUserError(
                 f"{relpath} has headings, so cite the SECTION this was drawn from "
                 f"rather than the whole doc — `{relpath}#<heading>`. Its sections "
-                f"are: {listing}")
+                f"are: {listing}"
+            )
         if not rows:
             raise CribUserError(f"{relpath} has no content to cite")
         return {"ref": relpath, "heading": None, "hash": rows[0]["section_hash"]}
 
-    def _capture_sources(self, proj: str,
-                         specs: list[Any] | None) -> list[dict[str, Any]]:
+    def _capture_sources(
+        self, proj: str, specs: list[Any] | None
+    ) -> list[dict[str, Any]]:
         """Resolve every `--source` spec on a write, de-duplicated, in order."""
         out: list[dict[str, Any]] = []
         seen: set[str] = set()
@@ -688,8 +783,9 @@ class Designs:
                 out.append(src)
         return out
 
-    def _recapture(self, proj: str,
-                   node: Node) -> tuple[list[dict[str, Any]], list[str]]:
+    def _recapture(
+        self, proj: str, node: Node
+    ) -> tuple[list[dict[str, Any]], list[str]]:
         """Re-record a node's source hashes (reaffirm/promote): each citation
         re-hashed as the doc reads now. A citation whose section is GONE keeps
         its old hash and is reported — re-blessing must not paper over a source
@@ -700,29 +796,46 @@ class Designs:
             current = self._section_hash(proj, src, cache)
             if current is None:
                 missing.append(source_label(src))
-            rows.append({"ref": src["ref"], "heading": src.get("heading"),
-                         "hash": current or src.get("hash") or ""})
+            rows.append(
+                {
+                    "ref": src["ref"],
+                    "heading": src.get("heading"),
+                    "hash": current or src.get("hash") or "",
+                }
+            )
         return rows, missing
 
     def _source_view(self, src: dict[str, Any]) -> dict[str, Any]:
         """One citation, rendered for a dossier: where it points and whether it
         still reads the way it did when this entry was drawn from it."""
         current, recorded = src.get("current"), src.get("hash") or ""
-        state = ("missing" if current is None else
-                 "unhashed" if not recorded else
-                 "ok" if current == recorded else "changed")
-        return {"ref": src["ref"], "heading": src.get("heading"),
-                "label": source_label(src), "state": state}
+        state = (
+            "missing"
+            if current is None
+            else "unhashed"
+            if not recorded
+            else "ok"
+            if current == recorded
+            else "changed"
+        )
+        return {
+            "ref": src["ref"],
+            "heading": src.get("heading"),
+            "label": source_label(src),
+            "state": state,
+        }
 
     # ── refs ──────────────────────────────────────────────────────────────────
 
-    def _resolve_ref(self, graph: Graph, ref: str,
-                     kind: str | None = None, _cross: bool = False) -> Node:
+    def _resolve_ref(
+        self, graph: Graph, ref: str, kind: str | None = None, _cross: bool = False
+    ) -> Node:
         """Resolve a user-supplied reference to exactly one node: a full ULID, a
         unique ULID prefix, a relpath (`design/x.md`, `x.md` or bare `x`), or the
         title / its slug. Ambiguity lists the candidates rather than guessing —
         a wrong node is worse than a second call."""
         from .app import _slug
+
         ref = (ref or "").strip()
         if not ref:
             raise CribUserError("empty ref — pass an id, relpath, or title")
@@ -741,13 +854,15 @@ class Designs:
                 return
             raise CribUserError(
                 f"{ref!r} is not a {kind} note — it exists as a "
-                f"{other.upper()} item ({hit.relpath}): use the {other}_* verbs")
+                f"{other.upper()} item ({hit.relpath}): use the {other}_* verbs"
+            )
 
         if not pool:
             _other_facet_hint()
             raise CribUserError(
                 f"no {kind or 'design/plan'} notes yet — "
-                f"`{kind or 'design'}_add` creates the first one")
+                f"`{kind or 'design'}_add` creates the first one"
+            )
         want, slug = ref.lower(), _slug(ref)
         exact = [n for n in pool if n.id == ref.upper()]
         if len(exact) == 1:
@@ -758,13 +873,14 @@ class Designs:
             w = want
             legacy = f"{_DIRS[n.kind]}/"
             if w.startswith(legacy):
-                w = w[len(legacy):]
+                w = w[len(legacy) :]
             return n.relpath.lower() in (w, f"{w}.md")
 
-        matches = [n for n in pool
-                   if _rel_match(n)
-                   or n.title.lower() == want
-                   or _slug(n.title) == slug]
+        matches = [
+            n
+            for n in pool
+            if _rel_match(n) or n.title.lower() == want or _slug(n.title) == slug
+        ]
         if not matches:
             matches = [n for n in pool if n.id.startswith(ref.upper())]
         if len(matches) == 1:
@@ -774,14 +890,18 @@ class Designs:
             raise CribUserError(
                 f"no {kind or 'design/plan'} note matches {ref!r} — "
                 f"reference it by id, relpath or title "
-                f"(`{kind or 'design'}_check` / `plan_list` show what exists)")
+                f"(`{kind or 'design'}_check` / `plan_list` show what exists)"
+            )
         listing = ", ".join(f"{n.id[:8]}… {n.relpath}" for n in matches[:8])
-        raise CribUserError(f"ambiguous ref {ref!r} — {len(matches)} matches: {listing}")
+        raise CribUserError(
+            f"ambiguous ref {ref!r} — {len(matches)} matches: {listing}"
+        )
 
     # ── taint ─────────────────────────────────────────────────────────────────
 
-    def _direct_taint(self, graph: Graph,
-                      sources: bool = True) -> dict[str, list[dict[str, Any]]]:
+    def _direct_taint(
+        self, graph: Graph, sources: bool = True
+    ) -> dict[str, list[dict[str, Any]]]:
         """Per node, why its OWN edges are out of date (decision 3), as structured
         causes: `{dep, dep_title, dep_updated, change_kind, reason}`.
 
@@ -813,33 +933,41 @@ class Designs:
                 if dep is not None and dep.status == "proposed":
                     continue
                 if dep is None:
-                    cause = {"dep": dep_id, "dep_title": dep_id, "dep_updated": None,
-                             "change_kind": "dep-deleted",
-                             "reason": f"dep {dep_id} is missing "
-                                       f"(deleted, or never existed)"}
+                    cause = {
+                        "dep": dep_id,
+                        "dep_title": dep_id,
+                        "dep_updated": None,
+                        "change_kind": "dep-deleted",
+                        "reason": f"dep {dep_id} is missing "
+                        f"(deleted, or never existed)",
+                    }
                 elif dep_id not in node.checked:
-                    cause = {"dep": dep_id, "dep_title": dep.title,
-                             "dep_updated": dep.updated or None,
-                             "change_kind": "new-unverified-edge",
-                             "reason": f"{dep.title!r} was added as a dep but never "
-                                       f"verified here"}
+                    cause = {
+                        "dep": dep_id,
+                        "dep_title": dep.title,
+                        "dep_updated": dep.updated or None,
+                        "change_kind": "new-unverified-edge",
+                        "reason": f"{dep.title!r} was added as a dep but never "
+                        f"verified here",
+                    }
                 elif node.checked[dep_id] != dep.body_hash:
                     superseded = dep.status == "superseded"
                     when = f" (dep updated {dep.updated})" if dep.updated else ""
                     cause = {
-                        "dep": dep_id, "dep_title": dep.title,
+                        "dep": dep_id,
+                        "dep_title": dep.title,
                         "dep_updated": dep.updated or None,
                         "change_kind": "dep-superseded" if superseded else "dep-edited",
                         "reason": f"{dep.title!r} "
-                                  f"{'was superseded' if superseded else 'changed'} "
-                                  f"since this was last verified{when}"}
+                        f"{'was superseded' if superseded else 'changed'} "
+                        f"since this was last verified{when}",
+                    }
                 else:
                     continue
                 out.setdefault(node.id, []).append(cause)
         return out
 
-    def _taint(self, graph: Graph,
-               sources: bool = True) -> dict[str, dict[str, Any]]:
+    def _taint(self, graph: Graph, sources: bool = True) -> dict[str, dict[str, Any]]:
         """{id: {reasons, causes, paths}} for every tainted node — direct causes
         plus transitive reachability over tainted edges. `paths` spells out the
         chain (`X → Y → Z`, Z being what actually changed) so `check` can say
@@ -863,7 +991,7 @@ class Designs:
             return dep_id in tainted and (dep is None or dep.status != "proposed")
 
         changed = True
-        while changed:                          # reachability over tainted edges
+        while changed:  # reachability over tainted edges
             changed = False
             for node in graph.nodes.values():
                 if node.id in tainted:
@@ -875,14 +1003,24 @@ class Designs:
         def chains(nid: str, stack: list[str]) -> list[dict[str, Any]]:
             node = graph.nodes[nid]
             base = [graph.nodes[s].title for s in stack] + [node.title]
-            out = [{"chain": base + ([c["dep_title"]] if c.get("source") else []),
-                    "cause": c["reason"], "change_kind": c["change_kind"],
-                    "dep": c["dep"], "dep_title": c["dep_title"],
-                    "dep_updated": c["dep_updated"]}
-                   for c in direct.get(nid, [])]
+            out = [
+                {
+                    "chain": base + ([c["dep_title"]] if c.get("source") else []),
+                    "cause": c["reason"],
+                    "change_kind": c["change_kind"],
+                    "dep": c["dep"],
+                    "dep_title": c["dep_title"],
+                    "dep_updated": c["dep_updated"],
+                }
+                for c in direct.get(nid, [])
+            ]
             for dep_id in node.deps:
-                if propagates(dep_id) and dep_id in graph.nodes \
-                        and dep_id not in stack and dep_id != nid:
+                if (
+                    propagates(dep_id)
+                    and dep_id in graph.nodes
+                    and dep_id not in stack
+                    and dep_id != nid
+                ):
                     out += chains(dep_id, [*stack, nid])
             return out
 
@@ -891,25 +1029,38 @@ class Designs:
             paths = chains(nid, [])
             causes = direct.get(nid, [])
             reasons = [c["reason"] for c in causes] or sorted(
-                {f"depends on {p['chain'][1]!r}, which is tainted"
-                 for p in paths if len(p["chain"]) > 1})
+                {
+                    f"depends on {p['chain'][1]!r}, which is tainted"
+                    for p in paths
+                    if len(p["chain"]) > 1
+                }
+            )
             result[nid] = {"reasons": reasons, "causes": causes, "paths": paths}
         return result
 
-    def _annotate(self, graph: Graph, tainted: dict[str, Any],
-                  dep_id: str) -> dict[str, Any]:
+    def _annotate(
+        self, graph: Graph, tainted: dict[str, Any], dep_id: str
+    ) -> dict[str, Any]:
         """One edge target, rendered for a dossier: enough to decide whether to
         open it without opening it. A dangling id says so rather than vanishing."""
         node = graph.nodes.get(dep_id)
         if node is None:
-            return {"id": dep_id, "title": f"{dep_id} (missing)", "missing": True,
-                    "tainted": True}
-        return {"id": node.id, "title": node.title, "relpath": node.relpath,
-                "status": node.status, "updated": node.updated,
-                "tainted": node.id in tainted}
+            return {
+                "id": dep_id,
+                "title": f"{dep_id} (missing)",
+                "missing": True,
+                "tainted": True,
+            }
+        return {
+            "id": node.id,
+            "title": node.title,
+            "relpath": node.relpath,
+            "status": node.status,
+            "updated": node.updated,
+            "tainted": node.id in tainted,
+        }
 
-    def _next(self, node: Node,
-              causes: list[dict[str, Any]] | None = None) -> str:
+    def _next(self, node: Node, causes: list[dict[str, Any]] | None = None) -> str:
         """The prescribed follow-up for a tainted decision — the one string every
         taint-bearing result ends with, so a reader is never left holding a flag
         with no verb attached. Taint is COARSE ("a dep moved"), so reaffirm is the
@@ -922,13 +1073,17 @@ class Designs:
         srcs = [c for c in causes or [] if c["change_kind"] in SOURCE_KINDS]
         if causes and len(srcs) == len(causes):
             cited = ", ".join(dict.fromkeys(c["dep_title"] for c in srcs))
-            return (f"re-read {cited} — the source {node.title!r} was drawn from — "
-                    f"then `design_reaffirm {node.relpath}` to re-record the section "
-                    f"hash (a source is attribution: it checks, it never gates)")
-        return (f"reconsider {node.title!r} against what changed, then "
-                f"`design_reaffirm {node.relpath}` (the usual case — taint means a "
-                f"dep moved, not that this is wrong); if it no longer holds, "
-                f"`design_supersede {node.relpath} <replacement>`")
+            return (
+                f"re-read {cited} — the source {node.title!r} was drawn from — "
+                f"then `design_reaffirm {node.relpath}` to re-record the section "
+                f"hash (a source is attribution: it checks, it never gates)"
+            )
+        return (
+            f"reconsider {node.title!r} against what changed, then "
+            f"`design_reaffirm {node.relpath}` (the usual case — taint means a "
+            f"dep moved, not that this is wrong); if it no longer holds, "
+            f"`design_supersede {node.relpath} <replacement>`"
+        )
 
     def tainted_designs(self, proj: str) -> set[str]:
         """Relpaths of this project's tainted design notes — the cheap ambient
@@ -940,11 +1095,15 @@ class Designs:
             tainted = self._taint(graph)
         except Exception:  # noqa: BLE001 — an ambient marker must never break a read
             return set()
-        return {n.relpath for n in graph.nodes.values()
-                if n.kind == "design" and n.id in tainted}
+        return {
+            n.relpath
+            for n in graph.nodes.values()
+            if n.kind == "design" and n.id in tainted
+        }
 
-    def annotate_hits(self, proj: str, hits: list[dict[str, Any]],
-                      kind: str | None = None) -> list[dict[str, Any]]:
+    def annotate_hits(
+        self, proj: str, hits: list[dict[str, Any]], kind: str | None = None
+    ) -> list[dict[str, Any]]:
         """Stamp facet state onto retrieval hits that land on a design/plan note:
         `status`, `tainted`, and dep/dependent counts. The agent reasoning FROM a
         stale decision is told so at the moment it reads it, which is the only
@@ -961,13 +1120,19 @@ class Designs:
         kinds = (kind,) if kind else ("design", "plan")
         for hit in hits:
             rp = str(hit.get("relpath") or "")
-            node = next((by_relpath[k] for k in ((kd, rp) for kd in kinds)
-                         if k in by_relpath), None)
+            node = next(
+                (by_relpath[k] for k in ((kd, rp) for kd in kinds) if k in by_relpath),
+                None,
+            )
             if node is None:
                 continue
-            hit.update(kind=node.kind, status=node.status,
-                       tainted=node.id in tainted, deps=len(node.deps),
-                       dependents=len(graph.dependents.get(node.id, [])))
+            hit.update(
+                kind=node.kind,
+                status=node.status,
+                tainted=node.id in tainted,
+                deps=len(node.deps),
+                dependents=len(graph.dependents.get(node.id, [])),
+            )
         return hits
 
     # ── writes ────────────────────────────────────────────────────────────────
@@ -983,8 +1148,9 @@ class Designs:
             i += 1
         return f"{slug}-{i}.md"
 
-    async def _save(self, proj: str, node: Node, fm: dict[str, Any],
-                    body: str | None = None) -> dict[str, Any]:
+    async def _save(
+        self, proj: str, node: Node, fm: dict[str, Any], body: str | None = None
+    ) -> dict[str, Any]:
         """Rewrite a node's frontmatter (body untouched unless given), stamp
         `updated`, and funnel through the locked index_file write path."""
         store = self._store(node.kind)
@@ -995,67 +1161,109 @@ class Designs:
         if body is not None:
             note.body = body
         res = await store.write(proj, node.relpath, note)
-        return {"project": proj, "id": node.id, "relpath": node.relpath,
-                "title": node.title, "indexed": res.upserted}
+        return {
+            "project": proj,
+            "id": node.id,
+            "relpath": node.relpath,
+            "title": node.title,
+            "indexed": res.upserted,
+        }
 
-    async def _add(self, proj: str, kind: str, title: str, content: str,
-                   deps: list[str] | None, extra: dict[str, Any],
-                   sources: list[Any] | None = None) -> dict[str, Any]:
+    async def _add(
+        self,
+        proj: str,
+        kind: str,
+        title: str,
+        content: str,
+        deps: list[str] | None,
+        extra: dict[str, Any],
+        sources: list[Any] | None = None,
+    ) -> dict[str, Any]:
         from .app import _slug
+
         if not (title or "").strip():
             raise CribUserError("a design/plan note needs a title")
         if kind == "design" and not (content or "").strip():
             raise CribUserError(
                 "a design decision needs a body — the choice, why, and what was "
                 "rejected. (A plan item may be title-only; a decision may not: "
-                "the rationale is the thing a future reader comes back for.)")
+                "the rationale is the thing a future reader comes back for.)"
+            )
         graph = self._load_graph(proj)
         dep_nodes = [self._resolve_ref(graph, r) for r in (deps or [])]
         relpath = self._unique_relpath(proj, kind, _slug(title))
         # A new decision is born VERIFIED: it was written against the deps as they
         # read right now, so seeding `checked` says exactly that (a fresh note
         # showing up already tainted would be noise, not signal).
-        checked = ({"checked": {n.id: n.body_hash for n in dep_nodes}}
-                   if kind == "design" else {})
+        checked = (
+            {"checked": {n.id: n.body_hash for n in dep_nodes}}
+            if kind == "design"
+            else {}
+        )
         # Same story for `sources`: the citation records the section hash AS
         # CAPTURED, so the entry is born current with the doc it was drawn from
         # and starts checking against it from the next edit onward.
         cited = self._capture_sources(proj, sources)
         fm: dict[str, Any] = {
-            "title": title.strip(), "type": kind,
+            "title": title.strip(),
+            "type": kind,
             "status": extra.pop("status", "active" if kind == "design" else "todo"),
-            "deps": [n.id for n in dep_nodes], "links": [], **checked,
+            "deps": [n.id for n in dep_nodes],
+            "links": [],
+            **checked,
             **({"sources": _source_rows(cited)} if cited else {}),
-            **extra, "created": _today(), "updated": _today()}
+            **extra,
+            "created": _today(),
+            "updated": _today(),
+        }
         store = self._store(kind)
-        note = Note(path=store.abspath(proj, relpath), frontmatter=fm,
-                    body=(content or "").strip() + "\n")
+        note = Note(
+            path=store.abspath(proj, relpath),
+            frontmatter=fm,
+            body=(content or "").strip() + "\n",
+        )
         res = await store.write(proj, relpath, note)
-        return {"project": proj, "id": note.id, "relpath": relpath,
-                "title": fm["title"], "deps": fm["deps"], "status": fm["status"],
-                "sources": [source_label(s) for s in cited],
-                "indexed": res.upserted}
+        return {
+            "project": proj,
+            "id": note.id,
+            "relpath": relpath,
+            "title": fm["title"],
+            "deps": fm["deps"],
+            "status": fm["status"],
+            "sources": [source_label(s) for s in cited],
+            "indexed": res.upserted,
+        }
 
-    async def _dep_add(self, proj: str, kind: str, ref: str,
-                       dep_ref: str) -> dict[str, Any]:
+    async def _dep_add(
+        self, proj: str, kind: str, ref: str, dep_ref: str
+    ) -> dict[str, Any]:
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, kind)
         dep = self._resolve_ref(graph, dep_ref)
         if dep.id == node.id:
             raise CribUserError(f"{node.title!r} cannot depend on itself")
         if dep.id in node.deps:
-            return {"project": proj, "id": node.id, "relpath": node.relpath,
-                    "title": node.title, "dep": dep.id, "already": True,
-                    "deps": list(node.deps)}
-        probe = {nid: Node(**{**vars(n), "deps": list(n.deps)})
-                 for nid, n in graph.nodes.items()}
+            return {
+                "project": proj,
+                "id": node.id,
+                "relpath": node.relpath,
+                "title": node.title,
+                "dep": dep.id,
+                "already": True,
+                "deps": list(node.deps),
+            }
+        probe = {
+            nid: Node(**{**vars(n), "deps": list(n.deps)})
+            for nid, n in graph.nodes.items()
+        }
         probe[node.id].deps.append(dep.id)
         for cyc in _cycles(probe):
             if node.id in cyc:
                 path = " → ".join(probe[c].title for c in cyc)
                 raise CribUserError(
                     f"that dep would create a cycle: {path}. Dependencies must be "
-                    f"a DAG — drop the opposite edge first")
+                    f"a DAG — drop the opposite edge first"
+                )
         deps = [*node.deps, dep.id]
         # Deliberately does NOT seed `checked`: a newly declared dep starts
         # UNVERIFIED, so the node shows up in `check` — the nudge to actually
@@ -1063,14 +1271,15 @@ class Designs:
         out = await self._save(proj, node, {"deps": deps})
         return {**out, "dep": dep.id, "dep_title": dep.title, "deps": deps}
 
-    async def _dep_remove(self, proj: str, kind: str, ref: str,
-                          dep_ref: str) -> dict[str, Any]:
+    async def _dep_remove(
+        self, proj: str, kind: str, ref: str, dep_ref: str
+    ) -> dict[str, Any]:
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, kind)
         try:
             dep_id = self._resolve_ref(graph, dep_ref).id
         except ValueError:
-            dep_id = dep_ref.strip().upper()    # dangling dep: remove by raw id
+            dep_id = dep_ref.strip().upper()  # dangling dep: remove by raw id
         if dep_id not in node.deps:
             raise CribUserError(f"{node.title!r} does not depend on {dep_ref!r}")
         deps = [d for d in node.deps if d != dep_id]
@@ -1081,8 +1290,9 @@ class Designs:
         out = await self._save(proj, node, fm)
         return {**out, "dep": dep_id, "deps": deps}
 
-    async def _forget(self, proj: str, kind: str, ref: str,
-                      force: bool) -> dict[str, Any]:
+    async def _forget(
+        self, proj: str, kind: str, ref: str, force: bool
+    ) -> dict[str, Any]:
         """Delete blocks on dependents (decision 4) — `force` deletes anyway and
         leaves them tainted (their `checked` now points at a missing id)."""
         graph = self._load_graph(proj)
@@ -1093,17 +1303,28 @@ class Designs:
             raise CribUserError(
                 f"{node.title!r} still has {len(dependents)} dependent(s): {listing}. "
                 f"Drop those edges ({kind}_dep_remove) or pass force=True — forcing "
-                f"leaves them tainted, pointing at a missing dep")
+                f"leaves them tainted, pointing at a missing dep"
+            )
         res = await self._store(node.kind).delete(proj, node.relpath)
-        return {**res, "id": node.id, "title": node.title,
-                "dependents": dependents, "forced": bool(dependents)}
+        return {
+            **res,
+            "id": node.id,
+            "title": node.title,
+            "dependents": dependents,
+            "forced": bool(dependents),
+        }
 
     # ── design verbs ──────────────────────────────────────────────────────────
 
-    async def design_add(self, proj: str, title: str, content: str,
-                         deps: list[str] | None = None,
-                         sources: list[Any] | None = None,
-                         proposed: bool = False) -> dict[str, Any]:
+    async def design_add(
+        self,
+        proj: str,
+        title: str,
+        content: str,
+        deps: list[str] | None = None,
+        sources: list[Any] | None = None,
+        proposed: bool = False,
+    ) -> dict[str, Any]:
         """Record a design decision under `notes/design/`, `checked` seeded from
         the current dep hashes (so a new decision is born verified) and `sources`
         from the cited sections' hashes.
@@ -1127,16 +1348,23 @@ class Designs:
         tainted = self._taint(graph)
         info = tainted.get(node.id, {})
         note = self._note(proj, node)
-        out = {"project": proj, **node.brief(), "body": note.body.strip(),
-               "deps": [self._annotate(graph, tainted, d) for d in node.deps],
-               "dependents": [self._annotate(graph, tainted, d)
-                              for d in graph.dependents.get(node.id, [])],
-               # attribution, alongside the graph edges: where this came FROM, and
-               # whether that passage still reads the way it did
-               "sources": [self._source_view(s) for s in node.sources],
-               "tainted": node.id in tainted,
-               "reasons": info.get("reasons", []), "causes": info.get("causes", []),
-               "paths": info.get("paths", [])}
+        out = {
+            "project": proj,
+            **node.brief(),
+            "body": note.body.strip(),
+            "deps": [self._annotate(graph, tainted, d) for d in node.deps],
+            "dependents": [
+                self._annotate(graph, tainted, d)
+                for d in graph.dependents.get(node.id, [])
+            ],
+            # attribution, alongside the graph edges: where this came FROM, and
+            # whether that passage still reads the way it did
+            "sources": [self._source_view(s) for s in node.sources],
+            "tainted": node.id in tainted,
+            "reasons": info.get("reasons", []),
+            "causes": info.get("causes", []),
+            "paths": info.get("paths", []),
+        }
         if node.id in tainted:
             out["next"] = self._next(node, info.get("causes"))
         if node.status == "proposed":
@@ -1144,12 +1372,18 @@ class Designs:
                 f"{node.title!r} is PROPOSED — extracted, not yet blessed, so it "
                 f"taints nothing and nothing should be built on it as settled. "
                 f"Confirm it against its sources, then `design_promote "
-                f"{node.relpath}`")
+                f"{node.relpath}`"
+            )
         return out
 
-    async def _write_body(self, proj: str, ref: str, rewrite: Any,
-                          sources: list[Any] | None = None,
-                          precaptured: bool = False) -> dict[str, Any]:
+    async def _write_body(
+        self,
+        proj: str,
+        ref: str,
+        rewrite: Any,
+        sources: list[Any] | None = None,
+        precaptured: bool = False,
+    ) -> dict[str, Any]:
         """The edge-aware write path shared by `design_edit`/`design_append`:
         snapshot the taint state, write the new body through the locked index
         path, then diff — so the answer to "I changed this" is "…and here is what
@@ -1170,37 +1404,52 @@ class Designs:
         note = self._note(proj, node)
         fm: dict[str, Any] = {}
         if sources is not None:
-            fm["sources"] = (sources if precaptured
-                             else _source_rows(self._capture_sources(proj, sources)))
+            fm["sources"] = (
+                sources
+                if precaptured
+                else _source_rows(self._capture_sources(proj, sources))
+            )
         out = await self._save(proj, node, fm, body=rewrite(note.body))
         after_graph = self._load_graph(proj)
         after = self._taint(after_graph)
         newly = []
         for nid in sorted(set(after) - before):
             hit = after_graph.nodes[nid]
-            newly.append({"id": nid, "title": hit.title, "relpath": hit.relpath,
-                          "kind": hit.kind,
-                          "via": [" → ".join(p["chain"]) for p in after[nid]["paths"]],
-                          "next": (self._next(hit, after[nid]["causes"])
-                                   if hit.kind == "design" else None)})
+            newly.append(
+                {
+                    "id": nid,
+                    "title": hit.title,
+                    "relpath": hit.relpath,
+                    "kind": hit.kind,
+                    "via": [" → ".join(p["chain"]) for p in after[nid]["paths"]],
+                    "next": (
+                        self._next(hit, after[nid]["causes"])
+                        if hit.kind == "design"
+                        else None
+                    ),
+                }
+            )
         res = {**out, "newly_tainted": newly}
         if newly:
             res["next"] = (
                 f"{len(newly)} dependent(s) now read as out of date with this — "
                 f"`design_read <ref>` each, then `design_reaffirm <ref>` where it "
-                f"still holds")
+                f"still holds"
+            )
         return res
 
-    async def design_edit(self, proj: str, ref: str, new_content: str,
-                          sources: list[Any] | None = None) -> dict[str, Any]:
+    async def design_edit(
+        self, proj: str, ref: str, new_content: str, sources: list[Any] | None = None
+    ) -> dict[str, Any]:
         """Replace a decision's body through the facet, answering with the
         dependents the change just tainted. `sources` replaces its citations."""
-        return await self._write_body(proj, ref,
-                                      lambda _: (new_content or "").strip() + "\n",
-                                      sources)
+        return await self._write_body(
+            proj, ref, lambda _: (new_content or "").strip() + "\n", sources
+        )
 
-    async def design_append(self, proj: str, ref: str, content: str,
-                            sources: list[Any] | None = None) -> dict[str, Any]:
+    async def design_append(
+        self, proj: str, ref: str, content: str, sources: list[Any] | None = None
+    ) -> dict[str, Any]:
         """Extend a decision's body through the facet, answering with the
         dependents the change just tainted.
 
@@ -1216,48 +1465,70 @@ class Designs:
         if sources:
             graph = self._load_graph(proj)
             node = self._resolve_ref(graph, ref, "design")
-            kept = [{k: v for k, v in s.items() if k != "current"}
-                    for s in node.sources]
+            kept = [
+                {k: v for k, v in s.items() if k != "current"} for s in node.sources
+            ]
             have = {(s.get("ref"), s.get("heading")) for s in kept}
-            new = [r for r in _source_rows(self._capture_sources(proj, sources))
-                   if (r.get("ref"), r.get("heading")) not in have]
+            new = [
+                r
+                for r in _source_rows(self._capture_sources(proj, sources))
+                if (r.get("ref"), r.get("heading")) not in have
+            ]
             merged = kept + new
         return await self._write_body(
-            proj, ref,
+            proj,
+            ref,
             lambda body: body.rstrip() + "\n\n" + (content or "").strip() + "\n",
             sources=None if merged is None else merged,
-            precaptured=merged is not None)
+            precaptured=merged is not None,
+        )
 
     def design_list(self, proj: str, tainted: bool = False) -> dict[str, Any]:
         """Every decision as a flat table — title, ref, status, taint flag, edge
         counts. The inventory read; `design_tree` is the shape read."""
         graph = self._load_graph(proj)
         stale = self._taint(graph)
-        rows = [{"id": n.id, "title": n.title, "relpath": n.relpath,
-                 "status": n.status, "updated": n.updated,
-                 "tainted": n.id in stale,
-                 "deps": len(n.deps), "sources": len(n.sources),
-                 "dependents": len(graph.dependents.get(n.id, []))}
-                for n in sorted(graph.of_kind("design"), key=lambda n: n.title)]
+        rows = [
+            {
+                "id": n.id,
+                "title": n.title,
+                "relpath": n.relpath,
+                "status": n.status,
+                "updated": n.updated,
+                "tainted": n.id in stale,
+                "deps": len(n.deps),
+                "sources": len(n.sources),
+                "dependents": len(graph.dependents.get(n.id, [])),
+            }
+            for n in sorted(graph.of_kind("design"), key=lambda n: n.title)
+        ]
         total, n_tainted = len(rows), sum(1 for r in rows if r["tainted"])
         proposed = sum(1 for r in rows if r["status"] == "proposed")
         if tainted:
             rows = [r for r in rows if r["tainted"]]
-        return {"project": proj, "designs": rows, "total": total,
-                "tainted": n_tainted, "proposed": proposed,
-                "filtered": bool(tainted),
-                "cycles": [[graph.nodes[c].title for c in cyc]
-                           for cyc in _cycles(graph.nodes)]}
+        return {
+            "project": proj,
+            "designs": rows,
+            "total": total,
+            "tainted": n_tainted,
+            "proposed": proposed,
+            "filtered": bool(tainted),
+            "cycles": [
+                [graph.nodes[c].title for c in cyc] for cyc in _cycles(graph.nodes)
+            ],
+        }
 
     async def design_dep_add(self, proj: str, ref: str, dep_ref: str) -> dict[str, Any]:
         return await self._dep_add(proj, "design", ref, dep_ref)
 
-    async def design_dep_remove(self, proj: str, ref: str,
-                                dep_ref: str) -> dict[str, Any]:
+    async def design_dep_remove(
+        self, proj: str, ref: str, dep_ref: str
+    ) -> dict[str, Any]:
         return await self._dep_remove(proj, "design", ref, dep_ref)
 
-    async def design_forget(self, proj: str, ref: str,
-                            force: bool = False) -> dict[str, Any]:
+    async def design_forget(
+        self, proj: str, ref: str, force: bool = False
+    ) -> dict[str, Any]:
         return await self._forget(proj, "design", ref, force)
 
     def design_check(self, proj: str, ref: str | None = None) -> dict[str, Any]:
@@ -1272,20 +1543,28 @@ class Designs:
             node = graph.nodes[nid]
             if node.kind != "design" or (only and nid != only):
                 continue
-            rows.append({**node.brief(), **info,
-                         "next": self._next(node, info.get("causes"))})
+            rows.append(
+                {**node.brief(), **info, "next": self._next(node, info.get("causes"))}
+            )
         rows.sort(key=lambda r: r["title"])
         cycles = [[graph.nodes[c].title for c in cyc] for cyc in _cycles(graph.nodes)]
         designs = graph.of_kind("design")
         # Proposed entries are their own queue, not part of the stale one: they
         # aren't out of date, they are un-blessed, and the verb that clears them
         # is `design_promote` rather than `design_reaffirm`.
-        proposed = [{**n.brief(),
-                     "next": f"confirm it, then `design_promote {n.relpath}`"}
-                    for n in sorted(designs, key=lambda n: n.title)
-                    if n.status == "proposed" and (not only or n.id == only)]
-        return {"project": proj, "designs": len(designs), "tainted": rows,
-                "proposed": proposed, "clean": not rows, "cycles": cycles}
+        proposed = [
+            {**n.brief(), "next": f"confirm it, then `design_promote {n.relpath}`"}
+            for n in sorted(designs, key=lambda n: n.title)
+            if n.status == "proposed" and (not only or n.id == only)
+        ]
+        return {
+            "project": proj,
+            "designs": len(designs),
+            "tainted": rows,
+            "proposed": proposed,
+            "clean": not rows,
+            "cycles": cycles,
+        }
 
     def _recheck(self, graph: Graph, node: Node) -> tuple[dict[str, str], list[str]]:
         """The dep hashes as they read now, plus the ids that resolve to nothing —
@@ -1318,9 +1597,13 @@ class Designs:
         if node.sources:
             fm["sources"] = sources
         out = await self._save(proj, node, fm)
-        return {**out, "verified": sorted(checked), "missing": missing,
-                "sources": [source_label(s) for s in sources],
-                "missing_sources": missing_sources}
+        return {
+            **out,
+            "verified": sorted(checked),
+            "missing": missing,
+            "sources": [source_label(s) for s in sources],
+            "missing_sources": missing_sources,
+        }
 
     async def plan_reaffirm(self, proj: str, ref: str) -> dict[str, Any]:
         """Re-record a plan item's dep AND source hashes after a human re-read
@@ -1342,9 +1625,13 @@ class Designs:
         if node.sources:
             fm["sources"] = sources
         out = await self._save(proj, node, fm)
-        return {**out, "verified": sorted(checked), "missing": missing,
-                "sources": [source_label(s) for s in sources],
-                "missing_sources": missing_sources}
+        return {
+            **out,
+            "verified": sorted(checked),
+            "missing": missing,
+            "sources": [source_label(s) for s in sources],
+            "missing_sources": missing_sources,
+        }
 
     async def design_promote(self, proj: str, ref: str) -> dict[str, Any]:
         """proposed → active: the human act that turns an EXTRACTED decision into
@@ -1362,7 +1649,8 @@ class Designs:
                 f"{node.title!r} is already {node.status} — promote applies to "
                 f"`proposed` entries (what `design_import`'s procedure creates); "
                 f"a decision that drifted is `design_reaffirm`, one that was "
-                f"replaced is `design_supersede`")
+                f"replaced is `design_supersede`"
+            )
         checked, missing = self._recheck(graph, node)
         sources, missing_sources = self._recapture(proj, node)
         fm: dict[str, Any] = {"status": "active", "checked": checked}
@@ -1370,58 +1658,89 @@ class Designs:
             fm["sources"] = sources
         out = await self._save(proj, node, fm)
         dependents = [graph.nodes[d].brief() for d in graph.dependents.get(node.id, [])]
-        return {**out, "status": "active", "verified": sorted(checked),
-                "missing": missing,
-                "sources": [source_label(s) for s in sources],
-                "missing_sources": missing_sources,
-                # now that it is active, its edges check like any other decision's
-                "dependents": dependents,
-                "next": (f"{node.title!r} is active — it now taints what builds on "
-                         f"it, and `design_check` covers it like any other decision")}
+        return {
+            **out,
+            "status": "active",
+            "verified": sorted(checked),
+            "missing": missing,
+            "sources": [source_label(s) for s in sources],
+            "missing_sources": missing_sources,
+            # now that it is active, its edges check like any other decision's
+            "dependents": dependents,
+            "next": (
+                f"{node.title!r} is active — it now taints what builds on "
+                f"it, and `design_check` covers it like any other decision"
+            ),
+        }
 
-    def design_tree(self, proj: str, ref: str | None = None,
-                    direction: str = "deps", depth: int = 6) -> dict[str, Any]:
+    def design_tree(
+        self, proj: str, ref: str | None = None, direction: str = "deps", depth: int = 6
+    ) -> dict[str, Any]:
         """The dependency tree around a decision — `deps` (what it builds on) or
         `dependents` (what builds on it) — every node taint-flagged."""
         if direction not in ("deps", "dependents"):
             raise CribUserError(
                 f"unknown direction {direction!r}: use 'deps' (what this builds on) "
-                f"or 'dependents' (what builds on this)")
+                f"or 'dependents' (what builds on this)"
+            )
         graph = self._load_graph(proj)
         tainted = self._taint(graph)
         # Without a ref: render every root of the chosen direction — the nodes
         # nothing points at *along the edges being followed*, so walking down from
         # them reaches the whole forest exactly once.
-        roots = ([self._resolve_ref(graph, ref, "design")] if ref else
-                 sorted((n for n in graph.of_kind("design")
-                         if not (graph.dependents.get(n.id) if direction == "deps"
-                                 else n.deps)),
-                        key=lambda n: n.title))
+        roots = (
+            [self._resolve_ref(graph, ref, "design")]
+            if ref
+            else sorted(
+                (
+                    n
+                    for n in graph.of_kind("design")
+                    if not (
+                        graph.dependents.get(n.id) if direction == "deps" else n.deps
+                    )
+                ),
+                key=lambda n: n.title,
+            )
+        )
 
         def build(node: Node, seen: frozenset[str], level: int) -> dict[str, Any]:
-            edges = (node.deps if direction == "deps"
-                     else graph.dependents.get(node.id, []))
-            out: dict[str, Any] = {**node.brief(),
-                                   "tainted": node.id in tainted, "children": []}
-            if node.id in seen:                 # DAG: shown already, don't re-expand
+            edges = (
+                node.deps if direction == "deps" else graph.dependents.get(node.id, [])
+            )
+            out: dict[str, Any] = {
+                **node.brief(),
+                "tainted": node.id in tainted,
+                "children": [],
+            }
+            if node.id in seen:  # DAG: shown already, don't re-expand
                 out["repeat"] = True
                 return out
             if level >= depth:
                 return out
             for eid in edges:
                 child = graph.nodes.get(eid)
-                if child is None:               # dangling id: a warning, not a crash
-                    out["children"].append({"id": eid, "title": f"{eid} (missing)",
-                                            "missing": True, "children": []})
+                if child is None:  # dangling id: a warning, not a crash
+                    out["children"].append(
+                        {
+                            "id": eid,
+                            "title": f"{eid} (missing)",
+                            "missing": True,
+                            "children": [],
+                        }
+                    )
                     continue
                 out["children"].append(build(child, seen | {node.id}, level + 1))
             return out
 
-        return {"project": proj, "direction": direction,
-                "roots": [build(r, frozenset(), 0) for r in roots]}
+        return {
+            "project": proj,
+            "direction": direction,
+            "roots": [build(r, frozenset(), 0) for r in roots],
+        }
 
-    def facet_graph(self, proj: str, kind: str = "design",
-                    sources: bool = False) -> dict[str, Any]:
+    def facet_graph(
+        self, proj: str, kind: str = "design", sources: bool = False
+    ) -> dict[str, Any]:
         """The decision/plan graph as `{nodes, edges}` — the same consumer contract
         as the symbol graph: every node an object carrying `id` and `name`, every
         edge endpoint declared (lean nodes for note-deps and missing targets), no
@@ -1439,7 +1758,8 @@ class Designs:
         if kind not in ("design", "plan"):
             raise CribUserError(
                 f"unknown kind {kind!r}: use 'design' (the decision map) or "
-                f"'plan' (items plus the decisions they rest on)")
+                f"'plan' (items plus the decisions they rest on)"
+            )
         graph = self._load_graph(proj)
         tainted = self._taint(graph)
         kinds = {"design"} if kind == "design" else {"plan", "design"}
@@ -1448,22 +1768,26 @@ class Designs:
             # only design nodes a plan item actually rests on — the whole decision
             # map belongs to kind="design", not to every plan export
             plan_dep_ids = {d for n in picked if n.kind == "plan" for d in n.deps}
-            picked = [n for n in picked
-                      if n.kind == "plan" or n.id in plan_dep_ids]
+            picked = [n for n in picked if n.kind == "plan" or n.id in plan_dep_ids]
 
         def ref_of(n: Node) -> str:
             return f"{n.kind}:{n.relpath}"
 
         nodes: dict[str, dict[str, Any]] = {}
         for n in picked:
-            node: dict[str, Any] = {"id": ref_of(n), "ulid": n.id,
-                                    "name": n.title, "kind": n.kind,
-                                    "status": n.status, "updated": n.updated}
+            node: dict[str, Any] = {
+                "id": ref_of(n),
+                "ulid": n.id,
+                "name": n.title,
+                "kind": n.kind,
+                "status": n.status,
+                "updated": n.updated,
+            }
             if n.kind == "design":
                 node["tainted"] = n.id in tainted
             if n.kind == "plan" and n.rank:
                 node["rank"] = n.rank
-            nodes[n.id] = node                 # keyed by ulid while wiring edges
+            nodes[n.id] = node  # keyed by ulid while wiring edges
 
         edges: list[dict[str, str]] = []
         for n in picked:
@@ -1476,41 +1800,71 @@ class Designs:
                     # design-only export never lands here; a plan edge to a note
                     # does not either — this is e.g. kind="design" citing a plan)
                     to = f"{target.kind}:{target.relpath}"
-                    nodes.setdefault(target.id, {
-                        "id": to, "ulid": target.id, "name": target.title,
-                        "kind": target.kind, "truncated": True})
+                    nodes.setdefault(
+                        target.id,
+                        {
+                            "id": to,
+                            "ulid": target.id,
+                            "name": target.title,
+                            "kind": target.kind,
+                            "truncated": True,
+                        },
+                    )
                 else:
                     # a NOTE dep (never blocks, lives outside this graph) or a
                     # genuinely dangling id — declared lean, never a bare string
                     to = f"note:{dep}"
-                    nodes.setdefault(dep, {"id": to, "ulid": dep,
-                                           "name": dep[-8:], "kind": "note",
-                                           "external": True})
+                    nodes.setdefault(
+                        dep,
+                        {
+                            "id": to,
+                            "ulid": dep,
+                            "name": dep[-8:],
+                            "kind": "note",
+                            "external": True,
+                        },
+                    )
                 edges.append({"from": nodes[n.id]["id"], "to": to, "kind": "dep"})
             by = str(n.frontmatter.get("superseded_by") or "")
             if by and by in nodes:
-                edges.append({"from": nodes[n.id]["id"], "to": nodes[by]["id"],
-                              "kind": "superseded_by"})
+                edges.append(
+                    {
+                        "from": nodes[n.id]["id"],
+                        "to": nodes[by]["id"],
+                        "kind": "superseded_by",
+                    }
+                )
             if sources:
                 for s in n.sources:
                     sid = f"doc:{source_label(s)}"
                     if sid not in nodes:
-                        nodes[sid] = {"id": sid, "name":
-                                      str(s.get("heading") or s.get("ref") or "")
-                                      .split("/")[-1],
-                                      "kind": "doc", "synthetic": True}
-                    edges.append({"from": nodes[n.id]["id"], "to": sid,
-                                  "kind": "source"})
+                        nodes[sid] = {
+                            "id": sid,
+                            "name": str(s.get("heading") or s.get("ref") or "").split(
+                                "/"
+                            )[-1],
+                            "kind": "doc",
+                            "synthetic": True,
+                        }
+                    edges.append(
+                        {"from": nodes[n.id]["id"], "to": sid, "kind": "source"}
+                    )
         uniq: dict[tuple[str, str, str], dict[str, str]] = {}
         for e in edges:
             uniq[(e["from"], e["to"], e["kind"])] = e
-        return {"project": proj, "kind": kind, "shape": "edges",
-                "nodes": sorted(nodes.values(), key=lambda x: str(x["id"])),
-                "edges": sorted(uniq.values(),
-                                key=lambda x: (x["from"], x["to"], x["kind"]))}
+        return {
+            "project": proj,
+            "kind": kind,
+            "shape": "edges",
+            "nodes": sorted(nodes.values(), key=lambda x: str(x["id"])),
+            "edges": sorted(
+                uniq.values(), key=lambda x: (x["from"], x["to"], x["kind"])
+            ),
+        }
 
-    async def design_supersede(self, proj: str, ref: str,
-                               by_ref: str | None = None) -> dict[str, Any]:
+    async def design_supersede(
+        self, proj: str, ref: str, by_ref: str | None = None
+    ) -> dict[str, Any]:
         """Soft-delete a decision: mark it `superseded` (optionally naming its
         replacement) and taint everything that builds on it.
 
@@ -1524,26 +1878,38 @@ class Designs:
         if by and by.id == node.id:
             raise CribUserError("a decision cannot supersede itself")
         note = self._note(proj, node)
-        marker = (f"\n> **Superseded** {_today()}"
-                  + (f" by {by.title!r} ({by.relpath})." if by else ".")
-                  + " Dependents are tainted until re-verified.\n")
+        marker = (
+            f"\n> **Superseded** {_today()}"
+            + (f" by {by.title!r} ({by.relpath})." if by else ".")
+            + " Dependents are tainted until re-verified.\n"
+        )
         fm: dict[str, Any] = {"status": "superseded"}
         if by:
             fm["superseded_by"] = by.id
         out = await self._save(proj, node, fm, body=note.body.rstrip() + "\n" + marker)
         dependents = [graph.nodes[d].brief() for d in graph.dependents.get(node.id, [])]
-        return {**out, "status": "superseded",
-                "superseded_by": by.id if by else None,
-                "tainted_dependents": dependents}
+        return {
+            **out,
+            "status": "superseded",
+            "superseded_by": by.id if by else None,
+            "tainted_dependents": dependents,
+        }
 
     # ── plan verbs ────────────────────────────────────────────────────────────
 
-    def _rank_for(self, graph: Graph, after: Node | None, before: Node | None,
-                  exclude: str | None = None) -> str:
+    def _rank_for(
+        self,
+        graph: Graph,
+        after: Node | None,
+        before: Node | None,
+        exclude: str | None = None,
+    ) -> str:
         """The rank for an item placed after/before given neighbours (either or
         both may be None — none at all means the end of the list)."""
-        items = sorted((n for n in graph.of_kind("plan") if n.id != exclude),
-                       key=lambda n: (n.rank, n.title))
+        items = sorted(
+            (n for n in graph.of_kind("plan") if n.id != exclude),
+            key=lambda n: (n.rank, n.title),
+        )
         ranks = [n.rank for n in items if n.rank]
         if after and before:
             return _rank_between(after.rank, before.rank)
@@ -1559,11 +1925,17 @@ class Designs:
             return _rank_between(prev, before.rank)
         return _rank_between(ranks[-1] if ranks else None, None)
 
-    async def plan_add(self, proj: str, title: str | None = None, content: str = "",
-                       deps: list[str] | None = None, after: str | None = None,
-                       before: str | None = None,
-                       items: list[dict[str, Any]] | None = None,
-                       sources: list[Any] | None = None) -> dict[str, Any]:
+    async def plan_add(
+        self,
+        proj: str,
+        title: str | None = None,
+        content: str = "",
+        deps: list[str] | None = None,
+        after: str | None = None,
+        before: str | None = None,
+        items: list[dict[str, Any]] | None = None,
+        sources: list[Any] | None = None,
+    ) -> dict[str, Any]:
         """Add plan items (default: at the end; `after`/`before` place them).
 
         Takes ONE item (`title`/`content`/`deps`/`sources`) or a BATCH (`items`),
@@ -1578,13 +1950,17 @@ class Designs:
         A plan item's BODY IS OPTIONAL: a title is a legitimate whole item
         ("wire up the emitter"). A design decision's body is not optional — there
         the rationale IS the artifact."""
-        batch = (items if items is not None
-                 else [{"title": title, "content": content, "deps": deps,
-                        "sources": sources}])
+        batch = (
+            items
+            if items is not None
+            else [
+                {"title": title, "content": content, "deps": deps, "sources": sources}
+            ]
+        )
         if not batch:
             raise CribUserError("plan_add needs a title, or items=[…]")
         rows: list[dict[str, Any]] = []
-        by_index: dict[str, str] = {}       # "#1" → the id it created
+        by_index: dict[str, str] = {}  # "#1" → the id it created
         prev: str | None = None
         for i, item in enumerate(batch, 1):
             if not isinstance(item, dict):  # a bare string is the obvious shorthand
@@ -1592,22 +1968,36 @@ class Designs:
             raw_deps = item.get("deps") if item.get("deps") is not None else []
             # "#n" resolves against THIS batch; anything else is an ordinary ref
             item_deps = [by_index[d] if d in by_index else d for d in raw_deps]
-            unknown = [d for d in raw_deps
-                       if d.startswith("#") and d not in by_index]
+            unknown = [d for d in raw_deps if d.startswith("#") and d not in by_index]
             if unknown:
                 raise CribUserError(
                     f"item {i} depends on {unknown[0]!r}, which is not an EARLIER "
                     f"item in this batch (use #1…#{i - 1}, or an existing ref) — "
-                    f"a batch dep can only point backwards")
+                    f"a batch dep can only point backwards"
+                )
             graph = self._load_graph(proj)
-            a = (self._resolve_ref(graph, prev, "plan") if prev
-                 else self._resolve_ref(graph, after, "plan") if after else None)
-            b = (self._resolve_ref(graph, before, "plan")
-                 if before and not prev else None)
+            a = (
+                self._resolve_ref(graph, prev, "plan")
+                if prev
+                else self._resolve_ref(graph, after, "plan")
+                if after
+                else None
+            )
+            b = (
+                self._resolve_ref(graph, before, "plan")
+                if before and not prev
+                else None
+            )
             rank = self._rank_for(graph, a, b)
-            out = await self._add(proj, "plan", str(item.get("title") or ""),
-                                  str(item.get("content") or ""), item_deps,
-                                  {"rank": rank}, item.get("sources"))
+            out = await self._add(
+                proj,
+                "plan",
+                str(item.get("title") or ""),
+                str(item.get("content") or ""),
+                item_deps,
+                {"rank": rank},
+                item.get("sources"),
+            )
             by_index[f"#{i}"] = out["id"]
             prev = out["id"]
             rows.append({**out, "rank": rank})
@@ -1635,22 +2025,31 @@ class Designs:
         if status not in PLAN_STATUSES:
             raise CribUserError(
                 f"unknown status {status!r}: use one of {', '.join(PLAN_STATUSES)} "
-                f"('blocked' is derived from deps, never set)")
+                f"('blocked' is derived from deps, never set)"
+            )
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, "plan")
         warnings = []
         if status in DONE_STATUSES:
-            open_deps = [graph.nodes[d].title for d in node.deps
-                         if d in graph.nodes and graph.nodes[d].kind == "plan"
-                         and graph.nodes[d].status not in DONE_STATUSES]
+            open_deps = [
+                graph.nodes[d].title
+                for d in node.deps
+                if d in graph.nodes
+                and graph.nodes[d].kind == "plan"
+                and graph.nodes[d].status not in DONE_STATUSES
+            ]
             if open_deps:
                 warnings.append(
                     f"marked {status} while {len(open_deps)} dep(s) are unfinished: "
-                    + ", ".join(repr(t) for t in open_deps))
+                    + ", ".join(repr(t) for t in open_deps)
+                )
         # what was blocked BEFORE — so `unblocked` names only what this call freed,
         # not everything that happens to be ready now
-        was_blocked = {r["id"] for r in self._rows(proj, graph, graph.of_kind("plan"))
-                       if r["blocked"]}
+        was_blocked = {
+            r["id"]
+            for r in self._rows(proj, graph, graph.of_kind("plan"))
+            if r["blocked"]
+        }
         fm: dict[str, Any] = {"status": status}
         missing_sources: list[str] = []
         if node.sources:
@@ -1660,29 +2059,47 @@ class Designs:
         if status in DONE_STATUSES:
             after = self._load_graph(proj)
             for row in self._rows(proj, after, after.of_kind("plan")):
-                if (row["id"] in was_blocked and not row["blocked"]
-                        and row["status"] not in DONE_STATUSES):
-                    unblocked.append({"id": row["id"], "ref": row["relpath"],
-                                      "title": row["title"],
-                                      "status": row["status"]})
+                if (
+                    row["id"] in was_blocked
+                    and not row["blocked"]
+                    and row["status"] not in DONE_STATUSES
+                ):
+                    unblocked.append(
+                        {
+                            "id": row["id"],
+                            "ref": row["relpath"],
+                            "title": row["title"],
+                            "status": row["status"],
+                        }
+                    )
         if missing_sources:
             warnings.append(
-                "cited source(s) no longer resolve: " + ", ".join(missing_sources))
-        return {**out, "status": status, "warnings": warnings,
-                "missing_sources": missing_sources, "unblocked": unblocked}
+                "cited source(s) no longer resolve: " + ", ".join(missing_sources)
+            )
+        return {
+            **out,
+            "status": status,
+            "warnings": warnings,
+            "missing_sources": missing_sources,
+            "unblocked": unblocked,
+        }
 
     async def plan_dep_add(self, proj: str, ref: str, dep_ref: str) -> dict[str, Any]:
         return await self._dep_add(proj, "plan", ref, dep_ref)
 
-    async def plan_dep_remove(self, proj: str, ref: str, dep_ref: str) -> dict[str, Any]:
+    async def plan_dep_remove(
+        self, proj: str, ref: str, dep_ref: str
+    ) -> dict[str, Any]:
         return await self._dep_remove(proj, "plan", ref, dep_ref)
 
-    async def plan_forget(self, proj: str, ref: str,
-                          force: bool = False) -> dict[str, Any]:
+    async def plan_forget(
+        self, proj: str, ref: str, force: bool = False
+    ) -> dict[str, Any]:
         return await self._forget(proj, "plan", ref, force)
 
-    async def plan_move(self, proj: str, ref: str, after: str | None = None,
-                        before: str | None = None) -> dict[str, Any]:
+    async def plan_move(
+        self, proj: str, ref: str, after: str | None = None, before: str | None = None
+    ) -> dict[str, Any]:
         """Re-rank an item. Deps are NOT touched: order is preference, deps are
         correctness (decision 5), so moving can never break the plan."""
         if not (after or before):
@@ -1705,8 +2122,10 @@ class Designs:
         pending = {nid: {d for d in n.deps if d in plans} for nid, n in plans.items()}
         order: list[Node] = []
         while True:
-            ready = sorted((plans[nid] for nid, d in pending.items() if not d),
-                           key=lambda n: (n.rank, n.title))
+            ready = sorted(
+                (plans[nid] for nid, d in pending.items() if not d),
+                key=lambda n: (n.rank, n.title),
+            )
             if not ready:
                 break
             node = ready[0]
@@ -1715,9 +2134,10 @@ class Designs:
             for rest in pending.values():
                 rest.discard(node.id)
         cycles = [[graph.nodes[c].title for c in cyc] for cyc in _cycles(graph.nodes)]
-        if pending:                             # cycle survivors, deterministic order
-            order += sorted((plans[nid] for nid in pending),
-                            key=lambda n: (n.rank, n.title))
+        if pending:  # cycle survivors, deterministic order
+            order += sorted(
+                (plans[nid] for nid in pending), key=lambda n: (n.rank, n.title)
+            )
         return order, cycles
 
     def _note_dep_ids(self, proj: str, ids: set[str]) -> set[str]:
@@ -1759,9 +2179,14 @@ class Designs:
         note_ids = self._note_dep_ids(proj, unresolved) if unresolved else set()
         return [self._row(graph, n, gating, note_ids, full) for n in nodes]
 
-    def _row(self, graph: Graph, node: Node, tainted: dict[str, Any],
-             note_ids: set[str],
-             full: dict[str, Any] | None = None) -> dict[str, Any]:
+    def _row(
+        self,
+        graph: Graph,
+        node: Node,
+        tainted: dict[str, Any],
+        note_ids: set[str],
+        full: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """One plan item + its derived state, under the MIXED-DEP RULE:
 
         - a **plan** dep blocks until it is `done`/`verified` — it is work that
@@ -1789,28 +2214,52 @@ class Designs:
                 (note_deps if dep_id in note_ids else missing).append(dep_id)
             elif dep.kind == "plan":
                 if dep.status not in DONE_STATUSES:
-                    blockers.append({"id": dep.id, "ref": dep.relpath,
-                                     "title": dep.title, "kind": "plan",
-                                     "status": dep.status})
+                    blockers.append(
+                        {
+                            "id": dep.id,
+                            "ref": dep.relpath,
+                            "title": dep.title,
+                            "kind": "plan",
+                            "status": dep.status,
+                        }
+                    )
             elif dep.status == "proposed":
-                blockers.append({"id": dep.id, "ref": dep.relpath,
-                                 "title": dep.title, "kind": "design",
-                                 "status": "proposed — `design_promote` it"})
+                blockers.append(
+                    {
+                        "id": dep.id,
+                        "ref": dep.relpath,
+                        "title": dep.title,
+                        "kind": "design",
+                        "status": "proposed — `design_promote` it",
+                    }
+                )
             elif dep.id in tainted:
-                blockers.append({"id": dep.id, "ref": dep.relpath,
-                                 "title": dep.title, "kind": "design",
-                                 "status": "stale — `design_read` it"})
+                blockers.append(
+                    {
+                        "id": dep.id,
+                        "ref": dep.relpath,
+                        "title": dep.title,
+                        "kind": "design",
+                        "status": "stale — `design_read` it",
+                    }
+                )
         causes = ((full or {}).get(node.id, {}) or {}).get("causes") or []
         moved = [c for c in causes if c["change_kind"] in SOURCE_KINDS]
-        row = {**node.brief(), "blocked": bool(blockers), "blocked_by": blockers,
-               "note_deps": note_deps, "missing_deps": missing,
-               "group": _group(node, bool(blockers))}
+        row = {
+            **node.brief(),
+            "blocked": bool(blockers),
+            "blocked_by": blockers,
+            "note_deps": note_deps,
+            "missing_deps": missing,
+            "group": _group(node, bool(blockers)),
+        }
         if moved and node.status in DONE_STATUSES:
             row["revisit"] = [c["reason"] for c in moved]
             row["next"] = (
                 f"a source {node.title!r} was done against has changed — re-read "
                 f"{', '.join(dict.fromkeys(c['dep_title'] for c in moved))} and "
-                f"decide: still done, or `plan_status {node.relpath} todo`")
+                f"decide: still done, or `plan_status {node.relpath} todo`"
+            )
         return row
 
     def plan_list(self, proj: str, all: bool = False) -> dict[str, Any]:
@@ -1823,16 +2272,22 @@ class Designs:
         up, what can't I") ahead of the question the raw graph answers."""
         graph = self._load_graph(proj)
         order, cycles = self._ordered(graph)
-        rows = self._rows(proj, graph,
-                          [n for n in order if all or n.status not in DONE_STATUSES])
-        rows.sort(key=lambda r: _GROUPS.index(r["group"]))   # stable: topo+rank kept
+        rows = self._rows(
+            proj, graph, [n for n in order if all or n.status not in DONE_STATUSES]
+        )
+        rows.sort(key=lambda r: _GROUPS.index(r["group"]))  # stable: topo+rank kept
         groups: dict[str, int] = {}
         for row in rows:
             groups[row["group"]] = groups.get(row["group"], 0) + 1
-        return {"project": proj, "items": rows, "total": len(order),
-                "groups": groups, "hidden": len(order) - len(rows),
-                "revisit": sum(1 for r in rows if r.get("revisit")),
-                "cycles": cycles}
+        return {
+            "project": proj,
+            "items": rows,
+            "total": len(order),
+            "groups": groups,
+            "hidden": len(order) - len(rows),
+            "revisit": sum(1 for r in rows if r.get("revisit")),
+            "cycles": cycles,
+        }
 
     def plan_next(self, proj: str, k: int = 5) -> dict[str, Any]:
         """What is actually actionable now: `todo` items nothing blocks, in rank
@@ -1854,17 +2309,25 @@ class Designs:
         marking it, which is what makes the claim visible to everyone else."""
         graph = self._load_graph(proj)
         order, _ = self._ordered(graph)
-        rows = [r for r in self._rows(proj, graph,
-                                      [n for n in order if n.status == "todo"])
-                if not r["blocked"]]
+        rows = [
+            r
+            for r in self._rows(proj, graph, [n for n in order if n.status == "todo"])
+            if not r["blocked"]
+        ]
         for row in rows:
             row["next"] = (
                 f"starting it? `plan_status {row['relpath']} in-progress` (that is "
                 f"the claim other agents read); finished? `plan_status "
-                f"{row['relpath']} done` — the result names what you unblocked")
-        return {"project": proj, "items": rows[:max(1, k)], "ready": len(rows),
-                "claimed": sum(1 for n in graph.of_kind("plan")
-                               if n.status == "in-progress")}
+                f"{row['relpath']} done` — the result names what you unblocked"
+            )
+        return {
+            "project": proj,
+            "items": rows[: max(1, k)],
+            "ready": len(rows),
+            "claimed": sum(
+                1 for n in graph.of_kind("plan") if n.status == "in-progress"
+            ),
+        }
 
     # ── import: the description IS the procedure ──────────────────────────────
     # IMPORT IS HOST-LLM DRIVEN; THIS SIDE IS TOOLING AND INSTRUCTION ONLY. These
@@ -1896,25 +2359,40 @@ class Designs:
 
     def _import(self, proj: str, kind: str, relpath: str) -> dict[str, Any]:
         doc = self._resolve_doc(proj, relpath)
-        sections = [{"heading_path": r["heading_path"],
-                     # the citation string, verbatim — this is what goes in
-                     # `sources`, so nothing has to be re-derived by hand
-                     "source": f"{doc}#{r['key']}" if r["key"] else doc,
-                     "section_hash": r["section_hash"], "words": r["words"],
-                     "preview": r["preview"], "indexed": r["indexed"]}
-                    for r in self._doc_sections(proj, doc)]
+        sections = [
+            {
+                "heading_path": r["heading_path"],
+                # the citation string, verbatim — this is what goes in
+                # `sources`, so nothing has to be re-derived by hand
+                "source": f"{doc}#{r['key']}" if r["key"] else doc,
+                "section_hash": r["section_hash"],
+                "words": r["words"],
+                "preview": r["preview"],
+                "indexed": r["indexed"],
+            }
+            for r in self._doc_sections(proj, doc)
+        ]
         existing = self._citing(proj, doc, kind)
         path = ""
         try:
             path = str(self._doc_abspath(proj, doc))
         except (OSError, ValueError):
             pass
-        return {"project": proj, "kind": kind, "relpath": doc, "path": path,
-                "sections": sections, "existing": existing,
-                "instruction": (_DESIGN_IMPORT if kind == "design"
-                                else _PLAN_IMPORT).format(relpath=doc),
-                "next": (f"read {doc}, then follow `instruction` — nothing has been "
-                         f"written yet; this verb only prepared the citations")}
+        return {
+            "project": proj,
+            "kind": kind,
+            "relpath": doc,
+            "path": path,
+            "sections": sections,
+            "existing": existing,
+            "instruction": (
+                _DESIGN_IMPORT if kind == "design" else _PLAN_IMPORT
+            ).format(relpath=doc),
+            "next": (
+                f"read {doc}, then follow `instruction` — nothing has been "
+                f"written yet; this verb only prepared the citations"
+            ),
+        }
 
     def design_import(self, proj: str, relpath: str) -> dict[str, Any]:
         """Prepare a doc for extraction into the DESIGN graph: its sections with

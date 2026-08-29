@@ -69,8 +69,8 @@ class LookupHit:
     title: str
     snippet: str
     score: float
-    line_start: int | None = None   # 1-based span of the section in the file,
-    line_end: int | None = None     # resolved against current disk (None if gone)
+    line_start: int | None = None  # 1-based span of the section in the file,
+    line_end: int | None = None  # resolved against current disk (None if gone)
     # True while this project's vectors are still being rebuilt after a store wipe
     # (embedder profile change): the result set is INCOMPLETE, not authoritative
     index_rebuilding: bool = False
@@ -97,6 +97,7 @@ def _resolve_embed_config(config: Config) -> Any:
     if profile and config.generate.config:
         try:
             from llmkit.bridge import load
+
             conf = load(str(Path(config.generate.config).expanduser()))
             spec = conf.select(profile, "embed")
             if spec:
@@ -134,13 +135,17 @@ class Crib:
         self.paths = paths
         self.config = config
         self.store = store
-        self.embedder = build_embedder(_resolve_embed_config(config),
-                                       stored_dim=_stored_dim(store))
-        self.index = IndexEngine(store, self.embedder,
-                                 config.chunk.window_words,
-                                 config.chunk.overlap_words,
-                                 keyword_terms=self._keyword_terms,
-                                 summary_terms=self._summary_terms)
+        self.embedder = build_embedder(
+            _resolve_embed_config(config), stored_dim=_stored_dim(store)
+        )
+        self.index = IndexEngine(
+            store,
+            self.embedder,
+            config.chunk.window_words,
+            config.chunk.overlap_words,
+            keyword_terms=self._keyword_terms,
+            summary_terms=self._summary_terms,
+        )
         # DESIGN §14: network git is CLI-side (the terminal owns auth) — the
         # daemon only ever snapshots/reads history locally.
         self.git = GitBacking(paths.data_dir, allow_network=False)
@@ -156,24 +161,31 @@ class Crib:
         # over the SAME shared backends (vector store / IndexEngine / ring /
         # resolver) — the pillars differ only by their StoreSpec. Crib keeps
         # delegators for the notes pillar (below); the facet layers own theirs.
-        self.notestore = NoteStore(paths, store, self.index, self.versions,
-                                   self.project_paths)
-        self.designstore = NoteStore(paths, store, self.index, self.versions,
-                                     self.project_paths, DESIGN_SPEC)
-        self.planstore = NoteStore(paths, store, self.index, self.versions,
-                                   self.project_paths, PLANS_SPEC)
-        self.learningstore = NoteStore(paths, store, self.index, self.versions,
-                                       self.project_paths, LEARNINGS_SPEC)
+        self.notestore = NoteStore(
+            paths, store, self.index, self.versions, self.project_paths
+        )
+        self.designstore = NoteStore(
+            paths, store, self.index, self.versions, self.project_paths, DESIGN_SPEC
+        )
+        self.planstore = NoteStore(
+            paths, store, self.index, self.versions, self.project_paths, PLANS_SPEC
+        )
+        self.learningstore = NoteStore(
+            paths, store, self.index, self.versions, self.project_paths, LEARNINGS_SPEC
+        )
         # Routing table for relpath-first entry points (the watcher, migration).
         self.pillars: dict[str, NoteStore] = {
-            "notes": self.notestore, "design": self.designstore,
-            "plans": self.planstore, "learnings": self.learningstore}
+            "notes": self.notestore,
+            "design": self.designstore,
+            "plans": self.planstore,
+            "learnings": self.learningstore,
+        }
         self.memory_bindings = MemoryBindings(paths.data_dir / "memory-bindings.json")
-        self._reranker: Any = None      # lazy cross-encoder, warm for the daemon
+        self._reranker: Any = None  # lazy cross-encoder, warm for the daemon
         self._watcher: Watcher | None = None
         self._code_watcher: CodeWatcher | None = None
-        self._describe_q: Any = None    # DescribeQueue, started by the daemon
-        self._mirror: Any = None        # MemoryMirror, started by the daemon
+        self._describe_q: Any = None  # DescribeQueue, started by the daemon
+        self._mirror: Any = None  # MemoryMirror, started by the daemon
         # auto keyword_index refresh (daemon): per-note settle timers, plus strong
         # refs for ALL fire-and-forget daemon tasks (backlogs, refreshes) — an
         # unreferenced asyncio task is GC-collectable mid-flight
@@ -182,7 +194,7 @@ class Crib:
         # projects left in an in-flight reconcile sweep (None = not reconciling);
         # the `status` progress signal for the backgrounded startup reconcile
         self._reconcile_remaining: int | None = None
-        self._reconcile_reason: str | None = None   # why (e.g. an embedder change)
+        self._reconcile_reason: str | None = None  # why (e.g. an embedder change)
         # Projects whose chunks a store wipe took and whose re-embed sweep hasn't
         # reached them yet — retrieval against one is THIN, so its hits say so
         # (`index_rebuilding`). Cleared per project as the recovery sweep finishes it.
@@ -206,9 +218,14 @@ class Crib:
         # The project-layer surface the indexing pipeline depends on — narrow deps
         # (refs + code + config for resolution/ref-context, plus two injected callables
         # for enumeration + watcher registration). No back-reference to Crib.
-        self.services = ProjectServices(self.refs, self.code, paths, config,
-                                        self._enumerate_code_files,
-                                        self._register_code_root)
+        self.services = ProjectServices(
+            self.refs,
+            self.code,
+            paths,
+            config,
+            self._enumerate_code_files,
+            self._register_code_root,
+        )
         # The code-index pipeline (extract → describe → persist), over CodeStore +
         # ProjectServices. Crib keeps delegators (below) so the watcher, the resident
         # revalidate hook, and project setup/index call it unchanged.
@@ -218,12 +235,16 @@ class Crib:
         self.learnings = Learnings(paths, self.refs, self.learningstore)
         # Design decisions + plan items (notes under design/ and plans/) and the
         # dependency graph over them. Same shape: Crib resolves, Designs executes.
-        self.designs = Designs(paths, self.designstore, self.planstore,
-                               self.notestore)
+        self.designs = Designs(paths, self.designstore, self.planstore, self.notestore)
         # Code-index queries (lookup/xref/dossier/graph) over refs + learnings + the
         # resident cache. Crib keeps resolve_project + delegate public wrappers.
-        self.query = CodeQuery(self.refs, self.learnings, self.embedder,
-                               self._resident_code, self._require_code_index)
+        self.query = CodeQuery(
+            self.refs,
+            self.learnings,
+            self.embedder,
+            self._resident_code,
+            self._require_code_index,
+        )
 
     # --- construction ------------------------------------------------------
     @classmethod
@@ -243,19 +264,24 @@ class Crib:
         the per-path index locks coordinate writers and watcher (DESIGN §4)."""
         if self._watcher is not None:
             return
-        self._daemon_loop = loop        # a loop that outlives a tool call exists now
+        self._daemon_loop = loop  # a loop that outlives a tool call exists now
         # Watch roots = the global `projects/` tree PLUS each AVAILABLE in-repo
         # store's notes dir. Computed once at start, so a mid-life adoption takes
         # effect on the next daemon start — the same accepted limitation as
         # memory bindings (DESIGN §13).
-        self._watcher = Watcher(self.paths.projects_dir, self._on_fs_change, loop,
-                                self._in_repo_store_roots())
+        self._watcher = Watcher(
+            self.paths.projects_dir,
+            self._on_fs_change,
+            loop,
+            self._in_repo_store_roots(),
+        )
         self._watcher.start()
         # Code watcher — reindexes source on edit (notes-watcher reloads notes,
         # code-watcher reindexes code). Seed it with every code-indexed project's root.
         self._code_watcher = CodeWatcher(self._on_code_change, loop)
         from .codeindex import SymbolIndex
-        for name in self.projects():           # `projects()` returns plain names
+
+        for name in self.projects():  # `projects()` returns plain names
             root = SymbolIndex(self.paths.project_dir(name)).source_root()
             if root is not None:
                 self._code_watcher.watch_root(name, root)
@@ -264,10 +290,14 @@ class Crib:
         # changed symbols to this per-file backoff queue, so an edit burst coalesces to
         # one focused LLM describe once the file settles (docs § Deferred describe).
         from .describe_queue import DescribeQueue
+
         gen = self.config.generate
-        self._describe_q = DescribeQueue(loop, self.indexer._describe_and_patch,
-                                         base=gen.describe_backoff_base,
-                                         cap=gen.describe_backoff_cap)
+        self._describe_q = DescribeQueue(
+            loop,
+            self.indexer._describe_and_patch,
+            base=gen.describe_backoff_base,
+            cap=gen.describe_backoff_cap,
+        )
         self.indexer.set_describe_queue(self._describe_q)
         # Self-heal: a crash (or clean stop) mid-window leaves symbols with structure
         # but a blank description — re-drive them so nothing stays undescribed. Ditto
@@ -302,10 +332,13 @@ class Crib:
             return False
         if pp.project not in self._warned_unavailable:
             self._warned_unavailable.add(pp.project)
-            print(f"[crib] {what} {pp.project}: its notes live in a repo at "
-                  f"{pp.store_token}, which is not on this machine "
-                  f"(clone it, add a [locations] entry, or `crib project release "
-                  f"{pp.project}`)", file=sys.stderr)
+            print(
+                f"[crib] {what} {pp.project}: its notes live in a repo at "
+                f"{pp.store_token}, which is not on this machine "
+                f"(clone it, add a [locations] entry, or `crib project release "
+                f"{pp.project}`)",
+                file=sys.stderr,
+            )
         return True
 
     def _spawn_bg(self, loop: asyncio.AbstractEventLoop, coro: Any) -> None:
@@ -317,11 +350,13 @@ class Crib:
 
     async def _on_fs_change(self, project: str, store: str, relpath: str) -> None:
         pillar = self.pillars.get(store, self.notestore)
-        await self.index.index_file(project, pillar.dir(project), relpath,
-                                    store=pillar.spec.name)
+        await self.index.index_file(
+            project, pillar.dir(project), relpath, store=pillar.spec.name
+        )
 
     async def _on_code_change(
-            self, project: str, changes: dict[str, tuple[str, bool]]) -> None:
+        self, project: str, changes: dict[str, tuple[str, bool]]
+    ) -> None:
         """Reindex (or drop) the source files the watcher coalesced for a project —
         eager counterpart to the lazy query-time revalidation. Off the loop;
         best-effort (a transient syntax error mid-edit just leaves the prior entry
@@ -329,6 +364,7 @@ class Crib:
         switch) collapses to a single revalidation sweep."""
         from .codeindex import _POOL
         from .watch import CODE_BATCH_FALLBACK
+
         # Pump the same events into the warm LSP sessions (docs §3.2) BEFORE
         # reindexing, so a server that doesn't self-watch the fs invalidates its
         # workspace index — cross-file edges then resolve against current code.
@@ -346,14 +382,19 @@ class Crib:
             return
         for relpath, (root, deleted) in changes.items():
             try:
-                if relpath.startswith("\x00doc\x00"):     # in-situ doc (see CodeWatcher._decode)
+                if relpath.startswith(
+                    "\x00doc\x00"
+                ):  # in-situ doc (see CodeWatcher._decode)
                     # index_file is async (asyncio locks) — await on THIS loop, don't
                     # thread it (a per-thread asyncio.run would strand stale-loop locks).
-                    rel_to_repo = relpath[len("\x00doc\x00"):]
+                    rel_to_repo = relpath[len("\x00doc\x00") :]
                     src_rel = src_relpath(Path(root).name, rel_to_repo)
                     await self.index.index_file(
-                        project, self.notes_dir(project), src_rel,
-                        content_path=self.abspath(project, src_rel))
+                        project,
+                        self.notes_dir(project),
+                        src_rel,
+                        content_path=self.abspath(project, src_rel),
+                    )
                 elif deleted and not (Path(root) / relpath).exists():
                     await asyncio.to_thread(self._drop_file, project, relpath)
                 else:
@@ -367,8 +408,14 @@ class Crib:
                     # description pass with per-file backoff (the live edit path is
                     # exactly where rapid saves would otherwise slam the LLM).
                     await asyncio.to_thread(
-                        self._index_code_file_tracked, Path(root), relpath, project,
-                        True, None, "defer")
+                        self._index_code_file_tracked,
+                        Path(root),
+                        relpath,
+                        project,
+                        True,
+                        None,
+                        "defer",
+                    )
             except Exception:  # noqa: BLE001 — one bad file never aborts the batch
                 pass
 
@@ -385,19 +432,27 @@ class Crib:
         inline reindex per affected file catches them up. A no-op in the common case
         (nothing blank), so it's cheap to run on every start."""
         from .codeindex import SymbolIndex
+
         for name in self.projects():
             try:
                 si = SymbolIndex(self.paths.project_dir(name))
                 root = si.source_root()
                 if root is None:
                     continue
-                files = sorted({e["file"] for e in si.all()
-                                if e.get("content_hash") and not e.get("description")
-                                and e.get("file")})
+                files = sorted(
+                    {
+                        e["file"]
+                        for e in si.all()
+                        if e.get("content_hash")
+                        and not e.get("description")
+                        and e.get("file")
+                    }
+                )
                 for rel in files:
-                    try:                                # inline: describe now, no queue
-                        await asyncio.to_thread(self._index_code_file_tracked,
-                                                root, rel, name, True)
+                    try:  # inline: describe now, no queue
+                        await asyncio.to_thread(
+                            self._index_code_file_tracked, root, rel, name, True
+                        )
                     except Exception:  # noqa: BLE001 — one bad file never aborts catch-up
                         pass
             except Exception:  # noqa: BLE001 — best-effort; missing/odd index is fine
@@ -412,17 +467,19 @@ class Crib:
         generates for every never-enriched section (the same work the explicit
         `crib elaborate`/`crib summarize` would do). The project-wide pass also runs
         the orphan prune (`SectionIndex.prune`) for each label."""
-        if not (self.config.retrieve.keyword_labels
-                or self.config.retrieve.summary_labels):
+        if not (
+            self.config.retrieve.keyword_labels or self.config.retrieve.summary_labels
+        ):
             return
         for name in self.projects():
             if self._skip_if_unavailable(self.project_paths(name), "not enriching"):
                 continue
             try:
-                await self.enrich(project=name)      # one combined pass, all facets
+                await self.enrich(project=name)  # one combined pass, all facets
             except Exception as e:  # noqa: BLE001 — best-effort catch-up
-                print(f"[crib] enrichment catch-up failed ({name}): {e}",
-                      file=sys.stderr)
+                print(
+                    f"[crib] enrichment catch-up failed ({name}): {e}", file=sys.stderr
+                )
 
     async def start_memory_mirror(self, loop: asyncio.AbstractEventLoop) -> None:
         """Catch up + live-mirror bound Claude harness memory dirs (DESIGN §13).
@@ -454,7 +511,7 @@ class Crib:
         for timer in self._kw_timers.values():
             timer.cancel()
         self._kw_timers.clear()
-        for task in self._bg_tasks:     # best-effort: unfinished work dies with us
+        for task in self._bg_tasks:  # best-effort: unfinished work dies with us
             task.cancel()
         self._bg_tasks.clear()
 
@@ -463,6 +520,7 @@ class Crib:
         Chroma refcount, if any."""
         self.stop_watchers()
         from .codeindex import _POOL
+
         _POOL.close_all()
         if self._on_close is not None:
             self._on_close()
@@ -475,24 +533,30 @@ class Crib:
     def notes_dir(self, project: str) -> Path:
         return self.notestore.dir(project)
 
-    def _keyword_terms(self, project: str, section_hash: str,
-                       labels: tuple[str, ...]) -> list[str]:
+    def _keyword_terms(
+        self, project: str, section_hash: str, labels: tuple[str, ...]
+    ) -> list[str]:
         """Per-section keyword_index terms for the given labels — the BM25 feed
         (§3.1). Read from the section-addressed TOML store; empty when a section
         has no keyword set for a label yet (graceful: BM25 falls back to
         body+heading)."""
         from .section_index import SectionIndex
-        return SectionIndex(self.project_paths(project).project_dir,
-                            "keyword_index").terms_for(section_hash, list(labels))
 
-    def _summary_terms(self, project: str, section_hash: str,
-                       labels: tuple[str, ...]) -> list[str]:
+        return SectionIndex(
+            self.project_paths(project).project_dir, "keyword_index"
+        ).terms_for(section_hash, list(labels))
+
+    def _summary_terms(
+        self, project: str, section_hash: str, labels: tuple[str, ...]
+    ) -> list[str]:
         """Per-section summary_index rephrasings for the given labels — the dense
         alias feed (§3). Read from the section-addressed TOML store; empty when a
         section has no summary for a label yet."""
         from .section_index import SectionIndex
-        return SectionIndex(self.project_paths(project).project_dir,
-                            "summary_index").terms_for(section_hash, list(labels))
+
+        return SectionIndex(
+            self.project_paths(project).project_dir, "summary_index"
+        ).terms_for(section_hash, list(labels))
 
     def _source_roots(self, project: str) -> "SourceRoots":
         """Per-project registry of docs indexed in-situ (prefix -> repo root)."""
@@ -503,10 +567,10 @@ class Crib:
 
     async def _write_note(self, project: str, relpath: str, note: Note) -> IndexResult:
         res = await self.notestore.write(project, relpath, note)
-        self._schedule_keyword_refresh(project, relpath)   # keep the sparse facet fresh
+        self._schedule_keyword_refresh(project, relpath)  # keep the sparse facet fresh
         return res
 
-    _KW_SETTLE_S = 1.0                  # per-note debounce before the refresh fires
+    _KW_SETTLE_S = 1.0  # per-note debounce before the refresh fires
 
     def _schedule_keyword_refresh(self, project: str, relpath: str) -> None:
         """AUTO enrichment: after a note write, (re)generate the terms for the active
@@ -520,9 +584,14 @@ class Crib:
         is held in `_bg_tasks` (an unreferenced task can be GC'd mid-flight).
         Daemon-only — a one-shot CLI has no persistent loop to drain the task; there
         `crib elaborate`/`crib summarize` stay the explicit verbs."""
-        if not (self.config.retrieve.keyword_labels
-                or self.config.retrieve.summary_labels) or self._describe_q is None:
-            return                                   # describe queue present ⇒ daemon
+        if (
+            not (
+                self.config.retrieve.keyword_labels
+                or self.config.retrieve.summary_labels
+            )
+            or self._describe_q is None
+        ):
+            return  # describe queue present ⇒ daemon
         try:
             loop = asyncio.get_running_loop()
         except RuntimeError:
@@ -548,7 +617,7 @@ class Crib:
 
         old = self._kw_timers.pop(key, None)
         if old is not None:
-            old.cancel()                # re-arm: newest write restarts the settle
+            old.cancel()  # re-arm: newest write restarts the settle
         self._kw_timers[key] = loop.call_later(self._KW_SETTLE_S, _fire)
 
     # --- tool verbs --------------------------------------------------------
@@ -572,8 +641,9 @@ class Crib:
             i += 1
         return f"{slug}-{i}.md"
 
-    def _similar(self, proj: str, content: str, exclude: str,
-                 store: str = "notes") -> list[dict[str, Any]]:
+    def _similar(
+        self, proj: str, content: str, exclude: str, store: str = "notes"
+    ) -> list[dict[str, Any]]:
         """Near-duplicate hints for a just-stored note (excludes the note itself),
         probing the SAME pillar it was stored into — a near-duplicate note is
         redundancy, a near-duplicate decision forks the graph, and each is a
@@ -588,20 +658,28 @@ class Crib:
             hits = self.lookup(probe, project=proj, k=4, store=store)
         except Exception:  # noqa: BLE001 — a nudge must never fail the store
             return []
-        return [{"relpath": h.relpath, "heading": h.heading, "score": h.score}
-                for h in hits
-                if h.relpath != exclude and h.score >= self.DEDUPE_WARN_SCORE]
+        return [
+            {"relpath": h.relpath, "heading": h.heading, "score": h.score}
+            for h in hits
+            if h.relpath != exclude and h.score >= self.DEDUPE_WARN_SCORE
+        ]
 
-    async def store_note(self, content: str, title: str | None = None,
-                         project: str | None = None, tags: list[str] | None = None,
-                         cwd: Path | None = None) -> dict[str, Any]:
+    async def store_note(
+        self,
+        content: str,
+        title: str | None = None,
+        project: str | None = None,
+        tags: list[str] | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         proj = self.resolve_project(project, cwd)
         created = self.project_is_new(proj)
         # Parenthesized deliberately: `a or b if c else d` binds as `(a or b) if c
         # else d`, which threw away an EXPLICIT title whenever the content was
         # blank/whitespace and filed the note as "note".
-        title = title or (content.strip().splitlines()[0][:60]
-                          if content.strip() else "note")
+        title = title or (
+            content.strip().splitlines()[0][:60] if content.strip() else "note"
+        )
         relpath = self._unique_relpath(proj, _slug(title))
         fm: dict[str, Any] = {"title": title, "source": "manual"}
         if tags:
@@ -609,48 +687,73 @@ class Crib:
         note = Note(path=self.abspath(proj, relpath), frontmatter=fm, body=content)
         res = await self._write_note(proj, relpath, note)
         similar = await asyncio.to_thread(self._similar, proj, content, relpath)
-        return {"project": proj, "relpath": relpath, "indexed": res.upserted,
-                "created": created, "similar": similar}
+        return {
+            "project": proj,
+            "relpath": relpath,
+            "indexed": res.upserted,
+            "created": created,
+            "similar": similar,
+        }
 
-    async def move_note(self, relpath: str, to_project: str | None = None,
-                        to_relpath: str | None = None, project: str | None = None,
-                        cwd: Path | None = None) -> dict[str, Any]:
+    async def move_note(
+        self,
+        relpath: str,
+        to_project: str | None = None,
+        to_relpath: str | None = None,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Relocate a note across projects and/or rename it, preserving its `id`
         (and thus version-ring history). One-way: write destination, drop source."""
         src_proj = self.resolve_project(project, cwd)
-        return await self.notestore.move(src_proj, relpath,
-                                         to_project or src_proj, to_relpath or relpath)
+        return await self.notestore.move(
+            src_proj, relpath, to_project or src_proj, to_relpath or relpath
+        )
 
-    async def append_note(self, relpath: str, content: str,
-                          heading: str | None = None, project: str | None = None,
-                          cwd: Path | None = None) -> dict[str, Any]:
+    async def append_note(
+        self,
+        relpath: str,
+        content: str,
+        heading: str | None = None,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         proj = self.resolve_project(project, cwd)
         path = self.abspath(proj, relpath)
-        note = notes.load(path) if path.exists() else Note(
-            path=path, frontmatter={"source": "appended"}, body="")
+        note = (
+            notes.load(path)
+            if path.exists()
+            else Note(path=path, frontmatter={"source": "appended"}, body="")
+        )
         block = f"\n\n## {heading}\n{content}" if heading else f"\n\n{content}"
         note.body = note.body.rstrip() + block
         res = await self._write_note(proj, relpath, note)
         return {"project": proj, "relpath": relpath, "indexed": res.upserted}
 
-    async def edit_note(self, relpath: str, new_content: str,
-                        project: str | None = None, cwd: Path | None = None) -> dict[str, Any]:
+    async def edit_note(
+        self,
+        relpath: str,
+        new_content: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Replace raw file content (frontmatter preserved if present in input)."""
         proj = self.resolve_project(project, cwd)
         fm, body = notes.parse(new_content)
         path = self.abspath(proj, relpath)
         if not fm and path.exists():
             try:
-                fm = notes.load(path).frontmatter   # keep existing frontmatter
+                fm = notes.load(path).frontmatter  # keep existing frontmatter
             except NoteParseError:
-                fm = {}     # unparseable header: this edit REPAIRS it (the old
-                            # bytes go to the version ring on the way through)
+                fm = {}  # unparseable header: this edit REPAIRS it (the old
+                # bytes go to the version ring on the way through)
         note = Note(path=path, frontmatter=fm, body=body)
         res = await self._write_note(proj, relpath, note)
         return {"project": proj, "relpath": relpath, "indexed": res.upserted}
 
-    async def forget(self, relpath: str, project: str | None = None,
-                     cwd: Path | None = None) -> dict[str, Any]:
+    async def forget(
+        self, relpath: str, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Delete a note: remove it from disk and drop its chunks from the index.
 
         The current content is stashed to the version ring first (keyed by note
@@ -660,18 +763,24 @@ class Crib:
         proj = self.resolve_project(project, cwd)
         return await self.notestore.delete(proj, relpath)
 
-    def read_note(self, relpath: str, project: str | None = None,
-                  cwd: Path | None = None) -> str:
+    def read_note(
+        self, relpath: str, project: str | None = None, cwd: Path | None = None
+    ) -> str:
         proj = self.resolve_project(project, cwd)
         return self.notestore.read(proj, relpath)
 
-    def locate(self, relpath: str, project: str | None = None,
-               cwd: Path | None = None) -> str:
+    def locate(
+        self, relpath: str, project: str | None = None, cwd: Path | None = None
+    ) -> str:
         proj = self.resolve_project(project, cwd)
         return str(self.abspath(proj, relpath))
 
-    async def reindex(self, relpath: str | None = None, project: str | None = None,
-                      cwd: Path | None = None) -> dict[str, Any]:
+    async def reindex(
+        self,
+        relpath: str | None = None,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Reindex a note, or fully reconcile a project when relpath is None.
 
         Full reconcile walks the UNION of on-disk notes and indexed paths, so it
@@ -700,8 +809,7 @@ class Crib:
                 res[k] += r[k]
             res["skipped"] += r["skipped"]
             if r.get("duplicate_ids"):
-                res["duplicate_ids"] = (res.get("duplicate_ids", [])
-                                        + r["duplicate_ids"])
+                res["duplicate_ids"] = res.get("duplicate_ids", []) + r["duplicate_ids"]
         if mig["moved"] or mig["skipped"] or mig["refs_rewritten"]:
             res["migrated"] = mig
         if recreated:
@@ -720,8 +828,11 @@ class Crib:
         cur = self.store.current_dim()
         if cur is None or cur == self.embedder.dim:
             return False
-        print(f"crib: embedder dim {cur}→{self.embedder.dim}; recreating "
-              f"the vector collection (full re-embed)", file=sys.stderr)
+        print(
+            f"crib: embedder dim {cur}→{self.embedder.dim}; recreating "
+            f"the vector collection (full re-embed)",
+            file=sys.stderr,
+        )
         self.store.recreate()
         # The derived retrieval caches (BM25 corpus + summary alias vectors) are
         # built from the store and keyed per project — a wipe invalidates ALL of
@@ -740,13 +851,18 @@ class Crib:
         say what's needed instead of stranding a task that would never run."""
         self._resweep_pending |= set(self.projects()) | self._indexed_projects()
         if self._daemon_loop is None:
-            print(f"[crib] vector store recreated ({reason}); other projects are "
-                  f"un-embedded until you run `crib project reconcile`",
-                  file=sys.stderr)
+            print(
+                f"[crib] vector store recreated ({reason}); other projects are "
+                f"un-embedded until you run `crib project reconcile`",
+                file=sys.stderr,
+            )
             return
         if self._reconcile_remaining is not None:
-            print(f"[crib] vector store recreated ({reason}); the in-flight "
-                  f"reconcile will re-embed what's left", file=sys.stderr)
+            print(
+                f"[crib] vector store recreated ({reason}); the in-flight "
+                f"reconcile will re-embed what's left",
+                file=sys.stderr,
+            )
             return
         self.reconcile_in_background(self._daemon_loop, reason=reason)
 
@@ -764,14 +880,13 @@ class Crib:
         try:
             return int(self._schema_marker.read_text().strip())
         except (OSError, ValueError):
-            return 0            # never recorded → pre-v2 store, sweep owed
+            return 0  # never recorded → pre-v2 store, sweep owed
 
     def _record_chunk_schema(self) -> None:
         try:
             self._schema_marker.write_text(f"{CHUNK_SCHEMA_VERSION}\n")
-        except OSError as e:    # marker only — a lost write costs one extra sweep
-            print(f"[crib] could not record chunk schema version: {e}",
-                  file=sys.stderr)
+        except OSError as e:  # marker only — a lost write costs one extra sweep
+            print(f"[crib] could not record chunk schema version: {e}", file=sys.stderr)
 
     async def reconcile_all(self) -> dict[str, Any]:
         """Startup/post-pull sweep across every project — catch up on offline
@@ -779,16 +894,21 @@ class Crib:
         that merged divergent symbol records lands here via the CLI's
         post-pull reconcile)."""
         projects = sorted(set(self.projects()) | self._indexed_projects())
-        total: dict[str, Any] = {"projects": len(projects), "changed": 0,
-                                 "removed": 0, "skipped": []}
+        total: dict[str, Any] = {
+            "projects": len(projects),
+            "changed": 0,
+            "removed": 0,
+            "skipped": [],
+        }
         self._reconcile_remaining = len(projects)
         try:
             for proj in projects:
                 # A project adopted into a repo that isn't cloned here has no
                 # notes to sweep — skip it (one warning) instead of failing the
                 # whole startup sweep on the first missing store.
-                if self._skip_if_unavailable(self.project_paths(proj),
-                                             "not reconciling"):
+                if self._skip_if_unavailable(
+                    self.project_paths(proj), "not reconciling"
+                ):
                     total.setdefault("unavailable", []).append(proj)
                     self._reconcile_remaining -= 1
                     continue
@@ -797,8 +917,9 @@ class Crib:
                 total["removed"] += r["removed"]
                 # notes crib couldn't read — carried up so a sweep that skipped
                 # something says so instead of quietly under-indexing
-                total["skipped"] += [{"project": proj, **s}
-                                     for s in r.get("skipped", [])]
+                total["skipped"] += [
+                    {"project": proj, **s} for s in r.get("skipped", [])
+                ]
                 if self._registered_root(proj) is not None:
                     # In-situ `sources/…` docs live outside the notes tree, so the
                     # walk above never revisits them — and the wipe-recovery
@@ -806,11 +927,12 @@ class Crib:
                     # restart between a store wipe and its resweep would otherwise
                     # lose the docs for good. Always sweep them here: hash-gated,
                     # a no-op whenever they're already current.
-                    total["insitu_reindexed"] = (total.get("insitu_reindexed", 0)
-                                                 + await self._resweep_insitu(proj))
+                    total["insitu_reindexed"] = total.get(
+                        "insitu_reindexed", 0
+                    ) + await self._resweep_insitu(proj)
                 self._resweep_pending.discard(proj)
                 self._reconcile_remaining -= 1
-                await asyncio.sleep(0)   # yield: a backlog must not starve clients
+                await asyncio.sleep(0)  # yield: a backlog must not starve clients
             dirty = await self._reindex_dirty_code()
             if dirty:
                 total["code_files_rebuilt"] = dirty
@@ -832,13 +954,16 @@ class Crib:
         try:
             res = await self.index_docs_insitu(project=project)
         except Exception as e:  # noqa: BLE001 — no repo / moved root / unreadable doc
-            print(f"[crib] in-situ doc re-embed skipped for {project}: {e}",
-                  file=sys.stderr)
+            print(
+                f"[crib] in-situ doc re-embed skipped for {project}: {e}",
+                file=sys.stderr,
+            )
             return 0
         return int(res.get("changed", 0))
 
-    def reconcile_in_background(self, loop: asyncio.AbstractEventLoop,
-                                reason: str | None = None) -> None:
+    def reconcile_in_background(
+        self, loop: asyncio.AbstractEventLoop, reason: str | None = None
+    ) -> None:
         """Run the startup reconcile as a background task instead of before the
         transport opens. A cold daemon with an offline backlog would otherwise
         hold the port closed past the client's ready timeout; serving *during*
@@ -850,25 +975,34 @@ class Crib:
         self._reconcile_reason = reason
         stored = self.stored_chunk_schema()
         if stored != CHUNK_SCHEMA_VERSION:
-            print(f"[crib] chunk schema {stored}→{CHUNK_SCHEMA_VERSION}; the startup "
-                  f"reconcile re-chunks every project (repeated headings get "
-                  f"distinct ids)", file=sys.stderr)
+            print(
+                f"[crib] chunk schema {stored}→{CHUNK_SCHEMA_VERSION}; the startup "
+                f"reconcile re-chunks every project (repeated headings get "
+                f"distinct ids)",
+                file=sys.stderr,
+            )
         self._spawn_bg(loop, self._reconcile_background(reason))
 
     async def _reconcile_background(self, reason: str | None = None) -> None:
         try:
             rec = await self.reconcile_all()
         except Exception as e:  # noqa: BLE001 — a failed sweep must not kill the daemon
-            print(f"[crib] {reason or 'startup'} reconcile failed: {e}",
-                  file=sys.stderr)
+            print(
+                f"[crib] {reason or 'startup'} reconcile failed: {e}", file=sys.stderr
+            )
             return
         if rec["changed"] or rec["removed"]:
-            print(f"[crib] startup reconcile: {rec['changed']} updated, "
-                  f"{rec['removed']} chunk(s) removed across "
-                  f"{rec['projects']} project(s)", file=sys.stderr)
+            print(
+                f"[crib] startup reconcile: {rec['changed']} updated, "
+                f"{rec['removed']} chunk(s) removed across "
+                f"{rec['projects']} project(s)",
+                file=sys.stderr,
+            )
         for s in rec.get("skipped", []):
-            print(f"[crib] skipped {s['project']}/{s['relpath']}: {s['error']}",
-                  file=sys.stderr)
+            print(
+                f"[crib] skipped {s['project']}/{s['relpath']}: {s['error']}",
+                file=sys.stderr,
+            )
 
     async def _reindex_dirty_code(self) -> dict[str, int]:
         """Rebuild every code file carrying a merge-dirtied symbol (blank
@@ -879,6 +1013,7 @@ class Crib:
         lazy backstop for pulls done outside crib). Best-effort per file.
         → {project: files rebuilt} for the projects that had any."""
         from .codeindex import SymbolIndex
+
         sem = asyncio.Semaphore(max(1, self.config.generate.concurrency))
         out: dict[str, int] = {}
         for proj in self.projects():
@@ -887,10 +1022,15 @@ class Crib:
                 continue
             root = store.source_root()
             if root is None or not root.exists():
-                continue                 # index synced from another machine — lazy path
-            src_root: Path = root        # narrowed rebind (mypy: closure default)
-            files = sorted({e["file"] for e in store.all()
-                            if e.get("file") and not e.get("content_hash")})
+                continue  # index synced from another machine — lazy path
+            src_root: Path = root  # narrowed rebind (mypy: closure default)
+            files = sorted(
+                {
+                    e["file"]
+                    for e in store.all()
+                    if e.get("file") and not e.get("content_hash")
+                }
+            )
             if not files:
                 continue
 
@@ -898,10 +1038,12 @@ class Crib:
                 async with sem:
                     try:
                         await asyncio.to_thread(
-                            self._index_code_file_tracked, root, rel, proj, True)
+                            self._index_code_file_tracked, root, rel, proj, True
+                        )
                         return True
                     except Exception:  # noqa: BLE001 — the lazy gate backstops
                         return False
+
             done = await asyncio.gather(*(_one(f) for f in files))
             out[proj] = sum(done)
         return out
@@ -918,6 +1060,7 @@ class Crib:
         """Lazy reranker, built once and kept warm (daemon-resident)."""
         if self._reranker is None:
             from .retrieve import build_reranker
+
             self._reranker = build_reranker(self.config.retrieve.rerank_model)
         return self._reranker
 
@@ -941,13 +1084,21 @@ class Crib:
         order = sorted(range(len(head)), key=lambda i: bn[i] + rn[i], reverse=True)
         return [head[i] for i in order] + hits[n:]
 
-    def _retrieve(self, proj: str, query: str, vec: list[float], topn: int,
-                  hybrid: bool, rerank: bool,
-                  keyword_labels: tuple[str, ...] = (),
-                  keyword_weight: float = 1.0,
-                  summary_labels: tuple[str, ...] = (),
-                  summary_weight: float = 1.0, *,
-                  store: str = "notes") -> list[Hit]:
+    def _retrieve(
+        self,
+        proj: str,
+        query: str,
+        vec: list[float],
+        topn: int,
+        hybrid: bool,
+        rerank: bool,
+        keyword_labels: tuple[str, ...] = (),
+        keyword_weight: float = 1.0,
+        summary_labels: tuple[str, ...] = (),
+        summary_weight: float = 1.0,
+        *,
+        store: str = "notes",
+    ) -> list[Hit]:
         """Candidate Hits in DENSE-DOMINANT SCORE order: raw cosine (dense, already
         calibrated) + min-max'd keyword_index BM25, over the union candidate pool. Only
         the uncalibrated sparse side is normalized; dense cosine stays RAW so a confident
@@ -961,31 +1112,38 @@ class Crib:
         sections already carry the vocabulary; the gate is a code-side answer to terse
         identifiers.)"""
         from .retrieve import tokenize
-        kw_blend = 0.5                          # fusion weight of the keyword_index term
+
+        kw_blend = 0.5  # fusion weight of the keyword_index term
 
         # Retrieval is scoped to ONE pillar store. The where-clause needs every
         # chunk re-stamped with its `store` key (the v3 sweep); until the marker
         # says that happened, query project-wide and apply the absence rule in
         # Python so retrieval never goes dark between upgrade and sweep.
         stamped = self.stored_chunk_schema() >= CHUNK_SCHEMA_VERSION
-        where = {"project": proj, "store": store} if stamped \
-            else {"project": proj}
+        where = {"project": proj, "store": store} if stamped else {"project": proj}
         dense = self.store.query(vec, k=topn, where=where)
         if not stamped:
-            dense = [h for h in dense
-                     if ((h.metadata or {}).get("store") or "notes") == store]
-        cos: dict[str, float] = {h.id: h.score for h in dense}   # raw cosine per candidate
+            dense = [
+                h
+                for h in dense
+                if ((h.metadata or {}).get("store") or "notes") == store
+            ]
+        cos: dict[str, float] = {
+            h.id: h.score for h in dense
+        }  # raw cosine per candidate
         dense_by = {h.id: h for h in dense}
         docs: dict = {}
         kw: dict[str, float] = {}
         if hybrid:
             ids, docs, bm25 = self.index.lexical.get(
-                proj, keyword_labels, keyword_weight, store=store)
+                proj, keyword_labels, keyword_weight, store=store
+            )
             if ids:
                 qt = tokenize(query)
                 sparse = bm25.scores(qt)
                 if self.config.retrieve.keyword_coverage_gate:
                     from .retrieve import STOPWORDS
+
                     Q = {t for t in set(qt) if len(t) > 1 and t not in STOPWORDS}
                     sparse = [c * s for c, s in zip(bm25.coverage(Q), sparse)]
                 top = sorted(range(len(ids)), key=lambda j: sparse[j], reverse=True)
@@ -994,29 +1152,35 @@ class Crib:
         summ_hit = False
         if summary_labels:
             for cid, ac in self.index.summaries.best_cosines(
-                    proj, summary_labels, vec, store=store).items():
-                ac *= summary_weight            # alias-trust scale (1.0 = full dense)
+                proj, summary_labels, vec, store=store
+            ).items():
+                ac *= summary_weight  # alias-trust scale (1.0 = full dense)
                 if ac > cos.get(cid, -1.0):
-                    cos[cid] = ac               # max over the section's vectors
+                    cos[cid] = ac  # max over the section's vectors
                     summ_hit = True
 
-        if not kw and not summ_hit:             # dense only
+        if not kw and not summ_hit:  # dense only
             out = dense
         else:
             pool = list(dict.fromkeys(list(cos) + list(kw)))
-            if not docs:                        # need doc text to back-fill cosines
-                docs = {i: (d, m) for i, (d, m)
-                        in self.store.get_docs(where).items()
-                        if not (m or {}).get("alias")
-                        and ((m or {}).get("store") or "notes") == store}
+            if not docs:  # need doc text to back-fill cosines
+                docs = {
+                    i: (d, m)
+                    for i, (d, m) in self.store.get_docs(where).items()
+                    if not (m or {}).get("alias")
+                    and ((m or {}).get("store") or "notes") == store
+                }
             missing = [cid for cid in pool if cid not in cos and cid in docs]
             if missing:
-                for cid, dv in zip(missing, embed_batch(
-                        self.embedder, [docs[cid][0] for cid in missing])):
+                for cid, dv in zip(
+                    missing,
+                    embed_batch(self.embedder, [docs[cid][0] for cid in missing]),
+                ):
                     cos[cid] = sum(a * b for a, b in zip(vec, dv))  # L2-normalized
             # drop any we couldn't score, and any alias rep whose chunk vanished
-            pool = [cid for cid in pool
-                    if cid in cos and (cid in dense_by or cid in docs)]
+            pool = [
+                cid for cid in pool if cid in cos and (cid in dense_by or cid in docs)
+            ]
 
             def _mm(d: dict[str, float]) -> dict[str, float]:
                 if not d:
@@ -1026,7 +1190,7 @@ class Crib:
                 rng = (hi - lo) or 1.0
                 return {cid: (d.get(cid, 0.0) - lo) / rng for cid in pool}
 
-            kn = _mm(kw)                         # min-max the sparse side over the pool
+            kn = _mm(kw)  # min-max the sparse side over the pool
             score = {cid: cos[cid] + kw_blend * kn.get(cid, 0.0) for cid in pool}
             order = sorted(pool, key=lambda cid: score[cid], reverse=True)[:topn]
             out = []
@@ -1042,15 +1206,24 @@ class Crib:
             out = self._rerank(query, out)
         return out
 
-    def lookup(self, query: str, project: str | None = None, k: int = 8,
-               tags: list[str] | None = None, dedupe: str = "section",
-               min_score: float = 0.0, cwd: Path | None = None,
-               hybrid: bool | None = None, rerank: bool | None = None,
-               keyword_labels: list[str] | None = None,
-               keyword_weight: float | None = None,
-               summary_labels: list[str] | None = None,
-               summary_weight: float | None = None, *,
-               store: str = "notes") -> list[LookupHit]:
+    def lookup(
+        self,
+        query: str,
+        project: str | None = None,
+        k: int = 8,
+        tags: list[str] | None = None,
+        dedupe: str = "section",
+        min_score: float = 0.0,
+        cwd: Path | None = None,
+        hybrid: bool | None = None,
+        rerank: bool | None = None,
+        keyword_labels: list[str] | None = None,
+        keyword_weight: float | None = None,
+        summary_labels: list[str] | None = None,
+        summary_weight: float | None = None,
+        *,
+        store: str = "notes",
+    ) -> list[LookupHit]:
         """Ranked sections matching `query`.
 
         `dedupe` collapses duplicates: "section" (default) keeps one hit per
@@ -1061,6 +1234,7 @@ class Crib:
         what-notes-are-relevant overview.
         """
         from .codequery import check_k, check_query
+
         # Both come straight off a tool call: an empty query embeds to a
         # meaningless vector and returns whatever is nearest to nothing, and a k of
         # 0/-1/10_000 either silently returns nothing or drags the whole corpus
@@ -1069,24 +1243,47 @@ class Crib:
         check_k(k)
         if dedupe not in ("section", "file", "none"):
             raise CribUserError(
-                f"unknown dedupe {dedupe!r}: use 'section' (default), 'file' or 'none'")
+                f"unknown dedupe {dedupe!r}: use 'section' (default), 'file' or 'none'"
+            )
         proj = self.resolve_project(project, cwd)
         vec = embed_query_batch(self.embedder, [query])[0]
         use_hybrid = self.config.retrieve.hybrid if hybrid is None else hybrid
         use_rerank = self.config.retrieve.rerank if rerank is None else rerank
-        kw_labels = tuple(self.config.retrieve.keyword_labels
-                          if keyword_labels is None else keyword_labels)
-        kw_weight = (self.config.retrieve.keyword_weight
-                     if keyword_weight is None else keyword_weight)
-        sum_labels = tuple(self.config.retrieve.summary_labels
-                           if summary_labels is None else summary_labels)
-        sum_weight = (self.config.retrieve.summary_weight
-                      if summary_weight is None else summary_weight)
+        kw_labels = tuple(
+            self.config.retrieve.keyword_labels
+            if keyword_labels is None
+            else keyword_labels
+        )
+        kw_weight = (
+            self.config.retrieve.keyword_weight
+            if keyword_weight is None
+            else keyword_weight
+        )
+        sum_labels = tuple(
+            self.config.retrieve.summary_labels
+            if summary_labels is None
+            else summary_labels
+        )
+        sum_weight = (
+            self.config.retrieve.summary_weight
+            if summary_weight is None
+            else summary_weight
+        )
         # Hybrid pulls a wider candidate pool so BM25 can promote terms dense ranked low.
         topn = max(k * 3, 30) if use_hybrid else (k if dedupe == "none" else k * 3)
-        raw = self._retrieve(proj, query, vec, topn, use_hybrid, use_rerank,
-                             kw_labels, kw_weight, sum_labels, sum_weight,
-                             store=store)
+        raw = self._retrieve(
+            proj,
+            query,
+            vec,
+            topn,
+            use_hybrid,
+            use_rerank,
+            kw_labels,
+            kw_weight,
+            sum_labels,
+            sum_weight,
+            store=store,
+        )
         # a store wipe this project hasn't been re-swept after: what comes back is
         # incomplete, so every hit says so rather than thin results reading as "all
         # there is" (cleared per project by the recovery sweep)
@@ -1098,7 +1295,7 @@ class Crib:
         hits, seen = [], set()
         line_maps: dict[tuple[str, str], dict[str, tuple[int, int]]] = {}
         for h in raw:
-            if h.score <= min_score:        # drop orthogonal / irrelevant matches
+            if h.score <= min_score:  # drop orthogonal / irrelevant matches
                 continue
             if tags:
                 # A note's frontmatter `type` (design/plan) filters like a tag —
@@ -1115,42 +1312,50 @@ class Crib:
             if dedupe != "none" and key in seen:
                 continue
             seen.add(key)
-            if (pillar, rp) not in line_maps:   # read each file once, current on disk
+            if (pillar, rp) not in line_maps:  # read each file once, current on disk
                 try:
-                    src = self.pillars.get(pillar, self.notestore) \
-                        .abspath(proj, rp)
+                    src = self.pillars.get(pillar, self.notestore).abspath(proj, rp)
                     line_maps[(pillar, rp)] = section_line_map(src.read_text())
                 except (OSError, ValueError):
                     line_maps[(pillar, rp)] = {}
             # A repeated heading path's 2nd+ section has its own span under
             # `heading#n`; the bare breadcrumb is occurrence 1 (chunk.section_key).
             span = line_maps[(pillar, rp)].get(
-                section_key(heading, int(h.metadata.get("occurrence", 1) or 1)))
+                section_key(heading, int(h.metadata.get("occurrence", 1) or 1))
+            )
             if pillar == "design":
                 if stale_designs is None:
                     stale_designs = self.designs.tainted_designs(proj)
                 stale = rp in stale_designs
             else:
                 stale = False
-            hits.append(LookupHit(
-                project=proj, relpath=rp,
-                heading=heading,
-                title=h.metadata.get("title", ""),
-                snippet=h.document[:280],
-                score=round(h.score, 4),
-                line_start=span[0] if span else None,
-                line_end=span[1] if span else None,
-                index_rebuilding=rebuilding,
-                tainted=stale,
-                store=pillar,
-            ))
+            hits.append(
+                LookupHit(
+                    project=proj,
+                    relpath=rp,
+                    heading=heading,
+                    title=h.metadata.get("title", ""),
+                    snippet=h.document[:280],
+                    score=round(h.score, 4),
+                    line_start=span[0] if span else None,
+                    line_end=span[1] if span else None,
+                    index_rebuilding=rebuilding,
+                    tainted=stale,
+                    store=pillar,
+                )
+            )
             if len(hits) >= k:
                 break
         return hits
 
-    def apropos(self, query: str, project: str | None = None, k: int = 8,
-                tags: list[str] | None = None,
-                cwd: Path | None = None) -> list[dict[str, Any]]:
+    def apropos(
+        self,
+        query: str,
+        project: str | None = None,
+        k: int = 8,
+        tags: list[str] | None = None,
+        cwd: Path | None = None,
+    ) -> list[dict[str, Any]]:
         """`lookup` (same section-level dedupe) but each hit carries the FULL
         matching section markdown — sliced from the file by its line span — rather
         than a 280-char snippet, for rendering the matches for a human to read."""
@@ -1160,18 +1365,20 @@ class Crib:
             section = h.snippet
             if h.line_start and h.line_end:
                 try:
-                    src = self.pillars.get(h.store, self.notestore) \
-                        .abspath(proj, h.relpath)
+                    src = self.pillars.get(h.store, self.notestore).abspath(
+                        proj, h.relpath
+                    )
                     lines = src.read_text().splitlines()
-                    section = "\n".join(lines[h.line_start - 1:h.line_end])
+                    section = "\n".join(lines[h.line_start - 1 : h.line_end])
                 except (OSError, ValueError):
                     pass
             out.append({**vars(h), "section": section})
         return out
 
     # --- generation: distill + elaborate (knowledge-capture §2/§4, §3.1) ---
-    async def distill(self, relpath: str, project: str | None = None,
-                      cwd: Path | None = None) -> dict[str, Any]:
+    async def distill(
+        self, relpath: str, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Revise a note in place via the LLM: compress, dedupe, normalize; keep
         facts/decisions, drop deliberation, preserve code verbatim. Thrash-guarded
         (no write if the body is unchanged), marked `source: distilled`, written
@@ -1183,55 +1390,102 @@ class Crib:
         note = notes.load(path)
         prompt = self.project_config(proj).distill_prompt or DEFAULT_DISTILL_PROMPT
         from .generate import agenerate
-        new_body = (await agenerate(
-            self.config.generate, prompt, note.body, purpose="distill",
-            timeout=self.config.generate.timeout)).strip()
+
+        new_body = (
+            await agenerate(
+                self.config.generate,
+                prompt,
+                note.body,
+                purpose="distill",
+                timeout=self.config.generate.timeout,
+            )
+        ).strip()
         if not new_body or new_body == note.body.strip():
             return {"project": proj, "relpath": relpath, "changed": False}
         note.frontmatter["source"] = "distilled"
         note.body = new_body
         res = await self._write_note(proj, relpath, note)
-        return {"project": proj, "relpath": relpath, "changed": True,
-                "indexed": res.upserted}
+        return {
+            "project": proj,
+            "relpath": relpath,
+            "changed": True,
+            "indexed": res.upserted,
+        }
 
-    async def elaborate(self, label: str, relpath: str | None = None,
-                        project: str | None = None, cwd: Path | None = None,
-                        overwrite: bool = False) -> dict[str, Any]:
+    async def elaborate(
+        self,
+        label: str,
+        relpath: str | None = None,
+        project: str | None = None,
+        cwd: Path | None = None,
+        overwrite: bool = False,
+    ) -> dict[str, Any]:
         """keyword_index: generate search terms per section for BM25 (§3.1).
         `crib elaborate <label>`; activate via `[retrieve].keyword_labels`."""
         from .section_index import KEYWORD_PROMPTS, resolve_prompt
+
         prompt = resolve_prompt(label, self.config.elaborate, KEYWORD_PROMPTS)
         return await self._generate_index(
-            "keyword_index", "elaborate", label, prompt, relpath, project, cwd,
-            overwrite)
+            "keyword_index",
+            "elaborate",
+            label,
+            prompt,
+            relpath,
+            project,
+            cwd,
+            overwrite,
+        )
 
-    async def summarize(self, label: str, relpath: str | None = None,
-                        project: str | None = None, cwd: Path | None = None,
-                        overwrite: bool = False) -> dict[str, Any]:
+    async def summarize(
+        self,
+        label: str,
+        relpath: str | None = None,
+        project: str | None = None,
+        cwd: Path | None = None,
+        overwrite: bool = False,
+    ) -> dict[str, Any]:
         """summary_index: generate LLM rephrasings per section, embedded as dense
         alias vectors (§3). `crib summarize <label>`; activate via
         `[retrieve].summary_labels`."""
         from .section_index import SUMMARY_PROMPTS, resolve_prompt
+
         prompt = resolve_prompt(label, self.config.summarize, SUMMARY_PROMPTS)
         return await self._generate_index(
-            "summary_index", "summarize", label, prompt, relpath, project, cwd,
-            overwrite)
+            "summary_index",
+            "summarize",
+            label,
+            prompt,
+            relpath,
+            project,
+            cwd,
+            overwrite,
+        )
 
     # --- code symbol index (docs/code-symbol-index.md) --------------------
-    async def code_index(self, path: str, project: str | None = None,
-                         cwd: Path | None = None,
-                         patch_edges: bool = True) -> dict[str, Any]:
+    async def code_index(
+        self,
+        path: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+        patch_edges: bool = True,
+    ) -> dict[str, Any]:
         """Delegate to the CodeIndexer pipeline (crib/codeindexer.py)."""
         return await self.indexer.code_index(path, project, cwd, patch_edges)
 
-    def _index_code_file_tracked(self, root: Path, rel: str, proj: str,
-                                 patch_edges: bool,
-                                 prior: list[dict] | None = None,
-                                 describe_mode: str = "inline") -> dict[str, Any]:
+    def _index_code_file_tracked(
+        self,
+        root: Path,
+        rel: str,
+        proj: str,
+        patch_edges: bool,
+        prior: list[dict] | None = None,
+        describe_mode: str = "inline",
+    ) -> dict[str, Any]:
         """Delegate to the CodeIndexer pipeline (kept on Crib so the watcher and the
         resident-cache revalidate hook call it unchanged)."""
-        return self.indexer._index_code_file_tracked(root, rel, proj, patch_edges,
-                                                      prior, describe_mode)
+        return self.indexer._index_code_file_tracked(
+            root, rel, proj, patch_edges, prior, describe_mode
+        )
 
     # ── Resident code cache: delegates to CodeStore (crib/codestore.py) ────────
     # Thin delegators so existing call sites are untouched; the state + its
@@ -1259,17 +1513,20 @@ class Crib:
         return self.code.tok(proj)
 
     def _resident_code(self, proj: str) -> _ResidentCode:
-        return self.code.resident(proj, revalidate=self._revalidate,
-                                  watched=self._code_watched(proj))
+        return self.code.resident(
+            proj, revalidate=self._revalidate, watched=self._code_watched(proj)
+        )
 
-    def _reload_code(self, proj: str, tok: Any,
-                     prev: _ResidentCode | None) -> _ResidentCode:
+    def _reload_code(
+        self, proj: str, tok: Any, prev: _ResidentCode | None
+    ) -> _ResidentCode:
         return self.code.reload(proj, tok, prev)
 
     def code_indexed_projects(self) -> list[dict[str, Any]]:
         """Projects that have a symbol_index, with counts — for orienting an agent
         whose call resolved to the wrong/empty project."""
         from .codeindex import SymbolIndex
+
         out = []
         for name in self.projects():
             si = SymbolIndex(self.paths.project_dir(name))
@@ -1290,38 +1547,64 @@ class Crib:
         project, or name a different one; which projects ARE indexed) rather than
         returning a bare `[]` it misreads as 'this codebase isn't indexed'."""
         from .codeindex import SymbolIndex
+
         if SymbolIndex(self.paths.project_dir(proj)).is_populated():
             return
         avail = self.code_indexed_projects()
         if avail:
             names = ", ".join(f"{p['project']}" for p in avail)
-            hint = (f" If you meant a DIFFERENT, already-indexed project ({names}), name "
-                    f"it: pass project=<name> or project_path=<a path in that repo> (or "
-                    f"use_project <name> to switch your current project).")
+            hint = (
+                f" If you meant a DIFFERENT, already-indexed project ({names}), name "
+                f"it: pass project=<name> or project_path=<a path in that repo> (or "
+                f"use_project <name> to switch your current project)."
+            )
         else:
             hint = ""
         raise CribUserError(
             f"project {proj!r} isn't code-indexed yet. If this is the repo you're working "
             f"in, INDEX IT NOW then retry: run project_index (project_path=<this repo dir>) "
             f"— it indexes the source so lookup/dossier/xref work; do NOT grep or read "
-            f"files instead.{hint}")
+            f"files instead.{hint}"
+        )
 
     # ── Whole-project lifecycle: setup / index / forget / status ──────────────
     # Shared engine behind `crib project <verb>` (superset) and the code/notes
     # facets. Everything defers to `_ensure_crib`, the sensible-default .crib
     # creator, so onboarding an unfamiliar repo is one call (docs §…).
     def _code_ignore(self) -> frozenset[str]:
-        return frozenset({".git", "node_modules", ".venv", "venv", "__pycache__",
-                          ".mypy_cache", ".pytest_cache", ".ruff_cache", "dist",
-                          "build", "target", ".tox", ".idea", "site-packages",
-                          ".cache", ".claude", ".DS_Store"})
+        return frozenset(
+            {
+                ".git",
+                "node_modules",
+                ".venv",
+                "venv",
+                "__pycache__",
+                ".mypy_cache",
+                ".pytest_cache",
+                ".ruff_cache",
+                "dist",
+                "build",
+                "target",
+                ".tox",
+                ".idea",
+                "site-packages",
+                ".cache",
+                ".claude",
+                ".DS_Store",
+            }
+        )
 
     def _detect_code_globs(self, root: Path) -> list[str]:
         """Auto-detect source globs: which LSP-supported extensions actually occur
         under `root` (junk dirs pruned) → `**/*.<ext>` per present type."""
         from .codeindex import load_specs
-        exts = {e for spec in load_specs().values() if isinstance(spec, dict)
-                for e in (spec.get("extensionToLanguage") or {})}
+
+        exts = {
+            e
+            for spec in load_specs().values()
+            if isinstance(spec, dict)
+            for e in (spec.get("extensionToLanguage") or {})
+        }
         junk, present = self._code_ignore(), set()
         for dp, dirs, files in os.walk(root):
             dirs[:] = [d for d in dirs if d not in junk and not d.startswith(".")]
@@ -1341,7 +1624,7 @@ class Crib:
             dirs[:] = [d for d in dirs if d not in junk and not d.startswith(".")]
             if ".crib" in files and Path(dp) != root:
                 out.append(Path(dp))
-                dirs[:] = []                 # bounded — no need to descend
+                dirs[:] = []  # bounded — no need to descend
         return out
 
     def _enumerate_code_files(self, root: Path, globs: list[str]) -> list[Path]:
@@ -1351,6 +1634,7 @@ class Crib:
         functions and dotfiles get indexed, not just `*.zsh`. Subtrees with
         their own `.crib` are skipped (project boundaries)."""
         from .codeindex import content_lang, load_grammar, load_specs, resolve_command
+
         junk, seen = self._code_ignore(), set()
         bounds = self._nested_project_roots(root)
         # An in-repo store is a boundary too, for the same reason: what lives there
@@ -1360,9 +1644,11 @@ class Crib:
             bounds.append(link.store_dir)
         for g in globs:
             for p in root.glob(g):
-                if p.is_file() and not any(part in junk
-                                           for part in p.relative_to(root).parts) \
-                        and not any(p.is_relative_to(b) for b in bounds):
+                if (
+                    p.is_file()
+                    and not any(part in junk for part in p.relative_to(root).parts)
+                    and not any(p.is_relative_to(b) for b in bounds)
+                ):
                     seen.add(p)
         # extensionless / unknown-extension files matched by the grammar map
         specs = load_specs()
@@ -1370,16 +1656,25 @@ class Crib:
         for sp in specs.values():
             if isinstance(sp, dict) and resolve_command(sp):
                 served.update((sp.get("extensionToLanguage") or {}).values())
-        known_exts = {e for sp in specs.values() if isinstance(sp, dict)
-                      for e in (sp.get("extensionToLanguage") or {})}
+        known_exts = {
+            e
+            for sp in specs.values()
+            if isinstance(sp, dict)
+            for e in (sp.get("extensionToLanguage") or {})
+        }
         grammar = load_grammar()
         for dp, dirs, files in os.walk(root):
-            dirs[:] = [d for d in dirs if d not in junk and not d.startswith(".")
-                       and not any((Path(dp) / d) == b for b in bounds)]
+            dirs[:] = [
+                d
+                for d in dirs
+                if d not in junk
+                and not d.startswith(".")
+                and not any((Path(dp) / d) == b for b in bounds)
+            ]
             for fn in files:
                 p = Path(dp) / fn
                 if p in seen or p.suffix.lower() in known_exts:
-                    continue                    # globs already cover known extensions
+                    continue  # globs already cover known extensions
                 lang = content_lang(p, grammar)
                 if lang and lang in served:
                     seen.add(p)
@@ -1392,6 +1687,7 @@ class Crib:
         if not project:
             return None
         from .codeindex import SymbolIndex
+
         root = SymbolIndex(self.paths.project_dir(project)).source_root()
         if root is None:
             doc_roots = {Path(r) for r in self._source_roots(project).all().values()}
@@ -1399,8 +1695,9 @@ class Crib:
                 root = doc_roots.pop()
         return root.resolve() if root is not None and root.is_dir() else None
 
-    def _ensure_crib(self, cwd: Path | None, project: str | None,
-                     want_code: bool, want_docs: bool) -> tuple[Any, bool]:
+    def _ensure_crib(
+        self, cwd: Path | None, project: str | None, want_code: bool, want_docs: bool
+    ) -> tuple[Any, bool]:
         """Find the repo's `.crib`, or CREATE one with sensible defaults (project =
         repo dir name; auto-detected code `paths:` + doc `docs:` globs indexed
         in-situ). Returns (CribLink, created?). The one primitive both `project
@@ -1428,19 +1725,22 @@ class Crib:
                         f"stale registration: {project!r} was last indexed from "
                         f"{reg}, but the .crib there now names {link.project!r}. "
                         "Pass project_path=<the repo dir> explicitly (or "
-                        "project_forget the stale project).")
+                        "project_forget the stale project)."
+                    )
             elif link is not None:
                 raise CribUserError(
                     f"{base} belongs to project {link.project!r} (its .crib says "
                     f"so), not {project!r} — refusing to index one project's repo "
-                    f"into another. Pass project_path=<{project}'s repo dir>.")
+                    f"into another. Pass project_path=<{project}'s repo dir>."
+                )
             # else: no .crib and no registered root → first-time onboard of
             # `project` at `base` (the create path below).
         if base is None:
             raise CribUserError(
                 f"can't locate a repo for project {project!r}: it has no recorded "
                 "source root. Pass project_path=<the repo dir> — a repo-scoped op "
-                "never falls back to the server's own cwd.")
+                "never falls back to the server's own cwd."
+            )
         if link and link.root:
             return link, False
         # Anchor at the nearest repo marker, else at `base` ITSELF — never escape to
@@ -1448,21 +1748,31 @@ class Crib:
         # wrong dir and index the parent tree.
         root = base
         for d in (base, *base.parents):
-            if (d / ".git").exists() or (d / "pyproject.toml").exists() \
-                    or (d / "setup.py").exists():
+            if (
+                (d / ".git").exists()
+                or (d / "pyproject.toml").exists()
+                or (d / "setup.py").exists()
+            ):
                 root = d
                 break
         name = project or root.name.replace(" ", "-")
-        if not project and (reg := self._registered_root(name)) is not None \
-                and reg != root.resolve():
+        if (
+            not project
+            and (reg := self._registered_root(name)) is not None
+            and reg != root.resolve()
+        ):
             # dir-name collision with an existing project rooted elsewhere — a
             # fresh .crib here would silently merge two repos under one project
             raise CribUserError(
                 f"a project named {name!r} already exists, rooted at {reg} — "
                 f"refusing to also bind {root} to it. Add a .crib here naming a "
-                "different project (or project_forget the old one to re-root).")
-        lines = ["# Auto-created by `crib project setup` — ties this repo to a crib "
-                 "project.", f"project: {name}"]
+                "different project (or project_forget the old one to re-root)."
+            )
+        lines = [
+            "# Auto-created by `crib project setup` — ties this repo to a crib "
+            "project.",
+            f"project: {name}",
+        ]
         # globs are quoted: a bare `- **/*.py` makes YAML read `*` as an alias anchor.
         if want_code and (globs := self._detect_code_globs(root)):
             lines += ["paths:", *[f'  - "{g}"' for g in globs]]
@@ -1471,13 +1781,15 @@ class Crib:
         (root / ".crib").write_text("\n".join(lines) + "\n")
         return CribLink.find(root), True
 
-    async def _index_project_code(self, proj: str, root: Path, globs: list[str],
-                                  budget_s: float | None = None) -> dict[str, Any]:
+    async def _index_project_code(
+        self, proj: str, root: Path, globs: list[str], budget_s: float | None = None
+    ) -> dict[str, Any]:
         """Delegate to the CodeIndexer pipeline (project setup/index call this)."""
         return await self.indexer._index_project_code(proj, root, globs, budget_s)
 
-    async def project_setup(self, project: str | None = None,
-                            cwd: Path | None = None) -> dict[str, Any]:
+    async def project_setup(
+        self, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Onboard a repo end-to-end: ensure `.crib` (create with sensible defaults if
         missing), index its declared docs IN-SITU (source is master, never copied),
         AND index all its source code. The superset — `code`+`notes`. Idempotent;
@@ -1485,32 +1797,51 @@ class Crib:
         explicit verb.)"""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=True)
         proj = project or link.project
-        new_project = proj not in self.projects()   # before indexing creates its dirs
-        docs = await self.index_docs_insitu(proj, link.root) if link.doc_patterns else {}
+        new_project = proj not in self.projects()  # before indexing creates its dirs
+        docs = (
+            await self.index_docs_insitu(proj, link.root) if link.doc_patterns else {}
+        )
         globs = link.paths or self._detect_code_globs(link.root)
         code = await self._index_project_code(proj, link.root, globs)
-        return {"project": proj, "root": str(link.root), "crib_created": created,
-                "created": new_project, "docs_indexed": docs.get("docs", 0), **code}
+        return {
+            "project": proj,
+            "root": str(link.root),
+            "crib_created": created,
+            "created": new_project,
+            "docs_indexed": docs.get("docs", 0),
+            **code,
+        }
 
-    async def project_index(self, project: str | None = None,
-                            cwd: Path | None = None,
-                            budget_s: float | None = None) -> dict[str, Any]:
+    async def project_index(
+        self,
+        project: str | None = None,
+        cwd: Path | None = None,
+        budget_s: float | None = None,
+    ) -> dict[str, Any]:
         """(Re)index the project's SOURCE CODE and in-situ docs from its `.crib`
         (ensuring a `.crib` first). Cheap re-run via the content-hash gate. `budget_s`
         bounds the call and DEFERS the rest (`complete=False`, `remaining=N`) — re-invoke
         to continue; poll `project_status` for live `{done,total}` progress meanwhile."""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
         proj = project or link.project
-        new_project = proj not in self.projects()   # before indexing creates its dirs
-        docs = await self.index_docs_insitu(proj, link.root) if link.doc_patterns else {}
+        new_project = proj not in self.projects()  # before indexing creates its dirs
+        docs = (
+            await self.index_docs_insitu(proj, link.root) if link.doc_patterns else {}
+        )
         globs = link.paths or self._detect_code_globs(link.root)
         code = await self._index_project_code(proj, link.root, globs, budget_s)
         # No learning re-attach here. The sweep converts ENTRIES as a side effect
         # (every write normalizes identity), and the learnings join reads bindings,
         # so notes stay correct WITHOUT being rewritten — rebinding note files under
         # a git-synced store is tidiness, kept behind the explicit `learning_migrate`.
-        return {"project": proj, "root": str(link.root), "crib_created": created,
-                "created": new_project, "docs_indexed": docs.get("docs", 0), **code}
+        return {
+            "project": proj,
+            "root": str(link.root),
+            "crib_created": created,
+            "created": new_project,
+            "docs_indexed": docs.get("docs", 0),
+            **code,
+        }
 
     # ── in-repo storage: adopt / release (docs/plans/repo-local-storage) ───────
     # A project's data tier is EITHER global OR in a repo, never both, so these
@@ -1545,6 +1876,7 @@ class Crib:
         the "no merge" rule is enforced by the CALLERS, which refuse before any
         file moves."""
         import shutil
+
         moved = 0
         if not src.is_dir():
             return 0
@@ -1564,7 +1896,7 @@ class Crib:
             try:
                 s = confine(src, note_id)
                 d = confine(dst, note_id)
-            except ValueError:              # an id that isn't a safe path segment
+            except ValueError:  # an id that isn't a safe path segment
                 continue
             if not s.is_dir():
                 continue
@@ -1573,8 +1905,10 @@ class Crib:
                 s.rmdir()
         return moved
 
-    _STORE_GITIGNORE = ("# crib in-repo store — the notes ARE the repo's, the "
-                        "version ring is not\n.versions/\n")
+    _STORE_GITIGNORE = (
+        "# crib in-repo store — the notes ARE the repo's, the "
+        "version ring is not\n.versions/\n"
+    )
 
     @staticmethod
     def _warn_store_glob_overlap(link: CribLink, store: Path) -> list[str]:
@@ -1585,18 +1919,24 @@ class Crib:
         "index everything, including these notes" does NOT, and adoption is the
         moment that became true. Silently-ignored config is the kind that gets
         rewritten to "fix" a problem it never had."""
-        hits = [p for p in (*link.doc_patterns, *link.paths)
-                if any(f.is_relative_to(store) for f in link.root.glob(p))]
+        hits = [
+            p
+            for p in (*link.doc_patterns, *link.paths)
+            if any(f.is_relative_to(store) for f in link.root.glob(p))
+        ]
         if hits:
-            print(f"[crib] note: {link.root / '.crib'} globs ({', '.join(hits)}) "
-                  f"reach into {store} — files there are indexed as {link.project}'s "
-                  "notes and are excluded from those globs, so nothing is indexed "
-                  "twice; narrow the globs if you'd rather they said so.",
-                  file=sys.stderr)
+            print(
+                f"[crib] note: {link.root / '.crib'} globs ({', '.join(hits)}) "
+                f"reach into {store} — files there are indexed as {link.project}'s "
+                "notes and are excluded from those globs, so nothing is indexed "
+                "twice; narrow the globs if you'd rather they said so.",
+                file=sys.stderr,
+            )
         return hits
 
-    async def project_adopt(self, project: str | None = None,
-                            cwd: Path | None = None) -> dict[str, Any]:
+    async def project_adopt(
+        self, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Move a project's notes (and their version ring) INTO the repo, at the
         dir its `.crib` declares as `store:`.
 
@@ -1612,56 +1952,72 @@ class Crib:
             raise CribUserError(
                 "no `.crib` at or above this directory — an adopt needs the repo "
                 "that will carry the notes (add a `.crib` with `project:` and "
-                "`store:`, or run `crib project setup` first)")
+                "`store:`, or run `crib project setup` first)"
+            )
         proj = check_project_name(project or link.project)
         if project and link.project != proj:
             raise CribUserError(
                 f"the `.crib` at {link.root} names project {link.project!r}, not "
-                f"{proj!r} — adopt is about THIS repo's project")
+                f"{proj!r} — adopt is about THIS repo's project"
+            )
         store = link.store_dir
         if store is None:
             raise CribUserError(
                 f"{link.root / '.crib'} declares no `store:` — add e.g. "
                 "`store: .crib/store` (repo-root-relative) to say where in this "
-                "repo the notes should live")
+                "repo the notes should live"
+            )
         pp = self.project_paths(proj)
         if pp.in_repo:
             if pp.store_root == store:
-                return {"project": proj, "store": str(store), "changed": False,
-                        "notes_moved": 0, "versions_moved": 0,
-                        "store_root": pp.store_token,
-                        "message": f"{proj} already lives in {store}"}
+                return {
+                    "project": proj,
+                    "store": str(store),
+                    "changed": False,
+                    "notes_moved": 0,
+                    "versions_moved": 0,
+                    "store_root": pp.store_token,
+                    "message": f"{proj} already lives in {store}",
+                }
             raise CribUserError(
                 f"{proj} is already adopted into {pp.store_root} — `crib project "
                 f"release {proj}` first, then adopt here (a project's notes live "
-                "in exactly one place)")
+                "in exactly one place)"
+            )
         if store.exists() and not store.is_dir():
             # `.crib` is itself a FILE at the repo root, so `store: .crib/store`
             # (an inviting-looking spelling) can never be created — say that here
             # rather than surfacing a bare NotADirectoryError from mkdir.
             raise CribUserError(
                 f"`store: {link.store}` is not a directory ({store} exists as a "
-                "file) — point it at a directory path, e.g. `store: .crib-store`")
+                "file) — point it at a directory path, e.g. `store: .crib-store`"
+            )
         from .watch import PILLAR_SEGMENTS
+
         for seg in PILLAR_SEGMENTS:
             dest = store / seg
             if any(dest.rglob("*.md")) if dest.is_dir() else False:
                 raise CribUserError(
                     f"{dest} already holds notes — refusing to merge two note "
                     "trees. Move them aside (or pick a different `store:`) and "
-                    "re-run")
-        ring_ids = [nid for seg in PILLAR_SEGMENTS
-                    if (src := pp.pillar_dir(seg)).is_dir()
-                    for nid in self._note_ring_ids(proj, src)]
+                    "re-run"
+                )
+        ring_ids = [
+            nid
+            for seg in PILLAR_SEGMENTS
+            if (src := pp.pillar_dir(seg)).is_dir()
+            for nid in self._note_ring_ids(proj, src)
+        ]
         store.mkdir(parents=True, exist_ok=True)
         notes_moved = 0
-        for seg in PILLAR_SEGMENTS:         # every pillar sibling travels together
+        for seg in PILLAR_SEGMENTS:  # every pillar sibling travels together
             src = pp.pillar_dir(seg)
             notes_moved += self._move_tree(src, store / seg)
             with contextlib.suppress(OSError):
-                src.rmdir()                 # only if the move emptied it
-        versions_moved = self._move_ring(ring_ids, self.paths.versions_dir,
-                                         store / ".versions")
+                src.rmdir()  # only if the move emptied it
+        versions_moved = self._move_ring(
+            ring_ids, self.paths.versions_dir, store / ".versions"
+        )
         # The ring is DERIVED history, not authored notes: the repo carries the
         # notes, crib carries their undo stack.
         (store / ".gitignore").write_text(self._STORE_GITIGNORE)
@@ -1674,12 +2030,19 @@ class Crib:
         pcfg.save(pp.config_file)
         self.project_paths.invalidate(proj)
         rec = await self.reindex(project=proj)
-        return {"project": proj, "store": str(store), "changed": True,
-                "store_root": pcfg.store_root, "notes_moved": notes_moved,
-                "versions_moved": versions_moved, "reconciled": rec}
+        return {
+            "project": proj,
+            "store": str(store),
+            "changed": True,
+            "store_root": pcfg.store_root,
+            "notes_moved": notes_moved,
+            "versions_moved": versions_moved,
+            "reconciled": rec,
+        }
 
-    async def project_release(self, project: str | None = None,
-                              cwd: Path | None = None) -> dict[str, Any]:
+    async def project_release(
+        self, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """The inverse of `project_adopt`: move an in-repo project's notes (and
         ring) back into the global store and clear the stub's `store_root`. Use it
         when the repo is going away, or when the notes should stop travelling with
@@ -1687,43 +2050,61 @@ class Crib:
         proj = self.resolve_project(project, cwd)
         pp = self.project_paths(proj)
         if not pp.in_repo:
-            return {"project": proj, "changed": False, "notes_moved": 0,
-                    "versions_moved": 0,
-                    "message": f"{proj} already lives in the global store"}
-        pp.require()            # can't move notes that aren't on this machine
+            return {
+                "project": proj,
+                "changed": False,
+                "notes_moved": 0,
+                "versions_moved": 0,
+                "message": f"{proj} already lives in the global store",
+            }
+        pp.require()  # can't move notes that aren't on this machine
         store = pp.store_root
-        assert store is not None                        # in_repo ⇒ store_root set
+        assert store is not None  # in_repo ⇒ store_root set
         from .watch import PILLAR_SEGMENTS
+
         gdir = self.paths.project_dir(proj)
         for seg in PILLAR_SEGMENTS:
             dest = gdir / seg
             if any(dest.rglob("*.md")) if dest.is_dir() else False:
                 raise CribUserError(
                     f"{dest} already holds notes — refusing to merge two note "
-                    "trees. Move them aside and re-run")
-        ring_ids = [nid for seg in PILLAR_SEGMENTS
-                    if (src := pp.pillar_dir(seg)).is_dir()
-                    for nid in self._note_ring_ids(proj, src)]
+                    "trees. Move them aside and re-run"
+                )
+        ring_ids = [
+            nid
+            for seg in PILLAR_SEGMENTS
+            if (src := pp.pillar_dir(seg)).is_dir()
+            for nid in self._note_ring_ids(proj, src)
+        ]
         notes_moved = 0
         for seg in PILLAR_SEGMENTS:
             notes_moved += self._move_tree(pp.pillar_dir(seg), gdir / seg)
-        versions_moved = self._move_ring(ring_ids, pp.versions_dir,
-                                         self.paths.versions_dir)
+        versions_moved = self._move_ring(
+            ring_ids, pp.versions_dir, self.paths.versions_dir
+        )
         gi = store / ".gitignore"
         if gi.is_file() and gi.read_text() == self._STORE_GITIGNORE:
-            gi.unlink()                     # ours, and now describing nothing
-        for d in (*(pp.pillar_dir(seg) for seg in PILLAR_SEGMENTS),
-                  pp.versions_dir, store):
+            gi.unlink()  # ours, and now describing nothing
+        for d in (
+            *(pp.pillar_dir(seg) for seg in PILLAR_SEGMENTS),
+            pp.versions_dir,
+            store,
+        ):
             with contextlib.suppress(OSError):
-                d.rmdir()                   # each only if the move emptied it
+                d.rmdir()  # each only if the move emptied it
         pcfg = ProjectConfig.load(pp.config_file, proj)
         pcfg.store_root = None
         pcfg.save(pp.config_file)
         self.project_paths.invalidate(proj)
         rec = await self.reindex(project=proj)
-        return {"project": proj, "changed": True, "store": str(store),
-                "notes_moved": notes_moved, "versions_moved": versions_moved,
-                "reconciled": rec}
+        return {
+            "project": proj,
+            "changed": True,
+            "store": str(store),
+            "notes_moved": notes_moved,
+            "versions_moved": versions_moved,
+            "reconciled": rec,
+        }
 
     # ── layout migration: facet subdirs → sibling pillar stores ────────────────
     # Pre-split layouts kept facet notes INSIDE the notes tree (`notes/design/`,
@@ -1734,8 +2115,11 @@ class Crib:
     # lagging, not-yet-upgraded machine pushes into the synced data repo.
 
     # legacy subdir under notes/ → the pillar store that owns it now
-    _LEGACY_FACET_DIRS = {"design": "design", "plans": "plans",
-                          "code-learnings": "learnings"}
+    _LEGACY_FACET_DIRS = {
+        "design": "design",
+        "plans": "plans",
+        "code-learnings": "learnings",
+    }
 
     def _migrate_legacy_layout(self, proj: str) -> dict[str, Any]:
         """Move facet notes out of the notes tree and requalify their citations.
@@ -1772,9 +2156,11 @@ class Crib:
         rewritten = self._requalify_facet_refs(proj)
         if moved or skipped or rewritten:
             note = f"; {len(skipped)} collision(s) left in place" if skipped else ""
-            print(f"[crib] {proj}: migrated {len(moved)} facet note(s) to sibling "
-                  f"pillar stores, requalified {len(rewritten)} citation(s){note}",
-                  file=sys.stderr)
+            print(
+                f"[crib] {proj}: migrated {len(moved)} facet note(s) to sibling "
+                f"pillar stores, requalified {len(rewritten)} citation(s){note}",
+                file=sys.stderr,
+            )
         return {"moved": moved, "skipped": skipped, "refs_rewritten": rewritten}
 
     def _requalify_facet_refs(self, proj: str) -> list[str]:
@@ -1803,8 +2189,7 @@ class Crib:
                     ref = str(src.get("ref") or "")
                     for legacy_sub, store_name in self._LEGACY_FACET_DIRS.items():
                         if ref.startswith(legacy_sub + "/"):
-                            src["ref"] = (f"{store_name}:"
-                                          f"{ref[len(legacy_sub) + 1:]}")
+                            src["ref"] = f"{store_name}:{ref[len(legacy_sub) + 1 :]}"
                             changed = True
                 if changed:
                     rel = path.name
@@ -1813,9 +2198,9 @@ class Crib:
                     out.append(f"{pillar.spec.name}/{rel}")
         return out
 
-    async def learning_migrate(self, project: str | None = None,
-                               cwd: Path | None = None,
-                               apply: bool = False) -> dict[str, Any]:
+    async def learning_migrate(
+        self, project: str | None = None, cwd: Path | None = None, apply: bool = False
+    ) -> dict[str, Any]:
         """Rebind a project's learning notes to the current symbol identity.
 
         OPTIONAL TIDINESS, not a correctness step: the learnings join resolves a
@@ -1828,9 +2213,9 @@ class Crib:
         proj = self.resolve_project(project, cwd)
         return await self.learnings.convert_notes(proj, apply=apply)
 
-    async def code_convert(self, project: str | None = None,
-                           cwd: Path | None = None,
-                           apply: bool = False) -> dict[str, Any]:
+    async def code_convert(
+        self, project: str | None = None, cwd: Path | None = None, apply: bool = False
+    ) -> dict[str, Any]:
         """Convert a project's symbol store to the current shape, in place — no LSP,
         no LLM, every expensive facet byte-identical or the entry is left alone.
 
@@ -1844,6 +2229,7 @@ class Crib:
         but at LSP+LLM price. This is the cheap path. DRY RUN unless `apply`."""
         from .codeindex import SYMBOL_SCHEMA_VERSION, SymbolIndex
         from .symconvert import convert_entry, convertible, preserved
+
         proj = self.resolve_project(project, cwd)
         store = SymbolIndex(self.paths.project_dir(proj))
         rows = store.records()
@@ -1860,9 +2246,11 @@ class Crib:
         violations: list[dict[str, Any]] = []
 
         def _parts(e: dict) -> tuple:
-            return (str(e.get("file") or ""),
-                    tuple(str(c) for c in (e.get("container") or ())),
-                    str(e.get("name") or ""))
+            return (
+                str(e.get("file") or ""),
+                tuple(str(c) for c in (e.get("container") or ())),
+                str(e.get("name") or ""),
+            )
 
         with self.code.lock(proj):
             for path, e in rows:
@@ -1878,11 +2266,15 @@ class Crib:
                         continue
                     # DISTINCT identities deriving one key: converting the second
                     # would silently erase the first. Leave it, say so, every run.
-                    collisions.append({"record": path.name, "key": k,
-                                       "held_by": holder})
+                    collisions.append(
+                        {"record": path.name, "key": k, "held_by": holder}
+                    )
                     continue
-                if int(e.get("schema") or 0) >= SYMBOL_SCHEMA_VERSION \
-                        and path.name == store._relname(_symbol_key(e)):
+                if int(
+                    e.get("schema") or 0
+                ) >= SYMBOL_SCHEMA_VERSION and path.name == store._relname(
+                    _symbol_key(e)
+                ):
                     done += 1
                     continue
                 if not convertible(e):
@@ -1890,25 +2282,32 @@ class Crib:
                     continue
                 new = convert_entry(e, SYMBOL_SCHEMA_VERSION)
                 bad = preserved(e, new)
-                if bad:                  # never write an entry conversion mangled
+                if bad:  # never write an entry conversion mangled
                     violations.append({"record": path.name, "fields": bad})
                     continue
                 if apply:
                     wrote = store.write(new)
-                    if path != wrote:    # a name no binding derives (pre-hash slug)
+                    if path != wrote:  # a name no binding derives (pre-hash slug)
                         path.unlink(missing_ok=True)
                 converted += 1
             if apply and not skipped and not violations and not collisions:
-                store.record_schema()    # a completion claim: this pass saw every record
+                store.record_schema()  # a completion claim: this pass saw every record
         if apply:
             self.code.bump_epoch(proj)
-        return {"project": proj, "applied": apply, "total": len(rows),
-                "already_done": done, "converted": converted,
-                "needs_reindex": skipped, "violations": violations,
-                "collisions": collisions}
+        return {
+            "project": proj,
+            "applied": apply,
+            "total": len(rows),
+            "already_done": done,
+            "converted": converted,
+            "needs_reindex": skipped,
+            "violations": violations,
+            "collisions": collisions,
+        }
 
-    async def project_migrate(self, project: str | None = None,
-                              cwd: Path | None = None) -> dict[str, Any]:
+    async def project_migrate(
+        self, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Run the legacy-layout migration for one project on demand, then
         reconcile. The same routine every full reindex runs automatically —
         this verb exists so the move can be driven (and its report read)
@@ -1918,42 +2317,57 @@ class Crib:
         self.project_paths(proj).require()
         mig = self._migrate_legacy_layout(proj)
         rec = await self.reindex(project=proj)
-        return {"project": proj, **mig, "reconciled": rec,
-                "changed": bool(mig["moved"] or mig["refs_rewritten"])}
+        return {
+            "project": proj,
+            **mig,
+            "reconciled": rec,
+            "changed": bool(mig["moved"] or mig["refs_rewritten"]),
+        }
 
     def _project_refs(self, proj: str) -> list[dict[str, Any]]:
         """Delegate to Refs (crib/refs.py) — a project's `.crib` refs: targets."""
         return self.refs.project_refs(proj)
 
-    def project_status(self, project: str | None = None,
-                       cwd: Path | None = None) -> dict[str, Any]:
+    def project_status(
+        self, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Is this project code-indexed? symbol/file counts, kind breakdown, the
         `.crib` source paths — for orienting before setup/index."""
         from collections import Counter
 
         from .codeindex import SymbolIndex
+
         proj = self.resolve_project(project, cwd)
         si = SymbolIndex(self.paths.project_dir(proj))
         entries = si.all()
         link = CribLink.find(Path(cwd)) if cwd else None
         srcs = self._source_roots(proj).all()
-        doc_count = sum(1 for m in self.store.get_meta({"project": proj}).values()
-                        if m.get("relpath", "").startswith(SRC_PREFIX))
-        refs = [{**r, "root": str(r["root"]) if r["root"] else None}
-                for r in self._project_refs(proj)]
-        return {"project": proj, "indexed": si.is_populated(),
-                "symbols": len(entries),
-                "files": len({e.get("file") for e in entries}),
-                "kinds": dict(Counter(e.get("kind", "?") for e in entries)),
-                "described": sum(1 for e in entries if e.get("description")),
-                "with_keywords": sum(1 for e in entries if e.get("keywords")),
-                "paths": (link.paths if link else []),
-                "refs": refs,
-                # live reindex progress ({done,total}) while a sweep runs — the poll signal
-                # for a budgeted project_index that returned complete=False
-                "indexing": self.code.sweeps.get(proj),
-                "doc_sources": srcs, "doc_chunks": doc_count,
-                "crib": (str(link.root / ".crib") if link and link.root else None)}
+        doc_count = sum(
+            1
+            for m in self.store.get_meta({"project": proj}).values()
+            if m.get("relpath", "").startswith(SRC_PREFIX)
+        )
+        refs = [
+            {**r, "root": str(r["root"]) if r["root"] else None}
+            for r in self._project_refs(proj)
+        ]
+        return {
+            "project": proj,
+            "indexed": si.is_populated(),
+            "symbols": len(entries),
+            "files": len({e.get("file") for e in entries}),
+            "kinds": dict(Counter(e.get("kind", "?") for e in entries)),
+            "described": sum(1 for e in entries if e.get("description")),
+            "with_keywords": sum(1 for e in entries if e.get("keywords")),
+            "paths": (link.paths if link else []),
+            "refs": refs,
+            # live reindex progress ({done,total}) while a sweep runs — the poll signal
+            # for a budgeted project_index that returned complete=False
+            "indexing": self.code.sweeps.get(proj),
+            "doc_sources": srcs,
+            "doc_chunks": doc_count,
+            "crib": (str(link.root / ".crib") if link and link.root else None),
+        }
 
     def status(self) -> dict[str, Any]:
         """One-call health summary (the `status` CLI verb / MCP tool): every
@@ -1963,14 +2377,18 @@ class Crib:
         indexing. Counts are cheap file counts (1 toml = 1 symbol), never full
         parses."""
         from .codeindex import _POOL
+
         projects = []
         for name in self.projects():
             pp = self.project_paths(name)
             nd = pp.notes_dir
             ld = pp.pillar_dir("learnings")
             sd = pp.project_dir / "symbol_index"
-            doc_chunks = sum(1 for m in self.store.get_meta({"project": name}).values()
-                             if m.get("relpath", "").startswith(SRC_PREFIX))
+            doc_chunks = sum(
+                1
+                for m in self.store.get_meta({"project": name}).values()
+                if m.get("relpath", "").startswith(SRC_PREFIX)
+            )
             dd = pp.pillar_dir("design")
             pd = pp.pillar_dir("plans")
             row = {
@@ -2016,8 +2434,8 @@ class Crib:
             # pending until a full sweep has re-chunked under the current scheme;
             # a daemonless user clears it with `crib reindex` per project
             "chunk_schema": CHUNK_SCHEMA_VERSION,
-            "chunk_schema_pending":
-                self.stored_chunk_schema() != CHUNK_SCHEMA_VERSION}
+            "chunk_schema_pending": self.stored_chunk_schema() != CHUNK_SCHEMA_VERSION,
+        }
         if remaining is not None:
             out["reconcile_remaining"] = remaining
             if self._reconcile_reason:
@@ -2030,26 +2448,36 @@ class Crib:
             out["index_rebuilding"] = sorted(self._resweep_pending)
         return out
 
-    def project_forget(self, project: str | None = None, cwd: Path | None = None,
-                       with_learnings: bool = False) -> dict[str, Any]:
+    def project_forget(
+        self,
+        project: str | None = None,
+        cwd: Path | None = None,
+        with_learnings: bool = False,
+    ) -> dict[str, Any]:
         """Clear the project's code index (the symbol_index). KEEPS attached learnings,
         notes and `.crib` by default — learnings are durable human source-of-truth;
         pass with_learnings=True to drop those too."""
         import shutil
 
         from .codeindex import SymbolIndex
+
         proj = self.resolve_project(project, cwd)
         si_root = SymbolIndex(self.project_paths(proj).project_dir).root
         removed = len(list(si_root.glob("*.toml"))) if si_root.exists() else 0
         if si_root.exists():
             shutil.rmtree(si_root)
-        self.code.cache.pop(proj, None)     # drop resident cache (trust-mode won't see rmtree)
+        self.code.cache.pop(
+            proj, None
+        )  # drop resident cache (trust-mode won't see rmtree)
         self._bump_code_epoch(proj)
         # In-situ docs are index-only (source is master) — drop their chunks + the
         # source registry too; re-runnable via `project index`.
         reg = self._source_roots(proj)
-        doc_ids = [i for i, m in self.store.get_meta({"project": proj}).items()
-                   if m.get("relpath", "").startswith(SRC_PREFIX)]
+        doc_ids = [
+            i
+            for i, m in self.store.get_meta({"project": proj}).items()
+            if m.get("relpath", "").startswith(SRC_PREFIX)
+        ]
         if doc_ids:
             self.store.delete(doc_ids)
             self.index.invalidate_caches(proj)
@@ -2061,58 +2489,98 @@ class Crib:
             if ldir.exists():
                 learnings = len(list(ldir.glob("*.md")))
                 shutil.rmtree(ldir)
-        return {"project": proj, "symbols_removed": removed,
-                "doc_chunks_removed": len(doc_ids), "learnings_removed": learnings}
+        return {
+            "project": proj,
+            "symbols_removed": removed,
+            "doc_chunks_removed": len(doc_ids),
+            "learnings_removed": learnings,
+        }
 
-    def code_xref(self, symbol: str, project: str | None = None,
-                  cwd: Path | None = None) -> list[dict[str, Any]]:
+    def code_xref(
+        self, symbol: str, project: str | None = None, cwd: Path | None = None
+    ) -> list[dict[str, Any]]:
         """A symbol's callers/callees/references from the persisted symbol_index."""
         return self.query.xref(self.resolve_project(project, cwd), symbol)
 
-    def code_dossier(self, symbol: str, project: str | None = None,
-                     cwd: Path | None = None, edge_cap: int = 20, path: str = "",
-                     scope: str = "", lang: str = "") -> dict[str, Any]:
+    def code_dossier(
+        self,
+        symbol: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+        edge_cap: int = 20,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+    ) -> dict[str, Any]:
         """Everything about one symbol (+ neighbour descriptions + any learning)."""
-        return self.query.dossier(self.resolve_project(project, cwd), symbol,
-                                  edge_cap, path, scope, lang)
+        return self.query.dossier(
+            self.resolve_project(project, cwd), symbol, edge_cap, path, scope, lang
+        )
 
     # ── Durable learnings: delegate to Learnings (crib/learnings.py) ───────────
     # Public code_* wrappers resolve_project then delegate; the internal helpers
     # (_attach_learnings / _learning_relpath / _learning_fqns / _rehome_candidates,
     # called by the code query methods) delegate directly.
-    async def learning_add(self, symbol: str, text: str, project: str | None = None,
-                          cwd: Path | None = None) -> dict[str, Any]:
+    async def learning_add(
+        self,
+        symbol: str,
+        text: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Attach a durable learning to a code symbol (append a dated entry)."""
-        return await self.learnings.append(self.resolve_project(project, cwd), symbol, text)
+        return await self.learnings.append(
+            self.resolve_project(project, cwd), symbol, text
+        )
 
-    async def learning_edit(self, symbol: str, new_content: str, project: str | None = None,
-                        cwd: Path | None = None) -> dict[str, Any]:
+    async def learning_edit(
+        self,
+        symbol: str,
+        new_content: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Rewrite a symbol's learning body wholesale."""
-        return await self.learnings.edit(self.resolve_project(project, cwd), symbol, new_content)
+        return await self.learnings.edit(
+            self.resolve_project(project, cwd), symbol, new_content
+        )
 
-    async def learning_forget(self, symbol: str, project: str | None = None,
-                          cwd: Path | None = None) -> dict[str, Any]:
+    async def learning_forget(
+        self, symbol: str, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Remove a symbol's learning (recoverable; works on orphans)."""
         return await self.learnings.forget(self.resolve_project(project, cwd), symbol)
 
-    async def learning_reaffirm(self, symbol: str, project: str | None = None,
-                            cwd: Path | None = None) -> dict[str, Any]:
+    async def learning_reaffirm(
+        self, symbol: str, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Clear a learning's stale flag without rewriting it."""
         return await self.learnings.reaffirm(self.resolve_project(project, cwd), symbol)
 
-    def learning_report(self, project: str | None = None, cwd: Path | None = None,
-                       orphans_only: bool = False) -> list[dict[str, Any]]:
+    def learning_report(
+        self,
+        project: str | None = None,
+        cwd: Path | None = None,
+        orphans_only: bool = False,
+    ) -> list[dict[str, Any]]:
         """Health report for attached learnings (ok/moved/orphan)."""
         return self.learnings.report(self.resolve_project(project, cwd), orphans_only)
 
-    async def learning_rehome(self, old_fqn: str, new_fqn: str | None = None,
-                          project: str | None = None,
-                          cwd: Path | None = None) -> dict[str, Any]:
+    async def learning_rehome(
+        self,
+        old_fqn: str,
+        new_fqn: str | None = None,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Re-point an orphaned learning (no target = ranked suggestions)."""
-        return await self.learnings.rehome(self.resolve_project(project, cwd), old_fqn, new_fqn)
+        return await self.learnings.rehome(
+            self.resolve_project(project, cwd), old_fqn, new_fqn
+        )
 
-    def learning_read(self, symbol: str, project: str | None = None,
-                  cwd: Path | None = None) -> dict[str, Any]:
+    def learning_read(
+        self, symbol: str, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Read a symbol's learning note (frontmatter + body)."""
         return self.learnings.read(self.resolve_project(project, cwd), symbol)
 
@@ -2121,10 +2589,16 @@ class Crib:
     # core that takes it explicitly. The FACET is the interface — reads, writes and
     # retrieval all have their own verbs here, so a caller never has to know the
     # decisions are notes in a directory (they are; that's backend).
-    async def design_add(self, title: str, content: str,
-                         deps: list[str] | None = None, project: str | None = None,
-                         sources: list[Any] | None = None, proposed: bool = False,
-                         cwd: Path | None = None) -> dict[str, Any]:
+    async def design_add(
+        self,
+        title: str,
+        content: str,
+        deps: list[str] | None = None,
+        project: str | None = None,
+        sources: list[Any] | None = None,
+        proposed: bool = False,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Record a design decision (deps validated + `checked` seeded, `sources`
         captured at their current section hashes), with the same near-duplicate
         probe `note_store` runs.
@@ -2133,42 +2607,61 @@ class Crib:
         the graph, so two half-authoritative decisions each collect their own
         dependents and neither taints the other's."""
         proj = self.resolve_project(project, cwd)
-        out = await self.designs.design_add(proj, title, content, deps, sources,
-                                            proposed)
-        similar = await asyncio.to_thread(self._similar, proj, content,
-                                          out["relpath"], "design")
+        out = await self.designs.design_add(
+            proj, title, content, deps, sources, proposed
+        )
+        similar = await asyncio.to_thread(
+            self._similar, proj, content, out["relpath"], "design"
+        )
         return {**out, "similar": similar}
 
-    def design_read(self, ref: str, project: str | None = None,
-                    cwd: Path | None = None) -> dict[str, Any]:
+    def design_read(
+        self, ref: str, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """A decision's dossier: body, status, annotated edges, taint + chains."""
         return self.designs.design_read(self.resolve_project(project, cwd), ref)
 
-    async def design_edit(self, ref: str, new_content: str,
-                          project: str | None = None,
-                          sources: list[Any] | None = None,
-                          cwd: Path | None = None) -> dict[str, Any]:
+    async def design_edit(
+        self,
+        ref: str,
+        new_content: str,
+        project: str | None = None,
+        sources: list[Any] | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Rewrite a decision through the facet; result names what it tainted.
         `sources`, when given, replaces its citations."""
-        return await self.designs.design_edit(self.resolve_project(project, cwd),
-                                              ref, new_content, sources)
+        return await self.designs.design_edit(
+            self.resolve_project(project, cwd), ref, new_content, sources
+        )
 
-    async def design_append(self, ref: str, content: str,
-                            project: str | None = None,
-                            cwd: Path | None = None,
-                            sources: list[Any] | None = None) -> dict[str, Any]:
+    async def design_append(
+        self,
+        ref: str,
+        content: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+        sources: list[Any] | None = None,
+    ) -> dict[str, Any]:
         """Extend a decision through the facet; result names what it tainted.
         `sources` ADDS citations (post-hoc doc wiring), never replaces."""
-        return await self.designs.design_append(self.resolve_project(project, cwd),
-                                                ref, content, sources)
+        return await self.designs.design_append(
+            self.resolve_project(project, cwd), ref, content, sources
+        )
 
-    def design_list(self, tainted: bool = False, project: str | None = None,
-                    cwd: Path | None = None) -> dict[str, Any]:
+    def design_list(
+        self, tainted: bool = False, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Every decision as a flat table (`tainted` filters to the stale ones)."""
         return self.designs.design_list(self.resolve_project(project, cwd), tainted)
 
-    def design_lookup(self, query: str, project: str | None = None, k: int = 8,
-                      cwd: Path | None = None) -> list[dict[str, Any]]:
+    def design_lookup(
+        self,
+        query: str,
+        project: str | None = None,
+        k: int = 8,
+        cwd: Path | None = None,
+    ) -> list[dict[str, Any]]:
         """Retrieval scoped to the DESIGN facet, each hit annotated with the facet
         state that decides whether to trust it (`status`, `tainted`, edge counts).
 
@@ -2176,168 +2669,258 @@ class Crib:
         is decisions, so a busy notes corpus can never crowd them out."""
         return self.designs.annotate_hits(
             self.resolve_project(project, cwd),
-            [vars(h) for h in self.lookup(query, project, k, cwd=cwd,
-                                          store="design")],
-            kind="design")
+            [vars(h) for h in self.lookup(query, project, k, cwd=cwd, store="design")],
+            kind="design",
+        )
 
-    def plan_lookup(self, query: str, project: str | None = None, k: int = 8,
-                    cwd: Path | None = None) -> list[dict[str, Any]]:
+    def plan_lookup(
+        self,
+        query: str,
+        project: str | None = None,
+        k: int = 8,
+        cwd: Path | None = None,
+    ) -> list[dict[str, Any]]:
         """Retrieval scoped to the PLAN facet, hits annotated as `design_lookup`
         annotates its own."""
         return self.designs.annotate_hits(
             self.resolve_project(project, cwd),
-            [vars(h) for h in self.lookup(query, project, k, cwd=cwd,
-                                          store="plans")],
-            kind="plan")
+            [vars(h) for h in self.lookup(query, project, k, cwd=cwd, store="plans")],
+            kind="plan",
+        )
 
-    async def design_dep_add(self, ref: str, dep_ref: str, project: str | None = None,
-                             cwd: Path | None = None) -> dict[str, Any]:
+    async def design_dep_add(
+        self,
+        ref: str,
+        dep_ref: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Declare that a decision builds on another (cycle-checked)."""
         return await self.designs.design_dep_add(
-            self.resolve_project(project, cwd), ref, dep_ref)
+            self.resolve_project(project, cwd), ref, dep_ref
+        )
 
-    async def design_dep_remove(self, ref: str, dep_ref: str,
-                                project: str | None = None,
-                                cwd: Path | None = None) -> dict[str, Any]:
+    async def design_dep_remove(
+        self,
+        ref: str,
+        dep_ref: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Drop a dependency edge between two decisions."""
         return await self.designs.design_dep_remove(
-            self.resolve_project(project, cwd), ref, dep_ref)
+            self.resolve_project(project, cwd), ref, dep_ref
+        )
 
-    async def design_forget(self, ref: str, force: bool = False,
-                            project: str | None = None,
-                            cwd: Path | None = None) -> dict[str, Any]:
+    async def design_forget(
+        self,
+        ref: str,
+        force: bool = False,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Delete a decision; blocks on dependents unless forced."""
         return await self.designs.design_forget(
-            self.resolve_project(project, cwd), ref, force)
+            self.resolve_project(project, cwd), ref, force
+        )
 
-    def design_check(self, ref: str | None = None, project: str | None = None,
-                     cwd: Path | None = None) -> dict[str, Any]:
+    def design_check(
+        self,
+        ref: str | None = None,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Which decisions are stale with respect to what they build on."""
         return self.designs.design_check(self.resolve_project(project, cwd), ref)
 
-    async def design_reaffirm(self, ref: str, project: str | None = None,
-                              cwd: Path | None = None) -> dict[str, Any]:
+    async def design_reaffirm(
+        self, ref: str, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Re-record a decision's dep hashes after re-reading it (the cheap,
         normal outcome of a taint — not error recovery)."""
-        return await self.designs.design_reaffirm(self.resolve_project(project, cwd),
-                                                  ref)
+        return await self.designs.design_reaffirm(
+            self.resolve_project(project, cwd), ref
+        )
 
-    async def plan_reaffirm(self, ref: str, project: str | None = None,
-                            cwd: Path | None = None) -> dict[str, Any]:
+    async def plan_reaffirm(
+        self, ref: str, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Re-record a plan item's dep hashes after re-reading what moved — the
         plan-side twin of design_reaffirm (clears a benign taint without the
         dep_remove/dep_add dance, and without pretending the work moved)."""
-        return await self.designs.plan_reaffirm(self.resolve_project(project, cwd),
-                                                ref)
+        return await self.designs.plan_reaffirm(self.resolve_project(project, cwd), ref)
 
-    async def design_promote(self, ref: str, project: str | None = None,
-                             cwd: Path | None = None) -> dict[str, Any]:
+    async def design_promote(
+        self, ref: str, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Promote an extracted decision: proposed → active, hashes seeded fresh."""
-        return await self.designs.design_promote(self.resolve_project(project, cwd),
-                                                 ref)
+        return await self.designs.design_promote(
+            self.resolve_project(project, cwd), ref
+        )
 
-    def design_import(self, relpath: str, project: str | None = None,
-                      cwd: Path | None = None) -> dict[str, Any]:
+    def design_import(
+        self, relpath: str, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """A doc's sections + hashes + existing citations + the extraction
         procedure — the read that precedes an LLM-driven design import."""
-        return self.designs.design_import(self.resolve_project(project, cwd),
-                                          relpath)
+        return self.designs.design_import(self.resolve_project(project, cwd), relpath)
 
-    def plan_import(self, relpath: str, project: str | None = None,
-                    cwd: Path | None = None) -> dict[str, Any]:
+    def plan_import(
+        self, relpath: str, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """The same for the plan facet (actionable work rather than decisions)."""
         return self.designs.plan_import(self.resolve_project(project, cwd), relpath)
 
-    def design_tree(self, ref: str | None = None, direction: str = "deps",
-                    depth: int = 6, project: str | None = None,
-                    cwd: Path | None = None) -> dict[str, Any]:
+    def design_tree(
+        self,
+        ref: str | None = None,
+        direction: str = "deps",
+        depth: int = 6,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """The dependency tree around a decision, taint-flagged."""
-        return self.designs.design_tree(self.resolve_project(project, cwd), ref,
-                                        direction, depth)
+        return self.designs.design_tree(
+            self.resolve_project(project, cwd), ref, direction, depth
+        )
 
-    def design_graph(self, project: str | None = None, cwd: Path | None = None,
-                     sources: bool = False) -> dict[str, Any]:
+    def design_graph(
+        self, project: str | None = None, cwd: Path | None = None, sources: bool = False
+    ) -> dict[str, Any]:
         """The decision map as {nodes, edges} — the symbol graph's consumer
         contract, for decisions. `tainted` is this graph's ※."""
-        return self.designs.facet_graph(self.resolve_project(project, cwd),
-                                        "design", sources)
+        return self.designs.facet_graph(
+            self.resolve_project(project, cwd), "design", sources
+        )
 
-    def plan_graph(self, project: str | None = None, cwd: Path | None = None,
-                   sources: bool = False) -> dict[str, Any]:
+    def plan_graph(
+        self, project: str | None = None, cwd: Path | None = None, sources: bool = False
+    ) -> dict[str, Any]:
         """The plan as {nodes, edges}, INCLUDING the design nodes items rest on —
         those edges gate, so a plan graph without them would misdraw the plan as
         self-contained."""
-        return self.designs.facet_graph(self.resolve_project(project, cwd),
-                                        "plan", sources)
+        return self.designs.facet_graph(
+            self.resolve_project(project, cwd), "plan", sources
+        )
 
-    async def design_supersede(self, ref: str, by_ref: str | None = None,
-                               project: str | None = None,
-                               cwd: Path | None = None) -> dict[str, Any]:
+    async def design_supersede(
+        self,
+        ref: str,
+        by_ref: str | None = None,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Soft-delete a decision and taint its dependents."""
         return await self.designs.design_supersede(
-            self.resolve_project(project, cwd), ref, by_ref)
+            self.resolve_project(project, cwd), ref, by_ref
+        )
 
-    async def plan_add(self, title: str | None = None, content: str = "",
-                       deps: list[str] | None = None, after: str | None = None,
-                       before: str | None = None,
-                       items: list[dict[str, Any]] | None = None,
-                       project: str | None = None,
-                       sources: list[Any] | None = None,
-                       cwd: Path | None = None) -> dict[str, Any]:
+    async def plan_add(
+        self,
+        title: str | None = None,
+        content: str = "",
+        deps: list[str] | None = None,
+        after: str | None = None,
+        before: str | None = None,
+        items: list[dict[str, Any]] | None = None,
+        project: str | None = None,
+        sources: list[Any] | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Add one plan item, or a whole batch (`items`), ranked at the end unless
         after/before place them."""
-        return await self.designs.plan_add(self.resolve_project(project, cwd),
-                                           title, content, deps, after, before,
-                                           items, sources)
+        return await self.designs.plan_add(
+            self.resolve_project(project, cwd),
+            title,
+            content,
+            deps,
+            after,
+            before,
+            items,
+            sources,
+        )
 
-    async def plan_status(self, ref: str, status: str, project: str | None = None,
-                          cwd: Path | None = None) -> dict[str, Any]:
+    async def plan_status(
+        self, ref: str, status: str, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Set a plan item's status (todo/in-progress/done/verified)."""
-        return await self.designs.plan_status(self.resolve_project(project, cwd),
-                                              ref, status)
+        return await self.designs.plan_status(
+            self.resolve_project(project, cwd), ref, status
+        )
 
-    async def plan_dep_add(self, ref: str, dep_ref: str, project: str | None = None,
-                           cwd: Path | None = None) -> dict[str, Any]:
+    async def plan_dep_add(
+        self,
+        ref: str,
+        dep_ref: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Declare that a plan item must follow another (cycle-checked)."""
-        return await self.designs.plan_dep_add(self.resolve_project(project, cwd),
-                                               ref, dep_ref)
+        return await self.designs.plan_dep_add(
+            self.resolve_project(project, cwd), ref, dep_ref
+        )
 
-    async def plan_dep_remove(self, ref: str, dep_ref: str, project: str | None = None,
-                              cwd: Path | None = None) -> dict[str, Any]:
+    async def plan_dep_remove(
+        self,
+        ref: str,
+        dep_ref: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Drop a must-precede edge between plan items."""
-        return await self.designs.plan_dep_remove(self.resolve_project(project, cwd),
-                                                  ref, dep_ref)
+        return await self.designs.plan_dep_remove(
+            self.resolve_project(project, cwd), ref, dep_ref
+        )
 
-    async def plan_forget(self, ref: str, force: bool = False,
-                          project: str | None = None,
-                          cwd: Path | None = None) -> dict[str, Any]:
+    async def plan_forget(
+        self,
+        ref: str,
+        force: bool = False,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Delete a plan item; blocks on dependents unless forced."""
-        return await self.designs.plan_forget(self.resolve_project(project, cwd),
-                                              ref, force)
+        return await self.designs.plan_forget(
+            self.resolve_project(project, cwd), ref, force
+        )
 
-    async def plan_move(self, ref: str, after: str | None = None,
-                        before: str | None = None, project: str | None = None,
-                        cwd: Path | None = None) -> dict[str, Any]:
+    async def plan_move(
+        self,
+        ref: str,
+        after: str | None = None,
+        before: str | None = None,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         """Re-rank a plan item (deps untouched)."""
-        return await self.designs.plan_move(self.resolve_project(project, cwd),
-                                            ref, after, before)
+        return await self.designs.plan_move(
+            self.resolve_project(project, cwd), ref, after, before
+        )
 
-    def plan_list(self, all: bool = False, project: str | None = None,
-                  cwd: Path | None = None) -> dict[str, Any]:
+    def plan_list(
+        self, all: bool = False, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """The plan in topological, rank-tie-broken order."""
         return self.designs.plan_list(self.resolve_project(project, cwd), all)
 
-    def plan_next(self, k: int = 5, project: str | None = None,
-                  cwd: Path | None = None) -> dict[str, Any]:
+    def plan_next(
+        self, k: int = 5, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """The actionable plan items right now (todo, deps satisfied)."""
         return self.designs.plan_next(self.resolve_project(project, cwd), k)
 
-    def code_lookup(self, query: str, project: str | None = None, k: int = 8,
-                    cwd: Path | None = None) -> list[dict[str, Any]]:
+    def code_lookup(
+        self,
+        query: str,
+        project: str | None = None,
+        k: int = 8,
+        cwd: Path | None = None,
+    ) -> list[dict[str, Any]]:
         """Find a code symbol by concept OR name. Coverage-gated expanded-BM25 ⊕ raw-dense
         blend (in `_lookup_one`), then an optional cross-encoder rerank folded in as a
         RANGE-MATCHED term (`[retrieve].rerank`). Fans out to refs."""
         from .codequery import _RERANK_N, check_k, check_query
+
         # validated HERE too: the widened pool below (`max(k, _RERANK_N)`) would
         # otherwise launder a k of 0/-1 into a legal 20 before the core saw it
         check_query(query)
@@ -2352,17 +2935,21 @@ class Crib:
             h.pop("_score", None)
         return hits
 
-    def _rerank_code(self, query: str, hits: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    def _rerank_code(
+        self, query: str, hits: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """Range-matched rerank: min-max the blend score AND the cross-encoder score over
         the head, sum, re-order. Keeps the blend's magnitude (unlike RRF, which discards it
         and let a noisier reranker reorder freely — measured to regress cross-domain)."""
         from .codequery import _RERANK_N
+
         head = hits[:_RERANK_N]
         try:
             # the NAME, not the reference: a cross-encoder scores words against a
             # query, and `crib.app.Crib.foo` carries them where a path ref does not
-            rr = self.reranker.scores(query, [f"{_symbol_fqn(h)}: {h.get('description', '')}"
-                                              for h in head])
+            rr = self.reranker.scores(
+                query, [f"{_symbol_fqn(h)}: {h.get('description', '')}" for h in head]
+            )
         except Exception as e:  # noqa: BLE001 — reranker optional; degrade to blend order
             print(f"[crib] code reranker disabled: {e}", file=sys.stderr)
             return hits
@@ -2371,23 +2958,48 @@ class Crib:
         order = sorted(range(len(head)), key=lambda j: bn[j] + rn[j], reverse=True)
         return [head[j] for j in order] + list(hits[_RERANK_N:])
 
-    def code_graph(self, symbol: str | None = None, direction: str = "callees",
-                   depth: int = 6, project: str | None = None,
-                   cwd: Path | None = None, shape: str | None = None,
-                   group_by: str | None = None, group_depth: int = 0,
-                   path: str = "", scope: str = "",
-                   lang: str = "", under: str = "",
-                   exclude: str = "") -> dict[str, Any]:
+    def code_graph(
+        self,
+        symbol: str | None = None,
+        direction: str = "callees",
+        depth: int = 6,
+        project: str | None = None,
+        cwd: Path | None = None,
+        shape: str | None = None,
+        group_by: str | None = None,
+        group_depth: int = 0,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+        under: str = "",
+        exclude: str = "",
+    ) -> dict[str, Any]:
         """Call graph around a symbol — pstree tree, or (`shape="edges"`) the
         deduplicated subgraph; omit `symbol` for the whole project (`under=`/`exclude=`
         then scope the export by path prefix; boundary-crossing edges keep lean
         `truncated` frontier nodes). Crosses into refs."""
-        return self.query.graph(self.resolve_project(project, cwd), symbol, direction,
-                                depth, shape, group_by, group_depth,
-                                path, scope, lang, under, exclude)
+        return self.query.graph(
+            self.resolve_project(project, cwd),
+            symbol,
+            direction,
+            depth,
+            shape,
+            group_by,
+            group_depth,
+            path,
+            scope,
+            lang,
+            under,
+            exclude,
+        )
 
-    async def enrich(self, relpath: str | None = None, project: str | None = None,
-                     cwd: Path | None = None, overwrite: bool = False) -> dict[str, Any]:
+    async def enrich(
+        self,
+        relpath: str | None = None,
+        project: str | None = None,
+        cwd: Path | None = None,
+        overwrite: bool = False,
+    ) -> dict[str, Any]:
         """ONE enrichment pass over every configured facet — the keyword labels (BM25
         side) AND the summary labels (dense alias side) together, one bulk generation
         per note batch emitting all facets' terms. The notes mirror of the code path's
@@ -2400,48 +3012,90 @@ class Crib:
             SectionIndex,
             resolve_prompt,
         )
+
         proj = self.resolve_project(project, cwd)
         facets: list[dict[str, Any]] = []
         for table, builtins, root, labels in (
-                (self.config.elaborate, KEYWORD_PROMPTS, "keyword_index",
-                 self.config.retrieve.keyword_labels),
-                (self.config.summarize, SUMMARY_PROMPTS, "summary_index",
-                 self.config.retrieve.summary_labels)):
+            (
+                self.config.elaborate,
+                KEYWORD_PROMPTS,
+                "keyword_index",
+                self.config.retrieve.keyword_labels,
+            ),
+            (
+                self.config.summarize,
+                SUMMARY_PROMPTS,
+                "summary_index",
+                self.config.retrieve.summary_labels,
+            ),
+        ):
             for lb in labels:
                 prompt = resolve_prompt(lb, table, builtins)
                 if prompt is None:
                     raise CribUserError(f"unknown enrichment label {lb!r}")
-                facets.append({"root": root, "label": lb, "prompt": prompt,
-                               "store": SectionIndex(self.paths.project_dir(proj), root)})
+                facets.append(
+                    {
+                        "root": root,
+                        "label": lb,
+                        "prompt": prompt,
+                        "store": SectionIndex(self.paths.project_dir(proj), root),
+                    }
+                )
         if not facets:
             return {"project": proj, "labels": [], "written": {}, "total": 0}
-        return await self._generate_enrichment(proj, "elaborate", facets,
-                                               relpath, overwrite)
+        return await self._generate_enrichment(
+            proj, "elaborate", facets, relpath, overwrite
+        )
 
-    async def _generate_index(self, root_name: str, purpose: str, label: str,
-                              prompt: str | None, relpath: str | None,
-                              project: str | None, cwd: Path | None,
-                              overwrite: bool) -> dict[str, Any]:
+    async def _generate_index(
+        self,
+        root_name: str,
+        purpose: str,
+        label: str,
+        prompt: str | None,
+        relpath: str | None,
+        project: str | None,
+        cwd: Path | None,
+        overwrite: bool,
+    ) -> dict[str, Any]:
         """Single-facet shim over `_generate_enrichment` (the `elaborate`/`summarize`
         verbs) — legacy flat result shape preserved."""
         proj = self.resolve_project(project, cwd)
         from .section_index import SectionIndex
+
         if prompt is None:
             raise CribUserError(
                 f"unknown {purpose} label {label!r}: no builtin and no "
-                f"[{purpose}.{label}].prompt in config")
-        facet = {"root": root_name, "label": label, "prompt": prompt,
-                 "store": SectionIndex(self.paths.project_dir(proj), root_name)}
-        out = await self._generate_enrichment(proj, purpose, [facet],
-                                              relpath, overwrite)
-        return {"project": proj, "label": label,
-                "written": out["written"].get(label, 0), "skipped": out["skipped"],
-                "errors": out["errors"], "total": out["total"],
-                "pruned": out["pruned"].get(label, 0), "bulk_docs": out["bulk_docs"]}
+                f"[{purpose}.{label}].prompt in config"
+            )
+        facet = {
+            "root": root_name,
+            "label": label,
+            "prompt": prompt,
+            "store": SectionIndex(self.paths.project_dir(proj), root_name),
+        }
+        out = await self._generate_enrichment(
+            proj, purpose, [facet], relpath, overwrite
+        )
+        return {
+            "project": proj,
+            "label": label,
+            "written": out["written"].get(label, 0),
+            "skipped": out["skipped"],
+            "errors": out["errors"],
+            "total": out["total"],
+            "pruned": out["pruned"].get(label, 0),
+            "bulk_docs": out["bulk_docs"],
+        }
 
-    async def _generate_enrichment(self, proj: str, purpose: str,
-                                   facets: list[dict[str, Any]], relpath: str | None,
-                                   overwrite: bool) -> dict[str, Any]:
+    async def _generate_enrichment(
+        self,
+        proj: str,
+        purpose: str,
+        facets: list[dict[str, Any]],
+        relpath: str | None,
+        overwrite: bool,
+    ) -> dict[str, Any]:
         """Shared MULTI-FACET section-level generation: one bulk call per note batch
         emits terms for EVERY facet (a facet = one label of keyword_index or
         summary_index, with its own prompt and store), with the full section as
@@ -2454,7 +3108,8 @@ class Crib:
         error-isolated; off the write path."""
         from .generate import agenerate, agenerate_structured, resolve_provider
         from .section_index import parse_terms
-        try:                                    # record the resolved provider for provenance
+
+        try:  # record the resolved provider for provenance
             _p = resolve_provider(self.config.generate, purpose)
             model = _p.model or _p.adapter or ""
         except Exception:  # noqa: BLE001 — provenance only; generation reports real errors
@@ -2469,19 +3124,20 @@ class Crib:
             if rp not in section_line_maps:
                 try:
                     section_line_maps[rp] = section_line_map(
-                        self.abspath(proj, rp).read_text())
+                        self.abspath(proj, rp).read_text()
+                    )
                 except OSError:
                     section_line_maps[rp] = {}
             span = section_line_maps[rp].get(heading)
             if span:
                 try:
                     lines = self.abspath(proj, rp).read_text().splitlines()
-                    return "\n".join(lines[span[0] - 1:span[1]])
+                    return "\n".join(lines[span[0] - 1 : span[1]])
                 except OSError:
                     pass
             return fallback
 
-        pass_start = time.time()        # prune guard: spare entries written mid-pass
+        pass_start = time.time()  # prune guard: spare entries written mid-pass
         seen_sections: set[str] = set()
         # (section_hash, relpath, heading, body, missing-facets)
         targets: list[tuple[str, str, str, str, list[dict]]] = []
@@ -2493,8 +3149,9 @@ class Crib:
             if not sh or sh in seen_sections:
                 continue
             seen_sections.add(sh)
-            missing = [f for f in facets
-                       if overwrite or not f["store"].has(f["label"], sh)]
+            missing = [
+                f for f in facets if overwrite or not f["store"].has(f["label"], sh)
+            ]
             if not missing:
                 skipped += 1
                 continue
@@ -2511,21 +3168,27 @@ class Crib:
         done: dict[str, set[str]] = {f["label"]: set() for f in facets}  # label → shs
         tag = f"{purpose} {'+'.join(f['label'] for f in facets)}"
         mode = "bulk+mop-up" if gen.bulk else "per-section"
-        print(f"[{tag}] {total} sections to generate ({mode}; skipped {skipped} "
-              f"cached; concurrency {gen.concurrency}, timeout {gen.timeout:g}s)",
-              file=sys.stderr, flush=True)
+        print(
+            f"[{tag}] {total} sections to generate ({mode}; skipped {skipped} "
+            f"cached; concurrency {gen.concurrency}, timeout {gen.timeout:g}s)",
+            file=sys.stderr,
+            flush=True,
+        )
 
-        def _record(facet: dict, sh: str, rp: str, heading: str,
-                    terms: list[str]) -> None:
+        def _record(
+            facet: dict, sh: str, rp: str, heading: str, terms: list[str]
+        ) -> None:
             lb = facet["label"]
             if terms and sh not in done[lb]:
-                facet["store"].write(lb, sh, terms, relpath=rp, heading=heading,
-                                     model=model)
+                facet["store"].write(
+                    lb, sh, terms, relpath=rp, heading=heading, model=model
+                )
                 written[lb] += 1
                 done[lb].add(sh)
 
-        async def _one_facet(facet: dict, sh: str, rp: str, heading: str,
-                             body: str) -> None:
+        async def _one_facet(
+            facet: dict, sh: str, rp: str, heading: str, body: str
+        ) -> None:
             # Per-section, per-facet: bounded-concurrent, timeout-capped, error-
             # isolated — one hung/failed section is skipped, never sinks the pass.
             # Serves both the legacy path (bulk off) and the bulk-missed mop-up;
@@ -2534,21 +3197,28 @@ class Crib:
             user = f"{heading}\n\n{body}" if heading else body
             try:
                 async with sem:
-                    text = await agenerate(gen, facet["prompt"], user, purpose=purpose,
-                                           timeout=gen.timeout)
+                    text = await agenerate(
+                        gen, facet["prompt"], user, purpose=purpose, timeout=gen.timeout
+                    )
                 terms = parse_terms(text)
             except Exception as e:  # noqa: BLE001 — timeout or generation failure
                 counters["errors"] += 1
                 counters["done"] += 1
-                print(f"[{tag}] {counters['done']} ERR  {rp} :: "
-                      f"{heading[-44:]} ({facet['label']}) — {type(e).__name__}: {e}",
-                      file=sys.stderr, flush=True)
+                print(
+                    f"[{tag}] {counters['done']} ERR  {rp} :: "
+                    f"{heading[-44:]} ({facet['label']}) — {type(e).__name__}: {e}",
+                    file=sys.stderr,
+                    flush=True,
+                )
                 return
             _record(facet, sh, rp, heading, terms)
             counters["done"] += 1
-            print(f"[{tag}] {counters['done']} ok   {rp} :: "
-                  f"{heading[-44:]} ({facet['label']}: {len(terms)} terms)",
-                  file=sys.stderr, flush=True)
+            print(
+                f"[{tag}] {counters['done']} ok   {rp} :: "
+                f"{heading[-44:]} ({facet['label']}: {len(terms)} terms)",
+                file=sys.stderr,
+                flush=True,
+            )
 
         # Phase 1 — whole-doc bulk authoring (structured, one call per note/batch):
         # the model sees a note's sections together, so it can pick section-
@@ -2564,23 +3234,37 @@ class Crib:
             # single-pass trick from the code path, generalized.
             bulk_schema = {
                 "type": "object",
-                "properties": {"sections": {"type": "array", "items": {
-                    "type": "object",
-                    "properties": {"heading": {"type": "string"},
-                                   **{f["label"]: {"type": "array",
-                                                   "items": {"type": "string"}}
-                                      for f in facets}},
-                    "required": ["heading"]}}},
+                "properties": {
+                    "sections": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "heading": {"type": "string"},
+                                **{
+                                    f["label"]: {
+                                        "type": "array",
+                                        "items": {"type": "string"},
+                                    }
+                                    for f in facets
+                                },
+                            },
+                            "required": ["heading"],
+                        },
+                    }
+                },
                 "required": ["sections"],
             }
-            instr = "\n\n".join(f"For the `{f['label']}` field: {f['prompt']}"
-                                for f in facets)
+            instr = "\n\n".join(
+                f"For the `{f['label']}` field: {f['prompt']}" for f in facets
+            )
             bulk_system = (
                 f"{instr}\n\nYou are given a DOCUMENT of several sections, each "
                 "introduced by a line `<<< SECTION: <heading> >>>`. Apply EACH "
                 "field's instruction above to EACH section independently and return "
                 "one result per section, using that section's exact <heading> "
-                "string. Cover every section and every field.")
+                "string. Cover every section and every field."
+            )
 
             def _match(h: str, by_head: dict[str, tuple]) -> tuple | None:
                 t = by_head.get(h)
@@ -2597,8 +3281,11 @@ class Crib:
             for t in targets:
                 by_doc[t[1]].append(t)
             step = max(1, gen.bulk_max_sections)
-            batches = [items[i:i + step] for items in by_doc.values()
-                       for i in range(0, len(items), step)]
+            batches = [
+                items[i : i + step]
+                for items in by_doc.values()
+                for i in range(0, len(items), step)
+            ]
 
             async def _bulk(batch: list[tuple]) -> None:
                 rp = batch[0][1]
@@ -2607,14 +3294,22 @@ class Crib:
                 try:
                     async with sem:
                         data = await agenerate_structured(
-                            gen, bulk_system, user, bulk_schema, purpose=purpose,
+                            gen,
+                            bulk_system,
+                            user,
+                            bulk_schema,
+                            purpose=purpose,
                             schema_name="emit_terms",
                             schema_description="Per-section search terms for the document.",
-                            timeout=gen.timeout)
+                            timeout=gen.timeout,
+                        )
                 except Exception as e:  # noqa: BLE001 — bulk fails → mop-up covers it
-                    print(f"[{tag}] bulk ERR {rp} ({len(batch)} sec) — "
-                          f"{type(e).__name__}: {e} → mop-up",
-                          file=sys.stderr, flush=True)
+                    print(
+                        f"[{tag}] bulk ERR {rp} ({len(batch)} sec) — "
+                        f"{type(e).__name__}: {e} → mop-up",
+                        file=sys.stderr,
+                        flush=True,
+                    )
                     return
                 items = (data.get("sections") if isinstance(data, dict) else None) or []
                 for it in items:
@@ -2623,17 +3318,23 @@ class Crib:
                     tgt = _match(str(it.get("heading") or ""), by_head)
                     if not tgt:
                         continue
-                    for facet in tgt[4]:        # write ONLY the missing facets
-                        terms = [str(x).strip()
-                                 for x in (it.get(facet["label"]) or [])
-                                 if str(x).strip()]
+                    for facet in tgt[4]:  # write ONLY the missing facets
+                        terms = [
+                            str(x).strip()
+                            for x in (it.get(facet["label"]) or [])
+                            if str(x).strip()
+                        ]
                         if terms:
                             _record(facet, tgt[0], tgt[1], tgt[2], terms)
                 counters["bulk_docs"] += 1
-                got = sum(1 for t in batch
-                          if all(t[0] in done[f["label"]] for f in t[4]))
-                print(f"[{tag}] bulk {rp}: {got}/{len(batch)} sections complete",
-                      file=sys.stderr, flush=True)
+                got = sum(
+                    1 for t in batch if all(t[0] in done[f["label"]] for f in t[4])
+                )
+                print(
+                    f"[{tag}] bulk {rp}: {got}/{len(batch)} sections complete",
+                    file=sys.stderr,
+                    flush=True,
+                )
 
             await asyncio.gather(*(_bulk(b) for b in batches))
 
@@ -2642,26 +3343,47 @@ class Crib:
         mop = [(f, t) for t in targets for f in t[4] if t[0] not in done[f["label"]]]
         if mop:
             if gen.bulk and counters["bulk_docs"]:
-                print(f"[{tag}] mop-up: {len(mop)} facet-sections uncovered",
-                      file=sys.stderr, flush=True)
-            await asyncio.gather(*(_one_facet(f, t[0], t[1], t[2], t[3])
-                                   for f, t in mop))
+                print(
+                    f"[{tag}] mop-up: {len(mop)} facet-sections uncovered",
+                    file=sys.stderr,
+                    flush=True,
+                )
+            await asyncio.gather(
+                *(_one_facet(f, t[0], t[1], t[2], t[3]) for f, t in mop)
+            )
 
         if targets:
-            self.index.invalidate_caches(proj)   # feeds BM25 (keywords) + aliases (summaries)
+            self.index.invalidate_caches(
+                proj
+            )  # feeds BM25 (keywords) + aliases (summaries)
         # GC orphaned entries (edits re-key their section, note deletes drop it) — only
         # a PROJECT-WIDE pass knows the full live set; a relpath-scoped one must not
         # prune (it saw one note's sections). Runs on every startup via the backlog.
-        pruned = ({f["label"]: f["store"].prune(f["label"], seen_sections,
-                                                before=pass_start) for f in facets}
-                  if relpath is None else {f["label"]: 0 for f in facets})
-        return {"project": proj, "labels": [f["label"] for f in facets],
-                "written": written, "skipped": skipped, "errors": counters["errors"],
-                "total": total, "pruned": pruned, "bulk_docs": counters["bulk_docs"]}
+        pruned = (
+            {
+                f["label"]: f["store"].prune(
+                    f["label"], seen_sections, before=pass_start
+                )
+                for f in facets
+            }
+            if relpath is None
+            else {f["label"]: 0 for f in facets}
+        )
+        return {
+            "project": proj,
+            "labels": [f["label"] for f in facets],
+            "written": written,
+            "skipped": skipped,
+            "errors": counters["errors"],
+            "total": total,
+            "pruned": pruned,
+            "bulk_docs": counters["bulk_docs"],
+        }
 
     # --- in-situ docs (default: source is master, never copied) ------------
-    async def index_docs_insitu(self, project: str | None = None,
-                                cwd: Path | None = None) -> dict[str, Any]:
+    async def index_docs_insitu(
+        self, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Index a repo's `.crib`-declared docs IN-SITU — the source tree is the
         master; crib holds only the index, never a copy. Each doc is a
         source-anchored note keyed `sources/<repo>/<rel>`; `read`/`locate` return
@@ -2672,7 +3394,8 @@ class Crib:
         if base is None:
             raise CribUserError(
                 "no repo dir to scan: pass project_path=<the repo dir> (or name an "
-                "already-indexed project)")
+                "already-indexed project)"
+            )
         link = CribLink.find(base)
         if link is None or link.root is None:
             raise CribUserError(f"no .crib found from {base} upward")
@@ -2680,7 +3403,9 @@ class Crib:
         repo = link.root.name
         prefix = f"{SRC_PREFIX}{repo}/"
         self._source_roots(proj).upsert(prefix, link.root)
-        self._register_code_root(proj, link.root)   # watch source-tree edits (docs + code)
+        self._register_code_root(
+            proj, link.root
+        )  # watch source-tree edits (docs + code)
 
         nd = self.notes_dir(proj)
         seen: set[str] = set()
@@ -2700,8 +3425,9 @@ class Crib:
                 # A repo's docs are NOT crib-shaped notes — one with a `---` header
                 # that isn't YAML (or a non-UTF8 byte) must skip, not kill the sweep.
                 try:
-                    res = await self.index.index_file(proj, nd, relpath,
-                                                      content_path=src)
+                    res = await self.index.index_file(
+                        proj, nd, relpath, content_path=src
+                    )
                 except (NoteParseError, UnicodeDecodeError, OSError) as e:
                     skipped.append({"relpath": relpath, "error": str(e)})
                     continue
@@ -2715,9 +3441,15 @@ class Crib:
         removed = 0
         for rp in self._indexed_relpaths(proj, prefix) - seen:
             removed += await self.index.forget(proj, rp)
-        return {"project": proj, "root": str(link.root), "prefix": prefix,
-                "docs": len(seen), "changed": len(indexed), "removed": removed,
-                "skipped": skipped}
+        return {
+            "project": proj,
+            "root": str(link.root),
+            "prefix": prefix,
+            "docs": len(seen),
+            "changed": len(indexed),
+            "removed": removed,
+            "skipped": skipped,
+        }
 
     def _indexed_relpaths(self, project: str, prefix: str) -> set[str]:
         """Relpaths currently indexed under `prefix` (one meta scan)."""
@@ -2729,8 +3461,9 @@ class Crib:
         return out
 
     # --- import ------------------------------------------------------------
-    async def import_files(self, paths: list[str], project: str | None = None,
-                           cwd: Path | None = None) -> dict[str, Any]:
+    async def import_files(
+        self, paths: list[str], project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
         """Copy explicit files INTO memory as crib-owned notes — manual only.
 
         Unlike in-situ docs (source is master, never copied), this takes a list of
@@ -2754,7 +3487,8 @@ class Crib:
                 if cwd is None:
                     raise CribUserError(
                         f"relative path {p!r} has no anchor: pass absolute paths, "
-                        "or project_path=<repo dir> to resolve them against")
+                        "or project_path=<repo dir> to resolve them against"
+                    )
                 src = cwd / src
             src = src.resolve()
             if not src.is_file():
@@ -2764,24 +3498,33 @@ class Crib:
             tgt = self.abspath(proj, relpath)
             prev = notes.load(tgt) if tgt.exists() else None
             fm = dict(sfm)
-            fm.update({
-                "source": "imported",
-                "source_path": portable_path(src, self.config.locations),
-                "imported": (prev.frontmatter.get("imported") if prev else None)
-                            or today,
-            })
+            fm.update(
+                {
+                    "source": "imported",
+                    "source_path": portable_path(src, self.config.locations),
+                    "imported": (prev.frontmatter.get("imported") if prev else None)
+                    or today,
+                }
+            )
             note_id = (prev.id if prev and prev.id else None) or derived_ulid(relpath)
             fm = {"id": note_id, **fm}
             note = Note(path=tgt, frontmatter=fm, body=sbody)
             await self._write_note(proj, relpath, note)
             imported.append(relpath)
-        return {"project": proj, "imported": len(imported), "files": imported,
-                "created": created}
+        return {
+            "project": proj,
+            "imported": len(imported),
+            "files": imported,
+            "created": created,
+        }
 
     # --- claude harness memory mirror (DESIGN §13) -------------------------
-    async def import_claude_memory(self, project: str | None = None,
-                                   cwd: Path | None = None,
-                                   root: Path | None = None) -> dict[str, Any]:
+    async def import_claude_memory(
+        self,
+        project: str | None = None,
+        cwd: Path | None = None,
+        root: Path | None = None,
+    ) -> dict[str, Any]:
         """Mirror Claude Code's harness memory into
         `<project>/notes/claude-memory/<host>/`.
 
@@ -2796,12 +3539,14 @@ class Crib:
         if start is None:
             raise CribUserError(
                 "no repo dir to anchor the memory lookup: pass project_path=<the "
-                "repo dir> (or root=<the harness project root>)")
+                "repo dir> (or root=<the harness project root>)"
+            )
         src_root = root or claudemem.find_harness_root(start)
         if src_root is None or not claudemem.harness_memory_dir(src_root).is_dir():
             raise CribUserError(
                 f"no Claude memory dir found from {start} upward "
-                f"(looked under {claudemem.claude_config_dir() / 'projects'})")
+                f"(looked under {claudemem.claude_config_dir() / 'projects'})"
+            )
         mem_dir = claudemem.harness_memory_dir(src_root)
         proj = self.resolve_project(project, cwd)
         created = self.project_is_new(proj)
@@ -2817,13 +3562,29 @@ class Crib:
             relpath = f"{prefix}{src.name}"
             seen.add(relpath)
             sfm, sbody = notes.parse(src.read_text())
-            mtype = ((sfm.get("metadata") or {}) if isinstance(sfm.get("metadata"), dict)
-                     else {}).get("type")
-            tags = list(dict.fromkeys(
-                [*(sfm.get("tags") or []), "claude-memory", *( [mtype] if mtype else [])]))
-            fm = {**sfm, "source": "claude_memory", "host": claudemem.hostslug(),
-                  "source_path": str(src), "memory_name": sfm.get("name"),
-                  "synced": today, "tags": tags}
+            mtype = (
+                (sfm.get("metadata") or {})
+                if isinstance(sfm.get("metadata"), dict)
+                else {}
+            ).get("type")
+            tags = list(
+                dict.fromkeys(
+                    [
+                        *(sfm.get("tags") or []),
+                        "claude-memory",
+                        *([mtype] if mtype else []),
+                    ]
+                )
+            )
+            fm = {
+                **sfm,
+                "source": "claude_memory",
+                "host": claudemem.hostslug(),
+                "source_path": str(src),
+                "memory_name": sfm.get("name"),
+                "synced": today,
+                "tags": tags,
+            }
             tgt = self.abspath(proj, relpath)
             prev_id = notes.load(tgt).id if tgt.exists() else None
             # Derived id (from the host-namespaced path) is stable across syncs,
@@ -2831,18 +3592,24 @@ class Crib:
             fm = {"id": prev_id or derived_ulid(relpath), **fm}
             note = Note(path=tgt, frontmatter=fm, body=sbody)
             note.path = tgt
-            notes.save_atomic(note)             # derived: bypass the version ring
+            notes.save_atomic(note)  # derived: bypass the version ring
             await self.index.index_file(proj, self.notes_dir(proj), relpath)
             synced.append(relpath)
 
         removed = await self._reconcile_memory_dir(proj, prefix, seen)
         self.memory_bindings.upsert(src_root, proj)
-        return {"project": proj, "source": str(mem_dir),
-                "synced": len(synced), "removed": removed, "files": synced,
-                "created": created}
+        return {
+            "project": proj,
+            "source": str(mem_dir),
+            "synced": len(synced),
+            "removed": removed,
+            "files": synced,
+            "created": created,
+        }
 
-    async def _reconcile_memory_dir(self, proj: str, prefix: str,
-                                    keep: set[str]) -> int:
+    async def _reconcile_memory_dir(
+        self, proj: str, prefix: str, keep: set[str]
+    ) -> int:
         """Drop mirrored memory files gone upstream — scoped to THIS host's
         subdir, so a synced peer machine's memories are never reaped."""
         host_dir = self.notes_dir(proj) / prefix
@@ -2858,13 +3625,19 @@ class Crib:
         return removed
 
     # --- versioning / git --------------------------------------------------
-    def list_versions(self, relpath: str, project: str | None = None,
-                      cwd: Path | None = None) -> list[dict[str, Any]]:
+    def list_versions(
+        self, relpath: str, project: str | None = None, cwd: Path | None = None
+    ) -> list[dict[str, Any]]:
         proj = self.resolve_project(project, cwd)
         return self.notestore.list_versions(proj, relpath)
 
-    async def restore(self, relpath: str, version: str, project: str | None = None,
-                      cwd: Path | None = None) -> dict[str, Any]:
+    async def restore(
+        self,
+        relpath: str,
+        version: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
         proj = self.resolve_project(project, cwd)
         content = self.notestore.version_content(proj, relpath, version)
         return await self.edit_note(relpath, content, project=proj)
@@ -2887,11 +3660,12 @@ class Crib:
         process-local here)."""
         from .paths import check_project_name
         from .session import session_state
+
         # Validated BEFORE the eager mkdir — otherwise `../x` would create a
         # namespace outside the projects tree on the way in.
         check_project_name(project)
         created = self.project_is_new(project)
-        self.notes_dir(project)                     # eager mkdir — no phantom namespace
+        self.notes_dir(project)  # eager mkdir — no phantom namespace
         session_state().current_project = project
         return {"current_project": project, "created": created}
 
@@ -2900,12 +3674,19 @@ class Crib:
         project_current MCP tool). A cwd naming a real project is reported as the
         answer, and adopted when the session has none yet."""
         from .session import resolve_session_project, session_state
+
         res = resolve_session_project(
-            session_state(), None, cwd,
+            session_state(),
+            None,
+            cwd,
             lambda c: self.resolve_project(None, c),
-            default=self.config.default_project)
-        return {"current_project": res.project, "resolved_via": res.via,
-                "projects": self.projects()}
+            default=self.config.default_project,
+        )
+        return {
+            "current_project": res.project,
+            "resolved_via": res.via,
+            "projects": self.projects(),
+        }
 
     def project_config(self, project: str) -> ProjectConfig:
         return ProjectConfig.load(self.project_paths(project).config_file, project)
@@ -2929,7 +3710,9 @@ class Crib:
         return out
 
 
-def _build_store(paths: Paths, config: Config) -> tuple[Store, Callable[[], None] | None]:
+def _build_store(
+    paths: Paths, config: Config
+) -> tuple[Store, Callable[[], None] | None]:
     """Return (store, on_close). on_close releases the shared Chroma refcount."""
     from .store import JsonStore
 
@@ -2939,6 +3722,7 @@ def _build_store(paths: Paths, config: Config) -> tuple[Store, Callable[[], None
     if mode == "embedded":
         try:
             from .store import ChromaStore
+
             return ChromaStore.embedded(str(paths.chroma_dir)), None
         except ImportError:
             pass  # fall through to the dependency-free persistent store
@@ -2946,7 +3730,9 @@ def _build_store(paths: Paths, config: Config) -> tuple[Store, Callable[[], None
     return JsonStore(paths.index_dir / "store.json"), None
 
 
-def _build_shared_chroma(paths: Paths, config: Config) -> tuple[Store, Callable[[], None]]:
+def _build_shared_chroma(
+    paths: Paths, config: Config
+) -> tuple[Store, Callable[[], None]]:
     """Refcount a `chroma run` via sharedserver, wait for it, then connect.
 
     `sharedserver use` is reuse-or-start by default: if `<server_name>` is already
@@ -2957,18 +3743,27 @@ def _build_shared_chroma(paths: Paths, config: Config) -> tuple[Store, Callable[
 
     c = config.chroma
     paths.chroma_dir.mkdir(parents=True, exist_ok=True)
-    command = ["chroma", "run", "--path", str(paths.chroma_dir),
-               "--host", c.host, "--port", str(c.port)]
+    command = [
+        "chroma",
+        "run",
+        "--path",
+        str(paths.chroma_dir),
+        "--host",
+        c.host,
+        "--port",
+        str(c.port),
+    ]
     sharedserver.use(c.server_name, command, c.grace_period)
 
     def probe() -> None:
         import chromadb  # lazy
+
         chromadb.HttpClient(host=c.host, port=c.port).heartbeat()
 
     try:
         sharedserver.wait_ready(probe)
         store = ChromaStore.shared(c.host, c.port)
     except Exception:
-        sharedserver.unuse(c.server_name)   # don't leak the refcount on failure
+        sharedserver.unuse(c.server_name)  # don't leak the refcount on failure
         raise
     return store, (lambda: sharedserver.unuse(c.server_name))
