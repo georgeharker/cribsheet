@@ -26,7 +26,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       # The version lives in ONE place — pyproject.toml; __version__ is derived
       # from it at runtime via importlib.metadata. The tag is the only other
       # location, so refuse to release when it doesn't match the source.
@@ -73,7 +73,7 @@ jobs:
     permissions:
       contents: write          # required to create the GitHub Release
     steps:
-      - uses: actions/checkout@v4   # for --generate-notes (needs the tag + history)
+      - uses: actions/checkout@v6   # for --generate-notes (needs the tag + history)
       - uses: actions/download-artifact@v4
         with:
           name: dist

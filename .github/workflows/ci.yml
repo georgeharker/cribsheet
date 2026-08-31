@@ -16,7 +16,7 @@ jobs:
       # in-tree xref / code index, while the code under test imports `llmkit` from the
       # published polyllmkit wheel. Fetching it would only lint-and-collect a second
       # copy of the same package.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
