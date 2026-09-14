@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import fnmatch
+import os
 import sys
 from pathlib import Path, PurePosixPath
 from typing import Any, Awaitable, Callable
@@ -132,7 +133,14 @@ class _FSWatcher:
         missing at registration simply never live-updated for the rest of the
         session with nothing said. Say it once, and let a later `watch_root` (or a
         restart) pick it up."""
-        from watchdog.events import FileSystemEventHandler
+        from watchdog.events import (
+            DirDeletedEvent,
+            FileCreatedEvent,
+            FileDeletedEvent,
+            FileModifiedEvent,
+            FileSystemEventHandler,
+            FileSystemMovedEvent,
+        )
         if d in self._watches:
             return True
         if not Path(d).exists():
@@ -146,26 +154,31 @@ class _FSWatcher:
         watcher = self
 
         class _Handler(FileSystemEventHandler):
-            def _emit(self, raw_path: str, deleted: bool = False) -> None:
+            def _emit(self, raw: bytes | str, deleted: bool = False) -> None:
+                # watchdog types src/dest_path bytes|str (Linux non-UTF-8 paths);
+                # fsdecode is the exact inverse of what produced the bytes.
+                raw_path = os.fsdecode(raw) if isinstance(raw, bytes) else raw
                 key = watcher._decode(raw_path, deleted)
                 if key is not None:
                     watcher._loop.call_soon_threadsafe(watcher._schedule, key)
 
-            def on_created(self, e):  # noqa: ANN001
-                if not e.is_directory:
-                    self._emit(e.src_path)
+            def on_created(self, event: FileCreatedEvent) -> None:
+                if not event.is_directory:
+                    self._emit(event.src_path)
 
-            def on_modified(self, e):  # noqa: ANN001
-                if not e.is_directory:
-                    self._emit(e.src_path)
+            def on_modified(self, event: FileModifiedEvent) -> None:
+                if not event.is_directory:
+                    self._emit(event.src_path)
 
-            def on_moved(self, e):  # noqa: ANN001
-                if not e.is_directory:
-                    self._emit(e.dest_path)
+            def on_moved(self, event: FileSystemMovedEvent) -> None:
+                if not event.is_directory:
+                    self._emit(event.dest_path)
 
-            def on_deleted(self, e):  # noqa: ANN001
-                if not e.is_directory:
-                    self._emit(e.src_path, deleted=True)
+            def on_deleted(self, event: DirDeletedEvent | FileDeletedEvent) -> None:
+                # union matches this watchdog's base — dir deletions route here too;
+                # the is_directory guard filters them.
+                if not event.is_directory:
+                    self._emit(event.src_path, deleted=True)
 
         self._watches[d] = self._observer.schedule(_Handler(), str(d), recursive=True)
         return True
@@ -236,7 +249,10 @@ class Watcher(_FSWatcher):
         key = decode(self.projects_dir, raw_path)
         return key if key is not None else decode_store(self.stores, raw_path)
 
-    async def _dispatch(self, project: str, store: str, relpath: str) -> None:
+    async def _dispatch(self, *key: Any) -> None:
+        # key = (project, store, relpath) from _decode — destructured because the
+        # base contract is varargs (each watcher's decode tuple has its own shape).
+        project, store, relpath = key
         # Guarded like the code watcher's batch dispatch: one note that won't parse
         # (a hand edit, conflict markers) or a file that vanished between event and
         # dispatch must not take the reindex down as an unhandled task exception —
@@ -431,8 +447,9 @@ class CodeWatcher(_FSWatcher):
             out[relpath] = (root, deleted)
         return out
 
-    async def _dispatch(self, project: str,
-                        changes: dict[str, tuple[str, bool, str]]) -> None:
+    async def _dispatch(self, *key: Any) -> None:
+        # key = (project, {rel: (root, deleted, reason)}) — varargs base contract.
+        project, changes = key
         resolved = await asyncio.to_thread(self._resolve_batch, changes)
         if resolved:
             await self._on_change(project, resolved)
