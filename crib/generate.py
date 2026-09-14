@@ -13,11 +13,32 @@ a thread so the daemon's async tools never block the event loop.
 from __future__ import annotations
 
 import asyncio
+import random
 import sys
 import time
+import threading
 from pathlib import Path
+from typing import Any
 
 from .config import GenerateConfig
+
+# Live generation observability (the ops view's queue numbers): the shared
+# limiter is invisible from outside the process, so counters live here —
+# thread-safe because describe calls run on worker threads.
+_stats_lock = threading.Lock()
+_gen_stats: dict[str, int] = {"inflight": 0, "waiting": 0, "rate_limited": 0}
+
+
+def generation_stats() -> dict[str, Any]:
+    """Snapshot for the ops surface: what generation is doing RIGHT NOW —
+    in-flight calls, callers waiting on the shared limiter, rate-limit hits,
+    and seconds remaining on the shared rate-limit cooldown (0 = clear)."""
+    with _stats_lock:
+        stats: dict[str, Any] = dict(_gen_stats)
+    with _cooldown_lock:
+        stats["cooldown_s"] = round(max(_cooldown_until - time.monotonic(), 0.0), 1)
+    return stats
+
 
 # Rate-limit retry (2026-09-14, after a zai coding-plan sweep 429'd most of its
 # describes): llmkit returns only (code, None) — the HTTP detail lives in the
@@ -32,7 +53,28 @@ _RATE_LIMIT_MARKERS = (
     "overloaded",
 )
 _RATE_LIMIT_ATTEMPTS = 4  # one try + three retries
-_RATE_LIMIT_BACKOFF_S = 2.0  # doubled per retry: 2s, 4s, 8s
+_RATE_LIMIT_BACKOFF_S = 2.0  # doubled per retry: ~2s, 4s, 8s (+ jitter)
+
+# SHARED cooldown (2026-09-14): per-call backoff alone stampedes — N parallel
+# callers all back off on the same cadence and all retry into the same window
+# (observed: a coding-plan sweep burning hundreds of rejected requests). A 429
+# cools the WHOLE engine down; every later call waits it out before its first
+# attempt.
+_cooldown_lock = threading.Lock()
+_cooldown_until = 0.0
+
+
+def _rate_limit_wait(attempt: int) -> float:
+    """Backoff for retry `attempt` (0-based): doubling + jitter, extended to the
+    shared cooldown so parallel callers don't retry into the same window — and
+    a final per-caller stagger ON TOP of the cooldown, so the N workers that all
+    waited out the same gate don't wake in lockstep and re-burst together."""
+    delay = _RATE_LIMIT_BACKOFF_S * (2**attempt) * (0.5 + random.random())
+    global _cooldown_until
+    with _cooldown_lock:
+        until = max(_cooldown_until, time.monotonic() + delay)
+        _cooldown_until = until
+        return max(until - time.monotonic(), 0.0) + random.uniform(0.0, 2.0)
 
 
 def _is_rate_limit(exc: BaseException) -> bool:
@@ -134,36 +176,54 @@ def generate_structured(
     )
     code = 1
     data = None
-    for attempt in range(_RATE_LIMIT_ATTEMPTS):
-        try:
-            code, data = chat_structured(provider, request)
-            break
-        # SystemExit too: keep a misbehaving adapter from crashing the daemon (a
-        # stray SystemExit is a BaseException that escapes a bare except Exception;
-        # the tuple is a fixed pair of types, not a boolean expression).
-        except (Exception, SystemExit) as e:  # noqa: BLE001 — adapter call failures
-            if attempt + 1 < _RATE_LIMIT_ATTEMPTS and _is_rate_limit(e):
-                delay = _RATE_LIMIT_BACKOFF_S * (2**attempt)
-                # stderr not logging: the daemon's stderr is where llmkit's own
-                # error text already lands — one stream, one story.
-                print(
-                    f"[crib] rate-limited (attempt {attempt + 1}/"
-                    f"{_RATE_LIMIT_ATTEMPTS}), retrying in {delay:.0f}s: "
-                    f"{str(e)[:120]}",
-                    file=sys.stderr,
-                )
-                time.sleep(delay)
-                continue
+    with _stats_lock:
+        _gen_stats["waiting"] += 1
+    try:
+        for attempt in range(_RATE_LIMIT_ATTEMPTS):
+            try:
+                with _stats_lock:
+                    _gen_stats["waiting"] -= 1
+                    _gen_stats["inflight"] += 1
+                try:
+                    code, data = chat_structured(provider, request)
+                    break
+                finally:
+                    with _stats_lock:
+                        _gen_stats["inflight"] -= 1
+            # SystemExit too: keep a misbehaving adapter from crashing the daemon (a
+            # stray SystemExit is a BaseException that escapes a bare except Exception;
+            # the tuple is a fixed pair of types, not a boolean expression).
+            except (Exception, SystemExit) as e:  # noqa: BLE001 — adapter call failures
+                if _is_rate_limit(e):
+                    with _stats_lock:
+                        _gen_stats["rate_limited"] += 1
+                if attempt + 1 < _RATE_LIMIT_ATTEMPTS and _is_rate_limit(e):
+                    delay = _rate_limit_wait(attempt)
+                    # stderr not logging: the daemon's stderr is where llmkit's own
+                    # error text already lands — one stream, one story.
+                    print(
+                        f"[crib] rate-limited (attempt {attempt + 1}/"
+                        f"{_RATE_LIMIT_ATTEMPTS}), retrying in {delay:.0f}s: "
+                        f"{str(e)[:120]}",
+                        file=sys.stderr,
+                    )
+                    with _stats_lock:
+                        _gen_stats["waiting"] += 1
+                    time.sleep(delay)
+                    continue
+                raise GenerationError(
+                    f"llmkit structured generation failed for adapter "
+                    f"{provider.adapter!r}: {e}."
+                ) from e
+        if code != 0:
             raise GenerationError(
-                f"llmkit structured generation failed for adapter "
-                f"{provider.adapter!r}: {e}."
-            ) from e
-    if code != 0:
-        raise GenerationError(
-            f"llmkit structured generation exited {code} for adapter "
-            f"{provider.adapter!r}."
-        )
-    return data
+                f"llmkit structured generation exited {code} for adapter "
+                f"{provider.adapter!r}."
+            )
+        return data
+    finally:
+        with _stats_lock:
+            _gen_stats["waiting"] = max(_gen_stats["waiting"] - 1, 0)
 
 
 async def agenerate(

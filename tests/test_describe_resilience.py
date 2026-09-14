@@ -69,7 +69,11 @@ def test_rate_limited_generation_retries_then_succeeds(monkeypatch, no_sleep):
     out = gen.generate_structured(GenerateConfig(), "sys", "user", {})
     assert out == {"symbols": []}
     assert state["attempts"] == 3
-    assert no_sleep == [2.0, 4.0]  # doubling backoff, no first-attempt wait
+    # positive, and DECORRELATED on purpose: the shared cooldown + per-caller
+    # stagger means wait #2 may be shorter than #1 — that's the de-bursting
+    # working, not a bug. Pin only what the design promises.
+    assert len(no_sleep) == 2
+    assert all(d > 0 for d in no_sleep)
 
 
 def test_non_rate_limit_fails_fast(monkeypatch, no_sleep):
@@ -85,7 +89,8 @@ def test_rate_limit_gives_up_after_max_attempts(monkeypatch, no_sleep):
     with pytest.raises(gen.GenerationError):
         gen.generate_structured(GenerateConfig(), "sys", "user", {})
     assert state["attempts"] == gen._RATE_LIMIT_ATTEMPTS
-    assert no_sleep == [2.0, 4.0, 8.0]
+    assert len(no_sleep) == gen._RATE_LIMIT_ATTEMPTS - 1
+    assert all(d > 0 for d in no_sleep)
 
 
 # --- 2. failure visibility (codeindexer aggregation + sweeps counter) ---------
@@ -111,7 +116,34 @@ def test_sweep_aggregates_describe_failures(crib, tmp_path, monkeypatch):
     assert out["described"] == 0
 
 
-def test_ticker_shows_desc_fail(capsys):
+def test_generation_stats_track_retry(monkeypatch, no_sleep):
+    state = _patch_bridge(
+        monkeypatch,
+        [RuntimeError("Error code: 429 - rate limit exceeded"), (0, {})],
+    )
+    from crib.generate import generation_stats
+
+    gen.generate_structured(GenerateConfig(), "sys", "user", {})
+    stats = generation_stats()
+    assert stats["inflight"] == 0  # slots released on all paths
+    assert stats["rate_limited"] >= 1  # the 429 was counted
+    assert state["attempts"] == 2  # one retry, then success
+
+
+def test_ops_status_composes(crib):
+    """The ops view composes sweeps + indexing + generation — the one call
+    that answers 'what is running and why is nothing moving'."""
+    ops = crib.ops_status()
+    assert set(ops) == {"sweeps", "indexing", "generation"}
+    assert ops["generation"]["inflight"] == 0  # nothing running in-process
+    # a fake sweep entry surfaces with its failure count intact
+    with crib.code.indexing_lock:
+        crib.code.sweeps["p"] = {"done": 3, "total": 10, "failed": 2}
+    ops = crib.ops_status()
+    assert ops["sweeps"]["p"]["failed"] == 2
+
+
+def test_ticker_shows_desc_fail():
     from crib.codestore import format_sweep
 
     clean = format_sweep({"done": 3, "total": 10}, now=1e9)

@@ -2354,6 +2354,20 @@ class Crib:
             "changed": bool(mig["moved"] or mig["refs_rewritten"]),
         }
 
+    def ops_status(self) -> dict[str, Any]:
+        """The ops view: what the engine is doing RIGHT NOW — live sweeps (with
+        scope + failure counts via format_sweep), per-project in-flight files,
+        and generation slot occupancy (in-flight / waiting / rate-limited /
+        cooldown). The one call that answers "what is running and why is
+        nothing moving" — the queue made visible."""
+        from .generate import generation_stats
+
+        return {
+            "sweeps": {p: dict(v) for p, v in self.code.sweeps.items()},
+            "indexing": {p: list(v) for p, v in self.code.indexing.items()},
+            "generation": generation_stats(),
+        }
+
     def _project_refs(self, proj: str) -> list[dict[str, Any]]:
         """Delegate to Refs (crib/refs.py) — a project's `.crib` refs: targets."""
         return self.refs.project_refs(proj)

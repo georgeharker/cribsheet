@@ -679,6 +679,14 @@ def build_server(crib: Crib | None = None):
         already current."""
         return await crib.reconcile_all()
 
+    @crib_tool("none")
+    def ops() -> dict[str, Any]:
+        """The ops view: what the engine is doing RIGHT NOW — live sweeps
+        (done/total/failed/scope), per-project in-flight files, and generation
+        slot occupancy (in-flight / waiting / rate-limited / cooldown seconds).
+        The one call that answers "what is running and why is nothing moving."""
+        return crib.ops_status()
+
     @crib_tool("read")
     async def note_distill(
         relpath: str, project: str | None = None, project_path: str | None = None

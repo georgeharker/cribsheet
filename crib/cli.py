@@ -418,6 +418,37 @@ def _emit_status(d: Any, as_json: bool) -> None:
             )
 
 
+def _E_ops(d, a):
+    _emit_ops(d, a.json)
+
+
+def _emit_ops(d: Any, as_json: bool) -> None:
+    """Human ops view — the queue, made visible: sweeps, generation slots."""
+    if as_json:
+        print(json.dumps(d, indent=2, default=str))
+        return
+    from .codestore import format_sweep
+
+    sweeps = d.get("sweeps") or {}
+    if sweeps:
+        print("sweeps:")
+        for proj, sw in sweeps.items():
+            print(f"  {proj}: {format_sweep(sw)}")
+    else:
+        print("sweeps: (none running)")
+    g = d.get("generation") or {}
+    bits = [
+        f"in-flight {g.get('inflight', 0)}",
+        f"waiting {g.get('waiting', 0)}",
+        f"429s {g.get('rate_limited', 0)}",
+    ]
+    if g.get("cooldown_s"):
+        bits.append(f"cooldown {g['cooldown_s']}s")
+    print("generation: " + " · ".join(bits))
+    for proj, files in (d.get("indexing") or {}).items():
+        print(f"  indexing {proj}: {len(files)} file(s) in flight")
+
+
 def _emit_projects(rows: Any, as_json: bool) -> None:
     """`crib project list`: one project per line, annotated when its notes live in
     a repo — and loudly when that repo isn't on this machine, since such a project
@@ -1218,6 +1249,11 @@ def build_parser() -> argparse.ArgumentParser:
         "status",
         help="health summary: projects (notes/docs/code/"
         "learnings), git sync, LSP sessions, indexing",
+    )
+    sub.add_parser(
+        "ops",
+        help="live ops: running sweeps (done/total/failed), in-flight files, "
+        "generation slot occupancy (in-flight/waiting/429s/cooldown)",
     )
 
     # `crib project <verb>` — whole-project lifecycle (superset of code + notes)
@@ -2373,6 +2409,7 @@ VERBS: dict[str, Verb] = {
     "status": Verb(
         "status", lambda a: {}, _E_status, wants_cwd=False, policy="none", mcp=""
     ),
+    "ops": Verb("ops", lambda a: {}, _E_ops, wants_cwd=False, policy="none", mcp=""),
     # project lifecycle (whole repo) — repo-scoped, hence the `source` policy
     "project setup": Verb(
         "project_setup",
