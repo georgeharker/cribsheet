@@ -506,7 +506,12 @@ class CodeIndexer:
         return {"described": patched, "file": rel}
 
     async def _index_project_code(
-        self, proj: str, root: Path, globs: list[str], budget_s: float | None = None
+        self,
+        proj: str,
+        root: Path,
+        globs: list[str],
+        budget_s: float | None = None,
+        crib_at: float | None = None,
     ) -> dict[str, Any]:
         """Index every source file under `globs`. Non-code files self-skip (NoServer).
 
@@ -584,17 +589,17 @@ class CodeIndexer:
                         # live desc-fail visibility: a rate-limited describe must
                         # never look like progress on the ticker
                         with self.code.indexing_lock:
-                            if proj in self.code.sweeps:
-                                self.code.sweeps[proj]["failed"] = (
-                                    self.code.sweeps[proj].get("failed", 0) + 1
-                                )
+                            sw = self.code.sweeps.get(proj)
+                            if sw is not None:
+                                sw["failed"] = (sw.get("failed") or 0) + 1
                     return f, r, None
                 except Exception as exc:  # noqa: BLE001 — one bad file never aborts the sweep
                     return f, None, str(exc)
                 finally:
                     with self.code.indexing_lock:  # live progress for `status` pollers
-                        if proj in self.code.sweeps:
-                            self.code.sweeps[proj]["done"] += 1
+                        sw = self.code.sweeps.get(proj)
+                        if sw is not None:
+                            sw["done"] = (sw.get("done") or 0) + 1
 
         syms = desc = indexed = describes_failed = 0
         errors: list[dict[str, str]] = []
@@ -603,11 +608,16 @@ class CodeIndexer:
         # and silent — these are reported so a hole in the index is never invisible.
         skipped: list[dict[str, str]] = []
         with self.code.indexing_lock:
-            self.code.sweeps[proj] = {
+            entry: dict[str, float | None] = {
                 "done": 0,
                 "total": len(files),
                 "started": time.monotonic(),
+                # scope fingerprint: the .crib mtime this enumeration came from —
+                # a kick against a changed .crib can detect the mismatch and
+                # warn instead of racing a stale-scoped sweep.
+                "crib_at": crib_at,
             }
+            self.code.sweeps[proj] = entry
         try:
             for f, r, err in await asyncio.gather(*(_one(f) for f in files)):
                 if (r or {}).get("deferred"):

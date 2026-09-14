@@ -166,8 +166,9 @@ class CodeStore:
         # wait signal for an agent polling `status` on a background index: present while
         # the sweep runs, gone when it finishes.
         self.indexing: dict[str, list[str]] = {}
-        # int values, float `started` — the numeric tower covers both (PEP 484).
-        self.sweeps: dict[str, dict[str, float]] = {}
+        # int values, `started`/`crib_at` floats or None (PEP 484 numeric tower
+        # covers the ints; None is the "not stamped" marker).
+        self.sweeps: dict[str, dict[str, float | None]] = {}
         self.indexing_lock = threading.Lock()
         self.locks: dict[str, threading.Lock] = {}
         self.locks_guard = threading.Lock()

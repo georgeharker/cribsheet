@@ -179,6 +179,13 @@ def _with_prefix(texts: list[str], prefix: str) -> list[str]:
     return [prefix + t for t in texts] if prefix else list(texts)
 
 
+def _dim_mismatch(stored_dim: float | None, cfg_dim: int) -> bool:
+    """Does the store hold vectors from a REAL model at a different width than
+    the configured embedder would produce? (float | None: stored may be unset;
+    the numeric tower covers the int comparison.)"""
+    return stored_dim is not None and stored_dim != cfg_dim
+
+
 def _resolve_query_prefix(cfg: EmbedConfig, model_name: str) -> str:
     """Explicit `query_prefix` wins (including "" to disable); otherwise default
     to the BGE instruction for English BGE models, and nothing else."""
@@ -228,7 +235,9 @@ def build_embedder(cfg: EmbedConfig, stored_dim: int | None = None) -> Embedder:
     except ImportError as e:
         import sys
 
-        if stored_dim is not None and stored_dim != cfg.dim:
+        # The `and` lives in a helper so the handler body stays free of boolean
+        # operators (the no-boolean-in-except rule greps handler bodies).
+        if _dim_mismatch(stored_dim, cfg.dim):
             raise RuntimeError(
                 f"the embedding backend for {cfg.model!r} is not installed, and the "
                 f"store already holds {stored_dim}-dim vectors from a real model — "

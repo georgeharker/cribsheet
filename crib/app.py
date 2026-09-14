@@ -233,6 +233,11 @@ class Crib:
         # ProjectServices. Crib keeps delegators (below) so the watcher, the resident
         # revalidate hook, and project setup/index call it unchanged.
         self.indexer = CodeIndexer(self.services)
+        # In-flight project_index JOBS (proj → {task, crib_at}): the join-don't-
+        # restart registry. A re-invoke while a sweep runs awaits the existing task
+        # instead of racing a second one — the zero-reset counter bug, fixed at the
+        # source. Same-process only (the daemon is the shared process).
+        self.code_jobs: dict[str, dict[str, Any]] = {}
         # Durable symbol learnings, over refs + their own pillar store.
         # Crib keeps resolve_project + delegate public wrappers (learning_add/…).
         self.learnings = Learnings(paths, self.refs, self.learningstore)
@@ -1808,10 +1813,17 @@ class Crib:
         return CribLink.find(root), True
 
     async def _index_project_code(
-        self, proj: str, root: Path, globs: list[str], budget_s: float | None = None
+        self,
+        proj: str,
+        root: Path,
+        globs: list[str],
+        budget_s: float | None = None,
+        crib_at: float | None = None,
     ) -> dict[str, Any]:
         """Delegate to the CodeIndexer pipeline (project setup/index call this)."""
-        return await self.indexer._index_project_code(proj, root, globs, budget_s)
+        return await self.indexer._index_project_code(
+            proj, root, globs, budget_s, crib_at=crib_at
+        )
 
     async def project_setup(
         self, project: str | None = None, cwd: Path | None = None

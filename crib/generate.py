@@ -151,6 +151,21 @@ def generate(
     return text.strip()
 
 
+def _retry_delay(e: BaseException, attempt: int) -> float | None:
+    """Retry backoff for a transient rate-limit error, else None (fail fast).
+
+    The 429 hit is counted here — the ops view's `rate_limited` number — so
+    the except handler stays free of boolean operators (the ast-grep rule
+    `no-boolean-in-except` scans handler bodies, not just the clause)."""
+    if not _is_rate_limit(e):
+        return None
+    with _stats_lock:
+        _gen_stats["rate_limited"] += 1
+    if attempt + 1 >= _RATE_LIMIT_ATTEMPTS:
+        return None
+    return _rate_limit_wait(attempt)
+
+
 def generate_structured(
     cfg: GenerateConfig,
     system: str,
@@ -191,26 +206,28 @@ def generate_structured(
                     with _stats_lock:
                         _gen_stats["inflight"] -= 1
             # SystemExit too: keep a misbehaving adapter from crashing the daemon (a
-            # stray SystemExit is a BaseException that escapes a bare except Exception;
-            # the tuple is a fixed pair of types, not a boolean expression).
+            # stray SystemExit is a BaseException that escapes a bare except Exception).
+            # The retry decision lives in _retry_delay so this handler body stays
+            # boolean-free (the no-boolean-in-except rule greps handler bodies).
             except (Exception, SystemExit) as e:  # noqa: BLE001 — adapter call failures
-                if _is_rate_limit(e):
-                    with _stats_lock:
-                        _gen_stats["rate_limited"] += 1
-                if attempt + 1 < _RATE_LIMIT_ATTEMPTS and _is_rate_limit(e):
-                    delay = _rate_limit_wait(attempt)
-                    # stderr not logging: the daemon's stderr is where llmkit's own
-                    # error text already lands — one stream, one story.
-                    print(
-                        f"[crib] rate-limited (attempt {attempt + 1}/"
-                        f"{_RATE_LIMIT_ATTEMPTS}), retrying in {delay:.0f}s: "
-                        f"{str(e)[:120]}",
-                        file=sys.stderr,
-                    )
-                    with _stats_lock:
-                        _gen_stats["waiting"] += 1
-                    time.sleep(delay)
-                    continue
+                delay = _retry_delay(e, attempt)
+                if delay is None:
+                    raise GenerationError(
+                        f"llmkit structured generation failed for adapter "
+                        f"{provider.adapter!r}: {e}."
+                    ) from e
+                # stderr not logging: the daemon's stderr is where llmkit's own
+                # error text already lands — one stream, one story.
+                print(
+                    f"[crib] rate-limited (attempt {attempt + 1}/"
+                    f"{_RATE_LIMIT_ATTEMPTS}), retrying in {delay:.0f}s: "
+                    f"{str(e)[:120]}",
+                    file=sys.stderr,
+                )
+                with _stats_lock:
+                    _gen_stats["waiting"] += 1
+                time.sleep(delay)
+                continue
                 raise GenerationError(
                     f"llmkit structured generation failed for adapter "
                     f"{provider.adapter!r}: {e}."

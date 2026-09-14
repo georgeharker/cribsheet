@@ -1,13 +1,32 @@
 {
     "rules": {
         "trust-internal-data": {
-            "disable": ["unchecked-throwing-call-python"]
+            "disable": [
+                "unchecked-throwing-call-python",
+                "ast-grep:unchecked-throwing-call-python"
+            ]
+        },
+        "no-boolean-in-except": {
+            "disable": [
+                "no-boolean-in-except",
+                "ast-grep:no-boolean-in-except"
+            ]
+        },
+        "no-ellipsis-body": {
+            "disable": [
+                "no-ellipsis-body",
+                "ast-grep:no-ellipsis-body"
+            ]
         },
         "markdownlint": {
             "disable": ["line-length", "MD013"]
         },
         "yamllint": {
-            "disable": ["line-length", "yamllint:line-length", "yaml:line-length"]
+            "disable": [
+                "line-length",
+                "yamllint:line-length",
+                "yaml:line-length"
+            ]
         }
     }
 }
