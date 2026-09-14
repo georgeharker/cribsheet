@@ -2,6 +2,12 @@
     "rules": {
         "trust-internal-data": {
             "disable": ["unchecked-throwing-call-python"]
+        },
+        "markdownlint": {
+            "disable": ["line-length", "MD013"]
+        },
+        "yamllint": {
+            "disable": ["line-length", "yamllint:line-length", "yaml:line-length"]
         }
     }
 }

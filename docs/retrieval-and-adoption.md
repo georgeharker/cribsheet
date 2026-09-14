@@ -1,7 +1,7 @@
 # Retrieval quality & tool adoption (the prerequisite layer)
 
 > **⚠︎ Superseded on the ranking mechanics (2026-07-13).** This is a dated
-> investigation log; its findings on *keyword_index / summary_index / adoption* stand,
+> investigation log; its findings on _keyword_index / summary_index / adoption_ stand,
 > but the **fusion and rerank** it describes (RRF-of-ranks, an "optional third RRF
 > list", rerank off) have been **replaced**: fusion is now a **dense-dominant score
 > blend** (raw cosine + min-max'd sparse) and rerank is **range-matched, on by
@@ -21,7 +21,7 @@
 > GC as keyword labels, so `summary_labels = ["summary"]` is the measured
 > recommendation (repo default stays `[]` — enrichment labels are opt-in LLM
 > cost). Read "RRF"
-> below as "the fusion of the day"; the *signals* (dense ⊕ keyword_index ⊕
+> below as "the fusion of the day"; the _signals_ (dense ⊕ keyword_index ⊕
 > summary_index) are unchanged.
 
 **Current flow, one picture:** both halves as they stand today — index side (section
@@ -29,7 +29,7 @@ split → windowing → the one LLM pass → the two derived caches) and lookup 
 three arms, the alias MAX-merge, back-fill, the dense-dominant blend, range-matched
 rerank), with the actual constants and formulae on the boxes. Read it before the dated
 log below; where the two disagree, the diagram is current. For the one-glance version
-of the *lookup* path alone, see
+of the _lookup_ path alone, see
 [`note-retrieval-pipeline`](images/note-retrieval-pipeline.png) in DESIGN.md §10.
 
 ![cribsheet retrieval — index side and lookup side](images/retrieval-flow.png)
@@ -39,6 +39,7 @@ of the *lookup* path alone, see
 > ## Build state & how to resume (2026-07-01)
 >
 > **Shipped & tested (88 unit tests pass):**
+>
 > - **Generation bridge** (`crib/generate.py` over llmkit; providers/profiles TOML
 >   like `models.toml`, default `~/.config/crib/models.toml` → zen-qwen). Powers
 >   `distill` and the two index generators.
@@ -53,26 +54,28 @@ of the *lookup* path alone, see
 >   metadata self-heals on reindex (`set_meta`, no re-embed); code-fence `#`
 >   comments no longer parsed as headings.
 > - **Eval harness**: `scripts/eval_retrieval.py --lift <kw> / --lift-summaries
->   <sum> [--elab-weight/--summary-weight]`, cases in `eval_retrieval.cases.json`.
+<sum> [--elab-weight/--summary-weight]`, cases in `eval_retrieval.cases.json`.
 >
 > **Findings (cribsheet corpus, 71 sections, n=31 phrasings, baseline MRR 0.844 /
 > recall@3 0.968):**
+>
 > - keyword_index `keywords@0.3`: the net-positive config (recall→1.0 in earlier
 >   runs; MRR neutral-to-slightly-up). **Shipped default.**
 > - summary_index: **net-negative at every weight** (best w=0.1: still −0.03
->   recall). Better *doc2query* summaries were *worse* (compete harder). Root
+>   recall). Better _doc2query_ summaries were _worse_ (compete harder). Root
 >   cause: **dense recall is already saturated** on this small clustered corpus —
 >   aliases can only displace, not rescue. Needs a **larger/diverse corpus** to
 >   show value → that's why `.crib` was added to zsh-ai, zdot, dotfiler,
 >   sharedserver, svg-mcp, mcp-companion (import for volume). **Confirmed
 >   net-positive on the volume corpus (§5.5, 2026-07-01): +0.024 MRR @ w=0.15–0.2,
->   recall held.** Also there: `keywords@0.3` (the shipped default) *hurts* diverse
+>   recall held.** Also there: `keywords@0.3` (the shipped default) _hurts_ diverse
 >   corpora — retune to w=0.1; best combo `sum@0.2 + kw@0.1` = +0.034 MRR.
 >
 > **To resume on a new machine:**
+>
 > 1. Clone this repo + `git submodule update --init` (vendor/llmkit at 67e8465).
 > 2. `uv sync` / `pip install -e '.[full,generate]'` then `pip install -e
->    './vendor/llmkit[anthropic]'` (zen adapter). Optional: `[embed]` for bge.
+'./vendor/llmkit[anthropic]'` (zen adapter). Optional: `[st]` for bge.
 > 3. Config in dotfiles: `~/.config/crib/config.toml` (`[generate]` + `[retrieve]`
 >    blocks) and `~/.config/crib/models.toml` (providers); `export OPENCODE_API_KEY`.
 > 4. `crib pull` (notes from `georgeharker/.crib`), then `crib reindex --all`.
@@ -91,15 +94,15 @@ of the *lookup* path alone, see
 
 Status: design. The substrate that must work **before** automatic capture
 ([knowledge-capture.md](knowledge-capture.md)) delivers any value: if `lookup`
-doesn't surface the right note, and if the connected agent doesn't *consult the
-tool* in the first place, capturing more knowledge just grows an index nobody
+doesn't surface the right note, and if the connected agent doesn't _consult the
+tool_ in the first place, capturing more knowledge just grows an index nobody
 reads. Realizes/extends DESIGN [§10.3 retrieval](../DESIGN.md) and [§10.4
 reranking].
 
 ## 1. The frame — two different problems, usually conflated
 
 - **Findability** — given a query, does the right note rank at the top?
-- **Invocation** — does a query get *issued at all*?
+- **Invocation** — does a query get _issued at all_?
 
 The design so far has invested almost entirely in findability — hybrid dense⊕BM25
 fused by RRF (§10.3), an optional reranker (§10.4) — and it largely works:
@@ -107,7 +110,7 @@ fused by RRF (§10.3), an optional reranker (§10.4) — and it largely works:
 it is the real gate: perfect retrieval delivers exactly zero value on every turn
 where the agent greps the source tree instead of calling `lookup`.
 
-> **Thesis:** the leverage is mostly on *invocation*, plus one specific findability
+> **Thesis:** the leverage is mostly on _invocation_, plus one specific findability
 > gap (vocabulary mismatch). The rest of the retrieval machinery is already good
 > enough. Capture sits behind both.
 
@@ -122,20 +125,20 @@ defaulting to `grep`/`glob` over the codebase rather than crib):
 - **No trigger in context.** Nothing fires at the moment the agent is about to
   search. The global "consult first" directive is a weak, vague prior competing
   against the strong, concrete habit of searching code.
-- **Cold-start emptiness.** Early on the store returns nothing, which *negatively
-  reinforces* — the agent learns to stop trying.
+- **Cold-start emptiness.** Early on the store returns nothing, which _negatively
+  reinforces_ — the agent learns to stop trying.
 - **Unclear value boundary.** The agent doesn't know which questions crib answers
   better than the code itself, so under ambiguity it picks the general tool (grep).
 
 > **The crucial observation:** the harness's own `MEMORY.md` (§13) gets consulted
-> reliably and crib does not — *not because it is better, but because it is
-> injected into context, never looked up.* crib is strictly more capable and loses
+> reliably and crib does not — _not because it is better, but because it is
+> injected into context, never looked up._ crib is strictly more capable and loses
 > on delivery. The whole strategy below follows from inverting that.
 
 ## 3. Part A — Search-term efficacy (findability)
 
 The one named weakness in §10.4 is the **vocabulary gap**: query "credentials" vs
-note "tokens" — stays rank-2 under any *small* reranker. Attack it on the
+note "tokens" — stays rank-2 under any _small_ reranker. Attack it on the
 **document side** (amortized, paid once at index time, zero query-time latency —
 and the generation layer in [knowledge-capture.md](knowledge-capture.md) is the
 natural home for the work):
@@ -151,11 +154,11 @@ natural home for the work):
 > ([knowledge-capture.md](knowledge-capture.md) §2) exists.
 
 1. **Canonical topic phrase per chunk** (do first — cheapest). The digestion pass
-   emits a one-line "what is this about" headline, embedded with weight *and*
+   emits a one-line "what is this about" headline, embedded with weight _and_
    reused as the snippet the agent sees. Doubles as a retrieval surface and a
    better read/skip signal.
-2. **Doc2query / "what questions does this answer."** Generate the *search phrases a
-   user would actually type* to find a chunk, in the **querier's** vocabulary
+2. **Doc2query / "what questions does this answer."** Generate the _search phrases a
+   user would actually type_ to find a chunk, in the **querier's** vocabulary
    ("how do I log in", "credentials"), not the author's ("tokens"). Closes the gap
    from the document side (docTTTTTquery). Free incremental work on the
    distill/capture pass.
@@ -171,19 +174,19 @@ natural home for the work):
 **Related-topic map.** A chunk↔topic graph (edges from shared entities, embedding
 proximity, or LLM-asserted "see also"). Threefold value: retrieval **expansion**
 (after a hit, pull graph neighbors — catches the vocabulary-gap note sitting one
-hop from a note that *did* match), **navigation** (surface "related:" so the agent
+hop from a note that _did_ match), **navigation** (surface "related:" so the agent
 can pivot), and it makes [knowledge-capture §5b](knowledge-capture.md)'s
-merge-aware write a graph lookup. A real build — stage it *after* per-chunk
+merge-aware write a graph lookup. A real build — stage it _after_ per-chunk
 enrichment proves out.
 
 **Topic index into code** — two directions; the reverse one is the more powerful:
 
-- *Notes→code*: notes carry resolvable **symbol** pointers (not line numbers —
+- _Notes→code_: notes carry resolvable **symbol** pointers (not line numbers —
   those rot), generated via LSP/ctags during digestion. Answers "where is this
   implemented."
-- *Code→notes* (the one that fights the grep habit): an index from symbol/file →
-  the notes that discuss it. When the agent is reading `crib/retrieve.py`, *meet it
-  there* — surface "there's a design note on this" instead of waiting for it to
+- _Code→notes_ (the one that fights the grep habit): an index from symbol/file →
+  the notes that discuss it. When the agent is reading `crib/retrieve.py`, _meet it
+  there_ — surface "there's a design note on this" instead of waiting for it to
   think to ask. Turns "about to grep" into "already pointed at the note."
 
 ### 3.1 Keyword sidecar — two tiers, and the git-communicable map
@@ -191,13 +194,13 @@ enrichment proves out.
 The keyword sidecar splits into two tiers by cost — and therefore by storage:
 
 - **Tier 1 — mechanical (shipped 2026-06-30).** Compound-identifier splitting so a
-  *spaced* query matches a *solid* identifier the tokenizer keeps whole: "index
+  _spaced_ query matches a _solid_ identifier the tokenizer keeps whole: "index
   file" → `index_file` (the `_` is a word char), "restart server" →
   `:MCPRestartServer`, "lexical cache" → `LexicalCache`. Computed **on-the-fly** in
   the BM25 corpus build (`_subtokens` / `_lexical_tokens`, `crib/retrieve.py`) — **no
   storage, always current**, BM25-only (kept out of the dense embedding to avoid
   identifier-soup). Proven deterministically: a spaced query plain BM25 scores 0 now
-  matches. Targets *exact-term* recall — it does **not** move the semantic-paraphrase
+  matches. Targets _exact-term_ recall — it does **not** move the semantic-paraphrase
   stragglers (§5.3); those need tier 2.
 - **Tier 2 — LLM-distilled (designed; deferred behind the bridge).** Semantic
   keywords / synonyms / "what this answers" — an LLM call per section, too costly to
@@ -212,10 +215,10 @@ free** (same content → same filename → byte-identical across machines). It r
 existing git sync (DESIGN §14), so the expensive LLM output **travels with the notes**
 — generated once on one machine, pulled everywhere, never re-run for content seen.
 
-**Plain text, never a binary store (no SQLite).** Git-communicable means *git can do
-its job*: line-level diff, three-way merge, and a legible commit/PR where one
+**Plain text, never a binary store (no SQLite).** Git-communicable means _git can do
+its job_: line-level diff, three-way merge, and a legible commit/PR where one
 machine's generated keywords are reviewable. A binary index (SQLite/LMDB) is opaque to
-diff/merge and churns as a blob — it would be a *cache*, not a shared asset. So each
+diff/merge and churns as a blob — it would be a _cache_, not a shared asset. So each
 entry is small **TOML** (matching crib's own config format) — line-oriented with one
 keyword per array line, comments allowed, stable key order — one file per
 `content_hash`, written deterministically so re-serialization never yields a spurious
@@ -235,27 +238,27 @@ keywords = [
 ```
 
 Liveness falls out of content-addressing: a section edit changes `content_hash` →
-cache miss → regenerate *that section only*; a prompt/extractor change bumps a
+cache miss → regenerate _that section only_; a prompt/extractor change bumps a
 `kw_scheme` field → a deliberate, on-demand global refresh (never automatic — it's
 expensive). Generation runs **off the write path** (an explicit `crib keywords` pass,
 or folded into `distill`, sharing the bridge), so a save never blocks on an LLM; BM25
 consumes whatever's cached and a miss degrades gracefully to tier-1 + body.
 
 **Record vs. serving — the text is the record; the indexes load from it.** The text
-files are the durable, shared store of record; the *serving* layers are derived and
+files are the durable, shared store of record; the _serving_ layers are derived and
 rebuildable, so loading/attaching them at serve time is fine (Chroma already attaches
 to serve — same idea). At `LexicalCache` build, look up each chunk's
 `keywords/<content_hash>.toml` (the `content_hash` is in chunk metadata) and append
 its terms to the BM25 token list — **exactly how heading and tier-1 subtokens already
 feed BM25** (`_lexical_tokens`). The same text can also be fed into Chroma (as added
-document text, for the dense side) if it earns lift. What we avoid is the *inverse*:
+document text, for the dense side) if it earns lift. What we avoid is the _inverse_:
 making a binary index the **store of record**. Chroma is gitignored and rebuilt from
 notes + this text asset, so it must never be the only home for the expensive LLM
-output — but Chroma (or BM25) *serving* it, loaded from the text, is the intended
+output — but Chroma (or BM25) _serving_ it, loaded from the text, is the intended
 shape. Derived-but-**expensive** data → tracked text asset, fed into the indexes;
 derived-and-**cheap** data (tier 1) → recomputed into the index, stored nowhere.
 
-## 4. Part B — Invocation (the actual gate) — make crib *push*, not only pull
+## 4. Part B — Invocation (the actual gate) — make crib _push_, not only pull
 
 Keep the pull tools for deep dives, but borrow `MEMORY.md`'s trick — inject
 automatically. In rough order of leverage:
@@ -266,7 +269,7 @@ automatically. In rough order of leverage:
    it is signal, not noise. Likely the single highest-leverage item here.
 2. **`SessionStart` hook = inject the project digest** (the topic-index / map from
    §3). Literally generalizing the `MEMORY.md` mechanism — the reason harness
-   memory wins. Curated knowledge in context *before* any tool decision.
+   memory wins. Curated knowledge in context _before_ any tool decision.
 3. **`PreToolUse(Grep|Glob)` hook.** Intercept the moment the agent is about to
    grep, run the same query against crib, inject "before grepping, crib has …".
    Advisory, not blocking. Triggers on the exact competing action.
@@ -275,12 +278,12 @@ automatically. In rough order of leverage:
    vague "consult first"). Promise `lookup` is cheap and safe to call
    speculatively.
 5. **Fix the reliability asymmetry.** Always-on daemon, graceful degraded mode,
-   health surfaced. Reliability *is* an adoption feature — a tool that is sometimes
+   health surfaced. Reliability _is_ an adoption feature — a tool that is sometimes
    down trains permanent fallback.
 
 > **Observed live (2026-06-30), three distinct failure modes in one session**, each
 > a textbook trainer of the grep habit: (a) the combiner did not surface crib's
-> tools to the agent until a refresh was forced — *reachable but undiscoverable*;
+> tools to the agent until a refresh was forced — _reachable but undiscoverable_;
 > (b) the tools were under an unexpected namespace prefix, so keyword search missed
 > them; (c) the combiner dropped all proxied tools **mid-call**. The crib server
 > itself stayed healthy on `:7732` throughout. The save each time was the **`crib`
@@ -296,10 +299,10 @@ as good. Grow the n=8 set from §10.4 into:
 
 - **Findability metric** — query→expected-note, MRR / recall@k, toggled per
   enrichment strategy (topic-phrase on/off, doc2query on/off, multi-vector) — so a
-  win is *proven* (did doc2query actually close credentials≠tokens?) not hoped.
+  win is _proven_ (did doc2query actually close credentials≠tokens?) not hoped.
 - **Invocation metric** — from logs: rate of lookups that returned nothing
   (enrichment gap) vs. returned-good-but-the-agent-grepped-anyway
-  (description/trust gap). That log *is* the dataset for tuning τ and the doc2query
+  (description/trust gap). That log _is_ the dataset for tuning τ and the doc2query
   prompts.
 
 Two metrics, two problems. Every strategy below lands behind a quality bar measured
@@ -311,14 +314,14 @@ The harness exists (`scripts/eval_retrieval.py`, cases in
 `scripts/eval_retrieval.cases.json`, driven via `crib --json lookup`). Its founding
 data point is the cold-start fix itself. Before this repo had a crib project, the
 design docs were **not indexed**, so crib could not answer questions about its own
-design — and grepping `DESIGN.md` was the *correct* behavior. After `.crib` →
+design — and grepping `DESIGN.md` was the _correct_ behavior. After `.crib` →
 `cribsheet` project + `import` of `DESIGN.md` and `docs/*.md`, the identical queries
 invert:
 
-| query | before (`default`, unindexed) | after (`cribsheet`, seeded) |
-|---|---|---|
-| "…consult the memory tool instead of grep" | rank-1 = generic project blurb (0.66); 0/3 on-topic | rank-1 = `retrieval-and-adoption.md §3` (0.79); 8/8 on-topic |
-| "vocabulary gap credentials tokens reranking" | rank-1 wrong (0.58) | rank-1 = the exact §3 section (**0.83**), then DESIGN §10.4, §10.3 |
+| query                                         | before (`default`, unindexed)                       | after (`cribsheet`, seeded)                                        |
+| --------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------ |
+| "…consult the memory tool instead of grep"    | rank-1 = generic project blurb (0.66); 0/3 on-topic | rank-1 = `retrieval-and-adoption.md §3` (0.79); 8/8 on-topic       |
+| "vocabulary gap credentials tokens reranking" | rank-1 wrong (0.58)                                 | rank-1 = the exact §3 section (**0.83**), then DESIGN §10.4, §10.3 |
 
 The lesson is the thesis (§1): **adoption cannot precede content + findability.** The
 seed is build-order step 0 — without it every downstream metric measures an empty
@@ -331,16 +334,16 @@ First doc-side enrichment (§3, "shipped first"), measured on the 9-case set. Cl
 A/B: `rerank=False, hybrid=True`, so the warm daemon and `--no-daemon` rank
 identically — the only variable is the enrichment.
 
-| | MRR | recall@3 | rank-2 cases |
-|---|---|---|---|
-| baseline (body only) | 0.889 | 1.000 | "Capture source" (§5c), "version ring" (§8) |
-| + heading breadcrumb | 0.926 | 1.000 | — both lifted to rank-1 |
+|                      | MRR   | recall@3 | rank-2 cases                                |
+| -------------------- | ----- | -------- | ------------------------------------------- |
+| baseline (body only) | 0.889 | 1.000    | "Capture source" (§5c), "version ring" (§8) |
+| + heading breadcrumb | 0.926 | 1.000    | — both lifted to rank-1                     |
 
-The two cases that improved are exactly the ones whose *subject* lives in the heading,
+The two cases that improved are exactly the ones whose _subject_ lives in the heading,
 not the prose — the predicted win. Recall was already saturated, so MRR (rank
 quality) is the metric that moved.
 
-**Finding — labels and near-ties.** One case *appeared* to regress (rank-1 → rank-3)
+**Finding — labels and near-ties.** One case _appeared_ to regress (rank-1 → rank-3)
 until inspected: enrichment had promoted `eval-organic-memory.md` (headings: "how
 well does the LLM save notes unprompted", "isolate cribsheet from the other memory
 system") — a **legitimately relevant** doc the narrow label hadn't anticipated, in a
@@ -358,25 +361,26 @@ One phrasing per need overfits to the note's own wording and measures nothing ab
 reports **per-need robustness** (phrasings-hit / total, worst rank), not just an
 average. This is the canonical set; single-phrasing was saturated noise.
 
-| set | MRR | recall@3 | needs all-rank-1 |
-|---|---|---|---|
-| single phrasing (n=9) | 1.000 | 1.000 | 9/9 (saturated) |
-| **3 phrasings (n=27)** | **0.809** | **0.963** | **3/9** |
+| set                    | MRR       | recall@3  | needs all-rank-1 |
+| ---------------------- | --------- | --------- | ---------------- |
+| single phrasing (n=9)  | 1.000     | 1.000     | 9/9 (saturated)  |
+| **3 phrasings (n=27)** | **0.809** | **0.963** | **3/9**          |
 
 The drop is the point — the oblique phrasings expose where bge-small's generality
 runs out (the vocabulary gap, live). Weak spots, i.e. the next enrichment's targets:
-- **1 miss** — distill / *"clean up and condense … with an LLM pass"*: right file,
+
+- **1 miss** — distill / _"clean up and condense … with an LLM pass"_: right file,
   **wrong section** (a vocabulary-shifted phrasing pulls a sibling section).
-- **rank-3 stragglers** — invocation *"stop the assistant reaching for grep"*,
-  hybrid-fusion *"combine semantic search with exact term matching"*, quarantine
-  *"low-trust staging area"*, version-ring *"keep recent revisions"*.
+- **rank-3 stragglers** — invocation _"stop the assistant reaching for grep"_,
+  hybrid-fusion _"combine semantic search with exact term matching"_, quarantine
+  _"low-trust staging area"_, version-ring _"keep recent revisions"_.
 - **robust across all 3:** only vocab-gap, rerank-fuse, capture-source.
 
 Bars track this baseline (MRR ≥ 0.75, recall@3 ≥ 0.90) — floors with margin, to be
 tightened as the keyword sidecar / LLM topic-phrase (§3) lift the stragglers.
 
 **Timing (Raspberry Pi).** The lookup path has **no LLM** (rerank off); cost is
-embedding. Cold `--no-daemon` reloads the embedder *per call* — minutes for 27
+embedding. Cold `--no-daemon` reloads the embedder _per call_ — minutes for 27
 queries. The warm daemon amortizes the model load (→ 2:40 for 27), and the residual
 is **27× CLI process startup + connect**, not embedding. A batch/in-process harness
 (one connection, all queries) is the fix if the set grows.
@@ -386,10 +390,10 @@ is **27× CLI process startup + connect**, not embedding. A batch/in-process har
 Compound-identifier splitting (§3.1), plus 2 identifier-style needs added for
 coverage (n=31, 11 needs):
 
-| | MRR | recall@3 | needs all-rank-1 |
-|---|---|---|---|
-| heading enrichment only | 0.809 | 0.963 | 3/9 |
-| + tier-1 keyword sidecar | **0.839** | 0.968 | **5/11** |
+|                          | MRR       | recall@3 | needs all-rank-1 |
+| ------------------------ | --------- | -------- | ---------------- |
+| heading enrichment only  | 0.809     | 0.963    | 3/9              |
+| + tier-1 keyword sidecar | **0.839** | 0.968    | **5/11**         |
 
 Predicted profile, confirmed: an **exact-term** lift with **no regression** on the
 semantic set. `version-ring` became fully robust (its "keep recent revisions"
@@ -407,23 +411,23 @@ imported repos (dotfiler, mcp-companion, svg-mcp, zdot, sharedserver;
 **vocabulary-shifted** phrasings — the query≠note gap the enrichments target. Indexes
 were **GLM-authored** (`opencode-glm`; the qwen zen endpoint was offline that day — a
 provenance variable, since alias/keyword quality tracks the generating model).
-Measured **in-process** (`Crib.lookup`, one warm embedder) against a *true* no-LLM-index
+Measured **in-process** (`Crib.lookup`, one warm embedder) against a _true_ no-LLM-index
 baseline.
 
-| config | MRR | recall@3 | needs all-rank-1 |
-|---|---|---|---|
-| baseline (none) | 0.841 | 0.917 | 5/12 |
-| kw@0.1 | 0.856 | 0.917 | 6/12 |
-| kw@0.3 *(shipped default)* | 0.848 | **0.889** | 5/12 |
-| sum@0.15 | 0.866 | 0.917 | 7/12 |
-| sum@0.2 | 0.861 | 0.917 | 7/12 |
-| **sum@0.2 + kw@0.1** | **0.875** | 0.917 | **7/12** |
+| config                     | MRR       | recall@3  | needs all-rank-1 |
+| -------------------------- | --------- | --------- | ---------------- |
+| baseline (none)            | 0.841     | 0.917     | 5/12             |
+| kw@0.1                     | 0.856     | 0.917     | 6/12             |
+| kw@0.3 _(shipped default)_ | 0.848     | **0.889** | 5/12             |
+| sum@0.15                   | 0.866     | 0.917     | 7/12             |
+| sum@0.2                    | 0.861     | 0.917     | 7/12             |
+| **sum@0.2 + kw@0.1**       | **0.875** | 0.917     | **7/12**         |
 
 - **summary_index is net-positive here — the §5 "needs a larger/diverse corpus"
   hypothesis is confirmed.** +0.024 MRR at w=0.15 (recall already 0.917, held),
   promoting stragglers (`dotfiler-deployment 2→1`, `svg-defs 3→1`,
   `requires-optional 3→2`). This **overturns the cribsheet-only net-negative**: where
-  dense recall isn't saturated the aliases *rescue* rather than *displace*. Sweet spot
+  dense recall isn't saturated the aliases _rescue_ rather than _displace_. Sweet spot
   **w=0.15–0.2**; w≥0.3 starts costing recall.
 - **keyword_weight is corpus-dependent.** The shipped `keywords@0.3` (measured best on
   cribsheet, §5.4) **hurts here** — recall −0.028 (demotes `svg-defs` out of top-3) for
@@ -434,21 +438,21 @@ baseline.
   all-rank-1 5→7/12 — best config, beating either alone.
 - **Why keywords come out generic → the next lever.** Sections are authored **blind to
   their siblings** (`_generate_index`, one LLM call per section), so the model can't
-  choose *distinctive* terms. **Whole-doc-context generation** — author a doc's sections
+  choose _distinctive_ terms. **Whole-doc-context generation** — author a doc's sections
   together, validate heading→`section_hash` coverage, mop-up the misses (content-
   addressing makes the mop-up idempotent + convergent, so strict model conformance is an
-  *efficiency* not a *correctness* property) — is the fix, re-measurable on this set.
+  _efficiency_ not a _correctness_ property) — is the fix, re-measurable on this set.
 
 **Measurement integrity — two bugs fixed to get valid numbers, both masking the lift:**
 `DaemonClient._data` returned empty hits (FastMCP typed `.data` reconstructs a
 list-of-objects return as empty models → `[{}]`/`Root()`; read `structured_content`
 instead) — the eval/gate drive the daemon by default, so every hit scored as a miss;
-`_split_labels("")` couldn't *disable* a default-on index (returned None → config
+`_split_labels("")` couldn't _disable_ a default-on index (returned None → config
 default), so `--lift keywords`'s baseline silently ran **with** keywords on → a Δ0 false
 null. Regression tests: `tests/test_client.py`, `tests/test_cli_labels.py`.
 
 **Whole-doc bulk generation (follow-up, same day).** The per-section stragglers
-motivated authoring a note's sections *together* (one structured call, whole-doc
+motivated authoring a note's sections _together_ (one structured call, whole-doc
 context → section-distinctive terms; `crib/app.py _generate_index`, `bulk=True`
 default). Re-generated both indexes for all five corpora via bulk and re-swept:
 
@@ -457,30 +461,30 @@ default). Re-generated both indexes for all five corpora via bulk and re-swept:
   authoring de-generics the terms, the predicted win.
 - **Summaries: a wash** vs per-section (both ~0.843 at equal section count). The
   apparent "bulk hurts summaries" in a first pass was a **section-count confound**:
-  `--overwrite` regenerated *every* section, and the fuller alias set scored below the
-  original *partial* one (0.866) — more alias vectors → more dense competition, a
-  *coverage/selectivity* effect, not authoring method (the equal-count bulk-vs-
+  `--overwrite` regenerated _every_ section, and the fuller alias set scored below the
+  original _partial_ one (0.866) — more alias vectors → more dense competition, a
+  _coverage/selectivity_ effect, not authoring method (the equal-count bulk-vs-
   per-section test showed no difference).
 - **So `bulk=True` is the right default for both verbs** — a keyword win, a summary
   wash, far fewer round-trips (2 calls vs 17 on a 17-section note; a batch that
   overruns the model output cap or is skipped is caught by the per-section mop-up).
   Requires a generous provider `max_tokens` (the implicit 1024 truncated batches).
-  Open, orthogonal: whether to summarize *every* section or select (the dense-side
+  Open, orthogonal: whether to summarize _every_ section or select (the dense-side
   coverage tradeoff).
 
 **Verdict on summary_index — off by default, removal candidate (2026-07-01).** Across
 every corpus measured it **never lifted recall** (recall was already saturated, so
 there was no vocabulary-gap note to rescue — its whole reason to exist) and moved MRR
 only **marginally and inconsistently** (net-negative on cribsheet-only; +0.002 with
-full-coverage summaries on the volume set; +0.025 only with a *partial* set, i.e. an
-artifact of *less* alias crowding, not a robust win). It is also the **most expensive**
+full-coverage summaries on the volume set; +0.025 only with a _partial_ set, i.e. an
+artifact of _less_ alias crowding, not a robust win). It is also the **most expensive**
 enrichment — an LLM call per section, regenerated on any content change, plus alias
-vectors to embed and a third RRF list to fuse — and it can *hurt* (crowds the dense
+vectors to embed and a third RRF list to fuse — and it can _hurt_ (crowds the dense
 space at higher weight). The **reranker (§10.4, `rerank`)** targets the same near-tie /
 vocabulary-divergent ranking gap far more directly and cheaply: a cross-encoder over
 the top-k, no per-section generation, no stored vectors, no crowding. Keep the machinery
 (cheap to leave in the code, default off); don't spend generation cost on it. Reconsider
-**only** for a genuinely *unsaturated* corpus (recall well below 1.0, severe
+**only** for a genuinely _unsaturated_ corpus (recall well below 1.0, severe
 querier-vs-author vocabulary mismatch) — untested at that scale, and even then benchmark
 it against the reranker first.
 

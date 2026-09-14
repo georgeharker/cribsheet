@@ -92,7 +92,8 @@ class FastEmbedEmbedder:
         # device-discovery warnings.
         try:
             self._model = TextEmbedding(
-                model_name=model_name, providers=["CPUExecutionProvider"])
+                model_name=model_name, providers=["CPUExecutionProvider"]
+            )
         except TypeError:  # older fastembed without a providers kwarg
             self._model = TextEmbedding(model_name=model_name)
         probe = next(iter(self._model.embed(["dimension probe"])))
@@ -103,7 +104,7 @@ class FastEmbedEmbedder:
         for v in self._model.embed(list(texts)):
             vec = [float(x) for x in v]
             n = math.sqrt(sum(x * x for x in vec)) or 1.0
-            out.append([x / n for x in vec])   # L2-normalize for cosine
+            out.append([x / n for x in vec])  # L2-normalize for cosine
         return out
 
     def embed_query(self, texts: list[str]) -> list[list[float]]:
@@ -134,17 +135,28 @@ class SentenceTransformerEmbedder:
         uv pip install torch --index-url https://download.pytorch.org/whl/cpu
     """
 
-    def __init__(self, model_name: str, device: str | None = None,
-                 query_prefix: str = "") -> None:
+    def __init__(
+        self, model_name: str, device: str | None = None, query_prefix: str = ""
+    ) -> None:
         from sentence_transformers import SentenceTransformer  # lazy
 
         self.query_prefix = query_prefix
         self.device = device or _auto_device()
         self._model = SentenceTransformer(model_name, device=self.device)
         # method renamed in sentence-transformers 5.x; fall back for older
-        get_dim = getattr(self._model, "get_embedding_dimension", None) \
+        get_dim = (
+            getattr(self._model, "get_embedding_dimension", None)
             or self._model.get_sentence_embedding_dimension
-        self.dim = get_dim()
+        )
+        # Both arms are bound methods returning int; the `or` types the union
+        # with None, so narrow explicitly — a genuine None means a broken
+        # sentence-transformers and must not pass silently as a dimension.
+        dim = get_dim()
+        if dim is None:
+            raise RuntimeError(
+                f"sentence-transformers returned no embedding dimension "
+                f"for {model_name!r}")
+        self.dim: int = int(dim)
 
     def embed(self, texts: list[str]) -> list[list[float]]:
         vecs = self._model.encode(
@@ -204,22 +216,30 @@ def build_embedder(cfg: EmbedConfig, stored_dim: int | None = None) -> Embedder:
     try:
         if backend == "st":
             return SentenceTransformerEmbedder(
-                name, device=device, query_prefix=_resolve_query_prefix(cfg, name))
+                name, device=device, query_prefix=_resolve_query_prefix(cfg, name)
+            )
         if backend in ("fe", "fastembed"):
-            return FastEmbedEmbedder(name, query_prefix=_resolve_query_prefix(cfg, name))
+            return FastEmbedEmbedder(
+                name, query_prefix=_resolve_query_prefix(cfg, name)
+            )
         # bare model name -> fastembed
         return FastEmbedEmbedder(model, query_prefix=_resolve_query_prefix(cfg, model))
     except ImportError as e:
         import sys
+
         if stored_dim is not None and stored_dim != cfg.dim:
             raise RuntimeError(
                 f"the embedding backend for {cfg.model!r} is not installed, and the "
                 f"store already holds {stored_dim}-dim vectors from a real model — "
                 f"falling back to the {cfg.dim}-dim hash embedder would make every "
-                f"lookup return garbage. Install it (pip install 'cribsheet[embed]'), "
-                f"or set [embed].model = \"hash\" and run `crib project reconcile` to "
-                f"re-embed.") from e
-        print(f"[crib] embedding backend for {cfg.model!r} not installed; "
-              f"falling back to the hash embedder. Install the recommended "
-              f"ONNX backend with: pip install 'cribsheet[embed]'", file=sys.stderr)
+                f"lookup return garbage. Install it (pip install 'cribsheet[st]'), "
+                f'or set [embed].model = "hash" and run `crib project reconcile` to '
+                f"re-embed."
+            ) from e
+        print(
+            f"[crib] embedding backend for {cfg.model!r} not installed; "
+            f"falling back to the hash embedder. Install the torch "
+            f"backend with: pip install 'cribsheet[st]'",
+            file=sys.stderr,
+        )
         return HashEmbedder(dim=cfg.dim)
