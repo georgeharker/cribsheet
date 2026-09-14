@@ -1857,9 +1857,56 @@ class Crib:
         budget_s: float | None = None,
     ) -> dict[str, Any]:
         """(Re)index the project's SOURCE CODE and in-situ docs from its `.crib`
-        (ensuring a `.crib` first). Cheap re-run via the content-hash gate. `budget_s`
-        bounds the call and DEFERS the rest (`complete=False`, `remaining=N`) — re-invoke
-        to continue; poll `project_status` for live `{done,total}` progress meanwhile."""
+        (ensuring a `.crib` first). Cheap re-run via the content-hash gate.
+
+        JOIN-DON'T-RESTART: a re-invoke while a sweep runs for this project
+        awaits the running task and returns its result (`joined: true`) instead
+        of racing a second sweep — the zero-reset counter bug, fixed at the
+        source. A scope change (`.crib` mtime moved since kick-off) returns a
+        `conflict` instead of silently joining a stale-scoped sweep; cancel the
+        running one (`project_cancel`) and re-invoke.
+
+        `budget_s` bounds the call and DEFERS the rest (`complete=False`,
+        `remaining=N`) — re-invoke to continue; poll `project_status` for live
+        `{done,total}` progress meanwhile."""
+        link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
+        proj = project or link.project
+        crib_file = link.root / ".crib"
+        crib_at = (
+            crib_file.stat().st_mtime if crib_file.exists() else None
+        )
+        running = self.code_jobs.get(proj)
+        if running is not None and not running["task"].done():
+            if running["crib_at"] != crib_at:
+                sw_total = (self.code.sweeps.get(proj) or {}).get("total")
+                return {
+                    "project": proj,
+                    "joined": False,
+                    "conflict": (
+                        f"a sweep is already running with an older scope "
+                        f"({sw_total} files, .crib mtime "
+                        f"{running['crib_at']}); project_cancel it, or wait "
+                        f"for it to finish"
+                    ),
+                }
+            result = await running["task"]
+            return {**result, "joined": True}
+        task = asyncio.create_task(
+            self._project_index_now(project, cwd, budget_s)
+        )
+        self.code_jobs[proj] = {"task": task, "crib_at": crib_at}
+        try:
+            return await task
+        finally:
+            self.code_jobs.pop(proj, None)
+
+    async def _project_index_now(
+        self,
+        project: str | None,
+        cwd: Path | None,
+        budget_s: float | None,
+    ) -> dict[str, Any]:
+        """The unguarded sweep body — caller (project_index) owns join/cancel."""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
         proj = project or link.project
         new_project = proj not in self.projects()  # before indexing creates its dirs
@@ -1867,7 +1914,13 @@ class Crib:
             await self.index_docs_insitu(proj, link.root) if link.doc_patterns else {}
         )
         globs = link.paths or self._detect_code_globs(link.root)
-        code = await self._index_project_code(proj, link.root, globs, budget_s)
+        crib_file = link.root / ".crib"
+        crib_at = (
+            crib_file.stat().st_mtime if crib_file.exists() else None
+        )
+        code = await self._index_project_code(
+            proj, link.root, globs, budget_s, crib_at=crib_at
+        )
         # No learning re-attach here. The sweep converts ENTRIES as a side effect
         # (every write normalizes identity), and the learnings join reads bindings,
         # so notes stay correct WITHOUT being rewritten — rebinding note files under
@@ -1880,6 +1933,75 @@ class Crib:
             "docs_indexed": docs.get("docs", 0),
             **code,
         }
+
+    async def project_wait(
+        self,
+        project: str | None = None,
+        cwd: Path | None = None,
+        wait_s: float = 30.0,
+    ) -> dict[str, Any]:
+        """Bounded-block on a running index job — the JOIN primitive for clients
+        whose tool timeout is shorter than a sweep. Idle → `{running: false}`;
+        finished within `wait_s` → the final result; still going → the live
+        partial state (call again to keep waiting)."""
+        proj = project or self._proj_from_cwd(cwd)
+        if proj is None:
+            raise CribUserError(
+                "project_wait: pass project= or run inside the repo")
+        job = self.code_jobs.get(proj)
+        if job is None or job["task"].done():
+            return {"project": proj, "running": False}
+        done, _ = await asyncio.wait({job["task"]}, timeout=max(wait_s, 0.05))
+        if done:
+            return {
+                "project": proj,
+                "running": False,
+                "complete": True,
+                **job["task"].result(),
+            }
+        sw = self.code.sweeps.get(proj) or {}
+        return {
+            "project": proj,
+            "running": True,
+            "complete": False,
+            "done": sw.get("done"),
+            "total": sw.get("total"),
+            "resume_hint": "call project_wait again to keep waiting",
+        }
+
+    async def project_cancel(
+        self, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
+        """Cancel a running index sweep. Completed files remain (hash-gated);
+        undescribed files retry on the next project_index. Returns
+        `{cancelled: false}` when nothing is running."""
+        proj = project or self._proj_from_cwd(cwd)
+        if proj is None:
+            raise CribUserError(
+                "project_cancel: pass project= or run inside the repo")
+        job = self.code_jobs.get(proj)
+        if job is None or job["task"].done():
+            return {"project": proj, "cancelled": False, "running": False}
+        sw = self.code.sweeps.get(proj) or {}
+        job["task"].cancel()
+        return {
+            "project": proj,
+            "cancelled": True,
+            "done_at_cancel": sw.get("done"),
+            "total": sw.get("total"),
+            "note": (
+                "completed files remain (hash-gated); re-run project index "
+                "to resume"
+            ),
+        }
+
+    def _proj_from_cwd(self, cwd: Path | None) -> str | None:
+        """Project name from the cwd's nearest `.crib`, or None — the read-only
+        resolution for wait/cancel (never creates a `.crib`)."""
+        if cwd is None:
+            return None
+        link = CribLink.find(Path(cwd))
+        return link.project if link else None
 
     # ── in-repo storage: adopt / release (docs/plans/repo-local-storage) ───────
     # A project's data tier is EITHER global OR in a repo, never both, so these

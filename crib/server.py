@@ -9,6 +9,7 @@ import asyncio
 import functools
 import inspect
 import sys
+import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -761,6 +762,7 @@ def build_server(crib: Crib | None = None):
         project: str | None = None,
         project_path: str | None = None,
         budget_s: float | None = None,
+        wait_s: float | None = None,
         ctx: Context | None = None,
     ) -> dict[str, Any]:
         """(Re)index a project's SOURCE CODE from its `.crib`, PLUS the prose it
@@ -776,12 +778,18 @@ def build_server(crib: Crib | None = None):
         2.1/s · eta 2:05`), so a long index streams live progress and doesn't
         idle-time-out — and the rate/eta is what a client needs to size its call
         timeout instead of guessing. It runs to completion in one call.
-        (`project_status` also carries the live `indexing` counts.) If your client enforces
-        a hard call timeout anyway, pass `budget_s=<seconds>`: files not reached by the
-        soft deadline are deferred and the result says `complete=false, remaining=N` —
-        re-invoke to continue (finished files re-skip via the content-hash gate)."""
+        (`project_status` also carries the live `indexing` counts.) If your client
+        enforces a hard call timeout anyway, two levers:
+        - `wait_s=<seconds>` bounds THIS call: the final result if the sweep
+          finished inside the budget, else a partial handle (`running: true`,
+          done/total/eta) — the sweep KEEPS RUNNING daemon-side; re-invoke to
+          re-join it (never a second sweep), or poll `project_status`.
+        - `budget_s=<seconds>` bounds the WORK: files not reached are deferred
+          (`complete=false, remaining=N`) — re-invoke to continue (finished
+          files re-skip via the content-hash gate)."""
         proj = project  # resolved by the `source` policy
         before = set(crib.code.sweeps)  # sweeps already running for OTHER calls
+        started = time.monotonic()
         task = asyncio.create_task(
             crib.project_index(proj, cwd=_cwd(project_path), budget_s=budget_s)
         )
@@ -789,8 +797,37 @@ def build_server(crib: Crib | None = None):
             # wait, don't sleep: a quick (all-cached) reindex returns immediately
             # instead of eating a full progress interval
             await asyncio.wait({task}, timeout=_PROGRESS_EVERY_S)
-            if ctx is None or task.done():
-                continue
+            if task.done():
+                break
+            # wait_s expiry → partial handle; the sweep KEEPS RUNNING daemon-side
+            # (create_task is independent of this call) and a re-invoke JOINS it.
+            if wait_s is not None and time.monotonic() - started >= wait_s:
+                picked = (
+                    (proj, crib.code.sweeps[proj])
+                    if proj and proj in crib.code.sweeps
+                    else next(
+                        (
+                            (p, v)
+                            for p, v in crib.code.sweeps.items()
+                            if p not in before
+                        ),
+                        None,
+                    )
+                )
+                key, sw = picked if picked else (proj or "?", {})
+                return {
+                    "project": key,
+                    "complete": False,
+                    "running": True,
+                    "done": sw.get("done"),
+                    "total": sw.get("total"),
+                    "line": f"{key}: {format_sweep(sw)}" if sw else None,
+                    "resume_hint": (
+                        "the sweep keeps running daemon-side — poll project_status, "
+                        "call project_wait to re-attach, or re-invoke project_index "
+                        "to join"
+                    ),
+                }
             # OUR sweep only: the named project's, else the one this call started
             # (proj is None when the repo's .crib names it) — never other projects'.
             picked = (
@@ -801,12 +838,12 @@ def build_server(crib: Crib | None = None):
                     None,
                 )
             )
-            if picked and picked[1].get("total"):
+            if picked and picked[1].get("total") and ctx is not None:
                 key, sw = picked
                 try:
                     await ctx.report_progress(
-                        progress=sw["done"],
-                        total=sw["total"],
+                        progress=sw["done"] or 0,
+                        total=sw["total"] or 0,
                         message=f"{key}: {format_sweep(sw)}",
                     )
                 except Exception:  # noqa: BLE001 — progress is best-effort
@@ -821,6 +858,29 @@ def build_server(crib: Crib | None = None):
         the `.crib` source paths — to orient before project_setup / a code_lookup. Pass
         `project_path=<the repo dir>`."""
         return crib.project_status(project, cwd=_cwd(project_path))
+
+    @crib_tool("none")
+    async def project_wait(
+        project: str | None = None,
+        project_path: str | None = None,
+        wait_s: float = 30.0,
+    ) -> dict[str, Any]:
+        """Bounded-block on a running index job for this project — the JOIN
+        primitive for clients whose tool timeout is shorter than a sweep.
+        `{running: false}` when nothing is running; the final result if the
+        sweep completes within wait_s; else the live partial state (call again
+        to keep waiting). Never starts a sweep."""
+        return await crib.project_wait(
+            project, cwd=_cwd(project_path), wait_s=wait_s
+        )
+
+    @crib_tool("source")
+    async def project_cancel(
+        project: str | None = None, project_path: str | None = None
+    ) -> dict[str, Any]:
+        """Cancel a running index sweep for this project. Completed files remain
+        (hash-gated); undescribed files retry on the next project_index."""
+        return await crib.project_cancel(project, cwd=_cwd(project_path))
 
     @crib_tool("source")
     def project_forget(
