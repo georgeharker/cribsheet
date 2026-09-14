@@ -13,9 +13,31 @@ a thread so the daemon's async tools never block the event loop.
 from __future__ import annotations
 
 import asyncio
+import sys
+import time
 from pathlib import Path
 
 from .config import GenerateConfig
+
+# Rate-limit retry (2026-09-14, after a zai coding-plan sweep 429'd most of its
+# describes): llmkit returns only (code, None) — the HTTP detail lives in the
+# raised error's TEXT — so detection is signature matching on the message.
+# Only transient throttling retries; schema/auth errors fail fast.
+_RATE_LIMIT_MARKERS = (
+    "429",
+    "rate limit",
+    "rate_limit",
+    "rate limited",
+    "too many requests",
+    "overloaded",
+)
+_RATE_LIMIT_ATTEMPTS = 4  # one try + three retries
+_RATE_LIMIT_BACKOFF_S = 2.0  # doubled per retry: 2s, 4s, 8s
+
+
+def _is_rate_limit(exc: BaseException) -> bool:
+    text = str(exc).lower()
+    return any(m in text for m in _RATE_LIMIT_MARKERS)
 
 
 class GenerationError(RuntimeError):
@@ -35,12 +57,15 @@ def resolve_provider(cfg: GenerateConfig, purpose: str):
         from llmkit.bridge import load
 
         conf = load(str(Path(cfg.config).expanduser()))
-        name = cfg.provider or (conf.select(cfg.profile, purpose) if cfg.profile else None)
+        name = cfg.provider or (
+            conf.select(cfg.profile, purpose) if cfg.profile else None
+        )
         if not name:
             raise GenerationError(
                 f"no generation provider for purpose {purpose!r}: set "
                 f"[generate].provider, or a [profiles.{cfg.profile}].{purpose} "
-                f"entry in {cfg.config}")
+                f"entry in {cfg.config}"
+            )
         return conf.resolve(name)
 
     return Provider(
@@ -54,8 +79,9 @@ def resolve_provider(cfg: GenerateConfig, purpose: str):
     )
 
 
-def generate(cfg: GenerateConfig, system: str, user: str,
-             purpose: str = "distill") -> str:
+def generate(
+    cfg: GenerateConfig, system: str, user: str, purpose: str = "distill"
+) -> str:
     """Run one chat turn; return the content stream as a stripped string.
 
     `purpose` selects the provider from the config's profile. Thinking is dropped
@@ -78,14 +104,20 @@ def generate(cfg: GenerateConfig, system: str, user: str,
     if code != 0:
         raise GenerationError(
             f"llmkit generation exited {code} for adapter {provider.adapter!r}; "
-            f"check the provider endpoint/key and that its extra is installed.")
+            f"check the provider endpoint/key and that its extra is installed."
+        )
     return text.strip()
 
 
-def generate_structured(cfg: GenerateConfig, system: str, user: str,
-                        schema: dict, purpose: str = "elaborate",
-                        schema_name: str = "emit",
-                        schema_description: str = "") -> object:
+def generate_structured(
+    cfg: GenerateConfig,
+    system: str,
+    user: str,
+    schema: dict,
+    purpose: str = "elaborate",
+    schema_name: str = "emit",
+    schema_description: str = "",
+) -> object:
     """Run one chat turn constrained to ``schema`` (JSON Schema); return the parsed
     object (or ``None`` on a non-zero exit / unparseable output — the caller falls
     back). Adapters enforce the schema natively (anthropic forced tool-use,
@@ -93,26 +125,54 @@ def generate_structured(cfg: GenerateConfig, system: str, user: str,
     from llmkit.bridge import ChatRequest, chat_structured
 
     provider = resolve_provider(cfg, purpose)
-    request = ChatRequest(user=user, system=system, schema=schema,
-                          schema_name=schema_name,
-                          schema_description=schema_description)
-    try:
-        code, data = chat_structured(provider, request)
-    # SystemExit too: keep a misbehaving adapter from crashing the daemon (a stray
-    # SystemExit is a BaseException and would escape a bare `except Exception`).
-    except (Exception, SystemExit) as e:  # noqa: BLE001 — adapter import / call failures
-        raise GenerationError(
-            f"llmkit structured generation failed for adapter "
-            f"{provider.adapter!r}: {e}.") from e
+    request = ChatRequest(
+        user=user,
+        system=system,
+        schema=schema,
+        schema_name=schema_name,
+        schema_description=schema_description,
+    )
+    code = 1
+    data = None
+    for attempt in range(_RATE_LIMIT_ATTEMPTS):
+        try:
+            code, data = chat_structured(provider, request)
+            break
+        # SystemExit too: keep a misbehaving adapter from crashing the daemon (a
+        # stray SystemExit is a BaseException that escapes a bare except Exception;
+        # the tuple is a fixed pair of types, not a boolean expression).
+        except (Exception, SystemExit) as e:  # noqa: BLE001 — adapter call failures
+            if attempt + 1 < _RATE_LIMIT_ATTEMPTS and _is_rate_limit(e):
+                delay = _RATE_LIMIT_BACKOFF_S * (2**attempt)
+                # stderr not logging: the daemon's stderr is where llmkit's own
+                # error text already lands — one stream, one story.
+                print(
+                    f"[crib] rate-limited (attempt {attempt + 1}/"
+                    f"{_RATE_LIMIT_ATTEMPTS}), retrying in {delay:.0f}s: "
+                    f"{str(e)[:120]}",
+                    file=sys.stderr,
+                )
+                time.sleep(delay)
+                continue
+            raise GenerationError(
+                f"llmkit structured generation failed for adapter "
+                f"{provider.adapter!r}: {e}."
+            ) from e
     if code != 0:
         raise GenerationError(
             f"llmkit structured generation exited {code} for adapter "
-            f"{provider.adapter!r}.")
+            f"{provider.adapter!r}."
+        )
     return data
 
 
-async def agenerate(cfg: GenerateConfig, system: str, user: str,
-                    purpose: str = "distill", timeout: float | None = None) -> str:
+async def agenerate(
+    cfg: GenerateConfig,
+    system: str,
+    user: str,
+    purpose: str = "distill",
+    timeout: float | None = None,
+) -> str:
     """Async wrapper — runs the sync bridge in a worker thread, with an optional
     per-call wall-clock cap. On timeout the coroutine is abandoned (the worker
     thread is left to the SDK's own timeout) and TimeoutError propagates, so a
@@ -123,15 +183,28 @@ async def agenerate(cfg: GenerateConfig, system: str, user: str,
     return await coro
 
 
-async def agenerate_structured(cfg: GenerateConfig, system: str, user: str,
-                               schema: dict, purpose: str = "elaborate",
-                               schema_name: str = "emit",
-                               schema_description: str = "",
-                               timeout: float | None = None) -> object:
+async def agenerate_structured(
+    cfg: GenerateConfig,
+    system: str,
+    user: str,
+    schema: dict,
+    purpose: str = "elaborate",
+    schema_name: str = "emit",
+    schema_description: str = "",
+    timeout: float | None = None,
+) -> object:
     """Async wrapper for :func:`generate_structured` (worker thread + optional
     wall-clock cap), mirroring :func:`agenerate`."""
-    coro = asyncio.to_thread(generate_structured, cfg, system, user, schema,
-                             purpose, schema_name, schema_description)
+    coro = asyncio.to_thread(
+        generate_structured,
+        cfg,
+        system,
+        user,
+        schema,
+        purpose,
+        schema_name,
+        schema_description,
+    )
     if timeout:
         return await asyncio.wait_for(coro, timeout)
     return await coro

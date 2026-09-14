@@ -511,9 +511,13 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
     # setup / index
     made = "  (created .crib)" if d.get("crib_created") else ""
     docs = f", {d['docs_imported']} docs imported" if d.get("docs_imported") else ""
+    fails = (
+        f", {d['describes_failed']} desc-failed" if d.get("describes_failed") else ""
+    )
     print(
         f"{proj}: indexed {d.get('files_indexed', 0)}/{d.get('files_seen', 0)} files, "
-        f"{d.get('symbols', 0)} symbols, {d.get('described', 0)} described{docs}{made}"
+        f"{d.get('symbols', 0)} symbols, {d.get('described', 0)} described"
+        f"{fails}{docs}{made}"
     )
     errs = d.get("errors") or []
     if errs:

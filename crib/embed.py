@@ -155,7 +155,8 @@ class SentenceTransformerEmbedder:
         if dim is None:
             raise RuntimeError(
                 f"sentence-transformers returned no embedding dimension "
-                f"for {model_name!r}")
+                f"for {model_name!r}"
+            )
         self.dim: int = int(dim)
 
     def embed(self, texts: list[str]) -> list[list[float]]:

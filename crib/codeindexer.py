@@ -42,6 +42,26 @@ def _parts(e: dict) -> tuple[tuple[str, ...], str]:
     return tuple(str(c) for c in (e.get("container") or ())), str(e.get("name") or "")
 
 
+def _stale_symbols(entries: list[dict], by_parts: dict[tuple, dict]) -> list[dict]:
+    """Symbols needing an LLM pass: body changed, OR a facet missing.
+
+    The `not description` / missing-`keywords` arms ARE the redo guarantee: a
+    describe that failed (rate-limited, provider down) writes entries with an
+    EMPTY description, which stays stale forever — the next sweep retries
+    exactly those files while described ones skip free via the content_hash.
+    Pinned by test_describe_resilience.py; do not "optimize" the arms away."""
+    return [
+        e
+        for e in entries
+        if by_parts.get(_parts(e), {}).get("content_hash") != e["content_hash"]
+        or not by_parts.get(_parts(e), {}).get("description")
+        # backfill kw facet: key PRESENCE is the "attempted" marker — a
+        # rendered `keywords = []` means the pass ran and yielded none
+        # (don't retry forever); a missing key means never attempted (legacy)
+        or "keywords" not in by_parts.get(_parts(e), {})
+    ]
+
+
 class CodeIndexer:
     def __init__(self, services: ProjectServices) -> None:
         self.services = services
@@ -272,16 +292,7 @@ class CodeIndexer:
                 entries = extract_file(root, rel, settle=3.0, ref_projects=ref_ctx)
             except Exception:  # noqa: BLE001 — keep the fast read if the slow one fails
                 pass
-        stale = [
-            e
-            for e in entries
-            if by_parts.get(_parts(e), {}).get("content_hash") != e["content_hash"]
-            or not by_parts.get(_parts(e), {}).get("description")
-            # backfill kw facet: key PRESENCE is the "attempted" marker — a
-            # rendered `keywords = []` means the pass ran and yielded none
-            # (don't retry forever); a missing key means never attempted (legacy)
-            or "keywords" not in by_parts.get(_parts(e), {})
-        ]
+        stale = _stale_symbols(entries, by_parts)
         gen_error: str | None = None
         # DEFER (the live watch path): persist STRUCTURE now and hand the changed
         # symbols to the backoff queue — the LLM pass is coalesced off the save path
@@ -569,6 +580,14 @@ class CodeIndexer:
                         prior_by_file.get(rel, []),
                         "inline",
                     )
+                    if (r or {}).get("descriptions_error"):
+                        # live desc-fail visibility: a rate-limited describe must
+                        # never look like progress on the ticker
+                        with self.code.indexing_lock:
+                            if proj in self.code.sweeps:
+                                self.code.sweeps[proj]["failed"] = (
+                                    self.code.sweeps[proj].get("failed", 0) + 1
+                                )
                     return f, r, None
                 except Exception as exc:  # noqa: BLE001 — one bad file never aborts the sweep
                     return f, None, str(exc)
@@ -577,7 +596,7 @@ class CodeIndexer:
                         if proj in self.code.sweeps:
                             self.code.sweeps[proj]["done"] += 1
 
-        syms = desc = indexed = 0
+        syms = desc = indexed = describes_failed = 0
         errors: list[dict[str, str]] = []
         # Files the sweep could not READ (undecodable/vanished). Distinct from the
         # ordinary self-skip of a non-code file (no LSP server), which is expected
@@ -602,6 +621,8 @@ class CodeIndexer:
                     indexed += 1
                     syms += (r or {}).get("symbols", 0)
                     desc += (r or {}).get("described", 0)
+                    if (r or {}).get("descriptions_error"):
+                        describes_failed += 1
         finally:
             with self.code.indexing_lock:
                 self.code.sweeps.pop(proj, None)
@@ -612,6 +633,7 @@ class CodeIndexer:
             "files_seen": len(files),
             "symbols": syms,
             "described": desc,
+            "describes_failed": describes_failed,
             "complete": deferred == 0,
             "remaining": deferred,
         }

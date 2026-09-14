@@ -132,6 +132,10 @@ def format_sweep(sw: dict[str, Any], now: float | None = None) -> str:
     if not total:
         return ""
     line = f"{done}/{total} files ({done * 100 // total}%)"
+    failed = sw.get("failed") or 0
+    if failed:
+        # a describe failing fast (429) must never read as progress — surface it
+        line += f" · {failed} desc-fail"
     started = sw.get("started")
     if started is not None and done:
         elapsed = (now if now is not None else time.monotonic()) - started
