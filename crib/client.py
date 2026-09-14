@@ -16,10 +16,20 @@ from __future__ import annotations
 import asyncio
 import os
 import time
-from typing import Any
+from typing import Any, Protocol
 
 from . import sharedserver
 from .config import DaemonConfig
+
+
+class ProgressHandler(Protocol):
+    """The progress-callback shape fastmcp's `call_tool` accepts (its `ProgressFnT`,
+    structural). Declared here so this module's public types carry no fastmcp
+    import and OUR boundary stays concretely typed rather than Any."""
+
+    async def __call__(
+        self, progress: float, total: float | None, message: str | None
+    ) -> None: ...  # pragma: no cover
 
 
 class DaemonError(RuntimeError):
@@ -65,20 +75,35 @@ class DaemonClient:
     def _command(self) -> list[str]:
         # Must match the sharedServer registration so `use` attaches to the same
         # process rather than racing a second one onto the port.
-        return ["crib", "--mcp", "--http",
-                "--host", self.cfg.host, "--port", str(self.cfg.port)]
+        return [
+            "crib",
+            "--mcp",
+            "--http",
+            "--host",
+            self.cfg.host,
+            "--port",
+            str(self.cfg.port),
+        ]
 
     def __enter__(self) -> "DaemonClient":
         sharedserver.use(self.cfg.name, self._command, self.cfg.grace_period)
         return self
 
-    def __exit__(self, *exc: object) -> None:
+    def __exit__(self, exc_type: object, exc_value: object, exc_tb: object) -> None:
         sharedserver.unuse(self.cfg.name)
 
-    def call(self, tool: str, arguments: dict[str, Any]) -> Any:
-        """Call one MCP tool and return its result as plain Python."""
+    def call(
+        self,
+        tool: str,
+        arguments: dict[str, Any],
+        progress_handler: ProgressHandler | None = None,
+    ) -> Any:
+        """Call one MCP tool and return its result as plain Python.
+
+        `progress_handler`, when given, receives the tool's progress notifications
+        as they stream in (rendered by the CLI's sweep ticker)."""
         args = {k: v for k, v in arguments.items() if v is not None}
-        return asyncio.run(self._call(tool, args))
+        return asyncio.run(self._call(tool, args, progress_handler))
 
     def _make_client(self) -> Any:
         """A fastmcp Client for the daemon, presenting the inbound bearer when the
@@ -92,14 +117,23 @@ class DaemonClient:
             from fastmcp.client.transports.http import StreamableHttpTransport
 
             return Client(
-                StreamableHttpTransport(self.url, headers={"Authorization": f"Bearer {tok}"})
+                StreamableHttpTransport(
+                    self.url, headers={"Authorization": f"Bearer {tok}"}
+                )
             )
         return Client(self.url)
 
-    async def _call(self, tool: str, args: dict[str, Any]) -> Any:
+    async def _call(
+        self,
+        tool: str,
+        args: dict[str, Any],
+        progress_handler: ProgressHandler | None = None,
+    ) -> Any:
         await self._wait_ready()
         async with self._make_client() as client:
-            return _data(await client.call_tool(tool, args))
+            return _data(
+                await client.call_tool(tool, args, progress_handler=progress_handler)
+            )
 
     async def _wait_ready(self) -> None:
         """Poll until the daemon answers — it may still be starting if we (not

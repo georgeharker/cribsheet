@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from .app import Crib
+from .codestore import format_sweep
 from .errors import CribUserError
 from .session import ProjectResolution, resolve_session_project, session_state
 
@@ -763,8 +764,10 @@ def build_server(crib: Crib | None = None):
         `project_path=<the repo dir>` (a `.crib` is auto-created if missing); a bare
         `project=<name>` re-indexes an ALREADY-INDEXED project from its recorded root.
 
-        Emits PROGRESS markers ({done,total} files) while the sweep runs, so a long index
-        streams live progress and doesn't idle-time-out — it runs to completion in one call.
+        Emits PROGRESS markers while the sweep runs (`<proj>: 42/317 files (13%) ·
+        2.1/s · eta 2:05`), so a long index streams live progress and doesn't
+        idle-time-out — and the rate/eta is what a client needs to size its call
+        timeout instead of guessing. It runs to completion in one call.
         (`project_status` also carries the live `indexing` counts.) If your client enforces
         a hard call timeout anyway, pass `budget_s=<seconds>`: files not reached by the
         soft deadline are deferred and the result says `complete=false, remaining=N` —
@@ -782,15 +785,21 @@ def build_server(crib: Crib | None = None):
                 continue
             # OUR sweep only: the named project's, else the one this call started
             # (proj is None when the repo's .crib names it) — never other projects'.
-            sw = (crib.code.sweeps.get(proj) if proj else None) or next(
-                (v for p, v in crib.code.sweeps.items() if p not in before), None
+            picked = (
+                (proj, crib.code.sweeps[proj])
+                if proj and proj in crib.code.sweeps
+                else next(
+                    ((p, v) for p, v in crib.code.sweeps.items() if p not in before),
+                    None,
+                )
             )
-            if sw and sw.get("total"):
+            if picked and picked[1].get("total"):
+                key, sw = picked
                 try:
                     await ctx.report_progress(
                         progress=sw["done"],
                         total=sw["total"],
-                        message=f"{sw['done']}/{sw['total']} files",
+                        message=f"{key}: {format_sweep(sw)}",
                     )
                 except Exception:  # noqa: BLE001 — progress is best-effort
                     pass

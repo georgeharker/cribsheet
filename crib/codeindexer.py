@@ -12,10 +12,12 @@ from __future__ import annotations
 
 import asyncio
 import sys
+import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from .config import CribLink
+from .describe_queue import DescribeQueue
 from .errors import CribUserError
 from .symbols import fqn_of
 from .symbols import key as symbol_key
@@ -43,20 +45,24 @@ def _parts(e: dict) -> tuple[tuple[str, ...], str]:
 class CodeIndexer:
     def __init__(self, services: ProjectServices) -> None:
         self.services = services
-        self.code = services.code          # CodeStore: index state + invariants
+        self.code = services.code  # CodeStore: index state + invariants
         self.paths = services.paths
         self.config = services.config
         # Set by Crib once the event loop exists (start_watchers). When present, the
         # live watch path DEFERS the LLM describe here instead of running it inline;
         # None → always describe inline (CLI/one-shot with no daemon, tests).
-        self._describe_q: Any = None
+        self._describe_q: DescribeQueue | None = None
 
-    def set_describe_queue(self, q: Any) -> None:
+    def set_describe_queue(self, q: DescribeQueue) -> None:
         self._describe_q = q
 
-    async def code_index(self, path: str, project: str | None = None,
-                         cwd: Path | None = None,
-                         patch_edges: bool = True) -> dict[str, Any]:
+    async def code_index(
+        self,
+        path: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+        patch_edges: bool = True,
+    ) -> dict[str, Any]:
         """Extract a source file's symbols + call graph via the LSP and persist them
         content-addressed under `<project>/symbol_index/`. Idempotent per file: drops
         symbols that vanished from it, records the file's mtime (the staleness gate),
@@ -65,6 +71,7 @@ class CodeIndexer:
         reindex keeps the cross-file call graph consistent. `patch_edges=False` in a
         full-project sweep (the LSP hands each file its edges directly). Off the loop."""
         from .codeindex import find_root
+
         p = Path(path)
         if not p.is_absolute():
             if cwd:
@@ -73,24 +80,33 @@ class CodeIndexer:
                 raise CribUserError(
                     f"code_index needs an ABSOLUTE path (got relative {path!r}) — a "
                     f"relative path resolves against the daemon's cwd, not yours. Pass "
-                    f"an absolute path, or cwd=<your working dir>.")
+                    f"an absolute path, or cwd=<your working dir>."
+                )
         p = p.resolve()
         root = find_root(p)
         rel = str(p.relative_to(root))
         proj = self.services.resolve_project(project, cwd)
-        return await asyncio.to_thread(self._index_code_file_tracked, root, rel, proj, patch_edges)
+        return await asyncio.to_thread(
+            self._index_code_file_tracked, root, rel, proj, patch_edges
+        )
 
-    def _index_code_file_tracked(self, root: Path, rel: str, proj: str,
-                                 patch_edges: bool,
-                                 prior: list[dict] | None = None,
-                                 describe_mode: str = "inline") -> dict[str, Any]:
+    def _index_code_file_tracked(
+        self,
+        root: Path,
+        rel: str,
+        proj: str,
+        patch_edges: bool,
+        prior: list[dict] | None = None,
+        describe_mode: str = "inline",
+    ) -> dict[str, Any]:
         """Tracked entry point for one-file indexing: registers (proj, rel) as
         in-flight for `status`, then runs `_index_code_file`."""
         with self.code.indexing_lock:
             self.code.indexing.setdefault(proj, []).append(rel)
         try:
-            return self._index_code_file(root, rel, proj, patch_edges, prior,
-                                         describe_mode)
+            return self._index_code_file(
+                root, rel, proj, patch_edges, prior, describe_mode
+            )
         finally:
             with self.code.indexing_lock:
                 files = self.code.indexing.get(proj, [])
@@ -99,10 +115,15 @@ class CodeIndexer:
                 if not files:
                     self.code.indexing.pop(proj, None)
 
-    def _index_code_file(self, root: Path, rel: str, proj: str,
-                         patch_edges: bool,
-                         prior: list[dict] | None = None,
-                         describe_mode: str = "inline") -> dict[str, Any]:
+    def _index_code_file(
+        self,
+        root: Path,
+        rel: str,
+        proj: str,
+        patch_edges: bool,
+        prior: list[dict] | None = None,
+        describe_mode: str = "inline",
+    ) -> dict[str, Any]:
         """The blocking core of code_index — extract + describe + persist one file. Sync
         so the lazy revalidation path (also sync) can reuse it directly; code_index runs
         it off the event loop via to_thread.
@@ -136,16 +157,25 @@ class CodeIndexer:
             extract_file,
             match_meta,
         )
+
         ref_ctx = self.services.ref_edge_ctx(proj, root)
         abs_p = (root / rel).resolve()
         for rname, rroot, _files in ref_ctx:
             # an in-tree ref checkout (e.g. vendor/llmkit) belongs to ITS project,
             # not this one — never index it into the parent (refs supersede the
             # old vendored-code-indexed-as-parent model)
-            if rroot is not None and rroot != root.resolve() \
-                    and abs_p.is_relative_to(rroot):
-                return {"project": proj, "root": str(root), "file": rel,
-                        "symbols": 0, "skipped": f"belongs to ref'd project {rname!r}"}
+            if (
+                rroot is not None
+                and rroot != root.resolve()
+                and abs_p.is_relative_to(rroot)
+            ):
+                return {
+                    "project": proj,
+                    "root": str(root),
+                    "file": rel,
+                    "symbols": 0,
+                    "skipped": f"belongs to ref'd project {rname!r}",
+                }
         # likewise a nested `.crib` bounds another project (watcher events for
         # files inside it must not index into the parent). Strictly UNDER root:
         # an ancestor .crib above a rootless project must not skip everything.
@@ -153,21 +183,36 @@ class CodeIndexer:
         if link is not None and link.root is not None:
             lroot = link.root.resolve()
             if lroot != root.resolve() and lroot.is_relative_to(root.resolve()):
-                return {"project": proj, "root": str(root), "file": rel,
-                        "symbols": 0,
-                        "skipped": f"inside nested project {link.project!r}"}
+                return {
+                    "project": proj,
+                    "root": str(root),
+                    "file": rel,
+                    "symbols": 0,
+                    "skipped": f"inside nested project {link.project!r}",
+                }
         try:
             entries = extract_file(root, rel, ref_projects=ref_ctx)
         except NoServer as exc:
-            return {"project": proj, "root": str(root), "file": rel,
-                    "symbols": 0, "skipped": str(exc)}
+            return {
+                "project": proj,
+                "root": str(root),
+                "file": rel,
+                "symbols": 0,
+                "skipped": str(exc),
+            }
         except FileReadError as exc:
             # The FILE is unreadable, not the server: skip this one and report it
             # (the sweep collects these into `skipped` and warns once). The warm
             # session is untouched — a single undecodable file used to cold-start
             # the whole language server, over and over.
-            return {"project": proj, "root": str(root), "file": rel, "symbols": 0,
-                    "skipped": str(exc), "skipped_kind": "unreadable"}
+            return {
+                "project": proj,
+                "root": str(root),
+                "file": rel,
+                "symbols": 0,
+                "skipped": str(exc),
+                "skipped_kind": "unreadable",
+            }
         # Semantic facet: LLM one-line descriptions, merged by fqname (§4).
         # content_hash GATE: reuse a cached description when the symbol's body is
         # unchanged; only call the LLM when something is stale/new. BEST-EFFORT: a
@@ -179,7 +224,7 @@ class CodeIndexer:
         # each entry declares the shape it was written at, a mixed store is the ordinary
         # state, and the converter's own filter resolves it. Writing one current-shape
         # entry into such a store adds one more converted record, which is progress.
-        if prior is None:                       # no slice supplied — read this file's
+        if prior is None:  # no slice supplied — read this file's
             prior = [e for e in store.all() if e.get("file") == rel]
         # Keyed by the identity PARTS, so this lookup never has to know how a symbol is
         # spelled — and therefore cannot miss against a half-converted store.
@@ -195,11 +240,19 @@ class CodeIndexer:
                 body = (root / rel).read_text(errors="ignore")
             except OSError:
                 body = ""
-            codeish = [ln for ln in body.splitlines()
-                       if ln.strip() and not ln.lstrip().startswith("#")]
+            codeish = [
+                ln
+                for ln in body.splitlines()
+                if ln.strip() and not ln.lstrip().startswith("#")
+            ]
             if len(codeish) > 3:
-                return {"project": proj, "root": str(root), "file": rel,
-                        "symbols": len(old_in_file), "skipped": "empty-extract-kept-prior"}
+                return {
+                    "project": proj,
+                    "root": str(root),
+                    "file": rel,
+                    "symbols": len(old_in_file),
+                    "skipped": "empty-extract-kept-prior",
+                }
         # PARTIAL-extract guard — the empty guard's unguarded cousin. A server
         # answering mid-settle (esp. on the short warm-session settle) can return a
         # partial documentSymbol. Signature of partial: strictly FEWER symbols and
@@ -209,19 +262,26 @@ class CodeIndexer:
         # listing, so the *reindex* is right rather than merely non-destructive;
         # `_deletion_allowed` is the hard guarantee behind it.
         fresh = {_parts(e) for e in entries}
-        if entries and old_in_file and len(fresh) < len(old_in_file) \
-                and not (fresh - old_in_file):
+        if (
+            entries
+            and old_in_file
+            and len(fresh) < len(old_in_file)
+            and not (fresh - old_in_file)
+        ):
             try:
                 entries = extract_file(root, rel, settle=3.0, ref_projects=ref_ctx)
             except Exception:  # noqa: BLE001 — keep the fast read if the slow one fails
                 pass
-        stale = [e for e in entries
-                 if by_parts.get(_parts(e), {}).get("content_hash") != e["content_hash"]
-                 or not by_parts.get(_parts(e), {}).get("description")
-                 # backfill kw facet: key PRESENCE is the "attempted" marker — a
-                 # rendered `keywords = []` means the pass ran and yielded none
-                 # (don't retry forever); a missing key means never attempted (legacy)
-                 or "keywords" not in by_parts.get(_parts(e), {})]
+        stale = [
+            e
+            for e in entries
+            if by_parts.get(_parts(e), {}).get("content_hash") != e["content_hash"]
+            or not by_parts.get(_parts(e), {}).get("description")
+            # backfill kw facet: key PRESENCE is the "attempted" marker — a
+            # rendered `keywords = []` means the pass ran and yielded none
+            # (don't retry forever); a missing key means never attempted (legacy)
+            or "keywords" not in by_parts.get(_parts(e), {})
+        ]
         gen_error: str | None = None
         # DEFER (the live watch path): persist STRUCTURE now and hand the changed
         # symbols to the backoff queue — the LLM pass is coalesced off the save path
@@ -234,11 +294,13 @@ class CodeIndexer:
         if defer:
             for sym in entries:
                 ex = by_parts.get(_parts(sym), {})
-                if ex.get("content_hash") == sym["content_hash"] and ex.get("description"):
+                if ex.get("content_hash") == sym["content_hash"] and ex.get(
+                    "description"
+                ):
                     sym["description"] = ex["description"]
-                    if "keywords" in ex:       # carry BOTH facets — write() replaces the
-                        sym["keywords"] = ex["keywords"]   # whole entry, so an omitted
-                else:                          # field is a clobber, not a no-op
+                    if "keywords" in ex:  # carry BOTH facets — write() replaces the
+                        sym["keywords"] = ex["keywords"]  # whole entry, so an omitted
+                else:  # field is a clobber, not a no-op
                     sym["description"] = ""
         else:
             descs: dict[str, Any] = {}
@@ -249,24 +311,27 @@ class CodeIndexer:
                     gen_error = str(exc)
             for sym in entries:
                 ex = by_parts.get(_parts(sym), {})
-                if ex.get("content_hash") == sym["content_hash"] and ex.get("description"):
-                    sym["description"] = ex["description"]       # cached, unchanged body
-                    if "keywords" in ex:                         # attempted (even if [])
+                if ex.get("content_hash") == sym["content_hash"] and ex.get(
+                    "description"
+                ):
+                    sym["description"] = ex["description"]  # cached, unchanged body
+                    if "keywords" in ex:  # attempted (even if [])
                         sym["keywords"] = ex["keywords"]
-                    else:                       # keyword-only backfill: NEVER blank the
-                        d, kw = match_meta(fqn_of(sym), descs)   # good description if
-                        if d:                   # the pass failed / missed this symbol
+                    else:  # keyword-only backfill: NEVER blank the
+                        d, kw = match_meta(fqn_of(sym), descs)  # good description if
+                        if d:  # the pass failed / missed this symbol
                             sym["keywords"] = kw
                 else:
                     desc, kw = match_meta(fqn_of(sym), descs)
                     sym["description"] = desc
-                    if desc:                    # covered by the pass → its keywords are
-                        sym["keywords"] = kw    # authoritative, [] included
+                    if desc:  # covered by the pass → its keywords are
+                        sym["keywords"] = kw  # authoritative, [] included
             # MOP-UP: symbols the whole-file bulk pass missed (low-yield / partial LLM
             # response) get a focused describe over just their bodies — far higher hit
             # rate on a small set. Best-effort; content_hash gate keeps future runs cheap.
-            missed = [e for e in stale
-                      if not e.get("description") or "keywords" not in e]
+            missed = [
+                e for e in stale if not e.get("description") or "keywords" not in e
+            ]
             if missed:
                 try:
                     mop = describe_symbols(self.config.generate, missed)
@@ -285,7 +350,7 @@ class CodeIndexer:
         withheld: set[str] = set()
         with self.code.lock(proj):
             store.write_all(entries)
-            store.set_source_root(root)                     # for query-time revalidation
+            store.set_source_root(root)  # for query-time revalidation
             # NOT stamped here, even though these entries are the current shape. One
             # file is not the store. The gate above lets a standalone write into an
             # UNSTAMPED store, but stamp 0 means "shape unknown" — not "shape matches"
@@ -313,27 +378,38 @@ class CodeIndexer:
                 withheld = self._withhold_deletions(store, vanished)
             if patch_edges:
                 self.code.patch_edges(store, entries, rel)
-        self.services.register_code_root(proj, root)        # live-watch this repo's source
-        self.code.bump_epoch(proj)                          # invalidate the resident cache
-        if defer and stale:
+        self.services.register_code_root(proj, root)  # live-watch this repo's source
+        self.code.bump_epoch(proj)  # invalidate the resident cache
+        if defer and stale and (q := self._describe_q) is not None:
             # Structure is durable; schedule the description pass. Bodies ride along
             # so the settle uses the focused describe_symbols over only what changed.
             # KEYED by the reference (that is what `store.read` takes at patch time)
             # while CARRYING the `fqn` (that is what the describe blob labels blocks
             # with, and what `match_meta` reconciles against). Two spellings, two
             # jobs — conflating them is what this whole change is undoing.
-            self._describe_q.enqueue(proj, root, rel, {
-                symbol_key(e): {"fqn": fqn_of(e),
-                                "name": e["name"],
-                                "kind": e.get("kind", ""),
-                                "content_hash": e["content_hash"],
-                                "_body": e.get("_body", "")}
-                for e in stale})
+            q.enqueue(
+                proj,
+                root,
+                rel,
+                {
+                    symbol_key(e): {
+                        "fqn": fqn_of(e),
+                        "name": e["name"],
+                        "kind": e.get("kind", ""),
+                        "content_hash": e["content_hash"],
+                        "_body": e.get("_body", ""),
+                    }
+                    for e in stale
+                },
+            )
         out: dict[str, Any] = {
-            "project": proj, "root": str(root), "file": rel,
+            "project": proj,
+            "root": str(root),
+            "file": rel,
             "symbols": len(entries),
             "described": sum(1 for e in entries if e["description"]),
-            "store": str(store.root)}
+            "store": str(store.root),
+        }
         if defer and stale:
             out["describe_deferred"] = len(stale)
         if withheld:
@@ -377,19 +453,21 @@ class CodeIndexer:
         for fq in vanished:
             cur = store.read(fq)
             if cur is None or not (cur.get("file") and cur.get("name")):
-                continue            # gone, or too broken to rewrite — leave it be
+                continue  # gone, or too broken to rewrite — leave it be
             cur["content_hash"] = ""
             store.write(cur)
             marked.add(fq)
         return marked
 
-    async def _describe_and_patch(self, proj: str, root: Path, rel: str,
-                                  pending: dict[str, dict]) -> dict[str, Any]:
+    async def _describe_and_patch(
+        self, proj: str, root: Path, rel: str, pending: dict[str, dict]
+    ) -> dict[str, Any]:
         """DescribeQueue callback: focused-describe the changed symbols of one settled
         file and patch their descriptions in. RAISES on LLM failure so the queue re-arms
         (backoff-as-retry). Clobber-guarded: re-reads each symbol and skips one whose
         body moved again since it was queued (a newer edit already re-queued it)."""
         from .codeindex import SymbolIndex, describe_symbols, match_meta
+
         syms = list(pending.values())
         descs = await asyncio.to_thread(describe_symbols, self.config.generate, syms)
         if not descs:
@@ -400,7 +478,7 @@ class CodeIndexer:
             for fq, sym in pending.items():
                 cur = store.read(fq)
                 if cur is None or cur.get("content_hash") != sym.get("content_hash"):
-                    continue                            # dropped / re-edited → skip
+                    continue  # dropped / re-edited → skip
                 # by the symbol's own `fqn` — the blob labelled each block with it,
                 # so an exact hit is expected. Matching on the bare `name` first is
                 # what let two same-named methods in one file overwrite each other's
@@ -409,15 +487,16 @@ class CodeIndexer:
                 d, kw = match_meta(str(sym.get("fqn") or ""), descs)
                 if d:
                     cur["description"] = d
-                    cur["keywords"] = kw    # [] included — marks the attempt durable
+                    cur["keywords"] = kw  # [] included — marks the attempt durable
                     store.write(cur)
                     patched += 1
         if patched:
-            self.code.bump_epoch(proj)                  # queries now see fresh descriptions
+            self.code.bump_epoch(proj)  # queries now see fresh descriptions
         return {"described": patched, "file": rel}
 
-    async def _index_project_code(self, proj: str, root: Path, globs: list[str],
-                                  budget_s: float | None = None) -> dict[str, Any]:
+    async def _index_project_code(
+        self, proj: str, root: Path, globs: list[str], budget_s: float | None = None
+    ) -> dict[str, Any]:
         """Index every source file under `globs`. Non-code files self-skip (NoServer).
 
         `budget_s` makes the sweep RESUMABLE: files not reached before the soft deadline
@@ -425,6 +504,7 @@ class CodeIndexer:
         `complete=False`, so a long reindex fits inside a bounded (e.g. MCP) call and the
         caller re-invokes to continue — the content-hash/keyword gate skips finished files."""
         from .codeindex import SymbolIndex
+
         files = self.services.enumerate_code_files(root, globs)
         loop = asyncio.get_event_loop()
         deadline = (loop.time() + budget_s) if budget_s else None
@@ -451,9 +531,13 @@ class CodeIndexer:
         # extensionless autoloads), so cross-file edges cover everything crib
         # enumerated. Held for the sweep, released in the finally.
         from .codeindex import _POOL, server_for
-        extra_roots = [r["root"].resolve() for r in self.services.project_refs(proj)
-                       if r["root"] is not None
-                       and not r["root"].resolve().is_relative_to(root.resolve())]
+
+        extra_roots = [
+            r["root"].resolve()
+            for r in self.services.project_refs(proj)
+            if r["root"] is not None
+            and not r["root"].resolve().is_relative_to(root.resolve())
+        ]
         pins: dict[str, tuple[list[str], dict, list[tuple[Path, str]]]] = {}
         for f in files:
             sel = server_for(str(f.resolve().relative_to(root.resolve())), abspath=f)
@@ -462,8 +546,9 @@ class CodeIndexer:
                 pins.setdefault(label, (argv, spec, []))[2].append((f, lang))
         for label, (argv, spec, docs) in pins.items():
             try:
-                await asyncio.to_thread(_POOL.pin_docs, root, label, argv, spec,
-                                        docs, extra_roots)
+                await asyncio.to_thread(
+                    _POOL.pin_docs, root, label, argv, spec, docs, extra_roots
+                )
             except Exception:  # noqa: BLE001 — pinning is best-effort enrichment
                 pass
 
@@ -475,14 +560,20 @@ class CodeIndexer:
                 if deadline is not None and loop.time() > deadline:
                     return f, {"deferred": True}, None
                 try:
-                    r = await asyncio.to_thread(self._index_code_file_tracked, root, rel,
-                                                proj, False,
-                                                prior_by_file.get(rel, []), "inline")
+                    r = await asyncio.to_thread(
+                        self._index_code_file_tracked,
+                        root,
+                        rel,
+                        proj,
+                        False,
+                        prior_by_file.get(rel, []),
+                        "inline",
+                    )
                     return f, r, None
                 except Exception as exc:  # noqa: BLE001 — one bad file never aborts the sweep
                     return f, None, str(exc)
                 finally:
-                    with self.code.indexing_lock:   # live progress for `status` pollers
+                    with self.code.indexing_lock:  # live progress for `status` pollers
                         if proj in self.code.sweeps:
                             self.code.sweeps[proj]["done"] += 1
 
@@ -493,15 +584,19 @@ class CodeIndexer:
         # and silent — these are reported so a hole in the index is never invisible.
         skipped: list[dict[str, str]] = []
         with self.code.indexing_lock:
-            self.code.sweeps[proj] = {"done": 0, "total": len(files)}
+            self.code.sweeps[proj] = {
+                "done": 0,
+                "total": len(files),
+                "started": time.monotonic(),
+            }
         try:
             for f, r, err in await asyncio.gather(*(_one(f) for f in files)):
                 if (r or {}).get("deferred"):
                     deferred += 1
                 elif err is not None:
                     errors.append({"file": str(f), "error": err})
-                elif (r or {}).get("skipped"):
-                    if (r or {}).get("skipped_kind") == "unreadable":
+                elif isinstance(r, dict) and r.get("skipped"):
+                    if r.get("skipped_kind") == "unreadable":
                         skipped.append({"file": str(f), "error": r["skipped"]})
                 else:
                     indexed += 1
@@ -512,9 +607,14 @@ class CodeIndexer:
                 self.code.sweeps.pop(proj, None)
             if pins:
                 await asyncio.to_thread(_POOL.unpin, root)
-        out: dict[str, Any] = {"files_indexed": indexed, "files_seen": len(files),
-                               "symbols": syms, "described": desc,
-                               "complete": deferred == 0, "remaining": deferred}
+        out: dict[str, Any] = {
+            "files_indexed": indexed,
+            "files_seen": len(files),
+            "symbols": syms,
+            "described": desc,
+            "complete": deferred == 0,
+            "remaining": deferred,
+        }
         if deferred == 0:
             # Stamp only a sweep that reached every file. A run cut short by the
             # budget leaves part of the project at the old shape, and claiming
@@ -524,6 +624,9 @@ class CodeIndexer:
             out["errors"] = errors
         if skipped:
             out["skipped"] = skipped
-            print(f"[crib] code index {proj}: {len(skipped)} unreadable file(s) "
-                  f"skipped (first: {skipped[0]['file']})", file=sys.stderr)
+            print(
+                f"[crib] code index {proj}: {len(skipped)} unreadable file(s) "
+                f"skipped (first: {skipped[0]['file']})",
+                file=sys.stderr,
+            )
         return out

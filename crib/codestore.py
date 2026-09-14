@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import os
 import threading
+import time
 from typing import TYPE_CHECKING, Any, Callable
 
 from .symbols import decode_edge, edge_is_from, encode_edge
@@ -32,11 +33,12 @@ class _ResidentCode:
     never re-embedded. Holds the parsed entries, a by-reference index, the description→
     vector map, and the precomputed dense/sparse query arrays (`_prepare`)."""
 
-    def __init__(self, tok: Any, entries: list[dict[str, Any]],
-                 emb: dict[str, list[float]]) -> None:
+    def __init__(
+        self, tok: Any, entries: list[dict[str, Any]], emb: dict[str, list[float]]
+    ) -> None:
         self.tok = tok
         self.entries = entries
-        self.emb = emb                                       # description text → vector
+        self.emb = emb  # description text → vector
         self.by_fq: dict[str, dict[str, Any]] = {symbol_key(e): e for e in entries}
         self._prepare()
 
@@ -55,9 +57,11 @@ class _ResidentCode:
 
     def _prepare(self) -> None:
         from .retrieve import BM25, _as_tf, _subtokens, tokenize
+
         # Only symbols with a description or name terms are query candidates.
-        self.lk = [e for e in self.entries
-                   if e.get("description") or e.get("name_terms")]
+        self.lk = [
+            e for e in self.entries if e.get("description") or e.get("name_terms")
+        ]
         self.lk_ids = [symbol_key(e) for e in self.lk]
         # EXPANDED lexical field per symbol = name_terms ⊕ synth-keyword tokens. The
         # keywords are the query-independent vocabulary expansion, so a BEHAVIORAL query
@@ -69,9 +73,13 @@ class _ResidentCode:
             # local NAME (not the qualified name_terms — module/path subtokens spuriously
             # inflate the coverage gate) ⊕ synth-keyword tokens.
             text = e.get("name", "") + " " + " ".join(e.get("keywords") or [])
-            self.field_terms.append([t.lower() for t in (tokenize(text) + _subtokens(text))])
+            self.field_terms.append(
+                [t.lower() for t in (tokenize(text) + _subtokens(text))]
+            )
         self.bm25 = BM25([_as_tf(ft) for ft in self.field_terms])
-        self._dense: list[list[float] | None] | None = None   # built lazily (code_lookup only)
+        self._dense: list[list[float] | None] | None = (
+            None  # built lazily (code_lookup only)
+        )
 
     def coverage(self, qtokens: set[str]) -> list[float]:
         """Fraction of the query's informative tokens present in each symbol's expanded
@@ -88,14 +96,49 @@ class _ResidentCode:
         cached in `emb` (reused across queries AND across reloads). ONLY code_lookup
         needs these, so dossier/graph/xref never pay to embed."""
         if self._dense is None:
-            missing = list(dict.fromkeys(
-                e["description"] for e in self.lk
-                if e.get("description") and e["description"] not in self.emb))
+            missing = list(
+                dict.fromkeys(
+                    e["description"]
+                    for e in self.lk
+                    if e.get("description") and e["description"] not in self.emb
+                )
+            )
             if missing:
                 self.emb.update(zip(missing, embedder.embed(missing)))
-            self._dense = [self.emb.get(e["description"]) if e.get("description")
-                           else None for e in self.lk]
+            self._dense = [
+                self.emb.get(e["description"]) if e.get("description") else None
+                for e in self.lk
+            ]
         return self._dense
+
+
+def _mmss(seconds: float) -> str:
+    """Seconds as `m:ss` (or `h:mm:ss` past the hour) — compact, no decimals.
+    Floor-then-format, never round: a 59.9s eta reads 0:59, not 0:60."""
+    s = max(seconds, 0.0) // 1.0
+    h, s = divmod(s, 3600.0)
+    m, s = divmod(s, 60.0)
+    return f"{h:.0f}:{m:02.0f}:{s:02.0f}" if h else f"{m:.0f}:{s:02.0f}"
+
+
+def format_sweep(sw: dict[str, Any], now: float | None = None) -> str:
+    """One human line for a live sweep entry ({done, total[, started]}) — the
+    shared renderer for the CLI ticker and the MCP progress message, so every
+    surface agrees on shape: `42/317 files (13%)`, plus `· rate · eta` once
+    `started` exists and enough has elapsed for the numbers to mean anything
+    (below ~2s the rate is startup noise, not throughput)."""
+    done = sw.get("done", 0)
+    total = sw.get("total", 0) or 0
+    if not total:
+        return ""
+    line = f"{done}/{total} files ({done * 100 // total}%)"
+    started = sw.get("started")
+    if started is not None and done:
+        elapsed = (now if now is not None else time.monotonic()) - started
+        if elapsed >= 2.0:
+            rate = done / elapsed
+            line += f" · {rate:.1f}/s · eta {_mmss((total - done) / rate)}"
+    return line
 
 
 class CodeStore:
@@ -119,7 +162,8 @@ class CodeStore:
         # wait signal for an agent polling `status` on a background index: present while
         # the sweep runs, gone when it finishes.
         self.indexing: dict[str, list[str]] = {}
-        self.sweeps: dict[str, dict[str, int]] = {}
+        # int values, float `started` — the numeric tower covers both (PEP 484).
+        self.sweeps: dict[str, dict[str, float]] = {}
         self.indexing_lock = threading.Lock()
         self.locks: dict[str, threading.Lock] = {}
         self.locks_guard = threading.Lock()
@@ -145,6 +189,7 @@ class CodeStore:
         scandir; no parse. In-place body edits keep the filename, so dir-mtime alone
         misses them — hence max(file mtime), not the dir's."""
         from .codeindex import SymbolIndex
+
         root = SymbolIndex(self.paths.project_dir(proj)).root
         if not root.exists():
             return (0, 0)
@@ -170,8 +215,12 @@ class CodeStore:
         return ("sig", self.dir_sig(proj))
 
     # --- resident cache -------------------------------------------------------
-    def resident(self, proj: str, revalidate: Callable[[str], None] | None = None,
-                 watched: bool = False) -> _ResidentCode:
+    def resident(
+        self,
+        proj: str,
+        revalidate: Callable[[str], None] | None = None,
+        watched: bool = False,
+    ) -> _ResidentCode:
         """Return the project's resident code index, rebuilding only when its token
         moved. On a COLD cache we always run the injected `revalidate` once (catches
         edits made while the daemon — and its watcher — were down); when warm, we skip
@@ -179,29 +228,33 @@ class CodeStore:
         (`watched` — edits refreshed eagerly on save). `revalidate` is Crib's
         pipeline-coupled lazy source→index gate, kept OUT of this object."""
         rc = self.cache.get(proj)
-        if revalidate is not None and (rc is None
-                                       or (self.freshness() == "scan" and not watched)):
-            revalidate(proj)                                # source → index freshness
+        if revalidate is not None and (
+            rc is None or (self.freshness() == "scan" and not watched)
+        ):
+            revalidate(proj)  # source → index freshness
         tok = self.tok(proj)
         rc = self.cache.get(proj)
         if rc is not None and rc.tok == tok:
             return rc
         return self.reload(proj, tok, rc)
 
-    def reload(self, proj: str, tok: Any,
-               prev: _ResidentCode | None) -> _ResidentCode:
+    def reload(self, proj: str, tok: Any, prev: _ResidentCode | None) -> _ResidentCode:
         """Reparse the symbol TOMLs and rebuild the resident cache, CARRYING FORWARD
         every description embedding whose text is unchanged (from `prev.emb`, pruned to
         current descriptions). Nothing is embedded here — code_lookup fills in only the
         genuinely new/edited descriptions lazily, so a reload after an edit re-embeds
         just what changed, and dossier/graph/xref reloads embed nothing at all."""
         from .codeindex import SymbolIndex
+
         entries = SymbolIndex(self.paths.project_dir(proj)).all()
         prev_emb = prev.emb if prev is not None else {}
-        emb = {d: prev_emb[d]
-               for d in dict.fromkeys(e["description"] for e in entries
-                                      if e.get("description"))
-               if d in prev_emb}
+        emb = {
+            d: prev_emb[d]
+            for d in dict.fromkeys(
+                e["description"] for e in entries if e.get("description")
+            )
+            if d in prev_emb
+        }
         rc = _ResidentCode(tok, entries, emb)
         self.cache[proj] = rc
         return rc
@@ -214,6 +267,7 @@ class CodeStore:
         No-op when the source root is unknown (older index / no meta). `reindex` is Crib's
         pipeline-coupled per-file indexer, injected so this object stays free of the LSP."""
         from .codeindex import SymbolIndex, _parse
+
         store = SymbolIndex(self.paths.project_dir(proj))
         root = store.source_root()
         if root is None or not store.root.exists():
@@ -221,12 +275,12 @@ class CodeStore:
         # Baseline = the on-disk mtime of a source file's symbol tomls (= WHEN indexed),
         # derived locally + cheap. NOT the toml's stored `mtime` field (that's a portable
         # git-date record, not comparable to a local st_mtime — and would need git here).
-        baseline: dict[str, int] = {}        # source file → oldest mtime of its tomls
-        dirty: set[str] = set()              # files with merge-dirtied symbols (blank
+        baseline: dict[str, int] = {}  # source file → oldest mtime of its tomls
+        dirty: set[str] = set()  # files with merge-dirtied symbols (blank
         for p in store.root.glob("*.toml"):  # content_hash, written by the sync merge
-            try:                             # driver on divergent code states) — their
-                mt = p.stat().st_mtime_ns    # tomls are FRESH (post-pull mtime), so the
-                e = _parse(p.read_text())    # mtime gate alone would never catch them
+            try:  # driver on divergent code states) — their
+                mt = p.stat().st_mtime_ns  # tomls are FRESH (post-pull mtime), so the
+                e = _parse(p.read_text())  # mtime gate alone would never catch them
                 f = e.get("file", "")
             except OSError:
                 continue
@@ -238,11 +292,11 @@ class CodeStore:
             src = root / rel
             try:
                 cur = src.stat().st_mtime_ns
-            except OSError:                  # deleted → drop all its symbols + its edges
+            except OSError:  # deleted → drop all its symbols + its edges
                 self.drop_file(proj, rel)
                 continue
-            if rel in dirty or cur > base_mt:   # merge-dirtied, or edited after indexing
-                try:                         # (content_hash gate no-ops if unchanged)
+            if rel in dirty or cur > base_mt:  # merge-dirtied, or edited after indexing
+                try:  # (content_hash gate no-ops if unchanged)
                     reindex(root, rel, proj, patch_edges=True)
                 except Exception:  # noqa: BLE001 — keep the stale entry over a failed query
                     pass
@@ -253,24 +307,34 @@ class CodeStore:
         concurrent reindex does), bumping the resident-cache epoch. Pure symbol_index
         mutation (no LSP), so its integrity invariants live with the state."""
         from .codeindex import SymbolIndex
+
         with self.lock(proj):
             store = SymbolIndex(self.paths.project_dir(proj))
             for e in store.all():
                 if e.get("file") == relpath:
                     store.delete(symbol_key(e))
                     continue
-                cb = [x for x in (e.get("called_by") or [])
-                      if not edge_is_from(x, relpath)]
-                rf = [x for x in (e.get("references") or [])
-                      if not edge_is_from(x, relpath)]
-                if cb != (e.get("called_by") or []) or rf != (e.get("references") or []):
+                cb = [
+                    x
+                    for x in (e.get("called_by") or [])
+                    if not edge_is_from(x, relpath)
+                ]
+                rf = [
+                    x
+                    for x in (e.get("references") or [])
+                    if not edge_is_from(x, relpath)
+                ]
+                if cb != (e.get("called_by") or []) or rf != (
+                    e.get("references") or []
+                ):
                     e["called_by"], e["references"] = cb, rf
                     store.write(e)
         self.bump_epoch(proj)
 
     @staticmethod
-    def patch_edges(store: Any, new_entries: list[dict[str, Any]],
-                    relpath: str) -> None:
+    def patch_edges(
+        store: Any, new_entries: list[dict[str, Any]], relpath: str
+    ) -> None:
         """Keep the cross-file graph consistent after a single-file reindex of A.
 
         BOTH reverse relations are patched, symmetrically: every `A→B` in A's fresh
@@ -304,16 +368,19 @@ class CodeStore:
         def target(name: str, file: str) -> dict | None:
             hits = by_key.get((name, file)) or []
             if len(hits) == 1:
-                return hits[0]                 # a bare name, unique in its file
+                return hits[0]  # a bare name, unique in its file
             if hits:
-                return None                    # ambiguous bare name: never guess
+                return None  # ambiguous bare name: never guess
             # not a bare name there — a qualified spelling, matched exactly
-            cands = [e for e in by_file.get(file, [])
-                     if match_entry(e, name) in ("ref", "exact", "was")]
+            cands = [
+                e
+                for e in by_file.get(file, [])
+                if match_entry(e, name) in ("ref", "exact", "was")
+            ]
             return cands[0] if len(cands) == 1 else None
 
         changed: dict[str, dict] = {}
-        for e in entries:                       # 1) strip every edge originating in A
+        for e in entries:  # 1) strip every edge originating in A
             if e.get("file") == relpath:
                 continue
             for rel_key in ("called_by", "references"):
@@ -322,7 +389,7 @@ class CodeStore:
                 if kept != cur:
                     e[rel_key] = kept
                     changed[symbol_key(e)] = e
-        for s in new_entries:                   # 2) re-add A's current edges
+        for s in new_entries:  # 2) re-add A's current edges
             edge = encode_edge(s["name"], relpath)
             for call in s.get("calls") or []:
                 _proj, name, rel, _loc = decode_edge(call, "")

@@ -13,10 +13,11 @@ import argparse
 import asyncio
 import json
 import sys
+import threading
 from ast import literal_eval
 from dataclasses import asdict, dataclass, is_dataclass, replace
 from pathlib import Path
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 from .app import Crib
 from .codequery import GRAPH_GROUPINGS
@@ -1147,6 +1148,12 @@ def _emit_code_graph(tree: Any, args: Any) -> None:
             render(c, prefix + (blank if islast else vert))
 
     render(tree, "")
+
+
+if TYPE_CHECKING:
+    # The daemon client's progress-callback Protocol — structural, fastmcp-free;
+    # imported for annotation only so the module stays importable without it.
+    from .client import ProgressHandler
 
 
 def _narrowers(sp: Any) -> None:
@@ -2960,6 +2967,72 @@ def _apply_unlinked_advisory(args: Any, msg: str | None, data: Any) -> Any:
     return data
 
 
+# Verbs whose Crib call runs a project-wide code sweep — the only ones a progress
+# ticker makes sense for (both go through _index_project_code).
+_SWEEP_TOOLS = frozenset({"project_index", "project_setup"})
+
+
+class _SweepTicker:
+    """One stderr line, redrawn in place while a sweep runs.
+
+    TTY-gated on purpose: piped or `--json` output (a stdout consumer, a script)
+    sees nothing from us, so machine-readable streams stay clean. stderr, not
+    stdout, for the same reason — the human channel, trivially 2>/dev/null'd."""
+
+    def __init__(self) -> None:
+        self._width = 0
+
+    def draw(self, text: str) -> None:
+        if not sys.stderr.isatty():
+            return
+        sys.stderr.write("\r" + text + " " * max(self._width - len(text), 0))
+        sys.stderr.flush()
+        self._width = len(text)
+
+    def done(self) -> None:
+        """Erase the line so the verb's own summary starts on a clean row."""
+        if self._width and sys.stderr.isatty():
+            sys.stderr.write("\r" + " " * self._width + "\r")
+            sys.stderr.flush()
+            self._width = 0
+
+
+def _daemon_sweep_progress(ticker: _SweepTicker) -> "ProgressHandler":
+    """A progress callback for DaemonClient: render the daemon's message as it
+    streams in — already shaped `<proj>: 42/317 files (13%) · rate · eta`
+    server-side by `format_sweep`, so the CLI ticker and the MCP surface show
+    the SAME line for the same sweep."""
+
+    async def _on_progress(
+        progress: float, total: float | None, message: str | None
+    ) -> None:
+        if message:
+            ticker.draw(message)
+
+    return _on_progress
+
+
+def _sweep_watcher(
+    crib: Crib, named: str | None, ticker: _SweepTicker, stop: threading.Event
+) -> None:
+    """In-process ticker feed: poll the sweep counter (the same dict `status`
+    reads) once a second and redraw. `before` scopes us to the sweep THIS call
+    started — another project's concurrent sweep is never ours to report."""
+    from .codestore import format_sweep
+
+    before = set(crib.code.sweeps)
+    while not stop.wait(1.0):
+        with crib.code.indexing_lock:
+            sweeps = {p: dict(v) for p, v in crib.code.sweeps.items()}
+        pick = (
+            named
+            if named in sweeps
+            else next((p for p in sweeps if p not in before), None)
+        )
+        if pick and sweeps[pick].get("total"):
+            ticker.draw(f"{pick}: {format_sweep(sweeps[pick])}")
+
+
 def _run_daemon(args: Any, cfg: Any) -> None:
     """Run a verb via the warm daemon: build the call, ship the caller's cwd as
     `project_path`, call the MCP tool, and emit — all off one registry row."""
@@ -2969,8 +3042,11 @@ def _run_daemon(args: Any, cfg: Any) -> None:
     if entry.wants_cwd:
         call["project_path"] = str(_cwd_of(args))
     msg = _unlinked_path_message(args, entry, cfg)
+    ticker = _SweepTicker()
+    handler = _daemon_sweep_progress(ticker) if entry.tool in _SWEEP_TOOLS else None
     with DaemonClient(cfg.daemon) as client:
-        data = client.call(entry.tool, call)
+        data = client.call(entry.tool, call, progress_handler=handler)
+    ticker.done()
     entry.emit(_apply_unlinked_advisory(args, msg, data), args)
 
 
@@ -3082,11 +3158,26 @@ def _run_inprocess(args: Any, cfg: Any) -> None:
         call["cwd"] = _cwd_of(args)
     msg = _unlinked_path_message(args, entry, cfg)
     crib = Crib.open()
+    ticker = _SweepTicker()
+    stop = threading.Event()
+    watcher: threading.Thread | None = None
     try:
+        if entry.tool in _SWEEP_TOOLS:
+            watcher = threading.Thread(
+                target=_sweep_watcher,
+                args=(crib, _proj_of(args), ticker, stop),
+                daemon=True,
+            )
+            watcher.start()
         method = getattr(crib, entry.crib_method())
         data = asyncio.run(method(**call)) if entry.is_async else method(**call)
+        if watcher is not None:
+            stop.set()
+            watcher.join(timeout=2.0)
+        ticker.done()
         entry.emit(_apply_unlinked_advisory(args, msg, data), args)
     finally:
+        stop.set()
         crib.close()
 
 
