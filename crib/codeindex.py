@@ -112,6 +112,17 @@ DEFAULT_LSP_SPECS: dict[str, dict[str, Any]] = {
     "shuck": {"command": "shuck", "args": ["server"],
               "extensionToLanguage": {".zsh": "zsh"},
               "pinWorkspace": True},
+    # Swift: sourcekit-lsp. Ships with Xcode/the CLT — on macOS the /usr/bin shim
+    # is on PATH so the bare `which` resolves (Linux Swift.org toolchains put it
+    # on PATH too). Verified on the bundled sourcekit-lsp (Swift 6.3.3): a STRAY
+    # .swift file gets documentSymbol (symbols index fine) but call hierarchy and
+    # references return empty without compile settings — the full call graph needs
+    # a real workspace (Package.swift / xcodeproj / compile_commands), which any
+    # actual Swift repo has. In a SwiftPM package: incoming/outgoing edges +
+    # references all verified, including synthesized accessor edges
+    # (Counter.getter:n / setter:n).
+    "sourcekit-lsp": {"command": "sourcekit-lsp", "args": [],
+                       "extensionToLanguage": {".swift": "swift"}},
 }
 
 
@@ -1608,7 +1619,7 @@ class SymbolIndex:
         out["symbol_ref"] = symbol_key(out)
         out.setdefault("scope", scope_of(lang, file, container))
         out.setdefault("fqn", fqn(out["scope"], name, lang, file, container))
-        was = list(out.get("symbol_was") or ())
+        was: list[str] = list(out.get("symbol_was") or ())
         legacy = out.pop("fqname", "")
         if legacy and legacy not in was and legacy != out["symbol_ref"]:
             was.append(str(legacy))
