@@ -85,7 +85,7 @@ def decode_store(stores: dict[str, Path], raw_path: str) -> tuple[str, str, str]
         return None
     parts = Path(best[2]).parts
     if len(parts) < 2 or parts[0] not in PILLAR_SEGMENTS:
-        return None                     # store-root clutter, not pillar content
+        return None  # store-root clutter, not pillar content
     return best[1], parts[0], str(Path(*parts[1:]))
 
 
@@ -102,7 +102,7 @@ class _FSWatcher:
         self._observer: Any = None
         # dir -> watchdog ObservedWatch, so a superseded root can be unscheduled
         self._watches: dict[str, Any] = {}
-        self._missing: set[str] = set()     # dirs warned about once (see _schedule_dir)
+        self._missing: set[str] = set()  # dirs warned about once (see _schedule_dir)
         # strong refs to in-flight dispatches (asyncio holds only weak ones, so an
         # unreferenced task can be GC'd mid-flight — a save's reindex silently lost)
         self._tasks: set[asyncio.Task] = set()
@@ -120,6 +120,7 @@ class _FSWatcher:
     # --- shared machinery ---
     def start(self) -> None:
         from watchdog.observers import Observer
+
         self._observer = Observer()
         for d in self._watch_dirs():
             self._schedule_dir(d)
@@ -141,14 +142,18 @@ class _FSWatcher:
             FileSystemEventHandler,
             FileSystemMovedEvent,
         )
+
         if d in self._watches:
             return True
         if not Path(d).exists():
             if d not in self._missing:
                 self._missing.add(d)
-                print(f"[crib] not watching {d}: no such directory — edits there "
-                      f"won't reindex until it exists and the root is re-registered "
-                      f"(or crib restarts)", file=sys.stderr)
+                print(
+                    f"[crib] not watching {d}: no such directory — edits there "
+                    f"won't reindex until it exists and the root is re-registered "
+                    f"(or crib restarts)",
+                    file=sys.stderr,
+                )
             return False
         self._missing.discard(d)
         watcher = self
@@ -200,8 +205,7 @@ class _FSWatcher:
 
     def _fire(self, key: tuple[Any, ...]) -> None:
         self._pending.pop("\x00".join(str(x) for x in key), None)
-        spawn(self._loop, self._dispatch(*key), self._tasks,
-              f"watch dispatch {key}")
+        spawn(self._loop, self._dispatch(*key), self._tasks, f"watch dispatch {key}")
 
     def stop(self) -> None:
         # Cancel pending debounce timers FIRST (as CodeWatcher.stop does for its
@@ -229,10 +233,13 @@ class Watcher(_FSWatcher):
     are the shared ones and apply per root — including `.versions/`, which each
     in-repo store keeps inside itself."""
 
-    def __init__(self, projects_dir: Path,
-                 on_change: Callable[[str, str, str], Awaitable[None]],
-                 loop: asyncio.AbstractEventLoop,
-                 stores: dict[str, Path] | None = None) -> None:
+    def __init__(
+        self,
+        projects_dir: Path,
+        on_change: Callable[[str, str, str], Awaitable[None]],
+        loop: asyncio.AbstractEventLoop,
+        stores: dict[str, Path] | None = None,
+    ) -> None:
         super().__init__(loop)
         self.projects_dir = projects_dir
         self._on_change = on_change
@@ -260,14 +267,31 @@ class Watcher(_FSWatcher):
         try:
             await self._on_change(project, store, relpath)
         except Exception as e:  # noqa: BLE001 — one bad note never kills the watcher
-            print(f"[crib] watch reindex failed ({project}/{store}/{relpath}): {e}",
-                  file=sys.stderr)
+            print(
+                f"[crib] watch reindex failed ({project}/{store}/{relpath}): {e}",
+                file=sys.stderr,
+            )
 
 
-_CODE_IGNORE_DIRS = {".git", ".versions", "node_modules", ".venv", "venv",
-                     "__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache",
-                     "dist", "build", "target", ".tox", ".idea", "site-packages",
-                     ".cache", ".claude"}
+_CODE_IGNORE_DIRS = {
+    ".git",
+    ".versions",
+    "node_modules",
+    ".venv",
+    "venv",
+    "__pycache__",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    "dist",
+    "build",
+    "target",
+    ".tox",
+    ".idea",
+    "site-packages",
+    ".cache",
+    ".claude",
+}
 # Prose docs indexed in-situ alongside code (same source roots, same watcher).
 DOC_EXTS = {".md", ".rst", ".txt", ".markdown"}
 
@@ -278,6 +302,7 @@ def _matches_doc_globs(root: Path, rel: Path) -> bool:
     docs no longer depends on whether the change arrived via a save or a sweep.
     (`full_match` mirrors the sweep's `Path.glob`, incl. `**`; needs py3.13+.)"""
     from .config import CribLink
+
     link = CribLink.find(root)
     if link is None:
         return False
@@ -291,12 +316,14 @@ class CodeWatcher(_FSWatcher):
     as projects get indexed (`watch_root`), so a repo onboarded mid-session is watched
     at once."""
 
-    def __init__(self, on_change: Callable[[str, dict[str, tuple[str, bool]]],
-                                           Awaitable[None]],
-                 loop: asyncio.AbstractEventLoop) -> None:
+    def __init__(
+        self,
+        on_change: Callable[[str, dict[str, tuple[str, bool]]], Awaitable[None]],
+        loop: asyncio.AbstractEventLoop,
+    ) -> None:
         super().__init__(loop)
         self._on_change = on_change
-        self._roots: dict[str, str] = {}          # abs root → project
+        self._roots: dict[str, str] = {}  # abs root → project
         self._exts: set[str] | None = None
         # per-project coalescing: {project: {relpath: (root, deleted)}} + one timer
         self._batch: dict[str, dict[str, tuple[str, bool, str]]] = {}
@@ -305,8 +332,13 @@ class CodeWatcher(_FSWatcher):
     def _code_exts(self) -> set[str]:
         if self._exts is None:
             from .codeindex import load_specs
-            self._exts = {e for sp in load_specs().values() if isinstance(sp, dict)
-                          for e in (sp.get("extensionToLanguage") or {})}
+
+            self._exts = {
+                e
+                for sp in load_specs().values()
+                if isinstance(sp, dict)
+                for e in (sp.get("extensionToLanguage") or {})
+            }
         return self._exts
 
     def watch_root(self, project: str, root: str | Path) -> None:
@@ -325,7 +357,7 @@ class CodeWatcher(_FSWatcher):
             del self._roots[old]
             self._unschedule_dir(old)
         if self._observer is not None:
-            self._schedule_dir(key)         # idempotent; retries a formerly-missing dir
+            self._schedule_dir(key)  # idempotent; retries a formerly-missing dir
 
     def watches(self, project: str) -> bool:
         """Is this project's source root being watched (so its index refreshes
@@ -333,15 +365,17 @@ class CodeWatcher(_FSWatcher):
         return project in self._roots.values()
 
     def _watch_dirs(self) -> list[str]:
-        self._code_exts()       # prime the spec table: it reads config files, and
-        return list(self._roots)    # `_decode` must never do that on the event thread
+        self._code_exts()  # prime the spec table: it reads config files, and
+        return list(self._roots)  # `_decode` must never do that on the event thread
 
     # Batch payload per file: (root, deleted, kind) where kind is how the path was
     # CLASSIFIED cheaply and what still has to be confirmed with I/O later:
     #   "code"  — a known code extension; nothing left to check
     #   "doc"   — a prose extension; still needs the repo's `docs:` globs applied
     #   "sniff" — extensionless; still needs a content sniff to route by language
-    def _decode(self, raw_path: str, deleted: bool) -> tuple[str, str, str, bool, str] | None:
+    def _decode(
+        self, raw_path: str, deleted: bool
+    ) -> tuple[str, str, str, bool, str] | None:
         """Classify an event by PATH ALONE — no filesystem access, no `.crib` parse.
 
         This runs on the watchdog EVENT THREAD, which must return fast: it drains
@@ -372,7 +406,7 @@ class CodeWatcher(_FSWatcher):
         best: tuple[str, str, str, bool, str] | None = None
         for key, proj in self._roots.items():
             try:
-                rel = p.relative_to(key)        # pure path arithmetic, no syscall
+                rel = p.relative_to(key)  # pure path arithmetic, no syscall
             except ValueError:
                 continue
             if best is None or len(key) > len(best[1]):
@@ -383,22 +417,32 @@ class CodeWatcher(_FSWatcher):
     # file for a project and (re)arm ONE timer, so a burst becomes a single dispatch.
     def _schedule(self, key: tuple[Any, ...]) -> None:
         project, root, relpath, deleted, kind = key
-        self._batch.setdefault(project, {})[relpath] = (root, deleted, kind)  # last wins
+        self._batch.setdefault(project, {})[relpath] = (
+            root,
+            deleted,
+            kind,
+        )  # last wins
         if (h := self._batch_timers.pop(project, None)) is not None:
             h.cancel()
         self._batch_timers[project] = self._loop.call_later(
-            CODE_DEBOUNCE_SEC, self._flush, project)
+            CODE_DEBOUNCE_SEC, self._flush, project
+        )
 
     def _flush(self, project: str) -> None:
         self._batch_timers.pop(project, None)
         changes = self._batch.pop(project, None)
         if changes:
-            spawn(self._loop, self._dispatch(project, changes), self._tasks,
-                  f"code watch dispatch {project}")
+            spawn(
+                self._loop,
+                self._dispatch(project, changes),
+                self._tasks,
+                f"code watch dispatch {project}",
+            )
 
     @staticmethod
-    def _resolve_batch(changes: dict[str, tuple[str, bool, str]]
-                       ) -> dict[str, tuple[str, bool]]:
+    def _resolve_batch(
+        changes: dict[str, tuple[str, bool, str]],
+    ) -> dict[str, tuple[str, bool]]:
         """Apply the I/O-bound half of the decode to a whole coalesced batch —
         existence, the in-repo store exclusion, the `docs:` globs, the extensionless
         content sniff — and return the `{relpath: (root, deleted)}` the change
@@ -409,7 +453,8 @@ class CodeWatcher(_FSWatcher):
         event thread must never do.)"""
         from .codeindex import content_lang
         from .config import CribLink
-        links: dict[str, Any] = {}              # root -> CribLink (parsed once)
+
+        links: dict[str, Any] = {}  # root -> CribLink (parsed once)
 
         def _link(root: str) -> Any:
             if root not in links:
@@ -439,8 +484,9 @@ class CodeWatcher(_FSWatcher):
                 # honors, so which docs get indexed no longer depends on how the
                 # change arrived. A `.md` outside the globs is not ours to index.
                 rp = PurePosixPath(Path(relpath).as_posix())
-                if link is None or not any(rp.full_match(pat)
-                                           for pat in link.doc_patterns):
+                if link is None or not any(
+                    rp.full_match(pat) for pat in link.doc_patterns
+                ):
                     continue
                 # relpath prefixed so the handler routes doc vs code
                 relpath = f"\x00doc\x00{relpath}"

@@ -12,6 +12,7 @@ steps. `symbol_hash` is the hash of the symbol BODY (window-invariant identity, 
 `section_hash` pattern) so a description/edge regenerates iff the symbol's own code
 changed.
 """
+
 from __future__ import annotations
 
 import atexit
@@ -64,42 +65,84 @@ DEFAULT_LSP_SPECS: dict[str, dict[str, Any]] = {
     # Python: ty (Astral, Rust) FIRST — full LSP (documentSymbol + callHierarchy +
     # references, all verified) and much faster than pyright; falls through to
     # basedpyright/pyright when ty isn't installed.
-    "ty": {"command": "ty", "args": ["server"],
-           "extensionToLanguage": {".py": "python", ".pyi": "python"}},
-    "basedpyright": {"command": "basedpyright-langserver", "args": ["--stdio"],
-                     "extensionToLanguage": {".py": "python", ".pyi": "python"}},
-    "pyright": {"command": "pyright-langserver", "args": ["--stdio"],
-                "extensionToLanguage": {".py": "python", ".pyi": "python"}},
-    "rust-analyzer": {"command": "rust-analyzer", "args": [],
-                      "extensionToLanguage": {".rs": "rust"}},
-    "gopls": {"command": "gopls", "args": [],
-              "extensionToLanguage": {".go": "go"}},
-    "clangd": {"command": "clangd", "args": [],
-               "extensionToLanguage": {".c": "c", ".h": "c", ".cc": "cpp",
-                                       ".cpp": "cpp", ".hpp": "cpp", ".hh": "cpp"}},
+    "ty": {
+        "command": "ty",
+        "args": ["server"],
+        "extensionToLanguage": {".py": "python", ".pyi": "python"},
+    },
+    "basedpyright": {
+        "command": "basedpyright-langserver",
+        "args": ["--stdio"],
+        "extensionToLanguage": {".py": "python", ".pyi": "python"},
+    },
+    "pyright": {
+        "command": "pyright-langserver",
+        "args": ["--stdio"],
+        "extensionToLanguage": {".py": "python", ".pyi": "python"},
+    },
+    "rust-analyzer": {
+        "command": "rust-analyzer",
+        "args": [],
+        "extensionToLanguage": {".rs": "rust"},
+    },
+    "gopls": {"command": "gopls", "args": [], "extensionToLanguage": {".go": "go"}},
+    "clangd": {
+        "command": "clangd",
+        "args": [],
+        "extensionToLanguage": {
+            ".c": "c",
+            ".h": "c",
+            ".cc": "cpp",
+            ".cpp": "cpp",
+            ".hpp": "cpp",
+            ".hh": "cpp",
+        },
+    },
     # TypeScript/JavaScript: typescript-language-server (tsserver over LSP —
     # documentSymbol + references + callHierarchy, all verified) first; vtsls
     # (the VSCode-flavoured tsserver wrapper, same capabilities) as the fallback.
     "typescript-language-server": {
-        "command": "typescript-language-server", "args": ["--stdio"],
-        "extensionToLanguage": {".ts": "typescript", ".tsx": "typescriptreact",
-                                ".mts": "typescript", ".cts": "typescript",
-                                ".js": "javascript", ".jsx": "javascriptreact",
-                                ".mjs": "javascript", ".cjs": "javascript"}},
+        "command": "typescript-language-server",
+        "args": ["--stdio"],
+        "extensionToLanguage": {
+            ".ts": "typescript",
+            ".tsx": "typescriptreact",
+            ".mts": "typescript",
+            ".cts": "typescript",
+            ".js": "javascript",
+            ".jsx": "javascriptreact",
+            ".mjs": "javascript",
+            ".cjs": "javascript",
+        },
+    },
     "vtsls": {
-        "command": "vtsls", "args": ["--stdio"],
-        "extensionToLanguage": {".ts": "typescript", ".tsx": "typescriptreact",
-                                ".mts": "typescript", ".cts": "typescript",
-                                ".js": "javascript", ".jsx": "javascriptreact",
-                                ".mjs": "javascript", ".cjs": "javascript"}},
+        "command": "vtsls",
+        "args": ["--stdio"],
+        "extensionToLanguage": {
+            ".ts": "typescript",
+            ".tsx": "typescriptreact",
+            ".mts": "typescript",
+            ".cts": "typescript",
+            ".js": "javascript",
+            ".jsx": "javascriptreact",
+            ".mjs": "javascript",
+            ".cjs": "javascript",
+        },
+    },
     # Lua: emmylua_ls (Rust rewrite, aims for full LSP incl. call hierarchy) first,
     # lua-language-server (LuaLS — references/definition but NO call hierarchy) as
     # the fallback. Even without call hierarchy, descriptions + callers-via-references
     # work; callees fall back to call-site→definition (§3.4).
-    "emmylua_ls": {"command": "emmylua_ls", "args": [],
-                   "extensionToLanguage": {".lua": "lua"}},
-    "lua-language-server": {"command": "lua-language-server", "args": [],
-                            "extensionToLanguage": {".lua": "lua"}},
+    "emmylua_ls": {
+        "command": "emmylua_ls",
+        "args": [],
+        "extensionToLanguage": {".lua": "lua"},
+    },
+    "lua-language-server": {
+        "command": "lua-language-server",
+        "args": [],
+        "extensionToLanguage": {".lua": "lua"},
+    },
     # Shell/zsh: shuck (Rust shell checker; `shuck server` speaks LSP over stdio).
     # documentSymbol + definition + references + CALL HIERARCHY, single-file and
     # cross-file over a workspace call-graph index — so zsh gets real calls/called_by,
@@ -109,9 +152,12 @@ DEFAULT_LSP_SPECS: dict[str, dict[str, Any]] = {
     # pinWorkspace: shuck's own discovery misses what crib enumerates by grammar
     # (extensionless autoload files, dotfiles) — the sweep didOpen-pins the full
     # doc set so cross-file references cover them (LSP membership via open docs).
-    "shuck": {"command": "shuck", "args": ["server"],
-              "extensionToLanguage": {".zsh": "zsh"},
-              "pinWorkspace": True},
+    "shuck": {
+        "command": "shuck",
+        "args": ["server"],
+        "extensionToLanguage": {".zsh": "zsh"},
+        "pinWorkspace": True,
+    },
     # Swift: sourcekit-lsp. Ships with Xcode/the CLT — on macOS the /usr/bin shim
     # is on PATH so the bare `which` resolves (Linux Swift.org toolchains put it
     # on PATH too). Verified on the bundled sourcekit-lsp (Swift 6.3.3): a STRAY
@@ -121,14 +167,16 @@ DEFAULT_LSP_SPECS: dict[str, dict[str, Any]] = {
     # actual Swift repo has. In a SwiftPM package: incoming/outgoing edges +
     # references all verified, including synthesized accessor edges
     # (Counter.getter:n / setter:n).
-    "sourcekit-lsp": {"command": "sourcekit-lsp", "args": [],
-                       "extensionToLanguage": {".swift": "swift"}},
+    "sourcekit-lsp": {
+        "command": "sourcekit-lsp",
+        "args": [],
+        "extensionToLanguage": {".swift": "swift"},
+    },
 }
 
 
 def _config_dir() -> Path:
-    return Path(os.environ.get("CRIB_CONFIG_DIR",
-                               os.path.expanduser("~/.config/crib")))
+    return Path(os.environ.get("CRIB_CONFIG_DIR", os.path.expanduser("~/.config/crib")))
 
 
 def _default_request_timeout() -> float:
@@ -157,7 +205,7 @@ def load_specs() -> dict[str, dict[str, Any]]:
         except (ValueError, OSError):
             pass
     for label, spec in DEFAULT_LSP_SPECS.items():
-        merged.setdefault(label, dict(spec))   # defaults fill gaps, never override
+        merged.setdefault(label, dict(spec))  # defaults fill gaps, never override
     return merged
 
 
@@ -168,7 +216,7 @@ def resolve_command(spec: dict) -> list[str] | None:
     args = list(spec.get("args", []))
     if not cmd:
         return None
-    if os.sep in cmd:                       # explicit / expanded path
+    if os.sep in cmd:  # explicit / expanded path
         return [cmd, *args] if Path(cmd).exists() else None
     resolved = shutil.which(cmd)
     return [resolved, *args] if resolved else None
@@ -182,15 +230,30 @@ def resolve_command(spec: dict) -> list[str] | None:
 DEFAULT_GRAMMAR: dict[str, dict[str, str]] = {
     # `#!` interpreter basename (version suffix stripped, `env` unwrapped) → language
     "shebangs": {
-        "zsh": "zsh", "bash": "bash", "sh": "sh", "dash": "sh",
-        "ksh": "ksh", "mksh": "ksh", "python": "python", "node": "javascript",
-        "nodejs": "javascript", "ruby": "ruby", "perl": "perl", "lua": "lua",
+        "zsh": "zsh",
+        "bash": "bash",
+        "sh": "sh",
+        "dash": "sh",
+        "ksh": "ksh",
+        "mksh": "ksh",
+        "python": "python",
+        "node": "javascript",
+        "nodejs": "javascript",
+        "ruby": "ruby",
+        "perl": "perl",
+        "lua": "lua",
     },
     # exact bare filename → language (shells key rc files by name, no extension)
     "filenames": {
-        ".zshrc": "zsh", ".zshenv": "zsh", ".zprofile": "zsh", ".zlogin": "zsh",
-        ".zlogout": "zsh", ".bashrc": "bash", ".bash_profile": "bash",
-        ".bash_login": "bash", ".profile": "sh",
+        ".zshrc": "zsh",
+        ".zshenv": "zsh",
+        ".zprofile": "zsh",
+        ".zlogin": "zsh",
+        ".zlogout": "zsh",
+        ".bashrc": "bash",
+        ".bash_profile": "bash",
+        ".bash_login": "bash",
+        ".profile": "sh",
     },
     # first-line tag (letters directly after `#`, NO space) → language. zsh
     # autoload/completion files begin `#compdef`/`#autoload` instead of a shebang;
@@ -232,12 +295,12 @@ def _shebang_lang(abspath: Path, grammar: dict | None = None) -> str | None:
     if not toks:
         return None
     exe = Path(toks[0]).name
-    if exe == "env":                            # `#!/usr/bin/env [-S] [VAR=v] zsh -f`
+    if exe == "env":  # `#!/usr/bin/env [-S] [VAR=v] zsh -f`
         rest = [t for t in toks[1:] if not t.startswith("-") and "=" not in t]
-        if not rest:                            # only flags/assignments → no interpreter
+        if not rest:  # only flags/assignments → no interpreter
             return None
         exe = Path(rest[0]).name
-    exe = re.sub(r"[0-9.]+$", "", exe)          # python3.11 → python
+    exe = re.sub(r"[0-9.]+$", "", exe)  # python3.11 → python
     return g.get(exe)
 
 
@@ -247,23 +310,24 @@ def content_lang(abspath: Path, grammar: dict | None = None) -> str | None:
     nothing matches. This is what lets discovery + routing reach files the
     extension map can't."""
     grammar = grammar if grammar is not None else load_grammar()
-    if (lang := grammar.get("filenames", {}).get(abspath.name)):
+    if lang := grammar.get("filenames", {}).get(abspath.name):
         return lang
-    if (lang := _shebang_lang(abspath, grammar)):
+    if lang := _shebang_lang(abspath, grammar):
         return lang
     try:
         with abspath.open("rb") as fh:
             first = fh.readline(256).decode("utf-8", "replace")
     except OSError:
         return None
-    m = re.match(r"#([A-Za-z_]+)", first)        # tag directly after # (no space)
+    m = re.match(r"#([A-Za-z_]+)", first)  # tag directly after # (no space)
     if m:
         return grammar.get("firstLineMarkers", {}).get(m.group(1))
     return None
 
 
-def server_for(relpath: str, specs: dict | None = None,
-               abspath: Path | None = None) -> tuple[str, list[str], str, dict] | None:
+def server_for(
+    relpath: str, specs: dict | None = None, abspath: Path | None = None
+) -> tuple[str, list[str], str, dict] | None:
     """Pick a server for `relpath`. FIRST by extension: iterate specs IN ORDER (user
     ~/.config/crib/lsp.json first, then shipped defaults backfilling missing labels)
     and take the FIRST that BOTH claims the extension (`extensionToLanguage`) AND has
@@ -276,7 +340,7 @@ def server_for(relpath: str, specs: dict | None = None,
     specs = specs if specs is not None else load_specs()
     ext = Path(relpath).suffix.lower()
     for label, spec in specs.items():
-        if not isinstance(spec, dict):   # skip "__doc__"/comment keys
+        if not isinstance(spec, dict):  # skip "__doc__"/comment keys
             continue
         lang = (spec.get("extensionToLanguage") or {}).get(ext)
         if not lang:
@@ -286,8 +350,11 @@ def server_for(relpath: str, specs: dict | None = None,
             return label, argv, lang, spec
     # content fallback (shebang / bare name / #compdef|#autoload marker) — only
     # when the extension is claimed by no spec at all (extensionless scripts, etc.)
-    ext_known = any(ext in (sp.get("extensionToLanguage") or {})
-                    for sp in specs.values() if isinstance(sp, dict))
+    ext_known = any(
+        ext in (sp.get("extensionToLanguage") or {})
+        for sp in specs.values()
+        if isinstance(sp, dict)
+    )
     if abspath is not None and not ext_known:
         lang = content_lang(abspath)
         if lang:
@@ -313,17 +380,25 @@ def derive_mtime(root: Path, relpath: str) -> int:
     except OSError:
         disk = 0
     try:
-        st = subprocess.run(["git", "-C", str(root), "status", "--porcelain", "--", relpath],
-                            capture_output=True, text=True, timeout=5)
+        st = subprocess.run(
+            ["git", "-C", str(root), "status", "--porcelain", "--", relpath],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
         if st.returncode != 0:
-            return disk                          # not a git repo (or error) → disk
+            return disk  # not a git repo (or error) → disk
         if st.stdout.strip():
-            return disk                          # modified/untracked → local disk mtime
-        log = subprocess.run(["git", "-C", str(root), "log", "-1", "--format=%ct", "--", relpath],
-                             capture_output=True, text=True, timeout=5)
+            return disk  # modified/untracked → local disk mtime
+        log = subprocess.run(
+            ["git", "-C", str(root), "log", "-1", "--format=%ct", "--", relpath],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
         ct = log.stdout.strip()
         if log.returncode == 0 and ct.isdigit():
-            return int(ct) * 1_000_000_000       # commit seconds → ns (same unit as disk)
+            return int(ct) * 1_000_000_000  # commit seconds → ns (same unit as disk)
     except (OSError, ValueError, subprocess.SubprocessError):
         pass
     return disk
@@ -341,7 +416,7 @@ def find_root(path: Path) -> Path:
     `_revalidate` evicts the real symbols (they resolve under the wrong root)."""
     path = path.resolve()
     for d in [path, *path.parents]:
-        if (d / ".git").is_dir():           # top-level repo (submodule .git is a file)
+        if (d / ".git").is_dir():  # top-level repo (submodule .git is a file)
             return d
     # No enclosing git repo → fall back to a package marker (nearest pyproject/setup).
     for d in [path, *path.parents]:
@@ -349,8 +424,9 @@ def find_root(path: Path) -> Path:
             return d
     return path.parent
 
+
 # documentSymbol kinds we index as callables/containers (LSP SymbolKind numbers).
-_FUNC_KINDS = {6, 12}          # Method, Function
+_FUNC_KINDS = {6, 12}  # Method, Function
 # Type definitions across languages: Class(5, Py/JS/TS), Enum(10), Interface(11,
 # Go iface / Rust trait / TS interface), Struct(23, Rust/Go/C). Indexed as symbols
 # AND descended into — their methods/fields live inside.
@@ -363,32 +439,40 @@ _CONTAINER_KINDS = _FUNC_KINDS | _TYPE_KINDS | {2, 3, 19}
 # Data declarations — globals/constants and class/struct fields. Indexed ONLY at
 # module/type scope (a var nested under a function is a local → noise): the scope
 # guard in extract_file drops any whose ancestry includes a function/method.
-_DATA_KINDS = {13, 14, 8, 7}   # Variable, Constant, Field, Property
+_DATA_KINDS = {13, 14, 8, 7}  # Variable, Constant, Field, Property
 _INDEX_KINDS = _FUNC_KINDS | _TYPE_KINDS | _DATA_KINDS
 
 
 class LspClient:
     """Minimal synchronous JSON-RPC LSP client over a server's stdio."""
 
-    def __init__(self, cmd: list[str], root: Path,
-                 init_options: dict | None = None,
-                 settings: dict | None = None,
-                 extra_folders: list[Path] | None = None) -> None:
+    def __init__(
+        self,
+        cmd: list[str],
+        root: Path,
+        init_options: dict | None = None,
+        settings: dict | None = None,
+        extra_folders: list[Path] | None = None,
+    ) -> None:
         self.root = root
-        self.extra_folders = extra_folders or []   # ref roots (multi-root xref)
+        self.extra_folders = extra_folders or []  # ref roots (multi-root xref)
         self.init_options = init_options or {}
         self.settings = settings or {}
-        self._progress: set[Any] = set()   # active $/progress tokens (busy signal)
-        self.proc = subprocess.Popen(cmd, stdin=subprocess.PIPE,
-                                     stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        self._progress: set[Any] = set()  # active $/progress tokens (busy signal)
+        self.proc = subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
         assert self.proc.stdin and self.proc.stdout
         self.w: IO[bytes] = self.proc.stdin
         self.r: IO[bytes] = self.proc.stdout
         self._id = 0
         self._resp: dict[int, dict] = {}
-        self._dead: str | None = None    # why the reader stopped; set once, never cleared
+        self._dead: str | None = None  # why the reader stopped; set once, never cleared
         self._lock = threading.Lock()
-        self._wlock = threading.Lock()   # frames must not interleave: the watcher
+        self._wlock = threading.Lock()  # frames must not interleave: the watcher
         threading.Thread(target=self._reader, daemon=True).start()  # pump notifies
         # concurrently with an in-flight extraction's requests (SessionPool).
 
@@ -434,7 +518,7 @@ class LspClient:
             body = self.r.read(int(headers.get("content-length", 0)))
             msg = json.loads(body)
             if "id" in msg and "method" in msg:
-                self._answer(msg)               # server → client request
+                self._answer(msg)  # server → client request
             elif "id" in msg:
                 with self._lock:
                     self._resp[msg["id"]] = msg
@@ -489,8 +573,9 @@ class LspClient:
             self._id += 1
             rid = self._id
         try:
-            self._send({"jsonrpc": "2.0", "id": rid, "method": method,
-                        "params": params})
+            self._send(
+                {"jsonrpc": "2.0", "id": rid, "method": method, "params": params}
+            )
         except OSError as e:
             self._mark_dead(repr(e))
             raise SessionError(f"{method}: write to LSP server failed ({e})") from e
@@ -501,38 +586,49 @@ class LspClient:
                     return self._resp.pop(rid).get("result")
                 dead = self._dead
             if dead:
-                raise SessionError(f"{method}: LSP session died awaiting reply ({dead})")
+                raise SessionError(
+                    f"{method}: LSP session died awaiting reply ({dead})"
+                )
             time.sleep(0.02)
         with self._lock:
-            self._resp.pop(rid, None)   # nobody will collect it — don't leak the slot
+            self._resp.pop(rid, None)  # nobody will collect it — don't leak the slot
         raise SessionError(f"{method}: no reply from the LSP server in {timeout}s")
 
     def notify(self, method: str, params: dict) -> None:
         self._send({"jsonrpc": "2.0", "method": method, "params": params})
 
     def initialize(self) -> None:
-        res = self.request("initialize", {
-            "processId": os.getpid(), "rootUri": self.root.as_uri(),
-            "initializationOptions": self.init_options,
-            "capabilities": {"textDocument": {
-                "documentSymbol": {"hierarchicalDocumentSymbolSupport": True},
-                "callHierarchy": {"dynamicRegistration": True},
-                "references": {"dynamicRegistration": True}},
-                # workDoneProgress: ask the server to REPORT its indexing, so
-                # readiness is its signal, not our sleep (`wait_quiescent`).
-                "window": {"workDoneProgress": True},
-                # didChangeWatchedFiles: servers that don't self-watch the fs
-                # register watchers (client/registerCapability → null-acked in
-                # `_answer`) and rely on the pool's `notify_changes` pump.
-                "workspace": {"configuration": True,
-                              "didChangeWatchedFiles": {"dynamicRegistration": True}}},
-            # multi-root: the ref projects' local roots ride along, so
-            # references/incomingCalls INTO ref code resolve (cross-project xref)
-            "workspaceFolders": [
-                {"uri": self.root.as_uri(), "name": self.root.name},
-                *({"uri": f.as_uri(), "name": f.name} for f in self.extra_folders),
-            ],
-        })
+        res = self.request(
+            "initialize",
+            {
+                "processId": os.getpid(),
+                "rootUri": self.root.as_uri(),
+                "initializationOptions": self.init_options,
+                "capabilities": {
+                    "textDocument": {
+                        "documentSymbol": {"hierarchicalDocumentSymbolSupport": True},
+                        "callHierarchy": {"dynamicRegistration": True},
+                        "references": {"dynamicRegistration": True},
+                    },
+                    # workDoneProgress: ask the server to REPORT its indexing, so
+                    # readiness is its signal, not our sleep (`wait_quiescent`).
+                    "window": {"workDoneProgress": True},
+                    # didChangeWatchedFiles: servers that don't self-watch the fs
+                    # register watchers (client/registerCapability → null-acked in
+                    # `_answer`) and rely on the pool's `notify_changes` pump.
+                    "workspace": {
+                        "configuration": True,
+                        "didChangeWatchedFiles": {"dynamicRegistration": True},
+                    },
+                },
+                # multi-root: the ref projects' local roots ride along, so
+                # references/incomingCalls INTO ref code resolve (cross-project xref)
+                "workspaceFolders": [
+                    {"uri": self.root.as_uri(), "name": self.root.name},
+                    *({"uri": f.as_uri(), "name": f.name} for f in self.extra_folders),
+                ],
+            },
+        )
         self.capabilities: dict = (res or {}).get("capabilities", {})
         self.notify("initialized", {})
 
@@ -602,8 +698,14 @@ class LspSessionPool:
         self._sessions: dict[tuple[str, str], _Session] = {}
         self.grace = grace
 
-    def acquire(self, root: Path, label: str, argv: list[str], spec: dict,
-                extra_roots: list[Path] | None = None) -> tuple[_Session, bool]:
+    def acquire(
+        self,
+        root: Path,
+        label: str,
+        argv: list[str],
+        spec: dict,
+        extra_roots: list[Path] | None = None,
+    ) -> tuple[_Session, bool]:
         """The warm session for (root, label), spawning + initializing on first
         use → (session, fresh). Callers hold `session.lock` while using it.
         Spawn/initialize happens under the pool lock: a concurrent cold start of
@@ -616,14 +718,17 @@ class LspSessionPool:
         with self._lock:
             sess = self._sessions.get(key)
             if sess is not None and sess.client.proc.poll() is not None:
-                self._sessions.pop(key)          # died since last use
+                self._sessions.pop(key)  # died since last use
                 sess = None
             if sess is not None:
                 return sess, False
-            client = LspClient(argv, root,
-                               init_options=spec.get("initializationOptions"),
-                               settings=spec.get("settings"),
-                               extra_folders=extra_roots)
+            client = LspClient(
+                argv,
+                root,
+                init_options=spec.get("initializationOptions"),
+                settings=spec.get("settings"),
+                extra_folders=extra_roots,
+            )
             try:
                 client.initialize()
             except Exception:
@@ -649,16 +754,17 @@ class LspSessionPool:
         a dead session surfaces at its next acquire)."""
         key_root = str(root.resolve())
         with self._lock:
-            sessions = [s for (r, _label), s in self._sessions.items()
-                        if r == key_root]
+            sessions = [s for (r, _label), s in self._sessions.items() if r == key_root]
         if not sessions:
             return
-        events = [{"uri": (Path(key_root) / rel).as_uri(), "type": t}
-                  for rel, t in changes]
+        events = [
+            {"uri": (Path(key_root) / rel).as_uri(), "type": t} for rel, t in changes
+        ]
         for sess in sessions:
             try:
-                sess.client.notify("workspace/didChangeWatchedFiles",
-                                   {"changes": events})
+                sess.client.notify(
+                    "workspace/didChangeWatchedFiles", {"changes": events}
+                )
             except Exception:  # noqa: BLE001 — dead pipe → respawned on next use
                 pass
 
@@ -669,16 +775,22 @@ class LspSessionPool:
                 if now - sess.last_used < self.grace:
                     continue
                 if not sess.lock.acquire(blocking=False):
-                    continue                     # in use → not actually idle
+                    continue  # in use → not actually idle
                 try:
                     self._sessions.pop(key, None)
                     sess.client.close()
                 finally:
                     sess.lock.release()
 
-    def pin_docs(self, root: Path, label: str, argv: list[str], spec: dict,
-                 docs: list[tuple[Path, str]],
-                 extra_roots: list[Path] | None = None) -> int:
+    def pin_docs(
+        self,
+        root: Path,
+        label: str,
+        argv: list[str],
+        spec: dict,
+        docs: list[tuple[Path, str]],
+        extra_roots: list[Path] | None = None,
+    ) -> int:
         """didOpen every (path, languageId) and HOLD them open — the protocol's
         membership signal: an open document is part of the server's analysis set
         even when its own discovery (include config, compile db, module graph)
@@ -696,8 +808,17 @@ class LspSessionPool:
                     text = pd.read_text()
                 except OSError:
                     continue
-                sess.client.notify("textDocument/didOpen", {"textDocument": {
-                    "uri": puri, "languageId": lang, "version": 1, "text": text}})
+                sess.client.notify(
+                    "textDocument/didOpen",
+                    {
+                        "textDocument": {
+                            "uri": puri,
+                            "languageId": lang,
+                            "version": 1,
+                            "text": text,
+                        }
+                    },
+                )
                 sess.pinned[puri] = 1
                 n += 1
             sess.last_used = time.monotonic()
@@ -712,8 +833,9 @@ class LspSessionPool:
             with sess.lock:
                 for u in sess.pinned:
                     try:
-                        sess.client.notify("textDocument/didClose",
-                                           {"textDocument": {"uri": u}})
+                        sess.client.notify(
+                            "textDocument/didClose", {"textDocument": {"uri": u}}
+                        )
                     except Exception:  # noqa: BLE001 — dead pipe → respawn later
                         pass
                 sess.pinned.clear()
@@ -724,12 +846,17 @@ class LspSessionPool:
         now = time.monotonic()
         with self._lock:
             items = list(self._sessions.items())
-        return [{"root": root, "server": label,
-                 "pid": sess.client.proc.pid,
-                 "alive": sess.client.proc.poll() is None,
-                 "busy": sess.lock.locked(),
-                 "idle_s": round(now - sess.last_used, 1)}
-                for (root, label), sess in items]
+        return [
+            {
+                "root": root,
+                "server": label,
+                "pid": sess.client.proc.pid,
+                "alive": sess.client.proc.poll() is None,
+                "busy": sess.lock.locked(),
+                "idle_s": round(now - sess.last_used, 1),
+            }
+            for (root, label), sess in items
+        ]
 
     def close_all(self) -> None:
         with self._lock:
@@ -753,7 +880,7 @@ def uri_path(uri: str) -> str | None:
     looked fine, just edgeless."""
     if not uri.startswith("file://"):
         return None
-    return url2pathname(uri[len("file://"):])
+    return url2pathname(uri[len("file://") :])
 
 
 def _in_workspace(uri: str, root: Path) -> bool:
@@ -830,8 +957,9 @@ def _rel(uri: str, root: Path) -> str:
         return Path(p).name
 
 
-def _walk(syms: list, parents: tuple[str, ...] = (),
-          kinds: tuple[int, ...] = ()) -> list[tuple[dict, tuple, tuple]]:
+def _walk(
+    syms: list, parents: tuple[str, ...] = (), kinds: tuple[int, ...] = ()
+) -> list[tuple[dict, tuple, tuple]]:
     """Flatten documentSymbol tree → [(symbol, container_names, container_kinds)],
     descending containers. `container_kinds` lets a caller tell a module/class-level
     declaration from a function-local (a Variable nested under a function)."""
@@ -839,13 +967,28 @@ def _walk(syms: list, parents: tuple[str, ...] = (),
     for s in syms or []:
         out.append((s, parents, kinds))
         if s.get("kind") in _CONTAINER_KINDS and s.get("children"):
-            out.extend(_walk(s["children"], parents + (s.get("name", ""),),
-                             kinds + (s.get("kind") or 0,)))
+            out.extend(
+                _walk(
+                    s["children"],
+                    parents + (s.get("name", ""),),
+                    kinds + (s.get("kind") or 0,),
+                )
+            )
     return out
 
 
-_KIND = {5: "class", 6: "method", 12: "function", 10: "enum", 11: "interface",
-         23: "struct", 13: "variable", 14: "constant", 8: "field", 7: "property"}
+_KIND = {
+    5: "class",
+    6: "method",
+    12: "function",
+    10: "enum",
+    11: "interface",
+    23: "struct",
+    13: "variable",
+    14: "constant",
+    8: "field",
+    7: "property",
+}
 # Per-language label niceties: same SymbolKind, different idiom (a trait IS an
 # Interface(11) to the LSP, but reads better as "trait"). Naming quirk, not a kind
 # distinction — so it lives here, not in the universal _INDEX_KINDS sets.
@@ -853,8 +996,9 @@ _KIND_LABEL_OVERRIDE = {("rust", 11): "trait"}
 _REF_CAP = 80  # references resolved per symbol — bounds worst-case on hot helpers
 
 
-def _symbol_ranges(c: LspClient, uri: str, language_id: str,
-                   cache: dict[str, list], opened: set[str]) -> list[tuple[str, int, int]]:
+def _symbol_ranges(
+    c: LspClient, uri: str, language_id: str, cache: dict[str, list], opened: set[str]
+) -> list[tuple[str, int, int]]:
     """(local_name, start_line, end_line) for every symbol in `uri` via documentSymbol
     (opening the file first if needed). Cached per session — used to map a reference
     location back to the symbol that encloses it (the referrer)."""
@@ -862,28 +1006,48 @@ def _symbol_ranges(c: LspClient, uri: str, language_id: str,
         return cache[uri]
     if uri not in opened:
         opened.add(uri)
-        path = uri_path(uri) or ""      # percent-decoded (spaces / non-ASCII roots)
+        path = uri_path(uri) or ""  # percent-decoded (spaces / non-ASCII roots)
         try:
             text = Path(path).read_text() if path else ""
         except OSError:
             text = ""
         if text:
-            c.notify("textDocument/didOpen", {"textDocument": {
-                "uri": uri, "languageId": language_id, "version": 1, "text": text}})
+            c.notify(
+                "textDocument/didOpen",
+                {
+                    "textDocument": {
+                        "uri": uri,
+                        "languageId": language_id,
+                        "version": 1,
+                        "text": text,
+                    }
+                },
+            )
             time.sleep(0.15)
     out: list[tuple[str, int, int]] = []
-    for s, _p, _k in _walk(c.request("textDocument/documentSymbol",
-                                     {"textDocument": {"uri": uri}}) or []):
+    for s, _p, _k in _walk(
+        c.request("textDocument/documentSymbol", {"textDocument": {"uri": uri}}) or []
+    ):
         rng = s.get("range", {})
-        out.append((_local_name(s.get("name", ""), language_id),
-                    rng.get("start", {}).get("line", 0),
-                    rng.get("end", {}).get("line", 0)))
+        out.append(
+            (
+                _local_name(s.get("name", ""), language_id),
+                rng.get("start", {}).get("line", 0),
+                rng.get("end", {}).get("line", 0),
+            )
+        )
     cache[uri] = out
     return out
 
 
-def _enclosing_symbol(c: LspClient, uri: str, line: int, language_id: str,
-                      cache: dict[str, list], opened: set[str]) -> str | None:
+def _enclosing_symbol(
+    c: LspClient,
+    uri: str,
+    line: int,
+    language_id: str,
+    cache: dict[str, list],
+    opened: set[str],
+) -> str | None:
     """Innermost symbol in `uri` whose range contains `line` — the referrer symbol."""
     best: tuple[str, int] | None = None
     for name, s0, e0 in _symbol_ranges(c, uri, language_id, cache, opened):
@@ -937,8 +1101,14 @@ _REUSE_SETTLE = 0.3
 _FRESH_SETTLE = 1.5
 
 
-def _hierarchy_edges(c: LspClient, method: str, item: dict, key: str,
-                     root: Path, ref_projects: RefProjects | None) -> list[str]:
+def _hierarchy_edges(
+    c: LspClient,
+    method: str,
+    item: dict,
+    key: str,
+    root: Path,
+    ref_projects: RefProjects | None,
+) -> list[str]:
     """One callHierarchy direction → located `name [loc]` edge strings (`key` is
     the LSP result field naming the counterpart: `to` outgoing, `from` incoming)."""
     out = []
@@ -950,9 +1120,13 @@ def _hierarchy_edges(c: LspClient, method: str, item: dict, key: str,
     return out
 
 
-def extract_file(root: Path, relpath: str, settle: float | None = None,
-                 pool: LspSessionPool | None = None,
-                 ref_projects: RefProjects | None = None) -> list[dict]:
+def extract_file(
+    root: Path,
+    relpath: str,
+    settle: float | None = None,
+    pool: LspSessionPool | None = None,
+    ref_projects: RefProjects | None = None,
+) -> list[dict]:
     """Symbols + workspace-resolved call edges for one file, via the LSP server the
     specs select for its extension (docs §3.3). Raises NoServer if none resolves,
     FileReadError if the file itself can't be read. The session comes WARM from the
@@ -973,19 +1147,41 @@ def extract_file(root: Path, relpath: str, settle: float | None = None,
     path = (root / relpath).resolve()
     sel = server_for(relpath, abspath=path)
     if sel is None:
-        raise NoServer(f"no LSP server for {Path(relpath).suffix or '(no ext)'} "
-                       f"(configure ~/.config/crib/lsp.json)")
+        raise NoServer(
+            f"no LSP server for {Path(relpath).suffix or '(no ext)'} "
+            f"(configure ~/.config/crib/lsp.json)"
+        )
     label, argv, language_id, spec = sel
     pool = pool or _POOL
     try:
-        return _extract(pool, root, relpath, path, settle, label, argv,
-                        language_id, spec, ref_projects)
+        return _extract(
+            pool,
+            root,
+            relpath,
+            path,
+            settle,
+            label,
+            argv,
+            language_id,
+            spec,
+            ref_projects,
+        )
     except FileReadError:
-        raise                            # the FILE is bad — the warm session is fine
+        raise  # the FILE is bad — the warm session is fine
     except (SessionError, TimeoutError, OSError, ValueError):
-        pool.discard(root, label)        # crash supervision: respawn once and retry
-        return _extract(pool, root, relpath, path, settle, label, argv,
-                        language_id, spec, ref_projects)
+        pool.discard(root, label)  # crash supervision: respawn once and retry
+        return _extract(
+            pool,
+            root,
+            relpath,
+            path,
+            settle,
+            label,
+            argv,
+            language_id,
+            spec,
+            ref_projects,
+        )
 
 
 @dataclass(frozen=True)
@@ -994,6 +1190,7 @@ class _ExtractCtx:
     the warm client + the file's identity/location context. `sym_cache` and `opened`
     are mutated in place across the loop (encloser-range cache; the didOpen'd-doc set
     the teardown closes), so they're the SAME objects `_extract` reads afterwards."""
+
     c: LspClient
     uri: str
     root: Path
@@ -1015,9 +1212,17 @@ def _reference_edges(ctx: _ExtractCtx, pos: dict, local: str) -> list[str]:
     a reference is broader than a call (reads/mentions too), the distinction left to
     the consumer/LLM. This is the only caller signal for symbols-only servers (shuck).
     Each hit is attributed to its enclosing symbol; self-references are dropped."""
-    refs = ctx.c.request("textDocument/references", {
-        "textDocument": {"uri": ctx.uri}, "position": pos,
-        "context": {"includeDeclaration": False}}) or []
+    refs = (
+        ctx.c.request(
+            "textDocument/references",
+            {
+                "textDocument": {"uri": ctx.uri},
+                "position": pos,
+                "context": {"includeDeclaration": False},
+            },
+        )
+        or []
+    )
     out: list[str] = []
     for loc in refs[:_REF_CAP]:
         ruri = loc.get("uri", "")
@@ -1025,10 +1230,11 @@ def _reference_edges(ctx: _ExtractCtx, pos: dict, local: str) -> list[str]:
         if rloc is None:
             continue
         rline = loc.get("range", {}).get("start", {}).get("line", 0)
-        enc = _enclosing_symbol(ctx.c, ruri, rline, ctx.language_id,
-                                ctx.sym_cache, ctx.opened)
+        enc = _enclosing_symbol(
+            ctx.c, ruri, rline, ctx.language_id, ctx.sym_cache, ctx.opened
+        )
         if not enc or (enc == local and rloc == ctx.relpath):
-            continue                                # skip self-references
+            continue  # skip self-references
         out.append(encode_edge(enc, rloc))
     return out
 
@@ -1043,13 +1249,17 @@ def _reference_edges(ctx: _ExtractCtx, pos: dict, local: str) -> list[str]:
 # lines between comment and symbol that still attach it (decorators/attributes) — walked
 # over so a comment above them is reached. Prefix/delimiter matching, no tree-sitter.
 _COMMENT_SYNTAX: dict[str, dict] = {
-    "python": {"line": ("#",),               "block": (),                "skip": ("@",)},
-    "zsh":    {"line": ("#",),               "block": (),                "skip": ()},
-    "rust":   {"line": ("///", "//!", "//"), "block": (("/*", "*/"),),   "skip": ("#[", "#![")},
-    "go":     {"line": ("//",),              "block": (("/*", "*/"),),   "skip": ()},
-    "c":      {"line": ("//",),              "block": (("/*", "*/"),),   "skip": ()},
-    "cpp":    {"line": ("//",),              "block": (("/*", "*/"),),   "skip": ()},
-    "lua":    {"line": ("--",),              "block": (("--[[", "]]"),), "skip": ()},
+    "python": {"line": ("#",), "block": (), "skip": ("@",)},
+    "zsh": {"line": ("#",), "block": (), "skip": ()},
+    "rust": {
+        "line": ("///", "//!", "//"),
+        "block": (("/*", "*/"),),
+        "skip": ("#[", "#!["),
+    },
+    "go": {"line": ("//",), "block": (("/*", "*/"),), "skip": ()},
+    "c": {"line": ("//",), "block": (("/*", "*/"),), "skip": ()},
+    "cpp": {"line": ("//",), "block": (("/*", "*/"),), "skip": ()},
+    "lua": {"line": ("--",), "block": (("--[[", "]]"),), "skip": ()},
 }
 # Servers whose `hover` documentation carries the doc-comment above a decl (so it's worth
 # the extra round-trip). Python/zsh omitted: pyright hover returns only the in-body
@@ -1065,13 +1275,13 @@ def _strip_comment_markers(text: str, syn: dict) -> str:
         s = raw.strip()
         for op, cl in syn["block"]:
             if s.startswith(op):
-                s = s[len(op):].strip()
+                s = s[len(op) :].strip()
             if s.endswith(cl):
                 s = s[: len(s) - len(cl)].strip()
         pfx = next((p for p in syn["line"] if s.startswith(p)), None)
         if pfx is not None:
-            s = s[len(pfx):].strip()
-        elif s.startswith("*"):                 # `/* * */`-style continuation bullets
+            s = s[len(pfx) :].strip()
+        elif s.startswith("*"):  # `/* * */`-style continuation bullets
             s = s[1:].strip()
         out.append(s)
     return "\n".join(out).strip()
@@ -1086,7 +1296,7 @@ def _leading_comment(lines: list[str], start: int, lang: str) -> str:
     syn = _COMMENT_SYNTAX.get(lang)
     if syn is None or start <= 0:
         return ""
-    collected: list[str] = []          # bottom-up; reversed at the end
+    collected: list[str] = []  # bottom-up; reversed at the end
     i = start - 1
     blanks = 0
     while i >= 0:
@@ -1097,7 +1307,7 @@ def _leading_comment(lines: list[str], start: int, lang: str) -> str:
                 break
             i -= 1
             continue
-        if syn["skip"] and s.startswith(syn["skip"]):   # decorator/attribute — step over
+        if syn["skip"] and s.startswith(syn["skip"]):  # decorator/attribute — step over
             blanks = 0
             i -= 1
             continue
@@ -1118,7 +1328,7 @@ def _leading_comment(lines: list[str], start: int, lang: str) -> str:
             blanks = 0
             i -= 1
             continue
-        break                          # real code — stop
+        break  # real code — stop
     if not collected:
         return ""
     return _strip_comment_markers("\n".join(reversed(collected)), syn)
@@ -1131,15 +1341,16 @@ def _hover_doc(ctx: "_ExtractCtx", pos: dict) -> str:
     if not ctx.c.capabilities.get("hoverProvider"):
         return ""
     try:
-        res = ctx.c.request("textDocument/hover",
-                            {"textDocument": {"uri": ctx.uri}, "position": pos})
+        res = ctx.c.request(
+            "textDocument/hover", {"textDocument": {"uri": ctx.uri}, "position": pos}
+        )
     except (SessionError, TimeoutError, OSError, ValueError):
-        return ""                    # best-effort enrichment; a dead session
-    if not res:                      # re-raises on the very next request anyway
+        return ""  # best-effort enrichment; a dead session
+    if not res:  # re-raises on the very next request anyway
         return ""
     contents = res.get("contents")
     parts: list[str] = []
-    for c in (contents if isinstance(contents, list) else [contents]):
+    for c in contents if isinstance(contents, list) else [contents]:
         if isinstance(c, str):
             parts.append(c)
         elif isinstance(c, dict) and "value" in c:
@@ -1156,8 +1367,9 @@ def _hover_doc(ctx: "_ExtractCtx", pos: dict) -> str:
     return "\n".join(prose).strip()
 
 
-def _symbol_entry(ctx: _ExtractCtx, s: dict, parents: tuple[str, ...],
-                  pkinds: tuple[int, ...]) -> dict | None:
+def _symbol_entry(
+    ctx: _ExtractCtx, s: dict, parents: tuple[str, ...], pkinds: tuple[int, ...]
+) -> dict | None:
     """Assemble one indexed-symbol record from a documentSymbol node (+ its call/
     reference edges), or None when the node is filtered out (uninteresting kind, or a
     data decl nested in a function → a local, noise)."""
@@ -1170,7 +1382,7 @@ def _symbol_entry(ctx: _ExtractCtx, s: dict, parents: tuple[str, ...],
         return None
     rng = s.get("range", {})
     start = rng.get("start", {}).get("line", 0)
-    body = "\n".join(ctx.lines[start:rng.get("end", {}).get("line", 0) + 1])
+    body = "\n".join(ctx.lines[start : rng.get("end", {}).get("line", 0) + 1])
     # Leading-doc capture (§3): the LSP range starts at the def, so the comment ABOVE the
     # symbol is excluded — fold it in (reverse-scan, plus hover for doc-comment servers)
     # so its authored intent gates description regen (content_hash) and enriches search.
@@ -1196,19 +1408,36 @@ def _symbol_entry(ctx: _ExtractCtx, s: dict, parents: tuple[str, ...],
     calls: list[str] = []
     called_by: list[str] = []
     if kind in _FUNC_KINDS and ctx.c.capabilities.get("callHierarchyProvider"):
-        prep = ctx.c.request("textDocument/prepareCallHierarchy",
-                             {"textDocument": {"uri": ctx.uri}, "position": pos})
+        prep = ctx.c.request(
+            "textDocument/prepareCallHierarchy",
+            {"textDocument": {"uri": ctx.uri}, "position": pos},
+        )
         if prep:
             item = prep[0]
-            calls = _hierarchy_edges(ctx.c, "callHierarchy/outgoingCalls",
-                                     item, "to", ctx.root, ctx.ref_projects)
-            called_by = _hierarchy_edges(ctx.c, "callHierarchy/incomingCalls",
-                                         item, "from", ctx.root, ctx.ref_projects)
+            calls = _hierarchy_edges(
+                ctx.c,
+                "callHierarchy/outgoingCalls",
+                item,
+                "to",
+                ctx.root,
+                ctx.ref_projects,
+            )
+            called_by = _hierarchy_edges(
+                ctx.c,
+                "callHierarchy/incomingCalls",
+                item,
+                "from",
+                ctx.root,
+                ctx.ref_projects,
+            )
     references = _reference_edges(ctx, pos, local) if ctx.has_refs else []
     # module-level variables read more naturally as "global" than "variable"
-    kind_label = ("global" if kind == 13 and not container
-                  else _KIND_LABEL_OVERRIDE.get((ctx.language_id, kind or 0))
-                  or _KIND.get(kind or 0, "?"))
+    kind_label = (
+        "global"
+        if kind == 13 and not container
+        else _KIND_LABEL_OVERRIDE.get((ctx.language_id, kind or 0))
+        or _KIND.get(kind or 0, "?")
+    )
     entry_scope = scope_of(ctx.language_id, ctx.relpath, container)
     entry_fqn = fqn(entry_scope, local, ctx.language_id, ctx.relpath, container)
     return {
@@ -1230,25 +1459,39 @@ def _symbol_entry(ctx: _ExtractCtx, s: dict, parents: tuple[str, ...],
         # with `symbol_ref`, because there the file IS the scope.
         "fqn": entry_fqn,
         "kind": kind_label,
-        "lang": ctx.language_id, "container": list(container),
+        "lang": ctx.language_id,
+        "container": list(container),
         # what the LANGUAGE calls this symbol's context — empty where the language
         # has no namespace, which is information rather than a gap (see scope_of)
         "scope": entry_scope,
         "content_hash": content_hash,
-        "file": ctx.relpath, "file_hash": ctx.file_hash,
-        "line": start + 1, "mtime": ctx.mtime, "signature": sig,
-        "calls": sorted(set(calls)), "called_by": sorted(set(called_by)),
+        "file": ctx.relpath,
+        "file_hash": ctx.file_hash,
+        "line": start + 1,
+        "mtime": ctx.mtime,
+        "signature": sig,
+        "calls": sorted(set(calls)),
+        "called_by": sorted(set(called_by)),
         "references": sorted(set(references)),
         # the lexical field is built from the NAME, not the retired key: a legacy
         # `rust::src::…` put `rust` and `src` into every Rust symbol's search terms
         "name_terms": _name_terms(local, entry_fqn),
-        "_body": body,   # transient: for the description mop-up; not persisted
+        "_body": body,  # transient: for the description mop-up; not persisted
     }
 
 
-def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
-             settle: float | None, label: str, argv: list[str], language_id: str,
-             spec: dict, ref_projects: RefProjects | None = None) -> list[dict]:
+def _extract(
+    pool: LspSessionPool,
+    root: Path,
+    relpath: str,
+    path: Path,
+    settle: float | None,
+    label: str,
+    argv: list[str],
+    language_id: str,
+    spec: dict,
+    ref_projects: RefProjects | None = None,
+) -> list[dict]:
     """Session/doc lifecycle skeleton: acquire a warm session, open (or sync a pinned)
     doc, wait for quiescence, then walk documentSymbol into `_symbol_entry` records —
     closing only what THIS call opened (pins stay) in the finally."""
@@ -1267,9 +1510,13 @@ def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
     file_hash = hashlib.sha1(text.encode()).hexdigest()[:16]
     # ref checkouts OUTSIDE the workspace ride along as extra workspaceFolders
     # (multi-root xref); in-tree ones are already inside the root
-    extra = list(dict.fromkeys(
-        rr for _p, rr, _f in (ref_projects or [])
-        if rr is not None and not rr.is_relative_to(root.resolve())))
+    extra = list(
+        dict.fromkeys(
+            rr
+            for _p, rr, _f in (ref_projects or [])
+            if rr is not None and not rr.is_relative_to(root.resolve())
+        )
+    )
     sess, fresh = pool.acquire(root, label, argv, spec, extra_roots=extra)
     entries: list[dict] = []
     with sess.lock:
@@ -1283,40 +1530,66 @@ def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
                 # open doc ⇒ client truth: sync the server to the SAME text we
                 # hash below (the file may have changed since it was pinned)
                 sess.pinned[uri] += 1
-                c.notify("textDocument/didChange", {
-                    "textDocument": {"uri": uri, "version": sess.pinned[uri]},
-                    "contentChanges": [{"text": text}]})
+                c.notify(
+                    "textDocument/didChange",
+                    {
+                        "textDocument": {"uri": uri, "version": sess.pinned[uri]},
+                        "contentChanges": [{"text": text}],
+                    },
+                )
             else:
                 opened.add(uri)
-                c.notify("textDocument/didOpen", {"textDocument": {
-                    "uri": uri, "languageId": language_id, "version": 1,
-                    "text": text}})
+                c.notify(
+                    "textDocument/didOpen",
+                    {
+                        "textDocument": {
+                            "uri": uri,
+                            "languageId": language_id,
+                            "version": 1,
+                            "text": text,
+                        }
+                    },
+                )
             # readiness: honor the server's own $/progress over a blind sleep —
             # fresh sessions may be mid-workspace-index (minutes on big repos).
             # settle=None is policy (short warm / full cold); an explicit value is
             # the caller's considered choice and is obeyed as given.
             c.wait_quiescent(
-                initial=(settle if settle is not None
-                         else (_FRESH_SETTLE if fresh else _REUSE_SETTLE)),
-                timeout=60.0 if fresh else 10.0)
-            syms = c.request("textDocument/documentSymbol",
-                             {"textDocument": {"uri": uri}})
+                initial=(
+                    settle
+                    if settle is not None
+                    else (_FRESH_SETTLE if fresh else _REUSE_SETTLE)
+                ),
+                timeout=60.0 if fresh else 10.0,
+            )
+            syms = c.request(
+                "textDocument/documentSymbol", {"textDocument": {"uri": uri}}
+            )
             ctx = _ExtractCtx(
-                c=c, uri=uri, root=root, ref_projects=ref_projects,
+                c=c,
+                uri=uri,
+                root=root,
+                ref_projects=ref_projects,
                 language_id=language_id,
-                relpath=relpath, lines=lines, file_hash=file_hash,
-                mtime=derive_mtime(root, relpath),   # portable index timestamp
+                relpath=relpath,
+                lines=lines,
+                file_hash=file_hash,
+                mtime=derive_mtime(root, relpath),  # portable index timestamp
                 has_refs=bool(c.capabilities.get("referencesProvider")),
-                sym_cache={}, opened=opened)         # uri → ranges; didOpen'd docs
+                sym_cache={},
+                opened=opened,
+            )  # uri → ranges; didOpen'd docs
             for s, parents, pkinds in _walk(syms):
                 e = _symbol_entry(ctx, s, parents, pkinds)
                 if e is not None:
                     entries.append(e)
         finally:
-            for u in opened - sess.pinned.keys():   # close what THIS call opened —
-                try:                         # call reads fresh disk; server doc-
-                    c.notify("textDocument/didClose",   # memory stays bounded.
-                             {"textDocument": {"uri": u}})   # PINNED docs stay
+            for u in opened - sess.pinned.keys():  # close what THIS call opened —
+                try:  # call reads fresh disk; server doc-
+                    c.notify(
+                        "textDocument/didClose",  # memory stays bounded.
+                        {"textDocument": {"uri": u}},
+                    )  # PINNED docs stay
                 except Exception:  # noqa: BLE001 — best-effort teardown
                     pass
             sess.last_used = time.monotonic()
@@ -1327,19 +1600,29 @@ def _extract(pool: LspSessionPool, root: Path, relpath: str, path: Path,
 
 DESCRIBE_SCHEMA: dict[str, Any] = {
     "type": "object",
-    "properties": {"symbols": {"type": "array", "items": {
-        "type": "object",
-        "properties": {"name": {"type": "string"}, "kind": {"type": "string"},
-                       "description": {"type": "string"},
-                       "keywords": {"type": "array", "items": {"type": "string"}}},
-        "required": ["name", "description"]}}},
+    "properties": {
+        "symbols": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "kind": {"type": "string"},
+                    "description": {"type": "string"},
+                    "keywords": {"type": "array", "items": {"type": "string"}},
+                },
+                "required": ["name", "description"],
+            },
+        }
+    },
     "required": ["symbols"],
 }
 _KEYWORD_INSTR = (
     "Also output `keywords`: 4-8 SEARCH KEYWORD PHRASES a developer would type to find "
     "this symbol BY INTENT — behaviors, concepts, domain synonyms, the problem it solves. "
     "NOT the identifier spelled out, NOT generic words like 'function'/'helper'; for a "
-    "test, describe what it verifies. These expand the symbol's searchable vocabulary. ")
+    "test, describe what it verifies. These expand the symbol's searchable vocabulary. "
+)
 DESCRIBE_SYSTEM = (
     "You are given a source file. For EACH top-level definition — class, function, "
     "or method — IN ORDER, output its QUALIFIED name, its kind "
@@ -1348,11 +1631,12 @@ DESCRIBE_SYSTEM = (
     "type represents or manages. The name MUST be qualified by every enclosing "
     "class/impl/module exactly as the file spells it (`Class.method`, Rust "
     "`Type::method`) — a bare `run` for two different classes' `run` methods is "
-    "unusable, and such a row is discarded. " + _KEYWORD_INSTR
+    "unusable, and such a row is discarded. "
+    + _KEYWORD_INSTR
     + "Return every definition as JSON matching the schema. "
     # NB: the literal word 'json' is required here — Alibaba/qwen rejects a
     # response_format=json_object request whose messages never mention 'json'.
-    )
+)
 
 
 def _rows_to_meta(data: Any) -> dict[str, dict[str, Any]]:
@@ -1366,9 +1650,13 @@ def _rows_to_meta(data: Any) -> dict[str, dict[str, Any]]:
     out: dict[str, dict[str, Any]] = {}
     for s in _describe_rows(data):
         if isinstance(s, dict) and s.get("name") and s.get("description"):
-            out.setdefault(str(s["name"]), {
-                "description": s["description"],
-                "keywords": [str(k) for k in (s.get("keywords") or [])]})
+            out.setdefault(
+                str(s["name"]),
+                {
+                    "description": s["description"],
+                    "keywords": [str(k) for k in (s.get("keywords") or [])],
+                },
+            )
     return out
 
 
@@ -1377,9 +1665,16 @@ def describe_file(gen_cfg: Any, root: Path, relpath: str) -> dict[str, dict[str,
     pass. Independent of the LSP — just the file text — so the semantic facet works even
     where no server exists. Reuses the bulk structured generation."""
     from .generate import generate_structured
+
     src = (root / relpath).read_text()
-    data = generate_structured(gen_cfg, DESCRIBE_SYSTEM, src, DESCRIBE_SCHEMA,
-                               purpose="elaborate", schema_name="describe_symbols")
+    data = generate_structured(
+        gen_cfg,
+        DESCRIBE_SYSTEM,
+        src,
+        DESCRIBE_SCHEMA,
+        purpose="elaborate",
+        schema_name="describe_symbols",
+    )
     return _rows_to_meta(data)
 
 
@@ -1402,15 +1697,26 @@ def describe_symbols(gen_cfg: Any, symbols: list[dict]) -> dict[str, dict[str, A
     if not symbols:
         return {}
     from .generate import generate_structured
+
     blob = "\n\n".join(
-        f"# {s.get('kind','')} {s.get('fqn') or s.get('name','')}\n{s.get('_body','')}"
-        for s in symbols)
-    sysp = ("For EACH `# kind name`-delimited definition below, output its name — "
-            "COPIED VERBATIM from its `#` header, qualifiers and all — and ONE "
-            "concise sentence on what it does (intent, not the signature). "
-            + _KEYWORD_INSTR + "Cover every one, as JSON matching the schema.")  # 'json' for qwen
-    data = generate_structured(gen_cfg, sysp, blob, DESCRIBE_SCHEMA,
-                               purpose="elaborate", schema_name="describe_symbols")
+        f"# {s.get('kind', '')} {s.get('fqn') or s.get('name', '')}\n{s.get('_body', '')}"
+        for s in symbols
+    )
+    sysp = (
+        "For EACH `# kind name`-delimited definition below, output its name — "
+        "COPIED VERBATIM from its `#` header, qualifiers and all — and ONE "
+        "concise sentence on what it does (intent, not the signature). "
+        + _KEYWORD_INSTR
+        + "Cover every one, as JSON matching the schema."
+    )  # 'json' for qwen
+    data = generate_structured(
+        gen_cfg,
+        sysp,
+        blob,
+        DESCRIBE_SCHEMA,
+        purpose="elaborate",
+        schema_name="describe_symbols",
+    )
     return _rows_to_meta(data)
 
 
@@ -1437,10 +1743,12 @@ def match_meta(fqname: str, metas: dict[str, Any]) -> tuple[str, list[str]]:
     then passes the content_hash gate forever, which is not.
 
     Tolerates a bare-string value (legacy description-only rows)."""
+
     def _split(v: Any) -> tuple[str, list[str]]:
         if isinstance(v, dict):
             return v.get("description", ""), list(v.get("keywords") or [])
         return (v or ""), []
+
     if fqname in metas:
         return _split(metas[fqname])
     suffixes = [(k, v) for k, v in metas.items() if suffix_of(fqname, k)]
@@ -1470,14 +1778,32 @@ _unquote = tomlrec.unquote
 write_atomic = tomlrec.write_atomic
 
 
-_SCALARS = ("symbol_ref", "fqn", "name", "kind", "lang", "content_hash",
-            "file", "file_hash", "signature", "description")
+_SCALARS = (
+    "symbol_ref",
+    "fqn",
+    "name",
+    "kind",
+    "lang",
+    "content_hash",
+    "file",
+    "file_hash",
+    "signature",
+    "description",
+)
 # `scope` renders only when non-empty, like every other array here. Absence is
 # therefore "no scope", which is the truth for a language that has none — and
 # the schema stamp is what says the field was computed at all, so an entry
 # written before it existed cannot be mistaken for a C symbol.
-_ARRAYS = ("container", "scope", "symbol_was", "calls", "called_by", "references",
-           "name_terms", "keywords")
+_ARRAYS = (
+    "container",
+    "scope",
+    "symbol_was",
+    "calls",
+    "called_by",
+    "references",
+    "name_terms",
+    "keywords",
+)
 
 
 def _render(e: dict) -> str:
@@ -1487,13 +1813,13 @@ def _render(e: dict) -> str:
     # asserts one fact about all of them and can only be kept true by forbidding
     # partial writes. Per-entry, a mixed store is the ORDINARY state — which is what
     # makes conversion resumable without a lock or a sentinel.
-    lines.append(f'schema = {e.get("schema", 0)}')
-    lines.append(f'line = {e.get("line", 0)}')
+    lines.append(f"schema = {e.get('schema', 0)}")
+    lines.append(f"line = {e.get('line', 0)}")
     # `mtime` is DERIVED (see derive_mtime): the git commit date for committed code
     # (identical across machines → the tracked toml doesn't churn on sync) or the
     # on-disk mtime for locally-modified files. It's a record; the staleness GATE uses
     # the toml file's own mtime (Crib._revalidate), so it never needs git at query time.
-    lines.append(f'mtime = {e.get("mtime", 0)}')
+    lines.append(f"mtime = {e.get('mtime', 0)}")
     for key in _ARRAYS:
         # `keywords` is OPTIONAL and its presence is meaningful: a rendered
         # `keywords = []` means a describe pass ran and yielded none (don't retry
@@ -1561,10 +1887,10 @@ class SymbolIndex:
         try:
             self.root.mkdir(parents=True, exist_ok=True)
             self._schema_marker.write_text(f"{SYMBOL_SCHEMA_VERSION}\n")
-        except OSError as e:      # marker only — a lost write costs one extra sweep
-            print(f"[crib] could not record symbol schema version: {e}",
-                  file=sys.stderr)
-
+        except OSError as e:  # marker only — a lost write costs one extra sweep
+            print(
+                f"[crib] could not record symbol schema version: {e}", file=sys.stderr
+            )
 
     def _relname(self, ref: str) -> str:
         return f"{ref_slug(ref)}.toml"
@@ -1578,8 +1904,7 @@ class SymbolIndex:
         because a store written before that fix has real files under it."""
         out: list[str] = []
         for b in symbol_bindings(entry):
-            for cand in (f"{ref_slug(b)}.toml",
-                         f"{legacy_ref_slug(b)}.toml"):
+            for cand in (f"{ref_slug(b)}.toml", f"{legacy_ref_slug(b)}.toml"):
                 if cand not in out:
                     out.append(cand)
         return out
@@ -1624,8 +1949,8 @@ class SymbolIndex:
         if legacy and legacy not in was and legacy != out["symbol_ref"]:
             was.append(str(legacy))
         out["symbol_was"] = was
-        out.pop("module", None)          # only ever fed `fqname` and `parent`
-        out.pop("parent", None)          # derivable: the reference, minus one segment
+        out.pop("module", None)  # only ever fed `fqname` and `parent`
+        out.pop("parent", None)  # derivable: the reference, minus one segment
         return out
 
     def write(self, entry: dict) -> Path:
@@ -1679,8 +2004,11 @@ class SymbolIndex:
         conversion that is supposed to add it."""
         if not self.root.exists():
             return []
-        return [e for e in (_parse(p.read_text()) for p in self.root.glob("*.toml"))
-                if e.get("file") and e.get("name")]
+        return [
+            e
+            for e in (_parse(p.read_text()) for p in self.root.glob("*.toml"))
+            if e.get("file") and e.get("name")
+        ]
 
     def records(self) -> list[tuple[Path, dict]]:
         """Every parseable record with the path it actually lives at — for the
@@ -1753,5 +2081,6 @@ def _parse(text: str) -> dict:
         data = tomllib.loads(text)
     except tomllib.TOMLDecodeError:
         return _parse_dirty(text)
-    return {k: ([str(x) for x in v] if isinstance(v, list) else v)
-            for k, v in data.items()}
+    return {
+        k: ([str(x) for x in v] if isinstance(v, list) else v) for k, v in data.items()
+    }
