@@ -1872,9 +1872,7 @@ class Crib:
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
         proj = project or link.project
         crib_file = link.root / ".crib"
-        crib_at = (
-            crib_file.stat().st_mtime if crib_file.exists() else None
-        )
+        crib_at = crib_file.stat().st_mtime if crib_file.exists() else None
         running = self.code_jobs.get(proj)
         if running is not None and not running["task"].done():
             if running["crib_at"] != crib_at:
@@ -1892,7 +1890,7 @@ class Crib:
             result = await running["task"]
             return {**result, "joined": True}
         task = asyncio.create_task(
-            self._project_index_now(project, cwd, budget_s)
+            self._project_index_now(proj, link, created, budget_s)
         )
         self.code_jobs[proj] = {"task": task, "crib_at": crib_at}
         try:
@@ -1902,24 +1900,27 @@ class Crib:
 
     async def _project_index_now(
         self,
-        project: str | None,
-        cwd: Path | None,
+        proj: str,
+        link: CribLink,
+        created: bool,
         budget_s: float | None,
     ) -> dict[str, Any]:
-        """The unguarded sweep body — caller (project_index) owns join/cancel."""
-        link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
-        proj = project or link.project
+        """The unguarded sweep body — the caller (project_index) owns
+        resolution, join/cancel, and passes the link + created flag in
+        (re-ensuring here would report crib_created=False on the very run
+        that created the `.crib`)."""
+        root = link.root
+        if root is None:  # pragma: no cover — ensure always resolves a root
+            raise CribUserError(
+                f"project {proj!r} has no source root; pass project_path="
+            )
         new_project = proj not in self.projects()  # before indexing creates its dirs
-        docs = (
-            await self.index_docs_insitu(proj, link.root) if link.doc_patterns else {}
-        )
-        globs = link.paths or self._detect_code_globs(link.root)
-        crib_file = link.root / ".crib"
-        crib_at = (
-            crib_file.stat().st_mtime if crib_file.exists() else None
-        )
+        docs = await self.index_docs_insitu(proj, root) if link.doc_patterns else {}
+        globs = link.paths or self._detect_code_globs(root)
+        crib_file = root / ".crib"
+        crib_at = crib_file.stat().st_mtime if crib_file.exists() else None
         code = await self._index_project_code(
-            proj, link.root, globs, budget_s, crib_at=crib_at
+            proj, root, globs, budget_s, crib_at=crib_at
         )
         # No learning re-attach here. The sweep converts ENTRIES as a side effect
         # (every write normalizes identity), and the learnings join reads bindings,
@@ -1946,8 +1947,7 @@ class Crib:
         partial state (call again to keep waiting)."""
         proj = project or self._proj_from_cwd(cwd)
         if proj is None:
-            raise CribUserError(
-                "project_wait: pass project= or run inside the repo")
+            raise CribUserError("project_wait: pass project= or run inside the repo")
         job = self.code_jobs.get(proj)
         if job is None or job["task"].done():
             return {"project": proj, "running": False}
@@ -1977,8 +1977,7 @@ class Crib:
         `{cancelled: false}` when nothing is running."""
         proj = project or self._proj_from_cwd(cwd)
         if proj is None:
-            raise CribUserError(
-                "project_cancel: pass project= or run inside the repo")
+            raise CribUserError("project_cancel: pass project= or run inside the repo")
         job = self.code_jobs.get(proj)
         if job is None or job["task"].done():
             return {"project": proj, "cancelled": False, "running": False}
@@ -1990,8 +1989,7 @@ class Crib:
             "done_at_cancel": sw.get("done"),
             "total": sw.get("total"),
             "note": (
-                "completed files remain (hash-gated); re-run project index "
-                "to resume"
+                "completed files remain (hash-gated); re-run project index to resume"
             ),
         }
 

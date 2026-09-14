@@ -1,51 +1,54 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+    push:
+        branches: [main]
+    pull_request:
 
 jobs:
-  check:
-    # Explicit name: the check-run name is what branch protection matches on, and the
-    # bare job id "check" is also used by vendored-drift.yml.
-    name: tests
-    runs-on: ubuntu-latest
-    steps:
-      # vendor/llmkit is deliberately NOT checked out: it is a reading copy for the
-      # in-tree xref / code index, while the code under test imports `llmkit` from the
-      # published polyllmkit wheel. Fetching it would only lint-and-collect a second
-      # copy of the same package.
-      - uses: actions/checkout@v6
+    check:
+        # Explicit name: the check-run name is what branch protection matches
+        # on, and the bare job id "check" is also used by vendored-drift.yml.
+        name: tests
+        runs-on: ubuntu-latest
+        steps:
+            # vendor/llmkit is deliberately NOT checked out: it is a reading
+            # copy for the in-tree xref / code index, while the code under test
+            # imports `llmkit` from the published polyllmkit wheel. Fetching it
+            # would only lint-and-collect a second copy of the same package.
+            - uses: actions/checkout@v6
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v10
-        with:
-          python-version: "3.13"
+            - name: Install uv
+              uses: astral-sh/setup-uv@v10
+              with:
+                  python-version: "3.13"
 
-      # tests/test_sync.py asserts GitBacking falls back to the *local* default branch.
-      # A runner's git has no init.defaultBranch set, so it falls back to "master" and
-      # the assertion fails on a difference in the runner's git config rather than in
-      # the code. Configure the default the project actually uses.
-      - name: Configure git defaults
-        run: git config --global init.defaultBranch main
+            # tests/test_sync.py asserts GitBacking falls back to the *local*
+            # default branch. A runner's git has no init.defaultBranch set, so it
+            # falls back to "master" and the assertion fails on a difference in
+            # the runner's git config rather than in the code. Configure the
+            # default the project actually uses.
+            - name: Configure git defaults
+              run: git config --global init.defaultBranch main
 
-      - name: Install (project + dev group, from uv.lock)
-        run: uv sync
+            - name: Install (project + dev group, from uv.lock)
+              run: uv sync
 
-      # Lint before the suite: it takes a second and its failures are unambiguous,
-      # so a style break reports as a style break rather than as whatever the tests
-      # happen to say three minutes later.
-      - name: Lint (ruff)
-        run: uv run ruff check .
+            # Lint before the suite: it takes a second and its failures are
+            # unambiguous, so a style break reports as a style break rather
+            # than as whatever the tests happen to say three minutes later.
+            - name: Lint (ruff)
+              run: uv run ruff check .
 
-      # The retrieval quality gate (tests/test_eval_retrieval.py) needs a seeded crib
-      # store and a warm daemon, neither of which exists on a runner; its harness exits
-      # 2 there and the test skips itself. Everything else is a plain unit test.
-      - name: Tests (pytest)
-        # A runner is slower and has fewer cores than a developer machine, and the
-        # code-index tests wait on a cold basedpyright; the stock 30s LSP timeout is
-        # not enough for its first callHierarchy reply here.
-        env:
-          CRIB_LSP_TIMEOUT: "180"
-        run: uv run pytest -q
+            # The retrieval quality gate (tests/test_eval_retrieval.py) needs a
+            # seeded crib store and a warm daemon, neither of which exists on a
+            # runner; its harness exits 2 there and the test skips itself.
+            # Everything else is a plain unit test.
+            - name: Tests (pytest)
+              # A runner is slower and has fewer cores than a developer machine,
+              # and the code-index tests wait on a cold basedpyright; the stock
+              # 30s LSP timeout is
+              # not enough for its first callHierarchy reply here.
+              env:
+                  CRIB_LSP_TIMEOUT: "180"
+              run: uv run pytest -q

@@ -870,9 +870,7 @@ def build_server(crib: Crib | None = None):
         `{running: false}` when nothing is running; the final result if the
         sweep completes within wait_s; else the live partial state (call again
         to keep waiting). Never starts a sweep."""
-        return await crib.project_wait(
-            project, cwd=_cwd(project_path), wait_s=wait_s
-        )
+        return await crib.project_wait(project, cwd=_cwd(project_path), wait_s=wait_s)
 
     @crib_tool("source")
     async def project_cancel(

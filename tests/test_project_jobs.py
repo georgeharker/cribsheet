@@ -46,8 +46,9 @@ def _mock_resolution(crib: Crib, monkeypatch, link: SimpleNamespace) -> None:
 def _fake_indexer(crib: Crib, monkeypatch, calls: list[str]) -> None:
     """Per-file indexer: records each call, returns a clean structural result."""
 
-    def fake(rt, rel, proj, patch_edges, existing=None,
-             describe_mode="inline", sweep=False):
+    def fake(
+        rt, rel, proj, patch_edges, existing=None, describe_mode="inline", sweep=False
+    ):
         calls.append(rel)
         return {"symbols": 1, "described": 1}
 
@@ -55,8 +56,9 @@ def _fake_indexer(crib: Crib, monkeypatch, calls: list[str]) -> None:
 
 
 def _slow_indexer(crib: Crib, monkeypatch, calls: list[str], delay: float) -> None:
-    def fake(rt, rel, proj, patch_edges, existing=None,
-             describe_mode="inline", sweep=False):
+    def fake(
+        rt, rel, proj, patch_edges, existing=None, describe_mode="inline", sweep=False
+    ):
         calls.append(rel)
         import time
 
@@ -69,9 +71,7 @@ def _slow_indexer(crib: Crib, monkeypatch, calls: list[str], delay: float) -> No
 # --- join ---------------------------------------------------------------------
 
 
-def test_join_returns_running_result_without_second_sweep(
-    crib, tmp_path, monkeypatch
-):
+def test_join_returns_running_result_without_second_sweep(crib, tmp_path, monkeypatch):
     root, link = _repo(tmp_path)
     _mock_resolution(crib, monkeypatch, link)
     calls: list[str] = []
@@ -79,16 +79,16 @@ def test_join_returns_running_result_without_second_sweep(
 
     async def scenario():
         t1 = asyncio.create_task(crib.project_index("p"))
-        await asyncio.sleep(0.05)               # sweep 1 is mid-flight
-        r2 = await crib.project_index("p")      # the re-invoke: must JOIN
+        await asyncio.sleep(0.05)  # sweep 1 is mid-flight
+        r2 = await crib.project_index("p")  # the re-invoke: must JOIN
         r1 = await t1
         return r1, r2, calls
 
     r1, r2, calls = asyncio.run(scenario())
     assert r1["files_indexed"] == 2
-    assert r2["joined"] is True                 # the re-invoke joined
-    assert r2["files_indexed"] == 2             # same result, not a second sweep
-    assert sorted(calls) == ["a.py", "b.py"]    # each file indexed EXACTLY once
+    assert r2["joined"] is True  # the re-invoke joined
+    assert r2["files_indexed"] == 2  # same result, not a second sweep
+    assert sorted(calls) == ["a.py", "b.py"]  # each file indexed EXACTLY once
 
 
 # --- scope conflict -----------------------------------------------------------
@@ -114,9 +114,7 @@ def test_scope_conflict_on_crib_change(crib, tmp_path, monkeypatch):
 # --- cancel -------------------------------------------------------------------
 
 
-def test_cancel_stops_the_sweep_and_keeps_completed_files(
-    crib, tmp_path, monkeypatch
-):
+def test_cancel_stops_the_sweep_and_keeps_completed_files(crib, tmp_path, monkeypatch):
     root, link = _repo(tmp_path)
     _mock_resolution(crib, monkeypatch, link)
     calls: list[str] = []
@@ -124,7 +122,7 @@ def test_cancel_stops_the_sweep_and_keeps_completed_files(
 
     async def scenario():
         t = asyncio.create_task(crib.project_index("p"))
-        await asyncio.sleep(0.3)                # mid-flight: 5 files × 0.4s each
+        await asyncio.sleep(0.3)  # mid-flight: 5 files × 0.4s each
         r = await crib.project_cancel("p", cwd=root)
         with pytest.raises(asyncio.CancelledError):
             await t
@@ -132,8 +130,8 @@ def test_cancel_stops_the_sweep_and_keeps_completed_files(
 
     r, calls = asyncio.run(scenario())
     assert r["cancelled"] is True
-    assert r["done_at_cancel"] >= 0             # mid-flight snapshot (may be 0)
-    assert crib.status()["sweeps"] == {}        # counters cleaned up
+    assert r["done_at_cancel"] >= 0  # mid-flight snapshot (may be 0)
+    assert crib.status()["sweeps"] == {}  # counters cleaned up
 
 
 def test_cancel_when_idle(crib, tmp_path):
@@ -153,7 +151,7 @@ def test_wait_returns_final_when_sweep_fits(crib, tmp_path, monkeypatch):
 
     async def scenario():
         t = asyncio.create_task(crib.project_index("p"))
-        await asyncio.sleep(0.05)               # sweep is running
+        await asyncio.sleep(0.05)  # sweep is running
         r = await crib.project_wait("p", wait_s=5.0)
         await t
         return r
@@ -172,7 +170,7 @@ def test_wait_returns_partial_when_slow(crib, tmp_path, monkeypatch):
 
     async def scenario():
         t = asyncio.create_task(crib.project_index("p"))
-        await asyncio.sleep(0.05)               # sweep registered, files queued
+        await asyncio.sleep(0.05)  # sweep registered, files queued
         r = await crib.project_wait("p", wait_s=0.05)
         await t
         return r
@@ -180,4 +178,4 @@ def test_wait_returns_partial_when_slow(crib, tmp_path, monkeypatch):
     r = asyncio.run(scenario())
     assert r["running"] is True
     assert r["complete"] is False
-    assert r["resume_hint"]                     # the timed-out client's next move
+    assert r["resume_hint"]  # the timed-out client's next move

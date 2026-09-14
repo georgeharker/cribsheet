@@ -539,6 +539,26 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
             )
         )
         return
+    if verb == "wait":
+        if d.get("running"):
+            print(
+                f"{proj}: still running — {d.get('done')}/{d.get('total')} files; "
+                f"call `crib project wait` again to keep waiting"
+            )
+        else:
+            done = " (already finished)" if d.get("complete") else " (nothing running)"
+            print(f"{proj}: not running{done}")
+        return
+    if verb == "cancel":
+        if d.get("cancelled"):
+            print(
+                f"{proj}: cancelled at {d.get('done_at_cancel')}/{d.get('total')} "
+                f"files — completed files remain; re-run `crib project index` "
+                f"to resume"
+            )
+        else:
+            print(f"{proj}: nothing running")
+        return
     # setup / index
     made = "  (created .crib)" if d.get("crib_created") else ""
     docs = f", {d['docs_imported']} docs imported" if d.get("docs_imported") else ""
@@ -1265,8 +1285,19 @@ def build_parser() -> argparse.ArgumentParser:
         ("setup", "ensure .crib + import docs + index all code"),
         ("index", "(re)index the repo's code + in-situ docs from its .crib"),
         ("status", "is it indexed? counts, kinds, .crib paths"),
+        ("wait", "bounded-block on a running index job (join primitive)"),
+        ("cancel", "cancel a running index sweep"),
     ):
         _sp = pjsub.add_parser(_v, help=_h)
+        if _v in ("setup", "index"):
+            _sp.add_argument("--budget", type=float, default=None,
+                             dest="budget_s",
+                             help="soft deadline; unfinished files are deferred")
+        if _v in ("index", "wait"):
+            _sp.add_argument("--wait-s", type=float, default=None,
+                             dest="wait_s",
+                             help="bound this CALL (the sweep keeps running "
+                             "daemon-side); re-invoke to re-join", )
         proj(_sp)
     for _v, _h in (
         (
@@ -2421,11 +2452,27 @@ VERBS: dict[str, Verb] = {
     ),
     "project index": Verb(
         "project_index",
-        lambda a: {"project": _proj_of(a)},
+        lambda a: {"project": _proj_of(a), "wait_s": getattr(a, "wait_s", None)},
         _E_project("index"),
         is_async=True,
         policy="source",
-        mcp=f"{_PROJ} budget_s=None",
+        mcp=f"{_PROJ} budget_s=None wait_s=None",
+    ),
+    "project wait": Verb(
+        "project_wait",
+        lambda a: {"project": _proj_of(a), "wait_s": getattr(a, "wait_s", None)},
+        _E_project("wait"),
+        is_async=True,
+        policy="none",
+        mcp=f"{_PROJ} wait_s=30.0",
+    ),
+    "project cancel": Verb(
+        "project_cancel",
+        lambda a: {"project": _proj_of(a)},
+        _E_project("cancel"),
+        is_async=True,
+        policy="source",
+        mcp=f"{_PROJ}",
     ),
     "project status": Verb(
         "project_status",
