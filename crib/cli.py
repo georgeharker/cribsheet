@@ -1290,14 +1290,22 @@ def build_parser() -> argparse.ArgumentParser:
     ):
         _sp = pjsub.add_parser(_v, help=_h)
         if _v in ("setup", "index"):
-            _sp.add_argument("--budget", type=float, default=None,
-                             dest="budget_s",
-                             help="soft deadline; unfinished files are deferred")
+            _sp.add_argument(
+                "--budget",
+                type=float,
+                default=None,
+                dest="budget_s",
+                help="soft deadline; unfinished files are deferred",
+            )
         if _v in ("index", "wait"):
-            _sp.add_argument("--wait-s", type=float, default=None,
-                             dest="wait_s",
-                             help="bound this CALL (the sweep keeps running "
-                             "daemon-side); re-invoke to re-join", )
+            _sp.add_argument(
+                "--wait-s",
+                type=float,
+                default=None,
+                dest="wait_s",
+                help="bound this CALL (the sweep keeps running "
+                "daemon-side); re-invoke to re-join",
+            )
         proj(_sp)
     for _v, _h in (
         (
