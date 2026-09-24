@@ -778,7 +778,7 @@ def main(argv: list[str] | None = None) -> int:
         type=float,
         default=None,
         dest="summary_weight",
-        help="RRF fusion weight of summary aliases for --lift-summaries "
+        help="alias-trust scale of summary aliases for --lift-summaries "
         "(overrides config; e.g. 0.15 damps broad summaries)",
     )
     args = ap.parse_args(argv)

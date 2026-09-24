@@ -1376,7 +1376,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=float,
         default=None,
         dest="summary_weight",
-        help="RRF fusion weight of the summary alias ranking "
+        help="trust scale of summary alias vectors vs body dense "
         "(overrides [retrieve].summary_weight)",
     )
     s.add_argument(
@@ -2037,7 +2037,6 @@ def cmd_info(as_json: bool) -> None:
         },
         "retrieve": {
             "hybrid": config.retrieve.hybrid,
-            "rrf_k": config.retrieve.rrf_k,
             "rerank": config.retrieve.rerank,
             "rerank_model": config.retrieve.rerank_model,
         },
@@ -2071,7 +2070,7 @@ def cmd_info(as_json: bool) -> None:
     rt = config.retrieve
     rr = f" + rerank ({rt.rerank_model.split('/')[-1]})" if rt.rerank else ""
     print(
-        f"{'retrieve':18} {'hybrid (dense+BM25, RRF)' if rt.hybrid else 'dense only'}{rr}"
+        f"{'retrieve':18} {'hybrid (dense+BM25 score blend)' if rt.hybrid else 'dense only'}{rr}"
     )
     print(
         f"{'daemon':18} {'on' if d.enabled else 'off'}  "

@@ -81,10 +81,12 @@ class MemoryConfig:
 
 @dataclass
 class RetrieveConfig:
-    """How `lookup`/`apropos` rank. `hybrid` fuses the dense vector ranking with
-    a BM25 lexical ranking (reciprocal-rank fusion), which fixes terse keyword
-    queries where exact-term sections lose to vaguely-on-topic prose. `rrf_k`
-    is the RRF damping constant (60 is the canonical value).
+    """How `lookup`/`apropos` rank. `hybrid` blends the dense vector ranking with
+    a BM25 lexical ranking by SCORE — dense-dominant fusion (`raw_cosine + beta ×
+    minmax(bm25)`, beta=0.5 notes / 1.0 code), never RRF intra-project (measured:
+    RRF's flat rank-space cannot move a raw cosine; see retrieve.py's module
+    docstring). RRF is used ONLY cross-project, in code_lookup's fan-out, where
+    per-project lists sit on incomparable scales.
 
     `rerank` folds a cross-encoder over the top `rerank_top_n` candidates into the
     (score-based, dense-dominant) fusion as a RANGE-MATCHED term — it reads (query,
@@ -94,7 +96,6 @@ class RetrieveConfig:
     and degrades gracefully to the fused order if the model is unavailable."""
 
     hybrid: bool = True
-    rrf_k: int = 60
     rerank: bool = True
     rerank_model: str = "Xenova/ms-marco-MiniLM-L-6-v2"  # small ONNX cross-encoder
     rerank_top_n: int = 20  # candidate pool to rerank
