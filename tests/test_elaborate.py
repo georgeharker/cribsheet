@@ -7,6 +7,7 @@ from __future__ import annotations
 import asyncio
 
 import pytest
+from typing import Any
 
 from crib.app import Crib
 from crib.config import Config
@@ -20,6 +21,38 @@ def run(coro):
     return asyncio.run(coro)
 
 
+class _DocStore:
+    """The one Store fake these retrieval-cache tests need: `get_docs` canned,
+    every other protocol member stubbed (never called — the caches only read docs)."""
+
+    def __init__(self, docs: dict[str, tuple[str, dict[str, Any]]]) -> None:
+        self._docs = docs
+
+    def get_docs(self, where: dict[str, Any]) -> dict[str, tuple[str, dict[str, Any]]]:
+        return self._docs
+
+    def upsert(self, records: Any) -> None:
+        raise AssertionError("not called in these tests")
+
+    def delete(self, ids: Any) -> None:
+        raise AssertionError("not called in these tests")
+
+    def set_meta(self, updates: Any) -> None:
+        raise AssertionError("not called in these tests")
+
+    def get_meta(self, where: Any) -> dict[str, dict[str, Any]]:
+        return {}
+
+    def query(self, embedding: Any, k: Any, where: Any = None) -> list:
+        return []
+
+    def current_dim(self) -> int | None:
+        return None
+
+    def recreate(self) -> None:
+        pass
+
+
 @pytest.fixture()
 def crib(tmp_path, monkeypatch):
     monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "config"))
@@ -31,12 +64,16 @@ def crib(tmp_path, monkeypatch):
 
 # --- parsing -----------------------------------------------------------------
 def test_parse_terms_strips_noise_and_dedupes():
-    text = "```\n- restart server\n1. Restart Server\n* index file\n\n\"lexical cache\"\n```"
+    text = (
+        '```\n- restart server\n1. Restart Server\n* index file\n\n"lexical cache"\n```'
+    )
     terms = parse_terms(text)
     assert "restart server" in terms
     assert "index file" in terms
     assert "lexical cache" in terms
-    assert sum(t.lower() == "restart server" for t in terms) == 1   # case-insensitive dedupe
+    assert (
+        sum(t.lower() == "restart server" for t in terms) == 1
+    )  # case-insensitive dedupe
 
 
 # --- store -------------------------------------------------------------------
@@ -55,50 +92,52 @@ def test_store_prune_drops_orphans_keeps_live_and_fresh(tmp_path):
 
     store = SectionIndex(tmp_path)
     store.write("kw", "live", ["a"], relpath="n.md", heading="H")
-    store.write("kw", "orphan", ["b"], relpath="n.md", heading="H")   # edited away
-    cutoff = time.time() + 1                     # both entries predate the "pass"
+    store.write("kw", "orphan", ["b"], relpath="n.md", heading="H")  # edited away
+    cutoff = time.time() + 1  # both entries predate the "pass"
     store.write("kw", "mid-pass", ["c"], relpath="m.md", heading="H")
     # mid-pass was written AFTER the live set was snapshotted → spared this round
-    (tmp_path / "keyword_index" / "kw" / "mid-pass.toml").touch()     # mtime ≥ cutoff bound
+    (
+        tmp_path / "keyword_index" / "kw" / "mid-pass.toml"
+    ).touch()  # mtime ≥ cutoff bound
     import os
-    os.utime(tmp_path / "keyword_index" / "kw" / "mid-pass.toml", (cutoff + 1, cutoff + 1))
+
+    os.utime(
+        tmp_path / "keyword_index" / "kw" / "mid-pass.toml", (cutoff + 1, cutoff + 1)
+    )
 
     assert store.prune("kw", {"live"}, before=cutoff) == 1
-    assert store.has("kw", "live")               # in the live set
-    assert not store.has("kw", "orphan")         # stale hash → GC'd
-    assert store.has("kw", "mid-pass")           # newer than the pass → spared
+    assert store.has("kw", "live")  # in the live set
+    assert not store.has("kw", "orphan")  # stale hash → GC'd
+    assert store.has("kw", "mid-pass")  # newer than the pass → spared
 
 
 def test_store_toml_is_deterministic(tmp_path):
     a, b = SectionIndex(tmp_path / "a"), SectionIndex(tmp_path / "b")
     p1 = a.write("kw", "h", ["x", "y"], relpath="n.md", heading="H", model="m")
     p2 = b.write("kw", "h", ["x", "y"], relpath="n.md", heading="H", model="m")
-    assert p1.read_text() == p2.read_text()   # byte-identical → merge-conflict-free
+    assert p1.read_text() == p2.read_text()  # byte-identical → merge-conflict-free
 
 
 # --- BM25 consumption (the deterministic lift proof) -------------------------
 def test_lexical_cache_folds_elaboration_terms():
     # neither body mentions "kubernetes"; only c1's elaboration does.
     docs = {
-        "c1": ("the deployment restarts on config change",
-               {"project": "p", "content_hash": "h1"}),
-        "c2": ("an unrelated note about cats",
-               {"project": "p", "content_hash": "h2"}),
+        "c1": (
+            "the deployment restarts on config change",
+            {"project": "p", "content_hash": "h1"},
+        ),
+        "c2": ("an unrelated note about cats", {"project": "p", "content_hash": "h2"}),
     }
-
-    class FakeStore:
-        def get_docs(self, where):
-            return docs
 
     def elab(project, ch, labels):
         return ["kubernetes orchestration"] if ch == "h1" else []
 
-    lc = LexicalCache(FakeStore(), elab)
+    lc = LexicalCache(_DocStore(docs), elab)
 
-    ids, _, bm = lc.get("p", ())                      # no labels → body only
+    ids, _, bm = lc.get("p", ())  # no labels → body only
     assert max(bm.scores(tokenize("kubernetes"))) == 0.0
 
-    ids, _, bm = lc.get("p", ("keywords",))           # label folded in
+    ids, _, bm = lc.get("p", ("keywords",))  # label folded in
     scores = bm.scores(tokenize("kubernetes"))
     assert scores[ids.index("c1")] > 0.0
     assert scores[ids.index("c2")] == 0.0
@@ -109,48 +148,52 @@ def test_code_fence_comments_are_not_headings():
     docs get bogus sections and both _split_sections and section_line_map keys
     diverge from reality."""
     from crib.chunk import _split_sections, section_line_map
-    body = ("# Real\ntext\n```toml\n# not a heading\nk = 1\n```\nmore\n"
-            "## Second\nbody\n")
+
+    body = "# Real\ntext\n```toml\n# not a heading\nk = 1\n```\nmore\n## Second\nbody\n"
     heads = [s.heading_path for s in _split_sections(body)]
-    assert heads == [["Real"], ["Real", "Second"]]      # fence comment ignored
+    assert heads == [["Real"], ["Real", "Second"]]  # fence comment ignored
     assert list(section_line_map(body).keys()) == ["Real", "Real/Second"]
 
 
 def test_section_hash_invariant_to_windowing():
     from crib.chunk import chunk_note
+
     # a long section split into multiple windows: all windows share one section_hash
     body = "# H\n\n" + " ".join(f"word{i}" for i in range(800))
     small = chunk_note("p", "n.md", "id", body, window_words=100, overlap=20)
     big = chunk_note("p", "n.md", "id", body, window_words=400, overlap=40)
-    assert len({c.section_hash for c in small}) == 1        # one section
-    assert len(small) > len(big)                            # different windowing
-    assert small[0].section_hash == big[0].section_hash     # ...same section id
+    assert len({c.section_hash for c in small}) == 1  # one section
+    assert len(small) > len(big)  # different windowing
+    assert small[0].section_hash == big[0].section_hash  # ...same section id
 
 
 def test_downweight_scales_elaboration_contribution():
     # c1's only "kubernetes" match comes from its elaboration term (section-keyed)
-    docs = {"c1": ("deployment restarts", {"project": "p", "section_hash": "s1"}),
-            "c2": ("unrelated cats", {"project": "p", "section_hash": "s2"})}
+    docs = {
+        "c1": ("deployment restarts", {"project": "p", "section_hash": "s1"}),
+        "c2": ("unrelated cats", {"project": "p", "section_hash": "s2"}),
+    }
 
-    class FakeStore:
-        def get_docs(self, where):
-            return docs
-
-    lc = LexicalCache(FakeStore(),
-                      lambda pr, sh, labels: ["kubernetes"] if sh == "s1" else [])
+    lc = LexicalCache(
+        _DocStore(docs),
+        lambda pr, sh, labels: ["kubernetes"] if sh == "s1" else [],
+    )
     ids, _, bm_full = lc.get("p", ("kw",), 1.0)
     ids, _, bm_half = lc.get("p", ("kw",), 0.5)
     q = tokenize("kubernetes")
     full = bm_full.scores(q)[ids.index("c1")]
     half = bm_half.scores(q)[ids.index("c1")]
-    assert full > half > 0.0                 # weight 0.5 scores lower but still hits
+    assert full > half > 0.0  # weight 0.5 scores lower but still hits
 
 
 # --- elaborate verb (fake generator) ----------------------------------------
 def test_elaborate_writes_store_and_skips_existing(crib, monkeypatch):
-    crib.config.generate.bulk = False   # exercise the per-section path (mop-up code)
-    run(crib.store_note("The deployment restarts on config change.",
-                        title="deploy", project="p"))
+    crib.config.generate.bulk = False  # exercise the per-section path (mop-up code)
+    run(
+        crib.store_note(
+            "The deployment restarts on config change.", title="deploy", project="p"
+        )
+    )
 
     calls = {"n": 0}
 
@@ -166,12 +209,14 @@ def test_elaborate_writes_store_and_skips_existing(crib, monkeypatch):
 
     store = SectionIndex(crib.paths.project_dir("p"))
     # every written chunk carries the generated terms
-    assert any(store.read_terms("keywords", ch.split(".")[0])
-               for ch in [p.name for p in (store.root / "keywords").glob("*.toml")])
+    assert any(
+        store.read_terms("keywords", ch.split(".")[0])
+        for ch in [p.name for p in (store.root / "keywords").glob("*.toml")]
+    )
 
-    out2 = run(crib.elaborate("keywords", project="p"))   # content-addressed: skip
+    out2 = run(crib.elaborate("keywords", project="p"))  # content-addressed: skip
     assert out2["written"] == 0 and out2["skipped"] >= 1
-    assert calls["n"] == first_calls                       # no new LLM calls
+    assert calls["n"] == first_calls  # no new LLM calls
 
 
 def test_elaborate_unknown_label_errors(crib):
@@ -186,32 +231,39 @@ def test_summary_alias_cache_ranks_section_by_rephrasing():
     body) is surfaced via its alias vector — the dense-side proof."""
     from crib.embed import HashEmbedder
     from crib.retrieve import SummaryVectorCache
-    docs = {"c1": ("body text one", {"project": "p", "section_hash": "s1"}),
-            "c2": ("body text two", {"project": "p", "section_hash": "s2"})}
 
-    class FakeStore:
-        def get_docs(self, where):
-            return docs
+    docs = {
+        "c1": ("body text one", {"project": "p", "section_hash": "s1"}),
+        "c2": ("body text two", {"project": "p", "section_hash": "s2"}),
+    }
 
     emb = HashEmbedder(dim=64)
 
     def summaries(pr, sh, labels):
-        return ["kubernetes orchestration platform"] if sh == "s1" else \
-               ["feline domestic animals"]
+        return (
+            ["kubernetes orchestration platform"]
+            if sh == "s1"
+            else ["feline domestic animals"]
+        )
 
-    cache = SummaryVectorCache(FakeStore(), emb, summaries)
+    cache = SummaryVectorCache(_DocStore(docs), emb, summaries)
     qv = emb.embed_query(["kubernetes orchestration platform"])[0]
     best = cache.best_cosines("p", ("summary",), qv)
     # s1's rep chunk carries the max alias cosine — a REAL dense score the caller
-    # max-merges into the dense arm (multi-vector), not a rank for a fused list
-    assert best["c1"] > best.get("c2", -2.0)
-    assert best["c1"] > 0.9                    # paraphrase-identical alias ≈ 1.0
+    # max-merges into the dense arm (multi-vector), not a rank for a fused list.
+    # Values are (cosine, winning_label) pairs — per-hit signal annotation.
+    assert best["c1"][0] > best.get("c2", (-2.0, ""))[0]
+    assert best["c1"][0] > 0.9  # paraphrase-identical alias ≈ 1.0
+    assert best["c1"][1] == "summary"  # the winning alias's label rides along
 
 
 def test_summarize_writes_summary_index(crib, monkeypatch):
-    crib.config.generate.bulk = False   # per-section path
-    run(crib.store_note("The deployment restarts on config change.",
-                        title="deploy", project="p"))
+    crib.config.generate.bulk = False  # per-section path
+    run(
+        crib.store_note(
+            "The deployment restarts on config change.", title="deploy", project="p"
+        )
+    )
 
     async def fake(cfg, system, user, purpose="summarize", timeout=None):
         return "a rephrasing\nanother framing\na gist"
@@ -229,19 +281,37 @@ def test_elaborate_bulk_path_covers_all_sections(crib, monkeypatch):
     and no per-section mop-up call is needed."""
     import re
 
-    run(crib.store_note("# Alpha\nThe alpha ring buffer.\n\n## Beta\nBeta token "
-                        "encryption with fernet.\n", title="doc", project="p"))
-    assert crib.config.generate.bulk is True   # default
+    run(
+        crib.store_note(
+            "# Alpha\nThe alpha ring buffer.\n\n## Beta\nBeta token "
+            "encryption with fernet.\n",
+            title="doc",
+            project="p",
+        )
+    )
+    assert crib.config.generate.bulk is True  # default
 
     struct_calls = {"n": 0}
 
-    async def fake_struct(cfg, system, user, schema, purpose="elaborate",
-                          schema_name="emit", schema_description="", timeout=None):
+    async def fake_struct(
+        cfg,
+        system,
+        user,
+        schema,
+        purpose="elaborate",
+        schema_name="emit",
+        schema_description="",
+        timeout=None,
+    ):
         struct_calls["n"] += 1
         heads = re.findall(r"<<< SECTION: (.*?) >>>", user)
         # the schema names each facet's field by its LABEL ("keywords" here)
-        return {"sections": [{"heading": h, "keywords": ["kubernetes", "orchestration"]}
-                             for h in heads]}
+        return {
+            "sections": [
+                {"heading": h, "keywords": ["kubernetes", "orchestration"]}
+                for h in heads
+            ]
+        }
 
     async def fake_mop(cfg, system, user, purpose="elaborate", timeout=None):
         raise AssertionError("mop-up should not run when bulk covers all sections")
@@ -251,22 +321,38 @@ def test_elaborate_bulk_path_covers_all_sections(crib, monkeypatch):
 
     out = run(crib.elaborate("keywords", project="p"))
     assert out["written"] >= 2 and out["errors"] == 0
-    assert out["bulk_docs"] == 1 and struct_calls["n"] == 1   # one call for the whole doc
+    assert (
+        out["bulk_docs"] == 1 and struct_calls["n"] == 1
+    )  # one call for the whole doc
     store = SectionIndex(crib.paths.project_dir("p"))
-    assert store.read_terms("keywords",
-                            [p.name.split(".")[0]
-                             for p in (store.root / "keywords").glob("*.toml")][0])
+    assert store.read_terms(
+        "keywords",
+        [p.name.split(".")[0] for p in (store.root / "keywords").glob("*.toml")][0],
+    )
 
 
 def test_elaborate_bulk_miss_falls_back_to_mopup(crib, monkeypatch):
     """A section the bulk call omits (non-conformance) is swept by the per-section
     mop-up — the content-addressed convergence guarantee."""
-    run(crib.store_note("# Alpha\nAlpha body.\n\n## Beta\nBeta body.\n",
-                        title="doc", project="p"))
+    run(
+        crib.store_note(
+            "# Alpha\nAlpha body.\n\n## Beta\nBeta body.\n", title="doc", project="p"
+        )
+    )
 
-    async def fake_struct(cfg, system, user, schema, purpose="elaborate",
-                          schema_name="emit", schema_description="", timeout=None):
-        return {"sections": [{"heading": "Doc/Alpha", "keywords": ["alpha-term"]}]}  # drops Beta
+    async def fake_struct(
+        cfg,
+        system,
+        user,
+        schema,
+        purpose="elaborate",
+        schema_name="emit",
+        schema_description="",
+        timeout=None,
+    ):
+        return {
+            "sections": [{"heading": "Doc/Alpha", "keywords": ["alpha-term"]}]
+        }  # drops Beta
 
     mop = {"headings": []}
 
@@ -278,13 +364,15 @@ def test_elaborate_bulk_miss_falls_back_to_mopup(crib, monkeypatch):
     monkeypatch.setattr("crib.generate.agenerate", fake_mop)
 
     out = run(crib.elaborate("keywords", project="p"))
-    assert out["written"] == 2 and out["errors"] == 0      # both sections written
-    assert any("Beta" in h for h in mop["headings"])       # Beta went through mop-up
+    assert out["written"] == 2 and out["errors"] == 0  # both sections written
+    assert any("Beta" in h for h in mop["headings"])  # Beta went through mop-up
 
 
 # --- distill verb (fake generator) ------------------------------------------
 def test_distill_revises_and_thrash_guards(crib, monkeypatch):
-    out = run(crib.store_note("verbose original body with fluff", title="n", project="p"))
+    out = run(
+        crib.store_note("verbose original body with fluff", title="n", project="p")
+    )
     rel = out["relpath"]
 
     async def revise(cfg, system, user, purpose="distill", timeout=None):
@@ -294,12 +382,13 @@ def test_distill_revises_and_thrash_guards(crib, monkeypatch):
     r1 = run(crib.distill(rel, project="p"))
     assert r1["changed"] is True
     from crib import notes
+
     note = notes.load(crib.abspath("p", rel))
     assert note.body.strip() == "tight revised body"
     assert note.frontmatter["source"] == "distilled"
 
     async def unchanged(cfg, system, user, purpose="distill", timeout=None):
-        return "tight revised body"    # same as current → thrash guard
+        return "tight revised body"  # same as current → thrash guard
 
     monkeypatch.setattr("crib.generate.agenerate", unchanged)
     r2 = run(crib.distill(rel, project="p"))
@@ -308,7 +397,7 @@ def test_distill_revises_and_thrash_guards(crib, monkeypatch):
 
 # --- provider resolution from a providers/profiles TOML (like models.toml) ---
 _GEN_TOML = (
-    '[defaults]\ntemperature = 0.2\n\n'
+    "[defaults]\ntemperature = 0.2\n\n"
     '[providers.qwen]\nadapter = "openai-compatible"\n'
     'endpoint = "http://localhost:11435/v1"\nmodel = "q"\n\n'
     '[providers.zen]\nadapter = "anthropic"\n'
@@ -321,31 +410,42 @@ _GEN_TOML = (
 def test_resolve_provider_by_profile_and_purpose(tmp_path):
     from crib.config import GenerateConfig
     from crib.generate import resolve_provider
+
     toml = tmp_path / "gen.toml"
     toml.write_text(_GEN_TOML)
 
     p = resolve_provider(GenerateConfig(config=str(toml), profile="cloud"), "distill")
     assert p.adapter == "anthropic" and p.model == "z"
-    assert resolve_provider(
-        GenerateConfig(config=str(toml), profile="local"), "elaborate").model == "q"
+    assert (
+        resolve_provider(
+            GenerateConfig(config=str(toml), profile="local"), "elaborate"
+        ).model
+        == "q"
+    )
     # explicit provider wins over the profile lookup
-    assert resolve_provider(
-        GenerateConfig(config=str(toml), profile="local", provider="zen"),
-        "distill").model == "z"
+    assert (
+        resolve_provider(
+            GenerateConfig(config=str(toml), profile="local", provider="zen"), "distill"
+        ).model
+        == "z"
+    )
 
 
 def test_resolve_provider_inline_fallback():
     from crib.config import GenerateConfig
     from crib.generate import resolve_provider
+
     p = resolve_provider(
         GenerateConfig(adapter="openai-compatible", model="m", endpoint="http://x/v1"),
-        "distill")
+        "distill",
+    )
     assert p.adapter == "openai-compatible" and p.model == "m"
 
 
 def test_resolve_provider_missing_selection_errors(tmp_path):
     from crib.config import GenerateConfig
     from crib.generate import GenerationError, resolve_provider
+
     toml = tmp_path / "gen.toml"
     toml.write_text(_GEN_TOML)
     # config file but no profile and no provider → nothing selects

@@ -37,6 +37,14 @@ class Hit:
     document: str
     metadata: dict[str, Any]
     score: float  # cosine similarity, higher = closer
+    # Per-hit signal annotation ("which route drove this hit"): the route map
+    # from retrieval, e.g. {"dense": 0.91, "sparse": 0.37, "alias": "asks"} —
+    # dense = raw cosine (alias-promoted values carry the alias's trust scale),
+    # sparse = the min-max'd BM25 term that entered the blend, alias = the label
+    # whose alias vector won the MAX merge. None when the producer doesn't track
+    # routes (e.g. the raw vector-store query path). Pure provenance — never
+    # consumed by ranking — so the blended `score` stays the single source of order.
+    signals: dict[str, Any] | None = None
 
 
 class Store(Protocol):
@@ -46,20 +54,24 @@ class Store(Protocol):
         """Replace metadata for the given ids WITHOUT re-embedding — for cheap
         metadata-schema/frontmatter drift when a chunk's content is unchanged."""
         ...
+
     def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:
         """Return {id: metadata} for records matching `where` (exact-match)."""
         ...
-    def get_docs(self, where: dict[str, Any]
-                 ) -> dict[str, tuple[str, dict[str, Any]]]:
+
+    def get_docs(self, where: dict[str, Any]) -> dict[str, tuple[str, dict[str, Any]]]:
         """Return {id: (document, metadata)} for matches — the corpus a lexical
         (BM25) index needs alongside the vector index."""
         ...
-    def query(self, embedding: list[float], k: int,
-              where: dict[str, Any] | None = None) -> list[Hit]: ...
+
+    def query(
+        self, embedding: list[float], k: int, where: dict[str, Any] | None = None
+    ) -> list[Hit]: ...
     def current_dim(self) -> int | None:
         """Dimension of stored vectors, or None if empty — lets a full reindex
         detect an embedder change (e.g. a profile switch bge-small→bge-large)."""
         ...
+
     def recreate(self) -> None:
         """Drop all vectors so the next upserts define a fresh dimension. For a
         fixed-dim backend (Chroma) this recreates the collection; emptying the
@@ -79,7 +91,8 @@ def _cosine(a: list[float], b: list[float]) -> float:
         raise CribUserError(
             f"embedding dimension mismatch: query has {len(a)}, stored vector has "
             f"{len(b)} — the store holds vectors from a different embedder; run "
-            "`crib project reconcile` to re-embed at the current dimension")
+            "`crib project reconcile` to re-embed at the current dimension"
+        )
     return sum(x * y for x, y in zip(a, b))
 
 
@@ -116,19 +129,24 @@ class InMemoryStore:
                     self._recs[i].metadata = meta
 
     def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:
-        return {r.id: r.metadata for r in self._snapshot()
-                if _matches(r.metadata, where)}
+        return {
+            r.id: r.metadata for r in self._snapshot() if _matches(r.metadata, where)
+        }
 
-    def get_docs(self, where: dict[str, Any]
-                 ) -> dict[str, tuple[str, dict[str, Any]]]:
-        return {r.id: (r.document, r.metadata) for r in self._snapshot()
-                if _matches(r.metadata, where)}
+    def get_docs(self, where: dict[str, Any]) -> dict[str, tuple[str, dict[str, Any]]]:
+        return {
+            r.id: (r.document, r.metadata)
+            for r in self._snapshot()
+            if _matches(r.metadata, where)
+        }
 
-    def query(self, embedding: list[float], k: int,
-              where: dict[str, Any] | None = None) -> list[Hit]:
+    def query(
+        self, embedding: list[float], k: int, where: dict[str, Any] | None = None
+    ) -> list[Hit]:
         scored = [
             Hit(r.id, r.document, r.metadata, _cosine(embedding, r.embedding))
-            for r in self._snapshot() if _matches(r.metadata, where)
+            for r in self._snapshot()
+            if _matches(r.metadata, where)
         ]
         scored.sort(key=lambda h: h.score, reverse=True)
         return scored[:k]
@@ -158,6 +176,7 @@ class JsonStore(InMemoryStore):
 
     def _load(self) -> None:
         import json
+
         if self._path.exists():
             for d in json.loads(self._path.read_text()):
                 r = Record(d["id"], d["embedding"], d["document"], d["metadata"])
@@ -167,6 +186,7 @@ class JsonStore(InMemoryStore):
         """Whole-file rewrite — callers must hold `_lock`, so two writer threads
         can't interleave into one tmp file or race the rename."""
         import json
+
         self._path.parent.mkdir(parents=True, exist_ok=True)
         tmp = self._path.with_suffix(".tmp")
         tmp.write_text(json.dumps([vars(r) for r in self._recs.values()]))
@@ -296,12 +316,14 @@ class ChromaStore:
     def upsert(self, records: list[Record]) -> None:
         if not records:
             return
-        self._run(lambda c: c.upsert(
-            ids=[r.id for r in records],
-            embeddings=[r.embedding for r in records],
-            documents=[r.document for r in records],
-            metadatas=[r.metadata for r in records],
-        ))
+        self._run(
+            lambda c: c.upsert(
+                ids=[r.id for r in records],
+                embeddings=[r.embedding for r in records],
+                documents=[r.document for r in records],
+                metadatas=[r.metadata for r in records],
+            )
+        )
 
     def delete(self, ids: list[str]) -> None:
         if ids:
@@ -311,33 +333,37 @@ class ChromaStore:
         # Chroma updates metadata in place; embeddings/documents untouched.
         if updates:
             ids = list(updates)
-            self._run(lambda c: c.update(
-                ids=ids, metadatas=[updates[i] for i in ids]))
+            self._run(lambda c: c.update(ids=ids, metadatas=[updates[i] for i in ids]))
 
     def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:
         where_clause = _chroma_where(where)
-        res = self._run(
-            lambda c: c.get(where=where_clause, include=["metadatas"]))
+        res = self._run(lambda c: c.get(where=where_clause, include=["metadatas"]))
         ids = res.get("ids") or []
         metas = res.get("metadatas") or []
         return {i: m for i, m in zip(ids, metas)}
 
-    def get_docs(self, where: dict[str, Any]
-                 ) -> dict[str, tuple[str, dict[str, Any]]]:
-        res = self._run(lambda c: c.get(where=_chroma_where(where),
-                                        include=["documents", "metadatas"]))
+    def get_docs(self, where: dict[str, Any]) -> dict[str, tuple[str, dict[str, Any]]]:
+        res = self._run(
+            lambda c: c.get(
+                where=_chroma_where(where), include=["documents", "metadatas"]
+            )
+        )
         ids = res.get("ids") or []
         docs = res.get("documents") or []
         metas = res.get("metadatas") or []
         return {i: (d, m) for i, d, m in zip(ids, docs, metas)}
 
-    def query(self, embedding: list[float], k: int,
-              where: dict[str, Any] | None = None) -> list[Hit]:
-        res = self._run(lambda c: c.query(
-            query_embeddings=[embedding], n_results=k,
-            where=_chroma_where(where) if where else None,
-            include=["documents", "metadatas", "distances"],
-        ))
+    def query(
+        self, embedding: list[float], k: int, where: dict[str, Any] | None = None
+    ) -> list[Hit]:
+        res = self._run(
+            lambda c: c.query(
+                query_embeddings=[embedding],
+                n_results=k,
+                where=_chroma_where(where) if where else None,
+                include=["documents", "metadatas", "distances"],
+            )
+        )
         hits: list[Hit] = []
         ids = (res.get("ids") or [[]])[0]
         docs = (res.get("documents") or [[]])[0]

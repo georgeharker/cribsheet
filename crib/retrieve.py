@@ -46,11 +46,41 @@ def tokenize(text: str) -> list[str]:
 
 # Function words carried by natural-language queries that shouldn't count toward the
 # keyword-coverage gate (they match everything). Deliberately small — content words win.
-STOPWORDS = frozenset({
-    "the", "a", "an", "that", "to", "of", "for", "and", "or", "in", "on", "by", "its",
-    "it", "is", "then", "so", "with", "into", "which", "given", "this", "them", "only",
-    "before", "after", "up", "re", "back", "single", "one",
-})
+STOPWORDS = frozenset(
+    {
+        "the",
+        "a",
+        "an",
+        "that",
+        "to",
+        "of",
+        "for",
+        "and",
+        "or",
+        "in",
+        "on",
+        "by",
+        "its",
+        "it",
+        "is",
+        "then",
+        "so",
+        "with",
+        "into",
+        "which",
+        "given",
+        "this",
+        "them",
+        "only",
+        "before",
+        "after",
+        "up",
+        "re",
+        "back",
+        "single",
+        "one",
+    }
+)
 
 
 def _as_tf(doc) -> dict[str, float]:
@@ -83,8 +113,9 @@ class BM25:
         for t in self.tf:
             df.update(t.keys())
         # BM25+ idf: always positive, so common terms still rank, never subtract.
-        self.idf = {t: math.log(1 + (self.n - c + 0.5) / (c + 0.5))
-                    for t, c in df.items()}
+        self.idf = {
+            t: math.log(1 + (self.n - c + 0.5) / (c + 0.5)) for t, c in df.items()
+        }
 
     def coverage(self, qtokens: set[str]) -> list[float]:
         """Fraction of the query's informative tokens present in each doc's field
@@ -104,7 +135,9 @@ class BM25:
                 f = tf.get(t)
                 if not f:
                     continue
-                denom = f + self.k1 * (1 - self.b + self.b * self.lengths[i] / self.avgdl)
+                denom = f + self.k1 * (
+                    1 - self.b + self.b * self.lengths[i] / self.avgdl
+                )
                 out[i] += idf * (f * (self.k1 + 1)) / denom
         return out
 
@@ -140,9 +173,12 @@ def _subtokens(text: str) -> list[str]:
     return extra
 
 
-def _lexical_tf(document: str, meta: dict | None,
-                extra_terms: list[str] | None = None,
-                extra_weight: float = 1.0) -> dict[str, float]:
+def _lexical_tf(
+    document: str,
+    meta: dict | None,
+    extra_terms: list[str] | None = None,
+    extra_weight: float = 1.0,
+) -> dict[str, float]:
     """Weighted term-frequency for one chunk: body+heading+subtokens at weight
     1.0, plus `extra_terms` (LLM elaborations) at `extra_weight` — so elaboration
     tokens can be scored below body tokens (§3.1). The ONE corpus builder: BM25
@@ -159,8 +195,9 @@ def _lexical_tf(document: str, meta: dict | None,
     return tf
 
 
-def reciprocal_rank_fusion(rankings: list[list[str]], k: int = 60,
-                           weights: list[float] | None = None) -> list[str]:
+def reciprocal_rank_fusion(
+    rankings: list[list[str]], k: int = 60, weights: list[float] | None = None
+) -> list[str]:
     """Fuse ranked id-lists (each best-first) into one ranking by RRF score.
 
     `weights` (one per ranking, default all 1.0) scales each list's vote — so a
@@ -189,7 +226,8 @@ class CrossEncoderReranker:
 
         try:
             self._model = TextCrossEncoder(
-                model_name, providers=["CPUExecutionProvider"])
+                model_name, providers=["CPUExecutionProvider"]
+            )
         except TypeError:  # older fastembed without a providers kwarg
             self._model = TextCrossEncoder(model_name)
 
@@ -207,10 +245,12 @@ class QwenReranker:
     ONNX MiniLM path (a ~0.6B LM forward per pair on CPU), but a stronger judge.
     """
 
-    _PREFIX = ("<|im_start|>system\nJudge whether the Document meets the "
-               "requirements based on the Query and the Instruct provided. Note "
-               'that the answer can only be "yes" or "no".<|im_end|>\n'
-               "<|im_start|>user\n")
+    _PREFIX = (
+        "<|im_start|>system\nJudge whether the Document meets the "
+        "requirements based on the Query and the Instruct provided. Note "
+        'that the answer can only be "yes" or "no".<|im_end|>\n'
+        "<|im_start|>user\n"
+    )
     _SUFFIX = "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
     _INSTRUCT = "Given a search query, retrieve relevant passages that answer it"
 
@@ -229,14 +269,16 @@ class QwenReranker:
         out: list[float] = []
         with torch.no_grad():
             for doc in documents:
-                body = (f"<Instruct>: {self._INSTRUCT}\n<Query>: {query}\n"
-                        f"<Document>: {doc}")
+                body = (
+                    f"<Instruct>: {self._INSTRUCT}\n<Query>: {query}\n<Document>: {doc}"
+                )
                 text = self._PREFIX + body + self._SUFFIX
-                inputs = self._tok(text, return_tensors="pt", truncation=True,
-                                   max_length=2048)
+                inputs = self._tok(
+                    text, return_tensors="pt", truncation=True, max_length=2048
+                )
                 last = self._model(**inputs).logits[0, -1]
                 pair = torch.stack([last[self._no], last[self._yes]])
-                out.append(float(torch.softmax(pair, dim=0)[1]))   # P(yes)
+                out.append(float(torch.softmax(pair, dim=0)[1]))  # P(yes)
         return out
 
 
@@ -279,16 +321,19 @@ class LexicalCache:
     never mutated once published, so a caller holding one keeps a consistent view.
     """
 
-    def __init__(self, store: "Store",
-                 keyword_terms: Callable[[str, str, tuple[str, ...]],
-                                         list[str]] | None = None) -> None:
+    def __init__(
+        self,
+        store: "Store",
+        keyword_terms: Callable[[str, str, tuple[str, ...]], list[str]] | None = None,
+    ) -> None:
         self._store = store
         self._elab = keyword_terms
         # (project, store, labels, weight) -> (ids, {id:(doc,meta)}, BM25) — the
         # pillar store is part of the key so each pillar ranks over its OWN
         # corpus: facet text must not shape notes IDF/length norms, or vice versa.
-        self._entries: dict[tuple[str, str, tuple[str, ...], float],
-                            tuple[list[str], dict, BM25]] = {}
+        self._entries: dict[
+            tuple[str, str, tuple[str, ...], float], tuple[list[str], dict, BM25]
+        ] = {}
         self._lock = threading.Lock()
         self._gen: dict[str, int] = {}
 
@@ -306,9 +351,14 @@ class LexicalCache:
                 self._gen[project] = self._gen.get(project, 0) + 1
             self._entries.clear()
 
-    def get(self, project: str, labels: tuple[str, ...] = (),
-            weight: float = 1.0, *,
-            store: str = "notes") -> tuple[list[str], dict, BM25]:
+    def get(
+        self,
+        project: str,
+        labels: tuple[str, ...] = (),
+        weight: float = 1.0,
+        *,
+        store: str = "notes",
+    ) -> tuple[list[str], dict, BM25]:
         labels = tuple(labels)
         key = (project, store, labels, weight)
         with self._lock:
@@ -316,11 +366,13 @@ class LexicalCache:
             gen = self._gen.get(project, 0)
         if entry is not None:
             return entry
-        docs = {i: (d, m) for i, (d, m)
-                in self._store.get_docs({"project": project}).items()
-                if not (m or {}).get("alias")   # dense-only summary aliases
-                # pillar scope; pre-split chunks lack the key -> "notes"
-                and ((m or {}).get("store") or "notes") == store}
+        docs = {
+            i: (d, m)
+            for i, (d, m) in self._store.get_docs({"project": project}).items()
+            if not (m or {}).get("alias")  # dense-only summary aliases
+            # pillar scope; pre-split chunks lack the key -> "notes"
+            and ((m or {}).get("store") or "notes") == store
+        }
         ids = list(docs)
         corpus: list[dict[str, float]] = []
         for i in ids:
@@ -328,14 +380,15 @@ class LexicalCache:
             extra: list[str] | None = None
             if labels and self._elab is not None:
                 # section-identified; fall back to content_hash pre-reindex
-                sh = (meta or {}).get("section_hash") \
-                    or (meta or {}).get("content_hash", "")
+                sh = (meta or {}).get("section_hash") or (meta or {}).get(
+                    "content_hash", ""
+                )
                 if sh:
                     extra = self._elab(project, sh, labels)
             corpus.append(_lexical_tf(doc, meta, extra, weight))
         entry = (ids, docs, BM25(corpus))
         with self._lock:
-            if self._gen.get(project, 0) == gen:   # no write raced this build
+            if self._gen.get(project, 0) == gen:  # no write raced this build
                 self._entries[key] = entry
         return entry
 
@@ -356,16 +409,21 @@ class SummaryVectorCache:
     build here also embeds, so it especially must not run under the lock.
     """
 
-    def __init__(self, store: "Store", embedder,
-                 summary_terms: Callable[[str, str, tuple[str, ...]],
-                                         list[str]] | None = None) -> None:
+    def __init__(
+        self,
+        store: "Store",
+        embedder,
+        summary_terms: Callable[[str, str, tuple[str, ...]], list[str]] | None = None,
+    ) -> None:
         self._store = store
         self._embed = embedder
         self._sum = summary_terms
         # (project, store, labels)
-        #   -> (section_hash -> [chunk_id], [(section_hash, vec)])
-        self._entries: dict[tuple[str, str, tuple[str, ...]],
-                            tuple[dict[str, list[str]], list[tuple[str, list[float]]]]] = {}
+        #   -> (section_hash -> [chunk_id], [(section_hash, winning_label, vec)])
+        self._entries: dict[
+            tuple[str, str, tuple[str, ...]],
+            tuple[dict[str, list[str]], list[tuple[str, str, list[float]]]],
+        ] = {}
         self._lock = threading.Lock()
         self._gen: dict[str, int] = {}
 
@@ -383,9 +441,9 @@ class SummaryVectorCache:
                 self._gen[project] = self._gen.get(project, 0) + 1
             self._entries.clear()
 
-    def get(self, project: str, labels: tuple[str, ...], *,
-            store: str = "notes"
-            ) -> tuple[dict[str, list[str]], list[tuple[str, list[float]]]]:
+    def get(
+        self, project: str, labels: tuple[str, ...], *, store: str = "notes"
+    ) -> tuple[dict[str, list[str]], list[tuple[str, str, list[float]]]]:
         key = (project, store, tuple(labels))
         with self._lock:
             entry = self._entries.get(key)
@@ -403,25 +461,37 @@ class SummaryVectorCache:
             sh = (meta or {}).get("section_hash") or (meta or {}).get("content_hash")
             if sh:
                 reps.setdefault(sh, []).append(cid)
-        pairs: list[tuple[str, str]] = []
+        pairs: list[tuple[str, str, str]] = []
         if labels and self._sum is not None:
             for sh in reps:
-                for t in self._sum(project, sh, labels):
-                    pairs.append((sh, t))
-        vecs: list[tuple[str, list[float]]] = []
+                # Per label, so the winning ALIAS's label can ride on the score
+                # (per-hit signal annotation): one call per (section, label) is
+                # the same reads flattened, just grouped by label.
+                for label in labels:
+                    for t in self._sum(project, sh, (label,)):
+                        pairs.append((sh, label, t))
+        vecs: list[tuple[str, str, list[float]]] = []
         if pairs:
-            embs = embed_batch(self._embed, [t for _, t in pairs])
-            vecs = [(pairs[j][0], embs[j]) for j in range(len(pairs))]
+            embs = embed_batch(self._embed, [t for _, _, t in pairs])
+            vecs = [(pairs[j][0], pairs[j][1], embs[j]) for j in range(len(pairs))]
         entry = (reps, vecs)
         with self._lock:
-            if self._gen.get(project, 0) == gen:   # no write raced this build
+            if self._gen.get(project, 0) == gen:  # no write raced this build
                 self._entries[key] = entry
         return entry
 
-    def best_cosines(self, project: str, labels: tuple[str, ...],
-                     query_vec: list[float], *,
-                     store: str = "notes") -> dict[str, float]:
-        """MAX query↔alias cosine per section, keyed by a representative chunk id.
+    def best_cosines(
+        self,
+        project: str,
+        labels: tuple[str, ...],
+        query_vec: list[float],
+        *,
+        store: str = "notes",
+    ) -> dict[str, tuple[float, str]]:
+        """MAX query↔alias cosine per section, keyed by a representative chunk id,
+        carrying the LABEL whose alias won — (cosine, label). The label is the
+        per-hit signal annotation ("which index drove this hit"): without it the
+        MAX merge discards the only thing a per-query diagnosis needs.
 
         The multi-vector semantics the index was built for: an alias embedding is
         ANOTHER dense vector pointing at the same section, so a query matching an
@@ -431,14 +501,17 @@ class SummaryVectorCache:
         dense-dominant score fusion could never express a strong alias match —
         measured to only hurt, at any weight)."""
         reps, vecs = self.get(project, labels, store=store)
-        best: dict[str, float] = {}
-        for sh, v in vecs:
+        best: dict[str, tuple[float, str]] = {}
+        for sh, label, v in vecs:
             c = sum(a * b for a, b in zip(query_vec, v))
-            if c > best.get(sh, -2.0):
-                best[sh] = c
-        out: dict[str, float] = {}
-        for sh, c in best.items():
+            if c > best.get(sh, (-2.0, ""))[0]:
+                best[sh] = (c, label)
+        out: dict[str, tuple[float, str]] = {}
+        for sh, (c, label) in best.items():
             ids = reps.get(sh) or []
             if ids:
-                out[ids[0]] = c      # section representative; dedupe collapses windows
+                out[ids[0]] = (
+                    c,
+                    label,
+                )  # section representative; dedupe collapses windows
         return out

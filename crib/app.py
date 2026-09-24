@@ -18,7 +18,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Callable
 
-from . import claudemem, notes
+from . import __version__, claudemem, notes
 from .chunk import CHUNK_SCHEMA_VERSION, section_key, section_line_map
 from .claudemem import MemoryBindings
 from .codeindexer import CodeIndexer
@@ -82,6 +82,11 @@ class LookupHit:
     # Which pillar store the hit came from — relpaths are store-relative, so the
     # pillar is part of resolving one back to a file.
     store: str = "notes"
+    # Per-hit signal annotation, straight off `Hit.signals` ("which route drove
+    # this hit"): dense cosine, sparse BM25 term, winning alias label. None when
+    # the producer doesn't track routes. Additive output — consumers that don't
+    # know it ignore it.
+    signals: dict[str, Any] | None = None
 
 
 def _resolve_embed_config(config: Config) -> Any:
@@ -1182,14 +1187,26 @@ class Crib:
                 kw = {ids[j]: sparse[j] for j in top[:topn] if sparse[j] > 0}
 
         summ_hit = False
+        alias_labels: dict[str, str] = {}  # rep cid -> label whose alias won
         if summary_labels:
-            for cid, ac in self.index.summaries.best_cosines(
+            for cid, (ac, alias_label) in self.index.summaries.best_cosines(
                 proj, summary_labels, vec, store=store
             ).items():
                 ac *= summary_weight  # alias-trust scale (1.0 = full dense)
                 if ac > cos.get(cid, -1.0):
                     cos[cid] = ac  # max over the section's vectors
+                    alias_labels[cid] = alias_label
                     summ_hit = True
+
+        def _signals_for(cid: str) -> dict[str, Any]:
+            """Per-hit route map: which signal(s) drove this candidate. Pure
+            provenance — riding on the Hit, never consulted by ranking."""
+            sig: dict[str, Any] = {"dense": round(cos[cid], 4)}
+            if cid in kn:
+                sig["sparse"] = round(kn[cid], 4)
+            if cid in alias_labels:
+                sig["alias"] = alias_labels[cid]
+            return sig
 
         if not kw and not summ_hit:  # dense only
             out = dense
@@ -1228,12 +1245,13 @@ class Crib:
             out = []
             for cid in order:
                 s = round(score[cid], 4)
+                sig = _signals_for(cid)
                 if cid in dense_by:
                     h = dense_by[cid]
-                    out.append(Hit(cid, h.document, h.metadata, s))
+                    out.append(Hit(cid, h.document, h.metadata, s, signals=sig))
                 else:
                     doc, meta = docs[cid]
-                    out.append(Hit(cid, doc, meta, s))
+                    out.append(Hit(cid, doc, meta, s, signals=sig))
         if rerank:
             out = self._rerank(query, out)
         return out
@@ -1374,6 +1392,7 @@ class Crib:
                     index_rebuilding=rebuilding,
                     tainted=stale,
                     store=pillar,
+                    signals=h.signals,
                 )
             )
             if len(hits) >= k:
@@ -2607,6 +2626,12 @@ class Crib:
             "reconciling": remaining is not None,
             "store": type(self.store).__name__,
             "embed_model": self.config.embed.model,
+            # The DAEMON's own version — the code actually serving lookups. The
+            # eval harness records this in every dump's protocol block: its own
+            # `crib_import_version` is the harness interpreter's install, which
+            # on the daemon path is NOT the executing code (it has differed:
+            # harness 0.15.2 vs daemon 0.14.0 from a stale global venv).
+            "crib_version": __version__,
             # pending until a full sweep has re-chunked under the current scheme;
             # a daemonless user clears it with `crib reindex` per project
             "chunk_schema": CHUNK_SCHEMA_VERSION,
