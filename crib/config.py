@@ -18,23 +18,22 @@ def _warn(msg: str) -> None:
     print(f"[crib] {msg}", file=sys.stderr)
 
 
-def _warn_unknown(config_file: Path, table: str, data: dict,
-                  known: set[str]) -> None:
+def _warn_unknown(config_file: Path, table: str, data: dict, known: set[str]) -> None:
     """One line naming the file, the table and every key we're ignoring — the
     only way a typo is ever noticed once it stops being fatal."""
     if unknown := sorted(k for k in data if k not in known):
-        _warn(f"{config_file}: unknown key(s) in [{table}]: "
-              f"{', '.join(unknown)} — ignored")
+        _warn(
+            f"{config_file}: unknown key(s) in [{table}]: "
+            f"{', '.join(unknown)} — ignored"
+        )
 
 
-def _table(kind: type, current: Any, data: dict, config_file: Path,
-           table: str) -> Any:
+def _table(kind: type, current: Any, data: dict, config_file: Path, table: str) -> Any:
     """Overlay a config table onto the defaults, keeping only keys `kind`
     actually declares (see `Config.load`)."""
     known = {f.name for f in fields(kind)}
     _warn_unknown(config_file, table, data, known)
-    return kind(**{**vars(current), **{k: v for k, v in data.items()
-                                       if k in known}})
+    return kind(**{**vars(current), **{k: v for k, v in data.items() if k in known}})
 
 
 @dataclass
@@ -60,8 +59,9 @@ class ChunkConfig:
     fraction of each window re-shared with its neighbour (so a knob set once
     holds steady if the window size changes). Changing either re-chunks notes —
     run `crib reindex` (or bounce the daemon) to apply to existing docs."""
-    window_words: int = 320         # keep windows under the model's 512-token cap
-    overlap_ratio: float = 0.20     # 0.0–<1.0; 0.20 => 64-word overlap at 320
+
+    window_words: int = 320  # keep windows under the model's 512-token cap
+    overlap_ratio: float = 0.20  # 0.0–<1.0; 0.20 => 64-word overlap at 320
 
     @property
     def overlap_words(self) -> int:
@@ -75,6 +75,7 @@ class MemoryConfig:
     """Mirroring of Claude Code harness memory into crib projects (DESIGN §13).
     `watch` enables the daemon's live mirror over bound repos (opted in via
     `crib import-memory`); the one-shot `import-memory` works regardless."""
+
     watch: bool = True
 
 
@@ -91,11 +92,12 @@ class RetrieveConfig:
     ON by default: measured a clear lift on both the code and notes paths (the biggest
     single lever); costs one model inference per candidate (warm in the daemon, ONNX/CPU)
     and degrades gracefully to the fused order if the model is unavailable."""
+
     hybrid: bool = True
     rrf_k: int = 60
     rerank: bool = True
     rerank_model: str = "Xenova/ms-marco-MiniLM-L-6-v2"  # small ONNX cross-encoder
-    rerank_top_n: int = 20                               # candidate pool to rerank
+    rerank_top_n: int = 20  # candidate pool to rerank
     # keyword_index labels folded into the BM25 corpus (§3.1): each names a
     # section-addressed keyword set under
     # <project>/keyword_index/<label>/<section_hash>.toml. Empty = none. Generate
@@ -144,6 +146,13 @@ class RetrieveConfig:
     # LLM aliases relative to real body matches. (The old meaning — RRF list
     # weight — died with the rank-bonus port it parameterized.)
     summary_weight: float = 1.0
+    # Weight of the hint agreement bonus (caller-supplied exact strings, each run
+    # as its own lexical route): bonus = hint_weight × (routes agreeing / n_hints),
+    # stacked on the blend. 0.15 = the summary-trust band; hints are OFF unless
+    # the caller passes any — the weight only matters then. Measured-or-killed:
+    # paired dumps under the eval protocol; a null at the 0.02 noise floor
+    # deletes the feature (zvec-grep Transferable 1, "hints" not "anchors").
+    hint_weight: float = 0.15
     # covpc-gate the notes BM25 arm (scale each doc's BM25 by the fraction of the
     # query's informative tokens its field contains) — the code path's answer to
     # diffuse sparse matches. MEASURED 2026-07-13 (n=1876): exactly neutral overall
@@ -180,19 +189,20 @@ class GenerateConfig:
     (adapter/model/endpoint/…) build one `Provider` directly. Needs the matching
     llmkit extra (`llmkit[bridge]` for openai, `[anthropic]`, `[google]`,
     `[claude]`)."""
+
     # providers/profiles file (llmkit format, like models.toml)
     config: str | None = None
-    profile: str | None = None       # profile whose widget keys map purpose→provider
-    provider: str | None = None      # force a named provider (wins over profile)
+    profile: str | None = None  # profile whose widget keys map purpose→provider
+    provider: str | None = None  # force a named provider (wins over profile)
     # inline single-provider fallback (used only when `config` is unset)
-    adapter: str = "claude_code"     # claude_code | openai-compatible | anthropic | google
+    adapter: str = "claude_code"  # claude_code | openai-compatible | anthropic | google
     model: str | None = None
     endpoint: str | None = None
     api_key_env: str | None = None
     api_key: str | None = None
-    max_tokens: int = 8192           # inline-fallback default; keep generous — a low
-                                     # cap truncates bulk structured output (the models.toml
-                                     # providers set 8192 too; 2048/1024 cut batches mid-JSON)
+    max_tokens: int = 8192  # inline-fallback default; keep generous — a low
+    # cap truncates bulk structured output (the models.toml
+    # providers set 8192 too; 2048/1024 cut batches mid-JSON)
     temperature: float = 0.2
     # per-call wall-clock cap (seconds) — a hung endpoint is abandoned, not left
     # to stall a batch; concurrency bounds parallel generation calls (network-
@@ -221,7 +231,7 @@ class GenerateConfig:
 
 @dataclass
 class ChromaConfig:
-    mode: str = "embedded"          # "embedded" | "shared"
+    mode: str = "embedded"  # "embedded" | "shared"
     server_name: str = "crib-chroma"
     grace_period: str = "1h"
     host: str = "127.0.0.1"
@@ -239,11 +249,12 @@ class DaemonConfig:
     — refcount + grace keep it warm between CLI calls; `name`/`host`/`port` must
     match the sharedServer registration so everyone attaches to the same process.
     """
+
     enabled: bool = True
-    name: str = "cribsheet"         # sharedserver name (== the MCP registration)
+    name: str = "cribsheet"  # sharedserver name (== the MCP registration)
     host: str = "127.0.0.1"
-    port: int = 7732                # crib's MCP band (chroma is 7733)
-    grace_period: str = "1h"        # keep warm this long after the last client
+    port: int = 7732  # crib's MCP band (chroma is 7733)
+    grace_period: str = "1h"  # keep warm this long after the last client
 
 
 @dataclass
@@ -285,20 +296,26 @@ class Config:
             data = tomllib.loads(config_file.read_text())
         except tomllib.TOMLDecodeError as e:
             raise CribUserError(f"{config_file}: invalid TOML — {e}") from e
-        sub = {"embed": EmbedConfig, "chunk": ChunkConfig,
-               "retrieve": RetrieveConfig, "memory": MemoryConfig,
-               "chroma": ChromaConfig, "daemon": DaemonConfig,
-               "generate": GenerateConfig}
-        _warn_unknown(config_file, "top level", data,
-                      {f.name for f in fields(cls)})
+        sub = {
+            "embed": EmbedConfig,
+            "chunk": ChunkConfig,
+            "retrieve": RetrieveConfig,
+            "memory": MemoryConfig,
+            "chroma": ChromaConfig,
+            "daemon": DaemonConfig,
+            "generate": GenerateConfig,
+        }
+        _warn_unknown(config_file, "top level", data, {f.name for f in fields(cls)})
         if "default_project" in data:
             cfg.default_project = str(data["default_project"])
         if "versions_keep" in data:
             try:
                 cfg.versions_keep = int(data["versions_keep"])
             except (TypeError, ValueError):
-                _warn(f"{config_file}: versions_keep must be a number, got "
-                      f"{data['versions_keep']!r} — using {cfg.versions_keep}")
+                _warn(
+                    f"{config_file}: versions_keep must be a number, got "
+                    f"{data['versions_keep']!r} — using {cfg.versions_keep}"
+                )
         if "watch" in data:
             cfg.watch = bool(data["watch"])
         for name, kind in sub.items():
@@ -306,14 +323,17 @@ class Config:
                 if not isinstance(t, dict):
                     _warn(f"{config_file}: [{name}] must be a table — ignored")
                     continue
-                setattr(cfg, name, _table(kind, getattr(cfg, name), t,
-                                          config_file, name))
+                setattr(
+                    cfg, name, _table(kind, getattr(cfg, name), t, config_file, name)
+                )
         if isinstance(el := data.get("elaborate"), dict):
-            cfg.elaborate = {str(k): dict(v) for k, v in el.items()
-                             if isinstance(v, dict)}
+            cfg.elaborate = {
+                str(k): dict(v) for k, v in el.items() if isinstance(v, dict)
+            }
         if isinstance(sm := data.get("summarize"), dict):
-            cfg.summarize = {str(k): dict(v) for k, v in sm.items()
-                             if isinstance(v, dict)}
+            cfg.summarize = {
+                str(k): dict(v) for k, v in sm.items() if isinstance(v, dict)
+            }
         if isinstance(loc := data.get("locations"), dict):
             cfg.locations = {str(k): str(v) for k, v in loc.items()}
         return cfg
@@ -322,6 +342,7 @@ class Config:
 @dataclass
 class ProjectConfig:
     """`.cribproject` — per-project config living in the project's data dir."""
+
     name: str
     embed_model: str | None = None
     distill_prompt: str | None = None
@@ -338,9 +359,10 @@ class ProjectConfig:
         if not path.exists():
             return cls(name=fallback_name)
         data = yaml.safe_load(path.read_text()) or {}
-        if not isinstance(data, dict):      # hand-edited into something else
-            _warn(f"ignoring {path}: expected a YAML mapping, got "
-                  f"{type(data).__name__}")
+        if not isinstance(data, dict):  # hand-edited into something else
+            _warn(
+                f"ignoring {path}: expected a YAML mapping, got {type(data).__name__}"
+            )
             return cls(name=fallback_name)
         return cls(
             name=data.get("name", fallback_name),
@@ -366,6 +388,7 @@ class ProjectConfig:
 @dataclass
 class CribLink:
     """`.crib` — found at a code repo root; ties the repo to a crib project."""
+
     project: str
     paths: list[str] = field(default_factory=list)
     docs: list[str] = field(default_factory=list)
@@ -410,10 +433,11 @@ class CribLink:
         """
         try:
             store = self.store_dir
-            return (store is not None
-                    and Path(path).resolve().is_relative_to(store.resolve()))
-        except (ValueError, OSError):   # a `store:` that escapes the repo owns
-            return False                # nothing; an unresolvable path is not ours
+            return store is not None and Path(path).resolve().is_relative_to(
+                store.resolve()
+            )
+        except (ValueError, OSError):  # a `store:` that escapes the repo owns
+            return False  # nothing; an unresolvable path is not ours
 
     @property
     def doc_patterns(self) -> list[str]:
@@ -448,8 +472,7 @@ class CribLink:
         if data is None:
             data = {}
         if not isinstance(data, dict):
-            _warn(f"ignoring {f}: expected a YAML mapping, got "
-                  f"{type(data).__name__}")
+            _warn(f"ignoring {f}: expected a YAML mapping, got {type(data).__name__}")
             return None
         project = data.get("project")
         if not isinstance(project, str) or not project.strip():
@@ -463,11 +486,14 @@ class CribLink:
             import_into=data.get("import_into"),
             root=d,
             refs=_as_list(data.get("refs")),
-            store=(str(s).strip() or None
-                   if isinstance(s := data.get("store"), str) else None),
+            store=(
+                str(s).strip() or None
+                if isinstance(s := data.get("store"), str)
+                else None
+            ),
         )
         try:
-            link.store_dir              # validate now, while we can name the file
+            link.store_dir  # validate now, while we can name the file
         except ValueError as e:
             # Same contract as the rest of `.crib` parsing: a bad key is warned
             # about and dropped, never fatal — this file sits above someone's
@@ -545,8 +571,10 @@ def expand_location(token: str, locations: dict[str, str]) -> Path:
     if not token.startswith("$"):
         return Path(token)
     head, _, rest = token[1:].partition("/")
-    roots = {"HOME": Path.home(),
-             **{k: Path(v).expanduser() for k, v in locations.items()}}
+    roots = {
+        "HOME": Path.home(),
+        **{k: Path(v).expanduser() for k, v in locations.items()},
+    }
     root = roots.get(head)
     if root is None:
         return Path(token)

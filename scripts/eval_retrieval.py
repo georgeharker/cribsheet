@@ -149,11 +149,14 @@ def run_lookup(
     keyword_weight: float | None = None,
     summaries: str | None = None,
     summary_weight: float | None = None,
+    hints: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     """One lookup → its ranked hits (top-first).
 
     ``keywords``/``keyword_weight`` drive BM25 keyword_index; ``summaries``/
     ``summary_weight`` the dense summary_index aliases — the lift knobs (§3).
+    ``hints``: caller-supplied exact strings (zvec-grep Transferable 1), each run
+    as its own exact-term route with an agreement bonus.
 
     Served by the shared daemon connection when there is one; `--no-daemon` (and an
     unreachable daemon) fall back to one `crib --json lookup` subprocess per query.
@@ -174,6 +177,8 @@ def run_lookup(
             call["summary_labels"] = _labels(summaries)
         if summary_weight is not None:
             call["summary_weight"] = summary_weight
+        if hints:
+            call["hints"] = hints
         try:
             return client.call("note_lookup", call)
         except Exception as e:
@@ -198,6 +203,8 @@ def run_lookup(
         cmd += ["--summaries", summaries]
     if summary_weight is not None:
         cmd += ["--summary-weight", str(summary_weight)]
+    for hint in hints or []:
+        cmd += ["--hint", hint]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
         raise RuntimeError(
@@ -276,6 +283,7 @@ def evaluate(
     rows: list[dict[str, Any]] = []
     for need in load_needs(spec):
         project = need.get("project") or default_project
+        need_hints = need.get("hints")
         for query in need["queries"]:
             runs = [
                 run_lookup(
@@ -288,6 +296,7 @@ def evaluate(
                     keyword_weight,
                     summaries,
                     summary_weight,
+                    hints=need_hints,
                 )
                 for _ in range(repeats)
             ]
@@ -324,6 +333,9 @@ def evaluate(
                     "hit": bool(rank and rank <= recall_k),
                     "rank_seq": rank_seq,
                     "stable": stable,
+                    # The hints this phrasing ran with (None = bare lookup) —
+                    # per-row provenance for the paired hints A/B.
+                    "hints": need_hints,
                     # Trimmed raw per-repeat hit lists — the recompute-from-raw
                     # substrate: MRR/recall/stability/nDCG are all derivable
                     # from these plus the protocol block, without re-driving

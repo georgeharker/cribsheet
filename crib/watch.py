@@ -135,7 +135,9 @@ class _FSWatcher:
         session with nothing said. Say it once, and let a later `watch_root` (or a
         restart) pick it up."""
         from watchdog.events import (
+            DirCreatedEvent,
             DirDeletedEvent,
+            DirModifiedEvent,
             FileCreatedEvent,
             FileDeletedEvent,
             FileModifiedEvent,
@@ -167,11 +169,14 @@ class _FSWatcher:
                 if key is not None:
                     watcher._loop.call_soon_threadsafe(watcher._schedule, key)
 
-            def on_created(self, event: FileCreatedEvent) -> None:
+            # Union param types match the base handler exactly (pyright
+            # reportIncompatibleMethodOverride) — `is_directory` does the narrowing
+            # the narrower annotations used to claim.
+            def on_created(self, event: DirCreatedEvent | FileCreatedEvent) -> None:
                 if not event.is_directory:
                     self._emit(event.src_path)
 
-            def on_modified(self, event: FileModifiedEvent) -> None:
+            def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> None:
                 if not event.is_directory:
                     self._emit(event.src_path)
 

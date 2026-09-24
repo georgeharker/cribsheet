@@ -1130,6 +1130,8 @@ class Crib:
         keyword_weight: float = 1.0,
         summary_labels: tuple[str, ...] = (),
         summary_weight: float = 1.0,
+        hints: list[str] | None = None,
+        hint_weight: float = 0.15,
         *,
         store: str = "notes",
     ) -> list[Hit]:
@@ -1171,6 +1173,8 @@ class Crib:
         dense_by = {h.id: h for h in dense}
         docs: dict = {}
         kw: dict[str, float] = {}
+        ids: list[str] = []
+        bm25 = None
         if hybrid:
             ids, docs, bm25 = self.index.lexical.get(
                 proj, keyword_labels, keyword_weight, store=store
@@ -1185,6 +1189,26 @@ class Crib:
                     sparse = [c * s for c, s in zip(bm25.coverage(Q), sparse)]
                 top = sorted(range(len(ids)), key=lambda j: sparse[j], reverse=True)
                 kw = {ids[j]: sparse[j] for j in top[:topn] if sparse[j] > 0}
+
+        # Hints: each caller-supplied exact string is its own lexical route over
+        # the SAME resident BM25 index — tokenize-only, zero embedding. Agreement
+        # (how many routes hit a candidate) is a COUNT signal the score blend
+        # cannot express; hint-only candidates ENTER the pool like sparse-only
+        # ones (dense back-filled below), because an exact-term match is the
+        # whole reason the caller supplied it.
+        hint_hits: dict[str, list[str]] = {}
+        if hints:
+            if bm25 is None:  # hybrid off: the lexical index wasn't fetched
+                ids, docs, bm25 = self.index.lexical.get(
+                    proj, keyword_labels, keyword_weight, store=store
+                )
+            if ids and bm25 is not None:
+                for hint in hints:
+                    hs = bm25.scores(tokenize(hint))
+                    htop = sorted(range(len(ids)), key=lambda j: hs[j], reverse=True)
+                    for j in htop[:topn]:
+                        if hs[j] > 0:
+                            hint_hits.setdefault(ids[j], []).append(hint)
 
         summ_hit = False
         alias_labels: dict[str, str] = {}  # rep cid -> label whose alias won
@@ -1206,12 +1230,14 @@ class Crib:
                 sig["sparse"] = round(kn[cid], 4)
             if cid in alias_labels:
                 sig["alias"] = alias_labels[cid]
+            if hint_hits.get(cid):
+                sig["hints"] = hint_hits[cid]
             return sig
 
-        if not kw and not summ_hit:  # dense only
+        if not kw and not summ_hit and not hint_hits:  # dense only
             out = dense
         else:
-            pool = list(dict.fromkeys(list(cos) + list(kw)))
+            pool = list(dict.fromkeys(list(cos) + list(kw) + list(hint_hits)))
             if not docs:  # need doc text to back-fill cosines
                 docs = {
                     i: (d, m)
@@ -1240,7 +1266,21 @@ class Crib:
                 return {cid: (d.get(cid, 0.0) - lo) / rng for cid in pool}
 
             kn = _mm(kw)  # min-max the sparse side over the pool
-            score = {cid: cos[cid] + kw_blend * kn.get(cid, 0.0) for cid in pool}
+            score = {
+                cid: (
+                    cos[cid]
+                    + kw_blend * kn.get(cid, 0.0)
+                    # hint agreement bonus: count of independent lexical routes
+                    # that hit this candidate, scaled by hint_weight — the one
+                    # signal the score blend cannot express on its own
+                    + (
+                        hint_weight * len(hint_hits[cid]) / len(hints)
+                        if hints and hint_hits.get(cid)
+                        else 0.0
+                    )
+                )
+                for cid in pool
+            }
             order = sorted(pool, key=lambda cid: score[cid], reverse=True)[:topn]
             out = []
             for cid in order:
@@ -1271,6 +1311,8 @@ class Crib:
         keyword_weight: float | None = None,
         summary_labels: list[str] | None = None,
         summary_weight: float | None = None,
+        hints: list[str] | None = None,
+        hint_weight: float | None = None,
         *,
         store: str = "notes",
     ) -> list[LookupHit]:
@@ -1319,6 +1361,7 @@ class Crib:
             if summary_weight is None
             else summary_weight
         )
+        hw = self.config.retrieve.hint_weight if hint_weight is None else hint_weight
         # Hybrid pulls a wider candidate pool so BM25 can promote terms dense ranked low.
         topn = max(k * 3, 30) if use_hybrid else (k if dedupe == "none" else k * 3)
         raw = self._retrieve(
@@ -1332,6 +1375,8 @@ class Crib:
             kw_weight,
             sum_labels,
             sum_weight,
+            hints=hints,
+            hint_weight=hint_weight if hint_weight is not None else hw,
             store=store,
         )
         # a store wipe this project hasn't been re-swept after: what comes back is
@@ -1406,13 +1451,16 @@ class Crib:
         k: int = 8,
         tags: list[str] | None = None,
         cwd: Path | None = None,
+        hints: list[str] | None = None,
     ) -> list[dict[str, Any]]:
         """`lookup` (same section-level dedupe) but each hit carries the FULL
         matching section markdown — sliced from the file by its line span — rather
         than a 280-char snippet, for rendering the matches for a human to read."""
         proj = self.resolve_project(project, cwd)
         out: list[dict[str, Any]] = []
-        for h in self.lookup(query, project, k, tags, dedupe="section", cwd=cwd):
+        for h in self.lookup(
+            query, project, k, tags, dedupe="section", cwd=cwd, hints=hints
+        ):
             section = h.snippet
             if h.line_start and h.line_end:
                 # a moved/unreadable/short file just keeps the snippet fallback
@@ -2862,6 +2910,7 @@ class Crib:
         project: str | None = None,
         k: int = 8,
         cwd: Path | None = None,
+        hints: list[str] | None = None,
     ) -> list[dict[str, Any]]:
         """Retrieval scoped to the DESIGN facet, each hit annotated with the facet
         state that decides whether to trust it (`status`, `tainted`, edge counts).
@@ -2870,7 +2919,12 @@ class Crib:
         is decisions, so a busy notes corpus can never crowd them out."""
         return self.designs.annotate_hits(
             self.resolve_project(project, cwd),
-            [vars(h) for h in self.lookup(query, project, k, cwd=cwd, store="design")],
+            [
+                vars(h)
+                for h in self.lookup(
+                    query, project, k, cwd=cwd, store="design", hints=hints
+                )
+            ],
             kind="design",
         )
 
@@ -2880,12 +2934,18 @@ class Crib:
         project: str | None = None,
         k: int = 8,
         cwd: Path | None = None,
+        hints: list[str] | None = None,
     ) -> list[dict[str, Any]]:
         """Retrieval scoped to the PLAN facet, hits annotated as `design_lookup`
         annotates its own."""
         return self.designs.annotate_hits(
             self.resolve_project(project, cwd),
-            [vars(h) for h in self.lookup(query, project, k, cwd=cwd, store="plans")],
+            [
+                vars(h)
+                for h in self.lookup(
+                    query, project, k, cwd=cwd, store="plans", hints=hints
+                )
+            ],
             kind="plan",
         )
 

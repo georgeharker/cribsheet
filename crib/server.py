@@ -521,6 +521,8 @@ def build_server(crib: Crib | None = None):
         keyword_weight: float | None = None,
         summary_labels: list[str] | None = None,
         summary_weight: float | None = None,
+        hints: list[str] | None = None,
+        hint_weight: float | None = None,
         project_path: str | None = None,
     ) -> list[dict[str, Any]]:
         """Semantic search over memory. Call this FIRST when the user asks
@@ -532,9 +534,13 @@ def build_server(crib: Crib | None = None):
         items and learnings live in their own pillar stores and never appear
         here — search them with `design_lookup` / `plan_lookup`, whose hits
         also carry the facet state.
-        `keyword_labels`/`keyword_weight` (BM25 keyword_index) and
-        `summary_labels` (dense summary_index aliases) override which LLM index
-        sets feed retrieval (default from config); mainly for eval sweeps.
+        `hints`: exact strings you already have in context — symbol names,
+        flags, error codes, note titles you just read. Each runs as its own
+        exact-term route and boosts candidates multiple routes agree on.
+        No hints? Just query. `keyword_labels`/`keyword_weight` (BM25
+        keyword_index) and `summary_labels` (dense summary_index aliases)
+        override which LLM index sets feed retrieval (default from config);
+        mainly for eval sweeps.
         A hit carrying `index_rebuilding: true` means this project is still being
         re-embedded after a store wipe (`status` shows the sweep) — the result set
         is INCOMPLETE, so retry once it clears rather than concluding nothing exists."""
@@ -549,6 +555,8 @@ def build_server(crib: Crib | None = None):
                 keyword_weight=keyword_weight,
                 summary_labels=summary_labels,
                 summary_weight=summary_weight,
+                hints=hints,
+                hint_weight=hint_weight,
             )
         ]
 
@@ -558,13 +566,15 @@ def build_server(crib: Crib | None = None):
         project: str | None = None,
         k: int = 8,
         tags: list[str] | None = None,
+        hints: list[str] | None = None,
         project_path: str | None = None,
     ) -> list[dict[str, Any]]:
         """Like `note_lookup`, but each hit carries the full matching section's
         markdown (`section`) instead of a short snippet — for reading the
         matched sections in full, not just locating them. Carries the same
-        `index_rebuilding` incompleteness flag."""
-        return crib.apropos(query, project, k, tags)
+        `index_rebuilding` incompleteness flag. `hints`: exact strings you
+        already have in context, each run as its own exact-term route."""
+        return crib.apropos(query, project, k, tags, hints=hints)
 
     @crib_tool("read")
     def note_read(
@@ -1305,6 +1315,7 @@ def build_server(crib: Crib | None = None):
         query: str,
         project: str | None = None,
         k: int = 8,
+        hints: list[str] | None = None,
         project_path: str | None = None,
     ) -> list[dict[str, Any]]:
         """Semantic search scoped to DECISIONS, each hit annotated with what
@@ -1314,11 +1325,13 @@ def build_server(crib: Crib | None = None):
         architecture change. Search the decisions before reconstructing them from
         the code — and note the `tainted` flag: a stale decision is exactly the one
         you must not quietly reason from. Follow a hit with `design_read <ref>`.
+        `hints`: exact strings you already have in context (decision titles,
+        symbols) — each runs as its own exact-term route.
 
         CONTRACT: taint is computed live from dep body hashes; `tainted: true` here
         means a dep moved and nobody has re-read this since. Resolves its project
         like a read."""
-        return crib.design_lookup(query, project, k)
+        return crib.design_lookup(query, project, k, hints=hints)
 
     @crib_tool("read")
     def design_list(
@@ -1677,15 +1690,17 @@ def build_server(crib: Crib | None = None):
         query: str,
         project: str | None = None,
         k: int = 8,
+        hints: list[str] | None = None,
         project_path: str | None = None,
     ) -> list[dict[str, Any]]:
         """Semantic search scoped to PLAN ITEMS, each hit annotated with `status`,
         `tainted` and dep/dependent counts.
 
         CUE: "was this already planned?" — before adding an item, and when picking
-        up work described in prose rather than by ref. Resolves its project like a
-        read."""
-        return crib.plan_lookup(query, project, k)
+        up work described in prose rather than by ref. `hints`: exact strings you
+        already have in context (item titles, refs) — each runs as its own
+        exact-term route. Resolves its project like a read."""
+        return crib.plan_lookup(query, project, k, hints=hints)
 
     @crib_tool("read")
     async def plan_dep_add(

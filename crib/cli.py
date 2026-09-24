@@ -1380,6 +1380,21 @@ def build_parser() -> argparse.ArgumentParser:
         "(overrides [retrieve].summary_weight)",
     )
     s.add_argument(
+        "--hint",
+        action="append",
+        dest="hints",
+        help="exact strings you already know (symbol, flag, error code, title) — "
+        "each runs as its own exact-term route and boosts candidates multiple "
+        "routes agree on; repeatable",
+    )
+    s.add_argument(
+        "--hint-weight",
+        type=float,
+        default=None,
+        dest="hint_weight",
+        help="weight of the hint agreement bonus (overrides [retrieve].hint_weight)",
+    )
+    s.add_argument(
         "-a",
         "--render",
         action="store_true",
@@ -1400,6 +1415,13 @@ def build_parser() -> argparse.ArgumentParser:
     # hits depending on how you spelled it.
     s.add_argument("-k", type=int, default=8)
     s.add_argument("--tag", action="append", dest="tags")
+    s.add_argument(
+        "--hint",
+        action="append",
+        dest="hints",
+        help="exact strings you already know — each runs as its own "
+        "exact-term route; repeatable",
+    )
 
     s = codesub.add_parser(
         "lookup", help="find a code symbol by concept OR name (hybrid dense+kw)"
@@ -1640,6 +1662,13 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("query")
     proj(s)
     s.add_argument("-k", type=int, default=8)
+    s.add_argument(
+        "--hint",
+        action="append",
+        dest="hints",
+        help="exact strings you already know (decision titles, symbols) — "
+        "each runs as its own exact-term route; repeatable",
+    )
 
     s = designsub.add_parser(
         "list", help="every decision as a table (--tainted filters to stale)"
@@ -1764,6 +1793,13 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("query")
     proj(s)
     s.add_argument("-k", type=int, default=8)
+    s.add_argument(
+        "--hint",
+        action="append",
+        dest="hints",
+        help="exact strings you already know (item titles, refs) — "
+        "each runs as its own exact-term route; repeatable",
+    )
 
     s = plansub.add_parser(
         "reaffirm",
@@ -2192,6 +2228,10 @@ def _b_lookup(a: Any) -> dict[str, Any]:
         call["summary_labels"] = _split_labels(a.summaries)
     if getattr(a, "summary_weight", None) is not None:
         call["summary_weight"] = a.summary_weight
+    if getattr(a, "hints", None):  # absent ⇒ None; --hint accumulates
+        call["hints"] = a.hints
+    if getattr(a, "hint_weight", None) is not None:
+        call["hint_weight"] = a.hint_weight
     return call
 
 
@@ -2229,14 +2269,21 @@ VERBS: dict[str, Verb] = {
         _E,
         policy="read",
         mcp=f"query {_PROJ} k=8 tags=None keyword_labels=None "
-        "keyword_weight=None summary_labels=None summary_weight=None",
+        "keyword_weight=None summary_labels=None summary_weight=None "
+        "hints=None hint_weight=None",
     ),
     "note apropos": Verb(
         "apropos",
-        lambda a: {"query": a.query, "project": a.project, "k": a.k, "tags": a.tags},
+        lambda a: {
+            "query": a.query,
+            "project": a.project,
+            "k": a.k,
+            "tags": a.tags,
+            "hints": a.hints,
+        },
         _E_apropos,
         policy="read",
-        mcp=f"query {_PROJ} k=8 tags=None",
+        mcp=f"query {_PROJ} k=8 tags=None hints=None",
     ),
     "note read": Verb(
         "read",
@@ -2720,10 +2767,10 @@ VERBS: dict[str, Verb] = {
     ),
     "design lookup": Verb(
         "design_lookup",
-        lambda a: {"query": a.query, "k": a.k, "project": a.project},
+        lambda a: {"query": a.query, "k": a.k, "project": a.project, "hints": a.hints},
         _E_facet,
         policy="read",
-        mcp=f"query {_PROJ} k=8",
+        mcp=f"query {_PROJ} k=8 hints=None",
     ),
     "design list": Verb(
         "design_list",
@@ -2853,10 +2900,10 @@ VERBS: dict[str, Verb] = {
     ),
     "plan lookup": Verb(
         "plan_lookup",
-        lambda a: {"query": a.query, "k": a.k, "project": a.project},
+        lambda a: {"query": a.query, "k": a.k, "project": a.project, "hints": a.hints},
         _E_facet,
         policy="read",
-        mcp=f"query {_PROJ} k=8",
+        mcp=f"query {_PROJ} k=8 hints=None",
     ),
     "plan reaffirm": Verb(
         "plan_reaffirm",
