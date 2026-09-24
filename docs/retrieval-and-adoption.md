@@ -488,6 +488,76 @@ the top-k, no per-section generation, no stored vectors, no crowding. Keep the m
 querier-vs-author vocabulary mismatch) — untested at that scale, and even then benchmark
 it against the reranker first.
 
+### 5.6 The frozen protocol — test discipline for subsequent changes (2026-09-24)
+
+The zvec-grep SWE-QA20 protocol (their `docs/zg-retrieval-metric-review.md`) supplies
+the discipline; our frozen sets supply the substrate. Two findings settle sufficiency:
+
+1. **Retrieval is deterministic.** Probed 2026-09-24: 31 phrasings × 5 repeats
+   through the warm daemon, 0 unstable rows (identical ordered top-k every time).
+   So a single measurement per phrasing IS the whole distribution — the gold-set
+   numbers need no error bars across repeats — and ranking stability becomes a
+   **standing invariant** any future change must preserve.
+2. **The frozen set is sufficient.** The n=1876 gold set stays the quality gate and
+   the 31-phrasing set the smoke test; stability adds no fixture requirement. The
+   43% alias-verbatim contamination (§ clean-824 plan item) splits USES, not the
+   gate: general retrieval changes gate on the full set; only `asks`-label
+   experiments need the de-contaminated subset, because contamination only distorts
+   deltas FOR that label.
+
+**Protocol ids** (written into every `--dump`):
+
+| id | pins |
+|---|---|
+| `crib-eval-quality-v1` | cases file (SHA-256), k, recall_k, repeats=1, bars, index-label overrides, crib versions (PATH CLI + imported package, recorded separately — they have differed), **index fingerprint**: embed model + device, rerank model, config path + SHA-256 |
+| `crib-eval-stability-v1` | the above plus repeats=N and the identity rule: a row is STABLE iff all N ordered `(relpath, heading)` top-k sequences are identical |
+
+Two dumps compare only when their protocol blocks match; changing any pinned field
+is a new protocol, never a silent re-comparison. The **index fingerprint is the
+model-swap pin**: swapping the embed model (or re-generating the derived labels
+under a different distill model, or toggling the reranker) changes retrieval while
+leaving every query-side pin identical — without `embed_model`/`config_sha256`
+two dumps from different models would carry the same protocol id and the
+compare-only-when-matching rule could not catch it. Comparing models is two runs
+two dumps under one shared query set, judged against the noise floor (SE ≈ 0.010
+on recall at n=1876; only moves > ~0.02 are real) — the dump's raw rows are
+per-run evidence, so a model swap is NOT rescorable across dumps (vectors aren't
+in the dump); it is a paired-run comparison.
+
+**Canonical gates:**
+
+```sh
+# smoke + determinism (seconds, run on every retrieval change):
+.venv/bin/python scripts/eval_retrieval.py --repeats 5 --dump /tmp/eval-smoke.json
+# quality gate (~13 min on the daemon, run on meaningful changes):
+.venv/bin/python scripts/eval_retrieval.py --cases scripts/eval_data/notes_gold_large.json \
+    --bar-mrr 0.69 --bar-recall 0.75 --dump /tmp/eval-large.json
+```
+
+Discipline rules, each traced to a failure it prevents:
+
+- **Stability bar is 1.0 and enforced whenever repeats > 1.** Any instability is a
+  regression signal (shared-chroma flake, tie-break change, candidate-pool wobble at
+  a ranking boundary) — never sampling noise. Reported ALONGSIDE MRR/recall, never
+  instead of them (their principle: equal scores need not imply identical retrieval).
+- **Failures score zero, not excluded.** A failed/timeout repeat makes its row
+  unstable — excluding it would launder exactly the flakiness the metric exists to
+  catch.
+- **Recompute from raw.** The dump carries per-repeat trimmed hit lists + rank
+  sequences; MRR/recall/stability are derivable from raw (verified identical to the
+  run's aggregates), so a future scorer change (e.g. nDCG) rescores old dumps
+  without re-driving the daemon.
+- **Record both crib versions.** The daemon path imports the project package; the
+  `crib` on PATH can be a stale install from another venv (0.14.0 vs 0.15.2 has
+  actually happened). The dump never lets one stand in for the other.
+
+**nDCG note (parked).** With one acceptable target per query, binary-gain nDCG@10 is
+algebraically identical to MRR@10 (`1/log2(rank+1)` per query) — adding it to the
+current single-target gold sets would produce a second number that moves exactly
+with the first. It becomes worth building only alongside multi-target gold needs
+(several sections genuinely answering one need), which ties into the clean-corpus
+plan item.
+
 ## 6. Recommended build order (each gated by a proof on §5)
 
 1. **Doc-side enrichment** — ✅ heading-breadcrumb injection (§5.2, MRR 0.889→0.926),
