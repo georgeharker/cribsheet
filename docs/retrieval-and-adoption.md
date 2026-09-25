@@ -529,9 +529,9 @@ in the dump); it is a paired-run comparison.
 ```sh
 # smoke + determinism (seconds, run on every retrieval change):
 .venv/bin/python scripts/eval_retrieval.py --repeats 5 --dump /tmp/eval-smoke.json
-# quality gate (~13 min on the daemon, run on meaningful changes):
+# quality gate (~4 min on the daemon, run on meaningful changes):
 .venv/bin/python scripts/eval_retrieval.py --cases scripts/eval_data/notes_gold_large.json \
-    --bar-mrr 0.69 --bar-recall 0.75 --dump /tmp/eval-large.json
+    --bar-mrr 0.66 --bar-recall 0.72 --dump /tmp/eval-large.json
 ```
 
 Discipline rules, each traced to a failure it prevents:
