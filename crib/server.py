@@ -1677,6 +1677,37 @@ def build_server(crib: Crib | None = None):
         return await crib.plan_decline(ref, why, project, triggers)
 
     @crib_tool("read")
+    async def plan_review(
+        project: str | None = None, project_path: str | None = None
+    ) -> dict[str, Any]:
+        """The full-plan REVIEW EVIDENCE PACK — the consolidated export plus
+        per-item evidence (age, dep/blocking state, `revisit`, trigger state,
+        and overlap probes for open items against the plan INCLUDING done and
+        declined items — a duplicate of a done item is the louder one).
+
+        Runs NO model and writes NOTHING (the `design_import` precedent): you
+        read, judge, and emit the batch, which `plan_review_apply` applies.
+        The `instruction` carries the contract and the batch format — READ IT;
+        its permission line (the LLM never sets `done`) is load-bearing."""
+        return await crib.plan_review(project)
+
+    @crib_tool("write")
+    async def plan_review_apply(
+        batch: list[dict],
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        """Apply a JUDGED review batch, edge-aware, with per-op reports and
+        `reviewed` stamps on every touched item.
+
+        Ops: retitle / move / park / decline / merge / edit. REFUSED with no
+        partial write: `done` (statuses are human claims — the LLM never sets
+        done; propose completions in prose for a human to confirm) and
+        `delete`/`forget` (MERGE instead — a decline keeps the item readable).
+        One op failing does not abort the batch."""
+        return await crib.plan_review_apply(project, batch)
+
+    @crib_tool("read")
     def plan_read(
         ref: str, project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:

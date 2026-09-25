@@ -20,7 +20,7 @@ import pytest
 from crib import notes
 from crib.app import Crib
 from crib.config import Config
-from crib.designs import Node, _cycles, _rank_between
+from crib.designs import DONE_STATUSES, Node, _cycles, _rank_between
 from crib.paths import Paths
 from crib.store import InMemoryStore
 
@@ -1105,3 +1105,129 @@ def test_probe_carries_facet_state_at_the_cue(crib):
     probe = crib._similar("p", "the nDCG unblock", "self", "plans")
     statuses = {r["relpath"]: r.get("status") for r in probe}
     assert "declined" in statuses.values()
+
+
+# ── the review sweep (plan-deferral-review.md P3) ─────────────────────────────
+
+
+def test_plan_review_hands_evidence_and_runs_no_model(crib):
+    d = run(crib.design_add("Clean corpus ground", "the fixture", project="p"))
+    run(crib.plan_add("nDCG work", "add nDCG to the gate", project="p"))
+    run(
+        crib.designs.plan_decline(
+            "p", "nDCG work", why="needs multi-target gold", triggers=[d["relpath"]]
+        )
+    )
+    run(crib.plan_add("nDCG work", "add nDCG to the gate", project="p"))
+    # The hash embedder (this fixture's store) scores near-text below the 0.85
+    # warn bar calibrated for the real one — lower it; the test is about the
+    # probe SEEING the declined twin with its status, not the score.
+    crib.DEDUPE_WARN_SCORE = 0.5
+    out = run(crib.plan_review(project="p"))
+    # the state exam rides inside; the contract is the instruction
+    assert "Plan items — p" in out["export"]
+    assert "NEVER set `done`" in out["instruction"]
+    # the OPEN re-proposal carries an overlap probe that sees the DECLINED twin
+    # (two items share the title; select the OPEN one — declined sorts first)
+    open_row = next(
+        r for r in out["items"] if r["title"] == "nDCG work" and r["status"] == "todo"
+    )
+    # the declined twin was probed (its relpath appears, with status)
+    assert any(r.get("status") == "declined" for r in open_row.get("overlap", []))
+    # finished work is not probed (the question is meaningless for it)
+    assert all(
+        "overlap" in r or r["status"] in DONE_STATUSES or r["status"] == "declined"
+        for r in out["items"]
+    )
+
+
+def test_review_apply_retitles_moves_and_stamps_reviewed(crib):
+    run(crib.plan_add("vague title", "body one", project="p"))
+    run(crib.plan_add("second", "body two", project="p"))
+    out = run(
+        crib.plan_review_apply(
+            "p",
+            [
+                {
+                    "op": "retitle",
+                    "ref": "vague-title.md",
+                    "title": "Add nDCG to the eval gate",
+                },
+                {"op": "move", "ref": "second.md", "before": "vague-title.md"},
+            ],
+        )
+    )
+    assert out["applied"] == 2 and out["failed"] == []
+    listed = crib.plan_list(project="p")["items"]
+    assert listed[0]["title"] == "second"  # moved before
+    assert listed[0]["reviewed"] and listed[1]["reviewed"]  # stamped
+
+
+def test_review_apply_refuses_done_and_delete_but_continues_the_batch(crib):
+    run(crib.plan_add("a", "x", project="p"))
+    run(crib.plan_add("b", "x", project="p"))
+    out = run(
+        crib.plan_review_apply(
+            "p",
+            [
+                {"op": "done", "ref": "a.md"},
+                {"op": "delete", "ref": "a.md"},
+                {"op": "decline", "ref": "b.md", "why": "settled by evidence"},
+                {"op": "retitle", "ref": "b.md", "title": "b, retitled"},
+            ],
+        )
+    )
+    assert out["applied"] == 2 and len(out["failed"]) == 2
+    assert all("human claims" in f["error"] for f in out["failed"])
+    # the batch continued past the refusals: b is declined AND retitled
+    row = next(
+        r
+        for r in crib.plan_list(all=True, project="p")["items"]
+        if r["title"] == "b, retitled"
+    )
+    assert row["status"] == "declined"
+
+
+def test_review_merge_rides_the_body_and_forgets_the_loser(crib):
+    run(crib.plan_add("dup a", "the real work detail", project="p"))
+    run(crib.plan_add("dup b", "duplicate wording", project="p"))
+    out = run(
+        crib.plan_review_apply(
+            "p",
+            [
+                {"op": "merge", "ref": "dup-b.md", "into": "dup-a.md"},
+            ],
+        )
+    )
+    assert out["applied"] == 1 and out["failed"] == []
+    titles = _titles(crib.plan_list(project="p")["items"])
+    assert "dup a" in titles and "dup b" not in titles
+    body = crib.plan_read("dup a", project="p")["body"]
+    assert "merged from dup b" in body and "duplicate wording" in body
+
+
+def test_review_merge_reports_dependents_instead_of_wedging(crib):
+    run(crib.plan_add("loser", "x", project="p"))
+    loser_rel = crib.plan_list(project="p")["items"][0]["relpath"]
+    run(crib.plan_add("dependent", "x", deps=[loser_rel], project="p"))
+    run(crib.plan_add("winner", "x", project="p"))
+    out = run(
+        crib.plan_review_apply(
+            "p",
+            [
+                {"op": "merge", "ref": loser_rel, "into": "winner.md"},
+            ],
+        )
+    )
+    assert out["failed"] and "repoint its dependents" in out["failed"][0]["error"]
+    # the loser still exists — the batch did not wedge the plan
+    assert loser_rel in [
+        r["relpath"] for r in crib.plan_list(all=True, project="p")["items"]
+    ]
+
+
+def test_review_batch_never_sets_done_even_by_accident(crib):
+    run(crib.plan_add("item", "x", project="p"))
+    out = run(crib.plan_review_apply("p", [{"op": "done", "ref": "item.md"}]))
+    assert out["failed"][0]["error"]
+    assert crib.plan_list(project="p")["items"][0]["status"] == "todo"  # untouched

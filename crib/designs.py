@@ -67,7 +67,7 @@ import contextlib
 import datetime
 import sys
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable
 
 from . import notes
 from .chunk import chunk_note, section_key
@@ -2471,6 +2471,211 @@ class Designs:
             ),
         }
 
+    _REVIEW_CONTRACT = (
+        "You are reviewing this plan as a whole. Evidence is in front of you; crib"
+        " ran no model and wrote nothing — you judge, then emit a BATCH of edits."
+        " The vocabulary, each evidence-backed: retitle (clarity), merge"
+        " (duplicate onto the better-worded one), reorder (ranks), park-with-"
+        " trigger, decline-with-why. Ops:"
+        ' {"op": "retitle", "ref": <relpath>, "title": <new>}'
+        ' {"op": "move", "ref": <relpath>, "after"|"before": <other relpath>}'
+        ' {"op": "park", "ref": <relpath>, "triggers": [<refs>], "why": "..."}'
+        ' {"op": "decline", "ref": <relpath>, "why": "...", "triggers": [...]}'
+        ' {"op": "merge", "ref": <loser relpath>, "into": <winner relpath>}'
+        ' {"op": "edit", "ref": <relpath>, "content": <new body>}'
+        " PERMISSION LINE — the load-bearing rule: you may NEVER set `done`."
+        " 'Done' means the work happened — a claim only the actor who did it can"
+        " make. If the evidence says an item looks complete, say so in prose for"
+        " a human to confirm. Every applied edit is edge-aware and stamped"
+        " `reviewed`."
+    )
+
+    async def plan_review(
+        self,
+        proj: str,
+        probe: Callable[[str, str, str], list[dict[str, Any]]] | None = None,
+    ) -> dict[str, Any]:
+        """The review EVIDENCE PACK — the state exam plus per-item evidence for a
+        full-plan evaluation. Runs NO model and writes NOTHING (the
+        `design_import` precedent): this hands the calling session everything a
+        reviewer needs, and `plan_review_apply` applies the judged batch.
+
+        Per item: age, dep/blocking state, `revisit`, trigger state, and — for
+        OPEN items — overlap probes against the plan INCLUDING done/declined
+        items (a duplicate of a done item is the louder one: the work regressed
+        or the item was mis-scoped). The `instruction` carries the contract and
+        the batch format. `probe` is the caller's near-dup hook (the Crib app's
+        `_similar`) — Designs holds no embedder of its own."""
+        import asyncio
+
+        graph = self._load_graph(proj)
+        order, cycles = self._ordered(graph)
+        rows = self._rows(proj, graph, order)
+        export = self.export_facet(proj, "plan")["markdown"]
+
+        # Overlap probes for OPEN items only: the re-proposal question ("is this
+        # already tracked / parked / declined / done?") is meaningless for
+        # finished work. Blocking lookups → to_thread, like `_similar` callers.
+        def _probe(r: dict[str, Any]) -> None:
+            node = graph.nodes[r["id"]]
+            body = (self._note(proj, node).body or "").strip()
+            text = (body or node.title).splitlines()[0][:200]
+            try:
+                r["overlap"] = probe(proj, text, r["relpath"]) if probe else []
+            except Exception:  # noqa: BLE001 — evidence, never a crash
+                r["overlap"] = []
+
+        open_rows = [
+            r
+            for r in rows
+            if r["status"] not in DONE_STATUSES and r["status"] != "declined"
+        ]
+        await asyncio.gather(*(asyncio.to_thread(_probe, r) for r in open_rows))
+
+        return {
+            "project": proj,
+            "export": export,
+            "items": rows,
+            "trigger_fired": sum(1 for r in rows if r.get("trigger_fired")),
+            "cycles": cycles,
+            "instruction": self._REVIEW_CONTRACT,
+        }
+
+    async def plan_review_apply(
+        self, proj: str, batch: list[dict[str, Any]]
+    ) -> dict[str, Any]:
+        """Apply a JUDGED review batch, edge-aware, with per-op reports.
+
+        Ops: retitle / move / park / decline / merge / edit (bodies). Refused,
+        with the reason and no partial write: `done` (statuses are human claims —
+        the LLM never sets done; propose completions in prose), `delete`/`forget`
+        (a batch can MERGE instead — a decline keeps the item readable, and a
+        deletion needs a deliberate human verb), anything unknown. Every
+        successfully touched item is stamped `reviewed` with today's date, so a
+        sweep's rewrites are visible, never silent history rewrites. One op
+        failing does not abort the batch — its error rides the report."""
+        if not isinstance(batch, list) or not batch:
+            raise CribUserError("empty batch — nothing to apply")
+        graph = self._load_graph(proj)
+        before = self._taint(graph)
+        results: list[dict[str, Any]] = []
+        applied_rels: list[str] = []
+        for i, op in enumerate(batch):
+            kind = (op.get("op") or "").lower()
+            entry: dict[str, Any] = {"index": i, "op": kind}
+            try:
+                ref = op.get("ref") or ""
+                if not ref:
+                    raise CribUserError(f"op #{i} ({kind!r}) is missing `ref`")
+                if kind == "retitle":
+                    node = self._resolve_ref(self._load_graph(proj), ref, "plan")
+                    if not (op.get("title") or "").strip():
+                        raise CribUserError("retitle needs a non-empty title")
+                    await self._save(proj, node, {"title": op["title"].strip()})
+                    entry["result"] = f"retitled {node.relpath} → {op['title']!r}"
+                    applied_rels.append(node.relpath)
+                elif kind == "move":
+                    out = await self.plan_move(
+                        proj, ref, after=op.get("after"), before=op.get("before")
+                    )
+                    entry["result"] = f"moved {out['title']} (rank updated)"
+                    applied_rels.append(out["relpath"])
+                elif kind == "park":
+                    out = await self.plan_park(
+                        proj, ref, op.get("triggers"), op.get("why")
+                    )
+                    entry["result"] = f"parked {out['relpath']}"
+                    applied_rels.append(out["relpath"])
+                elif kind == "decline":
+                    out = await self.plan_decline(
+                        proj, ref, op.get("why"), op.get("triggers")
+                    )
+                    entry["result"] = f"declined {out['relpath']}"
+                    applied_rels.append(out["relpath"])
+                elif kind == "edit":
+                    content = op.get("content") or ""
+                    out = await self.plan_edit(proj, ref, content)
+                    entry["result"] = f"edited {out['relpath']}"
+                    applied_rels.append(out["relpath"])
+                elif kind == "merge":
+                    entry["result"] = await self._review_merge(
+                        proj, ref, op.get("into") or ""
+                    )
+                    applied_rels.append(op.get("into") or "")
+                elif kind in ("done", "delete", "forget"):
+                    raise CribUserError(
+                        f"{kind!r} is refused in a review batch — statuses are "
+                        "human claims (the LLM never sets done) and deletion "
+                        "needs a deliberate human verb call; propose it in the "
+                        "report or MERGE instead"
+                    )
+                else:
+                    raise CribUserError(
+                        f"unknown op {kind!r}: use retitle/move/park/decline/merge/edit"
+                    )
+            except CribUserError as e:
+                entry["error"] = str(e)
+            results.append(entry)
+        # The `reviewed` stamp, per touched item: a sweep's rewrites are visible,
+        # never silent history rewrites.
+        final_graph = self._load_graph(proj)
+        by_rel = {n.relpath: n for n in final_graph.of_kind("plan")}
+        for rel in dict.fromkeys(applied_rels):
+            node = by_rel.get(rel)
+            if node:
+                await self._save(proj, node, {"reviewed": _today()})
+        after = self._load_graph(proj)
+        t_after = self._taint(after)
+        newly = [
+            self._annotate(after, t_after, nid)
+            for nid in after.nodes
+            if nid not in before
+            and after.nodes.get(nid)
+            and after.nodes[nid].kind == "plan"
+        ]
+        return {
+            "project": proj,
+            "applied": sum(1 for r in results if "result" in r),
+            "failed": [r for r in results if "error" in r],
+            "results": results,
+            "newly_tainted": newly,
+        }
+
+    async def _review_merge(
+        self, proj: str, loser_ref: str, winner_ref: str
+    ) -> dict[str, Any]:
+        """Merge two plan items: the loser's body rides onto the winner, the loser
+        is forgotten. Refuses politely when the loser has dependents — repoint
+        them first (the report says so; the batch continues)."""
+        loser = self._resolve_ref(self._load_graph(proj), loser_ref, "plan")
+        winner = self._resolve_ref(self._load_graph(proj), winner_ref, "plan")
+        if loser.id == winner.id:
+            raise CribUserError("merge needs two distinct items")
+        loser_body = (self._note(proj, loser).body or "").strip()
+        if loser_body:
+            await self._write_body(
+                proj,
+                winner.relpath,
+                lambda body: (
+                    body.rstrip()
+                    + "\n\n## merged from "
+                    + loser.title
+                    + "\n\n"
+                    + loser_body
+                    if body.strip()
+                    else loser_body
+                ),
+                kind="plan",
+            )
+        try:
+            await self.plan_forget(proj, loser.relpath)
+        except CribUserError as e:
+            raise CribUserError(
+                f"merged the body into {winner.relpath} but could not forget "
+                f"{loser.relpath}: {e} — repoint its dependents, then `plan_forget`"
+            ) from e
+        return {"merged": loser.relpath, "into": winner.relpath}
+
     async def plan_dep_add(self, proj: str, ref: str, dep_ref: str) -> dict[str, Any]:
         return await self._dep_add(proj, "plan", ref, dep_ref)
 
@@ -2640,6 +2845,10 @@ class Designs:
             "missing_deps": missing,
             "group": _group(node, bool(blockers)),
         }
+        # The review sweep's stamp — surfaced so a sweep's rewrites are visible in
+        # every working-set read, never only in the file.
+        if (node.frontmatter or {}).get("reviewed"):
+            row["reviewed"] = node.frontmatter["reviewed"]
         if node.status in ("parked", "declined"):
             # The trigger state is COMPUTED live here (baseline vs watched hash
             # or status, per the deferral flavour), so `plan_list` is where a

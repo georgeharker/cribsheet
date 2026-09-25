@@ -3136,6 +3136,25 @@ VERBS: dict[str, Verb] = {
         policy="read",
         mcp=f"{_PROJ}",
     ),
+    "plan review": Verb(
+        "plan_review",
+        lambda a: {"project": a.project},
+        _E,
+        is_async=True,
+        policy="read",
+        mcp=f"{_PROJ}",
+    ),
+    "plan review-apply": Verb(
+        "plan_review_apply",
+        lambda a: {
+            "batch": json.loads(Path(a.batch).read_text()),
+            "project": _proj_of(a),
+        },
+        _E_dwrite,
+        is_async=True,
+        policy="write",
+        mcp=f"batch {_PROJ}",
+    ),
     "plan next": Verb(
         "plan_next",
         lambda a: {"k": a.k, "project": a.project},

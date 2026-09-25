@@ -3166,6 +3166,29 @@ class Crib:
             self.resolve_project(project, cwd), ref, why, triggers
         )
 
+    async def plan_review(
+        self, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
+        """The review EVIDENCE PACK: the consolidated export + per-item evidence
+        (age, deps, overlap probes vs open AND done/declined items) + the review
+        contract. Runs no model, writes nothing — the session LLM judges, then
+        `plan_review_apply` applies the batch."""
+        return await self.designs.plan_review(
+            self.resolve_project(project, cwd),
+            probe=lambda p, text, exclude: self._similar(p, text, exclude, "plans"),
+        )
+
+    async def plan_review_apply(
+        self,
+        project: str | None = None,
+        batch: list[dict] | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
+        """Apply a judged review batch, edge-aware, stamped `reviewed`."""
+        return await self.designs.plan_review_apply(
+            self.resolve_project(project, cwd), batch or []
+        )
+
     def plan_read(
         self, ref: str, project: str | None = None, cwd: Path | None = None
     ) -> dict[str, Any]:
