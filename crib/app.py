@@ -692,11 +692,26 @@ class Crib:
             hits = self.lookup(probe, project=proj, k=4, store=store)
         except Exception:  # noqa: BLE001 — a nudge must never fail the store
             return []
-        return [
+        rows = [
             {"relpath": h.relpath, "heading": h.heading, "score": h.score}
             for h in hits
             if h.relpath != exclude and h.score >= self.DEDUPE_WARN_SCORE
         ]
+        # FACET STATE AT THE CUE (plan-deferral-review.md P2): a probe hit that is
+        # parked or declined is the answer, not redundancy — "was this already
+        # planned/parked/declined?" carries the status (and, for plan rows, the
+        # trigger/why lives one `plan_read` away). Notes have no status.
+        if store in ("design", "plans") and rows:
+            graph = self.designs._load_graph(proj)
+            by_rel = {
+                n.relpath: n
+                for n in graph.of_kind("design" if store == "design" else "plan")
+            }
+            for r in rows:
+                n = by_rel.get(r["relpath"])
+                if n:
+                    r["status"] = n.status
+        return rows
 
     async def store_note(
         self,
@@ -3135,6 +3150,20 @@ class Crib:
         whose change SURFACES it (never auto-wakes it)."""
         return await self.designs.plan_park(
             self.resolve_project(project, cwd), ref, triggers, why
+        )
+
+    async def plan_decline(
+        self,
+        ref: str,
+        why: str | None = None,
+        project: str | None = None,
+        triggers: list[str] | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
+        """Decline an item — never scheduled, remembered with the why-not (a
+        decline without the why-not is refused: the rationale IS the payload)."""
+        return await self.designs.plan_decline(
+            self.resolve_project(project, cwd), ref, why, triggers
         )
 
     def plan_read(

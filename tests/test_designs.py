@@ -1019,3 +1019,89 @@ def test_park_cannot_watch_itself_and_repark_rebaselines(crib):
     run(crib.design_edit("Ground", "v2", project="p"))
     out = run(crib.designs.plan_park("p", "solo", triggers=[d["relpath"]], why="again"))
     assert all(not t["fired"] for t in out["trigger"])  # baseline re-recorded
+
+
+# ── declined (plan-deferral-review.md P2) ─────────────────────────────────────
+
+
+def test_decline_requires_the_why_and_refuses_done(crib):
+    run(crib.plan_add("idea", "x", project="p"))
+    with pytest.raises(ValueError, match="needs the why-not"):
+        run(crib.designs.plan_decline("p", "idea"))
+    run(crib.plan_add("finished", "x", project="p"))
+    run(crib.plan_status("finished", "done", project="p"))
+    with pytest.raises(ValueError, match="the work happened"):
+        run(crib.designs.plan_decline("p", "finished", why="no"))
+
+
+def test_decline_remembers_the_why_and_hides_by_default(crib):
+    d = run(crib.design_add("Export covers this", "the ground", project="p"))
+    run(crib.plan_add("add nDCG", "x", project="p"))
+    out = run(
+        crib.designs.plan_decline(
+            "p",
+            "add nDCG",
+            why="algebraically identical to MRR on single-target gold",
+            triggers=[d["relpath"]],
+        )
+    )
+    assert out["status"] == "declined"
+    # hidden by default; --all shows it; both count it
+    listed = crib.plan_list(project="p")
+    assert listed["groups"].get("declined") is None and listed["hidden"] == 1
+    shown = crib.plan_list(all=True, project="p")
+    assert shown["groups"].get("declined") == 1
+    # the dated, searchable body line
+    body = crib.plan_read("add nDCG", project="p")["body"]
+    assert "> declined " in body and "algebraically identical" in body
+    # the export still shows it — a state exam that hides declines would lie
+    assert "## add nDCG" in crib.plan_export(project="p")["markdown"]
+
+
+def test_declined_trigger_fires_on_status_transitions_not_prose(crib):
+    d = run(crib.design_add("Ground decision", "v1", project="p"))
+    run(crib.plan_add("settled", "x", project="p"))
+    run(
+        crib.designs.plan_decline(
+            "p", "settled", why="no — v1 holds", triggers=[d["relpath"]]
+        )
+    )
+    row = next(
+        r
+        for r in crib.plan_list(all=True, project="p")["items"]
+        if r["title"] == "settled"
+    )
+    assert row["trigger_fired"] is False
+    # PROSE rewording of the watched decision: does NOT fire (narrow rule)
+    run(crib.design_edit("Ground decision", "v1, reworded for clarity", project="p"))
+    row = next(
+        r
+        for r in crib.plan_list(all=True, project="p")["items"]
+        if r["title"] == "settled"
+    )
+    assert row["trigger_fired"] is False
+    # STATUS transition: fires (supersede is a status change on the watched ref)
+    run(crib.design_supersede("Ground decision", project="p"))
+    row = next(
+        r
+        for r in crib.plan_list(all=True, project="p")["items"]
+        if r["title"] == "settled"
+    )
+    assert row["trigger_fired"] is True  # the ground CHANGED STATE
+
+
+def test_probe_carries_facet_state_at_the_cue(crib):
+    run(crib.plan_add("multi target gold", "the nDCG unblock", project="p"))
+    run(
+        crib.designs.plan_decline(
+            "p", "multi target gold", why="parked behind the clean-824 fixture"
+        )
+    )
+    # the probe is fed the re-proposal's first line, exactly as plan_add does.
+    # The hash embedder (this fixture's store) scores near-text lower than the
+    # real one the 0.85 warn bar was calibrated on — lower it; the test is about
+    # the STATUS riding the probe row, not the score.
+    crib.DEDUPE_WARN_SCORE = 0.5
+    probe = crib._similar("p", "the nDCG unblock", "self", "plans")
+    statuses = {r["relpath"]: r.get("status") for r in probe}
+    assert "declined" in statuses.values()

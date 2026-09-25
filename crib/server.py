@@ -1656,6 +1656,26 @@ def build_server(crib: Crib | None = None):
         semantically searchable via `plan_lookup`."""
         return await crib.plan_park(ref, project, triggers, why)
 
+    @crib_tool("write")
+    async def plan_decline(
+        ref: str,
+        why: str,
+        triggers: list[str] | None = None,
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        """Decline an item — never scheduled, REMEMBERED with the why-not.
+
+        CUE: "we considered this and chose not to" — the rationale is REQUIRED
+        (a decline without a why-not is refused; it is what a future
+        re-proposal comes back for). The probe remembers it: `plan_add` on the
+        same idea returns the declined item + its why at re-proposal time, and
+        `plan_lookup` hits carry status + reason inline — "settled, don't
+        re-litigate". Optional `triggers` fire NARROWLY: the watched ref's
+        STATUS transitions (promoted/superseded), not prose rewording. Un-
+        declining is a human claim: `plan_status <ref> todo`."""
+        return await crib.plan_decline(ref, why, project, triggers)
+
     @crib_tool("read")
     def plan_read(
         ref: str, project: str | None = None, project_path: str | None = None

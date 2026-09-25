@@ -1850,6 +1850,26 @@ def build_parser() -> argparse.ArgumentParser:
     proj(s)
 
     s = plansub.add_parser(
+        "decline",
+        help="decline an item — never scheduled, remembered with the why-not "
+        "(the rationale is REQUIRED)",
+    )
+    s.add_argument("ref")
+    s.add_argument(
+        "--why",
+        required=True,
+        help="the why-not — the payload a future re-proposal comes back for",
+    )
+    s.add_argument(
+        "--trigger",
+        action="append",
+        dest="triggers",
+        help="pillar-qualified ref to watch — fires on the watched ref's STATUS "
+        "transitions (promoted/superseded), not prose rewording; repeatable",
+    )
+    proj(s)
+
+    s = plansub.add_parser(
         "read", help="an item's dossier: body + status + what it's blocked on"
     )
     s.add_argument("ref")
@@ -3018,6 +3038,19 @@ VERBS: dict[str, Verb] = {
         is_async=True,
         policy="write",
         mcp=f"ref {_PROJ} triggers=None why=None",
+    ),
+    "plan decline": Verb(
+        "plan_decline",
+        lambda a: {
+            "ref": a.ref,
+            "why": a.why,
+            "project": a.project,
+            "triggers": a.triggers or None,
+        },
+        _E_dwrite,
+        is_async=True,
+        policy="write",
+        mcp=f"ref why {_PROJ} triggers=None",
     ),
     "plan read": Verb(
         "plan_read",

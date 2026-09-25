@@ -108,7 +108,7 @@ def format_docref(store: str, relpath: str) -> str:
 # behaviour — a proposed entry taints nothing until `design_promote`.
 DESIGN_STATUSES = ("proposed", "active", "superseded")
 # `blocked` is DERIVED (any dep not done/verified), never stored — decision 6.
-PLAN_STATUSES = ("todo", "in-progress", "parked", "done", "verified")
+PLAN_STATUSES = ("todo", "in-progress", "parked", "declined", "done", "verified")
 DONE_STATUSES = ("done", "verified")
 
 _ALPHA = "abcdefghijklmnopqrstuvwxyz"
@@ -129,7 +129,7 @@ CHANGE_KINDS = (
 
 # How `plan_list` presents the plan: the working set first, the graph second.
 # The order of this tuple IS the rendering order.
-_GROUPS = ("in-progress", "ready", "blocked", "parked", "done")
+_GROUPS = ("in-progress", "ready", "blocked", "parked", "declined", "done")
 
 # The EXTRACTION PROCEDURES the import verbs return as their `instruction`. They
 # are the payload, not documentation of it: `design_import` runs no model, so the
@@ -196,6 +196,8 @@ def _group(node: Node, blocked: bool) -> str:
         return "in-progress"  # claimed: shown first even when blocked
     if node.status == "parked":
         return "parked"  # visible state, not hidden — but never "pick me"
+    if node.status == "declined":
+        return "declined"  # hidden by default (--all); settled, not clutter
     return "blocked" if blocked else "ready"
 
 
@@ -2246,11 +2248,14 @@ class Designs:
         # the deferral's machinery, and a deferral that has ended is not watching
         # anything. (Re-parking re-records them fresh — the baseline must be the
         # watched ref's hash AS OF the new park, not a stale one.)
-        if status not in ("parked",) and (node.frontmatter or {}).get("trigger"):
+        if status not in ("parked", "declined") and (node.frontmatter or {}).get(
+            "trigger"
+        ):
             fm["trigger"] = []
             warnings.append(
-                "trigger record(s) cleared — the deferral has ended; re-park to "
-                "re-baseline them (the old baselines were as of the last park)"
+                "trigger record(s) cleared — the deferral has ended; re-park or "
+                "re-decline to re-baseline them (the old baselines were as of "
+                "the last deferral)"
             )
         missing_sources: list[str] = []
         if node.sources:
@@ -2286,24 +2291,32 @@ class Designs:
         }
 
     def _trigger_state(self, graph: Graph, node: Node) -> list[dict[str, Any]]:
-        """The item's trigger records with their LIVE fired state — the stored
-        `checked` baseline vs the watched ref's current body hash, computed on
+        """The item's trigger records with their LIVE fired state, computed on
         every read (nothing to keep in sync; the stored thing is only the
         baseline). Fired = surfaced, never acted on; unresolvable ref = fired
-        (the ground the deferral rested on has vanished)."""
+        (the ground the deferral rested on has vanished).
+
+        FIRING IS PER-STATE, deliberately: a PARKED item watches the ref's BODY
+        (any rewording of the ground is a reason to re-look), while a DECLINED
+        item watches the ref's STATUS only (promoted/superseded) — "I reworded
+        the rationale" is not a reason to resurrect a settled rejection. Same
+        edge machinery, per-status firing rule."""
         out = []
         for r in (node.frontmatter or {}).get("trigger") or []:
             watched = graph.nodes.get(r.get("ref") or "")
+            if node.status == "declined":
+                fired = watched is None or watched.status != r.get("checked_status")
+            else:  # parked (and any future deferral flavour): body-hash watch
+                fired = bool(watched is None or watched.body_hash != r.get("checked"))
             out.append(
                 {
                     "ref": r.get("ref") or "",
                     "title": watched.title if watched else None,
                     "watched_status": watched.status if watched else None,
                     "checked": r.get("checked"),
+                    "checked_status": r.get("checked_status"),
                     "why": r.get("why") or "",
-                    "fired": bool(
-                        watched is None or watched.body_hash != r.get("checked")
-                    ),
+                    "fired": fired,
                 }
             )
         return out
@@ -2377,6 +2390,84 @@ class Designs:
                 "unpark with `plan_status "
                 + node.relpath
                 + " todo` — the trigger SURFACES the item, it never auto-wakes"
+            ),
+        }
+
+    async def plan_decline(
+        self,
+        proj: str,
+        ref: str,
+        why: str | None = None,
+        triggers: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Decline an item — never scheduled, REMEMBERED with the why-not.
+
+        Terminal-with-rationale, the plan-facet sibling of `design_supersede`:
+        supersede = "replaced by THAT"; declined = "replaced by nothing, on
+        purpose". The rationale is REQUIRED — a decline without a why-not is
+        litter (same rule as a decision needing a body). `why` rides the record
+        and one dated body line, so the rejection is semantically searchable.
+
+        Retrieval participates: `plan_lookup` hits on declined items carry the
+        status + reason inline — the hit itself says "settled, don't
+        re-litigate". Triggers are optional and fire NARROWLY: a declined item
+        watches the ref's STATUS only (promoted/superseded), not prose —
+        "I reworded the rationale" is not a reason to resurrect."""
+        if not (why or "").strip():
+            raise CribUserError(
+                "a decline needs the why-not — that is the payload a future "
+                "re-proposal comes back for; pass `why`"
+            )
+        graph = self._load_graph(proj)
+        node = self._resolve_ref(graph, ref, "plan")
+        if node.status in DONE_STATUSES:
+            raise CribUserError(
+                f"{node.title!r} is {node.status} — the work happened; declining "
+                "is for ideas never scheduled, not for finished work"
+            )
+        records = []
+        for tref in triggers or []:
+            watched = self._resolve_ref(graph, tref)
+            if watched.id == node.id:
+                raise CribUserError("an item cannot watch itself")
+            # Status-watch, not hash-watch: the declined item's ground moves only
+            # when the watched ref CHANGES STATE (plan-deferral-review.md P2).
+            records.append(
+                {
+                    "ref": watched.id,
+                    "checked_status": watched.status,
+                    "why": why or "",
+                }
+            )
+        note = self._note(proj, node)
+        line = f"> declined {_today()}"
+        if records:
+            line += ", watching: " + ", ".join(f"`{r['ref']}`" for r in records)
+        line += f' — "{why}"'
+        new_body = note.body.rstrip() + "\n\n" + line if note.body.strip() else line
+        before = self._taint(graph)
+        out = await self._save(
+            proj, node, {"status": "declined", "trigger": records}, body=new_body
+        )
+        after = self._load_graph(proj)
+        newly = [
+            self._annotate(after, self._taint(after), nid)
+            for nid in after.nodes
+            if nid not in before
+            and after.nodes.get(nid)
+            and after.nodes[nid].kind == "plan"
+        ]
+        return {
+            **out,
+            "status": "declined",
+            "trigger": self._trigger_state(
+                after, next(n for n in after.of_kind("plan") if n.id == node.id)
+            ),
+            "newly_tainted": newly,
+            "next": (
+                "re-proposals are answered by the probe: `plan_add` returns this "
+                "item with its why. Un-declining is `plan_status <ref> todo` — "
+                "a human claim, as always"
             ),
         }
 
@@ -2549,9 +2640,11 @@ class Designs:
             "missing_deps": missing,
             "group": _group(node, bool(blockers)),
         }
-        if node.status == "parked":
-            # The trigger state is COMPUTED live here (baseline vs watched hash),
-            # so `plan_list` is where a fired trigger is seen, not a stored flag.
+        if node.status in ("parked", "declined"):
+            # The trigger state is COMPUTED live here (baseline vs watched hash
+            # or status, per the deferral flavour), so `plan_list` is where a
+            # fired trigger is seen, not a stored flag. Declined items carry it
+            # too — their narrow status-watch fires when the ground CHANGES STATE.
             trigger = self._trigger_state(graph, node)
             if trigger:
                 row["trigger"] = trigger
@@ -2568,18 +2661,21 @@ class Designs:
     def plan_list(self, proj: str, all: bool = False) -> dict[str, Any]:
         """The plan as a WORKING SET, not a graph dump: in-progress first, then
         ready, then blocked, then parked (each naming what it waits on or watches),
-        with finished work hidden unless `all`.
+        with finished AND declined work hidden unless `all`.
 
         Topological + rank order still holds WITHIN each group — the grouping only
         answers the question actually being asked ("what am I on, what can I pick
         up, what can't I, what am I waiting on") ahead of the question the raw
         graph answers. Parked items are VISIBLE state (never "pick me"), and a
         parked item whose trigger fired is surfaced here with `trigger_fired` —
-        the graph reports, it never re-opens the status."""
+        the graph reports, it never re-opens the status. Declined items are
+        hidden-by-default settled rejections — visible with --all, and always
+        retrievable via `plan_lookup` (the hit itself carries the why-not)."""
         graph = self._load_graph(proj)
         order, cycles = self._ordered(graph)
+        hidden_states = (*DONE_STATUSES, "declined")
         rows = self._rows(
-            proj, graph, [n for n in order if all or n.status not in DONE_STATUSES]
+            proj, graph, [n for n in order if all or n.status not in hidden_states]
         )
         rows.sort(key=lambda r: _GROUPS.index(r["group"]))  # stable: topo+rank kept
         groups: dict[str, int] = {}
