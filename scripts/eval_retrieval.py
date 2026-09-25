@@ -150,11 +150,15 @@ def run_lookup(
     summaries: str | None = None,
     summary_weight: float | None = None,
     hints: list[str] | None = None,
+    hint_weight: float | None = None,
 ) -> list[dict[str, Any]]:
     """One lookup → its ranked hits (top-first).
 
     ``keywords``/``keyword_weight`` drive BM25 keyword_index; ``summaries``/
     ``summary_weight`` the dense summary_index aliases — the lift knobs (§3).
+    ``hints``: caller-supplied exact strings (zvec-grep Transferable 1), each run
+    as its own exact-term route with an agreement bonus; ``hint_weight`` overrides
+    ``[retrieve].hint_weight`` for calibration sweeps.
     ``hints``: caller-supplied exact strings (zvec-grep Transferable 1), each run
     as its own exact-term route with an agreement bonus.
 
@@ -179,6 +183,8 @@ def run_lookup(
             call["summary_weight"] = summary_weight
         if hints:
             call["hints"] = hints
+        if hint_weight is not None:
+            call["hint_weight"] = hint_weight
         try:
             return client.call("note_lookup", call)
         except Exception as e:
@@ -205,6 +211,8 @@ def run_lookup(
         cmd += ["--summary-weight", str(summary_weight)]
     for hint in hints or []:
         cmd += ["--hint", hint]
+    if hint_weight is not None:
+        cmd += ["--hint-weight", str(hint_weight)]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
         raise RuntimeError(
@@ -270,6 +278,7 @@ def evaluate(
     summaries: str | None = None,
     summary_weight: float | None = None,
     repeats: int = 1,
+    hint_weight: float | None = None,
 ) -> list[dict[str, Any]]:
     """One row per (need, phrasing) — so a need with 3 phrasings yields 3 rows.
 
@@ -297,6 +306,7 @@ def evaluate(
                     summaries,
                     summary_weight,
                     hints=need_hints,
+                    hint_weight=hint_weight,
                 )
                 for _ in range(repeats)
             ]
@@ -725,6 +735,14 @@ def main(argv: list[str] | None = None) -> int:
         "retrieval is deterministic as of 2026-09-24, so the default bar is 1.0)",
     )
     ap.add_argument(
+        "--hint-weight",
+        type=float,
+        default=None,
+        dest="hint_weight",
+        help="override [retrieve].hint_weight for hinted rows — calibration sweeps "
+        "(the shipped default is 0.15)",
+    )
+    ap.add_argument(
         "--dump",
         type=Path,
         default=None,
@@ -813,6 +831,7 @@ def main(argv: list[str] | None = None) -> int:
             args.elab_weight,
             args.summaries,
             repeats=args.repeats,
+            hint_weight=args.hint_weight,
         )
     except RuntimeError as e:
         print(f"error: {e}", file=sys.stderr)
