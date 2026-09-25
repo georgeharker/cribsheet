@@ -2372,10 +2372,11 @@ class Designs:
             proj, node, {"status": "parked", "trigger": records}, body=new_body
         )
         after = self._load_graph(proj)
+        t_after = self._taint(after)
         newly = [
-            self._annotate(after, self._taint(after), nid)
+            self._annotate(after, t_after, nid)
             for nid in after.nodes
-            if nid not in before
+            if nid in t_after and nid not in before
             and after.nodes.get(nid)
             and after.nodes[nid].kind == "plan"
         ]
@@ -2450,10 +2451,11 @@ class Designs:
             proj, node, {"status": "declined", "trigger": records}, body=new_body
         )
         after = self._load_graph(proj)
+        t_after = self._taint(after)
         newly = [
-            self._annotate(after, self._taint(after), nid)
+            self._annotate(after, t_after, nid)
             for nid in after.nodes
-            if nid not in before
+            if nid in t_after and nid not in before
             and after.nodes.get(nid)
             and after.nodes[nid].kind == "plan"
         ]
@@ -2629,7 +2631,7 @@ class Designs:
         newly = [
             self._annotate(after, t_after, nid)
             for nid in after.nodes
-            if nid not in before
+            if nid in t_after and nid not in before
             and after.nodes.get(nid)
             and after.nodes[nid].kind == "plan"
         ]
