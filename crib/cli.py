@@ -1823,10 +1823,30 @@ def build_parser() -> argparse.ArgumentParser:
     proj(s)
 
     s = plansub.add_parser(
-        "status", help="set an item's status (todo/in-progress/done/verified)"
+        "status", help="set an item's status (todo/in-progress/parked/done/verified)"
     )
     s.add_argument("ref")
     s.add_argument("status")
+    proj(s)
+
+    s = plansub.add_parser(
+        "park",
+        help="park an item — not now, with a reason; optional trigger refs whose "
+        "change SURFACE it (never auto-wake)",
+    )
+    s.add_argument("ref")
+    s.add_argument(
+        "--trigger",
+        action="append",
+        dest="triggers",
+        help="pillar-qualified ref to watch (design/plan); repeatable — "
+        "each records its own body-hash baseline",
+    )
+    s.add_argument(
+        "--why",
+        help="why it is parked — rides the record and a dated body line "
+        "(this is what makes the deferral searchable)",
+    )
     proj(s)
 
     s = plansub.add_parser(
@@ -2985,6 +3005,19 @@ VERBS: dict[str, Verb] = {
         is_async=True,
         policy="read",
         mcp=f"ref status {_PROJ}",
+    ),
+    "plan park": Verb(
+        "plan_park",
+        lambda a: {
+            "ref": a.ref,
+            "triggers": a.triggers or None,
+            "why": a.why,
+            "project": a.project,
+        },
+        _E_dwrite,
+        is_async=True,
+        policy="write",
+        mcp=f"ref {_PROJ} triggers=None why=None",
     ),
     "plan read": Verb(
         "plan_read",

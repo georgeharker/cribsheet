@@ -3118,9 +3118,23 @@ class Crib:
     async def plan_status(
         self, ref: str, status: str, project: str | None = None, cwd: Path | None = None
     ) -> dict[str, Any]:
-        """Set a plan item's status (todo/in-progress/done/verified)."""
+        """Set a plan item's status (todo/in-progress/parked/done/verified)."""
         return await self.designs.plan_status(
             self.resolve_project(project, cwd), ref, status
+        )
+
+    async def plan_park(
+        self,
+        ref: str,
+        project: str | None = None,
+        triggers: list[str] | None = None,
+        why: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
+        """Park an item — not now, with a stated reason; optionally watching refs
+        whose change SURFACES it (never auto-wakes it)."""
+        return await self.designs.plan_park(
+            self.resolve_project(project, cwd), ref, triggers, why
         )
 
     def plan_read(

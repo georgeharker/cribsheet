@@ -108,7 +108,7 @@ def format_docref(store: str, relpath: str) -> str:
 # behaviour — a proposed entry taints nothing until `design_promote`.
 DESIGN_STATUSES = ("proposed", "active", "superseded")
 # `blocked` is DERIVED (any dep not done/verified), never stored — decision 6.
-PLAN_STATUSES = ("todo", "in-progress", "done", "verified")
+PLAN_STATUSES = ("todo", "in-progress", "parked", "done", "verified")
 DONE_STATUSES = ("done", "verified")
 
 _ALPHA = "abcdefghijklmnopqrstuvwxyz"
@@ -129,7 +129,7 @@ CHANGE_KINDS = (
 
 # How `plan_list` presents the plan: the working set first, the graph second.
 # The order of this tuple IS the rendering order.
-_GROUPS = ("in-progress", "ready", "blocked", "done")
+_GROUPS = ("in-progress", "ready", "blocked", "parked", "done")
 
 # The EXTRACTION PROCEDURES the import verbs return as their `instruction`. They
 # are the payload, not documentation of it: `design_import` runs no model, so the
@@ -194,6 +194,8 @@ def _group(node: Node, blocked: bool) -> str:
         return "done"
     if node.status == "in-progress":
         return "in-progress"  # claimed: shown first even when blocked
+    if node.status == "parked":
+        return "parked"  # visible state, not hidden — but never "pick me"
     return "blocked" if blocked else "ready"
 
 
@@ -875,10 +877,14 @@ class Designs:
 
         def _rel_match(n: Node) -> bool:
             # store-relative spelling, plus the legacy pre-split `design/x.md`
+            # and the graph-contract pillar-qualified id form `design:x.md` /
+            # `plans:x.md` (what design_graph/plan_graph paste as node ids —
+            # found live when plan_park's triggers were first given in that
+            # spelling and the pasteable ref failed to resolve).
             w = want
-            legacy = f"{_DIRS[n.kind]}/"
-            if w.startswith(legacy):
-                w = w[len(legacy) :]
+            for legacy in (f"{_DIRS[n.kind]}/", f"{_DIRS[n.kind]}:"):
+                if w.startswith(legacy):
+                    w = w[len(legacy) :]
             return n.relpath.lower() in (w, f"{w}.md")
 
         matches = [
@@ -2236,6 +2242,16 @@ class Designs:
             if r["blocked"]
         }
         fm: dict[str, Any] = {"status": status}
+        # Leaving the parked/declined states clears the trigger records: they are
+        # the deferral's machinery, and a deferral that has ended is not watching
+        # anything. (Re-parking re-records them fresh — the baseline must be the
+        # watched ref's hash AS OF the new park, not a stale one.)
+        if status not in ("parked",) and (node.frontmatter or {}).get("trigger"):
+            fm["trigger"] = []
+            warnings.append(
+                "trigger record(s) cleared — the deferral has ended; re-park to "
+                "re-baseline them (the old baselines were as of the last park)"
+            )
         missing_sources: list[str] = []
         if node.sources:
             fm["sources"], missing_sources = self._recapture(proj, node)
@@ -2267,6 +2283,101 @@ class Designs:
             "warnings": warnings,
             "missing_sources": missing_sources,
             "unblocked": unblocked,
+        }
+
+    def _trigger_state(self, graph: Graph, node: Node) -> list[dict[str, Any]]:
+        """The item's trigger records with their LIVE fired state — the stored
+        `checked` baseline vs the watched ref's current body hash, computed on
+        every read (nothing to keep in sync; the stored thing is only the
+        baseline). Fired = surfaced, never acted on; unresolvable ref = fired
+        (the ground the deferral rested on has vanished)."""
+        out = []
+        for r in (node.frontmatter or {}).get("trigger") or []:
+            watched = graph.nodes.get(r.get("ref") or "")
+            out.append(
+                {
+                    "ref": r.get("ref") or "",
+                    "title": watched.title if watched else None,
+                    "watched_status": watched.status if watched else None,
+                    "checked": r.get("checked"),
+                    "why": r.get("why") or "",
+                    "fired": bool(
+                        watched is None or watched.body_hash != r.get("checked")
+                    ),
+                }
+            )
+        return out
+
+    async def plan_park(
+        self,
+        proj: str,
+        ref: str,
+        triggers: list[str] | None = None,
+        why: str | None = None,
+    ) -> dict[str, Any]:
+        """Park an item — not now, with a stated reason; optionally watching refs
+        whose CHANGE surfaces it for re-evaluation.
+
+        The trigger is a dep edge wearing deferral semantics: each watched ref is
+        recorded with its body hash AS OF NOW (`checked`), and the item is
+        surfaced — never acted on — when that hash later moves. Unparking is a
+        human claim (`plan_status <ref> todo`); the trigger never auto-wakes.
+        Triggers gate attention, never work: they are deliberately NOT deps.
+
+        `triggers` are pillar-qualified refs to graph nodes (a design decision,
+        another plan item); each item carries its OWN baseline — a deferral is a
+        promise about the watched ref as it read when THAT item was parked. `why`
+        rides the record AND one dated body line, which is what makes the
+        deferral semantically searchable (`plan_lookup` hits carry it)."""
+        graph = self._load_graph(proj)
+        node = self._resolve_ref(graph, ref, "plan")
+        if node.status in DONE_STATUSES:
+            raise CribUserError(
+                f"{node.title!r} is {node.status} — that is not a deferral; "
+                "parking is for work not scheduled NOW"
+            )
+        records = []
+        for tref in triggers or []:
+            watched = self._resolve_ref(graph, tref)
+            if watched.id == node.id:
+                raise CribUserError("an item cannot watch itself")
+            records.append(
+                {"ref": watched.id, "checked": watched.body_hash, "why": why or ""}
+            )
+        note = self._note(proj, node)
+        line = f"> parked {_today()}"
+        if records:
+            line += ", watching: " + ", ".join(f"`{r['ref']}`" for r in records)
+        if why:
+            line += f' — "{why}"'
+        new_body = note.body.rstrip() + "\n\n" + line if note.body.strip() else line
+        # The parked state is an EDGE EVENT like any other: snapshot taint, write
+        # (status + trigger records + the body line), diff — the answer names what
+        # the deferral's write just put out of date.
+        before = self._taint(graph)
+        out = await self._save(
+            proj, node, {"status": "parked", "trigger": records}, body=new_body
+        )
+        after = self._load_graph(proj)
+        newly = [
+            self._annotate(after, self._taint(after), nid)
+            for nid in after.nodes
+            if nid not in before
+            and after.nodes.get(nid)
+            and after.nodes[nid].kind == "plan"
+        ]
+        return {
+            **out,
+            "status": "parked",
+            "trigger": self._trigger_state(
+                after, next(n for n in after.of_kind("plan") if n.id == node.id)
+            ),
+            "newly_tainted": newly,
+            "next": (
+                "unpark with `plan_status "
+                + node.relpath
+                + " todo` — the trigger SURFACES the item, it never auto-wakes"
+            ),
         }
 
     async def plan_dep_add(self, proj: str, ref: str, dep_ref: str) -> dict[str, Any]:
@@ -2438,6 +2549,13 @@ class Designs:
             "missing_deps": missing,
             "group": _group(node, bool(blockers)),
         }
+        if node.status == "parked":
+            # The trigger state is COMPUTED live here (baseline vs watched hash),
+            # so `plan_list` is where a fired trigger is seen, not a stored flag.
+            trigger = self._trigger_state(graph, node)
+            if trigger:
+                row["trigger"] = trigger
+                row["trigger_fired"] = any(t["fired"] for t in trigger)
         if moved and node.status in DONE_STATUSES:
             row["revisit"] = [c["reason"] for c in moved]
             row["next"] = (
@@ -2449,12 +2567,15 @@ class Designs:
 
     def plan_list(self, proj: str, all: bool = False) -> dict[str, Any]:
         """The plan as a WORKING SET, not a graph dump: in-progress first, then
-        ready, then blocked (each naming what it waits on), with finished work
-        hidden unless `all`.
+        ready, then blocked, then parked (each naming what it waits on or watches),
+        with finished work hidden unless `all`.
 
         Topological + rank order still holds WITHIN each group — the grouping only
         answers the question actually being asked ("what am I on, what can I pick
-        up, what can't I") ahead of the question the raw graph answers."""
+        up, what can't I, what am I waiting on") ahead of the question the raw
+        graph answers. Parked items are VISIBLE state (never "pick me"), and a
+        parked item whose trigger fired is surfaced here with `trigger_fired` —
+        the graph reports, it never re-opens the status."""
         graph = self._load_graph(proj)
         order, cycles = self._ordered(graph)
         rows = self._rows(
@@ -2471,6 +2592,9 @@ class Designs:
             "groups": groups,
             "hidden": len(order) - len(rows),
             "revisit": sum(1 for r in rows if r.get("revisit")),
+            # Parked items whose watched ref moved since the park — the
+            # re-evaluation queue. Surfaced here, never acted on.
+            "trigger_fired": sum(1 for r in rows if r.get("trigger_fired")),
             "cycles": cycles,
         }
 

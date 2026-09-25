@@ -1635,6 +1635,27 @@ def build_server(crib: Crib | None = None):
         changed source is what clears a `revisit` flag."""
         return await crib.plan_status(ref, status, project)
 
+    @crib_tool("write")
+    async def plan_park(
+        ref: str,
+        triggers: list[str] | None = None,
+        why: str | None = None,
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        """Park an item — not now, with a stated reason, optionally WATCHING refs
+        whose change surfaces it for re-evaluation.
+
+        CUE: "this matters but not now" or "I keep re-proposing this". Each
+        trigger (`triggers`: pillar-qualified refs — a design decision, another
+        plan item) is recorded with the watched ref's body hash AS OF NOW; when
+        that hash later moves, `plan_list` surfaces the item ("trigger fired") —
+        it NEVER auto-wakes. Unparking is a human claim:
+        `plan_status <ref> todo`. Triggers gate attention, never work.
+        `why` rides the record and one dated body line, so the deferral is
+        semantically searchable via `plan_lookup`."""
+        return await crib.plan_park(ref, project, triggers, why)
+
     @crib_tool("read")
     def plan_read(
         ref: str, project: str | None = None, project_path: str | None = None

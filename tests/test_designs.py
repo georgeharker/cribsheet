@@ -925,3 +925,97 @@ def test_export_plan_lists_status_and_includes_cross_facet_deps(crib):
 def test_export_refuses_an_unknown_facet(crib):
     with pytest.raises(ValueError, match="unknown facet"):
         run(crib.designs.export_facet("p", "notes"))
+
+
+# ── parked + triggers (plan-deferral-review.md P1) ────────────────────────────
+
+
+def test_park_excludes_from_plan_next_and_groups_parked(crib):
+    run(crib.plan_add("actionable", "x", project="p"))
+    parked = run(crib.designs.plan_park("p", "actionable", why="not now, no ground"))
+    assert parked["status"] == "parked"
+    # excluded from plan_next (a dis-claim, like in-progress)
+    assert _titles(crib.plan_next(project="p")["items"]) == []
+    # visible state in plan_list: its own group, counted, not hidden
+    listed = crib.plan_list(project="p")
+    assert listed["groups"].get("parked") == 1
+    assert listed["items"][-1]["group"] == "parked"
+    assert listed["hidden"] == 0
+    # the dated body line — the searchable half of the deferral
+    body = crib.plan_read("actionable", project="p")["body"]
+    assert "> parked " in body and '"not now, no ground"' in body
+
+
+def test_park_refuses_done_and_a_dangling_trigger(crib):
+    run(crib.plan_add("done one", "x", project="p"))
+    run(crib.plan_status("done one", "done", project="p"))
+    with pytest.raises(ValueError, match="not a deferral"):
+        run(crib.designs.plan_park("p", "done one"))
+    run(crib.plan_add("open one", "x", project="p"))
+    with pytest.raises(ValueError, match="no design/plan note matches"):
+        run(crib.designs.plan_park("p", "open one", triggers=["gone.md"], why="w"))
+
+
+def test_trigger_fires_when_watched_ref_moves_and_surfaces_not_wakes(crib):
+    d = run(crib.design_add("Ground", "the ground", project="p"))
+    run(
+        crib.designs.plan_park(
+            "p",
+            run(crib.plan_add("later", "x", project="p"))["relpath"],
+            triggers=[d["relpath"]],
+            why="wait for ground",
+        )
+    )
+    item = crib.plan_list(project="p")["items"][-1]
+    assert item["group"] == "parked" and item["trigger_fired"] is False
+    assert item["trigger"][0]["fired"] is False
+    assert crib.plan_list(project="p")["trigger_fired"] == 0
+
+    # the watched decision's body moves → the trigger FIRES, surfacing the item
+    run(crib.design_edit("Ground", "the ground MOVED", project="p"))
+    after = crib.plan_list(project="p")
+    assert after["trigger_fired"] == 1
+    assert after["items"][-1]["trigger"][0]["fired"] is True
+    # …but the graph reports, it never re-opens: status is still parked, and the
+    # item is NOT in plan_next (that is unparking's job, and it stays human)
+    assert after["items"][-1]["status"] == "parked"
+    assert _titles(crib.plan_next(project="p")["items"]) == []
+
+    # unpark is the human claim; leaving the parked state clears the stale
+    # baseline (it was as of the last park)
+    out = run(crib.plan_status("later", "todo", project="p"))
+    assert any("trigger record(s) cleared" in w for w in out["warnings"])
+    assert crib.plan_list(project="p")["items"][0]["group"] == "ready"
+
+
+def test_park_records_per_item_baselines(crib):
+    """Two parked items watching the same decision each record the hash AS OF
+    THEIR OWN park — a deferral is a promise about the ref as it read then."""
+    d = run(crib.design_add("Ground", "v1", project="p"))
+    run(crib.plan_add("early", "x", project="p"))
+    early = crib.plan_list(project="p")["items"][0]["relpath"]
+    run(crib.designs.plan_park("p", early, triggers=[d["relpath"]], why="early park"))
+    run(crib.design_edit("Ground", "v2", project="p"))
+    run(crib.plan_add("late", "x", project="p"))
+    late = next(
+        r for r in crib.plan_list(project="p")["items"] if r["title"] == "late"
+    )["relpath"]
+    run(crib.designs.plan_park("p", late, triggers=[d["relpath"]], why="late park"))
+    fired = {
+        r["title"]: r.get("trigger_fired", False)
+        for r in crib.plan_list(project="p")["items"]
+    }
+    assert fired["early"] is True and fired["late"] is False  # per-item baselines
+
+
+def test_park_cannot_watch_itself_and_repark_rebaselines(crib):
+    d = run(crib.design_add("Ground", "v1", project="p"))
+    run(crib.plan_add("solo", "x", project="p"))
+    with pytest.raises(ValueError, match="cannot watch itself"):
+        run(crib.designs.plan_park("p", "solo", triggers=["solo"]))
+    run(crib.designs.plan_park("p", "solo", triggers=[d["relpath"]], why="first"))
+    # re-parking an already-parked item is LEGITIMATE: it re-records the
+    # baselines fresh — a deferral is a promise about the ref as it reads NOW
+    run(crib.design_edit("Ground", "v2", project="p"))
+    out = run(crib.designs.plan_park("p", "solo", triggers=[d["relpath"]], why="again"))
+    assert all(not t["fired"] for t in out["trigger"])  # baseline re-recorded
