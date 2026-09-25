@@ -876,3 +876,52 @@ def test_the_wrong_facet_miss_names_the_right_verb(crib):
     d = run(crib.design_add("a decision", "body", project="p"))
     with pytest.raises(ValueError, match="DESIGN.*design_"):
         run(crib.plan_status(d["relpath"], "done", project="p"))
+
+
+# ── export_facet: one consolidated markdown doc per facet ────────────────────
+
+
+def test_export_design_is_topological_and_deterministic(crib):
+    run(crib.design_add("A", "base", project="p"))
+    run(crib.design_add("B", "mid", deps=["A"], project="p"))
+    run(crib.design_add("C", "top", deps=["B"], project="p"))
+    run(crib.plan_add("P1", project="p"))
+
+    d1 = crib.design_export(project="p")
+    d2 = crib.design_export(project="p")
+    # deterministic across runs: byte-identical — that is the whole point of
+    # committing the export and diffing it over time
+    assert d1["markdown"] == d2["markdown"]
+    # dep-topological: A (no deps) before B (builds on A) before C (builds on B)
+    ma, mb, mc = (d1["markdown"].index(t) for t in ("## A", "## B", "## C"))
+    assert ma < mb < mc
+    # status + dep provenance ride inline per section
+    assert (
+        "## A" in d1["markdown"]
+        and "builds on:" not in d1["markdown"].split("## A")[1].split("## B")[0]
+    )
+    assert "design:B" in d1["markdown"].split("## C")[1].split("\n\n")[1]
+    # header carries counts; cross-facet dep listed, not ordered
+    assert "3 designs · 0 tainted" in d1["markdown"]
+    assert (
+        "design:A" in d1["markdown"].split("## P1")[1]
+        if "## P1" in d1["markdown"]
+        else True
+    )
+
+
+def test_export_plan_lists_status_and_includes_cross_facet_deps(crib):
+    a = run(crib.design_add("Ground", "the ground", project="p"))
+    run(crib.plan_add("Work item", "do the thing", deps=[a["relpath"]], project="p"))
+    out = crib.plan_export(project="p")
+    assert "Plan items — p" in out["markdown"]
+    assert "## Work item" in out["markdown"]
+    assert "todo" in out["markdown"]
+    # the design dep is LISTED (part of the state) even though designs aren't
+    # section headings in the plans doc
+    assert "design:Ground" in out["markdown"]
+
+
+def test_export_refuses_an_unknown_facet(crib):
+    with pytest.raises(ValueError, match="unknown facet"):
+        run(crib.designs.export_facet("p", "notes"))

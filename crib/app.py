@@ -2904,6 +2904,20 @@ class Crib:
         """Every decision as a flat table (`tainted` filters to the stale ones)."""
         return self.designs.design_list(self.resolve_project(project, cwd), tainted)
 
+    def design_export(
+        self, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
+        """The whole decision graph as ONE consolidated markdown doc
+        (dep-topological, ties by rank/title/id — deterministic across runs)."""
+        return self.designs.export_facet(self.resolve_project(project, cwd), "design")
+
+    def plan_export(
+        self, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
+        """The whole plan as ONE consolidated markdown doc (same ordering
+        contract as the design export)."""
+        return self.designs.export_facet(self.resolve_project(project, cwd), "plan")
+
     def design_lookup(
         self,
         query: str,

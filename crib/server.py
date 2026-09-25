@@ -1346,6 +1346,19 @@ def build_server(crib: Crib | None = None):
         return crib.design_list(tainted, project)
 
     @crib_tool("read")
+    def design_export(
+        project: str | None = None, project_path: str | None = None
+    ) -> str:
+        """The whole decision graph as ONE consolidated markdown document —
+        dep-topological (foundations first), ties by rank/title/id, so it is
+        deterministic across runs. Status and taint ride inline per section.
+        The state-exam read: one call to see everything and how it rests.
+        CUE: about to assess what the codebase's architecture is, or to write a
+        DESIGN.md-style summary. (Use `crib design export --out PATH` to write
+        the same doc to a file for git-diffing.)"""
+        return crib.design_export(project)["markdown"]
+
+    @crib_tool("read")
     async def design_dep_add(
         ref: str,
         dep_ref: str,
@@ -1767,6 +1780,14 @@ def build_server(crib: Crib | None = None):
         stable ground; a tainted one means the ground moved); a plain **note** dep
         never blocks — it is a reference, not a gate."""
         return crib.plan_list(all, project)
+
+    @crib_tool("read")
+    def plan_export(project: str | None = None, project_path: str | None = None) -> str:
+        """The whole PLAN as ONE consolidated markdown document — same ordering
+        contract as `design_export` (dep-topological, ties by rank/title/id;
+        deterministic across runs). Includes done items — it is a state exam,
+        not a work queue (`plan_list` is that)."""
+        return crib.plan_export(project)["markdown"]
 
     @crib_tool("read")
     def plan_next(

@@ -1633,6 +1633,19 @@ def build_parser() -> argparse.ArgumentParser:
     proj(s)
 
     s = designsub.add_parser(
+        "export",
+        help="the whole decision graph as ONE markdown doc (dep-topological, "
+        "deterministic) — --out to write a file, else stdout",
+    )
+    proj(s)
+    s.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="write the markdown here (e.g. docs/STATE-designs.md) instead of stdout",
+    )
+
+    s = designsub.add_parser(
         "edit", help="rewrite a decision; lists what the change tainted"
     )
     s.add_argument("ref")
@@ -1872,6 +1885,19 @@ def build_parser() -> argparse.ArgumentParser:
     proj(s)
     s.add_argument("--all", action="store_true", help="include done/verified items")
 
+    s = plansub.add_parser(
+        "export",
+        help="the whole plan as ONE markdown doc (dep-topological, deterministic; "
+        "includes done) — --out to write a file, else stdout",
+    )
+    proj(s)
+    s.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="write the file (e.g. docs/STATE-plans.md) instead of stdout",
+    )
+
     s = plansub.add_parser("next", help="actionable items now (todo, deps satisfied)")
     proj(s)
     s.add_argument("-k", type=int, default=5)
@@ -2097,6 +2123,39 @@ def cmd_info(as_json: bool) -> None:
 # source of truth for the whole surface: tests/test_surface_parity.py walks it
 # against FastMCP's introspected schemas, so a param, a default (the CLI/MCP
 # `apropos k` split was 5 vs 8) or a policy can't drift on one face only.
+def _E_export(d: Any, a: Any) -> None:
+    """`design/plan export`: --out writes the file (prints a summary), else the
+    markdown goes to stdout verbatim. `--json` always emits the full dict (the
+    markdown is inside it) for scripted consumption.
+
+    Two shapes arrive here, on purpose: the DAEMON path returns the MCP tool's
+    bare markdown string, the in-process path returns the full dict. Handle both
+    — the summary line (count/tainted) is best-effort and only exists for the
+    dict shape."""
+    if isinstance(d, str):  # daemon path: the MCP tool returns the markdown
+        if a.json:
+            _emit({"markdown": d}, True)
+            return
+        if a.out:
+            a.out.write_text(d)
+            print(f"wrote {a.out} ({len(d.splitlines())} lines)")
+        else:
+            print(d, end="")
+        return
+    if a.json:
+        _emit(d, True)
+        return
+    md = d["markdown"]
+    if a.out:
+        a.out.write_text(md)
+        print(
+            f"wrote {a.out} — {d['count']} {d['facet']}s, "
+            f"{d['tainted']} tainted, {len(md.splitlines())} lines"
+        )
+    else:
+        print(md, end="")
+
+
 @dataclass(frozen=True)
 class Verb:
     tool: str  # MCP tool name (daemon path)
@@ -2778,6 +2837,13 @@ VERBS: dict[str, Verb] = {
         policy="read",
         mcp=f"{_PROJ} tainted=False",
     ),
+    "design export": Verb(
+        "design_export",
+        lambda a: {"project": _proj_of(a)},
+        _E_export,
+        policy="read",
+        mcp=f"{_PROJ}",
+    ),
     "design dep-add": Verb(
         "design_dep_add",
         lambda a: {"ref": a.ref, "dep_ref": a.dep_ref, "project": a.project},
@@ -2996,6 +3062,13 @@ VERBS: dict[str, Verb] = {
         _E_plans,
         policy="read",
         mcp=f"{_PROJ} all=False",
+    ),
+    "plan export": Verb(
+        "plan_export",
+        lambda a: {"project": _proj_of(a)},
+        _E_export,
+        policy="read",
+        mcp=f"{_PROJ}",
     ),
     "plan next": Verb(
         "plan_next",

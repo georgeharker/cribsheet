@@ -1608,6 +1608,100 @@ class Designs:
             ],
         }
 
+    def export_facet(self, proj: str, kind: str) -> dict[str, Any]:
+        """The whole facet as ONE consolidated markdown document — the state-exam
+        read (`design_list` is the table, `design_tree` the shape, this the doc).
+
+        ORDERING CONTRACT: dep-topological — dependencies before dependents
+        (foundations first) — with ties broken by (rank, title, id). That is
+        deterministic across runs, so regenerating into a committed file yields
+        DIFFS THAT MEAN SOMETHING: the only lines that move are the ones whose
+        meaning moved. Volatile state (status, taint) rides inline per section
+        rather than dictating order — a status flip changes one line, not the
+        document's shape.
+
+        Within-facet deps order the document; cross-facet deps (a plan item built
+        on a design decision, a decision on a note) are LISTED — they are part of
+        the state — but never position items in the other facet's document.
+        Cycle survivors (merge or hand-edit artifacts, `crib` never writes one)
+        come last, deterministically, flagged in the header."""
+        if kind not in ("design", "plan"):
+            raise CribUserError(f"unknown facet {kind!r}: use 'design' or 'plan'")
+        graph = self._load_graph(proj)
+        tainted = self._taint(graph)
+        nodes = graph.of_kind(kind)
+        ids = {n.id for n in nodes}
+
+        pending = {n.id: {d for d in n.deps if d in ids} for n in nodes}
+        order: list[Node] = []
+        while pending:
+            ready = sorted(
+                (graph.nodes[nid] for nid, d in pending.items() if not d),
+                key=lambda n: (n.rank, n.title, n.id),
+            )
+            if not ready:
+                break
+            node = ready[0]
+            order.append(node)
+            pending.pop(node.id)
+            for rest in pending.values():
+                rest.discard(node.id)
+        cycle_nodes = sorted(
+            (graph.nodes[nid] for nid in pending), key=lambda n: (n.rank, n.title, n.id)
+        )
+        order += cycle_nodes
+
+        n_tainted = sum(1 for n in nodes if tainted.get(n.id, {}).get("tainted"))
+        label = "Design decisions" if kind == "design" else "Plan items"
+        lines = [
+            f"# {label} — {proj}",
+            "",
+            f"<!-- crib {kind} export · dep-topological (foundations first), ties by rank/title/id.",
+            "     Deterministic across runs: regenerate and commit to diff state over time.",
+            f"     Regenerate: crib {kind} export [--out PATH] -->",
+            "",
+            f"{len(nodes)} {kind}s · {n_tainted} tainted"
+            + (
+                f" · {len(cycle_nodes)} IN A CYCLE (listed last)" if cycle_nodes else ""
+            ),
+            "",
+        ]
+        for node in order:
+            dep_names = []
+            for d in node.deps:
+                dep = graph.nodes.get(d)
+                dep_names.append(
+                    f"{dep.kind}:{dep.title}" if dep else f"(dangling) {d}"
+                )
+            t = tainted.get(node.id, {})
+            meta = f"`{node.relpath}` · {node.status}"
+            if t.get("tainted"):
+                meta += " · ⚠︎ TAINTED"
+            if dep_names:
+                meta += f" · builds on: {', '.join(dep_names)}"
+            lines += [
+                f"## {node.title}",
+                "",
+                meta,
+                "",
+                (self._note(proj, node).body or "").strip(),
+                "",
+                "---",
+                "",
+            ]
+        markdown = "\n".join(lines).rstrip() + "\n"
+        return {
+            "project": proj,
+            "facet": kind,
+            "count": len(nodes),
+            "tainted": n_tainted,
+            "markdown": markdown,
+            "cycles": [
+                [graph.nodes[c].title for c in cyc if graph.nodes.get(c)]
+                for cyc in _cycles(graph.nodes)
+            ],
+        }
+
     async def design_dep_add(self, proj: str, ref: str, dep_ref: str) -> dict[str, Any]:
         return await self._dep_add(proj, "design", ref, dep_ref)
 
