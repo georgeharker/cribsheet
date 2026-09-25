@@ -118,6 +118,15 @@ and deps can point at earlier items in the same batch.
   agents can see, and marking one `done` tells you what it just unblocked.
 - **`plan_next` is the "where was I" call** — run it when you pick work back up, and
   any future session (yours or another agent's) gets exactly what's actionable now.
+- **"this matters but not now" is `plan_park`, not a fake `done`.** Park with a
+  stated reason (`--why` rides a dated body line, so the deferral is searchable)
+  and optionally `--trigger <ref>`: when the watched decision's body changes,
+  `plan_list` surfaces the item ("trigger fired") — it NEVER auto-wakes; unparking
+  is `plan_status <ref> todo`, a human claim.
+- **The probe remembers your rejections.** Re-proposing something that exists
+  planned, parked, or declined returns it with status and why at the moment of
+  re-proposal — read the why instead of re-litigating; a decline is a settled
+  answer, not clutter.
 
 **Catch yourself:** if you've just typed "first I'll… then I'll…", or reached for a
 scratch todo list, this rule already fired.
