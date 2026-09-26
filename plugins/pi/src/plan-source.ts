@@ -119,6 +119,12 @@ const CRIB_PLAN_MUTATION_VERBS = [
     "plan_forget",
     "plan_move",
     "plan_add",
+    // deferral + review (plan-deferral-review.md): these mutate items too, and
+    // a sweep can touch MANY at once — missing them left the sidebar stale
+    // through the entire 2026-09-25 review sweep.
+    "plan_park",
+    "plan_decline",
+    "plan_review_apply",
 ] as const
 
 export function isCribPlanMutation(toolName: string): boolean {
