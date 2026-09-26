@@ -252,14 +252,26 @@ class CodeQuery:
                 {(e.get("name", ""), e.get("file", "")): symbol_key(e)
                  for e in rc.entries})
 
-    def xref(self, proj: str, symbol: str) -> list[dict[str, Any]]:
+    def xref(
+        self, proj: str, symbol: str, path: str = "", scope: str = "", lang: str = ""
+    ) -> list[dict[str, Any]]:
         """Callers/callees for a symbol from the persisted symbol_index — no live LSP.
         A local miss falls through to the project's `.crib` `refs:`; every entry carries
-        `project`."""
+        `project`.
+
+        `path`/`scope`/`lang` NARROW the returned set on the axes a caller may
+        actually know — unlike the write verbs, xref keeps its all-matches
+        contract: the axes filter the pool rather than refusing, so a narrowed
+        xref returns every symbol that survives the filter (and `[]` when none
+        do — a miss is data here, not an error)."""
+        from .refs import constrain
+
         check_query(symbol, "symbol")
         self._require_index(proj)
         rc = self._resident(proj)
         matches = rc.by_fqname(symbol)
+        if path or scope or lang:
+            matches = constrain(matches, path, scope, lang)
         owner = proj
         if not matches:
             for ref in self.refs.project_refs(proj):

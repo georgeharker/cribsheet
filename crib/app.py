@@ -2761,10 +2761,18 @@ class Crib:
         }
 
     def code_xref(
-        self, symbol: str, project: str | None = None, cwd: Path | None = None
+        self,
+        symbol: str,
+        project: str | None = None,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+        cwd: Path | None = None,
     ) -> list[dict[str, Any]]:
         """A symbol's callers/callees/references from the persisted symbol_index."""
-        return self.query.xref(self.resolve_project(project, cwd), symbol)
+        return self.query.xref(
+            self.resolve_project(project, cwd), symbol, path=path, scope=scope, lang=lang
+        )
 
     def code_dossier(
         self,
@@ -2789,37 +2797,60 @@ class Crib:
         self,
         symbol: str,
         text: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
         project: str | None = None,
         cwd: Path | None = None,
     ) -> dict[str, Any]:
         """Attach a durable learning to a code symbol (append a dated entry)."""
         return await self.learnings.append(
-            self.resolve_project(project, cwd), symbol, text
+            self.resolve_project(project, cwd), symbol, text, path=path, scope=scope, lang=lang
         )
 
     async def learning_edit(
         self,
         symbol: str,
         new_content: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
         project: str | None = None,
         cwd: Path | None = None,
     ) -> dict[str, Any]:
         """Rewrite a symbol's learning body wholesale."""
         return await self.learnings.edit(
-            self.resolve_project(project, cwd), symbol, new_content
+            self.resolve_project(project, cwd), symbol, new_content,
+            path=path, scope=scope, lang=lang,
         )
 
     async def learning_forget(
-        self, symbol: str, project: str | None = None, cwd: Path | None = None
+        self,
+        symbol: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+        project: str | None = None,
+        cwd: Path | None = None,
     ) -> dict[str, Any]:
         """Remove a symbol's learning (recoverable; works on orphans)."""
-        return await self.learnings.forget(self.resolve_project(project, cwd), symbol)
+        return await self.learnings.forget(
+            self.resolve_project(project, cwd), symbol, path=path, scope=scope, lang=lang
+        )
 
     async def learning_reaffirm(
-        self, symbol: str, project: str | None = None, cwd: Path | None = None
+        self,
+        symbol: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+        project: str | None = None,
+        cwd: Path | None = None,
     ) -> dict[str, Any]:
         """Clear a learning's stale flag without rewriting it."""
-        return await self.learnings.reaffirm(self.resolve_project(project, cwd), symbol)
+        return await self.learnings.reaffirm(
+            self.resolve_project(project, cwd), symbol, path=path, scope=scope, lang=lang
+        )
 
     def learning_report(
         self,
@@ -2843,10 +2874,18 @@ class Crib:
         )
 
     def learning_read(
-        self, symbol: str, project: str | None = None, cwd: Path | None = None
+        self,
+        symbol: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+        project: str | None = None,
+        cwd: Path | None = None,
     ) -> dict[str, Any]:
         """Read a symbol's learning note (frontmatter + body)."""
-        return self.learnings.read(self.resolve_project(project, cwd), symbol)
+        return self.learnings.read(
+            self.resolve_project(project, cwd), symbol, path=path, scope=scope, lang=lang
+        )
 
     # ── Design decisions & plan items: delegate to Designs (crib/designs.py) ───
     # Same shape as the learnings block: resolve the project, then delegate to a

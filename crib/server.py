@@ -947,14 +947,19 @@ def build_server(crib: Crib | None = None):
 
     @crib_tool("read", echo=True)
     async def code_xref(
-        symbol: str, project: str | None = None, project_path: str | None = None
+        symbol: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+        project: str | None = None,
+        project_path: str | None = None,
     ) -> list[dict[str, Any]]:
         """A symbol's callers (←), callees (→) and references (⇐ — broader than calls),
         plus any human learning pinned to it — from the persisted index, no live LSP.
         `symbol` is a bare name or dotted fqname. Name the project on the call —
         `project_path=<a path in that repo>` or `project=<name>` — whenever you mean
         somewhere other than the current one; naming it always wins."""
-        return crib.code_xref(symbol, project)
+        return crib.code_xref(symbol, project, path=path, scope=scope, lang=lang)
 
     @crib_tool("read", echo=True)
     async def code_lookup(
@@ -1076,6 +1081,9 @@ def build_server(crib: Crib | None = None):
     async def learning_add(
         symbol: str,
         text: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
         project: str | None = None,
         project_path: str | None = None,
     ) -> dict[str, Any]:
@@ -1097,6 +1105,9 @@ def build_server(crib: Crib | None = None):
     async def learning_edit(
         symbol: str,
         new_content: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
         project: str | None = None,
         project_path: str | None = None,
     ) -> dict[str, Any]:
@@ -1107,30 +1118,42 @@ def build_server(crib: Crib | None = None):
 
     @crib_tool("read")
     async def learning_forget(
-        symbol: str, project: str | None = None, project_path: str | None = None
+        symbol: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+        project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:
         """Remove a symbol's learning (stashed to the version ring first, so it's
         recoverable) — the standard forget, scoped to a symbol. Resolves its project
         like a read, as `learning_add` does."""
-        return await crib.learning_forget(symbol, project)
+        return await crib.learning_forget(symbol, path=path, scope=scope, lang=lang, project=project)
 
     @crib_tool("read")
     def learning_read(
-        symbol: str, project: str | None = None, project_path: str | None = None
+        symbol: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+        project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:
         """Read a symbol's attached learning note (frontmatter + body), or found=
         False if none is written yet. `symbol` is a bare name or dotted fqname."""
-        return crib.learning_read(symbol, project)
+        return crib.learning_read(symbol, path=path, scope=scope, lang=lang, project=project)
 
     @crib_tool("read")
     async def learning_reaffirm(
-        symbol: str, project: str | None = None, project_path: str | None = None
+        symbol: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+        project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:
         """Clear a learning's ⚠︎ stale flag WITHOUT rewriting it — you re-checked the
         note against the current code and it still holds. Re-snapshots the symbol's
         content_hash so it reads as fresh again. Use when code_lookup shows a ※ note
         flagged stale but the understanding is still correct."""
-        return await crib.learning_reaffirm(symbol, project)
+        return await crib.learning_reaffirm(symbol, path=path, scope=scope, lang=lang, project=project)
 
     @crib_tool("read")
     async def learning_migrate(

@@ -1449,6 +1449,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     s.add_argument("symbol")
     proj(s)
+    _narrowers(s)
 
     s = codesub.add_parser(
         "dossier", help="everything about one symbol (+ neighbour descriptions)"
@@ -1535,6 +1536,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("symbol")
     s.add_argument("text")
     proj(s)
+    _narrowers(s)
 
     s = learnsub.add_parser(
         "edit", help="rewrite a symbol's learning body ('-' reads stdin)"
@@ -1542,22 +1544,26 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("symbol")
     s.add_argument("text")
     proj(s)
+    _narrowers(s)
 
     s = learnsub.add_parser(
         "forget", help="remove a symbol's learning (recoverable; works on orphans)"
     )
     s.add_argument("symbol")
     proj(s)
+    _narrowers(s)
 
     s = learnsub.add_parser("read", help="print a symbol's attached learning")
     s.add_argument("symbol")
     proj(s)
+    _narrowers(s)
 
     s = learnsub.add_parser(
         "reaffirm", help="clear a learning's ⚠︎ stale flag without rewriting it"
     )
     s.add_argument("symbol")
     proj(s)
+    _narrowers(s)
 
     s = learnsub.add_parser(
         "migrate",
@@ -2695,10 +2701,16 @@ VERBS: dict[str, Verb] = {
     ),
     "code xref": Verb(
         "code_xref",
-        lambda a: {"symbol": a.symbol, "project": a.project},
+        lambda a: {
+            "symbol": a.symbol,
+            "path": getattr(a, "path", ""),
+            "scope": getattr(a, "scope", ""),
+            "lang": getattr(a, "lang", ""),
+            "project": a.project,
+        },
         _E_code("code-xref"),
         policy="read",
-        mcp=f"symbol {_PROJ}",
+        mcp=f'symbol path="" scope="" lang="" {_PROJ}',
     ),
     "code dossier": Verb(
         "code_dossier",
@@ -2762,11 +2774,14 @@ VERBS: dict[str, Verb] = {
             "symbol": a.symbol,
             "text": _read_content(a.text),
             "project": a.project,
+            "path": getattr(a, "path", ""),
+            "scope": getattr(a, "scope", ""),
+            "lang": getattr(a, "lang", ""),
         },
         _E_learning("learning-add"),
         is_async=True,
         policy="read",
-        mcp=f"symbol text {_PROJ}",
+        mcp=f"symbol text path='' scope='' lang='' {_PROJ}",
     ),
     "learning edit": Verb(
         "learning_edit",
@@ -2774,34 +2789,55 @@ VERBS: dict[str, Verb] = {
             "symbol": a.symbol,
             "new_content": _read_content(a.text),
             "project": a.project,
+            "path": getattr(a, "path", ""),
+            "scope": getattr(a, "scope", ""),
+            "lang": getattr(a, "lang", ""),
         },
         _E_learning("learning-edit"),
         is_async=True,
         policy="read",
-        mcp=f"symbol new_content {_PROJ}",
+        mcp=f"symbol new_content path='' scope='' lang='' {_PROJ}",
     ),
     "learning forget": Verb(
         "learning_forget",
-        lambda a: {"symbol": a.symbol, "project": a.project},
+        lambda a: {
+            "symbol": a.symbol,
+            "path": getattr(a, "path", ""),
+            "scope": getattr(a, "scope", ""),
+            "lang": getattr(a, "lang", ""),
+            "project": a.project,
+        },
         _E_learning("learning-forget"),
         is_async=True,
         policy="read",
-        mcp=f"symbol {_PROJ}",
+        mcp=f"symbol path='' scope='' lang='' {_PROJ}",
     ),
     "learning read": Verb(
         "learning_read",
-        lambda a: {"symbol": a.symbol, "project": a.project},
+        lambda a: {
+            "symbol": a.symbol,
+            "path": getattr(a, "path", ""),
+            "scope": getattr(a, "scope", ""),
+            "lang": getattr(a, "lang", ""),
+            "project": a.project,
+        },
         _E_learning("learning-read"),
         policy="read",
-        mcp=f"symbol {_PROJ}",
+        mcp=f"symbol path='' scope='' lang='' {_PROJ}",
     ),
     "learning reaffirm": Verb(
         "learning_reaffirm",
-        lambda a: {"symbol": a.symbol, "project": a.project},
+        lambda a: {
+            "symbol": a.symbol,
+            "path": getattr(a, "path", ""),
+            "scope": getattr(a, "scope", ""),
+            "lang": getattr(a, "lang", ""),
+            "project": a.project,
+        },
         _E_learning("learning-reaffirm"),
         is_async=True,
         policy="read",
-        mcp=f"symbol {_PROJ}",
+        mcp=f"symbol path='' scope='' lang='' {_PROJ}",
     ),
     "learning migrate": Verb(
         "learning_migrate",
@@ -2840,6 +2876,15 @@ VERBS: dict[str, Verb] = {
             "project": a.project,
             "sources": a.sources,
             "proposed": a.proposed,
+            "path": getattr(a, "path", ""),
+            "scope": getattr(a, "scope", ""),
+            "lang": getattr(a, "lang", ""),
+            "path": getattr(a, "path", ""),
+            "scope": getattr(a, "scope", ""),
+            "lang": getattr(a, "lang", ""),
+            "path": getattr(a, "path", ""),
+            "scope": getattr(a, "scope", ""),
+            "lang": getattr(a, "lang", ""),
         },
         _E_dwrite,
         is_async=True,

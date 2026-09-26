@@ -152,10 +152,17 @@ class Learnings:
                         out.add(by_binding.get(str(b), str(b)))
         return out
 
-    async def append(self, proj: str, symbol: str, text: str) -> dict[str, Any]:
+    async def append(
+        self, proj: str, symbol: str, text: str, path: str = "", scope: str = "",
+        lang: str = "",
+    ) -> dict[str, Any]:
         """Attach a durable learning to a symbol: append a dated entry to its running
-        note (create it, with symbol-keyed frontmatter, on first use)."""
-        entry = self.refs.resolve_symbol(proj, symbol)
+        note (create it, with symbol-keyed frontmatter, on first use).
+
+        `path`/`scope`/`lang` narrow an ambiguous symbol on axes a caller may
+        actually know (a stack trace gives the path; reading source, the scope).
+        They give a name more ways to BECOME unique — unique-or-refuse stands."""
+        entry = self.refs.resolve_symbol(proj, symbol, path=path, scope=scope, lang=lang)
         # BIND to the reference, TITLE with the language's own name. A note created
         # from here is already on the current binding, so the migration surface
         # stops growing while the rollout is under way.
@@ -192,10 +199,13 @@ class Learnings:
                 "resolved": resolution(entry, symbol),
                 "created": not existed, "indexed": res.upserted}
 
-    async def edit(self, proj: str, symbol: str, new_content: str) -> dict[str, Any]:
+    async def edit(
+        self, proj: str, symbol: str, new_content: str, path: str = "", scope: str = "",
+        lang: str = "",
+    ) -> dict[str, Any]:
         """Replace a symbol's learning body wholesale (fix/rewrite), frontmatter
         preserved. Errors if no learning exists yet — use append to create."""
-        entry = self.refs.resolve_symbol(proj, symbol)
+        entry = self.refs.resolve_symbol(proj, symbol, path=path, scope=scope, lang=lang)
         relpath = self.relpath(proj, entry)
         path = self.store.abspath(proj, relpath)
         if not path.exists():
@@ -208,7 +218,9 @@ class Learnings:
                 "resolved": resolution(entry, symbol),
                 "indexed": res.upserted}
 
-    async def forget(self, proj: str, symbol: str) -> dict[str, Any]:
+    async def forget(
+        self, proj: str, symbol: str, path: str = "", scope: str = "", lang: str = ""
+    ) -> dict[str, Any]:
         """Remove a symbol's learning (stashed to the version ring first, recoverable).
         Works on ORPHANS: if the symbol no longer resolves, forget by its binding.
 
@@ -219,7 +231,7 @@ class Learnings:
         one that cannot be found, because the note is right there."""
         resolved: dict[str, Any] | None = None
         try:
-            entry = self.refs.resolve_symbol(proj, symbol)
+            entry = self.refs.resolve_symbol(proj, symbol, path=path, scope=scope, lang=lang)
             bound = symbol_key(entry)
             resolved = resolution(entry, symbol)
             relpath: str | None = self.relpath(proj, entry)
@@ -234,11 +246,13 @@ class Learnings:
         return {**res, "symbol": bound,
                 **({"resolved": resolved} if resolved else {})}
 
-    async def reaffirm(self, proj: str, symbol: str) -> dict[str, Any]:
+    async def reaffirm(
+        self, proj: str, symbol: str, path: str = "", scope: str = "", lang: str = ""
+    ) -> dict[str, Any]:
         """Clear a learning's ⚠︎ stale flag WITHOUT editing the body — you re-checked it
         and it still holds. Re-snapshots content_hash/file/signature and stamps
         `reaffirmed`."""
-        entry = self.refs.resolve_symbol(proj, symbol)
+        entry = self.refs.resolve_symbol(proj, symbol, path=path, scope=scope, lang=lang)
         relpath = self.relpath(proj, entry)
         path = self.store.abspath(proj, relpath)
         if not path.exists():
@@ -482,9 +496,11 @@ class Learnings:
         return {"project": proj, "old": old_fqn, "new": symbol_key(new_entry),
                 "relpath": new_rel, "indexed": res.upserted}
 
-    def read(self, proj: str, symbol: str) -> dict[str, Any]:
+    def read(
+        self, proj: str, symbol: str, path: str = "", scope: str = "", lang: str = ""
+    ) -> dict[str, Any]:
         """Read a symbol's learning note (frontmatter + body), or found=False if unwritten."""
-        entry = self.refs.resolve_symbol(proj, symbol)
+        entry = self.refs.resolve_symbol(proj, symbol, path=path, scope=scope, lang=lang)
         relpath = self.relpath(proj, entry)
         path = self.store.abspath(proj, relpath)
         if not path.exists():
