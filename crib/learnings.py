@@ -169,10 +169,10 @@ class Learnings:
         ref = symbol_key(entry)
         fqn = str(entry.get("fqn") or ref)
         relpath = self.relpath(proj, entry)
-        path = self.store.abspath(proj, relpath)
-        existed = path.exists()
+        note_path = self.store.abspath(proj, relpath)
+        existed = note_path.exists()
         if existed:
-            note = notes.load(path)
+            note = notes.load(note_path)
             note.frontmatter["content_hash"] = entry.get("content_hash", "")
             note.frontmatter["file"] = entry.get("file", note.frontmatter.get("file", ""))
             note.frontmatter["signature"] = entry.get("signature",
@@ -207,10 +207,10 @@ class Learnings:
         preserved. Errors if no learning exists yet — use append to create."""
         entry = self.refs.resolve_symbol(proj, symbol, path=path, scope=scope, lang=lang)
         relpath = self.relpath(proj, entry)
-        path = self.store.abspath(proj, relpath)
-        if not path.exists():
+        note_path = self.store.abspath(proj, relpath)
+        if not note_path.exists():
             raise CribUserError(f"no learning for {symbol_key(entry)!r} yet — learning_add first")
-        note = notes.load(path)
+        note = notes.load(note_path)
         note.frontmatter["content_hash"] = entry.get("content_hash", "")
         note.body = new_content.strip() + "\n"
         res = await self.store.write(proj, relpath, note)
@@ -254,10 +254,10 @@ class Learnings:
         `reaffirmed`."""
         entry = self.refs.resolve_symbol(proj, symbol, path=path, scope=scope, lang=lang)
         relpath = self.relpath(proj, entry)
-        path = self.store.abspath(proj, relpath)
-        if not path.exists():
+        note_path = self.store.abspath(proj, relpath)
+        if not note_path.exists():
             raise CribUserError(f"no learning for {symbol_key(entry)!r} yet — learning_add first")
-        note = notes.load(path)
+        note = notes.load(note_path)
         note.frontmatter["content_hash"] = entry.get("content_hash", "")
         note.frontmatter["file"] = entry.get("file", note.frontmatter.get("file", ""))
         note.frontmatter["signature"] = entry.get("signature",
@@ -502,12 +502,12 @@ class Learnings:
         """Read a symbol's learning note (frontmatter + body), or found=False if unwritten."""
         entry = self.refs.resolve_symbol(proj, symbol, path=path, scope=scope, lang=lang)
         relpath = self.relpath(proj, entry)
-        path = self.store.abspath(proj, relpath)
-        if not path.exists():
+        note_path = self.store.abspath(proj, relpath)
+        if not note_path.exists():
             return {"project": proj, "symbol": symbol_key(entry), "relpath": relpath,
                     "resolved": resolution(entry, symbol),
-                    "path": str(path), "found": False, "body": None}
-        note = notes.load(path)
+                    "path": str(note_path), "found": False, "body": None}
+        note = notes.load(note_path)
         return {"project": proj, "symbol": symbol_key(entry), "relpath": relpath,
                 "resolved": resolution(entry, symbol),
                 "path": str(path), "found": True,
