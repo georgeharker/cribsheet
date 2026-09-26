@@ -28,6 +28,10 @@ an action**. At that exact moment:
 grep is the **fallback for when the index misses**. It is never the opening move.
 There is no shortcut around indexing; the utility *is* the index.
 
+**Ambiguous names refuse — that's the cue, not a failure.** A bare name matching
+several symbols comes back with ranked candidates (by caller count) instead of a
+guess; narrow with the file or scope rather than falling back to grep.
+
 **Catch yourself:** if you've read three files to answer one question, this rule
 already fired and you walked past it. Stop where you are, `code_lookup`, redo it.
 

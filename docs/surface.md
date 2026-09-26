@@ -85,6 +85,21 @@ projects.
 | `crib code index <file>`                            | `code_index`                | (Re)index ONE source file. Usually you want `crib project index` (whole repo) instead.                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `crib code convert [--apply]`                       | `code_convert`              | Convert the symbol store to the current shape **in place** — no LSP, no LLM; descriptions, keywords and edges byte-identical or the record is left alone and reported. Per record and resumable (re-running is the resume); dry run without `--apply`. A full `project index` also converts, at LSP+LLM price.                                                                                                                                                                                                                                 |
 
+**Symbol resolution — how a bare name becomes one symbol.** Queries are read
+permissively: a name matches by full fqname, by a suffix at a separator boundary
+(`state::exit_code` or `state.exit_code` — the query may use either separator
+regardless of the language's own, because only the caller's convenience is
+permissive; the landing spot is strict), or by bare final name. A name matching
+**several** symbols is REFUSED — never resolved by guessing — with candidates
+ranked by caller count, because a silent pick answers "who calls this?" for a
+symbol with 92 callers by answering *nothing does*. Every result carries
+**`resolved`** — the query, what it became, and which tier matched (`project`
+added when resolution fanned out through a `.crib` ref) — so the choice is
+visible even when it was unambiguous. Machine fields (`id`, `from`/`to`,
+`resolved.fqname`) are crib's canonical identity and stay separator-neutral;
+the language-idiomatic `display` label rides payloads for readers and is never
+a key.
+
 ## Learnings — durable notes attached to a code symbol
 
 | CLI                                | MCP                 | Description                                                                                                                                                                                                                                                                                               |
