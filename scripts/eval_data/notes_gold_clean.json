@@ -6696,5 +6696,12 @@
    ],
    "public_source": "georgeharker/cribsheet"
   }
- ]
+ ],
+ "_provenance": {
+  "derived": "2026-09-25",
+  "source_sha": "e8a19252ad63",
+  "docs_dirty": false,
+  "crib_version": "0.15.2",
+  "embed_model": "st:BAAI/bge-small-en-v1.5"
+ }
 }

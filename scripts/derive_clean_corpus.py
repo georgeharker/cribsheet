@@ -127,6 +127,50 @@ def main(argv: list[str] | None = None) -> int:
         elif not public:
             dropped_q["private-target"] += 1
 
+
+    # The REPEATABILITY STAMP: which tree state the seeded content is frozen
+    # against. The test checks out THIS sha into a temp worktree and asserts the
+    # seed reproduces — a dirty tree at derivation breaks that promise, so the
+    # doc-bearing paths are checked explicitly and the flag rides the stamp.
+    def _stamp() -> dict[str, object]:
+        import importlib.metadata
+        import subprocess
+
+        out: dict[str, object] = {"derived": __import__("datetime").date.today().isoformat()}
+        try:
+            head = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                capture_output=True, text=True, timeout=15, cwd=str(ROOT),
+            )
+            out["source_sha"] = head.stdout.strip()[:12] or None
+            dirty = subprocess.run(
+                ["git", "status", "--porcelain", "--",
+                 "DESIGN.md", "README.md", "docs", "sources"],
+                capture_output=True, text=True, timeout=15, cwd=str(ROOT),
+            )
+            docs_dirty = bool(dirty.stdout.strip())
+            out["docs_dirty"] = docs_dirty
+            if docs_dirty:
+                out["warning"] = (
+                    "doc-bearing paths were DIRTY at derivation — the pinned "
+                    "sha's worktree will NOT reproduce these section hashes; "
+                    "commit and re-derive for a bit-exact fixture"
+                )
+        except Exception:  # noqa: BLE001 — provenance, never a gate
+            out["source_sha"] = None
+        try:
+            out["crib_version"] = importlib.metadata.version("cribsheet")
+        except Exception:  # noqa: BLE001
+            pass
+        try:
+            from crib.paths import Paths as _P
+            from crib.config import Config as _C
+
+            out["embed_model"] = _C.load(_P.resolve().config_file).embed.model
+        except Exception:  # noqa: BLE001
+            pass
+        return out
+
     spec_out = {
         "_doc": (
             "CLEAN public-seeded notes gold subset, derived from "
@@ -144,6 +188,7 @@ def main(argv: list[str] | None = None) -> int:
         "query_sources": spec["query_sources"],
         "public_sources": PUBLIC_SOURCES,
         "needs": sorted(clean_needs, key=lambda n: n["id"]),
+        "_provenance": _stamp(),
     }
     n_q = sum(len(n["queries"]) for n in clean_needs)
     print(
