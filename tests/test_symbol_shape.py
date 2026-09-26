@@ -23,6 +23,7 @@ from crib.codeindex import _ARRAYS, _SCALARS, _render
 
 _CRIB = Path(__file__).resolve().parent.parent / "crib"
 
+
 # Every field a stored entry may carry. Adding one to the extractor without adding
 # it here (and to _SCALARS/_ARRAYS) is the failure this pins.
 def _entry_fields() -> set[str]:
@@ -40,9 +41,12 @@ def _entry_fields() -> set[str]:
     for node in ast.walk(src):
         if not isinstance(node, ast.Dict):
             continue
-        keys = {k.value for k in node.keys
-                if isinstance(k, ast.Constant) and isinstance(k.value, str)}
-        if {"symbol_ref", "name", "kind", "file"} <= keys:   # the entry literal
+        keys = {
+            k.value
+            for k in node.keys
+            if isinstance(k, ast.Constant) and isinstance(k.value, str)
+        }
+        if {"symbol_ref", "name", "kind", "file"} <= keys:  # the entry literal
             # `_body` is the raw source text, carried in memory for hashing and
             # describing and deliberately never written — the underscore is the
             # convention that says so.
@@ -60,55 +64,124 @@ def test_the_persist_allow_list_covers_every_declared_field():
     late_bound = {"description", "keywords"}
     assert persisted - late_bound == _entry_fields(), (
         "the entry shape and what _render persists disagree; a field in one and not "
-        "the other is written to memory and lost on disk, silently")
+        "the other is written to memory and lost on disk, silently"
+    )
 
 
 def test_a_rendered_entry_round_trips_every_field():
-    entry = {k: "" for k in _SCALARS}
-    entry.update(symbol_ref="a/b.py#C.d", fqn="a.b.C.d", name="d", lang="python",
-                 file="a/b.py", line=7, mtime=3, container=["C"],
-                 scope=["a", "b", "C"], symbol_was=["a.b.C.d"],
-                 calls=["e [a/c.py]"], called_by=[], references=[],
-                 name_terms=["d"], keywords=["k"])
+    entry: dict[str, object] = {k: "" for k in _SCALARS}
+    entry.update(
+        symbol_ref="a/b.py#C.d",
+        fqn="a.b.C.d",
+        name="d",
+        lang="python",
+        file="a/b.py",
+        line=7,
+        mtime=3,
+        container=["C"],
+        scope=["a", "b", "C"],
+        symbol_was=["a.b.C.d"],
+        calls=["e [a/c.py]"],
+        called_by=[],
+        references=[],
+        name_terms=["d"],
+        keywords=["k"],
+    )
     from crib.codeindex import _parse
+
     back = _parse(_render(entry))
-    for key in ("symbol_ref", "fqn", "symbol_was", "name", "lang", "file",
-                "container", "scope", "calls"):
+    for key in (
+        "symbol_ref",
+        "fqn",
+        "symbol_was",
+        "name",
+        "lang",
+        "file",
+        "container",
+        "scope",
+        "calls",
+    ):
         assert back.get(key) == entry[key], f"{key} did not survive the round trip"
 
 
 # The code-family modules — where a symbol spelling could plausibly be re-derived.
 # `designs.py` is exempt on purpose: its `doc#heading` citations are a DIFFERENT
 # convention that module owns, not a symbol reference.
-_CODE_FAMILY = ("codeindex.py", "codeindexer.py", "codestore.py", "codequery.py",
-                "learnings.py", "refs.py", "symconvert.py")
+_CODE_FAMILY = (
+    "codeindex.py",
+    "codeindexer.py",
+    "codestore.py",
+    "codequery.py",
+    "learnings.py",
+    "refs.py",
+    "symconvert.py",
+)
+
+# The EXEMPTION is itself asserted: designs.py is the one module allowed to
+# `#`-split (its `doc#heading` citations), and the count must stay exactly what
+# the exemption documents — a third `#`-split appearing there is a new convention
+# smuggled in under the exemption, and this assertion names it.
+_DESIGNS_ALLOWED_HASH_SPLITS = 2
 
 
 def test_no_code_module_splits_a_reference_by_hand():
     """`symbols.id_parts` / `match_entry` own the `#` convention. A hand
     `partition("#")` beside them is the second-copy drift this file exists to pin —
     and `id_parts` already passes a #-less input through, so there is no legitimate
-    reason for a caller to pre-test with `"#" in …` either."""
-    offenders = [f"{name}: {ln.strip()[:60]}"
-                 for name in _CODE_FAMILY
-                 for n, ln in enumerate((_CRIB / name).read_text().splitlines(), 1)
-                 if ('partition("#")' in ln or 'split("#")' in ln)
-                 and "id_parts" not in ln]
+    reason for a caller to pre-test with `"#" in …` either.
+
+    WIDENED beyond the code-family list (2026-09-25): the WHOLE crib package is
+    scanned, because a symbol spelling can plausibly be re-derived anywhere. The
+    only legal exceptions are `symbols.py` itself and `designs.py`'s documented
+    `doc#heading` citations — asserted at their counted exact number, so the
+    exemption cannot quietly grow."""
+    allowed = {"symbols.py", "designs.py"}
+    offenders = [
+        f"{path.name}: {ln.strip()[:60]}"
+        for path in sorted((_CRIB).glob("*.py"))
+        if path.name not in allowed
+        for n, ln in enumerate(path.read_text().splitlines(), 1)
+        if ('partition("#")' in ln or 'split("#")' in ln) and "id_parts" not in ln
+    ]
     assert not offenders, f"reference split by hand outside symbols.py: {offenders}"
 
 
-@pytest.mark.parametrize("pattern, what", [
-    (r'partition\(" \["\)', "parsing an edge ref by hand"),
-    (r'\.endswith\(f?"\[', "testing an edge ref's origin by hand"),
-    (r'\.endswith\("\." \+ ', "matching a qualified-name suffix by hand"),
-    (r'\.endswith\("::" \+ ', "matching a qualified-name suffix by hand"),
-    (r're\.compile\(r"::\|', "restating the separator rule"),
-])
+def test_designs_hash_split_exemption_shrinks_never_grows():
+    """`designs.py`'s two `#`-splits are the `doc#heading` citation convention —
+    recorded so the exemption stays exactly as documented. A THIRD split (a
+    symbol-reference parse smuggled under the citation exemption) fails here
+    instead of drifting silently."""
+    n = sum(
+        1
+        for ln in (_CRIB / "designs.py").read_text().splitlines()
+        if 'partition("#")' in ln or 'split("#")' in ln
+    )
+    assert n == _DESIGNS_ALLOWED_HASH_SPLITS, (
+        f"designs.py now has {n} #-splits — the exemption documents 2 "
+        f"(doc#heading citations). If a THIRD is a citation too, update "
+        f"_DESIGNS_ALLOWED_HASH_SPLITS with the reason; if it splits a SYMBOL "
+        f"reference, it belongs in symbols.py"
+    )
+
+
+@pytest.mark.parametrize(
+    "pattern, what",
+    [
+        (r'partition\(" \["\)', "parsing an edge ref by hand"),
+        (r'\.endswith\(f?"\[', "testing an edge ref's origin by hand"),
+        (r'\.endswith\("\." \+ ', "matching a qualified-name suffix by hand"),
+        (r'\.endswith\("::" \+ ', "matching a qualified-name suffix by hand"),
+        (r're\.compile\(r"::\|', "restating the separator rule"),
+    ],
+)
 def test_no_module_but_symbols_knows_how_a_symbol_is_spelled(pattern, what):
     """`crib/symbols.py` owns every spelling convention. A second copy anywhere else
     is the drift that made `by_fqname` blind to Rust while `_qualify` rendered it."""
-    offenders = [p.name for p in sorted(_CRIB.glob("*.py"))
-                 if p.name != "symbols.py" and re.search(pattern, p.read_text())]
+    offenders = [
+        p.name
+        for p in sorted(_CRIB.glob("*.py"))
+        if p.name != "symbols.py" and re.search(pattern, p.read_text())
+    ]
     assert not offenders, f"{what} outside symbols.py: {offenders}"
 
 
@@ -119,14 +192,29 @@ def test_a_read_verb_never_mutates_the_resident_cache():
     only smelled; the moment one changed a field's TYPE, the next reader in the
     process got a list it could not decode twice."""
     from crib.codestore import _ResidentCode
-    entries = [{"fqname": "a.b", "name": "b", "file": "a.py", "lang": "python",
-                "calls": ["c [a.py]"], "description": ""}]
+
+    entries = [
+        {
+            "fqname": "a.b",
+            "name": "b",
+            "file": "a.py",
+            "lang": "python",
+            "calls": ["c [a.py]"],
+            "description": "",
+        }
+    ]
     rc = _ResidentCode(tok=1, entries=entries, emb={})
     got = rc.by_fqname("b")
     got[0]["project"] = "somewhere"
     got[0]["calls"] = [{"symbol": "a.c"}]
-    assert entries[0] == {"fqname": "a.b", "name": "b", "file": "a.py",
-                          "lang": "python", "calls": ["c [a.py]"], "description": ""}
+    assert entries[0] == {
+        "fqname": "a.b",
+        "name": "b",
+        "file": "a.py",
+        "lang": "python",
+        "calls": ["c [a.py]"],
+        "description": "",
+    }
 
 
 def test_only_the_full_sweep_stamps_the_store():
@@ -151,7 +239,7 @@ def test_only_the_full_sweep_stamps_the_store():
     """
     callers = {}
     for src in sorted(_CRIB.glob("*.py")):
-        if src.name == "codeindex.py":       # where it is DEFINED
+        if src.name == "codeindex.py":  # where it is DEFINED
             continue
         for n, line in enumerate(src.read_text().splitlines(), 1):
             if re.search(r"\.record_schema\s*\(", line):
@@ -163,9 +251,10 @@ def test_only_the_full_sweep_stamps_the_store():
     # is the watcher bug pattern again.
     assert len(callers) == 2, (
         "record_schema may be called from exactly TWO sites — the full sweep and "
-        "the converter. Found:\n"
-        + "\n".join(f"  {k}  {v}" for k, v in callers.items()))
+        "the converter. Found:\n" + "\n".join(f"  {k}  {v}" for k, v in callers.items())
+    )
     files = {k.split(":")[0] for k in callers}
     assert files == {"codeindexer.py", "app.py"}, (
         f"record_schema called from {sorted(files)}; only a pass that saw every "
-        f"record may stamp")
+        f"record may stamp"
+    )

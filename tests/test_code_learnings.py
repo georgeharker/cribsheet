@@ -12,6 +12,10 @@ from crib.app import Crib
 from crib.codeindex import SymbolIndex
 from crib.config import Config
 from crib.paths import Paths
+from pathlib import Path
+
+_CRIB = Path(__file__).resolve().parent.parent / "crib"
+_ROOT = Path(__file__).resolve().parent.parent
 from crib.store import InMemoryStore
 
 
@@ -316,3 +320,34 @@ def test_the_glyph_marks_the_node_whatever_the_note_is_bound_to(crib, binding):
     g = crib.code_graph("foo", project="p", shape="edges")
     assert [n.get("has_learning") for n in g["nodes"]] == [True], \
         "the ※ join compared one spelling against the other"
+
+
+def test_ref_slug_round_trips_through_the_filesystem(crib):
+    """THE round-trip plan item 'mechanical checks' asked for and never had:
+    ref_slug(fqn) → learning file on disk → parse back → the SAME fqn. This is
+    the check that catches a filename-scheme change silently orphaning every
+    on-disk index file and the learnings keyed to them (it happened once: the
+    symbol_ref filename scheme churn forced a 6554-file golden re-capture)."""
+    run = lambda coro: asyncio.run(coro)  # noqa: E731 — local, matches the file
+    fqn = "scripts/eval_retrieval.py#run_lookup"
+    run(crib.code_index(path=f"{_ROOT}/scripts/eval_retrieval.py", project="p"))
+    run(crib.learning_add(fqn, "how run_lookup drives the daemon", project="p"))
+
+    # 1. ref_slug(fqn) → the file exists at the slug name
+    from crib.symbols import ref_slug
+
+    fname = ref_slug(fqn) + ".md"
+    f = crib.paths.project_dir("p") / "learnings" / fname
+    assert f.exists(), f"learning file missing at the slug name: {f}"
+
+    # 2. parse back: the file's frontmatter carries the SAME ref
+    lines = f.read_text().splitlines()
+    symbol_ref = next(
+        (ln.split(":", 1)[1].strip() for ln in lines if ln.startswith("symbol_ref:")),
+        None,
+    )
+    assert symbol_ref == fqn, (symbol_ref, fqn)
+
+    # 3. the read path resolves the fqn back through the same slug
+    back = crib.learning_read(fqn, project="p")
+    assert "how run_lookup drives the daemon" in (back.get("body") or "")

@@ -386,6 +386,10 @@ class Node:
 class Graph:
     nodes: dict[str, Node] = field(default_factory=dict)
     dependents: dict[str, list[str]] = field(default_factory=dict)
+    # The project this graph was loaded for — set by `_load_graph` so miss
+    # errors can NAME the namespace searched ("was it the wrong project?"),
+    # the not-found ergonomics the notes path already has.
+    proj: str = ""
 
     def of_kind(self, kind: str) -> list[Node]:
         return [n for n in self.nodes.values() if n.kind == kind]
@@ -463,7 +467,7 @@ class Designs:
         NOW, so `_taint` can compare against the recorded hash without doing I/O
         itself. `docs` memoizes per load, so ten decisions citing one DESIGN.md
         split it once."""
-        graph = Graph()
+        graph = Graph(proj=proj)
         docs: dict[str, dict[str, str]] = {}
         for kind, store in self._stores.items():
             try:
@@ -866,11 +870,14 @@ class Designs:
                 f"{other.upper()} item ({hit.relpath}): use the {other}_* verbs"
             )
 
+        where = f" in project {graph.proj!r}" if getattr(graph, "proj", "") else ""
         if not pool:
             _other_facet_hint()
             raise CribUserError(
-                f"no {kind or 'design/plan'} notes yet — "
-                f"`{kind or 'design'}_add` creates the first one"
+                f"no {kind or 'design/plan'} notes in project "
+                f"{getattr(graph, 'proj', '') or '(unanchored)'!r} — "
+                f"`{kind or 'design'}_add` creates the first one (wrong project? "
+                f"pass project= / project_path=)"
             )
         want, slug = ref.lower(), _slug(ref)
         exact = [n for n in pool if n.id == ref.upper()]
@@ -901,9 +908,11 @@ class Designs:
         if not matches:
             _other_facet_hint()
             raise CribUserError(
-                f"no {kind or 'design/plan'} note matches {ref!r} — "
-                f"reference it by id, relpath or title "
-                f"(`{kind or 'design'}_check` / `plan_list` show what exists)"
+                f"no {kind or 'design/plan'} note matches {ref!r} in project "
+                f"{getattr(graph, 'proj', '') or '(unanchored)'!r} — reference it "
+                f"by id, relpath or title "
+                f"(`{kind or 'design'}_check` / `plan_list` show what exists; "
+                f"a miss in the RIGHT project means the knowledge is genuinely absent)"
             )
         listing = ", ".join(f"{n.id[:8]}… {n.relpath}" for n in matches[:8])
         raise CribUserError(
