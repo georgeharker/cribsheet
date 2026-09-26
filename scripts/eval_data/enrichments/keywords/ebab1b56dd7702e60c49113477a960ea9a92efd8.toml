@@ -1,0 +1,22 @@
+section_hash = "ebab1b56dd7702e60c49113477a960ea9a92efd8"
+label = "keywords"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/5. Conversation capture (DESIGN §12) — where the value is/5b. `SessionEnd` hook — automatic, out-of-session → **quarantine**"
+model = "glm-5.3"
+terms = [
+  "end of session hook",
+  "auto summarize",
+  "automatic note capture",
+  "background processing",
+  "detached process",
+  "async summarization",
+  "not block session exit",
+  "fire and forget",
+  "dedup notes",
+  "merge duplicates",
+  "update existing note",
+  "skip trivial conversations",
+  "significance filter",
+  "transcript summarizer",
+  "quarantine review",
+]

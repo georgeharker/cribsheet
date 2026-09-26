@@ -1,0 +1,21 @@
+section_hash = "8c5213c59d3b69785482b37f8587b26cecf60fb1"
+label = "keywords"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/3. Trust tiers (the `source` field)"
+model = "glm-5.3"
+terms = [
+  "trust levels",
+  "confidence score",
+  "provenance metadata",
+  "source types explained",
+  "unreviewed notes",
+  "auto-captured session notes",
+  "how to promote a note",
+  "quarantine weight setting",
+  "ranking penalty search results",
+  "unvetted ai-generated content",
+  "review status approval workflow",
+  "human-written vs machine-written",
+  "hide unreviewed by default",
+  "lookup scoring priority",
+]

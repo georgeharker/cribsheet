@@ -1,0 +1,24 @@
+section_hash = "1b5b39e585ec6bb1ef818444f1a450357fd48c23"
+label = "keywords"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/2. The model"
+model = "claude-sonnet-4-6"
+terms = [
+  "ULID identity",
+  "frontmatter schema",
+  "deps field",
+  "checked field",
+  "sources field",
+  "body-hash",
+  "section grain",
+  "attribution edge",
+  "graph edge",
+  "lexorank",
+  "pillar store",
+  "version ring",
+  "merge driver",
+  "proposed active superseded",
+  "todo in-progress done verified",
+  "source citation heading",
+  "bare-doc citation refused",
+]

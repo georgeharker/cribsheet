@@ -1,0 +1,12 @@
+section_hash = "9d1efc3797e0d7d6a097be227ed2dda479d635e3"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 1 — daemon correctness under load/1.3 Startup reconcile blocks the transport"
+model = "glm-5.3"
+terms = [
+  "daemon waits on reconcile_all before mcp.run_async blocks transport startup",
+  "client ready timeout after cold start with large offline backlog",
+  "move reconcile to background task with _spawn_bg after transport is up",
+  "is serving during reconcile safe hash gate design §9",
+  "expose reconciling remaining in status while startup reconcile runs",
+]

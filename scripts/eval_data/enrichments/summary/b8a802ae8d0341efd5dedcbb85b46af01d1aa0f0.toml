@@ -1,0 +1,11 @@
+section_hash = "b8a802ae8d0341efd5dedcbb85b46af01d1aa0f0"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/6. Target shape/The filename — `ref_slug(symbol_ref)`, both stores"
+model = "glm-5.3"
+terms = [
+  "why rename symbols.learning_slug to ref_slug",
+  "does ref_slug ever skip the hash suffix",
+  "prior_names from symbol_was and legacy_learning_slug on write",
+  "symbol_ref vs fqn which anchor is stabler for the filename",
+]

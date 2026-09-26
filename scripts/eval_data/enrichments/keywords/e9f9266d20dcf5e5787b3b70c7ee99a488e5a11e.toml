@@ -1,0 +1,20 @@
+section_hash = "e9f9266d20dcf5e5787b3b70c7ee99a488e5a11e"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/1. Why this works where `summary_index` didn't"
+model = "claude-sonnet-4-6"
+terms = [
+  "why code summaries work unlike note summaries",
+  "summary_index verdict reversal",
+  "nl embedder code failure",
+  "raw body embeds terribly",
+  "recall saturated prose unsaturated code",
+  "doc2query code retest",
+  "llm description primary searchable surface",
+  "net new information code description",
+  "dense embedding code concept gap",
+  "token name embedding mismatch",
+  "identifier semantic mismatch embedder",
+  "shelved note summaries comparison",
+  "baseline differs code vs prose",
+]

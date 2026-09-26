@@ -1,0 +1,22 @@
+section_hash = "4d7cf0c4ece8c25cf5b895d9fd922c3569902305"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/5. Tool surface"
+model = "claude-sonnet-4-6"
+terms = [
+  "mcp tool list",
+  "note_lookup",
+  "note_store",
+  "note_append",
+  "note_edit",
+  "note_distill",
+  "note_reindex",
+  "note_restore",
+  "note_import",
+  "note_snapshot",
+  "noun verb cli interface",
+  "crib note commands",
+  "project_list",
+  "note_versions ring",
+  "note_locate abs path",
+]

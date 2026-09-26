@@ -1,0 +1,22 @@
+section_hash = "8148680d4efee8d129f24c60ce98758cadb4d40e"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/Sequencing summary"
+model = "glm-5.3"
+terms = [
+  "execution order",
+  "task ordering",
+  "dependency graph",
+  "prerequisites",
+  "blocking order",
+  "parallel workstreams",
+  "concurrency plan",
+  "work assignment",
+  "who does what",
+  "division of labor",
+  "broken search index",
+  "stale index",
+  "rebuild index",
+  "reindexing",
+  "commit policy",
+]

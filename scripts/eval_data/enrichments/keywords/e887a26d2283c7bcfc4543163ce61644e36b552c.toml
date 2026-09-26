@@ -1,0 +1,22 @@
+section_hash = "e887a26d2283c7bcfc4543163ce61644e36b552c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/8. Build order"
+model = "glm-5.3"
+terms = [
+  "roadmap",
+  "implementation plan",
+  "rollout order",
+  "what to build first",
+  "phased delivery",
+  "build sequence",
+  "milestones",
+  "mvp",
+  "thin slice",
+  "staged rollout",
+  "development stages",
+  "shipping order",
+  "dependency order",
+  "capture phases",
+  "when to build the proxy",
+]

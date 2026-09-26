@@ -1,0 +1,22 @@
+section_hash = "bf5756a64a90a0c488e57c8836c2871d11033877"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 1 — daemon correctness under load/1.1 Sync embedding on the event loop stalls every client"
+model = "glm-5.3"
+terms = [
+  "blocking call",
+  "event loop blocked",
+  "daemon unresponsive",
+  "daemon hangs",
+  "mcp client timeout",
+  "run_in_executor",
+  "offload to thread",
+  "thread pool",
+  "cpu-bound work",
+  "non-blocking",
+  "freeze during indexing",
+  "slow reconcile",
+  "health check failure",
+  "request starvation",
+  "async hang",
+]

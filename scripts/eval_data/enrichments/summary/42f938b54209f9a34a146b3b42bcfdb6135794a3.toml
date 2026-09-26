@@ -1,0 +1,11 @@
+section_hash = "42f938b54209f9a34a146b3b42bcfdb6135794a3"
+label = "summary"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/3. Staleness — computed, coarse, and cheap on purpose"
+model = "claude-sonnet-4-6"
+terms = [
+  "why is taint recomputed on read instead of propagated on write",
+  "what change kinds does the check verb return for a tainted entry",
+  "how does crib status surface tainted decisions",
+  "what does design reaffirm do and when should I run it",
+]

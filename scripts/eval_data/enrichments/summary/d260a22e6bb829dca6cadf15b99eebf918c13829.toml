@@ -1,0 +1,11 @@
+section_hash = "d260a22e6bb829dca6cadf15b99eebf918c13829"
+label = "summary"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)"
+model = "glm-5.3"
+terms = [
+  "why does distill use llmkit bridge instead of mcp sampling",
+  "what replaces the mcp-sampling path assumed in design §7",
+  "which layer handles knowledge capture and revision",
+  "how is automatic conversation summarization implemented with the vendor/llmkit submodule",
+]

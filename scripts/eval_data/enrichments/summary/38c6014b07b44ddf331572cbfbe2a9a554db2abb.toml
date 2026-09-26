@@ -1,0 +1,11 @@
+section_hash = "38c6014b07b44ddf331572cbfbe2a9a554db2abb"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-facet-ergonomics.md"
+heading = "Plan: design/plan facet ergonomics — first-class, edge-aware verbs/Principle: every edge checks (settled 2026-08-05)"
+model = "glm-5.3"
+terms = [
+  "why must every dep edge propagate checking for taint",
+  "difference between gating and checking in typed facet edges",
+  "can an informed-by edge skip taint without leaking origin changes",
+  "does plan_next blocking count as gating rather than checking",
+]

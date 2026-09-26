@@ -1,0 +1,11 @@
+section_hash = "05561f6251635e600c48971976ea6a8d1936159c"
+label = "summary"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/2. Two note classes, one index"
+model = "glm-5.3"
+terms = [
+  "crib-owned notes vs source-owned docs what's the difference",
+  "does re-importing a file keep the same note id and stamp provenance",
+  "what does index_docs_insitu sweep using the .crib docs globs",
+  "where is the repo to root mapping stored for read and locate paths",
+]

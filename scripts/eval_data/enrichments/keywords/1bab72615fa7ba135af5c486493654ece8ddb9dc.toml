@@ -1,0 +1,22 @@
+section_hash = "1bab72615fa7ba135af5c486493654ece8ddb9dc"
+label = "keywords"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Design decisions — what was settled, and what rests on it"
+model = "glm-5.3-flash"
+terms = [
+  "adr",
+  "architecture decision record",
+  "decision log",
+  "decision record",
+  "design rationale",
+  "why we chose",
+  "outdated decision",
+  "stale docs",
+  "doc rot",
+  "impact analysis",
+  "blast radius",
+  "what breaks when i change",
+  "provenance",
+  "tombstone",
+  "knowledge graph",
+]

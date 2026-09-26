@@ -1,0 +1,22 @@
+section_hash = "7ab37465fb2561de693d7232d7116ca23e7b0a46"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)/Wiring checklist"
+model = "glm-5.3"
+terms = [
+  "implementation checklist",
+  "hooking up new tools",
+  "task tracking",
+  "todo list with dependencies",
+  "dependency graph implementation",
+  "topological ordering",
+  "stale detection",
+  "change impact analysis",
+  "ripple effects",
+  "invalidation cascade",
+  "architecture decision records",
+  "decision log",
+  "roadmap planning",
+  "cli subcommands",
+  "agent prompt guidance",
+]

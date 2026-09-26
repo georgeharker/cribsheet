@@ -1,0 +1,22 @@
+section_hash = "1808046f52007f297f8080629f7267478d9cd7ff"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/8. Versioning (two layers, neither indexed)/Layer 1 — per-write version ring (automatic)"
+model = "claude-sonnet-4-6"
+terms = [
+  "version ring",
+  "versions_keep",
+  "ring depth",
+  "automatic versioning",
+  "per-write stash",
+  "note id keyed",
+  "survives rename",
+  "restore tool",
+  "versions tool",
+  "undo clobber",
+  "short hash filename",
+  "seq numbering",
+  "git ignored versions",
+  "non-destructive restore",
+  "restore is undoable",
+]

@@ -1,0 +1,11 @@
+section_hash = "8148680d4efee8d129f24c60ce98758cadb4d40e"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/Sequencing summary"
+model = "glm-5.3"
+terms = [
+  "which agent owns codeindex.py and works the items serially",
+  "can agent b's chunk.py change run in parallel with agent a",
+  "what has to land before agent c starts item four",
+  "do the fix agents commit or only run the full test suite",
+]

@@ -1,0 +1,21 @@
+section_hash = "ceeb2288db16647a34faf3e544a3de82102d631f"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Implementation steps/3. Availability handling"
+model = "glm-5.3"
+terms = [
+  "missing directory",
+  "repo not cloned",
+  "unknown location name",
+  "unavailable project",
+  "broken project",
+  "orphaned project",
+  "dangling reference",
+  "unresolvable path",
+  "path expansion failure",
+  "what happens if store_root is missing",
+  "daemon crash prevention",
+  "graceful degradation",
+  "warning log",
+  "new machine",
+]

@@ -1,0 +1,21 @@
+section_hash = "ee3a4e8b3a660a749683bdb78351891f7e5c3e0d"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 1 — daemon correctness under load/1.2 Store/caches mutated on loop thread, read from FastMCP's threadpool"
+model = "glm-5.3"
+terms = [
+  "race condition",
+  "thread safety",
+  "concurrency",
+  "data race",
+  "thread-safe store",
+  "shared mutable state",
+  "mutex",
+  "torn read",
+  "synchronization",
+  "atomic writes",
+  "concurrent access",
+  "parallel reads and writes",
+  "crash under load",
+  "gil",
+]

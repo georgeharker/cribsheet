@@ -1,0 +1,11 @@
+section_hash = "ebab1b56dd7702e60c49113477a960ea9a92efd8"
+label = "summary"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/5. Conversation capture (DESIGN §12) — where the value is/5b. `SessionEnd` hook — automatic, out-of-session → **quarantine**"
+model = "glm-5.3"
+terms = [
+  "why does the sessionend capture land in quarantine instead of the project notes",
+  "how does the significance gate skip trivially short sessions before the llm call",
+  "how does merge-aware lookup stop duplicate notes when a session is summarized",
+  "does the bridge generate the summary because sessionend runs with no connected model",
+]

@@ -1,0 +1,21 @@
+section_hash = "c8d05afdff849edd40f3079fd10da1a4823a38c3"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)"
+model = "glm-5.3"
+terms = [
+  "architecture decision records",
+  "adr",
+  "decision log",
+  "decision history",
+  "audit trail",
+  "impact analysis",
+  "reverse dependencies",
+  "transitive dependencies",
+  "stale detection",
+  "invalidation cascade",
+  "ripple effect",
+  "what depends on this",
+  "traceability",
+  "superseded decisions",
+]

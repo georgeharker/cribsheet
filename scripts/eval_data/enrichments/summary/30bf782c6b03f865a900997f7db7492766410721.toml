@@ -1,0 +1,11 @@
+section_hash = "30bf782c6b03f865a900997f7db7492766410721"
+label = "summary"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/9. Open questions"
+model = "glm-5.3"
+terms = [
+  "chat logs first or proxy for capture source routing cost",
+  "parse claude code jsonl directly or hook pre-extracted payload",
+  "how to key a proxy session with no sessionend signal",
+  "merge near-duplicate note in place or append dated section for provenance",
+]

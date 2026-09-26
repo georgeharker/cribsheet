@@ -1,0 +1,11 @@
+section_hash = "df80fb21e1c836f583a002345d70b1652243cd97"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/2. Constraints (measured, not assumed)/2.4 No plugin can configure another plugin"
+model = "glm-5.3"
+terms = [
+  "can the combiner plugin turn off the backend plugins",
+  "why can't a plugin set env for another plugin's manifest expansion",
+  "does mcp manifest expansion read the environment claude code was launched with",
+  "where to set the plugin switch before claude starts zshenv",
+]

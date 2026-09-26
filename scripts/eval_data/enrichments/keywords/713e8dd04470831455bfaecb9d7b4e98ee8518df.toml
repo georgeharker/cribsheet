@@ -1,0 +1,22 @@
+section_hash = "713e8dd04470831455bfaecb9d7b4e98ee8518df"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design"
+model = "glm-5.3"
+terms = [
+  "model context protocol",
+  "mcp server setup",
+  "auto register",
+  "conditional registration",
+  "session start hook",
+  "env var branching",
+  "duplicate registration",
+  "dedupe mcp entries",
+  "deregister server",
+  "unregister plugin",
+  "bash conditional script",
+  "bootstrap plugin",
+  "claude cli commands",
+  "prewarm backend",
+  "idempotent registration",
+]

@@ -1,0 +1,21 @@
+section_hash = "9b5d813d55e9e8b3d8ee8794ec547a440d289709"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/2. Constraints (measured, not assumed)/2.5 Writing MCP config mid-session forces a reload"
+model = "glm-5.3"
+terms = [
+  "hot reload",
+  "live edit mcp config",
+  "mcp.json change",
+  "add server while running",
+  "remove server mid-session",
+  "tools disappear",
+  "losing tools",
+  "tool loss",
+  "reconnect all servers",
+  "disconnect mid-session",
+  "restart required",
+  "config change side effect",
+  "session interruption",
+  "claude mcp add",
+]

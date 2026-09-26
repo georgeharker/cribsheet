@@ -1,0 +1,21 @@
+section_hash = "128918d53576ebbc2b95a4cb2114c08a84cb107e"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)/Verb surface (every verb: MCP tool + `crib design|plan <verb>`, same args,"
+model = "glm-5.3"
+terms = [
+  "api reference",
+  "cli commands",
+  "tool list",
+  "architecture decision record",
+  "adr",
+  "dependency tracking",
+  "stale decisions",
+  "impact analysis",
+  "what depends on what",
+  "taint propagation",
+  "blocked tasks",
+  "todo list",
+  "task management",
+  "roadmap",
+]

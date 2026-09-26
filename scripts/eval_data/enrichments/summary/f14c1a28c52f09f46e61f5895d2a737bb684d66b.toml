@@ -1,0 +1,11 @@
+section_hash = "f14c1a28c52f09f46e61f5895d2a737bb684d66b"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/③ Serialization hardening (`codeindex.py`, `section_index.py`) — same agent as ①, after it/2.5 Escaping + parse failure mode"
+model = "glm-5.3"
+terms = [
+  "escape order backslash quote newline carriage return tab in shared helper codeindex",
+  "what to do when tomllib.loads raises TOMLDecodeError in SymbolIndex _parse",
+  "mark symbol merge-dirty on truncated TOML so it re-enters describe backlog",
+  "make SymbolIndex.write atomic with save_atomic tmp and os.replace",
+]

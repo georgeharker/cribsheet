@@ -1,0 +1,11 @@
+section_hash = "fabb4af7727bcfdf052c8d648905cfe8b763f86e"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/surface-parity-fixes.md"
+heading = "Plan: CLI⇄MCP surface parity fixes/P2 — policy inconsistencies (decide once, then enforce)"
+model = "glm-5.3"
+terms = [
+  "why does note_import fall through to the default project without project_path",
+  "are learning_add and learning_edit supposed to use sticky read policy instead of write_tool",
+  "what does needs_target mean in the note_import anyOf wire schema",
+  "is project_use duplicating Crib.use_project logic in server.py",
+]

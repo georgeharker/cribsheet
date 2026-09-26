@@ -1,0 +1,11 @@
+section_hash = "1bab72615fa7ba135af5c486493654ece8ddb9dc"
+label = "summary"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Design decisions — what was settled, and what rests on it"
+model = "glm-5.3-flash"
+terms = [
+  "how do i clear taint on a crib design decision with reaffirm",
+  "what do the change kinds like dep-edited and source-changed mean in crib design check output",
+  "promote an extracted proposed decision to active using crib design promote",
+  "cite a specific heading section as a decision source with --source \"doc#heading\" in crib",
+]

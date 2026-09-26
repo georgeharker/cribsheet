@@ -1,0 +1,11 @@
+section_hash = "24cd604a5b8e1abaebadcf73336fbd69c197be5d"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/4. What is broken/4.7 `existing` is a store-wide dict keyed by a spelling"
+model = "glm-5.3"
+terms = [
+  "why is `existing` keyed by spelling instead of the file's rel path",
+  "codeindexer old_in_file vanished drop full store scan per file",
+  "is the O(N) cold onboard comment at codeindexer 399-401 actually true",
+  "`_deletion_allowed` prior file_hash lookup walks the whole store",
+]

@@ -1,0 +1,11 @@
+section_hash = "fe75e97a028a0656c37237e93c0d9756e05ee5f9"
+label = "summary"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/3. Retrieval (notes)"
+model = "glm-5.3"
+terms = [
+  "why did crib replace rrf with dense-dominant score fusion",
+  "how does the range-matched cross-encoder rerank work in retrieval",
+  "what does apropos return versus lookup section markdown line span",
+  "when does keyword_index get rebuilt after a note write",
+]

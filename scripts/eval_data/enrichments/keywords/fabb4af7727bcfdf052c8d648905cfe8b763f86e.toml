@@ -1,0 +1,21 @@
+section_hash = "fabb4af7727bcfdf052c8d648905cfe8b763f86e"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/surface-parity-fixes.md"
+heading = "Plan: CLI⇄MCP surface parity fixes/P2 — policy inconsistencies (decide once, then enforce)"
+model = "glm-5.3"
+terms = [
+  "project fallback",
+  "default project fallback",
+  "implicit project resolution",
+  "sticky project",
+  "require project_path",
+  "explicit project target",
+  "import tool write policy",
+  "learning tool project scope",
+  "duplicate code",
+  "code duplication",
+  "dedupe server.py",
+  "refactor use_project",
+  "drift risk",
+  "cli mcp parity",
+]

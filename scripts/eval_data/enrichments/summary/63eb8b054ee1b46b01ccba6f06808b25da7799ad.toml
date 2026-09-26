@@ -1,0 +1,11 @@
+section_hash = "63eb8b054ee1b46b01ccba6f06808b25da7799ad"
+label = "summary"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/4. `distill` — revise a note (DESIGN §7, on the bridge)"
+model = "glm-5.3"
+terms = [
+  "why is distill on-demand only and never run on note write",
+  "what does the distill thrash guard compare before writing",
+  "distill_prompt override in .cribproject vs built-in default prompt",
+  "which note fields are hidden from the llm during distill",
+]

@@ -1,0 +1,20 @@
+section_hash = "9c2fe5583669176d3218d95b189eee39b26da36f"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/5. Storage & retrieval"
+model = "claude-sonnet-4-6"
+terms = [
+  "crib_symbols collection",
+  "kind:symbol partition",
+  "parallel corpus symbols notes",
+  "fqname metadata storage",
+  "cosine search symbol descriptions",
+  "caller callee navigation",
+  "lookup_code verb",
+  "unified lookup kind field",
+  "reverse index from file",
+  "entry point concept search",
+  "call graph navigation from retrieval",
+  "symbol_hash storage schema",
+  "retrieval shape ranked symbols",
+]

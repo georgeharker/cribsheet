@@ -1,0 +1,22 @@
+section_hash = "7e54dea464fb968a613031c6e62d85fa1b42baf0"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/2. Constraints (measured, not assumed)/2.3 Hooks cannot change the current session's MCP set"
+model = "glm-5.3"
+terms = [
+  "mcp server not loading after hook",
+  "reload mcp servers",
+  "restart required for mcp changes",
+  "dynamically add server mid-session",
+  "hot reload mcp",
+  "hook takes effect next launch",
+  "mcp missing until relaunch",
+  "modify server list at runtime",
+  "live update mcp connections",
+  "register server without restarting",
+  "deferred registration",
+  "unregister mcp server",
+  "refresh mcp config",
+  "reconnect to new server",
+  "mcp changes not applied immediately",
+]

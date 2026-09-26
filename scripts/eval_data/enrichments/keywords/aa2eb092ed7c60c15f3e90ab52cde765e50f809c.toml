@@ -1,0 +1,22 @@
+section_hash = "aa2eb092ed7c60c15f3e90ab52cde765e50f809c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/Status matrix (complete)"
+model = "glm-5.3-flash"
+terms = [
+  "deferred",
+  "postponed",
+  "on hold",
+  "backburner",
+  "shelved",
+  "someday maybe",
+  "waiting for",
+  "revisit later",
+  "unpark",
+  "reactivate",
+  "rejected",
+  "skipped",
+  "triage",
+  "task lifecycle",
+  "show hidden items",
+]

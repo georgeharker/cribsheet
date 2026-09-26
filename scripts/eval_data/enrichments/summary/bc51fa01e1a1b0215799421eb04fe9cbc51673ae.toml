@@ -1,0 +1,11 @@
+section_hash = "bc51fa01e1a1b0215799421eb04fe9cbc51673ae"
+label = "summary"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/5. The eval harness — two metrics, because push amplifies both signal and noise"
+model = "glm-5.3"
+terms = [
+  "how to measure findability with mrr and recall@k per enrichment strategy",
+  "did doc2query close the credentials vs tokens gap how do we prove it",
+  "invocation metric lookups returned nothing vs agent grepped anyway",
+  "tuning tau threshold using retrieval logs enrichment gap trust gap",
+]

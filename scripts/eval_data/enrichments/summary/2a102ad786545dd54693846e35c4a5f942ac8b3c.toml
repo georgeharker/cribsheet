@@ -1,0 +1,11 @@
+section_hash = "2a102ad786545dd54693846e35c4a5f942ac8b3c"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P4 — composition and the export loop"
+model = "glm-5.3-flash"
+terms = [
+  "park-with-trigger verdict instead of delete during plan review sweep",
+  "next sweep re-evaluation queue for parked plans whose triggers fired",
+  "using the committed state-plans.md diff as a review audit trail",
+  "plan document as maintained file with git history rather than append-only graveyard",
+]

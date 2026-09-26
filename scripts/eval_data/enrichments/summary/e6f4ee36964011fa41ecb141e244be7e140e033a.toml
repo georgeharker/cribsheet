@@ -1,0 +1,11 @@
+section_hash = "e6f4ee36964011fa41ecb141e244be7e140e033a"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Implementation steps/1. `crib/config.py`"
+model = "glm-5.3"
+terms = [
+  "criblink store field validation reject path outside repo root",
+  "how to write .cribproject yaml without losing existing keys",
+  "projectconfig store_root parse in load",
+  "when should store path raise valueerror for absolute or escaping path",
+]

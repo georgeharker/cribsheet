@@ -1,0 +1,11 @@
+section_hash = "326e38f47966d4d81c6e31d7d589750af9bd861d"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/7. Conversion: one predicate, two stores/The note's four states"
+model = "glm-5.3"
+terms = [
+  "what are the four states of a note in symbol conversion",
+  "difference between pending and orphan binding entries",
+  "why does build_map skip entries without symbol_ref",
+  "can separating pending from orphan remove the 4.6 guard",
+]

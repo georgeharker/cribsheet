@@ -1,0 +1,22 @@
+section_hash = "e2288861d573150d1593f05ace588ff0367be7b6"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design/3.4 The flip is bidirectional — both branches must mutate"
+model = "glm-5.3"
+terms = [
+  "switch modes",
+  "toggle on and off",
+  "two-way sync",
+  "reconcile registry",
+  "idempotent",
+  "deregister",
+  "unregister mcp server",
+  "env var",
+  "environment variable",
+  "switch back to standalone",
+  "mcp keeps coming back",
+  "undo manual remove",
+  "self-healing",
+  "registry drift",
+  "no unnecessary writes",
+]

@@ -1,0 +1,22 @@
+section_hash = "cf095a15f54cf61dd70a40499b4a91fdd0e51340"
+label = "keywords"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/7. Cross-project refs"
+model = "glm-5.3"
+terms = [
+  "cross-repo",
+  "multi-repo search",
+  "search across projects",
+  "external project",
+  "other repository",
+  "linked repo",
+  "dependency lookup",
+  "follow import",
+  "shared library",
+  "vendored copy",
+  "site-packages match",
+  "monorepo workspace",
+  "symbol in another checkout",
+  "federated search",
+  "nested config directory",
+]

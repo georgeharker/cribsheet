@@ -1,0 +1,22 @@
+section_hash = "99ea1f85c517008f09302fc64b6c4b0df722c211"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/① Deletion safety (`codeindex.py`, `codeindexer.py`) — one agent, sequential/2.4 Reader-thread death fails fast"
+model = "glm-5.3"
+terms = [
+  "reader thread crash",
+  "thread dies",
+  "fail fast",
+  "stuck request",
+  "hang",
+  "30 second timeout",
+  "future never resolves",
+  "pending futures cancelled",
+  "sessionerror",
+  "dead session",
+  "discard and reconnect",
+  "garbage frame",
+  "malformed data",
+  "response leak",
+  "request id leak",
+]

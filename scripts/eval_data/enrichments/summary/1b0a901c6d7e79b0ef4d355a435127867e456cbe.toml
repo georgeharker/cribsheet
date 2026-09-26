@@ -1,0 +1,12 @@
+section_hash = "1b0a901c6d7e79b0ef4d355a435127867e456cbe"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-plan-import.md"
+heading = "Plan: doc import & source attribution for the design/plan graph"
+model = "glm-5.3"
+terms = [
+  "design_import enumerate sections section_hash who computes it",
+  "why is citing a whole doc refused instead of a heading section",
+  "does a proposed design dependency block a plan item",
+  "how do design entries attribute sources back to design.md sections",
+  "proposed=True flag on design_add instead of status argument",
+]

@@ -1,0 +1,11 @@
+section_hash = "e5f534749f1be19d38a0a23bedb3a4b934655b44"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-facet-ergonomics.md"
+heading = "Plan: design/plan facet ergonomics — first-class, edge-aware verbs/New verbs (all: both surfaces, registry rows, declared policy, parity green)"
+model = "glm-5.3"
+terms = [
+  "what does design_read return besides the body of a design node",
+  "design_edit newly_tainted via-chain causal consequences",
+  "how to filter design_list to show only tainted entries",
+  "is hash-taint still the fallback for raw edits when design_append exists",
+]

@@ -1,0 +1,11 @@
+section_hash = "e33d9f762b2d731f1305cda5c752144547f26c4e"
+label = "summary"
+relpath = "sources/cribsheet/docs/storage.md"
+heading = "Where things live — store types, ownership, and how to use each/The three roots (lifecycles)"
+model = "glm-5.3"
+terms = [
+  "which crib root can i safely delete with rm -rf",
+  "difference between crib data dir and index cache",
+  "override default ~/.local/share/crib with environment variable",
+  "where does crib store config.toml by default",
+]

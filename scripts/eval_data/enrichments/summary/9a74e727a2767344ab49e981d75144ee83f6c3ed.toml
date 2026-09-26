@@ -1,0 +1,11 @@
+section_hash = "9a74e727a2767344ab49e981d75144ee83f6c3ed"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-interface-catalog.md"
+heading = "Symbol interface — full catalog"
+model = "glm-5.3"
+terms = [
+  "symbol struct interface fields id project path scope name lang",
+  "why were fqname module and parent removed from symbol entries",
+  "what does narrowing axes reaching the verbs mean",
+  "learning_rehome parameters still open after symbol_ref conversion",
+]

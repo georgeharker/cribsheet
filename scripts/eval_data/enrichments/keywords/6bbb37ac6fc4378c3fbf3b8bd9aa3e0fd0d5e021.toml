@@ -1,0 +1,21 @@
+section_hash = "6bbb37ac6fc4378c3fbf3b8bd9aa3e0fd0d5e021"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 1 — daemon correctness under load/1.4 Stale Chroma collection handle after `recreate()` — the live"
+model = "glm-5.3"
+terms = [
+  "chroma collection does not exist error",
+  "stale handle",
+  "reconnect chroma",
+  "refresh cached collection reference",
+  "dangling pointer to deleted collection",
+  "uuid mismatch after recreate",
+  "vector database error after reindex",
+  "shared collection multiple processes",
+  "daemon needs restart to recover",
+  "invalid collection handle",
+  "retry on notfound",
+  "embedding dimension mismatch reindex",
+  "note_lookup fails",
+  "collection cache invalidation",
+]

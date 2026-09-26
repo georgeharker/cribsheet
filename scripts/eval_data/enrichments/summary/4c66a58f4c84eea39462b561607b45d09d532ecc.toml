@@ -1,0 +1,11 @@
+section_hash = "4c66a58f4c84eea39462b561607b45d09d532ecc"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/5. Tool surface/Design & plan facets"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does the design pillar dependency graph work",
+  "why does editing a design file outside cribsheet taint its dependents",
+  "how are plan and design pillars kept separate from note search",
+  "what triggers staleness recalculation for design decisions",
+]

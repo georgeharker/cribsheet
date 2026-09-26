@@ -1,0 +1,21 @@
+section_hash = "1808ea5f21d9b6d12c4c7184e1249d8205c5d7d5"
+label = "keywords"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Common workflows/2. Onboard a repo and search its code"
+model = "glm-5.3"
+terms = [
+  "index a repository",
+  "add codebase to cribsheet",
+  "first time setup",
+  "initialize code index",
+  "semantic code search",
+  "natural language code query",
+  "find function by description",
+  "where is a function used",
+  "who calls this function",
+  "call hierarchy",
+  "code navigation",
+  "reindex after changes",
+  "incremental indexing",
+  "ask questions about code",
+]

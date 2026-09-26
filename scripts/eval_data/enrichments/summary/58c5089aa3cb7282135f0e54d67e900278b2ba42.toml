@@ -1,0 +1,11 @@
+section_hash = "58c5089aa3cb7282135f0e54d67e900278b2ba42"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P1 — `parked` status + trigger (build first; the machinery lands here)/Semantics"
+model = "glm-5.3-flash"
+terms = [
+  "plan_park command --trigger and --why flag usage",
+  "does parked status ever show in plan_next",
+  "is parked a dis-claim meaning not work now",
+  "parked vs in-progress never blocks behavior",
+]

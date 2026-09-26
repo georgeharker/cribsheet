@@ -1,0 +1,20 @@
+section_hash = "b0a2ce084d58b1c0bf9a79aafdcfb25a2578e3dd"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/1. Evidence/The stores"
+model = "glm-5.3"
+terms = [
+  "store inventory",
+  "per-project entry counts",
+  "corpus census",
+  "schema coverage stats",
+  "stamping status",
+  "conversion progress",
+  "migration audit",
+  "which projects converted",
+  "symbol adoption metrics",
+  "notes repositories",
+  "population breakdown",
+  "baseline snapshot",
+  "entries missing schema lines",
+]

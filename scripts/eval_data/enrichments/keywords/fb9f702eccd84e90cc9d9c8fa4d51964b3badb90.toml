@@ -1,0 +1,22 @@
+section_hash = "fb9f702eccd84e90cc9d9c8fa4d51964b3badb90"
+label = "keywords"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/5. The eval harness — two metrics, because push amplifies both signal and noise/5.2 Enrichment lift — heading-breadcrumb injection (2026-06-30)"
+model = "glm-5.3"
+terms = [
+  "chunk metadata injection",
+  "title prefix enrichment",
+  "document header injection",
+  "section path context",
+  "rag chunking strategy",
+  "search relevance improvement",
+  "mean reciprocal rank",
+  "recall metric explained",
+  "retrieval evaluation results",
+  "gold answer false regression",
+  "multi-answer query handling",
+  "tie breaking reranker",
+  "ab test control variable",
+  "benchmark score improvement",
+  "query label ambiguity",
+]

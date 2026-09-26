@@ -1,0 +1,22 @@
+section_hash = "5972348db499e650fd3d4abc8c3d03878c698ec9"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/6. Project association — `.crib` and `.cribproject`/Import semantics"
+model = "claude-sonnet-4-6"
+terms = [
+  "note import",
+  "import glob",
+  "one-way pull",
+  "source wins",
+  "overwrite on re-import",
+  "provenance frontmatter",
+  "source_repo field",
+  "source_path field",
+  "imported frontmatter key",
+  "clobber warning",
+  "re-pull behavior",
+  "import_into path",
+  "local edits overwritten",
+  "central store truth",
+  "push back out of scope",
+]

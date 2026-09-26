@@ -1,0 +1,22 @@
+section_hash = "f990f0e8d7ef1ea9fc11f47954782bdc19f6e4c3"
+label = "keywords"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/1. Update source (cribsheet + llmkit submodule)"
+model = "glm-5.3"
+terms = [
+  "new computer setup",
+  "fresh install bootstrap",
+  "migrate to another machine",
+  "sync source code latest",
+  "update submodules pinned",
+  "reinstall dependencies after pull",
+  "restart daemon after upgrade",
+  "stale daemon old code running",
+  "schema mismatch tool error",
+  "unexpected keyword argument cwd",
+  "bounce reload server",
+  "daemon won't stop force kill",
+  "run without daemon in-process",
+  "refresh all repos",
+  "one-shot ingest batch",
+]

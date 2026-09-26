@@ -1,0 +1,11 @@
+section_hash = "c3af12c95a7ac000e611eeedee28409cc417507a"
+label = "summary"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/3. Ingest all `.crib`-tagged repos (creates/fills each project)"
+model = "glm-5.3"
+terms = [
+  "how do i recreate crib projects from .crib files on a new machine",
+  "does crib project setup read the .crib file from parent directories above cwd",
+  "what does crib project setup import into a project besides indexing source",
+  "shell loop to cd into each repo and run crib project setup",
+]

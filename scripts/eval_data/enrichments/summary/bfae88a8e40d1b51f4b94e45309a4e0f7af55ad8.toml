@@ -1,0 +1,12 @@
+section_hash = "bfae88a8e40d1b51f4b94e45309a4e0f7af55ad8"
+label = "summary"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Server & daemon"
+model = "glm-5.3"
+terms = [
+  "how to start crib mcp server over http instead of stdio with --port",
+  "what does crib status report per-project inventory and git-sync state",
+  "-no-daemon flag run verb in-process to test edited code without daemon restart",
+  "crib info show resolved paths and daemon chunk retrieve config",
+  "crib serve vs crib --mcp same warm process for cli and mcp",
+]

@@ -1,0 +1,22 @@
+section_hash = "efd02d644c7062b214766de25a1f104c095e4b62"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/9. File watcher (macOS + Linux)/Startup reconciliation"
+model = "claude-sonnet-4-6"
+terms = [
+  "reconcile sweep",
+  "startup sync",
+  "offline edits",
+  "missed changes",
+  "reindex command",
+  "orphaned chunks",
+  "hash gate",
+  "cold daemon backlog",
+  "background sweep",
+  "transport opens",
+  "reconciling status field",
+  "reconcile_remaining",
+  "chunk schema version",
+  "watcher gap",
+  "server restart recovery",
+]

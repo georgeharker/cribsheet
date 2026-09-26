@@ -1,0 +1,21 @@
+section_hash = "e36897e10229e665750eb051192f0280cdba2386"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/retrieval-quality.md"
+heading = "Plan: retrieval-quality investigation (notes path MRR)/Levers, in promise order"
+model = "glm-5.3"
+terms = [
+  "search relevance",
+  "ranking quality",
+  "mean reciprocal rank",
+  "hybrid search tuning",
+  "rerank stage",
+  "cross encoder",
+  "vocabulary mismatch",
+  "semantic gap",
+  "keyword weight sweep",
+  "gold set evaluation",
+  "retrieval diagnostics",
+  "bm25 weight",
+  "improve search results",
+  "failure triage",
+]

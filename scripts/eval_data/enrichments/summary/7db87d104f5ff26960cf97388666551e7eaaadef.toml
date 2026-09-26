@@ -1,0 +1,11 @@
+section_hash = "7db87d104f5ff26960cf97388666551e7eaaadef"
+label = "summary"
+relpath = "sources/cribsheet/docs/eval-organic-memory.md"
+heading = "Exploration task: how well does the LLM save notes to cribsheet *unprompted*?/The question"
+model = "claude-sonnet-4-6"
+terms = [
+  "what is the single metric for measuring unprompted cribsheet saves",
+  "how to calculate organic vs prompted fraction of cribsheet writes",
+  "when should the llm have saved to cribsheet but didn't",
+  "defining durable facts the model should persist without being told",
+]

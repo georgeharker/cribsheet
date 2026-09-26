@@ -1,0 +1,21 @@
+section_hash = "3548749c311c0fb9043aaaca7a5de0efd2a4e9a6"
+label = "keywords"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises"
+model = "claude-sonnet-4-6"
+terms = [
+  "design facet",
+  "plan facet",
+  "dependency graph",
+  "decision tracking",
+  "promise graph",
+  "crib design",
+  "crib plan",
+  "pillar store",
+  "design decisions",
+  "architectural decisions",
+  "adr",
+  "dependency edges",
+  "decision model",
+  "design graph overview",
+]

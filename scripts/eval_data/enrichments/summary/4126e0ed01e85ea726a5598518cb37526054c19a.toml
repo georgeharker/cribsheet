@@ -1,0 +1,11 @@
+section_hash = "4126e0ed01e85ea726a5598518cb37526054c19a"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Verified sound (don't \"fix\")"
+model = "glm-5.3"
+terms = [
+  "is the callers vs callees direction in the call hierarchy mapping swapped",
+  "are _unesc and _unquote true inverses of each other",
+  "what happens to bm25 scoring when the corpus is empty",
+  "deferred describe clobber guard hash re-check under project lock",
+]

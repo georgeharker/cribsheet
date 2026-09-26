@@ -1,0 +1,22 @@
+section_hash = "dc85e6379195b8b4948b6a181f5ac17132cc5beb"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/Tests"
+model = "glm-5.3-flash"
+terms = [
+  "deferred",
+  "backlog",
+  "snoozed",
+  "shelved",
+  "reactivate",
+  "auto-unpark",
+  "watchlist",
+  "notification",
+  "change detection",
+  "staleness",
+  "rejection reason",
+  "bulk apply",
+  "all-or-nothing",
+  "audit trail",
+  "human-in-the-loop",
+]

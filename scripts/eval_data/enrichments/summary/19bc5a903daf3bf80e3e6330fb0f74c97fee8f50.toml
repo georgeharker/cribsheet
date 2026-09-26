@@ -1,0 +1,11 @@
+section_hash = "19bc5a903daf3bf80e3e6330fb0f74c97fee8f50"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Follow-ups (approved 2026-08-05, not yet executed)/F1 — store exclusion from `.crib` globs (latent-bug fix) — EXECUTED 2026-08-05"
+model = "glm-5.3"
+terms = [
+  "why does a **/*.md docs glob index in-repo store notes a second time",
+  "what does CribLink.in_store exclude from .crib glob expansion",
+  "why is the store check in CodeWatcher._resolve_batch instead of _decode",
+  "does project adopt warn when existing globs overlap the store dir",
+]

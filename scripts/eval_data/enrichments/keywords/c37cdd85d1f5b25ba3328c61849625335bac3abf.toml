@@ -1,0 +1,22 @@
+section_hash = "c37cdd85d1f5b25ba3328c61849625335bac3abf"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Implementation steps/4. Watcher (`crib/watch.py`) + reconcile"
+model = "glm-5.3"
+terms = [
+  "file watcher",
+  "filesystem monitoring",
+  "detect new notes",
+  "inotify",
+  "watchdog library",
+  "auto detect changes",
+  "pick up changes",
+  "hot reload",
+  "rescan",
+  "reindex",
+  "live sync",
+  "daemon restart required",
+  "ignore patterns",
+  "excluded files",
+  "trigger reconcile",
+]

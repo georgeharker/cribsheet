@@ -1,0 +1,11 @@
+section_hash = "f12140aa14d525feb6fae700c8671d4dc14b1c53"
+label = "summary"
+relpath = "sources/cribsheet/docs/storage.md"
+heading = "Where things live — store types, ownership, and how to use each/What to use when (quick chooser)"
+model = "glm-5.3"
+terms = [
+  "which crib store do i use for a decision vs a gotcha",
+  "when to use design_add instead of note_store",
+  "crib command for saving a hard-won insight about a symbol",
+  "how to keep notes in the repo vs synced across machines crib",
+]

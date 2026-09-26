@@ -1,0 +1,21 @@
+section_hash = "9615f2ed9dd3b3a73fc6b1ddd3a41a14b8ccdfa0"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/7. Conversion: one predicate, two stores/Why the join is correct at every instant"
+model = "glm-5.3"
+terms = [
+  "symbol rename",
+  "migration compatibility",
+  "backward compatible lookup",
+  "legacy name alias",
+  "stable identifier",
+  "canonical key",
+  "fallback binding",
+  "dangling reference",
+  "stale annotation",
+  "mixed conversion state",
+  "live migration",
+  "join invariant",
+  "cross-reference resolution",
+  "note lookup fails",
+]

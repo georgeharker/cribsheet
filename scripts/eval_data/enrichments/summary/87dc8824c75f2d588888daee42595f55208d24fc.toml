@@ -1,0 +1,11 @@
+section_hash = "87dc8824c75f2d588888daee42595f55208d24fc"
+label = "summary"
+relpath = "sources/cribsheet/docs/storage.md"
+heading = "Where things live — store types, ownership, and how to use each"
+model = "glm-5.3"
+terms = [
+  "what store types does cribsheet have and who owns each",
+  "which cribsheet store am I allowed to write to",
+  "cribsheet in-repo store option",
+  "how long does content live in each cribsheet store",
+]

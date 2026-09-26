@@ -1,0 +1,22 @@
+section_hash = "0219fea078fc534229a5ecbdc7389c4d081d13a4"
+label = "keywords"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/5. Build the LLM indexes per project"
+model = "glm-5.3"
+terms = [
+  "reindex",
+  "rebuild index",
+  "new laptop setup",
+  "fresh install",
+  "migrate to another computer",
+  "restore from backup",
+  "first run setup",
+  "bootstrap search",
+  "warm the index",
+  "populate embeddings",
+  "semantic search setup",
+  "regenerate keywords",
+  "search broken after clone",
+  "reindex all projects",
+  "parallel api throughput",
+]

@@ -1,0 +1,22 @@
+section_hash = "cb4a4c8189d394389f3a362a3fdafb004ea572aa"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Follow-ups (approved 2026-08-05, not yet executed)/F2 — optional annotation-tier flip (`store_index: true`) — parity, not default"
+model = "glm-5.3"
+terms = [
+  "store annotations",
+  "move annotations into store",
+  "annotation storage location",
+  "where are annotations stored",
+  "symbol index location",
+  "move index out of repo",
+  "annotations out of repo",
+  "hide annotations from git",
+  "opt-in storage",
+  "config flag",
+  "toggle",
+  "repo clutter",
+  "generated files",
+  "relocate index",
+  "adopt release behavior",
+]

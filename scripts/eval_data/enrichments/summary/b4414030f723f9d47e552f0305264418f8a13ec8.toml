@@ -1,0 +1,11 @@
+section_hash = "b4414030f723f9d47e552f0305264418f8a13ec8"
+label = "summary"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work"
+model = "glm-5.3"
+terms = [
+  "implementation map subsystem by subsystem walkthrough",
+  "mess ledger cleanup candidates list",
+  "crib index guided code tour files and symbols",
+  "what's the difference between design.md and the implementation map",
+]

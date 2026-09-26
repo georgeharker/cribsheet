@@ -1,0 +1,11 @@
+section_hash = "66805259c40a0a695116bc4f17f6a5c457e9395b"
+label = "summary"
+relpath = "sources/cribsheet/docs/symbol-reference-map.md"
+heading = "The symbol reference map/2. Matching: one rule over the canonical run"
+model = "glm-5.3"
+terms = [
+  "what do the exact suffix ref and name tiers mean for symbol matching",
+  "how does # pin where the file path ends in a symbol reference",
+  "what happens to legacy symbol keys that are not trailing runs",
+  "why does ambiguous symbol lookup refuse instead of guessing a bare name",
+]

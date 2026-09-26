@@ -1,0 +1,11 @@
+section_hash = "d7f206db3375446ae434bc5a66a39be768fc8ee3"
+label = "summary"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Common workflows/5. Plan work that outlives the session"
+model = "glm-5.3"
+terms = [
+  "crib plan reaffirm vs status done difference",
+  "how to claim a plan item so other agents skip it in plan next",
+  "clear stale marker after the decision a plan item rests on changed",
+  "does plan graph include edges to design decisions it depends on",
+]

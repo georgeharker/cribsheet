@@ -1,0 +1,22 @@
+section_hash = "89b3c3fbdd41dd48affac0bc0e3e3ea9b7217b51"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/surface-parity-fixes.md"
+heading = "Plan: CLI⇄MCP surface parity fixes"
+model = "glm-5.3"
+terms = [
+  "cli vs mcp",
+  "command line parity",
+  "tool name mismatch",
+  "verbs registry",
+  "feature parity",
+  "mcp server tools",
+  "cli commands not available",
+  "drift between interfaces",
+  "parameter naming inconsistency",
+  "surface area alignment",
+  "tool coverage",
+  "same operations both interfaces",
+  "missing commands",
+  "audit fixes",
+  "protocol server parity",
+]

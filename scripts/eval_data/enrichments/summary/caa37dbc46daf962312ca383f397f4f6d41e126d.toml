@@ -1,0 +1,13 @@
+section_hash = "caa37dbc46daf962312ca383f397f4f6d41e126d"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-plan-import.md"
+heading = "Plan: doc import & source attribution for the design/plan graph/Data model/`sources:` — attribution edges (both facets)"
+model = "glm-5.3"
+terms = [
+  "difference between deps and sources edges which one gates plan_next",
+  "design_check taint kind \"source changed\" how is it explained",
+  "why section hash instead of whole file hash for design sources",
+  "plan_list revisit flag when source changed after done",
+  "-source flag heading suffix resolution multiple candidates error",
+  "design_reaffirm does it re-record source hashes",
+]

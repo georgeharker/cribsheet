@@ -1,0 +1,22 @@
+section_hash = "7e4d65c8611011d4ccce8fdaa8f7906cc14b4d28"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/7. Conversion: one predicate, two stores/A pass"
+model = "glm-5.3"
+terms = [
+  "rename migration",
+  "symbol rename",
+  "single-pass conversion",
+  "two-phase rewrite",
+  "slugify",
+  "canonical key",
+  "normalize symbol names",
+  "idempotent conversion",
+  "acyclic dependency graph",
+  "topological ordering",
+  "dangling references",
+  "orphaned aliases",
+  "reindex",
+  "crash recovery",
+  "resume checkpoint",
+]

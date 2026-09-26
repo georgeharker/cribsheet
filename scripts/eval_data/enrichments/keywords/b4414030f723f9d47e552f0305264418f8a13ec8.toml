@@ -1,0 +1,22 @@
+section_hash = "b4414030f723f9d47e552f0305264418f8a13ec8"
+label = "keywords"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work"
+model = "glm-5.3"
+terms = [
+  "code walkthrough",
+  "codebase tour",
+  "internals",
+  "deep dive",
+  "source code overview",
+  "module breakdown",
+  "code navigation",
+  "getting oriented",
+  "codebase structure",
+  "where things are",
+  "code layout",
+  "code reading guide",
+  "how it works",
+  "codebase map",
+  "technical debt",
+]

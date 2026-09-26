@@ -1,0 +1,11 @@
+section_hash = "ad58f114090b9a4783c67281e11459e3f4bf9804"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/2. The three spellings/`symbol_ref` ≡ `(file, fqn)`"
+model = "glm-5.3"
+terms = [
+  "is symbol_ref a separate identifier or just file plus fqn",
+  "how is symbol_ref serialized from fqn with the path prefix stripped",
+  "what does conversion/2 do between the three symbol spellings",
+  "does the fqn to symbol_ref mapping round trip exactly for every entry",
+]

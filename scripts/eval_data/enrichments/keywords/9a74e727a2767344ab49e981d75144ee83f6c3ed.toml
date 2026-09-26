@@ -1,0 +1,22 @@
+section_hash = "9a74e727a2767344ab49e981d75144ee83f6c3ed"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-interface-catalog.md"
+heading = "Symbol interface — full catalog"
+model = "glm-5.3"
+terms = [
+  "api surface",
+  "inventory",
+  "deprecated docs",
+  "legacy schema",
+  "primary key",
+  "symbol table",
+  "identifier lookup",
+  "find references",
+  "go to definition",
+  "code navigation",
+  "indexing",
+  "schema migration",
+  "breaking changes",
+  "touchpoints",
+  "consumers",
+]

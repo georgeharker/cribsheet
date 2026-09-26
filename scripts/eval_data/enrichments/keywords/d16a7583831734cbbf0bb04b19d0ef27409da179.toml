@@ -1,0 +1,22 @@
+section_hash = "d16a7583831734cbbf0bb04b19d0ef27409da179"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-facet-ergonomics.md"
+heading = "Plan: design/plan facet ergonomics — first-class, edge-aware verbs/The description layer IS the LLM UX (do this first)"
+model = "glm-5.3"
+terms = [
+  "llm tool ergonomics",
+  "prompt engineering for tool descriptions",
+  "mcp server ux",
+  "agent discoverability",
+  "self-documenting tools",
+  "teaching the model to call tools correctly",
+  "nudge agents to check first",
+  "staleness detection",
+  "dependency taint propagation",
+  "invalidating downstream decisions",
+  "when to reaffirm or supersede",
+  "change impact notification",
+  "stale dependencies",
+  "api affordances",
+  "docstring as usage guide",
+]

@@ -1,0 +1,11 @@
+section_hash = "02286607e68dedfdf9a2f029eff1ca3202c5684f"
+label = "summary"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/5. Conversation capture (DESIGN §12) — where the value is"
+model = "glm-5.3"
+terms = [
+  "what triggers conversation capture",
+  "how does a session create new knowledge",
+  "conversation capture engines and tiers",
+  "why does capture use two different triggers",
+]

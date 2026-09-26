@@ -1,0 +1,11 @@
+section_hash = "5457e4d13566f2e9d94dd34fe87a5a1c56e9a740"
+label = "summary"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/4. Part B — Invocation (the actual gate) — make crib _push_, not only pull"
+model = "glm-5.3"
+terms = [
+  "make crib push context automatically instead of pull-only lookup tools",
+  "userpromptsubmit hook inject top-k crib results with relevance threshold gate",
+  "pretooluse grep interception to suggest crib hits before the agent searches",
+  "why drive the crib cli directly instead of the mcp combiner in evals",
+]

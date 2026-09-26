@@ -1,0 +1,22 @@
+section_hash = "1c6bd42145b035232291e496e5733d61654a4517"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/4. What is broken/4.6 The half-converted guard is a wall with no door"
+model = "glm-5.3"
+terms = [
+  "migrate_symbols fails",
+  "migration blocked",
+  "partial migration",
+  "all or nothing migration",
+  "missing symbol_ref",
+  "migration aborts halfway",
+  "cannot migrate",
+  "stuck migration",
+  "incomplete conversion",
+  "chicken and egg",
+  "catch-22",
+  "deadlock",
+  "force migration",
+  "skip unreached symbols",
+  "every entry requires symbol_ref",
+]

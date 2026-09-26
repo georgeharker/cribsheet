@@ -1,0 +1,11 @@
+section_hash = "1bbed67e3ec9c547dc9e532be1f86a83fe85f920"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/10. Sequence"
+model = "glm-5.3"
+terms = [
+  "what order do the symbol key conversion steps run in",
+  "why delete existing and sweep before touching the resolver",
+  "resolver match entry_ref by parts split on # symbol_was tier",
+  "where does code_convert get wired and how does dry-run resume work",
+]

@@ -1,0 +1,20 @@
+section_hash = "3c9d916a30229130f711a23e047bbf36f6ebc996"
+label = "keywords"
+relpath = "sources/cribsheet/README.md"
+model = "glm-5.3"
+terms = [
+  "ai memory",
+  "long term memory",
+  "agent memory",
+  "second brain",
+  "rag",
+  "retrieval augmented generation",
+  "embeddings",
+  "vector database",
+  "knowledge base",
+  "mcp server",
+  "context window",
+  "code search by meaning",
+  "architecture decision records",
+  "cheat sheet for ai",
+]

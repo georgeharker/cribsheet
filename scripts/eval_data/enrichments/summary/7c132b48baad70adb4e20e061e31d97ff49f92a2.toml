@@ -1,0 +1,11 @@
+section_hash = "7c132b48baad70adb4e20e061e31d97ff49f92a2"
+label = "summary"
+relpath = "sources/cribsheet/docs/symbol-reference-map.md"
+heading = "The symbol reference map"
+model = "glm-5.3"
+terms = [
+  "what each interface calls a symbol",
+  "where symbol spelling rules are enforced",
+  "how many live stores in symbol_ref conversion",
+  "interface-specific symbol name spellings table",
+]

@@ -1,0 +1,22 @@
+section_hash = "8127cb79ea28a8048c4c18b0f3d94cc2f3d1f169"
+label = "keywords"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/5. The eval harness — two metrics, because push amplifies both signal and noise/5.3 Multi-phrasing coverage — the honest benchmark (2026-06-30)"
+model = "glm-5.3"
+terms = [
+  "paraphrase robustness test",
+  "query variations",
+  "query perturbation",
+  "synonym robustness",
+  "embedding generalization",
+  "retrieval benchmark saturation",
+  "mrr meaning",
+  "mean reciprocal rank",
+  "recall at k",
+  "per-need scoring",
+  "vocabulary mismatch",
+  "lexical gap problem",
+  "oblique phrasing",
+  "worst rank metric",
+  "cold start latency",
+]

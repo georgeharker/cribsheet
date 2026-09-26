@@ -1,0 +1,11 @@
+section_hash = "eb7f513edc961ace65ce5faa3226e594fc140f23"
+label = "summary"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/4. Code indexing pipeline"
+model = "glm-5.3"
+terms = [
+  "what does pinWorkspace didOpen do during a crib index sweep",
+  "keep-prior-on-empty guard file extracting zero symbols keep previous index",
+  "when does describe_file skip symbols content_hash stale gate",
+  "difference between scan dir_sig and trust epoch freshness in resident code cache",
+]

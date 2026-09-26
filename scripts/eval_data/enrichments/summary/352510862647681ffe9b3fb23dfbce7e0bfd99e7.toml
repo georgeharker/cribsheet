@@ -1,0 +1,11 @@
+section_hash = "352510862647681ffe9b3fb23dfbce7e0bfd99e7"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 3 — git/sync + config resilience (smaller, mechanical)"
+model = "glm-5.3"
+terms = [
+  "why does a failed git commit still count as committed when snapshot output is checked for \"nothing to",
+  "unborn head assumes main but the remote's default branch is master",
+  "git credential prompt wedging the daemon thread subprocess stdin devnull timeout",
+  "typo'd config key raising TypeError that kills every command",
+]

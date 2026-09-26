@@ -1,0 +1,22 @@
+section_hash = "23f26189de94626da3872808e977198f8411e3e8"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/surface-parity-fixes.md"
+heading = "Plan: CLI⇄MCP surface parity fixes/Non-issues (audited, deliberate — do not \"fix\")"
+model = "glm-5.3"
+terms = [
+  "intentional asymmetry",
+  "by design",
+  "working as intended",
+  "not a bug",
+  "wontfix",
+  "expected behavior",
+  "missing command",
+  "command not exposed",
+  "why is sync cli only",
+  "git authentication",
+  "interactive prompt",
+  "terminal credentials",
+  "progress bar",
+  "coverage gap",
+  "cli mcp mismatch",
+]

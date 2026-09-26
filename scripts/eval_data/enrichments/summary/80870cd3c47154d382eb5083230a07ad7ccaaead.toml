@@ -1,0 +1,11 @@
+section_hash = "80870cd3c47154d382eb5083230a07ad7ccaaead"
+label = "summary"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/5. Conversation capture (DESIGN §12) — where the value is/Why the split"
+model = "glm-5.3"
+terms = [
+  "why split conversation capture into slash command and hook",
+  "curated vs quarantine trust for captured conversations",
+  "difference between slash command mcp tool and hook bridge capture",
+  "does the automatic session-end hook quarantine what it captures",
+]

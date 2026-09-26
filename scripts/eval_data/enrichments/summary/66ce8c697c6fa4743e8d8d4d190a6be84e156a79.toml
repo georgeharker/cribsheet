@@ -1,0 +1,11 @@
+section_hash = "66ce8c697c6fa4743e8d8d4d190a6be84e156a79"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Implementation steps/5. Migration verbs (new, both CLI and MCP — pairing rule below)"
+model = "glm-5.3"
+terms = [
+  "crib project adopt move notes and ring entries into repo store",
+  "what does project_adopt write to .cribproject store_root and .gitignore",
+  "project_release command move files back to global storage",
+  "does project adopt fail if store dir already has notes",
+]

@@ -1,0 +1,22 @@
+section_hash = "326e38f47966d4d81c6e31d7d589750af9bd861d"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/7. Conversion: one predicate, two stores/The note's four states"
+model = "glm-5.3"
+terms = [
+  "note binding status",
+  "pending vs orphan",
+  "dangling reference",
+  "unresolved binding",
+  "skipped entries",
+  "state machine",
+  "lifecycle",
+  "backfill",
+  "second pass",
+  "idempotent",
+  "conflated states",
+  "unmatched symbol",
+  "stuck notes",
+  "deferred conversion",
+  "missing ref cleanup",
+]

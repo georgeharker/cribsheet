@@ -1,0 +1,11 @@
+section_hash = "7dd97076007841c578c2536025c9656fded9dfd4"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/5. Tool surface/Retrieval loop"
+model = "claude-sonnet-4-6"
+terms = [
+  "what is the recommended sequence of cribsheet tool calls to find and then edit a note",
+  "why does note_lookup return sections instead of whole files",
+  "when should note_reindex be called after editing a note via note_locate",
+  "how do i use note_locate to edit a note with native file tools rather than note_edit",
+]

@@ -1,0 +1,11 @@
+section_hash = "a6678dc36851ba6fdabc1ffabedd23a50e8fe384"
+label = "summary"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/4. Reindex everything (embeddings + BM25)"
+model = "glm-5.3"
+terms = [
+  "crib project reconcile command usage",
+  "reindex all projects embeddings and bm25",
+  "does reconcile skip unchanged files hash-gated",
+  "catch offline doc changes after moving to new machine",
+]

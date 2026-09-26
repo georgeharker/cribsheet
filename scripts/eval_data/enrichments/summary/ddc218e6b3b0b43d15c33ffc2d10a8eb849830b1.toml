@@ -1,0 +1,11 @@
+section_hash = "ddc218e6b3b0b43d15c33ffc2d10a8eb849830b1"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/10. Stack"
+model = "claude-sonnet-4-6"
+terms = [
+  "what embedding model does cribsheet use by default",
+  "how would you swap in an api-based embedder instead of local sentence-transformers",
+  "what is the chroma collection name used by cribsheet",
+  "which async mcp framework does cribsheet build on",
+]

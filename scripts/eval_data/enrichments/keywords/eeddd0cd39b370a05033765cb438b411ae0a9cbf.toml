@@ -1,0 +1,21 @@
+section_hash = "eeddd0cd39b370a05033765cb438b411ae0a9cbf"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/5. Tool surface/Direct-edit pattern"
+model = "claude-sonnet-4-6"
+terms = [
+  "locate tool",
+  "reindex tool",
+  "post-edit hook",
+  "file path editing",
+  "raw path",
+  "watcher debounce latency",
+  "searchable immediately",
+  "redundant call safe",
+  "no-op if current",
+  "index freshness",
+  "edit then reindex",
+  "manual reindex",
+  "absolute path retrieval",
+  "llm file editing",
+]

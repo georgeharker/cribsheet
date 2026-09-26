@@ -1,0 +1,21 @@
+section_hash = "4ed2a9bf6bf4d7892746a2e33ba7c6f96ac692dc"
+label = "keywords"
+relpath = "sources/cribsheet/README.md"
+heading = "Status & tests"
+model = "glm-5.3"
+terms = [
+  "run tests",
+  "test suite",
+  "unit tests",
+  "test coverage",
+  "continuous integration",
+  "ci pipeline",
+  "project status",
+  "what works",
+  "implemented features",
+  "production ready",
+  "stability",
+  "zero dependencies",
+  "optional dependencies",
+  "graceful degradation",
+]

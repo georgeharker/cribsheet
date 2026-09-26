@@ -1,0 +1,22 @@
+section_hash = "0d4f6fbe988ec0aa03b3bf9a92c33dd32b598c65"
+label = "keywords"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Code index — search & navigate (reach for these before grep)"
+model = "glm-5.3"
+terms = [
+  "find usages",
+  "go to definition",
+  "jump to definition",
+  "who calls this function",
+  "call hierarchy",
+  "call tree",
+  "dependency graph",
+  "reverse dependencies",
+  "semantic code search",
+  "explore codebase",
+  "code navigation",
+  "cross-repo search",
+  "monorepo",
+  "trace calls",
+  "impact analysis",
+]

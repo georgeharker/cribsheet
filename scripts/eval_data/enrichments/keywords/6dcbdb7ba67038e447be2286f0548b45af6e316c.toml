@@ -1,0 +1,23 @@
+section_hash = "6dcbdb7ba67038e447be2286f0548b45af6e316c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/The six things cribsheet manages"
+model = "glm-5.3"
+terms = [
+  "cribsheet features",
+  "what cribsheet tracks",
+  "what does cribsheet do",
+  "knowledge base for repos",
+  "second brain",
+  "persistent memory for ai agents",
+  "context window overflow",
+  "semantic code search",
+  "codebase map",
+  "understand a new codebase",
+  "onboarding to a repo",
+  "architecture decision records",
+  "adr",
+  "decision log",
+  "task list that survives the session",
+  "workspace isolation",
+]

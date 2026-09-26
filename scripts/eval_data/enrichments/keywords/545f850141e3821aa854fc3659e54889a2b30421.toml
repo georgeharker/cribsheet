@@ -1,0 +1,22 @@
+section_hash = "545f850141e3821aa854fc3659e54889a2b30421"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Out of scope"
+model = "glm-5.3"
+terms = [
+  "excluded features",
+  "not supported",
+  "limitations",
+  "future work",
+  "hybrid storage",
+  "mixed global and local notes",
+  "per-repo database",
+  "move database into vault",
+  "vector store location",
+  "next to my notes",
+  "git sync annotations",
+  "version control notes",
+  "hot reload watcher",
+  "change watch directory without restart",
+  "won't implement",
+]

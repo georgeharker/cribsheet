@@ -1,0 +1,11 @@
+section_hash = "1a5592db573c27453a6ba646d3da3dd5da8ae500"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 4 — worth doing, not urgent"
+model = "glm-5.3"
+terms = [
+  "why does a typo'd project lookup create a phantom directory in notestore",
+  "catch_up swallows per-binding exceptions stderr per failed binding fix",
+  "fqname slug Chunk vs chunk collision on case-insensitive APFS",
+  "client {\"result\": ...} unwrap heuristic misfires on single-key payload",
+]

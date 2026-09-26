@@ -1,0 +1,22 @@
+section_hash = "e9614c5d4b537d0179dc946b03c7e3a3a127afd4"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)/Goal"
+model = "glm-5.3"
+terms = [
+  "adr",
+  "architecture decision record",
+  "rfc",
+  "decision log",
+  "task management",
+  "todo list",
+  "roadmap",
+  "dag",
+  "topological sort",
+  "impact analysis",
+  "ripple effect",
+  "stale dependencies",
+  "blocked by",
+  "downstream impact",
+  "cycle detection",
+]

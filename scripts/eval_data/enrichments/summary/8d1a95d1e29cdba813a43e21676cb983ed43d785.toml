@@ -1,0 +1,11 @@
+section_hash = "8d1a95d1e29cdba813a43e21676cb983ed43d785"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/② Attribution keys (`codeindex.py` describe/meta paths, `codestore.py`) — after ①③ (same files)/2.6 Describe results keyed by fqname"
+model = "glm-5.3"
+terms = [
+  "how does match_meta fall back to tail match for rust fqnames with ::",
+  "describe rows dropped when fqname ambiguous never guess",
+  "_rows_to_meta keys describe results by fqname",
+  "why symbol stays undescribed and goes back to backlog after fqname mismatch",
+]

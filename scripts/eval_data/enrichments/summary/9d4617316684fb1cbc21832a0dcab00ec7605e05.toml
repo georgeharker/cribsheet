@@ -1,0 +1,11 @@
+section_hash = "9d4617316684fb1cbc21832a0dcab00ec7605e05"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/3. Where each spelling is authoritative today"
+model = "glm-5.3"
+terms = [
+  "what key does symbolindex use for the toml filename",
+  "is symbol_ref ever read as a lookup key anywhere",
+  "what format do edge refs in calls and called_by use",
+  "why does the resolver match id tier never match",
+]

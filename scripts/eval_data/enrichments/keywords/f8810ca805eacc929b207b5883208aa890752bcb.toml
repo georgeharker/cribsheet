@@ -1,0 +1,22 @@
+section_hash = "f8810ca805eacc929b207b5883208aa890752bcb"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-interface-catalog.md"
+heading = "Symbol interface — full catalog/1. Verbs that ACCEPT a symbol"
+model = "glm-5.3"
+terms = [
+  "which verbs take a symbol",
+  "commands that accept a symbol name",
+  "symbol argument",
+  "api endpoints with symbol param",
+  "look up a function by name",
+  "pass an identifier",
+  "disambiguate symbol matches",
+  "too many results for one name",
+  "narrow down search results",
+  "fully qualified name required",
+  "rename or refactor a symbol",
+  "move a note to a new symbol",
+  "filter by file path or scope",
+  "language filter",
+  "symbol resolution",
+]

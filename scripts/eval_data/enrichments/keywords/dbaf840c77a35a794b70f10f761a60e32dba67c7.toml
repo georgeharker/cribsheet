@@ -1,0 +1,20 @@
+section_hash = "dbaf840c77a35a794b70f10f761a60e32dba67c7"
+label = "keywords"
+relpath = "sources/cribsheet/docs/eval-organic-memory.md"
+heading = "Exploration task: how well does the LLM save notes to cribsheet *unprompted*?/Evidence sources (in priority order)"
+model = "claude-sonnet-4-6"
+terms = [
+  "jsonl transcript parsing",
+  "tool_use block extraction",
+  "session transcript analysis",
+  "crib history git log",
+  "crib versions relpath",
+  "crib projects cli command",
+  "source manual frontmatter",
+  "basic-memory comparison baseline",
+  "streaming large jsonl files",
+  "surrounding turns context",
+  "xdg data home basic-memory",
+  "mcpservers.json disabled",
+  "cross-reference timestamps",
+]

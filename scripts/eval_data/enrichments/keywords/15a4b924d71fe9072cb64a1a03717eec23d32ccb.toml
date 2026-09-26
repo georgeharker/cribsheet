@@ -1,0 +1,22 @@
+section_hash = "15a4b924d71fe9072cb64a1a03717eec23d32ccb"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/4. What is broken/4.3 The resumability marker is not on disk"
+model = "glm-5.3"
+terms = [
+  "schema marker missing",
+  "marker not persisted",
+  "schema version zero",
+  "stale store",
+  "store not rewritten",
+  "old store format",
+  "migration backfill",
+  "schema flag backfill",
+  "resume conversion broken",
+  "unconverted false positives",
+  "everything reports pending",
+  "conversion progress wrong",
+  "rewrite store files",
+  "reindex after upgrade",
+  "version stamp not written",
+]

@@ -1,0 +1,22 @@
+section_hash = "c038b1c0491dff1dd0bc4e084b36ff9445443e9d"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/10. Stack/10.3 Retrieval — hybrid dense ⊕ BM25, DENSE-DOMINANT SCORE fusion"
+model = "claude-sonnet-4-6"
+terms = [
+  "score fusion vs rrf",
+  "minmax normalization sparse",
+  "cosine similarity calibrated",
+  "coverage gate identifier tokens",
+  "bm25 unbounded scale",
+  "lexical cache okapi",
+  "missing cosine backfill",
+  "multi-vector dense alias",
+  "summary_weight alias embedding",
+  "keyword coverage gate notes off",
+  "code lookup mrr improvement",
+  "rrf_k cross-project fan-out",
+  "hybrid dense bm25 combination",
+  "sparse-only candidate",
+  "dense dominant blend weight",
+]

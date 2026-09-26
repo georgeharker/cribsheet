@@ -1,0 +1,21 @@
+section_hash = "94f747c559af89d216bf4210a33dcb39e214742b"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/① Deletion safety (`codeindex.py`, `codeindexer.py`) — one agent, sequential/2.2 Non-UTF8 file must not kill the session"
+model = "glm-5.3"
+terms = [
+  "encoding error",
+  "unicode decode error",
+  "invalid utf-8",
+  "bad encoding",
+  "crash while indexing",
+  "skip unreadable files",
+  "binary file",
+  "latin-1",
+  "mojibake",
+  "character encoding",
+  "session dies",
+  "indexer fails on weird files",
+  "graceful error handling",
+  "unreadable file handling",
+]

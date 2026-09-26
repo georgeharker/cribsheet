@@ -1,0 +1,11 @@
+section_hash = "d422743c9a82e650b46dd5c57335155212809d6f"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/4. The coordination model (writer ⇄ watcher)"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does cribsheet prevent the file watcher from re-embedding a file the tool just wrote",
+  "what is the exact sequence of steps when a tool write and watcher echo race in cribsheet",
+  "why does cribsheet not need a separate echo-tracking set to coordinate the watcher",
+  "how does cribsheet detect and reindex a file edited directly by an llm outside of tool calls",
+]

@@ -1,0 +1,21 @@
+section_hash = "82ba0069a5efd69e848a5799c497af86a3421360"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/2. The three spellings/`fqname` is not a name"
+model = "glm-5.3"
+terms = [
+  "fully qualified name",
+  "fqn",
+  "dotted path",
+  "canonical name",
+  "symbol identity",
+  "stable key",
+  "namespace mismatch",
+  "fake namespace",
+  "wrong module prefix",
+  "import path",
+  "crate path",
+  "package path vs module path",
+  "cross-language naming",
+  "module resolution",
+]

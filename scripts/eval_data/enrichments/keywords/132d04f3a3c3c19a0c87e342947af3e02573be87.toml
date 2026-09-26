@@ -1,0 +1,19 @@
+section_hash = "132d04f3a3c3c19a0c87e342947af3e02573be87"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/4. Semantic facet — the description index/4.3 Embedding — embed the description, not the code"
+model = "claude-sonnet-4-6"
+terms = [
+  "embed prose not source",
+  "bge embedder reuse",
+  "embedconfig",
+  "codebert alternative",
+  "no code-specific model",
+  "natural language embedding code",
+  "dim switch reindex",
+  "per-machine embedder profile",
+  "vector model choice",
+  "nl embedder for symbols",
+  "semantic search code without codebert",
+  "embedding strategy code search",
+]

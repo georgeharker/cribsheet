@@ -1,0 +1,22 @@
+section_hash = "bad7a0aa1a96eaeb0e92b6fcda492a4ce992509f"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/surface-parity-fixes.md"
+heading = "Plan: CLI⇄MCP surface parity fixes/P3 — stale text after the noun-verb rename (drift that already bit)"
+model = "glm-5.3"
+terms = [
+  "stale docs",
+  "outdated help text",
+  "documentation drift",
+  "rename cleanup",
+  "deprecated command names",
+  "docs mention old commands",
+  "wrong command in error message",
+  "obsolete tool names",
+  "legacy command references",
+  "stale docstrings",
+  "grep guard test",
+  "cli mcp parity",
+  "retired names sweep",
+  "help text mismatch",
+  "error message shows removed command",
+]

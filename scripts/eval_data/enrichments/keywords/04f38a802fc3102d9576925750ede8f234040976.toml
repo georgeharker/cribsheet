@@ -1,0 +1,22 @@
+section_hash = "04f38a802fc3102d9576925750ede8f234040976"
+label = "keywords"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/8. Learnings"
+model = "glm-5.3"
+terms = [
+  "annotate code",
+  "manual notes",
+  "persistent notes",
+  "symbol notes",
+  "project memory",
+  "code annotations",
+  "stale note detection",
+  "outdated notes",
+  "orphaned notes",
+  "dangling references",
+  "rename tracking",
+  "fully qualified name",
+  "where notes are stored",
+  "tribal knowledge",
+  "human notes vs generated",
+]

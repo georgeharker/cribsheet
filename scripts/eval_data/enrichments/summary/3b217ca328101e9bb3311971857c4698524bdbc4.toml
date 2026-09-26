@@ -1,0 +1,11 @@
+section_hash = "3b217ca328101e9bb3311971857c4698524bdbc4"
+label = "summary"
+relpath = "sources/cribsheet/README.md"
+heading = "Documentation"
+model = "glm-5.3"
+terms = [
+  "cribsheet documentation which page should i read first",
+  "where to find the cli and mcp reference for every noun and verb in cribsheet",
+  "which cribsheet doc covers the six facets and noun-verb interface",
+  "is there a guide for resuming cribsheet memory on a new machine with plain git",
+]

@@ -1,0 +1,21 @@
+section_hash = "0d188fdd131b580eea1fd55a55d697089631aaa7"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/8. Versioning (two layers, neither indexed)/Layer 2 — git checkpoints (manual, auto-detected)"
+model = "claude-sonnet-4-6"
+terms = [
+  "git checkpoint",
+  "snapshot tool",
+  "auto-detect git",
+  "dot git presence",
+  "no commit on write",
+  "explicit snapshot only",
+  "history tool",
+  "commit log per note",
+  "git inert without repo",
+  "no chroma in data root",
+  "git just works",
+  "stage and commit",
+  "git not in cribproject",
+  "manual git commit",
+]

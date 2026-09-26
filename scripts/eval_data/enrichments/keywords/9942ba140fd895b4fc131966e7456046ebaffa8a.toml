@@ -1,0 +1,22 @@
+section_hash = "9942ba140fd895b4fc131966e7456046ebaffa8a"
+label = "keywords"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Memory — notes"
+model = "glm-5.3-flash"
+terms = [
+  "remember this",
+  "save a fact",
+  "recall",
+  "find a note",
+  "agent memory",
+  "persistent knowledge",
+  "vector search",
+  "recover deleted note",
+  "rollback note",
+  "where is my note stored",
+  "edit note in my editor",
+  "compress note with llm",
+  "claude memory import",
+  "sync memory files",
+  "audit trail",
+]

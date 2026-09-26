@@ -1,0 +1,11 @@
+section_hash = "c66222e7ac9155f340546f7b5a6990fae30b5407"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/1. Evidence/A converted entry, and where it lives"
+model = "glm-5.3"
+terms = [
+  "where do converted symbol entries live after conversion",
+  "why is the symbol_index filename the legacy fqname",
+  "what fields are in a converted symbol_index toml entry",
+  "does the symbol file use the old fqname spelling or the fgn key",
+]

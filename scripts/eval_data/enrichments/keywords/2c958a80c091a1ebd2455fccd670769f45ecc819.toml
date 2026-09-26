@@ -1,0 +1,22 @@
+section_hash = "2c958a80c091a1ebd2455fccd670769f45ecc819"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design/3.7 A global toggle, not a per-session one"
+model = "glm-5.3"
+terms = [
+  "global vs per-session toggle",
+  "mcp_combiner environment variable",
+  "export zshenv shell config",
+  "machine-wide setting",
+  "override per session",
+  "enable combiner mode",
+  "disable combiner temporarily",
+  "concurrent sessions conflict",
+  "registry thrashing race condition",
+  "claude mcp user scope",
+  "one mode per machine",
+  "switch modes restart shell",
+  "inherited by neovim acp",
+  "per-session escape hatch",
+  "shared state convergence hook",
+]

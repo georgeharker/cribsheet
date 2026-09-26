@@ -1,0 +1,11 @@
+section_hash = "a382db968790970b306424bb3e9827d30a17bd47"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/2. Two facets, one identity"
+model = "claude-sonnet-4-6"
+terms = [
+  "why are locals excluded from the symbol index scope-aware filter",
+  "how does the symbol schema separate called_by from references",
+  "what symbol kinds get call hierarchy vs references-only in the index",
+  "how does fqname serve as stable identity while file and line are derived at read time",
+]

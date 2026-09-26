@@ -1,0 +1,21 @@
+section_hash = "74fc99f6e7aa08de7443aac61f5ed3a08b12db3f"
+label = "keywords"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Keeping the two faces in step"
+model = "glm-5.3"
+terms = [
+  "cli mcp sync",
+  "parity test",
+  "keep interfaces aligned",
+  "surface consistency",
+  "drift detection",
+  "schema mismatch",
+  "parameter mismatch",
+  "default mismatch",
+  "contract testing",
+  "conformance",
+  "guard test",
+  "dual interface",
+  "mirror commands and tools",
+  "renamed option check",
+]

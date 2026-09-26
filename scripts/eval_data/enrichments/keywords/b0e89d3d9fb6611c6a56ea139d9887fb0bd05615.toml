@@ -1,0 +1,21 @@
+section_hash = "b0e89d3d9fb6611c6a56ea139d9887fb0bd05615"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/2. Storage layout (XDG, three lifecycles)"
+model = "claude-sonnet-4-6"
+terms = [
+  "xdg base directory",
+  "crib_config_dir",
+  "crib_data_dir",
+  "crib_index_dir",
+  "config data cache separation",
+  "chroma under cache",
+  "env var override",
+  "disposable index",
+  "reindex recovery",
+  "git auto detect",
+  "precious data directory",
+  "three lifecycle directories",
+  "xdg_config_home",
+  "xdg_cache_home",
+]

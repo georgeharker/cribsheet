@@ -1,0 +1,22 @@
+section_hash = "db9a60a1f412647b03a12dcdf73e3ced55eefcf2"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner"
+model = "glm-5.3"
+terms = [
+  "mcp combiner",
+  "standalone mode vs combiner mode",
+  "avoid duplicate mcp registration",
+  "double registration",
+  "dedupe mcp server",
+  "idempotent registration",
+  "conditional registration",
+  "skip registering crib",
+  "detect deployment mode",
+  "how the plugin decides",
+  "merged plugins",
+  "single plugin both deployments",
+  "mcp proxy conflict",
+  "auto-detect combiner",
+  "crib server setup",
+]

@@ -1,0 +1,22 @@
+section_hash = "9e8193100d17e736128859bf86dfb0374327afe4"
+label = "keywords"
+relpath = "sources/cribsheet/README.md"
+heading = "Authentication (optional)"
+model = "glm-5.3"
+terms = [
+  "api key",
+  "password protect",
+  "secure endpoint",
+  "security",
+  "lock down server",
+  "access control",
+  "credentials",
+  "secret",
+  "unauthorized access",
+  "localhost",
+  "remote access",
+  "restrict access",
+  "tls",
+  "reverse proxy",
+  "network exposure",
+]

@@ -1,0 +1,11 @@
+section_hash = "dea1c0a09344ce5cab4d39bb71b904c19010f1ec"
+label = "summary"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Project lifecycle — onboard & manage a whole repo/In-repo storage (`store:`)"
+model = "glm-5.3"
+terms = [
+  "does crib project adopt move embeddings into my repo",
+  "what does store: .crib-store in .crib configure",
+  "why does crib memory sync fail after adopting a project",
+  "adopt to in-repo notes without reindexing chunk ids",
+]

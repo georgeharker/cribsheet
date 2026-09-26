@@ -1,0 +1,11 @@
+section_hash = "e36897e10229e665750eb051192f0280cdba2386"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/retrieval-quality.md"
+heading = "Plan: retrieval-quality investigation (notes path MRR)/Levers, in promise order"
+model = "glm-5.3"
+terms = [
+  "how to classify retrieval failures wrong-note-strong-match vs vocabulary gap",
+  "llm-judge reranker logprob yes/no openai-compatible endpoint beat minilm gate",
+  "why did summary_index keyword_index aliases only lift mrr by 0.013",
+  "re-sweep keyword_weight summary_weight after corpus doc-chunk share increase",
+]

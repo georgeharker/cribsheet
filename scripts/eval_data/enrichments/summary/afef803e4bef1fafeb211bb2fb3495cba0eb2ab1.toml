@@ -1,0 +1,11 @@
+section_hash = "afef803e4bef1fafeb211bb2fb3495cba0eb2ab1"
+label = "summary"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Common workflows/7. Reach the same memory from your AI"
+model = "glm-5.3"
+terms = [
+  "does the cribsheet mcp server share the same memory as the cli",
+  "which mcp tools does cribsheet expose like note_lookup and code_dossier",
+  "how do i install the cribsheet plugin for claude code",
+  "can my ai agent read and write the same markdown notes i use from the terminal",
+]

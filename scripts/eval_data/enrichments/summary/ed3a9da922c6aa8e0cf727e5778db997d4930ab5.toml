@@ -1,0 +1,11 @@
+section_hash = "ed3a9da922c6aa8e0cf727e5778db997d4930ab5"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/6. Migration"
+model = "glm-5.3"
+terms = [
+  "when should i set mcp_combiner=1 in zshenv before upgrading",
+  "why was cribsheet-instructions retired from the marketplace",
+  "how to fold commands instructions.txt and hooks into the unified cribsheet plugin",
+  "why is the command /cribsheet:crib instead of bare /crib",
+]

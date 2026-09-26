@@ -1,0 +1,11 @@
+section_hash = "1b5b39e585ec6bb1ef818444f1a450357fd48c23"
+label = "summary"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/2. The model"
+model = "claude-sonnet-4-6"
+terms = [
+  "what fields does the design frontmatter schema contain",
+  "how do deps edges differ from sources edges in the model",
+  "why are sources hashed at section grain rather than whole-file",
+  "what is the difference between deps and sources in terms of gating",
+]

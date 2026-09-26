@@ -1,0 +1,22 @@
+section_hash = "a91812715f2c2a085f581c63251c0a0fcfcb11d3"
+label = "keywords"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/Mess ledger — cleanup candidates"
+model = "glm-5.3"
+terms = [
+  "tech debt",
+  "technical debt",
+  "refactoring log",
+  "cleanup list",
+  "code smells",
+  "code hygiene",
+  "maintainability",
+  "known issues",
+  "backlog items",
+  "follow-ups",
+  "debt tracker",
+  "todo archive",
+  "code quality",
+  "leftover warts",
+  "refactor notes",
+]

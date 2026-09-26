@@ -1,0 +1,11 @@
+section_hash = "9401113ae260e5689fbef7b4cf79f10927cad8c8"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/② Attribution keys (`codeindex.py` describe/meta paths, `codestore.py`) — after ①③ (same files)/2.7 Patch `references` symmetrically; fqname keys"
+model = "glm-5.3"
+terms = [
+  "how does patch_called_by update reverse edges on incremental reindex",
+  "recompute references and called_by under project lock during file reindex",
+  "why replace the name file key with fqname when patching called_by edges",
+  "watcher edit adds a reference to b without reindexing b's dossier",
+]

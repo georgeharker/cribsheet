@@ -1,0 +1,20 @@
+section_hash = "4b146f5b718f9ab2e3f02e7dd18f2a1c54ceed0c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-interface-catalog.md"
+heading = "Symbol interface — full catalog/3. Persistence keyed by a symbol name"
+model = "glm-5.3"
+terms = [
+  "rename symbol",
+  "what happens when renaming a symbol",
+  "rename side effects",
+  "does renaming lose data",
+  "what survives a rename",
+  "data migration on rename",
+  "rekey storage",
+  "derived vs authored data",
+  "what gets regenerated",
+  "rebuildable cache",
+  "learning notes follow rename",
+  "stable symbol identifier",
+  "how many files change on rename",
+]

@@ -1,0 +1,11 @@
+section_hash = "d16a7583831734cbbf0bb04b19d0ef27409da179"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-facet-ergonomics.md"
+heading = "Plan: design/plan facet ergonomics — first-class, edge-aware verbs/The description layer IS the LLM UX (do this first)"
+model = "glm-5.3"
+terms = [
+  "should the staleness contract live in tool docstrings or global instructions",
+  "design_check output follow-up action design_reaffirm design_supersede per tainted entry",
+  "design_edit vs note_edit docstring cue listing tainted dependents",
+  "does taint mean the decision is wrong or just a dep changed",
+]

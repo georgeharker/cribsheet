@@ -1,0 +1,21 @@
+section_hash = "319c6df73b91f8bb228f92c36d1b335e31a9c0b1"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/3. Data model/Note file"
+model = "claude-sonnet-4-6"
+terms = [
+  "ulid note id",
+  "yaml frontmatter schema",
+  "note rename handling",
+  "stable identity rename",
+  "frontmatter fields",
+  "source field manual distilled",
+  "created updated timestamps",
+  "tags frontmatter",
+  "markdown note format",
+  "id assigned first index",
+  "relpath vs id",
+  "non-destructive rename",
+  "note identity persistence",
+  "cribsheet markdown schema",
+]

@@ -1,0 +1,12 @@
+section_hash = "3f1f8bdbcd61d266bb72aea844ec08094c5bd0da"
+label = "summary"
+relpath = "sources/cribsheet/docs/ideas/lsp-server-face.md"
+heading = "crib as a language server — the agent face (and the editor one)/8. Staleness becomes visible"
+model = "glm-5.3"
+terms = [
+  "why does the $/progress readiness barrier stop the cold server serving wrong answers",
+  "difference between query-time revalidation and eager source-watcher revalidation phase 2",
+  "stale hover or diagnostic on a symbol the agent just rewrote",
+  "do under-resolved edges from an early-answering server block finishing the face",
+  "when is a stale code_dossier acceptable but a stale hover not",
+]

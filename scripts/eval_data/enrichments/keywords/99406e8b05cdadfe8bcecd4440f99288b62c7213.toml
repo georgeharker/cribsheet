@@ -1,0 +1,21 @@
+section_hash = "99406e8b05cdadfe8bcecd4440f99288b62c7213"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes"
+model = "glm-5.3"
+terms = [
+  "bug fixes",
+  "hardening sweep",
+  "stability improvements",
+  "reliability",
+  "error handling",
+  "edge cases",
+  "technical debt",
+  "code quality",
+  "review findings",
+  "audit results",
+  "regression testing",
+  "crash prevention",
+  "defect remediation",
+  "qa checklist",
+]

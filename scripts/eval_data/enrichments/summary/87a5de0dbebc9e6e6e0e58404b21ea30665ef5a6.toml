@@ -1,0 +1,11 @@
+section_hash = "87a5de0dbebc9e6e6e0e58404b21ea30665ef5a6"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)/Dogfood (last step of execution)"
+model = "glm-5.3"
+terms = [
+  "what first design notes get recorded in cribsheet itself",
+  "seed dogfood decisions cli mcp paired surfaces disk is truth chroma rebuildable",
+  "how to capture decisions 1-6 with dependency edges between them",
+  "design_check after editing section 5 of design.md acceptance demo",
+]

@@ -1,0 +1,22 @@
+section_hash = "fafc74c5d6e49d6c5aad995d30ff5e12e07bd89c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 0 — security / data loss (do first)/0.3 One malformed note aborts whole-project reconcile"
+model = "glm-5.3"
+terms = [
+  "corrupted file blocks startup",
+  "one bad note crashes indexing",
+  "skip invalid yaml",
+  "graceful degradation",
+  "continue on error",
+  "daemon won't start after edit",
+  "yaml syntax error in frontmatter",
+  "merge conflict markers crash",
+  "partial index rebuild",
+  "quarantine unreadable files",
+  "resilient to broken notes",
+  "fault isolation per file",
+  "hand edited file breaks sync",
+  "repair corrupted note",
+  "all or nothing indexing",
+]

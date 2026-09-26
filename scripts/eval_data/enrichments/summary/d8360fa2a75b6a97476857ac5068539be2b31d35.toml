@@ -1,0 +1,11 @@
+section_hash = "d8360fa2a75b6a97476857ac5068539be2b31d35"
+label = "summary"
+relpath = "sources/cribsheet/README.md"
+heading = "How it works"
+model = "glm-5.3"
+terms = [
+  "how does rrf fuse dense vector ranking with warm bm25",
+  "why does the per-path lock plus content hash make indexing idempotent",
+  "which language servers build the structural facet .lsp.json pyright clangd",
+  "can the embedder and store be swapped out from the dependency-free defaults",
+]

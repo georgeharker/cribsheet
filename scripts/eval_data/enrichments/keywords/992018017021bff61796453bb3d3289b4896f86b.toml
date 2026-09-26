@@ -1,0 +1,22 @@
+section_hash = "992018017021bff61796453bb3d3289b4896f86b"
+label = "keywords"
+relpath = "sources/cribsheet/README.md"
+heading = "Why"
+model = "glm-5.3"
+terms = [
+  "motivation",
+  "rationale",
+  "why use cribsheet",
+  "benefits of agent memory",
+  "persistent memory for ai agents",
+  "context loss between sessions",
+  "llm forgets earlier work",
+  "shared knowledge base across repositories",
+  "semantic code search",
+  "grep limitations",
+  "call graph queries",
+  "change impact analysis",
+  "stale decision tracking",
+  "vendor lock-in free notes",
+  "markdown notes in git",
+]

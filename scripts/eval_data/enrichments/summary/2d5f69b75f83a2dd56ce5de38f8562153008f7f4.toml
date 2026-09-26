@@ -1,0 +1,11 @@
+section_hash = "2d5f69b75f83a2dd56ce5de38f8562153008f7f4"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/8. Learnings — durable human understanding attached to a symbol"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does content_hash detect a stale learning without auto-invalidating it",
+  "what is the difference between a true orphan and a moved learning in learning_report",
+  "how does learning_rehome rank candidates when no target symbol is specified",
+  "why are learnings stored separately from the regenerable lLM description cache",
+]

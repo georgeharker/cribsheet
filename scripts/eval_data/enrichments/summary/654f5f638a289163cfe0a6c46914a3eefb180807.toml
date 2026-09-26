@@ -1,0 +1,11 @@
+section_hash = "654f5f638a289163cfe0a6c46914a3eefb180807"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/9. Project lifecycle — onboarding a whole repo"
+model = "claude-sonnet-4-6"
+terms = [
+  "what does _ensure_crib write and how does it detect the repo root",
+  "how does budget_s bound a project_index call and what happens when it returns complete=false",
+  "what does project_forget preserve and what does it wipe",
+  "how does code_lookup self-diagnose an unindexed project and trigger project_setup automatically",
+]

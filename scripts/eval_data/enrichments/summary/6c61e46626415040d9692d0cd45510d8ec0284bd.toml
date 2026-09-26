@@ -1,0 +1,11 @@
+section_hash = "6c61e46626415040d9692d0cd45510d8ec0284bd"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/5. Generalising to the family"
+model = "glm-5.3"
+terms = [
+  "why copy combiner_serves into every plugin instead of a shared helper",
+  "how to exempt one backend from the combiner and run it standalone",
+  "where to export MCP_COMBINER so neovim and ACP agents inherit it",
+  "backend silently double-registers after adding to mcpservers.json",
+]

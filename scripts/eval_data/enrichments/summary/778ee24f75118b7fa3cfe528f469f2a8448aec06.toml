@@ -1,0 +1,12 @@
+section_hash = "778ee24f75118b7fa3cfe528f469f2a8448aec06"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/4. What is broken/4.8 The authored sweep"
+model = "glm-5.3"
+terms = [
+  "why does rebind write with save_atomic instead of store.write plus reindex",
+  "what reads symbol_was in learnings.py",
+  "stale chunk index relpaths after successful symbol migration",
+  "does seen_targets detect collisions on a resumed symmigrate run",
+  "manifest invariants computed before apply still valid",
+]

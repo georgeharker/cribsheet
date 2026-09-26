@@ -1,0 +1,11 @@
+section_hash = "3ff4bb45e683eb16a76f4fdf6172af09c6a9b07f"
+label = "summary"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/1. Notes ingestion (store → chunks → index)"
+model = "glm-5.3"
+terms = [
+  "does notestore.write keep the old note in the version ring before writing",
+  "how does index_file handle concurrent callers for the same note",
+  "when does chunk content_hash trigger re-embedding instead of skipping",
+  "why recompute heading line spans at query time for lookup results",
+]

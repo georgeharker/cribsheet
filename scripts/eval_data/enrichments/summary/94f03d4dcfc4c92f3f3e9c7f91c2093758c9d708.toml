@@ -1,0 +1,11 @@
+section_hash = "94f03d4dcfc4c92f3f3e9c7f91c2093758c9d708"
+label = "summary"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/5. Warm LSP sessions (`LspSessionPool`, `crib/codeindex.py`)"
+model = "glm-5.3"
+terms = [
+  "how does lsp session pool know when a server is done indexing",
+  "didOpen didClose lifecycle for warm lsp sessions vs pinned sweep files",
+  "notify_changes workspace/didChangeWatchedFiles warm sessions code watcher",
+  "respawning dead lsp servers poll wedged extraction retry once",
+]

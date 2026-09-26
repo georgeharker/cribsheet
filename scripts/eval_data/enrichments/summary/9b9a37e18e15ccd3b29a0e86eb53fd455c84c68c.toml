@@ -1,0 +1,12 @@
+section_hash = "9b9a37e18e15ccd3b29a0e86eb53fd455c84c68c"
+label = "summary"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/3. Part A — Search-term efficacy (findability)"
+model = "glm-5.3"
+terms = [
+  "heading breadcrumb injection index_text lexical_text content_hash re-embed",
+  "doc2query docTTTTTquery close credentials vs tokens vocabulary gap on document side",
+  "why store alias vectors per chunk instead of concatenating synthetic queries into one embedding",
+  "bm25 keyword sidecar restart server maps to mcprestartserver symbol extraction",
+  "code-to-notes index surface design note when agent is about to grep a file",
+]

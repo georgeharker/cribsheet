@@ -1,0 +1,22 @@
+section_hash = "6af9951e5c52f111d50252e8d1f3066209316007"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/7. distill"
+model = "claude-sonnet-4-6"
+terms = [
+  "distill command",
+  "on-demand distillation",
+  "distill_prompt",
+  "compressed notes",
+  "normalized markdown",
+  "source distilled tag",
+  "llmkit bridge",
+  "claude_code adapter",
+  "no-key adapter",
+  "hash thrash guard",
+  "no write on ingest",
+  "watcher feedback loop",
+  "index_file lock",
+  "mcp sampling alternative",
+  "knowledge capture",
+]

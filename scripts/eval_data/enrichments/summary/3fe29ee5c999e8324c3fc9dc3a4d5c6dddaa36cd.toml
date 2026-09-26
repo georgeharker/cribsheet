@@ -1,0 +1,11 @@
+section_hash = "3fe29ee5c999e8324c3fc9dc3a4d5c6dddaa36cd"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-plan-import.md"
+heading = "Plan: doc import & source attribution for the design/plan graph/Wiring checklist"
+model = "glm-5.3"
+terms = [
+  "when does editing a cited doc section taint a design decision",
+  "how do i promote a proposed decision from design_import",
+  "what hashing is used for source sections missing from chunk metadata",
+  "ambiguous --source heading uniqueness error on add",
+]

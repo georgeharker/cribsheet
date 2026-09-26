@@ -1,0 +1,22 @@
+section_hash = "4a924ba506f8de8f05c6d1a37bda0b3d1adf6e0c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/6. Target shape/The entry"
+model = "glm-5.3"
+terms = [
+  "symbol primary key",
+  "stable identifier",
+  "symbol identity scheme",
+  "fully qualified name derivation",
+  "parent pointer removal",
+  "drop parent field",
+  "remove module column",
+  "ancestor chain from name",
+  "hierarchy without parent pointer",
+  "schema cleanup",
+  "dead code removal",
+  "rename tracking",
+  "symbol_was migration",
+  "dedupe symbol records",
+  "unique key per symbol",
+]

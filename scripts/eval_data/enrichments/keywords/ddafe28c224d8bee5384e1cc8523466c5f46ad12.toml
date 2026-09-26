@@ -1,0 +1,22 @@
+section_hash = "ddafe28c224d8bee5384e1cc8523466c5f46ad12"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/5. Root cause"
+model = "glm-5.3"
+terms = [
+  "dual identity",
+  "two keys one symbol",
+  "incomplete migration",
+  "backwards compatibility",
+  "legacy field fallback",
+  "field rename",
+  "single source of truth",
+  "why forget broke",
+  "incomplete refactor",
+  "technical debt",
+  "schema migration",
+  "duplicate identifier",
+  "canonical id",
+  "parallel fields",
+  "regression after rollout",
+]

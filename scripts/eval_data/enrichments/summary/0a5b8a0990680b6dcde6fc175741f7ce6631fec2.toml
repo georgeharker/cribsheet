@@ -1,0 +1,11 @@
+section_hash = "0a5b8a0990680b6dcde6fc175741f7ce6631fec2"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/7. Conversion: one predicate, two stores/Termination, and an honest residue"
+model = "glm-5.3"
+terms = [
+  "what causes the reindex loop to leave unconvertible entries behind",
+  "when does learning_rehome run out of work and stop",
+  "which entries survive every pass as genuine orphans",
+  "difference between needs-reindex residue and orphan residue in conversion",
+]

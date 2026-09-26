@@ -1,0 +1,11 @@
+section_hash = "e9f9266d20dcf5e5787b3b70c7ee99a488e5a11e"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/1. Why this works where `summary_index` didn't"
+model = "claude-sonnet-4-6"
+terms = [
+  "why does an llm description add value for code symbols when it was redundant for note summaries",
+  "does the doc2query verdict from note summaries transfer to code symbol indexing",
+  "why does a raw code body embed poorly for concept search compared to prose",
+  "what makes recall unsaturated for code symbols when it was saturated for notes",
+]

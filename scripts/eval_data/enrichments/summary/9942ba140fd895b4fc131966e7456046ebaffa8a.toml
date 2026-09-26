@@ -1,0 +1,11 @@
+section_hash = "9942ba140fd895b4fc131966e7456046ebaffa8a"
+label = "summary"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Memory — notes"
+model = "glm-5.3-flash"
+terms = [
+  "crib note import-memory one-way mirror of memory md files",
+  "note lookup --hint exact-string boost and hint_weight override",
+  "crib note locate on-disk path for source-owned .crib doc",
+  "recover deleted note via version ring crib note forget restore",
+]

@@ -1,0 +1,22 @@
+section_hash = "1a5592db573c27453a6ba646d3da3dd5da8ae500"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 4 — worth doing, not urgent"
+model = "glm-5.3"
+terms = [
+  "bug backlog",
+  "tech debt",
+  "minor bugs",
+  "edge cases",
+  "silent failure",
+  "error handling improvements",
+  "crash recovery",
+  "race condition",
+  "input validation",
+  "case insensitive filesystem",
+  "duplicate detection",
+  "dead code removal",
+  "code hardening",
+  "low priority fixes",
+  "triage chores",
+]

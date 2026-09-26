@@ -1,0 +1,22 @@
+section_hash = "9d1efc3797e0d7d6a097be227ed2dda479d635e3"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 1 — daemon correctness under load/1.3 Startup reconcile blocks the transport"
+model = "glm-5.3"
+terms = [
+  "daemon hangs on startup",
+  "slow startup",
+  "cold start delay",
+  "server not responding",
+  "connection refused",
+  "startup timeout",
+  "stuck initializing",
+  "unresponsive daemon",
+  "defer reconciliation",
+  "backlog blocking boot",
+  "port not listening",
+  "ready timeout exceeded",
+  "won't start with large backlog",
+  "background startup task",
+  "daemon not accepting connections",
+]

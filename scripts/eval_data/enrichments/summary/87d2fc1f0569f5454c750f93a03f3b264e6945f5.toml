@@ -1,0 +1,11 @@
+section_hash = "87d2fc1f0569f5454c750f93a03f3b264e6945f5"
+label = "summary"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/5. Conversation capture (DESIGN §12) — where the value is/5c. Capture source — chat logs vs proxy"
+model = "glm-5.3"
+terms = [
+  "why capture conversations through a proxy instead of parsing the jsonl chat logs",
+  "does the capture proxy hold api keys or pass through the user's auth",
+  "fail-open requirement for a proxy on every request's critical path",
+  "last request of a session already contains the full conversation so no stitching deltas needed",
+]

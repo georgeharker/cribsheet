@@ -1,0 +1,12 @@
+section_hash = "e2288861d573150d1593f05ace588ff0367be7b6"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design/3.4 The flip is bidirectional — both branches must mutate"
+model = "glm-5.3"
+terms = [
+  "why is my manual claude mcp remove undone next session",
+  "does unsetting the combiner env flip registration back to standalone",
+  "what does the guard prevent when registry already matches env",
+  "env as source of truth instead of mcp registry writes",
+  "how many session starts and writes does each standalone/combiner flip cost",
+]

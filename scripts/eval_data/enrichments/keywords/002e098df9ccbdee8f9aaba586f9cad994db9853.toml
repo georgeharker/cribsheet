@@ -1,0 +1,19 @@
+section_hash = "002e098df9ccbdee8f9aaba586f9cad994db9853"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/3. Structural facet — the warm LSP session subsystem/3.1 Session registry & lifecycle"
+model = "claude-sonnet-4-6"
+terms = [
+  "lsp session registry keyed workspace language",
+  "lazy start lsp session",
+  "grace evict idle session",
+  "basedpyright rust-analyzer gopls clangd memory",
+  "lsp crash restart supervision",
+  "oom hang recovery lsp",
+  "init cost seconds minutes lsp",
+  "momentarily stale index semantics",
+  "query wait degrade during reindex",
+  "session lifecycle management",
+  "multiple language servers daemon",
+  "lsp session eviction policy",
+]

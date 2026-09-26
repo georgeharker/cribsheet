@@ -1,0 +1,31 @@
+section_hash = "3d2b811b8ec03e209ef1fa309fdf78d703570f56"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/3. Structural facet — the warm LSP session subsystem/3.4 Call-graph queries"
+model = "claude-sonnet-4-6"
+terms = [
+  "call hierarchy",
+  "incoming calls",
+  "outgoing calls",
+  "callees lsp",
+  "callers lsp",
+  "textDocument/references",
+  "callHierarchy/outgoingCalls",
+  "referencesProvider",
+  "callHierarchyProvider",
+  "code_graph shape edges",
+  "pstree view",
+  "group_by file dir scope",
+  "symbol_ref node id",
+  "fqname_sep language separator",
+  "suffix match symbol resolution",
+  "shebang language routing",
+  "MAX_GRAPH_NODES export cap",
+  "truncated frontier nodes",
+  "external unresolved edge",
+  "symbol_was compatibility",
+  "trailing run canonical sequence",
+  "architecture diagram aggregated edges",
+  "whole project export",
+  "repeat node depth-first tree",
+]

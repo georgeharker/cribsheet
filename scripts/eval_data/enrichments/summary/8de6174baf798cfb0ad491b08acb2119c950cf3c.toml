@@ -1,0 +1,11 @@
+section_hash = "8de6174baf798cfb0ad491b08acb2119c950cf3c"
+label = "summary"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/1. Why a facet, and not just notes"
+model = "claude-sonnet-4-6"
+terms = [
+  "why does note_edit refuse facet paths",
+  "what does a dep edge promise in the design facet",
+  "why does design_add return a similar warning instead of creating a duplicate",
+  "why can't an informed-by edge skip tainting",
+]

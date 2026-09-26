@@ -1,0 +1,11 @@
+section_hash = "a2a4c90bc88b29115a50ad40f51c83b3cf836369"
+label = "summary"
+relpath = "sources/cribsheet/docs/eval-organic-memory.md"
+heading = "Exploration task: how well does the LLM save notes to cribsheet *unprompted*?/Critical confound — isolate cribsheet from the *other* memory system"
+model = "claude-sonnet-4-6"
+terms = [
+  "how to distinguish cribsheet writes from harness MEMORY.md writes in transcripts",
+  "which tool calls count as cribsheet vs the file-based memory system",
+  "how does source: claude_memory frontmatter identify mirrored vs organic notes",
+  "what changed in cribsheet server.py instructions on 2026-06-28 and why segment there",
+]

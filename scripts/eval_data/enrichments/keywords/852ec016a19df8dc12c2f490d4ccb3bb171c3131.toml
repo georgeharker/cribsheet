@@ -1,0 +1,22 @@
+section_hash = "852ec016a19df8dc12c2f490d4ccb3bb171c3131"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/6. Project association — `.crib` and `.cribproject`"
+model = "claude-sonnet-4-6"
+terms = [
+  "project config file",
+  "dot crib",
+  "dot cribproject",
+  "project linking",
+  "repo association",
+  "in-repo storage",
+  "adopt release",
+  "store relpath",
+  "stub directory",
+  "store_root token",
+  "portable location token",
+  "project unavailable",
+  "import_into subdir",
+  "cwd walkup",
+  "project resolution order",
+]

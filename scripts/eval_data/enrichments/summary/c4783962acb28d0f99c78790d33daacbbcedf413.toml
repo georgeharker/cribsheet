@@ -1,0 +1,11 @@
+section_hash = "c4783962acb28d0f99c78790d33daacbbcedf413"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/2. Constraints (measured, not assumed)/2.2 Env expansion can choose a URL, never remove a server"
+model = "glm-5.3"
+terms = [
+  "does ${var:-default} in .mcp.json follow bash semantics when the variable is set but empty",
+  "why does an empty env var make the mcp server row show failed instead of not configured",
+  "can ${var:+alt} or nested expansion be used in a plugin .mcp.json",
+  "how to switch off an mcp server from environment variables instead of editing .mcp.json",
+]

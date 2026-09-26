@@ -1,0 +1,10 @@
+section_hash = "3c9d916a30229130f711a23e047bbf36f6ebc996"
+label = "summary"
+relpath = "sources/cribsheet/README.md"
+model = "glm-5.3"
+terms = [
+  "what does cribsheet remember notes code decisions",
+  "how does crib keep ai memory across sessions markdown on disk",
+  "cribsheet symbol index call graph learnings pinned to a symbol",
+  "is the crib vector index rebuildable with markdown as source of truth",
+]

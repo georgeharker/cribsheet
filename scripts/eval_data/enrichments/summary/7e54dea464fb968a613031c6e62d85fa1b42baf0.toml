@@ -1,0 +1,11 @@
+section_hash = "7e54dea464fb968a613031c6e62d85fa1b42baf0"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/2. Constraints (measured, not assumed)/2.3 Hooks cannot change the current session's MCP set"
+model = "glm-5.3"
+terms = [
+  "can a hook add an mcp server to the current session or only the next one",
+  "is the mcp server set resolved at session startup before hooks run",
+  "hook writes mcp config but server doesn't appear until restart",
+  "is there a hook api to remove or suppress an mcp server",
+]

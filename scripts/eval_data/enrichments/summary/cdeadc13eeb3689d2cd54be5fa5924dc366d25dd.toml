@@ -1,0 +1,11 @@
+section_hash = "cdeadc13eeb3689d2cd54be5fa5924dc366d25dd"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/Constraints (inherited)"
+model = "glm-5.3-flash"
+terms = [
+  "why does a moved trigger ref get surfaced on a parked plan",
+  "do triggers gate plan_next or only check deferred plans",
+  "can the graph re-open a declined plan on its own",
+  "typed-edge caveat trigger edges may vary gating never checking",
+]

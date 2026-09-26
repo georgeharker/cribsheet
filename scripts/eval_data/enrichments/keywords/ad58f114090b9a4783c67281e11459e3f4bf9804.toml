@@ -1,0 +1,22 @@
+section_hash = "ad58f114090b9a4783c67281e11459e3f4bf9804"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/2. The three spellings/`symbol_ref` ≡ `(file, fqn)`"
+model = "glm-5.3"
+terms = [
+  "round-trip",
+  "bidirectional",
+  "reversible",
+  "canonical identifier",
+  "fully qualified name",
+  "unique key",
+  "one-to-one mapping",
+  "bijection",
+  "deterministic",
+  "invertible",
+  "stable id",
+  "equivalence",
+  "normalization",
+  "dedup",
+  "lookup consistency",
+]

@@ -1,0 +1,11 @@
+section_hash = "9dd2aee7d1fad469a7deea52be73417d06a3aac7"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/7. Build order (each gated by a proof)"
+model = "claude-sonnet-4-6"
+terms = [
+  "what are the five gated build phases for the code symbol index",
+  "why does the lsp client come before session manager in the build order",
+  "at which build step does the doc2query a/b evaluation get proven",
+  "what does dump_lsp.lua prove before any further build warmth",
+]

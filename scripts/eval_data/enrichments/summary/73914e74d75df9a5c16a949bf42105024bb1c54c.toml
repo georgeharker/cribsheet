@@ -1,0 +1,12 @@
+section_hash = "73914e74d75df9a5c16a949bf42105024bb1c54c"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/2. The three spellings/Which is which"
+model = "glm-5.3"
+terms = [
+  "what is the difference between fqn symbol_ref and fqname",
+  "why can't fqn be used as the symbol key store.Store collision",
+  "what happened to the v0.7.0 fqname pathified module key",
+  "why does symbol_ref pair the file with the fqn",
+  "what does symbol_was fqname legacy field contain",
+]

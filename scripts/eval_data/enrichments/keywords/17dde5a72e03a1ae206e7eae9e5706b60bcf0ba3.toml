@@ -1,0 +1,22 @@
+section_hash = "17dde5a72e03a1ae206e7eae9e5706b60bcf0ba3"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 2 — indexing correctness/2.2 Non-UTF8 source file kills the warm LSP session"
+model = "glm-5.3"
+terms = [
+  "unicode decode error",
+  "non-utf8 file",
+  "latin-1 encoding",
+  "invalid utf-8 bytes",
+  "language server keeps restarting",
+  "lsp cold start",
+  "encoding error crash",
+  "read_text throws",
+  "wedged server",
+  "session dropped from pool",
+  "mojibake",
+  "bad encoding file breaks indexing",
+  "rust-analyzer slow startup",
+  "skip unreadable files",
+  "garbled characters",
+]

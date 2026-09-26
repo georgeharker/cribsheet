@@ -1,0 +1,11 @@
+section_hash = "015e7aacb3c2dbcac517046fd62ed13afd3fae7a"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design"
+model = "claude-sonnet-4-6"
+terms = [
+  "what is cribsheet and how does it differ from basic-memory",
+  "why does cribsheet use embeddings instead of a knowledge graph",
+  "what is the relationship between the crib binary and the cribsheet project",
+  "how does chroma fit into the cribsheet architecture",
+]

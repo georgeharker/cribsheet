@@ -1,0 +1,22 @@
+section_hash = "fd686689e8112230fbf257416d7b2fce53f78398"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design/3.3 Naming — why not `MCP_COMBINER_<NAME>`"
+model = "glm-5.3"
+terms = [
+  "naming convention",
+  "environment variable prefix",
+  "namespace collision",
+  "name conflict",
+  "prefix overlap",
+  "reserved prefix",
+  "env var naming",
+  "naming rationale",
+  "why serves prefix",
+  "naming scheme",
+  "settings namespace",
+  "disambiguation",
+  "ambiguous variable",
+  "prefix collision",
+  "naming decision",
+]

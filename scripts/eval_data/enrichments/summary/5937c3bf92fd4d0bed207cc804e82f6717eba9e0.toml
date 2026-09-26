@@ -1,0 +1,11 @@
+section_hash = "5937c3bf92fd4d0bed207cc804e82f6717eba9e0"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design/3.2 Polarity — default standalone"
+model = "glm-5.3"
+terms = [
+  "what is the default crib mode when mcp_combiner is unset",
+  "how to opt into combiner mode with one line in zshenv",
+  "why was crib_external retired and what replaces it",
+  "what does mcp_combiner_serves_cribsheet=0 change about proxied servers",
+]

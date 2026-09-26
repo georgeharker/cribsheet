@@ -1,0 +1,21 @@
+section_hash = "63eb8b054ee1b46b01ccba6f06808b25da7799ad"
+label = "keywords"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/4. `distill` — revise a note (DESIGN §7, on the bridge)"
+model = "glm-5.3"
+terms = [
+  "refine note",
+  "rewrite note with ai",
+  "clean up notes",
+  "tidy",
+  "condense",
+  "shorten",
+  "prune",
+  "polish",
+  "declutter",
+  "summarization",
+  "auto rewrite",
+  "idempotent",
+  "skip unchanged",
+  "manual trigger",
+]

@@ -1,0 +1,11 @@
+section_hash = "59e7957af1032f2315b6915b76dc8a7297d4901e"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design/3.6 Timing"
+model = "glm-5.3"
+terms = [
+  "does an mcp write apply to the current session or the next one",
+  "how many sessions does a plugin flip or first install cost",
+  "can i rely on the reload to land the registration change sooner",
+  "why does reload drop other servers when applying a plugin write",
+]

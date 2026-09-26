@@ -1,0 +1,11 @@
+section_hash = "25f05b5e4dc5c4237ecd3968a98fbe3ee5c37259"
+label = "summary"
+relpath = "sources/cribsheet/docs/storage.md"
+heading = "Where things live — store types, ownership, and how to use each/Global vs in-repo project storage"
+model = "glm-5.3"
+terms = [
+  "how do i move a project store into the repo with crib project adopt",
+  "why does crib memory sync refuse for in-repo projects",
+  "what is the .cribproject stub and store_root token left behind",
+  "does crib project adopt reindex when switching stores",
+]

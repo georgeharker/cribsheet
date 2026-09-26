@@ -1,0 +1,22 @@
+section_hash = "c66222e7ac9155f340546f7b5a6990fae30b5407"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/1. Evidence/A converted entry, and where it lives"
+model = "glm-5.3"
+terms = [
+  "fully qualified name",
+  "fqn vs fqname",
+  "canonical name",
+  "primary key",
+  "unique identifier",
+  "naming convention",
+  "file naming scheme",
+  "where are entries stored",
+  "storage location",
+  "directory layout",
+  "symbol index location",
+  "migration",
+  "renamed symbols",
+  "entry schema",
+  "toml format",
+]

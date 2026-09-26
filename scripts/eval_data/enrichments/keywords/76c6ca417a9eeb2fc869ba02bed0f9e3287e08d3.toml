@@ -1,0 +1,22 @@
+section_hash = "76c6ca417a9eeb2fc869ba02bed0f9e3287e08d3"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/15. Per-connection session scope (current project)"
+model = "claude-sonnet-4-6"
+terms = [
+  "session sticky project",
+  "weakkeydictionary serversession",
+  "project resolution precedence",
+  "fastmcp get_context session",
+  "crib_tool decorator policy",
+  "tool_policy registry check",
+  "session scope mcp connection",
+  "resolve_project cwd seeding",
+  "project_use switch session",
+  "stateless vs long-lived client",
+  "read write source policy",
+  "code_index wrong policy bug",
+  "session cleanup gc no hook",
+  "per-connection state table",
+  "svg-mcp session pattern",
+]

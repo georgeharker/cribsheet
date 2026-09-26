@@ -1,0 +1,20 @@
+section_hash = "0382b9868c9f423d646ddf200328d78bedd91daa"
+label = "keywords"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Common workflows/6. Share memory across machines"
+model = "glm-5.3"
+terms = [
+  "second computer",
+  "new laptop",
+  "sync between devices",
+  "multiple devices",
+  "two computers",
+  "another machine",
+  "migrate notes",
+  "transfer to new computer",
+  "keep in sync",
+  "backup notes",
+  "workstation",
+  "replicate",
+  "device sync",
+]

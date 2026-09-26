@@ -1,0 +1,11 @@
+section_hash = "545f850141e3821aa854fc3659e54889a2b30421"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Out of scope"
+model = "glm-5.3"
+terms = [
+  "is overlay or split storage with some notes global and some in-repo supported?",
+  "does f2 move the config tier or chroma into the repo or only annotations",
+  "can watcher roots be rebound without a daemon restart",
+  "what features are excluded from the optional in-repo storage plan",
+]

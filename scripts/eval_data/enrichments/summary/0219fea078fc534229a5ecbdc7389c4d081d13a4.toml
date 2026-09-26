@@ -1,0 +1,11 @@
+section_hash = "0219fea078fc534229a5ecbdc7389c4d081d13a4"
+label = "summary"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/5. Build the LLM indexes per project"
+model = "glm-5.3"
+terms = [
+  "crib note elaborate keywords one-time backfill after importing notes",
+  "how to pre-warm summary index without a daemon",
+  "generate concurrency parallel zen calls config.toml",
+  "summary_labels = [\"summary\"] activate dense aliases mrr gain",
+]

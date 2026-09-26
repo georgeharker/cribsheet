@@ -1,0 +1,11 @@
+section_hash = "5ab14e97454c389e002cf9489d45d451964f1709"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Goal"
+model = "glm-5.3"
+terms = [
+  "store crib notes and learnings inside the repo subdirectory",
+  "declare root-relative data directory in .crib for project storage",
+  "does the chroma index stay in global cache with in-repo storage",
+  "move project data tier out of the global store into the repo",
+]

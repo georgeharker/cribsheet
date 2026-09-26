@@ -1,0 +1,11 @@
+section_hash = "bf5756a64a90a0c488e57c8836c2871d11033877"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 1 — daemon correctness under load/1.1 Sync embedding on the event loop stalls every client"
+model = "glm-5.3"
+terms = [
+  "does embedder.embed run on the event loop inside _index_locked",
+  "why does a large reconcile make _wait_ready declare the daemon dead",
+  "move embedding to asyncio.to_thread while keeping per-path asyncio locks",
+  "does store_note dedupe probe embed inline on the loop",
+]

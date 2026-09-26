@@ -1,0 +1,11 @@
+section_hash = "6dcbdb7ba67038e447be2286f0548b45af6e316c"
+label = "summary"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/The six things cribsheet manages"
+model = "glm-5.3"
+terms = [
+  "what's the difference between a note and a learning pinned to a symbol",
+  "crib design check explains which decisions are out of date and why",
+  "does plan next hide items when the decision they implement changes",
+  "code index call graph find who calls a function by concept not grep",
+]

@@ -1,0 +1,21 @@
+section_hash = "37e749b4ec36a8f2383d5cd87697f7ef2fb59fe7"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/4. Semantic facet — the description index/4.1 Generation — structure feeds semantics"
+model = "claude-sonnet-4-6"
+terms = [
+  "bulk per file generation symbols",
+  "generate_index structured call one pass",
+  "description dense arm keywords sparse arm",
+  "doc2query behavioral search phrases",
+  "bm25 expanded field identifier subtokens",
+  "coverage-gated expanded bm25",
+  "calls called_by in generation prompt",
+  "structure feeds semantics prompt context",
+  "content addressed symbol_hash toml",
+  "symbol_index label hash toml path",
+  "watcher edit regenerates changed symbols only",
+  "git-tracked data tree symbol index",
+  "whole file context sibling visibility",
+  "per-symbol mop-up backstop",
+]

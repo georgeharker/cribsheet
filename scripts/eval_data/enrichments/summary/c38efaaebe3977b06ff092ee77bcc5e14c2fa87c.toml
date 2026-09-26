@@ -1,0 +1,11 @@
+section_hash = "c38efaaebe3977b06ff092ee77bcc5e14c2fa87c"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/13. Mirroring Claude Code's harness memory"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does crib locate the claude code harness memory directory from a project path",
+  "how does the live memorymirror daemon pick up new bindings registered after it starts",
+  "why do mirrored harness memory files bypass the version ring on write",
+  "how does crib index claude code memory files without adding a new index path",
+]

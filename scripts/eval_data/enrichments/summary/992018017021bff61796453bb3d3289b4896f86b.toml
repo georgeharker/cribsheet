@@ -1,0 +1,11 @@
+section_hash = "992018017021bff61796453bb3d3289b4896f86b"
+label = "summary"
+relpath = "sources/cribsheet/README.md"
+heading = "Why"
+model = "glm-5.3"
+terms = [
+  "how does cribsheet tell me which decisions go stale after a change",
+  "finding code by intent and call graph instead of grep",
+  "is cribsheet memory plain markdown i own or a proprietary store",
+  "why does cribsheet keep a daemon running for lookups",
+]

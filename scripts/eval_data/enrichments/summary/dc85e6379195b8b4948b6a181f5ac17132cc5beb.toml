@@ -1,0 +1,11 @@
+section_hash = "dc85e6379195b8b4948b6a181f5ac17132cc5beb"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/Tests"
+model = "glm-5.3-flash"
+terms = [
+  "are parked plans excluded from plan_next but still counted in status",
+  "what fires a parked plan trigger when the watched design body moves",
+  "why does re-proposing a declined plan return declined with the old reason",
+  "why does a sweep apply batch refuse to set a plan done",
+]

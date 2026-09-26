@@ -1,0 +1,11 @@
+section_hash = "2984cbe5b0eb69365a9a59ed13758132044b7ca2"
+label = "summary"
+relpath = "sources/cribsheet/docs/symbol-reference-map.md"
+heading = "The symbol reference map/1. One name, one key, one history"
+model = "glm-5.3"
+terms = [
+  "what does the symbol_ref path#tail key uniquely determine",
+  "why was fqname dropped from symbol entries and kept as symbol_was",
+  "which languages have fqn identical to symbol_ref by design",
+  "how are symbol_ref collisions between same-named lua block locals reported",
+]

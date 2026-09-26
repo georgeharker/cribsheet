@@ -1,0 +1,22 @@
+section_hash = "a722b446f3f4680c6c2f56101202631d74646fc6"
+label = "keywords"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/2. Two generation engines/The bridge wrapper — `crib/generate.py`"
+model = "glm-5.3"
+terms = [
+  "llm wrapper",
+  "model invocation",
+  "claude login reuse",
+  "no api key / keyless",
+  "agent sdk",
+  "system prompt",
+  "user prompt",
+  "chat streaming",
+  "stream capture",
+  "temp file",
+  "asyncio to_thread",
+  "non blocking event loop",
+  "provider config block",
+  "exit code",
+  "string return",
+]

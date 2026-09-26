@@ -1,0 +1,22 @@
+section_hash = "c138327f6a8b64816b5e4b5c98743072233c272c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/1. Evidence/The migrated learning notes"
+model = "glm-5.3"
+terms = [
+  "broken links",
+  "stale references",
+  "dangling pointers",
+  "link rot",
+  "filename mismatch",
+  "slug generation",
+  "deterministic filename",
+  "reproducible slug",
+  "hash suffix",
+  "unique identifier",
+  "canonical name",
+  "qualified name",
+  "dotted path",
+  "one-to-one mapping",
+  "migration regression",
+]

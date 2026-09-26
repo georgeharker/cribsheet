@@ -1,0 +1,11 @@
+section_hash = "132d04f3a3c3c19a0c87e342947af3e02573be87"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/4. Semantic facet — the description index/4.3 Embedding — embed the description, not the code"
+model = "claude-sonnet-4-6"
+terms = [
+  "why use the nl prose embedder instead of codebert for symbol search",
+  "how does embedding the llm description rather than source code affect retrieval",
+  "does the embedconfig and dim-switch reindex mechanism apply to symbol descriptions",
+  "what embedding model is used for the code symbol semantic index",
+]

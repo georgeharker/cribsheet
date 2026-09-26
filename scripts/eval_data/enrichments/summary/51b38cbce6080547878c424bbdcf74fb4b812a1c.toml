@@ -1,0 +1,11 @@
+section_hash = "51b38cbce6080547878c424bbdcf74fb4b812a1c"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/Build order"
+model = "glm-5.3-flash"
+terms = [
+  "how do i park a plan facet and attach a trigger",
+  "why does the declined status require a reason",
+  "when in the build order does the review sweep land",
+  "is the deferral trigger just a dep edge with deferral semantics",
+]

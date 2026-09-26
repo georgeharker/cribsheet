@@ -1,0 +1,21 @@
+section_hash = "82e68e6f4d6b71114428048b68daafb0c4cd6e46"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-interface-catalog.md"
+heading = "Symbol interface — full catalog/0. There are THREE symbol spellings in flight today, not one"
+model = "glm-5.3"
+terms = [
+  "symbol identifier formats",
+  "three symbol spellings exist",
+  "fully qualified name",
+  "node id syntax",
+  "edge reference notation",
+  "bracket notation",
+  "cross reference format",
+  "xref string format",
+  "structured refs migration",
+  "inconsistent identifiers",
+  "call graph node ids",
+  "parse call references",
+  "symbol representation variants",
+  "ref format cleanup",
+]

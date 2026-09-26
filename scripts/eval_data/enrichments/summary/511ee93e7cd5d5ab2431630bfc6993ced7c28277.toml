@@ -1,0 +1,11 @@
+section_hash = "511ee93e7cd5d5ab2431630bfc6993ced7c28277"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion"
+model = "glm-5.3"
+terms = [
+  "are all symbol_refs in path#tail form",
+  "is the on-disk filename derived from path#tail",
+  "convert old symbol records in place markers resumability",
+  "same conversion mechanism for both stores symbol_ref",
+]

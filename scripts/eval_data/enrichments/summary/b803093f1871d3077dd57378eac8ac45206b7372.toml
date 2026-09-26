@@ -1,0 +1,11 @@
+section_hash = "b803093f1871d3077dd57378eac8ac45206b7372"
+label = "summary"
+relpath = "sources/cribsheet/docs/eval-organic-memory.md"
+heading = "Exploration task: how well does the LLM save notes to cribsheet *unprompted*?/Prompted-vs-organic rubric"
+model = "claude-sonnet-4-6"
+terms = [
+  "how to classify a cribsheet write as prompted vs organic using surrounding turns",
+  "what counts as a missed opportunity to save a durable fact to cribsheet",
+  "rubric for ambiguous cribsheet writes that are borderline prompted",
+  "how many preceding turns to check when classifying organic cribsheet saves",
+]

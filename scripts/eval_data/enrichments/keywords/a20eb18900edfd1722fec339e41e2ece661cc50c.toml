@@ -1,0 +1,22 @@
+section_hash = "a20eb18900edfd1722fec339e41e2ece661cc50c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)/Out of scope"
+model = "glm-5.3"
+terms = [
+  "non-goals",
+  "limitations",
+  "excluded features",
+  "not supported",
+  "future work",
+  "deferred",
+  "descoped",
+  "won't fix",
+  "scope boundaries",
+  "static analysis",
+  "symbol linking",
+  "file watcher",
+  "hot reload",
+  "monorepo",
+  "cross-repo",
+]

@@ -1,0 +1,11 @@
+section_hash = "0d188fdd131b580eea1fd55a55d697089631aaa7"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/8. Versioning (two layers, neither indexed)/Layer 2 — git checkpoints (manual, auto-detected)"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does crib detect whether git is available for checkpointing",
+  "why does crib never commit on every write",
+  "how do you view a single note's git commit history in crib",
+  "what does snapshot do when the data root is not a git repo",
+]

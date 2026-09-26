@@ -1,0 +1,11 @@
+section_hash = "b950bffaa1bf57001f201d6f9c1dc87744d6ea78"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/2. Storage layout (XDG, three lifecycles)/On-disk shape"
+model = "claude-sonnet-4-6"
+terms = [
+  "where does cribsheet store its files on disk",
+  "what is the directory structure under crib_data_dir",
+  "where is the chroma index stored",
+  "what files live inside a cribsheet project folder",
+]

@@ -1,0 +1,22 @@
+section_hash = "6c61e46626415040d9692d0cd45510d8ec0284bd"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/5. Generalising to the family"
+model = "glm-5.3"
+terms = [
+  "per backend mcp plugin",
+  "multiple backends same pattern",
+  "apply pattern to other tools",
+  "partial proxy setup",
+  "mixed standalone and proxied servers",
+  "exempt a backend from the combiner",
+  "override which agent serves a tool",
+  "copy helper function between plugins",
+  "avoid cross-plugin dependencies",
+  "duplicate code instead of sharing",
+  "env vars inherited from shell config",
+  "set switch once machine-wide",
+  "silent double registration",
+  "env config drift",
+  "generate env flags from mcpservers.json",
+]

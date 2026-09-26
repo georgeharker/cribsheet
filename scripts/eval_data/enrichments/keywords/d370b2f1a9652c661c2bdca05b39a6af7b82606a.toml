@@ -1,0 +1,21 @@
+section_hash = "d370b2f1a9652c661c2bdca05b39a6af7b82606a"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/surface-parity-fixes.md"
+heading = "Plan: CLI⇄MCP surface parity fixes/Ordering"
+model = "glm-5.3"
+terms = [
+  "sequencing",
+  "task order",
+  "implementation order",
+  "priority order",
+  "priorities",
+  "roadmap",
+  "dependencies",
+  "execution plan",
+  "rollout order",
+  "phases",
+  "milestones",
+  "order of operations",
+  "what to do first",
+  "work plan",
+]

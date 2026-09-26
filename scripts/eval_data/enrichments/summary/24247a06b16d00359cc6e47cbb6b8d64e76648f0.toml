@@ -1,0 +1,11 @@
+section_hash = "24247a06b16d00359cc6e47cbb6b8d64e76648f0"
+label = "summary"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/5. The import tier — extraction is quarantined"
+model = "claude-sonnet-4-6"
+terms = [
+  "why do extracted decisions land as proposed instead of active",
+  "what does design import actually do versus design promote",
+  "why does the import tool write nothing and run no model",
+  "how do hand-authored decisions differ from extracted ones in terms of initial status",
+]

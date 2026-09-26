@@ -1,0 +1,22 @@
+section_hash = "2984cbe5b0eb69365a9a59ed13758132044b7ca2"
+label = "keywords"
+relpath = "sources/cribsheet/docs/symbol-reference-map.md"
+heading = "The symbol reference map/1. One name, one key, one history"
+model = "glm-5.3"
+terms = [
+  "symbol identifier",
+  "unique id",
+  "lookup key",
+  "primary key",
+  "canonical name",
+  "fully qualified name",
+  "stable reference",
+  "rename history",
+  "old name",
+  "alias resolution",
+  "schema migration",
+  "deprecated fields",
+  "duplicate symbols",
+  "id format",
+  "naming convention",
+]

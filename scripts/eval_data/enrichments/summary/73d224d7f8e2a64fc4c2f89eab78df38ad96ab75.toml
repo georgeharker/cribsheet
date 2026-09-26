@@ -1,0 +1,11 @@
+section_hash = "73d224d7f8e2a64fc4c2f89eab78df38ad96ab75"
+label = "summary"
+relpath = "sources/cribsheet/docs/ideas/lsp-server-face.md"
+heading = "crib as a language server — the agent face (and the editor one)/3. The rule: additive in kind"
+model = "glm-5.3"
+terms = [
+  "why must crib never answer a request pyright already handles",
+  "what breaks when crib and the co-attached server both return results",
+  "which lsp requests does crib refuse to serve definition rename formatting",
+  "additive in kind rule for choosing crib capabilities",
+]

@@ -1,0 +1,11 @@
+section_hash = "fb9f702eccd84e90cc9d9c8fa4d51964b3badb90"
+label = "summary"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/5. The eval harness — two metrics, because push amplifies both signal and noise/5.2 Enrichment lift — heading-breadcrumb injection (2026-06-30)"
+model = "glm-5.3"
+terms = [
+  "what mrr lift did heading-breadcrumb injection show on the 9-case set",
+  "near-tie cluster eval-organic-memory promoted by enrichment real regression or bad label",
+  "when did expect become a list for multi-answer queries in the eval harness",
+  "recall@3 already saturated which metric captures rank quality after enrichment",
+]

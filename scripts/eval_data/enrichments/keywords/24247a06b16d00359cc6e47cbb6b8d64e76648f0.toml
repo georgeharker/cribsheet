@@ -1,0 +1,20 @@
+section_hash = "24247a06b16d00359cc6e47cbb6b8d64e76648f0"
+label = "keywords"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/5. The import tier — extraction is quarantined"
+model = "claude-sonnet-4-6"
+terms = [
+  "design import",
+  "plan import",
+  "extraction quarantine",
+  "proposed status on import",
+  "design promote",
+  "active after promote",
+  "citable source string",
+  "correct-by-construction citations",
+  "hand-authored decisions",
+  "session LLM extraction",
+  "import procedure",
+  "no model run on import",
+  "unblessed ground",
+]

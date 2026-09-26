@@ -1,0 +1,22 @@
+section_hash = "d38ce16292aa61db69172310a8a56fdba908a46e"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/9. File watcher (macOS + Linux)"
+model = "claude-sonnet-4-6"
+terms = [
+  "watchdog",
+  "fsevents",
+  "inotify",
+  "atomic save",
+  "rename over target",
+  "vim temp file",
+  "vscode save behavior",
+  "debounce per path",
+  "200ms coalescing",
+  "created moved events",
+  "temp file filter",
+  "swp file",
+  "4913 vim probe",
+  "hash gate backstop",
+  "cross-platform watcher",
+]

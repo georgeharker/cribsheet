@@ -1,0 +1,22 @@
+section_hash = "5870328228d69742602f8dc26d2ceadd50aeda2e"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/14. Sharing notes across machines (git sync)"
+model = "claude-sonnet-4-6"
+terms = [
+  "git sync data dir notes",
+  "cribnote merge driver",
+  "frontmatter conflict resolution",
+  "portable path locations table",
+  "derived ulid cross-machine",
+  "notes heal_file duplicate keys",
+  "host-namespaced claude memory sync",
+  "gitattributes merge driver registration",
+  "pull reconcile reindex",
+  "source_repo portable token",
+  "snapshot verb local commit",
+  "sync verb push pull commit",
+  "allow-unrelated-histories join",
+  "memory-bindings gitignored",
+  "versions ring synced union",
+]

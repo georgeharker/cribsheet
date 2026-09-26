@@ -1,0 +1,11 @@
+section_hash = "9e679f2413ad96ac86f7d69535d469893c333b7c"
+label = "summary"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/7. New surface (summary)"
+model = "glm-5.3"
+terms = [
+  "crib distill mcp tool vs crib-distill slash command",
+  "how is the sessionend hook wired to summarize-session",
+  "what does crib promote relpath accept",
+  "capture proxy settings capture.proxy block crib proxy",
+]

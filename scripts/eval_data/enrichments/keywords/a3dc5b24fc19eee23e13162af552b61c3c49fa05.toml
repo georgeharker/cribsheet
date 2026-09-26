@@ -1,0 +1,22 @@
+section_hash = "a3dc5b24fc19eee23e13162af552b61c3c49fa05"
+label = "keywords"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/6. The graphs — one contract, three facets"
+model = "claude-sonnet-4-6"
+terms = [
+  "crib design graph",
+  "crib plan graph",
+  "graph export",
+  "nodes edges contract",
+  "code graph --edges",
+  "pillar-qualified refs",
+  "external node",
+  "truncated node",
+  "dep edge kind",
+  "superseded_by edge",
+  "source attribution edges --sources",
+  "tainted node live",
+  "renderer shared",
+  "diagram ready",
+  "consumer contract",
+]

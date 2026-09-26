@@ -1,0 +1,20 @@
+section_hash = "8f33aef3c374cd29293eb19b7fdf21337da4a181"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/6. Eval — same discipline, new corpus"
+model = "claude-sonnet-4-6"
+terms = [
+  "eval retrieval symbols",
+  "mrr recall@k code search",
+  "concept to symbol benchmark",
+  "paraphrase generality eval",
+  "structural correctness assertion",
+  "callers callees ground truth",
+  "deterministic lsp regression gate",
+  "doc2query ab eval",
+  "eval_retrieval scripts",
+  "developer phrasing queries eval",
+  "honest benchmark fqname",
+  "multi-phrasing test cases",
+  "symbol retrieval harness",
+]

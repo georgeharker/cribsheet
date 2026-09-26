@@ -1,0 +1,21 @@
+section_hash = "df75a777fc785969ca7d4cd39a26bbe40471a87d"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/retrieval-quality.md"
+heading = "Plan: retrieval-quality investigation (notes path MRR)"
+model = "glm-5.3"
+terms = [
+  "search quality",
+  "search relevance",
+  "search ranking",
+  "ranking metrics",
+  "mean reciprocal rank",
+  "relevance tuning",
+  "gold set",
+  "eval set",
+  "evaluation benchmark",
+  "a/b test",
+  "note search",
+  "semantic search",
+  "relevance experiments",
+  "offline evaluation",
+]

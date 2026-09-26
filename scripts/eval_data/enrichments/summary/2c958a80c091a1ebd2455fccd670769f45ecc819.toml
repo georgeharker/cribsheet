@@ -1,0 +1,11 @@
+section_hash = "2c958a80c091a1ebd2455fccd670769f45ecc819"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design/3.7 A global toggle, not a per-session one"
+model = "glm-5.3"
+terms = [
+  "why export mcp_combiner in zshenv instead of per session",
+  "what happens when two concurrent sessions disagree on mcp_combiner",
+  "can mcp_combiner_serves_cribsheet be overridden for a single session",
+  "why must the mode toggle match the scope of claude mcp --scope user",
+]

@@ -1,0 +1,22 @@
+section_hash = "4126e0ed01e85ea726a5598518cb37526054c19a"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Verified sound (don't \"fix\")"
+model = "glm-5.3"
+terms = [
+  "not a bug",
+  "working as intended",
+  "wontfix",
+  "false positive",
+  "known good",
+  "no action needed",
+  "leave alone",
+  "already correct",
+  "expected behavior",
+  "reciprocal rank fusion",
+  "race condition guard",
+  "stale write protection",
+  "escape unescape roundtrip",
+  "code audit findings",
+  "safe to ignore",
+]

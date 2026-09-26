@@ -1,0 +1,11 @@
+section_hash = "131558d9ec22439664ec1e318c0fba2cac7be199"
+label = "summary"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)"
+model = "glm-5.3"
+terms = [
+  "why did the summary_index verdict flip from never helped to recommended",
+  "what replaced the rrf-of-ranks fusion in crib lookup",
+  "does keyword_weight 0.3 hurt diverse corpora and need retuning",
+  "how does daemon start heal a keyword_index refresh lost to a quit",
+]

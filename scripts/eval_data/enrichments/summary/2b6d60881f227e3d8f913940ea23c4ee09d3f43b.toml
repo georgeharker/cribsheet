@@ -1,0 +1,11 @@
+section_hash = "2b6d60881f227e3d8f913940ea23c4ee09d3f43b"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/3. Data model/Chunk identity & Chroma metadata"
+model = "claude-sonnet-4-6"
+terms = [
+  "how is chunk_id computed for a repeated heading within the same note",
+  "what metadata fields does cribsheet store per chunk in chroma",
+  "how does cribsheet handle incremental reindex without re-embedding unchanged chunks",
+  "what is the single chroma collection name used by cribsheet and how are projects separated",
+]

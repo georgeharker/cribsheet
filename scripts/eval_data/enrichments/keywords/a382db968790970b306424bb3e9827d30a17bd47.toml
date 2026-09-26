@@ -1,0 +1,21 @@
+section_hash = "a382db968790970b306424bb3e9827d30a17bd47"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/2. Two facets, one identity"
+model = "claude-sonnet-4-6"
+terms = [
+  "symbol unit definition",
+  "module-level globals indexing scope",
+  "class member attribute indexing",
+  "self.x instance attribute pyright hoist",
+  "scope-aware indexing locals dropped",
+  "walk container kinds filter",
+  "fqname stable pointer",
+  "symbol_hash cache key",
+  "calls called_by references schema",
+  "data declarations vs callables",
+  "call hierarchy references distinction",
+  "symbol identity schema toml",
+  "no ancestor function guard",
+  "documentsymbol locals noise filter",
+]

@@ -1,0 +1,11 @@
+section_hash = "fff8ef648b485aa62ea017e378666250009a6e8e"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P2 — `declined`: terminal-with-rationale"
+model = "glm-5.3-flash"
+terms = [
+  "why does plan_decline require a --why rationale",
+  "plan_add re-proposing a declined idea shows original decline reason",
+  "plan_decline vs plan_supersede difference terminal statuses",
+  "when does a declined item trigger fire rationale rewording",
+]

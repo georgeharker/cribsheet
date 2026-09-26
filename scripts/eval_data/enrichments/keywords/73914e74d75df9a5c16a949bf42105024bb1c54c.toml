@@ -1,0 +1,22 @@
+section_hash = "73914e74d75df9a5c16a949bf42105024bb1c54c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/2. The three spellings/Which is which"
+model = "glm-5.3"
+terms = [
+  "difference between fqn and fqname",
+  "what is symbol_ref",
+  "symbol unique identifier",
+  "why did fqname change",
+  "legacy symbol id migration",
+  "symbol lookup key vs name",
+  "fully qualified name collisions",
+  "duplicate symbol same name",
+  "symbol primary key",
+  "disambiguate symbols",
+  "old symbol identifier format",
+  "fqname deprecated",
+  "symbol_ref vs fqname",
+  "rename fqname to symbol_ref",
+  "stable symbol id",
+]

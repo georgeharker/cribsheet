@@ -1,0 +1,22 @@
+section_hash = "5cd2fd043604252c40117da925d0ecdba87bb25b"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/7. Conversion: one predicate, two stores/What may not be converted"
+model = "glm-5.3"
+terms = [
+  "conversion constraints",
+  "what cannot be converted",
+  "transformation limits",
+  "invariants",
+  "forbidden fields",
+  "lossless migration",
+  "data integrity",
+  "no data loss",
+  "purity requirement",
+  "deferred resolution",
+  "forward reference",
+  "dangling reference",
+  "lazy lookup",
+  "node id format",
+  "unchanged fields",
+]

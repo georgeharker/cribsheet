@@ -1,0 +1,22 @@
+section_hash = "1b0a901c6d7e79b0ef4d355a435127867e456cbe"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-plan-import.md"
+heading = "Plan: doc import & source attribution for the design/plan graph"
+model = "glm-5.3"
+terms = [
+  "provenance",
+  "traceability",
+  "lineage",
+  "knowledge graph ingestion",
+  "import decisions from markdown docs",
+  "llm-driven extraction",
+  "section-level citation",
+  "backfill entries from existing docs",
+  "track where a decision came from",
+  "audit trail",
+  "re-check on source change",
+  "stale reference detection",
+  "source of truth",
+  "deep link to heading",
+  "blocker on unresolved dependency",
+]

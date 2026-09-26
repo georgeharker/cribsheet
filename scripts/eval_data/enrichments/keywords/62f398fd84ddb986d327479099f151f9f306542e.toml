@@ -1,0 +1,21 @@
+section_hash = "62f398fd84ddb986d327479099f151f9f306542e"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P3 — the review sweep: evidence handoff, batched apply/Phase 3 — `plan review --apply <batch>` (write, edge-aware)"
+model = "glm-5.3-flash"
+terms = [
+  "commit changes",
+  "accept edits",
+  "approve suggestions",
+  "human in the loop",
+  "agent cannot mark complete",
+  "no self-approval",
+  "sign off",
+  "bulk update",
+  "write back",
+  "trust boundary",
+  "audit trail",
+  "who can close a task",
+  "verify work happened",
+  "side effects",
+]

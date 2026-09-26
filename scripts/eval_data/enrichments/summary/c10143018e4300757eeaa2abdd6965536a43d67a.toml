@@ -1,0 +1,11 @@
+section_hash = "c10143018e4300757eeaa2abdd6965536a43d67a"
+label = "summary"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Git sync — share notes across machines (CLI-only)"
+model = "glm-5.3"
+terms = [
+  "crib memory setup --remote join shared memory repo on new machine",
+  "what does crib merge-driver do for frontmatter merge conflicts",
+  "is crib memory sync push pull available to the agent or cli-only",
+  "difference between crib memory sync and separate push pull commands reindex",
+]

@@ -1,0 +1,11 @@
+section_hash = "94f747c559af89d216bf4210a33dcb39e214742b"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/① Deletion safety (`codeindex.py`, `codeindexer.py`) — one agent, sequential/2.2 Non-UTF8 file must not kill the session"
+model = "glm-5.3"
+terms = [
+  "when should the retry handler discard the session vs skip the file — SessionError vs FileReadError",
+  "how does _extract read non-utf8 files with errors=\"replace",
+  "why send replaced text to lsp didOpen when decoding fails",
+  "latin-1 file crashes the sweep, how are skipped files recorded",
+]

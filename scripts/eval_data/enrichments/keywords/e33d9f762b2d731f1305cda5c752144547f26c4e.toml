@@ -1,0 +1,22 @@
+section_hash = "e33d9f762b2d731f1305cda5c752144547f26c4e"
+label = "keywords"
+relpath = "sources/cribsheet/docs/storage.md"
+heading = "Where things live — store types, ownership, and how to use each/The three roots (lifecycles)"
+model = "glm-5.3"
+terms = [
+  "file locations",
+  "where files are stored",
+  "directory layout",
+  "storage paths",
+  "xdg directories",
+  "home folder structure",
+  "safe to delete",
+  "wipe cache",
+  "rebuild embeddings",
+  "regenerate vector store",
+  "what to back up",
+  "move data directory",
+  "change install location",
+  "clean reinstall",
+  "environment variables override",
+]

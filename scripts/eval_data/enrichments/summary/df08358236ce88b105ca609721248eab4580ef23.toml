@@ -1,0 +1,11 @@
+section_hash = "df08358236ce88b105ca609721248eab4580ef23"
+label = "summary"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide"
+model = "glm-5.3"
+terms = [
+  "how do i talk to cribsheet with the crib command",
+  "does cribsheet store memory as plain markdown files i own in git",
+  "find notes by meaning not exact words semantic search cribsheet",
+  "is cribsheet memory shared across sessions tools and machines",
+]

@@ -1,0 +1,21 @@
+section_hash = "10941bfc1bfe7e96f5a0dc207947755fbec3817a"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/④ Decay + recovery (`describe_queue.py`, `notestore.py`, `app.py`) — AFTER the stall fix and Tier 0 land (shares `notestore.py`/`app.py`)/2.1 Backoff actually backs off"
+model = "glm-5.3"
+terms = [
+  "exponential backoff",
+  "retry delay",
+  "retry storm",
+  "tight retry loop",
+  "hot loop",
+  "hammering the server",
+  "escalating delay",
+  "doubling delay",
+  "fire and forget",
+  "orphaned task",
+  "task leak",
+  "silent task failure",
+  "unawaited exceptions",
+  "retries forever",
+]

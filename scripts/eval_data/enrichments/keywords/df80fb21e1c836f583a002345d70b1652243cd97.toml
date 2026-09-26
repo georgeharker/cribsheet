@@ -1,0 +1,22 @@
+section_hash = "df80fb21e1c836f583a002345d70b1652243cd97"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/2. Constraints (measured, not assumed)/2.4 No plugin can configure another plugin"
+model = "glm-5.3"
+terms = [
+  "disable plugin from another plugin",
+  "turn off mcp server via env var",
+  "cross-plugin configuration",
+  "inter-plugin dependency",
+  "load order not working",
+  "environment variable inheritance",
+  "set env before claude starts",
+  "shell startup file",
+  "zshrc vs zshenv",
+  "child process env",
+  "relaunch claude code",
+  "cannot disable backend plugin",
+  "plugin manifest expansion",
+  "toggle mcp plugins",
+  "pre-launch environment",
+]

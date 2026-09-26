@@ -1,0 +1,22 @@
+section_hash = "6bdb8437f2627c9d0514d96d4cc322075f76edc0"
+label = "keywords"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/5. Conversation capture (DESIGN §12) — where the value is/5a. Slash command — explicit, in-session → **curated**"
+model = "glm-5.3"
+terms = [
+  "save conversation",
+  "remember chat",
+  "custom slash command",
+  "claude code command",
+  "manual save",
+  "explicit save",
+  "persist session",
+  "save decisions",
+  "chat to note",
+  "session summary",
+  "keep context",
+  "export conversation",
+  "note-taking command",
+  "user-triggered capture",
+  "summarize chat history",
+]

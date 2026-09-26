@@ -1,0 +1,11 @@
+section_hash = "9e8193100d17e736128859bf86dfb0374327afe4"
+label = "summary"
+relpath = "sources/cribsheet/README.md"
+heading = "Authentication (optional)"
+model = "glm-5.3"
+terms = [
+  "how to require a bearer token on crib /mcp http endpoint",
+  "cribsheet_auth_token claude code headershelper strips token vars",
+  "pass crib bearer token to mcp-combiner in servers.json",
+  "pi-mcp-adapter bearerTokenEnv crib auth setup",
+]

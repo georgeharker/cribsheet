@@ -1,0 +1,11 @@
+section_hash = "cee346e4d98cfc8191b8c8b0b242e4173f41610a"
+label = "summary"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/The interface"
+model = "glm-5.3"
+terms = [
+  "difference between crib -p and -p capital project flags",
+  "why won't crib note store inherit the current project",
+  "crib --no-daemon run in-process after editing cribsheet",
+  "crib note store dash read text from stdin",
+]

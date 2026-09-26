@@ -1,0 +1,11 @@
+section_hash = "c138327f6a8b64816b5e4b5c98743072233c272c"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/1. Evidence/The migrated learning notes"
+model = "glm-5.3"
+terms = [
+  "how does ref_slug symbol_ref generate learning note filenames",
+  "migrated notes filenames already correct only readers wrong",
+  "which learning note still works end to end never migrated",
+  "reciprocal_rank_fusion f979eab8 slug vs dotted index name",
+]

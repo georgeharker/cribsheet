@@ -1,0 +1,11 @@
+section_hash = "8c5213c59d3b69785482b37f8587b26cecf60fb1"
+label = "summary"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/3. Trust tiers (the `source` field)"
+model = "glm-5.3"
+terms = [
+  "what values can the `source` field take on a note",
+  "how does `crib promote` move conversation entries out of quarantine",
+  "quarantine_weight retrieveconfig hide unreviewed notes",
+  "does lookup down-weight `conversation` entries until promoted",
+]

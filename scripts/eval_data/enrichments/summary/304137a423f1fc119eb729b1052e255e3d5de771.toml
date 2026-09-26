@@ -1,0 +1,11 @@
+section_hash = "304137a423f1fc119eb729b1052e255e3d5de771"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)/Decisions (settled — do not relitigate)"
+model = "glm-5.3"
+terms = [
+  "why is blocked not stored as a status on plan items",
+  "what does design_forget do when other items depend on it",
+  "lexorank rank string tie-breaker in topological sort ordering",
+  "how is staleness taint computed from checked sha1 hashes",
+]

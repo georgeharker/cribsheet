@@ -1,0 +1,11 @@
+section_hash = "9b5d813d55e9e8b3d8ee8794ec547a440d289709"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/2. Constraints (measured, not assumed)/2.5 Writing MCP config mid-session forces a reload"
+model = "glm-5.3"
+terms = [
+  "does editing mcp config during a live session force a reload",
+  "adding a user-scope server mid-session dropped my combiner's tools",
+  "why did a config write disconnect the combiner's 173 tools",
+  "are mcp config writes silent or do they restart the connection",
+]

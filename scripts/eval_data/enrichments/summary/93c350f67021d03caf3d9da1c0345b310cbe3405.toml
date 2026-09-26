@@ -1,0 +1,11 @@
+section_hash = "93c350f67021d03caf3d9da1c0345b310cbe3405"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)/Frontmatter schemas"
+model = "glm-5.3"
+terms = [
+  "what does the checked map with commit hashes pin in design note frontmatter",
+  "plan note status values todo in-progress done verified frontmatter fields",
+  "what is the rank hzzt lexorank field in notes/plans",
+  "difference between deps and links in design decision frontmatter",
+]

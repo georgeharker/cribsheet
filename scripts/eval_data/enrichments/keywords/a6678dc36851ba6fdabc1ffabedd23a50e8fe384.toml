@@ -1,0 +1,21 @@
+section_hash = "a6678dc36851ba6fdabc1ffabedd23a50e8fe384"
+label = "keywords"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/4. Reindex everything (embeddings + BM25)"
+model = "glm-5.3"
+terms = [
+  "rebuild index",
+  "reindex from scratch",
+  "new computer setup",
+  "fresh install",
+  "second laptop",
+  "sync between devices",
+  "resync projects",
+  "migrate to another machine",
+  "full rebuild embeddings",
+  "semantic index rebuild",
+  "keyword search index",
+  "backfill documents",
+  "catch up offline changes",
+  "restore workspace on new device",
+]

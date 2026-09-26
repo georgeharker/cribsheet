@@ -1,0 +1,22 @@
+section_hash = "711d67823fddfb73fd58f52151280ea0a3e5069f"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design/3.5 Idempotency is load-bearing"
+model = "glm-5.3"
+terms = [
+  "avoid duplicate mcp registration",
+  "skip if already registered",
+  "no-op hook",
+  "prevent re-registering servers",
+  "dedupe mcp entries",
+  "check before write",
+  "fast json read vs slow cli",
+  "startup latency",
+  "zero writes steady state",
+  "mcp reload disconnects",
+  "read .claude.json directly",
+  "fail safe fallback exit code",
+  "claude mcp get too slow",
+  "why the guard exists",
+  "session start overhead cost",
+]

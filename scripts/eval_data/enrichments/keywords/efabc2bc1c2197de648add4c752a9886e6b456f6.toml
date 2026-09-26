@@ -1,0 +1,20 @@
+section_hash = "efabc2bc1c2197de648add4c752a9886e6b456f6"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 1 — daemon correctness under load/1.5 Fire-and-forget tasks with no strong reference (3 sites)"
+model = "glm-5.3"
+terms = [
+  "asyncio task garbage collected",
+  "background task disappears",
+  "create_task keep reference",
+  "task lost mid execution",
+  "silently dropped async work",
+  "task exception never retrieved",
+  "keep task alive python",
+  "unawaited coroutine warning",
+  "task set strong ref",
+  "python background task gc",
+  "weakref collected task",
+  "event loop drops tasks",
+  "fire and forget exception handling",
+]

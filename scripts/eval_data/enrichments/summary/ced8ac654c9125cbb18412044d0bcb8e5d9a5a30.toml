@@ -1,0 +1,11 @@
+section_hash = "ced8ac654c9125cbb18412044d0bcb8e5d9a5a30"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/3. Structural facet — the warm LSP session subsystem/3.3 Server specs — the `.lsp.json` schema, from `~/.config/crib`"
+model = "claude-sonnet-4-6"
+terms = [
+  "why does crib mirror the claude code lsp.json schema instead of inventing its own format",
+  "how does crib resolve a server binary portably without baking in machine-specific paths",
+  "what client capabilities must crib advertise to unlock outgoing callhierarchy from basedpyright",
+  "how does the dump_lsp.lua nvim export feed into the shared lsp.json spec",
+]

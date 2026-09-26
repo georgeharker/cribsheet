@@ -1,0 +1,22 @@
+section_hash = "902200d5fe519958c38458f5a59265c6c62d4c27"
+label = "keywords"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/Notes / gotchas"
+model = "glm-5.3"
+terms = [
+  "new machine setup",
+  "second computer",
+  "fresh laptop",
+  "migrate workspace",
+  "rebuild indexes locally",
+  "regenerate index",
+  "index missing after pull",
+  "why is the index not in git",
+  "which model built the index",
+  "embedding model used",
+  "dense aliases hurt",
+  "recall already saturated",
+  "test on volume corpora",
+  "run without background service",
+  "avoid restarting the daemon",
+]

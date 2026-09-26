@@ -1,0 +1,21 @@
+section_hash = "caa37dbc46daf962312ca383f397f4f6d41e126d"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-plan-import.md"
+heading = "Plan: doc import & source attribution for the design/plan graph/Data model/`sources:` — attribution edges (both facets)"
+model = "glm-5.3"
+terms = [
+  "provenance",
+  "citations",
+  "traceability",
+  "cite design doc",
+  "link plan to documentation",
+  "where did this requirement come from",
+  "source of truth",
+  "stale documentation detection",
+  "doc drift",
+  "reference spec section",
+  "markdown heading anchor",
+  "import markdown files",
+  "track document edits",
+  "bibliography",
+]

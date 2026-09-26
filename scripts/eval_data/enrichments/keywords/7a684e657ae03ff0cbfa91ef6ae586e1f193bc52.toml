@@ -1,0 +1,21 @@
+section_hash = "7a684e657ae03ff0cbfa91ef6ae586e1f193bc52"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/1. Core principles"
+model = "claude-sonnet-4-6"
+terms = [
+  "idempotent indexing",
+  "content hash gating",
+  "per-path lock",
+  "disk as source of truth",
+  "rebuild index from disk",
+  "index_file routine",
+  "no api key server",
+  "mcp sampling distill",
+  "race condition prevention",
+  "noisy filesystem events",
+  "single write path",
+  "model agnostic embedding",
+  "file watcher coordination",
+  "redundant write safety",
+]

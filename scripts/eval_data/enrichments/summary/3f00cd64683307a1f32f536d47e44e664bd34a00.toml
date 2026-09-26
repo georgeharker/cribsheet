@@ -1,0 +1,11 @@
+section_hash = "3f00cd64683307a1f32f536d47e44e664bd34a00"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/10. Stack/10.2 CLI process model — the daemon is the MCP server"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does the crib cli avoid reloading embedder weights on every invocation",
+  "how does cwd-dependent project resolution work when the cli attaches to a warm daemon",
+  "what happens when the sharedserver binary is absent and daemon mode is requested",
+  "how does --no-daemon differ from normal cli daemon attach behavior",
+]

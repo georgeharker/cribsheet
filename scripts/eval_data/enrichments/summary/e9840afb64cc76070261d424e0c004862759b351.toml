@@ -1,0 +1,11 @@
+section_hash = "e9840afb64cc76070261d424e0c004862759b351"
+label = "summary"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Project lifecycle — onboard & manage a whole repo"
+model = "glm-5.3"
+terms = [
+  "how to onboard a whole repo in one call with crib project setup",
+  "project_index wait_s partial handle running true re-invoke to join sweep",
+  "cancel a crib index sweep do already completed files survive",
+  "crib project adopt vs release moving notes into the .crib store dir",
+]

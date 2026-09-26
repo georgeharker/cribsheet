@@ -1,0 +1,11 @@
+section_hash = "44e49526f397b740907989587cc6c457130d9042"
+label = "summary"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/4. Plans — a todo list that knows when it stops being safe"
+model = "claude-sonnet-4-6"
+terms = [
+  "when does a plan item drop out of plan next due to a design dep",
+  "what is the difference between plan status done and plan reaffirm",
+  "how does in-progress affect other agents' plan next results",
+  "what triggers a revisit flag on a finished plan item",
+]

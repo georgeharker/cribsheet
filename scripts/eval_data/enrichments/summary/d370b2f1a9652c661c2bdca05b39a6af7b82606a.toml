@@ -1,0 +1,11 @@
+section_hash = "d370b2f1a9652c661c2bdca05b39a6af7b82606a"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/surface-parity-fixes.md"
+heading = "Plan: CLI⇄MCP surface parity fixes/Ordering"
+model = "glm-5.3"
+terms = [
+  "what order should p1.1 p1.2 p1.3 p3 p2.5 p2.4 be done in",
+  "are the p1 parity fixes independent or do they need to be sequential",
+  "why does the p2.5 deletion come before p2.4 docs and import guard",
+  "how does this manual audit compare to what design_check should automate",
+]

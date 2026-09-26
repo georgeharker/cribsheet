@@ -1,0 +1,11 @@
+section_hash = "a91812715f2c2a085f581c63251c0a0fcfcb11d3"
+label = "summary"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/Mess ledger — cleanup candidates"
+model = "glm-5.3"
+terms = [
+  "why weren't elaborate and summarize merged if they're near-duplicates",
+  "crib memory git verbs need a memoryrepo collaborator seam",
+  "how did the two cli dispatch tables collapse into the verbs registry",
+  "what was the sticky session project leak and how did projectresolution fix it",
+]

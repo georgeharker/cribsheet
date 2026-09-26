@@ -1,0 +1,11 @@
+section_hash = "db9a60a1f412647b03a12dcdf73e3ced55eefcf2"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner"
+model = "glm-5.3"
+terms = [
+  "how does the cribsheet plugin decide whether to register the crib mcp server",
+  "standalone vs mcp-combiner deployment crib registration",
+  "avoid registering crib mcp twice when a combiner proxy already serves it",
+  "why did the cribsheet and cribsheet-instructions plugins merge into one",
+]

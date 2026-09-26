@@ -1,0 +1,11 @@
+section_hash = "75548c5e11848093bad40f0c168845776ab3d8df"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/① Deletion safety (`codeindex.py`, `codeindexer.py`) — one agent, sequential/2.3 Honor settle; hash-gated deletion rule"
+model = "glm-5.3"
+terms = [
+  "extract_file settle capped at _reuse_settle instead of honored",
+  "delete vanished symbols only when file content hash changed",
+  "confirm call settle=3.0 not actually waiting 3 seconds",
+  "partial documentsymbol response on unchanged file should trigger zero deletions",
+]

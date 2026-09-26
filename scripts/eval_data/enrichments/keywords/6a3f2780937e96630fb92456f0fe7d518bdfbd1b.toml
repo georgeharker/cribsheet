@@ -1,0 +1,22 @@
+section_hash = "6a3f2780937e96630fb92456f0fe7d518bdfbd1b"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/CLI⇄MCP pairing rule (applies to every verb here)"
+model = "glm-5.3"
+terms = [
+  "feature parity",
+  "dual interface",
+  "single source of truth",
+  "keep interfaces in sync",
+  "shared implementation",
+  "thin wrapper",
+  "mirror commands",
+  "argument consistency",
+  "matching signatures",
+  "avoid drift",
+  "code duplication",
+  "api contract",
+  "release together",
+  "contributing guidelines",
+  "one implementation",
+]

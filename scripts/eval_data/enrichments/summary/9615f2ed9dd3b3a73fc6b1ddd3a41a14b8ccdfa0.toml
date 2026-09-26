@@ -1,0 +1,11 @@
+section_hash = "9615f2ed9dd3b3a73fc6b1ddd3a41a14b8ccdfa0"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/7. Conversion: one predicate, two stores/Why the join is correct at every instant"
+model = "glm-5.3"
+terms = [
+  "why does an unconverted entry still have a key()",
+  "what does bindings() return for symbol_was and fqname",
+  "which entry and note combinations does the join correctness table cover",
+  "why do converted notes fail only because readers key on fqname",
+]

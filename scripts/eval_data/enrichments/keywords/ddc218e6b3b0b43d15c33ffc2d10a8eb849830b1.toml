@@ -1,0 +1,22 @@
+section_hash = "ddc218e6b3b0b43d15c33ffc2d10a8eb849830b1"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/10. Stack"
+model = "claude-sonnet-4-6"
+terms = [
+  "fastmcp",
+  "chroma",
+  "crib_chunks collection",
+  "sentence-transformers",
+  "bge-small-en-v1.5",
+  "nomic-embed-text",
+  "embedder protocol",
+  "api embedder swap",
+  "watchdog",
+  "gitpython",
+  "async server",
+  "shared chroma",
+  "embedded chroma",
+  "technology choices",
+  "dependencies",
+]

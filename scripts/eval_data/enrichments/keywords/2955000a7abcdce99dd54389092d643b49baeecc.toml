@@ -1,0 +1,22 @@
+section_hash = "2955000a7abcdce99dd54389092d643b49baeecc"
+label = "keywords"
+relpath = "sources/cribsheet/docs/symbol-reference-map.md"
+heading = "The symbol reference map/5. Where this is enforced"
+model = "glm-5.3"
+terms = [
+  "enforcement points",
+  "which tests cover symbol rules",
+  "who enforces the invariants",
+  "where are symbol spellings checked",
+  "source of truth for symbols",
+  "symbol validation locations",
+  "test ownership map",
+  "guardrails",
+  "invariant checks",
+  "allowlist enforcement",
+  "single source of truth",
+  "where is this rule checked",
+  "canonical spelling validation",
+  "traceability",
+  "policy enforcement files",
+]

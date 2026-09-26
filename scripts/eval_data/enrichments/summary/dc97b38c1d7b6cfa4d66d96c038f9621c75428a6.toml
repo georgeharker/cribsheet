@@ -1,0 +1,11 @@
+section_hash = "dc97b38c1d7b6cfa4d66d96c038f9621c75428a6"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/8. Versioning (two layers, neither indexed)"
+model = "claude-sonnet-4-6"
+terms = [
+  "why are crib versions not surfaced in the chroma index",
+  "how many versioning layers does cribsheet have and what are they",
+  "can you find old note versions through the lookup tool",
+  "how do you access prior versions if they are not indexed",
+]

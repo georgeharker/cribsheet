@@ -1,0 +1,22 @@
+section_hash = "ba58d63987bda0f0dc9b59f85473d7dfddddd572"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Implementation steps/2. `crib/paths.py` — the central seam"
+model = "glm-5.3"
+terms = [
+  "centralize path resolution",
+  "path indirection",
+  "single source of truth for paths",
+  "project directory layout",
+  "per-project storage location",
+  "in-repo notes directory",
+  "migrate call sites",
+  "refactor paths module",
+  "storage root expansion",
+  "stub file discovery",
+  "memoize project paths",
+  "cached resolution",
+  "grep sweep",
+  "dataclass for directories",
+  "mechanical refactor",
+]

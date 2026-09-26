@@ -1,0 +1,11 @@
+section_hash = "4d7cf0c4ece8c25cf5b895d9fd922c3569902305"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/5. Tool surface"
+model = "claude-sonnet-4-6"
+terms = [
+  "what is the difference between note_store note_append and note_edit in cribsheet",
+  "which cribsheet mcp tools write to disk and which are read-only",
+  "how do i import local repo docs referenced by a .crib file into a cribsheet project",
+  "what does note_locate return and when should it be used instead of note_read",
+]

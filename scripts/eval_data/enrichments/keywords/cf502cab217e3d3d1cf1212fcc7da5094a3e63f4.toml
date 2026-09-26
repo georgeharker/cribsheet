@@ -1,0 +1,21 @@
+section_hash = "cf502cab217e3d3d1cf1212fcc7da5094a3e63f4"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 2 — indexing correctness/2.1 Describe-queue backoff is broken (hammers a down endpoint)"
+model = "glm-5.3"
+terms = [
+  "exponential backoff not working",
+  "retry storm",
+  "infinite retry loop",
+  "retries not escalating",
+  "backoff resets to zero",
+  "hammering dead service",
+  "spamming unavailable api",
+  "tight retry loop",
+  "self dos",
+  "thundering herd",
+  "describe call flood",
+  "endpoint outage hammering",
+  "missing circuit breaker",
+  "retry without delay",
+]

@@ -1,0 +1,11 @@
+section_hash = "228740839143924d5a3d74d4e63595581849e50a"
+label = "summary"
+relpath = "sources/cribsheet/docs/storage.md"
+heading = "Where things live — store types, ownership, and how to use each/Content classes inside a project"
+model = "glm-5.3"
+terms = [
+  "why does note_store append refuse paths under design/ or plans/",
+  "can i raw-edit a plan item file instead of calling plan_add",
+  "what is the .versions ring and is it ever indexed or searched",
+  "does sources: attribution have to cite a section instead of the whole document",
+]

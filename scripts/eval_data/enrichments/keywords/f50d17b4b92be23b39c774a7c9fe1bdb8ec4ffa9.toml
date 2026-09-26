@@ -1,0 +1,21 @@
+section_hash = "f50d17b4b92be23b39c774a7c9fe1bdb8ec4ffa9"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/2. Constraints (measured, not assumed)"
+model = "glm-5.3"
+terms = [
+  "mcp server limitations",
+  "claude code mcp issues",
+  "why it doesn't work",
+  "known failure modes",
+  "tested findings",
+  "verified limits",
+  "combined server problems",
+  "pitfalls",
+  "gotchas",
+  "lessons learned",
+  "troubleshooting mcp",
+  "observed behavior",
+  "version specific quirks",
+  "hard limits",
+]

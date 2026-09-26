@@ -1,0 +1,21 @@
+section_hash = "c10143018e4300757eeaa2abdd6965536a43d67a"
+label = "keywords"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Git sync — share notes across machines (CLI-only)"
+model = "glm-5.3"
+terms = [
+  "backup notes",
+  "sync between computers",
+  "multiple devices",
+  "two laptops",
+  "github",
+  "clone notes repo",
+  "version control",
+  "merge conflicts",
+  "frontmatter merge",
+  "collaborate",
+  "team notes",
+  "transfer notes to new machine",
+  "remote repository",
+  "publish notes",
+]

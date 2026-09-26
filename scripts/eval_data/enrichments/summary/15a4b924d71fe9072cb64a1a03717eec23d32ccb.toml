@@ -1,0 +1,11 @@
+section_hash = "15a4b924d71fe9072cb64a1a03717eec23d32ccb"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/4. What is broken/4.3 The resumability marker is not on disk"
+model = "glm-5.3"
+terms = [
+  "why does unconverted report every entry as pending after full conversion",
+  "schema field reads 0 for all symbol entries in store",
+  "_symbol_entry sets schema but marker never written to disk",
+  "resumability marker missing since 741ae1b store rewrite",
+]

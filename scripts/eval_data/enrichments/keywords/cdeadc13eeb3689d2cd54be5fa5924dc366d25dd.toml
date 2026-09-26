@@ -1,0 +1,22 @@
+section_hash = "cdeadc13eeb3689d2cd54be5fa5924dc366d25dd"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/Constraints (inherited)"
+model = "glm-5.3-flash"
+terms = [
+  "constraint inheritance",
+  "carried-over rules",
+  "soft constraints",
+  "advisory triggers",
+  "non-blocking checks",
+  "warn don't block",
+  "silent failure prevention",
+  "dangling reference detection",
+  "human decides status",
+  "no automatic reopen",
+  "read-only graph",
+  "verb parity across surfaces",
+  "docstring as contract",
+  "self-documenting verbs",
+  "llm discoverability",
+]

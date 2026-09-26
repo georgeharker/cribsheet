@@ -1,0 +1,22 @@
+section_hash = "9401113ae260e5689fbef7b4cf79f10927cad8c8"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/② Attribution keys (`codeindex.py` describe/meta paths, `codestore.py`) — after ①③ (same files)/2.7 Patch `references` symmetrically; fqname keys"
+model = "glm-5.3"
+terms = [
+  "reverse edges",
+  "backlinks",
+  "called_by not updating",
+  "incoming references",
+  "incremental reindex",
+  "watch mode",
+  "file watcher",
+  "hot reload",
+  "stale graph",
+  "index out of sync",
+  "fully qualified name",
+  "duplicate symbol names",
+  "same-named functions",
+  "bidirectional edges",
+  "dossier stale references",
+]

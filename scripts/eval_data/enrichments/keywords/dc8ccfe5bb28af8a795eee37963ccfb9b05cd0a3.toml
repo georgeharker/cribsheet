@@ -1,0 +1,22 @@
+section_hash = "dc8ccfe5bb28af8a795eee37963ccfb9b05cd0a3"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Implementation steps/6. Git-sync guards (`crib/gitbacking.py` / CLI sync verbs)"
+model = "glm-5.3"
+terms = [
+  "nested repository",
+  "submodule",
+  "prevent double commit",
+  "don't sync in-repo notes",
+  "cannot push in-repo project",
+  "why can't i push my notes",
+  "sync rejected",
+  "guardrail",
+  "error message meaning",
+  "notes stored inside repo",
+  "commit with outer repo",
+  "skip nested projects",
+  "backup conflict",
+  "global tree only",
+  "forbidden verb",
+]

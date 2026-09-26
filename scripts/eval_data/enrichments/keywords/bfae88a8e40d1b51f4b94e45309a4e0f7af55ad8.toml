@@ -1,0 +1,22 @@
+section_hash = "bfae88a8e40d1b51f4b94e45309a4e0f7af55ad8"
+label = "keywords"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Server & daemon"
+model = "glm-5.3"
+terms = [
+  "background process",
+  "start daemon",
+  "daemonize",
+  "run in background",
+  "long-running process",
+  "persistent process",
+  "daemon not running",
+  "restart daemon",
+  "run without daemon",
+  "health check",
+  "shared process",
+  "mcp transport",
+  "streamable http",
+  "bind address",
+  "localhost port",
+]

@@ -1,0 +1,21 @@
+section_hash = "d422743c9a82e650b46dd5c57335155212809d6f"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/4. The coordination model (writer ⇄ watcher)"
+model = "claude-sonnet-4-6"
+terms = [
+  "writer watcher race",
+  "echo suppression",
+  "hash gated no-op",
+  "async per-path lock",
+  "file watcher mid-window",
+  "embedding race condition",
+  "tool write flow",
+  "watcher echo flow",
+  "external edit detection",
+  "no shared mutable state",
+  "coordination mechanism",
+  "direct llm edit handling",
+  "index_file idempotent lock",
+  "skip echo without tagging",
+]

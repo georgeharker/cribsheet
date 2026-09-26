@@ -1,0 +1,21 @@
+section_hash = "baae2697c8eb45b686d993d1aa59ace7f83c38b3"
+label = "keywords"
+relpath = "sources/cribsheet/README.md"
+heading = "The surface"
+model = "glm-5.3"
+terms = [
+  "all commands",
+  "command list",
+  "cli reference",
+  "available commands",
+  "subcommands",
+  "verb list",
+  "mcp tool names",
+  "tool catalog",
+  "cheat sheet",
+  "quick reference",
+  "command overview",
+  "api surface",
+  "every noun and verb",
+  "how to invoke",
+]

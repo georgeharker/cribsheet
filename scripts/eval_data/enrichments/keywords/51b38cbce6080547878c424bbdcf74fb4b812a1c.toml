@@ -1,0 +1,22 @@
+section_hash = "51b38cbce6080547878c424bbdcf74fb4b812a1c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/Build order"
+model = "glm-5.3-flash"
+terms = [
+  "snooze",
+  "postpone",
+  "shelved",
+  "parking lot",
+  "on hold",
+  "backburner",
+  "revisit later",
+  "wontfix",
+  "not now",
+  "backlog",
+  "someday maybe",
+  "future work",
+  "wake condition",
+  "auto-activate",
+  "triage",
+]

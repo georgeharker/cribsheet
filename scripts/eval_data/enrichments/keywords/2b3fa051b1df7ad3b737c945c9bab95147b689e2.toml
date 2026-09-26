@@ -1,0 +1,21 @@
+section_hash = "2b3fa051b1df7ad3b737c945c9bab95147b689e2"
+label = "keywords"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Common workflows/4. Record a decision and let the graph guard it"
+model = "glm-5.3"
+terms = [
+  "adr",
+  "architecture decision record",
+  "decision log",
+  "track design decisions",
+  "impact analysis",
+  "ripple effect",
+  "invalidate dependent decisions",
+  "revalidate past choices",
+  "revisit when assumptions change",
+  "stale decision notification",
+  "downstream impact",
+  "mermaid export",
+  "backfill citations",
+  "provenance sign off",
+]

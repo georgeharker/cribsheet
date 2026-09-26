@@ -1,0 +1,22 @@
+section_hash = "66805259c40a0a695116bc4f17f6a5c457e9395b"
+label = "keywords"
+relpath = "sources/cribsheet/docs/symbol-reference-map.md"
+heading = "The symbol reference map/2. Matching: one rule over the canonical run"
+model = "glm-5.3"
+terms = [
+  "symbol lookup",
+  "symbol resolution",
+  "name resolution",
+  "fully qualified name",
+  "qualified name",
+  "disambiguation",
+  "ambiguous symbol error",
+  "suffix match",
+  "short name lookup",
+  "canonical name form",
+  "legacy key compatibility",
+  "backwards compatible symbols",
+  "deprecated spelling",
+  "dotted path",
+  "partial name match",
+]

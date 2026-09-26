@@ -1,0 +1,11 @@
+section_hash = "a20eb18900edfd1722fec339e41e2ece661cc50c"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)/Out of scope"
+model = "glm-5.3"
+terms = [
+  "does plan tracking automatically taint on code changes",
+  "are cross-project dependencies supported in the dependency graph",
+  "is there a watcher that propagates design decisions in the background",
+  "future plans to link design ids to code symbols",
+]

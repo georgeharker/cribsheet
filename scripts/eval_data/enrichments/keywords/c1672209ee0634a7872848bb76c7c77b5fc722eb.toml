@@ -1,0 +1,22 @@
+section_hash = "c1672209ee0634a7872848bb76c7c77b5fc722eb"
+label = "keywords"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/10. Daemon & surfaces"
+model = "glm-5.3"
+terms = [
+  "background process",
+  "service architecture",
+  "command line interface",
+  "cli commands",
+  "subcommands",
+  "verb mapping",
+  "tool dispatch",
+  "command routing",
+  "in-process mode",
+  "local mode",
+  "health check",
+  "diagnostics",
+  "startup",
+  "rpc",
+  "client-server",
+]

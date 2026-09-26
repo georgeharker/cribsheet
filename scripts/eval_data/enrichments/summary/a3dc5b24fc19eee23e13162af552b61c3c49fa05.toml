@@ -1,0 +1,11 @@
+section_hash = "a3dc5b24fc19eee23e13162af552b61c3c49fa05"
+label = "summary"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/6. The graphs — one contract, three facets"
+model = "claude-sonnet-4-6"
+terms = [
+  "what is the shared consumer contract between crib design graph and code graph --edges",
+  "why does plan graph include design nodes and not the full decision map",
+  "how are deps to external or out-of-export entries represented in graph output",
+  "what does the tainted field on a design graph node mean and how is it set",
+]

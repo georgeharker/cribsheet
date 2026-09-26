@@ -1,0 +1,11 @@
+section_hash = "7ab37465fb2561de693d7232d7116ca23e7b0a46"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)/Wiring checklist"
+model = "glm-5.3"
+terms = [
+  "what unit tests should crib/designs.py include for taint propagation and cycle detection",
+  "where to register the design mcp tools next to the learning_* block in server.py",
+  "mcp instructions blurb steering the llm to record design decisions before changing a note",
+  "integration test note_edit taints dependent item then verify clears it",
+]

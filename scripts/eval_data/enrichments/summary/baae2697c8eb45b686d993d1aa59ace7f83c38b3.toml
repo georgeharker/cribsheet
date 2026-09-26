@@ -1,0 +1,11 @@
+section_hash = "baae2697c8eb45b686d993d1aa59ace7f83c38b3"
+label = "summary"
+relpath = "sources/cribsheet/README.md"
+heading = "The surface"
+model = "glm-5.3"
+terms = [
+  "crib command format noun verb mcp tool naming",
+  "does crib copy repo docs or index them in-situ .crib file",
+  "why don't design decisions show up in note lookup",
+  "crib --no-daemon flag bypass the warm daemon",
+]

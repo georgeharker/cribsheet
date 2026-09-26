@@ -1,0 +1,11 @@
+section_hash = "aa3da61d36b577a7d3cd17ca9d2023d4330a164c"
+label = "summary"
+relpath = "sources/cribsheet/docs/ideas/lsp-server-face.md"
+heading = "crib as a language server — the agent face (and the editor one)/10. Open questions"
+model = "glm-5.3"
+terms = [
+  "does claude's lsp tool pass workspaceSymbol results through unmodified",
+  "should the lsp face be a projection of code_lookup or a parallel implementation",
+  "learnings-only diagnostics sparse enough or add a recently-edited filter",
+  "detecting a co-attached client for edge capability advertising — config flag or duplicates",
+]

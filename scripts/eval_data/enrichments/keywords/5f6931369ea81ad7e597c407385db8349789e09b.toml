@@ -1,0 +1,22 @@
+section_hash = "5f6931369ea81ad7e597c407385db8349789e09b"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/④ Decay + recovery (`describe_queue.py`, `notestore.py`, `app.py`) — AFTER the stall fix and Tier 0 land (shares `notestore.py`/`app.py`)/Live-store recovery (operational, after ④ lands)"
+model = "glm-5.3"
+terms = [
+  "reindex sweep",
+  "rebuild search index",
+  "daemon restart procedure",
+  "reingest corpus",
+  "backfill missing chunks",
+  "restore crib chunks table",
+  "degraded search coverage",
+  "thin results after deploy",
+  "stale index recovery",
+  "partial index repair",
+  "runbook",
+  "post-deploy checklist",
+  "vector store rebuild",
+  "warm up search index",
+  "production incident 2.10",
+]

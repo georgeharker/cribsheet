@@ -1,0 +1,22 @@
+section_hash = "8b8a3be26df7b48454e7fea2c3fff0a1fc946b79"
+label = "keywords"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Learnings — durable notes attached to a code symbol"
+model = "glm-5.3"
+terms = [
+  "annotate symbol",
+  "attach note to function",
+  "persistent code comments",
+  "insights per symbol",
+  "tribal knowledge capture",
+  "gotchas and warnings",
+  "knowledge base for code",
+  "remember refactor decisions",
+  "note lost after rename",
+  "reattach orphaned note",
+  "recover deleted note",
+  "mark note fresh",
+  "survive reindex annotations",
+  "symbol memory",
+  "developer notes on classes",
+]

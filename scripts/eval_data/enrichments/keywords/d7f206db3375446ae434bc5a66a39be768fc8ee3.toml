@@ -1,0 +1,22 @@
+section_hash = "d7f206db3375446ae434bc5a66a39be768fc8ee3"
+label = "keywords"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Common workflows/5. Plan work that outlives the session"
+model = "glm-5.3"
+terms = [
+  "todo list",
+  "task management",
+  "backlog",
+  "pick up where you left off",
+  "resume work in a new session",
+  "persistent checklist",
+  "cross-session state",
+  "what should i work on next",
+  "task queue",
+  "dependency graph",
+  "blocked tasks",
+  "multiple agents sharing work",
+  "handoff",
+  "stale task",
+  "unblock",
+]

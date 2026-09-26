@@ -1,0 +1,11 @@
+section_hash = "7a684e657ae03ff0cbfa91ef6ae586e1f193bc52"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/1. Core principles"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does index_file prevent race conditions between the tool and file watcher",
+  "why is content-hash gating the central design decision in cribsheet",
+  "how does cribsheet handle duplicate or noisy filesystem events without corrupting the index",
+  "why does cribsheet use mcp sampling for distill instead of holding its own api key",
+]

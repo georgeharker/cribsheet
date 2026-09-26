@@ -1,0 +1,21 @@
+section_hash = "05572aee8d053ad8f59daa146a3317461c445f3f"
+label = "keywords"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/3. Part A — Search-term efficacy (findability)/3.1 Keyword sidecar — two tiers, and the git-communicable map"
+model = "glm-5.3"
+terms = [
+  "camelcase splitting",
+  "snake case query matching",
+  "query expansion",
+  "synonym generation",
+  "llm keyword extraction",
+  "auto tagging sections",
+  "content addressed cache",
+  "merge safe storage",
+  "diffable generated data",
+  "review generated keywords in pull requests",
+  "cache invalidation on edit",
+  "incremental regeneration",
+  "why not sqlite",
+  "improve search recall",
+]

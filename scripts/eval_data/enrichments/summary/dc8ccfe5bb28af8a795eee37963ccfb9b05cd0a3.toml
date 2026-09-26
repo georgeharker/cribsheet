@@ -1,0 +1,11 @@
+section_hash = "dc8ccfe5bb28af8a795eee37963ccfb9b05cd0a3"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Implementation steps/6. Git-sync guards (`crib/gitbacking.py` / CLI sync verbs)"
+model = "glm-5.3"
+terms = [
+  "why does sync error that notes for my project live in that repo",
+  "can crib push or pull handle notes stored in-repo",
+  "does snapshot with no project argument include in-repo stores",
+  "what guards run at the top of setup sync push pull in gitbacking",
+]

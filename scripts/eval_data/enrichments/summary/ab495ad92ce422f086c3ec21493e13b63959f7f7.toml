@@ -1,0 +1,11 @@
+section_hash = "ab495ad92ce422f086c3ec21493e13b63959f7f7"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-interface-catalog.md"
+heading = "Symbol interface — full catalog/5. Work list, in dependency order"
+model = "glm-5.3"
+terms = [
+  "why is render_symbol scheduled before the structured edge refs step",
+  "what happens in phase 4 when the id moves and learnings re-attach",
+  "how does scope_of get wired into indexing and stored on reindex",
+  "which phase introduces group_by as an axis choice",
+]

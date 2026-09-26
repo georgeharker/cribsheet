@@ -1,0 +1,21 @@
+section_hash = "dea1c0a09344ce5cab4d39bb71b904c19010f1ec"
+label = "keywords"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Project lifecycle — onboard & manage a whole repo/In-repo storage (`store:`)"
+model = "glm-5.3"
+terms = [
+  "keep notes in git",
+  "check data into the repository",
+  "repo-local storage",
+  "move notes out of the global store",
+  "portable project data",
+  "self-contained repository",
+  "share project across machines",
+  "clone repo with data included",
+  "version control my notes",
+  "colocate notes with code",
+  "per-repo datastore",
+  "custom storage location",
+  "unavailable project not cloned here",
+  "detach notes from global store",
+]

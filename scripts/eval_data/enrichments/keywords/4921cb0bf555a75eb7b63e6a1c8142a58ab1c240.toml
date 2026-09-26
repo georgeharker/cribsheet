@@ -1,0 +1,22 @@
+section_hash = "4921cb0bf555a75eb7b63e6a1c8142a58ab1c240"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/10. Stack/10.4 Reranking — range-matched, ON by default"
+model = "claude-sonnet-4-6"
+terms = [
+  "cross-encoder precision stage",
+  "minmax rerank blend",
+  "rrf rerank vs range matched",
+  "miniml-l6 onnx fastembed",
+  "logprob yes/no judge",
+  "llama.cpp openai compatible reranker",
+  "anthropic text-score reranker",
+  "rerank_top_n candidates",
+  "pi cpu reranker latency",
+  "machine-aware tier selection",
+  "qwen3 reranker doa",
+  "build_reranker dispatch",
+  "rerank on by default graceful degrade",
+  "sequence classification score",
+  "vocabulary gap queries",
+]

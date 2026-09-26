@@ -1,0 +1,11 @@
+section_hash = "12ff5ac93db6969a583f21d958285614bdc445d9"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/6. Target shape/`code_graph` node ids — designed, not migrated"
+model = "glm-5.3"
+terms = [
+  "are code_graph node ids persisted or recomputed via qualified_symbol each query",
+  "why does the node id payload change need no conversion or resume story",
+  "external graph node key when the ref is unresolved name [file]",
+  "does the rollup _group_key read node ids or the module field",
+]

@@ -1,0 +1,11 @@
+section_hash = "0382b9868c9f423d646ddf200328d78bedd91daa"
+label = "summary"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Common workflows/6. Share memory across machines"
+model = "glm-5.3"
+terms = [
+  "crib memory sync vs push and pull which to use",
+  "how to set up crib notes on a second machine with git remote",
+  "crib memory sync provenance merge conflict",
+  "rebuild code index on new machine crib project reconcile",
+]

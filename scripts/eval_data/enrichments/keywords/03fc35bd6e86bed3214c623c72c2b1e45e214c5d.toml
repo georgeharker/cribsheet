@@ -1,0 +1,22 @@
+section_hash = "03fc35bd6e86bed3214c623c72c2b1e45e214c5d"
+label = "keywords"
+relpath = "sources/cribsheet/README.md"
+heading = "Going further"
+model = "glm-5.3"
+terms = [
+  "self-host",
+  "standalone server",
+  "run server manually",
+  "share notes between computers",
+  "sync across devices",
+  "migrate to new machine",
+  "backup notes with git",
+  "import claude code memory",
+  "mirror claude memory",
+  "change embedding model",
+  "switch embedder",
+  "vector database backend",
+  "hybrid search settings",
+  "config file location",
+  "remote server port",
+]

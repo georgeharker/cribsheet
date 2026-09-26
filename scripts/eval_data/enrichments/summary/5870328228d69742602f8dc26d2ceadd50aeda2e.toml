@@ -1,0 +1,11 @@
+section_hash = "5870328228d69742602f8dc26d2ceadd50aeda2e"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/14. Sharing notes across machines (git sync)"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does the cribnote git merge driver resolve frontmatter conflicts without surfacing them to the user",
+  "how does notes.heal_file fix repos that were merged without the custom merge driver registered",
+  "why are source_repo paths stored as portable location tokens instead of absolute paths",
+  "what triggers a reconcile after git pull and why must it happen before search is accurate",
+]

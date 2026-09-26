@@ -1,0 +1,22 @@
+section_hash = "b449e30ffda3bc3d2cd22186fd154b2035670013"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/11. Checks"
+model = "glm-5.3"
+terms = [
+  "automated verification",
+  "invariants enforcement",
+  "regression tests",
+  "guardrails",
+  "lint rules",
+  "static analysis import audit",
+  "sanity checks",
+  "round trip test",
+  "validation assertions",
+  "single source of truth enforcement",
+  "mechanical checks vs manual",
+  "migration fixtures",
+  "test coverage guarantees",
+  "ci consistency checks",
+  "fqname removal verification",
+]

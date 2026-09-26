@@ -1,0 +1,11 @@
+section_hash = "e7ba1fc3b7da670074b83288164e45f8860c6377"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/9. What gets deleted"
+model = "glm-5.3"
+terms = [
+  "why delete the schema_stale single-file refusal for mixed stores",
+  "what gets removed from symmigrate build_map apply_plan seen_targets",
+  "why does migrate_symbols keep one path instead of dry-run/apply",
+  "symbols.match dead id tier replaced by symbol_ref symbol_was",
+]

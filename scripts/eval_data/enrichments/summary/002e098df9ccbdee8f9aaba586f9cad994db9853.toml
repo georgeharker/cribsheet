@@ -1,0 +1,11 @@
+section_hash = "002e098df9ccbdee8f9aaba586f9cad994db9853"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/3. Structural facet — the warm LSP session subsystem/3.1 Session registry & lifecycle"
+model = "claude-sonnet-4-6"
+terms = [
+  "how is the lsp session registry keyed and when does a session start",
+  "what happens to queries when an lsp server crashes and is restarting",
+  "how does grace eviction for idle lsp sessions work in the daemon",
+  "why is lazy start combined with grace eviction for basedpyright and rust-analyzer sessions",
+]

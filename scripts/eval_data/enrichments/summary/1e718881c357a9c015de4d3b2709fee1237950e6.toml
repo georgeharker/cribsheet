@@ -1,0 +1,11 @@
+section_hash = "1e718881c357a9c015de4d3b2709fee1237950e6"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/8. `existing` and `sweep` are deleted; the leaf takes `prior`"
+model = "glm-5.3"
+terms = [
+  "why delete the `sweep` parameter from `_index_code_file`",
+  "`prior_by_file` replaces the store-wide dict passed to the leaf",
+  "keying the cache on `(container, name)` instead of `symbol_ref`",
+  "what happens to `record_schema` when the sweep parameter goes away",
+]

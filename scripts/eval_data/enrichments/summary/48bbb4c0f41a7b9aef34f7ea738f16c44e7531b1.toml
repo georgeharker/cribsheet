@@ -1,0 +1,11 @@
+section_hash = "48bbb4c0f41a7b9aef34f7ea738f16c44e7531b1"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/10. Stack/10.1 Chroma process model — embedded vs shared"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does sharedserver refcount work when multiple crib mcp servers share a chroma instance",
+  "why is embedded chroma unsafe with concurrent crib processes",
+  "how does crib avoid corrupt index when two processes embed the same file simultaneously",
+  "why does the shared chroma collection use no embedding function and explicit query_embeddings",
+]

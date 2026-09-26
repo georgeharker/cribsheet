@@ -1,0 +1,11 @@
+section_hash = "d0b96b73e261b26747aac29b25098c8223b2df1a"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)"
+model = "claude-sonnet-4-6"
+terms = [
+  "why is the symbol index parked behind adoption rather than built first",
+  "what is the value boundary between grep and concept search in crib",
+  "how do the structural and semantic facets compose over shared symbol identity",
+  "what sequencing constraint gates building the code↔note index",
+]

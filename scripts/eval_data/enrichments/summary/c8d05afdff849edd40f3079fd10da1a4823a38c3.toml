@@ -1,0 +1,11 @@
+section_hash = "c8d05afdff849edd40f3079fd10da1a4823a38c3"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)"
+model = "glm-5.3"
+terms = [
+  "why does design_supersede append the supersession to the decision body instead of updating dependents directly",
+  "how do dependents get tainted after a design decision is superseded without write fan-out",
+  "what values does the direction parameter accept for design_tree deps vs dependents",
+  "is crib/learnings.py the structural template for adding a new noun facet over notestore",
+]

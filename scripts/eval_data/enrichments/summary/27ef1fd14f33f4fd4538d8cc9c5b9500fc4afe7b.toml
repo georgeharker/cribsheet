@@ -1,0 +1,11 @@
+section_hash = "27ef1fd14f33f4fd4538d8cc9c5b9500fc4afe7b"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/11. Resolved decisions & remaining open items"
+model = "claude-sonnet-4-6"
+terms = [
+  "is there a way to push crib store edits back to the source repo docs",
+  "why is git commit-on-write explicitly ruled out in cribsheet design",
+  "where does the version ring live and is it backed up or versioned",
+  "how does chroma shared mode differ from embedded mode for multi-client safety",
+]

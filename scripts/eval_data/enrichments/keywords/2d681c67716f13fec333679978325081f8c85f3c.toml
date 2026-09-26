@@ -1,0 +1,21 @@
+section_hash = "2d681c67716f13fec333679978325081f8c85f3c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P1 — `parked` status + trigger (build first; the machinery lands here)/The meaning half: one appended body line makes it searchable"
+model = "glm-5.3-flash"
+terms = [
+  "deferred work",
+  "postpone a plan",
+  "snooze",
+  "revisit later",
+  "blocked on",
+  "waiting on",
+  "why did we park this",
+  "remember the reason",
+  "rationale",
+  "annotate",
+  "full-text search",
+  "someday maybe",
+  "dormant item",
+  "stale backlog",
+]

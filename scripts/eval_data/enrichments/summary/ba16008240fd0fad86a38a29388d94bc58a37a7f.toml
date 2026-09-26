@@ -1,0 +1,11 @@
+section_hash = "ba16008240fd0fad86a38a29388d94bc58a37a7f"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification"
+model = "glm-5.3"
+terms = [
+  "what does \"correct or visibly dirty never plausibly wrong\" mean in the index-corruption plan",
+  "how does the index-corruption spec expand tier 2 of robustness-fixes.md",
+  "did work package 2.9 land with the fix: hardening sweep commit on dev",
+  "why does the plan say to re-grep line numbers before applying the fixes",
+]

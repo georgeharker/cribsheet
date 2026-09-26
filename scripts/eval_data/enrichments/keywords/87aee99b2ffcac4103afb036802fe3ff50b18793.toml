@@ -1,0 +1,22 @@
+section_hash = "87aee99b2ffcac4103afb036802fe3ff50b18793"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-plan-import.md"
+heading = "Plan: doc import & source attribution for the design/plan graph/Import verbs — the description IS the procedure"
+model = "glm-5.3"
+terms = [
+  "ingest markdown into graph",
+  "import docs",
+  "load document",
+  "parse into sections",
+  "extract tasks from plan",
+  "turn notes into actionable items",
+  "source citation",
+  "attribution",
+  "traceability",
+  "lineage",
+  "anchor to heading",
+  "duplicate handling",
+  "no model call",
+  "read-only verb",
+  "llm-guided extraction",
+]

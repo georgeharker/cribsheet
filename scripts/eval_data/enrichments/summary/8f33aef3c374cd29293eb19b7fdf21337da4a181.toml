@@ -1,0 +1,11 @@
+section_hash = "8f33aef3c374cd29293eb19b7fdf21337da4a181"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/6. Eval — same discipline, new corpus"
+model = "claude-sonnet-4-6"
+terms = [
+  "how is mrr and recall@k measured for concept-to-symbol retrieval",
+  "how are callers and callees asserted as ground truth in the structural correctness eval",
+  "where does the doc2query a/b test get re-run for the code symbol corpus",
+  "what does the eval_retrieval harness extension look like for symbol cases versus notes",
+]

@@ -1,0 +1,21 @@
+section_hash = "9fa184b8df70ef04480668b59839564073c86431"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/4. Semantic facet — the description index/4.1.1 Deferred describe — the two facets run on different clocks"
+model = "claude-sonnet-4-6"
+terms = [
+  "deferred indexing",
+  "lazy description",
+  "debounce llm calls",
+  "exponential backoff queue",
+  "describe queue",
+  "edit burst coalescing",
+  "crash recovery blank field",
+  "structural vs semantic split",
+  "live watch watcher",
+  "keyword presence marker",
+  "backlog reindex on startup",
+  "describe_backoff_base config",
+  "rate limiting llm",
+  "stale description signal",
+]

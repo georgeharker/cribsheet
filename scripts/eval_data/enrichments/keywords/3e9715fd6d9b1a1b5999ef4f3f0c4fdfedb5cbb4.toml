@@ -1,0 +1,22 @@
+section_hash = "3e9715fd6d9b1a1b5999ef4f3f0c4fdfedb5cbb4"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/1. The problem"
+model = "glm-5.3"
+terms = [
+  "duplicate mcp tools",
+  "tool collision",
+  "double registration",
+  "tool conflict",
+  "combiner mode",
+  "proxy mode",
+  "namespacing",
+  "dedupe tools",
+  "single plugin",
+  "plugin variant",
+  "deployment detection",
+  "environment selection",
+  "mcp clash",
+  "tool duplication",
+  "one plugin per server",
+]

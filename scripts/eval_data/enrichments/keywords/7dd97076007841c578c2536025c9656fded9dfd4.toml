@@ -1,0 +1,21 @@
+section_hash = "7dd97076007841c578c2536025c9656fded9dfd4"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/5. Tool surface/Retrieval loop"
+model = "claude-sonnet-4-6"
+terms = [
+  "search then read workflow",
+  "note_lookup then note_read",
+  "note_locate native edit",
+  "retrieval workflow pattern",
+  "chunk based results",
+  "precise context retrieval",
+  "find then fetch pattern",
+  "optional reindex after edit",
+  "llm retrieval workflow",
+  "section level results",
+  "semantic search to edit loop",
+  "note edit sequence",
+  "cribsheet usage pattern",
+  "lookup read edit cycle",
+]

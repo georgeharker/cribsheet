@@ -1,0 +1,22 @@
+section_hash = "b4027468cee09e9ef6fb530e07b9163d13ba62c6"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P1 — `parked` status + trigger (build first; the machinery lands here)/The trigger is a dep edge wearing deferral semantics"
+model = "glm-5.3-flash"
+terms = [
+  "stale",
+  "invalidation",
+  "blocked on",
+  "blocked by",
+  "upstream change",
+  "dependency changed",
+  "conditional",
+  "on hold",
+  "dormant",
+  "fingerprint",
+  "change detection",
+  "hash mismatch",
+  "baseline drift",
+  "monitor",
+  "wake up",
+]

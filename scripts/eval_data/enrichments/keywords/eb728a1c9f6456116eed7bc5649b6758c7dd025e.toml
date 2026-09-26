@@ -1,0 +1,22 @@
+section_hash = "eb728a1c9f6456116eed7bc5649b6758c7dd025e"
+label = "keywords"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/1. The frame — two different problems, usually conflated"
+model = "glm-5.3"
+terms = [
+  "when to retrieve",
+  "retrieval trigger",
+  "agent not calling the search tool",
+  "missed tool calls",
+  "query never issued",
+  "rag failure modes",
+  "adaptive retrieval",
+  "selective retrieval",
+  "decision to retrieve",
+  "grep instead of vector search",
+  "vocabulary mismatch",
+  "recall vs tool usage",
+  "retrieval gating",
+  "ranking vs invocation",
+  "search tool adoption",
+]

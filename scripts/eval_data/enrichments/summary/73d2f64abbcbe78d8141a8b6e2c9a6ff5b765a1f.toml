@@ -1,0 +1,11 @@
+section_hash = "73d2f64abbcbe78d8141a8b6e2c9a6ff5b765a1f"
+label = "summary"
+relpath = "sources/cribsheet/docs/ideas/lsp-server-face.md"
+heading = "crib as a language server — the agent face (and the editor one)/5. Sidecar, not proxy"
+model = "glm-5.3"
+terms = [
+  "why did crib choose a sidecar instead of proxying pyright",
+  "rejected middleware design for language server forwarding",
+  "proxy second lifecycle over LspSessionPool problem",
+  "sidecar vs proxy blast radius keystroke requests",
+]

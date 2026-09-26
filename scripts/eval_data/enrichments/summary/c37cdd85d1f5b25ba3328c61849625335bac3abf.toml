@@ -1,0 +1,11 @@
+section_hash = "c37cdd85d1f5b25ba3328c61849625335bac3abf"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Implementation steps/4. Watcher (`crib/watch.py`) + reconcile"
+model = "glm-5.3"
+terms = [
+  "what directories does crib/watch.py watch besides projects_dir",
+  "does adopting an in-repo store require a daemon restart for the watcher",
+  "do .versions and dotfile ignore rules apply per watch root",
+  "when are watch roots recomputed to include new in-repo notes directories",
+]

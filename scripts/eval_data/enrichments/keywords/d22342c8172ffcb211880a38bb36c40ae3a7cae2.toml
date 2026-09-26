@@ -1,0 +1,21 @@
+section_hash = "d22342c8172ffcb211880a38bb36c40ae3a7cae2"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/Governing intent"
+model = "glm-5.3-flash"
+terms = [
+  "backlog grooming",
+  "task triage",
+  "stale task cleanup",
+  "defer postpone snooze task",
+  "someday maybe list",
+  "won't fix wontfix",
+  "revisit later reminder",
+  "task lifecycle states",
+  "zombie stale todo items",
+  "gtd waiting for someday",
+  "plan maintenance pruning",
+  "reopen resurrect task",
+  "expiration date tasks",
+  "cleanup pass on plan",
+]

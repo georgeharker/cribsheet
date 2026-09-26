@@ -1,0 +1,20 @@
+section_hash = "f06a6be8765ed7b84cdc3c448775654f58a7efee"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/2. Two facets, one identity/2.1 Hashing & the location-rot rule"
+model = "claude-sonnet-4-6"
+terms = [
+  "symbol_hash normalized body",
+  "location rot problem",
+  "line number identity rot",
+  "section_hash analogy",
+  "window invariant hash",
+  "reformatting churn prevention",
+  "fqname durable pointer",
+  "file line resolved at read time",
+  "dedent strip docstring hash",
+  "content addressed symbol identity",
+  "description regeneration trigger",
+  "edit above invalidation prevention",
+  "lsp documentsymbol range re-derive",
+]

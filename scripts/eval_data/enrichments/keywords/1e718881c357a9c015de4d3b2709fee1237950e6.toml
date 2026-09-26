@@ -1,0 +1,21 @@
+section_hash = "1e718881c357a9c015de4d3b2709fee1237950e6"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/8. `existing` and `sweep` are deleted; the leaf takes `prior`"
+model = "glm-5.3"
+terms = [
+  "remove unused parameters",
+  "simplify function signature",
+  "layering violation fix",
+  "incremental reindex",
+  "per-file previous entries",
+  "carry forward descriptions",
+  "symbol lookup key",
+  "container and name identity",
+  "mixed schema store",
+  "half converted records cleanup",
+  "stale entries deletion",
+  "refactor indexer internals",
+  "replacing indexpass",
+  "prior state instead of global map",
+]

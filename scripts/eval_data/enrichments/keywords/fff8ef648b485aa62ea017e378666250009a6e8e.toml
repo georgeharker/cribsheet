@@ -1,0 +1,22 @@
+section_hash = "fff8ef648b485aa62ea017e378666250009a6e8e"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P2 — `declined`: terminal-with-rationale"
+model = "glm-5.3-flash"
+terms = [
+  "rejected",
+  "wontfix",
+  "no-go decision",
+  "vetoed idea",
+  "killed feature",
+  "shot down an idea",
+  "zombie proposals",
+  "idea keeps coming back",
+  "already considered",
+  "remember why we didn't",
+  "decision record",
+  "institutional memory",
+  "out of scope",
+  "rejection reason",
+  "close without action",
+]

@@ -1,0 +1,11 @@
+section_hash = "3df080c35b9535e28041c9bfd6ea7a1b3e2f045b"
+label = "summary"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/8. Where to go next"
+model = "claude-sonnet-4-6"
+terms = [
+  "where is the full verb reference for design and plan commands",
+  "which guide.md workflows walk through a decision and plan end to end",
+  "where is storage ownership for the design and plan facets documented",
+  "what is the design-plan-tracking.md file and where does it fit",
+]

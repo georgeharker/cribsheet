@@ -1,0 +1,22 @@
+section_hash = "94f03d4dcfc4c92f3f3e9c7f91c2093758c9d708"
+label = "keywords"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/5. Warm LSP sessions (`LspSessionPool`, `crib/codeindex.py`)"
+model = "glm-5.3"
+terms = [
+  "language server reuse",
+  "keep-alive lsp session",
+  "persistent language server process",
+  "prewarm language server",
+  "avoid reinitializing the server",
+  "amortize startup cost",
+  "shared server per project",
+  "lsp ready signal",
+  "stale index freshness",
+  "crash recovery restart dead server",
+  "wedged server hang timeout",
+  "idle session eviction",
+  "cleanup on exit",
+  "language server protocol pooling",
+  "session manager supervision",
+]

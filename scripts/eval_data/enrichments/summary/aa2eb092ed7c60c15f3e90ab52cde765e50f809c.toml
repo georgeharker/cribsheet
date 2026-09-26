@@ -1,0 +1,11 @@
+section_hash = "aa2eb092ed7c60c15f3e90ab52cde765e50f809c"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/Status matrix (complete)"
+model = "glm-5.3-flash"
+terms = [
+  "does plan_next exclude parked and declined items",
+  "how to show declined plans with --all flag",
+  "parked item with \"trigger fired\" banner meaning",
+  "are parked and declined items counted by plan_list and included in exports",
+]

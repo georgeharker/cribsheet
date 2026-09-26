@@ -1,0 +1,11 @@
+section_hash = "f2778c5aec9b301c83dde7251b0d2d9faa9702ed"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-facet-ergonomics.md"
+heading = "Plan: design/plan facet ergonomics — first-class, edge-aware verbs"
+model = "glm-5.3"
+terms = [
+  "how does plan_status become unblocked",
+  "batch plan_add with #n intra-batch dependencies and optional bodies",
+  "plan_next in-progress means claimed contract",
+  "why every dependency edge must propagate checking",
+]

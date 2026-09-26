@@ -1,0 +1,13 @@
+section_hash = "e9614c5d4b537d0179dc946b03c7e3a3a127afd4"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)/Goal"
+model = "glm-5.3"
+terms = [
+  "how does editing a design decision taint its dependents",
+  "what frontmatter fields does a plan note need for resumable status",
+  "design facet typed dependencies re-check on delete",
+  "why build design and plan as markdown notes instead of new storage",
+  "which existing features do design and plan notes inherit for free",
+  "maintainable ordering of plan items with dependencies",
+]

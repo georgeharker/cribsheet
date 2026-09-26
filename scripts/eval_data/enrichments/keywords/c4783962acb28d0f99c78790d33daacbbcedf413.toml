@@ -1,0 +1,22 @@
+section_hash = "c4783962acb28d0f99c78790d33daacbbcedf413"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/2. Constraints (measured, not assumed)/2.2 Env expansion can choose a URL, never remove a server"
+model = "glm-5.3"
+terms = [
+  "env variable expansion",
+  "env var substitution",
+  "parameter expansion",
+  "default value fallback",
+  "colon dash syntax",
+  "set but empty",
+  "unset vs empty variable",
+  "blank url",
+  "disable mcp server via env",
+  "turn off server with environment variable",
+  "toggle mcp server on and off",
+  "shell default semantics not bash",
+  "failed to connect red row",
+  "url override from environment",
+  "mcp.json variable interpolation",
+]

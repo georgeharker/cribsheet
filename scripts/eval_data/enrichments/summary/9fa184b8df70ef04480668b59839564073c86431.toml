@@ -1,0 +1,11 @@
+section_hash = "9fa184b8df70ef04480668b59839564073c86431"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/4. Semantic facet — the description index/4.1.1 Deferred describe — the two facets run on different clocks"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does describe_queue.py defer llm calls after rapid edits",
+  "what does a blank description field mean after a crash in the symbol index",
+  "difference between describe_backoff_base and describe_backoff_cap config knobs",
+  "how does keyword key-presence distinguish never-attempted from empty results in symbol entries",
+]

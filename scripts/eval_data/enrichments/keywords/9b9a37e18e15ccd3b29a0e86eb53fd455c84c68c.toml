@@ -1,0 +1,22 @@
+section_hash = "9b9a37e18e15ccd3b29a0e86eb53fd455c84c68c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/3. Part A — Search-term efficacy (findability)"
+model = "glm-5.3"
+terms = [
+  "search quality",
+  "recall",
+  "why doesn't search find my note",
+  "vocabulary mismatch",
+  "query document mismatch",
+  "synonym expansion",
+  "synthetic queries",
+  "discoverability",
+  "make notes easier to find",
+  "agent ignores my notes",
+  "search returns nothing",
+  "relevance tuning",
+  "query rewriting",
+  "linking notes to code",
+  "grep instead of search",
+]

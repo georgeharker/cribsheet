@@ -1,0 +1,22 @@
+section_hash = "05561f6251635e600c48971976ea6a8d1936159c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/2. Two note classes, one index"
+model = "glm-5.3"
+terms = [
+  "note types",
+  "note kinds",
+  "where notes are stored",
+  "notes directory",
+  "import notes",
+  "in-place indexing",
+  "index without copying",
+  "external documents",
+  "which files get indexed",
+  "glob patterns",
+  "file watcher",
+  "auto reindex",
+  "repo path mapping",
+  "crib vs source notes",
+  "note ownership",
+]

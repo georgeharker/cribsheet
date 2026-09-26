@@ -1,0 +1,11 @@
+section_hash = "99ea1f85c517008f09302fc64b6c4b0df722c211"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/① Deletion safety (`codeindex.py`, `codeindexer.py`) — one agent, sequential/2.4 Reader-thread death fails fast"
+model = "glm-5.3"
+terms = [
+  "how does _reader set _dead when the frame loop throws an exception",
+  "avoid the 30 second wait before raising SessionError on a dead session",
+  "complete pending _resp futures with SessionError after reader thread dies",
+  "remove request id from _resp on timeout to stop the response leak",
+]

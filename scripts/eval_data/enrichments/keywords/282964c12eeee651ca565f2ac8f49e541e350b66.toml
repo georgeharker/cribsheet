@@ -1,0 +1,21 @@
+section_hash = "282964c12eeee651ca565f2ac8f49e541e350b66"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 0 — security / data loss (do first)/0.2 `sources/…` relpaths are writable through note verbs"
+model = "glm-5.3"
+terms = [
+  "path traversal",
+  "path escape",
+  "data loss",
+  "accidental deletion",
+  "immutable sources",
+  "read-only enforcement",
+  "source file corruption",
+  "overwrite readme",
+  "prefix validation",
+  "sanitize relpath",
+  "destructive verb",
+  "git checkout dirty",
+  "mutate indexed sources",
+  "unauthorized write",
+]

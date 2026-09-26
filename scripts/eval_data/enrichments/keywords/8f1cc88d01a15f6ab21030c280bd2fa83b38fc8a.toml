@@ -1,0 +1,22 @@
+section_hash = "8f1cc88d01a15f6ab21030c280bd2fa83b38fc8a"
+label = "keywords"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Common workflows/1. Store and recall a note"
+model = "glm-5.3"
+terms = [
+  "save a note",
+  "create new note",
+  "find notes",
+  "search by meaning",
+  "semantic search",
+  "natural language query",
+  "retrieval",
+  "remember facts",
+  "personal knowledge base",
+  "second brain",
+  "scratchpad",
+  "snippets",
+  "revision history",
+  "undo changes",
+  "recover deleted note",
+]

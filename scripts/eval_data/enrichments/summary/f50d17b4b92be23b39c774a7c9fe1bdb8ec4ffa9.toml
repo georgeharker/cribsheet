@@ -1,0 +1,11 @@
+section_hash = "f50d17b4b92be23b39c774a7c9fe1bdb8ec4ffa9"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/2. Constraints (measured, not assumed)"
+model = "glm-5.3"
+terms = [
+  "claude code v2.1.210 mcp plugin registration constraints",
+  "standalone vs combiner mcp registration which one works",
+  "empirically measured mcp limits for plugins",
+  "why the obvious mcp registration design fails in claude code",
+]

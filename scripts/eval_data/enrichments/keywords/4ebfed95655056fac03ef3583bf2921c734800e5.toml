@@ -1,0 +1,22 @@
+section_hash = "4ebfed95655056fac03ef3583bf2921c734800e5"
+label = "keywords"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/6. Watchers (`crib/watch.py`)"
+model = "glm-5.3"
+terms = [
+  "file watching",
+  "monitor file system changes",
+  "live indexing",
+  "hot reload",
+  "incremental reindex",
+  "event batching",
+  "throttle fs events",
+  "false delete",
+  "stale index",
+  "ghost files",
+  "atomic save",
+  "editor swap file",
+  "git checkout",
+  "inotify",
+  "watchdog python",
+]

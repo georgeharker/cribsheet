@@ -1,0 +1,11 @@
+section_hash = "2209d3a22b0bc824726c58dc5520a9f94d5ac60b"
+label = "summary"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Where to go next"
+model = "glm-5.3"
+terms = [
+  "which doc explains why a graph instead of notes",
+  "where do i find every cli verb and mcp tool",
+  "what page covers the import quarantine and the two claims",
+  "where does it say who owns the bytes and which verbs may write",
+]

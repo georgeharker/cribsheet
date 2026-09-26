@@ -1,0 +1,22 @@
+section_hash = "bc51fa01e1a1b0215799421eb04fe9cbc51673ae"
+label = "keywords"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/5. The eval harness — two metrics, because push amplifies both signal and noise"
+model = "glm-5.3"
+terms = [
+  "evaluation harness",
+  "retrieval evaluation metrics",
+  "mean reciprocal rank",
+  "recall at k",
+  "golden test set",
+  "ground truth queries",
+  "search relevance benchmark",
+  "ablation testing enrichment",
+  "zero results rate",
+  "empty lookup rate",
+  "tool usage telemetry",
+  "agent trust in search tools",
+  "offline evaluation",
+  "information retrieval scoring",
+  "regression test retrieval quality",
+]

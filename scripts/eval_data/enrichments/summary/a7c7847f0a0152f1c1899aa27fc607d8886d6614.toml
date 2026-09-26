@@ -1,0 +1,11 @@
+section_hash = "a7c7847f0a0152f1c1899aa27fc607d8886d6614"
+label = "summary"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/5. The eval harness — two metrics, because push amplifies both signal and noise/5.1 First proof — cold-start seed (2026-06-30)"
+model = "glm-5.3"
+terms = [
+  "how to run the retrieval eval harness eval_retrieval.py cases json",
+  "why do displayed cosine scores go non-monotonically down the ranked list rrf fusion",
+  "before and after seeding cribsheet project import design.md cold-start fix",
+  "vocabulary gap credentials tokens reranking which section ranks first after indexing",
+]

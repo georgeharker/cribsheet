@@ -1,0 +1,11 @@
+section_hash = "871304efea3dde125ef4cb2814ae966337ed22b7"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 2 — indexing correctness/2.3 \"Slow confirm\" guard is a no-op → real symbols get dropped"
+model = "glm-5.3"
+terms = [
+  "why does extract_file settle only wait 0.3s on a warm session",
+  "vanished-symbol pass deleting live symbols after partial documentSymbol",
+  "min(settle, _REUSE_SETTLE) makes slow confirm guard a no-op",
+  "how to force full settle wait on the partial-result re-check pass",
+]

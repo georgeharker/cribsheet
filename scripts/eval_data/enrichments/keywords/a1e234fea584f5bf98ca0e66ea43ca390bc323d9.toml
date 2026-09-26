@@ -1,0 +1,21 @@
+section_hash = "a1e234fea584f5bf98ca0e66ea43ca390bc323d9"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 2 — indexing correctness/2.4 LSP reader-thread death poisons the session silently"
+model = "glm-5.3"
+terms = [
+  "lSP hang",
+  "language server timeout",
+  "reader thread crash",
+  "unhandled exception jsonrpc",
+  "json-rpc malformed message",
+  "session stuck unresponsive",
+  "fail fast dead session",
+  "silent failure diagnosis",
+  "30 second stall",
+  "thread death recovery",
+  "lsp connection dropped",
+  "garbage input crash",
+  "discard and retry session",
+  "watchdog language server",
+]

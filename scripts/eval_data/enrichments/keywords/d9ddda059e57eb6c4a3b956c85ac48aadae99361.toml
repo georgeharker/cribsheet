@@ -1,0 +1,23 @@
+section_hash = "d9ddda059e57eb6c4a3b956c85ac48aadae99361"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/15. Per-connection session scope (current project)/15.1 Project lifecycle & curation (from dogfooding feedback)"
+model = "claude-sonnet-4-6"
+terms = [
+  "project creation",
+  "note relpath",
+  "title slug",
+  "ulid identity",
+  "dedup warning",
+  "similar notes",
+  "dedupe_warn_score",
+  "note move",
+  "curation primitive",
+  "phantom namespace",
+  "project_use creates",
+  "numeric suffix collision",
+  "frontmatter id",
+  "store feedback",
+  "created flag",
+  "session switch on create",
+]

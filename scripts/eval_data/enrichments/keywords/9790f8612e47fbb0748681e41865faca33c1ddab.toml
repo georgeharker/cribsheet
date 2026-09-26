@@ -1,0 +1,21 @@
+section_hash = "9790f8612e47fbb0748681e41865faca33c1ddab"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/3. Data model/Chunking — per-heading + windowed fallback"
+model = "claude-sonnet-4-6"
+terms = [
+  "heading split chunking",
+  "sliding window overlap",
+  "512 token limit",
+  "markdown heading chunks",
+  "heading_path nested",
+  "headingless note chunking",
+  "windowed sub-chunks",
+  "chunk size threshold",
+  "frontmatter only note",
+  "section based chunking",
+  "token limit per chunk",
+  "how notes are split",
+  "embedding chunk strategy",
+  "fallback chunking",
+]

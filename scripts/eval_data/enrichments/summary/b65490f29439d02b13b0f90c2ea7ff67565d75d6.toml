@@ -1,0 +1,11 @@
+section_hash = "b65490f29439d02b13b0f90c2ea7ff67565d75d6"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 0 — security / data loss (do first)/0.1 Path traversal via `relpath`, `project`, and version names"
+model = "glm-5.3"
+terms = [
+  "why does an absolute relpath make pathlib drop the project base directory",
+  "regex for validating project names to block separators and traversal",
+  "stop note_forget from unlinking files outside the store via ../ relpath",
+  "how to confine joined paths with is_relative_to and reject .. segments up front",
+]

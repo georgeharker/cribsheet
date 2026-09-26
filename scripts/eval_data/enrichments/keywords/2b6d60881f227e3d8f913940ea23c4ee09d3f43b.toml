@@ -1,0 +1,21 @@
+section_hash = "2b6d60881f227e3d8f913940ea23c4ee09d3f43b"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/3. Data model/Chunk identity & Chroma metadata"
+model = "claude-sonnet-4-6"
+terms = [
+  "chunk_id formula",
+  "sha1 chunk hash",
+  "content_hash coordination gate",
+  "crib_chunks collection",
+  "chroma metadata fields",
+  "project filter metadata",
+  "section_key repeated heading",
+  "window_idx",
+  "incremental reindex",
+  "upsert changed chunks",
+  "delete stale chunk ids",
+  "note_id in metadata",
+  "type facet filter",
+  "file_mtime metadata",
+]

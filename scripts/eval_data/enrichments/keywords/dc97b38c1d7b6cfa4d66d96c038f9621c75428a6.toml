@@ -1,0 +1,19 @@
+section_hash = "dc97b38c1d7b6cfa4d66d96c038f9621c75428a6"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/8. Versioning (two layers, neither indexed)"
+model = "claude-sonnet-4-6"
+terms = [
+  "version history",
+  "two-layer versioning",
+  "recovery mechanism",
+  "not in chroma index",
+  "tools-only access",
+  "version ring",
+  "git checkpoint",
+  "complementary layers",
+  "note recovery",
+  "undo note edit",
+  "version not searchable",
+  "hidden from lookup",
+]

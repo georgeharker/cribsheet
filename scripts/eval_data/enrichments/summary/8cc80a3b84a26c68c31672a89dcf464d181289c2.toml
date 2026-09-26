@@ -1,0 +1,11 @@
+section_hash = "8cc80a3b84a26c68c31672a89dcf464d181289c2"
+label = "summary"
+relpath = "sources/cribsheet/docs/ideas/lsp-server-face.md"
+heading = "crib as a language server — the agent face (and the editor one)/4. The surfaces/4.6 Not served"
+model = "glm-5.3"
+terms = [
+  "why doesn't crib's language server serve definition or typedefinition requests",
+  "which lsp capabilities does crib deliberately omit from the agent surface",
+  "is completion served by crib or kept out of the latency-critical hot path",
+  "does crib handle rename, formatting, or code actions from an editor",
+]

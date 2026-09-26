@@ -1,0 +1,11 @@
+section_hash = "f8810ca805eacc929b207b5883208aa890752bcb"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-interface-catalog.md"
+heading = "Symbol interface — full catalog/1. Verbs that ACCEPT a symbol"
+model = "glm-5.3"
+terms = [
+  "which verbs accept a symbol parameter",
+  "does code_graph fall back to whole project when symbol is omitted",
+  "what parameters does learning_rehome require",
+  "can learning_forget target an orphan's recorded fqn",
+]

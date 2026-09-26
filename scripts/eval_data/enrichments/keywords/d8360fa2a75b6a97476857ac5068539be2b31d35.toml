@@ -1,0 +1,22 @@
+section_hash = "d8360fa2a75b6a97476857ac5068539be2b31d35"
+label = "keywords"
+relpath = "sources/cribsheet/README.md"
+heading = "How it works"
+model = "glm-5.3"
+terms = [
+  "architecture",
+  "overview",
+  "internals",
+  "hybrid search",
+  "semantic search",
+  "sparse retrieval",
+  "vector search",
+  "reciprocal rank fusion",
+  "reranker",
+  "concurrency",
+  "race conditions",
+  "thread safety",
+  "incremental indexing",
+  "code search",
+  "language server protocol",
+]

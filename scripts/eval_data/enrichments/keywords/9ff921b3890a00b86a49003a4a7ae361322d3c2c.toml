@@ -1,0 +1,22 @@
+section_hash = "9ff921b3890a00b86a49003a4a7ae361322d3c2c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/7. Conversion: one predicate, two stores"
+model = "glm-5.3"
+terms = [
+  "idempotent migration",
+  "backfill",
+  "schema version bump",
+  "data migration",
+  "rename refactor",
+  "canonical key",
+  "single source of truth",
+  "resumable migration",
+  "restart after crash",
+  "worklist algorithm",
+  "dependency ordering",
+  "two-pass conversion",
+  "slugify",
+  "backlink resolution",
+  "progress tracking",
+]

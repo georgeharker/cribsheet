@@ -1,0 +1,11 @@
+section_hash = "38b202a384d3972fb71a2b495f3662f150fa86ef"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-facet-ergonomics.md"
+heading = "Plan: design/plan facet ergonomics — first-class, edge-aware verbs/Changes to existing surface"
+model = "glm-5.3"
+terms = [
+  "why was design_verify renamed to design_reaffirm",
+  "what does running crib design with no subcommand do",
+  "plan_next blocking rules for tainted design deps vs note deps",
+  "crib design add body via --file stdin or $EDITOR instead of quoting",
+]

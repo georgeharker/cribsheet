@@ -1,0 +1,11 @@
+section_hash = "04f38a802fc3102d9576925750ede8f234040976"
+label = "summary"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/8. Learnings"
+model = "glm-5.3"
+terms = [
+  "what does learnings.attach do to query results",
+  "crib learning rehome orphaned notes",
+  "how is a stale learning detected content_hash",
+  "where are code-learnings notes stored slugged fqn",
+]

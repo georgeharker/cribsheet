@@ -1,0 +1,11 @@
+section_hash = "1808ea5f21d9b6d12c4c7184e1249d8205c5d7d5"
+label = "summary"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Common workflows/2. Onboard a repo and search its code"
+model = "glm-5.3"
+terms = [
+  "difference between crib project setup and crib project index",
+  "crib code lookup find a symbol by concept not name",
+  "how to see callers and callees with crib code xref",
+  "crib code graph pstree call graph for a function",
+]

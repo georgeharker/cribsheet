@@ -1,0 +1,11 @@
+section_hash = "17dde5a72e03a1ae206e7eae9e5706b60bcf0ba3"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 2 — indexing correctness/2.2 Non-UTF8 source file kills the warm LSP session"
+model = "glm-5.3"
+terms = [
+  "latin-1 file makes rust-analyzer cold start on every indexing pass",
+  "UnicodeDecodeError from read_text treated as wedged server and pool.discard",
+  "read_text errors=\"replace\" keep positions consistent with the lsp opened document",
+  "how to verify warm session identity survives indexing a non-utf8 repo",
+]

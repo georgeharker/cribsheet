@@ -1,0 +1,22 @@
+section_hash = "78333962fe9c266a550eb430cfac3495d132f242"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-plan-import.md"
+heading = "Plan: doc import & source attribution for the design/plan graph/Data model/`status: proposed` (design facet)"
+model = "glm-5.3"
+terms = [
+  "untrusted entries",
+  "ai generated decisions",
+  "llm extraction confidence",
+  "human review required",
+  "approve imported decision",
+  "promote to active",
+  "draft status",
+  "pending review",
+  "verify extracted data",
+  "quarantine imported data",
+  "trust level",
+  "source reliability",
+  "human in the loop",
+  "false authority",
+  "provenance tracking",
+]

@@ -1,0 +1,20 @@
+section_hash = "131558d9ec22439664ec1e318c0fba2cac7be199"
+label = "keywords"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)"
+model = "glm-5.3"
+terms = [
+  "hybrid search",
+  "semantic search",
+  "lexical search",
+  "bm25 vs vector",
+  "reciprocal rank fusion",
+  "query expansion",
+  "rag retrieval quality",
+  "search relevance tuning",
+  "information retrieval evaluation",
+  "reranker settings",
+  "embedding aliases",
+  "search mrr benchmark",
+  "agent tool usage",
+]

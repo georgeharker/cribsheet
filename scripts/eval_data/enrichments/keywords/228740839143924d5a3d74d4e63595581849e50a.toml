@@ -1,0 +1,22 @@
+section_hash = "228740839143924d5a3d74d4e63595581849e50a"
+label = "keywords"
+relpath = "sources/cribsheet/docs/storage.md"
+heading = "Where things live — store types, ownership, and how to use each/Content classes inside a project"
+model = "glm-5.3"
+terms = [
+  "directory layout",
+  "folder structure",
+  "where files are stored",
+  "what goes where",
+  "file organization",
+  "storage locations",
+  "content types",
+  "memory categories",
+  "decision log",
+  "adr",
+  "todos",
+  "lessons learned",
+  "read-only files",
+  "edit permissions",
+  "version history",
+]

@@ -1,0 +1,22 @@
+section_hash = "0a5b8a0990680b6dcde6fc175741f7ce6631fec2"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/7. Conversion: one predicate, two stores/Termination, and an honest residue"
+model = "glm-5.3"
+terms = [
+  "fixpoint",
+  "fixed point convergence",
+  "does the conversion loop terminate",
+  "infinite loop risk",
+  "stopping condition",
+  "progress guarantee",
+  "leftover notes",
+  "what happens to unconvertible entries",
+  "unresolvable binding",
+  "dangling reference",
+  "orphan recovery",
+  "reindex needed",
+  "stuck items",
+  "rerun safely",
+  "residue meaning",
+]

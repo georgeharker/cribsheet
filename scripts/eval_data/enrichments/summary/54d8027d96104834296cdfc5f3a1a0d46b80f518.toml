@@ -1,0 +1,11 @@
+section_hash = "54d8027d96104834296cdfc5f3a1a0d46b80f518"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/4. Risks accepted"
+model = "glm-5.3"
+terms = [
+  "why is the mcp toggle global only instead of per-session",
+  "does uninstalling the plugin leave a stray cribsheet registry entry",
+  "what causes the one-session lag on install or mode flip",
+  "plugin writing global mcp config surprising behavior readme warning",
+]

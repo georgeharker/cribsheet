@@ -1,0 +1,11 @@
+section_hash = "9c2fe5583669176d3218d95b189eee39b26da36f"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/5. Storage & retrieval"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does concept search find an entry point and then call graph navigate from it",
+  "what metadata fields are stored per symbol in the crib_symbols collection",
+  "difference between unified lookup and dedicated lookup_code verb for symbol retrieval",
+  "how does the reverse direction surface symbol docs when opening a source file",
+]

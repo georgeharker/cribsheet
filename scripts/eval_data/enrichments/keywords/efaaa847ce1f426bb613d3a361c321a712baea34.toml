@@ -1,0 +1,22 @@
+section_hash = "efaaa847ce1f426bb613d3a361c321a712baea34"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Decisions (settled — do not relitigate)"
+model = "glm-5.3"
+terms = [
+  "keep notes in git",
+  "notes inside the repository",
+  "repo-local storage",
+  "colocate project with code",
+  "move project into repo",
+  "migrate project storage",
+  "where are notes stored",
+  "portable storage location",
+  "self-contained project",
+  "commit notes to version control",
+  "check notes into git",
+  "storage backend options",
+  "embed notes in repo",
+  "project location pointer",
+  "gitignore versions directory",
+]

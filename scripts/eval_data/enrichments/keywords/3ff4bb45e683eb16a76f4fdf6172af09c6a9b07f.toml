@@ -1,0 +1,22 @@
+section_hash = "3ff4bb45e683eb16a76f4fdf6172af09c6a9b07f"
+label = "keywords"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/1. Notes ingestion (store → chunks → index)"
+model = "glm-5.3"
+terms = [
+  "ingestion pipeline",
+  "how notes get indexed",
+  "write path",
+  "save flow",
+  "architecture diagram",
+  "chunking strategy",
+  "split by heading",
+  "embedding cache",
+  "incremental re-embedding",
+  "deduplication",
+  "line number citations",
+  "race conditions",
+  "thread safety",
+  "file watcher",
+  "version history",
+]

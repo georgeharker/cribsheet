@@ -1,0 +1,11 @@
+section_hash = "2f3810b0abeb73ec5187d5e312b5b8992fce9903"
+label = "summary"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/5. The eval harness — two metrics, because push amplifies both signal and noise/5.5 Volume-corpus lift — LLM elaboration + summary_index (2026-07-01)"
+model = "glm-5.3"
+terms = [
+  "sum@0.2 + kw@0.1 stacked mrr volume eval best config",
+  "does the keywords@0.3 default hurt recall on imported repos",
+  "why author section indexes whole-doc with bulk=True instead of per-section",
+  "summary_index off by default removal candidate vs reranker",
+]

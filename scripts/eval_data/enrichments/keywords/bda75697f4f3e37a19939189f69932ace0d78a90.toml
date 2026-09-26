@@ -1,0 +1,19 @@
+section_hash = "bda75697f4f3e37a19939189f69932ace0d78a90"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/3. Structural facet — the warm LSP session subsystem/3.2 Watched-files sync — the crux, done right"
+model = "claude-sonnet-4-6"
+terms = [
+  "didchangewatchedfiles incremental protocol",
+  "client registerCapability glob patterns",
+  "lsp stale results file sync",
+  "didopen whole tree avoid",
+  "disk-synced lsp index",
+  "watcher code workspace scope",
+  "symbol_hash invalidation on fs event",
+  "lsp index incremental not re-dump",
+  "honor server registration capability",
+  "didopen cursor precision only",
+  "didclose after active query",
+  "lsp sync crux pattern",
+]

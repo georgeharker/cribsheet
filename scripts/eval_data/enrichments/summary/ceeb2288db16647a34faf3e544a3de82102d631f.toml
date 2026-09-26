@@ -1,0 +1,11 @@
+section_hash = "ceeb2288db16647a34faf3e544a3de82102d631f"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Implementation steps/3. Availability handling"
+model = "glm-5.3"
+terms = [
+  "what happens when store_root expands to a missing directory",
+  "project_list unavailable true flag unexpanded token",
+  "crib project release fix for unknown [locations] entry",
+  "does startup reconcile skip unavailable projects so the watcher never crashes",
+]

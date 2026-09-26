@@ -1,0 +1,11 @@
+section_hash = "0d4f6fbe988ec0aa03b3bf9a92c33dd32b598c65"
+label = "summary"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Code index — search & navigate (reach for these before grep)"
+model = "glm-5.3"
+terms = [
+  "crib code lookup vs grep — how does hybrid name and concept search work",
+  "code_graph --edges deduplicated subgraph symbol_ref pasteable",
+  "what do synthetic sentinel groups like (no scope) mean in graph group-by",
+  "does crib code convert re-run resume without lsp or llm",
+]

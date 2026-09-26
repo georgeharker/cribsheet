@@ -1,0 +1,23 @@
+section_hash = "cd7d820084fda549395f7734fc667c356d877c4a"
+label = "keywords"
+relpath = "sources/cribsheet/docs/symbol-reference-map.md"
+heading = "The symbol reference map/3. Identity: what an id is, and what it is not"
+model = "glm-5.3"
+terms = [
+  "rename a note",
+  "what happens when i rename a file",
+  "unique identifier",
+  "uuid",
+  "stable id",
+  "persistent identifier",
+  "alias",
+  "old symbol names",
+  "previous names",
+  "file naming convention",
+  "how files are named on disk",
+  "lookup by symbol",
+  "rename safety",
+  "stale files",
+  "leftover records",
+  "hash collision",
+]

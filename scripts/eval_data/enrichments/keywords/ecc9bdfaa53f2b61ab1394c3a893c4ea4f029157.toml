@@ -1,0 +1,22 @@
+section_hash = "ecc9bdfaa53f2b61ab1394c3a893c4ea4f029157"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/retrieval-quality.md"
+heading = "Plan: retrieval-quality investigation (notes path MRR)/Baseline (2026-08-05, quiet tree, daemon on dev@abd7c0a)"
+model = "glm-5.3"
+terms = [
+  "mean reciprocal rank",
+  "search quality",
+  "retrieval eval",
+  "ranking regression",
+  "metric dropped after reindex",
+  "eval regression",
+  "gold set",
+  "duplicate docs in index",
+  "near-duplicate content",
+  "dedupe search results",
+  "ranking dilution",
+  "corpus pinning",
+  "re-baseline metrics",
+  "information retrieval benchmark",
+  "search relevance scores",
+]

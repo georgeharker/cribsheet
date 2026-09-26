@@ -1,0 +1,11 @@
+section_hash = "e9113d921383026993db189bd9b30b7627c0ff38"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/2. The three spellings/Ground truth is four fields"
+model = "glm-5.3"
+terms = [
+  "what four fields does the extractor actually observe for a symbol",
+  "is container a bare-name ancestor chain or a reference to the parent",
+  "how is fqn computed from scope and declared_tail",
+  "difference between symbol_ref and fqname",
+]

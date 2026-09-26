@@ -1,0 +1,11 @@
+section_hash = "bda75697f4f3e37a19939189f69932ace0d78a90"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/3. Structural facet — the warm LSP session subsystem/3.2 Watched-files sync — the crux, done right"
+model = "claude-sonnet-4-6"
+terms = [
+  "why should you not didopen the whole source tree when initializing an lsp server",
+  "how does crib honor the server's client/registerCapability glob patterns for watched files",
+  "what triggers symbol_hash invalidation when a file changes in the watched-files sync",
+  "when is didopen used vs disk-synced didchangewatchedfiles in the lsp integration",
+]

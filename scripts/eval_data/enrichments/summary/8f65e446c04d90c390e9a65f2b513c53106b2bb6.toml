@@ -1,0 +1,11 @@
+section_hash = "8f65e446c04d90c390e9a65f2b513c53106b2bb6"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/surface-parity-fixes.md"
+heading = "Plan: CLI⇄MCP surface parity fixes/P1 — behavior bugs"
+model = "glm-5.3"
+terms = [
+  "code_index files symbols under sticky session project instead of project_path arg",
+  "how to disable default keywords index with --keywords",
+  "note apropos default k cli 5 vs mcp 8 mismatch",
+  "difference between _source_project and _project resolution policy for indexing",
+]

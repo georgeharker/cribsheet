@@ -1,0 +1,22 @@
+section_hash = "80870cd3c47154d382eb5083230a07ad7ccaaead"
+label = "keywords"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/5. Conversation capture (DESIGN §12) — where the value is/Why the split"
+model = "glm-5.3"
+terms = [
+  "why two capture methods",
+  "capture rationale",
+  "design decision reasoning",
+  "slash command vs hook",
+  "explicit vs automatic capture",
+  "manual vs background capture",
+  "opt-in vs always-on",
+  "curated vs quarantined knowledge",
+  "trust level comparison",
+  "design tradeoff",
+  "capture mechanism comparison",
+  "why split capture paths",
+  "session end automation",
+  "zero friction workflow",
+  "architecture decision record",
+]

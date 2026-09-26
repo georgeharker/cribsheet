@@ -1,0 +1,11 @@
+section_hash = "894cd0fa56d086cc7503babe302ff60a36822aca"
+label = "summary"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/6. Recommended build order (each gated by a proof on §5)"
+model = "glm-5.3"
+terms = [
+  "what order should heading-breadcrumb enrichment and sessionstart auto-rag be built in",
+  "how to measure the lift from llm elaborations with eval_retrieval.py --lift keywords",
+  "crib elaborate label content-addressed toml store and the generate.py bridge over llmkit",
+  "when do doc2query and alias vectors get built relative to the eval harness",
+]

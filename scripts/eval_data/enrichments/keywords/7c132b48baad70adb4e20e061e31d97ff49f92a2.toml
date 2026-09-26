@@ -1,0 +1,22 @@
+section_hash = "7c132b48baad70adb4e20e061e31d97ff49f92a2"
+label = "keywords"
+relpath = "sources/cribsheet/docs/symbol-reference-map.md"
+heading = "The symbol reference map"
+model = "glm-5.3"
+terms = [
+  "naming conventions",
+  "nomenclature",
+  "canonical name",
+  "name mapping",
+  "crosswalk",
+  "lookup table",
+  "aliases",
+  "spelling variants",
+  "identifier mapping",
+  "naming standard",
+  "symbol synonyms",
+  "translation table",
+  "name normalization",
+  "glossary",
+  "symbol list",
+]

@@ -1,0 +1,17 @@
+section_hash = "3df080c35b9535e28041c9bfd6ea7a1b3e2f045b"
+label = "keywords"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/8. Where to go next"
+model = "claude-sonnet-4-6"
+terms = [
+  "surface.md verbs reference",
+  "guide.md workflows",
+  "storage.md ownership",
+  "design-plan-tracking historical",
+  "workflow 4",
+  "workflow 5",
+  "next steps",
+  "further reading",
+  "verb reference",
+  "storage ownership",
+]

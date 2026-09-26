@@ -1,0 +1,22 @@
+section_hash = "fda87967de99b53c8dfddf156b40be6d8a502f25"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P1 — `parked` status + trigger (build first; the machinery lands here)/The most important consumer is the near-dup probe"
+model = "glm-5.3-flash"
+terms = [
+  "duplicate proposal detection",
+  "prevent re-proposing same idea",
+  "already proposed check",
+  "dedupe plan items",
+  "similar plan item exists",
+  "repeat suggestion warning",
+  "redundant plan entry",
+  "same idea twice",
+  "rejected idea reuse",
+  "deferred work rediscovery",
+  "existing plan lookup",
+  "plan_add duplicate guard",
+  "collision on new proposal",
+  "rehash old idea",
+  "avoid duplicate planning",
+]

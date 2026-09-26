@@ -1,0 +1,11 @@
+section_hash = "87aee99b2ffcac4103afb036802fe3ff50b18793"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-plan-import.md"
+heading = "Plan: doc import & source attribution for the design/plan graph/Import verbs — the description IS the procedure"
+model = "glm-5.3"
+terms = [
+  "does design_import run a model or just split the doc",
+  "how to cite imported doc sections as sources with heading_path and section_hash",
+  "what is the crib pattern where the result instruction describes the extraction procedure",
+  "why prefer dep_add onto existing entries when similar is returned during import",
+]

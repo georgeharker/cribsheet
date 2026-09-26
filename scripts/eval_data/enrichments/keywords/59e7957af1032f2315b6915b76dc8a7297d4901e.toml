@@ -1,0 +1,22 @@
+section_hash = "59e7957af1032f2315b6915b76dc8a7297d4901e"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design/3.6 Timing"
+model = "glm-5.3"
+terms = [
+  "when does registration take effect",
+  "plugin mcp latency",
+  "how long until plugin appears",
+  "activation delay",
+  "restart required",
+  "take effect immediately",
+  "why is my plugin missing",
+  "not showing until reconnect",
+  "reload doesn't apply changes",
+  "one session wait",
+  "first install latency",
+  "propagation delay",
+  "toggle timing",
+  "stale registration",
+  "session boundary",
+]

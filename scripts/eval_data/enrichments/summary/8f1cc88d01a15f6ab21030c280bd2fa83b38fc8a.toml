@@ -1,0 +1,11 @@
+section_hash = "8f1cc88d01a15f6ab21030c280bd2fa83b38fc8a"
+label = "summary"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Common workflows/1. Store and recall a note"
+model = "glm-5.3"
+terms = [
+  "difference between crib note lookup and apropos",
+  "crib note versions restore old revision of a note",
+  "replace a note body with stdin crib note edit",
+  "is a note recoverable after crib note forget",
+]

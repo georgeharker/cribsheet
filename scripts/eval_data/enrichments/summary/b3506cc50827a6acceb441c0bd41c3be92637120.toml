@@ -1,0 +1,11 @@
+section_hash = "b3506cc50827a6acceb441c0bd41c3be92637120"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/2. Constraints (measured, not assumed)/2.1 There is no `disable` for an MCP entry"
+model = "glm-5.3"
+terms = [
+  "disable mcp server entry in plugin.json mcpServers",
+  "does plugin .mcp.json support an enabled or disabled flag",
+  "can I conditionally register an mcp server with a when field in a plugin",
+  "why does every mcpServers entry in a plugin always register",
+]

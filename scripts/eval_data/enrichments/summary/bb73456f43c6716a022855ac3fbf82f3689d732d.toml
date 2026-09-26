@@ -1,0 +1,11 @@
+section_hash = "bb73456f43c6716a022855ac3fbf82f3689d732d"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P3 — the review sweep: evidence handoff, batched apply"
+model = "glm-5.3-flash"
+terms = [
+  "does crib run a model during the review sweep or just hand over evidence",
+  "how does the design_import precedent shape crib's review sweep",
+  "session llm judges findings then structured batch applies them",
+  "what does crib hand off instead of writing itself in p3",
+]

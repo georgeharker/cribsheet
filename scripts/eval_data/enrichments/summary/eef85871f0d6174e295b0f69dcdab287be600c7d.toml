@@ -1,0 +1,11 @@
+section_hash = "eef85871f0d6174e295b0f69dcdab287be600c7d"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/4. Semantic facet — the description index/4.2 doc2query — retest here"
+model = "claude-sonnet-4-6"
+terms = [
+  "why did doc2query wash on notes but may lift on code symbols",
+  "how is the doc2query a/b test structured in the eval harness for symbol search",
+  "what does it mean to embed queries alongside the description for symbol retrieval",
+  "how to prove or kill the doc2query hypothesis for code versus notes corpus",
+]

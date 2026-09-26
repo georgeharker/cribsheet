@@ -1,0 +1,11 @@
+section_hash = "e887a26d2283c7bcfc4543163ce61644e36b552c"
+label = "summary"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/8. Build order"
+model = "glm-5.3"
+terms = [
+  "what order are the crib capture pipeline phases built in",
+  "why is the capture proxy deferred until after the chat-log path",
+  "which build phase introduces quarantine_weight and the promote tool",
+  "when does the /crib-remember slash command get implemented relative to distill",
+]

@@ -1,0 +1,11 @@
+section_hash = "7eb5e2a4426c59132d009be38f5d08830be6470a"
+label = "summary"
+relpath = "sources/cribsheet/docs/storage.md"
+heading = "Where things live — store types, ownership, and how to use each/Legacy layout migration"
+model = "glm-5.3"
+terms = [
+  "what happens to pre-split notes/design and notes/plans folders on reindex",
+  "crib project migrate skipped name collisions report never merged",
+  "does design/x.md get requalified to design:x.md in sources refs without taint",
+  "do older crib versions see the new sibling pillar dirs or need upgrade on every machine",
+]

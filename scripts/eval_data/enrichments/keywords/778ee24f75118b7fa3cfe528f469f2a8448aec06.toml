@@ -1,0 +1,22 @@
+section_hash = "778ee24f75118b7fa3cfe528f469f2a8448aec06"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/4. What is broken/4.8 The authored sweep"
+model = "glm-5.3"
+terms = [
+  "stale index after rename",
+  "index not rebuilt",
+  "dead field",
+  "unused metadata",
+  "write ordering bug",
+  "rollback safety",
+  "crash mid-migration",
+  "resume after crash",
+  "idempotent migration",
+  "atomic write bypass",
+  "dangling file pointers",
+  "orphaned chunks",
+  "happy path failure",
+  "symbol rename cleanup",
+  "post-migration consistency",
+]

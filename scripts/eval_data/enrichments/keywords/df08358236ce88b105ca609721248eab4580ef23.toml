@@ -1,0 +1,22 @@
+section_hash = "df08358236ce88b105ca609721248eab4580ef23"
+label = "keywords"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide"
+model = "glm-5.3"
+terms = [
+  "ai memory",
+  "persistent memory for llm",
+  "long term memory",
+  "cheat sheet tool",
+  "crib notes",
+  "second brain",
+  "knowledge base",
+  "semantic search notes",
+  "mcp server",
+  "remember past conversations",
+  "cross session context",
+  "shared notes across machines",
+  "version controlled notes",
+  "getting started",
+  "how to use tutorial",
+]

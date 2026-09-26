@@ -1,0 +1,22 @@
+section_hash = "b3506cc50827a6acceb441c0bd41c3be92637120"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/2. Constraints (measured, not assumed)/2.1 There is no `disable` for an MCP entry"
+model = "glm-5.3"
+terms = [
+  "how to disable mcp server",
+  "turn off mcp",
+  "toggle mcp on off",
+  "stop mcp from loading",
+  "mcp always registers",
+  "cannot turn off mcp server",
+  "deactivate mcp",
+  "conditional mcp registration",
+  "mcp autostart",
+  "opt out of mcp",
+  "prevent mcp from registering",
+  "no toggle for mcp",
+  "skip mcp server entry",
+  "mcp entry always active",
+  "unload mcp server",
+]

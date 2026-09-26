@@ -1,0 +1,12 @@
+section_hash = "b449e30ffda3bc3d2cd22186fd154b2035670013"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/11. Checks"
+model = "glm-5.3"
+terms = [
+  "which functions are forbidden from taking fqname in symbols.py checks",
+  "why assert the schema line against a rendered entry instead of the dict",
+  "what does the ref_slug round-trip check cover filename parse",
+  "why must the ※ join test use a migrated fixture",
+  "project_index regenerates zero descriptions after conversion",
+]

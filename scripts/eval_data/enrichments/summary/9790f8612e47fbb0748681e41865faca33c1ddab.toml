@@ -1,0 +1,11 @@
+section_hash = "9790f8612e47fbb0748681e41865faca33c1ddab"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/3. Data model/Chunking — per-heading + windowed fallback"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does cribsheet split a note with no headings into chunks for embedding",
+  "what happens when a single markdown section exceeds 512 tokens in cribsheet",
+  "how is heading_path represented for nested headings in cribsheet chunks",
+  "what chunking strategy does cribsheet use for markdown heading-based sections",
+]

@@ -1,0 +1,11 @@
+section_hash = "966fac160106f9cef42fa9acab220e582b237ead"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/10. Open questions"
+model = "claude-sonnet-4-6"
+terms = [
+  "does adding class or module level descriptions cause crowding in concept search vectors",
+  "what are the tradeoffs between a lookup_code tool and a pretooluse grep hook for surfacing symbol docs",
+  "how should symbol_index toml files be tracked when the code repo moves ahead of descriptions",
+  "which lsp servers lack callHierarchy callees and does a callers-only graph mislead",
+]

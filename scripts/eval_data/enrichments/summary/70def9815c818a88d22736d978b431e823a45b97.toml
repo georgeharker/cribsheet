@@ -1,0 +1,11 @@
+section_hash = "70def9815c818a88d22736d978b431e823a45b97"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Suggested execution order"
+model = "glm-5.3"
+terms = [
+  "suggested order to land the robustness and correctness fixes",
+  "why do 0.1 and 0.2 go in one pr with a shared confinement helper",
+  "which fix unbricks the live daemon first",
+  "when to add the grep-guard test from surface-parity-fixes.md p3",
+]

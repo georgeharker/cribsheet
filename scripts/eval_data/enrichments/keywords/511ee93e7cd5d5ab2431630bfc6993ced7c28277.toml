@@ -1,0 +1,22 @@
+section_hash = "511ee93e7cd5d5ab2431630bfc6993ced7c28277"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion"
+model = "glm-5.3"
+terms = [
+  "symbol reference format",
+  "symbol_ref migration",
+  "canonical symbol id",
+  "naming convention",
+  "unique key per symbol",
+  "filename from symbol name",
+  "deterministic slug",
+  "path tail syntax",
+  "hash in symbol name",
+  "in-place migration",
+  "resumable conversion",
+  "idempotent upgrade",
+  "backward compatibility",
+  "rename symbols",
+  "schema change",
+]

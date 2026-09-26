@@ -1,0 +1,12 @@
+section_hash = "128918d53576ebbc2b95a4cb2114c08a84cb107e"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)/Verb surface (every verb: MCP tool + `crib design|plan <verb>`, same args,"
+model = "glm-5.3"
+terms = [
+  "design_dep_add not seeding checked vs design_add born verified",
+  "does editing a design note via note_edit taint it without a hook",
+  "what counts as actionable in plan_next with k limit",
+  "design_supersede soft delete taint dependents",
+  "why does design_check show the dep path for tainted decisions",
+]

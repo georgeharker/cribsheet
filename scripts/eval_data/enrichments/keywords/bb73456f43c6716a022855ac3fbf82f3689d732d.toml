@@ -1,0 +1,22 @@
+section_hash = "bb73456f43c6716a022855ac3fbf82f3689d732d"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P3 — the review sweep: evidence handoff, batched apply"
+model = "glm-5.3-flash"
+terms = [
+  "pending changes",
+  "deferred decisions",
+  "triage queue",
+  "bulk apply",
+  "staged edits",
+  "two-phase workflow",
+  "dry run",
+  "read-only analysis",
+  "human in the loop",
+  "accept or reject suggestions",
+  "preview before apply",
+  "no model calls in tool",
+  "llm makes the judgment",
+  "approval flow",
+  "crib review",
+]

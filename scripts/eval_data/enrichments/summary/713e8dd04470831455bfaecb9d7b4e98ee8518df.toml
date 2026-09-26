@@ -1,0 +1,11 @@
+section_hash = "713e8dd04470831455bfaecb9d7b4e98ee8518df"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design"
+model = "glm-5.3"
+terms = [
+  "why register the mcp with a sessionstart hook instead of mcpservers in the manifest",
+  "how does session-start.sh use combiner_serves cribsheet to skip standalone registration",
+  "claude mcp remove cribsheet --scope user when the combiner is already the mcp",
+  "sharedserver use --pid $PPID --grace-period 1h to warm the crib mcp backend",
+]

@@ -1,0 +1,23 @@
+section_hash = "b0bb085b1080b7367822a727d9c0719c3f3d7adb"
+label = "keywords"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/1. Goal & the central tension"
+model = "glm-5.3"
+terms = [
+  "automatic note taking",
+  "auto capture",
+  "passive capture",
+  "knowledge loss",
+  "ephemeral knowledge",
+  "remembering decisions",
+  "memory pollution",
+  "signal to noise",
+  "capture vs curation",
+  "chat log problem",
+  "unreviewed notes",
+  "quarantine tier",
+  "human review workflow",
+  "promote notes",
+  "write friction",
+  "note deduplication",
+]

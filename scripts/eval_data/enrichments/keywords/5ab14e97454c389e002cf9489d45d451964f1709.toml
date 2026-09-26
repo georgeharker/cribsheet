@@ -1,0 +1,21 @@
+section_hash = "5ab14e97454c389e002cf9489d45d451964f1709"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Goal"
+model = "glm-5.3"
+terms = [
+  "local project data",
+  "per-repo storage",
+  "store notes in repo",
+  "colocate data with code",
+  "version control notes",
+  "git tracked learnings",
+  "portable project data",
+  "storage location override",
+  "custom data directory",
+  "where are notes stored",
+  "move data out of global store",
+  "relative path configuration",
+  "team shared notes",
+  "keep chroma index in cache",
+]

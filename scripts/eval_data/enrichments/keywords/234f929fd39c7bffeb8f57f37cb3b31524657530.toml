@@ -1,0 +1,21 @@
+section_hash = "234f929fd39c7bffeb8f57f37cb3b31524657530"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/surface-parity-fixes.md"
+heading = "Plan: CLI⇄MCP surface parity fixes/P5 — structural enforcement (approved 2026-08-05; do after P1-P3)"
+model = "glm-5.3"
+terms = [
+  "cli mcp consistency",
+  "tool registration decorator",
+  "single source of truth",
+  "parameter drift",
+  "schema mismatch check",
+  "policy per tool",
+  "wiring the resolver automatically",
+  "reflection of tool signatures",
+  "keep cli and mcp in sync",
+  "prevent silent bugs",
+  "regression guard",
+  "assert every tool declares policy",
+  "api surface consistency",
+  "generate docs from registry",
+]

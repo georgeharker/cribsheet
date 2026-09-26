@@ -1,0 +1,11 @@
+section_hash = "62f398fd84ddb986d327479099f151f9f306542e"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P3 — the review sweep: evidence handoff, batched apply/Phase 3 — `plan review --apply <batch>` (write, edge-aware)"
+model = "glm-5.3-flash"
+terms = [
+  "can the llm set done when applying a plan review batch",
+  "what does an apply report say an edit tainted in plan_edit",
+  "plan review --apply batch stamps reviewed and human confirms evidence",
+  "are titles parks and declines applied directly in plan review apply",
+]

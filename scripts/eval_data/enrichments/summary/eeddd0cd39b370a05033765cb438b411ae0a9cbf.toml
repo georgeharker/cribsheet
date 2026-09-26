@@ -1,0 +1,11 @@
+section_hash = "eeddd0cd39b370a05033765cb438b411ae0a9cbf"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/5. Tool surface/Direct-edit pattern"
+model = "claude-sonnet-4-6"
+terms = [
+  "what does reindex do after editing a note via raw path",
+  "why call reindex immediately instead of waiting for watcher",
+  "is reindex safe to call multiple times redundantly",
+  "how does locate fit into the direct-edit workflow",
+]

@@ -1,0 +1,22 @@
+section_hash = "5cfea5064006623b2acc2e0515e4f466271492cd"
+label = "keywords"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/6. Config"
+model = "glm-5.3"
+terms = [
+  "change model",
+  "switch provider",
+  "ollama",
+  "local llm",
+  "self-hosted model",
+  "custom endpoint",
+  "api key",
+  "openai compatible",
+  "model settings",
+  "token limit",
+  "cheap model",
+  "save quota",
+  "config file",
+  "toml",
+  "proxy setup",
+]

@@ -1,0 +1,11 @@
+section_hash = "f331b70aa9b844826817763d7d3cfb0419e727ab"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/4. What is broken/4.4 The converter has no caller"
+model = "glm-5.3"
+terms = [
+  "why is convert_store never called outside tests",
+  "does the indexer ever invoke convert_entry",
+  "unconverted only referenced in test_symbol_convert.py",
+  "missing cli or mcp verb for symbol conversion",
+]

@@ -1,0 +1,11 @@
+section_hash = "030f73d80b0c1e5eb93fd5c0ec09d97a61247e2d"
+label = "summary"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Plans — persistent, resumable work items"
+model = "glm-5.3-flash"
+terms = [
+  "how do plan, design, and note dependencies gate a plan item differently",
+  "plan item shows stale in lookups after a decision edit — does plan reaffirm clear it",
+  "why does plan next exclude items marked in-progress",
+  "done plan item flagged revisit when its cited source changed",
+]

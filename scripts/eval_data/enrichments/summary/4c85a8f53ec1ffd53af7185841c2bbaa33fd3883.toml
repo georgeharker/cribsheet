@@ -1,0 +1,11 @@
+section_hash = "4c85a8f53ec1ffd53af7185841c2bbaa33fd3883"
+label = "summary"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Common workflows/3. Attach and recall a learning on a symbol"
+model = "glm-5.3"
+terms = [
+  "crib learning add command save insight about a function",
+  "how to rehome an orphaned learning in crib",
+  "crib learning report ok moved orphan status",
+  "do crib learnings show up in code lookup and code xref",
+]

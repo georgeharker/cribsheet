@@ -1,0 +1,22 @@
+section_hash = "7eb5e2a4426c59132d009be38f5d08830be6470a"
+label = "keywords"
+relpath = "sources/cribsheet/docs/storage.md"
+heading = "Where things live — store types, ownership, and how to use each/Legacy layout migration"
+model = "glm-5.3"
+terms = [
+  "upgrade",
+  "update crib",
+  "backward compatibility",
+  "old version",
+  "convert old notes",
+  "reorganize notes",
+  "move notes to pillars",
+  "repair layout",
+  "fix old paths",
+  "slash to colon",
+  "dotted facet notation",
+  "duplicate filenames",
+  "sync conflicts",
+  "downgrade",
+  "breaking change",
+]

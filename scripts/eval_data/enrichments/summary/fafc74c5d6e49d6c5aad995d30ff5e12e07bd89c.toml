@@ -1,0 +1,11 @@
+section_hash = "fafc74c5d6e49d6c5aad995d30ff5e12e07bd89c"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 0 — security / data loss (do first)/0.3 One malformed note aborts whole-project reconcile"
+model = "glm-5.3"
+terms = [
+  "reconcile fails on one note with bad yaml frontmatter",
+  "how to stop single malformed note from aborting project reindex",
+  "catch yaml.YAMLError in notes.parse and raise NoteParseError",
+  "can notestore.write overwrite a corrupt note during recovery",
+]

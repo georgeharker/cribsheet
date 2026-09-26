@@ -1,0 +1,24 @@
+section_hash = "38b202a384d3972fb71a2b495f3662f150fa86ef"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-facet-ergonomics.md"
+heading = "Plan: design/plan facet ergonomics — first-class, edge-aware verbs/Changes to existing surface"
+model = "glm-5.3"
+terms = [
+  "rename design_verify",
+  "verification vs reaffirmation",
+  "stale decisions",
+  "drift detection",
+  "near duplicates",
+  "duplicate decisions",
+  "default subcommand",
+  "bare command names",
+  "tty detection",
+  "editor workflow",
+  "stdin input",
+  "piped text",
+  "blocking dependencies",
+  "gate vs reference",
+  "status counters",
+  "lookup annotations",
+  "agent guidance rules",
+]

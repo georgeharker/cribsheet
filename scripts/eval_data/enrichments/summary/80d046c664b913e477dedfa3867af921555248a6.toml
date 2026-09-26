@@ -1,0 +1,11 @@
+section_hash = "80d046c664b913e477dedfa3867af921555248a6"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/4. What is broken/4.1 A `symbol_ref` cannot be used as input to any verb"
+model = "glm-5.3"
+terms = [
+  "why does symbols.match return none for a symbol_ref",
+  "is the id tier in symbols.match ever reachable",
+  "can a symbol_ref be passed as input to a verb",
+  "which call sites pass entry.get id to symbols.match",
+]

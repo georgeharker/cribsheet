@@ -1,0 +1,11 @@
+section_hash = "2f3487bb3dc5c401014c57ad102aa5ea7660bac1"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage"
+model = "glm-5.3"
+terms = [
+  "how to enable optional in-repo project storage in crib",
+  "why does store: .crib/store throw an error",
+  "what should store: be set to instead of .crib/store",
+  "crib git sync $LOCATION portable paths",
+]

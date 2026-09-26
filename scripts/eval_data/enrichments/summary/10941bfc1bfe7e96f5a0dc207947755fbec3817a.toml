@@ -1,0 +1,11 @@
+section_hash = "10941bfc1bfe7e96f5a0dc207947755fbec3817a"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/④ Decay + recovery (`describe_queue.py`, `notestore.py`, `app.py`) — AFTER the stall fix and Tier 0 land (shares `notestore.py`/`app.py`)/2.1 Backoff actually backs off"
+model = "glm-5.3"
+terms = [
+  "how does _fire thread the popped entry level into _run for backoff",
+  "exponential backoff delays double up to cap _arm level+1 describe_queue",
+  "keep spawned describer task refs in a set with done-callback logging exceptions",
+  "test stub describer always raises to verify backoff doubling and entry cleared",
+]

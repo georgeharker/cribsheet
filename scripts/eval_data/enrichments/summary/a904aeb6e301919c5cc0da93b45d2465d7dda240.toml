@@ -1,0 +1,11 @@
+section_hash = "a904aeb6e301919c5cc0da93b45d2465d7dda240"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P3 — the review sweep: evidence handoff, batched apply/Phase 2 — the session LLM emits an edit batch"
+model = "glm-5.3-flash"
+terms = [
+  "what goes in the evidence-backed edit batch the review sweep llm emits",
+  "merge rule for duplicate plan items onto the better-worded one",
+  "park with trigger vs decline with why-not verdicts on plan items",
+  "why write down why-nots instead of just tidying the plan list",
+]

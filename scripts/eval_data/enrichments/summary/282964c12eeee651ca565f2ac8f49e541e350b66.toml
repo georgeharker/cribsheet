@@ -1,0 +1,11 @@
+section_hash = "282964c12eeee651ca565f2ac8f49e541e350b66"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 0 — security / data loss (do first)/0.2 `sources/…` relpaths are writable through note verbs"
+model = "glm-5.3"
+terms = [
+  "note_forget deleted file from my sources checkout",
+  "add src_prefix guard to notestore write and delete",
+  "note_edit stamped crib frontmatter into source repo readme",
+  "prevent note_restore from rewriting sources relpath",
+]

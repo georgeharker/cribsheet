@@ -1,0 +1,11 @@
+section_hash = "23f26189de94626da3872808e977198f8411e3e8"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/surface-parity-fixes.md"
+heading = "Plan: CLI⇄MCP surface parity fixes/Non-issues (audited, deliberate — do not \"fix\")"
+model = "glm-5.3"
+terms = [
+  "why are memory sync and push cli-only instead of mcp-exposed",
+  "should crib serve or merge-driver also be available over mcp",
+  "why is project_index budget_s mcp-only with no cli flag",
+  "why do project_source and resolved markers vanish on the in-process cli path",
+]

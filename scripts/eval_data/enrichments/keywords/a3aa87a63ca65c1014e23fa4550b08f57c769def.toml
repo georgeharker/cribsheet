@@ -1,0 +1,21 @@
+section_hash = "a3aa87a63ca65c1014e23fa4550b08f57c769def"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P3 — the review sweep: evidence handoff, batched apply/Phase 1 — `plan review` (read; MCP `plan_review`)"
+model = "glm-5.3-flash"
+terms = [
+  "stale items",
+  "plan audit",
+  "health check",
+  "redundant work",
+  "triage",
+  "pre-flight check",
+  "dry run",
+  "read-only summary",
+  "plan hygiene",
+  "zombie tasks",
+  "forgotten items",
+  "inspect before apply",
+  "item age",
+  "plan lint",
+]

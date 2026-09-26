@@ -1,0 +1,22 @@
+section_hash = "228b1a6803e8279687732e458d01735869b84878"
+label = "keywords"
+relpath = "sources/cribsheet/README.md"
+heading = "Quickstart"
+model = "glm-5.3"
+terms = [
+  "getting started",
+  "getting started guide",
+  "how to install crib",
+  "installation instructions",
+  "setup tutorial",
+  "first steps",
+  "agent memory tool",
+  "persistent memory for ai coding agents",
+  "claude code memory plugin",
+  "mcp server setup",
+  "semantic search notes",
+  "second brain for developers",
+  "index your codebase",
+  "knowledge base setup",
+  "start here",
+]

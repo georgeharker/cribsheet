@@ -1,0 +1,21 @@
+section_hash = "e9840afb64cc76070261d424e0c004862759b351"
+label = "keywords"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Project lifecycle — onboard & manage a whole repo"
+model = "glm-5.3"
+terms = [
+  "initialize a repository",
+  "first time setup",
+  "get started with a repo",
+  "index whole codebase",
+  "reindex after changes",
+  "incremental indexing",
+  "background indexing job",
+  "long running task",
+  "indexing progress",
+  "monitor sweep status",
+  "switch active project",
+  "multiple workspaces",
+  "sync offline file changes",
+  "move notes into git",
+]

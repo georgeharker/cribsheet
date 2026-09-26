@@ -1,0 +1,11 @@
+section_hash = "b0a2ce084d58b1c0bf9a79aafdcfb25a2578e3dd"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/1. Evidence/The stores"
+model = "glm-5.3"
+terms = [
+  "how many entries across the stores have symbol_ref converted",
+  "which projects are stamped but not converted to symbol_ref",
+  "cribsheet svg-mcp zdot sharedserver .schema conversion status",
+  "does any of the 14035 entries carry a schema = line",
+]

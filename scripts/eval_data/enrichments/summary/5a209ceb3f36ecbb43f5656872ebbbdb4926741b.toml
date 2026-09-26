@@ -1,0 +1,11 @@
+section_hash = "5a209ceb3f36ecbb43f5656872ebbbdb4926741b"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)/New module: `crib/designs.py` (one module, both facets)"
+model = "glm-5.3"
+terms = [
+  "how does dep_add reject a dependency cycle before writing",
+  "why does the body hash exclude frontmatter when tainting dependents",
+  "rank_between lexorank midpoint string append m on tie",
+  "resolving a note by ulid prefix vs title slug ambiguous candidates",
+]

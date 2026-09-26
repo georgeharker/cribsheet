@@ -1,0 +1,22 @@
+section_hash = "b65490f29439d02b13b0f90c2ea7ff67565d75d6"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 0 — security / data loss (do first)/0.1 Path traversal via `relpath`, `project`, and version names"
+model = "glm-5.3"
+terms = [
+  "path traversal",
+  "directory traversal",
+  "sanitize file path",
+  "containment check",
+  "arbitrary file deletion",
+  "arbitrary file read",
+  "escape sandbox",
+  "dotdot attack",
+  "path validation",
+  "lfi",
+  "local file inclusion",
+  "security vulnerability",
+  "file path injection",
+  "symlink escape",
+  "input validation",
+]

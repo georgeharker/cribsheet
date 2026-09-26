@@ -1,0 +1,22 @@
+section_hash = "894cd0fa56d086cc7503babe302ff60a36822aca"
+label = "keywords"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/6. Recommended build order (each gated by a proof on §5)"
+model = "glm-5.3"
+terms = [
+  "build order",
+  "implementation roadmap",
+  "phased rollout",
+  "what to build first",
+  "sequencing",
+  "priorities",
+  "quick wins",
+  "mvp",
+  "next steps",
+  "task list",
+  "gated milestones",
+  "dependency order",
+  "prerequisites",
+  "rag setup plan",
+  "rollout checklist",
+]

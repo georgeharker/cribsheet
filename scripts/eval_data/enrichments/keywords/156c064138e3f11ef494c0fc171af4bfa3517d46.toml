@@ -1,0 +1,22 @@
+section_hash = "156c064138e3f11ef494c0fc171af4bfa3517d46"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design/3.1 The switch — global, with a per-backend override"
+model = "glm-5.3"
+terms = [
+  "mcp combiner toggle",
+  "disable combiner for one backend",
+  "per-backend flag",
+  "mcp_combiner_serves",
+  "override global setting",
+  "force standalone registration",
+  "opt out of combiner",
+  "exception to global flag",
+  "per-backend override",
+  "backend specific setting",
+  "exclude backend from combiner",
+  "env var precedence",
+  "boolean environment variable values",
+  "mcp_combiner false",
+  "skip mcp registration",
+]

@@ -1,0 +1,11 @@
+section_hash = "4a924ba506f8de8f05c6d1a37bda0b3d1adf6e0c"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/6. Target shape/The entry"
+model = "glm-5.3"
+terms = [
+  "how is a parent's symbol_ref truncated from the child's key",
+  "why strip the leaf by name instead of rsplit when deriving parent",
+  "when does symbol_was stay empty for a symbol",
+  "why can module_of and legacy_fqname be deleted after conversion",
+]

@@ -1,0 +1,20 @@
+section_hash = "8d1a95d1e29cdba813a43e21676cb983ed43d785"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/② Attribution keys (`codeindex.py` describe/meta paths, `codestore.py`) — after ①③ (same files)/2.6 Describe results keyed by fqname"
+model = "glm-5.3"
+terms = [
+  "fully qualified name",
+  "symbol lookup",
+  "identifier resolution",
+  "duplicate symbol names",
+  "same-name methods in one file",
+  "description attached to wrong symbol",
+  "mismatched metadata",
+  "suffix match",
+  "double colon separator",
+  "rust module path",
+  "namespace resolution",
+  "disambiguate namesakes",
+  "requeue undescribed entries",
+]

@@ -1,0 +1,22 @@
+section_hash = "3f00cd64683307a1f32f536d47e44e664bd34a00"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/10. Stack/10.2 CLI process model — the daemon is the MCP server"
+model = "claude-sonnet-4-6"
+terms = [
+  "cold start latency cli",
+  "fastembed onnx reload",
+  "mcp client over tcp",
+  "crib --mcp --http daemon",
+  "sharedserver use unuse cli",
+  "port 7732 default endpoint",
+  "cwd resolution daemon",
+  "no-daemon escape hatch",
+  "llmkit md render",
+  "vendor/llmkit submodule",
+  "json flag scripting output",
+  "embedder weight reload",
+  "daemon refcount per command",
+  "in-process fallback",
+  "per-path lock authoritative",
+]

@@ -1,0 +1,22 @@
+section_hash = "4e66832b383586422ca6d4335b990b661c8b1dd0"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/2.9 Chunk-id occurrence counter (`chunk.py`) — independent small agent, any time"
+model = "glm-5.3"
+terms = [
+  "duplicate headings",
+  "identical section titles",
+  "heading collision",
+  "chunk id collision",
+  "hash collision",
+  "same heading twice",
+  "dedupe chunk ids",
+  "disambiguate headings",
+  "occurrence suffix",
+  "reindex on upgrade",
+  "rebuild index",
+  "schema migration",
+  "stale chunks cleanup",
+  "line map out of sync",
+  "duplicate sections missing from search",
+]

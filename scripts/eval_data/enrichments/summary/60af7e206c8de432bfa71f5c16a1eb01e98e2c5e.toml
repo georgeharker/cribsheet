@@ -1,0 +1,11 @@
+section_hash = "60af7e206c8de432bfa71f5c16a1eb01e98e2c5e"
+label = "summary"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/2. Why the agent greps instead of looking up"
+model = "glm-5.3"
+terms = [
+  "why does the agent grep the codebase instead of calling lookup",
+  "what is the reliability asymmetry between grep and the mcp lookup tool",
+  "why does memory.md get consulted reliably while the crib store does not",
+  "how does cold-start emptiness negatively reinforce the fallback to search",
+]

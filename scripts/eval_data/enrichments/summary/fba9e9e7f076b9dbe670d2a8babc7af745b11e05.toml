@@ -1,0 +1,11 @@
+section_hash = "fba9e9e7f076b9dbe670d2a8babc7af745b11e05"
+label = "summary"
+relpath = "sources/cribsheet/docs/ideas/lsp-server-face.md"
+heading = "crib as a language server — the agent face (and the editor one)/4. The surfaces/4.4 Edges — only where the real server cannot reach"
+model = "glm-5.3"
+terms = [
+  "does crib answer findreferences or defer to pyright when both are attached",
+  "how does refs: fan-out surface llmkit callers of a crib symbol across projects",
+  "what happens to call hierarchy queries when no language server resolved for that file",
+  "can a lsp server tell if another client is connected to avoid duplicate reference results",
+]

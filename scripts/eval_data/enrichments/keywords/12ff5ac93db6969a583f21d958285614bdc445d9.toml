@@ -1,0 +1,22 @@
+section_hash = "12ff5ac93db6969a583f21d958285614bdc445d9"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/6. Target shape/`code_graph` node ids — designed, not migrated"
+model = "glm-5.3"
+terms = [
+  "node id migration",
+  "ephemeral graph ids",
+  "computed at query time",
+  "not persisted on disk",
+  "qualified symbol format",
+  "dotted path vs file path",
+  "hash notation locator",
+  "openable in editor",
+  "jump to definition",
+  "no compatibility path needed",
+  "payload vs key change",
+  "rust zsh symbol names",
+  "unreleased tag status",
+  "rollup group key unaffected",
+  "marks glyph join",
+]

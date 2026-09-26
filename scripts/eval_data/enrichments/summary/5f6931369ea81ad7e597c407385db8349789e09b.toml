@@ -1,0 +1,11 @@
+section_hash = "5f6931369ea81ad7e597c407385db8349789e09b"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/④ Decay + recovery (`describe_queue.py`, `notestore.py`, `app.py`) — AFTER the stall fix and Tier 0 land (shares `notestore.py`/`app.py`)/Live-store recovery (operational, after ④ lands)"
+model = "glm-5.3"
+terms = [
+  "restart daemon and run full reindex sweep after decay fix lands",
+  "why is live crib_chunks down to ~305 chunks",
+  "what recovery is needed since 2.10 already fired in production",
+  "other projects lookups silently thin until reindex sweep completes",
+]

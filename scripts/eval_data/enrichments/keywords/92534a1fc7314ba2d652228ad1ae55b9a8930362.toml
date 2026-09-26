@@ -1,0 +1,21 @@
+section_hash = "92534a1fc7314ba2d652228ad1ae55b9a8930362"
+label = "keywords"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/6. Verify"
+model = "glm-5.3"
+terms = [
+  "sanity check",
+  "verify installation",
+  "resume on new computer",
+  "migration checklist",
+  "confirm projects restored",
+  "smoke test",
+  "retrieval evaluation",
+  "search quality",
+  "benchmark retrieval",
+  "relevance scoring",
+  "top-k lookup",
+  "eval script",
+  "baseline comparison",
+  "lift metrics",
+]

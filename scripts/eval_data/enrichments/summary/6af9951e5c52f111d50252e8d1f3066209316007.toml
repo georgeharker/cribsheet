@@ -1,0 +1,11 @@
+section_hash = "6af9951e5c52f111d50252e8d1f3066209316007"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/7. distill"
+model = "claude-sonnet-4-6"
+terms = [
+  "why is distill never triggered on write in cribsheet",
+  "how does distill avoid rewriting unchanged content",
+  "what is the llmkit bridge and why is it used instead of mcp sampling for distill",
+  "what frontmatter tag does distill write to mark a note",
+]

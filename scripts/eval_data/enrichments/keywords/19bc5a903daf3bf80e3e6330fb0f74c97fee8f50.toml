@@ -1,0 +1,22 @@
+section_hash = "19bc5a903daf3bf80e3e6330fb0f74c97fee8f50"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Follow-ups (approved 2026-08-05, not yet executed)/F1 — store exclusion from `.crib` globs (latent-bug fix) — EXECUTED 2026-08-05"
+model = "glm-5.3"
+terms = [
+  "exclude store from globs",
+  "skip .crib store directory",
+  "glob matches store notes",
+  "notes indexed twice",
+  "double indexing bug",
+  "duplicate chunks fix",
+  "dedupe store notes",
+  "prevent reindexing store",
+  "retrieval noise search decoys",
+  "in-situ docs duplicates",
+  "glob overlaps store dir",
+  "adopt warning existing globs",
+  "ignore versioned store",
+  "latent bug store paths",
+  "criblink in_store rule",
+]

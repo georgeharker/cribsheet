@@ -1,0 +1,22 @@
+section_hash = "5a209ceb3f36ecbb43f5656872ebbbdb4926741b"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-plan-tracking.md"
+heading = "Plan: design-decision & plan tracking (dependency graphs)/New module: `crib/designs.py` (one module, both facets)"
+model = "glm-5.3"
+terms = [
+  "circular dependency detection",
+  "cycle prevention",
+  "dag",
+  "topological sort",
+  "stale notes",
+  "outdated dependencies",
+  "dirty flag",
+  "transitive invalidation",
+  "downstream impact analysis",
+  "recompute affected notes",
+  "fractional indexing",
+  "lexicographic ordering",
+  "architecture decision records",
+  "adr",
+  "checksum verification",
+]

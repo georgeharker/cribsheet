@@ -1,0 +1,21 @@
+section_hash = "fa2791665a35e24784391058f180aa0f532d1fe4"
+label = "keywords"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/7. Resolution & ergonomics"
+model = "claude-sonnet-4-6"
+terms = [
+  "ref resolution",
+  "ULID prefix",
+  "relpath resolution",
+  "title slug resolution",
+  "ambiguity candidates",
+  "wrong facet message",
+  "post-hoc citation",
+  "design append --source",
+  "design edit --source",
+  "deduped citations",
+  "hash at capture",
+  "citation wired after the fact",
+  "source string",
+  "ref ambiguity",
+]

@@ -1,0 +1,20 @@
+section_hash = "966fac160106f9cef42fa9acab220e582b237ead"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/10. Open questions"
+model = "claude-sonnet-4-6"
+terms = [
+  "open questions design",
+  "symbol hierarchy breadcrumb",
+  "multi-language lsp coverage",
+  "callees missing servers",
+  "daemon session eviction",
+  "eager vs lazy lsp init",
+  "pretooluse hook injection",
+  "lookup_code vs grep hook",
+  "symbol_index git tracking",
+  "description provenance staleness",
+  "workspace scope cost",
+  "crowding failure mode vectors",
+  "class module level description",
+]

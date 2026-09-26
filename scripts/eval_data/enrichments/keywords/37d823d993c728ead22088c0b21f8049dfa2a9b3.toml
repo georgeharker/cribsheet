@@ -1,0 +1,21 @@
+section_hash = "37d823d993c728ead22088c0b21f8049dfa2a9b3"
+label = "keywords"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/0. Prerequisites (once)"
+model = "glm-5.3"
+terms = [
+  "new computer setup",
+  "fresh install",
+  "migrate to another machine",
+  "setup checklist",
+  "bootstrap new environment",
+  "second workstation",
+  "reinstall from scratch",
+  "new laptop setup",
+  "first-time configuration",
+  "restore workspace",
+  "clone repositories",
+  "api key setup",
+  "environment provisioning",
+  "getting started on a new box",
+]

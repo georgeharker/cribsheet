@@ -1,0 +1,11 @@
+section_hash = "d411cd86c95dbc5c6f48918439cf8215cc376af3"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/3. Structural facet — the warm LSP session subsystem"
+model = "claude-sonnet-4-6"
+terms = [
+  "why does the lsp session live in-process in the daemon rather than as a sharedserver",
+  "how does the crib watcher integrate with the lsp server for file change notification",
+  "what is the architectural parallel between chroma and the lsp session in crib",
+  "why is warm startup mandatory for the lsp session registry",
+]

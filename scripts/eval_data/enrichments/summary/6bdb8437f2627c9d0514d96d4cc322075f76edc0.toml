@@ -1,0 +1,11 @@
+section_hash = "6bdb8437f2627c9d0514d96d4cc322075f76edc0"
+label = "summary"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/5. Conversation capture (DESIGN §12) — where the value is/5a. Slash command — explicit, in-session → **curated**"
+model = "glm-5.3"
+terms = [
+  "how does /crib-remember store a note as curated",
+  "crib capture mcp tool arguments title body tags project",
+  "/crib-distill command invoke distill on existing note",
+  "why no bridge needed for slash command knowledge capture",
+]

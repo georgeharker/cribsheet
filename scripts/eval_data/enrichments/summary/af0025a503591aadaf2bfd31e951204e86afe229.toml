@@ -1,0 +1,11 @@
+section_hash = "af0025a503591aadaf2bfd31e951204e86afe229"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/7. Conversion: one predicate, two stores/Crash states: two, plus a leftover"
+model = "glm-5.3"
+terms = [
+  "what crash state does write_atomic leave behind after the rename",
+  "how does all() pick between two files with the same key after a crash",
+  "why no recovery journal for leftover duplicate records",
+  "can key() group an old unconverted file missing symbol_ref",
+]

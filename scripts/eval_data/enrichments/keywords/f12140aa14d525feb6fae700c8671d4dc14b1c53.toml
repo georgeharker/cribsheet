@@ -1,0 +1,22 @@
+section_hash = "f12140aa14d525feb6fae700c8671d4dc14b1c53"
+label = "keywords"
+relpath = "sources/cribsheet/docs/storage.md"
+heading = "Where things live — store types, ownership, and how to use each/What to use when (quick chooser)"
+model = "glm-5.3"
+terms = [
+  "which command should i use",
+  "decision table",
+  "cheat sheet",
+  "when to use",
+  "choosing a store",
+  "where do i put this",
+  "picking the right tool",
+  "command routing",
+  "comparison guide",
+  "rules of thumb",
+  "storage options",
+  "quick reference",
+  "best tool for the job",
+  "how to choose",
+  "decision guide",
+]

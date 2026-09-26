@@ -1,0 +1,22 @@
+section_hash = "030f73d80b0c1e5eb93fd5c0ec09d97a61247e2d"
+label = "keywords"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Plans — persistent, resumable work items"
+model = "glm-5.3-flash"
+terms = [
+  "task management",
+  "todo list",
+  "backlog",
+  "work queue",
+  "action item",
+  "checklist",
+  "kanban",
+  "ticket",
+  "milestone",
+  "dependency tracking",
+  "what should i do next",
+  "bulk create items",
+  "import markdown outline",
+  "delete task",
+  "claim work",
+]

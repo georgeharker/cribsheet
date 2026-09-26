@@ -1,0 +1,22 @@
+section_hash = "1bbed67e3ec9c547dc9e532be1f86a83fe85f920"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/10. Sequence"
+model = "glm-5.3"
+terms = [
+  "refactor plan",
+  "implementation order",
+  "migration checklist",
+  "phased rollout",
+  "symbol resolution",
+  "unique identifier",
+  "canonical id",
+  "single source of truth",
+  "dedupe",
+  "rename handling",
+  "lookup by reference",
+  "qualified name",
+  "idempotent migration",
+  "backfill",
+  "legacy cleanup",
+]

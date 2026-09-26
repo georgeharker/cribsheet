@@ -1,0 +1,11 @@
+section_hash = "f06a6be8765ed7b84cdc3c448775654f58a7efee"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/2. Two facets, one identity/2.1 Hashing & the location-rot rule"
+model = "claude-sonnet-4-6"
+terms = [
+  "why are line numbers not used as symbol identity in the crib index",
+  "what triggers a description regeneration for a symbol vs suppresses it",
+  "how does symbol_hash mirror section_hash to survive reformatting",
+  "how is the current file and line location resolved at query time if not stored",
+]

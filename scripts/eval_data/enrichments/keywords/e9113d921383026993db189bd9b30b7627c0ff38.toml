@@ -1,0 +1,21 @@
+section_hash = "e9113d921383026993db189bd9b30b7627c0ff38"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/2. The three spellings/Ground truth is four fields"
+model = "glm-5.3"
+terms = [
+  "canonical fields",
+  "source of truth",
+  "observed vs derived",
+  "raw extractor output",
+  "computed values",
+  "minimal stored data",
+  "how is fqn built",
+  "qualified name",
+  "dotted path",
+  "full symbol name",
+  "enclosing class",
+  "inner function",
+  "nested hierarchy",
+  "unique symbol id",
+]

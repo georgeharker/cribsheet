@@ -1,0 +1,11 @@
+section_hash = "844226344c22094d6ad801481098747532681501"
+label = "summary"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/5. The eval harness — two metrics, because push amplifies both signal and noise/5.6 The frozen protocol — test discipline for subsequent changes (2026-09-24)"
+model = "glm-5.3-flash"
+terms = [
+  "crib-eval-quality-v1 vs crib-eval-stability-v1 which pins differ between the two protocol ids",
+  "why does the eval dump fingerprint embed model and config sha256 before comparing two dumps",
+  "should a failed or timed-out eval repeat be excluded or scored zero for stability",
+  "is retrieval deterministic so gold set recall needs no error bars across repeats",
+]

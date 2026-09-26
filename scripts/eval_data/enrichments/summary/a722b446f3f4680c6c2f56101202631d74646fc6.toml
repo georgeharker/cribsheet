@@ -1,0 +1,11 @@
+section_hash = "a722b446f3f4680c6c2f56101202631d74646fc6"
+label = "summary"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/2. Two generation engines/The bridge wrapper — `crib/generate.py`"
+model = "glm-5.3"
+terms = [
+  "why does crib generate.py write bridge.chat output to a temp file",
+  "claude_code adapter default no api key needed in [generate] block",
+  "running synchronous bridge.chat with asyncio.to_thread in crib",
+  "what does generate(system, user) in crib/generate.py return",
+]

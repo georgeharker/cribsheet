@@ -1,0 +1,11 @@
+section_hash = "6bbb37ac6fc4378c3fbf3b8bd9aa3e0fd0d5e021"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 1 — daemon correctness under load/1.4 Stale Chroma collection handle after `recreate()` — the live"
+model = "glm-5.3"
+terms = [
+  "why does note_lookup error \"collection does not exist\" after embed dim reindex",
+  "stale chroma collection handle in other process after recreate()",
+  "how to refresh cached self._col when recreate deletes the collection uuid",
+  "should chromastore recreate swallow all exceptions or only pass on not found",
+]

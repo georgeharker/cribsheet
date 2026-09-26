@@ -1,0 +1,22 @@
+section_hash = "4c31ae91bec26a9f37f861555d91e4ce5a1e653b"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 2 — indexing correctness/2.10 Dim-change `recreate()` wipes all projects, reindexes one"
+model = "glm-5.3"
+terms = [
+  "rebuild index after model change",
+  "embedding dimension mismatch",
+  "reindex all projects",
+  "switch embedding model",
+  "stale vectors",
+  "search returns no results",
+  "missing documents after reindex",
+  "wipe vector store",
+  "re-embed everything",
+  "cross-project reindex",
+  "silent data loss",
+  "reset index",
+  "vector size change",
+  "docs disappear from search",
+  "partial reindex",
+]

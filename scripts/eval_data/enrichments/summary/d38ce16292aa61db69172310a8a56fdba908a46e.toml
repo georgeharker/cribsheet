@@ -1,0 +1,11 @@
+section_hash = "d38ce16292aa61db69172310a8a56fdba908a46e"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/9. File watcher (macOS + Linux)"
+model = "claude-sonnet-4-6"
+terms = [
+  "why does crib watch for moved events in addition to modified",
+  "how does crib handle vim or vscode atomic save writes",
+  "what file patterns does the watcher filter out",
+  "how does the 200ms debounce interact with inotify firing multiple events per save",
+]

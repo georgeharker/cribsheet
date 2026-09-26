@@ -1,0 +1,22 @@
+section_hash = "c3af12c95a7ac000e611eeedee28409cc417507a"
+label = "keywords"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/3. Ingest all `.crib`-tagged repos (creates/fills each project)"
+model = "glm-5.3"
+terms = [
+  "new computer",
+  "new laptop",
+  "migrate",
+  "migration",
+  "reinstall",
+  "restore projects",
+  "fresh install",
+  "bootstrap",
+  "reindex",
+  "batch setup",
+  "multiple repositories",
+  "initialize projects",
+  "import docs",
+  "dev environment",
+  "setup script",
+]

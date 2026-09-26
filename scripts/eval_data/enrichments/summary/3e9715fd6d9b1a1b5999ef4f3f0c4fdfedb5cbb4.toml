@@ -1,0 +1,11 @@
+section_hash = "3e9715fd6d9b1a1b5999ef4f3f0c4fdfedb5cbb4"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/1. The problem"
+model = "glm-5.3"
+terms = [
+  "what does the crib plugin sessionstart hook keep warm via sharedserver",
+  "crib tools duplicated after installing plugin alongside mcp-combiner",
+  "why does crib ship two near-identical plugins for standalone and combiner",
+  "difference between crib registering 127.0.0.1:7732/mcp directly and namespaced tools like cribsheet_note_apropos",
+]

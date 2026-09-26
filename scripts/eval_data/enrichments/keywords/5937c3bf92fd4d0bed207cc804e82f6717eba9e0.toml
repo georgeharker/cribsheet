@@ -1,0 +1,21 @@
+section_hash = "5937c3bf92fd4d0bed207cc804e82f6717eba9e0"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design/3.2 Polarity — default standalone"
+model = "glm-5.3"
+terms = [
+  "standalone vs combiner mode",
+  "switch plugin registration mode",
+  "mcp combiner environment variable",
+  "opt out of standalone",
+  "toggle crib proxy mode",
+  "fresh install default configuration",
+  "mcp_combiner_serves_cribsheet flag",
+  "crib_external deprecated replacement",
+  "zshenv export setting",
+  "marketplace plugin works out of the box",
+  "gate backend registration",
+  "proxy only cribsheet",
+  "single plugin registration gap",
+  "change polarity default",
+]

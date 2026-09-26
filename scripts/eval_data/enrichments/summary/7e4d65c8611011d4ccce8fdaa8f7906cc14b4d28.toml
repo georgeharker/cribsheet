@@ -1,0 +1,11 @@
+section_hash = "7e4d65c8611011d4ccce8fdaa8f7906cc14b4d28"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/7. Conversion: one predicate, two stores/A pass"
+model = "glm-5.3"
+terms = [
+  "why are prior names unlinked when writing entries at ref_slug(symbol_ref)",
+  "how is by_binding built from entry bindings",
+  "when can the store be stamped after the work-lists empty",
+  "why does interleaving only matter for resume if note conversion depends on entries",
+]

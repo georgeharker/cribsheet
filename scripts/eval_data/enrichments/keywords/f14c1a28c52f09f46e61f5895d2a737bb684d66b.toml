@@ -1,0 +1,22 @@
+section_hash = "f14c1a28c52f09f46e61f5895d2a737bb684d66b"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/③ Serialization hardening (`codeindex.py`, `section_index.py`) — same agent as ①, after it/2.5 Escaping + parse failure mode"
+model = "glm-5.3"
+terms = [
+  "escape sequences",
+  "unescape strings",
+  "sanitize special characters",
+  "round-trip test",
+  "fuzzing random unicode",
+  "malformed toml",
+  "invalid toml",
+  "toml decode error",
+  "corrupted index repair",
+  "truncated file recovery",
+  "newline in description",
+  "torn write",
+  "atomic file replacement",
+  "os.replace",
+  "crash safety",
+]

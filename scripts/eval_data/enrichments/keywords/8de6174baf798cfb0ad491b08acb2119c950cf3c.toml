@@ -1,0 +1,21 @@
+section_hash = "8de6174baf798cfb0ad491b08acb2119c950cf3c"
+label = "keywords"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/1. Why a facet, and not just notes"
+model = "claude-sonnet-4-6"
+terms = [
+  "design_add",
+  "design_edit",
+  "note_edit facet restriction",
+  "dependency edge promise",
+  "taint propagation",
+  "dep invalidation",
+  "silent breakage",
+  "hash taint",
+  "supersede decision",
+  "append decision",
+  "similar warning",
+  "graph fork",
+  "why not notes",
+  "facet vs note",
+]

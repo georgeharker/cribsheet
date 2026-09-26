@@ -1,0 +1,11 @@
+section_hash = "df75a777fc785969ca7d4cd39a26bbe40471a87d"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/retrieval-quality.md"
+heading = "Plan: retrieval-quality investigation (notes path MRR)"
+model = "glm-5.3"
+terms = [
+  "when is the notes path mrr investigation scheduled",
+  "is notes mrr queued behind repo-local-storage and design-plan-tracking",
+  "does every retrieval lever need an ab test on gold sets",
+  "what does design 10.3 require before shipping retrieval changes",
+]

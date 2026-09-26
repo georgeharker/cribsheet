@@ -1,0 +1,22 @@
+section_hash = "f2778c5aec9b301c83dde7251b0d2d9faa9702ed"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-facet-ergonomics.md"
+heading = "Plan: design/plan facet ergonomics — first-class, edge-aware verbs"
+model = "glm-5.3"
+terms = [
+  "dependency graph",
+  "dag",
+  "task queue",
+  "next action",
+  "blocked tasks",
+  "unblocking work",
+  "batch add",
+  "todo capture",
+  "topological order",
+  "workflow verbs",
+  "api ergonomics",
+  "task claiming",
+  "design tools",
+  "checklist",
+  "work breakdown",
+]

@@ -1,0 +1,22 @@
+section_hash = "27ef1fd14f33f4fd4538d8cc9c5b9500fc4afe7b"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/11. Resolved decisions & remaining open items"
+model = "claude-sonnet-4-6"
+terms = [
+  "design decisions log",
+  "open issues",
+  "import write-back",
+  "round-trip export",
+  "ring storage durability",
+  "versions directory backup",
+  "crib state dir",
+  "git auto-detect",
+  "snapshot only git",
+  "no commit on write",
+  "chroma embedded vs shared",
+  "sharedserver refcount",
+  "multi-client safety",
+  "adr",
+  "decision record",
+]

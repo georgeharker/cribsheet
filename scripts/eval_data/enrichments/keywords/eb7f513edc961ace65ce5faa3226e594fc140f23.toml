@@ -1,0 +1,20 @@
+section_hash = "eb7f513edc961ace65ce5faa3226e594fc140f23"
+label = "keywords"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/4. Code indexing pipeline"
+model = "glm-5.3"
+terms = [
+  "build code index",
+  "how files get parsed",
+  "incremental reindex",
+  "full sweep vs single file reindex",
+  "symbol extraction",
+  "call graph",
+  "callers and callees",
+  "find references",
+  "go to definition",
+  "stale cache invalidation",
+  "in-memory symbol store",
+  "monorepo boundaries",
+  "flaky lsp extraction",
+]

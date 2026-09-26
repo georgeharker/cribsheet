@@ -1,0 +1,22 @@
+section_hash = "87d2fc1f0569f5454c750f93a03f3b264e6945f5"
+label = "keywords"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/5. Conversation capture (DESIGN §12) — where the value is/5c. Capture source — chat logs vs proxy"
+model = "glm-5.3"
+terms = [
+  "transcript source",
+  "where conversation text comes from",
+  "jsonl transcript file",
+  "chat log parser",
+  "llm proxy",
+  "reverse proxy",
+  "traffic interception",
+  "mitm proxy",
+  "api traffic capture",
+  "anthropic base url override",
+  "conversation history extraction",
+  "live session capture",
+  "wire format record",
+  "passthrough proxy",
+  "fail-open middleware",
+]

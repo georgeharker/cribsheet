@@ -1,0 +1,22 @@
+section_hash = "50f61590b860a62950de4e0faf2b5849b69d973b"
+label = "keywords"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference"
+model = "glm-5.3"
+terms = [
+  "cheatsheet",
+  "cheat sheet",
+  "list of all commands",
+  "subcommands",
+  "command syntax",
+  "usage",
+  "arguments",
+  "options",
+  "parameters",
+  "switches",
+  "man page",
+  "available tools",
+  "tool names",
+  "naming conventions",
+  "command catalog",
+]

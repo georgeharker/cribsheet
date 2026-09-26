@@ -1,0 +1,11 @@
+section_hash = "4921cb0bf555a75eb7b63e6a1c8142a58ab1c240"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/10. Stack/10.4 Reranking — range-matched, ON by default"
+model = "claude-sonnet-4-6"
+terms = [
+  "why does range-matched reranking outperform rrf-rerank with the new score fusion pipeline",
+  "how does the llm-judge reranker use logprobs to score passages with one token per passage",
+  "why is qwen3-reranker unusable on raspberry pi cpu and what is the fallback",
+  "what does build_reranker dispatch on and what are the four tier options",
+]

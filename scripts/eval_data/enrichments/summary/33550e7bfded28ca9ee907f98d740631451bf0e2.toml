@@ -1,0 +1,11 @@
+section_hash = "33550e7bfded28ca9ee907f98d740631451bf0e2"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-interface-catalog.md"
+heading = "Symbol interface — full catalog/2. Verbs that RETURN a symbol"
+model = "glm-5.3"
+terms = [
+  "which verbs return a symbol object today",
+  "what fields does code_dossier return for neighbours",
+  "code_lookup hit shape fqname kind line raw edge-ref strings",
+  "is code_dossier neigh() the precedent for the new symbol struct",
+]

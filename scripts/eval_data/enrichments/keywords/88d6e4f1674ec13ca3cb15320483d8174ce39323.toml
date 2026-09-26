@@ -1,0 +1,22 @@
+section_hash = "88d6e4f1674ec13ca3cb15320483d8174ce39323"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 1 — daemon correctness under load/1.6 Multi-process access has no guard at all"
+model = "glm-5.3"
+terms = [
+  "concurrency",
+  "race condition",
+  "concurrent access",
+  "concurrent writes",
+  "file locking",
+  "two processes",
+  "multiple instances",
+  "data corruption",
+  "lost updates",
+  "torn write",
+  "partial write",
+  "crash safety",
+  "exclusive lock",
+  "simultaneous access",
+  "locking",
+]

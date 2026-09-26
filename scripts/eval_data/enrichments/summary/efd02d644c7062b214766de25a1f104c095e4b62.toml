@@ -1,0 +1,11 @@
+section_hash = "efd02d644c7062b214766de25a1f104c095e4b62"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/9. File watcher (macOS + Linux)/Startup reconciliation"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does crib handle notes edited while the daemon was not running",
+  "why does the watcher start before the reconcile sweep and not after",
+  "how to check reconcile progress after a cold daemon start",
+  "what triggers a reindex without needing bespoke migration code after a store wipe",
+]

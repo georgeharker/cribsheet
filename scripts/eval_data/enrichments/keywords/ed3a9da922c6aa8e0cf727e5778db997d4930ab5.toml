@@ -1,0 +1,21 @@
+section_hash = "ed3a9da922c6aa8e0cf727e5778db997d4930ab5"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/6. Migration"
+model = "glm-5.3"
+terms = [
+  "how to migrate",
+  "consolidate plugins",
+  "merge into single plugin",
+  "deprecate cribsheet-instructions",
+  "remove old plugin",
+  "upgrade guide",
+  "transition to new version",
+  "deprecation steps",
+  "combiner environment variable",
+  "set env var before upgrade",
+  "uninstall instructions-only plugin",
+  "one plugin instead of two",
+  "cleanup after migration",
+  "deprecated marketplace listing",
+]

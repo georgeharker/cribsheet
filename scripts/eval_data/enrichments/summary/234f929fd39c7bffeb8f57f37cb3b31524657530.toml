@@ -1,0 +1,11 @@
+section_hash = "234f929fd39c7bffeb8f57f37cb3b31524657530"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/surface-parity-fixes.md"
+heading = "Plan: CLI⇄MCP surface parity fixes/P5 — structural enforcement (approved 2026-08-05; do after P1-P3)"
+model = "glm-5.3"
+terms = [
+  "how does the crib_tool decorator wire the project resolver per tool",
+  "why do note_import and learning_add get different resolution policies than the default",
+  "what does test_surface_parity.py check against fastmcp introspected schemas",
+  "where is TOOL_POLICY defined and how are all 40 tool policies enforced",
+]

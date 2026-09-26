@@ -1,0 +1,11 @@
+section_hash = "99406e8b05cdadfe8bcecd4440f99288b62c7213"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes"
+model = "glm-5.3"
+terms = [
+  "did the robustness correctness fixes plan get executed on dev",
+  "what commits contain the hardening sweep and tier 3-4 fixes",
+  "which deep reviews covered storage notes code-index server session",
+  "where is project_use project_current duplication tracked p2.5",
+]

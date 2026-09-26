@@ -1,0 +1,23 @@
+section_hash = "e5f534749f1be19d38a0a23bedb3a4b934655b44"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-facet-ergonomics.md"
+heading = "Plan: design/plan facet ergonomics — first-class, edge-aware verbs/New verbs (all: both surfaces, registry rows, declared policy, parity green)"
+model = "glm-5.3"
+terms = [
+  "inspect design",
+  "view design details",
+  "show dependencies",
+  "what depends on this",
+  "reverse dependencies",
+  "impact analysis",
+  "blast radius",
+  "ripple effects",
+  "downstream consequences",
+  "update design document",
+  "append to design",
+  "search designs",
+  "find plans",
+  "browse designs",
+  "stale designs",
+  "taint propagation",
+]

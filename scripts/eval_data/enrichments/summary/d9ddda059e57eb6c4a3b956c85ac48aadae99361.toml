@@ -1,0 +1,11 @@
+section_hash = "d9ddda059e57eb6c4a3b956c85ac48aadae99361"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/15. Per-connection session scope (current project)/15.1 Project lifecycle & curation (from dogfooding feedback)"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does store signal near-duplicate notes at write time using dedupe_warn_score",
+  "when does creating a note via store switch the session current project",
+  "how are note filenames assigned and what guarantees stable identity across renames",
+  "what does the move verb do that store-new plus forget-old does not",
+]

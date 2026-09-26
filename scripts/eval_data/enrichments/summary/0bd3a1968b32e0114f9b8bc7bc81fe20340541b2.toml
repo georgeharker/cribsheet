@@ -1,0 +1,11 @@
+section_hash = "0bd3a1968b32e0114f9b8bc7bc81fe20340541b2"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-interface-catalog.md"
+heading = "Symbol interface — full catalog/4. CLI presentation — six independent renderers"
+model = "glm-5.3"
+terms = [
+  "why six separate emitters format symbols differently",
+  "render_symbol(ref, style) inline id tree hit styles",
+  "consolidate _emit_code symbol formatting into one renderer",
+  "where should module path adornment live for cli output",
+]

@@ -1,0 +1,22 @@
+section_hash = "b8a802ae8d0341efd5dedcbb85b46af01d1aa0f0"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/6. Target shape/The filename — `ref_slug(symbol_ref)`, both stores"
+model = "glm-5.3"
+terms = [
+  "slugify symbol name",
+  "filename sanitization",
+  "safe characters in file names",
+  "kebab case conversion",
+  "dash separated slug",
+  "deterministic file naming",
+  "content hash suffix",
+  "unique filename per symbol",
+  "slug collision check",
+  "rename function migration",
+  "backwards compatibility old names",
+  "stable identifier scheme",
+  "fully qualified name not unique",
+  "refactor learning slug",
+  "unlink stale symbol files",
+]

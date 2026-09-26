@@ -1,0 +1,20 @@
+section_hash = "c9be24d4156eba894a1cd4ca25bb04eb9f8cc474"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/④ Decay + recovery (`describe_queue.py`, `notestore.py`, `app.py`) — AFTER the stall fix and Tier 0 land (shares `notestore.py`/`app.py`)/2.10 Dim-change triggers full recovery, visibly"
+model = "glm-5.3"
+terms = [
+  "dimension mismatch",
+  "embedding model change",
+  "reindex after model swap",
+  "rebuild search index",
+  "re-embed all documents",
+  "stale embeddings",
+  "vector size changed",
+  "empty search results after upgrade",
+  "background reindex",
+  "reindexing progress",
+  "index rebuilding flag",
+  "model migration embeddings",
+  "thin search results explained",
+]

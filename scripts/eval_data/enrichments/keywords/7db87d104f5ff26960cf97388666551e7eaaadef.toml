@@ -1,0 +1,20 @@
+section_hash = "7db87d104f5ff26960cf97388666551e7eaaadef"
+label = "keywords"
+relpath = "sources/cribsheet/docs/eval-organic-memory.md"
+heading = "Exploration task: how well does the LLM save notes to cribsheet *unprompted*?/The question"
+model = "claude-sonnet-4-6"
+terms = [
+  "organic save rate",
+  "model-initiated writes",
+  "unforced memory calls",
+  "durable facts persistence",
+  "cribsheet store append edit unprompted",
+  "mcp instructions compliance",
+  "memory tool volition",
+  "headline metric definition",
+  "fraction prompted vs organic",
+  "should have saved denominator",
+  "cross-session memory value",
+  "basic-memory replacement",
+  "autonomous knowledge capture",
+]

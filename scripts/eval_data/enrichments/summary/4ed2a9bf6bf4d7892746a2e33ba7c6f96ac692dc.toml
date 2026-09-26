@@ -1,0 +1,11 @@
+section_hash = "4ed2a9bf6bf4d7892746a2e33ba7c6f96ac692dc"
+label = "summary"
+relpath = "sources/cribsheet/README.md"
+heading = "Status & tests"
+model = "glm-5.3"
+terms = [
+  "run tests with pytest -q command",
+  "are json store and hash embedder fallbacks exercised in ci",
+  "is --no-daemon a separate install profile or a tested fallback",
+  "which components work: version ring, file watcher, git sync, code index",
+]

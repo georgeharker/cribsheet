@@ -1,0 +1,11 @@
+section_hash = "88d6e4f1674ec13ca3cb15320483d8174ce39323"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 1 — daemon correctness under load/1.6 Multi-process access has no guard at all"
+model = "glm-5.3"
+terms = [
+  "second process corrupts jsonstore last-writer-wins writes",
+  "source registry empty after crash mid-write sourceRoots._save",
+  "flock lockfile to block --no-daemon while daemon is running",
+  "make symbolindex.write and versionring.stash atomic with save_atomic",
+]

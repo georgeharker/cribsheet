@@ -1,0 +1,11 @@
+section_hash = "74fc99f6e7aa08de7443aac61f5ed3a08b12db3f"
+label = "summary"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Keeping the two faces in step"
+model = "glm-5.3"
+terms = [
+  "crib cli.py verbs registry mcp tool parameters single source of truth",
+  "what does test_surface_parity.py check against fastmcp introspected schemas",
+  "apropos -k default 5 vs 8 cli mcp drift",
+  "tool_policy server resolution policy swapped inside tool body detection",
+]

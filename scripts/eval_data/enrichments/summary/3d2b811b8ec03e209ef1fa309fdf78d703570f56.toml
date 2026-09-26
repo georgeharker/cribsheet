@@ -1,0 +1,11 @@
+section_hash = "3d2b811b8ec03e209ef1fa309fdf78d703570f56"
+label = "summary"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/3. Structural facet — the warm LSP session subsystem/3.4 Call-graph queries"
+model = "claude-sonnet-4-6"
+terms = [
+  "why are callees support listed as uneven across lsp servers",
+  "what is the difference between shape tree and shape edges in code_graph",
+  "how does group_by collapse symbol edges onto file or dir axis with weight",
+  "how does fqname_sep prevent separator collision for languages like zsh",
+]

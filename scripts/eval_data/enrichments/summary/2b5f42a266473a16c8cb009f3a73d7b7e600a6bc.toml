@@ -1,0 +1,11 @@
+section_hash = "2b5f42a266473a16c8cb009f3a73d7b7e600a6bc"
+label = "summary"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/2. Pull the crib data repo (notes)"
+model = "glm-5.3"
+terms = [
+  "crib memory setup --remote first time on new machine",
+  "what does crib memory pull do after fetching notes",
+  "does crib configure a frontmatter merge driver when joining the repo",
+  "are crib indexes gitignored and regenerated on pull",
+]

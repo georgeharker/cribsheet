@@ -1,0 +1,11 @@
+section_hash = "8b8e08bd0b5b5aec5a139c268a4955ccd945685f"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/retrieval-quality.md"
+heading = "Plan: retrieval-quality investigation (notes path MRR)/Non-goals"
+model = "glm-5.3"
+terms = [
+  "why is rrf off the table after the ranking experiments",
+  "what was decided about rank-bonus alias ports",
+  "does the 0.72 mrr bar ever get lowered again",
+  "mrr ratchet rule when a lever lands",
+]

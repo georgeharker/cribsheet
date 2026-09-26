@@ -1,0 +1,11 @@
+section_hash = "f990f0e8d7ef1ea9fc11f47954782bdc19f6e4c3"
+label = "summary"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/1. Update source (cribsheet + llmkit submodule)"
+model = "glm-5.3"
+terms = [
+  "why does crib import fail with unexpected keyword argument cwd after updating",
+  "sharedserver admin stop cribsheet to reload daemon after source update",
+  "update llmkit submodule to its pinned commit in vendor",
+  "run one-shot ingest index batch with crib --no-daemon",
+]

@@ -1,0 +1,22 @@
+section_hash = "8bfd278789f1b7f47038b414ad444cf90020d9cb"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Config surface"
+model = "glm-5.3"
+terms = [
+  "project storage location",
+  "where is project data stored",
+  "change store path",
+  "move store directory",
+  "repo-relative data directory",
+  "committed config file",
+  "machine-local pointer",
+  "portable path expansion",
+  "environment variable in config",
+  "dev token expansion",
+  "storage root override",
+  "cribproject stub",
+  "custom data directory",
+  "share project across machines",
+  "relative path validation",
+]

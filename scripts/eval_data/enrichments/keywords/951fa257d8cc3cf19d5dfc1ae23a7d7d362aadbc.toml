@@ -1,0 +1,21 @@
+section_hash = "951fa257d8cc3cf19d5dfc1ae23a7d7d362aadbc"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/12. What is actually released, and who has to be migrated"
+model = "glm-5.3"
+terms = [
+  "released version vs dev",
+  "what users actually have",
+  "who needs to migrate",
+  "upgrade path",
+  "backward compatibility",
+  "breaking change",
+  "unreleased schema",
+  "legacy format users",
+  "crash recovery",
+  "idempotent conversion",
+  "half converted store",
+  "reindex vs reconvert",
+  "one-off repair script",
+  "promote dev to main",
+]

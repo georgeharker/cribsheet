@@ -1,0 +1,11 @@
+section_hash = "9c541ed0712d61a19ee91e4f1c994d095808ca1c"
+label = "summary"
+relpath = "sources/cribsheet/docs/ideas/lsp-server-face.md"
+heading = "crib as a language server — the agent face (and the editor one)/2. Who consumes it/2.3 Multi-server attach is settled"
+model = "glm-5.3"
+terms = [
+  "can crib attach alongside the real language server instead of replacing it",
+  "running pylsp and ruff-lsp concurrently as claude code plugins for .py files",
+  "does .lsp.json support multiple servers for the same extension",
+  "is multi-server attach per extension already proven or speculative",
+]

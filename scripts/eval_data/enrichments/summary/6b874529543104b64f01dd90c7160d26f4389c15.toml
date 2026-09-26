@@ -1,0 +1,11 @@
+section_hash = "6b874529543104b64f01dd90c7160d26f4389c15"
+label = "summary"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/0. The shape — `Crib` as composition root"
+model = "glm-5.3"
+terms = [
+  "why does crib.lookup stay on crib instead of moving to codequery",
+  "crib.__init__ collaborator wiring order dag notestore codestore refs",
+  "which collaborator owns the resident code cache and freshness epoch",
+  "snapshot_harness.py byte-for-byte golden proof the crib split was behavior-preserving",
+]

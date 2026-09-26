@@ -1,0 +1,11 @@
+section_hash = "2d681c67716f13fec333679978325081f8c85f3c"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P1 — `parked` status + trigger (build first; the machinery lands here)/The meaning half: one appended body line makes it searchable"
+model = "glm-5.3-flash"
+terms = [
+  "why does plan_park --why append the reason to the body instead of frontmatter",
+  "how to find what a parked plan is waiting on with plan_lookup",
+  "make a deferred plan's trigger semantically searchable in exports",
+  "keeping parked status prose and the firing mechanism from drifting apart",
+]

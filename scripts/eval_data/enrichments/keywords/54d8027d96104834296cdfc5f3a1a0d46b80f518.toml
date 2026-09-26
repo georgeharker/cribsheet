@@ -1,0 +1,20 @@
+section_hash = "54d8027d96104834296cdfc5f3a1a0d46b80f518"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/4. Risks accepted"
+model = "glm-5.3"
+terms = [
+  "mcp registration risks",
+  "known limitations",
+  "global toggle downside",
+  "machine-wide setting",
+  "per-project scope unsupported",
+  "orphaned entry",
+  "leftover config after uninstall",
+  "stale registration",
+  "cleanup on removal",
+  "restart required after mode switch",
+  "delay until next session",
+  "surprising side effects",
+  "registry pollution",
+]

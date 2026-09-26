@@ -1,0 +1,21 @@
+section_hash = "2f3487bb3dc5c401014c57ad102aa5ea7660bac1"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage"
+model = "glm-5.3"
+terms = [
+  "in-repo storage",
+  "repo-local project files",
+  "check in project settings",
+  "commit project state to git",
+  "version control project data",
+  "share project config with team",
+  "sync across machines",
+  "per-repo configuration",
+  "repository-local state",
+  "relative paths",
+  "hidden dotfile storage",
+  "gitignore crib files",
+  "checked into version control",
+  "portable project location",
+]

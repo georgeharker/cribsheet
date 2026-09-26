@@ -1,0 +1,22 @@
+section_hash = "25f05b5e4dc5c4237ecd3968a98fbe3ee5c37259"
+label = "keywords"
+relpath = "sources/cribsheet/docs/storage.md"
+heading = "Where things live — store types, ownership, and how to use each/Global vs in-repo project storage"
+model = "glm-5.3"
+terms = [
+  "colocate data with the repository",
+  "where is my data stored",
+  "data location",
+  "change storage location",
+  "move project into the repo",
+  "keep notes in the repo",
+  "commit notes to git",
+  "version project data with the code",
+  "share projects across machines",
+  "portable storage",
+  "monorepo",
+  "embedding index location",
+  "chroma location",
+  "migrate project storage",
+  "local vs shared storage",
+]

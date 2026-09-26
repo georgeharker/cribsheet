@@ -1,0 +1,11 @@
+section_hash = "5972348db499e650fd3d4abc8c3d03878c698ec9"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/6. Project association — `.crib` and `.cribproject`/Import semantics"
+model = "claude-sonnet-4-6"
+terms = [
+  "what happens to local edits in the crib store when note import is re-run",
+  "how is provenance recorded for imported notes",
+  "does crib push edits back to the source repo after import",
+  "what does import_into control and what is its default value",
+]

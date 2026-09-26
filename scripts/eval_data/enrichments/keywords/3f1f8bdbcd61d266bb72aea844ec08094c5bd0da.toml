@@ -1,0 +1,21 @@
+section_hash = "3f1f8bdbcd61d266bb72aea844ec08094c5bd0da"
+label = "keywords"
+relpath = "sources/cribsheet/docs/ideas/lsp-server-face.md"
+heading = "crib as a language server — the agent face (and the editor one)/8. Staleness becomes visible"
+model = "glm-5.3"
+terms = [
+  "stale cache",
+  "cache invalidation",
+  "outdated hover results",
+  "cold start race",
+  "initialization readiness",
+  "partial index answers",
+  "file watcher",
+  "reindex on file change",
+  "out of sync diagnostics",
+  "editor integration accuracy",
+  "lsp freshness",
+  "wrong symbol info",
+  "live revalidation",
+  "consistent state",
+]

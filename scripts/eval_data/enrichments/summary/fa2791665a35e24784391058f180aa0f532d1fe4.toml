@@ -1,0 +1,11 @@
+section_hash = "fa2791665a35e24784391058f180aa0f532d1fe4"
+label = "summary"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/7. Resolution & ergonomics"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does ref resolution handle a ULID prefix that matches multiple entries",
+  "how do I add a source citation to a decision after it was already written",
+  "what message appears when a ref exists in the wrong facet",
+  "what is the difference between design append --source and design edit --source",
+]

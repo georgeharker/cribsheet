@@ -1,0 +1,11 @@
+section_hash = "bd152f66797c8a5f81ecccc83cc47149255df280"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/6. Target shape/The note"
+model = "glm-5.3"
+terms = [
+  "what does symbol_was[] record in a note",
+  "why is the symbol field gone from the note shape",
+  "note id ulid and title set to entry.fqn",
+  "what are signature and content_hash used for in a note",
+]

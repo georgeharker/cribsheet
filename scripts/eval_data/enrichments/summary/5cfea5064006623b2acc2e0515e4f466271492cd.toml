@@ -1,0 +1,11 @@
+section_hash = "5cfea5064006623b2acc2e0515e4f466271492cd"
+label = "summary"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/6. Config"
+model = "glm-5.3"
+terms = [
+  "point auto-summarize at a cheaper local model to save claude quota",
+  "what does generate.summarize fall back to when the section is missing",
+  "capture.proxy listen address upstream pass-through fail open",
+  "set per-project distill_prompt and summarize_prompt in .cribproject",
+]

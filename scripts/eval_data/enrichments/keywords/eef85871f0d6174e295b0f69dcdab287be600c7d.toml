@@ -1,0 +1,20 @@
+section_hash = "eef85871f0d6174e295b0f69dcdab287be600c7d"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/4. Semantic facet — the description index/4.2 doc2query — retest here"
+model = "claude-sonnet-4-6"
+terms = [
+  "doc2query",
+  "query augmentation",
+  "synthetic query generation",
+  "hypothetical question embedding",
+  "a/b test retrieval",
+  "recall lift symbols",
+  "developer query phrasing",
+  "eval harness ab",
+  "embed queries alongside description",
+  "retrieval technique comparison",
+  "notes vs code corpus difference",
+  "saturated recall notes",
+  "search augmentation hypothesis",
+]

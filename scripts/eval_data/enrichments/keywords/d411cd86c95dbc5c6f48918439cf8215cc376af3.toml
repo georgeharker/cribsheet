@@ -1,0 +1,20 @@
+section_hash = "d411cd86c95dbc5c6f48918439cf8215cc376af3"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/3. Structural facet — the warm LSP session subsystem"
+model = "claude-sonnet-4-6"
+terms = [
+  "warm lsp session daemon",
+  "chroma twin architecture",
+  "lsp in-process daemon",
+  "stdio lsp not port",
+  "lsp session long-lived owner",
+  "sharedserver lsp divergence",
+  "lsp watcher didchangewatchedfiles",
+  "session registry grace eviction",
+  "expensive cold start lsp",
+  "lsp cli routes through daemon",
+  "language server warm stateful index",
+  "crib daemon owns lsp session",
+  "pipes parent single process lsp",
+]

@@ -1,0 +1,11 @@
+section_hash = "03fc35bd6e86bed3214c623c72c2b1e45e214c5d"
+label = "summary"
+relpath = "sources/cribsheet/README.md"
+heading = "Going further"
+model = "glm-5.3"
+terms = [
+  "how to run the crib mcp server myself instead of using the plugin",
+  "when should i set MCP_COMBINER_SERVES_CRIBSHEET=1",
+  "crib memory setup --remote second machine frontmatter merge driver",
+  "config.toml embed model hash vs fe: bge-small difference",
+]

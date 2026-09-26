@@ -1,0 +1,11 @@
+section_hash = "951fa257d8cc3cf19d5dfc1ae23a7d7d362aadbc"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/12. What is actually released, and who has to be migrated"
+model = "glm-5.3"
+terms = [
+  "is symbol_ref in the released v0.6.1 symbol entry or only on dev",
+  "what fields did the v0.6.1 fqname record ship with",
+  "half converted store rerun converter or reindex",
+  "v0.7.0 tagged on dev never promoted to main",
+]

@@ -1,0 +1,22 @@
+section_hash = "2209d3a22b0bc824726c58dc5520a9f94d5ac60b"
+label = "keywords"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Where to go next"
+model = "glm-5.3"
+terms = [
+  "next steps",
+  "further reading",
+  "see also",
+  "getting started",
+  "quickstart guide",
+  "where to start",
+  "reading order",
+  "documentation map",
+  "table of contents",
+  "learn more",
+  "deep dive",
+  "cli reference",
+  "mcp tools",
+  "new machine setup",
+  "migrate memory",
+]

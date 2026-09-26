@@ -1,0 +1,22 @@
+section_hash = "cee346e4d98cfc8191b8c8b0b242e4173f41610a"
+label = "keywords"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/The interface"
+model = "glm-5.3"
+terms = [
+  "cli",
+  "command line syntax",
+  "how to use crib",
+  "command structure",
+  "subcommands",
+  "command grammar",
+  "flags and options",
+  "command arguments",
+  "switch current project",
+  "set default project",
+  "pipe stdin to a command",
+  "machine readable output",
+  "cheat sheet of commands",
+  "cli reference",
+  "terminal usage",
+]

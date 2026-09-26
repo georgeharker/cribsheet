@@ -1,0 +1,22 @@
+section_hash = "9d4617316684fb1cbc21832a0dcab00ec7605e05"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/3. Where each spelling is authoritative today"
+model = "glm-5.3"
+terms = [
+  "canonical key",
+  "primary key",
+  "lookup key",
+  "identifier mismatch",
+  "inconsistent naming",
+  "mixed formats",
+  "join key",
+  "unique identifier",
+  "canonical id",
+  "slug collision",
+  "dangling reference",
+  "orphaned note",
+  "rename symbol",
+  "dedupe symbols",
+  "resolve by name",
+]

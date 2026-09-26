@@ -1,0 +1,23 @@
+section_hash = "d43ce5632373b2da586c044df04f166054ea27a1"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/design-facet-ergonomics.md"
+heading = "Plan: design/plan facet ergonomics — first-class, edge-aware verbs/Constraints"
+model = "glm-5.3"
+terms = [
+  "facet commands",
+  "planning mode",
+  "design tooling",
+  "cli mcp symmetry",
+  "command parity",
+  "dual interface consistency",
+  "graph-aware verbs",
+  "edge semantics",
+  "relationship constraints",
+  "schema validation",
+  "notes promotion",
+  "rename migration",
+  "backward compatibility",
+  "breaking changes",
+  "regression coverage",
+  "architecture decision record",
+]

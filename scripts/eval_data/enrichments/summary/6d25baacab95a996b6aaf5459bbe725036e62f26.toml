@@ -1,0 +1,11 @@
+section_hash = "6d25baacab95a996b6aaf5459bbe725036e62f26"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/12. Future / v2 — automatic conversation summarization"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does the quarantine tier prevent auto-captured conversation notes from polluting lookup results",
+  "what are the two trigger paths for automatic conversation summarization in the v2 design",
+  "why is automatic conversation summarization deferred to v2 rather than included in v1",
+  "how does the proposed merge-aware distill step avoid creating duplicate notes across sessions",
+]

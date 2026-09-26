@@ -1,0 +1,11 @@
+section_hash = "0b2b5efe3be97b3ae12c54cc46f2ed8c5f2f154c"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 2 — indexing correctness/2.7 Incremental reindex never patches `references`"
+model = "glm-5.3"
+terms = [
+  "patch_called_by only patches called_by not references",
+  "why does editing file a leave b's references stale until b reindexes",
+  "name and file key collision for same-named symbols in codestore",
+  "dossier missing new call reference after watcher edit without reindex",
+]

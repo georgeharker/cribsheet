@@ -1,0 +1,11 @@
+section_hash = "250cabfb57025c39d1c23ba0c424e88a4c0acb98"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep"
+model = "glm-5.3-flash"
+terms = [
+  "park a facet instead of declining it",
+  "what triggers move a facet from parked back to active",
+  "when does the review sweep pick up parked and declined facets",
+  "build order and open decisions for the facet deferral design",
+]

@@ -1,0 +1,22 @@
+section_hash = "75548c5e11848093bad40f0c168845776ab3d8df"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/① Deletion safety (`codeindex.py`, `codeindexer.py`) — one agent, sequential/2.3 Honor settle; hash-gated deletion rule"
+model = "glm-5.3"
+terms = [
+  "symbols disappearing",
+  "partial lsp response",
+  "false deletion",
+  "index corruption",
+  "content hash check",
+  "settle time",
+  "debounce wait",
+  "race condition",
+  "stale index",
+  "reindex file",
+  "incomplete document symbols",
+  "language server timeout",
+  "truncated symbol response",
+  "checksum gate",
+  "missing symbols after reindex",
+]

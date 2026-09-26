@@ -1,0 +1,11 @@
+section_hash = "05572aee8d053ad8f59daa146a3317461c445f3f"
+label = "summary"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/3. Part A — Search-term efficacy (findability)/3.1 Keyword sidecar — two tiers, and the git-communicable map"
+model = "glm-5.3"
+terms = [
+  "why store llm-generated keywords as toml files instead of sqlite in crib",
+  "how does the keyword sidecar tier 1 handle spaced queries matching compound identifiers",
+  "what makes the tier 2 keyword map merge-conflict-free across machines",
+  "when do keyword files get regenerated after a content edit or kw_scheme bump",
+]

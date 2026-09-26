@@ -1,0 +1,25 @@
+section_hash = "4c66a58f4c84eea39462b561607b45d09d532ecc"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/5. Tool surface/Design & plan facets"
+model = "claude-sonnet-4-6"
+terms = [
+  "dependency graph",
+  "facet notes",
+  "design decisions",
+  "plan items",
+  "pillar store",
+  "storespec",
+  "staleness",
+  "design_reaffirm",
+  "design_lookup",
+  "plan_lookup",
+  "bm25 cache",
+  "per-pillar retrieval",
+  "store axis",
+  "must-precede order",
+  "external editor sync",
+  "git pull taint",
+  "note_star verbs",
+  "facet path restriction",
+]

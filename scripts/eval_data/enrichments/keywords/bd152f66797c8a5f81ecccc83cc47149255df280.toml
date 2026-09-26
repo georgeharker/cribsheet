@@ -1,0 +1,20 @@
+section_hash = "bd152f66797c8a5f81ecccc83cc47149255df280"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/6. Target shape/The note"
+model = "glm-5.3"
+terms = [
+  "unique identifier",
+  "primary key",
+  "canonical name",
+  "fully qualified name",
+  "stable id",
+  "rename history",
+  "alias",
+  "fingerprint",
+  "checksum",
+  "record structure",
+  "field list",
+  "deprecated field",
+  "provenance",
+]

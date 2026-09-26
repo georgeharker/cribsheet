@@ -1,0 +1,22 @@
+section_hash = "af0025a503591aadaf2bfd31e951204e86afe229"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/7. Conversion: one predicate, two stores/Crash states: two, plus a leftover"
+model = "glm-5.3"
+terms = [
+  "crash safety",
+  "crash recovery",
+  "atomicity",
+  "power loss",
+  "torn write",
+  "partial write",
+  "process killed mid-write",
+  "orphaned files",
+  "stale files",
+  "duplicate records",
+  "cleanup",
+  "garbage collection",
+  "rename atomicity",
+  "startup recovery",
+  "fault tolerance",
+]

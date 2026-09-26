@@ -1,0 +1,11 @@
+section_hash = "b4027468cee09e9ef6fb530e07b9163d13ba62c6"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P1 — `parked` status + trigger (build first; the machinery lands here)/The trigger is a dep edge wearing deferral semantics"
+model = "glm-5.3-flash"
+terms = [
+  "what makes a parked plan's trigger fire — body hash mismatch?",
+  "how do i unpark a plan after its trigger fires if it stays human?",
+  "can a plan trigger be free text like \"when the corpus doubles\"?",
+  "what does `checked` mean in a parked plan's trigger yaml?",
+]

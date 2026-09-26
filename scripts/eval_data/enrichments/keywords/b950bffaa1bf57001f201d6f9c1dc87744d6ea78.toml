@@ -1,0 +1,22 @@
+section_hash = "b950bffaa1bf57001f201d6f9c1dc87744d6ea78"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/2. Storage layout (XDG, three lifecycles)/On-disk shape"
+model = "claude-sonnet-4-6"
+terms = [
+  "directory structure",
+  "file layout",
+  "folder hierarchy",
+  "xdg base dirs",
+  "crib_config_dir",
+  "crib_data_dir",
+  "crib_index_dir",
+  "config.toml",
+  ".cribproject",
+  "chroma storage path",
+  "version ring location",
+  "pillar directories",
+  "project root",
+  "data directory",
+  "index directory",
+]

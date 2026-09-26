@@ -1,0 +1,21 @@
+section_hash = "2b5f42a266473a16c8cb009f3a73d7b7e600a6bc"
+label = "keywords"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/2. Pull the crib data repo (notes)"
+model = "glm-5.3"
+terms = [
+  "sync notes between machines",
+  "sync notes between devices",
+  "second computer",
+  "another device",
+  "new laptop",
+  "transfer notes",
+  "migrate notes to a new machine",
+  "move my notes",
+  "restore notes from backup",
+  "multiple devices",
+  "share notes across computers",
+  "clone repository",
+  "download my notes",
+  "switch computers",
+]

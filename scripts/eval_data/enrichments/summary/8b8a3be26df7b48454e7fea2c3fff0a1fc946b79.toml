@@ -1,0 +1,11 @@
+section_hash = "8b8a3be26df7b48454e7fea2c3fff0a1fc946b79"
+label = "summary"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference/Learnings — durable notes attached to a code symbol"
+model = "glm-5.3"
+terms = [
+  "crib learning reaffirm clear stale flag",
+  "how to rehome an orphaned learning without giving a target symbol",
+  "what does learning migrate do without --apply and what is a collision",
+  "can i recover a learning after crib learning forget",
+]

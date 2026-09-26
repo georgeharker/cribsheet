@@ -1,0 +1,22 @@
+section_hash = "87dc8824c75f2d588888daee42595f55208d24fc"
+label = "keywords"
+relpath = "sources/cribsheet/docs/storage.md"
+heading = "Where things live — store types, ownership, and how to use each"
+model = "glm-5.3"
+terms = [
+  "where is data stored",
+  "storage types",
+  "data locations",
+  "who owns what",
+  "ownership model",
+  "write permissions",
+  "read-only vs writable",
+  "data lifecycle",
+  "persistence",
+  "storage backends",
+  "global vs local",
+  "shared vs personal data",
+  "where to save data",
+  "data model overview",
+  "content categories",
+]

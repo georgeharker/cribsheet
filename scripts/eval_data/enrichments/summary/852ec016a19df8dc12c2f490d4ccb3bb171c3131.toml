@@ -1,0 +1,11 @@
+section_hash = "852ec016a19df8dc12c2f490d4ccb3bb171c3131"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/6. Project association — `.crib` and `.cribproject`"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does crib resolve which project to use when no explicit project arg is given",
+  "what does crib project adopt do to the notes directory and version ring",
+  "how does the daemon find an in-repo store when it has no cwd near the repo",
+  "difference between .crib and .cribproject files and what each configures",
+]

@@ -1,0 +1,11 @@
+section_hash = "92534a1fc7314ba2d652228ad1ae55b9a8930362"
+label = "summary"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/6. Verify"
+model = "glm-5.3"
+terms = [
+  "how to verify crib setup after moving to a new machine",
+  "eval_retrieval.py --lift keywords vs --lift-summaries flags",
+  "crib note lookup json test query after reindexing",
+  "what weights to pass eval_retrieval.py for elaboration and summary lift",
+]

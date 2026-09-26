@@ -1,0 +1,11 @@
+section_hash = "b0bb085b1080b7367822a727d9c0719c3f3d7adb"
+label = "summary"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/1. Goal & the central tension"
+model = "glm-5.3"
+terms = [
+  "why capture into a quarantine tier instead of writing straight to crib memory",
+  "how does auto-capture avoid polluting lookup results",
+  "what does source conversation mean for a note's ranking",
+  "what has to happen before a captured note is trusted in the curated index",
+]

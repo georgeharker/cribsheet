@@ -1,0 +1,22 @@
+section_hash = "844226344c22094d6ad801481098747532681501"
+label = "keywords"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/5. The eval harness — two metrics, because push amplifies both signal and noise/5.6 The frozen protocol — test discipline for subsequent changes (2026-09-24)"
+model = "glm-5.3-flash"
+terms = [
+  "test determinism",
+  "ranking stability invariant",
+  "protocol pinning",
+  "index fingerprint",
+  "model swap comparison",
+  "regression detection flakiness",
+  "mrr vs ndcg",
+  "smoke test quality gate",
+  "gold set contamination",
+  "reproducible eval dumps",
+  "stale install version mismatch",
+  "rescorable raw dump",
+  "paired-run comparison",
+  "noise floor statistical significance",
+  "failure handling zero score",
+]

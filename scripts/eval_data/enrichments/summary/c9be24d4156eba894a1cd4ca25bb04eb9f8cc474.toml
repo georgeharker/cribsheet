@@ -1,0 +1,11 @@
+section_hash = "c9be24d4156eba894a1cd4ca25bb04eb9f8cc474"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/index-corruption-fixes.md"
+heading = "Plan: index-corruption fixes — exact specification/④ Decay + recovery (`describe_queue.py`, `notestore.py`, `app.py`) — AFTER the stall fix and Tier 0 land (shares `notestore.py`/`app.py`)/2.10 Dim-change triggers full recovery, visibly"
+model = "glm-5.3"
+terms = [
+  "when does reconcile_in_background fire with reason \"embedder profile change",
+  "what fields does the reindexing status object expose while re-embedding",
+  "why do lookup results show index_rebuilding true after an embed dim flip",
+  "does changing embedding dimension trigger re-embed of in-situ sources docs",
+]

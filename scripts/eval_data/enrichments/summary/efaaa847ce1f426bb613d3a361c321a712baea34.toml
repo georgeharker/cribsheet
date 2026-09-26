@@ -1,0 +1,11 @@
+section_hash = "efaaa847ce1f426bb613d3a361c321a712baea34"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Decisions (settled — do not relitigate)"
+model = "glm-5.3"
+terms = [
+  "does migrating a project to in-repo storage require a reindex",
+  "why do crib snapshot sync push pull refuse for in-repo projects",
+  ".cribproject stub store_root $LOCATION portable token",
+  "can chroma embeddings get committed to the repo with in-repo storage",
+]

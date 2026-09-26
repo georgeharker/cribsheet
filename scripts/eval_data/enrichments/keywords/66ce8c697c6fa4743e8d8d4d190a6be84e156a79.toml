@@ -1,0 +1,21 @@
+section_hash = "66ce8c697c6fa4743e8d8d4d190a6be84e156a79"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Implementation steps/5. Migration verbs (new, both CLI and MCP — pairing rule below)"
+model = "glm-5.3"
+terms = [
+  "migrate project to repository",
+  "move notes to local storage",
+  "import project into repo",
+  "export project back to global",
+  "transfer project storage",
+  "detach project from store",
+  "undo adopt",
+  "onboard project",
+  "relocate notes between storages",
+  "switch storage location",
+  "per-repo notes",
+  "link project to git repository",
+  "checkout project notes",
+  "handoff project storage",
+]

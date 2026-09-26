@@ -1,0 +1,22 @@
+section_hash = "afef803e4bef1fafeb211bb2fb3495cba0eb2ab1"
+label = "keywords"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Common workflows/7. Reach the same memory from your AI"
+model = "glm-5.3"
+terms = [
+  "llm access to notes",
+  "connect ai to my memory",
+  "model context protocol",
+  "mcp server",
+  "claude code plugin",
+  "chatgpt integration",
+  "cursor support",
+  "copilot",
+  "agent tools",
+  "share notes with ai",
+  "ai assistant read crib sheet",
+  "sync memory between cli and chatbot",
+  "expose markdown to agent",
+  "use cribsheet inside claude",
+  "onboard agent to repo",
+]

@@ -1,0 +1,22 @@
+section_hash = "3b217ca328101e9bb3311971857c4698524bdbc4"
+label = "keywords"
+relpath = "sources/cribsheet/README.md"
+heading = "Documentation"
+model = "glm-5.3"
+terms = [
+  "table of contents",
+  "docs index",
+  "documentation overview",
+  "getting started",
+  "where to start",
+  "user manual",
+  "handbook",
+  "reading order",
+  "all guides",
+  "help pages",
+  "sitemap",
+  "tutorial",
+  "file list",
+  "wiki",
+  "quickstart",
+]

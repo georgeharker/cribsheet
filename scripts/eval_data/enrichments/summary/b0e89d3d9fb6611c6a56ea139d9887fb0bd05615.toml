@@ -1,0 +1,11 @@
+section_hash = "b0e89d3d9fb6611c6a56ea139d9887fb0bd05615"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/2. Storage layout (XDG, three lifecycles)"
+model = "claude-sonnet-4-6"
+terms = [
+  "what environment variables override the default xdg directories in cribsheet",
+  "why is the chroma index stored under cache and not data in cribsheet",
+  "how do i fully reset and rebuild the cribsheet embedding index from scratch",
+  "what is the resolution precedence for crib directory paths when env vars are not set",
+]

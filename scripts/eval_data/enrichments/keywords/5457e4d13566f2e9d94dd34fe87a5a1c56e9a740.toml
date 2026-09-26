@@ -1,0 +1,25 @@
+section_hash = "5457e4d13566f2e9d94dd34fe87a5a1c56e9a740"
+label = "keywords"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/4. Part B — Invocation (the actual gate) — make crib _push_, not only pull"
+model = "glm-5.3"
+terms = [
+  "automatic context injection",
+  "rag injection",
+  "auto-inject retrieved notes",
+  "proactive retrieval",
+  "push vs pull",
+  "agent adoption",
+  "tool discovery",
+  "userpromptsubmit hook",
+  "sessionstart hook",
+  "pretooluse hook",
+  "just-in-time lookup",
+  "memory.md mechanism",
+  "priming the context window",
+  "relevance threshold filtering",
+  "breaking the grep habit",
+  "tool reliability fallback",
+  "speculative tool calls",
+  "nudging the agent toward the tool",
+]

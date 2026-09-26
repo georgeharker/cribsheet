@@ -1,0 +1,22 @@
+section_hash = "ced8ac654c9125cbb18412044d0bcb8e5d9a5a30"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/3. Structural facet — the warm LSP session subsystem/3.3 Server specs — the `.lsp.json` schema, from `~/.config/crib`"
+model = "claude-sonnet-4-6"
+terms = [
+  "lsp.json schema crib config",
+  "claude code lsp.json mirror",
+  "extension to language id mapping",
+  "command env resolution which",
+  "portable lsp spec binary path",
+  "default lsp specs shipped",
+  "user config wins selection order",
+  "basedpyright pyright fallback",
+  "callhierarchy server requirement",
+  "pylsp jedi no outgoing calls",
+  "nvim dump_lsp.lua export",
+  "advertise client capabilities callhierarchy",
+  "workspace configuration settings pull",
+  "initializationoptions vs settings lsp",
+  "extensionless script shebang fallback",
+]

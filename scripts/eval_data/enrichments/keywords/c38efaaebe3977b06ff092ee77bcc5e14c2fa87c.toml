@@ -1,0 +1,22 @@
+section_hash = "c38efaaebe3977b06ff092ee77bcc5e14c2fa87c"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/13. Mirroring Claude Code's harness memory"
+model = "claude-sonnet-4-6"
+terms = [
+  "claude code memory sync",
+  "harness memory searchable",
+  "munged project path lossy",
+  "import-memory command",
+  "memory-bindings.json",
+  "memorymirror daemon watcher",
+  "source claude_memory provenance",
+  "claude-memory tag frontmatter",
+  "host-namespaced memory",
+  "version ring bypass derived",
+  "live mirror watch bindings",
+  "notes/claude-memory/ destination",
+  "crib_data_dir bindings",
+  "harness memory one-way sync",
+  "memory.watch config gate",
+]

@@ -1,0 +1,22 @@
+section_hash = "70def9815c818a88d22736d978b431e823a45b97"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Suggested execution order"
+model = "glm-5.3"
+terms = [
+  "priority order",
+  "prioritization",
+  "implementation sequence",
+  "which fixes to do first",
+  "roadmap",
+  "merge order",
+  "rollout plan",
+  "phased approach",
+  "dependency order",
+  "what to tackle first",
+  "task sequencing",
+  "ship order",
+  "order of operations",
+  "first steps",
+  "backlog sequence",
+]

@@ -1,0 +1,22 @@
+section_hash = "ab495ad92ce422f086c3ec21493e13b63959f7f7"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-interface-catalog.md"
+heading = "Symbol interface — full catalog/5. Work list, in dependency order"
+model = "glm-5.3"
+terms = [
+  "roadmap",
+  "implementation plan",
+  "task list",
+  "work breakdown",
+  "order of operations",
+  "rollout plan",
+  "milestones",
+  "next steps",
+  "sequencing tasks",
+  "what's left to do",
+  "refactor strategy",
+  "abstraction seam",
+  "behavior-preserving change",
+  "unify emitters",
+  "migration order",
+]

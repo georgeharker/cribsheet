@@ -1,0 +1,22 @@
+section_hash = "48bbb4c0f41a7b9aef34f7ea738f16c44e7531b1"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/10. Stack/10.1 Chroma process model — embedded vs shared"
+model = "claude-sonnet-4-6"
+terms = [
+  "chroma backend modes",
+  "persistentclient vs httpclient",
+  "sqlite contention multi-process",
+  "chroma run server",
+  "refcount lifecycle management",
+  "grace period warm index",
+  "dead client detection",
+  "single writer safety",
+  "vector database concurrency",
+  "no embedding function collection",
+  "query_embeddings explicit",
+  "client-side embedder",
+  "sharedserver binary",
+  "hash gate upsert idempotent",
+  "multi-instance crib",
+]

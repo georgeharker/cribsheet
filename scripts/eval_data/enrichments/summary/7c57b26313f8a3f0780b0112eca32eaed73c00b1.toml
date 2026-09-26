@@ -1,0 +1,11 @@
+section_hash = "7c57b26313f8a3f0780b0112eca32eaed73c00b1"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/surface-parity-fixes.md"
+heading = "Plan: CLI⇄MCP surface parity fixes/P4 — naming/param drift (fix opportunistically; keep back-compat where MCP-visible)"
+model = "glm-5.3"
+terms = [
+  "why does learning_add take text but learning_edit take new_content",
+  "cli --orphans flag vs mcp orphans_only parameter drift",
+  "was crib code_learnings renamed to learning_report",
+  "note_import_memory conflicts with memory_ git lifecycle naming",
+]

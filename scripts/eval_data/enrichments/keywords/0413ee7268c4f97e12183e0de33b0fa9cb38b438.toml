@@ -1,0 +1,21 @@
+section_hash = "0413ee7268c4f97e12183e0de33b0fa9cb38b438"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 2 — indexing correctness/2.5 Newlines in LLM output corrupt the symbol-index TOML"
+model = "glm-5.3"
+terms = [
+  "toml corruption",
+  "line break",
+  "embedded newline",
+  "multiline value",
+  "escape characters",
+  "control characters",
+  "truncated value",
+  "unterminated string",
+  "malformed toml",
+  "parse error",
+  "serialization bug",
+  "llm response breaks index",
+  "round trip",
+  "sanitize output",
+]

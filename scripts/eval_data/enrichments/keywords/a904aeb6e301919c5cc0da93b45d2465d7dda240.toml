@@ -1,0 +1,23 @@
+section_hash = "a904aeb6e301919c5cc0da93b45d2465d7dda240"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/P3 — the review sweep: evidence handoff, batched apply/Phase 2 — the session LLM emits an edit batch"
+model = "glm-5.3-flash"
+terms = [
+  "plan maintenance",
+  "plan grooming",
+  "plan cleanup",
+  "llm edit suggestions",
+  "structured edit operations",
+  "batch apply",
+  "decision log",
+  "why-not rationale",
+  "negative decision capture",
+  "institutional memory",
+  "duplicate detection",
+  "plan consolidation",
+  "priority ranking",
+  "dependency graph update",
+  "revisit conditions",
+  "deferred backlog",
+]

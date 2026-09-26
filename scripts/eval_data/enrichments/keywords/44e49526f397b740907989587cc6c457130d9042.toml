@@ -1,0 +1,23 @@
+section_hash = "44e49526f397b740907989587cc6c457130d9042"
+label = "keywords"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/4. Plans — a todo list that knows when it stops being safe"
+model = "claude-sonnet-4-6"
+terms = [
+  "plan next",
+  "mixed-dep rule",
+  "plan dep gating",
+  "design dep gating",
+  "note dep never gates",
+  "in-progress claim",
+  "done unblocked",
+  "revisit flag",
+  "plan reaffirm",
+  "plan status done",
+  "two stalenesses",
+  "item stale",
+  "decision taint gates",
+  "proposed blocks plan",
+  "plan item statuses",
+  "context window todo list",
+]

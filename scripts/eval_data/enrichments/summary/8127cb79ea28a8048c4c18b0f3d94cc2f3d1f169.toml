@@ -1,0 +1,11 @@
+section_hash = "8127cb79ea28a8048c4c18b0f3d94cc2f3d1f169"
+label = "summary"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/5. The eval harness — two metrics, because push amplifies both signal and noise/5.3 Multi-phrasing coverage — the honest benchmark (2026-06-30)"
+model = "glm-5.3"
+terms = [
+  "why restructure the eval to 9 needs × 3 vocabulary-shifted phrasings",
+  "what counts as per-need robustness phrasings-hit and worst rank",
+  "why does bge-small drop to mrr 0.809 on oblique phrasings distill and quarantine misses",
+  "why does the 27-query pi benchmark take minutes without the warm daemon",
+]

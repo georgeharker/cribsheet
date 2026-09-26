@@ -1,0 +1,15 @@
+section_hash = "82e68e6f4d6b71114428048b68daafb0c4cd6e46"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-interface-catalog.md"
+heading = "Symbol interface — full catalog/0. There are THREE symbol spellings in flight today, not one"
+model = "glm-5.3"
+terms = [
+  "what are the three symbol spellings in the current interface",
+  "why do calls called_by references return raw name [file] strings",
+  "difference between fqname edge ref and graph node id",
+  "how to parse edge refs like helper [dep:src/util.py]",
+  "mixed syntaxes in nodes[].id and edges[].from/to fields",
+  "does code_xref leak unstructured name [file] refs to callers",
+  "where is string surgery done on edge refs",
+  "plan to convert edge refs and node ids into structured refs",
+]

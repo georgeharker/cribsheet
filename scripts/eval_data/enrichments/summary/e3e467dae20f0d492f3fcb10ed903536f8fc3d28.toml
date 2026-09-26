@@ -1,0 +1,11 @@
+section_hash = "e3e467dae20f0d492f3fcb10ed903536f8fc3d28"
+label = "summary"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/7. Genuinely open architectural questions (worth scrutiny before committing)"
+model = "glm-5.3"
+terms = [
+  "how to choose auto-rag injection budget and τ threshold per turn",
+  "stop injected rag context from being re-captured in a feedback loop",
+  "topic graph edges stored in chroma metadata or sidecar file",
+  "is code→note lookup a lookup_code tool or another injection hook",
+]

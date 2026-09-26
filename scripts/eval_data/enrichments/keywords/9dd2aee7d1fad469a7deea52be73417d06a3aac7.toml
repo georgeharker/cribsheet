@@ -1,0 +1,20 @@
+section_hash = "9dd2aee7d1fad469a7deea52be73417d06a3aac7"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/7. Build order (each gated by a proof)"
+model = "claude-sonnet-4-6"
+terms = [
+  "build order phases",
+  "gated by proof",
+  "dump_lsp lua script",
+  "basedpyright one-shot",
+  "session manager warmup",
+  "symbol identity phase",
+  "semantic layer phase",
+  "surface phase lookup",
+  "incremental build steps",
+  "lsp capability dance derisking",
+  "thin lsp client read-only",
+  "implementation sequence",
+  "content-addressed describe phase",
+]

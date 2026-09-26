@@ -1,0 +1,11 @@
+section_hash = "cf095a15f54cf61dd70a40499b4a91fdd0e51340"
+label = "summary"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/7. Cross-project refs"
+model = "glm-5.3"
+terms = [
+  "how does codequery.lookup merge rankings across project refs",
+  "refs resolve_symbol_or_ref fall through to refs for dossier or xref",
+  "_locate attribute out-of-root lsp resolution to vendored ref checkout",
+  "why are nested .crib directories excluded from parent enumeration",
+]

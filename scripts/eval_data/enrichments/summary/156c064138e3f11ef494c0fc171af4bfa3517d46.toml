@@ -1,0 +1,11 @@
+section_hash = "156c064138e3f11ef494c0fc171af4bfa3517d46"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design/3.1 The switch — global, with a per-backend override"
+model = "glm-5.3"
+terms = [
+  "how does mcp_combiner_serves_<name> override the global mcp_combiner setting",
+  "does mcp_combiner=0 mean the combiner is on or off",
+  "why is _truthy value-based instead of presence-based for the per-backend override",
+  "when combiner_serves returns true should the plugin register or remove the backend",
+]

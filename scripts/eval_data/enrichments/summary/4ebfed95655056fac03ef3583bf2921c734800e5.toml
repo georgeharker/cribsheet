@@ -1,0 +1,11 @@
+section_hash = "4ebfed95655056fac03ef3583bf2921c734800e5"
+label = "summary"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/6. Watchers (`crib/watch.py`)"
+model = "glm-5.3"
+terms = [
+  "why codewatcher verifies the delete flag at both decode and dispatch",
+  "fsevents rename saves watchdog event order evicting file symbols",
+  "how codewatcher coalesces an event burst into one per-project batch",
+  "when does the watcher run whole-project _revalidate instead of per-file reindex",
+]

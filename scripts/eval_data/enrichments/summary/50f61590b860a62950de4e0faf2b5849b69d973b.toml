@@ -1,0 +1,11 @@
+section_hash = "50f61590b860a62950de4e0faf2b5849b69d973b"
+label = "summary"
+relpath = "sources/cribsheet/docs/surface.md"
+heading = "crib surface — CLI & MCP reference"
+model = "glm-5.3"
+terms = [
+  "crib cli hyphenated command like code-lookup rejected noun verb form",
+  "difference between --project and --project-path in crib",
+  "why does crib note store not inherit the current project",
+  "where do global flags go in crib commands --json --no-daemon",
+]

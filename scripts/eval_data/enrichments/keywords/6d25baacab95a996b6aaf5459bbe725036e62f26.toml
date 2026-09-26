@@ -1,0 +1,22 @@
+section_hash = "6d25baacab95a996b6aaf5459bbe725036e62f26"
+label = "keywords"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/12. Future / v2 — automatic conversation summarization"
+model = "claude-sonnet-4-6"
+terms = [
+  "auto summarize conversation memory",
+  "quarantine tier source conversation",
+  "conversation pollution index",
+  "sessionend hook llmkit bridge",
+  "distill merge-aware dedup",
+  "opt-in remember gesture",
+  "v2 roadmap future features",
+  "knowledge capture design",
+  "slash command in-session capture",
+  "pass-through proxy chat logs",
+  "index drift chaff",
+  "note deduplication at write time",
+  "mcp sampling summarizing model",
+  "conversation vs note structure",
+  "down-weighted unreviewed capture",
+]

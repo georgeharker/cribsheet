@@ -1,0 +1,22 @@
+section_hash = "e3e467dae20f0d492f3fcb10ed903536f8fc3d28"
+label = "keywords"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/7. Genuinely open architectural questions (worth scrutiny before committing)"
+model = "glm-5.3"
+terms = [
+  "open design problems",
+  "unresolved questions",
+  "tradeoffs before building",
+  "token budget per turn",
+  "context window limits",
+  "top-k tuning",
+  "context pollution",
+  "self-injection feedback loop",
+  "deduplication strategy",
+  "knowledge graph schema",
+  "vector db metadata vs sidecar",
+  "single source of truth",
+  "bidirectional code-note linking",
+  "known unknowns",
+  "pitfalls to decide early",
+]

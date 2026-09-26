@@ -1,0 +1,11 @@
+section_hash = "3548749c311c0fb9043aaaca7a5de0efd2a4e9a6"
+label = "summary"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises"
+model = "claude-sonnet-4-6"
+terms = [
+  "what is the design facet for in crib",
+  "how does the plan facet differ from notes",
+  "overview of the decision and plan graph model",
+  "where does surface.md fit relative to the design and plan facets",
+]

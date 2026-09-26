@@ -1,0 +1,22 @@
+section_hash = "4c85a8f53ec1ffd53af7185841c2bbaa33fd3883"
+label = "keywords"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Common workflows/3. Attach and recall a learning on a symbol"
+model = "glm-5.3"
+terms = [
+  "annotate a function",
+  "attach note to symbol",
+  "save insight about code",
+  "persistent code notes",
+  "remember what a function does",
+  "notes survive reindexing",
+  "orphaned learning fix",
+  "lost note after refactor",
+  "symbol moved or renamed",
+  "re-point learning to new location",
+  "knowledge base per symbol",
+  "personal annotations in codebase",
+  "share notes with the ai",
+  "sticky notes on functions",
+  "learning report health",
+]

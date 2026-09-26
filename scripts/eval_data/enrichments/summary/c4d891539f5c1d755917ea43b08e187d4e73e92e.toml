@@ -1,0 +1,11 @@
+section_hash = "c4d891539f5c1d755917ea43b08e187d4e73e92e"
+label = "summary"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/5. The eval harness — two metrics, because push amplifies both signal and noise/5.4 Tier-1 keyword sidecar lift (2026-06-30)"
+model = "glm-5.3"
+terms = [
+  "bm25 sidecar exact-term lift without semantic regression",
+  "what improved version-ring retrieval rank-3 to rank-1",
+  "why keyword sidecar doesn't help paraphrase misses like hybrid-fusion",
+  "tier-1 sidecar mrr recall numbers heading enrichment vs added index",
+]

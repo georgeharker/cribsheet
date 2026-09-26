@@ -1,0 +1,11 @@
+section_hash = "8bfd278789f1b7f47038b414ad444cf90020d9cb"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Config surface"
+model = "glm-5.3"
+terms = [
+  "what can the store field in .crib contain",
+  ".cribproject store_root $dev token expansion via locations",
+  "is .crib committed portable or machine-local config",
+  "store path validation relative no parent traversal in .crib",
+]

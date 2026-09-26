@@ -1,0 +1,11 @@
+section_hash = "d22342c8172ffcb211880a38bb36c40ae3a7cae2"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/plan-deferral-review.md"
+heading = "Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep/Governing intent"
+model = "glm-5.3-flash"
+terms = [
+  "parked declined statuses for plan items with re-evaluation trigger",
+  "plan facet review sweep retitle merge park litter",
+  "plan item stuck in todo forever littering plan_next",
+  "graph reports never re-opens only human claim moves status",
+]

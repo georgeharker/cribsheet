@@ -1,0 +1,11 @@
+section_hash = "ecc9bdfaa53f2b61ab1394c3a893c4ea4f029157"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/retrieval-quality.md"
+heading = "Plan: retrieval-quality investigation (notes path MRR)/Baseline (2026-08-05, quiet tree, daemon on dev@abd7c0a)"
+model = "glm-5.3"
+terms = [
+  "what mrr and recall@3 did the 2026-08-05 baseline record",
+  "recall@3 dropped below 0.8 after docs/plans were indexed",
+  "adversarial near-duplicates of gold targets from planning docs",
+  "corpus pinning vs section-level golds for eval re-baseline",
+]

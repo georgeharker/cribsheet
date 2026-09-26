@@ -1,0 +1,21 @@
+section_hash = "899e48b18d5c8f063a783ace742ee0777c7edfc1"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 2 — indexing correctness/2.6 Same-named symbols clobber each other's descriptions"
+model = "glm-5.3"
+terms = [
+  "duplicate symbol names",
+  "name collision",
+  "overwritten descriptions",
+  "symbols with same name",
+  "ambiguous method names",
+  "disambiguate symbols",
+  "fully qualified name",
+  "qualname",
+  "namespace collision",
+  "module path separator",
+  "rust double colon",
+  "identical names different classes",
+  "wrong description assigned",
+  "description mismatch",
+]

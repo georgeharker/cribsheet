@@ -1,0 +1,21 @@
+section_hash = "d0b96b73e261b26747aac29b25098c8223b2df1a"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)"
+model = "claude-sonnet-4-6"
+terms = [
+  "symbol index design rationale",
+  "code retrieval vs grep",
+  "lsp call graph crib",
+  "semantic code search agent",
+  "adoption gate sequencing",
+  "invocation rate precondition",
+  "crib consult trigger",
+  "code note integration architecture",
+  "structural semantic facet composition",
+  "embedded code concept search",
+  "why build index later",
+  "ergonomics before findability",
+  "userpromptsubmit auto-rag prerequisite",
+  "grep cant do value boundary",
+]

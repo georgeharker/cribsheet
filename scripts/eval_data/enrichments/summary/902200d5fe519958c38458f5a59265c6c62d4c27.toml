@@ -1,0 +1,11 @@
+section_hash = "902200d5fe519958c38458f5a59265c6c62d4c27"
+label = "summary"
+relpath = "sources/cribsheet/docs/resume-on-new-machine.md"
+heading = "Resume on a new machine — update, pull, ingest, index/Notes / gotchas"
+model = "glm-5.3"
+terms = [
+  "why doesn't crib memory pull download the indexes",
+  "which provider generated an index toml provenance field",
+  "retest dense aliases on zsh-ai sharedserver with --lift-summaries",
+  "what does --no-daemon do versus the mcp server",
+]

@@ -1,0 +1,11 @@
+section_hash = "2b3fa051b1df7ad3b737c945c9bab95147b689e2"
+label = "summary"
+relpath = "sources/cribsheet/docs/guide.md"
+heading = "cribsheet — user guide/Common workflows/4. Record a decision and let the graph guard it"
+model = "glm-5.3"
+terms = [
+  "how do i record a decision with --dep so crib flags dependents when it changes",
+  "what does tainted mean in crib design check vs being wrong",
+  "how to import decisions from DESIGN.md and promote proposed entries",
+  "crib design append add citation to existing decision after the fact",
+]

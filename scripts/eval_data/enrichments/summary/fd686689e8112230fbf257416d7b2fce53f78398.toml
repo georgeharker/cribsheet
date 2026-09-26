@@ -1,0 +1,12 @@
+section_hash = "fd686689e8112230fbf257416d7b2fce53f78398"
+label = "summary"
+relpath = "sources/cribsheet/docs/plugin-mcp-registration.md"
+heading = "Plugin MCP registration — standalone vs combiner/3. Design/3.3 Naming — why not `MCP_COMBINER_<NAME>`"
+model = "glm-5.3"
+terms = [
+  "why not name plugin mcp variables `mcp_combiner_<name>`",
+  "does the `mcp_combiner_` prefix belong to combiner settings or plugin backends",
+  "what happens if a plugin backend is named `config` or `port`",
+  "what does the `serves_` infix distinguish in mcp environment variable naming",
+  "is `mcp_combiner_cribsheet` a combiner setting or a plugin flag",
+]

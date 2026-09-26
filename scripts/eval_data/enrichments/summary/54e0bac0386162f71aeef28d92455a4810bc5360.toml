@@ -1,0 +1,11 @@
+section_hash = "54e0bac0386162f71aeef28d92455a4810bc5360"
+label = "summary"
+relpath = "sources/cribsheet/docs/ideas/lsp-server-face.md"
+heading = "crib as a language server — the agent face (and the editor one)/1. The inversion"
+model = "glm-5.3"
+terms = [
+  "what does it mean for crib to invert the lsp protocol and become a server",
+  "answering workspaceSymbol by concept instead of calling documentSymbol",
+  "can crib serve callHierarchy and references across projects from stored edges",
+  ".lsp.json entry so claude attaches to crib with no mcp wiring",
+]

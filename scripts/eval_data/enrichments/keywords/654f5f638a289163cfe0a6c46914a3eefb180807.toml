@@ -1,0 +1,21 @@
+section_hash = "654f5f638a289163cfe0a6c46914a3eefb180807"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/9. Project lifecycle — onboarding a whole repo"
+model = "claude-sonnet-4-6"
+terms = [
+  "project_setup onboarding",
+  "project_index reindex",
+  "project_forget keep learnings",
+  "ensure_crib defaults",
+  "budget_s streaming progress",
+  "autonomous reindex loop",
+  "docs in-situ indexing",
+  "complete=false remaining=N",
+  "code facet vs notes facet",
+  "repo root detection",
+  "project_status counts",
+  "yaml glob quoting anchor",
+  "self-diagnose unindexed project",
+  "whole repo bootstrap",
+]

@@ -1,0 +1,22 @@
+section_hash = "6b874529543104b64f01dd90c7160d26f4389c15"
+label = "keywords"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/0. The shape — `Crib` as composition root"
+model = "glm-5.3"
+terms = [
+  "dependency injection",
+  "god object",
+  "composition root pattern",
+  "wiring order",
+  "object graph",
+  "constructor injection",
+  "service locator",
+  "app bootstrap",
+  "initialization order",
+  "modular refactor",
+  "loose coupling",
+  "decompose monolith",
+  "single responsibility split",
+  "component diagram",
+  "top-level architecture",
+]

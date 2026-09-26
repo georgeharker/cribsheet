@@ -1,0 +1,11 @@
+section_hash = "4d840698902a1bb87928e4faf6bde6ab88dd1430"
+label = "summary"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/9. Git sync & merge"
+model = "glm-5.3"
+terms = [
+  "what happens to .gitignore when joining a populated remote in crib",
+  "how does the cribnote merge driver resolve frontmatter conflicts",
+  "symbol toml field-wise merge when content_hash differs between machines",
+  "what triggers _reindex_dirty_code after a pull",
+]

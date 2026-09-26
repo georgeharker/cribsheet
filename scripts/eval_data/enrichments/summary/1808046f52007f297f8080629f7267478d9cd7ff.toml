@@ -1,0 +1,11 @@
+section_hash = "1808046f52007f297f8080629f7267478d9cd7ff"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/8. Versioning (two layers, neither indexed)/Layer 1 — per-write version ring (automatic)"
+model = "claude-sonnet-4-6"
+terms = [
+  "how does the version ring handle a note being renamed",
+  "what happens when restore is called — is the current content preserved",
+  "where on disk are version ring files stored",
+  "how many prior versions does crib keep per note by default",
+]

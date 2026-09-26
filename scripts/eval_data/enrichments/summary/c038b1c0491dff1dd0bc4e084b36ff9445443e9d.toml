@@ -1,0 +1,11 @@
+section_hash = "c038b1c0491dff1dd0bc4e084b36ff9445443e9d"
+label = "summary"
+relpath = "sources/cribsheet/DESIGN.md"
+heading = "cribsheet — design/10. Stack/10.3 Retrieval — hybrid dense ⊕ BM25, DENSE-DOMINANT SCORE fusion"
+model = "claude-sonnet-4-6"
+terms = [
+  "why was rrf replaced with score fusion and how does the dense-dominant blend formula work",
+  "why does the coverage gate apply to code retrieval but not notes retrieval",
+  "how are sparse-only candidates given a cosine score under the new score fusion approach",
+  "how do summary alias embeddings contribute to the notes dense score without acting as a rank bonus",
+]

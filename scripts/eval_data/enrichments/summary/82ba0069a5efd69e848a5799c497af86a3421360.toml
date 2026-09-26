@@ -1,0 +1,11 @@
+section_hash = "82ba0069a5efd69e848a5799c497af86a3421360"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/2. The three spellings/`fqname` is not a name"
+model = "glm-5.3"
+terms = [
+  "why is fqname wrong for rust symbols rust::src:: prefix",
+  "module_of dots the file path unconditionally for every language",
+  "_path_scope _PATH_NAMESPACE module package crate last src",
+  "which languages get a correct fqname python lua only",
+]

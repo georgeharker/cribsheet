@@ -1,0 +1,22 @@
+section_hash = "30bf782c6b03f865a900997f7db7492766410721"
+label = "keywords"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/9. Open questions"
+model = "glm-5.3"
+terms = [
+  "open questions",
+  "unresolved issues",
+  "undecided design decisions",
+  "tbd",
+  "tradeoffs",
+  "future work",
+  "session tracking",
+  "idle timeout",
+  "session key detection",
+  "duplicate detection",
+  "deduplication",
+  "significance threshold",
+  "unreviewed filter",
+  "jsonl parsing",
+  "backlog",
+]

@@ -1,0 +1,11 @@
+section_hash = "cf502cab217e3d3d1cf1212fcc7da5094a3e63f4"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/robustness-fixes.md"
+heading = "Plan: robustness & correctness fixes/Tier 2 — indexing correctness/2.1 Describe-queue backoff is broken (hammers a down endpoint)"
+model = "glm-5.3"
+terms = [
+  "describe_queue _fire drops level so backoff restarts at 0",
+  "why does failed describe retry every 2 seconds instead of backing off",
+  "re-arm failed describe entry with level + 1 in _run",
+  "test geometric delay growth with stubbed failing describer",
+]

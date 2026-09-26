@@ -1,0 +1,22 @@
+section_hash = "0bd3a1968b32e0114f9b8bc7bc81fe20340541b2"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-interface-catalog.md"
+heading = "Symbol interface — full catalog/4. CLI presentation — six independent renderers"
+model = "glm-5.3"
+terms = [
+  "symbol display format",
+  "cli output formatting",
+  "unify symbol renderers",
+  "dedupe emitter formats",
+  "single symbol renderer",
+  "refactor emit functions",
+  "one place to change display",
+  "deduplicate output formatting",
+  "terminal output style",
+  "pretty print symbols",
+  "render_symbol",
+  "consolidate emitters",
+  "single source of truth",
+  "stdout format",
+  "ranked list display",
+]

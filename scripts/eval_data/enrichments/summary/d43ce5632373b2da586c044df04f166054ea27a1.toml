@@ -1,0 +1,11 @@
+section_hash = "d43ce5632373b2da586c044df04f166054ea27a1"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-facet-ergonomics.md"
+heading = "Plan: design/plan facet ergonomics — first-class, edge-aware verbs/Constraints"
+model = "glm-5.3"
+terms = [
+  "what does keeping the parity suite green require when adding a verb",
+  "does the facet rename touch frontmatter in the dogfooded cribsheet project",
+  "design facet is first-class and edge-aware notes are backend intent",
+  "cli-and-mcp-surfaces-stay-paired dependency for recording the design note",
+]

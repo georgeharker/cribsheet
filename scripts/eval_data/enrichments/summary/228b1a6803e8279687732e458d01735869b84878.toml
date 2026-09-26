@@ -1,0 +1,11 @@
+section_hash = "228b1a6803e8279687732e458d01735869b84878"
+label = "summary"
+relpath = "sources/cribsheet/README.md"
+heading = "Quickstart"
+model = "glm-5.3"
+terms = [
+  "install cribsheet with the torch embedder st extra",
+  "claude plugin marketplace add georgeharker/cribsheet",
+  "how to stop crib tools mounting twice when mcp-combiner already serves them",
+  "what does crib design check report about stale decisions",
+]

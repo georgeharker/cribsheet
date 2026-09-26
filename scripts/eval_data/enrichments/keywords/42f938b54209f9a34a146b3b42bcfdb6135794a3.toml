@@ -1,0 +1,23 @@
+section_hash = "42f938b54209f9a34a146b3b42bcfdb6135794a3"
+label = "keywords"
+relpath = "sources/cribsheet/docs/decisions-and-plans.md"
+heading = "Decisions & plans — the graph that keeps promises/3. Staleness — computed, coarse, and cheap on purpose"
+model = "claude-sonnet-4-6"
+terms = [
+  "taint computation",
+  "staleness on read",
+  "dep-edited",
+  "dep-superseded",
+  "dep-deleted",
+  "new-unverified-edge",
+  "source-changed",
+  "source-missing",
+  "design reaffirm",
+  "crib status tainted count",
+  "tainted true",
+  "change kind",
+  "coarse taint",
+  "recomputed on read",
+  "no propagation on write",
+  "baseline hash",
+]

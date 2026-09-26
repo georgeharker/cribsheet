@@ -1,0 +1,22 @@
+section_hash = "bff1024595b7baf5080c6c4b2cbb4d45161cfa4a"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/4. What is broken/4.2 The migration broke the join it was moving"
+model = "glm-5.3"
+terms = [
+  "cannot delete learning",
+  "forget fails",
+  "file not found",
+  "filename mismatch",
+  "fqname lookup fails",
+  "renamed file breaks lookup",
+  "hash suffix in filename",
+  "dangling learning entry",
+  "orphaned note reference",
+  "stale path after migration",
+  "broken link",
+  "frontmatter symbol field missing",
+  "rebind removes key",
+  "references instead of definitions",
+  "migration regression",
+]

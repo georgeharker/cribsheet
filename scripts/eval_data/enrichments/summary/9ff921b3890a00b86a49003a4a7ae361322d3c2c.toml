@@ -1,0 +1,11 @@
+section_hash = "9ff921b3890a00b86a49003a4a7ae361322d3c2c"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/symbol-ref-conversion.md"
+heading = "Symbol identity: one name, one key, one conversion/7. Conversion: one predicate, two stores"
+model = "glm-5.3"
+terms = [
+  "what does the done predicate check for symbol records schema target ref_slug basename",
+  "why must a note wait for its binding entry to be done before converting",
+  "which fields does the entry store drop during conversion fqname module parent",
+  "is the work-list the only record of conversion progress",
+]

@@ -1,0 +1,21 @@
+section_hash = "33550e7bfded28ca9ee907f98d740631451bf0e2"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/symbol-interface-catalog.md"
+heading = "Symbol interface — full catalog/2. Verbs that RETURN a symbol"
+model = "glm-5.3"
+terms = [
+  "return type",
+  "return value",
+  "response shape",
+  "output format",
+  "result schema",
+  "api response",
+  "payload structure",
+  "which functions return symbols",
+  "symbol producers",
+  "where symbols come from",
+  "lookup results",
+  "data shape",
+  "fields returned",
+  "reverse lookup",
+]

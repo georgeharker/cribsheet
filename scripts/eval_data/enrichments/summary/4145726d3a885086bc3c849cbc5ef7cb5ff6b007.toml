@@ -1,0 +1,11 @@
+section_hash = "4145726d3a885086bc3c849cbc5ef7cb5ff6b007"
+label = "summary"
+relpath = "sources/cribsheet/docs/symbol-reference-map.md"
+heading = "The symbol reference map/4. Conversion"
+model = "glm-5.3"
+terms = [
+  "how does done(r) decide a record is already converted",
+  "does code_convert run without lsp or llm",
+  "what happened to the pending state noop convert orphan",
+  "why restart the daemon before running conversion",
+]

@@ -1,0 +1,22 @@
+section_hash = "60af7e206c8de432bfa71f5c16a1eb01e98e2c5e"
+label = "keywords"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/2. Why the agent greps instead of looking up"
+model = "glm-5.3"
+terms = [
+  "agent ignores mCP tool",
+  "why does the agent grep instead of using the index",
+  "model won't call my retrieval tool",
+  "agent prefers local search over lookup",
+  "tool adoption failure",
+  "agent bypasses knowledge base",
+  "fallback habit",
+  "mcp server down so agent stopped trying",
+  "negative reinforcement empty results",
+  "retrieval not consulted",
+  "agent skips lookup and searches code instead",
+  "injection beats retrieval",
+  "directive ignored in practice",
+  "cold start no results",
+  "agent rarely calls the index tool",
+]

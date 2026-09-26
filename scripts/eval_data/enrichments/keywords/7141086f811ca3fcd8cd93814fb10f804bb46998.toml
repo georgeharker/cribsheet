@@ -1,0 +1,21 @@
+section_hash = "7141086f811ca3fcd8cd93814fb10f804bb46998"
+label = "keywords"
+relpath = "sources/cribsheet/docs/knowledge-capture.md"
+heading = "Knowledge capture & revision (the generation layer)/2. Two generation engines"
+model = "glm-5.3"
+terms = [
+  "which llm",
+  "model selection",
+  "choosing an llm",
+  "llm backend",
+  "background summarization",
+  "without claude",
+  "no ai session available",
+  "headless mode",
+  "api key",
+  "remote model",
+  "difference between engines",
+  "automated distillation",
+  "standalone invocation",
+  "fallback model",
+]

@@ -1,0 +1,11 @@
+section_hash = "6a3f2780937e96630fb92456f0fe7d518bdfbd1b"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/CLI⇄MCP pairing rule (applies to every verb here)"
+model = "glm-5.3"
+terms = [
+  "does a new project verb need both an mcp tool and cli command in the same pr",
+  "where should project_adopt and crib project adopt share their implementation",
+  "is business logic allowed in server.py or cli.py for new project verbs",
+  "should mcp tools and cli commands use identical parameter names and defaults",
+]

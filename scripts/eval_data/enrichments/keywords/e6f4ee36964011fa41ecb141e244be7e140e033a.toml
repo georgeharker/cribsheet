@@ -1,0 +1,22 @@
+section_hash = "e6f4ee36964011fa41ecb141e244be7e140e033a"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Implementation steps/1. `crib/config.py`"
+model = "glm-5.3"
+terms = [
+  "path traversal",
+  "directory escape",
+  "relative path check",
+  "symlink safety",
+  "validate path",
+  "yaml dump",
+  "write config file",
+  "persist settings",
+  "cribproject write support",
+  "config serializer",
+  "save method",
+  "storage location option",
+  "storage directory setting",
+  "config field parsing",
+  "dataclass schema",
+]

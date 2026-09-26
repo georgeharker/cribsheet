@@ -1,0 +1,22 @@
+section_hash = "8b8e08bd0b5b5aec5a139c268a4955ccd945685f"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/retrieval-quality.md"
+heading = "Plan: retrieval-quality investigation (notes path MRR)/Non-goals"
+model = "glm-5.3"
+terms = [
+  "out of scope",
+  "anti-goals",
+  "won't do",
+  "rejected approaches",
+  "ruled out experiments",
+  "failed experiments",
+  "dead ends",
+  "reciprocal rank fusion",
+  "mean reciprocal rank",
+  "quality threshold",
+  "bar raising",
+  "regression prevention",
+  "scope boundaries",
+  "excluded levers",
+  "acceptance criteria",
+]

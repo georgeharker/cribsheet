@@ -1,0 +1,31 @@
+section_hash = "2d5f69b75f83a2dd56ce5de38f8562153008f7f4"
+label = "keywords"
+relpath = "sources/cribsheet/docs/code-symbol-index.md"
+heading = "Code symbol index — concept-search ⊕ call graph (the code↔note build)/8. Learnings — durable human understanding attached to a symbol"
+model = "claude-sonnet-4-6"
+terms = [
+  "learning_add",
+  "learning_edit",
+  "learning_forget",
+  "learning_reaffirm",
+  "learning_rehome",
+  "learning_report",
+  "code-learnings",
+  "learnings pillar store",
+  "symbol_ref binding",
+  "symbol_was orphan",
+  "content_hash staleness",
+  "stale learning flag",
+  "orphan learning",
+  "moved learning",
+  "cribsheet note",
+  "durable human annotation",
+  "attach note to vendored code",
+  "cross-session memory",
+  "git history rehoming",
+  "frontmatter binding",
+  "ref_slug filename",
+  "identity drift rename",
+  "learning vs comment",
+  "treasure map call tree glyph",
+]

@@ -1,0 +1,22 @@
+section_hash = "d84e11dfb47bfe5ea6e748ace6b5337d9e8829c2"
+label = "keywords"
+relpath = "sources/cribsheet/docs/plans/repo-local-storage.md"
+heading = "Plan: optional in-repo project storage/Implementation steps/7. Tests"
+model = "glm-5.3"
+terms = [
+  "testing",
+  "test coverage",
+  "test plan",
+  "unit testing",
+  "integration testing",
+  "assertions",
+  "edge cases",
+  "path traversal",
+  "security validation",
+  "stable ids",
+  "idempotency",
+  "regression tests",
+  "file watching",
+  "change detection",
+  "error handling",
+]

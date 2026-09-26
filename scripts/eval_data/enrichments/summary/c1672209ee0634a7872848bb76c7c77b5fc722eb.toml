@@ -1,0 +1,12 @@
+section_hash = "c1672209ee0634a7872848bb76c7c77b5fc722eb"
+label = "summary"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/10. Daemon & surfaces"
+model = "glm-5.3"
+terms = [
+  "how does the verbs registry in crib/cli.py map nested verbs to mcp tools",
+  "what --no-daemon actually does when running crib in-process",
+  "write_tool decorator anyof schema why writes need an explicit project",
+  "difference between _run_daemon and _run_inprocess dispatchers",
+  "what does crib status show in its one-call health summary",
+]

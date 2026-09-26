@@ -1,0 +1,11 @@
+section_hash = "78333962fe9c266a550eb430cfac3495d132f242"
+label = "summary"
+relpath = "sources/cribsheet/docs/plans/design-plan-import.md"
+heading = "Plan: doc import & source attribution for the design/plan graph/Data model/`status: proposed` (design facet)"
+model = "glm-5.3"
+terms = [
+  "how do i promote a proposed design entry to active",
+  "does status proposed taint-gate dependent nodes",
+  "why do llm-extracted decisions land as proposed instead of active",
+  "difference between design_add active and imported proposed entries",
+]

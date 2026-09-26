@@ -1,0 +1,22 @@
+section_hash = "4d840698902a1bb87928e4faf6bde6ab88dd1430"
+label = "keywords"
+relpath = "sources/cribsheet/docs/implementation.md"
+heading = "Implementation map — how the parts actually work/9. Git sync & merge"
+model = "glm-5.3"
+terms = [
+  "sync notes between devices",
+  "multi-device",
+  "share notes across computers",
+  "conflict resolution",
+  "merge conflicts",
+  "automatic merge",
+  "version control",
+  "keep notes in sync",
+  "remote repository",
+  "clone",
+  "history backup",
+  "offline edits",
+  "stale index",
+  "rebuild index after pull",
+  "converging two machines",
+]

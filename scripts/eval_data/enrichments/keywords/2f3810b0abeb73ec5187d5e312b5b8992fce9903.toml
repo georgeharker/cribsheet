@@ -1,0 +1,22 @@
+section_hash = "2f3810b0abeb73ec5187d5e312b5b8992fce9903"
+label = "keywords"
+relpath = "sources/cribsheet/docs/retrieval-and-adoption.md"
+heading = "Retrieval quality & tool adoption (the prerequisite layer)/5. The eval harness — two metrics, because push amplifies both signal and noise/5.5 Volume-corpus lift — LLM elaboration + summary_index (2026-07-01)"
+model = "glm-5.3"
+terms = [
+  "retrieval quality benchmark",
+  "hybrid search tuning",
+  "rag evaluation metrics",
+  "mrr recall@k",
+  "keyword weight too high",
+  "summary index worth it",
+  "llm generated aliases",
+  "vocabulary mismatch paraphrases",
+  "query note gap synonyms",
+  "semantic search boost",
+  "ablation sweep results",
+  "reranker vs enrichment",
+  "bulk index generation",
+  "embedding crowding",
+  "config default change",
+]
