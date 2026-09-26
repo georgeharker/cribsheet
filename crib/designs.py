@@ -2943,6 +2943,16 @@ class Designs:
             "claimed": sum(
                 1 for n in graph.of_kind("plan") if n.status == "in-progress"
             ),
+            # The re-evaluation queue, COUNTED here because `plan_next` is the
+            # habitual pickup read and parked items are excluded from it by
+            # design — without this pointer, a fired trigger is invisible in
+            # the flow an LLM actually runs. Surfaced, never acted on: the
+            # unpark is a human claim via plan_status.
+            "trigger_fired": sum(
+                1
+                for r in self._rows(proj, graph, graph.of_kind("plan"))
+                if r.get("trigger_fired")
+            ),
         }
 
     # ── import: the description IS the procedure ──────────────────────────────
