@@ -523,6 +523,7 @@ def build_server(crib: Crib | None = None):
         summary_weight: float | None = None,
         hints: list[str] | None = None,
         hint_weight: float | None = None,
+        rerank: bool | None = None,
         project_path: str | None = None,
     ) -> list[dict[str, Any]]:
         """Semantic search over memory. Call this FIRST when the user asks
@@ -540,7 +541,8 @@ def build_server(crib: Crib | None = None):
         No hints? Just query. `keyword_labels`/`keyword_weight` (BM25
         keyword_index) and `summary_labels` (dense summary_index aliases)
         override which LLM index sets feed retrieval (default from config);
-        mainly for eval sweeps.
+        `rerank` overrides [retrieve].rerank for this query — mainly for eval
+        sweeps.
         A hit carrying `index_rebuilding: true` means this project is still being
         re-embedded after a store wipe (`status` shows the sweep) — the result set
         is INCOMPLETE, so retry once it clears rather than concluding nothing exists."""
@@ -557,6 +559,7 @@ def build_server(crib: Crib | None = None):
                 summary_weight=summary_weight,
                 hints=hints,
                 hint_weight=hint_weight,
+                rerank=rerank,
             )
         ]
 

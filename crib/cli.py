@@ -1394,6 +1394,20 @@ def build_parser() -> argparse.ArgumentParser:
         dest="hint_weight",
         help="weight of the hint agreement bonus (overrides [retrieve].hint_weight)",
     )
+    r = s.add_mutually_exclusive_group()
+    r.add_argument(
+        "--rerank",
+        dest="rerank",
+        action="store_true",
+        default=None,
+        help="force the cross-encoder rerank for this query",
+    )
+    r.add_argument(
+        "--no-rerank",
+        dest="rerank",
+        action="store_false",
+        help="skip the cross-encoder rerank for this query",
+    )
     s.add_argument(
         "-a",
         "--render",
@@ -2330,6 +2344,8 @@ def _b_lookup(a: Any) -> dict[str, Any]:
         call["hints"] = a.hints
     if getattr(a, "hint_weight", None) is not None:
         call["hint_weight"] = a.hint_weight
+    if getattr(a, "rerank", None) is not None:
+        call["rerank"] = a.rerank
     return call
 
 
@@ -2368,7 +2384,7 @@ VERBS: dict[str, Verb] = {
         policy="read",
         mcp=f"query {_PROJ} k=8 tags=None keyword_labels=None "
         "keyword_weight=None summary_labels=None summary_weight=None "
-        "hints=None hint_weight=None",
+        "hints=None hint_weight=None rerank=None",
     ),
     "note apropos": Verb(
         "apropos",

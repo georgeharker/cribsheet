@@ -151,6 +151,7 @@ def run_lookup(
     summary_weight: float | None = None,
     hints: list[str] | None = None,
     hint_weight: float | None = None,
+    rerank: bool | None = None,
 ) -> list[dict[str, Any]]:
     """One lookup → its ranked hits (top-first).
 
@@ -185,6 +186,8 @@ def run_lookup(
             call["hints"] = hints
         if hint_weight is not None:
             call["hint_weight"] = hint_weight
+        if rerank is not None:
+            call["rerank"] = rerank
         try:
             return client.call("note_lookup", call)
         except Exception as e:
@@ -213,6 +216,10 @@ def run_lookup(
         cmd += ["--hint", hint]
     if hint_weight is not None:
         cmd += ["--hint-weight", str(hint_weight)]
+    if rerank is False:
+        cmd += ["--no-rerank"]
+    elif rerank is True:
+        cmd += ["--rerank"]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
         raise RuntimeError(
@@ -279,6 +286,7 @@ def evaluate(
     summary_weight: float | None = None,
     repeats: int = 1,
     hint_weight: float | None = None,
+    rerank: bool | None = None,
 ) -> list[dict[str, Any]]:
     """One row per (need, phrasing) — so a need with 3 phrasings yields 3 rows.
 
@@ -307,6 +315,7 @@ def evaluate(
                     summary_weight,
                     hints=need_hints,
                     hint_weight=hint_weight,
+                    rerank=rerank,
                 )
                 for _ in range(repeats)
             ]
@@ -743,6 +752,19 @@ def main(argv: list[str] | None = None) -> int:
         "(the shipped default is 0.15)",
     )
     ap.add_argument(
+        "--rerank",
+        dest="rerank",
+        action="store_true",
+        default=None,
+        help="force the cross-encoder rerank (overrides [retrieve].rerank)",
+    )
+    ap.add_argument(
+        "--no-rerank",
+        dest="rerank",
+        action="store_false",
+        help="skip the cross-encoder rerank (overrides [retrieve].rerank)",
+    )
+    ap.add_argument(
         "--dump",
         type=Path,
         default=None,
@@ -832,6 +854,7 @@ def main(argv: list[str] | None = None) -> int:
             args.summaries,
             repeats=args.repeats,
             hint_weight=args.hint_weight,
+            rerank=args.rerank,
         )
     except RuntimeError as e:
         print(f"error: {e}", file=sys.stderr)
@@ -887,6 +910,7 @@ def main(argv: list[str] | None = None) -> int:
                     "keyword_weight": args.elab_weight,
                     "summaries": args.summaries,
                     "summary_weight": args.summary_weight,
+                    "rerank": args.rerank,
                 },
                 "crib_exec": args.crib,
                 "crib_exec_version": _crib_version(args.crib),
