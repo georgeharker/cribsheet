@@ -1,7 +1,9 @@
 # Plan: plan-facet deferral ergonomics — parked/declined with triggers, and the review sweep
 
-Status: **DESIGN 2026-09-24** — sketched and discussed; not yet built. Build order
-and open decisions at the bottom. Companion to
+Status: **EXECUTED 2026-09-25** — P1/P2/P3 all built, tested, live-verified. The
+as-built map is at the bottom; the original design below records intent and the
+build-order reasoning (kept: the as-built diverges from it in two recorded ways
+— the clean corpus cut is 638-not-824, and triggers watch graph-node refs only). Companion to
 [`design-facet-ergonomics.md`](design-facet-ergonomics.md) (executed 2026-08-05),
 whose principles this inherits wholesale.
 
@@ -206,3 +208,119 @@ Each independently landable; P1 unlocks P3's most valuable verdict.
   `reviewed` stamps present; an attempt to set `done` in a batch is refused with
   the reason (statuses are human claims); LLM-generated batches against a real
   plan are idempotent under re-run.
+---
+
+# AS-BUILT MAP (2026-09-25)
+
+Everything below is SHIPPED and tested (780+ tests). Commit map: P1 `318960f`,
+P2 `8fb71f6`, P3 `998e456`, retitles + newly-tainted fix `c19a114`, injection
+guide `49179ce` (+ pi copy sync `02fd39a`), pi verb watch `bd187b9`, sha stamp +
+pinned worktree `b8fc567`, plan_next fired count `8d902a2`, pi-plan renderer
+`d4071af` (v0.4.0), clean corpus fixture `1d69f5f`.
+
+## 1. The state machine
+
+| status | set by | plan_next | plan_list | dep gating (mirrored by pi-plan) |
+|---|---|---|---|---|
+| `todo` | `plan_status` | shows (unblocked) | ready | blocks dependents |
+| `in-progress` | `plan_status` | excluded (claim) | active | blocks dependents |
+| `parked` | `plan_park` | excluded + fired count | parked group, visible | blocks dependents |
+| `declined` | `plan_decline` (why REQUIRED) | excluded | hidden by default (`--all`) | blocks dependents |
+| `done`/`verified` | `plan_status` | excluded | hidden by default | satisfied |
+
+Leaving parked/declined clears the trigger records with a warning (re-baseline
+on the next deferral). Re-parking an already-parked item is legitimate: fresh
+baselines.
+
+## 2. The trigger record — thin by design
+
+```yaml
+status: parked            # or declined
+trigger:                  # a LIST — several grounds are legal, one is normal
+  - ref: designs:reranker-ab-….md   # pillar-qualified, graph node (P1 scope)
+    checked: <body_hash>           # PARKED: body-hash watch (fires on any edit)
+    why: "…"
+  - ref: designs:clean-corpus-….md
+    checked_status: todo           # DECLINED: status-watch (narrow firing)
+    why: "reconsider only if the ground changes state"
+```
+
+- Deliberately NOT in `deps`/`checked`: triggers gate **attention**, never work.
+- Fired is **computed live on every read** (`_trigger_state`): stored is only the
+  baseline; truth is re-derived from the watched ref's current hash/status.
+  Pull-not-push → missed-event immunity, nothing to keep in sync.
+- Per-state firing: parked watches the BODY (any rewording is a reason to
+  re-look); declined watches the STATUS only (promoted/superseded) — "I reworded
+  the rationale" is not a reason to resurrect.
+- The searchable half: one dated body line ("> parked 2026-09-24, watching: … —
+  'why'"), indexed by `plan_lookup`, carried by exports.
+
+## 3. The cue chain (how an LLM session interacts)
+
+```
+plan_next (habitual pickup read) — now carries trigger_fired: N  ← the self-cue
+   → plan_list (per-row trigger + fired; the re-evaluation queue)
+      → plan_read (dossier: baseline vs moved, change kind, the why)
+         → plan_status <ref> todo   ← THE UNPARK: a human claim, performed by
+                                       the LLM on the user's behalf
+         → or re-park with fresh baselines
+plan_add (re-proposal) — the near-dup probe returns parked/declined + status
+   + why at the cue moment, with facet state on every probe row
+```
+
+## 4. The review sweep — evidence handoff, batched apply
+
+- `plan_review` (read): consolidated export + per-item evidence (age, dep
+  state, revisit, trigger state, **overlap probes vs open AND done/declined**
+  items) + the contract as `instruction`. No model, no writes.
+- The session LLM judges and emits a batch: retitle / move / park / decline /
+  merge / edit.
+- `plan_review_apply` (write): edge-aware, `reviewed` stamp per touched item
+  (surfaced in plan_list rows), per-op report, batch continues past failures.
+  **Refused**: `done` (statuses are human claims — the LLM never sets done),
+  `delete`/`forget` (merge instead — a decline keeps the item readable).
+- Merge: loser's body rides under "merged from" heading; dependents are
+  reported instead of wedged.
+
+## 5. The integration chain (store → bus → sidebar)
+
+```
+plan writes → CRIB_PLAN_MUTATION_VERBS (now incl. plan_park/decline/
+              review_apply) → plan:snapshot bus → pi-plan v0.4.0
+```
+pi-plan renders deferred states: sink like done, never actionable (`⏸`/`×`,
+dimmed), deps still block (crib-consistent). Bus item `status` is a plain
+string, so new states degrade gracefully on older consumers.
+
+## 6. Invariants (the constitution, as enforced)
+
+- Every edge checks; triggers gate attention, never work — but they CHECK.
+- The graph reports, it never re-opens: fired ≠ unparked; unpark is human.
+- The LLM never sets `done` — refused at the apply verb, with the reason.
+- Pull-not-push: fired is derived (missed-event immune; nothing to sync).
+- The newly-tainted diff is a true delta (`nid in t_after and not in before`)
+  — fixed after the first live sweep exposed it riding un-tainted rows.
+
+## 7. The escape hatch — promote the condition into a decision
+
+The trigger record stays deliberately thin because a thin record cannot carry
+the three-layer gap (fires on any edit ≠ the semantic condition; the why is one
+line; the re-evaluation protocol lives in conversation). When a condition
+outgrows one line: **`design_add` the wake condition decision** (what evidence
+resolves it, what each outcome means, who decides) and watch THAT decision —
+the trigger stays a dumb hash-watch on the decision, the semantics live one
+`design_read` away, and the gradient is: body line → decision → (never) a
+richer trigger record.
+
+## 8. Known limits (recorded, not hidden)
+
+- Fires on any edit of the watched ref — the proxy, stated openly. Rich
+  conditions → promote to a decision (§7).
+- A declined dep wedges its dependents forever — visible state, the fix is a
+  repoint; deliberate, matches crib's plan-dep gating.
+- `trigger_fired` does not ride the bus yet — the sidebar shows parked items
+  dimmed but cannot display "woke" (the optional extension).
+- Free-text triggers ("when the corpus doubles") are unenforceable — only
+  hash/status-watchable refs.
+- Trigger refs must resolve to graph nodes (design/plan). Note-watching is a
+  possible extension (needs a note body-hash story).
