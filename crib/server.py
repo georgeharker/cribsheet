@@ -191,6 +191,35 @@ async def _write_project_elicit(
     return _write_project(crib, None, None)  # raises the explicit-target error
 
 
+async def _confirm_destructive(project: str, verb: str, detail: str) -> None:
+    """ALWAYS elicit (MCP mode): a destructive verb runs ONLY after the client
+    affirms it — the human decision is not a parameter an agent can supply, so
+    it is never a signature argument. `detail` states EXACTLY what happens
+    (the caller has already computed the fences/preview, so the wording can
+    be truthful about force/undo rather than optimistic). The confirmation is
+    typed (echo the project name) and a wrong/blank/declined answer is a
+    refusal. A client that doesn't support elicitation is refused with the
+    terminal path: the CLI confirms in its own interactive prompt."""
+    try:
+        from fastmcp.server.dependencies import get_context
+
+        ctx = get_context()
+        result = await ctx.elicit(
+            f"Confirm: {detail} Type the project name '{project}' to confirm, "
+            "anything else to abort.",
+            response_type=str,
+        )
+    except Exception as e:  # noqa: BLE001 — no elicitation ⇒ no deletion
+        raise CribUserError(
+            f"{verb} requires your confirmation, but this client does not "
+            f"support MCP elicitation — run `crib project delete {project}` "
+            "in your terminal instead"
+        ) from e
+    chosen = getattr(result, "data", None)
+    if not (isinstance(chosen, str) and chosen.strip() == project):
+        raise CribUserError(f"{verb} aborted: confirmation did not echo {project!r}")
+
+
 async def _read_project_elicit(crib: Crib, res: ProjectResolution) -> ProjectResolution:
     """An UNANCHORED read — no selector, no path, no session — must not answer from
     a guess: the daemon's own startup directory is meaningless to every chat, and
@@ -623,6 +652,11 @@ def build_server(crib: Crib | None = None):
         # declaration asks the client for the target when it's omitted (rather than
         # erroring) and stamps the answer's `project_source`; `ctx` is declared here
         # only so FastMCP injects it for that.
+        # NOTE: `content` is stored VERBATIM to a markdown file — deliberately
+        # not html-escaped: notes are DATA (markdown on disk, rendered by
+        # nothing as raw HTML; legit HTML/code samples must survive), so this
+        # sink is disk, not a browser context.
+        # pi-lens-ignore: xss-html-injection
         return await crib.store_note(content, title, project, tags)
 
     @crib_tool("write")
@@ -945,6 +979,97 @@ def build_server(crib: Crib | None = None):
         merged."""
         return await crib.project_migrate(project, cwd=_cwd(project_path))
 
+    # NO resolution policy on create: the name is caller-supplied OR derived
+    # from the repo. The "write" default-resolution would land a name-less
+    # call on the session default and write `project: default` into a foreign
+    # repo's .crib — the exact misroute this policy system exists to refuse.
+    @crib_tool("none")
+    async def project_create(
+        project: str | None = None,
+        store: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        """Explicitly create a project: pillar skeleton + birth manifest
+        (created/host in `.cribproject`). A DOORWAY, not a gate — writes still
+        create implicitly; use this when a project should exist before its
+        first write, or to declare RESIDENCY AT BIRTH: `store=<repo-relative
+        path>` + `project_path=<the repo dir>` writes the repo's `.crib`
+        (`project:` + `store:`) and the machine stub, so the project is born
+        in-repo (its pillar stores travel with the repo; commit them). The
+        at-birth store must be empty — moving an existing global project's
+        notes into the repo is `project_adopt`, not this. Idempotent.
+
+        The name comes from you OR the repo's `.crib`/repo dir — never from
+        the session's sticky current project (a fresh repo without a `.crib`
+        derives its name from the repo dir; this is why create runs with NO
+        resolution policy: the default-project fallback would silently point
+        a repo-bound store at the shared bucket). The default project is
+        refused as a residency target."""
+        return await crib.project_create(project, cwd=_cwd(project_path), store=store)
+
+    @crib_tool("write")
+    async def project_delete(project: str, force: bool = False) -> dict[str, Any]:
+        """Fenced removal of a project from CRIB: its index entries, caches,
+        code-index state, mirror bindings, and the machine-local tree — moved
+        to `.trash/` (one-level undo), not rm -rf'd.
+
+        THE INVARIANT: crib NEVER removes anything from a user repo. For an
+        in-repo project the committed notes, the store's ring and the repo's
+        `.crib` STAY (the result says so, and how to release them first if
+        they should follow the namespace). `force` is accepted for surface
+        compatibility and gates nothing. The default project is refused (no
+        owner to consent); a running code sweep or background reconcile is
+        refused. Deletion never resolves a session default or a cwd:
+        `project=` is required and is the whole answer.
+
+        ALWAYS elicited in MCP mode, and the fences run FIRST: the body
+        computes the deletion plan (which refuses any fence), then the client
+        is asked to echo the project name against an exact account of what
+        will happen. A client without elicitation support is refused (the
+        CLI's terminal prompt is the same gate in the other mode)."""
+        plan = crib._delete_plan(project, force)  # fences run BEFORE the elicitation
+        if not plan["exists_anywhere"]:
+            return {
+                "project": project,
+                "deleted": False,
+                "message": "nothing to delete — no such project on this machine",
+            }
+        detail = (
+            "DELETE crib project '"
+            + project
+            + "'"
+            + (
+                # The invariant, spoken: crib's index/cache/tree state goes; a user
+                # repo is never touched, whatever the force flag says.
+                " — crib's index entries, caches and the machine-local tree (to "
+                ".trash) are removed. YOUR REPO IS NOT TOUCHED."
+                + (
+                    " Your notes stay in the repo store at "
+                    + str(plan["store_token"])
+                    + " — release them first if you want them in the global store."
+                    if plan["in_repo"]
+                    else ""
+                )
+            )
+        )
+        await _confirm_destructive(project, "project_delete", detail)
+        return await crib.project_delete(project, force=force, cwd=None)
+
+    @crib_tool("write")
+    async def project_rename(project: str, to: str) -> dict[str, Any]:
+        """Rename a project namespace (`projects/<old>` → `projects/<new>`).
+
+        Travels: the pillar tree, machine stub, symbol_index, version ring
+        (note ids live in frontmatter — untouched). Churns: every chunk id
+        (they hash the project name), so this deletes the old chunks and
+        reindexes under the new name (a full re-embed; the known cost of a
+        rare verb), after stamping any id-less note with its pre-rename
+        derived id so ring history stays resolvable. Other projects' `.crib`
+        `refs:` naming the old name are reported (they live in foreign repos —
+        fix by hand). Pass `project_path=` only to resolve OTHER projects'
+        context; `project=` is required."""
+        return await crib.project_rename(project, to, cwd=None)
+
     @crib_tool("read", echo=True)
     async def code_xref(
         symbol: str,
@@ -1099,7 +1224,9 @@ def build_server(crib: Crib | None = None):
         project you're in, so — unlike a note write — it resolves that project the
         way the read tools do (a documented exception; pass `project=`/`project_path=`
         to pin one elsewhere)."""
-        return await crib.learning_add(symbol, text, project)
+        return await crib.learning_add(
+            symbol, text, project=project, path=path, scope=scope, lang=lang
+        )
 
     @crib_tool("read")
     async def learning_edit(
@@ -1114,7 +1241,9 @@ def build_server(crib: Crib | None = None):
         """Rewrite a symbol's learning body wholesale (frontmatter preserved) —
         the standard edit, scoped to a symbol. Errors if none exists; `learning_add`
         creates. Resolves its project like a read, as `learning_add` does."""
-        return await crib.learning_edit(symbol, new_content, project)
+        return await crib.learning_edit(
+            symbol, new_content, project=project, path=path, scope=scope, lang=lang
+        )
 
     @crib_tool("read")
     async def learning_forget(
@@ -1122,12 +1251,15 @@ def build_server(crib: Crib | None = None):
         path: str = "",
         scope: str = "",
         lang: str = "",
-        project: str | None = None, project_path: str | None = None
+        project: str | None = None,
+        project_path: str | None = None,
     ) -> dict[str, Any]:
         """Remove a symbol's learning (stashed to the version ring first, so it's
         recoverable) — the standard forget, scoped to a symbol. Resolves its project
         like a read, as `learning_add` does."""
-        return await crib.learning_forget(symbol, path=path, scope=scope, lang=lang, project=project)
+        return await crib.learning_forget(
+            symbol, path=path, scope=scope, lang=lang, project=project
+        )
 
     @crib_tool("read")
     def learning_read(
@@ -1135,11 +1267,14 @@ def build_server(crib: Crib | None = None):
         path: str = "",
         scope: str = "",
         lang: str = "",
-        project: str | None = None, project_path: str | None = None
+        project: str | None = None,
+        project_path: str | None = None,
     ) -> dict[str, Any]:
         """Read a symbol's attached learning note (frontmatter + body), or found=
         False if none is written yet. `symbol` is a bare name or dotted fqname."""
-        return crib.learning_read(symbol, path=path, scope=scope, lang=lang, project=project)
+        return crib.learning_read(
+            symbol, path=path, scope=scope, lang=lang, project=project
+        )
 
     @crib_tool("read")
     async def learning_reaffirm(
@@ -1147,13 +1282,16 @@ def build_server(crib: Crib | None = None):
         path: str = "",
         scope: str = "",
         lang: str = "",
-        project: str | None = None, project_path: str | None = None
+        project: str | None = None,
+        project_path: str | None = None,
     ) -> dict[str, Any]:
         """Clear a learning's ⚠︎ stale flag WITHOUT rewriting it — you re-checked the
         note against the current code and it still holds. Re-snapshots the symbol's
         content_hash so it reads as fresh again. Use when code_lookup shows a ※ note
         flagged stale but the understanding is still correct."""
-        return await crib.learning_reaffirm(symbol, path=path, scope=scope, lang=lang, project=project)
+        return await crib.learning_reaffirm(
+            symbol, path=path, scope=scope, lang=lang, project=project
+        )
 
     @crib_tool("read")
     async def learning_migrate(

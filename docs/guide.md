@@ -275,6 +275,40 @@ rebuild them locally with `crib project reconcile` (sweeps every project for cha
 A full new-machine runbook is in
 [resume-on-new-machine.md](resume-on-new-machine.md).
 
+### 6b. Create, rename, or delete a project
+
+A project normally materializes on its first write, and that stays true — the
+lifecycle verbs exist for when a namespace should exist *deliberately*
+(provenance you can audit later, or residency declared at birth):
+
+```bash
+crib project create toucan                                  # skeleton + birth manifest
+crib project create toucan --store .crib-store -P ~/Development/toucan
+                               # born IN-REPO: the repo's .crib + the stub are
+                               # written now — commit the store with the repo
+crib project rename old-name new-name                       # note ids + ring survive
+crib project delete old-name                                # confirmed in your terminal
+```
+
+create and delete also accept the selector spelling for the project name
+(`crib project delete -p old-name`) — the positional and the flag must agree
+if you give both.
+
+- **Writes don't need create.** `note store` with a new `project=` still births the
+  namespace implicitly; create is an optional, richer doorway, never a gate.
+- **Delete never touches a user repo.** The invariant (2026-10-31): it removes
+  crib's own state — index entries, caches, the machine-local tree to `.trash/` —
+  and NOTHING from any repo. For an in-repo project the committed notes, the store's
+  ring and the repo's `.crib` all stay; the result says so and points at
+  `crib project release <name>` as the way to move notes out (or you edit the repo
+  yourself). `--force` is accepted and gates nothing. Both version rings survive,
+  the default project + running sweeps are fenced, and `--yes` still skips the
+  terminal confirmation for scripts.
+- **Rename churns chunk ids** (they hash the project name), so it reindexes the whole
+  project (a re-embed); note ids, frontmatter, symbol index and ring history all
+  survive. It reports any *other* project's `.crib` `refs:` that name the old name —
+  those live in foreign repos, so you update them by hand.
+
 ### 7. Reach the same memory from your AI
 
 Everything above is available to an AI agent through cribsheet's MCP tools, whose

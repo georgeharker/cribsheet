@@ -169,6 +169,13 @@ crib design add "Content-hash gating is the only write/watcher coordination" \
 crib design check -p cribsheet          # what a change put out of date, and why
 crib plan add "Backfill section hashes for existing citations" -p cribsheet
 crib plan next -p cribsheet             # "where was I" — this session or a later one
+
+# project lifecycle — deliberate birth / rename / fenced delete
+crib project create toucan --store .crib-store -P ~/Development/toucan
+                                        # born IN-REPO (skeleton + birth manifest
+                                        # + the repo's .crib store declaration)
+crib project rename toucan toucan2      # ids + ring survive; re-embeds
+crib project delete toucan2             # confirmed in the terminal; → .trash
 ```
 
 That's the loop: **store what's worth keeping, look it up by meaning, onboard a repo

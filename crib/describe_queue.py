@@ -36,7 +36,9 @@ class _Entry:
 
     def __init__(self, root: Path) -> None:
         self.root = root
-        self.pending: dict[str, dict] = {}      # symbol_ref → {fqn, name, kind, content_hash, _body}
+        self.pending: dict[
+            str, dict
+        ] = {}  # symbol_ref → {fqn, name, kind, content_hash, _body}
         self.level = 0
         self.timer: asyncio.TimerHandle | None = None
 
@@ -47,9 +49,13 @@ class DescribeQueue:
     `describe_fn(project, root, relpath, pending)` does the actual LLM call + patched
     write; it MUST raise on failure so the queue can re-arm (backoff-as-retry)."""
 
-    def __init__(self, loop: asyncio.AbstractEventLoop,
-                 describe_fn: Callable[[str, Path, str, dict[str, dict]], Awaitable[Any]],
-                 base: float = 2.0, cap: float = 240.0) -> None:
+    def __init__(
+        self,
+        loop: asyncio.AbstractEventLoop,
+        describe_fn: Callable[[str, Path, str, dict[str, dict]], Awaitable[Any]],
+        base: float = 2.0,
+        cap: float = 240.0,
+    ) -> None:
         self._loop = loop
         self._describe = describe_fn
         self._base = max(0.1, base)
@@ -58,8 +64,9 @@ class DescribeQueue:
         # strong refs to the in-flight describe tasks (asyncio holds only weak ones)
         self._tasks: set[asyncio.Task] = set()
 
-    def enqueue(self, project: str, root: Path, relpath: str,
-                symbols: dict[str, dict]) -> None:
+    def enqueue(
+        self, project: str, root: Path, relpath: str, symbols: dict[str, dict]
+    ) -> None:
         """Add changed symbols for a file and (re)arm its backoff timer. Thread-safe:
         the structural pass runs off the event loop, so hop back onto it."""
         if not symbols:
@@ -67,8 +74,14 @@ class DescribeQueue:
         self._loop.call_soon_threadsafe(self._arm, project, root, relpath, symbols)
 
     # --- on the loop thread from here down -----------------------------------
-    def _arm(self, project: str, root: Path, relpath: str,
-             symbols: dict[str, dict], level: int = 0) -> None:
+    def _arm(
+        self,
+        project: str,
+        root: Path,
+        relpath: str,
+        symbols: dict[str, dict],
+        level: int = 0,
+    ) -> None:
         """(Re)arm a file's window. `level` seeds the backoff exponent for an entry
         that isn't already queued — a retry passes the failed attempt's level so the
         delay keeps DOUBLING instead of restarting at `base` (a down LLM endpoint
@@ -82,10 +95,10 @@ class DescribeQueue:
         else:
             e.level = max(e.level, level)
         e.root = root
-        e.pending.update(symbols)                   # newest body per fqname wins
+        e.pending.update(symbols)  # newest body per fqname wins
         if e.timer is not None:
             e.timer.cancel()
-        delay = min(self._base * (2 ** e.level), self._cap)
+        delay = min(self._base * (2**e.level), self._cap)
         e.level += 1
         e.timer = self._loop.call_later(delay, self._fire, key)
 
@@ -96,22 +109,50 @@ class DescribeQueue:
         project, relpath = key
         # strong ref + exception logging: a multi-second LLM call must not be GC'd
         # mid-flight, and a raise inside _run's own handler must not vanish
-        spawn(self._loop, self._run(project, e.root, relpath, e.pending, e.level),
-              self._tasks, f"describe {project}/{relpath}")
+        spawn(
+            self._loop,
+            self._run(project, e.root, relpath, e.pending, e.level),
+            self._tasks,
+            f"describe {project}/{relpath}",
+        )
 
-    async def _run(self, project: str, root: Path, relpath: str,
-                   pending: dict[str, dict], level: int = 0) -> None:
+    async def _run(
+        self,
+        project: str,
+        root: Path,
+        relpath: str,
+        pending: dict[str, dict],
+        level: int = 0,
+    ) -> None:
         try:
             await self._describe(project, root, relpath, pending)
         except Exception:  # noqa: BLE001 — backoff-as-retry: re-arm one round later
             self._arm(project, root, relpath, pending, level=level)
 
-    # --- introspection / teardown --------------------------------------------
+    # --- introspection / teardown -------------------------------------------
     def pending_files(self) -> int:
         return len(self._q)
 
     def pending_symbols(self) -> int:
         return sum(len(e.pending) for e in self._q.values())
+
+    def drop_project(self, project: str) -> int:
+        """Cancel every timer + drop every queued entry for `project`.
+
+        Delete/rename project cleanup: an entry whose project is gone would
+        describe symbols from files that no longer exist — each attempt would
+        fail and re-arm (backoff-as-retry keeps retrying a corpse). The loop hop
+        matches `enqueue`'s thread-safety contract (the structural pass runs off
+        the loop)."""
+        n = self.pending_files()
+        self._loop.call_soon_threadsafe(self._drop_project, project)
+        return n
+
+    def _drop_project(self, project: str) -> None:
+        dead = [k for k in self._q if k[0] == project]
+        for k in dead:
+            if (e := self._q.pop(k)) is not None and e.timer is not None:
+                e.timer.cancel()
 
     def stop(self) -> None:
         """Cancel every pending timer and drop the queue (a clean shutdown; any

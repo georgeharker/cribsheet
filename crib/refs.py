@@ -45,8 +45,9 @@ class AmbiguousSymbol(CribUserError):
     calls this" about live code."""
 
 
-def resolution(entry: dict[str, Any], query: str,
-               project: str | None = None) -> dict[str, Any]:
+def resolution(
+    entry: dict[str, Any], query: str, project: str | None = None
+) -> dict[str, Any]:
     """What the caller's symbol string turned INTO — `{query, symbol_ref, fqn, via}`.
 
     Attached by every verb that NARROWS TO ONE symbol, because that is the moment a
@@ -74,19 +75,23 @@ def resolution(entry: dict[str, Any], query: str,
         "query": query,
         "symbol_ref": symbol_key(entry),
         "fqn": fqn_of(entry),
-        "via": match_entry(entry, query)}
+        "via": match_entry(entry, query),
+    }
     if project:
         out["project"] = project
     return out
 
 
 class Refs:
-    def __init__(self, paths: Paths,
-                 resident: Callable[[str], _ResidentCode],
-                 nested_roots: Callable[[Path], list[Path]]) -> None:
+    def __init__(
+        self,
+        paths: Paths,
+        resident: Callable[[str], _ResidentCode],
+        nested_roots: Callable[[Path], list[Path]],
+    ) -> None:
         self.paths = paths
-        self._resident = resident            # (proj) → _ResidentCode  (Crib-owned)
-        self._nested_roots = nested_roots    # (root) → [nested .crib dirs]  (Crib-owned)
+        self._resident = resident  # (proj) → _ResidentCode  (Crib-owned)
+        self._nested_roots = nested_roots  # (root) → [nested .crib dirs]  (Crib-owned)
 
     def project_refs(self, proj: str) -> list[dict[str, Any]]:
         """The projects `proj`'s `.crib` names in `refs:` — cross-project xref
@@ -95,18 +100,34 @@ class Refs:
         carries NAMES only and survives differently-located clones. → [{project,
         root (None when not locally present), indexed}]."""
         from .codeindex import SymbolIndex
+        from .sources import SourceRoots
+
         my_root = SymbolIndex(self.paths.project_dir(proj)).source_root()
-        link = (CribLink.find(my_root)
-                if my_root is not None and my_root.exists() else None)
+        if my_root is None:
+            # The doc-root fallback of Crib._registered_root: a project whose
+            # only anchor is a sole in-situ doc repo — refs resolve through it
+            # too, or such a project's `.crib refs:` would silently never
+            # resolve (the case a rename report most needs to see).
+            roots = SourceRoots(self.paths.project_dir(proj) / "doc-sources.json")
+            candidates = {Path(r) for r in roots.all().values()}
+            if len(candidates) == 1:
+                my_root = candidates.pop()
+        link = (
+            CribLink.find(my_root) if my_root is not None and my_root.exists() else None
+        )
         out: list[dict[str, Any]] = []
-        for name in (link.refs if link else []):
+        for name in link.refs if link else []:
             if name == proj:
-                continue                     # self-reference is meaningless
+                continue  # self-reference is meaningless
             si = SymbolIndex(self.paths.project_dir(name))
             root = si.source_root()
-            out.append({"project": name,
-                        "root": root if root is not None and root.exists() else None,
-                        "indexed": si.is_populated()})
+            out.append(
+                {
+                    "project": name,
+                    "root": root if root is not None and root.exists() else None,
+                    "indexed": si.is_populated(),
+                }
+            )
         return out
 
     def ref_edge_ctx(self, proj: str, root: Path | None = None) -> RefProjects:
@@ -131,7 +152,8 @@ class Refs:
                 try:
                     files = frozenset(
                         e.get("file", "")
-                        for e in self._resident(ref["project"]).entries)
+                        for e in self._resident(ref["project"]).entries
+                    )
                 except Exception:  # noqa: BLE001 — a broken ref never fails indexing
                     pass
             rroot = ref["root"].resolve() if ref["root"] else None
@@ -141,9 +163,15 @@ class Refs:
                 out.append((ref["project"], nested, files))
         return out
 
-    def resolve_symbol(self, proj: str, symbol: str,
-                       rc: _ResidentCode | None = None, path: str = "",
-                       scope: str = "", lang: str = "") -> dict[str, Any]:
+    def resolve_symbol(
+        self,
+        proj: str,
+        symbol: str,
+        rc: _ResidentCode | None = None,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+    ) -> dict[str, Any]:
         """Resolve a user-supplied symbol to exactly one indexed entry. Exact fqn
         wins; a bare/partial name resolves only if unique — else raise, listing
         candidates (never silently pick, so a learning can't land on the wrong one).
@@ -156,51 +184,76 @@ class Refs:
         unique."""
         from .codeindex import SymbolIndex
         from .codequery import check_query  # lazy: one message for one boundary
+
         check_query(symbol, "symbol")
-        matches = (rc.by_fqname(symbol) if rc is not None
-                   else SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol))
+        matches = (
+            rc.by_fqname(symbol)
+            if rc is not None
+            else SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol)
+        )
         if not matches:
-            raise UnknownSymbol(f"unknown symbol {symbol!r} in project {proj!r} — "
-                                f"code_lookup it, or code_index the file first")
+            raise UnknownSymbol(
+                f"unknown symbol {symbol!r} in project {proj!r} — "
+                f"code_lookup it, or code_index the file first"
+            )
         if path or scope or lang:
             narrowed = constrain(matches, path, scope, lang)
             if not narrowed:
-                where = ", ".join(f"{k}={v!r}" for k, v in
-                                  (("path", path), ("scope", scope), ("lang", lang)) if v)
+                where = ", ".join(
+                    f"{k}={v!r}"
+                    for k, v in (("path", path), ("scope", scope), ("lang", lang))
+                    if v
+                )
                 raise CribUserError(
                     f"{symbol!r} matches {len(matches)} symbol(s) in project "
-                    f"{proj!r}, none of them with {where}")
+                    f"{proj!r}, none of them with {where}"
+                )
             matches = narrowed
         # An EXACT tier wins outright — the caller named the symbol rather than
         # gestured at it. `ref` and `was` are exact by construction; `fqname` is the
         # whole language-native name.
-        exact = [m for m in matches
-                 if match_entry(m, symbol) in ("ref", "was", "exact")]
+        exact = [
+            m for m in matches if match_entry(m, symbol) in ("ref", "was", "exact")
+        ]
         cands = exact or matches
         if len(cands) > 1:
             # Ranked by caller count, and the count stated: the question a bare name
             # usually precedes is "who calls this, can I delete it", so the busiest
             # candidate is nearly always the one meant, and a bare list of names
             # makes the reader go and find that out.
-            ranked = sorted(cands, key=lambda m: (-len(m.get("called_by") or []),
-                                                  symbol_key(m)))
-            shown = ", ".join(f"{symbol_key(m)} ({len(m.get('called_by') or [])}"
-                              f" callers)" for m in ranked[:8])
+            ranked = sorted(
+                cands, key=lambda m: (-len(m.get("called_by") or []), symbol_key(m))
+            )
+            shown = ", ".join(
+                f"{symbol_key(m)} ({len(m.get('called_by') or [])} callers)"
+                for m in ranked[:8]
+            )
             more = f", +{len(ranked) - 8} more" if len(ranked) > 8 else ""
-            axis = ("path" if len({m.get("file") for m in cands}) == len(cands)
-                    else "scope" if len({tuple(m.get("scope") or ())
-                                         for m in cands}) == len(cands) else "")
-            hint = (" Re-run with one of those qualified names"
-                    + (f", or narrow with {axis}=." if axis else "."))
+            axis = (
+                "path"
+                if len({m.get("file") for m in cands}) == len(cands)
+                else "scope"
+                if len({tuple(m.get("scope") or ()) for m in cands}) == len(cands)
+                else ""
+            )
+            hint = " Re-run with one of those qualified names" + (
+                f", or narrow with {axis}=." if axis else "."
+            )
             raise AmbiguousSymbol(
                 f"ambiguous symbol {symbol!r} — {len(cands)} symbols match, NO result "
-                f"returned: {shown}{more}.{hint}")
+                f"returned: {shown}{more}.{hint}"
+            )
         return cands[0]
 
-    def resolve_symbol_or_ref(self, proj: str, symbol: str,
-                              rc: _ResidentCode | None = None, path: str = "",
-                              scope: str = "", lang: str = "",
-                              ) -> tuple[str, dict[str, Any]]:
+    def resolve_symbol_or_ref(
+        self,
+        proj: str,
+        symbol: str,
+        rc: _ResidentCode | None = None,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+    ) -> tuple[str, dict[str, Any]]:
         """Resolve locally first; on a LOCAL MISS, try the project's `.crib`
         `refs:` (cross-project xref) → (owning_project, entry). Exactly one ref
         matching wins; several → ambiguous error naming the projects; none →
@@ -215,9 +268,14 @@ class Refs:
                 if not ref["indexed"]:
                     continue
                 try:
-                    found.append((ref["project"],
-                                  self.resolve_symbol(ref["project"], symbol,
-                                                      None, path, scope, lang)))
+                    found.append(
+                        (
+                            ref["project"],
+                            self.resolve_symbol(
+                                ref["project"], symbol, None, path, scope, lang
+                            ),
+                        )
+                    )
                 except ValueError:
                     continue
             if len(found) == 1:
@@ -226,5 +284,6 @@ class Refs:
                 names = ", ".join(f"{p}:{symbol_key(e)}" for p, e in found)
                 raise AmbiguousSymbol(
                     f"ambiguous symbol {symbol!r} across refs → {names}; "
-                    f"pass project= to disambiguate") from None
+                    f"pass project= to disambiguate"
+                ) from None
             raise local_err

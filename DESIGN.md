@@ -619,6 +619,26 @@ re-clear that bar.)
   `sharedserver`-refcounted `chroma run` for multi-client safety + warm reuse.
   Embedder is always client-side; the index is hash-gated so multi-process
   writers stay correct (§10.1).
+- Project lifecycle ("2026-11"): explicit `project_create`/`delete`/`rename`
+  verbs (CLI + MCP), with create as the RESIDENCY DOORWAY — skeleton + birth
+  manifest (`created`/`host` in `.cribproject`) + optional at-birth in-repo
+  declaration (`store:` written into the repo `.crib` + the machine stub, the
+  at-birth form of adopt; refuses non-empty anywhere, never a silent merge).
+  Writes KEEP their implicit creation — create is an optional richer doorway,
+  never a gate, so `default` stays frictionless and nothing pre-existing
+  changes. Delete is FENCED and ALWAYS confirmed (MCP mode elicits the echo of
+  the project name; the CLI prompts in the terminal / `--yes`; piped stdin
+  refuses): the tree is MOVED to `(data)/.trash/` (one-level undo, ring's
+  spirit) not rm-rf'd, the version ring is kept, and the default project and
+  running sweeps are fenced; an in-repo store requires `--force` — deleting it
+  is a repo commit and the repo's git is the undo. Rename CHURNS chunk ids
+  (they hash the project name) → old chunks dropped + full re-embed under the
+  new name; note ids (frontmatter) and ring survive, id-less notes are stamped
+  with their pre-rename derived id first, and other projects' `.crib`
+  `refs:` naming the old name are reported, not edited (foreign repos).
+  (The decision record: design facet
+  `project-lifecycle-explicit-createdeleterename-create-is-the-residency-
+  doorway-writes-stay-implicit`, dep on `repo-commit-is-the-sync-primitive-…`.)
 
 **Open:**
 1. **Import write-back** — currently strictly one-way (source → store). Should

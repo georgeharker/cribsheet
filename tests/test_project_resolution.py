@@ -49,7 +49,9 @@ def test_write_tools_carry_project_or_path_anyof(crib):
     mcp = build_server(crib)
 
     async def schema(name):
-        return (await mcp.get_tool(name)).to_mcp_tool().inputSchema
+        tool = await mcp.get_tool(name)
+        assert tool is not None, name
+        return tool.to_mcp_tool().inputSchema
 
     want = [{"required": ["project"]}, {"required": ["project_path"]}]
     for w in ("note_store", "note_append", "note_edit", "note_forget", "note_move"):
@@ -242,16 +244,21 @@ def test_code_index_files_symbols_under_the_path_repo_not_the_sticky_project(
 
     async def call():
         tool = await mcp.get_tool("code_index")
+        assert tool is not None
         return await tool.run({"path": str(beta / "b.py"), "project_path": str(beta)})
 
     asyncio.run(call())
     assert indexed == [("beta", "b.py")]  # B's repo, not the sticky A
 
 
-def _advisory_args(project_path, json=False):
+def _advisory_args(project_path, json=False, cmd="note", project_verb="lookup"):
+    """A parsed-args stand-in carrying the attrs `_unlinked_path_message` now
+    REQUIRES (cmd/project_verb direct-accessed; the parser always sets both)."""
     from types import SimpleNamespace
 
-    return SimpleNamespace(project_path=project_path, json=json)
+    return SimpleNamespace(
+        project_path=project_path, json=json, cmd=cmd, project_verb=project_verb
+    )
 
 
 def _wants_cwd_entry(wants=True):

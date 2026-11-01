@@ -354,6 +354,13 @@ class ProjectConfig:
     # only way the daemon finds an adopted store without a cwd near the repo,
     # which is why it is recorded here and not only in the repo's `.crib`.
     store_root: str | None = None
+    # Birth manifest, written by `project_create` (docs/surface.md — project
+    # lifecycle). A namespace's origin becomes auditable the moment stores cross
+    # machines: WHEN and on WHICH host it was born. Both default None so every
+    # pre-create project loads unchanged — an absent manifest means "born
+    # implicitly on first write", which is true.
+    created: str | None = None
+    host: str | None = None
 
     @classmethod
     def load(cls, path: Path, fallback_name: str) -> "ProjectConfig":
@@ -371,6 +378,8 @@ class ProjectConfig:
             distill_prompt=data.get("distill_prompt"),
             versions_keep=data.get("versions_keep"),
             store_root=data.get("store_root"),
+            created=data.get("created"),
+            host=data.get("host"),
         )
 
     def save(self, path: Path) -> None:
@@ -379,7 +388,14 @@ class ProjectConfig:
         only the fields this dataclass declares — a hand-added key it doesn't know
         would be dropped, which is why nothing but the migration verbs writes it."""
         data = {"name": self.name}
-        for key in ("embed_model", "distill_prompt", "versions_keep", "store_root"):
+        for key in (
+            "embed_model",
+            "distill_prompt",
+            "versions_keep",
+            "store_root",
+            "created",
+            "host",
+        ):
             if (value := getattr(self, key)) is not None:
                 data[key] = value
         path.parent.mkdir(parents=True, exist_ok=True)

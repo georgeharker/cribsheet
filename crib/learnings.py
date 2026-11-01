@@ -74,8 +74,7 @@ class Learnings:
             return rel
         # A note written before the case-hash slug keeps its old filename — those are
         # deliberately never renamed, since a human may have the path in hand.
-        for cand in (f"{ref_slug(binding)}.md",
-                     f"{legacy_ref_slug(binding)}.md"):
+        for cand in (f"{ref_slug(binding)}.md", f"{legacy_ref_slug(binding)}.md"):
             if self.store.abspath(proj, cand).exists():
                 return cand
         return None
@@ -98,8 +97,7 @@ class Learnings:
                     return cand
         return f"{ref_slug(symbol_key(entry))}.md"
 
-    def attach(self, proj: str,
-               entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    def attach(self, proj: str, entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Enrich symbol entries in place with any attached learning (※) + a staleness
         flag, so pinned understanding resurfaces exactly where you're already looking
         (code_lookup / code_xref), joined by BINDING via frontmatter. `stale` = the
@@ -108,19 +106,23 @@ class Learnings:
         ldir = self.store.root(proj)
         if not ldir.exists():
             return entries
-        by_binding = self.notes_by_binding(proj)      # read ONCE, not per entry
+        by_binding = self.notes_by_binding(proj)  # read ONCE, not per entry
         for e in entries:
-            rel = next((by_binding[b] for b in symbol_bindings(e) if b in by_binding),
-                       None)
+            rel = next(
+                (by_binding[b] for b in symbol_bindings(e) if b in by_binding), None
+            )
             relpath = rel if rel is not None else self.relpath(proj, e)
             path = ldir / relpath
             if not path.exists():
                 continue
             note = notes.load(path)
             wrote, cur = note.frontmatter.get("content_hash"), e.get("content_hash")
-            e["learning"] = {"relpath": relpath, "path": str(path),
-                             "stale": bool(wrote and cur and wrote != cur),
-                             "body": note.body.strip()}
+            e["learning"] = {
+                "relpath": relpath,
+                "path": str(path),
+                "stale": bool(wrote and cur and wrote != cur),
+                "body": note.body.strip(),
+            }
         return entries
 
     def marks(self, proj: str) -> set[str]:
@@ -136,6 +138,7 @@ class Learnings:
         A binding that resolves to NO entry passes through raw: its symbol is
         gone, but an orphan should still show the mark if something renders it."""
         from .codeindex import SymbolIndex
+
         by_binding: dict[str, str] = {}
         for e in SymbolIndex(self.paths.project_dir(proj)).all():
             k = symbol_key(e)
@@ -146,14 +149,22 @@ class Learnings:
         if ldir.exists():
             for p in ldir.glob("*.md"):
                 _fm = notes.load(p).frontmatter
-                for b in (_fm.get("symbol_ref"), _fm.get("symbol"),
-                          *(_fm.get("symbol_was") or ())):
+                for b in (
+                    _fm.get("symbol_ref"),
+                    _fm.get("symbol"),
+                    *(_fm.get("symbol_was") or ()),
+                ):
                     if b:
                         out.add(by_binding.get(str(b), str(b)))
         return out
 
     async def append(
-        self, proj: str, symbol: str, text: str, path: str = "", scope: str = "",
+        self,
+        proj: str,
+        symbol: str,
+        text: str,
+        path: str = "",
+        scope: str = "",
         lang: str = "",
     ) -> dict[str, Any]:
         """Attach a durable learning to a symbol: append a dated entry to its running
@@ -162,7 +173,9 @@ class Learnings:
         `path`/`scope`/`lang` narrow an ambiguous symbol on axes a caller may
         actually know (a stack trace gives the path; reading source, the scope).
         They give a name more ways to BECOME unique — unique-or-refuse stands."""
-        entry = self.refs.resolve_symbol(proj, symbol, path=path, scope=scope, lang=lang)
+        entry = self.refs.resolve_symbol(
+            proj, symbol, path=path, scope=scope, lang=lang
+        )
         # BIND to the reference, TITLE with the language's own name. A note created
         # from here is already on the current binding, so the migration surface
         # stops growing while the rollout is under way.
@@ -174,49 +187,81 @@ class Learnings:
         if existed:
             note = notes.load(note_path)
             note.frontmatter["content_hash"] = entry.get("content_hash", "")
-            note.frontmatter["file"] = entry.get("file", note.frontmatter.get("file", ""))
-            note.frontmatter["signature"] = entry.get("signature",
-                                                      note.frontmatter.get("signature", ""))
-            note.frontmatter["title"] = fqn        # tracks the name, never goes stale
+            note.frontmatter["file"] = entry.get(
+                "file", note.frontmatter.get("file", "")
+            )
+            note.frontmatter["signature"] = entry.get(
+                "signature", note.frontmatter.get("signature", "")
+            )
+            note.frontmatter["title"] = fqn  # tracks the name, never goes stale
         else:
             # `symbol_was` snapshots the entry's PRIOR bindings at authoring, like
             # `file` and `signature` snapshot its location. While the symbol lives,
             # the join resolves through the entry and this is redundant — it earns
             # its keep when the symbol DIES: an orphan's note must still answer to
             # the name a human has in hand, and by then the entry is gone.
-            note = Note(path=path, body="", frontmatter={
-                "title": fqn, "kind": "code-learning", "symbol_ref": ref,
-                **({"symbol_was": symbol_bindings(entry)[1:]}
-                   if symbol_bindings(entry)[1:] else {}),
-                "lang": entry.get("lang", ""), "file": entry.get("file", ""),
-                "signature": entry.get("signature", ""),
-                "content_hash": entry.get("content_hash", ""),
-                "source": "code-note"})
+            note = Note(
+                path=note_path,
+                body="",
+                frontmatter={
+                    "title": fqn,
+                    "kind": "code-learning",
+                    "symbol_ref": ref,
+                    **(
+                        {"symbol_was": symbol_bindings(entry)[1:]}
+                        if symbol_bindings(entry)[1:]
+                        else {}
+                    ),
+                    "lang": entry.get("lang", ""),
+                    "file": entry.get("file", ""),
+                    "signature": entry.get("signature", ""),
+                    "content_hash": entry.get("content_hash", ""),
+                    "source": "code-note",
+                },
+            )
         today = datetime.date.today().isoformat()
         note.body = note.body.rstrip() + f"\n\n### {today}\n{text.strip()}\n"
         res = await self.store.write(proj, relpath, note)
-        return {"project": proj, "symbol": ref, "relpath": relpath,
-                "resolved": resolution(entry, symbol),
-                "created": not existed, "indexed": res.upserted}
+        return {
+            "project": proj,
+            "symbol": ref,
+            "relpath": relpath,
+            "resolved": resolution(entry, symbol),
+            "created": not existed,
+            "indexed": res.upserted,
+        }
 
     async def edit(
-        self, proj: str, symbol: str, new_content: str, path: str = "", scope: str = "",
+        self,
+        proj: str,
+        symbol: str,
+        new_content: str,
+        path: str = "",
+        scope: str = "",
         lang: str = "",
     ) -> dict[str, Any]:
         """Replace a symbol's learning body wholesale (fix/rewrite), frontmatter
         preserved. Errors if no learning exists yet — use append to create."""
-        entry = self.refs.resolve_symbol(proj, symbol, path=path, scope=scope, lang=lang)
+        entry = self.refs.resolve_symbol(
+            proj, symbol, path=path, scope=scope, lang=lang
+        )
         relpath = self.relpath(proj, entry)
         note_path = self.store.abspath(proj, relpath)
         if not note_path.exists():
-            raise CribUserError(f"no learning for {symbol_key(entry)!r} yet — learning_add first")
+            raise CribUserError(
+                f"no learning for {symbol_key(entry)!r} yet — learning_add first"
+            )
         note = notes.load(note_path)
         note.frontmatter["content_hash"] = entry.get("content_hash", "")
         note.body = new_content.strip() + "\n"
         res = await self.store.write(proj, relpath, note)
-        return {"project": proj, "symbol": symbol_key(entry), "relpath": relpath,
-                "resolved": resolution(entry, symbol),
-                "indexed": res.upserted}
+        return {
+            "project": proj,
+            "symbol": symbol_key(entry),
+            "relpath": relpath,
+            "resolved": resolution(entry, symbol),
+            "indexed": res.upserted,
+        }
 
     async def forget(
         self, proj: str, symbol: str, path: str = "", scope: str = "", lang: str = ""
@@ -231,7 +276,9 @@ class Learnings:
         one that cannot be found, because the note is right there."""
         resolved: dict[str, Any] | None = None
         try:
-            entry = self.refs.resolve_symbol(proj, symbol, path=path, scope=scope, lang=lang)
+            entry = self.refs.resolve_symbol(
+                proj, symbol, path=path, scope=scope, lang=lang
+            )
             bound = symbol_key(entry)
             resolved = resolution(entry, symbol)
             relpath: str | None = self.relpath(proj, entry)
@@ -243,8 +290,7 @@ class Learnings:
         if relpath is None or not self.store.abspath(proj, relpath).exists():
             raise CribUserError(f"no learning for {symbol!r} in project {proj!r}")
         res = await self.store.delete(proj, relpath)
-        return {**res, "symbol": bound,
-                **({"resolved": resolved} if resolved else {})}
+        return {**res, "symbol": bound, **({"resolved": resolved} if resolved else {})}
 
     async def reaffirm(
         self, proj: str, symbol: str, path: str = "", scope: str = "", lang: str = ""
@@ -252,21 +298,31 @@ class Learnings:
         """Clear a learning's ⚠︎ stale flag WITHOUT editing the body — you re-checked it
         and it still holds. Re-snapshots content_hash/file/signature and stamps
         `reaffirmed`."""
-        entry = self.refs.resolve_symbol(proj, symbol, path=path, scope=scope, lang=lang)
+        entry = self.refs.resolve_symbol(
+            proj, symbol, path=path, scope=scope, lang=lang
+        )
         relpath = self.relpath(proj, entry)
         note_path = self.store.abspath(proj, relpath)
         if not note_path.exists():
-            raise CribUserError(f"no learning for {symbol_key(entry)!r} yet — learning_add first")
+            raise CribUserError(
+                f"no learning for {symbol_key(entry)!r} yet — learning_add first"
+            )
         note = notes.load(note_path)
         note.frontmatter["content_hash"] = entry.get("content_hash", "")
         note.frontmatter["file"] = entry.get("file", note.frontmatter.get("file", ""))
-        note.frontmatter["signature"] = entry.get("signature",
-                                                  note.frontmatter.get("signature", ""))
+        note.frontmatter["signature"] = entry.get(
+            "signature", note.frontmatter.get("signature", "")
+        )
         note.frontmatter["reaffirmed"] = datetime.date.today().isoformat()
         res = await self.store.write(proj, relpath, note)
-        return {"project": proj, "symbol": symbol_key(entry), "relpath": relpath,
-                "resolved": resolution(entry, symbol),
-                "reaffirmed": note.frontmatter["reaffirmed"], "indexed": res.upserted}
+        return {
+            "project": proj,
+            "symbol": symbol_key(entry),
+            "relpath": relpath,
+            "resolved": resolution(entry, symbol),
+            "reaffirmed": note.frontmatter["reaffirmed"],
+            "indexed": res.upserted,
+        }
 
     async def convert_notes(self, proj: str, apply: bool = False) -> dict[str, Any]:
         """Rebind every learning note to its symbol's CURRENT identity, per record.
@@ -296,46 +352,72 @@ class Learnings:
         import hashlib
         import json
         from .codeindex import SymbolIndex
+
         entries = SymbolIndex(self.paths.project_dir(proj)).all()
         by_binding: dict[str, dict[str, Any]] = {}
         for e in entries:
             for b in symbol_bindings(e):
                 by_binding.setdefault(b, e)
         ldir = self.store.root(proj)
-        rows: dict[str, list[dict[str, Any]]] = {"noop": [], "convert": [],
-                                                 "orphan": [], "collision": []}
+        rows: dict[str, list[dict[str, Any]]] = {
+            "noop": [],
+            "convert": [],
+            "orphan": [],
+            "collision": [],
+        }
         detail: list[dict[str, Any]] = []
         claimed: dict[str, str] = {}
-        for path in (sorted(ldir.glob("*.md")) if ldir.exists() else []):
+        for path in sorted(ldir.glob("*.md")) if ldir.exists() else []:
             note = notes.load(path)
             fm = note.frontmatter
             bound = str(fm.get("symbol_ref") or fm.get("symbol") or "")
             entry = by_binding.get(bound)
-            detail.append({"relpath": path.name, "binding": bound,
-                           "id": fm.get("id"),
-                           "body_sha1": hashlib.sha1(note.body.encode()).hexdigest()})
+            detail.append(
+                {
+                    "relpath": path.name,
+                    "binding": bound,
+                    "id": fm.get("id"),
+                    "body_sha1": hashlib.sha1(note.body.encode()).hexdigest(),
+                }
+            )
             if entry is None:
                 rows["orphan"].append({"relpath": path.name, "binding": bound})
                 continue
             ref = symbol_key(entry)
             target = f"{ref_slug(ref)}.md"
-            if fm.get("symbol_ref") == ref and "symbol" not in fm \
-                    and path.name == target:
+            if (
+                fm.get("symbol_ref") == ref
+                and "symbol" not in fm
+                and path.name == target
+            ):
                 rows["noop"].append({"relpath": path.name, "binding": bound})
                 continue
             prior = claimed.get(ref)
             tpath = self.store.abspath(proj, target)
-            if prior is not None or (tpath.exists() and tpath != path
-                                     and notes.load(tpath).frontmatter.get("id")
-                                     != fm.get("id")):
+            if prior is not None or (
+                tpath.exists()
+                and tpath != path
+                and notes.load(tpath).frontmatter.get("id") != fm.get("id")
+            ):
                 # two hand-written notes for one symbol: both kept, said out loud
-                rows["collision"].append({"relpath": path.name, "binding": bound,
-                                          "target": target,
-                                          "held_by": prior or target})
+                rows["collision"].append(
+                    {
+                        "relpath": path.name,
+                        "binding": bound,
+                        "target": target,
+                        "held_by": prior or target,
+                    }
+                )
                 continue
             claimed[ref] = path.name
-            rows["convert"].append({"relpath": path.name, "binding": bound,
-                                    "new_relpath": target, "symbol_ref": ref})
+            rows["convert"].append(
+                {
+                    "relpath": path.name,
+                    "binding": bound,
+                    "new_relpath": target,
+                    "symbol_ref": ref,
+                }
+            )
         applied = 0
         if apply:
             for row in rows["convert"]:
@@ -344,7 +426,7 @@ class Learnings:
                 fm = note.frontmatter
                 was = str(fm.get("symbol_ref") or fm.get("symbol") or "")
                 fm["symbol_ref"] = row["symbol_ref"]
-                fm.pop("symbol", None)     # the field is renamed, not duplicated
+                fm.pop("symbol", None)  # the field is renamed, not duplicated
                 # HISTORIED, not replaced: a list, because this will not be the last
                 # identity change and a scalar loses the first one
                 if was and was != row["symbol_ref"]:
@@ -359,18 +441,26 @@ class Learnings:
         counts = {k: len(v) for k, v in rows.items()}
         # counts under the state names; the ACTIONABLE lists under their own keys
         # (an orphan wants a rehome, a collision wants a human merge)
-        out: dict[str, Any] = {"project": proj, "applied": apply, **counts,
-                               **({"orphans": rows["orphan"]} if rows["orphan"]
-                                  else {}),
-                               **({"collisions": rows["collision"]}
-                                  if rows["collision"] else {})}
+        out: dict[str, Any] = {
+            "project": proj,
+            "applied": apply,
+            **counts,
+            **({"orphans": rows["orphan"]} if rows["orphan"] else {}),
+            **({"collisions": rows["collision"]} if rows["collision"] else {}),
+        }
         if apply:
             d = self.paths.project_dir(proj) / "migrations"
             d.mkdir(parents=True, exist_ok=True)
             stamp = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
             mpath = d / f"learning-convert-{stamp}.json"
-            mpath.write_text(json.dumps({**out, "notes_detail": detail},
-                                        indent=1, sort_keys=True, default=str))
+            mpath.write_text(
+                json.dumps(
+                    {**out, "notes_detail": detail},
+                    indent=1,
+                    sort_keys=True,
+                    default=str,
+                )
+            )
             out["manifest"] = str(mpath)
         return out
 
@@ -379,6 +469,7 @@ class Learnings:
         fqn still resolves but the symbol's file drifted from the snapshot; `orphan` =
         the fqn no longer resolves. Report-only — drives cleanup (rehome / forget)."""
         from .codeindex import SymbolIndex
+
         ldir = self.store.root(proj)
         # keyed by BOTH bindings: a note may be on the current id or on the legacy
         # qualified name, and a report that only knows one calls the other an orphan
@@ -403,13 +494,21 @@ class Learnings:
                     status, new_file = "ok", None
                 if orphans_only and status == "ok":
                     continue
-                out.append({"symbol": fq, "status": status, "file": fm.get("file", ""),
-                            "new_file": new_file, "signature": fm.get("signature", ""),
-                            "relpath": p.name})
+                out.append(
+                    {
+                        "symbol": fq,
+                        "status": status,
+                        "file": fm.get("file", ""),
+                        "new_file": new_file,
+                        "signature": fm.get("signature", ""),
+                        "relpath": p.name,
+                    }
+                )
         return out
 
-    def candidates(self, fm: dict[str, Any], entries: list[dict[str, Any]],
-                   top: int = 6) -> list[dict[str, Any]]:
+    def candidates(
+        self, fm: dict[str, Any], entries: list[dict[str, Any]], top: int = 6
+    ) -> list[dict[str, Any]]:
         """Rank index symbols as rehome targets for an orphaned learning from the
         snapshot we kept — unqualified name, signature token overlap, same file.
         Structural only; the human/LLM confirms.
@@ -422,13 +521,13 @@ class Learnings:
         bound = str(fm.get("symbol_ref") or fm.get("symbol") or "")
         # the bare leaf, from either spelling: a reference ends at its tail, a
         # qualified name at its last segment
-        oldname = _tail(id_parts(bound)[1])   # no-# input passes through id_parts
+        oldname = _tail(id_parts(bound)[1])  # no-# input passes through id_parts
         oldfile = fm.get("file", "")
         oldsig = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", fm.get("signature", "")))
         scored: list[tuple[float, dict[str, Any]]] = []
         for e in entries:
             if bound and bound in symbol_bindings(e):
-                continue                                    # itself, if it resolves
+                continue  # itself, if it resolves
             s = 0.0
             if e.get("name") == oldname:
                 s += 3.0
@@ -440,17 +539,25 @@ class Learnings:
             if s > 0:
                 scored.append((s, e))
         scored.sort(key=lambda t: t[0], reverse=True)
-        return [{"symbol_ref": symbol_key(e), "fqn": e.get("fqn", ""),
-                 "file": e.get("file", ""),
-                 "signature": e.get("signature", ""), "score": round(s, 2)}
-                for s, e in scored[:top]]
+        return [
+            {
+                "symbol_ref": symbol_key(e),
+                "fqn": e.get("fqn", ""),
+                "file": e.get("file", ""),
+                "signature": e.get("signature", ""),
+                "score": round(s, 2),
+            }
+            for s, e in scored[:top]
+        ]
 
-    async def rehome(self, proj: str, old_fqn: str,
-                     new_fqn: str | None = None) -> dict[str, Any]:
+    async def rehome(
+        self, proj: str, old_fqn: str, new_fqn: str | None = None
+    ) -> dict[str, Any]:
         """Re-point an orphaned learning at the symbol it became. Without `new_fqn`:
         ranked candidates (never auto-move). With `new_fqn`: move the note to the new
         symbol's slug, re-snapshot frontmatter, preserve the note id/history."""
         from .codeindex import SymbolIndex
+
         # `old_fqn` is whatever spelling the caller has — a reference, a legacy
         # qualified name, or an orphan's recorded binding — so look it up by binding
         # rather than by deriving a filename from it.
@@ -463,13 +570,18 @@ class Learnings:
         entries = SymbolIndex(self.paths.project_dir(proj)).all()
         if new_fqn is None:
             fm = notes.load(old_path).frontmatter
-            return {"old": old_fqn, "relpath": old_rel,
-                    "candidates": self.candidates(fm, entries)}
+            return {
+                "old": old_fqn,
+                "relpath": old_rel,
+                "candidates": self.candidates(fm, entries),
+            }
         new_entry = next((e for e in entries if new_fqn in symbol_bindings(e)), None)
-        if new_entry is None:                               # allow a unique bare name
+        if new_entry is None:  # allow a unique bare name
             m = [e for e in entries if match_entry(e, new_fqn)]
             if len(m) != 1:
-                raise CribUserError(f"target {new_fqn!r} not found or not unique in index")
+                raise CribUserError(
+                    f"target {new_fqn!r} not found or not unique in index"
+                )
             new_entry = m[0]
         new_rel = self.relpath(proj, new_entry)
         # A rehome must never CLOBBER: the target symbol may already carry its own
@@ -480,35 +592,60 @@ class Learnings:
             raise CribUserError(
                 f"{symbol_key(new_entry)!r} already has a learning ({new_rel}) — "
                 f"read both and merge with learning_edit, or learning_forget one "
-                f"first; rehome refuses to overwrite")
+                f"first; rehome refuses to overwrite"
+            )
         note = notes.load(old_path)
-        note.frontmatter.pop("symbol", None)   # rebind, never leave two bindings
-        note.frontmatter.update({
-            "symbol_ref": symbol_key(new_entry),
-            "title": str(new_entry.get("fqn") or symbol_key(new_entry)),
-            "lang": new_entry.get("lang", ""), "file": new_entry.get("file", ""),
-            "signature": new_entry.get("signature", ""),
-            "content_hash": new_entry.get("content_hash", ""), "rehomed_from": old_fqn})
-        res = await self.store.write(proj, new_rel, note)   # id preserved
+        note.frontmatter.pop("symbol", None)  # rebind, never leave two bindings
+        note.frontmatter.update(
+            {
+                "symbol_ref": symbol_key(new_entry),
+                "title": str(new_entry.get("fqn") or symbol_key(new_entry)),
+                "lang": new_entry.get("lang", ""),
+                "file": new_entry.get("file", ""),
+                "signature": new_entry.get("signature", ""),
+                "content_hash": new_entry.get("content_hash", ""),
+                "rehomed_from": old_fqn,
+            }
+        )
+        res = await self.store.write(proj, new_rel, note)  # id preserved
         if new_rel != old_rel:
             old_path.unlink()
-            await self.store.reindex(proj, old_rel)     # drop the old note's chunks
-        return {"project": proj, "old": old_fqn, "new": symbol_key(new_entry),
-                "relpath": new_rel, "indexed": res.upserted}
+            await self.store.reindex(proj, old_rel)  # drop the old note's chunks
+        return {
+            "project": proj,
+            "old": old_fqn,
+            "new": symbol_key(new_entry),
+            "relpath": new_rel,
+            "indexed": res.upserted,
+        }
 
     def read(
         self, proj: str, symbol: str, path: str = "", scope: str = "", lang: str = ""
     ) -> dict[str, Any]:
         """Read a symbol's learning note (frontmatter + body), or found=False if unwritten."""
-        entry = self.refs.resolve_symbol(proj, symbol, path=path, scope=scope, lang=lang)
+        entry = self.refs.resolve_symbol(
+            proj, symbol, path=path, scope=scope, lang=lang
+        )
         relpath = self.relpath(proj, entry)
         note_path = self.store.abspath(proj, relpath)
         if not note_path.exists():
-            return {"project": proj, "symbol": symbol_key(entry), "relpath": relpath,
-                    "resolved": resolution(entry, symbol),
-                    "path": str(note_path), "found": False, "body": None}
-        note = notes.load(note_path)
-        return {"project": proj, "symbol": symbol_key(entry), "relpath": relpath,
+            return {
+                "project": proj,
+                "symbol": symbol_key(entry),
+                "relpath": relpath,
                 "resolved": resolution(entry, symbol),
-                "path": str(path), "found": True,
-                "frontmatter": note.frontmatter, "body": note.body}
+                "path": str(note_path),
+                "found": False,
+                "body": None,
+            }
+        note = notes.load(note_path)
+        return {
+            "project": proj,
+            "symbol": symbol_key(entry),
+            "relpath": relpath,
+            "resolved": resolution(entry, symbol),
+            "path": str(path),
+            "found": True,
+            "frontmatter": note.frontmatter,
+            "body": note.body,
+        }

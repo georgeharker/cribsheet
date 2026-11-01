@@ -202,6 +202,14 @@ class _FSWatcher:
             except Exception:  # noqa: BLE001 — already gone is the goal state
                 pass
 
+    def forget_dir(self, d: str | Path) -> None:
+        """Public cleanup hook: stop watching `d` (project delete/rename).
+        Also clears the once-only missing-dir warning marker, so a later root
+        that reuses the path is not silently never scheduled."""
+        key = str(d)
+        self._unschedule_dir(key)
+        self._missing.discard(key)
+
     def _schedule(self, key: tuple[Any, ...]) -> None:
         sk = "\x00".join(str(x) for x in key)
         if (h := self._pending.pop(sk, None)) is not None:
@@ -249,6 +257,25 @@ class Watcher(_FSWatcher):
         self.projects_dir = projects_dir
         self._on_change = on_change
         self.stores = dict(stores or {})
+
+    def forget_store(self, store_root: Path) -> bool:
+        """Stop watching an in-repo store's pillar tree (delete/rename cleanup).
+        Returns whether a root was known for that store."""
+        key = str(store_root)
+        had = key in {str(d) for d in self.stores.values()}
+        self.stores = {p: d for p, d in self.stores.items() if str(d) != key}
+        self.forget_dir(key)
+        return had
+
+    def add_store(self, project: str, root: Path) -> None:
+        """Watch an in-repo store's pillar tree for `project` — the complement
+        of `forget_store` (a mid-session create/rename keeps live edits
+        working without waiting for the next daemon start). Idempotent; a
+        missing dir is a no-op (schedule_dir's once-only warning applies)."""
+        if not root.is_dir():
+            return
+        self.stores[project] = root
+        self._schedule_dir(str(root))
 
     def _watch_dirs(self) -> list[str]:
         self.projects_dir.mkdir(parents=True, exist_ok=True)
@@ -368,6 +395,19 @@ class CodeWatcher(_FSWatcher):
         """Is this project's source root being watched (so its index refreshes
         eagerly on save, and a per-query source scan is redundant)?"""
         return project in self._roots.values()
+
+    def forget_project(self, project: str) -> list[str]:
+        """Stop watching every root registered for `project` (delete/rename
+        cleanup): a save in a deleted project's checkout would otherwise
+        reindex symbols into a namespace that no longer exists — recreating it
+        as a phantom. Returns the roots dropped."""
+        dropped = [k for k, p in self._roots.items() if p == project]
+        for k in dropped:
+            del self._roots[k]
+            self._unschedule_dir(k)
+        for k in dropped:
+            self._missing.discard(k)
+        return dropped
 
     def _watch_dirs(self) -> list[str]:
         self._code_exts()  # prime the spec table: it reads config files, and

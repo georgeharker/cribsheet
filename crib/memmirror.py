@@ -26,11 +26,14 @@ DEBOUNCE_SEC = 0.5  # a memory write is one file; coalesce its create/modify bur
 class MemoryMirror:
     """Watches bound harness memory dirs; re-syncs a binding on change."""
 
-    def __init__(self, bindings: MemoryBindings,
-                 sync: Callable[[Path, str], Coroutine[Any, Any, Any]],
-                 loop: asyncio.AbstractEventLoop) -> None:
+    def __init__(
+        self,
+        bindings: MemoryBindings,
+        sync: Callable[[Path, str], Coroutine[Any, Any, Any]],
+        loop: asyncio.AbstractEventLoop,
+    ) -> None:
         self._bindings = bindings
-        self._sync = sync          # (root, project) -> awaitable, runs the mirror
+        self._sync = sync  # (root, project) -> awaitable, runs the mirror
         self._loop = loop
         self._pending: dict[str, asyncio.TimerHandle] = {}
         self._observer: Any = None
@@ -47,8 +50,10 @@ class MemoryMirror:
             except Exception as e:  # noqa: BLE001 — one stale root can't abort the rest
                 # …but it must not be invisible either: a binding that never syncs
                 # is memory the user believes is mirrored and isn't.
-                print(f"[crib] memory sync failed for {b['project']} "
-                      f"({b['root']}): {e}", file=sys.stderr)
+                print(
+                    f"[crib] memory sync failed for {b['project']} ({b['root']}): {e}",
+                    file=sys.stderr,
+                )
 
     def start(self) -> None:
         from watchdog.events import FileSystemEventHandler  # lazy
@@ -60,26 +65,26 @@ class MemoryMirror:
         mirror = self
 
         class _Handler(FileSystemEventHandler):
-            def _emit(self, raw_path: str) -> None:
-                binding = mirror._match(raw_path)
+            def _emit(self, raw_path: "str | bytes") -> None:
+                binding = mirror._match(str(raw_path))
                 if binding is not None:
                     mirror._loop.call_soon_threadsafe(mirror._schedule, binding)
 
-            def on_created(self, e):  # noqa: ANN001
-                if not e.is_directory:
-                    self._emit(e.src_path)
+            def on_created(self, event):  # noqa: ANN001
+                if not event.is_directory:
+                    self._emit(event.src_path)
 
-            def on_modified(self, e):  # noqa: ANN001
-                if not e.is_directory:
-                    self._emit(e.src_path)
+            def on_modified(self, event):  # noqa: ANN001
+                if not event.is_directory:
+                    self._emit(event.src_path)
 
-            def on_moved(self, e):  # noqa: ANN001
-                if not e.is_directory:
-                    self._emit(e.dest_path)
+            def on_moved(self, event):  # noqa: ANN001
+                if not event.is_directory:
+                    self._emit(event.dest_path)
 
-            def on_deleted(self, e):  # noqa: ANN001 — re-sync drops the chunk
-                if not e.is_directory:
-                    self._emit(e.src_path)
+            def on_deleted(self, event):  # noqa: ANN001 — re-sync drops the chunk
+                if not event.is_directory:
+                    self._emit(event.src_path)
 
         self._observer = Observer()
         for d in dirs:
@@ -111,8 +116,21 @@ class MemoryMirror:
 
     def _fire(self, binding: tuple[Path, str]) -> None:
         self._pending.pop(str(binding[0]), None)
-        spawn(self._loop, self._sync(binding[0], binding[1]), self._tasks,
-              f"memory sync {binding[1]}")
+        spawn(
+            self._loop,
+            self._sync(binding[0], binding[1]),
+            self._tasks,
+            f"memory sync {binding[1]}",
+        )
+
+    def refresh(self) -> None:
+        """Re-resolve bindings and reschedule the mirror — the rename/delete
+        counterpart of `upsert`. The watcher holds its start-time snapshot
+        (`_watched`), so without this a renamed or deleted project kept
+        receiving harness edits that re-created the namespace through
+        `import_claude_memory`."""
+        self.stop()
+        self.start()
 
     def stop(self) -> None:
         if self._observer is not None:

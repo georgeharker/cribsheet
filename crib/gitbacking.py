@@ -25,6 +25,8 @@ _GITIGNORE = """\
 memory-bindings.json
 *.tmp
 .tmp
+# deleted-project trees (project_delete's one-level undo) — machine-local
+.trash/
 
 # Per-project code-index local state: the source repo's absolute path on THIS
 # machine (regenerated on index). The symbol tomls themselves ARE shared.
@@ -50,14 +52,16 @@ _MERGE_DRIVER_NAME = "crib frontmatter-aware note merge"
 _LOCAL_TIMEOUT = 15.0
 _NET_TIMEOUT = 120.0
 _NET_VERBS = frozenset({"fetch", "pull", "push", "clone", "ls-remote"})
-_TIMEOUT_RC = 124                       # coreutils' convention, and never git's
+_TIMEOUT_RC = 124  # coreutils' convention, and never git's
 
 # DESIGN §14: the network side of sync is the USER's terminal — that's where
 # credentials, key agents and prompts live. A GitBacking constructed with
 # `allow_network=False` (the daemon's) refuses those verbs outright rather than
 # discovering the problem as a 120s stall.
-_NO_NETWORK = ("network git is CLI-side only (DESIGN §14) — run `crib memory "
-               "sync` in your terminal, where git auth lives")
+_NO_NETWORK = (
+    "network git is CLI-side only (DESIGN §14) — run `crib memory "
+    "sync` in your terminal, where git auth lives"
+)
 
 
 def _msg(r: subprocess.CompletedProcess) -> str:
@@ -82,7 +86,7 @@ class SyncResult:
     pushed: bool
     conflicts: list[str]
     message: str
-    changed: bool = False   # did a pull change files (→ caller should reconcile)
+    changed: bool = False  # did a pull change files (→ caller should reconcile)
 
 
 @dataclass
@@ -91,6 +95,7 @@ class SnapshotResult:
     status, never by reading its prose: a commit that FAILED (no `user.name`,
     a rejecting hook) must not read as "committed" to `sync`, which would then
     pull onto a dirty tree."""
+
     ok: bool
     committed: bool
     message: str
@@ -100,34 +105,42 @@ class GitBacking:
     def __init__(self, data_dir: Path, allow_network: bool = True) -> None:
         self.data_dir = data_dir
         self.allow_network = allow_network
-        self._unborn_branch: str | None = None   # memo for the remote-HEAD probe
+        self._unborn_branch: str | None = None  # memo for the remote-HEAD probe
 
     @property
     def enabled(self) -> bool:
         return (self.data_dir / ".git").is_dir()
 
-    def _run(self, *args: str, timeout: float | None = None
-             ) -> subprocess.CompletedProcess:
+    def _run(
+        self, *args: str, timeout: float | None = None
+    ) -> subprocess.CompletedProcess:
         """Run git in the data dir. Never interactive, never unbounded — a
         timeout or a refused network verb comes back as a failing
         CompletedProcess so every existing returncode check still holds."""
         verb = args[0] if args else ""
         if verb in _NET_VERBS and not self.allow_network:
             return subprocess.CompletedProcess(
-                ["git", *args], 1, "", f"refusing `git {verb}`: {_NO_NETWORK}")
+                ["git", *args], 1, "", f"refusing `git {verb}`: {_NO_NETWORK}"
+            )
         if timeout is None:
             timeout = _NET_TIMEOUT if verb in _NET_VERBS else _LOCAL_TIMEOUT
         try:
             return subprocess.run(
-                ["git", *args], cwd=self.data_dir,
-                capture_output=True, text=True,
-                stdin=subprocess.DEVNULL, timeout=timeout,
+                ["git", *args],
+                cwd=self.data_dir,
+                capture_output=True,
+                text=True,
+                stdin=subprocess.DEVNULL,
+                timeout=timeout,
             )
         except subprocess.TimeoutExpired as e:
             return subprocess.CompletedProcess(
-                ["git", *args], _TIMEOUT_RC, _text(e.stdout),
+                ["git", *args],
+                _TIMEOUT_RC,
+                _text(e.stdout),
                 _text(e.stderr) + f"git {verb} timed out after {timeout:.0f}s "
-                "(a credential prompt or an unreachable remote?)")
+                "(a credential prompt or an unreachable remote?)",
+            )
 
     def _pending_join(self) -> bool:
         """True when `origin/<branch>` has been fetched but isn't part of local
@@ -138,7 +151,7 @@ class GitBacking:
         if self._run("rev-parse", "--verify", "-q", f"origin/{branch}").returncode != 0:
             return False
         if self._run("rev-parse", "--verify", "-q", "HEAD").returncode != 0:
-            return True                  # unborn local branch → nothing merged yet
+            return True  # unborn local branch → nothing merged yet
         return self._run("merge-base", "HEAD", f"origin/{branch}").returncode != 0
 
     def _remote_file(self, name: str) -> str | None:
@@ -159,6 +172,14 @@ class GitBacking:
         gi = self.data_dir / ".gitignore"
         if not gi.exists():
             gi.write_text(self._remote_file(".gitignore") or _GITIGNORE)
+        elif ".trash/" not in gi.read_text():
+            # a pre-existing repo predates .trash/: append the exclusion IN
+            # PLACE rather than leaving deleted projects tracked (sync does
+            # `git add -A` — an ungignored .trash would commit and push them)
+            with gi.open("a") as f:
+                f.write(
+                    "\n# crib deleted-project trees (machine-local undo)\n.trash/\n"
+                )
 
     def _ensure_gitattributes(self) -> None:
         """Ensure `*.md` routes through the cribnote merge driver (committed).
@@ -173,8 +194,7 @@ class GitBacking:
         """Register the cribnote merge driver in this machine's local git config.
         Git config isn't synced, so every machine must do this — invoking the CLI
         back through `python -m crib` keeps it PATH-independent."""
-        cmd = (f"{shlex.quote(sys.executable)} -m crib merge-driver "
-               "%O %A %B %P")
+        cmd = f"{shlex.quote(sys.executable)} -m crib merge-driver %O %A %B %P"
         self._run("config", "merge.cribnote.name", _MERGE_DRIVER_NAME)
         self._run("config", "merge.cribnote.driver", cmd)
 
@@ -197,18 +217,37 @@ class GitBacking:
         if not self.enabled:
             return {"enabled": False}
         branch = self._branch()
-        dirty = len([ln for ln in self._run("status", "--porcelain").stdout.splitlines()
-                     if ln.strip()])
-        last = self._run("log", "-1", "--pretty=%h %ad %s",
-                         "--date=short").stdout.strip() or None
-        out: dict = {"enabled": True, "remote": self.current_remote(),
-                     "branch": branch, "dirty": dirty, "last_commit": last}
-        if self._run("rev-parse", "--verify", "-q",
-                     f"origin/{branch}").returncode == 0:
-            out["ahead"] = int(self._run(
-                "rev-list", "--count", f"origin/{branch}..HEAD").stdout.strip() or 0)
-            out["behind"] = int(self._run(
-                "rev-list", "--count", f"HEAD..origin/{branch}").stdout.strip() or 0)
+        dirty = len(
+            [
+                ln
+                for ln in self._run("status", "--porcelain").stdout.splitlines()
+                if ln.strip()
+            ]
+        )
+        last = (
+            self._run("log", "-1", "--pretty=%h %ad %s", "--date=short").stdout.strip()
+            or None
+        )
+        out: dict = {
+            "enabled": True,
+            "remote": self.current_remote(),
+            "branch": branch,
+            "dirty": dirty,
+            "last_commit": last,
+        }
+        if self._run("rev-parse", "--verify", "-q", f"origin/{branch}").returncode == 0:
+            out["ahead"] = int(
+                self._run(
+                    "rev-list", "--count", f"origin/{branch}..HEAD"
+                ).stdout.strip()
+                or 0
+            )
+            out["behind"] = int(
+                self._run(
+                    "rev-list", "--count", f"HEAD..origin/{branch}"
+                ).stdout.strip()
+                or 0
+            )
         return out
 
     # --- local checkpoints -------------------------------------------------
@@ -220,21 +259,23 @@ class GitBacking:
         a dirty tree is how a conflict becomes a mess)."""
         if not self.enabled:
             return SnapshotResult(
-                False, False,
+                False,
+                False,
                 "git not enabled (data dir is not a repo; run "
-                "`crib memory setup --remote <url>`)")
+                "`crib memory setup --remote <url>`)",
+            )
         self._ensure_repo_config()
         add = self._run("add", "-A")
         if add.returncode != 0:
-            return SnapshotResult(False, False,
-                                  f"git add failed: {_msg(add)}")
+            return SnapshotResult(False, False, f"git add failed: {_msg(add)}")
         if not self._run("status", "--porcelain").stdout.strip():
             return SnapshotResult(True, False, "nothing to snapshot")
         r = self._run("commit", "-m", message or "crib snapshot")
         if r.returncode != 0:
             return SnapshotResult(False, False, f"commit failed: {_msg(r)}")
-        return SnapshotResult(True, True, r.stdout.strip() or r.stderr.strip()
-                              or "committed")
+        return SnapshotResult(
+            True, True, r.stdout.strip() or r.stderr.strip() or "committed"
+        )
 
     def snapshot(self, message: str | None = None) -> str:
         """Prose form for the `memory_snapshot` surface."""
@@ -269,9 +310,11 @@ class GitBacking:
             else:
                 self._run("remote", "add", "origin", remote)
                 out.append("added remote origin")
-            self._run("fetch", "origin")     # best-effort; visibility for the join guard
-        for f, ensure in ((".gitignore", self._ensure_gitignore),
-                          (".gitattributes", self._ensure_gitattributes)):
+            self._run("fetch", "origin")  # best-effort; visibility for the join guard
+        for f, ensure in (
+            (".gitignore", self._ensure_gitignore),
+            (".gitattributes", self._ensure_gitattributes),
+        ):
             if not (self.data_dir / f).exists():
                 ensure()
                 out.append(f"wrote {f}")
@@ -295,12 +338,13 @@ class GitBacking:
             self._run("remote", "set-url", "origin", remote)
         else:
             self._run("remote", "add", "origin", remote)
-        self._ensure_merge_driver()          # config only — safe before checkout
+        self._ensure_merge_driver()  # config only — safe before checkout
 
         branch = self._branch()
         fetched = self._run("fetch", "origin")
-        remote_has_branch = self._run(
-            "rev-parse", "--verify", f"origin/{branch}").returncode == 0
+        remote_has_branch = (
+            self._run("rev-parse", "--verify", f"origin/{branch}").returncode == 0
+        )
         if fetched.returncode == 0 and remote_has_branch:
             # Adopt the remote tree. Drop the two shared files first if they're
             # present-but-untracked (e.g. from a prior failed setup) so checkout
@@ -309,10 +353,17 @@ class GitBacking:
                 (self.data_dir / f).unlink(missing_ok=True)
             self._run("checkout", "-B", branch, f"origin/{branch}")
             self._run("branch", f"--set-upstream-to=origin/{branch}", branch)
-            self._ensure_gitignore()         # no-ops: remote provided them
+            self._ensure_gitignore()  # no-ops: remote provided them
             self._ensure_gitattributes()
-            return SyncResult(True, False, True, False, [],
-                              f"joined {remote} at origin/{branch}", changed=True)
+            return SyncResult(
+                True,
+                False,
+                True,
+                False,
+                [],
+                f"joined {remote} at origin/{branch}",
+                changed=True,
+            )
         # Brand-new / empty remote: fall back to bootstrap + (no-op) pull.
         self.init(remote)
         return self.pull()
@@ -328,34 +379,56 @@ class GitBacking:
             return SyncResult(False, False, False, False, [], "git not enabled")
         if not self.allow_network:
             return SyncResult(False, False, False, False, [], _NO_NETWORK)
-        self._run("fetch", "origin")     # best-effort, pull refetches; makes a joinable
-        self._ensure_repo_config()       # branch visible so the shared files defer to it
+        self._run("fetch", "origin")  # best-effort, pull refetches; makes a joinable
+        self._ensure_repo_config()  # branch visible so the shared files defer to it
         before = self._run("rev-parse", "HEAD").stdout.strip()
         # --allow-unrelated-histories lets a machine join an existing remote: the
         # two independently-init'd trees merge as a union (conflicts only on
         # genuinely divergent same-path files). Harmless once histories are linked.
-        r = self._run("pull", "--no-rebase", "--allow-unrelated-histories",
-                      "origin", self._branch())
+        r = self._run(
+            "pull",
+            "--no-rebase",
+            "--allow-unrelated-histories",
+            "origin",
+            self._branch(),
+        )
         conflicts = self._conflicts()
         if conflicts:
             return SyncResult(
-                False, False, False, False, conflicts,
+                False,
+                False,
+                False,
+                False,
+                conflicts,
                 "merge conflict — resolve the files below in "
-                f"{self.data_dir}, commit, then re-run:\n  " + "\n  ".join(conflicts))
+                f"{self.data_dir}, commit, then re-run:\n  " + "\n  ".join(conflicts),
+            )
         if r.returncode != 0:
             # First sync against an empty remote: nothing to merge yet, not an error.
-            if any(s in r.stderr.lower() for s in
-                   ("couldn't find remote ref", "no such ref", "not our ref")):
-                return SyncResult(True, False, True, False, [], "remote empty (first sync)")
-            return SyncResult(False, False, False, False, [],
-                              f"pull failed: {r.stderr.strip()}")
+            if any(
+                s in r.stderr.lower()
+                for s in ("couldn't find remote ref", "no such ref", "not our ref")
+            ):
+                return SyncResult(
+                    True, False, True, False, [], "remote empty (first sync)"
+                )
+            return SyncResult(
+                False, False, False, False, [], f"pull failed: {r.stderr.strip()}"
+            )
         after = self._run("rev-parse", "HEAD").stdout.strip()
         # Post-merge: if the join deferred the shared files and the remote turned
         # out not to carry them (older remote), write them now (no-op otherwise).
         self._ensure_gitignore()
         self._ensure_gitattributes()
-        return SyncResult(True, False, True, False, [],
-                          r.stdout.strip() or "up to date", changed=(before != after))
+        return SyncResult(
+            True,
+            False,
+            True,
+            False,
+            [],
+            r.stdout.strip() or "up to date",
+            changed=(before != after),
+        )
 
     def push(self) -> SyncResult:
         if not self.enabled:
@@ -364,26 +437,39 @@ class GitBacking:
             return SyncResult(False, False, False, False, [], _NO_NETWORK)
         r = self._run("push", "-u", "origin", self._branch())
         if r.returncode != 0:
-            return SyncResult(False, False, False, False, [],
-                              f"push failed: {r.stderr.strip()}")
-        return SyncResult(True, False, False, True, [],
-                          r.stderr.strip() or r.stdout.strip() or "pushed")
+            return SyncResult(
+                False, False, False, False, [], f"push failed: {r.stderr.strip()}"
+            )
+        return SyncResult(
+            True,
+            False,
+            False,
+            True,
+            [],
+            r.stderr.strip() or r.stdout.strip() or "pushed",
+        )
 
     def sync(self, message: str | None = None) -> SyncResult:
         """commit → pull → push. Stops (without pushing) if the commit failed or
         the pull conflicts."""
         if not self.enabled:
-            return SyncResult(False, False, False, False, [],
-                              "git not enabled; run `crib memory sync --remote <url>` "
-                              "first")
+            return SyncResult(
+                False,
+                False,
+                False,
+                False,
+                [],
+                "git not enabled; run `crib memory sync --remote <url>` first",
+            )
         if not self.allow_network:
             return SyncResult(False, False, False, False, [], _NO_NETWORK)
         snap = self.snapshot_result(message)
         if not snap.ok:
             # A failed commit leaves the tree dirty; pulling onto it is how a
             # recoverable "set your user.name" becomes a merge to untangle.
-            return SyncResult(False, False, False, False, [],
-                              f"sync stopped: {snap.message}")
+            return SyncResult(
+                False, False, False, False, [], f"sync stopped: {snap.message}"
+            )
         committed = snap.committed
         pulled = self.pull()
         if not pulled.ok:
@@ -391,12 +477,23 @@ class GitBacking:
             return pulled
         pushed = self.push()
         return SyncResult(
-            pushed.ok, committed, True, pushed.pushed, [],
-            "; ".join(filter(None, [
-                "committed" if committed else "",
-                pulled.message if pulled.changed else "up to date",
-                pushed.message])),
-            changed=pulled.changed)
+            pushed.ok,
+            committed,
+            True,
+            pushed.pushed,
+            [],
+            "; ".join(
+                filter(
+                    None,
+                    [
+                        "committed" if committed else "",
+                        pulled.message if pulled.changed else "up to date",
+                        pushed.message,
+                    ],
+                )
+            ),
+            changed=pulled.changed,
+        )
 
     def _branch(self) -> str:
         """The branch this data repo syncs on.
@@ -412,8 +509,9 @@ class GitBacking:
         if r.returncode == 0 and name and name != "HEAD":
             return name
         if self._unborn_branch is None:
-            self._unborn_branch = (self._remote_head_branch()
-                                   or self._local_default_branch() or "main")
+            self._unborn_branch = (
+                self._remote_head_branch() or self._local_default_branch() or "main"
+            )
         return self._unborn_branch
 
     def _remote_head_branch(self) -> str | None:
@@ -427,10 +525,12 @@ class GitBacking:
         ref = r.stdout.strip()
         if r.returncode == 0 and ref.startswith("origin/"):
             return ref.removeprefix("origin/") or None
-        for ln in self._run("ls-remote", "--symref", "origin", "HEAD").stdout.splitlines():
+        for ln in self._run(
+            "ls-remote", "--symref", "origin", "HEAD"
+        ).stdout.splitlines():
             # "ref: refs/heads/master\tHEAD"
             if ln.startswith("ref: "):
-                head = ln[len("ref: "):].split()[0]
+                head = ln[len("ref: ") :].split()[0]
                 if head.startswith("refs/heads/"):
                     return head.removeprefix("refs/heads/") or None
         return None

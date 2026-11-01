@@ -107,6 +107,19 @@ _SESSIONS: "WeakKeyDictionary[Any, SessionState]" = WeakKeyDictionary()
 _DEFAULT = SessionState()  # non-request contexts: in-process CLI, tests
 
 
+def retarget_sessions(old: str, new: str | None) -> int:
+    """Repoint (or clear, with `new=None`) the current-project pointer of EVERY
+    live session after a project rename/delete — not just the caller's: a
+    per-connection scope that still names a deleted project re-seeds it as a
+    phantom on its next write. Returns how many sessions moved."""
+    n = 0
+    for st in (*_SESSIONS.values(), _DEFAULT):
+        if st.current_project == old:
+            st.current_project = new
+            n += 1
+    return n
+
+
 def session_state() -> SessionState:
     """The SessionState for the calling MCP connection, created on first use.
     Returns the shared default when there's no active MCP context."""

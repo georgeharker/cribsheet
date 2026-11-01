@@ -517,6 +517,31 @@ def _emit_project(d: Any, verb: str | None, as_json: bool) -> None:
             f"{rec.get('removed', 0)} removed  (0/0 = ids unchanged, as expected)"
         )
         return
+    if verb == "create":
+        if d.get("created"):
+            print(d.get("message") or f"{proj} created")
+        else:
+            print(d.get("message") or f"{proj}: already exists — nothing changed")
+            return
+        if d.get("store"):
+            print(f"  store: {d['store']} ({d.get('store_root', '')})")
+        return
+    if verb == "delete":
+        if not d.get("deleted"):
+            print(d.get("message") or f"{proj}: nothing to delete")
+            return
+        print(d.get("message") or f"{proj} deleted")
+        if d.get("trash"):
+            print(f"  undo: move the tree back from {d['trash']}")
+        return
+    if verb == "rename":
+        print(d.get("message") or f"{proj}: renamed")
+        for r in d.get("refs_affected") or []:
+            print(
+                f"  ! {r.get('referrer')} refs: {r.get('target')} — update its "
+                "repo's .crib"
+            )
+        return
     if verb == "status":
         state = "indexed" if d.get("indexed") else "NOT indexed"
         print(
@@ -1322,6 +1347,75 @@ def build_parser() -> argparse.ArgumentParser:
     ):
         _sp = pjsub.add_parser(_v, help=_h)
         proj(_sp)
+    _sp = pjsub.add_parser(
+        "create",
+        help="explicitly create a project (skeleton + birth manifest; "
+        "--store <rel> declares in-repo residency at birth)",
+    )
+    _sp.add_argument("project", nargs="?", help="the new project's name")
+    _sp.add_argument(
+        "--store",
+        metavar="RELPATH",
+        help="create the project IN-REPO at this repo-relative store path "
+        "(writes .crib + the machine stub; anchor with -P/--project-path)",
+    )
+    # -P anchors --store at a repo, not the project; -p NAMES it, same fact as
+    # the positional (separate dest, merged + conflict-guarded in the build).
+    _sp.add_argument(
+        "-P",
+        "--project-path",
+        dest="project_path",
+        help="anchor --store at this repo (needed with --store; never the "
+        "daemon's cwd)",
+    )
+    _sp.add_argument(
+        "-p",
+        "--project",
+        dest="project_flag",
+        default=None,
+        help="the new project's name (selector spelling)",
+    )
+    _sp = pjsub.add_parser(
+        "delete",
+        help="fenced removal: moves the tree to .trash (default "
+        "project, running sweeps and in-repo stores are fenced)",
+    )
+    _sp.add_argument(
+        "project",
+        nargs="?",
+        help="the project to delete (explicit; positional or -p; never the "
+        "session default)",
+    )
+    _sp.add_argument(
+        "-p",
+        "--project",
+        dest="project_flag",
+        default=None,
+        help="the project to delete (selector spelling, same fact)",
+    )
+    _sp.add_argument(
+        "--force",
+        action="store_true",
+        help="accepted for compatibility; NO-OP — delete never removes "
+        "anything from a user repo (its notes stay; release them first if "
+        "they should follow the namespace)",
+    )
+    _sp.add_argument(
+        "--yes",
+        action="store_true",
+        help="skip the interactive confirmation (for scripts; piped stdin "
+        "refuses without it)",
+    )
+    _sp = pjsub.add_parser(
+        "rename",
+        help="rename a project namespace (chunk ids churn → full re-embed; "
+        "note ids and ring history survive)",
+    )
+    _sp.add_argument("project", help="the current name")
+    _sp.add_argument("to", help="the new name")
+    # NO -p/-P selectors: both positionals name the namespace, and rename never
+    # anchors at a repo (the -p clash with the positional would be the same
+    # order-dependence create had).
     _pf = pjsub.add_parser(
         "forget", help="clear the code index (keeps learnings/notes)"
     )
@@ -2381,6 +2475,63 @@ def _proj_of(a: Any) -> str | None:
 
 _PROJ = "project=None project_path=None"  # the two selectors, on most tools
 
+
+# Deletion is ALWAYS human-confirmed (MCP mode elicits; the CLI prompts in its
+# terminal, `--yes` for scripts) and the CLI routes it IN-PROCESS below — the
+# confirmation must be a human act, never a tool-call parameter an agent could
+# supply. Routing detail in main()'s `project delete` branch.
+def _proj_named(a: Any, verb: str, optional: bool = False) -> str | None:
+    """The lifecycle verbs' project name: the positional OR the `-p` selector
+    spelling, same fact, both allowed — but never silently arbitrated. If both
+    are given and DIFFER, that's a typo, not a choice; say so and refuse. (The
+    dests are separate, so there's no order-dependence to launder through.)
+
+    `optional=True` (create) returns None when NEITHER is given: the core
+    derives the name from the repo's `.crib`/repo dir — the MCP surface can
+    do that, so the CLI must not block it (nargs="?" already says optional)."""
+    from .errors import CribUserError
+
+    pos, flag = getattr(a, "project", None), getattr(a, "project_flag", None)
+    if pos is not None and flag is not None and pos != flag:
+        raise CribUserError(
+            f"crib project {verb}: {pos!r} (positional) and {flag!r} (-p) name "
+            "different projects — give one"
+        )
+    name = pos if pos is not None else flag
+    if name is None and not optional:
+        raise CribUserError(
+            f"crib project {verb}: pass the project name (positional or -p)"
+        )
+    return name
+
+
+def _proj_name_required(a: Any, verb: str) -> str:
+    """The strict form of `_proj_named` — a name is REQUIRED and is a `str`
+    (the checker-visible guarantee the delete path needs; delete never
+    resolves a session default or a cwd)."""
+    from .errors import CribUserError
+
+    name = _proj_named(a, verb, optional=False)
+    if name is None:  # unreachable: strict mode raises above
+        raise CribUserError(
+            f"crib project {verb}: pass the project name (positional or -p)"
+        )
+    return name
+
+
+_DELETE_VERB = Verb(
+    "project_delete",
+    lambda a: {
+        "project": _proj_name_required(a, "delete"),
+        "force": getattr(a, "force", False),
+    },
+    _E_project("delete"),
+    is_async=True,
+    policy="write",
+    wants_cwd=False,  # deletion never resolves from a path (MCP tool agrees)
+    mcp="project force=False",
+)
+
 VERBS: dict[str, Verb] = {
     # notes: search / read
     "note lookup": Verb(
@@ -2691,6 +2842,32 @@ VERBS: dict[str, Verb] = {
         policy="source",
         mcp=_PROJ,
     ),
+    "project create": Verb(
+        "project_create",
+        lambda a: {
+            # OPTIONAL name: no positional and no -p means the core derives it
+            # from the repo's .crib/repo dir (with --store) — the MCP surface
+            # can do that, so the CLI must not block it.
+            "project": _proj_named(a, "create", optional=True),
+            "store": getattr(a, "store", None),
+        },
+        _E_project("create"),
+        is_async=True,
+        # matches the server's "none" (create does its own naming: no
+        # session-default fallback may point a repo-bound store at `default`)
+        policy="none",
+        mcp="project=None store=None project_path=None",
+    ),
+    "project rename": Verb(
+        "project_rename",
+        lambda a: {"project": a.project, "to": a.to},
+        _E_project("rename"),
+        is_async=True,
+        policy="write",
+        wants_cwd=False,  # the MCP tool takes no project_path
+        mcp="project to",
+    ),
+    "project delete": _DELETE_VERB,
     # code index
     "code lookup": Verb(
         "code_lookup",
@@ -2876,12 +3053,6 @@ VERBS: dict[str, Verb] = {
             "project": a.project,
             "sources": a.sources,
             "proposed": a.proposed,
-            "path": getattr(a, "path", ""),
-            "scope": getattr(a, "scope", ""),
-            "lang": getattr(a, "lang", ""),
-            "path": getattr(a, "path", ""),
-            "scope": getattr(a, "scope", ""),
-            "lang": getattr(a, "lang", ""),
             "path": getattr(a, "path", ""),
             "scope": getattr(a, "scope", ""),
             "lang": getattr(a, "lang", ""),
@@ -3296,7 +3467,12 @@ def _unlinked_path_message(args: Any, entry: Verb, cfg: Any) -> str | None:
     which is that path's DOCUMENTED fallback but almost always a missing `.crib`
     rather than intent (see DESIGN: 'An explicit selector never loses'). A bare cwd
     (no -P) is deliberate, so this is gated on `args.project_path` being set."""
-    if not (entry.wants_cwd and getattr(args, "project_path", None)):
+    if not (entry.wants_cwd and args.project_path):
+        return None
+    if args.cmd == "project" and args.project_verb == "create":
+        # A fresh repo without .crib is create's INTENDED input (at-birth
+        # residency writes the .crib) — the "answering from 'default'" advisory
+        # would be not just noise but wrong.
         return None
     from .config import CribLink
 
@@ -3321,7 +3497,7 @@ def _apply_unlinked_advisory(args: Any, msg: str | None, data: Any) -> Any:
     identically (the in-process path never sees the server key)."""
     if isinstance(data, dict):
         data.pop("unlinked_project_path", None)  # the CLI owns this, not the daemon
-        if msg and getattr(args, "json", False):
+        if msg and args.json:
             data["unlinked_project_path"] = msg
     if msg:
         print(msg, file=sys.stderr)
@@ -3445,7 +3621,9 @@ def _run_git(args: Any, cfg: Any) -> int:
     from .gitbacking import GitBacking
     from .paths import Paths
 
-    verb = getattr(args, "memory_verb", None)  # `crib memory setup/sync/push/pull`
+    # the memory noun always defines memory_verb (required subparser), and
+    # main() dispatches here only for the four git verbs
+    verb = args.memory_verb  # `crib memory setup/sync/push/pull`
     # setup runs on a fresh machine where the data dir may not exist yet
     paths = Paths.resolve().ensure() if verb == "setup" else Paths.resolve()
     if (refusal := _in_repo_guard(paths, cfg, _cwd_of(args))) is not None:
@@ -3454,9 +3632,8 @@ def _run_git(args: Any, cfg: Any) -> int:
     git = GitBacking(paths.data_dir)
 
     if verb == "setup":
-        remote = (
-            getattr(args, "remote", None) or git.current_remote() or _prompt_remote()
-        )
+        # the setup parser always defines --remote; verb is matched above
+        remote = args.remote or git.current_remote() or _prompt_remote()
         if not remote:
             print(
                 "crib memory setup: no remote given (pass --remote <url>)",
@@ -3466,7 +3643,7 @@ def _run_git(args: Any, cfg: Any) -> int:
         print(f"joining {remote} …")
         res = git.setup(remote)
     elif verb == "sync":
-        if getattr(args, "remote", None):
+        if args.remote:  # the sync parser always defines it
             print(git.init(args.remote))
         res = git.sync(args.message)
     elif verb == "push":
@@ -3508,6 +3685,72 @@ def _reconcile(cfg: Any) -> Any:
         return asyncio.run(crib.reconcile_all())
     finally:
         crib.close()
+
+
+def _confirm_delete_terminal(args: Any, proj: str) -> bool:
+    """The CLI's half of ALWAYS-CONFIRMED deletion (MCP mode elicits; the CLI
+    asks in its terminal). Piped stdin refuses without --yes — a script that
+    can't confirm must not delete."""
+    if getattr(args, "yes", False):
+        return True
+    if not sys.stdin.isatty():
+        print(
+            f"crib: refusing to delete {proj!r} without confirmation — stdin is "
+            "not a terminal; pass --yes (or answer the prompt interactively)",
+            file=sys.stderr,
+        )
+        return False
+    ans = input(
+        f"Delete crib project '{proj}'? The tree moves to .trash (one-level "
+        "undo); an in-repo store needs --force and is removed from the repo. "
+        "[y/N] "
+    )
+    return ans.strip().lower() in ("y", "yes")
+
+
+def _daemon_is_up(cfg: Any) -> bool:
+    """Is a crib daemon ACTUALLY listening right now — a socket probe of the
+    configured host/port, NOT `sharedserver.available()` (which only checks
+    the binary is on PATH; attaching via DaemonClient would then SPAWN one,
+    whose startup reconcile races the destructive verb this guards)."""
+    import socket
+
+    if not getattr(cfg, "daemon", None) or not cfg.daemon.enabled:
+        return False
+    try:
+        with socket.create_connection((cfg.daemon.host, cfg.daemon.port), timeout=0.3):
+            return True
+    except OSError:
+        return False
+
+
+def _daemon_sweep_fence(cfg: Any, proj: str) -> None:
+    """Pre-flight for an in-process destructive verb while a daemon runs: the
+    daemon's warm state (running sweep) is invisible to this process — ask IT
+    whether anything is in flight for `proj` before deleting.
+
+    ATTACHED daemons only — `_daemon_is_up`'s socket probe never spawns one
+    (DaemonClient.__enter__ would), and when none is up there is nothing to
+    race. Uses `status` (which carries `sweeps` + `reconciling`), not
+    `project_status` (which has neither)."""
+    if not _daemon_is_up(cfg):
+        return
+    from .client import DaemonClient
+
+    try:
+        with DaemonClient(cfg.daemon) as client:
+            st = client.call("status", {})
+    except Exception:  # noqa: BLE001 — daemon went down mid-probe ⇒ cannot race
+        return
+    if (
+        (st.get("sweeps") or {}).get(proj)
+        or st.get("reconciling")
+        or (st.get("indexing") or {}).get(proj)
+    ):
+        raise SystemExit(
+            f"crib: the daemon is indexing ({proj!r} sweep or a background "
+            "reconcile) — `crib project cancel` / wait for it to finish first"
+        )
 
 
 def _run_inprocess(args: Any, cfg: Any) -> None:
@@ -3603,6 +3846,40 @@ def main(argv: list[str] | None = None) -> int:
         "pull",
     ):
         return _run_git(args, cfg)
+    if args.cmd == "project" and args.project_verb == "delete":
+        # Deletion is ALWAYS human-confirmed: MCP mode elicits (the tool refuses
+        # without an affirmation); the CLI confirms HERE, in the terminal
+        # (`--yes` for scripts, piped stdin without it refuses). The verb runs
+        # in-process even when a daemon runs — the tool-level elicitation is
+        # not the CLI's confirmation — with a pre-flight fence against the
+        # daemon's in-flight sweep (attached daemons only: the fence must
+        # never SPAWN one, whose startup reconcile would race the delete).
+        # Inside the try: a fenced refusal (default project, missing name,
+        # conflict) is a user error with the same formatting as every other
+        # refusal — never a raw traceback, and --json gets the error payload.
+        try:
+            proj = _proj_name_required(args, "delete")
+            _daemon_sweep_fence(cfg, proj)
+            if not _confirm_delete_terminal(args, proj):
+                return 2
+            _run_inprocess(args, cfg)
+            if _daemon_is_up(cfg):
+                # a warm daemon holds per-project state this process cannot
+                # clean (code-watcher roots, mirror snapshot, warm caches):
+                # say so rather than leave it silent
+                print(
+                    f"crib: a running daemon still holds warm state for "
+                    f"{proj!r} (watchers/caches) — restart the daemon to "
+                    "drop it (its index tiers were already cleaned here)",
+                    file=sys.stderr,
+                )
+            return 0
+        except _user_errors() as e:
+            msg = str(e)
+            print(f"crib: {msg}", file=sys.stderr)
+            if getattr(args, "json", False):
+                print(json.dumps({"error": msg}))
+            return 2
     try:
         if cfg.daemon.enabled and not args.no_daemon:
             from . import sharedserver

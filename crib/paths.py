@@ -33,7 +33,8 @@ def check_project_name(project: str) -> str:
     if project in (".", "..") or not _PROJECT_RE.match(project or ""):
         raise CribUserError(
             f"invalid project name {project!r}: use letters, digits, '.', '_' or "
-            "'-' only — a project is a name, not a path")
+            "'-' only — a project is a name, not a path"
+        )
     return project
 
 
@@ -49,7 +50,8 @@ def check_relpath(relpath: str, base: Path | str = "the store") -> str:
     p = Path(relpath)
     if p.is_absolute():
         raise CribUserError(
-            f"absolute path not allowed: {relpath!r} — pass a path relative to {base}")
+            f"absolute path not allowed: {relpath!r} — pass a path relative to {base}"
+        )
     if ".." in p.parts:
         raise CribUserError(f"path escapes {base}: {relpath!r} — no '..' segments")
     return relpath
@@ -106,6 +108,12 @@ class Paths:
         return self.data_dir / ".versions"
 
     @property
+    def trash_dir(self) -> Path:
+        """Holding area for deleted projects — `project_delete` moves a tree here
+        rather than rm-ing it, one-level undo in the spirit of the version ring."""
+        return self.data_dir / ".trash"
+
+    @property
     def chroma_dir(self) -> Path:
         return self.index_dir / "chroma"
 
@@ -130,8 +138,14 @@ class Paths:
         return self.project_dir(project) / "notes"
 
     def ensure(self) -> Paths:
-        for d in (self.config_dir, self.data_dir, self.projects_dir,
-                  self.versions_dir, self.index_dir):
+        for d in (
+            self.config_dir,
+            self.data_dir,
+            self.projects_dir,
+            self.versions_dir,
+            self.index_dir,
+            self.trash_dir,
+        ):
             d.mkdir(parents=True, exist_ok=True)
         return self
 
@@ -143,19 +157,21 @@ class Paths:
 # `store_root` as a portable `$LOCATION` token. Never both — adoption is a move,
 # not an overlay. Only this pair of tiers moves; see `Paths.project_dir`.
 
+
 @dataclass(frozen=True)
 class ProjectPaths:
     """One project's resolved storage locations."""
+
     project: str
-    project_dir: Path                   # global `projects/<name>` (stub or full)
+    project_dir: Path  # global `projects/<name>` (stub or full)
     notes_dir: Path
     versions_dir: Path
-    data_root: Path                     # dir holding the pillar stores (notes/,
-                                        # design/, plans/, learnings/): the global
-                                        # project dir, or the adopted store root
-    store_root: Path | None = None      # the in-repo store dir, when adopted
-    store_token: str | None = None      # its portable `$LOCATION/...` spelling
-    available: bool = True              # False ⇒ store_root isn't on this machine
+    data_root: Path  # dir holding the pillar stores (notes/,
+    # design/, plans/, learnings/): the global
+    # project dir, or the adopted store root
+    store_root: Path | None = None  # the in-repo store dir, when adopted
+    store_token: str | None = None  # its portable `$LOCATION/...` spelling
+    available: bool = True  # False ⇒ store_root isn't on this machine
 
     @property
     def in_repo(self) -> bool:
@@ -186,7 +202,8 @@ class ProjectPaths:
             f"{self.store_token} ({self.store_root}), which is not on this "
             f"machine: clone the repo there, add a [locations] entry mapping "
             f"that $NAME to a local dir, or run `crib project release "
-            f"{self.project}` to move the notes back into the global store")
+            f"{self.project}` to move the notes back into the global store"
+        )
 
 
 def resolve_project_paths(paths: Paths, cfg: "Config", project: str) -> ProjectPaths:
@@ -197,19 +214,27 @@ def resolve_project_paths(paths: Paths, cfg: "Config", project: str) -> ProjectP
     (project listing, startup reconcile and watcher roots all scan `projects_dir`
     as before). `.crib` `store:` is what `project adopt` reads to WRITE that stub."""
     from .config import ProjectConfig, expand_location
+
     name = check_project_name(project)
     pdir = paths.projects_dir / name
     token = ProjectConfig.load(pdir / ".cribproject", name).store_root
     if not token:
         # Global layout: the ring is the SHARED `data_dir/.versions`, keyed by
         # note id across every project (DESIGN §8) — unchanged for global projects.
-        return ProjectPaths(name, pdir, pdir / "notes", paths.versions_dir,
-                            data_root=pdir)
+        return ProjectPaths(
+            name, pdir, pdir / "notes", paths.versions_dir, data_root=pdir
+        )
     root = expand_location(token, cfg.locations)
-    return ProjectPaths(name, pdir, root / "notes", root / ".versions",
-                        data_root=root,
-                        store_root=root, store_token=token,
-                        available=root.is_dir())
+    return ProjectPaths(
+        name,
+        pdir,
+        root / "notes",
+        root / ".versions",
+        data_root=root,
+        store_root=root,
+        store_token=token,
+        available=root.is_dir(),
+    )
 
 
 class ProjectPathResolver:

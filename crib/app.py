@@ -11,6 +11,8 @@ import asyncio
 import contextlib
 import datetime
 import os
+import re
+import shutil
 import sys
 import threading
 import time
@@ -2115,6 +2117,7 @@ class Crib:
         populated destination is still a merge of trees rather than a refusal —
         the "no merge" rule is enforced by the CALLERS, which refuse before any
         file moves."""
+
         import shutil
 
         moved = 0
@@ -2346,6 +2349,784 @@ class Crib:
             "notes_moved": notes_moved,
             "versions_moved": versions_moved,
             "reconciled": rec,
+        }
+
+    # ── project lifecycle: create / delete / rename (docs/surface.md) ─────────
+    # Birth is a decision moment now: create is the RESIDENCY DOORWAY (declare
+    # the repo store at birth instead of adopting retroactively) and records a
+    # birth manifest, so a namespace's origin stays auditable once stores cross
+    # machines. Write policy unchanged: writes still create implicitly — create
+    # is an optional richer doorway, never a gate.
+
+    @staticmethod
+    def _stamp_manifest(pcfg: ProjectConfig) -> None:
+        """Fill an absent birth manifest — once and only once (a re-create never
+        rewrites a project's birth record)."""
+        if pcfg.created is None:
+            pcfg.created = datetime.date.today().isoformat()
+        if pcfg.host is None:
+            pcfg.host = claudemem.hostslug()
+
+    async def project_create(
+        self,
+        project: str | None = None,
+        cwd: Path | None = None,
+        store: str | None = None,
+    ) -> dict[str, Any]:
+        """Explicitly create a project: pillar skeleton + birth manifest
+        (`created`/`host` in `.cribproject`).
+
+        With `store=<repo-relative path>` (and `project_path=<the repo dir>`) it
+        is the RESIDENCY DOORWAY: writes the repo `.crib` (`project:` +
+        `store:`) and the machine stub so a project is born in-repo — the
+        at-birth form of `project adopt`. It refuses when a non-empty global
+        project of that name already exists (moving notes into a repo is
+        adopt's job), so it can never be a silent merge.
+
+        Idempotent: an existing project reports `created: false` and changes
+        nothing. Writes do NOT require this verb — the implicit creation on
+        first write stays (an absent manifest just means "born implicitly")."""
+        from .watch import PILLAR_SEGMENTS
+
+        def _skeleton(*roots: Path) -> None:
+            for root in roots:
+                for seg in PILLAR_SEGMENTS:
+                    (root / seg).mkdir(parents=True, exist_ok=True)
+
+        if store is not None:
+            # Residency: anchored at the CALLER's repo — never the process cwd
+            # (the daemon's spawn dir is not a repo anyone meant). Same rule as
+            # every other repo-scoped verb.
+            if cwd is None:
+                raise CribUserError(
+                    "declaring residency needs the repo: pass project_path=<the "
+                    "repo dir> (a create never falls back to the server's cwd)"
+                )
+            base = Path(cwd).resolve()
+            name = check_project_name(project) if project else None
+            link = CribLink.find(base)
+            crib_created = False
+            if link is None or link.root is None:
+                # The link is part of the birth: anchor at the nearest repo
+                # marker, else at `base` itself (the `_ensure_crib` rule —
+                # never escape to base.parent).
+                root = base
+                for d in (base, *base.parents):
+                    if (
+                        (d / ".git").exists()
+                        or (d / "pyproject.toml").exists()
+                        or (d / "setup.py").exists()
+                    ):
+                        root = d
+                        break
+                if name is None:
+                    name = check_project_name(root.name.replace(" ", "-"))
+                store_decl = store
+            else:
+                if name is not None and link.project != name:
+                    raise CribUserError(
+                        f"{base} belongs to project {link.project!r} (its .crib "
+                        f"says so), not {name!r} — create is about THIS repo"
+                    )
+                name = check_project_name(name or link.project)
+                if link.store and store != link.store:
+                    raise CribUserError(
+                        f"{link.root / '.crib'} already declares `store: "
+                        f"{link.store}` — edit the .crib by hand to change it"
+                    )
+                if link.store is None:
+                    raise CribUserError(
+                        f"{link.root / '.crib'} declares no `store:` — add e.g. "
+                        f"`store: {store}` (repo-root-relative), then re-run"
+                    )
+                root = link.root
+                store_decl = link.store
+            # The shared bucket never lives inside ONE repo — residency is a
+            # repo's own memory, and `default` would silently adopt it into a
+            # repo checkout (and into every clone's .crib).
+            if name == self.config.default_project:
+                raise CribUserError(
+                    f"refusing to declare residency for {name!r} — the default "
+                    "project is the shared bucket and stays in the global store"
+                )
+            # Validate the store string BEFORE anything is written anywhere:
+            # it is interpolated into the repo's `.crib` (a YAML file), so a
+            # newline or any YAML metacharacter would inject keys (reproduced:
+            # `store: "a: b"` wrote a broken .crib). Restrict to the safe
+            # spelling — letters/digits dot dash underscore slash — which
+            # automatically covers absolute/`..`/control characters.
+            if not re.fullmatch(r"[A-Za-z0-9._/-]+", store_decl) or not re.search(
+                r"[A-Za-z0-9]", store_decl
+            ):
+                raise CribUserError(
+                    f"invalid store path {store_decl!r}: use repo-relative "
+                    "letters/digits/./-/_ / only (no YAML metacharacters — it "
+                    "lands in the .crib)"
+                )
+            if root is None or not root.is_dir():  # pragma: no cover — find() roots
+                raise CribUserError("cannot resolve a repo dir to hold the store")
+            try:
+                store_dir = confine(root, store_decl)
+            except (CribUserError, ValueError) as e:
+                # confine's message already names the offending value
+                raise CribUserError(str(e)) from None
+            # adopt's guard, generalized: ANY existing file along the store's
+            # relative path (like `store: .crib/store` — the inviting spelling
+            # inside the `.crib` FILE itself) means this path can never be a
+            # directory; say that by name instead of a bare NotADirectoryError.
+            blocker: Path | None = None
+            cur = root
+            for part in store_dir.relative_to(root).parts:
+                cur = cur / part
+                if cur.exists() and not cur.is_dir():
+                    blocker = cur
+                    break
+            if blocker is not None:
+                raise CribUserError(
+                    f"`store: {store_decl}` is not a directory ({blocker} exists "
+                    "as a file) — point it at a directory path, e.g. "
+                    "`store: .crib-store`"
+                )
+            # A store that IS the repo ("." collapses to root) can never be a
+            # crib store: pillar dirs would be created beside the repo's own
+            # content, and a later `project delete --force` would walk the
+            # repo's every directory. Same refusal for a store containing the
+            # checkout's root markers — it is not crib-owned content.
+            if store_dir.resolve() == root.resolve():
+                raise CribUserError(
+                    f"store {store_decl!r} resolves to the repo root — point it "
+                    "at a dedicated directory, e.g. `store: .crib-store`"
+                )
+            if store_dir.is_dir() and (store_dir / ".git").exists():
+                raise CribUserError(
+                    f"{store_dir} contains a checkout of its own (has .git) — "
+                    "it cannot be a crib store"
+                )
+            pp = self.project_paths(name)
+            if pp.in_repo:
+                if pp.store_root == store_dir:
+                    return {
+                        "project": name,
+                        "created": False,
+                        "residency": "repo",
+                        "store": str(store_dir),
+                        "store_root": pp.store_token,
+                        "crib_created": False,
+                        "message": f"{name} already lives in {store_dir}",
+                    }
+                raise CribUserError(
+                    f"{name} is already adopted into {pp.store_root} — `crib "
+                    f"project release {name}` first, then create here"
+                )
+            # Non-empty anywhere is a refusal, never a merge: notes already in
+            # the repo store → this repo was written for another purpose; notes
+            # already in the global store of the same name → ADOPT moves them.
+            # Empty pillar dirs are fine (a pre-created skeleton, or the empty
+            # tree `project use` mkdirs) — only CONTENT collides.
+            for dest in (
+                *(store_dir / seg for seg in PILLAR_SEGMENTS),
+                *(pp.pillar_dir(seg) for seg in PILLAR_SEGMENTS),
+            ):
+                if dest.is_dir() and any(dest.rglob("*.md")):
+                    hint = (
+                        f"\n(the global store of {name!r} already holds notes — "
+                        f"run `crib project adopt` to move them into the repo)"
+                        if dest.is_relative_to(self.paths.projects_dir)
+                        else ""
+                    )
+                    raise CribUserError(
+                        f"{dest} already holds notes — refusing to merge two "
+                        "note trees." + hint
+                    )
+            # ALL refusals passed — only now is anything written. The `.crib`
+            # comes last of the checks but first of the writes, so a refused
+            # create never leaves a poisoned link in a foreign repo.
+            if crib_created is False and (
+                link is None or link.root is None or link.store is None
+            ):
+                (root / ".crib").write_text(
+                    "# Created by `crib project create` — ties this repo to a "
+                    f"crib project with its store in-repo.\nproject: {name}\n"
+                    f"store: {store}\n"
+                )
+                link2 = CribLink.find(root)
+                if link2 is None or link2.root is None:  # pragma: no cover
+                    raise CribUserError(f"created .crib at {root} failed to parse")
+                link, crib_created = link2, True
+                store_dir = link.store_dir
+                if store_dir is None:  # pragma: no cover — validated above
+                    raise CribUserError("store: failed to resolve")
+            store_dir.mkdir(parents=True, exist_ok=True)
+            _skeleton(store_dir)
+            gi = store_dir / ".gitignore"
+            if not gi.exists():  # never overwrite a repo's own ignore file
+                gi.write_text(self._STORE_GITIGNORE)
+            if self._watcher is not None:  # a mid-session birth stays live-watched
+                self._watcher.add_store(name, store_dir)
+            for seg in PILLAR_SEGMENTS:  # the (now-empty) global pillar dirs
+                with contextlib.suppress(OSError):
+                    pp.pillar_dir(seg).rmdir()
+            pcfg = ProjectConfig.load(pp.config_file, name)
+            pcfg.store_root = portable_path(store_dir, self.config.locations)
+            self._stamp_manifest(pcfg)
+            pcfg.save(pp.config_file)
+            self.project_paths.invalidate(name)
+            return {
+                "project": name,
+                "created": True,
+                "residency": "repo",
+                "store": str(store_dir),
+                "store_root": pcfg.store_root,
+                "crib_created": crib_created,
+                "message": (
+                    f"{name} born in-repo at {store_dir} — its pillar stores "
+                    "travel with this repo (commit them); the derived index "
+                    "tiers stay machine-local"
+                ),
+            }
+        # Global birth: an explicit name is the point of an explicit create.
+        if not project:
+            raise CribUserError(
+                "project_create: pass project=<name> for a global project "
+                "(residency is declared with store=<repo-relative path>)"
+            )
+        name = check_project_name(project)
+        if self.paths.project_dir(name).exists():
+            return {
+                "project": name,
+                "created": False,
+                "residency": "global",
+                "message": f"{name} already exists (implicit birth on first "
+                "write, or a previous create) — nothing changed",
+            }
+        pdir = self.paths.project_dir(name)
+        pdir.mkdir(parents=True, exist_ok=True)
+        _skeleton(pdir)
+        pcfg = ProjectConfig.load(pdir / ".cribproject", name)
+        self._stamp_manifest(pcfg)
+        pcfg.save(pdir / ".cribproject")
+        return {
+            "project": name,
+            "created": True,
+            "residency": "global",
+            "message": (
+                f"{name} created with an empty pillar skeleton + birth manifest"
+            ),
+        }
+
+    def _pillar_note_count(self, pp: ProjectPaths) -> int:
+        """*.md count across every pillar of a project (delete/rename reports)."""
+        from .watch import PILLAR_SEGMENTS
+
+        return sum(
+            sum(1 for _ in pp.pillar_dir(seg).rglob("*.md"))
+            if pp.pillar_dir(seg).is_dir()
+            else 0
+            for seg in PILLAR_SEGMENTS
+        )
+
+    def _drop_index_state(
+        self, proj: str, *, drop_sources: bool = True, drop_bindings: bool = True
+    ) -> tuple[int, list[str]]:
+        """Delete/rename shared cleanup: drop EVERY chunk of `proj` (one
+        project-keyed pass over all pillars + `sources/` docs), the derived
+        retrieval caches, the code resident cache/epoch, and any queued
+        describes. FLAGS (rename keeps what travels with the tree):
+        - `drop_sources` — the in-situ doc registry (doc-sources.json). DELETE
+          drops it (the registry names absolute repo paths; the namespace is
+          gone). RENAME must KEEP it (the file moves with the project tree;
+          its entries key on repo paths, not the project name) — wiping it
+          silently lost every `sources/` doc in the first rename pass.
+        - `drop_bindings` — mirror bindings. DELETE drops them. RENAME must
+          REBIND them (MemoryBindings.rebind) — dropping unbound the harness
+          mirror for good.
+
+        Returns (chunks removed, mirror roots dropped/rebound). The
+        symbol_index is NOT touched here — it travels with the project tree
+        (delete removes the tree; rename moves it)."""
+        chunks = list(self.store.get_meta({"project": proj}))
+        if chunks:
+            self.store.delete(chunks)
+        self.index.invalidate_caches(proj)
+        if drop_sources:
+            reg = self._source_roots(proj)
+            for prefix in list(reg.all()):
+                reg.remove(prefix)
+        mirrors_dropped = (
+            self.memory_bindings.drop_project(proj) if drop_bindings else []
+        )
+        self.code.cache.pop(proj, None)
+        self._bump_code_epoch(proj)
+        if self._describe_q is not None:
+            self._describe_q.drop_project(proj)
+        return len(chunks), mirrors_dropped
+
+    async def project_delete(
+        self,
+        project: str | None = None,
+        cwd: Path | None = None,
+        force: bool = False,
+    ) -> dict[str, Any]:
+        """Fenced removal of a project namespace: its chunks, derived caches,
+        code index state, mirror bindings — and the machine-local tree itself,
+        MOVED to `.trash/` (one-level undo, the version ring's spirit) rather
+        than rm -rf'd.
+
+        THE INVARIANT (user-set 2026-10-31): delete NEVER removes anything
+        from a user repo. For an in-repo project, committed notes, the store's
+        `.versions` ring, the store `.gitignore` and the repo's `.crib` all
+        STAY — crib removes only its own state (index entries, caches, the
+        machine-local tree). `force` is accepted for surface compatibility
+        and gates nothing.
+
+        FENCES, all loud:
+        - `project=` is required — deletion never resolves a session default
+          (an accidental `delete` with no selector must not guess).
+        - the default project is refused: a shared bucket has no owner to
+          consent (use `project_forget` for its index only).
+        - a running code sweep or background reconcile is refused (cancel/wait
+          first — racing one deletes from under it).
+
+        Both version rings survive: the global ring (keyed by note id) stays,
+        and an in-repo ring lives in a store delete never touches. To
+        actually remove notes that live in a repo, `project release` them
+        first (then delete — or edit the repo yourself)."""
+        if not project:
+            raise CribUserError(
+                "project_delete: pass project=<name> — deletion never resolves "
+                "the session default"
+            )
+        proj = check_project_name(project)
+        del cwd  # deliberately unused: the selector above is the whole answer
+        plan = self._delete_plan(proj, force)
+        if not plan["exists_anywhere"]:
+            return {
+                "project": proj,
+                "deleted": False,
+                "message": "nothing to delete — no such project on this machine",
+            }
+        ring_ids = plan["ring_ids"]
+        trash: str | None = None
+        # THE INVARIANT: a user repo is never written-removed by delete. For
+        # an in-repo project the store (committed notes, their .versions ring,
+        # crib's .gitignore, even the .crib itself) stays exactly as it is —
+        # delete removes crib's OWN state only (see _delete_plan).
+        # The destructive phase holds the project's code lock: a watcher save
+        # writing `projects/<name>/symbol_index` mid-move would resurrect a
+        # phantom tree under our feet.
+        with self.code.lock(proj):
+            # Watchers forget FIRST: a delete/move event racing an unschedule
+            # is harmless (decode→index_file no-ops), but a kept root re-creates
+            # the namespace on the next save. (This stops crib WATCHING the
+            # repo — it removes nothing from it.)
+            if self._code_watcher is not None:
+                self._code_watcher.forget_project(proj)
+            if (
+                plan["in_repo"]
+                and plan["store_available"]
+                and self._watcher is not None
+            ):
+                self._watcher.forget_store(plan["store_root"])
+            # The global tree (machine-local stub + derived caches) travels to
+            # the trash — it is shared-git/data-root state, undo for free.
+            # The user repo's store is deliberately NOT touched here.
+            if plan["tree_exists"]:
+                tdir = self.paths.trash_dir
+                tdir.mkdir(parents=True, exist_ok=True)
+                stamp = time.strftime("%Y%m%d-%H%M%S")
+                # proj is a VALIDATED name (check_project_name at the gate:
+                # one [A-Za-z0-9._-] segment, never a path), so this join
+                # cannot traverse — the rule is syntactic, not semantic here.
+                # pi-lens-ignore: python-path-traversal
+                dst = tdir / f"{proj}-{stamp}"
+                # create/delete/create/delete within one second collides on
+                # the timestamp — suffix on and keep going, never refuse
+                dst = (
+                    tdir / f"{proj}-{stamp}-{os.urandom(2).hex()}"
+                    if dst.exists()
+                    else dst
+                )
+                self.paths.project_dir(proj).rename(dst)
+                trash = str(dst)
+        chunks_removed, mirrors_dropped = self._drop_index_state(proj)
+        # a second pass is deliberately cheap: chunks a racing sweep re-added
+        # mid-delete (hash-gated) go with it too
+        self._drop_index_state(proj)
+        self.project_paths.invalidate(proj)
+        from .session import retarget_sessions
+
+        retarget_sessions(proj, None)
+        # the live mirror holds its start-time _watched snapshot — a harness
+        # edit would otherwise re-sync into the deleted namespace
+        if self._mirror is not None:
+            self._mirror.refresh()
+        return {
+            "project": proj,
+            "deleted": True,
+            "notes_removed": plan["notes_count"],
+            "chunks_removed": chunks_removed,
+            # BOTH rings survive now: the global ring stays, and an in-repo
+            # ring lives in a store delete never touches
+            "ring_entries_kept": len(ring_ids),
+            "mirror_bindings_dropped": len(mirrors_dropped),
+            "trash": trash,
+            # stated for the surface: the invariant means this is ALWAYS false
+            "store_deleted": False,
+            "store": plan["store_token"],
+            "message": (
+                f"{proj} deleted ({plan['notes_count']} crib-index entries, "
+                f"{chunks_removed} chunks)"
+                + (f"; machine-local tree kept at {trash}" if trash else "")
+                + (
+                    "; notes live in a repo and were NOT touched: they remain "
+                    f"at {plan['store_token']} — to also remove them there, "
+                    "`crib project release` first (or edit the repo yourself)"
+                    if plan["in_repo"]
+                    else ""
+                )
+                + (
+                    "; its repo .crib still names it — a write from that "
+                    "checkout will recreate the namespace (run `crib project "
+                    "release <name>` first to move notes back, or drop the "
+                    ".crib `store:` line)"
+                    if plan["in_repo"]
+                    else ""
+                )
+            ),
+        }
+
+    def _delete_plan(self, proj: str, force: bool) -> dict[str, Any]:
+        """The fences + preview for `project_delete` — the one place the fences
+        are written, used both by the verb and by the MCP surface's pre-confirm
+        check (the client must be told what it is agreeing to BEFORE the
+        elicitation, and a fence refusal must not cost a round-trip the user
+        confirms into).
+
+        THE INVARIANT (user-set 2026-10-31): delete NEVER removes anything
+        from a user repo. Whatever a store's location, only crib-owned state
+        is removed — index entries (Chroma), local derived caches, the global
+        tree to `.trash/`, mirror bindings, session pointers. The user's repo
+        (committed notes, `.crib`, store dir) is untouched, so `force` no
+        longer gates anything here either; it is accepted for surface
+        compatibility and ignored."""
+        from .watch import PILLAR_SEGMENTS
+
+        if proj is None:
+            raise CribUserError(
+                "project_delete: pass project=<name> — deletion never resolves "
+                "the session default"
+            )
+        if proj == self.config.default_project:
+            raise CribUserError(
+                f"refusing to delete the default project {proj!r} — the shared "
+                "bucket has no owner to consent; use `project_forget` to clear "
+                "only its index"
+            )
+        if proj in self.code.sweeps or proj in self.code_jobs:
+            raise CribUserError(
+                f"a code-index sweep is running for {proj!r} — project_cancel "
+                "or project_wait it first"
+            )
+        if self._reconcile_remaining is not None:
+            # the startup/background reconcile walks every project; a delete
+            # racing its per-project reindex leaves the sweep re-adding chunks
+            # (and, mid-tree, reading dirs that are moving away)
+            raise CribUserError(
+                "a background reconcile sweep is running — wait for it to "
+                "finish (see `crib status`) and retry"
+            )
+        pp = self.project_paths(proj)
+        gdir = self.paths.project_dir(proj)
+        chunks = list(self.store.get_meta({"project": proj}))
+        mirrors = [b for b in self.memory_bindings.all() if b.get("project") == proj]
+        tree_exists = gdir.exists()
+        return {
+            "exists_anywhere": tree_exists or pp.in_repo or chunks or mirrors,
+            "tree_exists": tree_exists,
+            "notes_count": self._pillar_note_count(pp)
+            if tree_exists or (pp.in_repo and pp.available)
+            else 0,
+            "chunks_count": len(chunks),
+            "mirrors_count": len(mirrors),
+            "ring_ids": [
+                nid
+                for seg in PILLAR_SEGMENTS
+                if (srcd := pp.pillar_dir(seg)).is_dir()
+                for nid in self._note_ring_ids(proj, srcd)
+            ],
+            "in_repo": pp.in_repo,
+            "store_available": pp.in_repo and pp.available,
+            # the invariant, stated in the data: crib never removes repo content
+            "will_remove_store": False,
+            "store_root": pp.store_root,
+            "store_token": pp.store_token,
+        }
+
+    async def project_rename(
+        self,
+        project: str | None = None,
+        to: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
+        """Rename a project namespace: `projects/<old>` → `projects/<new>`, with
+        the identity churn made explicit rather than discovered.
+
+        What travels: the pillar tree (incl. claude-memory mirrors), the machine
+        stub, the symbol_index (its entries key on repo paths, not the project
+        name), and the global version ring — note ids live in frontmatter and
+        survive untouched. What CHURNS: every chunk id (`chunk_id` hashes the
+        project name), so the verb deletes the old chunks and reindexes under
+        the new name — a full re-embed of the project, the known cost of a rare
+        verb. Note files lacking `id:` (their identity was the derived fallback,
+        which embeds the project name) are STAMPED with the pre-rename derived
+        id first, so their ring history and cross-references stay resolvable.
+
+        Fences: explicit `project=` (never the session default), a target name
+        that doesn't exist, the default project pinned (like delete), and an
+        in-repo store that isn't on this machine. Other projects' `.crib`
+        `refs:` naming the old name are REPORTED, not edited (they live in
+        foreign repos — fix each by hand or re-run its setup)."""
+        from .watch import PILLAR_SEGMENTS
+
+        if not project:
+            raise CribUserError(
+                "project_rename: pass project=<name> — renaming never resolves "
+                "the session default"
+            )
+        if not to:
+            raise CribUserError("project_rename: pass to=<new name>")
+        old = check_project_name(project)
+        del cwd  # deliberately unused, same rule as delete
+        new = check_project_name(to)
+        if old == new:
+            raise CribUserError(f"rename to the same name ({old!r}) does nothing")
+        if old == self.config.default_project or new == self.config.default_project:
+            raise CribUserError(
+                "the default project name is pinned — rename another project, "
+                "or change [config] default_project first"
+            )
+        if self.paths.project_dir(new).exists():
+            raise CribUserError(
+                f"a project named {new!r} already exists — refusing to merge "
+                "two namespaces (delete the empty one first)"
+            )
+        if old in self.code.sweeps or old in self.code_jobs:
+            raise CribUserError(
+                f"a code-index sweep is running for {old!r} — project_cancel "
+                "or project_wait it first"
+            )
+        if self._reconcile_remaining is not None:
+            raise CribUserError(
+                "a background reconcile sweep is running — wait for it to "
+                "finish (see `crib status`) and retry"
+            )
+        pp = self.project_paths(old)
+        gdir = self.paths.project_dir(old)
+        if not gdir.exists() and not pp.in_repo:
+            raise CribUserError(f"no such project: {old!r}")
+        if pp.in_repo and not pp.available:
+            raise CribUserError(
+                f"{old} keeps notes in a repo at {pp.store_token}, which is not "
+                "on this machine — clone it (or `project release`) first"
+            )
+        # Stamp id-less notes with their CURRENT derived id before the move: the
+        # derivation embeds the project name, so post-rename they would silently
+        # re-derive to different ids — their ring history unreachable. Falsy
+        # `id:` values (empty/null in a hand-edited header) are OVERWRITTEN, not
+        # kept; a derivation that collides with an id another file already owns
+        # is SKIPPED and reported (stamping it would forge a duplicate id — the
+        # honest outcome is an un-stamped note whose ring entry orphans, same
+        # as pre-rename).
+        # One walk: real frontmatter ids own their identity (seen_ids); idless
+        # notes are candidates for stamping. (_note_ring_ids DERIVES fallbacks
+        # for idless files — seeding seen_ids with those would make every
+        # stamp attempt look like a collision.)
+        seen_ids: set[str] = set()
+        idless: list[tuple[Path, str]] = []  # (file, pillar-relative relpath)
+        for seg in PILLAR_SEGMENTS:
+            root = pp.pillar_dir(seg)
+            if not root.is_dir():
+                continue
+            for p in sorted(root.rglob("*.md")):
+                try:
+                    raw = p.read_text()
+                except OSError:
+                    continue
+                if nid := notes.scan_id(raw):
+                    # `id: null`/`~` scan as the literal strings "null"/"~" —
+                    # the canonical id (fm.get("id") or derived) treats those
+                    # as ABSENT, so they are stamp candidates, not owners
+                    if nid.lower() in ("null", "~", "none"):
+                        idless.append((p, str(p.relative_to(root))))
+                    else:
+                        seen_ids.add(nid)
+                else:
+                    idless.append((p, str(p.relative_to(root))))
+        stamped = 0
+        stamp_collisions = 0
+        for p, rel in sorted(idless):
+            try:
+                note = notes.load(p)
+            except NoteParseError:
+                continue
+            derived = derived_ulid(old, rel)
+            if derived in seen_ids:
+                stamp_collisions += 1
+                continue
+            seen_ids.add(derived)
+            note.frontmatter["id"] = derived  # overwrites a falsy `id:` too
+            notes.save_atomic(note)  # identity stamp, not a revision
+            stamped += 1
+        ring_ids = [
+            nid
+            for seg in PILLAR_SEGMENTS
+            if (srcd := pp.pillar_dir(seg)).is_dir()
+            for nid in self._note_ring_ids(old, srcd)
+        ]
+        # Drop what churns; KEEP what travels. The doc-sources registry moves
+        # with the tree (its entries key on repo paths) — wiping it would
+        # silently lose every `sources/` doc; mirror bindings are REBOUND
+        # below, not dropped (dropping unbound the harness mirror for good).
+        chunks_removed, _ = self._drop_index_state(
+            old, drop_sources=False, drop_bindings=False
+        )
+        mirror_bound = self.memory_bindings.rebind(old, new)
+        # The destructive phase holds the project's code lock (a watcher save
+        # writing symbol_index mid-move would resurrect a phantom tree).
+        with self.code.lock(old):
+            # Watchers forget FIRST (a kept root re-creates the namespace).
+            if self._code_watcher is not None:
+                self._code_watcher.forget_project(old)
+            if self._watcher is not None and pp.store_root is not None:
+                self._watcher.forget_store(pp.store_root)
+            if not gdir.exists():  # pragma: no cover — in_repo requires the stub
+                raise CribUserError(
+                    f"no project tree for {old!r} on this machine — cannot rename"
+                )
+            gdir.rename(self.paths.project_dir(new))
+        # a racing sweep's re-added chunks go too (cheap post-move pass)
+        self._drop_index_state(old, drop_sources=False, drop_bindings=False)
+        self.project_paths.invalidate(old)
+        self.project_paths.invalidate(new)
+        from .session import retarget_sessions
+
+        retarget_sessions(old, new)
+        # the live mirror holds its start-time _watched snapshot — a harness
+        # edit would otherwise re-sync into the OLD name after a rename
+        if self._mirror is not None:
+            self._mirror.refresh()
+        pcfg = ProjectConfig.load(self.paths.project_dir(new) / ".cribproject", new)
+        pcfg.name = new
+        pcfg.save(self.paths.project_dir(new) / ".cribproject")
+        # NO manifest stamp here: a rename never fakes a birth record — an
+        # implicitly-born project stays implicitly-born under its new name.
+        # THIS project's own repo `.crib` still says `project: <old>` — every
+        # cwd-resolved read in that repo would resolve to the (now empty)
+        # old namespace, and implicit creation would resurrect it. Rewrite
+        # that one line — it is THIS project's repo, not a foreign one.
+        crib_needs_fix: str | None = None
+        crib_rewritten: str | None = None
+        own_root = CribLink.find(pp.store_root) if pp.store_root is not None else None
+        if own_root is None or own_root.root is None:
+            from .codeindex import SymbolIndex
+
+            si_root = SymbolIndex(self.paths.project_dir(new)).source_root()
+            own_root = CribLink.find(si_root) if si_root is not None else None
+        if (
+            own_root is not None
+            and own_root.root is not None
+            and own_root.project == old
+        ):
+            crib_file = own_root.root / ".crib"
+            text = crib_file.read_text()
+            lines, rewritten = [], False
+            for ln in text.splitlines(keepends=True):
+                if ln.strip() == f"project: {old}":
+                    lines.append(f"project: {new}\n")
+                    rewritten = True
+                else:
+                    lines.append(ln)
+            if rewritten:
+                crib_file.write_text("".join(lines))
+                crib_rewritten = str(crib_file)
+            else:
+                # a hand-spelled variant we won't guess at — report it
+                crib_needs_fix = str(crib_file)
+        # Re-point the live watchers under the new name — INCLUDING the in-repo
+        # store's pillar tree (a rename is exactly when it would silently go
+        # unwatched until the next daemon start otherwise).
+        if self._code_watcher is not None:
+            from .codeindex import SymbolIndex
+
+            if (
+                root := SymbolIndex(self.paths.project_dir(new)).source_root()
+            ) is not None and root.is_dir():
+                self._code_watcher.watch_root(new, root)
+        if self._watcher is not None and pp.store_root is not None:
+            self._watcher.add_store(new, pp.store_root)
+        rec = await self.reindex(project=new)
+        # In-situ `sources/…` docs are not part of the pillar walk reindex ran;
+        # their registry moved intact, so this re-registers/indexes under the
+        # new name (best-effort: a repo gone from disk just has no docs).
+        insitu_docs = 0
+        try:
+            insitu_docs = int(
+                (await self.index_docs_insitu(project=new)).get("changed", 0)
+            )
+        except Exception as e:  # noqa: BLE001 — no repo root / no docs
+            print(
+                f"[crib] rename: in-situ doc reindex skipped for {new}: {e}",
+                file=sys.stderr,
+            )
+        refs_affected = [
+            {
+                "referrer": p,
+                "target": r.get("project"),
+                "root": str(r["root"]) if r.get("root") else None,
+            }
+            for p in self.projects()
+            if p != new
+            for r in self._project_refs(p)
+            if r.get("project") == old
+        ]
+        return {
+            "project": new,
+            "from": old,
+            "renamed": True,
+            "id_less_notes_stamped": stamped,
+            "id_less_stamp_collisions": stamp_collisions,
+            "chunks_rebuilt": chunks_removed,
+            "ring_entries_carried": len(ring_ids),
+            "mirror_bindings_moved": mirror_bound,
+            "insitu_docs_reindexed": insitu_docs,
+            "crib_rewritten": crib_rewritten,
+            "crib_needs_fix": crib_needs_fix,
+            "refs_affected": refs_affected,
+            "reindex": rec,
+            "message": (
+                f"{old} → {new}: {stamped} id-less note(s) stamped, "
+                f"{chunks_removed} chunk(s) re-embedded, "
+                f"{len(ring_ids)} ring entry/entries carried"
+                + (f"; {insitu_docs} in-situ doc(s) re-indexed" if insitu_docs else "")
+                + (
+                    f"; own .crib rewritten ({crib_rewritten})"
+                    if crib_rewritten
+                    else ""
+                )
+                + (
+                    f"; .crib at {crib_needs_fix} still says project: {old} "
+                    "(hand-edit line)"
+                    if crib_needs_fix
+                    else ""
+                )
+                + (
+                    "; cross-project refs name the old name: "
+                    + ", ".join(sorted({e["referrer"] for e in refs_affected}))
+                    + " — update their repos' .crib"
+                    if refs_affected
+                    else ""
+                )
+            ),
         }
 
     # ── layout migration: facet subdirs → sibling pillar stores ────────────────
@@ -2721,7 +3502,6 @@ class Crib:
         """Clear the project's code index (the symbol_index). KEEPS attached learnings,
         notes and `.crib` by default — learnings are durable human source-of-truth;
         pass with_learnings=True to drop those too."""
-        import shutil
 
         from .codeindex import SymbolIndex
 
@@ -2771,7 +3551,11 @@ class Crib:
     ) -> list[dict[str, Any]]:
         """A symbol's callers/callees/references from the persisted symbol_index."""
         return self.query.xref(
-            self.resolve_project(project, cwd), symbol, path=path, scope=scope, lang=lang
+            self.resolve_project(project, cwd),
+            symbol,
+            path=path,
+            scope=scope,
+            lang=lang,
         )
 
     def code_dossier(
@@ -2805,7 +3589,12 @@ class Crib:
     ) -> dict[str, Any]:
         """Attach a durable learning to a code symbol (append a dated entry)."""
         return await self.learnings.append(
-            self.resolve_project(project, cwd), symbol, text, path=path, scope=scope, lang=lang
+            self.resolve_project(project, cwd),
+            symbol,
+            text,
+            path=path,
+            scope=scope,
+            lang=lang,
         )
 
     async def learning_edit(
@@ -2820,8 +3609,12 @@ class Crib:
     ) -> dict[str, Any]:
         """Rewrite a symbol's learning body wholesale."""
         return await self.learnings.edit(
-            self.resolve_project(project, cwd), symbol, new_content,
-            path=path, scope=scope, lang=lang,
+            self.resolve_project(project, cwd),
+            symbol,
+            new_content,
+            path=path,
+            scope=scope,
+            lang=lang,
         )
 
     async def learning_forget(
@@ -2835,7 +3628,11 @@ class Crib:
     ) -> dict[str, Any]:
         """Remove a symbol's learning (recoverable; works on orphans)."""
         return await self.learnings.forget(
-            self.resolve_project(project, cwd), symbol, path=path, scope=scope, lang=lang
+            self.resolve_project(project, cwd),
+            symbol,
+            path=path,
+            scope=scope,
+            lang=lang,
         )
 
     async def learning_reaffirm(
@@ -2849,7 +3646,11 @@ class Crib:
     ) -> dict[str, Any]:
         """Clear a learning's stale flag without rewriting it."""
         return await self.learnings.reaffirm(
-            self.resolve_project(project, cwd), symbol, path=path, scope=scope, lang=lang
+            self.resolve_project(project, cwd),
+            symbol,
+            path=path,
+            scope=scope,
+            lang=lang,
         )
 
     def learning_report(
@@ -2884,7 +3685,11 @@ class Crib:
     ) -> dict[str, Any]:
         """Read a symbol's learning note (frontmatter + body)."""
         return self.learnings.read(
-            self.resolve_project(project, cwd), symbol, path=path, scope=scope, lang=lang
+            self.resolve_project(project, cwd),
+            symbol,
+            path=path,
+            scope=scope,
+            lang=lang,
         )
 
     # ── Design decisions & plan items: delegate to Designs (crib/designs.py) ───

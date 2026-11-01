@@ -94,6 +94,31 @@ class MemoryBindings:
         root_s = str(resolve_path(root))
         items = [b for b in self.all() if b.get("root") != root_s]
         items.append({"root": root_s, "project": project})
+        self._write(items)
+
+    def drop_project(self, project: str) -> list[str]:
+        """Remove every binding naming `project` — `project_delete` cleanup: the
+        mirror would otherwise keep watching harness dirs for a store that can
+        no longer hold it. Returns the roots dropped."""
+        items = self.all()
+        kept = [b for b in items if b.get("project") != project]
+        self._write(kept)
+        return [str(b["root"]) for b in items if b.get("project") == project]
+
+    def rebind(self, old: str, new: str) -> int:
+        """Repoint every binding naming `old` at `new` — `project_rename` cleanup.
+        Returns how many bindings moved."""
+        items = self.all()
+        n = 0
+        for b in items:
+            if b.get("project") == old:
+                b["project"] = new
+                n += 1
+        if n:
+            self._write(items)
+        return n
+
+    def _write(self, items: list[dict[str, str]]) -> None:
         self._path.parent.mkdir(parents=True, exist_ok=True)
         tmp = self._path.with_suffix(".tmp")
         tmp.write_text(json.dumps(items, indent=2))
