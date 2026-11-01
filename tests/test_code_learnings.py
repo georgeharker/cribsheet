@@ -12,11 +12,11 @@ from crib.app import Crib
 from crib.codeindex import SymbolIndex
 from crib.config import Config
 from crib.paths import Paths
+from crib.store import InMemoryStore
 from pathlib import Path
 
 _CRIB = Path(__file__).resolve().parent.parent / "crib"
 _ROOT = Path(__file__).resolve().parent.parent
-from crib.store import InMemoryStore
 
 
 @pytest.fixture()
@@ -31,14 +31,27 @@ def run(coro):
     return asyncio.run(coro)
 
 
-def _seed_symbol(crib, project, fqname="pkg.Mod.foo", content_hash="aaaa1111",
-                 file="pkg/mod.py"):
+def _seed_symbol(
+    crib, project, fqname="pkg.Mod.foo", content_hash="aaaa1111", file="pkg/mod.py"
+):
     """Persist one synthetic symbol_index entry so the learning verbs can resolve it."""
-    SymbolIndex(crib.paths.project_dir(project)).write({
-        "fqname": fqname, "name": fqname.split(".")[-1], "kind": "function",
-        "lang": "python", "content_hash": content_hash, "file": file, "line": 10,
-        "signature": "def foo():", "description": "does foo",
-        "container": [], "calls": [], "called_by": [], "name_terms": ["foo"]})
+    SymbolIndex(crib.paths.project_dir(project)).write(
+        {
+            "fqname": fqname,
+            "name": fqname.split(".")[-1],
+            "kind": "function",
+            "lang": "python",
+            "content_hash": content_hash,
+            "file": file,
+            "line": 10,
+            "signature": "def foo():",
+            "description": "does foo",
+            "container": [],
+            "calls": [],
+            "called_by": [],
+            "name_terms": ["foo"],
+        }
+    )
 
 
 def test_append_creates_then_appends_dated_entries(crib):
@@ -51,7 +64,7 @@ def test_append_creates_then_appends_dated_entries(crib):
     # rather than one with a was-this-hashed branch.
     assert a["created"] and a["relpath"] == "pkg-mod.py-foo-f04b29ec.md"
     b = run(crib.learning_add("pkg.Mod.foo", "second insight", project="p"))
-    assert not b["created"]                                   # same running note
+    assert not b["created"]  # same running note
     body = crib.learning_read("pkg.Mod.foo", project="p")["body"]
     assert "first insight" in body and "second insight" in body
 
@@ -61,9 +74,9 @@ def test_unknown_and_ambiguous_symbols_raise(crib):
     _seed_symbol(crib, "p", fqname="b.foo", file="b/mod.py")
     with pytest.raises(ValueError, match="unknown symbol"):
         run(crib.learning_add("nope.nope", "x", project="p"))
-    with pytest.raises(ValueError, match="ambiguous"):          # bare name, two hits
+    with pytest.raises(ValueError, match="ambiguous"):  # bare name, two hits
         run(crib.learning_add("foo", "x", project="p"))
-    run(crib.learning_add("a.foo", "exact wins", project="p"))   # exact fqn is fine
+    run(crib.learning_add("a.foo", "exact wins", project="p"))  # exact fqn is fine
 
 
 def test_forget_removes_learning(crib):
@@ -96,29 +109,43 @@ def test_join_surfaces_learning_and_flags_staleness(crib):
 def test_reaffirm_clears_stale_without_touching_body(crib):
     _seed_symbol(crib, "p", content_hash="aaaa1111")
     run(crib.learning_add("pkg.Mod.foo", "still true", project="p"))
-    _seed_symbol(crib, "p", content_hash="bbbb2222")          # body moved on
+    _seed_symbol(crib, "p", content_hash="bbbb2222")  # body moved on
     assert crib.code_xref("pkg.Mod.foo", project="p")[0]["learning"]["stale"] is True
 
     out = run(crib.learning_reaffirm("pkg.Mod.foo", project="p"))
     assert out["reaffirmed"]
     hit = crib.code_xref("pkg.Mod.foo", project="p")[0]
-    assert hit["learning"]["stale"] is False                  # cleared
-    assert hit["learning"]["body"].endswith("still true")     # body untouched
+    assert hit["learning"]["stale"] is False  # cleared
+    assert hit["learning"]["body"].endswith("still true")  # body untouched
 
 
 def test_code_graph_marks_nodes_with_learnings(crib):
     # foo → bar (callee); attach a learning to bar, expect the glyph flag on that node
-    SymbolIndex(crib.paths.project_dir("p")).write({
-        "fqname": "pkg.Mod.foo", "name": "foo", "kind": "function", "lang": "python",
-        "module": "pkg.Mod", "parent": "", "content_hash": "h1", "file": "pkg/mod.py",
-        "line": 1, "signature": "def foo():", "description": "", "container": [],
-        "calls": ["bar [pkg/mod.py]"], "called_by": [], "name_terms": ["foo"]})
+    SymbolIndex(crib.paths.project_dir("p")).write(
+        {
+            "fqname": "pkg.Mod.foo",
+            "name": "foo",
+            "kind": "function",
+            "lang": "python",
+            "module": "pkg.Mod",
+            "parent": "",
+            "content_hash": "h1",
+            "file": "pkg/mod.py",
+            "line": 1,
+            "signature": "def foo():",
+            "description": "",
+            "container": [],
+            "calls": ["bar [pkg/mod.py]"],
+            "called_by": [],
+            "name_terms": ["foo"],
+        }
+    )
     _seed_symbol(crib, "p", fqname="pkg.Mod.bar")
     run(crib.learning_add("pkg.Mod.bar", "gotcha", project="p"))
     tree = crib.code_graph("pkg.Mod.foo", project="p")
-    assert not tree.get("has_learning")                       # foo has none
+    assert not tree.get("has_learning")  # foo has none
     assert tree["children"][0]["symbol_ref"].endswith("#bar")
-    assert tree["children"][0]["has_learning"] is True        # bar is glyphed
+    assert tree["children"][0]["has_learning"] is True  # bar is glyphed
 
 
 def test_learnings_report_and_orphan_lifecycle(crib):
@@ -128,11 +155,13 @@ def test_learnings_report_and_orphan_lifecycle(crib):
 
     # the symbol is renamed away → the learning orphans; report flags it
     import shutil
+
     shutil.rmtree(crib.paths.project_dir("p") / "symbol_index")
-    _seed_symbol(crib, "p", fqname="a.bar", content_hash="h")     # renamed foo→bar
+    _seed_symbol(crib, "p", fqname="a.bar", content_hash="h")  # renamed foo→bar
     rows = crib.learning_report(project="p", orphans_only=True)
-    assert rows and rows[0]["symbol"] == "pkg/mod.py#foo" \
-        and rows[0]["status"] == "orphan"
+    assert (
+        rows and rows[0]["symbol"] == "pkg/mod.py#foo" and rows[0]["status"] == "orphan"
+    )
 
     # rehome suggestions surface the rename target; then confirm the move
     sugg = run(crib.learning_rehome("a.foo", project="p"))
@@ -140,7 +169,7 @@ def test_learnings_report_and_orphan_lifecycle(crib):
     moved = run(crib.learning_rehome("a.foo", "a.bar", project="p"))
     assert moved["new"] == "pkg/mod.py#bar"
     assert crib.learning_read("a.bar", project="p")["found"] is True
-    assert crib.learning_report(project="p", orphans_only=True) == []   # resolved
+    assert crib.learning_report(project="p", orphans_only=True) == []  # resolved
 
 
 def test_rehome_refuses_to_overwrite_an_existing_learning(crib):
@@ -159,7 +188,7 @@ def test_rehome_refuses_to_overwrite_an_existing_learning(crib):
 def test_graph_validates_its_boundaries(crib):
     _seed_symbol(crib, "p", fqname="a.foo", content_hash="h")
     with pytest.raises(ValueError, match="unknown direction"):
-        crib.code_graph("a.foo", direction="calls", project="p")   # meant `callees`
+        crib.code_graph("a.foo", direction="calls", project="p")  # meant `callees`
     with pytest.raises(ValueError, match="depth"):
         crib.code_graph("a.foo", depth=0, project="p")
     with pytest.raises(ValueError, match="depth"):
@@ -171,18 +200,52 @@ def test_graph_validates_its_boundaries(crib):
 
 def test_dossier_annotates_neighbours_with_their_descriptions(crib):
     si = SymbolIndex(crib.paths.project_dir("p"))
-    si.write({"fqname": "m.foo", "name": "foo", "kind": "function", "lang": "python",
-              "module": "m", "parent": "", "content_hash": "h", "file": "m.py", "line": 1,
-              "signature": "def foo():", "description": "does foo", "container": [],
-              "calls": ["bar [m.py]"], "called_by": [], "references": [], "name_terms": ["foo"]})
-    si.write({"fqname": "m.bar", "name": "bar", "kind": "function", "lang": "python",
-              "module": "m", "parent": "", "content_hash": "h", "file": "m.py", "line": 9,
-              "signature": "def bar():", "description": "does the bar thing", "container": [],
-              "calls": [], "called_by": ["foo [m.py]"], "references": [], "name_terms": ["bar"]})
+    si.write(
+        {
+            "fqname": "m.foo",
+            "name": "foo",
+            "kind": "function",
+            "lang": "python",
+            "module": "m",
+            "parent": "",
+            "content_hash": "h",
+            "file": "m.py",
+            "line": 1,
+            "signature": "def foo():",
+            "description": "does foo",
+            "container": [],
+            "calls": ["bar [m.py]"],
+            "called_by": [],
+            "references": [],
+            "name_terms": ["foo"],
+        }
+    )
+    si.write(
+        {
+            "fqname": "m.bar",
+            "name": "bar",
+            "kind": "function",
+            "lang": "python",
+            "module": "m",
+            "parent": "",
+            "content_hash": "h",
+            "file": "m.py",
+            "line": 9,
+            "signature": "def bar():",
+            "description": "does the bar thing",
+            "container": [],
+            "calls": [],
+            "called_by": ["foo [m.py]"],
+            "references": [],
+            "name_terms": ["bar"],
+        }
+    )
     d = crib.code_dossier("m.foo", project="p")
     assert d["symbol_ref"] == "m.py#foo" and d["description"] == "does foo"
     assert d["calls"][0]["symbol"] == "m.py#bar"
-    assert d["calls"][0]["description"] == "does the bar thing"   # neighbour's OWN description
+    assert (
+        d["calls"][0]["description"] == "does the bar thing"
+    )  # neighbour's OWN description
 
 
 def test_code_tools_self_diagnose_unindexed_project(crib):
@@ -194,21 +257,21 @@ def test_code_tools_self_diagnose_unindexed_project(crib):
         crib.code_graph("anything", project="ghost")
     # once populated, the guard passes; an unknown symbol just returns empty
     _seed_symbol(crib, "ghost", fqname="pkg.foo")
-    assert crib.code_xref("pkg.foo", project="ghost")            # found
+    assert crib.code_xref("pkg.foo", project="ghost")  # found
     assert crib.code_xref("nonexistent", project="ghost") == []  # indexed → plain miss
 
 
 def test_ensure_crib_creates_sensible_defaults_and_anchors_in_repo(crib, tmp_path):
     repo = tmp_path / "myrepo"
     (repo / "src").mkdir(parents=True)
-    (repo / ".git").mkdir()                     # marker → anchors here, not the parent
+    (repo / ".git").mkdir()  # marker → anchors here, not the parent
     (repo / "src" / "a.py").write_text("x = 1\n")
     link, created = crib._ensure_crib(repo, None, want_code=True, want_docs=True)
-    assert created and link.root == repo         # never escapes to tmp_path
+    assert created and link.root == repo  # never escapes to tmp_path
     assert link.project == "myrepo"
     text = (repo / ".crib").read_text()
-    assert 'project: myrepo' in text
-    assert '"**/*.py"' in text                    # quoted glob (YAML-safe, not an alias)
+    assert "project: myrepo" in text
+    assert '"**/*.py"' in text  # quoted glob (YAML-safe, not an alias)
     # idempotent: a second call finds the existing .crib, doesn't recreate
     link2, created2 = crib._ensure_crib(repo, None, want_code=True, want_docs=False)
     assert not created2 and link2.project == "myrepo"
@@ -218,22 +281,37 @@ def test_project_forget_clears_index_but_keeps_learnings(crib):
     _seed_symbol(crib, "p", fqname="m.foo")
     run(crib.learning_add("m.foo", "keep me", project="p"))
     assert crib.project_status(project="p")["indexed"]
-    out = crib.project_forget(project="p")        # default: keep learnings
+    out = crib.project_forget(project="p")  # default: keep learnings
     assert out["symbols_removed"] == 1 and out["learnings_removed"] == 0
     assert not crib.project_status(project="p")["indexed"]
     # the learning survived the index wipe (durable human source-of-truth)
-    _seed_symbol(crib, "p", fqname="m.foo")       # re-index the symbol
+    _seed_symbol(crib, "p", fqname="m.foo")  # re-index the symbol
     assert crib.learning_read("m.foo", project="p")["found"]
 
 
 def test_patch_edges_keeps_cross_file_graph_consistent(crib):
     from crib.codeindex import SymbolIndex
+
     store = SymbolIndex(crib.paths.project_dir("p"))
     # target lives in a.py; caller (b.py) already calls it
-    store.write({"fqname": "a.target", "name": "target", "kind": "function",
-                 "file": "a.py", "line": 1, "mtime": 1, "calls": [],
-                 "called_by": ["caller [b.py]"], "references": [], "container": [],
-                 "name_terms": ["target"], "lang": "python", "module": "a", "parent": ""})
+    store.write(
+        {
+            "fqname": "a.target",
+            "name": "target",
+            "kind": "function",
+            "file": "a.py",
+            "line": 1,
+            "mtime": 1,
+            "calls": [],
+            "called_by": ["caller [b.py]"],
+            "references": [],
+            "container": [],
+            "name_terms": ["target"],
+            "lang": "python",
+            "module": "a",
+            "parent": "",
+        }
+    )
     # b.py is reindexed with a NEW second caller — patch must update a.target.called_by
     new_b = [
         {"name": "caller", "file": "b.py", "calls": ["target [a.py]"]},
@@ -241,29 +319,58 @@ def test_patch_edges_keeps_cross_file_graph_consistent(crib):
     ]
     crib.code.patch_edges(store, new_b, "b.py")
     cb = store.by_fqname("a.target")[0]["called_by"]
-    assert cb == ["caller [b.py]", "caller2 [b.py]"]     # both, no dup, no stale
+    assert cb == ["caller [b.py]", "caller2 [b.py]"]  # both, no dup, no stale
 
     # a removed call (caller2 no longer calls target) is stripped on the next reindex
-    crib.code.patch_edges(store, [{"name": "caller", "file": "b.py",
-                                   "calls": ["target [a.py]"]}], "b.py")
+    crib.code.patch_edges(
+        store, [{"name": "caller", "file": "b.py", "calls": ["target [a.py]"]}], "b.py"
+    )
     assert store.by_fqname("a.target")[0]["called_by"] == ["caller [b.py]"]
 
 
 def test_drop_file_removes_symbols_and_edges(crib):
     from crib.codeindex import SymbolIndex
+
     store = SymbolIndex(crib.paths.project_dir("p"))
-    store.write({"fqname": "a.target", "name": "target", "kind": "function",
-                 "file": "a.py", "line": 1, "mtime": 1, "calls": [],
-                 "called_by": ["gone [b.py]"], "references": ["gone [b.py]"],
-                 "container": [], "name_terms": ["target"], "lang": "python",
-                 "module": "a", "parent": ""})
-    store.write({"fqname": "b.gone", "name": "gone", "kind": "function", "file": "b.py",
-                 "line": 1, "mtime": 1, "calls": ["target [a.py]"], "called_by": [],
-                 "references": [], "container": [], "name_terms": ["gone"],
-                 "lang": "python", "module": "b", "parent": ""})
-    crib._drop_file("p", "b.py")                  # b.py deleted (proj, relpath)
-    assert not store.by_fqname("b.gone")          # its symbols gone
-    tgt = store.by_fqname("a.target")[0]          # edges from b.py stripped
+    store.write(
+        {
+            "fqname": "a.target",
+            "name": "target",
+            "kind": "function",
+            "file": "a.py",
+            "line": 1,
+            "mtime": 1,
+            "calls": [],
+            "called_by": ["gone [b.py]"],
+            "references": ["gone [b.py]"],
+            "container": [],
+            "name_terms": ["target"],
+            "lang": "python",
+            "module": "a",
+            "parent": "",
+        }
+    )
+    store.write(
+        {
+            "fqname": "b.gone",
+            "name": "gone",
+            "kind": "function",
+            "file": "b.py",
+            "line": 1,
+            "mtime": 1,
+            "calls": ["target [a.py]"],
+            "called_by": [],
+            "references": [],
+            "container": [],
+            "name_terms": ["gone"],
+            "lang": "python",
+            "module": "b",
+            "parent": "",
+        }
+    )
+    crib._drop_file("p", "b.py")  # b.py deleted (proj, relpath)
+    assert not store.by_fqname("b.gone")  # its symbols gone
+    tgt = store.by_fqname("a.target")[0]  # edges from b.py stripped
     assert tgt["called_by"] == [] and tgt["references"] == []
 
 
@@ -271,8 +378,9 @@ def test_forget_removes_an_orphan(crib):
     _seed_symbol(crib, "p", fqname="a.foo")
     run(crib.learning_add("a.foo", "note", project="p"))
     import shutil
-    shutil.rmtree(crib.paths.project_dir("p") / "symbol_index")        # foo is gone
-    out = run(crib.learning_forget("a.foo", project="p"))                 # still removable
+
+    shutil.rmtree(crib.paths.project_dir("p") / "symbol_index")  # foo is gone
+    out = run(crib.learning_forget("a.foo", project="p"))  # still removable
     assert out["symbol"] == "a.foo" and out["removed"] >= 1
 
 
@@ -282,22 +390,36 @@ def test_forget_removes_an_orphan(crib):
 # whichever spelling that was — which is exactly why `learning_forget` and the ※
 # glyph could both be broken on every migrated project without a single red test.
 
+
 def _note_bound_to(crib, project, binding, body="pinned", **fm):
     """Write a learning note directly, bound to an arbitrary spelling."""
     from crib import notes
+
     root = crib.learnings.store.root(project)
     root.mkdir(parents=True, exist_ok=True)
     path = root / "hand-written-name.md"
-    notes.save_atomic(notes.Note(path=path, body=f"\n### 2026-01-01\n{body}\n",
-                                 frontmatter={"title": binding, "kind": "code-learning",
-                                              "symbol_ref": binding, **fm}))
+    notes.save_atomic(
+        notes.Note(
+            path=path,
+            body=f"\n### 2026-01-01\n{body}\n",
+            frontmatter={
+                "title": binding,
+                "kind": "code-learning",
+                "symbol_ref": binding,
+                **fm,
+            },
+        )
+    )
     return path
 
 
-@pytest.mark.parametrize("binding", [
-    "pkg/mod.py#foo",     # the note is on the REFERENCE, the entry answers to both
-    "pkg.Mod.foo",        # the note is on the LEGACY name — an unmigrated store
-])
+@pytest.mark.parametrize(
+    "binding",
+    [
+        "pkg/mod.py#foo",  # the note is on the REFERENCE, the entry answers to both
+        "pkg.Mod.foo",  # the note is on the LEGACY name — an unmigrated store
+    ],
+)
 def test_every_learning_verb_finds_a_note_whatever_it_is_bound_to(crib, binding):
     _seed_symbol(crib, "p")
     _note_bound_to(crib, "p", binding)
@@ -306,8 +428,9 @@ def test_every_learning_verb_finds_a_note_whatever_it_is_bound_to(crib, binding)
     # derived its own path from the entry's legacy name while its four siblings went
     # through the shared one, so a note bound to a reference could not be deleted.
     assert crib.learning_read("pkg.Mod.foo", project="p")["found"]
-    hit = crib.learnings.attach("p", [dict(
-        SymbolIndex(crib.paths.project_dir("p")).all()[0])])[0]
+    hit = crib.learnings.attach(
+        "p", [dict(SymbolIndex(crib.paths.project_dir("p")).all()[0])]
+    )[0]
     assert hit.get("learning"), "attach missed the note"
     run(crib.learning_forget("pkg.Mod.foo", project="p"))
     assert not crib.learning_read("pkg.Mod.foo", project="p")["found"]
@@ -318,8 +441,9 @@ def test_the_glyph_marks_the_node_whatever_the_note_is_bound_to(crib, binding):
     _seed_symbol(crib, "p")
     _note_bound_to(crib, "p", binding)
     g = crib.code_graph("foo", project="p", shape="edges")
-    assert [n.get("has_learning") for n in g["nodes"]] == [True], \
+    assert [n.get("has_learning") for n in g["nodes"]] == [True], (
         "the ※ join compared one spelling against the other"
+    )
 
 
 def test_ref_slug_round_trips_through_the_filesystem(crib):

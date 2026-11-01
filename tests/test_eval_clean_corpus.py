@@ -116,7 +116,6 @@ def seeded_crib(tmp_path, monkeypatch):
             for f in src.glob("*.toml"):
                 shutil.copy(f, dest / f.name)
     yield crib
-    import subprocess
 
     subprocess.run(
         ["git", "-C", str(ROOT), "worktree", "remove", "--force", str(yield_path)],

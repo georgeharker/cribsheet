@@ -870,7 +870,6 @@ class Designs:
                 f"{other.upper()} item ({hit.relpath}): use the {other}_* verbs"
             )
 
-        where = f" in project {graph.proj!r}" if getattr(graph, "proj", "") else ""
         if not pool:
             _other_facet_hint()
             raise CribUserError(
@@ -2385,7 +2384,8 @@ class Designs:
         newly = [
             self._annotate(after, t_after, nid)
             for nid in after.nodes
-            if nid in t_after and nid not in before
+            if nid in t_after
+            and nid not in before
             and after.nodes.get(nid)
             and after.nodes[nid].kind == "plan"
         ]
@@ -2464,7 +2464,8 @@ class Designs:
         newly = [
             self._annotate(after, t_after, nid)
             for nid in after.nodes
-            if nid in t_after and nid not in before
+            if nid in t_after
+            and nid not in before
             and after.nodes.get(nid)
             and after.nodes[nid].kind == "plan"
         ]
@@ -2640,7 +2641,8 @@ class Designs:
         newly = [
             self._annotate(after, t_after, nid)
             for nid in after.nodes
-            if nid in t_after and nid not in before
+            if nid in t_after
+            and nid not in before
             and after.nodes.get(nid)
             and after.nodes[nid].kind == "plan"
         ]
