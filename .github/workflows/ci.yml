@@ -17,6 +17,15 @@ jobs:
             # imports `llmkit` from the published polyllmkit wheel. Fetching it
             # would only lint-and-collect a second copy of the same package.
             - uses: actions/checkout@v6
+              with:
+                  # FULL history: tests/test_eval_clean_corpus.py worktree-checks
+                  # out the corpus fixture's pinned source_sha, which a shallow
+                  # clone doesn't know ("invalid reference") — CI has been red
+                  # on this since v0.17.0.
+                  fetch-depth: 0
+                  # the runner never pushes; a persisted token would be both an
+                  # attack surface and the zizmor `artipacked` finding
+                  persist-credentials: false
 
             - name: Install uv
               uses: astral-sh/setup-uv@v10.1.0
