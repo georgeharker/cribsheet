@@ -16,6 +16,12 @@ Three halves:
      sticks for the next selector-less call.
   3. NO LEAK BETWEEN CONNECTIONS — a fresh connection must not see session 1's
      pointer.
+  4. THE ERA PIN — a client whose default is `mode="auto"` (fastmcp 4's own
+     default: it probes `server/discover` and negotiates the modern era when
+     it can) must land on the HANDSHAKE era and keep sticky sessions working.
+     The daemon pins that server-side (`_pin_regression_era`), because on the
+     2026-07-28 stateless era every Connection is per-request and the sticky
+     session project + elicitation silently die.
 """
 
 from __future__ import annotations
@@ -51,12 +57,19 @@ def crib(tmp_path, monkeypatch):
 @pytest.fixture()
 def http_url(crib):
     """A REAL daemon: the FastMCP app on streamable HTTP via uvicorn, on an
-    ephemeral port. The in-memory transport reuses one session object, so the
-    ServerSession-per-request failure mode cannot reproduce there — the failure
-    is only visible over a real client session spanning several calls."""
+    ephemeral port, prepared the PRODUCTION way (_prepare_http_serve — the same
+    function _serve_async's http branch calls) so the era/idle behavior under
+    test is the daemon's actual behavior. The in-memory transport reuses one
+    session object, so the ServerSession-per-request failure mode cannot
+    reproduce there — the failure is only visible over a real client session
+    spanning several calls."""
     import uvicorn
 
-    app = build_server(crib).http_app(transport="streamable-http")
+    from crib.server import _prepare_http_serve
+
+    mcp = build_server(crib)
+    _prepare_http_serve(mcp)
+    app = mcp.http_app(transport="streamable-http")
     with socket.socket() as s:
         s.bind(("127.0.0.1", 0))
         port = s.getsockname()[1]
@@ -152,3 +165,28 @@ def test_sessions_do_not_leak_between_connections(crib, http_url):
     fresh = asyncio_run(second_session())
     assert fresh.get("current_project") != "alpha"
     assert fresh.get("resolved_via") != "session"
+
+
+def test_a_default_auto_client_negotiates_the_handshake_era(crib, http_url):
+    """The era pin: a DEFAULT fastmcp client (mode="auto" — probes server/discover
+    and adopts the modern era when the server advertises it) must end up on the
+    handshake era, because the daemon advertises supported_versions=[] there.
+    Regression case: before _pin_legacy_era this client negotiated 2026-07-28
+    (measured: current_project answered 'default'/'seed' on the call right
+    after project_use — no error, just no session)."""
+    from fastmcp import Client
+
+    async def session():
+        async with Client(http_url) as c:  # mode defaults to "auto"
+            await c.call_tool("project_use", {"project": "alpha"})
+            one = await c.call_tool("project_current", {})
+            two = await c.call_tool("project_current", {})
+            era = getattr(c, "protocol_version", None)
+            return era, _data(one), _data(two)
+
+    era, one, two = asyncio_run(session())
+    # handshake-era negotiation — no stateless 2026-07-28 connection
+    assert era is not None and era != "2026-07-28"
+    for r in (one, two):
+        assert r.get("current_project") == "alpha"  # sticky state persisted
+        assert r.get("resolved_via") == "session"

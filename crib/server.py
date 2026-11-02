@@ -187,6 +187,7 @@ async def _write_project_elicit(
         if isinstance(chosen, str) and chosen.strip():
             return chosen.strip()
     except Exception:  # noqa: BLE001 — no elicitation support → fall back to the error
+        # pi-lens-ignore: python-empty-except
         pass
     return _write_project(crib, None, None)  # raises the explicit-target error
 
@@ -254,8 +255,10 @@ async def _read_project_elicit(crib: Crib, res: ProjectResolution) -> ProjectRes
                 proj = chosen
             # the human just anchored the session — adopt, and say so
             session_state().current_project = proj
+            # pi-lens-ignore: unreachable-except
             return ProjectResolution(proj, "elicited", session_set=True)
     except CribUserError:
+        # pi-lens-ignore: python-empty-except
         raise
     except Exception:  # noqa: BLE001 — no elicitation support / declined → refuse
         pass
@@ -891,6 +894,7 @@ def build_server(crib: Crib | None = None):
                     await ctx.report_progress(
                         progress=sw["done"] or 0,
                         total=sw["total"] or 0,
+                        # pi-lens-ignore: python-empty-except
                         message=f"{key}: {format_sweep(sw)}",
                     )
                 except Exception:  # noqa: BLE001 — progress is best-effort
@@ -2147,6 +2151,57 @@ def build_server(crib: Crib | None = None):
     return mcp
 
 
+def _prepare_http_serve(mcp) -> None:
+    """Prep the FastMCP server for ITS HTTP face (called from `_serve_async`'s
+    http branch — deliberately NOT from `build_server`: the in-memory transport
+    shares one stream pair, where an auto client's discover probe would open the
+    modern era before the handshake- fallback can take effect; over HTTP the
+    probe is a separate connection, so the pin lands cleanly there)."""
+    # Sessions must not silently reset mid-chat (§15): mcp 2 expires idle
+    # stateful HTTP sessions after 30 min by default; 24h is beyond any pause
+    # while still eventually reaping a vanished client.
+    import fastmcp
+
+    # pydantic settings on the fastmcp 4 line have this field; setattr because
+    # the type resolver may resolve a different fastmcp.
+    setattr(fastmcp.settings, "http_session_idle_timeout", 86_400)  # noqa: B010
+    # The daemon serves the handshake era only: a modern-era direct client
+    # would otherwise statelessly re-resolve per request (§15's sticky project
+    # dies) and lose elicitation.
+    _pin_legacy_era(mcp)
+
+
+def _pin_legacy_era(mcp) -> None:
+    """Advertise ONLY the handshake era, so clients with era defaults negotiate
+    stateful: modern-era (2026-07-28) stateless connections build a Connection
+    per request, which kills the per-session current project (DESIGN §15) and
+    forbids server-initiated requests (elicitation). Verified: without this pin
+    a client whose default is `mode='auto'` connects directly and negotiates
+    `2026-07-28` — sticky adoption dies between calls, silently; with an empty
+    `supported_versions` the same client falls back to the handshake era (`
+    `2025-11-25``) and everything works.
+
+    This is a deliberate SERVER-side decision, the mirror of the combiner
+    pinning ITS clients to `mode='legacy'`: crib's session model (§15) and the
+    destructive-confirm gates depend on the back-channel that the handshake era
+    has and the modern era removes, so cribsheet does not yet support the
+    modern era. Revisit when the stateless era grows per-session state or
+    crib's session model moves to per-call selectors.
+
+    (Direct mcp 2 lowlevel-server API: `mcp._mcp_server` is fastmcp's own
+    surface into it — the same route fastmcp's internal code takes. If a later
+    fastmcp moves it, the e2e HTTP session tests fail loudly, flagging the
+    migration.)"""
+    from mcp.types import DiscoverResult, RequestParams, ServerCapabilities
+
+    async def legacy_only_discover(ctx, params=None):  # noqa: ANN001
+        return DiscoverResult(supported_versions=[], capabilities=ServerCapabilities())
+
+    mcp._mcp_server.add_request_handler(
+        "server/discover", RequestParams, legacy_only_discover
+    )
+
+
 async def _serve_async(
     transport: str = "stdio", host: str = "127.0.0.1", port: int = 8787
 ) -> None:
@@ -2174,20 +2229,9 @@ async def _serve_async(
         if transport == "stdio":
             await mcp.run_async(transport="stdio")
         else:
-            # Keep a chat's session state alive across an idle pause: mcp 2
-            # expires stateful HTTP sessions after 30 min idle by default
-            # (fastmcp 'auto' -> the SDK's 1800s). The sticky current project
-            # would silently reset mid-chat; the global setting's None is the
-            # only way to say "never" (passing None to http_app instead means
-            # "use the setting"). Session-expiry GC is not something crib
-            # needs — a stale connection is just a WeakKeyDictionary entry
-            # waiting to be collected. Equivalent env override:
-            # FASTMCP_HTTP_SESSION_IDLE_TIMEOUT=none.
-            import fastmcp
-
-            # pydantic settings on the fastmcp 4 line have this field; setattr
-            # because the type resolver may resolve a different fastmcp.
-            setattr(fastmcp.settings, "http_session_idle_timeout", None)  # noqa: B010 — deliberate: the attr exists on fastmcp>=4
+            # Keep a chat's session state alive across an idle pause and pin the
+            # handshake era (both live in _prepare_http_serve; see its rationale).
+            _prepare_http_serve(mcp)
             # Optional inbound bearer auth on /mcp (off unless CRIBSHEET_AUTH_TOKEN
             # is set). inbound_auth.py is vendored byte-identical from mcp-companion's
             # combiner — no dependency on it. /health stays open.

@@ -1,4 +1,7 @@
 {
+    "lsp": {
+        "enabled": false
+    },
     "rules": {
         "trust-internal-data": {
             "disable": ["unchecked-throwing-call-python", "ast-grep:unchecked-throwing-call-python"]

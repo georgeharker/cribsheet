@@ -861,6 +861,14 @@ switches the session deliberately; `project_current()` reports it. Only note
 operations are session-scoped; `note_import`/`note_import_memory` stay cwd/repo-driven
 (they're about a specific source, not the ambient project).
 
+Both sides of the wire pin the handshake era: the daemon advertises
+`supported_versions=[]` on `server/discover` (`_pin_legacy_era`), so a client
+whose default is `mode="auto"` falls back to the handshake era instead of
+negotiating the modern stateless era — there a `Connection` is per request and
+this session model has nothing to stick to (measure: sticky adoption dies
+between calls). Clients crib ships (the CLI's `DaemonClient`) also pin
+`mode="legacy"` themselves.
+
 **The policy is declared, not chosen in the body.** Precedence (1)-(3) is the *read*
 policy; writes must name their target (`_write_project`) and repo-scoped ops let the
 named repo's `.crib` decide (`_source_project`, never sticky). Which one a tool uses
