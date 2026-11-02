@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import functools
 import inspect
+import os
 import sys
 import time
 from pathlib import Path
@@ -248,9 +249,14 @@ async def _read_project_elicit(crib: Crib, res: ProjectResolution) -> ProjectRes
                 proj = crib.resolve_project(None, Path(chosen).expanduser())
             else:
                 if chosen not in crib.projects():
+                    # the dir named in the refusal is the evidence that makes this
+                    # failure class self-explaining (flake investigation 2026-11-02:
+                    # a one-off empty list had no breadcrumbs to diagnose)
                     raise CribUserError(
                         f"no project named {chosen!r} — one of: "
                         + ", ".join(sorted(crib.projects()))
+                        + f" (projects dir: {crib.paths.projects_dir}; CRIB_DATA_DIR: "
+                        f"{os.environ.get('CRIB_DATA_DIR')})"
                     )
                 proj = chosen
             # the human just anchored the session — adopt, and say so

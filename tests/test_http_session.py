@@ -130,6 +130,12 @@ def test_elicited_adopt_persists_across_http_calls(crib, http_url):
     import asyncio as _asyncio
 
     _asyncio.run(crib.project_create("alpha"))
+    # PRECONDITION, on the record: the flake investigation (2026-11-02) found a
+    # one-off failure with `projects()` empty at the elicit check on an IN-FLIGHT
+    # working tree (another session was rewriting the port mid-run). Assert the
+    # precondition so a repeat names the broken invariant directly instead of
+    # surfacing as a mysterious resolution error.
+    assert "alpha" in crib.projects(), "precondition failed: project_create didn't land"
 
     async def accept_alpha(message, response_type, params, ctx):  # noqa: ANN001
         return "alpha"
