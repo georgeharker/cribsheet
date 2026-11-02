@@ -119,9 +119,17 @@ class DaemonClient:
             return Client(
                 StreamableHttpTransport(
                     self.url, headers={"Authorization": f"Bearer {tok}"}
-                )
+                ),
+                mode="legacy",
             )
-        return Client(self.url)
+        # mode="legacy": pin the initialize-handshake era. fastmcp 4's Client
+        # defaults to mode="auto", which probes the server and negotiates the
+        # 2026-07-28 stateless era when it can — there a Connection is built per
+        # request, so the daemon's per-connection session state (the sticky
+        # current project, DESIGN §15) would not persist and server-initiated
+        # requests (elicitation) are forbidden. Progress notifications work in
+        # both eras; sessions and elicitation only exist on legacy.
+        return Client(self.url, mode="legacy")
 
     async def _call(
         self,

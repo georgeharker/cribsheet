@@ -2174,6 +2174,20 @@ async def _serve_async(
         if transport == "stdio":
             await mcp.run_async(transport="stdio")
         else:
+            # Keep a chat's session state alive across an idle pause: mcp 2
+            # expires stateful HTTP sessions after 30 min idle by default
+            # (fastmcp 'auto' -> the SDK's 1800s). The sticky current project
+            # would silently reset mid-chat; the global setting's None is the
+            # only way to say "never" (passing None to http_app instead means
+            # "use the setting"). Session-expiry GC is not something crib
+            # needs — a stale connection is just a WeakKeyDictionary entry
+            # waiting to be collected. Equivalent env override:
+            # FASTMCP_HTTP_SESSION_IDLE_TIMEOUT=none.
+            import fastmcp
+
+            # pydantic settings on the fastmcp 4 line have this field; setattr
+            # because the type resolver may resolve a different fastmcp.
+            setattr(fastmcp.settings, "http_session_idle_timeout", None)  # noqa: B010 — deliberate: the attr exists on fastmcp>=4
             # Optional inbound bearer auth on /mcp (off unless CRIBSHEET_AUTH_TOKEN
             # is set). inbound_auth.py is vendored byte-identical from mcp-companion's
             # combiner — no dependency on it. /health stays open.

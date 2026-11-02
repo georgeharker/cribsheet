@@ -836,12 +836,18 @@ One warm daemon serves many connections; rather than re-resolve the project from
 table — the svg-mcp pattern. A chat session lands in its project once and stays
 there; calls omit `project`/`cwd` thereafter.
 
-**The table.** `WeakKeyDictionary[ServerSession, SessionState]` (`crib/session.py`),
-keyed by the MCP `ServerSession` *object* obtained via fastmcp
-`get_context().session`. MCP exposes no session-close hook, so cleanup is by GC:
-when the connection ends and the session object is collected, its entry is
-released — no hooks, no TTL. Non-request contexts (the in-process CLI, tests)
-fall back to a shared default state, so the path degrades to plain cwd seeding.
+**The table.** `WeakKeyDictionary[Connection, SessionState]` (`crib/session.py`),
+keyed by the per-client mcp `Connection` object (`get_context().session` → its
+`_connection`), NOT the `ServerSession`: since MCP SDK v2 (fastmcp 4), a fresh
+`ServerSession` is constructed for every inbound request, so keying on it would
+forget the sticky project between calls — silently. On the handshake era (what
+the daemon serves; clients that need sessions pin `mode="legacy"`, as the CLI's
+`DaemonClient` does) the Connection spans the whole client session; fastmcp keys
+its own session state the same way. MCP still exposes no session-close hook, so
+cleanup stays GC-based: when the connection ends and the Connection is
+collected, its entry is released — no hooks, no TTL. Non-request contexts
+(the in-process CLI, tests) fall back to a shared default state, so the path
+degrades to plain cwd seeding.
 
 **Resolution precedence** (per call, in `server.py._project`):
 1. explicit `project` arg — one-off override; does **not** change the session.

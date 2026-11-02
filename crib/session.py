@@ -2,9 +2,21 @@
 
 One warm crib daemon serves many connections; each chat session keeps its own
 *current project* so calls don't have to re-pass cwd every time. The pattern is
-svg-mcp's: a `WeakKeyDictionary` keyed by the MCP `ServerSession` object — MCP
-exposes no session-close hook, so we lean on GC: when the connection ends and the
-session object is collected, its entry is released automatically.
+svg-mcp's: a `WeakKeyDictionary` — MCP exposes no session-close hook on the
+handshake era, so we lean on GC: when the connection ends and the key object is
+collected, its entry is released automatically.
+
+The key is the per-client mcp `Connection` (``session._connection``), NOT the
+`ServerSession`: on MCP SDK v2 a fresh ServerSession is constructed for every
+inbound request, so keying on it would forget the adopted project between calls
+— silently (fastmcp 4 keys its own session state the same way, see fastmcp's
+``Context.session_id``). On the handshake era (what the daemon serves and the
+combiner pins its clients to) the Connection spans the whole client session, so
+WeakKeyDictionary[Connection, SessionState] keeps this call's sticky project
+and releases it on disconnect. Over the 2026-07-28 stateless era a Connection is
+built per request here too — session state then degrades to per-call, which is
+why clients that need persistent state must speak the legacy era (crib/client.py
+pins `mode="legacy"`).
 
 The state is MCP-only; the in-process CLI/tests have no session and fall back to
 a shared default (so `resolve_session_project` degrades to plain cwd seeding).
@@ -129,10 +141,16 @@ def session_state() -> SessionState:
         session = get_context().session
     except Exception:  # noqa: BLE001 — no request context (CLI/tests)
         return _DEFAULT
-    st = _SESSIONS.get(session)
+    # mcp SDK v2 rebuilds the ServerSession per request; the per-client
+    # `Connection` is the object that lives for the whole client session
+    # (fastmcp 4 keys its own state off it the same way). Defensive fallback to
+    # the session itself keeps the dict shapable if the private attr moves.
+    conn = getattr(session, "_connection", None)
+    key = conn if conn is not None else session
+    st = _SESSIONS.get(key)
     if st is None:
         st = SessionState()
-        _SESSIONS[session] = st
+        _SESSIONS[key] = st
     return st
 
 

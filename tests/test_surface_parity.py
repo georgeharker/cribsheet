@@ -57,13 +57,16 @@ def tools(crib):
 
 def _schema_params(tool) -> dict[str, object]:
     """A tool's wire params as {name: default}, `...` when required."""
-    schema = tool.to_mcp_tool().inputSchema
+    schema = tool.to_mcp_tool().input_schema  # snake_case on the mcp 2 line
     required = set(schema.get("required") or ())
-    return {name: (... if name in required else spec.get("default", ...))
-            for name, spec in (schema.get("properties") or {}).items()}
+    return {
+        name: (... if name in required else spec.get("default", ...))
+        for name, spec in (schema.get("properties") or {}).items()
+    }
 
 
 # ── The registry is the single source of truth ────────────────────────────────
+
 
 def test_registry_and_mcp_surface_cover_each_other(tools):
     # every MCP tool is CLI-reachable and every CLI verb has its MCP twin — a verb
@@ -81,7 +84,8 @@ def test_registry_matches_mcp_tool_schemas(tools):
     for key, verb in VERBS.items():
         assert verb.tool in tools, f"{key}: no MCP tool {verb.tool!r}"
         assert _schema_params(tools[verb.tool]) == verb.mcp_params(), (
-            f"{key} ⇄ {verb.tool}: params/defaults drifted")
+            f"{key} ⇄ {verb.tool}: params/defaults drifted"
+        )
 
 
 def test_registry_policy_matches_the_server_declaration(tools):
@@ -89,6 +93,7 @@ def test_registry_policy_matches_the_server_declaration(tools):
 
 
 # ── The server declares a policy for every tool (P5.9) ────────────────────────
+
 
 def test_every_mcp_tool_declares_a_resolution_policy(tools):
     undeclared = sorted(set(tools) - set(TOOL_POLICY))
@@ -104,8 +109,9 @@ def test_no_tool_body_picks_a_resolver_itself():
     body = src.split("def crib_tool(", 1)[1].split("def register(", 1)[1]
     for helper in ("_resolve", "_project", "_source_project", "_write_project"):
         # boundary-matched, so `crib.use_project(` isn't read as `_project(`
-        assert not re.search(rf"(?<![\w.]){helper}\(", body), \
+        assert not re.search(rf"(?<![\w.]){helper}\(", body), (
             f"a tool body calls {helper}() directly"
+        )
 
 
 # ── Defaults agree on BOTH faces (the apropos k=5/8 class) ────────────────────
@@ -143,30 +149,38 @@ def test_cli_defaults_match_the_declared_mcp_defaults(key):
     declared = VERBS[key].mcp_params()
     for param, value in call.items():
         if declared.get(param, ...) is ... or value is None or value in argv:
-            continue                      # required param, "not given" on the CLI, or
-                                          # supplied BY the invocation (a positional
-                                          # that is optional on the MCP face) — none of
-                                          # those three is a default to compare
+            continue  # required param, "not given" on the CLI, or
+            # supplied BY the invocation (a positional
+            # that is optional on the MCP face) — none of
+            # those three is a default to compare
         assert value == declared[param], (
-            f"{key}: CLI default {param}={value!r} ≠ MCP default {declared[param]!r}")
+            f"{key}: CLI default {param}={value!r} ≠ MCP default {declared[param]!r}"
+        )
 
 
 # ── Imports must name a source (P2.4) ─────────────────────────────────────────
 
-@pytest.mark.parametrize("tool_name, args", [
-    ("note_import", {"paths": ["/tmp/whatever.md"]}),
-    ("note_import_memory", {}),
-])
-def test_imports_refuse_to_fall_through_to_the_default_project(crib, tools, tool_name,
-                                                               args):
+
+@pytest.mark.parametrize(
+    "tool_name, args",
+    [
+        ("note_import", {"paths": ["/tmp/whatever.md"]}),
+        ("note_import_memory", {}),
+    ],
+)
+def test_imports_refuse_to_fall_through_to_the_default_project(
+    crib, tools, tool_name, args
+):
     # an import is ABOUT a repo; with no source it used to file the copies in the
     # config default project silently. Declared `source` + needs_target → it errors.
     with pytest.raises(Exception, match="needs a SOURCE"):
         asyncio.run(tools[tool_name].run(args))
     # …and the requirement is on the wire too, not just at runtime
-    schema = tools[tool_name].to_mcp_tool().inputSchema
-    assert schema.get("anyOf") == [{"required": ["project"]},
-                                   {"required": ["project_path"]}]
+    schema = tools[tool_name].to_mcp_tool().input_schema  # snake_case on the mcp 2 line
+    assert schema.get("anyOf") == [
+        {"required": ["project"]},
+        {"required": ["project_path"]},
+    ]
 
 
 # ── Retired command names can't creep back (P3 grep-guard) ────────────────────
@@ -174,7 +188,7 @@ def test_imports_refuse_to_fall_through_to_the_default_project(crib, tools, tool
 # docstrings for a release — text nobody re-greps. These two sweeps fail the build
 # the next time a rename leaves one behind.
 
-_RETIRED_COMMANDS = {                       # in ANY user-facing string in crib/*.py
+_RETIRED_COMMANDS = {  # in ANY user-facing string in crib/*.py
     "crib code-": "the noun-verb form (`crib code lookup`, `crib code index`)",
     "crib note-": "the noun-verb form (`crib note lookup`)",
     "crib learning-": "the noun-verb form (`crib learning add`)",
@@ -186,12 +200,17 @@ _RETIRED_COMMANDS = {                       # in ANY user-facing string in crib/
     # not "crib snapshot": `GitBacking` uses that exact text as its default git
     # COMMIT MESSAGE, which is not a command reference.
 }
-_RETIRED_TOOLS = {                          # anywhere an agent or reader can see
-    "code_append": "learning_add", "code_edit": "learning_edit",
-    "code_forget": "learning_forget", "code_rehome": "learning_rehome",
-    "code_learnings": "learning_report", "code_reaffirm": "learning_reaffirm",
-    "code_read": "learning_read", "code-append": "learning-add",
-    "code-forget": "learning-forget", "reindex(": "note_reindex(",
+_RETIRED_TOOLS = {  # anywhere an agent or reader can see
+    "code_append": "learning_add",
+    "code_edit": "learning_edit",
+    "code_forget": "learning_forget",
+    "code_rehome": "learning_rehome",
+    "code_learnings": "learning_report",
+    "code_reaffirm": "learning_reaffirm",
+    "code_read": "learning_read",
+    "code-append": "learning-add",
+    "code-forget": "learning-forget",
+    "reindex(": "note_reindex(",
     # the design facet renamed `verify` → `reaffirm` (one vocabulary with
     # `learning_reaffirm`, and no collision with plan's `verified` STATUS).
     # Surface was a day old: renamed outright, no alias, so the old spelling must
@@ -201,8 +220,11 @@ _RETIRED_TOOLS = {                          # anywhere an agent or reader can se
 
 
 def _strings(tree) -> list[str]:
-    return [n.value for n in ast.walk(tree)
-            if isinstance(n, ast.Constant) and isinstance(n.value, str)]
+    return [
+        n.value
+        for n in ast.walk(tree)
+        if isinstance(n, ast.Constant) and isinstance(n.value, str)
+    ]
 
 
 @pytest.mark.parametrize("path", _CRIB_PY, ids=lambda p: p.name)
@@ -212,7 +234,8 @@ def test_no_retired_command_names_in_user_facing_strings(path):
         for retired, use in _RETIRED_COMMANDS.items():
             assert retired not in text, (
                 f"{path.name}: retired command {retired!r} in a user-facing string "
-                f"— say {use}:\n    {text.strip()[:160]}")
+                f"— say {use}:\n    {text.strip()[:160]}"
+            )
 
 
 @pytest.mark.parametrize("path", _CRIB_PY, ids=lambda p: p.name)
@@ -225,10 +248,12 @@ def test_no_retired_tool_names_in_strings(path):
             # word-boundary-ish: `note_reindex(` must not read as `reindex(`
             assert not re.search(rf"(?<![\w.]){re.escape(retired)}", text), (
                 f"{path.name}: retired name {retired!r} in a docstring — say "
-                f"{use!r}:\n    {text.strip()[:160]}")
+                f"{use!r}:\n    {text.strip()[:160]}"
+            )
 
 
 # ── The two surfaces must agree on the KEY, not just the shape ────────────────
+
 
 def test_the_empty_result_marker_is_the_key_the_cli_renders(capsys):
     """`_echo_list` returns a diagnostic row instead of a bare `[]` and `_emit_code`

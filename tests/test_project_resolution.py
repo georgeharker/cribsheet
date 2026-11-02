@@ -51,7 +51,15 @@ def test_write_tools_carry_project_or_path_anyof(crib):
     async def schema(name):
         tool = await mcp.get_tool(name)
         assert tool is not None, name
-        return tool.to_mcp_tool().inputSchema
+        wt = tool.to_mcp_tool()
+        # mcp 2 (fastmcp 4) renamed the field input_schema; mcp 1.x spelled it
+        # camelCase and its read DEPRECATED on fastmcp 4 (then removed at
+        # runtime). getattr keeps this helper correct on whichever SDK the env
+        # has — and stops a differently-resolved type checker from wiring the
+        # test to one SDK's spelling.
+        out = getattr(wt, "input_schema", None) or getattr(wt, "inputSchema", None)
+        assert out is not None, f"{name}: no input schema on the wire tool"
+        return out
 
     want = [{"required": ["project"]}, {"required": ["project_path"]}]
     for w in ("note_store", "note_append", "note_edit", "note_forget", "note_move"):

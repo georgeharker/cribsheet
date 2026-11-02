@@ -85,7 +85,7 @@ class _DaemonSession:
         self._dc = DaemonClient(cfg)
         self._dc.__enter__()
         self._loop = asyncio.new_event_loop()
-        self._client = Client(self._dc.url)
+        self._client = Client(self._dc.url, mode="legacy")
         self._entered = False
 
     def _ensure(self) -> None:
