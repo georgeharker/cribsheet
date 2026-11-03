@@ -196,3 +196,60 @@ def test_a_default_auto_client_negotiates_the_handshake_era(crib, http_url):
     for r in (one, two):
         assert r.get("current_project") == "alpha"  # sticky state persisted
         assert r.get("resolved_via") == "session"
+
+
+# ── 5. THE PIN SERVES 2026 (direct) — it only STEERS auto-lients ──────────────
+# Combiner-era correction (2026-11-02): the discover pin exists for `mode="auto"`
+# probing. A client that SKIPS discovery and speaks 2026-07-28 directly must still
+# be served (that is how the combiner's per-server `protocol: "2026"` opt-in works
+# — no pin-dropping switch needed). On that era the one anchor gate applies:
+# nothing anchors between calls, and every answer is a visible per-call result.
+
+
+def test_pin_serves_a_direct_2026_client(crib, http_url):
+    """A `mode="2026-07-28"` client (no discover) initializes against the PINNED
+    daemon and works — but per call: project_use refuses to anchor (reports so),
+    and a selector-less read lands on seed, never on a session."""
+    from fastmcp import Client
+
+    async def session():
+        async with Client(http_url, mode="2026-07-28") as c:
+            use = await c.call_tool("project_use", {"project": "alpha"})
+            # selector-less read on 2026: the fresh per-request state is empty —
+            # it must answer without erroring and WITHOUT any “session” anchor
+            cur = await c.call_tool("project_current", {})
+            # explicit selector: the only way state is carried on 2026
+            lookup = await c.call_tool(
+                "note_lookup", {"project": "alpha", "query": "x", "k": 3}
+            )
+            return _data(use), _data(cur), _data(lookup)
+
+    use, cur, lookup = asyncio_run(session())
+    # project_use does not pretend: nothing anchored, it says what to do instead
+    assert use.get("anchored") is False
+    assert "STATELESS" in use.get("note", "").upper() or "stateless" in use.get(
+        "note", ""
+    )
+    # and the next call confirms nothing stuck
+    assert cur.get("resolved_via") != "session"
+    assert cur.get("current_project") != "alpha"
+    # per-call selectors are how 2026 works, and they work fully
+    assert lookup is not None
+
+
+def test_stateless_selector_less_read_refuses_actionably(crib, http_url):
+    """A selector-less READ on 2026 elicits per call — but ctx.elicit has no
+    channel on a stateless connection, so it falls through to the REFUSAL, which
+    must name the stateless fact and the recovery (pass project= every call).
+    Never a silent `default` answer, never a hang."""
+    from fastmcp import Client
+
+    async def session():
+        async with Client(http_url, mode="2026-07-28") as c:
+            return await c.call_tool("note_lookup", {"query": "anything"})
+
+    with pytest.raises(Exception, match="STATELESS") as exc:
+        asyncio_run(session())
+    msg = str(exc.value)
+    assert "nothing anchors between calls" in msg
+    assert "project=<name>" in msg or "project_path=" in msg
