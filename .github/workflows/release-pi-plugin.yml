@@ -53,4 +53,14 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npm run build
       - name: Publish to npm (trusted publishing + provenance)
-        run: npm publish --provenance --access public
+        # A PRERELEASE (dev/alpha/rc — e.g. the dev release channel, cut from the
+        # dev branch) must carry an explicit dist-tag: npm refuses the implicit
+        # 'latest' for a prerelease, and 'latest' must never point at one anyway.
+        # Stable versions keep the implicit latest.
+        run: |
+          prerelease="$(node -p "require('./package.json').version" | grep -q -- '-' && echo yes || echo no)"
+          if [ "$prerelease" = "yes" ]; then
+            npm publish --provenance --access public --tag dev
+          else
+            npm publish --provenance --access public
+          fi
