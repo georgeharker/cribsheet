@@ -26,6 +26,7 @@ Three halves:
 
 from __future__ import annotations
 
+import asyncio
 import socket
 import threading
 import time
@@ -41,7 +42,6 @@ from crib.store import InMemoryStore
 
 
 def asyncio_run(coro):
-    import asyncio
 
     return asyncio.run(coro)
 
@@ -127,9 +127,7 @@ def test_elicited_adopt_persists_across_http_calls(crib, http_url):
     # the elicited NAME must be a REAL project: create 'alpha' up front (via the
     # Crib API — the fixture process has no MCP session, so this touches only the
     # project tree, never any connection's session state)
-    import asyncio as _asyncio
-
-    _asyncio.run(crib.project_create("alpha"))
+    asyncio.run(crib.project_create("alpha"))
     # PRECONDITION, on the record: the flake investigation (2026-11-02) found a
     # one-off failure with `projects()` empty at the elicit check on an IN-FLIGHT
     # working tree (another session was rewriting the port mid-run). Assert the
@@ -198,12 +196,63 @@ def test_a_default_auto_client_negotiates_the_handshake_era(crib, http_url):
         assert r.get("resolved_via") == "session"
 
 
-# ── 5. THE PIN SERVES 2026 (direct) — it only STEERS auto-lients ──────────────
+# ── 4b. SYNC TOOLS ASK — the obs-1 fix (combiner live test, 2026-11-03) ───────
+# FastMCP runs sync tool bodies in a threadpool, where an imperative elicit
+# cannot block on a client round-trip — so crib's sync path REFUSED instead of
+# asking (note_lookup, design_lookup, plan_next and 20 more sync reads all
+# refused while an async code_lookup asked live). The sync READ bodies now run
+# their unanchored branch through the elicit-capable path; the refusal stays for
+# clients that can't take elicitation.
+
+
+# ── 5. THE PIN SERVES 2026 (direct) — it only STEERS auto-clients ──────────────
 # Combiner-era correction (2026-11-02): the discover pin exists for `mode="auto"`
 # probing. A client that SKIPS discovery and speaks 2026-07-28 directly must still
 # be served (that is how the combiner's per-server `protocol: "2026"` opt-in works
 # — no pin-dropping switch needed). On that era the one anchor gate applies:
 # nothing anchors between calls, and every answer is a visible per-call result.
+
+
+def test_sync_tools_ask_and_the_answer_sticks(crib, http_url):
+    """The obs-1 fix, end to end: a SYNC tool (note_lookup) whose body used to
+    refuse on unanchored now ASKS over the back-channel, and the human's answer
+    sticks for that chat (project_use-free flow) — the same contract the async
+    reads (code_lookup) already had."""
+    from fastmcp import Client
+
+    async def accept_alpha(message, response_type, params, ctx):  # noqa: ANN001
+        return "alpha"
+
+    # the elicited NAME must be a REAL project (same precondition as the async
+    # elicited-adopt test — and the same self-explaining assert)
+    asyncio.run(crib.project_create("alpha"))
+    assert "alpha" in crib.projects(), "precondition failed: project_create didn't land"
+
+    async def session():
+        async with Client(
+            http_url, mode="legacy", elicitation_handler=accept_alpha
+        ) as c:
+            r = await c.call_tool("note_lookup", {"query": "anything"})
+            cur = await c.call_tool("project_current", {})
+            return _data(r), _data(cur)
+
+    lookup, cur = asyncio_run(session())
+    assert lookup is not None  # the ask was ANSWERED — the lookup ran
+    assert cur.get("current_project") == "alpha"
+    assert cur.get("resolved_via") == "session"  # the answer stuck
+
+
+def test_sync_tools_still_refuse_without_a_handler(crib, http_url):
+    """The refusal path is intact: a client that can't take elicitation gets the
+    actionable refusal, never a silent default answer."""
+    from fastmcp import Client
+
+    async def session():
+        async with Client(http_url, mode="legacy") as c:  # no elicitation handler
+            return await c.call_tool("note_lookup", {"query": "anything"})
+
+    with pytest.raises(Exception, match="no project is anchored"):
+        asyncio_run(session())
 
 
 def test_pin_serves_a_direct_2026_client(crib, http_url):

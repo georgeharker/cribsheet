@@ -573,7 +573,7 @@ def build_server(crib: Crib | None = None):
         return register
 
     @crib_tool("read")
-    def note_lookup(
+    async def note_lookup(
         query: str,
         project: str | None = None,
         k: int = 8,
@@ -625,7 +625,7 @@ def build_server(crib: Crib | None = None):
         ]
 
     @crib_tool("read")
-    def note_apropos(
+    async def note_apropos(
         query: str,
         project: str | None = None,
         k: int = 8,
@@ -641,7 +641,7 @@ def build_server(crib: Crib | None = None):
         return crib.apropos(query, project, k, tags, hints=hints)
 
     @crib_tool("read")
-    def note_read(
+    async def note_read(
         relpath: str, project: str | None = None, project_path: str | None = None
     ) -> str:
         """Read a note's full raw markdown (frontmatter + body) — e.g. to see a
@@ -649,7 +649,7 @@ def build_server(crib: Crib | None = None):
         return crib.read_note(relpath, project)
 
     @crib_tool("read")
-    def note_locate(
+    async def note_locate(
         relpath: str, project: str | None = None, project_path: str | None = None
     ) -> str:
         """Get the real on-disk path of a note so you can edit it with your own
@@ -736,7 +736,7 @@ def build_server(crib: Crib | None = None):
         return await crib.reindex(relpath, project)
 
     @crib_tool("read")
-    def note_versions(
+    async def note_versions(
         relpath: str, project: str | None = None, project_path: str | None = None
     ) -> list[dict[str, Any]]:
         """List recoverable prior versions of a note."""
@@ -1141,7 +1141,7 @@ def build_server(crib: Crib | None = None):
         return crib.code_lookup(query, project, k)
 
     @crib_tool("read", echo=True)
-    def code_dossier(
+    async def code_dossier(
         symbol: str,
         project: str | None = None,
         project_path: str | None = None,
@@ -1295,7 +1295,7 @@ def build_server(crib: Crib | None = None):
         )
 
     @crib_tool("read")
-    def learning_read(
+    async def learning_read(
         symbol: str,
         path: str = "",
         scope: str = "",
@@ -1355,7 +1355,7 @@ def build_server(crib: Crib | None = None):
         return await crib.code_convert(project, cwd=_cwd(project_path), apply=apply)
 
     @crib_tool("read")
-    def learning_report(
+    async def learning_report(
         project: str | None = None,
         orphans_only: bool = False,
         project_path: str | None = None,
@@ -1438,7 +1438,7 @@ def build_server(crib: Crib | None = None):
         return await crib.design_add(title, content, deps, project, sources, proposed)
 
     @crib_tool("read")
-    def design_read(
+    async def design_read(
         ref: str, project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:
         """A decision's DOSSIER in one call — body, status, every dep and dependent
@@ -1508,7 +1508,7 @@ def build_server(crib: Crib | None = None):
         return await crib.design_append(ref, content, project, sources=sources)
 
     @crib_tool("read")
-    def design_lookup(
+    async def design_lookup(
         query: str,
         project: str | None = None,
         k: int = 8,
@@ -1531,7 +1531,7 @@ def build_server(crib: Crib | None = None):
         return crib.design_lookup(query, project, k, hints=hints)
 
     @crib_tool("read")
-    def design_list(
+    async def design_list(
         tainted: bool = False,
         project: str | None = None,
         project_path: str | None = None,
@@ -1543,7 +1543,7 @@ def build_server(crib: Crib | None = None):
         return crib.design_list(tainted, project)
 
     @crib_tool("read")
-    def design_export(
+    async def design_export(
         project: str | None = None, project_path: str | None = None
     ) -> str:
         """The whole decision graph as ONE consolidated markdown document —
@@ -1600,7 +1600,7 @@ def build_server(crib: Crib | None = None):
         return await crib.design_forget(ref, force, project)
 
     @crib_tool("read")
-    def design_check(
+    async def design_check(
         ref: str | None = None,
         project: str | None = None,
         project_path: str | None = None,
@@ -1659,7 +1659,7 @@ def build_server(crib: Crib | None = None):
         return await crib.design_promote(ref, project)
 
     @crib_tool("read")
-    def design_import(
+    async def design_import(
         relpath: str, project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:
         """Capture a DESIGN DOC into the decision graph — the doc split into
@@ -1683,7 +1683,7 @@ def build_server(crib: Crib | None = None):
         return crib.design_import(relpath, project)
 
     @crib_tool("read")
-    def plan_import(
+    async def plan_import(
         relpath: str, project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:
         """Capture a PLAN DOC into the plan facet — the same shape as
@@ -1699,7 +1699,7 @@ def build_server(crib: Crib | None = None):
         return crib.plan_import(relpath, project)
 
     @crib_tool("read")
-    def design_tree(
+    async def design_tree(
         ref: str | None = None,
         direction: str = "deps",
         depth: int = 6,
@@ -1714,7 +1714,7 @@ def build_server(crib: Crib | None = None):
         return crib.design_tree(ref, direction, depth, project)
 
     @crib_tool("read", echo=True)
-    def design_graph(
+    async def design_graph(
         project: str | None = None,
         project_path: str | None = None,
         sources: bool = False,
@@ -1728,7 +1728,7 @@ def build_server(crib: Crib | None = None):
         return crib.design_graph(project, cwd=_cwd(project_path), sources=sources)
 
     @crib_tool("read", echo=True)
-    def plan_graph(
+    async def plan_graph(
         project: str | None = None,
         project_path: str | None = None,
         sources: bool = False,
@@ -1905,7 +1905,7 @@ def build_server(crib: Crib | None = None):
         return await crib.plan_review_apply(project, batch)
 
     @crib_tool("read")
-    def plan_read(
+    async def plan_read(
         ref: str, project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:
         """A plan item's DOSSIER in one call — body, status, every dep and dependent
@@ -1968,7 +1968,7 @@ def build_server(crib: Crib | None = None):
         return await crib.plan_append(ref, content, project, sources=sources)
 
     @crib_tool("read")
-    def plan_lookup(
+    async def plan_lookup(
         query: str,
         project: str | None = None,
         k: int = 8,
@@ -2034,7 +2034,7 @@ def build_server(crib: Crib | None = None):
         return await crib.plan_move(ref, after, before, project)
 
     @crib_tool("read")
-    def plan_list(
+    async def plan_list(
         all: bool = False, project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:
         """THE PLAN as a working set: in-progress items first, then ready, then
@@ -2051,7 +2051,9 @@ def build_server(crib: Crib | None = None):
         return crib.plan_list(all, project)
 
     @crib_tool("read")
-    def plan_export(project: str | None = None, project_path: str | None = None) -> str:
+    async def plan_export(
+        project: str | None = None, project_path: str | None = None
+    ) -> str:
         """The whole PLAN as ONE consolidated markdown document — same ordering
         contract as `design_export` (dep-topological, ties by rank/title/id;
         deterministic across runs). Includes done items — it is a state exam,
@@ -2059,7 +2061,7 @@ def build_server(crib: Crib | None = None):
         return crib.plan_export(project)["markdown"]
 
     @crib_tool("read")
-    def plan_next(
+    async def plan_next(
         k: int = 5, project: str | None = None, project_path: str | None = None
     ) -> dict[str, Any]:
         """What to do NEXT: `todo` items nothing blocks, in order. The one-call
