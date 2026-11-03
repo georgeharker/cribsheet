@@ -146,8 +146,20 @@ passage re-checks exactly what was drawn from it. Extracted decisions land
 `proposed`: they gate work and taint nothing until a human confirms them with
 `design_promote`.
 
-<!-- Project selection for *reads*: code tools act on ONE current project — set it once
-     with `use_project <name>`, or it's inferred from `project_path` on your first code
-     call; reads then need no project args. To read a *different* project you must name it
-     (`project=` / `project_path=`). `project_path` means "which repo I mean" — it is not
-     your shell cwd. -->
+### Project selection for *reads*: name it — every call, never wrong
+
+**Pass `project=<name>` or `project_path=<a path in that repo>` on every read.** Naming
+a project is never wrong, costs nothing, and can't re-home or leak anything: a named
+selector always decides that call, naming a different one changes nothing, and
+`project_path` means "which repo I mean" — not your shell cwd.
+
+**A read with NO project doesn't guess — it may ask or refuse.** If the call is
+unanchored, crib ASKS the user which project to use (a real question, answer it with a
+project name or a repo path — never a placeholder), or refuses with a one-pass
+recovery asking you to name it. Expect that; don't pass `default` to dodge it.
+
+`use_project <name>` (MCP: `project_use`) is optional today and on its way out: it sets
+a per-connection current project so selector-less reads keep working — but the
+convenience does not survive a daemon restart, and a 2026 (stateless) connection never
+has one at all, so the named project is the call. Treat **"name it every call" as the
+rule now**; keep naming it when it matters even if you also used `use_project`.
