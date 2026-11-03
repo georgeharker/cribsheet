@@ -26,6 +26,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any, Callable
+import re
 from weakref import WeakKeyDictionary
 
 
@@ -154,6 +155,65 @@ def session_state() -> SessionState:
     return st
 
 
+# ── Protocol era: ONE gate for everything that anchors a session ─────────────
+
+ERA_HANDSHAKE = "handshake"  # durable Connection — session state can anchor
+ERA_STATELESS = "stateless"  # mcp 2026-07-28: a Connection per request, none can
+
+# mcp 2 serves both eras off one app, routed per request by this header (see
+# crib/server.py `_pin_legacy_era` and crib/client.py's `mode="legacy"` pin).
+_PROTOCOL_HEADER = "mcp-protocol-version"
+_STATELESS_PROTOCOL = "2026-07-28"
+
+STATELESS_HINT = (
+    "this is a STATELESS connection (mcp 2026-07-28 era: each request stands "
+    "alone, nothing anchors between calls) — pass project=<name> or "
+    "project_path=<a path in that repo> on every call"
+)
+
+
+def _era_of_version(version: str | None) -> str:
+    """Classify one `mcp-protocol-version` header value. ONLY a well-formed
+    ISO-date version at-or-after 2026-07-28 is the stateless era; absent,
+    malformed, or older values are the handshake era — anchoring is real there,
+    and every non-HTTP face (stdio, in-process CLI, in-memory transport) hits
+    this branch because it never carries the header at all."""
+    v = (version or "").strip()
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", v):  # malformed/absent → handshake
+        return ERA_HANDSHAKE
+    return ERA_STATELESS if v >= _STATELESS_PROTOCOL else ERA_HANDSHAKE
+
+
+def request_era() -> str:
+    """The protocol era of the current inbound request (see `_era_of_version`):
+    "stateless" when the client speaks mcp 2026-07-28 (a Connection per request
+    — nothing can anchor across calls), else "handshake". Falls back to the
+    handshake era whenever there is no HTTP request (stdio, the in-process CLI,
+    the in-memory test transport) — anchoring is real there and the legacy
+    behavior is what those tests assert."""
+    try:
+        from fastmcp.server.dependencies import get_http_headers
+
+        return _era_of_version(get_http_headers().get(_PROTOCOL_HEADER))
+    except Exception:  # noqa: BLE001 — no HTTP request (stdio/CLI/in-memory)
+        return ERA_HANDSHAKE
+
+
+def adopt_into_session(project: str | None) -> bool:
+    """Anchor `project` as the session's current project. THE one gate: every
+    anchor (project_use, the first path-bearing call, an elicited project) goes
+    through here, so the stateless-era rule needs no scattered `if era` checks.
+
+    On the stateless era an anchor that LOOKED like it took would die after the
+    call — the same silent forgetting the fastmcp 4 port exists to prevent — so
+    it is refused (returns False; callers surface `STATELESS_HINT`) and nothing
+    is written. Returns True when anchored (handshake era)."""
+    if request_era() != ERA_HANDSHAKE:
+        return False
+    session_state().current_project = project
+    return True
+
+
 def resolve_session_project(
     state: SessionState,
     project_arg: str | None,
@@ -192,6 +252,12 @@ def resolve_session_project(
         # exactly that case (a lookup answering from `default` while the agent
         # believes it named a repo).
         if picked != default:
+            # Adoption, gated once: on the stateless era the state object is
+            # per-request — don't write it, and don't CLAIM it stuck (`session_set`
+            # would otherwise report an anchor that dies after the call). "path"
+            # itself is still a deliberate caller choice, so it echoes normally.
+            if request_era() != ERA_HANDSHAKE:
+                return ProjectResolution(picked, "path")
             first = state.current_project is None
             if first:
                 state.current_project = picked

@@ -17,7 +17,15 @@ from typing import TYPE_CHECKING, Any
 from .app import Crib
 from .codestore import format_sweep
 from .errors import CribUserError
-from .session import ProjectResolution, resolve_session_project, session_state
+from .session import (
+    ERA_STATELESS,
+    ProjectResolution,
+    STATELESS_HINT,
+    adopt_into_session,
+    request_era,
+    resolve_session_project,
+    session_state,
+)
 
 # How often project_index emits an MCP progress notification while a sweep runs — frequent
 # enough to keep the call alive (progress resets the client idle timeout) and feel live.
@@ -259,19 +267,26 @@ async def _read_project_elicit(crib: Crib, res: ProjectResolution) -> ProjectRes
                         f"{os.environ.get('CRIB_DATA_DIR')})"
                     )
                 proj = chosen
-            # the human just anchored the session — adopt, and say so
-            session_state().current_project = proj
+            # the human just named it — anchor (handshake era only) and say so;
+            # on the stateless era the answer is for this call, quietly
+            anchored = adopt_into_session(proj)
             # pi-lens-ignore: unreachable-except
-            return ProjectResolution(proj, "elicited", session_set=True)
+            return ProjectResolution(proj, "elicited", session_set=anchored)
     except CribUserError:
         # pi-lens-ignore: python-empty-except
         raise
     except Exception:  # noqa: BLE001 — no elicitation support / declined → refuse
         pass
     raise CribUserError(
-        "no project is anchored for this session and none was named (sessions "
-        "reset when the crib daemon restarts): pass project=<name> or "
-        "project_path=<a path in the repo>, or call project_use once. Projects: "
+        "no project is anchored for this session and none was named"
+        + (
+            f" — {STATELESS_HINT}"
+            if request_era() == ERA_STATELESS
+            else " (sessions reset when the crib daemon restarts): pass "
+            "project=<name> or project_path=<a path in the repo>, or call "
+            "project_use once"
+        )
+        + ". Projects: "
         + ", ".join(sorted(crib.projects()))
     )
 
@@ -298,9 +313,13 @@ _POLICIES = ("read", "write", "source", "session", "none")
 
 def _switch_if_created(result: dict) -> dict:
     """Creating a project switches the session into it — referencing an existing
-    one (a one-off `project` arg) does not (DESIGN §15)."""
+    one (a one-off `project` arg) does not (DESIGN §15). The switch is the ONE
+    anchor gate (`adopt_into_session`): on the stateless era nothing anchors,
+    so say so instead of silently pretending."""
     if isinstance(result, dict) and result.get("created"):
-        session_state().current_project = result.get("project")
+        if not adopt_into_session(result.get("project")):
+            result["anchored"] = False
+            result["note"] = STATELESS_HINT
     return result
 
 
@@ -466,11 +485,15 @@ def build_server(crib: Crib | None = None):
                 # the async path falls back to; the message reaches the LLM verbatim
                 # (CribUserError rides the MCP face), and re-calling with project=
                 # is the recovery. Never answer from a guess.
+                anchor_help = (
+                    STATELESS_HINT
+                    if request_era() == ERA_STATELESS
+                    else "(sessions reset when the crib daemon restarts): pass "
+                    "project=<name> or project_path=<a path in the repo>, or "
+                    "call project_use once"
+                )
                 raise CribUserError(
-                    "no project is anchored for this session (sessions reset when "
-                    "the crib daemon restarts): pass project=<name> or "
-                    "project_path=<a path in the repo>, or call project_use once. "
-                    "Projects: " + ", ".join(sorted(crib.projects()))
+                    "no project is anchored for this session " + anchor_help
                 )
             return finish(fn(**a), res, project, path)
 

@@ -4888,14 +4888,23 @@ class Crib:
         `project_use` MCP tool and the in-process CLI verb (session state is
         process-local here)."""
         from .paths import check_project_name
-        from .session import session_state
+        from .session import STATELESS_HINT, adopt_into_session
 
         # Validated BEFORE the eager mkdir — otherwise `../x` would create a
         # namespace outside the projects tree on the way in.
         check_project_name(project)
         created = self.project_is_new(project)
         self.notes_dir(project)  # eager mkdir — no phantom namespace
-        session_state().current_project = project
+        # The ONE anchor gate: on the stateless era the pointer would die after
+        # this call, so don't write it — say so instead (the CLI, which anchors
+        # process-locally, never sees the `anchored: false` shape).
+        if not adopt_into_session(project):
+            return {
+                "current_project": project,
+                "created": created,
+                "anchored": False,
+                "note": STATELESS_HINT,
+            }
         return {"current_project": project, "created": created}
 
     def current_project(self, cwd: Path | None = None) -> dict[str, Any]:
