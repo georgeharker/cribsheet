@@ -930,6 +930,23 @@ def build_server(crib: Crib | None = None):
                     pass
         return _switch_if_created(await task)
 
+    @crib_tool("none")
+    async def project_relocate(
+        project: str | None = None,
+        project_path: str | None = None,
+        source: str | None = None,
+    ) -> dict[str, Any]:
+        """Re-point an indexed project at its repo's NEW location — the checkout
+        was renamed or moved on this machine. IDENTITY-KEEPING: nothing churns (no
+        chunk re-embeds, no ring moves, no citation rewrites); only the recorded
+        absolute paths move — the code index's .source_root (its entries key on
+        repo-relative paths), the doc-sources registry roots, this repo's own .crib
+        project line when it names the old name, and the watchers. Pass
+        project=<name> AND project_path=<the repo's new dir>; optionally
+        source=<repo segment> to disambiguate when several in-situ sources are
+        dead. A reindex after is cheap but not required — it's the same index."""
+        return await crib.project_relocate(project, project_path, source)
+
     @crib_tool("source")
     def project_status(
         project: str | None = None, project_path: str | None = None

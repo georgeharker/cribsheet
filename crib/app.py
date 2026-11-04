@@ -3223,6 +3223,214 @@ class Crib:
                     out.append(f"{pillar.spec.name}/{rel}")
         return out
 
+    async def project_relocate(
+        self,
+        project: str | None = None,
+        project_path: str | None = None,
+        source: str | None = None,
+    ) -> dict[str, Any]:
+        """Re-point an already-indexed project at its repo's NEW location on this
+        machine (the checkout was renamed or moved). IDENTITY-KEEPING: nothing
+        churns — no chunk ids, no ring moves, no re-embed, no citation rewrites.
+        Only the three places that record an ABSOLUTE path move:
+
+        - the code index's `.source_root` (entries key on repo-relative paths,
+          so the same index serves the new checkout as-is)
+        - the doc-sources registry (`sources/<repo>/ -> abs root`), every entry
+          whose root is dead AND whose repo-segment matches the new dir's name
+          or the project name (or exactly one whose `source=<segment>` names)
+        - the repo's OWN `.crib` `project:` line when it still names the old
+          name (THIS repo, not a foreign one — the same rule project_rename
+          applies; it reports `crib_needs_fix` for a hand-spelled variant)
+        - the live code/doc + in-repo-store watchers, and the machine stub's
+          portable `store_root` when the project is adopted in-repo
+
+        A reindex after relocate is CHEAP (content-hash gate) but not required —
+        it is the same index. Only future FRESH registrations use the repo's NEW
+        dir name (`sources/<new-name>/…`); the registered prefix keeps its name,
+        which is what keeps existing citations resolvable.
+
+        Fences: explicit `project=` + `project_path=` (never the session
+        default, never a cwd guess); a `.crib` must exist at/above the new path
+        (a moved repo carries its own); refuses mid-sweep; cross-project doc
+        citations FROM other projects' registries are out of scope (each registry
+        is per-project and machine-local)."""
+        from .config import CribLink, ProjectConfig, portable_path
+        from .sources import SRC_PREFIX
+        from .watch import PILLAR_SEGMENTS
+
+        if not project or not project_path:
+            raise CribUserError(
+                "project_relocate: pass project=<name> AND "
+                "project_path=<the repo's new dir> — a relocation names both, "
+                "never the session default and never a cwd guess"
+            )
+        old = check_project_name(project)
+        new_root = Path(project_path).expanduser().resolve()
+        if not new_root.is_dir():
+            raise CribUserError(f"no such directory: {new_root}")
+        if old in self.code.sweeps or old in self.code_jobs:
+            raise CribUserError(
+                f"a code-index sweep is running for {old!r} — project_cancel "
+                "or project_wait it first"
+            )
+        if self._reconcile_remaining is not None:
+            raise CribUserError(
+                "a background reconcile sweep is running — wait for it to "
+                "finish (see `crib status`) and retry"
+            )
+        pp = self.project_paths(old)
+        gdir = self.paths.project_dir(old)
+        if not gdir.exists() and not pp.in_repo:
+            raise CribUserError(f"no such project: {old!r}")
+
+        link = CribLink.find(new_root)
+        if link is None or link.root is None:
+            raise CribUserError(
+                f"no .crib found from {new_root} upward — a moved repo carries "
+                "its own committed .crib; if this clone lacks one, set it up "
+                "(project_setup / a hand-written .crib naming the project) and "
+                "retry"
+            )
+        if link.project not in (old, project):
+            # OUR-stale case: the repo still names the PRE-RENAME project — the
+            # rename itself declares this rewrite legal, but could not run (the
+            # dir had already moved). Evidence required: THIS project's registry
+            # holds a dead source for that repo. No evidence ⇒ foreign; refuse.
+            ro0 = self._source_roots(old)
+            stale_evidence = any(
+                not Path(r).is_dir()
+                for p, r in ro0.all().items()
+                if p[len(SRC_PREFIX) :].strip("/") in (link.project, link.root.name)
+            )
+            if not stale_evidence:
+                raise CribUserError(
+                    f"{new_root} belongs to project {link.project!r} (its .crib "
+                    f"says so), not {old!r} — relocations are about THIS repo"
+                )
+
+        # 1. The repo's own .crib, when it still names the pre-rename project —
+        #    the exact rewrite project_rename does, which could not run here
+        #    because the dir had ALREADY moved when the rename was called.
+        crib_rewritten: str | None = None
+        if link.project != old:
+            crib_file = link.root / ".crib"
+            text = crib_file.read_text()
+            lines, rewritten = [], False
+            for ln in text.splitlines(keepends=True):
+                if ln.strip() == f"project: {link.project}":
+                    lines.append(f"project: {old}\n")
+                    rewritten = True
+                else:
+                    lines.append(ln)
+            if not rewritten:
+                raise CribUserError(
+                    f"{crib_file} does not name its project on its own line — "
+                    "edit it (project: " + old + ") and retry"
+                )
+            crib_file.write_text("".join(lines))
+            crib_rewritten = str(crib_file)
+            link = CribLink.find(new_root)  # reload under the corrected name
+            if link is None or link.root is None:  # pragma: no cover — just rewrote it
+                raise CribUserError(f"created .crib at {new_root} failed to parse")
+
+        # 2. The machine stub's portable store_root, for an in-repo store: the
+        #    notes live in the repo (they moved WITH it), but the stub still
+        #    pointed at the old machine path.
+        store_repointed: str | None = None
+        if pp.in_repo and pp.store_root is not None and not pp.store_root.exists():
+            if link.store_dir is None:
+                raise CribUserError(
+                    f"{old} was in-repo at a store that moved with the repo, but "
+                    f"{link.root / '.crib'} declares no `store:` — fix the .crib "
+                    "and retry"
+                )
+            for seg in PILLAR_SEGMENTS:  # pragma: no cover — store sanity
+                (link.store_dir / seg).mkdir(parents=True, exist_ok=True)
+            pcfg = ProjectConfig.load(pp.config_file, old)
+            pcfg.store_root = portable_path(link.store_dir, self.config.locations)
+            pcfg.save(pp.config_file)
+            self.project_paths.invalidate(old)
+            if self._watcher is not None:
+                self._watcher.forget_store(pp.store_root)
+                self._watcher.add_store(old, link.store_dir)
+            store_repointed = str(link.store_dir)
+
+        # 3. The doc-sources registry: prefixes whose root is dead AND whose
+        #    repo-segment matches the new dir's name or the project name — the
+        #    repo was renamed, so the segment can be either. `source=` picks
+        #    explicitly when the match is ambiguous.
+        ro = self._source_roots(old)
+        dead = {
+            p: r
+            for p, r in ro.all().items()
+            if not Path(r).is_dir() and p.startswith(SRC_PREFIX)
+        }
+        if source:
+            seg = source.strip("/")
+            cands = {
+                p: r for p, r in dead.items() if p[len(SRC_PREFIX) :].strip("/") == seg
+            }
+            if not cands:
+                raise CribUserError(
+                    f"no registered source matches {source!r} for {old!r} under "
+                    f"{pp.project_dir} (registered: {sorted(ro.all()) or 'none'})"
+                )
+        else:
+            seg_of = lambda p: p[len(SRC_PREFIX) :].strip("/")  # noqa: E731
+            cands = {p: r for p, r in dead.items() if seg_of(p) in (new_root.name, old)}
+            if not cands and len(dead) == 1:
+                cands = dict(dead)  # one dead source: it is unambiguous
+            elif not cands and len(dead) > 1:
+                raise CribUserError(
+                    f"{old} has several dead in-situ sources "
+                    f"{sorted(dead)} — pass source=<repo segment> for this "
+                    "relocation"
+                )
+            if not cands:
+                cands = {}
+        prefixes_repointed: list[str] = []
+        for p in cands:
+            ro.upsert(p, new_root)
+            prefixes_repointed.append(p)
+
+        # 4. The code index's source root: entries key on repo-RELATIVE paths,
+        #    so this one rewrite re-homes the whole index.
+        from .codeindex import SymbolIndex
+
+        symbol_index = SymbolIndex(gdir)
+        old_si_root = symbol_index.source_root()
+        source_root_repointed = False
+        if old_si_root != new_root and (
+            old_si_root is None or not old_si_root.exists()
+        ):
+            symbol_index.set_source_root(new_root)
+            self.code.cache.pop(old, None)
+            self._bump_code_epoch(old)
+            if self._code_watcher is not None:
+                self._code_watcher.watch_root(old, new_root)  # re-point
+            source_root_repointed = True
+
+        return {
+            "project": old,
+            "relocated": True,
+            "root": str(new_root),
+            "source_root": (
+                {"from": str(old_si_root), "to": str(new_root)}
+                if source_root_repointed
+                else None
+            ),
+            "store_repointed": store_repointed,
+            "crib_rewritten": crib_rewritten,
+            "message": (
+                f"relocated {old!r}'s repo to {new_root} — identity kept: no "
+                "chunks re-embedded, citations resolvable. Dead roots re-pointed: "
+                + ", ".join(sorted(prefixes_repointed) or ["none"])
+                + (f"; .crib rewritten ({crib_rewritten})" if crib_rewritten else "")
+                + (f"; store re-pointed ({store_repointed})" if store_repointed else "")
+            ),
+        }
+
     async def learning_migrate(
         self, project: str | None = None, cwd: Path | None = None, apply: bool = False
     ) -> dict[str, Any]:

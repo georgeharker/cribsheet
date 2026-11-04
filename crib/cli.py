@@ -2867,6 +2867,19 @@ VERBS: dict[str, Verb] = {
         wants_cwd=False,  # the MCP tool takes no project_path
         mcp="project to",
     ),
+    "project relocate": Verb(
+        "project_relocate",
+        lambda a: {
+            "project": a.project,
+            "project_path": a.project_path,
+            "source": getattr(a, "source", None),
+        },
+        _E,  # the report is structured; json-aware print
+        is_async=True,
+        policy="none",
+        wants_cwd=False,  # the new dir is named, never inferred from cwd
+        mcp=_PROJ + " source=None",
+    ),
     "project delete": _DELETE_VERB,
     # code index
     "code lookup": Verb(

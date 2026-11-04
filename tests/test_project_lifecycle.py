@@ -562,3 +562,105 @@ def test_delete_unwatches_code_watcher_for_global_project(crib, repo, monkeypatc
     assert cw.watches("watched-global")
     run(crib.project_delete(project="watched-global"))
     assert not cw.watches("watched-global")
+
+
+# --- project_relocate -------------------------------------------------------
+
+
+def test_relocate_repoints_registry_source_root_and_crib(tmp_path, crib):
+    """The repo MOVED (dir renamed); relocate is identity-keeping: the registered
+    doc-source prefix keeps its NAME (so citations stay valid) but its root moves
+    to the new checkout; the code index's .source_root moves; the repo's .crib
+    still names THIS project so it is NOT rewritten. No chunks re-embedded."""
+    import shutil
+    import json as _json
+
+    from crib.codeindex import SymbolIndex
+    from crib.sources import SRC_PREFIX
+
+    old_dir = tmp_path / "repos" / "toucan-old"
+    old_dir.mkdir(parents=True)
+    (old_dir / "docs").mkdir()
+    (old_dir / "docs" / "guide.md").write_text("# Guide\n\nrelocate me\n")
+    (old_dir / ".crib").write_text('project: toucan\ndocs: ["docs/*.md"]\n')
+
+    run(crib.project_create(project="toucan"))
+    out = run(crib.index_docs_insitu("toucan", old_dir))
+    old_prefix = out["prefix"]
+    # the prefix derives from the DIR name at index time (dir = 'toucan-old')
+    assert old_prefix == f"{SRC_PREFIX}toucan-old/"
+    SymbolIndex(crib.paths.project_dir("toucan")).set_source_root(old_dir)
+    old_prefixes = sorted(crib._source_roots("toucan").all())
+
+    # THE MOVE: the repo disappears from the old dir, appears under a new name
+    new_dir = tmp_path / "repos" / "toucan-new"
+    shutil.move(str(old_dir), str(new_dir))
+
+    res = run(crib.project_relocate(project="toucan", project_path=str(new_dir)))
+    assert res["relocated"] is True
+    assert res["crib_rewritten"] is None  # .crib names THIS project already
+    # registry: SAME prefix name, NEW root — the identity that keeps citations
+    after = crib._source_roots("toucan").all()
+    assert sorted(after) == old_prefixes  # the prefix name was KEPT
+    assert after[old_prefix] == str(new_dir)
+    # the in-situ doc resolve()s through the new location again
+    solved = crib._source_roots("toucan").resolve(f"{old_prefix}docs/guide.md")
+    assert solved is not None and solved.is_file()
+    assert solved.read_text().startswith("# Guide")
+    # the code index's absolute root moved with the one rewrite
+    si = SymbolIndex(crib.paths.project_dir("toucan"))
+    assert si.source_root() == new_dir
+    # the result is json-serializable (it rides the MCP face)
+    _json.dumps(res)
+
+
+def test_relocate_rewrites_own_crib_stale_project_line(tmp_path, crib):
+    """A repo whose .crib still names the PRE-RENAME project: the relocate
+    rewrites that one line (this repo, not a foreign one) — the rename itself
+    couldn't, because the dir had already moved. The rename-legal rewrite is
+    proven by the registry evidence: a dead source for this repo (dir == project
+    name throughout — the real-world shape this fence exists for)."""
+    import shutil
+
+    repo = tmp_path / "repos" / "old-name"
+    repo.mkdir(parents=True)
+    (repo / "docs").mkdir()
+    (repo / "docs" / "g.md").write_text("g\n")
+    (repo / ".crib").write_text('project: old-name\ndocs: ["docs/*.md"]\n')
+    run(crib.project_create(project="old-name"))
+    run(crib.index_docs_insitu("old-name", repo))
+    # the namespace renames; the registry (entries key on repo paths) moves with
+    # the tree — still named sources/old-name/
+    run(crib.project_rename(project="old-name", to="renamed"))
+    assert "sources/old-name/" in crib._source_roots("renamed").all()
+    # the dir moves AFTER (the repo's .crib still says project: old-name)
+    moved = tmp_path / "repos2" / "renamed-new"
+    shutil.move(str(repo), str(moved))
+    res = run(crib.project_relocate(project="renamed", project_path=str(moved)))
+    # the .crib NOW names the project the namespace was renamed to
+    assert "project: renamed" in (moved / ".crib").read_text()
+    assert res["crib_rewritten"] == str(moved / ".crib")
+
+
+def test_relocate_fences(crib, tmp_path):
+    # never the session default or a cwd guess: both names are required
+    with pytest.raises(CribUserError, match="pass project"):
+        run(crib.project_relocate())
+    with pytest.raises(CribUserError, match="pass project"):
+        run(crib.project_relocate(project="only-one"))
+    # a missing dir
+    with pytest.raises(CribUserError, match="no such directory"):
+        run(crib.project_relocate(project="ghost", project_path=str(tmp_path / "nope")))
+    # no .crib in the moved tree
+    bare = tmp_path / "bare"
+    bare.mkdir()
+    run(crib.project_create(project="nolink"))
+    with pytest.raises(CribUserError, match="no .crib found"):
+        run(crib.project_relocate(project="nolink", project_path=str(bare)))
+    # a .crib naming a Foreign project
+    foreign = tmp_path / "foreign"
+    foreign.mkdir()
+    (foreign / ".crib").write_text("project: someoneelse\n")
+    run(crib.project_create(project="mine"))
+    with pytest.raises(CribUserError, match="someoneelse"):
+        run(crib.project_relocate(project="mine", project_path=str(foreign)))
