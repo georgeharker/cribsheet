@@ -488,8 +488,7 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
     mcp = FastMCP(
         "cribsheet",
         instructions=(
-            preamble
-            + "Shared, durable project memory: markdown notes with semantic + "
+            preamble + "Shared, durable project memory: markdown notes with semantic + "
             "keyword search, persisting across sessions and shared across "
             "agents and tools. Use it IN ADDITION TO any built-in memory you "
             "have, not instead of — this is the cross-session, cross-agent "
@@ -721,7 +720,9 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
             set_name = tool_set_of(fn.__name__)
             if _EXPOSED is not None and set_name not in _EXPOSED:
                 return fn  # not exposed on THIS deployment: never registered
-            if set_name in _RO and fn.__name__ not in READ_ONLY_TOOLS.get(set_name, frozenset()):
+            if set_name in _RO and fn.__name__ not in READ_ONLY_TOOLS.get(
+                set_name, frozenset()
+            ):
                 return fn  # a read-only set: the mutating verbs never register
             impl = (
                 fn
