@@ -1441,14 +1441,6 @@ def build_parser() -> argparse.ArgumentParser:
         "prefix (citations keep spelling the old dir name; the docs rehash "
         "is skipped so no double-mount)",
     )
-    _sp.add_argument(
-        "--wait-s",
-        type=float,
-        default=None,
-        dest="wait_s",
-        help="block up to N seconds joining the rekey job (default: a "
-        "running handle returns at once; re-invoke to poll/join)",
-    )
     _pf = pjsub.add_parser(
         "forget", help="clear the code index (keeps learnings/notes)"
     )
@@ -2907,13 +2899,12 @@ VERBS: dict[str, Verb] = {
             "project_path": a.project_path,
             "source": getattr(a, "source", None),
             "keep_prefix": getattr(a, "keep_prefix", False),
-            "wait_s": getattr(a, "wait_s", None),
         },
         _E,  # the report is structured; json-aware print
         is_async=True,
         policy="none",
         wants_cwd=False,  # the new dir is named, never inferred from cwd
-        mcp=_PROJ + " source=None keep_prefix=False wait_s=None",
+        mcp=_PROJ + " source=None keep_prefix=False",
     ),
     "project delete": _DELETE_VERB,
     # code index

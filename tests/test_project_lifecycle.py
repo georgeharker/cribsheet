@@ -846,3 +846,80 @@ def test_relocate_sweep_fence_still_guards_non_relocate_sweeps(crib, tmp_path):
         # don't let the 999s sleeper fire at teardown
         task = crib.code_jobs.pop("toucan")["task"]
         task.cancel() if hasattr(task, "cancel") else None
+
+
+def test_project_status_jobs_is_the_nonblocking_poll(tmp_path, crib):
+    """George's polling rule: never block — poll. While the relocate JOB runs,
+    project_status's `jobs` section reports it (running + done/total + the
+    banked counts); a FAILED job shows the error and never raises; after a
+    normal completion the row says so. Calling status must NEVER error while
+    anything runs — the poll IS the point."""
+    import shutil
+
+    old_dir = tmp_path / "repos" / "toucan-old"
+    old_dir.mkdir(parents=True)
+    (old_dir / "docs").mkdir()
+    (old_dir / "docs" / "guide.md").write_text("# Guide\n\nrelocate me\n")
+    (old_dir / ".crib").write_text('project: toucan\ndocs: ["docs/*.md"]\n')
+    run(crib.project_create(project="toucan"))
+    run(crib.index_docs_insitu("toucan", old_dir))
+    new_dir = tmp_path / "repos" / "toucan-new"
+    shutil.move(str(old_dir), str(new_dir))
+
+    async def flow():
+        # start the job; the handle says running at once
+        handle = await crib.project_relocate(
+            project="toucan", project_path=str(new_dir)
+        )
+        assert handle.get("running") is True
+        # THE POLL, mid-job: a plain read, no error, the row is there
+        mid = crib.project_status(project="toucan")
+        rows = [j for j in mid["jobs"] if j["kind"] == "relocate"]
+        assert rows and rows[0]["running"] is True
+        assert rows[0]["project"] == "toucan"
+        assert rows[0]["phase"] == "rekey+rehash"
+        # join: the poll afterwards shows the banked counts
+        res = await crib.project_relocate(
+            project="toucan", project_path=str(new_dir), wait_s=120
+        )
+        after = crib.project_status(project="toucan")
+        reloc = [
+            j
+            for j in after["jobs"]
+            if j["kind"] == "relocate" and j["project"] == "toucan"
+        ]
+        assert not reloc or reloc[0]["running"] is False
+        return mid, res
+
+    mid, res = asyncio.run(flow())
+    # the mid-poll ALSO banked whatever the job had finished by then
+    assert "jobs" in mid and any(j["kind"] == "relocate" for j in mid["jobs"])
+    assert res["citations_rewritten"] >= 0
+
+
+def test_project_status_shows_a_failed_job_as_a_row_not_an_exception(crib):
+    """A job that RAISES is reported by the poll — the status read never
+    re-raises it (an error row, running: false, error named)."""
+
+
+    async def seed_dead_job():
+        async def boom():
+            raise RuntimeError("mid-rekey explosion")
+
+        crib.relocate_jobs["gone"] = {
+            "task": asyncio.ensure_future(boom()),
+            "state": {"done": 3, "total": 9, "citations": 1, "mount": []},
+        }
+        # let the failing task finish (inside this loop, so the future lands)
+        await asyncio.sleep(0)
+
+    asyncio.run(seed_dead_job())
+    rows = crib._job_rows()  # the poll — must not re-raise
+    gone = [r for r in rows if r["project"] == "gone"]
+    assert gone, rows
+    assert gone[0]["running"] is False and gone[0]["complete"] is False
+    assert "mid-rekey explosion" in (gone[0].get("error") or "")
+    # and the banked progress still rides the row
+    assert gone[0]["done"] == 3 and gone[0]["total"] == 9
+    # clean up so other tests don't see the corpse
+    crib.relocate_jobs.pop("gone", None)

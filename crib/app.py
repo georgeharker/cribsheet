@@ -3492,8 +3492,9 @@ class Crib:
                     "progress": state,
                     "resume_hint": (
                         "the rekey runs daemon-owned (a client disconnect can't "
-                        "cancel it) — re-invoke to poll/join, or with "
-                        "wait_s=<seconds> to block"
+                        "cancel it) — POLL it, don't block: project_status "
+                        "carries the live progress; re-invoking the verb joins "
+                        "or finishes it"
                     ),
                 }
             started = time.monotonic()
@@ -3506,7 +3507,9 @@ class Crib:
                 "relocated": True,
                 "running": True,
                 "progress": state,
-                "resume_hint": "still rekeying — re-invoke to join/poll",
+                "resume_hint": (
+                    "still rekeying — poll project_status; re-invoking joins"
+                ),
             }
 
         # 6. The FINISHED path (or nothing to do): the heavy result if a job ran
@@ -3853,11 +3856,92 @@ class Crib:
         """Delegate to Refs (crib/refs.py) — a project's `.crib` refs: targets."""
         return self.refs.project_refs(proj)
 
+    def _job_rows(self, proj: str | None = None) -> list[dict[str, Any]]:
+        """Every long-running project job that a POLL can see — the relocate
+        rekey/citation phase, the code-index sweeps, the background reconcile.
+        Calling this while ANY of them run is the point of it: it never errors,
+        never blocks; it reports running/complete/failed + live counts, and the
+        finished counts a job already banked (citations rewritten, mount named,
+        chunks rekeyed)."""
+        rows: list[dict[str, Any]] = []
+        for p, job in sorted(self.relocate_jobs.items()):
+            if proj is not None and p != proj:
+                continue
+            state = dict(job.get("state") or {})
+            t = job["task"]
+            done, error = t.done(), None
+            if done:
+                try:
+                    exc = t.exception()  # never re-raised — reported, polled
+                    if exc is not None:
+                        error = f"{type(exc).__name__}: {exc}"
+                except Exception as e:  # noqa: BLE001 — the poll never raises
+                    error = f"{type(e).__name__}: {e}"
+            rows.append(
+                {
+                    "kind": "relocate",
+                    "project": p,
+                    "phase": "rekey+rehash",
+                    "running": not done,
+                    "complete": done and error is None,
+                    "error": error,
+                    "done": state.get("done", 0),
+                    "total": state.get("total", 0),
+                    "citations_rewritten": state.get("citations", 0),
+                    "mount_renamed": state.get("mount") or [],
+                }
+            )
+        for p, meta in sorted(self.code_jobs.items()):
+            if proj is not None and p != proj:
+                continue
+            sw = self.code.sweeps.get(p) or {}
+            done = meta["task"].done()
+            rows.append(
+                {
+                    "kind": "code_index",
+                    "project": p,
+                    "phase": "extract+describe+embed",
+                    "running": not done,
+                    "complete": done,
+                    "done": sw.get("done"),
+                    "total": sw.get("total"),
+                    **({"line": sw.get("line")} if sw.get("line") else {}),
+                }
+            )
+        for p in sorted(self.code.sweeps):
+            if p in self.code_jobs or (proj is not None and p != proj):
+                continue
+            sw = self.code.sweeps[p] or {}
+            rows.append(
+                {
+                    "kind": "code_index",
+                    "project": p,
+                    "phase": "sweep (no live call; project_index re-invokes to join)",
+                    "running": sw.get("running", True),
+                    "complete": False,
+                    "done": sw.get("done"),
+                    "total": sw.get("total"),
+                }
+            )
+        if self._reconcile_remaining is not None:
+            rows.append(
+                {
+                    "kind": "reconcile",
+                    "project": "ALL",
+                    "phase": "re-embed sweep",
+                    "running": True,
+                    "complete": False,
+                    "remaining": self._reconcile_remaining,
+                }
+            )
+        return rows
+
     def project_status(
         self, project: str | None = None, cwd: Path | None = None
     ) -> dict[str, Any]:
         """Is this project code-indexed? symbol/file counts, kind breakdown, the
-        `.crib` source paths — for orienting before setup/index."""
+        `.crib` source paths — for orienting before setup/index. Also the POLL
+        surface for long-running jobs (see `jobs`)."""
         from collections import Counter
 
         from .codeindex import SymbolIndex
@@ -3889,6 +3973,11 @@ class Crib:
             # live reindex progress ({done,total}) while a sweep runs — the poll signal
             # for a budgeted project_index that returned complete=False
             "indexing": self.code.sweeps.get(proj),
+            # the non-blocking poll section: every long-running job for this
+            # project (relocate rekey, code sweep, reconcile) — running/
+            # complete/failed + the counts already banked. NEVER errors, never
+            # blocks; this is what the model polls instead of waiting.
+            "jobs": self._job_rows(proj),
             "doc_sources": srcs,
             "doc_chunks": doc_count,
             "crib": (str(link.root / ".crib") if link and link.root else None),

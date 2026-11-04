@@ -853,10 +853,9 @@ def build_server(crib: Crib | None = None):
         `project_path=<the repo dir>` (a `.crib` is auto-created if missing); a bare
         `project=<name>` re-indexes an ALREADY-INDEXED project from its recorded root.
 
-        Emits PROGRESS markers while the sweep runs (`<proj>: 42/317 files (13%) ·
-        2.1/s · eta 2:05`), so a long index streams live progress and doesn't
-        idle-time-out — and the rate/eta is what a client needs to size its call
-        timeout instead of guessing. It runs to completion in one call.
+ Emits PROGRESS markers while the sweep runs (`<proj>: 42/317 files (13%) ·
+        2.1/s · eta 2:05`) — the call returns when the sweep completes; while it
+        runs, `project_status`'s `jobs` section is the non-blocking poll.
         (`project_status` also carries the live `indexing` counts.) If your client
         enforces a hard call timeout anyway, two levers:
         - `wait_s=<seconds>` bounds THIS call: the final result if the sweep
@@ -936,27 +935,22 @@ def build_server(crib: Crib | None = None):
         project_path: str | None = None,
         source: str | None = None,
         keep_prefix: bool = False,
-        wait_s: float | None = None,
     ) -> dict[str, Any]:
         """The move-and-rename verb: a repo project's checkout was moved and/or
-        renamed on this machine (works after the fact — the old path may be gone).
-        Re-points everything that recorded the OLD absolute path AND, when the
-        directory was renamed, re-homes the `sources/<old-name>/` mount prefix to
-        `sources/<new-name>/…`: the doc chunks rekey (project+relpath hash — the
-        rare verb's re-embed cost, same class as project_rename) and every
-        citation in THIS project's notes is rewritten to the new spelling (the
-        prior note stashed to the ring first). The code index's .source_root and
-        this repo's own .crib `project:` line (when it names the pre-rename name,
-        fenced by dead-source evidence) are rewritten; the heavy half runs as a
-        DAEMON-OWNED job (a client disconnect can't cancel it mid-embed):
-        wait_s=None returns a running handle with progress (re-invoke to poll or
-        join); wait_s=<seconds> blocks. A trailing CODE rehash surface uses
-        project_wait. Foreign sites are REPORTED, not edited. Pass project=<name>
-        AND project_path=<the repo's new dir>; source=<segment> disambiguates
-        dead in-situ sources; keep_prefix=true = identity-keeping only."""
-        return await crib.project_relocate(
-            project, project_path, source, keep_prefix, wait_s
-        )
+        renamed on this machine (works after the fact — the old path may be gone,
+        the project renamed, an earlier relocate cut halfway — re-invoke RESUMES).
+        The fast half (code-index .source_root, doc-source mounts, the repo's own
+        .crib line when it names the pre-rename name, an in-repo store stub) is
+        re-pointed at once and idempotent. The HEAVY half — re-homing the
+        `sources/<old>/` mount when the DIR was renamed (doc chunks rekey +
+        re-embed; every citation in THIS project's notes rewritten to the new
+        spelling) — runs as a DAEMON-OWNED job: the call returns a RUNNING HALF
+        at once with `progress` + `resume_hint`. DON'T WAIT: poll `project_status`
+        (its `jobs` section carries live done/total + the banked counts);
+        re-invoking the verb joins when the job is still running. A trailing CODE
+        rehash sweep joins too — never an error. keep_prefix=true = identity-
+        keeping only. Foreign sites are REPORTED, not edited."""
+        return await crib.project_relocate(project, project_path, source, keep_prefix)
 
     @crib_tool("source")
     def project_status(
