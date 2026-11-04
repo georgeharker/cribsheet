@@ -557,7 +557,7 @@ wheels = [
 
 [[package]]
 name = "cribsheet"
-version = "0.21.2.dev4"
+version = "0.21.3.dev1"
 source = { editable = "." }
 dependencies = [
     { name = "chromadb" },
