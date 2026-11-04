@@ -593,7 +593,9 @@ def test_relocate_renames_mount_rekeys_chunks_and_repoints(tmp_path, crib):
 
     new_dir = tmp_path / "repos" / "toucan-new"
     shutil.move(str(old_dir), str(new_dir))
-    res = run(crib.project_relocate(project="toucan", project_path=str(new_dir), wait_s=120))
+    res = run(
+        crib.project_relocate(project="toucan", project_path=str(new_dir), wait_s=120)
+    )
     assert res["relocated"] is True
     assert res["crib_rewritten"] is None  # .crib names THIS project already
     # the mount RENAMED to the new dir's name (that is the default's point)
@@ -701,7 +703,9 @@ def test_relocate_rewrites_citations_and_own_crib_after_the_fact(tmp_path, crib)
     assert rows, "expected a stale row (source-missing)"
     assert any("source-missing" in json.dumps(r) for r in rows), rows
 
-    res = run(crib.project_relocate(project="toucan2", project_path=str(moved), wait_s=180))
+    res = run(
+        crib.project_relocate(project="toucan2", project_path=str(moved), wait_s=180)
+    )
     # the .crib NOW names the project the namespace was renamed to
     assert "project: toucan2" in (moved / ".crib").read_text()
     assert res["crib_rewritten"] == str(moved / ".crib")
@@ -735,7 +739,9 @@ def test_relocate_reports_foreign_refs_never_edits_them(tmp_path, crib, repo):
     other_repo.mkdir(parents=True, exist_ok=True)
     (other_repo / ".crib").write_text("project: other\nrefs:\n  - toucan\n")
     crib._source_roots("other").upsert("sources/other/", other_repo)
-    res = run(crib.project_relocate(project="toucan", project_path=str(repo), wait_s=120))
+    res = run(
+        crib.project_relocate(project="toucan", project_path=str(repo), wait_s=120)
+    )
     # nothing to re-point (the repo never moved / no dead source) — but the
     # foreign ref rows ride the report
     assert res["prefixes_repointed"] == [] and res["mount_renamed"] == []
@@ -773,3 +779,70 @@ def test_relocate_fences(crib, tmp_path):
     run(crib.project_create(project="mine"))
     with pytest.raises(CribUserError, match="someoneelse"):
         run(crib.project_relocate(project="mine", project_path=str(foreign)))
+
+
+def test_relocate_joins_its_own_sweep_instead_of_fencing(tmp_path, crib):
+    """The peer's poll failure: while the JOB's trailing code rehash runs, a
+    re-invoke must JOIN the job — the sweep-conflict fence exists only for a
+    sweep NOT ours (the fence now runs only when no relocate context exists).
+    One event loop: the job is daemon-owned WITHIN the loop."""
+    import shutil
+
+    old_dir = tmp_path / "repos" / "toucan-old"
+    old_dir.mkdir(parents=True)
+    (old_dir / "docs").mkdir()
+    (old_dir / "docs" / "guide.md").write_text("# Guide\n\nrelocate me\n")
+    (old_dir / ".crib").write_text('project: toucan\ndocs: ["docs/*.md"]\n')
+    run(crib.project_create(project="toucan"))
+    run(crib.index_docs_insitu("toucan", old_dir))
+    new_dir = tmp_path / "repos" / "toucan-new"
+    shutil.move(str(old_dir), str(new_dir))
+
+    async def flow():
+        # start the job WITHOUT waiting → a running handle
+        handle = await crib.project_relocate(
+            project="toucan", project_path=str(new_dir)
+        )
+        assert handle.get("running") is True and "resume_hint" in handle
+        # SIMULATE the job's own trailing rehash registering its sweep (the
+        # poll once died on exactly this): a code_jobs entry while the job runs
+        standing = asyncio.ensure_future(asyncio.sleep(0.5))
+        crib.code_jobs["toucan"] = {"task": standing, "crib_at": None}
+        try:
+            again = await crib.project_relocate(
+                project="toucan", project_path=str(new_dir)
+            )
+            # JOIN, not the sweep fence
+            assert again.get("running") is True, again
+            assert "progress" in again and "resume_hint" in again
+        finally:
+            crib.code_jobs.pop("toucan", None)
+            standing.cancel()
+        # and once it completes, a re-invoke returns the RESULT (no zombie job)
+        return await crib.project_relocate(
+            project="toucan", project_path=str(new_dir), wait_s=120
+        )
+
+    res = asyncio.run(flow())
+    assert res.get("mount_renamed") or res.get("prefixes_repointed") == []
+    assert "crib_rewritten" in res
+
+
+def test_relocate_sweep_fence_still_guards_non_relocate_sweeps(crib, tmp_path):
+    """The fence's real job — a FOREIGN (non-relocate) sweep for this project
+    still refuses, naming project_cancel/project_wait."""
+    from crib.codeindex import SymbolIndex
+
+    repo = tmp_path / "repos" / "toucan"
+    repo.mkdir(parents=True)
+    (repo / ".crib").write_text("project: toucan\n")
+    run(crib.project_create(project="toucan"))
+    SymbolIndex(crib.paths.project_dir("toucan")).set_source_root(repo)
+    crib.code_jobs["toucan"] = {"task": asyncio.sleep(999), "crib_at": None}
+    try:
+        with pytest.raises(CribUserError, match="sweep is running"):
+            run(crib.project_relocate(project="toucan", project_path=str(repo)))
+    finally:
+        # don't let the 999s sleeper fire at teardown
+        task = crib.code_jobs.pop("toucan")["task"]
+        task.cancel() if hasattr(task, "cancel") else None

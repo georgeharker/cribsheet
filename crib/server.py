@@ -936,6 +936,7 @@ def build_server(crib: Crib | None = None):
         project_path: str | None = None,
         source: str | None = None,
         keep_prefix: bool = False,
+        wait_s: float | None = None,
     ) -> dict[str, Any]:
         """The move-and-rename verb: a repo project's checkout was moved and/or
         renamed on this machine (works after the fact — the old path may be gone).
@@ -946,13 +947,16 @@ def build_server(crib: Crib | None = None):
         citation in THIS project's notes is rewritten to the new spelling (the
         prior note stashed to the ring first). The code index's .source_root and
         this repo's own .crib `project:` line (when it names the pre-rename name,
-        fenced by dead-source evidence) are rewritten; the code + docs rehash at
-        the new path runs at the end (cheap, content-hash gate). Foreign sites are
-        REPORTED, not edited (other projects citing this repo). Pass
-        project=<name> AND project_path=<the repo's new dir>; source=<segment>
-        disambiguates dead in-situ sources; keep_prefix=true = identity-keeping
-        only (citations keep spelling the old dir name)."""
-        return await crib.project_relocate(project, project_path, source, keep_prefix)
+        fenced by dead-source evidence) are rewritten; the heavy half runs as a
+        DAEMON-OWNED job (a client disconnect can't cancel it mid-embed):
+        wait_s=None returns a running handle with progress (re-invoke to poll or
+        join); wait_s=<seconds> blocks. A trailing CODE rehash surface uses
+        project_wait. Foreign sites are REPORTED, not edited. Pass project=<name>
+        AND project_path=<the repo's new dir>; source=<segment> disambiguates
+        dead in-situ sources; keep_prefix=true = identity-keeping only."""
+        return await crib.project_relocate(
+            project, project_path, source, keep_prefix, wait_s
+        )
 
     @crib_tool("source")
     def project_status(

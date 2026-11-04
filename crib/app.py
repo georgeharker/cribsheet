@@ -3285,10 +3285,16 @@ class Crib:
         new_root = Path(project_path).expanduser().resolve()
         if not new_root.is_dir():
             raise CribUserError(f"no such directory: {new_root}")
-        if old in self.code.sweeps or old in self.code_jobs:
+        # a relocate JOB of ours may be mid-flight WITH its own trailing code
+        # sweep (the rehash runs inside the job) — that must JOIN, not fence:
+        # the sweep-conflict refusal exists only when no relocate context exists.
+        if old not in self.relocate_jobs and (
+            old in self.code.sweeps or old in self.code_jobs
+        ):
             raise CribUserError(
-                f"a code-index sweep is running for {old!r} — project_cancel "
-                "or project_wait it first"
+                f"a code-index sweep is running for {old!r} (not a relocate's "
+                "own) — project_cancel or project_wait it first; a relocate in "
+                "flight would have joined instead"
             )
         if self._reconcile_remaining is not None:
             raise CribUserError(
