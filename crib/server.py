@@ -935,17 +935,24 @@ def build_server(crib: Crib | None = None):
         project: str | None = None,
         project_path: str | None = None,
         source: str | None = None,
+        keep_prefix: bool = False,
     ) -> dict[str, Any]:
-        """Re-point an indexed project at its repo's NEW location — the checkout
-        was renamed or moved on this machine. IDENTITY-KEEPING: nothing churns (no
-        chunk re-embeds, no ring moves, no citation rewrites); only the recorded
-        absolute paths move — the code index's .source_root (its entries key on
-        repo-relative paths), the doc-sources registry roots, this repo's own .crib
-        project line when it names the old name, and the watchers. Pass
-        project=<name> AND project_path=<the repo's new dir>; optionally
-        source=<repo segment> to disambiguate when several in-situ sources are
-        dead. A reindex after is cheap but not required — it's the same index."""
-        return await crib.project_relocate(project, project_path, source)
+        """The move-and-rename verb: a repo project's checkout was moved and/or
+        renamed on this machine (works after the fact — the old path may be gone).
+        Re-points everything that recorded the OLD absolute path AND, when the
+        directory was renamed, re-homes the `sources/<old-name>/` mount prefix to
+        `sources/<new-name>/…`: the doc chunks rekey (project+relpath hash — the
+        rare verb's re-embed cost, same class as project_rename) and every
+        citation in THIS project's notes is rewritten to the new spelling (the
+        prior note stashed to the ring first). The code index's .source_root and
+        this repo's own .crib `project:` line (when it names the pre-rename name,
+        fenced by dead-source evidence) are rewritten; the code + docs rehash at
+        the new path runs at the end (cheap, content-hash gate). Foreign sites are
+        REPORTED, not edited (other projects citing this repo). Pass
+        project=<name> AND project_path=<the repo's new dir>; source=<segment>
+        disambiguates dead in-situ sources; keep_prefix=true = identity-keeping
+        only (citations keep spelling the old dir name)."""
+        return await crib.project_relocate(project, project_path, source, keep_prefix)
 
     @crib_tool("source")
     def project_status(

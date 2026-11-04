@@ -1416,6 +1416,31 @@ def build_parser() -> argparse.ArgumentParser:
     # NO -p/-P selectors: both positionals name the namespace, and rename never
     # anchors at a repo (the -p clash with the positional would be the same
     # order-dependence create had).
+    _sp = pjsub.add_parser(
+        "relocate",
+        help="the repo moved and/or was renamed: re-point code index, "
+        "doc-sources and its own .crib at the new path — identity kept; "
+        "the sources/<repo>/ mount prefix re-homes by default",
+    )
+    _sp.add_argument("project", help="the (current) project name")
+    _sp.add_argument(
+        "-P",
+        "--project-path",
+        dest="project_path",
+        help="the repo's NEW dir (a moved repo carries its own .crib)",
+    )
+    _sp.add_argument(
+        "--source",
+        help="the mount segment to re-point, when several in-situ sources are dead",
+    )
+    _sp.add_argument(
+        "--keep-prefix",
+        action="store_true",
+        dest="keep_prefix",
+        help="identity-keeping only: do NOT re-home the sources/<repo>/ mount "
+        "prefix (citations keep spelling the old dir name; the docs rehash "
+        "is skipped so no double-mount)",
+    )
     _pf = pjsub.add_parser(
         "forget", help="clear the code index (keeps learnings/notes)"
     )
@@ -2873,12 +2898,13 @@ VERBS: dict[str, Verb] = {
             "project": a.project,
             "project_path": a.project_path,
             "source": getattr(a, "source", None),
+            "keep_prefix": getattr(a, "keep_prefix", False),
         },
         _E,  # the report is structured; json-aware print
         is_async=True,
         policy="none",
         wants_cwd=False,  # the new dir is named, never inferred from cwd
-        mcp=_PROJ + " source=None",
+        mcp=_PROJ + " source=None keep_prefix=False",
     ),
     "project delete": _DELETE_VERB,
     # code index

@@ -567,13 +567,15 @@ def test_delete_unwatches_code_watcher_for_global_project(crib, repo, monkeypatc
 # --- project_relocate -------------------------------------------------------
 
 
-def test_relocate_repoints_registry_source_root_and_crib(tmp_path, crib):
-    """The repo MOVED (dir renamed); relocate is identity-keeping: the registered
-    doc-source prefix keeps its NAME (so citations stay valid) but its root moves
-    to the new checkout; the code index's .source_root moves; the repo's .crib
-    still names THIS project so it is NOT rewritten. No chunks re-embedded."""
-    import shutil
+def test_relocate_renames_mount_rekeys_chunks_and_repoints(tmp_path, crib):
+    """THE DEFAULT (mount rename): the checkout's dir name moved, so the
+    sources/<old>/ mount re-homes to sources/<new-name>/ — the doc chunk rekeys
+    (old dropped + re-indexed under the new relpath), the registry's prefix name
+    follows the dir, .source_root moves, and the cheap rehash runs. Citations
+    keep resolving; the .crib names THIS project already, so it is NOT
+    rewritten."""
     import json as _json
+    import shutil
 
     from crib.codeindex import SymbolIndex
     from crib.sources import SRC_PREFIX
@@ -583,63 +585,170 @@ def test_relocate_repoints_registry_source_root_and_crib(tmp_path, crib):
     (old_dir / "docs").mkdir()
     (old_dir / "docs" / "guide.md").write_text("# Guide\n\nrelocate me\n")
     (old_dir / ".crib").write_text('project: toucan\ndocs: ["docs/*.md"]\n')
-
     run(crib.project_create(project="toucan"))
     out = run(crib.index_docs_insitu("toucan", old_dir))
     old_prefix = out["prefix"]
-    # the prefix derives from the DIR name at index time (dir = 'toucan-old')
     assert old_prefix == f"{SRC_PREFIX}toucan-old/"
     SymbolIndex(crib.paths.project_dir("toucan")).set_source_root(old_dir)
-    old_prefixes = sorted(crib._source_roots("toucan").all())
 
-    # THE MOVE: the repo disappears from the old dir, appears under a new name
     new_dir = tmp_path / "repos" / "toucan-new"
     shutil.move(str(old_dir), str(new_dir))
-
     res = run(crib.project_relocate(project="toucan", project_path=str(new_dir)))
     assert res["relocated"] is True
     assert res["crib_rewritten"] is None  # .crib names THIS project already
-    # registry: SAME prefix name, NEW root — the identity that keeps citations
+    # the mount RENAMED to the new dir's name (that is the default's point)
     after = crib._source_roots("toucan").all()
-    assert sorted(after) == old_prefixes  # the prefix name was KEPT
-    assert after[old_prefix] == str(new_dir)
-    # the in-situ doc resolve()s through the new location again
-    solved = crib._source_roots("toucan").resolve(f"{old_prefix}docs/guide.md")
+    assert sorted(after) == [f"{SRC_PREFIX}toucan-new/"]
+    assert after[f"{SRC_PREFIX}toucan-new/"] == str(new_dir)
+    mount = res["mount_renamed"][0]
+    assert mount["from"] == old_prefix and mount["to"] == f"{SRC_PREFIX}toucan-new/"
+    assert res["chunks_rekeyed"] == 1  # one doc dropped + re-indexed
+    assert int(mount["docs"]) == 1
+    # the in-situ doc resolves through the NEW spelling …
+    solved = crib._source_roots("toucan").resolve(
+        f"{SRC_PREFIX}toucan-new/docs/guide.md"
+    )
     assert solved is not None and solved.is_file()
     assert solved.read_text().startswith("# Guide")
+    # …and the OLD spelling is gone (no zombie docs)
+    assert crib._source_roots("toucan").resolve(f"{old_prefix}docs/guide.md") is None
     # the code index's absolute root moved with the one rewrite
     si = SymbolIndex(crib.paths.project_dir("toucan"))
     assert si.source_root() == new_dir
+    # the cheap confirmation rehash RAN (mount-rename mode) and changed nothing
+    assert res["reindex"] is not None
+    assert res["reindex"].get("complete") is not False
     # the result is json-serializable (it rides the MCP face)
     _json.dumps(res)
 
 
-def test_relocate_rewrites_own_crib_stale_project_line(tmp_path, crib):
-    """A repo whose .crib still names the PRE-RENAME project: the relocate
-    rewrites that one line (this repo, not a foreign one) — the rename itself
-    couldn't, because the dir had already moved. The rename-legal rewrite is
-    proven by the registry evidence: a dead source for this repo (dir == project
-    name throughout — the real-world shape this fence exists for)."""
+def test_relocate_keep_prefix_is_identity_keeping(tmp_path, crib):
+    """keep_prefix=true: the mount prefix KEEPS ITS NAME (citations keep spelling
+    the old dir name), the root still re-points, and the confirmation rehash is
+    SKIPPED — a docs re-hash would register sources/<new-name>/ beside the kept
+    mount and double-index every doc."""
     import shutil
 
-    repo = tmp_path / "repos" / "old-name"
+    from crib.codeindex import SymbolIndex
+
+    old_dir = tmp_path / "repos" / "toucan-old"
+    old_dir.mkdir(parents=True)
+    (old_dir / "docs").mkdir()
+    (old_dir / "docs" / "guide.md").write_text("# Guide\n\nrelocate me\n")
+    (old_dir / ".crib").write_text('project: toucan\ndocs: ["docs/*.md"]\n')
+    run(crib.project_create(project="toucan"))
+    out = run(crib.index_docs_insitu("toucan", old_dir))
+    old_prefix = out["prefix"]
+    SymbolIndex(crib.paths.project_dir("toucan")).set_source_root(old_dir)
+
+    new_dir = tmp_path / "repos" / "toucan-new"
+    shutil.move(str(old_dir), str(new_dir))
+    res = run(
+        crib.project_relocate(
+            project="toucan", project_path=str(new_dir), keep_prefix=True
+        )
+    )
+    assert res["mount_renamed"] == [] and res["chunks_rekeyed"] == 0
+    assert res["reindex"] is None  # skipped: a re-hash would double-mount
+    after = crib._source_roots("toucan").all()
+    assert sorted(after) == [old_prefix]  # the name was KEPT
+    assert after[old_prefix] == str(new_dir)
+    assert crib._source_roots("toucan").resolve(f"{old_prefix}docs/guide.md").is_file()
+
+
+def test_relocate_rewrites_citations_and_own_crib_after_the_fact(tmp_path, crib):
+    """THE PEER'S CASE, exact order: the repo dir moved FIRST, project_rename
+    ran SECOND (its chunk churn rebuilds pillar notes but SKIPS the in-situ docs
+    — the registry root is dead); the cited decisions sit 'source-missing' with
+    their doc chunks LOST at call time. The relocate fixes it: rewrites the
+    repo's own .crib line (dead-source evidence proves it is OURS), renames the
+    mount, and the final rehash re-indexes the docs from the new path — so
+    design_check goes clean WITHOUT any note body having moved."""
+    import shutil
+
+    name0 = "toucan"
+    repo = tmp_path / "repos" / name0
     repo.mkdir(parents=True)
     (repo / "docs").mkdir()
-    (repo / "docs" / "g.md").write_text("g\n")
-    (repo / ".crib").write_text('project: old-name\ndocs: ["docs/*.md"]\n')
-    run(crib.project_create(project="old-name"))
-    run(crib.index_docs_insitu("old-name", repo))
-    # the namespace renames; the registry (entries key on repo paths) moves with
-    # the tree — still named sources/old-name/
-    run(crib.project_rename(project="old-name", to="renamed"))
-    assert "sources/old-name/" in crib._source_roots("renamed").all()
-    # the dir moves AFTER (the repo's .crib still says project: old-name)
-    moved = tmp_path / "repos2" / "renamed-new"
-    shutil.move(str(repo), str(moved))
-    res = run(crib.project_relocate(project="renamed", project_path=str(moved)))
+    (repo / "docs" / "guide.md").write_text("# Guide\n\ncited section\n")
+    (repo / ".crib").write_text(f'project: {name0}\ndocs: ["docs/*.md"]\n')
+    run(crib.project_create(project=name0))
+    run(crib.index_docs_insitu(name0, repo))
+
+    # a decision CITED from the in-situ doc (hash captured at add time; the
+    # citation stores the canonical in-situ spelling)
+    dec = run(
+        crib.design_add(
+            project=name0,
+            title="Mount identity is the dir name",
+            content="Decided because doc says so.",
+            sources=["docs/guide.md#Guide"],
+        )
+    )
+    ref_by = dec.get("relpath") or "Mount identity is the dir name"
+    read0 = crib.design_read(ref_by, project=name0)
+    assert read0["sources"][0]["ref"] == f"sources/{name0}/docs/guide.md"
+
+    # THE DOUBLE MOVE, out from under everything — the peer's order:
+    moved = tmp_path / "repos2" / "toucan-renamed"
+    shutil.move(str(repo), str(moved))  # the checkout dir moves FIRST
+    run(crib.project_rename(project=name0, to="toucan2"))  # …then the namespace
+    assert crib.project_config("toucan2")  # the stub carried the rename
+    # citations ARE broken right now: the rename re-indexed nothing in situ
+    # (the registry root was dead), so the doc's chunks are LOST
+    check = crib.design_check(project="toucan2")
+    rows = _check_rows(check)
+    assert rows, "expected a stale row (source-missing)"
+    assert any("source-missing" in json.dumps(r) for r in rows), rows
+
+    res = run(crib.project_relocate(project="toucan2", project_path=str(moved)))
     # the .crib NOW names the project the namespace was renamed to
-    assert "project: renamed" in (moved / ".crib").read_text()
+    assert "project: toucan2" in (moved / ".crib").read_text()
     assert res["crib_rewritten"] == str(moved / ".crib")
+    # the mount RENAMED to the new dir name; the lost chunks are re-indexed by
+    # the final rehash (chunks_rekeyed counts the SURVIVING ones — zero here)
+    assert res["mount_renamed"], res
+    assert res["citations_rewritten"] == 1
+    assert res["chunks_rekeyed"] == 0
+    assert res["reindex"] is not None
+    new_prefix = "sources/toucan-renamed/"
+    assert sorted(crib._source_roots("toucan2").all()) == [new_prefix]
+    # the doc lives again under the new spelling, and the citation follows
+    solved = crib._source_roots("toucan2").resolve(f"{new_prefix}docs/guide.md")
+    assert solved is not None and solved.is_file()
+    assert solved.read_text().startswith("# Guide")
+    readback = crib.design_read(ref_by, project="toucan2")
+    assert readback["sources"][0]["ref"] == f"{new_prefix}docs/guide.md"
+    # …and the citation is HEALTHY: the decision is no longer reported stale
+    check2 = crib.design_check(project="toucan2")
+    assert not _check_rows(check2) or not any(
+        "source-missing" in json.dumps(r) for r in _check_rows(check2)
+    )
+
+
+def test_relocate_reports_foreign_refs_never_edits_them(tmp_path, crib, repo):
+    """Other projects' .crib refs naming this project are REPORTED (never
+    edited) — the foreign repos are never written to."""
+    run(crib.project_create(project="toucan"))
+    (repo / ".crib").write_text("project: toucan\n")  # minimal, enough to pass
+    other_repo = tmp_path / "repos" / "other"
+    other_repo.mkdir(parents=True, exist_ok=True)
+    (other_repo / ".crib").write_text("project: other\nrefs:\n  - toucan\n")
+    crib._source_roots("other").upsert("sources/other/", other_repo)
+    res = run(crib.project_relocate(project="toucan", project_path=str(repo)))
+    # nothing to re-point (the repo never moved / no dead source) — but the
+    # foreign ref rows ride the report
+    assert res["prefixes_repointed"] == [] and res["mount_renamed"] == []
+    json.dumps(res)  # fully serializable
+
+
+def _check_rows(check: Any) -> list[dict[str, Any]]:
+    """design_check's rows, tolerantly: the verb returns {'tainted': [rows]} (a
+    dict with 'rows' spelling is tolerated too), and tests need the rows to
+    inspect their causes' change_kind fields."""
+    if isinstance(check, list):
+        return list(check)
+    return list(check.get("tainted") or check.get("rows") or [])
 
 
 def test_relocate_fences(crib, tmp_path):
@@ -657,7 +766,7 @@ def test_relocate_fences(crib, tmp_path):
     run(crib.project_create(project="nolink"))
     with pytest.raises(CribUserError, match="no .crib found"):
         run(crib.project_relocate(project="nolink", project_path=str(bare)))
-    # a .crib naming a Foreign project
+    # a .crib naming a foreign project, with NO dead-source evidence
     foreign = tmp_path / "foreign"
     foreign.mkdir()
     (foreign / ".crib").write_text("project: someoneelse\n")

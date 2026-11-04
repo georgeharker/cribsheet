@@ -3228,11 +3228,14 @@ class Crib:
         project: str | None = None,
         project_path: str | None = None,
         source: str | None = None,
+        keep_prefix: bool = False,
     ) -> dict[str, Any]:
-        """Re-point an already-indexed project at its repo's NEW location on this
-        machine (the checkout was renamed or moved). IDENTITY-KEEPING: nothing
-        churns — no chunk ids, no ring moves, no re-embed, no citation rewrites.
-        Only the three places that record an ABSOLUTE path move:
+        """The move-and-rename verb: re-point an already-indexed project at its
+        repo's NEW location on this machine (the checkout was renamed or moved;
+        works after the fact — the old path may already be gone). IDENTITY-
+        KEEPING at the core: no chunk ids churn, no ring moves, no re-embed for
+        the identity half — only the three places that record an ABSOLUTE path
+        move:
 
         - the code index's `.source_root` (entries key on repo-relative paths,
           so the same index serves the new checkout as-is)
@@ -3245,16 +3248,27 @@ class Crib:
         - the live code/doc + in-repo-store watchers, and the machine stub's
           portable `store_root` when the project is adopted in-repo
 
-        A reindex after relocate is CHEAP (content-hash gate) but not required —
-        it is the same index. Only future FRESH registrations use the repo's NEW
-        dir name (`sources/<new-name>/…`); the registered prefix keeps its name,
-        which is what keeps existing citations resolvable.
+        AND, when the checkout's DIR NAME moved (the default; keep_prefix
+        escapes to identity-keeping only), the mount prefix is re-homed:
+        `sources/<old-name>/…` → `sources/<new-name>/…` — the doc chunks rekey
+        (project+relpath hash, so they re-embed: the rare verb's cost, same
+        class as project_rename) and every citation in THIS project's notes is
+        rewritten to the new spelling (stashed to the ring first; the checked
+        hash rides along — a cited SECTION's content is unchanged by the mount
+        rename), which is what keeps decisions from going 'source-missing'
+        after a repo rename.
+
+        The verb runs the cheap confirmation rehash at the new path itself
+        (content-hash gate, 0 changed expected) — ONLY in mount-rename mode;
+        keep_prefix SKIPS it (a docs re-hash would register
+        `sources/<new-name>/` beside the kept old mount and double-index every
+        doc — adopting the new mount name is what keep_prefix defers).
 
         Fences: explicit `project=` + `project_path=` (never the session
         default, never a cwd guess); a `.crib` must exist at/above the new path
-        (a moved repo carries its own); refuses mid-sweep; cross-project doc
-        citations FROM other projects' registries are out of scope (each registry
-        is per-project and machine-local)."""
+        (a moved repo carries its own); refuses mid-sweep; other projects
+        citing this repo are REPORTED (foreign_refs), never edited (each
+        registry is per-project and machine-local)."""
         from .config import CribLink, ProjectConfig, portable_path
         from .sources import SRC_PREFIX
         from .watch import PILLAR_SEGMENTS
@@ -3411,6 +3425,110 @@ class Crib:
                 self._code_watcher.watch_root(old, new_root)  # re-point
             source_root_repointed = True
 
+        # 5. THE MOUNT RENAME (the complete move-and-rename; keep_prefix escapes
+        #    to identity-keeping only): when the checkout's DIR NAME moved (the
+        #    prefix is named for the dir at index time), re-home the registered
+        #    prefix and everything that keys on it — the doc chunks (relpath
+        #    rekeys: project+relpath hash, so they re-embed — the rare verb's
+        #    cost, same class as project_rename) and every citation in THIS
+        #    project's notes (stashed to the ring first; the checked hash rides
+        #    along — a cited SECTION's content is unchanged by the mount rename).
+        mount_renamed: list[dict[str, str]] = []
+        chunks_rekeyed = citations_rewritten = 0
+        if not keep_prefix:
+            for old_prefix in list(prefixes_repointed):
+                seg = old_prefix[len(SRC_PREFIX) :].strip("/")
+                if seg == new_root.name:
+                    continue  # already named for the (new) dir
+                new_prefix = f"{SRC_PREFIX}{new_root.name}/"
+                existing = ro.all().get(new_prefix)
+                if existing is not None and existing != str(new_root):
+                    # a second mount would double-index every doc
+                    raise CribUserError(
+                        f"{new_prefix!r} is already mounted at another root "
+                        f"({existing}) — resolve the collision, or keep_prefix"
+                    )
+                nd = self.notes_dir(old)
+                moved_docs: list[tuple[str, Path]] = []
+                for rp in sorted(self._indexed_relpaths(old, old_prefix)):
+                    suffix = rp[len(old_prefix) :]
+                    target = new_root / suffix
+                    if not target.is_file():
+                        continue  # reported below, not guessed back to life
+                    await self.index.forget(old, rp)
+                    moved_docs.append((f"{new_prefix}{suffix}", target))
+                rekeyed = 0
+                for new_rel, target in moved_docs:
+                    await self.index.index_file(old, nd, new_rel, content_path=target)
+                    rekeyed += 1
+                chunks_rekeyed += rekeyed
+                ro.remove(old_prefix)
+                ro.upsert(new_prefix, new_root)
+                prefixes_repointed = [
+                    new_prefix if p == old_prefix else p for p in prefixes_repointed
+                ]
+                mount_renamed.append(
+                    {"from": old_prefix, "to": new_prefix, "docs": str(rekeyed)}
+                )
+                # ...and the citations, in every pillar note THIS project owns
+                for pillar in (self.notestore, self.designstore, self.planstore):
+                    root = pillar.root(old)
+                    if not root.is_dir():
+                        continue
+                    for path in sorted(root.glob("**/*.md")):
+                        try:
+                            note = notes.load(path)
+                        except Exception:  # noqa: BLE001 — not citable, skipped
+                            continue
+                        srcs = note.frontmatter.get("sources")
+                        if not isinstance(srcs, list):
+                            continue
+                        changed = False
+                        for src in srcs:
+                            if not isinstance(src, dict):
+                                continue
+                            ref = str(src.get("ref") or "")
+                            if ref == old_prefix.rstrip("/") or ref.startswith(
+                                old_prefix
+                            ):
+                                src["ref"] = (
+                                    new_prefix.rstrip("/")
+                                    if ref == old_prefix.rstrip("/")
+                                    else new_prefix + ref[len(old_prefix) :]
+                                )
+                                changed = True
+                        if changed:
+                            rel = str(path.relative_to(root))
+                            pillar._stash_existing(old, rel, path, note.id)
+                            notes.save_atomic(note)
+                            citations_rewritten += 1
+
+        # 6. The cheap confirmation rehash at the new path — code + docs through
+        #    the content-hash gate (0 changed expected). ONLY in mount-rename
+        #    mode: the registry prefix then ALREADY spells the new dir's name, so
+        #    the rehash can't double-mount. keep_prefix mode SKIPS it — a docs
+        #    re-hash would register `sources/<new-name>/` beside the kept old
+        #    mount (a project_index would double-index every doc); adopting the
+        #    new mount name is exactly what keep_prefix defers.
+        reindex: dict[str, Any] | None = None
+        if (link.paths or link.doc_patterns) and not keep_prefix:
+            reindex = await self.project_index(project=old, cwd=new_root)
+
+        # the honest residue: OTHER projects still spelling this repo the old
+        # way — foreign repos/notes are never edited, only reported (rename's
+        # rule), so a human fixes each or re-runs its setup.
+        foreign_refs = [
+            {
+                "referrer": p,
+                "target": r.get("project"),
+                "root": str(r["root"]) if r.get("root") else None,
+            }
+            for p in self.projects()
+            if p != old
+            for r in self._project_refs(p)
+            if r.get("project") == old
+        ]
+
         return {
             "project": old,
             "relocated": True,
@@ -3420,14 +3538,34 @@ class Crib:
                 if source_root_repointed
                 else None
             ),
+            "prefixes_repointed": prefixes_repointed,
+            "mount_renamed": mount_renamed,
+            "chunks_rekeyed": chunks_rekeyed,
+            "citations_rewritten": citations_rewritten,
+            "foreign_refs": foreign_refs,
             "store_repointed": store_repointed,
             "crib_rewritten": crib_rewritten,
+            "reindex": reindex,
             "message": (
-                f"relocated {old!r}'s repo to {new_root} — identity kept: no "
-                "chunks re-embedded, citations resolvable. Dead roots re-pointed: "
-                + ", ".join(sorted(prefixes_repointed) or ["none"])
+                f"relocated {old!r}'s repo to {new_root}"
+                + (
+                    "; mount renamed "
+                    + "; ".join(
+                        f"{m['from']} -> {m['to']} ({m['docs']} docs)"
+                        for m in mount_renamed
+                    )
+                    if mount_renamed
+                    else ""
+                )
+                + f"; {chunks_rekeyed} doc chunk(s) rekeyed, "
+                + f"{citations_rewritten} citation(s) rewritten"
                 + (f"; .crib rewritten ({crib_rewritten})" if crib_rewritten else "")
                 + (f"; store re-pointed ({store_repointed})" if store_repointed else "")
+                + (
+                    f"; {len(foreign_refs)} foreign ref(s) reported (not edited)"
+                    if foreign_refs
+                    else ""
+                )
             ),
         }
 
