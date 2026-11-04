@@ -1258,6 +1258,14 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="crib", description="markdown memory")
     p.add_argument("--version", action="version", version=f"crib {__version__}")
     p.add_argument("--mcp", action="store_true", help="run the MCP server")
+    p.add_argument(
+        "--tools",
+        default=None,
+        help="comma-separated tool SETS to expose on this deployment "
+        "(notes,designs,plans,code,learnings,projects,memory; `system` — "
+        "status/ops/reconcile — always rides); default: all. Overrides "
+        "config.toml [tools].expose",
+    )
     p.add_argument("--json", action="store_true", help="machine-readable output")
     # transport options (apply to --mcp and `serve`; also pick the daemon the CLI
     # attaches to). Default to None so config `[daemon]` (host/port) wins unless
@@ -1287,6 +1295,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     sv = sub.add_parser("serve", help="run the MCP server (stdio or --http)")
     sv.add_argument("--http", action="store_true")
+    sv.add_argument("--tools", dest="tools", default=None)  # same set as --mcp
     sv.add_argument("--host", default=None)
     sv.add_argument("--port", type=int, default=None)
     sub.add_parser("info", help="show resolved paths and available backends")
@@ -3491,6 +3500,19 @@ def _dispatch(args: Any) -> tuple[Verb, dict[str, Any]]:
     return _resolve_verb(args)
 
 
+def _resolve_tool_spec(args: Any) -> str | list[str] | None:
+    """The tool-set exposure for serve: the --tools flag WINS over config.toml
+    `[tools].expose`; neither = everything. (Validated at serve startup.)"""
+    from .config import Config
+    from .paths import Paths
+
+    spec = getattr(args, "tools", None)
+    if spec is not None and str(spec).strip():
+        return str(spec)
+    cfg = Config.load(Paths.resolve().config_file)
+    return cfg.tools.expose or None
+
+
 def _resolve_serve_endpoint(args: Any) -> tuple[str, int]:
     """Bind address for `serve`/`--mcp`: explicit flags win, else `[daemon]`."""
     from .config import Config
@@ -3848,8 +3870,9 @@ def main(argv: list[str] | None = None) -> int:
         host, port = _resolve_serve_endpoint(args)
         from .server import main as serve
 
+        tools = _resolve_tool_spec(args)
         transport = "http" if args.http else "stdio"
-        serve(transport, host, port)
+        serve(transport, host, port, tools)
         return 0
     if args.cmd is None:
         build_parser().print_help()

@@ -311,6 +311,75 @@ TOOL_POLICY: dict[str, str] = {}
 _POLICIES = ("read", "write", "source", "session", "none")
 
 
+# ── Per-deployment tool-set EXPOSURE (crib serve --tools / [tools].expose) ────
+# A general-assistant deployment shows the prose facets only; a pi session gets
+# everything. The mapping is the tool NAME's own family — the same grouping the
+# CLI's nouns use — plus `system`: status/ops/project_reconcile (the poll/meta
+# surface) always ride along, filtered or not, because polling a job needs no
+# code intelligence.
+TOOL_SET_NAMES = (
+    "notes",
+    "designs",
+    "plans",
+    "code",
+    "learnings",
+    "projects",
+    "memory",
+    "system",
+)
+_SET_FAMILIES = {
+    "note": "notes",
+    "design": "designs",
+    "plan": "plans",
+    "code": "code",
+    "learning": "learnings",
+    "project": "projects",
+    "memory": "memory",
+}
+TOOL_SETS: dict[str, str] = {}  # tool name -> set name, filled as tools register
+_EXPOSED: frozenset[str] | None = None  # None (the default) = every set
+
+
+def tool_set_of(name: str) -> str:
+    """The tool set a tool belongs to — the CLI noun it nests under.
+    `project_reconcile` is the one prefix-straddler: it sweeps EVERY project
+    (whole-store housekeeping), so it rides with the poll/meta `system` set,
+    not with a namespace's management."""
+    set_name = (
+        "system"
+        if name == "project_reconcile"
+        else _SET_FAMILIES.get(name.split("_", 1)[0], "system")
+    )
+    TOOL_SETS[name] = set_name
+    return set_name
+
+
+def exposure(
+    spec: str | list[str] | None,
+) -> frozenset[str] | None:
+    """`--tools notes,plans` / `[tools] expose` → the exposed sets (with
+    `system` always added). None (everything) when the spec names nothing.
+    UNKNOWN set names REFUSE here — at serve startup, naming the valid list —
+    rather than starting a server quietly missing sets someone asked for."""
+    if not spec:
+        return None
+    asked = [
+        t.strip()
+        for t in (spec.split(",") if isinstance(spec, str) else spec)
+        if t.strip()
+    ]
+    if not asked:
+        return None
+    unknown = sorted(set(asked) - set(TOOL_SET_NAMES))
+    if unknown:
+        raise ValueError(
+            f"unknown tool set(s) {', '.join(unknown)} — the sets are: "
+            + ", ".join(TOOL_SET_NAMES)
+            + " (`system` always rides along)"
+        )
+    return frozenset(asked) | {"system"}
+
+
 def _switch_if_created(result: dict) -> dict:
     """Creating a project switches the session into it — referencing an existing
     one (a one-off `project` arg) does not (DESIGN §15). The switch is the ONE
@@ -323,10 +392,21 @@ def _switch_if_created(result: dict) -> dict:
     return result
 
 
-def build_server(crib: Crib | None = None):
+def build_server(crib: Crib | None = None, tools: str | list[str] | None = None):
     from fastmcp import FastMCP  # lazy
     from fastmcp.tools import FunctionTool
 
+    global _EXPOSED
+    _EXPOSED = exposure(tools)
+    if _EXPOSED is not None:
+        served = sorted(_EXPOSED - {"system"})
+        print(
+            f"[crib] MCP tool sets exposed: {', '.join(served)} (+ system); "
+            f"{len(TOOL_SET_NAMES) - 1 - len(served)} set(s) not exposed: "
+            + ", ".join(
+                n for n in TOOL_SET_NAMES if n not in _EXPOSED and n != "system"
+            )
+        )
     crib = crib or Crib.open()
     mcp = FastMCP(
         "cribsheet",
@@ -557,7 +637,12 @@ def build_server(crib: Crib | None = None):
             raise ValueError(f"unknown resolution policy {resolution!r}")
 
         def register(fn):
-            TOOL_POLICY[fn.__name__] = resolution
+            TOOL_POLICY[fn.__name__] = resolution  # the policy table is FULL, even
+            # when THIS deployment doesn't expose the tool (the exposure gate is
+            # below): the declared/reserved policy stays checkable everywhere
+            set_name = tool_set_of(fn.__name__)
+            if _EXPOSED is not None and set_name not in _EXPOSED:
+                return fn  # not exposed on THIS deployment: never registered
             impl = (
                 fn
                 if resolution in ("session", "none")
@@ -845,26 +930,26 @@ def build_server(crib: Crib | None = None):
         ctx: Context | None = None,
     ) -> dict[str, Any]:
         """(Re)index a project's SOURCE CODE from its `.crib`, PLUS the prose it
-        declares under `docs:` — those are indexed IN-SITU (searchable via note_lookup;
-        the repo keeps the only copy). It differs from project_setup only in not
-        COPYING files into crib-owned notes. Use to index a repo for
-        code_lookup/code_dossier, or to refresh after edits (cheap: unchanged files
-        are skipped). Pass
-        `project_path=<the repo dir>` (a `.crib` is auto-created if missing); a bare
-        `project=<name>` re-indexes an ALREADY-INDEXED project from its recorded root.
+               declares under `docs:` — those are indexed IN-SITU (searchable via note_lookup;
+               the repo keeps the only copy). It differs from project_setup only in not
+               COPYING files into crib-owned notes. Use to index a repo for
+               code_lookup/code_dossier, or to refresh after edits (cheap: unchanged files
+               are skipped). Pass
+               `project_path=<the repo dir>` (a `.crib` is auto-created if missing); a bare
+               `project=<name>` re-indexes an ALREADY-INDEXED project from its recorded root.
 
- Emits PROGRESS markers while the sweep runs (`<proj>: 42/317 files (13%) ·
-        2.1/s · eta 2:05`) — the call returns when the sweep completes; while it
-        runs, `project_status`'s `jobs` section is the non-blocking poll.
-        (`project_status` also carries the live `indexing` counts.) If your client
-        enforces a hard call timeout anyway, two levers:
-        - `wait_s=<seconds>` bounds THIS call: the final result if the sweep
-          finished inside the budget, else a partial handle (`running: true`,
-          done/total/eta) — the sweep KEEPS RUNNING daemon-side; re-invoke to
-          re-join it (never a second sweep), or poll `project_status`.
-        - `budget_s=<seconds>` bounds the WORK: files not reached are deferred
-          (`complete=false, remaining=N`) — re-invoke to continue (finished
-          files re-skip via the content-hash gate)."""
+        Emits PROGRESS markers while the sweep runs (`<proj>: 42/317 files (13%) ·
+               2.1/s · eta 2:05`) — the call returns when the sweep completes; while it
+               runs, `project_status`'s `jobs` section is the non-blocking poll.
+               (`project_status` also carries the live `indexing` counts.) If your client
+               enforces a hard call timeout anyway, two levers:
+               - `wait_s=<seconds>` bounds THIS call: the final result if the sweep
+                 finished inside the budget, else a partial handle (`running: true`,
+                 done/total/eta) — the sweep KEEPS RUNNING daemon-side; re-invoke to
+                 re-join it (never a second sweep), or poll `project_status`.
+               - `budget_s=<seconds>` bounds the WORK: files not reached are deferred
+                 (`complete=false, remaining=N`) — re-invoke to continue (finished
+                 files re-skip via the content-hash gate)."""
         proj = project  # resolved by the `source` policy
         before = set(crib.code.sweeps)  # sweeps already running for OTHER calls
         started = time.monotonic()
@@ -2256,10 +2341,13 @@ def _pin_legacy_era(mcp) -> None:
 
 
 async def _serve_async(
-    transport: str = "stdio", host: str = "127.0.0.1", port: int = 8787
+    transport: str = "stdio",
+    host: str = "127.0.0.1",
+    port: int = 8787,
+    tools: str | list[str] | None = None,
 ) -> None:
     crib = Crib.open()
-    mcp = build_server(crib)
+    mcp = build_server(crib, tools=tools)
     # Watcher runs on THIS loop so its index_file calls share the per-path locks
     # with the tool calls (DESIGN §4) — correctness depends on one loop.
     if crib.config.watch:
@@ -2307,8 +2395,13 @@ async def _serve_async(
         crib.close()
 
 
-def main(transport: str = "stdio", host: str = "127.0.0.1", port: int = 8787) -> None:
-    asyncio.run(_serve_async(transport, host, port))
+def main(
+    transport: str = "stdio",
+    host: str = "127.0.0.1",
+    port: int = 8787,
+    tools: str | list[str] | None = None,
+) -> None:
+    asyncio.run(_serve_async(transport, host, port, tools=tools))
 
 
 if __name__ == "__main__":

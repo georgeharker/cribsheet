@@ -259,8 +259,22 @@ class DaemonConfig:
 
 
 @dataclass
+class ToolsConfig:
+    """Which tool SETS the MCP face exposes, per deployment (DESIGN: exposure).
+
+    `expose` lists set NAMES (`notes/designs/plans/code/learnings/projects/
+    memory`); empty = everything (the default, and what a pi session wants).
+    The `system` set (status/ops/project_reconcile — the poll/meta surface)
+    always rides along, filtered or not. The `crib serve --tools`
+    comma-list overrides this file setting."""
+
+    expose: list[str] = field(default_factory=list)
+
+
+@dataclass
 class Config:
     default_project: str = "default"
+    tools: ToolsConfig = field(default_factory=ToolsConfig)
     embed: EmbedConfig = field(default_factory=EmbedConfig)
     chunk: ChunkConfig = field(default_factory=ChunkConfig)
     retrieve: RetrieveConfig = field(default_factory=RetrieveConfig)
@@ -305,6 +319,7 @@ class Config:
             "chroma": ChromaConfig,
             "daemon": DaemonConfig,
             "generate": GenerateConfig,
+            "tools": ToolsConfig,
         }
         _warn_unknown(config_file, "top level", data, {f.name for f in fields(cls)})
         if "default_project" in data:
