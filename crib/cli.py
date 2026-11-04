@@ -1331,13 +1331,16 @@ def build_parser() -> argparse.ArgumentParser:
                 dest="budget_s",
                 help="soft deadline; unfinished files are deferred",
             )
-        if _v in ("index", "wait"):
+        if _v == "wait":
+            # the polling contract: `project index` returns a running handle and
+            # the CLI emitter follows it to completion — no --wait-s there; the
+            # BLOCKING join is wait's own verb (scripts/terminals).
             _sp.add_argument(
                 "--wait-s",
                 type=float,
                 default=None,
                 dest="wait_s",
-                help="bound this CALL (the sweep keeps running "
+                help="bound this WAIT (the sweep keeps running "
                 "daemon-side); re-invoke to re-join",
             )
         proj(_sp)
@@ -2812,11 +2815,15 @@ VERBS: dict[str, Verb] = {
     ),
     "project index": Verb(
         "project_index",
-        lambda a: {"project": _proj_of(a), "wait_s": getattr(a, "wait_s", None)},
+        # the polling contract: the daemon face returns a RUNNING HANDLE at
+        # once (no wait_s — a blocking call can't survive proxy caps); the CLI
+        # emitter follows it to completion (a terminal may block) via
+        # project_wait when the handle says running.
+        lambda a: {"project": _proj_of(a)},
         _E_project("index"),
         is_async=True,
         policy="source",
-        mcp=f"{_PROJ} budget_s=None wait_s=None",
+        mcp=f"{_PROJ} budget_s=None",
     ),
     "project wait": Verb(
         "project_wait",

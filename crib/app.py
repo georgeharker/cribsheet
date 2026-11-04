@@ -26,6 +26,7 @@ from .claudemem import MemoryBindings
 from .codeindexer import CodeIndexer
 from .codequery import CodeQuery
 from .codestore import CodeStore, _ResidentCode
+from .codestore import format_sweep
 from .config import Config, CribLink, ProjectConfig, portable_path, resolve_project
 from .designs import Designs
 from .embed import build_embedder, embed_batch, embed_query_batch
@@ -61,6 +62,13 @@ DEFAULT_DISTILL_PROMPT = (
     "hedging, and restated context. Preserve code blocks and commands VERBATIM. "
     "Return ONLY the revised note body in markdown — no preamble, no fences."
 )
+
+
+# The polling interval for bounded JOINS inside a kick/wait sweep — the poll
+# contract's own cadence: a join checks the sweep every interval until it is
+# done. Lives HERE (app), not server (server imports app; never the reverse);
+# server.py re-exports its own copy for the MCP face's historic progress loop.
+_PROGRESS_EVERY_S = 2.0
 
 
 @dataclass
@@ -1944,20 +1952,27 @@ class Crib:
         project: str | None = None,
         cwd: Path | None = None,
         budget_s: float | None = None,
+        wait_s: float | None = None,
     ) -> dict[str, Any]:
         """(Re)index the project's SOURCE CODE and in-situ docs from its `.crib`
         (ensuring a `.crib` first). Cheap re-run via the content-hash gate.
 
-        JOIN-DON'T-RESTART: a re-invoke while a sweep runs for this project
-        awaits the running task and returns its result (`joined: true`) instead
-        of racing a second sweep — the zero-reset counter bug, fixed at the
-        source. A scope change (`.crib` mtime moved since kick-off) returns a
-        `conflict` instead of silently joining a stale-scoped sweep; cancel the
-        running one (`project_cancel`) and re-invoke.
+        THE POLLING CONTRACT: the sweep runs as a daemon-owned job — a call
+        returns a RUNNING HANDLE at once (`running: true` + live done/total)
+        and never holds a client request for the sweep's length (a capped proxy
+        would cut it; poll `project_status`'s `jobs` — it never errors or
+        blocks, and reporting a failed job is its job). A re-invoke JOINS the
+        running sweep (never a second one — the zero-reset counter bug, fixed
+        at the source); `wait_s=<seconds>` BLOCKS bounded (scripts/terminals;
+        the agent-facing faces don't expose it), returning the final result or
+        a still-running handle. A finished sweep's re-invoke returns its full
+        result. A scope change (`.crib` mtime moved since kick-off) returns a
+        `conflict` instead of silently joining a stale-scoped sweep —
+        `project_cancel` then re-invoke.
 
-        `budget_s` bounds the call and DEFERS the rest (`complete=False`,
-        `remaining=N`) — re-invoke to continue; poll `project_status` for live
-        `{done,total}` progress meanwhile."""
+        `budget_s` bounds the WORK: files not reached are deferred
+        (`complete=False, remaining=N`) — re-invoke to continue (finished files
+        re-skip via the content-hash gate)."""
         link, created = self._ensure_crib(cwd, project, want_code=True, want_docs=False)
         proj = project or link.project
         crib_file = link.root / ".crib"
@@ -1976,16 +1991,65 @@ class Crib:
                         f"for it to finish"
                     ),
                 }
-            result = await running["task"]
-            return {**result, "joined": True}
+            # JOIN the running sweep: bounded, or an immediate handle — a poll
+            # is never an error, and a bounded join still never starts sweep 2.
+            if wait_s is not None:
+                started = time.monotonic()
+                while (
+                    not running["task"].done() and time.monotonic() - started < wait_s
+                ):
+                    await asyncio.wait({running["task"]}, timeout=_PROGRESS_EVERY_S)
+                if running["task"].done():
+                    return {**(await running["task"]), "joined": True}
+                return {
+                    "project": proj,
+                    "joined": True,
+                    "running": True,
+                    "done": (self.code.sweeps.get(proj) or {}).get("done"),
+                    "total": (self.code.sweeps.get(proj) or {}).get("total"),
+                    "resume_hint": (
+                        "the sweep keeps running daemon-side — poll "
+                        "project_status, call project_wait to re-attach, or "
+                        "re-invoke project_index to join"
+                    ),
+                }
+            return {
+                "project": proj,
+                "joined": True,
+                "running": True,
+                "done": (self.code.sweeps.get(proj) or {}).get("done"),
+                "total": (self.code.sweeps.get(proj) or {}).get("total"),
+                "resume_hint": (
+                    "already running — POLL project_status (never blocks, never "
+                    "errors); re-invoke to finish-poll; project_wait to block"
+                ),
+            }
         task = asyncio.create_task(
             self._project_index_now(proj, link, created, budget_s)
         )
+        # RETAINED (not popped on finish): the poll needs the completed row
+        # (complete: true + the final counts) so 'finished OK' is distinguishable
+        # from 'never started'; the next sweep for this project replaces it.
         self.code_jobs[proj] = {"task": task, "crib_at": crib_at}
-        try:
-            return await task
-        finally:
-            self.code_jobs.pop(proj, None)
+        if wait_s is None:
+            # the handle-at-once half of the contract: never hold the request
+            sw = self.code.sweeps.get(proj) or {}
+            return {
+                "project": proj,
+                "started": True,
+                "running": True,
+                "done": sw.get("done"),
+                "total": sw.get("total"),
+                "resume_hint": (
+                    "indexing runs daemon-owned — POLL project_status (never "
+                    "blocks, never errors); re-invoke to join, project_wait to "
+                    "block for it"
+                ),
+            }
+        started = time.monotonic()
+        while not task.done() and time.monotonic() - started < wait_s:
+            await asyncio.wait({task}, timeout=_PROGRESS_EVERY_S)
+        return await task
 
     async def _project_index_now(
         self,
@@ -2029,34 +2093,59 @@ class Crib:
         project: str | None = None,
         cwd: Path | None = None,
         wait_s: float = 30.0,
+        ctx: Any = None,
     ) -> dict[str, Any]:
         """Bounded-block on a running index job — the JOIN primitive for clients
         whose tool timeout is shorter than a sweep. Idle → `{running: false}`;
         finished within `wait_s` → the final result; still going → the live
-        partial state (call again to keep waiting)."""
+        partial state (call again to keep waiting). While it waits it STREAMS
+        PROGRESS (report_progress on the caller's context when one exists —
+        `42/317 files (13%) · eta 1:50`), so a blocking join is still
+        observable; `ctx` is the fastmcp Context when called over MCP."""
         proj = project or self._proj_from_cwd(cwd)
         if proj is None:
             raise CribUserError("project_wait: pass project= or run inside the repo")
         job = self.code_jobs.get(proj)
         if job is None or job["task"].done():
             return {"project": proj, "running": False}
-        done, _ = await asyncio.wait({job["task"]}, timeout=max(wait_s, 0.05))
-        if done:
-            return {
-                "project": proj,
-                "running": False,
-                "complete": True,
-                **job["task"].result(),
-            }
-        sw = self.code.sweeps.get(proj) or {}
-        return {
-            "project": proj,
-            "running": True,
-            "complete": False,
-            "done": sw.get("done"),
-            "total": sw.get("total"),
-            "resume_hint": "call project_wait again to keep waiting",
-        }
+        started = time.monotonic()
+        while True:
+            remaining = max(wait_s, 0.05) - (time.monotonic() - started)
+            done, _pending = await asyncio.wait(
+                {job["task"]}, timeout=min(_PROGRESS_EVERY_S, max(remaining, 0.001))
+            )
+            if done:
+                return {
+                    "project": proj,
+                    "running": False,
+                    "complete": True,
+                    **job["task"].result(),
+                }
+            if ctx is not None:
+                sw = self.code.sweeps.get(proj) or {}
+                if sw.get("total"):
+                    try:
+                        await ctx.report_progress(
+                            progress=sw.get("done") or 0,
+                            total=sw["total"],
+                            # pi-lens-ignore: python-empty-except
+                            message=f"{proj}: {format_sweep(sw)}",
+                        )
+                    except Exception:  # noqa: BLE001 — progress is best-effort
+                        pass
+            if time.monotonic() - started >= max(wait_s, 0.05):
+                sw = self.code.sweeps.get(proj) or {}
+                return {
+                    "project": proj,
+                    "running": True,
+                    "complete": False,
+                    "done": sw.get("done"),
+                    "total": sw.get("total"),
+                    "resume_hint": (
+                        "still running — POLL project_status (never blocks); "
+                        "call project_wait again to keep waiting"
+                    ),
+                }
 
     async def project_cancel(
         self, project: str | None = None, cwd: Path | None = None
@@ -3902,7 +3991,9 @@ class Crib:
                     "project": p,
                     "phase": "extract+describe+embed",
                     "running": not done,
-                    "complete": done,
+                    # done but cancelled means STOPPED, never "finished OK"
+                    "complete": done and not meta["task"].cancelled(),
+                    **({"cancelled": True} if meta["task"].cancelled() else {}),
                     "done": sw.get("done"),
                     "total": sw.get("total"),
                     **({"line": sw.get("line")} if sw.get("line") else {}),

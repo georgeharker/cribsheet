@@ -51,19 +51,35 @@ def test_quick_index_returns_without_interval_lag(crib, monkeypatch):
     assert calls["budget_s"] == 7.5            # budget reaches Crib.project_index
 
 
-def test_progress_reports_only_this_calls_sweep(crib, monkeypatch):
-    """Progress must read THIS call's sweep — not sum every project's (a concurrent
-    index of another project used to bleed into the numbers)."""
+def test_progress_streams_on_the_join_face(crib, monkeypatch):
+    """Progress was streamed in-call on project_index — now the SWEEP runs
+    daemon-owned and index calls return handles; the streaming lives on the
+    JOIN primitive (project_wait), the one call that legitimately holds the
+    client while waiting: report_progress ticks (only THIS call's sweep — not
+    summing every project's: a concurrent index of another project must not
+    bleed into the numbers)."""
     from crib import server as server_mod
 
     monkeypatch.setattr(server_mod, "_PROGRESS_EVERY_S", 0.05)
-    crib.code.sweeps["other"] = {"done": 90, "total": 100}   # someone else's sweep
+    # the STREAM loop lives in the app (server imports app, never the reverse)
+    monkeypatch.setattr("crib.app._PROGRESS_EVERY_S", 0.05)
+    crib.code.sweeps["other"] = {"done": 90, "total": 100}  # someone else's sweep
 
-    async def fake_index(project=None, cwd=None, budget_s=None):
-        crib.code.sweeps[project] = {"done": 3, "total": 9}
-        await asyncio.sleep(0.2)               # a few progress ticks fire meanwhile
-        crib.code.sweeps.pop(project, None)
-        return {"project": project, "created": False, "complete": True}
+    async def fake_index(project=None, cwd=None, budget_s=None, wait_s=None):
+        # a real sweep: registers its code_jobs entry (what project_wait joins)
+        # and (the polling contract) returns a handle at once unless blocke�
+        async def sweep():
+            crib.code.sweeps[project] = {"done": 3, "total": 9}
+            await asyncio.sleep(0.2)  # a few progress ticks fire meanwhile
+            crib.code.sweeps.pop(project, None)
+            return {"project": project, "created": False, "complete": True}
+
+        task = asyncio.ensure_future(sweep())
+        crib.code_jobs[project] = {"task": task, "crib_at": None}
+        if wait_s is None:
+            return {"project": project, "started": True, "running": True,
+                    "resume_hint": "poll project_status"}
+        return await task
 
     monkeypatch.setattr(crib, "project_index", fake_index)
     mcp = server_mod.build_server(crib)
@@ -74,8 +90,9 @@ def test_progress_reports_only_this_calls_sweep(crib, monkeypatch):
 
     async def body():
         async with Client(mcp) as c:
-            await c.call_tool("project_index", {"project": "p"},
-                              progress_handler=on_progress)
+            await c.call_tool("project_index", {"project": "p"})  # KICK: handle
+            await c.call_tool("project_wait", {"project": "p", "wait_s": 5.0},
+                              progress_handler=on_progress)  # JOIN: streams
 
     asyncio.run(body())
     assert seen                                # progress was streamed

@@ -148,7 +148,7 @@ def test_named_project_end_to_end_index_uses_registered_root(crib, tmp_path):
 
     repo = _crib_repo(tmp_path, "alpha")
     _register(crib, "alpha", repo)
-    out = asyncio.run(crib.project_index(project="alpha"))
+    out = asyncio.run(crib.project_index(project="alpha", wait_s=60))  # join
     assert out["root"] == str(repo) and not out["crib_created"]
     assert not out["created"]  # existing project — no session switch
 
@@ -219,7 +219,7 @@ def test_switch_if_created_fires_on_project_creation(crib, tmp_path):
 
     repo = tmp_path / "fresh"
     (repo / ".git").mkdir(parents=True)
-    out = asyncio.run(crib.project_index(cwd=repo))
+    out = asyncio.run(crib.project_index(cwd=repo, wait_s=60))  # join
     assert out["crib_created"] and out["created"]
     session_state().current_project = None
     _switch_if_created(out)

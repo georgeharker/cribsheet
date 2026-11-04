@@ -80,15 +80,18 @@ def test_join_returns_running_result_without_second_sweep(crib, tmp_path, monkey
     async def scenario():
         t1 = asyncio.create_task(crib.project_index("p"))
         await asyncio.sleep(0.05)  # sweep 1 is mid-flight
-        r2 = await crib.project_index("p")  # the re-invoke: must JOIN
+        r2 = await crib.project_index("p", wait_s=60)  # the re-invoke: must JOIN
         r1 = await t1
         return r1, r2, calls
 
     r1, r2, calls = asyncio.run(scenario())
-    assert r1["files_indexed"] == 2
-    assert r2["joined"] is True  # the re-invoke joined
-    assert r2["files_indexed"] == 2  # same result, not a second sweep
-    assert sorted(calls) == ["a.py", "b.py"]  # each file indexed EXACTLY once
+    # the kickoff returns the RUNNING HANDLE (the polling contract: the call
+    # never holds the request for the sweep's length)
+    assert r1.get("running") is True
+    # the bounded JOIN returns the REAL result — and indexed each file once
+    assert r2["joined"] is True
+    assert r2["files_indexed"] == 2
+    assert sorted(calls) == ["a.py", "b.py"]
 
 
 # --- scope conflict -----------------------------------------------------------
@@ -121,14 +124,15 @@ def test_cancel_stops_the_sweep_and_keeps_completed_files(crib, tmp_path, monkey
     _slow_indexer(crib, monkeypatch, calls, delay=0.4)
 
     async def scenario():
+        # the kickoff returns a HANDLE (the sweep task runs daemon-side under it)
         t = asyncio.create_task(crib.project_index("p"))
         await asyncio.sleep(0.3)  # mid-flight: 5 files × 0.4s each
         r = await crib.project_cancel("p", cwd=root)
-        with pytest.raises(asyncio.CancelledError):
-            await t
-        return r, calls
+        r1 = await t  # the handle itself completes normally
+        return r, calls, r1
 
-    r, calls = asyncio.run(scenario())
+    r, calls, handle = asyncio.run(scenario())
+    assert handle.get("running") is True
     assert r["cancelled"] is True
     assert r["done_at_cancel"] >= 0  # mid-flight snapshot (may be 0)
     assert crib.status()["sweeps"] == {}  # counters cleaned up

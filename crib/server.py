@@ -10,12 +10,10 @@ import functools
 import inspect
 import os
 import sys
-import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from .app import Crib
-from .codestore import format_sweep
 from .errors import CribUserError
 from .session import (
     ERA_STATELESS,
@@ -926,93 +924,29 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         project: str | None = None,
         project_path: str | None = None,
         budget_s: float | None = None,
-        wait_s: float | None = None,
-        ctx: Context | None = None,
     ) -> dict[str, Any]:
         """(Re)index a project's SOURCE CODE from its `.crib`, PLUS the prose it
-               declares under `docs:` — those are indexed IN-SITU (searchable via note_lookup;
-               the repo keeps the only copy). It differs from project_setup only in not
-               COPYING files into crib-owned notes. Use to index a repo for
-               code_lookup/code_dossier, or to refresh after edits (cheap: unchanged files
-               are skipped). Pass
-               `project_path=<the repo dir>` (a `.crib` is auto-created if missing); a bare
-               `project=<name>` re-indexes an ALREADY-INDEXED project from its recorded root.
+        declares under `docs:` — those are indexed IN-SITU (searchable via
+        note_lookup; the repo keeps the only copy). It differs from
+        project_setup only in not COPYING files into crib-owned notes. Use to
+        index a repo for code_lookup/code_dossier, or to refresh after edits
+        (cheap: unchanged files are skipped). Pass
+        `project_path=<the repo dir>` (a `.crib` is auto-created if missing); a
+        bare `project=<name>` re-indexes an ALREADY-INDEXED project from its
+        recorded root.
 
-        Emits PROGRESS markers while the sweep runs (`<proj>: 42/317 files (13%) ·
-               2.1/s · eta 2:05`) — the call returns when the sweep completes; while it
-               runs, `project_status`'s `jobs` section is the non-blocking poll.
-               (`project_status` also carries the live `indexing` counts.) If your client
-               enforces a hard call timeout anyway, two levers:
-               - `wait_s=<seconds>` bounds THIS call: the final result if the sweep
-                 finished inside the budget, else a partial handle (`running: true`,
-                 done/total/eta) — the sweep KEEPS RUNNING daemon-side; re-invoke to
-                 re-join it (never a second sweep), or poll `project_status`.
-               - `budget_s=<seconds>` bounds the WORK: files not reached are deferred
-                 (`complete=false, remaining=N`) — re-invoke to continue (finished
-                 files re-skip via the content-hash gate)."""
-        proj = project  # resolved by the `source` policy
-        before = set(crib.code.sweeps)  # sweeps already running for OTHER calls
-        started = time.monotonic()
-        task = asyncio.create_task(
-            crib.project_index(proj, cwd=_cwd(project_path), budget_s=budget_s)
-        )
-        while not task.done():
-            # wait, don't sleep: a quick (all-cached) reindex returns immediately
-            # instead of eating a full progress interval
-            await asyncio.wait({task}, timeout=_PROGRESS_EVERY_S)
-            if task.done():
-                break
-            # wait_s expiry → partial handle; the sweep KEEPS RUNNING daemon-side
-            # (create_task is independent of this call) and a re-invoke JOINS it.
-            if wait_s is not None and time.monotonic() - started >= wait_s:
-                picked = (
-                    (proj, crib.code.sweeps[proj])
-                    if proj and proj in crib.code.sweeps
-                    else next(
-                        (
-                            (p, v)
-                            for p, v in crib.code.sweeps.items()
-                            if p not in before
-                        ),
-                        None,
-                    )
-                )
-                key, sw = picked if picked else (proj or "?", {})
-                return {
-                    "project": key,
-                    "complete": False,
-                    "running": True,
-                    "done": sw.get("done"),
-                    "total": sw.get("total"),
-                    "line": f"{key}: {format_sweep(sw)}" if sw else None,
-                    "resume_hint": (
-                        "the sweep keeps running daemon-side — poll project_status, "
-                        "call project_wait to re-attach, or re-invoke project_index "
-                        "to join"
-                    ),
-                }
-            # OUR sweep only: the named project's, else the one this call started
-            # (proj is None when the repo's .crib names it) — never other projects'.
-            picked = (
-                (proj, crib.code.sweeps[proj])
-                if proj and proj in crib.code.sweeps
-                else next(
-                    ((p, v) for p, v in crib.code.sweeps.items() if p not in before),
-                    None,
-                )
-            )
-            if picked and picked[1].get("total") and ctx is not None:
-                key, sw = picked
-                try:
-                    await ctx.report_progress(
-                        progress=sw["done"] or 0,
-                        total=sw["total"] or 0,
-                        # pi-lens-ignore: python-empty-except
-                        message=f"{key}: {format_sweep(sw)}",
-                    )
-                except Exception:  # noqa: BLE001 — progress is best-effort
-                    pass
-        return _switch_if_created(await task)
+        THE SWEEP RUNS DAEMON-OWNED and this call returns at once — a RUNNING
+        HANDLE (`running: true` + done/total) or, for an instant sweep, its full
+        result. DON'T WAIT: poll `project_status` (its `jobs` section: never
+        errors, never blocks, reports failed jobs); re-invoke to join; a
+        completed sweep's re-invoke returns its full result. `budget_s=<seconds>`
+        bounds the WORK (not the call): files not reached are deferred
+        (`complete=false, remaining=N`) — re-invoke to continue (finished files
+        re-skip via the content-hash gate)."""
+        res = await crib.project_index(
+            project, cwd=_cwd(project_path), budget_s=budget_s
+        )  # the polling contract — a RUNNING HANDLE at once (wait_s=None)
+        return _switch_if_created(res)
 
     @crib_tool("none")
     async def project_relocate(
@@ -1051,13 +985,18 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         project: str | None = None,
         project_path: str | None = None,
         wait_s: float = 30.0,
+        ctx: Context | None = None,
     ) -> dict[str, Any]:
-        """Bounded-block on a running index job for this project — the JOIN
-        primitive for clients whose tool timeout is shorter than a sweep.
-        `{running: false}` when nothing is running; the final result if the
-        sweep completes within wait_s; else the live partial state (call again
-        to keep waiting). Never starts a sweep."""
-        return await crib.project_wait(project, cwd=_cwd(project_path), wait_s=wait_s)
+        """PREFER POLLING (`project_status`'s `jobs` section) — a blocking wait
+        ties up a client request and gets cut off at proxy caps. This verb is
+        the JOIN primitive for scripts/terminals only: bounded-block on a
+        running index job for this project. The final result if the sweep
+        completes within wait_s; else the live partial state (a re-invoke keeps
+        waiting). Emits progress markers while it waits (`42/317 files (13%) ·
+        eta 1:50`). Never starts a sweep; `{running: false}` when idle."""
+        return await crib.project_wait(
+            project, cwd=_cwd(project_path), wait_s=wait_s, ctx=ctx
+        )
 
     @crib_tool("source")
     async def project_cancel(
