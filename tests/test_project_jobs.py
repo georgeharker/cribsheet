@@ -135,7 +135,9 @@ def test_cancel_stops_the_sweep_and_keeps_completed_files(crib, tmp_path, monkey
     assert handle.get("running") is True
     assert r["cancelled"] is True
     assert r["done_at_cancel"] >= 0  # mid-flight snapshot (may be 0)
-    assert crib.status()["sweeps"] == {}  # counters cleaned up
+    # a CANCEL pops the counters (a stale 'running' entry must never linger);
+    # only a NATURAL finish retains them (final counts + finished_at stamp)
+    assert crib.status()["sweeps"] == {}
 
 
 def test_cancel_when_idle(crib, tmp_path):

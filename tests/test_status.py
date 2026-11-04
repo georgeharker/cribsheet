@@ -76,7 +76,10 @@ def test_status_sweeps_progress_signal(crib, tmp_path, monkeypatch):
     out = asyncio.run(crib._index_project_code("p", root, ["**/*.py"]))
     assert out["files_seen"] == 2
     assert seen and all(s.get("total") == 2 for s in seen)   # visible mid-sweep
-    assert crib.status()["sweeps"] == {}                     # gone when finished
+    # RETAINED at natural finish (the poller's 'finished OK' row): final counts
+    # + the stamp — distinguishable from 'vanished' and from 'never started'
+    fin = crib.status()["sweeps"]["p"]
+    assert fin["done"] == 2 and fin["total"] == 2 and fin["finished_at"]
 
 
 def test_budgeted_sweep_defers_and_resumes(crib, tmp_path, monkeypatch):
@@ -106,4 +109,6 @@ def test_budgeted_sweep_defers_and_resumes(crib, tmp_path, monkeypatch):
     out = asyncio.run(crib._index_project_code("p", root, ["**/*.py"]))  # resume
     assert out["complete"] is True and out["remaining"] == 0
     assert out["files_indexed"] == 3
-    assert crib.status()["sweeps"] == {}       # no stale progress left behind
+    fin = crib.status()["sweeps"]["p"]         # retained: final counts + stamp
+    assert fin["done"] == 3 and fin["finished_at"]
+

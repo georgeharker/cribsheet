@@ -3744,6 +3744,7 @@ class Crib:
                         notes.save_atomic(note)
                         citations_rewritten += 1
                         state["citations"] += 1
+            state["finished_at"] = time.time()  # the poller's receipt
             # REMOVE LAST — after the new-spelling chunks exist and the notes
             # cite them: an interrupt above leaves the old mount present and
             # resolvable (both mounts resolve the same files mid-job)
@@ -3978,6 +3979,11 @@ class Crib:
                     "total": state.get("total", 0),
                     "citations_rewritten": state.get("citations", 0),
                     "mount_renamed": state.get("mount") or [],
+                    **(
+                        {"finished_at": state.get("finished_at")}
+                        if state.get("finished_at")
+                        else {}
+                    ),
                 }
             )
         for p, meta in sorted(self.code_jobs.items()):

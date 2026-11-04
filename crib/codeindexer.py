@@ -633,9 +633,23 @@ class CodeIndexer:
                     desc += (r or {}).get("described", 0)
                     if (r or {}).get("descriptions_error"):
                         describes_failed += 1
-        finally:
+            # NATURAL finish RETAINS the entry (with final counts + stamp) — the
+            # poller's 'finished OK' must be distinguishable from 'vanished' or
+            # 'never started' long after; the project's NEXT sweep replaces it.
+            # (A CANCEL pops the counters here via raised CancelledError below —
+            # its stale 'running' entry is exactly what must not linger.)
+            with self.code.indexing_lock:
+                sw = self.code.sweeps.get(proj)
+                if sw is not None:
+                    sw["done"] = sw.get("total") or sw.get("done")
+                    sw["finished_at"] = time.time()
+        except asyncio.CancelledError:
             with self.code.indexing_lock:
                 self.code.sweeps.pop(proj, None)
+            if pins:
+                await asyncio.to_thread(_POOL.unpin, root)
+            raise
+        finally:
             if pins:
                 await asyncio.to_thread(_POOL.unpin, root)
         out: dict[str, Any] = {

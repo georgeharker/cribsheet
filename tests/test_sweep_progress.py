@@ -78,4 +78,5 @@ def test_sweep_registration_stamps_started(crib, tmp_path, monkeypatch):
     out = asyncio.run(crib._index_project_code("p", root, ["**/*.py"]))
     assert out["files_seen"] == 2
     assert seen and all(s.get("started") for s in seen)
-    assert crib.status()["sweeps"] == {}  # gone when finished, as before
+    fin = crib.status()["sweeps"]["p"]  # RETAINED: final counts + the stamp
+    assert fin["done"] == 2 and fin["total"] == 2 and fin["finished_at"]
