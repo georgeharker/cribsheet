@@ -20,6 +20,7 @@ from crib.cli import VERBS
 from crib.config import Config
 from crib.paths import Paths
 from crib.server import (
+    READ_ONLY_TOOLS,
     TOOL_SET_NAMES,
     TOOL_POLICY,
     build_server,
@@ -71,14 +72,28 @@ def test_every_tool_maps_to_a_known_set():
 def test_exposure_validates_and_always_includes_system():
     assert exposure(None) is None  # everything
     assert exposure("") is None and exposure([]) is None
-    out = exposure("notes, plans")
-    assert out is not None and "notes" in out and "plans" in out
-    assert "system" in out  # the poll/meta surface ALWAYS rides
+    exposure_result = exposure("notes, plans")
+    assert exposure_result is not None
+    sets, ro = exposure_result
+    assert "notes" in sets and "plans" in sets and "system" in sets
+    assert ro == frozenset()  # no suffix: nothing read-only
+    # the :ro suffix — a set exposed read-only
+    exposure_result = exposure("notes:ro,plans")
+    assert exposure_result is not None
+    sets, ro = exposure_result
+    assert sets >= {"notes", "plans", "system"} and ro == {"notes"}
+    # ro-only spelling is also exposure
+    exposure_result = exposure("notes:ro")
+    assert exposure_result is not None
+    sets, ro = exposure_result
+    assert sets == frozenset({"notes", "system"}) and ro == {"notes"}
     with pytest.raises(ValueError, match="unknown tool set"):
         exposure("notes,bananas")
     # the refusal NAMES the valid sets — fixable without a doc lookup
     with pytest.raises(ValueError, match="learnings"):
         exposure("banana")
+    with pytest.raises(ValueError, match=":ro"):
+        exposure("notes:foo")  # an unknown SUFFIX refuses too
 
 
 def test_filtered_server_serves_only_its_sets(crib):
@@ -152,3 +167,89 @@ def _resolve_tool_spec_with(args: Any, config_file):
         return str(spec)
     cfg = Config.load(config_file)
     return cfg.tools.expose or None
+
+
+def test_readonly_coverage_is_total_and_disjoint():
+    """The r/o classification is DATA: every declared read-only verb is a REAL
+    member of its set (so a typo'd name or a renamed tool fails here, loudly);
+    an UNDECLARED tool just counts as mutating — the safe default (a r/o
+    deployment hides it rather than silently offering a write)."""
+    tools = sorted({v.tool for v in VERBS.values()})
+    for set_name in TOOL_SET_NAMES:
+        if set_name == "system":
+            continue  # the poll/meta trio: always exposed, no r/o distinction
+        in_set = {t for t in tools if tool_set_of(t) == set_name}
+        declared = set(READ_ONLY_TOOLS[set_name])
+        phantoms = declared - in_set
+        assert not phantoms, (
+            f"{set_name}: RO list names non-members: {sorted(phantoms)}"
+        )
+        assert declared, f"{set_name}: no read-only verbs declared at all?"
+
+
+def test_readonly_set_serves_only_its_reading_half(crib):
+    """notes:ro: the reads exist and ANSWER; note_store/append/edit/forget/move
+    are ABSENT from the face (not registerable, not visible) — and the
+    instructions preamble says the deployment is read-only."""
+    mcp = build_server(crib, tools=["notes:ro"])
+    names = {t.name for t in run(mcp.list_tools())}
+    assert {"note_lookup", "note_read", "note_versions"} <= names
+    assert not (
+        names
+        & {
+            "note_store",
+            "note_append",
+            "note_edit",
+            "note_forget",
+            "note_move",
+            "note_reindex",
+            "note_distill",
+            "note_elaborate",
+            "note_summarize",
+            "note_import",
+            "note_import_memory",
+            "note_restore",
+        }
+    )
+    # designs/plans/code/learnings/projects: absent entirely
+    assert not (
+        names
+        & {
+            t
+            for t in (t.name for t in run(build_server(crib).list_tools()))
+            if tool_set_of(t) not in ("notes", "system")
+        }
+        - set("note_")
+    )
+    instr = (mcp.instructions or "").upper()
+    assert "READ-ONLY DEPLOYMENT" in instr
+    assert "NOTES" in instr  # the exposed sets named
+    # poll/meta still present (system rides)
+    assert {"status", "ops", "project_reconcile"} <= names
+
+
+def test_readonly_writes_never_even_register(tmp_path, crib):
+    """The r/o guarantee at the face: an exposed-but-readonly set can answer a
+    READ over the wire, and a write verb is an UNKNOWN TOOL — the model's own
+    tools view (list_tools) never advertises it."""
+    from fastmcp import Client
+
+    mcp = build_server(crib, tools=["notes:ro"])
+    run(crib.store_note("the body", title="The", project="default"))
+
+    async def probe():
+        async with Client(mcp) as c:
+            lookup = await c.call_tool(
+                "note_lookup", {"query": "the body", "project": "default"}
+            )
+            try:
+                await c.call_tool(
+                    "note_store", {"title": "x", "content": "y", "project": "default"}
+                )
+                return lookup, "WRITE LANDED?!"
+            except Exception as e:
+                return lookup, str(e)
+
+    lookup, write = run(probe())
+    assert lookup is not None
+    assert "Unknown tool" in write

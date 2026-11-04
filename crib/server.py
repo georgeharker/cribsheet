@@ -336,6 +336,46 @@ _SET_FAMILIES = {
 }
 TOOL_SETS: dict[str, str] = {}  # tool name -> set name, filled as tools register
 _EXPOSED: frozenset[str] | None = None  # None (the default) = every set
+_RO: frozenset[str] = frozenset()  # the exposed-but-READ-ONLY sets
+
+# ── the read-only classification, per set ─────────────────────────────────────
+# `notes:ro` = the set exposes ONLY these verbs: the model never sees its
+# mutating half (no refusal at call time, no unusable verbs advertised). A new
+# tool must land in one of the two lists or the coverage test fails — the
+# classification is data, reviewed in the diff like a policy declaration.
+# Derived-index maintenance (reindex/distill/elaborate/summarize/code_index/
+# code_convert) counts as WRITING: it costs generation and rewrites indexes.
+READ_ONLY_TOOLS: dict[str, frozenset[str]] = {
+    "notes": frozenset(
+        {"note_lookup", "note_apropos", "note_read", "note_locate", "note_versions"}
+    ),
+    "designs": frozenset(
+        {
+            "design_list",
+            "design_lookup",
+            "design_read",
+            "design_tree",
+            "design_graph",
+            "design_export",
+            "design_check",
+        }
+    ),
+    "plans": frozenset(
+        {
+            "plan_list",
+            "plan_lookup",
+            "plan_next",
+            "plan_read",
+            "plan_graph",
+            "plan_export",
+            "plan_review",
+        }
+    ),
+    "code": frozenset({"code_lookup", "code_dossier", "code_graph", "code_xref"}),
+    "learnings": frozenset({"learning_read", "learning_report"}),
+    "memory": frozenset({"memory_history"}),
+    "projects": frozenset({"project_list", "project_status", "project_wait"}),
+}
 
 
 def tool_set_of(name: str) -> str:
@@ -354,11 +394,13 @@ def tool_set_of(name: str) -> str:
 
 def exposure(
     spec: str | list[str] | None,
-) -> frozenset[str] | None:
-    """`--tools notes,plans` / `[tools] expose` → the exposed sets (with
-    `system` always added). None (everything) when the spec names nothing.
-    UNKNOWN set names REFUSE here — at serve startup, naming the valid list —
-    rather than starting a server quietly missing sets someone asked for."""
+) -> tuple[frozenset[str], frozenset[str]] | None:
+    """`--tools notes:ro,plans` / `[tools] expose` → ({exposed}, {read-only});
+    None (the default) = everything, nothing read-only. `system` always joins
+    the exposed sets. UNKNOWN set names REFUSE here — at serve startup, naming
+    the valid list — rather than starting a server quietly missing sets someone
+    asked for. The suffix is `:ro` (the set's mutating verbs vanish from the
+    face); an unknown suffix is a refusal too."""
     if not spec:
         return None
     asked = [
@@ -368,14 +410,25 @@ def exposure(
     ]
     if not asked:
         return None
-    unknown = sorted(set(asked) - set(TOOL_SET_NAMES))
-    if unknown:
+    sets, ro = set(), set()
+    bad: list[str] = []
+    for token in asked:
+        name, _, mode = token.partition(":")
+        if name not in TOOL_SET_NAMES:
+            bad.append(token)
+            continue
+        sets.add(name)
+        if mode == "ro":
+            ro.add(name)
+        elif mode:
+            bad.append(token)
+    if bad:
         raise ValueError(
-            f"unknown tool set(s) {', '.join(unknown)} — the sets are: "
+            f"unknown tool set(s) {', '.join(bad)} — the sets are: "
             + ", ".join(TOOL_SET_NAMES)
-            + " (`system` always rides along)"
+            + "; a set may carry `:ro` (read-only); `system` always rides along"
         )
-    return frozenset(asked) | {"system"}
+    return frozenset(sets) | {"system"}, frozenset(ro)
 
 
 def _switch_if_created(result: dict) -> dict:
@@ -395,21 +448,48 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
     from fastmcp.tools import FunctionTool
 
     global _EXPOSED
-    _EXPOSED = exposure(tools)
+    global _EXPOSED, _RO
+    exposure_result = exposure(tools)
+    _EXPOSED = frozenset(exposure_result[0]) if exposure_result else None
+    _RO = frozenset(exposure_result[1]) if exposure_result else frozenset()
+    preamble: str = ""
     if _EXPOSED is not None:
         served = sorted(_EXPOSED - {"system"})
+        ro = sorted(_EXPOSED & _RO)
         print(
             f"[crib] MCP tool sets exposed: {', '.join(served)} (+ system); "
-            f"{len(TOOL_SET_NAMES) - 1 - len(served)} set(s) not exposed: "
+            + (f"read-only: {', '.join(ro)}; " if ro else "")
+            + f"{len(TOOL_SET_NAMES) - 1 - len(served)} set(s) not exposed: "
             + ", ".join(
                 n for n in TOOL_SET_NAMES if n not in _EXPOSED and n != "system"
             )
+        )
+        # THE MARGINAL CONCERN, handled at the source: the instructions name
+        # tools from every set, but the guidance below can never be surgically
+        # filtered — so the preamble says WHAT is on this deployment's face and
+        # that anything else named in the text is absent. The model reads the
+        # caveat BEFORE it tries a missing tool.
+        preamble = (
+            "THIS DEPLOYMENT'S EXPOSURE: the tool sets on the wire are "
+            + ", ".join(served)
+            + " (plus the status/ops/meta tools — `system`; they poll jobs and "
+            "report health). "
+            + (
+                "READ-ONLY DEPLOYMENT for: " + ", ".join(ro) + " — only their "
+                "reading verbs exist (no writes, no LLM revision, no index "
+                "rebuilds). "
+                if ro
+                else ""
+            )
+            + "Any tool named in the guidance below that belongs to a set not "
+            "listed here is NOT on this server — don't call it. "
         )
     crib = crib or Crib.open()
     mcp = FastMCP(
         "cribsheet",
         instructions=(
-            "Shared, durable project memory: markdown notes with semantic + "
+            preamble
+            + "Shared, durable project memory: markdown notes with semantic + "
             "keyword search, persisting across sessions and shared across "
             "agents and tools. Use it IN ADDITION TO any built-in memory you "
             "have, not instead of — this is the cross-session, cross-agent "
@@ -641,6 +721,8 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
             set_name = tool_set_of(fn.__name__)
             if _EXPOSED is not None and set_name not in _EXPOSED:
                 return fn  # not exposed on THIS deployment: never registered
+            if set_name in _RO and fn.__name__ not in READ_ONLY_TOOLS.get(set_name, frozenset()):
+                return fn  # a read-only set: the mutating verbs never register
             impl = (
                 fn
                 if resolution in ("session", "none")
