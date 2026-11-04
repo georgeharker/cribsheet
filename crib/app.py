@@ -245,6 +245,11 @@ class Crib:
         # instead of racing a second one — the zero-reset counter bug, fixed at the
         # source. Same-process only (the daemon is the shared process).
         self.code_jobs: dict[str, dict[str, Any]] = {}
+        # in-flight RELOCATE jobs (proj → task + live progress): the heavy half
+        # (mount rekey + citation rewrite + rehash) runs daemon-owned so a client
+        # disconnect (the combiner's 90s cap) can never cancel it mid-embed —
+        # learned live on the mcp-combiner relocation;
+        self.relocate_jobs: dict[str, dict[str, Any]] = {}
         # Durable symbol learnings, over refs + their own pillar store.
         # Crib keeps resolve_project + delegate public wrappers (learning_add/…).
         self.learnings = Learnings(paths, self.refs, self.learningstore)
@@ -3229,46 +3234,43 @@ class Crib:
         project_path: str | None = None,
         source: str | None = None,
         keep_prefix: bool = False,
+        wait_s: float | None = None,
     ) -> dict[str, Any]:
         """The move-and-rename verb: re-point an already-indexed project at its
-        repo's NEW location on this machine (the checkout was renamed or moved;
-        works after the fact — the old path may already be gone). IDENTITY-
-        KEEPING at the core: no chunk ids churn, no ring moves, no re-embed for
-        the identity half — only the three places that record an ABSOLUTE path
-        move:
+        repo's NEW location on this machine — the checkout was renamed and/or
+        moved; works AFTER THE FACT (the old path may already be gone, the
+        project may be renamed, and a PREVIOUS relocate may have been cut
+        halfway — re-running RESUMES what's left, never double-registering).
 
-        - the code index's `.source_root` (entries key on repo-relative paths,
-          so the same index serves the new checkout as-is)
-        - the doc-sources registry (`sources/<repo>/ -> abs root`), every entry
-          whose root is dead AND whose repo-segment matches the new dir's name
-          or the project name (or exactly one whose `source=<segment>` names)
-        - the repo's OWN `.crib` `project:` line when it still names the old
-          name (THIS repo, not a foreign one — the same rule project_rename
-          applies; it reports `crib_needs_fix` for a hand-spelled variant)
-        - the live code/doc + in-repo-store watchers, and the machine stub's
-          portable `store_root` when the project is adopted in-repo
+        The FAST half runs synchronously and idempotently: fences; the code
+        index's `.source_root` rewrite (entries key on repo-RELATIVE paths, so
+        the same index serves the new checkout); the doc-sources registry's
+        dead-root re-points; the repo's OWN `.crib` `project:` line (when it
+        names the pre-rename name — fenced by dead-source registry evidence;
+        foreign .cribs are refused); the machine stub's portable store_root for
+        an adopted project (the STORE moved with the repo); the watchers.
 
-        AND, when the checkout's DIR NAME moved (the default; keep_prefix
-        escapes to identity-keeping only), the mount prefix is re-homed:
-        `sources/<old-name>/…` → `sources/<new-name>/…` — the doc chunks rekey
-        (project+relpath hash, so they re-embed: the rare verb's cost, same
-        class as project_rename) and every citation in THIS project's notes is
-        rewritten to the new spelling (stashed to the ring first; the checked
-        hash rides along — a cited SECTION's content is unchanged by the mount
-        rename), which is what keeps decisions from going 'source-missing'
-        after a repo rename.
+        The HEAVY half — re-homing the `sources/<old-name>/` mount when the DIR
+        was renamed: doc chunks rekeyed (re-embedded from the new checkout) and
+        every citation in THIS project's notes rewritten to the new spelling
+        (ring-stashed first) — runs as a DAEMON-OWNED BACKGROUND JOB: a client
+        disconnect (e.g. the combiner's ~90s call cap) can never cancel it
+        mid-embed. Ordering is content-first, so an interrupt at ANY point
+        leaves a resolvable state: a doc is re-embedded under the NEW spelling
+        BEFORE its old chunks drop, and the old mount's registry entry is
+        removed LAST — mid-job, BOTH mounts resolve the same files, so citations
+        never go source-missing in passing.
 
-        The verb runs the cheap confirmation rehash at the new path itself
-        (content-hash gate, 0 changed expected) — ONLY in mount-rename mode;
-        keep_prefix SKIPS it (a docs re-hash would register
-        `sources/<new-name>/` beside the kept old mount and double-index every
-        doc — adopting the new mount name is what keep_prefix defers).
+        `wait_s=None` (default) returns a RUNNING HANDLE immediately (with
+        live progress + a resume hint); `wait_s=<seconds>` JOINS the job,
+        bounded like `project_index`'s wait; a re-invoke joins automatically
+        while it runs. `keep_prefix=true` = identity-keeping only: no mount
+        rename, no rehash (a docs re-hash would double-mount
+        `sources/<new-name>/` beside the kept old mount).
 
-        Fences: explicit `project=` + `project_path=` (never the session
-        default, never a cwd guess); a `.crib` must exist at/above the new path
-        (a moved repo carries its own); refuses mid-sweep; other projects
-        citing this repo are REPORTED (foreign_refs), never edited (each
-        registry is per-project and machine-local)."""
+        The foreign residue — other projects citing this repo by the old
+        spellings — is REPORTED (`foreign_refs`), never edited (rename's
+        rule: each registry is per-project and machine-local)."""
         from .config import CribLink, ProjectConfig, portable_path
         from .sources import SRC_PREFIX
         from .watch import PILLAR_SEGMENTS
@@ -3310,10 +3312,11 @@ class Crib:
             # OUR-stale case: the repo still names the PRE-RENAME project — the
             # rename itself declares this rewrite legal, but could not run (the
             # dir had already moved). Evidence required: THIS project's registry
-            # holds a dead source for that repo. No evidence ⇒ foreign; refuse.
+            # holds a (dead OR already-re-pointed) source for that repo. No
+            # evidence ⇒ foreign; refuse.
             ro0 = self._source_roots(old)
             stale_evidence = any(
-                not Path(r).is_dir()
+                (not Path(r).is_dir()) or Path(r) == new_root
                 for p, r in ro0.all().items()
                 if p[len(SRC_PREFIX) :].strip("/") in (link.project, link.root.name)
             )
@@ -3373,7 +3376,8 @@ class Crib:
         # 3. The doc-sources registry: prefixes whose root is dead AND whose
         #    repo-segment matches the new dir's name or the project name — the
         #    repo was renamed, so the segment can be either. `source=` picks
-        #    explicitly when the match is ambiguous.
+        #    explicitly when the match is ambiguous. IDEMPOTENT: a re-run sees
+        #    no dead roots and re-points nothing.
         ro = self._source_roots(old)
         dead = {
             p: r
@@ -3405,8 +3409,8 @@ class Crib:
                 cands = {}
         prefixes_repointed: list[str] = []
         for p in cands:
-            ro.upsert(p, new_root)
-            prefixes_repointed.append(p)
+            ro.upsert(p, new_root)  # re-point BEFORE the rekey: mid-job, both
+            prefixes_repointed.append(p)  # mounts resolve the same files
 
         # 4. The code index's source root: entries key on repo-RELATIVE paths,
         #    so this one rewrite re-homes the whole index.
@@ -3425,94 +3429,88 @@ class Crib:
                 self._code_watcher.watch_root(old, new_root)  # re-point
             source_root_repointed = True
 
-        # 5. THE MOUNT RENAME (the complete move-and-rename; keep_prefix escapes
-        #    to identity-keeping only): when the checkout's DIR NAME moved (the
-        #    prefix is named for the dir at index time), re-home the registered
-        #    prefix and everything that keys on it — the doc chunks (relpath
-        #    rekeys: project+relpath hash, so they re-embed — the rare verb's
-        #    cost, same class as project_rename) and every citation in THIS
-        #    project's notes (stashed to the ring first; the checked hash rides
-        #    along — a cited SECTION's content is unchanged by the mount rename).
-        mount_renamed: list[dict[str, str]] = []
-        chunks_rekeyed = citations_rewritten = 0
-        if not keep_prefix:
-            for old_prefix in list(prefixes_repointed):
-                seg = old_prefix[len(SRC_PREFIX) :].strip("/")
-                if seg == new_root.name:
-                    continue  # already named for the (new) dir
-                new_prefix = f"{SRC_PREFIX}{new_root.name}/"
-                existing = ro.all().get(new_prefix)
-                if existing is not None and existing != str(new_root):
-                    # a second mount would double-index every doc
-                    raise CribUserError(
-                        f"{new_prefix!r} is already mounted at another root "
-                        f"({existing}) — resolve the collision, or keep_prefix"
-                    )
-                nd = self.notes_dir(old)
-                moved_docs: list[tuple[str, Path]] = []
-                for rp in sorted(self._indexed_relpaths(old, old_prefix)):
-                    suffix = rp[len(old_prefix) :]
-                    target = new_root / suffix
-                    if not target.is_file():
-                        continue  # reported below, not guessed back to life
-                    await self.index.forget(old, rp)
-                    moved_docs.append((f"{new_prefix}{suffix}", target))
-                rekeyed = 0
-                for new_rel, target in moved_docs:
-                    await self.index.index_file(old, nd, new_rel, content_path=target)
-                    rekeyed += 1
-                chunks_rekeyed += rekeyed
-                ro.remove(old_prefix)
-                ro.upsert(new_prefix, new_root)
-                prefixes_repointed = [
-                    new_prefix if p == old_prefix else p for p in prefixes_repointed
-                ]
-                mount_renamed.append(
-                    {"from": old_prefix, "to": new_prefix, "docs": str(rekeyed)}
+        # 5. The HEAVY half as a daemon-owned job. The resume set is detected
+        #    from the REGISTRY, not from dead paths: every mount of THIS repo
+        #    (root == the new checkout) whose name still spells the old dir
+        #    rekeys + rewrites citations + is removed last.
+        job = self.relocate_jobs.get(old)
+        running = job is not None and not job["task"].done()
+        pending = (
+            [
+                p
+                for p, r in ro.all().items()
+                if r == str(new_root) and p != f"{SRC_PREFIX}{new_root.name}/"
+            ]
+            if not keep_prefix and not running
+            else []
+        )
+        task = None
+        state: dict[str, Any] | None = job["state"] if job is not None else None
+        if not keep_prefix and not running and pending:
+            job_state: dict[str, Any] = {
+                "done": 0,
+                "total": 0,
+                "citations": 0,
+                "mount": [],
+                "chunks_lost_restored": 0,
+            }
+            task = asyncio.create_task(
+                self._relocate_rekey(
+                    old,
+                    new_root,
+                    pending,
+                    job_state,
+                    fast={
+                        "source_root": (
+                            {"from": str(old_si_root), "to": str(new_root)}
+                            if source_root_repointed
+                            else None
+                        ),
+                        "prefixes_repointed": prefixes_repointed,
+                        "store_repointed": store_repointed,
+                        "crib_rewritten": crib_rewritten,
+                    },
                 )
-                # ...and the citations, in every pillar note THIS project owns
-                for pillar in (self.notestore, self.designstore, self.planstore):
-                    root = pillar.root(old)
-                    if not root.is_dir():
-                        continue
-                    for path in sorted(root.glob("**/*.md")):
-                        try:
-                            note = notes.load(path)
-                        except Exception:  # noqa: BLE001 — not citable, skipped
-                            continue
-                        srcs = note.frontmatter.get("sources")
-                        if not isinstance(srcs, list):
-                            continue
-                        changed = False
-                        for src in srcs:
-                            if not isinstance(src, dict):
-                                continue
-                            ref = str(src.get("ref") or "")
-                            if ref == old_prefix.rstrip("/") or ref.startswith(
-                                old_prefix
-                            ):
-                                src["ref"] = (
-                                    new_prefix.rstrip("/")
-                                    if ref == old_prefix.rstrip("/")
-                                    else new_prefix + ref[len(old_prefix) :]
-                                )
-                                changed = True
-                        if changed:
-                            rel = str(path.relative_to(root))
-                            pillar._stash_existing(old, rel, path, note.id)
-                            notes.save_atomic(note)
-                            citations_rewritten += 1
+            )
+            self.relocate_jobs[old] = {"task": task, "state": job_state}
+            state = job_state
+        elif running and job is not None:
+            task = job["task"]
 
-        # 6. The cheap confirmation rehash at the new path — code + docs through
-        #    the content-hash gate (0 changed expected). ONLY in mount-rename
-        #    mode: the registry prefix then ALREADY spells the new dir's name, so
-        #    the rehash can't double-mount. keep_prefix mode SKIPS it — a docs
-        #    re-hash would register `sources/<new-name>/` beside the kept old
-        #    mount (a project_index would double-index every doc); adopting the
-        #    new mount name is exactly what keep_prefix defers.
-        reindex: dict[str, Any] | None = None
-        if (link.paths or link.doc_patterns) and not keep_prefix:
-            reindex = await self.project_index(project=old, cwd=new_root)
+        if task is not None and not task.done():
+            if wait_s is None:
+                return {
+                    "project": old,
+                    "relocated": True,
+                    "running": True,
+                    "progress": state,
+                    "resume_hint": (
+                        "the rekey runs daemon-owned (a client disconnect can't "
+                        "cancel it) — re-invoke to poll/join, or with "
+                        "wait_s=<seconds> to block"
+                    ),
+                }
+            started = time.monotonic()
+            while not task.done() and time.monotonic() - started < wait_s:
+                await asyncio.wait({task}, timeout=2.0)
+            if task.done():
+                return await task
+            return {
+                "project": old,
+                "relocated": True,
+                "running": True,
+                "progress": state,
+                "resume_hint": "still rekeying — re-invoke to join/poll",
+            }
+
+        # 6. The FINISHED path (or nothing to do): the heavy result if a job ran
+        #    to completion in this call, else the plain report. The rehash is
+        #    part of the job; nothing runs here.
+        if job is not None and job["task"].done():
+            task = job["task"]
+            res = await task  # the job's result dict (raises if it failed)
+            self.relocate_jobs.pop(old, None)
+            return res
 
         # the honest residue: OTHER projects still spelling this repo the old
         # way — foreign repos/notes are never edited, only reported (rename's
@@ -3528,7 +3526,8 @@ class Crib:
             for r in self._project_refs(p)
             if r.get("project") == old
         ]
-
+        if job is not None and job["task"].done():
+            self.relocate_jobs.pop(old, None)
         return {
             "project": old,
             "relocated": True,
@@ -3539,15 +3538,152 @@ class Crib:
                 else None
             ),
             "prefixes_repointed": prefixes_repointed,
-            "mount_renamed": mount_renamed,
-            "chunks_rekeyed": chunks_rekeyed,
-            "citations_rewritten": citations_rewritten,
+            # uniform shape with the heavy job's result (keep_prefix / nothing-
+            # to-rehome paths): no mount work ran, so these are empty
+            "mount_renamed": [],
+            "chunks_rekeyed": 0,
+            "chunks_lost_restored": 0,
+            "citations_rewritten": 0,
+            "reindex": None,
             "foreign_refs": foreign_refs,
             "store_repointed": store_repointed,
             "crib_rewritten": crib_rewritten,
-            "reindex": reindex,
             "message": (
-                f"relocated {old!r}'s repo to {new_root}"
+                f"relocated {old!r}'s repo to {new_root} — identity kept "
+                "(no re-embed); nothing to re-home"
+                + ("; .crib line rewritten" if crib_rewritten else "")
+                + ("; in-repo store re-pointed" if store_repointed else "")
+                + (
+                    f"; {len(foreign_refs)} foreign ref(s) reported (not edited)"
+                    if foreign_refs
+                    else ""
+                )
+            ),
+        }
+
+    async def _relocate_rekey(
+        self,
+        proj: str,
+        new_root: Path,
+        old_prefixes: list[str],
+        state: dict[str, Any],
+        fast: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """The heavy relocate half, daemon-owned: re-home each stale mount of
+        THIS repo. CONTENT-FIRST and resumable at every step — a doc is
+        re-embedded under the NEW spelling BEFORE its old chunks drop; the old
+        mount's registry entry is removed LAST; citations are rewritten after
+        (an already-rewritten ref no longer matches, so re-running finishes
+        rather than double-writing); the prose + code + docs rehash closes, which
+        also RESTORES doc chunks a rename's skipped in-situ reindex lost (the
+        after-the-fact case)."""
+        from .sources import SRC_PREFIX
+
+        new_prefix = f"{SRC_PREFIX}{new_root.name}/"
+        ro = self._source_roots(proj)
+        mount_renamed: list[dict[str, str]] = []
+        chunks_rekeyed = citations_rewritten = chunks_lost_restored = 0
+        state["total"] = state["total"] or 0
+        for old_prefix in old_prefixes:
+            nd = self.notes_dir(proj)
+            rels = sorted(self._indexed_relpaths(proj, old_prefix))
+            suffixes = {
+                rp[len(old_prefix) :]: new_root / rp[len(old_prefix) :] for rp in rels
+            }
+            state["total"] += len(suffixes)
+            for suffix, target in sorted(suffixes.items()):
+                new_rel = f"{new_prefix}{suffix}"
+                if target.is_file():
+                    # CONTENT FIRST: the new-spelling chunks exist (hash gate
+                    # skips when already there) before anything is dropped
+                    res = await self.index.index_file(
+                        proj, nd, new_rel, content_path=target
+                    )
+                    if res.changed:
+                        chunks_rekeyed += 1
+                        state["done"] += 1
+                    else:
+                        state["done"] += 1  # already rekeyed (a resume)
+                await self.index.forget(proj, old_prefix + suffix)
+            # any DOC the index knows under the old spelling with NO surviving
+            # file under the new (a rename's in-situ loss) is re-indexed from
+            # the target tree in the rehash below
+            chunks_lost_restored += len(
+                {
+                    f"{new_prefix}{suffix}"
+                    for suffix in suffixes
+                    if not suffixes[suffix].is_file()
+                }
+            )
+            # ...and the citations, in every pillar note THIS project owns
+            for pillar in (self.notestore, self.designstore, self.planstore):
+                root = pillar.root(proj)
+                if not root.is_dir():
+                    continue
+                for path in sorted(root.glob("**/*.md")):
+                    try:
+                        note = notes.load(path)
+                    except Exception:  # noqa: BLE001 — not citable, skipped
+                        continue
+                    srcs = note.frontmatter.get("sources")
+                    if not isinstance(srcs, list):
+                        continue
+                    changed = False
+                    for src in srcs:
+                        if not isinstance(src, dict):
+                            continue
+                        ref = str(src.get("ref") or "")
+                        if ref == old_prefix.rstrip("/") or ref.startswith(old_prefix):
+                            src["ref"] = (
+                                new_prefix.rstrip("/")
+                                if ref == old_prefix.rstrip("/")
+                                else new_prefix + ref[len(old_prefix) :]
+                            )
+                            changed = True
+                    if changed:
+                        rel = str(path.relative_to(root))
+                        pillar._stash_existing(proj, rel, path, note.id)
+                        notes.save_atomic(note)
+                        citations_rewritten += 1
+                        state["citations"] += 1
+            # REMOVE LAST — after the new-spelling chunks exist and the notes
+            # cite them: an interrupt above leaves the old mount present and
+            # resolvable (both mounts resolve the same files mid-job)
+            ro.remove(old_prefix)
+            ro.upsert(new_prefix, new_root)
+            state["mount"].append(
+                {"from": old_prefix, "to": new_prefix, "docs": str(len(suffixes))}
+            )
+            mount_renamed.append(
+                {"from": old_prefix, "to": new_prefix, "docs": str(len(suffixes))}
+            )
+        # CLOSE: the cheap confirmation rehash (code + docs, content-hash gate)
+        # and the prose reindex — which re-adds any in-situ docs whose chunks a
+        # rename's skipped reindex dropped (content comes from the new path).
+        link = CribLink.find(new_root)
+        rehash: dict[str, Any] | None = None
+        if link is not None and (link.paths or link.doc_patterns):
+            self.index.invalidate_caches(proj)
+            rehash = await self.reindex(project=proj)  # prose first (cheap too)
+            rehash["in_situ_and_code"] = await self.project_index(
+                project=proj, cwd=new_root
+            )
+        fast = fast or {}
+        return {
+            "project": proj,
+            "relocated": True,
+            "root": str(new_root),
+            "source_root": fast.get("source_root"),
+            "prefixes_repointed": fast.get("prefixes_repointed") or [],
+            "store_repointed": fast.get("store_repointed"),
+            "crib_rewritten": fast.get("crib_rewritten"),
+            "mount_renamed": mount_renamed,
+            "chunks_rekeyed": chunks_rekeyed,
+            "chunks_lost_restored": chunks_lost_restored,
+            "citations_rewritten": citations_rewritten,
+            "reindex": rehash,
+            "message": (
+                f"relocated {proj!r}'s repo to {new_root}"
                 + (
                     "; mount renamed "
                     + "; ".join(
@@ -3555,15 +3691,13 @@ class Crib:
                         for m in mount_renamed
                     )
                     if mount_renamed
-                    else ""
+                    else " (no stale mount)"
                 )
                 + f"; {chunks_rekeyed} doc chunk(s) rekeyed, "
                 + f"{citations_rewritten} citation(s) rewritten"
-                + (f"; .crib rewritten ({crib_rewritten})" if crib_rewritten else "")
-                + (f"; store re-pointed ({store_repointed})" if store_repointed else "")
                 + (
-                    f"; {len(foreign_refs)} foreign ref(s) reported (not edited)"
-                    if foreign_refs
+                    f"; {chunks_lost_restored} lost doc(s) re-indexed"
+                    if chunks_lost_restored
                     else ""
                 )
             ),
