@@ -309,7 +309,9 @@ class ChromaStore:
         return cls(chromadb.PersistentClient(path=path))
 
     @classmethod
-    def shared(cls, host: str, port: int) -> "ChromaStore":
+    def shared(
+        cls, host: str, port: int, allow_unpatched: bool = False
+    ) -> "ChromaStore":
         import chromadb  # lazy
 
         # SECURITY GUARD: chromadb's pre-auth code injection (CVE-2026-45829,
@@ -318,8 +320,13 @@ class ChromaStore:
         # default) has no listener and is unaffected. Until a chromadb release
         # carries the upstream fix (chroma-core/chroma#7237), `shared` mode is
         # refused unless explicitly opted in — a config change must never
-        # silently open the surface.
-        if os.environ.get("CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE") != "1":
+        # silently open the surface. Opt-in: [chroma]
+        # allow_unpatched_remote = true (the caller passes it down) or
+        # CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE = 1 in the daemon's env.
+        if (
+            os.environ.get("CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE") != "1"
+            and not allow_unpatched
+        ):
             raise CribUserError(
                 "chroma `shared` mode is refused: the installed chromadb "
                 "(<= 1.5.9) carries the remote-mode pre-auth code injection "
