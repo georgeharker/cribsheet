@@ -255,8 +255,8 @@ class QwenReranker:
     _INSTRUCT = "Given a search query, retrieve relevant passages that answer it"
 
     def __init__(self, model_name: str) -> None:
-        import torch
-        from transformers import AutoModelForCausalLM, AutoTokenizer  # lazy
+        import torch  # type: ignore[reportMissingImports]  # the [st] extra: lazy, guarded
+        from transformers import AutoModelForCausalLM, AutoTokenizer  # type: ignore[reportMissingImports]  # the [st] extra: lazy, guarded
 
         self._torch = torch
         self._tok = AutoTokenizer.from_pretrained(model_name, padding_side="left")

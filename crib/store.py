@@ -15,6 +15,7 @@ iterate a snapshot taken under it.
 from __future__ import annotations
 
 import functools
+import os
 import threading
 from dataclasses import dataclass
 from pathlib import Path
@@ -311,6 +312,23 @@ class ChromaStore:
     def shared(cls, host: str, port: int) -> "ChromaStore":
         import chromadb  # lazy
 
+        # SECURITY GUARD: chromadb's pre-auth code injection (CVE-2026-45829,
+        # GHSA-f4j7-r4q5-qw2c — trust_remote_code in the server collections API)
+        # is reachable in REMOTE/server mode only; embedded mode (crib's
+        # default) has no listener and is unaffected. Until a chromadb release
+        # carries the upstream fix (chroma-core/chroma#7237), `shared` mode is
+        # refused unless explicitly opted in — a config change must never
+        # silently open the surface.
+        if os.environ.get("CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE") != "1":
+            raise CribUserError(
+                "chroma `shared` mode is refused: the installed chromadb "
+                "(<= 1.5.9) carries the remote-mode pre-auth code injection "
+                "(CVE-2026-45829 / GHSA-f4j7-r4q5-qw2c), fixed upstream "
+                "(chroma-core/chroma#7237) but not yet in a release. Embedded "
+                "mode is unaffected. To opt in anyway: set "
+                "CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE=1 or, in the daemon's env, "
+                "config.toml [chroma] allow_unpatched_remote = true"
+            )
         return cls(chromadb.HttpClient(host=host, port=port))
 
     def upsert(self, records: list[Record]) -> None:

@@ -117,7 +117,7 @@ def _auto_device() -> str:
     Matches the policy "accelerator if the box has one, else CPU": nvidia/CUDA on
     CUDA systems, MPS on Apple Silicon, plain CPU on a Pi or unaccelerated Linux.
     """
-    import torch  # lazy
+    import torch  # lazy  # type: ignore[reportMissingImports]  # the [st] extra: lazy, guarded
 
     if torch.cuda.is_available():
         return "cuda"
@@ -138,7 +138,7 @@ class SentenceTransformerEmbedder:
     def __init__(
         self, model_name: str, device: str | None = None, query_prefix: str = ""
     ) -> None:
-        from sentence_transformers import SentenceTransformer  # lazy
+        from sentence_transformers import SentenceTransformer  # lazy  # type: ignore[reportMissingImports]  # the [st] extra: lazy, guarded
 
         self.query_prefix = query_prefix
         self.device = device or _auto_device()

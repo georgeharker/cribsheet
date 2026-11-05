@@ -239,6 +239,14 @@ class ChromaConfig:
     # 7733 keeps shared chroma in crib's own 773x band (MCP server is 7732),
     # away from chromadb's default 8000 — the most collision-prone port on the box.
     port: int = 7733
+    # SECURITY GUARD (CVE-2026-45829 / GHSA-f4j7-r4q5-qw2c): chroma's server
+    # collections API had pre-auth code injection (trust_remote_code, fixed in
+    # chroma-core/chroma#7237 but UNRELEASED as of 1.5.9) — reachable only in
+    # REMOTE/server mode, never in crib's embedded mode. `shared` therefore
+    # refuses until `allow_unpatched_remote = true` (or the daemon env
+    # CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE=1) — flipping a config key must not
+    # silently open the surface.
+    allow_unpatched_remote: bool = False
 
 
 @dataclass
