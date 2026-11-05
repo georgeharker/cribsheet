@@ -5671,7 +5671,7 @@ def _build_shared_chroma(
 
     try:
         sharedserver.wait_ready(probe)
-        store = ChromaStore.shared(c.host, c.port)
+        store = ChromaStore.shared(c.host, c.port, allow_unpatched=c.allow_unpatched_remote)
     except Exception:
         sharedserver.unuse(c.server_name)  # don't leak the refcount on failure
         raise
