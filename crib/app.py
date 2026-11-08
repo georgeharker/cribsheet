@@ -5648,9 +5648,12 @@ def _build_shared_chroma(
     running it just attaches and increments the refcount; it only launches a new
     `chroma run` when none exists. crib releases its refcount on close."""
     from . import sharedserver
-    from .store import ChromaStore
+    from .store import ChromaStore, check_chroma_exposure
 
     c = config.chroma
+    # BEFORE the launch: `--host` below is chroma's bind address, so a
+    # non-loopback config must be refused before any listener exists.
+    check_chroma_exposure(c.host, c.allow_unpatched_remote)
     paths.chroma_dir.mkdir(parents=True, exist_ok=True)
     command = [
         "chroma",
@@ -5671,7 +5674,9 @@ def _build_shared_chroma(
 
     try:
         sharedserver.wait_ready(probe)
-        store = ChromaStore.shared(c.host, c.port, allow_unpatched=c.allow_unpatched_remote)
+        store = ChromaStore.shared(
+            c.host, c.port, allow_unpatched=c.allow_unpatched_remote
+        )
     except Exception:
         sharedserver.unuse(c.server_name)  # don't leak the refcount on failure
         raise

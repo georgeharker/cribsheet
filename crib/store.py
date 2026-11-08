@@ -24,6 +24,48 @@ from typing import Any, Callable, Protocol, TypeVar
 from .errors import CribUserError
 
 
+def is_loopback_host(host: str) -> bool:
+    """True when `host` can only be reached from this machine: `localhost`,
+    127.0.0.0/8 or ::1. Any other name is treated as NOT loopback without
+    resolving it — a hostname can resolve to a routable address."""
+    import ipaddress
+
+    h = (host or "").strip().strip("[]").lower()
+    if h == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(h).is_loopback
+    except ValueError:
+        return False
+
+
+def check_chroma_exposure(host: str, allow_unpatched: bool = False) -> None:
+    """SECURITY GUARD for `shared` chroma (CVE-2026-45829 / GHSA-f4j7-r4q5-qw2c:
+    pre-auth code injection via trust_remote_code in chroma's server collections
+    API; fixed upstream in chroma-core/chroma#7237, unreleased as of 1.5.9).
+
+    The exposure is chroma's LISTENER receiving untrusted input. crib launches
+    `chroma run --host <host>`, so the configured host IS the bind address: a
+    loopback bind takes no off-machine input and is allowed. Any other bind is
+    refused unless explicitly opted in — a config change must never silently put
+    the vulnerable endpoint on the network. Opt-in: [chroma]
+    allow_unpatched_remote = true, or CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE=1 in the
+    daemon's env."""
+    if is_loopback_host(host):
+        return
+    if os.environ.get("CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE") == "1" or allow_unpatched:
+        return
+    raise CribUserError(
+        f"chroma `shared` mode on host {host!r} is refused: that bind is reachable "
+        "off this machine, and the installed chromadb (<= 1.5.9) carries the "
+        "server-mode pre-auth code injection (CVE-2026-45829 / "
+        "GHSA-f4j7-r4q5-qw2c; fixed upstream in chroma-core/chroma#7237, not yet "
+        'released). Bind to loopback ([chroma] host = "127.0.0.1"), or opt in '
+        "anyway with [chroma] allow_unpatched_remote = true or the env var "
+        "CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE=1 in the daemon's env"
+    )
+
+
 @dataclass
 class Record:
     id: str
@@ -314,28 +356,7 @@ class ChromaStore:
     ) -> "ChromaStore":
         import chromadb  # lazy
 
-        # SECURITY GUARD: chromadb's pre-auth code injection (CVE-2026-45829,
-        # GHSA-f4j7-r4q5-qw2c — trust_remote_code in the server collections API)
-        # is reachable in REMOTE/server mode only; embedded mode (crib's
-        # default) has no listener and is unaffected. Until a chromadb release
-        # carries the upstream fix (chroma-core/chroma#7237), `shared` mode is
-        # refused unless explicitly opted in — a config change must never
-        # silently open the surface. Opt-in: [chroma]
-        # allow_unpatched_remote = true (the caller passes it down) or
-        # CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE = 1 in the daemon's env.
-        if (
-            os.environ.get("CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE") != "1"
-            and not allow_unpatched
-        ):
-            raise CribUserError(
-                "chroma `shared` mode is refused: the installed chromadb "
-                "(<= 1.5.9) carries the remote-mode pre-auth code injection "
-                "(CVE-2026-45829 / GHSA-f4j7-r4q5-qw2c), fixed upstream "
-                "(chroma-core/chroma#7237) but not yet in a release. Embedded "
-                "mode is unaffected. To opt in anyway: set the env var "
-                "CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE=1 in the daemon's env, or "
-                "config.toml [chroma] allow_unpatched_remote = true"
-            )
+        check_chroma_exposure(host, allow_unpatched)
         return cls(chromadb.HttpClient(host=host, port=port))
 
     def upsert(self, records: list[Record]) -> None:
