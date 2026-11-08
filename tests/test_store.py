@@ -19,11 +19,15 @@ def test_shared_mode_refused_until_patched(tmp_path, monkeypatch):
         ChromaStore.shared("127.0.0.1", 7733)
     with pytest.raises(CribUserError, match="allow_unpatched_remote"):
         ChromaStore.shared("127.0.0.1", 7733, allow_unpatched=False)
-    # the explicit opt-in is accepted (constructor runs; HttpClient is built
-    # lazily enough not to CONNECT here)
+    # the opt-in is accepted and the client CONSTRUCTS — with chromadb's own
+    # HttpClient STUBBED (on CI/CI-like boxes its constructor pings the server;
+    # the guard's job is only to check the opt-in, not that a server exists)
+    monkeypatch.setattr(
+        "chromadb.HttpClient", lambda host, port: f"stubbed@{host}:{port}"
+    )
     s = ChromaStore.shared("127.0.0.1", 7733, allow_unpatched=True)
-    assert s is not None
+    assert s._client == "stubbed@127.0.0.1:7733"
     # the env spelling for the daemon's process env
     monkeypatch.setenv("CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE", "1")
     s2 = ChromaStore.shared("127.0.0.1", 7733)
-    assert s2 is not None
+    assert s2._client == "stubbed@127.0.0.1:7733"
