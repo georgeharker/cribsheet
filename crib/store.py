@@ -332,8 +332,8 @@ class ChromaStore:
                 "(<= 1.5.9) carries the remote-mode pre-auth code injection "
                 "(CVE-2026-45829 / GHSA-f4j7-r4q5-qw2c), fixed upstream "
                 "(chroma-core/chroma#7237) but not yet in a release. Embedded "
-                "mode is unaffected. To opt in anyway: set "
-                "CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE=1 or, in the daemon's env, "
+                "mode is unaffected. To opt in anyway: set the env var "
+                "CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE=1 in the daemon's env, or "
                 "config.toml [chroma] allow_unpatched_remote = true"
             )
         return cls(chromadb.HttpClient(host=host, port=port))

@@ -211,16 +211,12 @@ def test_readonly_set_serves_only_its_reading_half(crib):
             "note_restore",
         }
     )
-    # designs/plans/code/learnings/projects: absent entirely
-    assert not (
-        names
-        & {
-            t
-            for t in (t.name for t in run(build_server(crib).list_tools()))
-            if tool_set_of(t) not in ("notes", "system")
-        }
-        - set("note_")
-    )
+    # designs/plans/code/learnings/projects: absent entirely — the face carries
+    # NO tool from a set that wasn't exposed (which is exactly what a r/o mode
+    # and the filter are for: `names` is the face's tool set; anything whose
+    # set isn't exposed here is a leak)
+    gated = {n for n in names if tool_set_of(n) not in ("notes", "system")}
+    assert not gated, f"non-exposed tools on the face: {sorted(gated)}"
     instr = (mcp.instructions or "").upper()
     assert "READ-ONLY DEPLOYMENT" in instr
     assert "NOTES" in instr  # the exposed sets named
