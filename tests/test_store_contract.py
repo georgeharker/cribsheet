@@ -508,3 +508,26 @@ def test_count_and_projects_without_fetching(backend):
     assert s.count({"project": "p"}, relpath_prefix="sources/") == 2
     assert s.count({}, relpath_prefix="sources/") == 3
     assert s.projects() == {"p", "q"}
+
+
+def test_apply_writes_upserts_deletes_and_meta_together(backend):
+    s = backend.store
+    s.upsert([rec("old", X, relpath="n.md"), rec("keep", Y, relpath="n.md")])
+    s.apply(
+        [rec("new", Z, relpath="n.md")],
+        ["old"],
+        {"keep": {"project": "p", "relpath": "renamed.md", "tags": ["t"]}},
+    )
+    assert set(s.get_meta({"project": "p"})) == {"keep", "new"}
+    assert s.get_meta({"relpath": "renamed.md"})["keep"]["tags"] == ["t"]
+    assert s.count({"project": "p"}, relpath_prefix="renamed") == 1
+
+
+def test_set_meta_many_rows_in_batches(backend):
+    s = backend.store
+    s.upsert([rec(f"r{i:03}", X, relpath="a.md") for i in range(450)])
+    s.set_meta(
+        {f"r{i:03}": {"project": "p", "relpath": "b.md", "i": i} for i in range(450)}
+    )
+    metas = s.get_meta({"relpath": "b.md"})
+    assert len(metas) == 450 and metas["r321"]["i"] == 321

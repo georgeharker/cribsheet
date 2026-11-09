@@ -282,6 +282,14 @@ class QuackStore(DuckDBStore):
     def delete(self, ids: list[str]) -> None:
         self._call(super().delete, ids)
 
+    def apply(
+        self,
+        records: list[Record],
+        deletes: list[str],
+        meta: dict[str, dict[str, Any]],
+    ) -> None:
+        self._call(super().apply, records, deletes, meta)
+
     def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:
         self._call(super().set_meta, updates)
 

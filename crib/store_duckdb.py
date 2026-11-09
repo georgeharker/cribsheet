@@ -216,6 +216,62 @@ def _dim_of(data_type: str) -> int:
     return int(data_type.rsplit("[", 1)[1].rstrip("]"))
 
 
+def _upsert_step(store: "DuckDBStore", records: list[Record]) -> Callable[[Any], None]:
+    dims = {len(r.embedding) for r in records}
+    if len(dims) != 1:
+        raise CribUserError(f"one upsert mixed vector dimensions {sorted(dims)}")
+    (dim,) = dims
+    rows = [
+        [
+            r.id,
+            r.document,
+            json.dumps(r.metadata),
+            *_promoted(r.metadata),
+            [float(x) for x in r.embedding],
+        ]
+        for r in records
+    ]
+    ids = [r.id for r in records]
+
+    def write(ex: Any) -> None:
+        store._ensure_table(ex, dim)
+        ex.run(f"DELETE FROM {TABLE} WHERE id = ANY(?)", [ids])
+        # TABLE is a module constant; every value is a parameter.
+        # pi-lens-ignore: python-sql-injection
+        ex.run_many(f"INSERT INTO {TABLE} VALUES (?, ?, ?, ?, ?, ?, ?)", rows)
+
+    return write
+
+
+_META_ROWS_PER_STATEMENT = 200
+
+
+def _set_meta_step(
+    store: "DuckDBStore", updates: dict[str, dict[str, Any]]
+) -> Callable[[Any], None]:
+    """One UPDATE … FROM (VALUES …) per batch, not one UPDATE per row (which
+    over Quack was a round trip each)."""
+    rows = [[i, json.dumps(m), *_promoted(m)] for i, m in updates.items()]
+
+    def write(ex: Any) -> None:
+        if store._table_dim(ex) is None:
+            return
+        for start in range(0, len(rows), _META_ROWS_PER_STATEMENT):
+            batch = rows[start : start + _META_ROWS_PER_STATEMENT]
+            groups = ", ".join("(?, ?, ?, ?, ?)" for _ in batch)
+            # TABLE is a module constant; every value is a parameter.
+            # pi-lens-ignore: python-sql-injection
+            ex.run(
+                f"UPDATE {TABLE} SET meta = v.meta::JSON, project = v.project, "
+                "store = v.store, relpath = v.relpath "
+                f"FROM (VALUES {groups}) AS v(id, meta, project, store, relpath) "
+                f"WHERE {TABLE}.id = v.id",
+                [x for row in batch for x in row],
+            )
+
+    return write
+
+
 class DuckDBStore:
     """Embedded DuckDB: the daemon is the only process with the file open.
 
@@ -365,61 +421,44 @@ class DuckDBStore:
     # ── writes ───────────────────────────────────────────────────────────────
 
     def upsert(self, records: list[Record]) -> None:
-        if not records:
-            return
-        dims = {len(r.embedding) for r in records}
-        if len(dims) != 1:
-            raise CribUserError(f"one upsert mixed vector dimensions {sorted(dims)}")
-        (dim,) = dims
-        rows = [
-            [
-                r.id,
-                r.document,
-                json.dumps(r.metadata),
-                *_promoted(r.metadata),
-                [float(x) for x in r.embedding],
-            ]
-            for r in records
-        ]
-        ids = [r.id for r in records]
-
-        def write(ex: Any) -> None:
-            self._ensure_table(ex, dim)
-            ex.run(f"DELETE FROM {TABLE} WHERE id = ANY(?)", [ids])
-            # TABLE is a module constant; every value is a parameter.
-            # pi-lens-ignore: python-sql-injection
-            ex.run_many(f"INSERT INTO {TABLE} VALUES (?, ?, ?, ?, ?, ?, ?)", rows)
-
-        self._transaction(write)
+        self.apply(records, [], {})
 
     def delete(self, ids: list[str]) -> None:
-        if not ids:
-            return
-        wanted = list(ids)
-
-        def write(ex: Any) -> None:
-            if self._table_dim(ex) is not None:
-                ex.run(f"DELETE FROM {TABLE} WHERE id = ANY(?)", [wanted])
-
-        self._transaction(write)
+        self.apply([], ids, {})
 
     def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:
         """REPLACE each record's metadata (the contract): keys absent from the new
         dict are gone. Vectors and documents are untouched."""
-        if not updates:
+        self.apply([], [], updates)
+
+    def apply(
+        self,
+        records: list[Record],
+        deletes: list[str],
+        meta: dict[str, dict[str, Any]],
+    ) -> None:
+        """Upserts, deletes and metadata replacements as ONE transaction: a note
+        write never leaves its new chunks beside its stale ones, and over Quack
+        it costs one BEGIN/COMMIT instead of three."""
+        steps: list[Callable[[Any], None]] = []
+        if records:
+            steps.append(_upsert_step(self, records))
+        if deletes:
+            wanted = list(deletes)
+
+            def delete(ex: Any) -> None:
+                if self._table_dim(ex) is not None:
+                    ex.run(f"DELETE FROM {TABLE} WHERE id = ANY(?)", [wanted])
+
+            steps.append(delete)
+        if meta:
+            steps.append(_set_meta_step(self, meta))
+        if not steps:
             return
-        rows = [[json.dumps(m), *_promoted(m), i] for i, m in updates.items()]
 
         def write(ex: Any) -> None:
-            if self._table_dim(ex) is None:
-                return
-            # TABLE is a module constant; every value is a parameter.
-            # pi-lens-ignore: python-sql-injection
-            ex.run_many(
-                f"UPDATE {TABLE} SET meta = ?, project = ?, store = ?, relpath = ? "
-                "WHERE id = ?",
-                rows,
-            )
+            for step in steps:
+                step(ex)
 
         self._transaction(write)
 

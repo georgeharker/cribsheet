@@ -152,11 +152,9 @@ class IndexEngine:
 
     def _commit(self, records: list[Record], stale_ids: list[str],
                 meta_updates: dict[str, dict]) -> None:
-        """The store writes as one worker-thread job (the stores are thread-safe)."""
-        self.store.upsert(records)
-        self.store.delete(stale_ids)
-        if meta_updates:
-            self.store.set_meta(meta_updates)
+        """The store writes as one worker-thread job and one transaction: a crash
+        never leaves a note's new chunks beside its stale ones."""
+        self.store.apply(records, stale_ids, meta_updates)
 
     def _plan(self, project: str, notes_dir: Path, relpath: str,
               content_path: Path | None = None, store: str = "notes") -> _Plan:

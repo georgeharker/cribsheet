@@ -70,6 +70,16 @@ class Store(Protocol):
         metadata-schema/frontmatter drift when a chunk's content is unchanged."""
         ...
 
+    def apply(
+        self,
+        records: list[Record],
+        deletes: list[str],
+        meta: dict[str, dict[str, Any]],
+    ) -> None:
+        """`upsert(records)`, `delete(deletes)` and `set_meta(meta)` as one atomic
+        write, in that order."""
+        ...
+
     def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:
         """Return {id: metadata} for records matching `where` (exact-match)."""
         ...
@@ -210,6 +220,17 @@ class InMemoryStore:
     def recreate(self) -> None:
         with self._lock:
             self._recs.clear()
+
+    def apply(
+        self,
+        records: list[Record],
+        deletes: list[str],
+        meta: dict[str, dict[str, Any]],
+    ) -> None:
+        with self._lock:
+            self.upsert(records)
+            self.delete(deletes)
+            self.set_meta(meta)
 
     def count(self, where: dict[str, Any], relpath_prefix: str = "") -> int:
         return sum(
