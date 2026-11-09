@@ -5623,9 +5623,23 @@ class Crib:
 def _build_store(
     paths: Paths, config: Config
 ) -> tuple[Store, Callable[[], None] | None]:
-    """Return (store, on_close). on_close releases the shared Chroma refcount."""
+    """Return (store, on_close). on_close releases what the store holds: the
+    shared Chroma refcount, or the DuckDB file (so another process can open it)."""
     from .store import JsonStore
 
+    backend = config.store.backend
+    if backend == "duckdb":
+        from .store_duckdb import DuckDBStore
+
+        store = DuckDBStore.embedded(paths.duckdb_file)
+        return store, store.close
+    if backend == "json":
+        return JsonStore(paths.index_dir / "store.json"), None
+    if backend != "chroma":
+        raise CribUserError(
+            f"[store] backend = {backend!r} is not a store crib knows "
+            "(chroma | duckdb | json)"
+        )
     mode = config.chroma.mode
     if mode == "shared":
         return _build_shared_chroma(paths, config)

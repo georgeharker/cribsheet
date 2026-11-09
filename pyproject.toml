@@ -18,6 +18,10 @@ requires-python = ">=3.13"
 dependencies = [
     "pyyaml>=6.0",
     "chromadb>=0.5",   # default vector store (embedded PersistentClient)
+    # DuckDB vector store ([store] backend = "duckdb"; exact cosine search, core
+    # only, no extension). Opt-in until dogfooded, then the default. 2.x: the
+    # Python API broke at 2.0 (relations lost fetchone), so stay on one major.
+    "duckdb>=2.0,<3",
     "fastembed>=0.3",
 # v4 line to match mcp-combiner (which requires >=4.1.5) so both install into a
 # shared venv. `SessionState` is keyed on the per-client mcp `Connection` — in mcp

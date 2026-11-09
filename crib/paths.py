@@ -117,6 +117,12 @@ class Paths:
     def chroma_dir(self) -> Path:
         return self.index_dir / "chroma"
 
+    @property
+    def duckdb_file(self) -> Path:
+        """The DuckDB vector store — a derived index tier like `chroma_dir`, so it
+        lives under the index dir and a full reindex can always rebuild it."""
+        return self.index_dir / "duckdb" / "crib.duckdb"
+
     def project_dir(self, project: str) -> Path:
         """The project's GLOBAL dir under `projects/`.
 

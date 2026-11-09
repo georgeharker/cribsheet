@@ -231,6 +231,17 @@ class GenerateConfig:
 
 
 @dataclass
+class StoreConfig:
+    """Which vector store backs the index (design: "Vector store moves to DuckDB on
+    two paths"). `chroma` stays the default until DuckDB has been dogfooded;
+    `duckdb` is the embedded DuckDB file at `Paths.duckdb_file`. Each backend
+    keeps its own table (`[chroma]`, and `[duckdb]` once its shared mode lands).
+    `json` is the dependency-free fallback."""
+
+    backend: str = "chroma"  # "chroma" | "duckdb" | "json"
+
+
+@dataclass
 class ChromaConfig:
     mode: str = "embedded"  # "embedded" | "shared"
     server_name: str = "crib-chroma"
@@ -242,10 +253,11 @@ class ChromaConfig:
     # SECURITY GUARD (CVE-2026-45829 / GHSA-f4j7-r4q5-qw2c): chroma's server
     # collections API had pre-auth code injection (trust_remote_code, fixed in
     # chroma-core/chroma#7237 but UNRELEASED as of 1.5.9) — reachable only in
-    # REMOTE/server mode, never in crib's embedded mode. `shared` therefore
-    # refuses until `allow_unpatched_remote = true` (or the daemon env
+    # REMOTE/server mode, never in crib's embedded mode. `host` is chroma's bind
+    # address: loopback is allowed, anything else is refused until
+    # `allow_unpatched_remote = true` (or the daemon env
     # CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE=1) — flipping a config key must not
-    # silently open the surface.
+    # silently put the vulnerable listener on the network.
     allow_unpatched_remote: bool = False
 
 
@@ -287,6 +299,7 @@ class Config:
     chunk: ChunkConfig = field(default_factory=ChunkConfig)
     retrieve: RetrieveConfig = field(default_factory=RetrieveConfig)
     memory: MemoryConfig = field(default_factory=MemoryConfig)
+    store: StoreConfig = field(default_factory=StoreConfig)
     chroma: ChromaConfig = field(default_factory=ChromaConfig)
     daemon: DaemonConfig = field(default_factory=DaemonConfig)
     generate: GenerateConfig = field(default_factory=GenerateConfig)
@@ -324,6 +337,7 @@ class Config:
             "chunk": ChunkConfig,
             "retrieve": RetrieveConfig,
             "memory": MemoryConfig,
+            "store": StoreConfig,
             "chroma": ChromaConfig,
             "daemon": DaemonConfig,
             "generate": GenerateConfig,

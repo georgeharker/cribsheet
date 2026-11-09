@@ -16,14 +16,23 @@ from crib.paths import Paths
 from crib.store import InMemoryStore
 
 
-@pytest.fixture()
-def crib(tmp_path, monkeypatch):
+@pytest.fixture(params=["memory", "duckdb"])
+def crib(request, tmp_path, monkeypatch):
+    """The core loop on each dependency-light store: the in-memory reference,
+    and the embedded DuckDB file (the store crib is moving to)."""
     monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "config"))
     monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "data"))
     monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
     paths = Paths.resolve().ensure()
     config = Config()  # defaults: hash embedder, in-memory-ish
-    return Crib(paths, config, InMemoryStore())
+    if request.param == "duckdb":
+        from crib.store_duckdb import DuckDBStore
+
+        store = DuckDBStore.embedded(paths.duckdb_file)
+        request.addfinalizer(store.close)
+    else:
+        store = InMemoryStore()
+    return Crib(paths, config, store)
 
 
 def run(coro):
@@ -31,10 +40,12 @@ def run(coro):
 
 
 def test_store_then_lookup(crib):
-    run(crib.store_note("The capital of France is Paris.", title="France",
-                        project="p"))
-    run(crib.store_note("Python uses indentation for blocks.", title="Python",
-                        project="p"))
+    run(crib.store_note("The capital of France is Paris.", title="France", project="p"))
+    run(
+        crib.store_note(
+            "Python uses indentation for blocks.", title="Python", project="p"
+        )
+    )
     hits = crib.lookup("france capital", project="p")
     assert hits
     assert hits[0].relpath.startswith("france")
@@ -56,11 +67,14 @@ def test_metadata_drift_self_heals_without_reembed(crib):
     rel = out["relpath"]
     # Simulate an older-schema chunk: strip section_hash from stored metadata.
     metas = crib.store.get_meta({"project": "p", "relpath": rel})
-    stripped = {i: {k: v for k, v in m.items() if k != "section_hash"}
-                for i, m in metas.items()}
+    stripped = {
+        i: {k: v for k, v in m.items() if k != "section_hash"} for i, m in metas.items()
+    }
     crib.store.set_meta(stripped)
-    assert all(not m.get("section_hash")
-               for m in crib.store.get_meta({"project": "p", "relpath": rel}).values())
+    assert all(
+        not m.get("section_hash")
+        for m in crib.store.get_meta({"project": "p", "relpath": rel}).values()
+    )
     # Reindex identical content: detects the missing field and refreshes metadata.
     res = run(crib.reindex(rel, project="p"))
     assert res["changed"] == 1
