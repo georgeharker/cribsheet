@@ -1,7 +1,8 @@
 """Thin wrapper over the `sharedserver` CLI (DESIGN §10.1).
 
-In shared Chroma mode crib does not own the Chroma process — it refcounts it.
-`use` attaches (starting `chroma run` if needed); `unuse` detaches. The grace
+In shared mode crib does not own the store's server process (`chroma run`, or the
+crib DuckDB server) — it refcounts it. `use` attaches (starting the server if
+needed); `unuse` detaches. The grace
 period keeps Chroma warm between crib invocations; dead-client detection reaps
 the refcount if a crib process crashes.
 """
@@ -10,6 +11,8 @@ from __future__ import annotations
 
 import shutil
 import subprocess
+
+from . import proc
 import time
 
 
@@ -19,6 +22,11 @@ class SharedServerError(RuntimeError):
 
 def available() -> bool:
     return shutil.which("sharedserver") is not None
+
+
+def _run(args: list[str]) -> subprocess.CompletedProcess[str]:
+    """The sharedserver CLI, started without fork() (see `crib.proc`)."""
+    return proc.run(args, capture_output=True, text=True)
 
 
 def use(name: str, command: list[str], grace_period: str | None = None) -> None:
@@ -32,7 +40,7 @@ def use(name: str, command: list[str], grace_period: str | None = None) -> None:
     if grace_period:
         args += ["--grace-period", grace_period]
     args += ["--", *command]
-    r = subprocess.run(args, capture_output=True, text=True)
+    r = _run(args)
     if r.returncode != 0:
         raise SharedServerError(f"sharedserver use failed: {r.stderr.strip()}")
 
@@ -40,7 +48,7 @@ def use(name: str, command: list[str], grace_period: str | None = None) -> None:
 def unuse(name: str) -> None:
     if not available():
         return
-    subprocess.run(["sharedserver", "unuse", name], capture_output=True, text=True)
+    _run(["sharedserver", "unuse", name])
 
 
 def wait_ready(probe, timeout: float = 30.0, interval: float = 0.3) -> None:

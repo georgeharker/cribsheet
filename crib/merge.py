@@ -11,14 +11,13 @@ This runs inside `git pull`, so it stays light: yaml + `git merge-file`, no inde
 
 from __future__ import annotations
 
-import subprocess
 import tempfile
 from pathlib import Path
 from typing import Any
 
 import yaml
 
-from . import notes
+from . import notes, proc
 
 _MISSING: Any = object()
 
@@ -76,7 +75,7 @@ def _merge_body(base: str, ours: str, theirs: str) -> tuple[str, bool]:
         (dp / "ours").write_text(ours)
         (dp / "base").write_text(base)
         (dp / "theirs").write_text(theirs)
-        r = subprocess.run(
+        r = proc.run(
             ["git", "merge-file", "-p",
              "-L", "ours", "-L", "base", "-L", "theirs",
              str(dp / "ours"), str(dp / "base"), str(dp / "theirs")],

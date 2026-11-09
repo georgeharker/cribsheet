@@ -5629,6 +5629,13 @@ def _build_store(
 
     backend = config.store.backend
     if backend == "duckdb":
+        if config.duckdb.mode == "shared":
+            return _build_shared_duckdb(paths, config)
+        if config.duckdb.mode != "embedded":
+            raise CribUserError(
+                f"[duckdb] mode = {config.duckdb.mode!r} is not a mode crib knows "
+                "(embedded | shared)"
+            )
         from .store_duckdb import DuckDBStore
 
         store = DuckDBStore.embedded(paths.duckdb_file)
@@ -5651,6 +5658,63 @@ def _build_store(
             return ChromaStore.embedded(str(paths.chroma_dir)), None
     # mode == "json", or embedded requested but chromadb unavailable
     return JsonStore(paths.index_dir / "store.json"), None
+
+
+def _build_shared_duckdb(
+    paths: Paths, config: Config
+) -> tuple[Store, Callable[[], None]]:
+    """Refcount the crib DuckDB server via sharedserver, wait for it, connect.
+
+    Reuse-or-start like `_build_shared_chroma`. The bind is checked BEFORE the
+    launch so a non-loopback config never opens a listener. The first start
+    fetches the Quack extension into crib's own extension dir, so it may take a
+    while; later starts load it offline."""
+    from . import sharedserver
+    from .store_quack import (
+        QuackStore,
+        check_shared_bind,
+        ensure_token,
+        quack_uri,
+        server_command,
+    )
+
+    c = config.duckdb
+    check_shared_bind(c.host)
+    token = ensure_token(paths.duckdb_token_file)
+    ext = paths.duckdb_extension_dir
+    command = server_command(
+        paths.duckdb_file, c.host, c.port, paths.duckdb_token_file, ext
+    )
+    uri = quack_uri(c.host, c.port)
+    held = [0]  # sharedserver refcounts this crib holds; each one is released at close
+
+    def probe() -> None:
+        QuackStore.connect(uri, token, ext).close()
+
+    def attach() -> None:
+        """Reuse-or-start the server and wait until it answers. Also the client's
+        relaunch hook: a server that died is started again on the next op."""
+        sharedserver.use(c.server_name, command, c.grace_period)
+        held[0] += 1
+        sharedserver.wait_ready(probe, timeout=180.0)
+
+    def release() -> None:
+        while held[0]:
+            held[0] -= 1
+            sharedserver.unuse(c.server_name)
+
+    try:
+        attach()
+        store = QuackStore.connect(uri, token, ext, relaunch=attach)
+    except Exception:
+        release()  # don't leak the refcount on failure
+        raise
+
+    def close() -> None:
+        store.close()
+        release()
+
+    return store, close
 
 
 def _build_shared_chroma(

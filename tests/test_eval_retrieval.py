@@ -13,11 +13,12 @@ minutes on a warm daemon. See the bar rationale in scripts/eval_retrieval.py.
 """
 
 import os
-import subprocess
 import sys
 from pathlib import Path
 
 import pytest
+
+from crib import proc as spawn
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "scripts" / "eval_retrieval.py"
@@ -32,7 +33,7 @@ LARGE_BAR_RECALL = "0.75"
 
 
 def _run(cmd: list[str]) -> tuple[int, str]:
-    proc = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT)
+    proc = spawn.run(cmd, capture_output=True, text=True, cwd=ROOT)
     return proc.returncode, proc.stdout + proc.stderr
 
 

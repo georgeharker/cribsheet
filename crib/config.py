@@ -242,6 +242,23 @@ class StoreConfig:
 
 
 @dataclass
+class DuckDBConfig:
+    """The DuckDB store's two paths ([store] backend = "duckdb"). `embedded`: the
+    daemon opens the file itself, one process per file. `shared`: a crib-owned
+    server (`python -m crib.store_quack`, refcounted by sharedserver like chroma's)
+    serves the file over Quack and every crib process is a client. The server
+    binds to loopback only, needs a token (a 0600 file beside the database), and
+    is locked down so a token holder reaches only the store."""
+
+    mode: str = "embedded"  # "embedded" | "shared"
+    server_name: str = "crib-duckdb"
+    grace_period: str = "1h"
+    host: str = "127.0.0.1"  # loopback only; anything else is refused
+    # 7734: crib's own 773x band (MCP 7732, shared chroma 7733).
+    port: int = 7734
+
+
+@dataclass
 class ChromaConfig:
     mode: str = "embedded"  # "embedded" | "shared"
     server_name: str = "crib-chroma"
@@ -300,6 +317,7 @@ class Config:
     retrieve: RetrieveConfig = field(default_factory=RetrieveConfig)
     memory: MemoryConfig = field(default_factory=MemoryConfig)
     store: StoreConfig = field(default_factory=StoreConfig)
+    duckdb: DuckDBConfig = field(default_factory=DuckDBConfig)
     chroma: ChromaConfig = field(default_factory=ChromaConfig)
     daemon: DaemonConfig = field(default_factory=DaemonConfig)
     generate: GenerateConfig = field(default_factory=GenerateConfig)
@@ -338,6 +356,7 @@ class Config:
             "retrieve": RetrieveConfig,
             "memory": MemoryConfig,
             "store": StoreConfig,
+            "duckdb": DuckDBConfig,
             "chroma": ChromaConfig,
             "daemon": DaemonConfig,
             "generate": GenerateConfig,

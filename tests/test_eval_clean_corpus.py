@@ -21,6 +21,7 @@ from pathlib import Path
 
 import pytest
 
+from crib import proc as spawn
 from crib.app import Crib
 from crib.config import Config
 from crib.paths import Paths
@@ -51,7 +52,6 @@ def seeded_crib(tmp_path, monkeypatch):
     crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
 
     import asyncio
-    import subprocess
 
     spec = json.loads(CASES.read_text())
     stamp = spec["_provenance"]
@@ -117,11 +117,11 @@ def seeded_crib(tmp_path, monkeypatch):
                 shutil.copy(f, dest / f.name)
     yield crib
 
-    subprocess.run(
+    spawn.run(
         ["git", "-C", str(ROOT), "worktree", "remove", "--force", str(yield_path)],
         capture_output=True, text=True,
     )
-    subprocess.run(
+    spawn.run(
         ["git", "-C", str(ROOT), "worktree", "prune"], capture_output=True, text=True
     )
 

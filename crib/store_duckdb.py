@@ -13,13 +13,20 @@ real columns; every other metadata key is filtered through the JSON copy, by
 type, so `{"n": "1"}` never matches an int 1 (the contract's exact match).
 
 Every value travels as a bound parameter — no SQL text is built from data. Table
-and column names are fixed constants; JSON paths are bound too.
+and column names are fixed constants; JSON paths are bound too. All SQL runs
+through an executor (`_Bound` here); the shared path (`crib.store_quack`) swaps in
+one that renders the same statements' parameters as literals, because bound
+parameters don't cross Quack in duckdb 2.0.0.
 """
 
 from __future__ import annotations
 
+import contextlib
 import json
+import random
 import threading
+import time
+from collections.abc import Callable, Iterator, Sequence
 from pathlib import Path
 from types import MappingProxyType
 from typing import Any
@@ -99,13 +106,56 @@ def _promoted(meta: dict[str, Any]) -> list[Any]:
     return [v if isinstance(v := meta.get(k), str) else None for k in PROMOTED]
 
 
+class _Bound:
+    """Runs SQL on one DuckDB cursor with BOUND parameters (the embedded path)."""
+
+    def __init__(self, cur: Any) -> None:
+        self._cur = cur
+
+    # `sql` is always one of this module's constant statements; every value
+    # arrives in `params`/`rows` and is bound by DuckDB, never spliced in.
+    def run(self, sql: str, params: Sequence[Any] = ()) -> list[tuple]:
+        # pi-lens-ignore: python-sql-injection
+        return self._cur.execute(sql, list(params)).fetchall()
+
+    def run_many(self, sql: str, rows: list[list[Any]]) -> None:
+        # pi-lens-ignore: python-sql-injection
+        self._cur.executemany(sql, rows)
+
+
+# DuckDB's concurrency is optimistic: when two transactions touch the same rows
+# (or both create the table), one is rolled back with a TransactionException and
+# must be retried. Only the shared path has several writers; the embedded path
+# is serialized in-process, but retrying costs it nothing.
+_CONFLICT_RETRIES = 8
+
+
+def _retryable(exc: BaseException, attempt: int) -> bool:
+    import duckdb  # lazy
+
+    return attempt < _CONFLICT_RETRIES and isinstance(exc, duckdb.TransactionException)
+
+
+def _backoff(attempt: int) -> float:
+    """Jittered exponential backoff: ~5 ms, doubling, capped at ~0.2 s."""
+    return min(0.2, 0.005 * 2**attempt) * (0.5 + random.random())
+
+
+def _dim_of(data_type: str) -> int:
+    """'FLOAT[384]' -> 384."""
+    return int(data_type.rsplit("[", 1)[1].rstrip("]"))
+
+
 class DuckDBStore:
     """Embedded DuckDB: the daemon is the only process with the file open.
 
-    Thread-safe: the daemon calls the store from worker threads. Each operation
-    runs on its own cursor (DuckDB cursors are separate connections into one
-    database), and writes are serialized so two writers never race a
-    first-upsert CREATE TABLE or conflict mid-transaction."""
+    Thread-safe: the daemon calls the store from worker threads. Reads each run
+    on their own cursor (DuckDB cursors are separate connections into one
+    database); writes are serialized so two writers never race a first-upsert
+    CREATE TABLE or conflict mid-transaction.
+
+    Subclasses change WHERE the SQL runs, never WHAT it is: they override
+    `_reading` / `_writing` to hand out a different executor."""
 
     def __init__(self, conn: Any, path: Path | None = None) -> None:
         self._conn = conn
@@ -129,32 +179,42 @@ class DuckDBStore:
     def close(self) -> None:
         self._conn.close()
 
+    @contextlib.contextmanager
+    def _reading(self) -> Iterator[Any]:
+        yield _Bound(self._conn.cursor())
+
+    @contextlib.contextmanager
+    def _writing(self) -> Iterator[Any]:
+        with self._write:
+            yield _Bound(self._conn.cursor())
+
     # ── schema ───────────────────────────────────────────────────────────────
 
     def current_dim(self) -> int | None:
         """The stored vectors' dimension, or None when the store is EMPTY (the
         contract) — an empty table still has a typed column, so check for rows."""
-        cur = self._conn.cursor()
-        dim = self._table_dim(cur)
-        if dim is None:
-            return None
-        # pi-lens-ignore: python-sql-injection
-        return dim if cur.execute(f"SELECT 1 FROM {TABLE} LIMIT 1").fetchall() else None
+        with self._reading() as ex:
+            dim = self._table_dim(ex)
+            if dim is None:
+                return None
+            # pi-lens-ignore: python-sql-injection
+            return dim if ex.run(f"SELECT 1 FROM {TABLE} LIMIT 1") else None
 
-    def _table_dim(self, cur: Any) -> int | None:
+    @staticmethod
+    def _table_dim(ex: Any) -> int | None:
         """The vector column's dimension, rows or not (None: no table yet)."""
-        rows = cur.execute(
+        rows = ex.run(
             "SELECT data_type FROM duckdb_columns() "
             "WHERE table_name = ? AND column_name = 'vec'",
             [TABLE],
-        ).fetchall()
-        return int(rows[0][0].rsplit("[", 1)[1].rstrip("]")) if rows else None
+        )
+        return _dim_of(rows[0][0]) if rows else None
 
-    def _ensure_table(self, cur: Any, dim: int) -> None:
-        have = self._table_dim(cur)
+    def _ensure_table(self, ex: Any, dim: int) -> None:
+        have = self._table_dim(ex)
         if have is None:
-            cur.execute(
-                f"CREATE TABLE {TABLE} ("
+            ex.run(
+                f"CREATE TABLE IF NOT EXISTS {TABLE} ("
                 "id VARCHAR PRIMARY KEY, document VARCHAR, meta JSON, "
                 "project VARCHAR, store VARCHAR, relpath VARCHAR, "
                 f"vec FLOAT[{int(dim)}])"
@@ -166,9 +226,32 @@ class DuckDBStore:
                 "`crib project reconcile` to re-embed at the current dimension"
             )
 
+    def _transaction(self, body: Callable[[Any], None]) -> None:
+        """Run `body(executor)` as ONE transaction, retrying it from the start when
+        DuckDB reports a conflict with a concurrent writer (see `_retryable`)."""
+        attempt = 0
+        while True:
+            failure: BaseException | None = None
+            with self._writing() as ex:
+                ex.run("BEGIN")
+                try:
+                    body(ex)
+                    ex.run("COMMIT")
+                except BaseException as exc:  # noqa: BLE001 — re-raised below
+                    with contextlib.suppress(
+                        Exception
+                    ):  # a failed COMMIT already rolled back
+                        ex.run("ROLLBACK")
+                    failure = exc
+            if failure is None:
+                return
+            if not _retryable(failure, attempt):
+                raise failure
+            time.sleep(_backoff(attempt))
+            attempt += 1
+
     def recreate(self) -> None:
-        with self._write:
-            self._conn.cursor().execute(f"DROP TABLE IF EXISTS {TABLE}")
+        self._transaction(lambda ex: ex.run(f"DROP TABLE IF EXISTS {TABLE}"))
 
     # ── writes ───────────────────────────────────────────────────────────────
 
@@ -185,35 +268,31 @@ class DuckDBStore:
                 r.document,
                 json.dumps(r.metadata),
                 *_promoted(r.metadata),
-                r.embedding,
+                [float(x) for x in r.embedding],
             ]
             for r in records
         ]
-        with self._write:
-            cur = self._conn.cursor()
-            self._ensure_table(cur, dim)
-            cur.execute("BEGIN")
-            try:
-                cur.execute(
-                    f"DELETE FROM {TABLE} WHERE id = ANY(?)", [[r.id for r in records]]
-                )
-                # TABLE is a module constant; every value is a bound parameter.
-                # pi-lens-ignore: python-sql-injection
-                cur.executemany(
-                    f"INSERT INTO {TABLE} VALUES (?, ?, ?, ?, ?, ?, ?)", rows
-                )
-                cur.execute("COMMIT")
-            except BaseException:
-                cur.execute("ROLLBACK")
-                raise
+        ids = [r.id for r in records]
+
+        def write(ex: Any) -> None:
+            self._ensure_table(ex, dim)
+            ex.run(f"DELETE FROM {TABLE} WHERE id = ANY(?)", [ids])
+            # TABLE is a module constant; every value is a parameter.
+            # pi-lens-ignore: python-sql-injection
+            ex.run_many(f"INSERT INTO {TABLE} VALUES (?, ?, ?, ?, ?, ?, ?)", rows)
+
+        self._transaction(write)
 
     def delete(self, ids: list[str]) -> None:
         if not ids:
             return
-        with self._write:
-            cur = self._conn.cursor()
-            if self._table_dim(cur) is not None:
-                cur.execute(f"DELETE FROM {TABLE} WHERE id = ANY(?)", [list(ids)])
+        wanted = list(ids)
+
+        def write(ex: Any) -> None:
+            if self._table_dim(ex) is not None:
+                ex.run(f"DELETE FROM {TABLE} WHERE id = ANY(?)", [wanted])
+
+        self._transaction(write)
 
     def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:
         """REPLACE each record's metadata (the contract): keys absent from the new
@@ -221,30 +300,32 @@ class DuckDBStore:
         if not updates:
             return
         rows = [[json.dumps(m), *_promoted(m), i] for i, m in updates.items()]
-        with self._write:
-            cur = self._conn.cursor()
-            if self._table_dim(cur) is None:
+
+        def write(ex: Any) -> None:
+            if self._table_dim(ex) is None:
                 return
-            # TABLE is a module constant; every value is a bound parameter.
+            # TABLE is a module constant; every value is a parameter.
             # pi-lens-ignore: python-sql-injection
-            cur.executemany(
+            ex.run_many(
                 f"UPDATE {TABLE} SET meta = ?, project = ?, store = ?, relpath = ? "
                 "WHERE id = ?",
                 rows,
             )
 
+        self._transaction(write)
+
     # ── reads ────────────────────────────────────────────────────────────────
 
     def _select(self, which: str, where: dict[str, Any] | None) -> list[tuple]:
         columns = _SELECT_COLUMNS[which]  # allowlisted: never caller text
-        cur = self._conn.cursor()
-        if self._table_dim(cur) is None:
-            return []
-        clause, params = _where(where)
-        # columns/TABLE are constants and `clause` is built from constant column
-        # names and `?` placeholders only; every value is in `params`.
-        # pi-lens-ignore: python-sql-injection
-        return cur.execute(f"SELECT {columns} FROM {TABLE}{clause}", params).fetchall()
+        with self._reading() as ex:
+            if self._table_dim(ex) is None:
+                return []
+            clause, params = _where(where)
+            # columns/TABLE are constants and `clause` is built from constant
+            # column names and `?` placeholders only; every value is in `params`.
+            # pi-lens-ignore: python-sql-injection
+            return ex.run(f"SELECT {columns} FROM {TABLE}{clause}", params)
 
     def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:
         return {i: json.loads(m) for i, m in self._select("meta", where)}
@@ -255,23 +336,24 @@ class DuckDBStore:
     def query(
         self, embedding: list[float], k: int, where: dict[str, Any] | None = None
     ) -> list[Hit]:
-        cur = self._conn.cursor()
-        dim = self._table_dim(cur)
-        if dim is None or k <= 0:
-            return []
-        if len(embedding) != dim:
-            raise CribUserError(
-                f"embedding dimension mismatch: query has {len(embedding)}, stored "
-                f"vectors have {dim} — the store holds vectors from a different "
-                "embedder; run `crib project reconcile` to re-embed at the current "
-                "dimension"
+        with self._reading() as ex:
+            dim = self._table_dim(ex)
+            if dim is None or k <= 0:
+                return []
+            if len(embedding) != dim:
+                raise CribUserError(
+                    f"embedding dimension mismatch: query has {len(embedding)}, "
+                    f"stored vectors have {dim} — the store holds vectors from a "
+                    "different embedder; run `crib project reconcile` to re-embed "
+                    "at the current dimension"
+                )
+            clause, params = _where(where)
+            # Ties break on id so the order is total: retrieval stays deterministic.
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(
+                f"SELECT id, document, meta, "
+                f"array_cosine_similarity(vec, ?::FLOAT[{int(dim)}]) AS score "
+                f"FROM {TABLE}{clause} ORDER BY score DESC, id LIMIT ?",
+                [[float(x) for x in embedding], *params, int(k)],
             )
-        clause, params = _where(where)
-        # Ties break on id so the order is total: retrieval stays deterministic.
-        rows = cur.execute(
-            f"SELECT id, document, meta, "
-            f"array_cosine_similarity(vec, ?::FLOAT[{int(dim)}]) AS score "
-            f"FROM {TABLE}{clause} ORDER BY score DESC, id LIMIT ?",
-            [embedding, *params, int(k)],
-        ).fetchall()
         return [Hit(i, d, json.loads(m), float(s)) for i, d, m, s in rows]

@@ -8,19 +8,20 @@ from pathlib import Path
 
 import pytest
 
+from crib import proc as spawn
 from crib import gitbacking
 from crib.gitbacking import GitBacking
 
 
 def git(cwd: Path, *args: str) -> str:
-    r = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True)
+    r = spawn.run(["git", *args], cwd=cwd, capture_output=True, text=True)
     return r.stdout
 
 
 @pytest.fixture()
 def remote(tmp_path):
     bare = tmp_path / "remote.git"
-    subprocess.run(["git", "init", "--bare", "-b", "main", str(bare)], check=True,
+    spawn.run(["git", "init", "--bare", "-b", "main", str(bare)], check=True,
                    capture_output=True)
     return bare
 
@@ -210,11 +211,11 @@ def test_snapshot_with_nothing_to_do_is_ok_but_not_committed(tmp_path, remote):
 def master_remote(tmp_path):
     """A populated remote whose HEAD is `master`, not `main`."""
     bare = tmp_path / "master-remote.git"
-    subprocess.run(["git", "init", "--bare", "-b", "master", str(bare)],
+    spawn.run(["git", "init", "--bare", "-b", "master", str(bare)],
                    check=True, capture_output=True)
     seed = tmp_path / "master-seed"
     seed.mkdir()
-    subprocess.run(["git", "init", "-q", "-b", "master"], cwd=seed, check=True)
+    spawn.run(["git", "init", "-q", "-b", "master"], cwd=seed, check=True)
     (seed / "projects").mkdir()
     (seed / "projects" / "note.md").write_text("# from master\n")
     for k, v in (("user.email", "t@t"), ("user.name", "t")):
@@ -262,12 +263,17 @@ def test_git_runs_are_bounded_and_get_no_stdin(tmp_path, remote, monkeypatch):
     monkeypatch.setattr(gitbacking.subprocess, "run", spy)
     g.state()
     g._run("fetch", "origin")
+    def verb(c: dict) -> str:  # git [-C <dir>] <verb> ...
+        cmd = c["cmd"]
+        return cmd[cmd.index("-C") + 2] if "-C" in cmd else cmd[1]
+
     assert calls, "no git ran"
     assert all(c["stdin"] is subprocess.DEVNULL for c in calls)   # no prompt can block
     assert all(c["timeout"] for c in calls)
-    local = [c for c in calls if c["cmd"][1] != "fetch"]
+    assert all(c["close_fds"] is False for c in calls)  # spawned, never forked
+    local = [c for c in calls if verb(c) != "fetch"]
     assert all(c["timeout"] == gitbacking._LOCAL_TIMEOUT for c in local)
-    assert [c for c in calls if c["cmd"][1] == "fetch"][0]["timeout"] \
+    assert [c for c in calls if verb(c) == "fetch"][0]["timeout"] \
         == gitbacking._NET_TIMEOUT
 
 

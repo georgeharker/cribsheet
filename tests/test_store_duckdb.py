@@ -10,6 +10,7 @@ import sys
 
 import pytest
 
+from crib import proc as spawn
 from crib.errors import CribUserError
 from crib.store import Record
 
@@ -24,7 +25,7 @@ def _hold_open(path) -> subprocess.Popen:
         "import sys, duckdb; c = duckdb.connect(sys.argv[1]); "
         "print('open', flush=True); sys.stdin.read()"
     )
-    proc = subprocess.Popen(
+    proc = spawn.popen(
         [sys.executable, "-I", "-c", code, str(path)],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
@@ -60,7 +61,7 @@ def test_close_releases_the_file_for_another_process(tmp_path):
         "import sys, duckdb; c = duckdb.connect(sys.argv[1]); "
         "print(c.execute('SELECT count(*) FROM crib_chunks').fetchone()[0])"
     )
-    out = subprocess.run(
+    out = spawn.run(
         [sys.executable, "-I", "-c", code, str(path)],
         capture_output=True,
         text=True,

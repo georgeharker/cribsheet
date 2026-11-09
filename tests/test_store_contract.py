@@ -27,6 +27,7 @@ from typing import Any, Callable
 
 import pytest
 
+from crib import proc as spawn
 from crib.store import InMemoryStore, JsonStore, Record, Store
 
 # ── vectors ──────────────────────────────────────────────────────────────────
@@ -82,7 +83,7 @@ def chroma_server(tmp_path_factory):
     import chromadb
 
     path, port = tmp_path_factory.mktemp("chroma-shared"), _free_port()
-    proc = subprocess.Popen(
+    proc = spawn.popen(
         [exe, "run", "--path", str(path), "--host", "127.0.0.1", "--port", str(port)],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
@@ -160,20 +161,37 @@ def _make_duckdb_embedded(tmp_path, request) -> Backend:
     return Backend("duckdb-embedded", store, reopen, fixed_dim=True, shared=False)
 
 
+@pytest.fixture(scope="session")
+def quack_server(tmp_path_factory):
+    """One crib DuckDB server (Quack on loopback) for the session, launched the
+    way sharedserver launches it: `python -m crib.store_quack`. Quack installs
+    into the default extension dir on first use, so a box that can't reach
+    extensions.duckdb.org skips this backend rather than failing."""
+    quack = pytest.importorskip("crib.store_quack", reason="Quack path not built yet")
+    root = tmp_path_factory.mktemp("duckdb-quack")
+    try:
+        server = quack.spawn_server(
+            root / "crib.duckdb", _free_port(), root / "token", timeout=180
+        )
+    except RuntimeError as e:
+        pytest.skip(f"crib DuckDB server did not start: {e}")
+    yield server
+    server.stop()
+
+
 def _make_duckdb_quack(tmp_path, request) -> Backend:
-    mod = pytest.importorskip("crib.store_duckdb", reason="DuckDB store not built yet")
-    if not hasattr(mod, "QuackStore"):
-        pytest.skip("Quack shared path not built yet")
-    server = mod.serve_for_tests(tmp_path / "store.duckdb")
-    request.addfinalizer(server.stop)
+    quack = pytest.importorskip("crib.store_quack", reason="Quack path not built yet")
+    server = request.getfixturevalue("quack_server")
 
     def client() -> Store:
-        c = mod.QuackStore.connect(server.uri, server.token)
+        c = quack.QuackStore.connect(server.uri, server.token)
         request.addfinalizer(c.close)
         return c
 
+    store = client()
+    store.recreate()  # one server for the session: start every test empty
     return Backend(
-        "duckdb-quack", client(), client, fixed_dim=True, shared=True, new_client=client
+        "duckdb-quack", store, client, fixed_dim=True, shared=True, new_client=client
     )
 
 

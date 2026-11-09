@@ -123,6 +123,17 @@ class Paths:
         lives under the index dir and a full reindex can always rebuild it."""
         return self.index_dir / "duckdb" / "crib.duckdb"
 
+    @property
+    def duckdb_token_file(self) -> Path:
+        """The shared DuckDB server's auth token (0600, created once)."""
+        return self.duckdb_file.parent / "quack.token"
+
+    @property
+    def duckdb_extension_dir(self) -> Path:
+        """crib's own DuckDB extension directory (Quack lives here once fetched),
+        so crib never depends on, or writes to, the user's ~/.duckdb."""
+        return self.duckdb_file.parent / "extensions"
+
     def project_dir(self, project: str) -> Path:
         """The project's GLOBAL dir under `projects/`.
 

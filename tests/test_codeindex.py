@@ -12,6 +12,7 @@ from pathlib import Path
 
 import pytest
 
+from crib import proc as spawn
 from crib import codeindex as ci
 
 REPO = Path(__file__).resolve().parent.parent
@@ -56,9 +57,8 @@ def test_symbol_index_uses_legible_slug_filenames(tmp_path):
 
 
 def test_derive_mtime_git_date_for_committed_disk_for_modified(tmp_path):
-    import subprocess
     r = tmp_path / "repo"; (r / "sub").mkdir(parents=True)
-    def git(*a): subprocess.run(["git", "-C", str(r), *a], check=True,
+    def git(*a): spawn.run(["git", "-C", str(r), *a], check=True,
                                 capture_output=True)
     git("init"); git("config", "user.email", "t@t"); git("config", "user.name", "t")
     f = r / "sub" / "mod.py"; f.write_text("x = 1\n")
@@ -66,7 +66,7 @@ def test_derive_mtime_git_date_for_committed_disk_for_modified(tmp_path):
     import os
     env = {**os.environ, "GIT_COMMITTER_DATE": "1700000000 +0000",
            "GIT_AUTHOR_DATE": "1700000000 +0000"}
-    subprocess.run(["git", "-C", str(r), "commit", "-m", "c"], check=True,
+    spawn.run(["git", "-C", str(r), "commit", "-m", "c"], check=True,
                    capture_output=True, env=env)
     # committed + clean → git commit date (seconds → ns)
     assert ci.derive_mtime(r, "sub/mod.py") == 1700000000 * 1_000_000_000

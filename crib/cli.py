@@ -19,6 +19,7 @@ from dataclasses import asdict, dataclass, is_dataclass, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
 
+from . import proc
 from .app import Crib
 from .codequery import GRAPH_GROUPINGS
 
@@ -41,7 +42,6 @@ def _from_editor(what: str) -> str:
     quietly pushes people toward one-line decisions. Only ever reached on a tty
     with the body omitted — a pipeline reads stdin instead."""
     import os
-    import subprocess
     import tempfile
 
     editor = os.environ.get("EDITOR") or os.environ.get("VISUAL") or "vi"
@@ -49,7 +49,7 @@ def _from_editor(what: str) -> str:
         fh.write(f"\n{_EDITOR_HINT}# ({what})\n")
         path = Path(fh.name)
     try:
-        subprocess.run([*editor.split(), str(path)], check=True)
+        proc.run([*editor.split(), str(path)], check=True)
         text = path.read_text()
     finally:
         path.unlink(missing_ok=True)

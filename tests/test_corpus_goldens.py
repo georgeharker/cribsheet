@@ -23,11 +23,12 @@ noise) and 1 on real structural drift.
 from __future__ import annotations
 
 import os
-import subprocess
 import sys
 from pathlib import Path
 
 import pytest
+
+from crib import proc as spawn
 
 _ROOT = Path(__file__).resolve().parent.parent
 _GOLDENS = _ROOT / "tests" / "goldens"
@@ -45,7 +46,7 @@ def test_corpus_golden_structurally_identical(project):
     # in the interpreter pytest is running in. A PATH lookup picks whichever venv
     # happens to be active, which is a different interpreter as soon as one shell has
     # a venv activated and `uv run` redirects to the project's own.
-    r = subprocess.run(
+    r = spawn.run(
         [sys.executable, str(_ROOT / "scripts" / "snapshot_harness.py"),
          "compare", str(golden)],
         capture_output=True, text=True, cwd=str(_ROOT))

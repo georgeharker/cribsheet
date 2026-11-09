@@ -31,6 +31,7 @@ from pathlib import Path
 from typing import IO, Any
 from urllib.request import url2pathname
 
+from . import proc
 from . import tomlrec
 from .symbols import (
     encode_edge,
@@ -380,7 +381,7 @@ def derive_mtime(root: Path, relpath: str) -> int:
     except OSError:
         disk = 0
     try:
-        st = subprocess.run(
+        st = proc.run(
             ["git", "-C", str(root), "status", "--porcelain", "--", relpath],
             capture_output=True,
             text=True,
@@ -390,7 +391,7 @@ def derive_mtime(root: Path, relpath: str) -> int:
             return disk  # not a git repo (or error) → disk
         if st.stdout.strip():
             return disk  # modified/untracked → local disk mtime
-        log = subprocess.run(
+        log = proc.run(
             ["git", "-C", str(root), "log", "-1", "--format=%ct", "--", relpath],
             capture_output=True,
             text=True,
@@ -459,7 +460,7 @@ class LspClient:
         self.init_options = init_options or {}
         self.settings = settings or {}
         self._progress: set[Any] = set()  # active $/progress tokens (busy signal)
-        self.proc = subprocess.Popen(
+        self.proc = proc.popen(
             cmd,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,

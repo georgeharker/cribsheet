@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import shlex
 import subprocess
+
+from . import proc
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -125,9 +127,9 @@ class GitBacking:
         if timeout is None:
             timeout = _NET_TIMEOUT if verb in _NET_VERBS else _LOCAL_TIMEOUT
         try:
-            return subprocess.run(
-                ["git", *args],
-                cwd=self.data_dir,
+            # `git -C` rather than cwd=: crib.proc never forks (see its docstring)
+            return proc.run(
+                ["git", "-C", str(self.data_dir), *args],
                 capture_output=True,
                 text=True,
                 stdin=subprocess.DEVNULL,
