@@ -304,16 +304,18 @@ class DuckDBStore:
         return cls(conn, path)
 
     def close(self) -> None:
-        self._conn.close()
+        with self._write:  # never close under a writer mid-transaction
+            self._conn.close()
 
     @contextlib.contextmanager
     def _reading(self) -> Iterator[Any]:
-        yield _Bound(self._conn.cursor())
+        with contextlib.closing(self._conn.cursor()) as cur:
+            yield _Bound(cur)
 
     @contextlib.contextmanager
     def _writing(self) -> Iterator[Any]:
-        with self._write:
-            yield _Bound(self._conn.cursor())
+        with self._write, contextlib.closing(self._conn.cursor()) as cur:
+            yield _Bound(cur)
 
     # ── schema ───────────────────────────────────────────────────────────────
 
@@ -346,6 +348,31 @@ class DuckDBStore:
                     _put_meta(ex, key, value)
 
         self._transaction(prepare)
+
+    def checkpoint(self) -> None:
+        """Write the WAL into the database file (DuckDB's CHECKPOINT)."""
+        with self._writing() as ex:
+            ex.run("CHECKPOINT")
+
+    def stats(self) -> dict[str, Any]:
+        """What's in the file, for `status`: rows per crib table, the recorded
+        versions, and the file and WAL sizes (embedded only)."""
+        with self._reading() as ex:
+            tables = {t for (t,) in ex.run("SELECT table_name FROM duckdb_tables()")}
+            rows = {}
+            for table in (TABLE, EMBED_CACHE, RECORD_CACHE, LEDGER):
+                if table in tables:
+                    # pi-lens-ignore: python-sql-injection
+                    ((n,),) = ex.run(f"SELECT count(*) FROM {table}")
+                    rows[table] = int(n)
+            meta = dict(ex.run(f"SELECT key, value FROM {META}"))
+        out: dict[str, Any] = {"rows": rows, **meta}
+        if self._path is not None:
+            for label, path in (("file_bytes", self._path),
+                                ("wal_bytes", self._path.with_name(self._path.name + ".wal"))):
+                with contextlib.suppress(OSError):
+                    out[label] = path.stat().st_size
+        return out
 
     def meta_get(self, key: str) -> str | None:
         with self._reading() as ex:

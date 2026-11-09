@@ -1131,6 +1131,14 @@ class Crib:
                 f"[crib] skipped {s['project']}/{s['relpath']}: {s['error']}",
                 file=sys.stderr,
             )
+        checkpoint = getattr(self.store, "checkpoint", None)
+        if callable(checkpoint) and (rec["changed"] or rec["removed"]):
+            # Fold the sweep's writes from the WAL into the file, so a long-lived
+            # daemon's store doesn't sit on an ever-growing log.
+            try:
+                await asyncio.to_thread(checkpoint)
+            except Exception as e:  # noqa: BLE001 — housekeeping only
+                print(f"[crib] store checkpoint failed: {e}", file=sys.stderr)
 
     async def _reindex_dirty_code(self) -> dict[str, int]:
         """Rebuild every code file carrying a merge-dirtied symbol (blank
@@ -4220,6 +4228,17 @@ class Crib:
             # projects still un-embedded after a wipe: their lookups are THIN and
             # say so per hit (`index_rebuilding`)
             out["index_rebuilding"] = sorted(self._resweep_pending)
+        stats = getattr(self.store, "stats", None)
+        if callable(stats):
+            # rows per table, versions, file/WAL size, and (shared) reconnects
+            try:
+                out["store_stats"] = stats()
+            except Exception as e:  # noqa: BLE001 — status must still answer
+                out["store_stats"] = {"error": str(e)}
+        hits = getattr(self.embedder, "hits", None)
+        if hits is not None:
+            out["embed_cache"] = {"hits": hits,
+                                  "misses": getattr(self.embedder, "misses", 0)}
         return out
 
     def project_forget(

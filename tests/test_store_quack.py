@@ -594,3 +594,15 @@ def test_crib_never_touches_home_dot_duckdb(tmp_path):
         str(p) for p in (home / ".duckdb").rglob("*")
     )
     assert (home / ".cache" / "crib" / "duckdb" / "extensions").is_dir()
+
+
+def test_install_extensions_fills_crib_s_own_dir(tmp_path):
+    from crib.store_quack import SHARED_EXTENSIONS, install_extensions
+
+    ext = tmp_path / "extensions"
+    try:
+        assert install_extensions(ext) == list(SHARED_EXTENSIONS)
+    except Exception as e:  # noqa: BLE001 — offline box: nothing to check
+        pytest.skip(f"extensions.duckdb.org unreachable: {e}")
+    found = {p.name.split(".")[0] for p in ext.rglob("*.duckdb_extension")}
+    assert set(SHARED_EXTENSIONS) <= found

@@ -112,8 +112,16 @@ def _make_duckdb_quack(tmp_path, request) -> Backend:
         request.addfinalizer(c.close)
         return c
 
-    store = client()
-    store.recreate()  # one server for the session: start every test empty
+    store = quack.QuackStore.connect(server.uri, server.token)
+    request.addfinalizer(store.close)
+    # One server for the session: start every test empty, caches and settings
+    # included, not just the chunks recreate() drops.
+    store.recreate()
+    with store._writing() as ex:
+        for table in ("crib_embed_cache", "crib_record_cache", "crib_gen_ledger"):
+            # pi-lens-ignore: python-sql-injection
+            ex.run(f"DELETE FROM {table}")
+        ex.run("DELETE FROM crib_meta WHERE key = 'embed_model'")
     return Backend(
         "duckdb-quack", store, client, fixed_dim=True, shared=True, new_client=client
     )

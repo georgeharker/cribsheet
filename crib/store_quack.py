@@ -149,6 +149,27 @@ def _install_quack(conn: Any) -> None:
         conn.execute("LOAD quack")
 
 
+# What the shared path loads: quack for the protocol, httpfs because
+# quack_serve uses it. Embedded mode needs neither.
+SHARED_EXTENSIONS = ("quack", "httpfs")
+
+
+def install_extensions(extension_directory: Path | str | None = None) -> list[str]:
+    """Download the shared path's DuckDB extensions into crib's extension dir
+    now, so a container image or an offline machine never fetches them at
+    first use. Returns the extensions installed (already present: a no-op)."""
+    import duckdb  # lazy
+
+    conn = duckdb.connect(":memory:", config=_connect_config(extension_directory))
+    try:
+        for name in SHARED_EXTENSIONS:
+            conn.execute(f"INSTALL {name}")
+            conn.execute(f"LOAD {name}")
+        return list(SHARED_EXTENSIONS)
+    finally:
+        conn.close()
+
+
 def _connect_config(
     extension_directory: Path | str | None,
 ) -> dict[str, str | bool | int | float | list[str]]:
@@ -225,6 +246,7 @@ class QuackStore(DuckDBStore):
         # Bumped by each successful reconnect, so threads that lost the same
         # session reconnect (and relaunch) once between them, not once each.
         self._generation = 0
+        self.reconnects = 0  # successful reconnects, for status
         super().__init__(conn)
 
     @classmethod
@@ -264,6 +286,9 @@ class QuackStore(DuckDBStore):
                 self._conn.close()
             self._conn, self._remote = conn, remote
             self._generation += 1
+            self.reconnects += 1
+            print(f"[crib] DuckDB server session re-established ({self._uri})",
+                  file=sys.stderr)
 
     def _call(self, op: Callable[..., Any], *args: Any) -> Any:
         generation = self._generation
@@ -309,6 +334,13 @@ class QuackStore(DuckDBStore):
 
     def meta_get(self, key: str) -> str | None:
         return self._call(super().meta_get, key)
+
+    def checkpoint(self) -> None:
+        self._call(super().checkpoint)
+
+    def stats(self) -> dict[str, Any]:
+        return {**self._call(super().stats), "server": self._uri,
+                "reconnects": self.reconnects}
 
     def count(self, where: dict[str, Any], relpath_prefix: str = "") -> int:
         return self._call(super().count, where, relpath_prefix)

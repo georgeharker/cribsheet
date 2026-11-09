@@ -206,3 +206,18 @@ def test_a_record_format_change_empties_only_the_record_cache(tmp_path):
     assert s.current_dim() == 2
     assert s.ec_get("m#2", ["h"])
     s.close()
+
+
+def test_stats_reports_rows_versions_and_sizes(tmp_path):
+    from crib.store_duckdb import SCHEMA_VERSION
+
+    s = DuckDBStore.embedded(tmp_path / "crib.duckdb")
+    try:
+        s.upsert([Record("a", [1.0, 0.0], "doc a", {"project": "p"})])
+        st = s.stats()
+        assert st["rows"]["crib_chunks"] == 1
+        assert st["rows"]["crib_embed_cache"] == 0
+        assert st["schema_version"] == SCHEMA_VERSION
+        assert st["file_bytes"] > 0
+    finally:
+        s.close()

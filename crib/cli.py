@@ -2214,6 +2214,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     # internal: invoked by git as the cribnote merge driver (DESIGN §14). No
     # help= → kept out of the listed commands (still a valid hidden subcommand).
+    n_store = sub.add_parser("store", help="the vector store (DuckDB)")
+    storesub = n_store.add_subparsers(dest="store_cmd", required=True)
+    storesub.add_parser(
+        "install-extensions",
+        help="download the shared-mode DuckDB extensions now (containers, offline)",
+    )
+
     s = sub.add_parser("merge-driver")
     s.add_argument("base")  # %O ancestor
     s.add_argument("current")  # %A ours / output file
@@ -3887,6 +3894,16 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     if args.cmd == "info":
         cmd_info(args.json)
+        return 0
+    if args.cmd == "store" and args.store_cmd == "install-extensions":
+        # Runs locally (no daemon, no store file): it only fills crib's own
+        # extension directory, which every crib DuckDB connection reads.
+        from .paths import Paths
+        from .store_quack import install_extensions
+
+        ext = Paths.resolve().duckdb_extension_dir
+        names = install_extensions(ext)
+        print(f"installed {', '.join(names)} into {ext}")
         return 0
     if args.cmd == "merge-driver":
         # git invokes this per-file during a merge — stay light, no config/daemon
