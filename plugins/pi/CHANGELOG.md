@@ -34,7 +34,7 @@ version has no heading here.
 - **chroma.** DuckDB is the only vector store. Gone with it: `ChromaStore`,
   the shared chroma server, the `[chroma]` config table (now ignored with a
   one-time warning), the chroma CVE guard, `crib store migrate`, and the
-  `chromadb` dependency. Upgrading: [docs/migrating-to-duckdb.md](docs/migrating-to-duckdb.md).
+  `chromadb` dependency. Upgrading: [docs/migrating-to-duckdb.md](https://github.com/georgeharker/cribsheet/blob/main/docs/migrating-to-duckdb.md).
 
 ### Added
 
