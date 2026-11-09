@@ -63,6 +63,7 @@ def chunk_ids(crib, project):
 def test_store_relpath_resolves_against_the_repo_root(tmp_path):
     root = repo_with_store(tmp_path)
     link = CribLink.find(root)
+    assert link is not None
     assert link.store == ".crib-store"
     assert link.store_dir == root / ".crib-store"
 
@@ -72,6 +73,7 @@ def test_missing_store_key_is_simply_absent(tmp_path):
     root.mkdir()
     (root / ".crib").write_text("project: p\n")
     link = CribLink.find(root)
+    assert link is not None
     assert link.store is None and link.store_dir is None
 
 
@@ -83,6 +85,7 @@ def test_store_that_escapes_the_repo_is_refused(tmp_path, bad, capsys):
     whole tree and must not break every command run below it."""
     root = repo_with_store(tmp_path, store=bad)
     link = CribLink.find(root)
+    assert link is not None
     assert link.store is None                       # dropped …
     assert "store:" in capsys.readouterr().err      # … and said so
     # the property itself is strict: it raises rather than returning a bad path

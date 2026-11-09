@@ -482,7 +482,7 @@ def main() -> int:
                 b = makers[name](root)
                 r = bench_backend(b, ds, root, args.queries)
             except Exception as e:  # noqa: BLE001 — recorded, the run continues
-                r = {
+                r: dict[str, Any] = {
                     "backend": name,
                     "dataset": ds.name,
                     "n": len(ds.ids),

@@ -183,9 +183,10 @@ def test_colliding_records_convert_one_and_report_the_rest(crib):
     reported, and the store is never stamped complete over them."""
     si = _seed_legacy_store(crib, "p", n=0)
     for cont in (["if", "for in"], ["if", "do end"]):
-        e = dict(LEGACY, fqname=f"t.lua.{'-'.join(cont)}.out", name="out",
+        fqname = f"t.lua.{'-'.join(cont)}.out"
+        e = dict(LEGACY, fqname=fqname, name="out",
                  lang="lua", file="t.lua", container=cont, parent="")
-        write_atomic(si.root / f"{e['fqname'].replace(' ', '-')}.toml",
+        write_atomic(si.root / f"{fqname.replace(' ', '-')}.toml",
                      _legacy_toml(e))
     out = asyncio.run(crib.code_convert(project="p", apply=True))
     assert out["converted"] == 1 and len(out["collisions"]) == 1

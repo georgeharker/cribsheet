@@ -43,8 +43,10 @@ def index(checkout_dir: Path, data_root: Path) -> tuple[str, Path]:
         os.environ[k] = str(data_root / sub)
     # structural-only: stub the LLM describe so images are deterministic
     import crib.codeindex as ci
-    ci.describe_file = lambda *a, **k: {}          # type: ignore[assignment]
-    ci.describe_symbols = lambda *a, **k: {}       # type: ignore[assignment]
+    # setattr, not plain assignment: the declared type of a module-level function
+    # attribute is that function itself, so no stub is assignable to it by name
+    setattr(ci, "describe_file", lambda *a, **k: {})
+    setattr(ci, "describe_symbols", lambda *a, **k: {})
     from crib.app import Crib
     from crib.codeindex import SymbolIndex
     from crib.config import Config

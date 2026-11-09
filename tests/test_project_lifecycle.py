@@ -147,7 +147,7 @@ def _write_note(crib, project, relpath, body, fm=None):
     path.parent.mkdir(parents=True, exist_ok=True)
     note = Note(path=path, frontmatter=fm or {"title": relpath}, body=body)
     notes.save_atomic(note)
-    return asyncio.get_event_loop_policy()
+    return note
 
 
 def test_delete_moves_tree_to_trash_and_drops_chunks(crib):
@@ -753,7 +753,7 @@ def _check_rows(check: Any) -> list[dict[str, Any]]:
     dict with 'rows' spelling is tolerated too), and tests need the rows to
     inspect their causes' change_kind fields."""
     if isinstance(check, list):
-        return list(check)
+        return list(cast("list[dict[str, Any]]", check))
     return list(check.get("tainted") or check.get("rows") or [])
 
 

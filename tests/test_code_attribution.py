@@ -46,14 +46,33 @@ def _entry(fqname: str, *, file: str, name: str | None = None, **kw) -> dict:
     # the declared chain, as the extractor would observe it: whatever qualifies the
     # leaf beyond the module. `a.B.run` in a.py → container ["B"]; `a.target` → [].
     mod = file.replace(".py", "").replace("/", ".")
-    mid = fqname[len(mod) + 1:] if fqname.startswith(mod + ".") else fqname
+    mid = fqname[len(mod) + 1 :] if fqname.startswith(mod + ".") else fqname
     chain = mid.split(".")[:-1] if mid.endswith(leaf) else []
-    e = {"fqname": fqname, "name": leaf, "kind": "function",
-         "lang": "python", "content_hash": f"h_{fqname}", "file": file, "line": 1,
-         "mtime": 1, "signature": "def _():", "description": "d",
-         "container": chain, "calls": [], "called_by": [], "references": [],
-         "name_terms": [leaf]}
+    e = {
+        "fqname": fqname,
+        "name": leaf,
+        "kind": "function",
+        "lang": "python",
+        "content_hash": f"h_{fqname}",
+        "file": file,
+        "line": 1,
+        "mtime": 1,
+        "signature": "def _():",
+        "description": "d",
+        "container": chain,
+        "calls": [],
+        "called_by": [],
+        "references": [],
+        "name_terms": [leaf],
+    }
     e.update(kw)
+    return e
+
+
+def _read(store: SymbolIndex, key: str) -> dict:
+    """`read` is Optional-typed; every call below expects the symbol to be there."""
+    e = store.read(key)
+    assert e is not None, key
     return e
 
 
@@ -62,9 +81,14 @@ def test_same_named_methods_get_their_own_descriptions():
     """`A.run` and `B.run` in one file: the rows carry the qualified name, so each
     symbol's fqname resolves to its own row by a unique qualified suffix. Before,
     both were keyed `run` and the second row simply overwrote the first."""
-    metas = ci._rows_to_meta({"symbols": [
-        {"name": "A.run", "description": "runs A", "keywords": ["a"]},
-        {"name": "B.run", "description": "runs B", "keywords": ["b"]}]})
+    metas = ci._rows_to_meta(
+        {
+            "symbols": [
+                {"name": "A.run", "description": "runs A", "keywords": ["a"]},
+                {"name": "B.run", "description": "runs B", "keywords": ["b"]},
+            ]
+        }
+    )
     assert ci.match_meta("pkg.mod.A.run", metas) == ("runs A", ["a"])
     assert ci.match_meta("pkg.mod.B.run", metas) == ("runs B", ["b"])
 
@@ -87,8 +111,10 @@ def test_rust_fqnames_tail_match_on_double_colon():
 
 
 def test_exact_fqname_beats_any_fallback():
-    metas = {"pkg.mod.A.run": {"description": "exact"},
-             "A.run": {"description": "suffix"}}
+    metas = {
+        "pkg.mod.A.run": {"description": "exact"},
+        "A.run": {"description": "suffix"},
+    }
     assert ci.match_meta("pkg.mod.A.run", metas)[0] == "exact"
 
 
@@ -104,9 +130,14 @@ def test_longest_qualified_suffix_wins():
 def test_duplicate_describe_rows_do_not_clobber():
     """A model contradicting itself about one symbol resolves deterministically to
     the first row, in the order the file was read — not to whichever came last."""
-    metas = ci._rows_to_meta({"symbols": [
-        {"name": "f", "description": "first"},
-        {"name": "f", "description": "second"}]})
+    metas = ci._rows_to_meta(
+        {
+            "symbols": [
+                {"name": "f", "description": "first"},
+                {"name": "f", "description": "second"},
+            ]
+        }
+    )
     assert metas["f"]["description"] == "first"
 
 
@@ -117,13 +148,21 @@ def test_mop_up_blob_labels_each_block_with_the_fqname(monkeypatch):
 
     def fake_generate(cfg, sysp, blob, schema, purpose=None, schema_name=None):
         seen["blob"], seen["sys"] = blob, sysp
-        return {"symbols": [{"name": "m.A.run", "description": "runs A"},
-                            {"name": "m.B.run", "description": "runs B"}]}
+        return {
+            "symbols": [
+                {"name": "m.A.run", "description": "runs A"},
+                {"name": "m.B.run", "description": "runs B"},
+            ]
+        }
 
     monkeypatch.setattr("crib.generate.generate_structured", fake_generate)
-    out = ci.describe_symbols(None, [
-        {"fqn": "m.A.run", "name": "run", "kind": "method", "_body": "a"},
-        {"fqn": "m.B.run", "name": "run", "kind": "method", "_body": "b"}])
+    out = ci.describe_symbols(
+        None,
+        [
+            {"fqn": "m.A.run", "name": "run", "kind": "method", "_body": "a"},
+            {"fqn": "m.B.run", "name": "run", "kind": "method", "_body": "b"},
+        ],
+    )
     assert "# method m.A.run" in seen["blob"] and "# method m.B.run" in seen["blob"]
     assert out["m.A.run"]["description"] == "runs A"
     assert out["m.B.run"]["description"] == "runs B"
@@ -135,18 +174,29 @@ def test_deferred_describe_patches_each_symbol_by_fqname(crib, tmp_path, monkeyp
     store = SymbolIndex(crib.paths.project_dir("p"))
     store.write(_entry("m.A.run", file="m.py", name="run"))
     store.write(_entry("m.B.run", file="m.py", name="run"))
-    monkeypatch.setattr(ci, "describe_symbols", lambda cfg, syms: {
-        "m.A.run": {"description": "runs A", "keywords": ["a"]},
-        "m.B.run": {"description": "runs B", "keywords": ["b"]}})
+    monkeypatch.setattr(
+        ci,
+        "describe_symbols",
+        lambda cfg, syms: {
+            "m.A.run": {"description": "runs A", "keywords": ["a"]},
+            "m.B.run": {"description": "runs B", "keywords": ["b"]},
+        },
+    )
 
-    pending = {f"m.py#{fq.split('.', 1)[1]}":
-                   {"fqn": fq, "name": "run", "kind": "method",
-                    "content_hash": f"h_{fq}", "_body": "..."}
-               for fq in ("m.A.run", "m.B.run")}
+    pending = {
+        f"m.py#{fq.split('.', 1)[1]}": {
+            "fqn": fq,
+            "name": "run",
+            "kind": "method",
+            "content_hash": f"h_{fq}",
+            "_body": "...",
+        }
+        for fq in ("m.A.run", "m.B.run")
+    }
     out = run(crib.indexer._describe_and_patch("p", tmp_path, "m.py", pending))
     assert out["described"] == 2
-    assert store.read("m.py#A.run")["description"] == "runs A"
-    assert store.read("m.py#B.run")["description"] == "runs B"
+    assert _read(store, "m.py#A.run")["description"] == "runs A"
+    assert _read(store, "m.py#B.run")["description"] == "runs B"
 
 
 # ── 2.7 patch_edges: both relations, fqname-keyed targets ─────────────────────
@@ -157,13 +207,14 @@ def test_patch_edges_updates_references_symmetrically(crib):
     store.write(_entry("a.target", file="a.py"))
 
     crib.code.patch_edges(
-        store, [_entry("b.caller", file="b.py", calls=["target [a.py]"])], "b.py")
-    tgt = store.read("a.py#target")
+        store, [_entry("b.caller", file="b.py", calls=["target [a.py]"])], "b.py"
+    )
+    tgt = _read(store, "a.py#target")
     assert tgt["called_by"] == ["caller [b.py]"]
-    assert tgt["references"] == ["caller [b.py]"]     # the half that was never patched
+    assert tgt["references"] == ["caller [b.py]"]  # the half that was never patched
 
     crib.code.patch_edges(store, [_entry("b.caller", file="b.py")], "b.py")
-    tgt = store.read("a.py#target")
+    tgt = _read(store, "a.py#target")
     assert tgt["called_by"] == [] and tgt["references"] == []
 
 
@@ -176,9 +227,10 @@ def test_patch_edges_skips_an_ambiguous_same_named_target(crib):
     store.write(_entry("a.B.run", file="a.py", name="run"))
 
     crib.code.patch_edges(
-        store, [_entry("b.caller", file="b.py", calls=["run [a.py]"])], "b.py")
-    assert store.read("a.py#A.run")["called_by"] == []
-    assert store.read("a.py#B.run")["called_by"] == []
+        store, [_entry("b.caller", file="b.py", calls=["run [a.py]"])], "b.py"
+    )
+    assert _read(store, "a.py#A.run")["called_by"] == []
+    assert _read(store, "a.py#B.run")["called_by"] == []
 
 
 def test_patch_edges_resolves_a_qualified_edge_target_exactly(crib):
@@ -189,9 +241,10 @@ def test_patch_edges_resolves_a_qualified_edge_target_exactly(crib):
     store.write(_entry("a.B.run", file="a.py", name="run"))
 
     crib.code.patch_edges(
-        store, [_entry("b.caller", file="b.py", calls=["a.B.run [a.py]"])], "b.py")
-    assert store.read("a.py#A.run")["called_by"] == []
-    assert store.read("a.py#B.run")["called_by"] == ["caller [b.py]"]
+        store, [_entry("b.caller", file="b.py", calls=["a.B.run [a.py]"])], "b.py"
+    )
+    assert _read(store, "a.py#A.run")["called_by"] == []
+    assert _read(store, "a.py#B.run")["called_by"] == ["caller [b.py]"]
 
 
 def test_same_named_sources_in_one_file_patch_independently(crib):
@@ -202,15 +255,20 @@ def test_same_named_sources_in_one_file_patch_independently(crib):
     store.write(_entry("a.first", file="a.py"))
     store.write(_entry("c.second", file="c.py"))
 
-    crib.code.patch_edges(store, [
-        _entry("b.X.run", file="b.py", name="run", calls=["first [a.py]"]),
-        _entry("b.Y.run", file="b.py", name="run", calls=["second [c.py]"]),
-    ], "b.py")
-    assert store.read("a.py#first")["called_by"] == ["run [b.py]"]
-    assert store.read("c.py#second")["called_by"] == ["run [b.py]"]
+    crib.code.patch_edges(
+        store,
+        [
+            _entry("b.X.run", file="b.py", name="run", calls=["first [a.py]"]),
+            _entry("b.Y.run", file="b.py", name="run", calls=["second [c.py]"]),
+        ],
+        "b.py",
+    )
+    assert _read(store, "a.py#first")["called_by"] == ["run [b.py]"]
+    assert _read(store, "c.py#second")["called_by"] == ["run [b.py]"]
 
 
 # ── Edge attribution: URI decoding + path-boundary anchoring (robustness 4.6) ──
+
 
 def test_uri_path_percent_decodes(tmp_path):
     root = tmp_path / "My Repos" / "crib"
@@ -218,7 +276,7 @@ def test_uri_path_percent_decodes(tmp_path):
     f = root / "src" / "a.py"
     f.write_text("x = 1\n")
     uri = f.as_uri()
-    assert "%20" in uri                              # the space really is encoded
+    assert "%20" in uri  # the space really is encoded
     # Slicing the scheme off without decoding left a literal `%20` in the path, so
     # relative_to missed and EVERY cross-file edge in such a workspace was dropped.
     assert ci.uri_path(uri) == str(f)

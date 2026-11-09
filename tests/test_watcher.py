@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Awaitable, Callable
 from pathlib import Path
+from typing import cast
 
 import pytest
 
@@ -70,7 +72,10 @@ def test_code_watcher_decode_is_pure_path_work(tmp_path, monkeypatch):
     from crib.watch import CodeWatcher
     root = tmp_path / "repo"
     (root / "src").mkdir(parents=True)
-    cw = CodeWatcher(lambda *a: None, asyncio.new_event_loop())  # type: ignore[arg-type]
+    # the callback never fires in this test (pure path work), so a stub stands in
+    on_batch = cast("Callable[[str, dict[str, tuple[str, bool]]], Awaitable[None]]",
+                    lambda *a: None)
+    cw = CodeWatcher(on_batch, asyncio.new_event_loop())
     cw.watch_root("proj", root)
     rk = str(root.resolve())
     cw._code_exts()             # primed by `start()` in the daemon (see _watch_dirs)

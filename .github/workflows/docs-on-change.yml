@@ -21,7 +21,7 @@ jobs:
   deploy:
     # Inert until the deploy vars/secrets are configured on the repo.
     if: ${{ vars.DOCS_SSH_DEST != '' }}
-    uses: georgeharker/gh-quarto-publish/.github/workflows/publish.yml@main
+    uses: georgeharker/gh-quarto-publish/.github/workflows/publish.yml@06fe9321b7b5a68195f7f90d4b010816766135d8 # main
     with:
       target-prefix: ${{ github.ref_name }}
       ssh-dest: ${{ vars.DOCS_SSH_DEST }}

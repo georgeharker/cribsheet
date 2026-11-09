@@ -10,6 +10,7 @@ states it as one node with two in-edges."""
 from __future__ import annotations
 
 import asyncio
+from typing import Any
 
 import pytest
 
@@ -32,7 +33,7 @@ def crib(tmp_path, monkeypatch):
 
 
 def _sym(crib, project, fqname, file, **over):
-    e = {"fqname": fqname, "name": fqname.split(".")[-1], "kind": "function",
+    e: dict[str, Any] = {"fqname": fqname, "name": fqname.split(".")[-1], "kind": "function",
          "lang": "python", "module": fqname.rsplit(".", 1)[0], "parent": "",
          "content_hash": f"h_{fqname}", "file": file, "line": 1,
          "signature": f"def {fqname.split('.')[-1]}():", "description": "",
@@ -571,7 +572,8 @@ def test_an_indexed_entry_carries_its_language_scope(crib, tmp_path):
     # is why absence cannot be read as "this language has no scope" — the schema
     # stamp is what says the field was computed at all.
     _sym(crib, "p", "old.entry", "app.py", scope=[])
-    assert si.read("app.py#entry").get("scope") == []
+    entry = si.read("app.py#entry")
+    assert entry is not None and entry.get("scope") == []
     assert all(e.get("scope") for e in si.all()
                if e["symbol_ref"] != "app.py#entry")
     assert crib.code_graph("app.main", project="p")["symbol_ref"] == "app.py#main"

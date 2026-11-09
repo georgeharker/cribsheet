@@ -146,9 +146,8 @@ class SentenceTransformerEmbedder:
         self.device = device or _auto_device()
         self._model = SentenceTransformer(model_name, device=self.device)
         # method renamed in sentence-transformers 5.x; fall back for older
-        get_dim = (
-            getattr(self._model, "get_embedding_dimension", None)
-            or self._model.get_sentence_embedding_dimension
+        get_dim = getattr(self._model, "get_embedding_dimension", None) or getattr(
+            self._model, "get_sentence_embedding_dimension"
         )
         # Both arms are bound methods returning int; the `or` types the union
         # with None, so narrow explicitly — a genuine None means a broken

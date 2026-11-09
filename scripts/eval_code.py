@@ -15,6 +15,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "vendor" / "llmkit" / "src"))
@@ -56,9 +57,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{'sparse_w':>9}{'MRR':>8}{'recall@'+str(args.recall_k):>11}"
               f"{'concept-r':>11}{'name-r':>9}   (n={len(cases)})")
         print("-" * 60)
-        rows_by_w = {}
+        rows_by_w: dict[float, list[dict[str, Any]]] = {}
         for w in weights:
-            rows = []
+            rows: list[dict[str, Any]] = []
             for c in cases:
                 hits = crib.code_lookup(c["q"], project=c["project"], k=args.k)
                 rank = _hit_rank(hits, c["expect"])

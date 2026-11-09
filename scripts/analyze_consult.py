@@ -119,7 +119,7 @@ def _load(path: Path) -> dict:
         try:
             return json.loads(ck.read_text())
         except ValueError:
-            pass
+            ck.unlink(missing_ok=True)  # corrupt cache entry → re-parse below
     data = _parse_transcript(path)
     CACHE.mkdir(parents=True, exist_ok=True)
     ck.write_text(json.dumps(data))

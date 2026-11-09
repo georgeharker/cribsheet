@@ -66,7 +66,7 @@ from __future__ import annotations
 import contextlib
 import datetime
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any, Callable
 
 from . import notes
@@ -1274,7 +1274,7 @@ class Designs:
                 "deps": list(node.deps),
             }
         probe = {
-            nid: Node(**{**vars(n), "deps": list(n.deps)})
+            nid: replace(n, deps=list(n.deps))
             for nid, n in graph.nodes.items()
         }
         probe[node.id].deps.append(dep.id)

@@ -7,6 +7,7 @@ indexed. Recovery only via tools.
 
 from __future__ import annotations
 
+import builtins
 import re
 import sys
 from dataclasses import dataclass
@@ -82,7 +83,7 @@ class VersionRing:
         self._prune(d)
         return VersionEntry(seq, name, path, path.stat().st_mtime)
 
-    def list(self, note_id: str) -> list[VersionEntry]:
+    def list(self, note_id: str) -> builtins.list[VersionEntry]:
         d = self._note_dir(note_id)
         if not d.is_dir():
             return []

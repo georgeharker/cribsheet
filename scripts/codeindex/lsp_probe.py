@@ -162,7 +162,8 @@ def main(argv: list[str]) -> int:
             print(f"symbol {name!r} not found in {rel}", file=sys.stderr)
             print("top-level symbols:", [s.get("name") for s in (syms or [])][:20])
             return 1
-        pos = (sym.get("selectionRange") or sym.get("range"))["start"]
+        rng: Any = sym.get("selectionRange") or sym.get("range")
+        pos = rng["start"]
         print(f"symbol: {name}  at {rel}:{pos['line']+1}")
         prep = c.request("textDocument/prepareCallHierarchy",
                          {"textDocument": {"uri": uri}, "position": pos})

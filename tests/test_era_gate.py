@@ -67,16 +67,14 @@ def adopt_via(st: SessionState, project: str) -> bool:
     """`adopt_into_session` targets the ambient context's session, not a passed
     state — so this drives the REAL gate through the state the way the callers
     do: with a SessionState substituted for the ambient one."""
-    orig = sessionmod.session_state
+    import unittest.mock as mock
 
     def fake_state():
         return st
 
-    sessionmod.session_state = fake_state  # type: ignore[assignment]
-    try:
+    # patched the same way the tests patch `request_era`: set, then restored
+    with mock.patch.object(sessionmod, "session_state", fake_state):
         return sessionmod.adopt_into_session(project)
-    finally:
-        sessionmod.session_state = orig
 
 
 def test_adopt_refuses_on_the_stateless_era_and_writes_nothing():

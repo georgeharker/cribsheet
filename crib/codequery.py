@@ -129,7 +129,7 @@ def _rollup(sub: dict[str, Any], proj: str, axis: str,
         p = str(n.get("project") or proj)
         mid = _group_key(n, proj, axis, depth)
         member[str(n["id"])] = mid
-        m = mods.get(mid)
+        m: dict[str, Any] | None = mods.get(mid)
         if m is None:
             m = {"id": mid, "symbols": 0, "external": True, "truncated": True,
                  # `name` = the last segment of the group id: a rollup node's box

@@ -10,7 +10,9 @@ mid-window is healed on next start by re-driving anything left blank.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 from pathlib import Path
+from typing import cast
 
 import pytest
 
@@ -49,6 +51,11 @@ class _FakeTimer:
         self.cancelled = True
 
 
+class _FakeTask:
+    def add_done_callback(self, cb):
+        pass
+
+
 class _FakeLoop:
     """Records call_later delays; runs call_soon_threadsafe inline. Enough to assert
     the backoff schedule deterministically without real time."""
@@ -65,6 +72,7 @@ class _FakeLoop:
 
     def create_task(self, coro):
         coro.close()
+        return _FakeTask()
 
 
 def test_backoff_delays_double_then_cap():
@@ -73,7 +81,7 @@ def test_backoff_delays_double_then_cap():
     async def _noop(*a):
         pass
 
-    q = DescribeQueue(loop, _noop, base=1.0, cap=8.0)
+    q = DescribeQueue(cast(asyncio.AbstractEventLoop, loop), _noop, base=1.0, cap=8.0)
     sym = {"pkg.f": _sym("pkg.f", "h", "b")}
     for _ in range(6):
         q.enqueue("p", Path("/r"), "f.py", sym)          # same file re-edited 6×
@@ -85,16 +93,10 @@ class _DrivingLoop(_FakeLoop):
     really suspend), so a failed describe's RE-ARM lands in `delays` deterministically
     — the backoff schedule under repeated failure, with no wall-clock in the test."""
 
-    class _Task:
-        def add_done_callback(self, cb):
-            pass
-
     def create_task(self, coro):
-        try:
+        with contextlib.suppress(StopIteration):
             coro.send(None)
-        except StopIteration:
-            pass
-        return self._Task()
+        return _FakeTask()
 
 
 def test_failed_describe_backs_off_instead_of_restarting_at_zero():
@@ -105,7 +107,7 @@ def test_failed_describe_backs_off_instead_of_restarting_at_zero():
     async def boom(*a):
         raise RuntimeError("LLM down")
 
-    q = DescribeQueue(loop, boom, base=1.0, cap=8.0)
+    q = DescribeQueue(cast(asyncio.AbstractEventLoop, loop), boom, base=1.0, cap=8.0)
     sym = {"pkg.f": _sym("pkg.f", "h", "b")}
     q.enqueue("p", Path("/r"), "f.py", sym)
     for _ in range(5):                                   # each fire fails → re-arms
@@ -120,7 +122,7 @@ def test_successful_describe_clears_the_entry():
     async def ok(*a):
         return None
 
-    q = DescribeQueue(loop, ok, base=1.0, cap=8.0)
+    q = DescribeQueue(cast(asyncio.AbstractEventLoop, loop), ok, base=1.0, cap=8.0)
     q.enqueue("p", Path("/r"), "f.py", {"pkg.f": _sym("pkg.f", "h", "b")})
     q._fire(("p", "f.py"))
     assert q.pending_files() == 0 and loop.delays == [1.0]   # nothing re-armed
@@ -283,6 +285,7 @@ def test_llm_down_backfill_preserves_description(crib, tmp_path, monkeypatch):
     monkeypatch.setattr(ci, "describe_symbols", boom)
     crib._index_code_file_tracked(root, "pkg/mod.py", "p", True)
     cur = si.read("pkg/mod.py#a")
+    assert cur is not None
     assert cur["description"] == "does A"      # NOT blanked by the failed backfill
     assert "keywords" not in cur               # still marked never-attempted
 
@@ -290,7 +293,8 @@ def test_llm_down_backfill_preserves_description(crib, tmp_path, monkeypatch):
         "a": {"description": "does A", "keywords": ["alpha behavior"]}})
     monkeypatch.setattr(ci, "describe_symbols", lambda cfg, syms: {})
     crib._index_code_file_tracked(root, "pkg/mod.py", "p", True)
-    assert si.read("pkg/mod.py#a")["keywords"] == ["alpha behavior"]
+    cur = si.read("pkg/mod.py#a")
+    assert cur is not None and cur["keywords"] == ["alpha behavior"]
 
 
 def test_describe_and_patch_patches_then_clobber_guards(crib, tmp_path, monkeypatch):
@@ -304,11 +308,13 @@ def test_describe_and_patch_patches_then_clobber_guards(crib, tmp_path, monkeypa
         await crib.indexer._describe_and_patch("p", tmp_path, "pkg/mod.py", pending)
 
     run(go({"pkg/mod.py#b": _sym("pkg.mod.b", "hb2", "def b(): return 1")}))
-    assert si.read("pkg/mod.py#b")["description"] == "does B v2"      # patched
+    cur = si.read("pkg/mod.py#b")
+    assert cur is not None and cur["description"] == "does B v2"     # patched
 
     # stale content_hash vs disk → skipped (a newer edit already re-queued it)
     run(go({"pkg.mod.b": _sym("pkg.mod.b", "OLD", "def b(): pass")}))
-    assert si.read("pkg/mod.py#b")["description"] == "does B v2"      # untouched
+    cur = si.read("pkg/mod.py#b")
+    assert cur is not None and cur["description"] == "does B v2"     # untouched
 
 
 def test_backlog_reindexes_only_blank_described_files(crib, tmp_path, monkeypatch):

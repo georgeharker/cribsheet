@@ -98,13 +98,15 @@ def test_good_crib_still_parses(tmp_path):
         "project: proj\npaths:\n  - src\ndocs:\n  - 'docs/**/*.md'\n"
         "refs:\n  - other\n")
     link = CribLink.find(tmp_path)
+    assert link is not None
     assert link.project == "proj" and link.paths == ["src"]
     assert link.doc_patterns == ["docs/**/*.md"] and link.refs == ["other"]
 
 
 def test_scalar_list_fields_are_tolerated(tmp_path):
     (tmp_path / ".crib").write_text("project: proj\npaths: src\n")
-    assert CribLink.find(tmp_path).paths == ["src"]
+    link = CribLink.find(tmp_path)
+    assert link is not None and link.paths == ["src"]
 
 
 # ── 3.6 portable paths through symlinked roots ───────────────────────────────
@@ -157,11 +159,12 @@ def test_unmatched_path_still_falls_back(tmp_path):
 def test_stray_file_in_a_ring_dir_does_not_break_writes(tmp_path, capsys):
     ring = VersionRing(tmp_path / "versions", keep=5)
     e1 = ring.stash("NOTEID", "v1")
+    assert e1 is not None
     (e1.path.parent / "foo.md").write_text("stray")          # editor backup, junk…
     (e1.path.parent / "README.md").write_text("also stray")
 
     e2 = ring.stash("NOTEID", "v2")                          # used to ValueError
-    assert e2.seq == e1.seq + 1
+    assert e2 is not None and e2.seq == e1.seq + 1
     assert [e.seq for e in ring.list("NOTEID")] == [2, 1]     # strays not listed
     assert ring.read("NOTEID", e1.name) == "v1"
     assert (e1.path.parent / "foo.md").exists()              # and never deleted
@@ -172,7 +175,10 @@ def test_prune_only_counts_real_entries(tmp_path):
     ring = VersionRing(tmp_path / "versions", keep=2)
     d = None
     for i in range(4):
-        d = ring.stash("ID", f"v{i}").path.parent
+        e = ring.stash("ID", f"v{i}")
+        assert e is not None
+        d = e.path.parent
+    assert d is not None
     (d / "stray.md").write_text("x")
     ring.stash("ID", "v4")
     assert [e.seq for e in ring.list("ID")] == [5, 4]
@@ -181,7 +187,9 @@ def test_prune_only_counts_real_entries(tmp_path):
 
 def test_ring_warns_once_per_dir(tmp_path, capsys):
     ring = VersionRing(tmp_path / "versions", keep=5)
-    d = ring.stash("ID2", "v1").path.parent
+    e = ring.stash("ID2", "v1")
+    assert e is not None
+    d = e.path.parent
     (d / "junk.md").write_text("x")
     ring.stash("ID2", "v2")
     ring.stash("ID2", "v3")

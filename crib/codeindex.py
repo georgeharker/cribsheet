@@ -16,6 +16,7 @@ changed.
 from __future__ import annotations
 
 import atexit
+import contextlib
 import hashlib
 import json
 import os
@@ -176,6 +177,10 @@ DEFAULT_LSP_SPECS: dict[str, dict[str, Any]] = {
 }
 
 
+def _warn(msg: str) -> None:
+    print(f"[crib] {msg}", file=sys.stderr)
+
+
 def _config_dir() -> Path:
     return Path(os.environ.get("CRIB_CONFIG_DIR", os.path.expanduser("~/.config/crib")))
 
@@ -203,8 +208,8 @@ def load_specs() -> dict[str, dict[str, Any]]:
             user = json.loads(f.read_text())
             if isinstance(user, dict):
                 merged.update(user)
-        except (ValueError, OSError):
-            pass
+        except (ValueError, OSError) as e:
+            _warn(f"ignoring malformed {f}: {e}")
     for label, spec in DEFAULT_LSP_SPECS.items():
         merged.setdefault(label, dict(spec))  # defaults fill gaps, never override
     return merged
@@ -276,8 +281,8 @@ def load_grammar() -> dict[str, dict[str, str]]:
                 for cat, rules in user.items():
                     if isinstance(rules, dict):
                         merged.setdefault(cat, {}).update(rules)
-        except (ValueError, OSError):
-            pass
+        except (ValueError, OSError) as e:
+            _warn(f"ignoring malformed {f}: {e}")
     return merged
 
 
@@ -401,7 +406,7 @@ def derive_mtime(root: Path, relpath: str) -> int:
         if log.returncode == 0 and ct.isdigit():
             return int(ct) * 1_000_000_000  # commit seconds → ns (same unit as disk)
     except (OSError, ValueError, subprocess.SubprocessError):
-        pass
+        return disk  # no usable git answer → local disk mtime
     return disk
 
 
@@ -648,11 +653,9 @@ class LspClient:
             time.sleep(0.05)
 
     def close(self) -> None:
-        try:
+        with contextlib.suppress(Exception):  # dying server: terminate regardless
             self.request("shutdown", {}, timeout=5)
             self.notify("exit", {})
-        except Exception:  # noqa: BLE001
-            pass
         self.proc.terminate()
 
 
@@ -762,12 +765,11 @@ class LspSessionPool:
             {"uri": (Path(key_root) / rel).as_uri(), "type": t} for rel, t in changes
         ]
         for sess in sessions:
-            try:
+            # A dead pipe is respawned on next use.
+            with contextlib.suppress(Exception):
                 sess.client.notify(
                     "workspace/didChangeWatchedFiles", {"changes": events}
                 )
-            except Exception:  # noqa: BLE001 — dead pipe → respawned on next use
-                pass
 
     def _reap(self) -> None:
         now = time.monotonic()
@@ -833,12 +835,11 @@ class LspSessionPool:
         for sess in sessions:
             with sess.lock:
                 for u in sess.pinned:
-                    try:
+                    # A dead pipe is respawned later.
+                    with contextlib.suppress(Exception):
                         sess.client.notify(
                             "textDocument/didClose", {"textDocument": {"uri": u}}
                         )
-                    except Exception:  # noqa: BLE001 — dead pipe → respawn later
-                        pass
                 sess.pinned.clear()
 
     def stats(self) -> list[dict[str, Any]]:
@@ -1589,14 +1590,11 @@ def _extract(
                 if e is not None:
                     entries.append(e)
         finally:
-            for u in opened - sess.pinned.keys():  # close what THIS call opened —
-                try:  # call reads fresh disk; server doc-
-                    c.notify(
-                        "textDocument/didClose",  # memory stays bounded.
-                        {"textDocument": {"uri": u}},
-                    )  # PINNED docs stay
-                except Exception:  # noqa: BLE001 — best-effort teardown
-                    pass
+            # Close what THIS call opened, best-effort, so the next call reads
+            # fresh disk and server doc-memory stays bounded. PINNED docs stay.
+            for u in opened - sess.pinned.keys():
+                with contextlib.suppress(Exception):
+                    c.notify("textDocument/didClose", {"textDocument": {"uri": u}})
             sess.last_used = time.monotonic()
     return entries
 

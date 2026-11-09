@@ -50,7 +50,9 @@ def test_symbol_index_uses_legible_slug_filenames(tmp_path):
                   "signature": "", "description": "d", "container": [], "calls": [],
                   "called_by": [], "references": [], "name_terms": ["C"]})
     assert p.name.startswith("a.rs-C-") and p.suffix == ".toml"    # slug of its key
-    assert si.read("a.rs#C")["symbol_was"] == ["a::b::C"]          # history intact
+    stored = si.read("a.rs#C")
+    assert stored is not None
+    assert stored["symbol_was"] == ["a::b::C"]                     # history intact
     assert si.by_fqname("a::b::C")                # any spelling still FINDS it
     assert si.delete("a.rs#C")                    # the store itself speaks keys
     assert not si.by_fqname("a::b::C")

@@ -5281,17 +5281,18 @@ class Crib:
                         flush=True,
                     )
                     return
-                items = (data.get("sections") if isinstance(data, dict) else None) or []
-                for it in items:
+                items = data.get("sections") if isinstance(data, dict) else None
+                for it in items if isinstance(items, list) else []:
                     if not isinstance(it, dict):
                         continue
                     tgt = _match(str(it.get("heading") or ""), by_head)
                     if not tgt:
                         continue
                     for facet in tgt[4]:  # write ONLY the missing facets
+                        raw = it.get(facet["label"])
                         terms = [
                             str(x).strip()
-                            for x in (it.get(facet["label"]) or [])
+                            for x in (raw if isinstance(raw, list) else [])
                             if str(x).strip()
                         ]
                         if terms:

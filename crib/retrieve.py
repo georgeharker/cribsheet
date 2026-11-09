@@ -259,7 +259,10 @@ class QwenReranker:
         from transformers import AutoModelForCausalLM, AutoTokenizer  # type: ignore[reportMissingImports]  # the [st] extra: lazy, guarded
 
         self._torch = torch
-        self._tok = AutoTokenizer.from_pretrained(model_name, padding_side="left")
+        tok = AutoTokenizer.from_pretrained(model_name, padding_side="left")
+        if tok is None:
+            raise RuntimeError(f"transformers returned no tokenizer for {model_name!r}")
+        self._tok = tok
         self._model = AutoModelForCausalLM.from_pretrained(model_name).eval()
         self._yes = self._tok.convert_tokens_to_ids("yes")
         self._no = self._tok.convert_tokens_to_ids("no")
