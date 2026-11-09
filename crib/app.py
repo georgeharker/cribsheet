@@ -1237,14 +1237,9 @@ class Crib:
 
         kw_blend = 0.5  # fusion weight of the keyword_index term
 
-        # Retrieval is scoped to ONE pillar store. The where-clause needs every
-        # chunk re-stamped with its `store` key (the v3 sweep); until the marker
-        # says that happened, query project-wide and apply the absence rule in
-        # Python so retrieval never goes dark between upgrade and sweep.
-        stamped = self.stored_chunk_schema() >= CHUNK_SCHEMA_VERSION
-        where: dict[str, Any] = (
-            {"project": proj, "store": store} if stamped else {"project": proj}
-        )
+        # Retrieval is scoped to ONE pillar store: every chunk carries its
+        # `store` key (chunk schema v3, which every DuckDB store was filled at).
+        where: dict[str, Any] = {"project": proj, "store": store}
         if labels:
             # A tags= lookup filters IN the query, so the dense top-n is drawn
             # from matching chunks only, never thinned after the fact.
@@ -1253,12 +1248,6 @@ class Crib:
         # not a SQL string; there is no SQL here.
         # pi-lens-ignore: python-sql-injection
         dense = self.store.query(vec, k=topn, where=where)
-        if not stamped:
-            dense = [
-                h
-                for h in dense
-                if ((h.metadata or {}).get("store") or "notes") == store
-            ]
         cos: dict[str, float] = {
             h.id: h.score for h in dense
         }  # raw cosine per candidate
@@ -1331,12 +1320,7 @@ class Crib:
         else:
             pool = list(dict.fromkeys(list(cos) + list(kw) + list(hint_hits)))
             if not docs:  # need doc text to back-fill cosines
-                docs = {
-                    i: (d, m)
-                    for i, (d, m) in self.store.get_docs(where).items()
-                    if not (m or {}).get("alias")
-                    and ((m or {}).get("store") or "notes") == store
-                }
+                docs = self.store.get_docs(where)
             if labels:
                 # The lexical index and the alias cache span the whole store, so
                 # their candidates get the same label filter the query applied.
@@ -5734,14 +5718,19 @@ def _build_store(
 
     Every store is a rebuildable cache: a fresh or empty one is filled by the
     startup reconcile, which re-embeds what is on disk (no LLM)."""
-    from .store import JsonStore
-
     backend = config.store.backend
     if backend == "json":
-        return JsonStore(paths.index_dir / "store.json"), None
-    if backend != "duckdb":
+        # Removed in 0.22: DuckDB ships in the base install, and the JSON file
+        # was rewritten whole on every edit. The store is a cache, so nothing
+        # is lost by switching; the startup reconcile fills the new one.
+        print(
+            '[crib] [store] backend = "json" is no longer supported; using duckdb. '
+            "Remove the setting from config.toml.",
+            file=sys.stderr,
+        )
+    elif backend != "duckdb":
         raise CribUserError(
-            f"[store] backend = {backend!r} is not a store crib knows (duckdb | json)"
+            f"[store] backend = {backend!r} is not a store crib knows (duckdb)"
         )
     if config.duckdb.mode == "shared":
         return _build_shared_duckdb(paths, config)

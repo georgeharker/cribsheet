@@ -19,7 +19,7 @@ from crib.app import Crib
 from crib.config import Config
 from crib.embed import HashEmbedder
 from crib.paths import Paths
-from crib.store import InMemoryStore, JsonStore, Record
+from crib.store import InMemoryStore, Record
 
 SLOW = 0.5          # stand-in for a real model forward
 # Acceptance bar for the loop gap during a big write. What it discriminates is
@@ -146,11 +146,11 @@ def test_status_reports_background_reconcile(slow_crib):
     assert crib.status()["reconciling"] is False
 
 
-def test_jsonstore_survives_concurrent_writers_and_readers(tmp_path):
+def test_memory_store_survives_concurrent_writers_and_readers(tmp_path):
     """1.2: indexing writes from worker threads while FastMCP's sync tools read
     from its threadpool — a plain dict rewritten wholesale would raise
     `dictionary changed size during iteration`."""
-    store = JsonStore(tmp_path / "store.json")
+    store = InMemoryStore()
     vec = [1.0] + [0.0] * 7
     errors: list[BaseException] = []
     stop = threading.Event()
@@ -170,7 +170,9 @@ def test_jsonstore_survives_concurrent_writers_and_readers(tmp_path):
     t = threading.Thread(target=writer)
     t.start()
     reads = 0
-    while not stop.is_set():
+    # Read until the writer finishes, and at least once: the in-memory store is
+    # fast enough that the writer can be done before the first read.
+    while not stop.is_set() or reads == 0:
         try:
             store.get_meta({"project": "p"})
             store.get_docs({"project": "p"})

@@ -121,11 +121,9 @@ class IndexEngine:
     def _existing_meta(self, project: str, store: str, relpath: str) -> dict:
         """This note's indexed chunks — project + relpath narrowed to its pillar.
         Store-relative relpaths repeat across pillars, so the relpath alone is
-        ambiguous; chunks indexed before the split lack the `store` key, hence
-        the absence rule rather than an equality where-clause."""
-        return {cid: m for cid, m in self.store.get_meta(
-                    {"project": project, "relpath": relpath}).items()
-                if ((m or {}).get("store") or "notes") == store}
+        ambiguous."""
+        return self.store.get_meta(
+            {"project": project, "store": store, "relpath": relpath})
 
     async def _index_locked(self, project: str, notes_dir: Path, relpath: str,
                             content_path: Path | None = None, *,

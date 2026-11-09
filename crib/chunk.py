@@ -18,7 +18,7 @@ _HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
 # `#<n>` occurrence disambiguator in the id (v1 collided, later section winning).
 # v3: chunks carry a `store` (pillar) axis; non-notes stores qualify the relpath
 # in the id (`design:foo.md`) so store-relative relpaths can never collide across
-# pillars in the one shared collection. Notes ids are unchanged.
+# pillars in the one shared store. Notes ids are unchanged.
 CHUNK_SCHEMA_VERSION = 3
 
 # Windowing is measured in whitespace words, but the cap is set so a window
@@ -112,8 +112,7 @@ class Chunk:
             "relpath": self.relpath,
             # The pillar store axis retrieval scopes on — an equality
             # where-clause per surface keeps facet chunks out of note search
-            # (and vice versa). Chunks indexed before the split lack the key;
-            # consumers apply the absence rule `(meta.get("store") or "notes")`.
+            # (and vice versa).
             "store": self.store,
             "note_id": self.note_id,
             "title": title or "",

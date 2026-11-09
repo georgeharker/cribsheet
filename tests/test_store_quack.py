@@ -98,7 +98,9 @@ def test_vector_literal_rounds_like_a_bound_parameter():
     ((bound,),) = con.execute(f"SELECT ?::FLOAT[{n}]", [vec]).fetchall()
     # pi-lens-ignore: python-sql-injection
     ((literal,),) = con.execute(f"SELECT {to_literal(vec)}::FLOAT[{n}]").fetchall()
-    assert [math.copysign(1, x) for x in literal] == [math.copysign(1, x) for x in bound]
+    assert [math.copysign(1, x) for x in literal] == [
+        math.copysign(1, x) for x in bound
+    ]
     assert list(literal) == list(bound)
 
 
@@ -133,7 +135,7 @@ def test_loopback_bind_is_allowed(host):
     check_shared_bind(host)
 
 
-@pytest.mark.parametrize("host", ["0.0.0.0", "192.168.1.5", "chroma.internal", "::"])
+@pytest.mark.parametrize("host", ["0.0.0.0", "192.168.1.5", "store.internal", "::"])
 def test_off_box_bind_is_refused(host):
     with pytest.raises(CribUserError, match="loopback"):
         check_shared_bind(host)

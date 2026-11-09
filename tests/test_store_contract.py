@@ -22,7 +22,7 @@ from typing import Any, Callable
 import pytest
 
 from crib.errors import CribUserError
-from crib.store import InMemoryStore, JsonStore, Record, Store
+from crib.store import InMemoryStore, Record, Store
 
 # ── vectors ──────────────────────────────────────────────────────────────────
 
@@ -68,13 +68,6 @@ def _free_port() -> int:
 
 def _make_memory(tmp_path, request) -> Backend:
     return Backend("memory", InMemoryStore(), None, fixed_dim=False, shared=False)
-
-
-def _make_json(tmp_path, request) -> Backend:
-    path = tmp_path / "store.json"
-    return Backend(
-        "json", JsonStore(path), lambda: JsonStore(path), fixed_dim=False, shared=False
-    )
 
 
 def _make_duckdb_embedded(tmp_path, request) -> Backend:
@@ -128,7 +121,6 @@ def _make_duckdb_quack(tmp_path, request) -> Backend:
 
 BACKENDS = {
     "memory": _make_memory,
-    "json": _make_json,
     "duckdb-embedded": _make_duckdb_embedded,
     "duckdb-quack": _make_duckdb_quack,
 }

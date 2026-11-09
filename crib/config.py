@@ -238,11 +238,11 @@ class GenerateConfig:
 class StoreConfig:
     """Which vector store backs the index (design: "Vector store moves to DuckDB on
     two paths"). `duckdb` (the default) is the DuckDB store, configured by the
-    `[duckdb]` table; `json` is the dependency-free fallback. chroma was removed
-    (2026-11-09): every store is a rebuildable cache, so switching needs no
+    `[duckdb]` table, and the only store. chroma and the json store were removed
+    in 0.22: every store is a rebuildable cache, so switching needs no
     migration; the startup reconcile re-embeds what's on disk."""
 
-    backend: str = "duckdb"  # "duckdb" | "json"
+    backend: str = "duckdb"  # "duckdb" (the only store; "json" warns and uses it)
 
 
 @dataclass

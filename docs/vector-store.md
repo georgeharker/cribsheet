@@ -33,7 +33,7 @@ In `~/.config/crib/config.toml`:
 
 ```toml
 [store]
-backend = "duckdb"        # "duckdb" (default) | "json" (dependency-free, tests/CI)
+backend = "duckdb"        # the only store (the default; may be omitted)
 
 [duckdb]
 mode = "embedded"         # "embedded" (default) | "shared"

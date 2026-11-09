@@ -615,13 +615,9 @@ class Designs:
         source and a retrieval hit never disagree about what the doc says."""
         store, rel = split_docref(relpath)
         try:
-            metas = {
-                cid: m
-                for cid, m in self.notestore.store.get_meta(
-                    {"project": proj, "relpath": rel}
-                ).items()
-                if (str(m.get("store") or "notes")) == store
-            }
+            metas = self.notestore.store.get_meta(
+                {"project": proj, "store": store, "relpath": rel}
+            )
         except Exception:  # noqa: BLE001 — fall back to hashing the text ourselves
             return {}
         out: dict[str, str] = {}

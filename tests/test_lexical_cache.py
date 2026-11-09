@@ -72,19 +72,6 @@ def test_corpora_are_per_pillar_store(crib):
     assert not any("zebra" in design_docs[i][0] for i in design_ids)
 
 
-def test_chunks_without_a_store_key_count_as_notes(crib):
-    # Pre-split chunks lack the `store` metadata key; the absence rule keeps
-    # them visible to the notes pillar until the sweep re-stamps them.
-    run(crib.store_note("gamma rhino body", title="g", project="p"))
-    metas = crib.store.get_meta({"project": "p"})
-    crib.store.set_meta({cid: {k: v for k, v in m.items() if k != "store"}
-                         for cid, m in metas.items()})
-    crib.index.invalidate_caches("p")
-    ids, docs, _ = crib.index.lexical.get("p")
-    assert any("rhino" in docs[i][0] for i in ids)
-    assert crib.index.lexical.get("p", store="design")[0] == []
-
-
 def test_a_store_wipe_invalidates_every_projects_cache(crib):
     # A dim change recreates the collection — every project's chunks go, not just
     # the reindexed one's. The derived caches are built FROM the store, so a warm

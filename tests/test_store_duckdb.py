@@ -113,8 +113,25 @@ def test_unknown_backend_is_a_clear_error(tmp_path, monkeypatch):
     monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
     cfg = Config()
     cfg.store.backend = "duckbd"
-    with pytest.raises(CribUserError, match="duckdb \\| json"):
+    with pytest.raises(CribUserError, match="not a store crib knows"):
         _build_store(Paths.resolve(), cfg)
+
+
+def test_the_removed_json_backend_warns_and_uses_duckdb(tmp_path, monkeypatch, capsys):
+    from crib.app import _build_store
+    from crib.config import Config
+    from crib.paths import Paths
+
+    monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
+    cfg = Config()
+    cfg.store.backend = "json"
+    store, close = _build_store(Paths.resolve(), cfg)
+    try:
+        assert isinstance(store, DuckDBStore)
+        assert "no longer supported" in capsys.readouterr().err
+    finally:
+        if close:
+            close()
 
 
 def test_config_file_selects_the_backend(tmp_path):

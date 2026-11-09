@@ -243,7 +243,7 @@ runs), so it's fast; `--no-daemon` runs in-process, `--json` gives machine outpu
   [retrieve]
   hybrid = true           # dense ⊕ BM25, RRF-fused; rerank = true adds a cross-encoder
   [store]
-  backend = "duckdb"      # "duckdb" (default) | "json" (dependency-free)
+  backend = "duckdb"      # the only store (the default; may be omitted)
   [duckdb]
   mode = "embedded"       # "embedded" | "shared" (a loopback DuckDB server via sharedserver)
   # store details and upgrading from chroma: docs/vector-store.md, docs/migrating-to-duckdb.md

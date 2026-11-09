@@ -1,7 +1,6 @@
 """Vector store behind one interface (DESIGN §10.1).
 
-`InMemoryStore`  — brute-force cosine, dependency-free; default for dev/tests.
-`JsonStore`      — InMemoryStore persisted to a JSON file.
+`InMemoryStore`  — brute-force cosine, dependency-free; the reference for tests.
 `DuckDBStore` / `QuackStore` (crib.store_duckdb / crib.store_quack) — the real
 store: an embedded DuckDB file, or that file served over Quack.
 
@@ -19,7 +18,6 @@ from __future__ import annotations
 
 import threading
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any, Protocol
 
 from .errors import CribUserError
@@ -156,7 +154,6 @@ class InMemoryStore:
     def __init__(self) -> None:
         self._recs: dict[str, Record] = {}
         self._meta: dict[str, str] = {}
-        # Reentrant so JsonStore can hold it across super() + _save.
         self._lock = threading.RLock()
 
     def _snapshot(self) -> list[Record]:
@@ -224,7 +221,9 @@ class InMemoryStore:
 
     def projects(self) -> set[str]:
         return {
-            p for r in self._snapshot() if isinstance(p := r.metadata.get("project"), str)
+            p
+            for r in self._snapshot()
+            if isinstance(p := r.metadata.get("project"), str)
         }
 
     def meta_get(self, key: str) -> str | None:
@@ -232,55 +231,3 @@ class InMemoryStore:
 
     def meta_set(self, key: str, value: str) -> None:
         self._meta[key] = value
-
-
-class JsonStore(InMemoryStore):
-    """Persistent brute-force store: InMemoryStore + a JSON file on disk.
-
-    `[store] backend = "json"`: fine for personal-scale memory, and what keeps
-    the core loop testable with no backend installed. DuckDB ships in the base
-    install and is the default store.
-    """
-
-    def __init__(self, path: Path) -> None:
-        super().__init__()
-        self._path = path
-        self._load()
-
-    def _load(self) -> None:
-        import json
-
-        if self._path.exists():
-            for d in json.loads(self._path.read_text()):
-                r = Record(d["id"], d["embedding"], d["document"], d["metadata"])
-                self._recs[r.id] = r
-
-    def _save(self) -> None:
-        """Whole-file rewrite — callers must hold `_lock`, so two writer threads
-        can't interleave into one tmp file or race the rename."""
-        import json
-
-        self._path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = self._path.with_suffix(".tmp")
-        tmp.write_text(json.dumps([vars(r) for r in self._recs.values()]))
-        tmp.replace(self._path)
-
-    def upsert(self, records: list[Record]) -> None:
-        with self._lock:
-            super().upsert(records)
-            self._save()
-
-    def delete(self, ids: list[str]) -> None:
-        with self._lock:
-            super().delete(ids)
-            self._save()
-
-    def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:
-        with self._lock:
-            super().set_meta(updates)
-            self._save()
-
-    def recreate(self) -> None:
-        with self._lock:
-            super().recreate()
-            self._save()

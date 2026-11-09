@@ -293,9 +293,9 @@ class NoteStore:
             # sweep must NOT treat them as deleted (owned by index_docs_insitu +
             # the code watcher).
             indexed = {m.get("relpath")
-                       for m in self.store.get_meta({"project": project}).values()
-                       if ((m.get("store") or "notes") == self.spec.name
-                           and not (m.get("relpath") or "").startswith(SRC_PREFIX))}
+                       for m in self.store.get_meta(
+                           {"project": project, "store": self.spec.name}).values()
+                       if not (m.get("relpath") or "").startswith(SRC_PREFIX)}
             targets = sorted(disk | {r for r in indexed if r})
         changed = removed = 0
         skipped: list[dict[str, str]] = []
