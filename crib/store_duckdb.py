@@ -532,29 +532,6 @@ class DuckDBStore:
             )
         return {p: {"failing": int(n), "backing_off": int(b)} for p, n, b in rows}
 
-    def iter_records(self, batch_size: int = 500) -> Iterator[list[Record]]:
-        """Pages by id (keyset, not OFFSET): each page is one range scan, and a
-        record written mid-export is either in or out, never twice."""
-        after = ""
-        while page := self._page(after, batch_size):
-            yield page
-            after = page[-1].id
-
-    def _page(self, after: str, n: int) -> list[Record]:
-        """The next `n` records by id after `after` (one read: retryable)."""
-        with self._reading() as ex:
-            if self._table_dim(ex) is None:
-                return []
-            # pi-lens-ignore: python-sql-injection
-            rows = ex.run(
-                f"SELECT id, vec, document, meta FROM {TABLE} "
-                "WHERE id > ? ORDER BY id LIMIT ?",
-                [after, int(n)],
-            )
-        return [
-            Record(i, [float(x) for x in v], d, json.loads(m)) for i, v, d, m in rows
-        ]
-
     def query(
         self, embedding: list[float], k: int, where: dict[str, Any] | None = None
     ) -> list[Hit]:

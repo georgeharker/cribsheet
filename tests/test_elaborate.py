@@ -52,9 +52,6 @@ class _DocStore:
     def recreate(self) -> None:
         pass
 
-    def iter_records(self, batch_size: int = 500) -> Any:
-        raise AssertionError("not called in these tests")
-
 
 @pytest.fixture()
 def crib(tmp_path, monkeypatch):

@@ -303,11 +303,6 @@ class QuackStore(DuckDBStore):
     def ledger_counts(self, now: float) -> dict[str, dict[str, int]]:
         return self._call(super().ledger_counts, now)
 
-    def _page(self, after: str, n: int) -> list[Record]:
-        # iter_records is a generator, so the reconnect wraps each PAGE: an
-        # export carries on across a server restart.
-        return self._call(super()._page, after, n)
-
     def close(self) -> None:
         with self._session:
             with contextlib.suppress(Exception):  # the server may be gone already

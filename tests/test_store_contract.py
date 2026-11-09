@@ -337,37 +337,6 @@ def test_recreate_empties_and_accepts_a_new_dimension(backend):
     assert [h.id for h in top(s, unit(1, 0), 5)] == ["c"]
 
 
-# ── export (the migration source side) ─────────────────────────────────────
-
-
-def test_iter_records_exports_every_record_with_its_vector(backend):
-    s = backend.store
-    assert list(s.iter_records()) == []  # empty: no batches at all
-    vecs = {f"r{i}": unit(1, i / 7, (i % 3) / 5) for i in range(7)}
-    s.upsert([rec(i, v, f"doc {i}", n=n) for n, (i, v) in enumerate(vecs.items())])
-    batches = list(s.iter_records(batch_size=3))
-    assert [len(b) for b in batches] == [3, 3, 1]
-    got = [r for b in batches for r in b]
-    assert [r.id for r in got] == sorted(vecs)  # stable order: by id
-    for n, r in enumerate(sorted(got, key=lambda r: r.id)):
-        assert r.document == f"doc {r.id}"
-        assert r.metadata == {"project": "p", "n": int(r.id[1:])}
-        assert r.embedding == pytest.approx(vecs[r.id], abs=1e-6)
-
-
-def test_iter_records_round_trips_into_another_store(backend, tmp_path):
-    """Export then import reproduces the store exactly: same records, same
-    nearest neighbours. This is the whole migration, minus verification."""
-    s = backend.store
-    s.upsert([rec(f"r{i}", unit(1, i / 9, 0.3), f"doc {i}", store="notes") for i in range(9)])
-    copy = InMemoryStore()
-    for batch in s.iter_records(batch_size=4):
-        copy.upsert(batch)
-    assert copy.get_docs({"project": "p"}) == s.get_docs({"project": "p"})
-    q = unit(1, 0.5, 0.3)
-    assert [h.id for h in top(copy, q, 5)] == [h.id for h in top(s, q, 5)]
-
-
 # ── persistence ──────────────────────────────────────────────────────────────
 
 

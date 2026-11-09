@@ -20,7 +20,6 @@ from __future__ import annotations
 import threading
 from dataclasses import dataclass
 from pathlib import Path
-from collections.abc import Iterator
 from typing import Any, Protocol
 
 from .errors import CribUserError
@@ -94,12 +93,6 @@ class Store(Protocol):
         """Drop all vectors so the next upserts define a fresh dimension. For a
         fixed-dim backend (DuckDB) this drops the table; emptying the
         store also makes the content-hash gate re-embed every chunk."""
-        ...
-
-    def iter_records(self, batch_size: int = 500) -> Iterator[list[Record]]:
-        """Every record WITH its embedding, in batches, in a stable order (by id)
-        — the export side of a store migration, so vectors move without
-        re-embedding."""
         ...
 
 
@@ -183,14 +176,6 @@ class InMemoryStore:
     def recreate(self) -> None:
         with self._lock:
             self._recs.clear()
-
-    def iter_records(self, batch_size: int = 500) -> Iterator[list[Record]]:
-        recs = sorted(self._snapshot(), key=lambda r: r.id)
-        for lo in range(0, len(recs), batch_size):
-            yield [
-                Record(r.id, list(r.embedding), r.document, dict(r.metadata))
-                for r in recs[lo : lo + batch_size]
-            ]
 
 
 class JsonStore(InMemoryStore):

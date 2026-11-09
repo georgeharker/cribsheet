@@ -70,8 +70,6 @@ Per machine:
 
 ## Things that changed alongside
 
-- **`crib store migrate` is gone.** It copied an index between backends;
-  re-embedding is cheap enough that it was not worth keeping.
 - **Startup is faster on warm machines.** Three per-machine caches now live in
   the DuckDB file: embeddings, parsed symbol-index records, and a generation
   ledger. See [vector-store.md](vector-store.md#what-lives-where).
