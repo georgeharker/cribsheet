@@ -1404,6 +1404,8 @@ def _symbol_entry(
     # No `parent` is computed. It was the enclosing symbol's own qualified name — a
     # pointer in a retiring spelling — and the parent's REFERENCE is a truncation of
     # this symbol's, so it is derivable at read time and can never dangle.
+    # content identity (stored in every record), not security
+    # pi-lens-ignore: python-weak-hash
     content_hash = hashlib.sha1(body.encode()).hexdigest()[:16]
     sig = ctx.lines[start].strip()[:120]
     calls: list[str] = []
@@ -1508,6 +1510,8 @@ def _extract(
     # FILE-level hash of exactly the text we analyze — the deletion gate's evidence
     # (codeindexer): identical bytes cannot have lost symbols, so a shrinking extract
     # over an unchanged file is an extraction anomaly, not an edit.
+    # content identity (stored in every record), not security
+    # pi-lens-ignore: python-weak-hash
     file_hash = hashlib.sha1(text.encode()).hexdigest()[:16]
     # ref checkouts OUTSIDE the workspace ride along as extra workspaceFolders
     # (multi-root xref); in-tree ones are already inside the root

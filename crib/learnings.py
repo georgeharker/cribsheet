@@ -377,6 +377,8 @@ class Learnings:
                     "relpath": path.name,
                     "binding": bound,
                     "id": fm.get("id"),
+                    # content identity, not security
+                    # pi-lens-ignore: python-weak-hash
                     "body_sha1": hashlib.sha1(note.body.encode()).hexdigest(),
                 }
             )

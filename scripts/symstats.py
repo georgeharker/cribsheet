@@ -130,6 +130,8 @@ def capture(project: str) -> dict:
                 "was": fm.get("symbol_was") or [],
                 "id": fm.get("id") or "",
                 "schema": int(fm.get("schema") or 0),
+                # content identity, not security
+                # pi-lens-ignore: python-weak-hash
                 "body_sha1": hashlib.sha1(body.encode()).hexdigest(),
             })
     reachable = {b for e in entries for b in _bindings(e)}

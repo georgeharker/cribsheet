@@ -65,6 +65,8 @@ class HashEmbedder:
     def _vec(self, text: str) -> list[float]:
         v = [0.0] * self.dim
         for tok in text.lower().split():
+            # token bucket for the dev hash embedder, not security
+            # pi-lens-ignore: python-weak-hash
             h = int(hashlib.md5(tok.encode("utf-8")).hexdigest(), 16)
             idx = h % self.dim
             sign = 1.0 if (h >> 8) & 1 else -1.0

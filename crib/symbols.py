@@ -264,6 +264,8 @@ def ref_slug(ref: str) -> str:
     still name real files on disk."""
     safe = _SLUG_UNSAFE.sub("-", ref).strip("-")
     if safe != ref or safe != safe.lower():
+        # filename disambiguation suffix, not security
+        # pi-lens-ignore: python-weak-hash
         safe = f"{safe}-{hashlib.sha1(ref.encode()).hexdigest()[:8]}"
     return safe
 
@@ -275,6 +277,8 @@ def legacy_ref_slug(binding: str) -> str:
     it rewrites, and the learnings verbs read through to it in place."""
     safe = _SLUG_UNSAFE.sub("-", binding).strip("-")
     if safe != binding:
+        # filename disambiguation suffix, not security
+        # pi-lens-ignore: python-weak-hash
         safe = f"{safe}-{hashlib.sha1(binding.encode()).hexdigest()[:8]}"
     return safe
 

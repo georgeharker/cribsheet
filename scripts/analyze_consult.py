@@ -106,6 +106,8 @@ def _parse_transcript(path: Path) -> dict:
 
 def _cache_key(path: Path) -> Path:
     st = path.stat()
+    # cache key, not security
+    # pi-lens-ignore: python-weak-hash
     h = hashlib.sha1(f"{path}:{st.st_mtime_ns}:{st.st_size}:{CACHE_SCHEMA}"
                      .encode()).hexdigest()
     return CACHE / f"{h}.json"

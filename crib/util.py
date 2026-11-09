@@ -37,6 +37,8 @@ def spawn(loop: asyncio.AbstractEventLoop, coro: Coroutine[Any, Any, Any],
 
 def sha1_hex(*parts: str) -> str:
     """Stable SHA-1 hex over the concatenation of the given parts."""
+    # content identity / cache key, not security
+    # pi-lens-ignore: python-weak-hash
     h = hashlib.sha1()
     for p in parts:
         h.update(p.encode("utf-8"))
@@ -45,6 +47,8 @@ def sha1_hex(*parts: str) -> str:
 
 
 def short_hash(text: str, n: int = 8) -> str:
+    # content identity / cache key, not security
+    # pi-lens-ignore: python-weak-hash
     return hashlib.sha1(text.encode("utf-8")).hexdigest()[:n]
 
 
@@ -69,6 +73,8 @@ def derived_ulid(*parts: str) -> str:
     the same path (DESIGN §14). Not time-ordered — that property is irrelevant for
     content whose identity is its source, not its creation moment.
     """
+    # content identity / cache key, not security
+    # pi-lens-ignore: python-weak-hash
     digest = hashlib.sha1("\x00".join(parts).encode("utf-8")).digest()
     return _b32(int.from_bytes(digest[:16], "big"))  # 128 bits
 
