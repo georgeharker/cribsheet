@@ -29,6 +29,11 @@ from pathlib import Path
 from typing import Any, Protocol
 
 Stamp = tuple[int, int]  # (st_mtime_ns, st_size)
+# The shape of the parsed records this cache persists. Bump it whenever the
+# parse (crib.codeindex) changes what it returns for the same TOML: the stores
+# empty their record cache on a mismatch, since an unchanged file's stamp would
+# otherwise keep serving the old parse forever.
+RECORD_FORMAT = "1"
 
 
 class CacheStorage(Protocol):

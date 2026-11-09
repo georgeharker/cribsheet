@@ -20,6 +20,9 @@ def _free_port() -> int:
 class CountingEmbedder:
     def __init__(self, dim: int = 3) -> None:
         self.dim = dim
+        # Every embedder says what it IS, in `[embed].model` spec syntax; the cache
+        # key is spelled off this and never off the config string.
+        self.model_id = f"fe:counting-{dim}"
         self.calls: list[list[str]] = []
         self.query_prefix = "q: "
 
@@ -145,10 +148,69 @@ def test_wrap_only_when_the_store_can_hold_it(tmp_path):
     from crib.store_duckdb import DuckDBStore
 
     inner = CountingEmbedder()
-    assert wrap(inner, InMemoryStore(), "m") is inner
+    assert wrap(inner, InMemoryStore()) is inner
     s = DuckDBStore.embedded(tmp_path / "c.duckdb")
     try:
-        assert isinstance(wrap(inner, s, "m"), CachedEmbedder)
+        assert isinstance(wrap(inner, s), CachedEmbedder)
+    finally:
+        s.close()
+
+
+# --- the key names what was BUILT, not what was configured -------------------
+def test_the_key_is_spelled_off_the_built_embedder(tmp_path):
+    from crib.store_duckdb import DuckDBStore
+
+    s = DuckDBStore.embedded(tmp_path / "c.duckdb")
+    try:
+        ce = wrap(CountingEmbedder(3), s)
+        assert ce.model_key == "fe:counting-3#3"  # model_id # dim
+        assert ce.model_id == "fe:counting-3" and ce.dim == 3  # read through the wrap
+    finally:
+        s.close()
+
+
+def test_a_hash_embedder_is_never_wrapped(tmp_path):
+    """Hash vectors are a few hashes of a short string — cheaper to recompute than
+    to fetch, and caching them is exactly how a missing-backend fallback leaves
+    hash vectors in the store under a real model's name."""
+    from crib.embed import HashEmbedder
+    from crib.store_duckdb import DuckDBStore
+
+    s = DuckDBStore.embedded(tmp_path / "c.duckdb")
+    try:
+        h = HashEmbedder(dim=16)
+        assert h.model_id == "hash:16"
+        assert wrap(h, s) is h  # no cache in front of it at all
+    finally:
+        s.close()
+
+
+def test_the_hash_fallback_is_not_cached_under_the_real_model(tmp_path, monkeypatch):
+    """`build_embedder` degrades to the hash embedder when a backend is missing. The
+    cache used to be keyed on `[embed].model`, so those vectors were filed under the
+    REAL model's name and went on being served after the backend was installed."""
+    import crib.embed as embed_mod
+    from crib.config import EmbedConfig
+    from crib.embed import HashEmbedder, build_embedder
+    from crib.store_duckdb import DuckDBStore
+
+    def no_backend(*_a, **_kw):
+        raise ImportError("fastembed is not installed")
+
+    monkeypatch.setattr(embed_mod, "FastEmbedEmbedder", no_backend)
+    cfg = EmbedConfig(model="fe:BAAI/bge-small-en-v1.5", dim=256)
+    built = build_embedder(cfg, stored_dim=None)  # empty store -> fallback allowed
+    assert isinstance(built, HashEmbedder)
+
+    s = DuckDBStore.embedded(tmp_path / "c.duckdb")
+    try:
+        e = wrap(built, s)
+        assert e is built  # not wrapped, so nothing is written at all
+        e.embed(["a description to embed"])
+        assert (
+            s.ec_get(f"{cfg.model}#{cfg.dim}", [text_hash("a description to embed")])
+            == {}
+        )
     finally:
         s.close()
 
@@ -170,9 +232,18 @@ def test_crib_on_duckdb_embeds_through_the_cache(tmp_path, monkeypatch):
     monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
     paths = Paths.resolve().ensure()
     s = DuckDBStore.embedded(paths.duckdb_file)
+
+    # A real backend, faked: the default config is `hash`, which is deliberately
+    # NOT cached, so the wiring under test needs an embedder worth caching.
+    import crib.app as app_mod
+
+    monkeypatch.setattr(
+        app_mod, "build_embedder", lambda *_a, **_kw: CountingEmbedder()
+    )
     try:
         c = Crib(paths, Config(), s)
         assert isinstance(c.embedder, CachedEmbedder)
+        assert c.embedder.model_key == "fe:counting-3#3"  # the BUILT embedder
         c.embedder.embed(["an alias worth keeping"])
         assert c.embedder.misses == 1
         c2 = Crib(paths, Config(), s)  # "next start" on the same store

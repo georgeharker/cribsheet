@@ -52,6 +52,12 @@ class _DocStore:
     def recreate(self) -> None:
         pass
 
+    def meta_get(self, key: str) -> str | None:
+        return None
+
+    def meta_set(self, key: str, value: str) -> None:
+        pass
+
 
 @pytest.fixture()
 def crib(tmp_path, monkeypatch):

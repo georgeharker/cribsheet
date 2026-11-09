@@ -18,6 +18,12 @@ from .config import EmbedConfig
 @runtime_checkable
 class Embedder(Protocol):
     dim: int
+    # What was ACTUALLY built, in `[embed].model` spec syntax ("hash:384",
+    # "fe:BAAI/bge-small-en-v1.5", "st:…"). The config string is not a substitute:
+    # `build_embedder` can fall back to the hash embedder, and anything keyed on the
+    # config (the persistent embedding cache) would then file hash vectors under the
+    # real model's name and keep serving them once the backend is installed.
+    model_id: str
 
     def embed(self, texts: list[str]) -> list[list[float]]:
         """Embed passages/documents (and anything stored)."""
@@ -58,6 +64,7 @@ class HashEmbedder:
 
     def __init__(self, dim: int = 256) -> None:
         self.dim = dim
+        self.model_id = f"hash:{dim}"
 
     def embed_query(self, texts: list[str]) -> list[list[float]]:
         return self.embed(texts)  # symmetric — no query instruction
@@ -100,6 +107,7 @@ class FastEmbedEmbedder:
             self._model = TextEmbedding(model_name=model_name)
         probe = next(iter(self._model.embed(["dimension probe"])))
         self.dim = len(probe)
+        self.model_id = f"fe:{model_name}"
 
     def embed(self, texts: list[str]) -> list[list[float]]:
         out: list[list[float]] = []
@@ -140,9 +148,13 @@ class SentenceTransformerEmbedder:
     def __init__(
         self, model_name: str, device: str | None = None, query_prefix: str = ""
     ) -> None:
-        from sentence_transformers import SentenceTransformer  # lazy  # type: ignore[reportMissingImports]  # the [st] extra: lazy, guarded
+        # the [st] extra: lazy, guarded
+        from sentence_transformers import (  # type: ignore[reportMissingImports]
+            SentenceTransformer,
+        )
 
         self.query_prefix = query_prefix
+        self.model_id = f"st:{model_name}"
         self.device = device or _auto_device()
         self._model = SentenceTransformer(model_name, device=self.device)
         # method renamed in sentence-transformers 5.x; fall back for older

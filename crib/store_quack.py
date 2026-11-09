@@ -72,6 +72,16 @@ def to_literal(value: Any) -> str:
     if isinstance(value, (list, tuple)):
         if not value:
             raise CribUserError("cannot render an empty list literal (no element type)")
+        if all(type(v) is float for v in value):
+            # A vector: ONE string literal cast to DOUBLE[], not one literal per
+            # element. DuckDB parses it ~20x faster (a 384-d vector is one token,
+            # not 384 casts). The text holds only repr() of finite floats, so it
+            # cannot contain a quote; DOUBLE keeps every value bit-exact, and the
+            # column's own cast to FLOAT rounds exactly as a bound parameter does.
+            for v in value:
+                if not math.isfinite(v):
+                    raise CribUserError(f"cannot store a non-finite number ({v!r})")
+            return "'[" + ", ".join(repr(v) for v in value) + "]'::DOUBLE[]"
         return "[" + ", ".join(to_literal(v) for v in value) + "]"
     raise CribUserError(f"cannot render a {type(value).__name__} as a SQL literal")
 
@@ -172,12 +182,14 @@ def _open_session(uri: str, token: str, extension_directory: Path | str | None):
 
 
 def _session_lost(exc: BaseException) -> bool:
-    """The server went away (IOException: can't reach it) or was restarted (our
-    session id is unknown to the new process). Anything else — a constraint, a
-    dimension mismatch, a refused token — is a real error and is not retried."""
+    """The server went away (IOException: can't reach it), was restarted (our
+    session id is unknown to the new process), or an earlier reconnect failed
+    and left this client's own connection closed (ConnectionException). Anything
+    else — a constraint, a dimension mismatch, a refused token — is a real
+    error and is not retried."""
     import duckdb  # lazy
 
-    if isinstance(exc, duckdb.IOException):
+    if isinstance(exc, (duckdb.IOException, duckdb.ConnectionException)):
         return True
     return isinstance(exc, duckdb.InvalidInputException) and "connection id" in str(exc)
 
@@ -203,13 +215,17 @@ class QuackStore(DuckDBStore):
         extension_directory: Path | str | None = None,
         relaunch: Callable[[], None] | None = None,
     ) -> None:
-        super().__init__(conn)
+        # Set before super().__init__, which prepares the schema through them.
         self._remote = remote
         self._uri = uri
         self._token = token
         self._ext = extension_directory
         self._relaunch = relaunch
         self._session = threading.RLock()
+        # Bumped by each successful reconnect, so threads that lost the same
+        # session reconnect (and relaunch) once between them, not once each.
+        self._generation = 0
+        super().__init__(conn)
 
     @classmethod
     def connect(
@@ -232,22 +248,32 @@ class QuackStore(DuckDBStore):
         with self._session:
             yield _Literal(self._remote)
 
-    def _reconnect(self) -> None:
+    def _reconnect(self, lost_generation: int) -> None:
+        """Replace the session lost at `lost_generation`. The new session is
+        opened BEFORE the old one is dropped: if the server isn't back yet this
+        raises and the client is unchanged, so the next operation fails as
+        session-lost again and retries, rather than wedging on a closed
+        connection."""
         with self._session:
-            with contextlib.suppress(Exception):  # the old session is dead anyway
-                self._conn.close()
+            if self._generation != lost_generation:
+                return  # another thread already reconnected
             if self._relaunch is not None:
                 self._relaunch()
-            self._conn, self._remote = _open_session(self._uri, self._token, self._ext)
+            conn, remote = _open_session(self._uri, self._token, self._ext)
+            with contextlib.suppress(Exception):  # the old session is dead anyway
+                self._conn.close()
+            self._conn, self._remote = conn, remote
+            self._generation += 1
 
     def _call(self, op: Callable[..., Any], *args: Any) -> Any:
+        generation = self._generation
         try:
             return op(*args)
         except Exception as exc:  # noqa: BLE001 — classified below
             failure = exc
         if not _session_lost(failure):
             raise failure
-        self._reconnect()
+        self._reconnect(generation)
         return op(*args)
 
     def upsert(self, records: list[Record]) -> None:
@@ -272,6 +298,12 @@ class QuackStore(DuckDBStore):
 
     def current_dim(self) -> int | None:
         return self._call(super().current_dim)
+
+    def meta_get(self, key: str) -> str | None:
+        return self._call(super().meta_get, key)
+
+    def meta_set(self, key: str, value: str) -> None:
+        self._call(super().meta_set, key, value)
 
     def recreate(self) -> None:
         self._call(super().recreate)

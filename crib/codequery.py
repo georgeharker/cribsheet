@@ -13,6 +13,8 @@ from __future__ import annotations
 from collections import deque
 from typing import TYPE_CHECKING, Any, Callable
 
+import numpy as np
+
 from .errors import CribUserError
 from .symbols import (
     decode_edge,
@@ -43,6 +45,24 @@ if TYPE_CHECKING:
     from .embed import Embedder
     from .learnings import Learnings
     from .refs import Refs
+
+
+def _topk(scores: Any, k: int) -> list[int]:
+    """Indices of the `k` largest `scores`, best first, ties broken by ASCENDING index
+    — exactly `sorted(range(n), key=scores.__getitem__, reverse=True)[:k]`, whose
+    stability the candidate pool's composition depends on.
+
+    `argpartition` is O(n) where a full sort is O(n log n), but says nothing about the
+    order WITHIN the partition, so it cannot settle ties on its own. Hence the cut
+    value: everything strictly above the k-th largest score, plus everything equal to
+    it, is a superset of the top k, and a stable sort over those (k + ties entries, not
+    n) reproduces the old ordering exactly."""
+    n = int(scores.shape[0])
+    if n <= k:
+        return sorted(range(n), key=lambda i: -scores[i])
+    cut = scores[np.argpartition(scores, n - k)[n - k]]
+    cand = np.flatnonzero(scores >= cut)
+    return sorted(cand.tolist(), key=lambda i: -scores[i])[:k]
 
 _POOL_K = 50        # top-K per source for the union candidate pool (min-max support)
 _RERANK_N = 20      # candidates carried for the cross-encoder rerank stage
@@ -366,20 +386,25 @@ class CodeQuery:
         by_id = rc.by_fq
         n = len(ids)
         qt = tokenize(query) + _subtokens(query)
-        # dense: raw cosine over the resident description embeddings (only the query embeds)
-        dense_v = rc.dense(self.embedder)
-        if any(v for v in dense_v):
-            qv = self.embedder.embed_query([query])[0]
-            dense = [sum(a * b for a, b in zip(qv, v)) if v else -1.0 for v in dense_v]
+        # dense: raw cosine over the resident description embeddings (only the query
+        # embeds). ONE matmul against the resident matrix — the per-symbol Python dot
+        # product cost 90-140ms at 10-16k symbols, which was the whole of code_lookup.
+        # A symbol with no description scores -1.0, below any real cosine, so it can
+        # only ever enter the pool through the sparse arm.
+        M, rows = rc.dense_matrix(self.embedder)
+        if rows.size:
+            qv = np.asarray(self.embedder.embed_query([query])[0], dtype=np.float32)
+            dense = np.full(n, -1.0, dtype=np.float32)
+            dense[rows] = M @ qv
         else:
-            dense = [0.0] * n
+            dense = np.zeros(n, dtype=np.float32)
         # sparse: coverage-gated BM25 over the expanded field (name ⊕ keywords)
         Q = {t for t in set(qt) if len(t) > 1 and t not in STOPWORDS}
         bmsc = rc.bm25.scores(qt)
         cov = rc.coverage(Q)
         gated = {i: cov[i] * bmsc[i] for i in range(n) if cov[i] * bmsc[i] > 0}
         # union pool (top-K each) → min-max ONLY the gated side → dense-dominant blend
-        dtop = sorted(range(n), key=lambda i: dense[i], reverse=True)[:_POOL_K]
+        dtop = _topk(dense, _POOL_K)
         gtop = sorted(gated, key=lambda i: gated[i], reverse=True)[:_POOL_K]
         pool = list(dict.fromkeys(dtop + gtop))
         if gated:
@@ -389,7 +414,8 @@ class CodeQuery:
             gnorm = {i: (gated.get(i, 0.0) - lo) / rng for i in pool}
         else:
             gnorm = {i: 0.0 for i in pool}
-        score = {i: dense[i] + gnorm[i] for i in pool}       # alpha = beta = 1
+        # float(), not the numpy scalar: `_score` is handed to callers and serialised
+        score = {i: float(dense[i]) + gnorm[i] for i in pool}       # alpha = beta = 1
         order = sorted(pool, key=lambda i: score[i], reverse=True)[:max(k, _RERANK_N)]
         # `id` and `lang` ride along: a hit that omits the current identity cannot be
         # matched to its learning note, and cannot render its language-native name

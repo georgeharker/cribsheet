@@ -22,6 +22,12 @@ dependencies = [
     # (relations lost fetchone), so stay on one major.
     "duckdb>=2.0,<3",
     "fastembed>=0.3",
+    # Explicit, though duckdb and fastembed both pull it in: retrieval does its
+    # cosines as one `M @ q` against a float32 matrix (crib/codestore.py
+    # `dense_matrix`, crib/retrieve.py `SummaryVectorCache._matrix`), so numpy is a
+    # DIRECT dependency of the query path and not an incidental transitive one.
+    # 2.x floor: that is what the matrix code was written and measured against.
+    "numpy>=2",
 # v4 line to match mcp-combiner (which requires >=4.1.5) so both install into a
 # shared venv. `SessionState` is keyed on the per-client mcp `Connection` — in mcp
 # 2 the ServerSession is constructed per-request, so it can no longer hold

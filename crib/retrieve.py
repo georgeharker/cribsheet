@@ -30,7 +30,9 @@ import math
 import re
 import threading
 from collections import Counter
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable
+
+import numpy as np
 
 from .embed import embed_batch
 
@@ -427,6 +429,13 @@ class SummaryVectorCache:
             tuple[str, str, tuple[str, ...]],
             tuple[dict[str, list[str]], list[tuple[str, str, list[float]]]],
         ] = {}
+        # The same vectors as ONE float32 matrix per entry, for `best_cosines`:
+        #   key -> (M, [section_hash per row], [label per row])
+        # Derived from `_entries[key]`, so it is dropped wherever that is.
+        self._mats: dict[
+            tuple[str, str, tuple[str, ...]],
+            tuple[Any, list[str], list[str]],
+        ] = {}
         self._lock = threading.Lock()
         self._gen: dict[str, int] = {}
 
@@ -435,6 +444,7 @@ class SummaryVectorCache:
             self._gen[project] = self._gen.get(project, 0) + 1
             for key in [k for k in self._entries if k[0] == project]:
                 del self._entries[key]
+                self._mats.pop(key, None)
 
     def invalidate_all(self) -> None:
         """Drop every project's alias vectors — the store-wide counterpart of
@@ -443,6 +453,7 @@ class SummaryVectorCache:
             for project in {k[0] for k in self._entries} | set(self._gen):
                 self._gen[project] = self._gen.get(project, 0) + 1
             self._entries.clear()
+            self._mats.clear()
 
     def get(
         self, project: str, labels: tuple[str, ...], *, store: str = "notes"
@@ -483,6 +494,35 @@ class SummaryVectorCache:
                 self._entries[key] = entry
         return entry
 
+    def _matrix(
+        self,
+        key: tuple[str, str, tuple[str, ...]],
+        vecs: list[tuple[str, str, list[float]]],
+    ) -> tuple[Any, list[str], list[str]]:
+        """`(M, sections, labels)` for one cache entry: a float32 (len(vecs), dim)
+        matrix, plus the section hash and label each ROW belongs to.
+
+        Built once per entry and held beside it, because the alias vectors do not
+        change while the entry lives. The vectors are ALREADY L2-NORMALISED by the
+        embedder, so `M @ q` IS the cosine — no renormalisation here.
+
+        Cached only while `_entries` still holds the key: a write that invalidated the
+        project mid-build must not leave a matrix of its dropped vectors behind.
+        """
+        with self._lock:
+            hit = self._mats.get(key)
+        if hit is not None:
+            return hit
+        built = (
+            np.asarray([v for _, _, v in vecs], dtype=np.float32),
+            [sh for sh, _, _ in vecs],
+            [label for _, label, _ in vecs],
+        )
+        with self._lock:
+            if key in self._entries:
+                self._mats[key] = built
+        return built
+
     def best_cosines(
         self,
         project: str,
@@ -505,10 +545,21 @@ class SummaryVectorCache:
         measured to only hurt, at any weight)."""
         reps, vecs = self.get(project, labels, store=store)
         best: dict[str, tuple[float, str]] = {}
-        for sh, label, v in vecs:
-            c = sum(a * b for a, b in zip(query_vec, v))
-            if c > best.get(sh, (-2.0, ""))[0]:
-                best[sh] = (c, label)
+        if vecs:
+            # ONE matmul for every alias vector, then the per-section MAX over the
+            # result. The reduction stays a Python loop on purpose: it carries the
+            # WINNING LABEL, which a `np.maximum.reduceat` over sorted sections
+            # cannot, and it keeps the original semantics exactly — strict `>`, so
+            # among equal cosines the first row for a section wins, and sections
+            # come out in first-appearance order.
+            M, sections, row_labels = self._matrix(
+                (project, store, tuple(labels)), vecs
+            )
+            cos = M @ np.asarray(query_vec, dtype=np.float32)
+            for j, sh in enumerate(sections):
+                c = float(cos[j])
+                if c > best.get(sh, (-2.0, ""))[0]:
+                    best[sh] = (c, row_labels[j])
         out: dict[str, tuple[float, str]] = {}
         for sh, (c, label) in best.items():
             ids = reps.get(sh) or []

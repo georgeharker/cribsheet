@@ -95,6 +95,13 @@ class Store(Protocol):
         store also makes the content-hash gate re-embed every chunk."""
         ...
 
+    def meta_get(self, key: str) -> str | None:
+        """A store-level setting, e.g. `embed_model` (which embedder wrote the
+        stored vectors), or None if never set."""
+        ...
+
+    def meta_set(self, key: str, value: str) -> None: ...
+
 
 def _cosine(a: list[float], b: list[float]) -> float:
     """Dot product of two PRE-NORMALIZED vectors — cosine similarity.
@@ -120,6 +127,7 @@ def _matches(meta: dict[str, Any], where: dict[str, Any] | None) -> bool:
 class InMemoryStore:
     def __init__(self) -> None:
         self._recs: dict[str, Record] = {}
+        self._meta: dict[str, str] = {}
         # Reentrant so JsonStore can hold it across super() + _save.
         self._lock = threading.RLock()
 
@@ -176,6 +184,12 @@ class InMemoryStore:
     def recreate(self) -> None:
         with self._lock:
             self._recs.clear()
+
+    def meta_get(self, key: str) -> str | None:
+        return self._meta.get(key)
+
+    def meta_set(self, key: str, value: str) -> None:
+        self._meta[key] = value
 
 
 class JsonStore(InMemoryStore):

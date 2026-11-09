@@ -44,6 +44,23 @@ RECORD_CACHE = "crib_record_cache"
 # The embedding cache (crib.embedcache): text hash -> vector per model; plain
 # vectors, no index (search builds what it needs in memory).
 EMBED_CACHE = "crib_embed_cache"
+# Versions and identities the rest of the file depends on: schema_version (bump it
+# when any table's layout changes; a mismatch drops every crib table, since all
+# of them are rebuildable), record_format (crib.recordcache's parse output) and
+# embed_model (which embedder wrote crib_chunks; see `Crib._maybe_recreate_for_dim`).
+META = "crib_meta"
+SCHEMA_VERSION = "1"
+# The tables that don't depend on the embedder's dimension, created at open.
+_FIXED_TABLES = MappingProxyType(
+    {
+        EMBED_CACHE: "model VARCHAR, h VARCHAR, vec FLOAT[], PRIMARY KEY (model, h)",
+        RECORD_CACHE: "key VARCHAR, name VARCHAR, mtime_ns BIGINT, size BIGINT, "
+        "rec VARCHAR, PRIMARY KEY (key, name)",
+        LEDGER: "purpose VARCHAR, target VARCHAR, input_hash VARCHAR, "
+        "provider VARCHAR, attempts INTEGER, last_error VARCHAR, "
+        "last_attempt DOUBLE, next_retry DOUBLE, PRIMARY KEY (purpose, target)",
+    }
+)
 PROMOTED = ("project", "store", "relpath")  # filtered constantly: real columns
 # The only column lists a read may select — never caller text.
 _SELECT_COLUMNS = MappingProxyType({"meta": "id, meta", "docs": "id, document, meta"})
@@ -164,6 +181,11 @@ def _backoff(attempt: int) -> float:
     return min(0.2, 0.005 * 2**attempt) * (0.5 + random.random())
 
 
+def _put_meta(ex: Any, key: str, value: str) -> None:
+    ex.run(f"DELETE FROM {META} WHERE key = ?", [key])
+    ex.run(f"INSERT INTO {META} VALUES (?, ?)", [key, value])
+
+
 def _dim_of(data_type: str) -> int:
     """'FLOAT[384]' -> 384."""
     return int(data_type.rsplit("[", 1)[1].rstrip("]"))
@@ -184,6 +206,7 @@ class DuckDBStore:
         self._conn = conn
         self._path = path
         self._write = threading.Lock()
+        self._prepare()
 
     @classmethod
     def embedded(cls, path: Path | str) -> "DuckDBStore":
@@ -212,6 +235,44 @@ class DuckDBStore:
             yield _Bound(self._conn.cursor())
 
     # ── schema ───────────────────────────────────────────────────────────────
+
+    def _prepare(self) -> None:
+        """Check the file's versions and create the fixed tables, once at open.
+
+        A file from before crib_meta existed is adopted as version 1, the layout
+        it already has. A different schema_version drops every crib table (all
+        rebuildable caches); a different record_format empties the record
+        cache, whose rows hold the old parse."""
+        from .recordcache import RECORD_FORMAT
+
+        def prepare(ex: Any) -> None:
+            ex.run(f"CREATE TABLE IF NOT EXISTS {META} (key VARCHAR PRIMARY KEY, value VARCHAR)")
+            meta = dict(ex.run(f"SELECT key, value FROM {META}"))
+            if meta.get("schema_version", SCHEMA_VERSION) != SCHEMA_VERSION:
+                for table in (TABLE, *_FIXED_TABLES):
+                    ex.run(f"DROP TABLE IF EXISTS {table}")
+                ex.run(f"DELETE FROM {META}")
+                meta = {}
+            for table, columns in _FIXED_TABLES.items():
+                ex.run(f"CREATE TABLE IF NOT EXISTS {table} ({columns})")
+            if meta.get("record_format", RECORD_FORMAT) != RECORD_FORMAT:
+                ex.run(f"DELETE FROM {RECORD_CACHE}")
+            for key, value in (
+                ("schema_version", SCHEMA_VERSION),
+                ("record_format", RECORD_FORMAT),
+            ):
+                if meta.get(key) != value:
+                    _put_meta(ex, key, value)
+
+        self._transaction(prepare)
+
+    def meta_get(self, key: str) -> str | None:
+        with self._reading() as ex:
+            rows = ex.run(f"SELECT value FROM {META} WHERE key = ?", [key])
+        return rows[0][0] if rows else None
+
+    def meta_set(self, key: str, value: str) -> None:
+        self._transaction(lambda ex: _put_meta(ex, key, value))
 
     def current_dim(self) -> int | None:
         """The stored vectors' dimension, or None when the store is EMPTY (the
@@ -362,10 +423,6 @@ class DuckDBStore:
         if not hashes:
             return {}
         with self._reading() as ex:
-            if not ex.run(
-                "SELECT 1 FROM duckdb_tables() WHERE table_name = ?", [EMBED_CACHE]
-            ):
-                return {}
             # pi-lens-ignore: python-sql-injection
             rows = ex.run(
                 f"SELECT h, vec FROM {EMBED_CACHE} WHERE model = ? AND h = ANY(?)",
@@ -379,10 +436,6 @@ class DuckDBStore:
         data = [[model, h, [float(x) for x in v]] for h, v in rows]
 
         def write(ex: Any) -> None:
-            ex.run(
-                f"CREATE TABLE IF NOT EXISTS {EMBED_CACHE} ("
-                "model VARCHAR, h VARCHAR, vec FLOAT[], PRIMARY KEY (model, h))"
-            )
             # pi-lens-ignore: python-sql-injection
             ex.run(
                 f"DELETE FROM {EMBED_CACHE} WHERE model = ? AND h = ANY(?)",
@@ -397,10 +450,6 @@ class DuckDBStore:
 
     def rc_load(self, key: str) -> dict[str, tuple[int, int, str]]:
         with self._reading() as ex:
-            if not ex.run(
-                "SELECT 1 FROM duckdb_tables() WHERE table_name = ?", [RECORD_CACHE]
-            ):
-                return {}
             # pi-lens-ignore: python-sql-injection
             rows = ex.run(
                 f"SELECT name, mtime_ns, size, rec FROM {RECORD_CACHE} WHERE key = ?",
@@ -414,11 +463,6 @@ class DuckDBStore:
         data = [[key, n, int(m), int(s), r] for n, m, s, r in rows]
 
         def write(ex: Any) -> None:
-            ex.run(
-                f"CREATE TABLE IF NOT EXISTS {RECORD_CACHE} ("
-                "key VARCHAR, name VARCHAR, mtime_ns BIGINT, size BIGINT, rec VARCHAR, "
-                "PRIMARY KEY (key, name))"
-            )
             # pi-lens-ignore: python-sql-injection
             ex.run(
                 f"DELETE FROM {RECORD_CACHE} WHERE key = ? AND name = ANY(?)",
@@ -434,26 +478,15 @@ class DuckDBStore:
             return
 
         def write(ex: Any) -> None:
-            if ex.run(
-                "SELECT 1 FROM duckdb_tables() WHERE table_name = ?", [RECORD_CACHE]
-            ):
-                # pi-lens-ignore: python-sql-injection
-                ex.run(
-                    f"DELETE FROM {RECORD_CACHE} WHERE key = ? AND name = ANY(?)",
-                    [key, list(names)],
-                )
+            # pi-lens-ignore: python-sql-injection
+            ex.run(
+                f"DELETE FROM {RECORD_CACHE} WHERE key = ? AND name = ANY(?)",
+                [key, list(names)],
+            )
 
         self._transaction(write)
 
     # ── the generation ledger (crib.genledger) ───────────────────────────────
-
-    def _ensure_ledger(self, ex: Any) -> None:
-        ex.run(
-            f"CREATE TABLE IF NOT EXISTS {LEDGER} ("
-            "purpose VARCHAR, target VARCHAR, input_hash VARCHAR, provider VARCHAR, "
-            "attempts INTEGER, last_error VARCHAR, last_attempt DOUBLE, "
-            "next_retry DOUBLE, PRIMARY KEY (purpose, target))"
-        )
 
     def ledger_rows(self, purpose: str, targets: list[str]) -> dict[str, Any]:
         from .genledger import Entry
@@ -461,10 +494,6 @@ class DuckDBStore:
         if not targets:
             return {}
         with self._reading() as ex:
-            if not ex.run(
-                "SELECT 1 FROM duckdb_tables() WHERE table_name = ?", [LEDGER]
-            ):
-                return {}
             # pi-lens-ignore: python-sql-injection
             rows = ex.run(
                 f"SELECT purpose, target, input_hash, provider, attempts, last_error, "
@@ -492,7 +521,6 @@ class DuckDBStore:
         ]
 
         def write(ex: Any) -> None:
-            self._ensure_ledger(ex)
             for purpose in {e.purpose for e in entries}:
                 # pi-lens-ignore: python-sql-injection
                 ex.run(
@@ -509,7 +537,6 @@ class DuckDBStore:
             return
 
         def write(ex: Any) -> None:
-            self._ensure_ledger(ex)
             # pi-lens-ignore: python-sql-injection
             ex.run(
                 f"DELETE FROM {LEDGER} WHERE purpose = ? AND target = ANY(?)",
@@ -520,10 +547,6 @@ class DuckDBStore:
 
     def ledger_counts(self, now: float) -> dict[str, dict[str, int]]:
         with self._reading() as ex:
-            if not ex.run(
-                "SELECT 1 FROM duckdb_tables() WHERE table_name = ?", [LEDGER]
-            ):
-                return {}
             # pi-lens-ignore: python-sql-injection
             rows = ex.run(
                 f"SELECT purpose, count(*), count(*) FILTER (WHERE next_retry > ?) "

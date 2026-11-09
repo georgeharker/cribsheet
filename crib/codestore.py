@@ -16,6 +16,8 @@ import threading
 import time
 from typing import TYPE_CHECKING, Any, Callable
 
+import numpy as np
+
 from .symbols import decode_edge, edge_is_from, encode_edge
 from .symbols import key as symbol_key
 from .symbols import match_entry
@@ -31,7 +33,13 @@ class _ResidentCode:
     per freshness token (`tok`); rebuilt only when the token changes — and even then
     description embeddings are reused by description text, so an unchanged symbol is
     never re-embedded. Holds the parsed entries, a by-reference index, the description→
-    vector map, and the precomputed dense/sparse query arrays (`_prepare`)."""
+    vector map, and the precomputed dense/sparse query arrays (`_prepare`).
+
+    Every array here is derived from `entries`, which is FROZEN for the lifetime of
+    the object: a changed index means a new freshness token and a NEW
+    `_ResidentCode`, never a mutation of this one. That is what lets `_prepare`
+    build the lexical side eagerly, and the dense matrix be cached with no
+    invalidation hook."""
 
     def __init__(
         self, tok: Any, entries: list[dict[str, Any]], emb: dict[str, list[float]]
@@ -80,6 +88,7 @@ class _ResidentCode:
         self._dense: list[list[float] | None] | None = (
             None  # built lazily (code_lookup only)
         )
+        self._dmat: tuple[Any, Any] | None = None  # ditto, the numpy view of it
 
     def coverage(self, qtokens: set[str]) -> list[float]:
         """Fraction of the query's informative tokens present in each symbol's expanded
@@ -110,6 +119,33 @@ class _ResidentCode:
                 for e in self.lk
             ]
         return self._dense
+
+    def dense_matrix(self, embedder: Any) -> tuple[Any, Any]:
+        """`(M, rows)`: a float32 (m, dim) matrix of the dense vectors, and the `lk`
+        indices they belong to — `rows[j]` is the `lk` index of row `j`. A symbol with
+        no description has no row at all, so `m < len(lk)` in general and the caller
+        must scatter the scores back through `rows`. `rows.size == 0` means nothing in
+        this index has a vector.
+
+        Why a matrix: the per-symbol Python dot product was the whole cost of
+        `code_lookup` (~90-140ms at 10-16k symbols × 384 dims); one `M @ q` is ~0.2ms.
+
+        The vectors are ALREADY L2-NORMALISED — `HashEmbedder` divides by the norm and
+        the real backends are asked to normalise — so `M @ q` IS the cosine, with no
+        renormalisation here. A backend that stopped normalising would be a bug at the
+        source, not something for this method to paper over.
+
+        Built once and kept: `entries` never changes under a resident index (see the
+        class docstring), and the vectors come from `dense`, which is itself idempotent.
+        """
+        if self._dmat is None:
+            dv = self.dense(embedder)
+            rows = [i for i, v in enumerate(dv) if v]
+            self._dmat = (
+                np.asarray([dv[i] for i in rows], dtype=np.float32),
+                np.asarray(rows, dtype=np.intp),
+            )
+        return self._dmat
 
 
 def _mmss(seconds: float) -> str:

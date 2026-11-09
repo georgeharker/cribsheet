@@ -13,8 +13,14 @@ nothing index-shaped is persisted. Query embeddings (embed_query) are not
 cached: a query is one short string, embedded once.
 
 The model key includes the model name and dimension, so a profile switch
-(bge-small -> bge-large) never serves a stale vector. Like every derived
-tier the cache is rebuildable: losing it costs one re-embed.
+(bge-small -> bge-large) never serves a stale vector. It comes from the BUILT
+embedder's `model_id`, not from the config string, because `build_embedder`
+falls back to the hash embedder when a backend is missing: keyed on the config,
+hash vectors would be filed under the real model's name and go on being served
+after the backend is installed. A hash embedder is not wrapped at all --- it
+computes faster than the cache can be read.
+
+Like every derived tier the cache is rebuildable: losing it costs one re-embed.
 """
 
 from __future__ import annotations
@@ -36,10 +42,18 @@ class CachedEmbedder:
     """`embedder` with `embed()` served from (and filling) a persistent cache.
     Everything else (`dim`, `embed_query`, any backend attribute) passes through."""
 
-    def __init__(self, embedder: Any, storage: EmbedStorage, model: str) -> None:
+    def __init__(
+        self, embedder: Any, storage: EmbedStorage, model: str | None = None
+    ) -> None:
         self._inner = embedder
         self._s = storage
-        self.model_key = f"{model}#{getattr(embedder, 'dim', '?')}"
+        # `model_id` says what was BUILT; `model` overrides it only for tests that
+        # want to name a key directly.
+        self.model_id: str = model or getattr(embedder, "model_id", "?")
+        self.dim: int = getattr(embedder, "dim", 0)
+        # Spelled off the same attributes callers read, so a wrapper and a bare
+        # embedder answer `model_id`/`dim` identically.
+        self.model_key = f"{self.model_id}#{getattr(embedder, 'dim', '?')}"
         self.hits = 0
         self.misses = 0
 
@@ -68,9 +82,17 @@ class CachedEmbedder:
         return [cached[h] for h in hashes]
 
 
-def wrap(embedder: Any, store: Any, model: str) -> Any:
+def wrap(embedder: Any, store: Any) -> Any:
     """`embedder` wrapped in a persistent cache when `store` can hold one (the
-    DuckDB stores); otherwise unchanged."""
+    DuckDB stores); otherwise unchanged.
+
+    A `HashEmbedder` is returned unwrapped: its vectors are a few hashes of a
+    short string, cheaper to recompute than to fetch, and caching them is how a
+    missing-backend fallback leaves hash vectors behind in the store."""
+    from .embed import HashEmbedder
+
+    if isinstance(embedder, HashEmbedder):
+        return embedder
     if all(callable(getattr(store, m, None)) for m in ("ec_get", "ec_put")):
-        return CachedEmbedder(embedder, store, model)
+        return CachedEmbedder(embedder, store)
     return embedder

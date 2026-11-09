@@ -84,6 +84,29 @@ def test_vector_literal_reads_back_as_float32():
     assert list(got) == pytest.approx(vec, rel=1e-6)
 
 
+def test_vector_literal_rounds_like_a_bound_parameter():
+    """The one-string vector literal stores the same float32 bits as the
+    embedded path's bound parameter, including -0.0 and denormal-ish values."""
+    import random
+
+    import duckdb
+
+    rng = random.Random(7)
+    vec = [rng.uniform(-1, 1) for _ in range(384)] + [-0.0, 1e-40, 0.1, 1 / 3]
+    n = len(vec)
+    con = duckdb.connect(":memory:")
+    ((bound,),) = con.execute(f"SELECT ?::FLOAT[{n}]", [vec]).fetchall()
+    # pi-lens-ignore: python-sql-injection
+    ((literal,),) = con.execute(f"SELECT {to_literal(vec)}::FLOAT[{n}]").fetchall()
+    assert [math.copysign(1, x) for x in literal] == [math.copysign(1, x) for x in bound]
+    assert list(literal) == list(bound)
+
+
+def test_vector_literal_refuses_non_finite():
+    with pytest.raises(CribUserError):
+        to_literal([0.5, math.nan])
+
+
 @pytest.mark.parametrize(
     "bad",
     [math.nan, math.inf, -math.inf, "nul\x00inside", [], {"a": 1}, b"bytes", object()],
@@ -225,6 +248,63 @@ def test_client_survives_a_server_restart(tmp_path):
         assert len(servers) == 2  # relaunched exactly once
         assert set(store.get_meta({"project": "p"})) == {"a", "b"}
         assert [h.id for h in store.query([1.0, 0.0], 1)] == ["a"]
+    finally:
+        store.close()
+        for s in servers:
+            s.stop()
+
+
+def test_client_recovers_after_a_reconnect_that_failed(tmp_path):
+    """The server is still down when the client first tries to reconnect, so
+    that reconnect fails. The client must not wedge on its closed connection:
+    once the server is back, the next operation reconnects and succeeds."""
+    port, db, tok = _free_port(), tmp_path / "crib.duckdb", tmp_path / "token"
+    first = spawn_server(db, port, tok, timeout=180)
+    store = QuackStore.connect(first.uri, first.token)
+    second = None
+    try:
+        store.upsert([Record("a", [1.0, 0.0], "doc a", {"project": "p"})])
+        first.stop()
+        with pytest.raises(Exception):
+            store.current_dim()  # server down: the reconnect fails too
+        second = spawn_server(db, port, tok, timeout=180)
+        assert store.current_dim() == 2
+        assert set(store.get_meta({"project": "p"})) == {"a"}
+    finally:
+        store.close()
+        if second is not None:
+            second.stop()
+
+
+def test_threads_that_lose_one_session_relaunch_once(tmp_path):
+    """Several threads hit the same dead session: one of them relaunches and
+    reconnects, the rest reuse that new session instead of relaunching too."""
+    port, db, tok = _free_port(), tmp_path / "crib.duckdb", tmp_path / "token"
+    servers = [spawn_server(db, port, tok, timeout=180)]
+
+    def relaunch() -> None:
+        servers.append(spawn_server(db, port, tok, timeout=180))
+
+    store = QuackStore.connect(servers[0].uri, servers[0].token, relaunch=relaunch)
+    try:
+        store.upsert([Record("a", [1.0, 0.0], "doc a", {"project": "p"})])
+        servers[0].proc.kill()
+        servers[0].proc.wait(30)
+        errors: list[BaseException] = []
+
+        def read() -> None:
+            try:
+                assert set(store.get_meta({"project": "p"})) == {"a"}
+            except BaseException as e:  # noqa: BLE001 — reported below
+                errors.append(e)
+
+        threads = [threading.Thread(target=read) for _ in range(4)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(240)
+        assert errors == []
+        assert len(servers) == 2  # one relaunch for one lost session
     finally:
         store.close()
         for s in servers:

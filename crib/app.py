@@ -159,10 +159,12 @@ class Crib:
         # any search index is built in memory.
         from . import embedcache
 
+        # Keyed on what `build_embedder` ACTUALLY returned (its `model_id`), not on
+        # `embed_cfg.model`: a missing backend falls back to the hash embedder, and
+        # the config key would file those vectors under the real model's name.
         self.embedder = embedcache.wrap(
             build_embedder(embed_cfg, stored_dim=_stored_dim(store)),
             store,
-            embed_cfg.model,
         )
         self.index = IndexEngine(
             store,
@@ -935,14 +937,26 @@ class Crib:
         doesn't walk) — hoisted out of the per-pillar store so the check runs once
         per full reindex, not once per pillar."""
         cur = self.store.current_dim()
-        if cur is None or cur == self.embedder.dim:
+        model = getattr(self.embedder, "model_id", None)
+        stored = self.store.meta_get("embed_model") if model else None
+        if cur is None or (cur == self.embedder.dim and stored in (None, model)):
+            # Nothing stored yet, or the same embedder: record who wrote the
+            # vectors, so a later same-dimension model change is caught too.
+            if model and stored != model:
+                self.store.meta_set("embed_model", model)
             return False
+        change = (
+            f"dim {cur}→{self.embedder.dim}"
+            if cur != self.embedder.dim
+            else f"model {stored}→{model}"
+        )
         print(
-            f"crib: embedder dim {cur}→{self.embedder.dim}; recreating "
-            f"the vector collection (full re-embed)",
+            f"crib: embedder {change}; recreating the vector store (full re-embed)",
             file=sys.stderr,
         )
         self.store.recreate()
+        if model:
+            self.store.meta_set("embed_model", model)
         # The derived retrieval caches (BM25 corpus + summary alias vectors) are
         # built from the store and keyed per project — a wipe invalidates ALL of
         # them at once, not just one project's. Without this a warm daemon kept
@@ -5772,17 +5786,22 @@ def _build_shared_duckdb(
 
     if not c.launch:
         # Externally supervised: never start (or restart) it; just attach. A
-        # restart by the supervisor is survived by the client's reconnect.
-        try:
-            sharedserver.wait_ready(probe, timeout=c.attach_timeout)
-        except sharedserver.SharedServerError as e:
-            raise CribUserError(
-                f"the crib DuckDB server is not answering at {uri} ({e}). It is "
-                "configured as externally managed ([duckdb] launch = false): start "
-                "it (`python -m crib.store_quack`, e.g. from a combiner "
-                "sharedServers entry), or set launch = true to let crib start it"
-            ) from e
-        store = QuackStore.connect(uri, token, ext)
+        # restart by the supervisor is survived by the client's reconnect,
+        # which waits for the server like the first attach does.
+        def wait() -> None:
+            try:
+                sharedserver.wait_ready(probe, timeout=c.attach_timeout)
+            except sharedserver.SharedServerError as e:
+                raise CribUserError(
+                    f"the crib DuckDB server is not answering at {uri} ({e}). It "
+                    "is configured as externally managed ([duckdb] launch = "
+                    "false): start it (`python -m crib.store_quack`, e.g. from a "
+                    "combiner sharedServers entry), or set launch = true to let "
+                    "crib start it"
+                ) from e
+
+        wait()
+        store = QuackStore.connect(uri, token, ext, relaunch=wait)
         return store, store.close
 
     held = [0]  # sharedserver refcounts this crib holds; each one is released at close

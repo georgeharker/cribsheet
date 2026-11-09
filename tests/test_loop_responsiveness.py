@@ -38,6 +38,7 @@ class SlowEmbedder:
     def __init__(self, delay: float = SLOW) -> None:
         self._inner = HashEmbedder()
         self.dim = self._inner.dim
+        self.model_id = self._inner.model_id
         self.delay = delay
         self.calls = 0
 
@@ -173,6 +174,7 @@ def test_jsonstore_survives_concurrent_writers_and_readers(tmp_path):
         try:
             store.get_meta({"project": "p"})
             store.get_docs({"project": "p"})
+            # pi-lens-ignore: python-sql-injection
             store.query(vec, k=5, where={"project": "p"})
             reads += 1
         except BaseException as e:  # noqa: BLE001
