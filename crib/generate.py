@@ -92,7 +92,13 @@ def resolve_provider(cfg: GenerateConfig, purpose: str):
 
     With a providers/profiles ``config`` file: an explicit ``provider`` wins,
     else the ``profile``'s widget key for ``purpose`` selects one. Without a
-    file: the inline single-provider fields."""
+    file: the inline single-provider fields.
+
+    Every provider carries ``[generate] timeout`` unless it sets its own: llmkit
+    applies it to each socket read AND as a total deadline across a streamed
+    reply. That is what actually stops a stuck stream. The ``asyncio.wait_for``
+    in agenerate* only abandons the call; the worker thread used to sit in
+    ssl.read until the SDK's own 600 s default."""
     from llmkit.bridge import Provider
 
     if cfg.config:
@@ -108,17 +114,30 @@ def resolve_provider(cfg: GenerateConfig, purpose: str):
                 f"[generate].provider, or a [profiles.{cfg.profile}].{purpose} "
                 f"entry in {cfg.config}"
             )
-        return conf.resolve(name)
+        return _with_timeout(conf.resolve(name), cfg.timeout)
 
-    return Provider(
-        model=cfg.model,
-        adapter=cfg.adapter,
-        endpoint=cfg.endpoint,
-        api_key=cfg.api_key,
-        api_key_env=cfg.api_key_env,
-        max_tokens=cfg.max_tokens,
-        temperature=cfg.temperature,
+    return _with_timeout(
+        Provider(
+            model=cfg.model,
+            adapter=cfg.adapter,
+            endpoint=cfg.endpoint,
+            api_key=cfg.api_key,
+            api_key_env=cfg.api_key_env,
+            max_tokens=cfg.max_tokens,
+            temperature=cfg.temperature,
+        ),
+        cfg.timeout,
     )
+
+
+def _with_timeout(provider: Any, timeout: float | None) -> Any:
+    """`provider` with `timeout` applied, unless it already sets one (a
+    models.toml entry may choose its own) or this llmkit predates the field."""
+    import dataclasses
+
+    if not timeout or getattr(provider, "timeout", 0) is not None:
+        return provider
+    return dataclasses.replace(provider, timeout=float(timeout))
 
 
 def generate(

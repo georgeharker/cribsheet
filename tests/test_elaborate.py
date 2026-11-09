@@ -52,6 +52,9 @@ class _DocStore:
     def recreate(self) -> None:
         pass
 
+    def iter_records(self, batch_size: int = 500) -> Any:
+        raise AssertionError("not called in these tests")
+
 
 @pytest.fixture()
 def crib(tmp_path, monkeypatch):
@@ -451,3 +454,35 @@ def test_resolve_provider_missing_selection_errors(tmp_path):
     # config file but no profile and no provider → nothing selects
     with pytest.raises(GenerationError, match="no generation provider"):
         resolve_provider(GenerateConfig(config=str(toml)), "distill")
+
+
+def test_resolved_providers_carry_the_generate_timeout(tmp_path):
+    """[generate] timeout reaches every Provider. llmkit applies it per socket
+    read and as a total streaming deadline, so a stalled reply ends the worker
+    thread instead of leaving it in ssl.read for the SDK's 600 s default. A
+    timeout chosen in models.toml wins; no timeout leaves the provider as is."""
+    from crib.config import GenerateConfig
+    from crib.generate import resolve_provider
+
+    toml = tmp_path / "models.toml"
+    toml.write_text(
+        _GEN_TOML + '\n[providers.slowpoke]\nadapter = "openai-compatible"\n'
+        'model = "s"\nendpoint = "http://localhost:1/v1"\ntimeout = 300\n'
+        '\n[profiles.own]\ndistill = "slowpoke"\n'
+    )
+    profile = resolve_provider(
+        GenerateConfig(config=str(toml), profile="local", timeout=42.0), "distill"
+    )
+    assert profile.timeout == 42.0
+    inline = resolve_provider(
+        GenerateConfig(adapter="openai-compatible", timeout=7.5), "distill"
+    )
+    assert inline.timeout == 7.5
+    own = resolve_provider(
+        GenerateConfig(config=str(toml), profile="own", timeout=42.0), "distill"
+    )
+    assert own.timeout == 300  # the provider's own choice is kept
+    untimed = resolve_provider(
+        GenerateConfig(config=str(toml), profile="local", timeout=0), "distill"
+    )
+    assert untimed.timeout is None  # no cap configured: llmkit's/SDK defaults
