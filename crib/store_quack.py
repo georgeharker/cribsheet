@@ -346,6 +346,12 @@ class QuackStore(DuckDBStore):
     def ledger_delete(self, purpose: str, targets: list[str]) -> None:
         self._call(super().ledger_delete, purpose, targets)
 
+    def ledger_prune(self, purpose: str, prefix: str, keep: list[str]) -> None:
+        self._call(super().ledger_prune, purpose, prefix, keep)
+
+    def ec_prune(self, keep_model: str) -> int:
+        return self._call(super().ec_prune, keep_model)
+
     def ledger_counts(self, now: float) -> dict[str, dict[str, int]]:
         return self._call(super().ledger_counts, now)
 

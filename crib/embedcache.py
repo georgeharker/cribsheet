@@ -25,6 +25,8 @@ Like every derived tier the cache is rebuildable: losing it costs one re-embed.
 
 from __future__ import annotations
 
+import sys
+
 import hashlib
 from typing import Any, Protocol
 
@@ -94,5 +96,16 @@ def wrap(embedder: Any, store: Any) -> Any:
     if isinstance(embedder, HashEmbedder):
         return embedder
     if all(callable(getattr(store, m, None)) for m in ("ec_get", "ec_put")):
-        return CachedEmbedder(embedder, store)
+        cached = CachedEmbedder(embedder, store)
+        # Vectors from any other embedder can never be read again: drop them,
+        # so a profile switch doesn't leave the old model's cache behind.
+        prune = getattr(store, "ec_prune", None)
+        if callable(prune):
+            try:
+                if n := prune(cached.model_key):
+                    print(f"[crib] embedding cache: dropped {n} vectors from "
+                          "other embedders", file=sys.stderr)
+            except Exception as e:  # noqa: BLE001 — a cache; never block startup
+                print(f"[crib] embedding cache prune failed: {e}", file=sys.stderr)
+        return cached
     return embedder

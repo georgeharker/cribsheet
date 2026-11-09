@@ -70,6 +70,7 @@ class LedgerStorage(Protocol):
     def ledger_rows(self, purpose: str, targets: list[str]) -> dict[str, Entry]: ...
     def ledger_put(self, entries: list[Entry]) -> None: ...
     def ledger_delete(self, purpose: str, targets: list[str]) -> None: ...
+    def ledger_prune(self, purpose: str, prefix: str, keep: list[str]) -> None: ...
     def ledger_counts(self, now: float) -> dict[str, dict[str, int]]: ...
 
 
@@ -93,6 +94,15 @@ class MemoryLedgerStorage:
         with self._lock:
             for t in targets:
                 self._rows.pop((purpose, t), None)
+
+    def ledger_prune(self, purpose: str, prefix: str, keep: list[str]) -> None:
+        wanted = set(keep)
+        with self._lock:
+            for key in [
+                k for k in self._rows
+                if k[0] == purpose and k[1].startswith(prefix) and k[1] not in wanted
+            ]:
+                del self._rows[key]
 
     def ledger_counts(self, now: float) -> dict[str, dict[str, int]]:
         out: dict[str, dict[str, int]] = {}
@@ -163,6 +173,11 @@ class GenLedger:
             )
         self._s.ledger_put(out)
 
+    def forget_except(self, purpose: str, prefix: str, current: list[str]) -> None:
+        """Drop failures under `prefix` for targets no longer in `current`, so a
+        deleted or renamed file stops counting as failing in status."""
+        self._s.ledger_prune(purpose, prefix, list(current))
+
     def succeeded(self, purpose: str, targets: list[str]) -> None:
         if targets:
             self._s.ledger_delete(purpose, list(targets))
@@ -177,6 +192,8 @@ def for_store(store: Any) -> GenLedger:
     """The ledger for `store`: its own table when it has one, else memory."""
     has = all(
         callable(getattr(store, m, None))
-        for m in ("ledger_rows", "ledger_put", "ledger_delete", "ledger_counts")
+        for m in (
+            "ledger_rows", "ledger_put", "ledger_delete", "ledger_prune", "ledger_counts"
+        )
     )
     return GenLedger(store if has else MemoryLedgerStorage())

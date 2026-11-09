@@ -516,6 +516,23 @@ class DuckDBStore:
             )
         return {h: [float(x) for x in v] for h, v in rows}
 
+    def ec_prune(self, keep_model: str) -> int:
+        """Drop cached vectors from every embedder but `keep_model`; how many."""
+
+        def write(ex: Any) -> None:
+            # pi-lens-ignore: python-sql-injection
+            ((n,),) = ex.run(
+                f"SELECT count(*) FROM {EMBED_CACHE} WHERE model <> ?", [keep_model]
+            )
+            dropped[0] = int(n)
+            if n:
+                # pi-lens-ignore: python-sql-injection
+                ex.run(f"DELETE FROM {EMBED_CACHE} WHERE model <> ?", [keep_model])
+
+        dropped = [0]
+        self._transaction(write)
+        return dropped[0]
+
     def ec_put(self, model: str, rows: list[tuple[str, list[float]]]) -> None:
         if not rows:
             return
@@ -627,6 +644,20 @@ class DuckDBStore:
             ex.run(
                 f"DELETE FROM {LEDGER} WHERE purpose = ? AND target = ANY(?)",
                 [purpose, list(targets)],
+            )
+
+        self._transaction(write)
+
+    def ledger_prune(self, purpose: str, prefix: str, keep: list[str]) -> None:
+        """Drop `purpose` rows under `prefix` whose target isn't in `keep`: the
+        file or section was deleted, renamed or since succeeded elsewhere."""
+
+        def write(ex: Any) -> None:
+            # pi-lens-ignore: python-sql-injection
+            ex.run(
+                f"DELETE FROM {LEDGER} WHERE purpose = ? AND starts_with(target, ?) "
+                "AND NOT (target = ANY(?))",
+                [purpose, prefix, list(keep)],
             )
 
         self._transaction(write)

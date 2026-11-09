@@ -194,3 +194,14 @@ def test_for_store_picks_the_store_or_memory(tmp_path):
         assert for_store(s)._s is s
     finally:
         s.close()
+
+
+def test_forget_except_drops_vanished_targets_only(ledger):
+    led, _ = ledger
+    led.failed("describe", {"p:a": "h", "p:gone": "h", "q:x": "h"}, "glm", "boom")
+    led.failed("enrich", {"p:gone": "h"}, "glm", "boom")
+    led.forget_except("describe", "p:", ["p:a"])
+    assert led.counts()["describe"]["failing"] == 2  # p:a and q:x remain
+    _, waiting = led.due("describe", {"p:a": "h", "p:gone": "h", "q:x": "h"}, "glm")
+    assert sorted(waiting) == ["p:a", "q:x"]
+    assert led.counts()["enrich"]["failing"] == 1  # other purposes untouched

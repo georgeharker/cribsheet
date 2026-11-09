@@ -515,7 +515,12 @@ class Crib:
                         and not e.get("description")
                         and e.get("file")
                     ):
-                        hashes[f"{name}:{e['file']}"] = str(e.get("file_hash") or "")
+                        # The file's hash is the input; without one, the
+                        # symbol's own hash, so an edit still counts as new input.
+                        hashes[f"{name}:{e['file']}"] = str(
+                            e.get("file_hash") or e.get("content_hash") or ""
+                        )
+                self.ledger.forget_except("describe", f"{name}:", list(hashes))
                 if not hashes:
                     continue
                 pending += len(hashes)

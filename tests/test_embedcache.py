@@ -251,3 +251,28 @@ def test_crib_on_duckdb_embeds_through_the_cache(tmp_path, monkeypatch):
         assert (c2.embedder.hits, c2.embedder.misses) == (1, 0)
     finally:
         s.close()
+
+
+def test_wrapping_drops_other_embedders_vectors(tmp_path):
+    from crib.embedcache import CachedEmbedder, wrap
+    from crib.store_duckdb import DuckDBStore
+
+    class Real:
+        dim = 2
+        model_id = "fe:real"
+
+        def embed(self, texts):
+            return [[1.0, 0.0] for _ in texts]
+
+        embed_query = embed
+
+    store = DuckDBStore.embedded(tmp_path / "crib.duckdb")
+    try:
+        store.ec_put("fe:old#2", [("h1", [1.0, 0.0])])
+        store.ec_put("fe:real#2", [("h2", [0.0, 1.0])])
+        wrapped = wrap(Real(), store)
+        assert isinstance(wrapped, CachedEmbedder)
+        assert store.ec_get("fe:old#2", ["h1"]) == {}
+        assert store.ec_get("fe:real#2", ["h2"])
+    finally:
+        store.close()
