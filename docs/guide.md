@@ -157,19 +157,19 @@ rehome <old> [new]` re-points it (with no target it suggests ranked candidates).
 When a design question gets settled, record it *with what it builds on*:
 
 ```bash
-crib design add "Disk is truth, Chroma is a rebuildable cache" \
+crib design add "Disk is truth, the index is a rebuildable cache" \
   "Every write lands on disk first; the index is derived and safe to drop." -p myrepo
 
 crib design add "Content-hash gating is the only write/watcher coordination" \
   "One idempotent, hash-gated index path under a per-path lock." \
-  --dep "Disk is truth, Chroma is a rebuildable cache" -p myrepo
+  --dep "Disk is truth, the index is a rebuildable cache" -p myrepo
 ```
 
 That `--dep` is a promise: *if that changes, reconsider this.* So when the ground
 moves — an edit through the facet, a raw `note edit`, even a git pull —
 
 ```bash
-crib design edit "Disk is truth, Chroma is a rebuildable cache" -p myrepo
+crib design edit "Disk is truth, the index is a rebuildable cache" -p myrepo
 ```
 
 — the edit answers with what it just tainted, and `check` says so again later, with
@@ -178,7 +178,7 @@ the chain and the change kind that explain it:
 ```bash
 crib design check -p myrepo                                   # the re-read queue
 crib design read "Content-hash gating is the only write/watcher coordination" -p myrepo
-crib design tree "Disk is truth, Chroma is a rebuildable cache" --dependents -p myrepo
+crib design tree "Disk is truth, the index is a rebuildable cache" --dependents -p myrepo
 ```
 
 `read` is the one-call orientation: body, what it builds on, what builds on it,

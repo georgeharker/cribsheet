@@ -23,6 +23,9 @@ Start with the **[overview & quick start](README.md)**, then dive in:
 | [CLI ⇄ MCP reference](docs/surface.md) | every noun, every verb, one line each |
 | [Where things live](docs/storage.md) | store types, who owns the bytes, which verbs may write them |
 | [Sync across machines](docs/resume-on-new-machine.md) | share your memory over plain git |
+| [Vector store](docs/vector-store.md) | the DuckDB index: modes, configuration, caches, recovery |
+| [Migrating to DuckDB](docs/migrating-to-duckdb.md) | upgrading from 0.21.x (chroma) |
+| [Changelog](CHANGELOG.md) | what changed in each release |
 
 ### Under the hood
 

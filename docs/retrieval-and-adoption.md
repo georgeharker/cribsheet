@@ -246,15 +246,15 @@ consumes whatever's cached and a miss degrades gracefully to tier-1 + body.
 
 **Record vs. serving — the text is the record; the indexes load from it.** The text
 files are the durable, shared store of record; the _serving_ layers are derived and
-rebuildable, so loading/attaching them at serve time is fine (Chroma already attaches
-to serve — same idea). At `LexicalCache` build, look up each chunk's
+rebuildable, so loading/attaching them at serve time is fine (the vector store already
+attaches to serve — same idea). At `LexicalCache` build, look up each chunk's
 `keywords/<content_hash>.toml` (the `content_hash` is in chunk metadata) and append
 its terms to the BM25 token list — **exactly how heading and tier-1 subtokens already
-feed BM25** (`_lexical_tokens`). The same text can also be fed into Chroma (as added
+feed BM25** (`_lexical_tokens`). The same text can also be fed into the vector store (as added
 document text, for the dense side) if it earns lift. What we avoid is the _inverse_:
-making a binary index the **store of record**. Chroma is gitignored and rebuilt from
+making a binary index the **store of record**. The vector store is a cache, rebuilt from
 notes + this text asset, so it must never be the only home for the expensive LLM
-output — but Chroma (or BM25) _serving_ it, loaded from the text, is the intended
+output — but the vector store (or BM25) _serving_ it, loaded from the text, is the intended
 shape. Derived-but-**expensive** data → tracked text asset, fed into the indexes;
 derived-and-**cheap** data (tier 1) → recomputed into the index, stored nowhere.
 
@@ -537,7 +537,7 @@ in the dump); it is a paired-run comparison.
 Discipline rules, each traced to a failure it prevents:
 
 - **Stability bar is 1.0 and enforced whenever repeats > 1.** Any instability is a
-  regression signal (shared-chroma flake, tie-break change, candidate-pool wobble at
+  regression signal (shared-store flake, tie-break change, candidate-pool wobble at
   a ranking boundary) — never sampling noise. Reported ALONGSIDE MRR/recall, never
   instead of them (their principle: equal scores need not imply identical retrieval).
 - **Failures score zero, not excluded.** A failed/timeout repeat makes its row
@@ -584,6 +584,6 @@ only adds value once 1–3 make the store findable and consulted.
   τ, how to dedupe against what is already in context, and how to avoid a feedback
   loop where injected text gets re-captured. Lean: strict τ, small top-k, mark
   injected blocks so capture ignores them.
-- **Topic graph + code↔note index (§3).** Storage model (edges in Chroma metadata
+- **Topic graph + code↔note index (§3).** Storage model (edges in vector-store metadata
   vs. a sidecar), how edges are derived and kept fresh under the single write path,
   and whether code→note is a tool (`lookup_code`) or another injection hook.

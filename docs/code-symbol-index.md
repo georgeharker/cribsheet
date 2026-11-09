@@ -93,20 +93,20 @@ symbol → {
 
 ## 3. Structural facet — the warm LSP session subsystem
 
-An LSP server is architecturally **Chroma's twin**: a warm, stateful, expensive-to-
-cold-start semantic index that must live as long as the daemon. Everything crib built
-to keep Chroma + the embedder warm maps directly.
+An LSP server is architecturally **the vector store's twin**: a warm, stateful,
+expensive-to-cold-start semantic index that must live as long as the daemon.
+Everything crib built to keep the store + the embedder warm maps directly.
 
 | crib (text) | this (code) |
 |---|---|
-| Chroma warm index | language server, warm per (root, lang) |
+| warm vector store (DuckDB) | language server, warm per (root, lang) |
 | daemon owns it; CLI is a client (DESIGN §10.2) | daemon owns the LSP sessions; CLI queries through it |
 | `Watcher` → reindex on edit (`crib/watch.py`) | `Watcher` → `didChangeWatchedFiles` to refresh the server |
 | content-hash gate (idempotent) | `symbol_hash` gate for descriptions |
 | sharedserver refcount + grace | session registry with grace + eviction |
 
 **Divergence: stdio, not a port.** An LSP server talks over pipes to *one* parent, so
-it cannot be sharedserver-shared across processes the way `crib-chroma` (HTTP) is.
+it cannot be sharedserver-shared across processes the way the `crib-duckdb` store server is.
 The sessions therefore live **in-process in the daemon** — which is consistent: the
 daemon is already the long-lived owner, and the CLI already routes through it.
 
@@ -116,7 +116,7 @@ daemon is already the long-lived owner, and the CLI already routes through it.
   once (init pays the full project-index cost — seconds on pyright, minutes on
   rust-analyzer for a big repo; *this* is why warm is mandatory).
 - **Lazy start** on first query for a (root, lang); **grace-evict** idle sessions
-  (mirrors Chroma's grace) — the daemon may otherwise juggle basedpyright +
+  (mirrors the store server's grace period) — the daemon may otherwise juggle basedpyright +
   rust-analyzer + gopls + clangd at once, real memory weight.
 - **Crash/restart supervision.** Servers hang or OOM; a restart re-pays init. Queries
   during (re)index must wait/degrade gracefully — crib already has "momentarily stale

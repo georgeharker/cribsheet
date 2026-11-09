@@ -149,9 +149,9 @@ do too:
 
 ```bash
 # notes
-crib note store "Chroma is refcounted by sharedserver." -p notes  # remember a fact
-crib note lookup "how is chroma managed" -p notes                 # find it by meaning
-crib note apropos "how is chroma managed" -p notes                # hits as full sections
+crib note store "The store server is refcounted by sharedserver." -p notes  # remember a fact
+crib note lookup "how is the store server managed" -p notes                # find it by meaning
+crib note apropos "how is the store server managed" -p notes               # hits as full sections
 
 # code — onboard a repo, then ask it questions grep can't answer
 cd ~/Development/myrepo
@@ -165,7 +165,7 @@ crib learning add reciprocal_rank_fusion \
 # decisions & plans — what was settled, and the work that rests on it
 crib design add "Content-hash gating is the only write/watcher coordination" \
      "One idempotent, hash-gated index path under a per-path lock." \
-     --dep "Disk is truth, Chroma is a rebuildable cache" -p cribsheet
+     --dep "Disk is truth, the index is a rebuildable cache" -p cribsheet
 crib design check -p cribsheet          # what a change put out of date, and why
 crib plan add "Backfill section hashes for existing citations" -p cribsheet
 crib plan next -p cribsheet             # "where was I" — this session or a later one
@@ -246,6 +246,7 @@ runs), so it's fast; `--no-daemon` runs in-process, `--json` gives machine outpu
   backend = "duckdb"      # "duckdb" (default) | "json" (dependency-free)
   [duckdb]
   mode = "embedded"       # "embedded" | "shared" (a loopback DuckDB server via sharedserver)
+  # store details and upgrading from chroma: docs/vector-store.md, docs/migrating-to-duckdb.md
   [locations]
   DEV = "~/Development"   # provenance paths stored as $DEV/… so they sync clean
   ```
@@ -307,6 +308,11 @@ The deep dives live in the docs — see **[Documentation](#documentation)** belo
   noun, every verb, one line each.
 - **[docs/storage.md](docs/storage.md)** — where each kind of content lives, who owns
   the bytes, and which verbs may write them.
+- **[docs/vector-store.md](docs/vector-store.md)** — the DuckDB index: embedded vs
+  shared mode, configuration, the per-machine caches, and recovery.
+- **[docs/migrating-to-duckdb.md](docs/migrating-to-duckdb.md)** — upgrading from
+  0.21.x, which used chroma.
+- **[CHANGELOG.md](CHANGELOG.md)** — what changed in each release.
 - **[docs/resume-on-new-machine.md](docs/resume-on-new-machine.md)** — share your
   memory across machines over plain git.
 

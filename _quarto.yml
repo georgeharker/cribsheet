@@ -4,6 +4,7 @@ project:
     - index.md
     - README.md        # README files must be listed explicitly; globs skip them
     - DESIGN.md
+    - CHANGELOG.md
     - docs/*.md
     # Repo-only documents — excluded from the published site:
     # (todos.md and CLAUDE.md.example are top-level, and docs/ideas/ holds
@@ -49,6 +50,12 @@ website:
             href: docs/storage.md
           - text: "Sync across machines"
             href: docs/resume-on-new-machine.md
+          - text: "Vector store (DuckDB)"
+            href: docs/vector-store.md
+          - text: "Migrating from chroma"
+            href: docs/migrating-to-duckdb.md
+          - text: "Changelog"
+            href: CHANGELOG.md
       - section: "Plans & reviews"
         contents:
           - text: "Robustness fixes (executed)"

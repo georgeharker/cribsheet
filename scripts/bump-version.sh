@@ -180,6 +180,16 @@ if [ "$(highest "$base" "$new")" = "$base" ] && [ "$new" != "$base" ]; then
   die "new version $new is lower than baseline $base; refusing to go backwards"
 fi
 
+# The changelog must already describe the release. Pi shows a package's
+# CHANGELOG.md entries newer than the version it last saw, matching headings
+# like `## [X.Y.Z] - YYYY-MM-DD` against package.json, so a release with no
+# heading of its own ships with nothing to show. Write the entry first.
+CHANGELOG="$ROOT/CHANGELOG.md"
+if [ -f "$CHANGELOG" ]; then
+  grep -qE "^## \[$(printf '%s' "$new" | sed 's/[.]/\\./g')\]" "$CHANGELOG" \
+    || die "CHANGELOG.md has no '## [$new]' heading; add the release notes first"
+fi
+
 if [ "$dry_run" = 1 ]; then echo "(dry run) no files changed"; exit 0; fi
 
 if [ "$do_commit" = 1 ]; then
@@ -213,6 +223,15 @@ for _plugdir in "$ROOT/plugins/claude" "$ROOT/plugins/opencode" "$ROOT/plugins/p
   INSTRS+=("$_plugdir/instructions.txt")
   echo "  synced ${_plugdir#"$ROOT"/}/instructions.txt from CLAUDE.md.example"
 done
+
+# The Pi package ships the changelog the same way, as a real file at the
+# package root, where Pi reads it after an update (`pi.changelogPath`).
+if [ -d "$ROOT/plugins/pi" ] && [ -f "$CHANGELOG" ]; then
+  rm -f "$ROOT/plugins/pi/CHANGELOG.md"
+  cp "$CHANGELOG" "$ROOT/plugins/pi/CHANGELOG.md"
+  INSTRS+=("$ROOT/plugins/pi/CHANGELOG.md")
+  echo "  synced plugins/pi/CHANGELOG.md from CHANGELOG.md"
+fi
 
 # Keep any Cargo.lock next to a bumped Cargo.toml in sync (the crate's own
 # self-version entry, so a `--locked` build/publish doesn't fail).

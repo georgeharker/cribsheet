@@ -481,7 +481,7 @@ def report(
     # them (zvec-grep's SWE-QA20 protocol names the same principle: equal
     # quality scores need not imply identical retrieval). Deterministic today
     # (2026-09-24 probe: 31 phrasings x 5 repeats, 0 unstable), so the bar is
-    # 1.0 and ANY drop is a real signal — a shared-chroma flake, a tie-break
+    # 1.0 and ANY drop is a real signal — a shared-store flake, a tie-break
     # change, pool-boundary wobble at a ranking boundary.
     if repeats > 1:
         stability = sum(1 for r in rows if r.get("stable")) / len(rows)

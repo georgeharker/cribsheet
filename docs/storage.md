@@ -10,7 +10,7 @@ rules, and lifecycles. This page is the map. (Design rationale: DESIGN §2,
 |---|---|---|---|
 | **config** | `~/.config/crib` | `config.toml` | hand-edited |
 | **data** | `~/.local/share/crib` | everything authored or curated (below) | **precious** — the truth |
-| **index** | `~/.cache/crib` | DuckDB store (embeddings, chunk text + metadata), chunk-schema marker | disposable — `rm -rf` + reconcile is a supported recovery |
+| **index** | `~/.cache/crib` | DuckDB store (embeddings, chunk text + metadata, per-machine caches), chunk-schema marker — see [vector-store.md](vector-store.md) | disposable — `rm -rf` + reconcile is a supported recovery |
 
 Env overrides: `CRIB_CONFIG_DIR` / `CRIB_DATA_DIR` / `CRIB_INDEX_DIR`.
 
