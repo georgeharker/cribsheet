@@ -93,7 +93,10 @@ jobs:
                   GH_TOKEN: ${{ github.token }}
               # --generate-notes auto-builds notes from merged PRs/commits
               # since the previous tag; the built sdist + wheel are attached as
-              # downloadable assets.
+              # downloadable assets. A prerelease tag (vX.Y.Z-devN, the dev
+              # channel) is marked prerelease so it never becomes "Latest".
               run: |
+                  pre=()
+                  case "${GITHUB_REF_NAME}" in *-*) pre=(--prerelease) ;; esac
                   gh release create "${GITHUB_REF_NAME}" dist/* \
-                      --title "${GITHUB_REF_NAME}" --generate-notes
+                      --title "${GITHUB_REF_NAME}" --generate-notes "${pre[@]}"
