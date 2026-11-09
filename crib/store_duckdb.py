@@ -38,6 +38,9 @@ TABLE = "crib_chunks"
 # The generation ledger (crib.genledger): beside the chunks, NOT part of them, so a
 # vector rebuild (recreate) keeps it.
 LEDGER = "crib_gen_ledger"
+# The derived-index record cache (crib.recordcache): parsed TOML records keyed by
+# tier directory + filename + (mtime, size). Like the ledger, outside crib_chunks.
+RECORD_CACHE = "crib_record_cache"
 PROMOTED = ("project", "store", "relpath")  # filtered constantly: real columns
 # The only column lists a read may select — never caller text.
 _SELECT_COLUMNS = MappingProxyType({"meta": "id, meta", "docs": "id, document, meta"})
@@ -349,6 +352,58 @@ class DuckDBStore:
 
     def get_docs(self, where: dict[str, Any]) -> dict[str, tuple[str, dict[str, Any]]]:
         return {i: (d, json.loads(m)) for i, d, m in self._select("docs", where)}
+
+    # ── the derived-index record cache (crib.recordcache) ────────────────────
+
+    def rc_load(self, key: str) -> dict[str, tuple[int, int, str]]:
+        with self._reading() as ex:
+            if not ex.run(
+                "SELECT 1 FROM duckdb_tables() WHERE table_name = ?", [RECORD_CACHE]
+            ):
+                return {}
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(
+                f"SELECT name, mtime_ns, size, rec FROM {RECORD_CACHE} WHERE key = ?",
+                [key],
+            )
+        return {n: (int(m), int(s), r) for n, m, s, r in rows}
+
+    def rc_put(self, key: str, rows: list[tuple[str, int, int, str]]) -> None:
+        if not rows:
+            return
+        data = [[key, n, int(m), int(s), r] for n, m, s, r in rows]
+
+        def write(ex: Any) -> None:
+            ex.run(
+                f"CREATE TABLE IF NOT EXISTS {RECORD_CACHE} ("
+                "key VARCHAR, name VARCHAR, mtime_ns BIGINT, size BIGINT, rec VARCHAR, "
+                "PRIMARY KEY (key, name))"
+            )
+            # pi-lens-ignore: python-sql-injection
+            ex.run(
+                f"DELETE FROM {RECORD_CACHE} WHERE key = ? AND name = ANY(?)",
+                [key, [r[0] for r in rows]],
+            )
+            # pi-lens-ignore: python-sql-injection
+            ex.run_many(f"INSERT INTO {RECORD_CACHE} VALUES (?, ?, ?, ?, ?)", data)
+
+        self._transaction(write)
+
+    def rc_delete(self, key: str, names: list[str]) -> None:
+        if not names:
+            return
+
+        def write(ex: Any) -> None:
+            if ex.run(
+                "SELECT 1 FROM duckdb_tables() WHERE table_name = ?", [RECORD_CACHE]
+            ):
+                # pi-lens-ignore: python-sql-injection
+                ex.run(
+                    f"DELETE FROM {RECORD_CACHE} WHERE key = ? AND name = ANY(?)",
+                    [key, list(names)],
+                )
+
+        self._transaction(write)
 
     # ── the generation ledger (crib.genledger) ───────────────────────────────
 

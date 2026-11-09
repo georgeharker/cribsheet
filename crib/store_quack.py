@@ -276,6 +276,15 @@ class QuackStore(DuckDBStore):
     def recreate(self) -> None:
         self._call(super().recreate)
 
+    def rc_load(self, key: str) -> dict[str, tuple[int, int, str]]:
+        return self._call(super().rc_load, key)
+
+    def rc_put(self, key: str, rows: list[tuple[str, int, int, str]]) -> None:
+        self._call(super().rc_put, key, rows)
+
+    def rc_delete(self, key: str, names: list[str]) -> None:
+        self._call(super().rc_delete, key, names)
+
     def ledger_rows(self, purpose: str, targets: list[str]) -> dict[str, Any]:
         return self._call(super().ledger_rows, purpose, targets)
 

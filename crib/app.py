@@ -254,6 +254,11 @@ class Crib:
 
         self.ledger = for_store(store)
         self.indexer.set_ledger(self.ledger)
+        # Parsed derived-index records (crib.recordcache), backed by the same
+        # database, so a fresh daemon doesn't re-parse every TOML.
+        from . import recordcache
+
+        recordcache.attach(store)
         # In-flight project_index JOBS (proj → {task, crib_at}): the join-don't-
         # restart registry. A re-invoke while a sweep runs awaits the existing task
         # instead of racing a second one — the zero-reset counter bug, fixed at the

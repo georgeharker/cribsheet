@@ -2003,11 +2003,14 @@ class SymbolIndex:
         of, so this admits an unconverted entry as readily as a current one — an
         `all()` that filtered on the new field would drop the entire input of the
         conversion that is supposed to add it."""
-        if not self.root.exists():
-            return []
+        # Through the record cache (crib.recordcache): unchanged TOMLs (same mtime
+        # and size) aren't re-read or re-parsed, and a fresh daemon seeds from the
+        # store's DuckDB copy. The TOMLs stay the truth; every call re-stats them.
+        from . import recordcache
+
         return [
             e
-            for e in (_parse(p.read_text()) for p in self.root.glob("*.toml"))
+            for _name, _stamp, e in recordcache.get().load(self.root, _parse)
             if e.get("file") and e.get("name")
         ]
 
