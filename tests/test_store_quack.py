@@ -265,9 +265,7 @@ class FakeSharedServer:
             log = open(self.logs / f"server{self.launches}.log", "w")  # noqa: SIM115
             # Spawn, don't fork, as crib.sharedserver does (see crib.proc): forking
             # this Quack-client-holding process crashes the child on macOS.
-            self.proc = spawn.popen(
-                command, stdout=log, stderr=subprocess.STDOUT
-            )
+            self.proc = spawn.popen(command, stdout=log, stderr=subprocess.STDOUT)
 
     def output(self) -> str:
         return "\n".join(
@@ -377,3 +375,69 @@ def test_server_refuses_to_start_off_box(tmp_path):
             tmp_path / "c.duckdb", _free_port(), tmp_path / "t", host="0.0.0.0"
         )
     assert os.listdir(tmp_path) == [] or not (tmp_path / "c.duckdb").exists()
+
+
+# ── externally supervised server ([duckdb] launch = false) ──────────────────
+
+
+def _bare_server(env_dir, port):
+    """`python -m crib.store_quack` with NO arguments, as an external supervisor
+    (a combiner sharedServers entry) runs it: everything from crib's config."""
+    import sys
+
+    cfg_dir = env_dir / "config"
+    cfg_dir.mkdir(exist_ok=True)
+    (cfg_dir / "config.toml").write_text(f"[duckdb]\nport = {port}\n")
+    env = {
+        **os.environ,
+        "CRIB_CONFIG_DIR": str(cfg_dir),
+        "CRIB_DATA_DIR": str(env_dir / "data"),
+        "CRIB_INDEX_DIR": str(env_dir / "index"),
+    }
+    p = spawn.popen(
+        [sys.executable, "-m", "crib.store_quack"],
+        env=env,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    assert p.stdout is not None
+    line = p.stdout.readline()
+    assert line.startswith("crib-duckdb ready"), line
+    return p
+
+
+def test_external_server_attach_only_never_launches(shared_env):
+    from crib.app import _build_store
+
+    paths, cfg, fake = shared_env
+    cfg.duckdb.launch = False
+    srv = _bare_server(paths.config_dir.parent, cfg.duckdb.port)
+    try:
+        store, close = _build_store(paths, cfg)
+        assert close is not None
+        try:
+            assert isinstance(store, QuackStore)
+            assert (fake.launches, fake.refs) == (0, 0)  # crib started nothing
+            # the bare server used crib's own paths: same token file, same db
+            assert (paths.duckdb_token_file.stat().st_mode & 0o777) == 0o600
+            store.upsert([Record("a", [1.0, 0.0], "doc", {"project": "p"})])
+            assert [h.id for h in store.query([1.0, 0.0], 1)] == ["a"]
+        finally:
+            close()
+        assert (fake.launches, fake.refs) == (0, 0)
+    finally:
+        srv.terminate()
+        srv.wait(30)
+    assert paths.duckdb_file.exists()  # it served the configured store file
+
+
+def test_external_server_absent_is_a_clear_error(shared_env):
+    from crib.app import _build_store
+
+    paths, cfg, fake = shared_env
+    cfg.duckdb.launch = False
+    cfg.duckdb.attach_timeout = 1.0
+    with pytest.raises(CribUserError, match="externally managed"):
+        _build_store(paths, cfg)
+    assert fake.launches == 0

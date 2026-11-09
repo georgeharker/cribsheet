@@ -256,6 +256,12 @@ class DuckDBConfig:
     host: str = "127.0.0.1"  # loopback only; anything else is refused
     # 7734: crib's own 773x band (MCP 7732, shared chroma 7733).
     port: int = 7734
+    # true: crib starts the server itself through sharedserver (refcounted).
+    # false: an EXTERNAL supervisor runs it (e.g. a combiner sharedServers
+    # entry running `python -m crib.store_quack`, which reads these same
+    # settings); crib only attaches and waits up to `attach_timeout` for it.
+    launch: bool = True
+    attach_timeout: float = 60.0
 
 
 @dataclass

@@ -5735,10 +5735,26 @@ def _build_shared_duckdb(
         paths.duckdb_file, c.host, c.port, paths.duckdb_token_file, ext
     )
     uri = quack_uri(c.host, c.port)
-    held = [0]  # sharedserver refcounts this crib holds; each one is released at close
 
     def probe() -> None:
         QuackStore.connect(uri, token, ext).close()
+
+    if not c.launch:
+        # Externally supervised: never start (or restart) it; just attach. A
+        # restart by the supervisor is survived by the client's reconnect.
+        try:
+            sharedserver.wait_ready(probe, timeout=c.attach_timeout)
+        except sharedserver.SharedServerError as e:
+            raise CribUserError(
+                f"the crib DuckDB server is not answering at {uri} ({e}). It is "
+                "configured as externally managed ([duckdb] launch = false): start "
+                "it (`python -m crib.store_quack`, e.g. from a combiner "
+                "sharedServers entry), or set launch = true to let crib start it"
+            ) from e
+        store = QuackStore.connect(uri, token, ext)
+        return store, store.close
+
+    held = [0]  # sharedserver refcounts this crib holds; each one is released at close
 
     def attach() -> None:
         """Reuse-or-start the server and wait until it answers. Also the client's

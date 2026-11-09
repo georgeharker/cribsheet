@@ -382,20 +382,25 @@ READY = "crib-duckdb ready"
 
 
 def main(argv: list[str] | None = None) -> int:
+    """`python -m crib.store_quack`: serve crib's DuckDB store over Quack. Every
+    option defaults to crib's own config and paths ([duckdb] host/port, the
+    store file, token file and extension dir under the index dir), so an
+    external supervisor can run it bare and it serves exactly what crib expects."""
+    from .config import Config
+    from .paths import Paths
+
+    paths = Paths.resolve()
+    cfg = Config.load(paths.config_file).duckdb
     ap = argparse.ArgumentParser(prog="python -m crib.store_quack")
-    ap.add_argument("--db", required=True, type=Path)
-    ap.add_argument("--host", default="127.0.0.1")
-    ap.add_argument("--port", required=True, type=int)
-    ap.add_argument("--token-file", required=True, type=Path)
-    ap.add_argument("--extension-dir", type=Path)
+    ap.add_argument("--db", type=Path, default=paths.duckdb_file)
+    ap.add_argument("--host", default=cfg.host)
+    ap.add_argument("--port", type=int, default=cfg.port)
+    ap.add_argument("--token-file", type=Path, default=paths.duckdb_token_file)
+    ap.add_argument("--extension-dir", type=Path, default=paths.duckdb_extension_dir)
     args = ap.parse_args(argv)
     try:
         conn = serve(
-            args.db,
-            args.host,
-            args.port,
-            ensure_token(args.token_file),
-            args.extension_dir,
+            args.db, args.host, args.port, ensure_token(args.token_file), args.extension_dir
         )
     except CribUserError as e:
         print(f"crib-duckdb: {e}", file=sys.stderr)
