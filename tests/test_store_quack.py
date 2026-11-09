@@ -441,3 +441,16 @@ def test_external_server_absent_is_a_clear_error(shared_env):
     with pytest.raises(CribUserError, match="externally managed"):
         _build_store(paths, cfg)
     assert fake.launches == 0
+
+
+def test_duckdb_state_stays_in_crib_dirs(tmp_path):
+    """Extensions AND DuckDB's secrets directory (quack_serve reads it) live in
+    crib's own dir, never the user's ~/.duckdb."""
+    from crib.store_quack import _connect_config
+
+    ext = tmp_path / "duckdb" / "extensions"
+    cfg = _connect_config(ext)
+    assert cfg["extension_directory"] == str(ext)
+    assert cfg["secret_directory"] == str(tmp_path / "duckdb" / "secrets")
+    assert (tmp_path / "duckdb" / "secrets").is_dir()
+    assert not any(str(v).startswith(os.path.expanduser("~/.duckdb")) for v in cfg.values())

@@ -142,9 +142,17 @@ def _install_quack(conn: Any) -> None:
 def _connect_config(
     extension_directory: Path | str | None,
 ) -> dict[str, str | bool | int | float | list[str]]:
-    return (
-        {"extension_directory": str(extension_directory)} if extension_directory else {}
-    )
+    """DuckDB settings keeping crib out of the user's ~/.duckdb: extensions AND
+    the secrets directory (quack_serve reads the latter) live beside each other
+    in crib's own dir."""
+    if not extension_directory:
+        return {}
+    secrets_dir = Path(extension_directory).parent / "secrets"
+    secrets_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+    return {
+        "extension_directory": str(extension_directory),
+        "secret_directory": str(secrets_dir),
+    }
 
 
 def _open_session(uri: str, token: str, extension_directory: Path | str | None):
@@ -346,7 +354,11 @@ def serve(
     uri = quack_uri(host, port)
     conn.execute(f"CALL quack_serve({to_literal(uri)}, token = {to_literal(token)})")
     # Lock down AFTER serving: no file reads/writes, ATTACH or extension installs
-    # from a client, and no client can SET it back.
+    # from a client, and no client can SET it back. It can't go first:
+    # quack_serve needs file access (httpfs, the secrets dir), and allowlisting
+    # those would leave a token holder a directory to read and write. The cost
+    # is the microseconds between serve and lockdown; only a holder of the 0600
+    # token could try to race it, and READY is printed only after.
     conn.execute("SET enable_external_access = false")
     conn.execute("SET lock_configuration = true")
     return conn
@@ -400,7 +412,11 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     try:
         conn = serve(
-            args.db, args.host, args.port, ensure_token(args.token_file), args.extension_dir
+            args.db,
+            args.host,
+            args.port,
+            ensure_token(args.token_file),
+            args.extension_dir,
         )
     except CribUserError as e:
         print(f"crib-duckdb: {e}", file=sys.stderr)
