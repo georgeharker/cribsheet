@@ -21,6 +21,7 @@ from typing import Any, Callable
 
 import pytest
 
+from crib.errors import CribUserError
 from crib.store import InMemoryStore, JsonStore, Record, Store
 
 # ── vectors ──────────────────────────────────────────────────────────────────
@@ -131,6 +132,7 @@ BACKENDS = {
     "duckdb-embedded": _make_duckdb_embedded,
     "duckdb-quack": _make_duckdb_quack,
 }
+
 
 @pytest.fixture(params=list(BACKENDS))
 def backend(request, tmp_path) -> Backend:
@@ -421,3 +423,79 @@ def test_concurrent_writers_and_a_reader(backend):
     assert len(reader.get_meta({"writer": "a"})) == 25
     assert len(reader.get_meta({"writer": "b"})) == 25
     assert len(top(reader, X, 100)) == 50
+
+
+# ── filter semantics (every backend agrees) ──────────────────────────────────
+
+
+def test_any_matches_list_membership(backend):
+    s = backend.store
+    s.upsert(
+        [
+            rec("a", X, labels=["design", "x"]),
+            rec("b", Y, labels=["plan"]),
+            rec("c", Z),  # no labels key
+            rec("d", XY, labels="design"),  # not a list: never a member
+        ]
+    )
+    assert {h.id for h in top(s, X, 10, {"labels": {"$any": ["design"]}})} == {"a"}
+    assert {h.id for h in top(s, X, 10, {"labels": {"$any": ["plan", "x"]}})} == {
+        "a",
+        "b",
+    }
+    assert top(s, X, 10, {"labels": {"$any": []}}) == []
+    both = {"project": "p", "labels": {"$any": ["plan"]}}
+    assert set(s.get_meta(both)) == {"b"}
+
+
+def test_any_refuses_a_non_list(backend):
+    backend.store.upsert([rec("a", X, labels=["x"])])
+    with pytest.raises(CribUserError):
+        top(backend.store, X, 5, {"labels": {"$any": "x"}})
+    with pytest.raises(CribUserError):
+        top(backend.store, X, 5, {"labels": {"$gt": 1}})
+
+
+@pytest.mark.parametrize(
+    "stored, wanted",
+    [(True, 1), (1, True), (1, 1.0), (1.0, 1), ("1", 1), (None, None)],
+    ids=[
+        "bool-vs-int",
+        "int-vs-bool",
+        "int-vs-float",
+        "float-vs-int",
+        "str-vs-int",
+        "none",
+    ],
+)
+def test_exact_match_is_type_exact(backend, stored, wanted):
+    backend.store.upsert([rec("a", X, n=stored)])
+    assert top(backend.store, X, 5, {"n": wanted}) == []
+
+
+def test_ties_break_by_id(backend):
+    backend.store.upsert([rec(i, X) for i in ("c", "a", "b")])
+    assert [h.id for h in top(backend.store, X, 3)] == ["a", "b", "c"]
+
+
+def test_nonpositive_k_returns_nothing(backend):
+    backend.store.upsert([rec("a", X)])
+    assert top(backend.store, X, 0) == []
+    assert top(backend.store, X, -1) == []
+
+
+def test_zero_vector_scores_zero_not_nan(backend):
+    """A zero vector has no direction: its cosine is 0, and it ranks below any
+    real match rather than (as NaN would) above all of them."""
+    backend.store.upsert([rec("zero", [0.0, 0.0, 0.0]), rec("x", X)])
+    hits = top(backend.store, X, 2)
+    assert [h.id for h in hits] == ["x", "zero"]
+    assert hits[1].score == 0.0
+
+
+def test_store_meta_round_trips(backend):
+    s = backend.store
+    assert s.meta_get("embed_model") is None
+    s.meta_set("embed_model", "fe:BAAI/bge-small-en-v1.5")
+    s.meta_set("embed_model", "st:other")
+    assert s.meta_get("embed_model") == "st:other"

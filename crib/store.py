@@ -120,8 +120,27 @@ def _cosine(a: list[float], b: list[float]) -> float:
     return sum(x * y for x, y in zip(a, b))
 
 
+def _match_one(have: Any, want: Any) -> bool:
+    """One `where` entry, the same semantics as the DuckDB store's: a plain value
+    matches only an equal value of the same type (`True` is not `1`, `1` is not
+    `1.0`, `None` matches nothing); `{"$any": [...]}` matches a list sharing an
+    element with it."""
+    if isinstance(want, dict):
+        if set(want) != {"$any"}:
+            raise CribUserError(f"unsupported filter {want!r}")
+        wanted = want["$any"]
+        if not isinstance(wanted, (list, tuple)) or not all(
+            isinstance(v, str) for v in wanted
+        ):
+            raise CribUserError(f'"$any" takes a list of strings, got {wanted!r}')
+        return isinstance(have, list) and bool(set(wanted) & set(have))
+    if want is None or isinstance(want, (list, dict)):
+        return False
+    return type(have) is type(want) and have == want
+
+
 def _matches(meta: dict[str, Any], where: dict[str, Any] | None) -> bool:
-    return not where or all(meta.get(k) == v for k, v in where.items())
+    return not where or all(_match_one(meta.get(k), v) for k, v in where.items())
 
 
 class InMemoryStore:
@@ -173,8 +192,9 @@ class InMemoryStore:
             for r in self._snapshot()
             if _matches(r.metadata, where)
         ]
-        scored.sort(key=lambda h: h.score, reverse=True)
-        return scored[:k]
+        # Best first, ties by id: the DuckDB store's order, so backends agree.
+        scored.sort(key=lambda h: (-h.score, h.id))
+        return scored[: max(k, 0)]
 
     def current_dim(self) -> int | None:
         for r in self._snapshot():

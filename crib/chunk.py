@@ -117,13 +117,16 @@ class Chunk:
             "store": self.store,
             "note_id": self.note_id,
             "title": title or "",
-            "tags": ",".join(tags),
+            "tags": list(tags),
             # The note's frontmatter `type` (e.g. design/plan), so a facet's notes
             # are filterable at query time (`note_lookup(tags=["design"])` matches
             # it like a tag). Metadata only — `chunk_id` is (project, relpath,
             # section_key, window_idx), so adding a field re-stamps metadata on the
             # next reindex without changing an id: no CHUNK_SCHEMA_VERSION bump.
             "type": note_type or "",
+            # What a `tags=` filter matches: the tags plus the type, filtered in
+            # the store query (`{"labels": {"$any": [...]}}`), not after top-k.
+            "labels": [t for t in dict.fromkeys([*tags, note_type]) if t],
             # Display/lookup key stays the clean breadcrumb; `occurrence` carries
             # the disambiguator so a consumer can rebuild the identity key with
             # `section_key(heading_path, occurrence)` (e.g. to hit the right span

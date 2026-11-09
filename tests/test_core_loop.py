@@ -108,3 +108,25 @@ def test_stable_id_assigned_and_persisted(crib):
     out = run(crib.store_note("content", title="x", project="p"))
     text = crib.read_note(out["relpath"], project="p")
     assert "id:" in text
+
+
+def test_a_tag_filter_does_not_thin_the_results(crib):
+    """tags= filters inside the store query: with many closer untagged notes, a
+    tagged lookup still returns every tagged match, not whatever survives a
+    post-filter of the overall top-n."""
+    for i in range(40):
+        run(
+            crib.store_note(
+                f"deploy pipeline notes number {i}", title=f"untagged {i}", project="p"
+            )
+        )
+    for i in range(3):
+        run(
+            crib.store_note(
+                f"rollback steps {i}", title=f"rare {i}", project="p", tags=["rare"]
+            )
+        )
+    hits = crib.lookup(
+        "deploy pipeline notes", project="p", k=8, tags=["rare"], min_score=-1.0
+    )
+    assert {h.relpath.split(".")[0] for h in hits} == {"rare-0", "rare-1", "rare-2"}

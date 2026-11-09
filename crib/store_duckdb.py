@@ -123,14 +123,39 @@ def _typed_match(key: str, value: Any) -> tuple[str, list[Any]]:
     return ("FALSE", [])
 
 
+def _any_match(key: str, wanted: Any) -> tuple[str, list[Any]]:
+    """`{key: {"$any": [...]}}`: the metadata list at `key` shares at least one
+    string with `wanted`. A missing key, or one that isn't a list, matches
+    nothing (TRY_CAST makes a non-list NULL; AND doesn't short-circuit)."""
+    if not isinstance(wanted, (list, tuple)) or not all(
+        isinstance(v, str) for v in wanted
+    ):
+        raise CribUserError(f'"$any" takes a list of strings, got {wanted!r}')
+    if not wanted:
+        return ("FALSE", [])
+    path = _json_path(key)
+    return (
+        "coalesce(json_type(meta, ?) = 'ARRAY' AND list_has_any("
+        "TRY_CAST(json_extract(meta, ?) AS VARCHAR[]), ?::VARCHAR[]), FALSE)",
+        [path, path, list(wanted)],
+    )
+
+
 def _where(where: dict[str, Any] | None) -> tuple[str, list[Any]]:
-    """`WHERE …` for an exact-match metadata filter (all keys must match)."""
+    """`WHERE …` for a metadata filter (all keys must match): a plain value is an
+    exact, type-checked match; `{"$any": [...]}` is list membership."""
     if not where:
         return "", []
     conds: list[str] = []
     params: list[Any] = []
     for key, value in where.items():
-        if key in PROMOTED and isinstance(value, str):
+        if isinstance(value, dict):
+            if set(value) != {"$any"}:
+                raise CribUserError(f"unsupported filter for {key!r}: {value!r}")
+            cond, ps = _any_match(key, value["$any"])
+            conds.append(cond)
+            params.extend(ps)
+        elif key in PROMOTED and isinstance(value, str):
             conds.append(f"{key} = ?")  # key is one of the constant column names
             params.append(value)
         else:
@@ -571,11 +596,14 @@ class DuckDBStore:
                 )
             clause, params = _where(where)
             # Ties break on id so the order is total: retrieval stays deterministic.
+            # A zero vector's cosine is NaN, which DuckDB sorts ABOVE 1.0; score it
+            # 0.0 instead, as the in-memory store does.
             # pi-lens-ignore: python-sql-injection
             rows = ex.run(
-                f"SELECT id, document, meta, "
-                f"array_cosine_similarity(vec, ?::FLOAT[{int(dim)}]) AS score "
-                f"FROM {TABLE}{clause} ORDER BY score DESC, id LIMIT ?",
+                f"SELECT id, document, meta, CASE WHEN isnan(s) THEN 0.0 ELSE s END "
+                f"AS score FROM (SELECT id, document, meta, "
+                f"array_cosine_similarity(vec, ?::FLOAT[{int(dim)}]) AS s "
+                f"FROM {TABLE}{clause}) ORDER BY score DESC, id LIMIT ?",
                 [[float(x) for x in embedding], *params, int(k)],
             )
         return [Hit(i, d, json.loads(m), float(s)) for i, d, m, s in rows]

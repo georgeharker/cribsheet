@@ -124,3 +124,68 @@ def test_config_file_selects_the_backend(tmp_path):
     f.write_text('[store]\nbackend = "duckdb"\n')
     assert Config.load(f).store.backend == "duckdb"
     assert Config.load(tmp_path / "absent.toml").store.backend == "duckdb"
+
+
+# ── crib_meta: versions recorded in the file ─────────────────────────────────
+
+
+def _rows(path, sql):
+    import duckdb
+
+    con = duckdb.connect(str(path))
+    try:
+        # A test's own constant statement, not data.
+        # pi-lens-ignore: python-sql-injection
+        return con.execute(sql).fetchall()
+    finally:
+        con.close()
+
+
+def _seed(path):
+    s = DuckDBStore.embedded(path)
+    s.upsert([Record("a", [1.0, 0.0], "doc a", {"project": "p"})])
+    s.rc_put("dir", [("x.toml", 1, 2, "{}")])
+    s.ec_put("m#2", [("h", [1.0, 0.0])])
+    s.close()
+
+
+def test_a_new_file_records_its_versions(tmp_path):
+    from crib.recordcache import RECORD_FORMAT
+    from crib.store_duckdb import SCHEMA_VERSION
+
+    s = DuckDBStore.embedded(tmp_path / "crib.duckdb")
+    assert s.meta_get("schema_version") == SCHEMA_VERSION
+    assert s.meta_get("record_format") == RECORD_FORMAT
+    s.close()
+
+
+def test_a_file_from_before_crib_meta_is_adopted_not_wiped(tmp_path):
+    path = tmp_path / "crib.duckdb"
+    _seed(path)
+    _rows(path, "DROP TABLE crib_meta")
+    s = DuckDBStore.embedded(path)
+    assert s.current_dim() == 2  # chunks kept
+    assert s.rc_load("dir")  # caches kept
+    s.close()
+
+
+def test_a_schema_change_drops_every_rebuildable_table(tmp_path):
+    path = tmp_path / "crib.duckdb"
+    _seed(path)
+    _rows(path, "UPDATE crib_meta SET value = '0' WHERE key = 'schema_version'")
+    s = DuckDBStore.embedded(path)
+    assert s.current_dim() is None
+    assert s.rc_load("dir") == {}
+    assert s.ec_get("m#2", ["h"]) == {}
+    s.close()
+
+
+def test_a_record_format_change_empties_only_the_record_cache(tmp_path):
+    path = tmp_path / "crib.duckdb"
+    _seed(path)
+    _rows(path, "UPDATE crib_meta SET value = 'old' WHERE key = 'record_format'")
+    s = DuckDBStore.embedded(path)
+    assert s.rc_load("dir") == {}
+    assert s.current_dim() == 2
+    assert s.ec_get("m#2", ["h"])
+    s.close()

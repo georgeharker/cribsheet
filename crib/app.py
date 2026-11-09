@@ -1223,6 +1223,7 @@ class Crib:
         hint_weight: float = 0.15,
         *,
         store: str = "notes",
+        labels: list[str] | None = None,
     ) -> list[Hit]:
         """Candidate Hits in DENSE-DOMINANT SCORE order: raw cosine (dense, already
         calibrated) + min-max'd keyword_index BM25, over the union candidate pool. Only
@@ -1245,7 +1246,13 @@ class Crib:
         # says that happened, query project-wide and apply the absence rule in
         # Python so retrieval never goes dark between upgrade and sweep.
         stamped = self.stored_chunk_schema() >= CHUNK_SCHEMA_VERSION
-        where = {"project": proj, "store": store} if stamped else {"project": proj}
+        where: dict[str, Any] = (
+            {"project": proj, "store": store} if stamped else {"project": proj}
+        )
+        if labels:
+            # A tags= lookup filters IN the query, so the dense top-n is drawn
+            # from matching chunks only, never thinned after the fact.
+            where["labels"] = {"$any": list(labels)}
         # `where` is a vector-store filter dict (an exact-match metadata predicate),
         # not a SQL string; there is no SQL here.
         # pi-lens-ignore: python-sql-injection
@@ -1334,6 +1341,18 @@ class Crib:
                     if not (m or {}).get("alias")
                     and ((m or {}).get("store") or "notes") == store
                 }
+            if labels:
+                # The lexical index and the alias cache span the whole store, so
+                # their candidates get the same label filter the query applied.
+                wanted = set(labels)
+
+                def _labelled(cid: str) -> bool:
+                    h = dense_by.get(cid)
+                    meta = h.metadata if h is not None else docs.get(cid, ("", {}))[1]
+                    return bool(wanted & set((meta or {}).get("labels") or []))
+
+                pool = [cid for cid in pool if _labelled(cid)]
+                kw = {cid: v for cid, v in kw.items() if cid in pool}
             missing = [cid for cid in pool if cid not in cos and cid in docs]
             if missing:
                 for cid, dv in zip(
@@ -1467,6 +1486,7 @@ class Crib:
             hints=hints,
             hint_weight=hint_weight if hint_weight is not None else hw,
             store=store,
+            labels=tags,
         )
         # a store wipe this project hasn't been re-swept after: what comes back is
         # incomplete, so every hit says so rather than thin results reading as "all
@@ -1481,14 +1501,8 @@ class Crib:
         for h in raw:
             if h.score <= min_score:  # drop orthogonal / irrelevant matches
                 continue
-            if tags:
-                # A note's frontmatter `type` (design/plan) filters like a tag —
-                # those facets are identified by type, not by a hand-added tag, so
-                # `tags=["design"]` is how you scope a lookup to them.
-                have = set(filter(None, (h.metadata.get("tags") or "").split(",")))
-                have |= set(filter(None, [h.metadata.get("type") or ""]))
-                if not (set(tags) & have):
-                    continue
+            # tags= was applied in the store query (`labels` = the chunk's tags
+            # plus its frontmatter `type`, so tags=["design"] scopes to that facet).
             rp = h.metadata.get("relpath", "")
             pillar = str(h.metadata.get("store") or "notes")
             heading = h.metadata.get("heading_path", "")
