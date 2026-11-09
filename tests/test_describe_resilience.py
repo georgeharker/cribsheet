@@ -84,6 +84,29 @@ def test_non_rate_limit_fails_fast(monkeypatch, no_sleep):
     assert no_sleep == []  # nothing transient about it — no wait
 
 
+def test_success_without_structured_data_is_a_failure(monkeypatch, no_sleep):
+    """An adapter that exits 0 but hands back no parsed object (an endpoint
+    answering outside the structured channel; 2026-11-09, glm at ollama.com)
+    must raise, not return None. Callers read None as 'nothing to describe', so
+    the call was paid for, recorded nothing, and was retried every start."""
+    state = _patch_bridge(monkeypatch, [(0, None)])
+    with pytest.raises(gen.GenerationError, match="no structured data"):
+        gen.generate_structured(GenerateConfig(), "sys", "user", {})
+    assert state["attempts"] == 1  # not transient: no retry, no wait
+    assert no_sleep == []
+
+
+def test_describe_file_surfaces_the_empty_structured_result(monkeypatch, tmp_path):
+    """describe_file propagates it, so the indexer records a gen_error (and the
+    failure is countable) instead of silently writing blank descriptions."""
+    from crib.codeindex import describe_file
+
+    _patch_bridge(monkeypatch, [(0, None)])
+    (tmp_path / "m.py").write_text("def f():\n    return 1\n")
+    with pytest.raises(gen.GenerationError):
+        describe_file(GenerateConfig(), tmp_path, "m.py")
+
+
 def test_rate_limit_gives_up_after_max_attempts(monkeypatch, no_sleep):
     state = _patch_bridge(monkeypatch, [RuntimeError("429 too many requests")] * 10)
     with pytest.raises(gen.GenerationError):

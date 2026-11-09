@@ -195,9 +195,15 @@ def generate_structured(
     schema_description: str = "",
 ) -> object:
     """Run one chat turn constrained to ``schema`` (JSON Schema); return the parsed
-    object (or ``None`` on a non-zero exit / unparseable output — the caller falls
-    back). Adapters enforce the schema natively (anthropic forced tool-use,
-    openai-compatible ``response_format``), so the model can't wander off-format."""
+    object. Adapters enforce the schema natively (anthropic forced tool-use,
+    openai-compatible ``response_format``), so the model can't wander off-format.
+
+    Raises GenerationError on a non-zero exit AND on a "successful" exit that
+    carried no parsed object. The latter used to be passed through as None, and
+    callers read None as "nothing to describe": a provider whose structured
+    channel came back empty was paid for, recorded nothing, and was asked again
+    at every start (crib-bulk's ollama-glm, 2026-11-09). Callers already treat a
+    raise as "fall back to the mop-up / leave it for later"."""
     from llmkit.bridge import ChatRequest, chat_structured
 
     provider = resolve_provider(cfg, purpose)
@@ -255,6 +261,12 @@ def generate_structured(
             raise GenerationError(
                 f"llmkit structured generation exited {code} for adapter "
                 f"{provider.adapter!r}."
+            )
+        if data is None:
+            raise GenerationError(
+                f"llmkit structured generation returned no structured data (exit 0) "
+                f"for adapter {provider.adapter!r}, model {provider.model!r}: the "
+                "endpoint likely answered outside the requested structured channel"
             )
         return data
     finally:
