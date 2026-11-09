@@ -33,11 +33,13 @@ dependencies = [
     # resolves its generation adapter at runtime from config (default: claude_code),
     # so all backends must be present — a missing one crashes lifespan startup.
     # >=0.1.1: adapters raise catchable ImportError, never SystemExit.
-    # >=0.2.1: structured output recovered from fenced/bare JSON replies and
+    # >=0.2.2: the schema also rides in the system prompt, and a per-provider
+    # `structured = "tool"` mode for endpoints that ignore response_format
+    # (Ollama Cloud) (0.2.2); structured output recovered from fenced/bare JSON and
     # never "success with no data" (0.2.1); Provider.timeout, which crib passes
     # so a stalled stream ends; posix_spawn for claude_code, because the DuckDB
     # daemon must never fork on macOS (see crib/proc.py) (both 0.2.0).
-    "polyllmkit[md,all]>=0.2.1",
+    "polyllmkit[md,all]>=0.2.2",
 ]
 
 [project.optional-dependencies]
