@@ -9,6 +9,45 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.22.0-dev3] - 2026-11-09
+
+### Fixed
+
+- **Shared store recovery.** One failed reconnect no longer leaves the
+  shared (Quack) client unusable until the daemon restarts; threads that
+  lose the same session relaunch the server once between them; and with
+  `[duckdb] launch = false` a reconnect waits for the supervised server.
+- **`tags=` lookups return k results.** The tag filter now runs inside the
+  store query instead of after the top results were picked.
+- **The embedding cache can't be poisoned** by the hash-embedder fallback:
+  it keys on the embedder actually built and never caches hash vectors.
+- A zero vector scores 0 instead of NaN, which sorted above every match.
+
+### Changed
+
+- `code_lookup` and summary-alias scoring use numpy (about 140 ms to 0.1 ms
+  per code query at 16k symbols). numpy is now a direct dependency.
+- Shared mode sends each vector as one literal: writes about 20x faster.
+- A note write is one transaction; metadata refreshes are one statement
+  per batch.
+- A `crib_meta` table records the schema version, record-cache format and
+  embedder; a change drops or rebuilds what depended on it, and switching
+  embedders at the same vector size now recreates the store.
+- The generation ledger forgets files that no longer need a description;
+  the embedding cache drops other embedders' vectors.
+- `crib status` shows `store_stats` (rows, versions, sizes, reconnects) and
+  embedding-cache hits; the store checkpoints after a startup reconcile.
+
+### Added
+
+- `crib store install-extensions`: fetch the shared-mode DuckDB extensions
+  ahead of time, for containers and offline machines.
+
+### Removed
+
+- The `json` store backend (`[store] backend = "json"` now warns and uses
+  DuckDB), and leftover chroma-era code paths.
+
 ## [0.22.0-dev2] - 2026-11-09
 
 ### Added

@@ -71,11 +71,16 @@ itself down: no file access, no extension installs, and its configuration is
 locked. A token holder can therefore reach only the store, not the filesystem.
 
 **Health check.** `GET http://127.0.0.1:7734/` returns 200 while the server is
-up. `sharedserver list` shows its refcount and grace state.
+up. `sharedserver list` shows its refcount and grace state. If the server goes
+away, clients reconnect on their next operation (with `launch = true` crib
+starts it again; with `launch = false` it waits up to `attach_timeout`), and
+each reconnect is logged and counted in `crib status`.
 
-**First run needs the network once.** The shared path uses DuckDB's `quack`
-extension, which DuckDB downloads from extensions.duckdb.org on first use and
-caches under crib's own directory. Embedded mode needs no extensions.
+**First run needs the network once.** The shared path uses DuckDB's `quack` and
+`httpfs` extensions, which DuckDB downloads from extensions.duckdb.org on first
+use and caches under crib's own directory. For a container image or an offline
+machine, fetch them ahead of time with `crib store install-extensions`.
+Embedded mode needs no extensions.
 
 ## What lives where
 
@@ -108,19 +113,38 @@ generation consults it; an explicit request always runs, and still records
 its outcome. `[generate] backlog_budget` (default 50) caps how many files'
 describes one daemon start attempts.
 
-Search is exact cosine over vectors held in memory. Nothing approximate is
-persisted, so no index format is tied to a DuckDB version.
+Ledger rows for files that no longer need a description are dropped at each
+daemon start, and the embedding cache drops vectors from any embedder other
+than the current one.
+
+A small `crib_meta` table records the file's schema version, the record-cache
+format, and which embedder wrote the vectors. On a schema change crib drops
+and rebuilds every table above; on a record-format change it empties only the
+record cache; and on an embedder change (even at the same vector size) the
+next full reindex recreates the chunks.
+
+Search is exact: DuckDB scores every row the filters select with
+`array_cosine_similarity` and keeps the top k. Filters, including `tags=`, run
+inside that query, so a selective tag still returns k results. Nothing
+approximate is persisted, so no index format is tied to a DuckDB version.
+
+`crib status` reports the store under `store_stats`: rows per table, the
+recorded versions, the file and WAL sizes, and in shared mode the server
+address and reconnect count. After a startup reconcile that changed anything,
+crib checkpoints the WAL into the file.
 
 ## Recovery
 
 Because the store is a cache, deleting it is a supported fix:
 
 ```bash
-mcp-combiner restart-server cribsheet   # or stop the daemon another way
-rm ~/.cache/crib/duckdb/crib.duckdb ~/.cache/crib/duckdb/crib.duckdb.wal
+sharedserver admin stop cribsheet       # stop the daemon (and crib-duckdb, if shared)
+sharedserver admin stop crib-duckdb
+rm -f ~/.cache/crib/duckdb/crib.duckdb ~/.cache/crib/duckdb/crib.duckdb.wal
 ```
 
-The next start re-embeds from disk. With an MPS or GPU embedder that takes
-about 12 s for 4,600 chunks; a CPU-only embedder is slower. The symbol index's
+The next client starts the daemon again, which re-embeds from disk. With an
+MPS or GPU embedder that takes about 12 s for 4,600 chunks; a CPU-only
+embedder is slower. The symbol index's
 LLM descriptions live in the TOML files, not the store, so nothing has to be
 regenerated.
