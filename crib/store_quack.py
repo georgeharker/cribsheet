@@ -43,7 +43,7 @@ from typing import Any
 from . import proc as spawn
 from .errors import CribUserError
 from .store import Hit, Record, is_loopback_host
-from .store_duckdb import DuckDBStore
+from .store_duckdb import DuckDBStore, local_dirs
 
 # ── literal rendering: the one place a value becomes SQL text ──────────────
 
@@ -142,17 +142,14 @@ def _install_quack(conn: Any) -> None:
 def _connect_config(
     extension_directory: Path | str | None,
 ) -> dict[str, str | bool | int | float | list[str]]:
-    """DuckDB settings keeping crib out of the user's ~/.duckdb: extensions AND
-    the secrets directory (quack_serve reads the latter) live beside each other
-    in crib's own dir."""
+    """crib's DuckDB dirs for a Quack connection (see `local_dirs`): extensions
+    at `extension_directory`, secrets beside it. None means crib's own default
+    (`Paths.duckdb_extension_dir`), never DuckDB's ~/.duckdb."""
     if not extension_directory:
-        return {}
-    secrets_dir = Path(extension_directory).parent / "secrets"
-    secrets_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
-    return {
-        "extension_directory": str(extension_directory),
-        "secret_directory": str(secrets_dir),
-    }
+        from .paths import Paths
+
+        extension_directory = Paths.resolve().duckdb_extension_dir
+    return local_dirs(Path(extension_directory).parent)
 
 
 def _open_session(uri: str, token: str, extension_directory: Path | str | None):

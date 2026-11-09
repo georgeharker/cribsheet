@@ -40,6 +40,20 @@ PROMOTED = ("project", "store", "relpath")  # filtered constantly: real columns
 _SELECT_COLUMNS = MappingProxyType({"meta": "id, meta", "docs": "id, document, meta"})
 
 
+def local_dirs(base: Path | str) -> dict[str, str | bool | int | float | list[str]]:
+    """DuckDB connection settings that keep its state in crib's own dir, never
+    the user's ~/.duckdb: downloaded extensions and the secrets directory
+    (which quack_serve reads) sit under `base`. DuckDB has no environment
+    variable for these, so every crib connection passes them explicitly."""
+    base = Path(base)
+    secrets = base / "secrets"
+    secrets.mkdir(parents=True, exist_ok=True, mode=0o700)
+    return {
+        "extension_directory": str(base / "extensions"),
+        "secret_directory": str(secrets),
+    }
+
+
 def _lock_error(path: Path, exc: Exception) -> CribUserError:
     return CribUserError(
         f"the DuckDB store {path} is open in another process ({exc}). Embedded mode "
@@ -169,7 +183,7 @@ class DuckDBStore:
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         try:
-            conn = duckdb.connect(str(path))
+            conn = duckdb.connect(str(path), config=local_dirs(path.parent))
         except duckdb.IOException as exc:
             if "lock" in str(exc).lower():
                 raise _lock_error(path, exc) from exc

@@ -159,7 +159,9 @@ def remote(server):
     """A raw server-routed cursor: what any holder of the token can send."""
     import duckdb
 
-    conn = duckdb.connect(":memory:")
+    from crib.store_quack import _connect_config
+
+    conn = duckdb.connect(":memory:", config=_connect_config(None))  # crib's dirs
     conn.execute("LOAD quack")
     conn.execute(f"ATTACH '{server.uri}' AS r (TOKEN '{server.token}')")
     cur = conn.cursor()
@@ -453,4 +455,62 @@ def test_duckdb_state_stays_in_crib_dirs(tmp_path):
     assert cfg["extension_directory"] == str(ext)
     assert cfg["secret_directory"] == str(tmp_path / "duckdb" / "secrets")
     assert (tmp_path / "duckdb" / "secrets").is_dir()
-    assert not any(str(v).startswith(os.path.expanduser("~/.duckdb")) for v in cfg.values())
+    assert not any(
+        str(v).startswith(os.path.expanduser("~/.duckdb")) for v in cfg.values()
+    )
+
+
+def test_crib_never_touches_home_dot_duckdb(tmp_path):
+    """Every crib DuckDB path (embedded store, the Quack server, a client, a
+    migration) keeps DuckDB's state in crib's own dirs. Proved by running them
+    under a fresh $HOME and checking ~/.duckdb never appears. (Quack is fetched
+    once into crib's extension dir under that $HOME.)"""
+    import sys
+    import textwrap
+
+    home = tmp_path / "home"
+    home.mkdir()
+    script = textwrap.dedent(
+        """
+        import socket
+        from crib.paths import Paths
+        from crib.store import InMemoryStore, Record
+        from crib.store_duckdb import DuckDBStore
+        from crib.store_migrate import migrate
+        from crib.store_quack import QuackStore, spawn_server
+
+        p = Paths.resolve().ensure()
+        emb = DuckDBStore.embedded(p.duckdb_file)
+        emb.upsert([Record("a", [1.0, 0.0], "doc", {"project": "p"})])
+        emb.close()
+        with socket.socket() as s:
+            s.bind(("127.0.0.1", 0))
+            port = s.getsockname()[1]
+        srv = spawn_server(p.index_dir / "q.duckdb", port, p.duckdb_token_file, timeout=180)
+        try:
+            q = QuackStore.connect(srv.uri, srv.token)
+            src = InMemoryStore()
+            src.upsert([Record("b", [0.0, 1.0], "doc", {"project": "p", "content_hash": "h"})])
+            assert migrate(src, q)["ok"]
+            q.close()
+        finally:
+            srv.stop()
+        print("ok")
+        """
+    )
+    env = {k: v for k, v in os.environ.items() if not k.startswith(("CRIB_", "XDG_"))}
+    env["HOME"] = str(home)
+    r = spawn.run(
+        [sys.executable, "-c", script],
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=300,
+    )
+    if r.returncode != 0 and "extensions.duckdb.org" in (r.stdout + r.stderr):
+        pytest.skip("no network to fetch the quack extension")
+    assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
+    assert not (home / ".duckdb").exists(), sorted(
+        str(p) for p in (home / ".duckdb").rglob("*")
+    )
+    assert (home / ".cache" / "crib" / "duckdb" / "extensions").is_dir()
