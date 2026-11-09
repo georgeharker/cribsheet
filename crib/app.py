@@ -1009,6 +1009,55 @@ class Crib:
             self._reconcile_reason = None
         return total
 
+    async def store_migrate(
+        self, to: str = "duckdb", apply: bool = False
+    ) -> dict[str, Any]:
+        """Copy the vector index from the store this crib has open into the `to`
+        backend WITHOUT re-embedding (crib.store_migrate). A dry run unless
+        `apply`. The target is built exactly as the daemon would build it
+        (`[duckdb] mode` decides embedded vs shared); the source is never
+        written, and config is never edited: the result says what to change.
+
+        Rerunnable: each run copies only what changed, so run it once to copy,
+        and once more right before switching the backend to catch writes made
+        meanwhile."""
+        import dataclasses
+
+        from .store_migrate import migrate, plan_migration
+
+        current = self.config.store.backend
+        if to == current:
+            raise CribUserError(f"the index is already on {to!r}: nothing to migrate")
+        if to not in ("duckdb", "chroma", "json"):
+            raise CribUserError(f"unknown target store {to!r} (duckdb | chroma | json)")
+        cfg = dataclasses.replace(
+            self.config, store=dataclasses.replace(self.config.store, backend=to)
+        )
+        target, close = await asyncio.to_thread(_build_store, self.paths, cfg)
+        try:
+            if not apply:
+                plan = await asyncio.to_thread(plan_migration, self.store, target)
+                return {
+                    "dry_run": True,
+                    "from": current,
+                    "to": to,
+                    **plan.as_dict(),
+                    "next": "rerun with apply=True (CLI: --apply) to copy and verify",
+                }
+            report = await asyncio.to_thread(migrate, self.store, target)
+        finally:
+            if close is not None:
+                await asyncio.to_thread(close)
+        report.update({"dry_run": False, "from": current, "to": to})
+        report["next"] = (
+            f'set [store] backend = "{to}" in config.toml and restart the daemon '
+            "(mcp-combiner restart-server cribsheet); rerun this first if notes "
+            "changed meanwhile"
+            if report["ok"]
+            else "verification FAILED: keep the current backend; see problems"
+        )
+        return report
+
     async def _resweep_insitu(self, project: str) -> int:
         """Re-embed a project's in-situ `sources/…` docs after a store wipe. Doc
         chunks live under the notes namespace but their FILES live in the repo, so

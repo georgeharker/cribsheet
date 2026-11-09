@@ -382,7 +382,8 @@ def tool_set_of(name: str) -> str:
     """The tool set a tool belongs to — the CLI noun it nests under.
     `project_reconcile` is the one prefix-straddler: it sweeps EVERY project
     (whole-store housekeeping), so it rides with the poll/meta `system` set,
-    not with a namespace's management."""
+    not with a namespace's management. `store_migrate` (no family prefix) lands
+    in `system` the same way: whole-store, a dry run unless `apply`."""
     set_name = (
         "system"
         if name == "project_reconcile"
@@ -924,6 +925,16 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         index back in line. Safe to call anytime — the hash gate no-ops anything
         already current."""
         return await crib.reconcile_all()
+
+    @crib_tool("none")
+    async def store_migrate(to: str = "duckdb", apply: bool = False) -> dict[str, Any]:
+        """Copy the vector index into another store backend (`to`: duckdb |
+        chroma | json) WITHOUT re-embedding, then verify the copy (counts, content
+        hashes, sampled vectors, top-k parity). A DRY RUN unless `apply`: the
+        plan says how much would move. Notes are never touched and the source
+        store is never written. Rerunnable: each run copies only what changed.
+        After an ok run, switch `[store] backend` in config.toml and restart."""
+        return await crib.store_migrate(to, apply)
 
     @crib_tool("none")
     def ops() -> dict[str, Any]:
