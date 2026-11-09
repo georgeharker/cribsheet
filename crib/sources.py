@@ -7,7 +7,7 @@ and this registry records `prefix -> absolute repo root` so `abspath`, reconcile
 and the file watcher can turn that relpath back into the on-disk source file
 without needing the repo's `.crib` to be reachable from the current cwd.
 
-The registry is machine-local (like the Chroma index it feeds): the markdown is
+The registry is machine-local (like the vector index it feeds): the markdown is
 git-synced, but the vectors — and these abs roots — are rebuilt per machine.
 """
 from __future__ import annotations

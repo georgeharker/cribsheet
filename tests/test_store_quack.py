@@ -474,9 +474,8 @@ def test_crib_never_touches_home_dot_duckdb(tmp_path):
         """
         import socket
         from crib.paths import Paths
-        from crib.store import InMemoryStore, Record
+        from crib.store import Record
         from crib.store_duckdb import DuckDBStore
-        from crib.store_migrate import migrate
         from crib.store_quack import QuackStore, spawn_server
 
         p = Paths.resolve().ensure()
@@ -489,9 +488,8 @@ def test_crib_never_touches_home_dot_duckdb(tmp_path):
         srv = spawn_server(p.index_dir / "q.duckdb", port, p.duckdb_token_file, timeout=180)
         try:
             q = QuackStore.connect(srv.uri, srv.token)
-            src = InMemoryStore()
-            src.upsert([Record("b", [0.0, 1.0], "doc", {"project": "p", "content_hash": "h"})])
-            assert migrate(src, q)["ok"]
+            q.upsert([Record("b", [0.0, 1.0], "doc", {"project": "p"})])
+            assert [h.id for h in q.query([0.0, 1.0], 1)] == ["b"]
             q.close()
         finally:
             srv.stop()

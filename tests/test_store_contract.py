@@ -3,31 +3,24 @@
 One suite, parametrized over every vector-store backend crib ships or is building,
 so a new backend is accepted by passing the SAME tests the current ones pass — not
 tests written to fit it. A backend whose module isn't there yet is skipped, never
-faked. Where today's backends genuinely disagree, the documented contract wins and
-the divergence is marked per backend with the reason, so it stays visible instead
-of being averaged away.
+faked.
 
-Backends: InMemory, Json, Chroma embedded, Chroma shared (a real `chroma run` on
-loopback), DuckDB embedded, DuckDB over Quack.
+Backends: InMemory, Json, DuckDB embedded, DuckDB over Quack (a real crib DuckDB
+server on loopback). Chroma was removed 2026-11-09; until then it ran here as
+the baseline, and this suite is where its set_meta MERGE (vs the contract's
+REPLACE) was caught.
 """
 
 from __future__ import annotations
 
-import contextlib
 import math
-import shutil
 import socket
-import subprocess
-import sys
 import threading
-import time
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any, Callable
 
 import pytest
 
-from crib import proc as spawn
 from crib.store import InMemoryStore, JsonStore, Record, Store
 
 # ── vectors ──────────────────────────────────────────────────────────────────
@@ -72,41 +65,6 @@ def _free_port() -> int:
         return s.getsockname()[1]
 
 
-@pytest.fixture(scope="session")
-def chroma_server(tmp_path_factory):
-    """A real `chroma run` bound to loopback, for the shared-mode baseline."""
-    exe = shutil.which("chroma", path=str(Path(sys.executable).parent)) or shutil.which(
-        "chroma"
-    )
-    if not exe:
-        pytest.skip("no `chroma` executable for the shared-mode baseline")
-    import chromadb
-
-    path, port = tmp_path_factory.mktemp("chroma-shared"), _free_port()
-    proc = spawn.popen(
-        [exe, "run", "--path", str(path), "--host", "127.0.0.1", "--port", str(port)],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    try:
-        deadline = time.monotonic() + 60
-        while True:
-            try:
-                chromadb.HttpClient(host="127.0.0.1", port=port).heartbeat()
-                break
-            except Exception:  # noqa: BLE001 — not up yet
-                if proc.poll() is not None or time.monotonic() > deadline:
-                    pytest.skip("`chroma run` did not come up")
-                time.sleep(0.25)
-        yield port
-    finally:
-        proc.terminate()
-        with contextlib.suppress(subprocess.TimeoutExpired):
-            proc.wait(10)
-        if proc.poll() is None:
-            proc.kill()
-
-
 def _make_memory(tmp_path, request) -> Backend:
     return Backend("memory", InMemoryStore(), None, fixed_dim=False, shared=False)
 
@@ -115,34 +73,6 @@ def _make_json(tmp_path, request) -> Backend:
     path = tmp_path / "store.json"
     return Backend(
         "json", JsonStore(path), lambda: JsonStore(path), fixed_dim=False, shared=False
-    )
-
-
-def _make_chroma_embedded(tmp_path, request) -> Backend:
-    from crib.store import ChromaStore
-
-    path = str(tmp_path / "chroma")
-    return Backend(
-        "chroma-embedded",
-        ChromaStore.embedded(path),
-        lambda: ChromaStore.embedded(path),
-        fixed_dim=True,
-        shared=False,
-    )
-
-
-def _make_chroma_shared(tmp_path, request) -> Backend:
-    from crib.store import ChromaStore
-
-    port = request.getfixturevalue("chroma_server")
-
-    def client() -> Store:
-        return ChromaStore.shared("127.0.0.1", port)
-
-    store = client()
-    store.recreate()  # one server for the session: start every test empty
-    return Backend(
-        "chroma-shared", store, client, fixed_dim=True, shared=True, new_client=client
     )
 
 
@@ -198,31 +128,13 @@ def _make_duckdb_quack(tmp_path, request) -> Backend:
 BACKENDS = {
     "memory": _make_memory,
     "json": _make_json,
-    "chroma-embedded": _make_chroma_embedded,
-    "chroma-shared": _make_chroma_shared,
     "duckdb-embedded": _make_duckdb_embedded,
     "duckdb-quack": _make_duckdb_quack,
 }
 
-# Where a backend departs from the documented contract today: {test: {backend: why}}.
-# strict xfail — if a backend starts conforming, the mark fails loudly and comes off.
-DIVERGES = {
-    "test_set_meta_replaces_not_merges": {
-        "chroma-embedded": "chroma's collection.update MERGES metadata, so a key "
-        "dropped from the schema lingers (and _meta_stable then re-sends it on every "
-        "reindex)",
-        "chroma-shared": "chroma's collection.update MERGES metadata (see embedded)",
-    },
-}
-
-
 @pytest.fixture(params=list(BACKENDS))
 def backend(request, tmp_path) -> Backend:
-    b = BACKENDS[request.param](tmp_path, request)
-    why = DIVERGES.get(request.node.originalname, {}).get(b.name)
-    if why:
-        request.applymarker(pytest.mark.xfail(reason=why, strict=True))
-    return b
+    return BACKENDS[request.param](tmp_path, request)
 
 
 # ── empty store ──────────────────────────────────────────────────────────────

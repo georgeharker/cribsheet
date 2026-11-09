@@ -1,8 +1,8 @@
 # cribsheet — design
 
 A local MCP server that manages a tree of markdown notes as long-term memory,
-indexed for semantic retrieval by a Chroma embedding store. Markdown on disk is
-the source of truth; Chroma is a derived, rebuildable cache. Inspired by
+indexed for semantic retrieval by a DuckDB embedding store. Markdown on disk is
+the source of truth; the store is a derived, rebuildable cache. Inspired by
 basic-memory, but content-addressable via embeddings rather than a knowledge
 graph.
 
@@ -12,7 +12,7 @@ graph.
 
 ## 1. Core principles
 
-1. **Disk is truth, Chroma is a cache.** Notes are plain markdown (optional YAML
+1. **Disk is truth, the vector store is a cache.** Notes are plain markdown (optional YAML
    frontmatter). The index can always be deleted and rebuilt from disk.
 2. **One path to the index.** Every write — tool, file watcher, or direct LLM
    edit — funnels through a single `index_file(path)` routine that is
@@ -34,11 +34,11 @@ Three categories of state with different lifecycles get three roots:
 |---|---|---|---|---|
 | **Config** — `config.toml`, default embed model, distill prompt | `$XDG_CONFIG_HOME/crib` → `~/.config/crib` | `CRIB_CONFIG_DIR` | optional | hand-edited |
 | **Data (truth)** — `projects/<name>/notes/**.md`, `.cribproject` | `$XDG_DATA_HOME/crib` → `~/.local/share/crib` | `CRIB_DATA_DIR` | **auto-detect** | precious |
-| **Index (derived)** — Chroma persistent dir | `$XDG_CACHE_HOME/crib` → `~/.cache/crib` | `CRIB_INDEX_DIR` | **never** | disposable |
+| **Index (derived)** — the DuckDB store | `$XDG_CACHE_HOME/crib` → `~/.cache/crib` | `CRIB_INDEX_DIR` | **never** | disposable |
 
 Per-dir resolution precedence: explicit env var → `XDG_*` → `~/.{config,local/share,cache}/crib`.
 
-Chroma lives under **cache** on purpose:
+The store lives under **cache** on purpose:
 - `rm -rf $CRIB_INDEX_DIR && crib reindex --all` is a supported recovery path.
 - It is physically impossible to accidentally git the embeddings — they are not
   in the data tree.
@@ -61,7 +61,7 @@ $CRIB_DATA_DIR/
   .git/                       # optional, auto-detected; backs the data tree only
 
 $CRIB_INDEX_DIR/
-  chroma/                     # persistent Chroma client dir
+  duckdb/crib.duckdb          # the vector store (+ quack.token, extensions/, secrets/)
 ```
 
 ---
@@ -96,7 +96,7 @@ without losing the logical identity.
 - A section over ~512 tokens → sliding-window sub-chunks with overlap.
 - Headingless / frontmatter-only notes → whole body, windowed if long.
 
-### Chunk identity & Chroma metadata
+### Chunk identity & store metadata
 
 Single collection `crib_chunks`, filtered by `project` metadata.
 
@@ -293,7 +293,7 @@ only when the distilled output's hash differs (thrash guard).
 
 ## 8. Versioning (two layers, neither indexed)
 
-Recovery is two complementary layers. Neither is surfaced in the Chroma index —
+Recovery is two complementary layers. Neither is surfaced in the vector index —
 both are reachable only via tools.
 
 ### Layer 1 — per-write version ring (automatic)
@@ -316,7 +316,7 @@ writing the new content. The ring keeps the last N versions per note
 
 Git is **not configured** in `.cribproject`. It is **auto-detected**: if the data
 root contains `.git`, git features activate; otherwise they are inert. The data
-root is self-contained with **no Chroma inside it**, so git just works.
+root is self-contained with **no vector store inside it**, so git just works.
 
 - **No commit-on-write, and no option for it.** Per-edit commits are never
   offered — they would be noise. Commits happen only on explicit `snapshot`.
@@ -367,64 +367,69 @@ path with no bespoke migration code.
 ## 10. Stack
 
 - **FastMCP** server, async.
-- **Chroma**, one collection `crib_chunks` — embedded or shared (see §10.1).
+- **DuckDB**, one table `crib_chunks` — embedded or shared (see §10.1).
 - **Embeddings**: local `sentence-transformers`, default `bge-small-en-v1.5`
   (`nomic-embed-text` option for longer context). Behind an `Embedder` protocol
   so an API embedder is a one-line swap later.
 - **Watcher**: `watchdog` with debounce + temp-file filtering.
 - **Git**: shell out / `GitPython` against the data dir only.
 
-### 10.1 Chroma process model — embedded vs shared
+### 10.1 Store process model — embedded vs shared
 
-Two backends behind one `Store` interface, selected by config
-(`chroma.mode: embedded | shared`):
+The vector index is a DuckDB store (crib.store_duckdb), one `Store` interface over
+two paths, selected by config (`[store] backend = "duckdb"`, `[duckdb] mode`):
 
 | | **embedded** (default) | **shared** |
 |---|---|---|
-| Client | Chroma `PersistentClient`, in-process | `HttpClient` → `chroma run` server |
-| Store ownership | this crib process opens the SQLite store | one server owns it; clients talk HTTP |
-| Concurrent crib instances | **unsafe** — single writer only | safe — server serializes writes |
-| Cold start | reloads index each process start | server stays warm across restarts |
+| Client | `DuckDBStore`: the file opened in-process | `QuackStore` → the crib DuckDB server over Quack |
+| Store ownership | this crib process opens the file | one server owns it; clients talk HTTP (Quack) |
+| Concurrent crib instances | one process per file (a second gets a clear error) | safe — every crib process is a client |
+| Cold start | opens the file (~15 ms to first query) | server stays warm across restarts (~38 ms) |
 | Lifecycle | none | **`sharedserver`** refcount + grace period |
-| Deps | none extra | a running `chroma`, the `sharedserver` binary |
+| Deps | duckdb | the `sharedserver` binary (the server is `python -m crib.store_quack`) |
 
-**Why shared exists:** the moment more than one crib MCP server runs against the
-same store — two editors, an agent plus a shell — an embedded `PersistentClient`
-contends on the SQLite store. The shared backend gives one writer and lets every
-crib client attach over HTTP.
+Search is EXACT cosine (no ANN index): crib always filters by project and pillar
+store, and filtered exact search stays ~1–4 ms even at 100k chunks. HNSW (DuckDB
+`vss`, built in memory at open, never the experimental persistence flag) is a
+benchmarked option, not the default.
 
-**`sharedserver` integration** (your crate — uses Chroma as its canonical
-example). In shared mode, crib does not spawn or kill Chroma itself; it
-refcounts:
+**`sharedserver` integration.** In shared mode crib does not own the store
+server; it refcounts it, configured from crib's own `[duckdb]` table:
 
 - On MCP server startup:
-  `sharedserver use crib-chroma --grace-period <cfg> -- chroma run --path $CRIB_INDEX_DIR/chroma`
-- On shutdown: `sharedserver unuse crib-chroma`.
+  `sharedserver use crib-duckdb --grace-period <cfg> -- python -m crib.store_quack`
+  (it reads host/port/paths from the same config). `[duckdb] launch = false`
+  instead ATTACHES to a server something else supervises.
+- On shutdown: `sharedserver unuse crib-duckdb`.
 
-The grace period keeps Chroma warm between editor sessions (no reload churn), and
-the server shuts down only when the last crib client detaches and grace expires.
-Dead-client detection reaps refcounts if a crib process crashes. crib never owns
-the process lifecycle — it only declares "I'm using it."
+The server binds loopback only, requires a token (a 0600 file beside the
+database), and locks itself down after it starts serving (no file access, no
+extension installs, configuration locked), so a token holder reaches only the
+store. Bound parameters don't cross Quack (duckdb 2.0), so the client renders
+values through one escaping function, covered by hostile-value contract tests.
+
+**The store is a rebuildable cache.** Disk is truth: an empty or new store is
+filled by the startup reconcile, which re-embeds what's on disk with the local
+embedder. That's no LLM, and ~12 s for ~4.6k chunks on MPS. Switching backends
+therefore needs no migration. (chroma, the original backend, was removed
+2026-11-09 for this reason, after its project went into wind-down with
+unpatched server CVEs.)
 
 **Embedder stays client-side, server stays model-free.** crib computes *all*
-embeddings (both stored chunks and query text) with its local model and talks to
-Chroma purely by vector — the collection is created with **no embedding
-function**, and queries pass explicit `query_embeddings`. So the shared `chroma
-run` never needs the model, stays lightweight, and the embedder remains a crib
-concern. (A shared embedding service is a possible later `sharedserver`-managed
-peer, but out of scope now.)
+embeddings (stored chunks and query text) with its local model and talks to the
+store purely by vector, so the store server never needs the model.
 
 **Coordination across processes.** The per-path lock in §4 is intra-process only.
 In shared mode two crib processes could both embed a file before either upserts —
 but the **hash gate makes the second upsert a no-op**, so the worst case is
-redundant embed work, never a corrupt or divergent index. The same invariant that
-tames the writer⇄watcher race tames multi-process writers for free.
+redundant embed work, never a corrupt or divergent index. DuckDB's own
+transactions (with retry on write-write conflicts) keep each write atomic.
 
 ### 10.2 CLI process model — the daemon is the MCP server
 
-`Crib.open()` pays a cold start every call: import chromadb, load the embedder
-weights (fastembed ONNX / torch), open the Chroma client. Shared mode (§10.1)
-keeps *Chroma* warm but reloads the *embedder* on every CLI invocation — so a
+`Crib.open()` pays a cold start every call: import the store backend, load the embedder
+weights (fastembed ONNX / torch), open the store. Shared mode (§10.1)
+keeps the *store* warm but reloads the *embedder* on every CLI invocation — so a
 bare `crib note lookup` still takes seconds. The fix is to not open Crib at all from
 the CLI.
 
@@ -439,7 +444,7 @@ own Crib:
 - Each verb: `sharedserver use <name> --grace-period <g> -- crib --mcp --http …`
   (reuse-or-start) → MCP `call_tool` → `sharedserver unuse <name>`. Refcount +
   grace keep it warm between calls; dead-client detection reaps a crashed CLI.
-- This layers cleanly over §10.1: the daemon holds the Chroma refcount for its
+- This layers cleanly over §10.1: the daemon holds the store server's refcount for its
   whole life; the CLI holds a daemon refcount for one command + grace.
 
 **Why this is also more correct.** Centralizing every write in one process makes
@@ -615,8 +620,8 @@ re-clear that bar.)
   indexed) + manual git snapshots.
 - Local docs reach a project via one-way `import` (pull from source) declared in
   a code repo's `.crib`.
-- Chroma runs embedded by default; `chroma.mode: shared` runs it as a
-  `sharedserver`-refcounted `chroma run` for multi-client safety + warm reuse.
+- The DuckDB store runs embedded by default; `[duckdb] mode = "shared"` runs it as a
+  `sharedserver`-refcounted crib DuckDB server for multi-client safety + warm reuse.
   Embedder is always client-side; the index is hash-gated so multi-process
   writers stay correct (§10.1).
 - Project lifecycle ("2026-11"): explicit `project_create`/`delete`/`rename`
@@ -798,7 +803,7 @@ absolute paths in `memory-bindings.json`.
 
 **The index must follow git.** A pull rewrites note files on disk, so after any pull
 that changed files the CLI triggers `reconcile` (hash-gated) — via the warm daemon if
-up, else in-process — to bring Chroma back in line with whatever git produced
+up, else in-process — to bring the vector store back in line with whatever git produced
 (including a human-resolved merge). Sync that skipped this would leave search lying.
 
 **Git runs client-side; the daemon never shells git.** `push` can prompt (SSH

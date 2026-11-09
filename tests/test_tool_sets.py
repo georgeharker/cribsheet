@@ -67,9 +67,8 @@ def test_every_tool_maps_to_a_known_set():
         assert all(t.startswith(fam + "_") for t in by_set[set_name]), set_name
     # the system set is exactly the poll/meta trio (+ any unprefixed strays)
     # system always rides, even in read-only deployments: adding to it is a
-    # reviewed decision. store_migrate: whole-store housekeeping like reconcile,
-    # a dry run unless apply, never touches notes (writes only a new index).
-    assert set(by_set["system"]) == {"ops", "status", "project_reconcile", "store_migrate"}
+    # reviewed decision.
+    assert set(by_set["system"]) == {"ops", "status", "project_reconcile"}
 
 
 def test_exposure_validates_and_always_includes_system():

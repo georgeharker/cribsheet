@@ -39,7 +39,8 @@ def test_unknown_top_level_key_warns_and_loads(tmp_path, capsys):
 def test_every_table_tolerates_unknown_keys(tmp_path):
     f = _cfg(tmp_path, "\n".join(
         f"[{t}]\nnot_a_real_key = 1\n" for t in
-        ("embed", "chunk", "retrieve", "memory", "chroma", "daemon", "generate")))
+        ("embed", "chunk", "retrieve", "memory", "store", "duckdb", "daemon",
+         "generate")))
     cfg = Config.load(f)                      # each table filtered independently
     assert cfg.daemon.port == 7732 and cfg.retrieve.hybrid is True
 

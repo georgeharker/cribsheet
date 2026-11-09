@@ -1469,16 +1469,6 @@ def build_parser() -> argparse.ArgumentParser:
     proj(_pc)
     pjsub.add_parser("reconcile", help="sweep all projects for offline changes")
 
-    n_store = sub.add_parser("store", help="the vector index store: migrate between backends")
-    storesub = n_store.add_subparsers(dest="store_verb", required=True)
-    _sm = storesub.add_parser(
-        "migrate",
-        help="copy the index into another backend without re-embedding (dry run "
-        "unless --apply), then verify it",
-    )
-    _sm.add_argument("--to", default="duckdb", choices=["duckdb", "chroma", "json"])
-    _sm.add_argument("--apply", action="store_true", help="copy + verify (default: plan only)")
-
     # noun groups mirroring `project`: note / code / learning (verbs nest under them)
     n_note = sub.add_parser("note", help="memory notes: search, read, write, share")
     notesub = n_note.add_subparsers(dest="note_verb", required=True)
@@ -2243,7 +2233,7 @@ def cmd_info(as_json: bool) -> None:
     paths = Paths.resolve()
     config = Config.load(paths.config_file)
     backends = {
-        "chromadb": importlib.util.find_spec("chromadb") is not None,
+        "duckdb": importlib.util.find_spec("duckdb") is not None,
         "fastembed": importlib.util.find_spec("fastembed") is not None,
         "sentence_transformers": importlib.util.find_spec("sentence_transformers")
         is not None,
@@ -2267,7 +2257,8 @@ def cmd_info(as_json: bool) -> None:
             "rerank": config.retrieve.rerank,
             "rerank_model": config.retrieve.rerank_model,
         },
-        "chroma_mode": config.chroma.mode,
+        "store": config.store.backend
+        + (f" ({config.duckdb.mode})" if config.store.backend == "duckdb" else ""),
         "default_project": config.default_project,
         "daemon": {
             "enabled": d.enabled,
@@ -2285,7 +2276,7 @@ def cmd_info(as_json: bool) -> None:
         "data_dir",
         "index_dir",
         "embed_model",
-        "chroma_mode",
+        "store",
         "default_project",
     ):
         print(f"{k:18} {info[k]}")
@@ -2814,15 +2805,6 @@ VERBS: dict[str, Verb] = {
         "status", lambda a: {}, _E_status, wants_cwd=False, policy="none", mcp=""
     ),
     "ops": Verb("ops", lambda a: {}, _E_ops, wants_cwd=False, policy="none", mcp=""),
-    "store migrate": Verb(
-        "store_migrate",
-        lambda a: {"to": a.to, "apply": a.apply},
-        _E,
-        is_async=True,
-        wants_cwd=False,
-        policy="none",
-        mcp="to='duckdb' apply=False",
-    ),
     # project lifecycle (whole repo) — repo-scoped, hence the `source` policy
     "project setup": Verb(
         "project_setup",

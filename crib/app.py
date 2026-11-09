@@ -565,8 +565,8 @@ class Crib:
         self._bg_tasks.clear()
 
     def close(self) -> None:
-        """Stop watchers, shut warm LSP sessions down, and release the shared
-        Chroma refcount, if any."""
+        """Stop watchers, shut warm LSP sessions down, and release the store
+        (the DuckDB file, or the shared server's refcount)."""
         self.stop_watchers()
         from .codeindex import _POOL
 
@@ -884,8 +884,8 @@ class Crib:
     def _maybe_recreate_for_dim(self) -> bool:
         """A full reindex is the one safe place to switch embedder: if the stored
         vectors' dim differs from the current embedder (a profile flip to a bigger
-        model), recreate the collection so all chunks re-embed at the new dim.
-        Chroma is shared across projects AND pillars, so this wipes EVERY
+        model), recreate the store so all chunks re-embed at the new dim.
+        The store is shared across projects AND pillars, so this wipes EVERY
         project's chunks (and in-situ `sources/…` docs, which the notes sweep
         doesn't walk) — hoisted out of the per-pillar store so the check runs once
         per full reindex, not once per pillar."""
@@ -1008,55 +1008,6 @@ class Crib:
             self._reconcile_remaining = None
             self._reconcile_reason = None
         return total
-
-    async def store_migrate(
-        self, to: str = "duckdb", apply: bool = False
-    ) -> dict[str, Any]:
-        """Copy the vector index from the store this crib has open into the `to`
-        backend WITHOUT re-embedding (crib.store_migrate). A dry run unless
-        `apply`. The target is built exactly as the daemon would build it
-        (`[duckdb] mode` decides embedded vs shared); the source is never
-        written, and config is never edited: the result says what to change.
-
-        Rerunnable: each run copies only what changed, so run it once to copy,
-        and once more right before switching the backend to catch writes made
-        meanwhile."""
-        import dataclasses
-
-        from .store_migrate import migrate, plan_migration
-
-        current = self.config.store.backend
-        if to == current:
-            raise CribUserError(f"the index is already on {to!r}: nothing to migrate")
-        if to not in ("duckdb", "chroma", "json"):
-            raise CribUserError(f"unknown target store {to!r} (duckdb | chroma | json)")
-        cfg = dataclasses.replace(
-            self.config, store=dataclasses.replace(self.config.store, backend=to)
-        )
-        target, close = await asyncio.to_thread(_build_store, self.paths, cfg)
-        try:
-            if not apply:
-                plan = await asyncio.to_thread(plan_migration, self.store, target)
-                return {
-                    "dry_run": True,
-                    "from": current,
-                    "to": to,
-                    **plan.as_dict(),
-                    "next": "rerun with apply=True (CLI: --apply) to copy and verify",
-                }
-            report = await asyncio.to_thread(migrate, self.store, target)
-        finally:
-            if close is not None:
-                await asyncio.to_thread(close)
-        report.update({"dry_run": False, "from": current, "to": to})
-        report["next"] = (
-            f'set [store] backend = "{to}" in config.toml and restart the daemon '
-            "(mcp-combiner restart-server cribsheet); rerun this first if notes "
-            "changed meanwhile"
-            if report["ok"]
-            else "verification FAILED: keep the current backend; see problems"
-        )
-        return report
 
     async def _resweep_insitu(self, project: str) -> int:
         """Re-embed a project's in-situ `sources/…` docs after a store wipe. Doc
@@ -1236,7 +1187,7 @@ class Crib:
         # Python so retrieval never goes dark between upgrade and sweep.
         stamped = self.stored_chunk_schema() >= CHUNK_SCHEMA_VERSION
         where = {"project": proj, "store": store} if stamped else {"project": proj}
-        # `where` is a vector-store filter dict (Chroma/Json metadata predicate),
+        # `where` is a vector-store filter dict (an exact-match metadata predicate),
         # not a SQL string; there is no SQL here.
         # pi-lens-ignore: python-sql-injection
         dense = self.store.query(vec, k=topn, where=where)
@@ -2947,7 +2898,7 @@ class Crib:
 
         THE INVARIANT (user-set 2026-10-31): delete NEVER removes anything
         from a user repo. Whatever a store's location, only crib-owned state
-        is removed — index entries (Chroma), local derived caches, the global
+        is removed — index entries (the vector store), local derived caches, the global
         tree to `.trash/`, mirror bindings, session pointers. The user's repo
         (committed notes, `.crib`, store dir) is untouched, so `force` no
         longer gates anything here either; it is accepted for surface
@@ -5672,41 +5623,31 @@ class Crib:
 def _build_store(
     paths: Paths, config: Config
 ) -> tuple[Store, Callable[[], None] | None]:
-    """Return (store, on_close). on_close releases what the store holds: the
-    shared Chroma refcount, or the DuckDB file (so another process can open it)."""
+    """Return (store, on_close). on_close releases what the store holds: the DuckDB
+    file (so another process can open it), or the shared server's refcount.
+
+    Every store is a rebuildable cache: a fresh or empty one is filled by the
+    startup reconcile, which re-embeds what is on disk (no LLM)."""
     from .store import JsonStore
 
     backend = config.store.backend
-    if backend == "duckdb":
-        if config.duckdb.mode == "shared":
-            return _build_shared_duckdb(paths, config)
-        if config.duckdb.mode != "embedded":
-            raise CribUserError(
-                f"[duckdb] mode = {config.duckdb.mode!r} is not a mode crib knows "
-                "(embedded | shared)"
-            )
-        from .store_duckdb import DuckDBStore
-
-        store = DuckDBStore.embedded(paths.duckdb_file)
-        return store, store.close
     if backend == "json":
         return JsonStore(paths.index_dir / "store.json"), None
-    if backend != "chroma":
+    if backend != "duckdb":
         raise CribUserError(
-            f"[store] backend = {backend!r} is not a store crib knows "
-            "(chroma | duckdb | json)"
+            f"[store] backend = {backend!r} is not a store crib knows (duckdb | json)"
         )
-    mode = config.chroma.mode
-    if mode == "shared":
-        return _build_shared_chroma(paths, config)
-    if mode == "embedded":
-        # chromadb absent → fall through to the dependency-free persistent store
-        with contextlib.suppress(ImportError):
-            from .store import ChromaStore
+    if config.duckdb.mode == "shared":
+        return _build_shared_duckdb(paths, config)
+    if config.duckdb.mode != "embedded":
+        raise CribUserError(
+            f"[duckdb] mode = {config.duckdb.mode!r} is not a mode crib knows "
+            "(embedded | shared)"
+        )
+    from .store_duckdb import DuckDBStore
 
-            return ChromaStore.embedded(str(paths.chroma_dir)), None
-    # mode == "json", or embedded requested but chromadb unavailable
-    return JsonStore(paths.index_dir / "store.json"), None
+    store = DuckDBStore.embedded(paths.duckdb_file)
+    return store, store.close
 
 
 def _build_shared_duckdb(
@@ -5714,7 +5655,7 @@ def _build_shared_duckdb(
 ) -> tuple[Store, Callable[[], None]]:
     """Refcount the crib DuckDB server via sharedserver, wait for it, connect.
 
-    Reuse-or-start like `_build_shared_chroma`. The bind is checked BEFORE the
+    Reuse-or-start through sharedserver. The bind is checked BEFORE the
     launch so a non-loopback config never opens a listener. The first start
     fetches the Quack extension into crib's own extension dir, so it may take a
     while; later starts load it offline."""
@@ -5781,46 +5722,3 @@ def _build_shared_duckdb(
 
     return store, close
 
-
-def _build_shared_chroma(
-    paths: Paths, config: Config
-) -> tuple[Store, Callable[[], None]]:
-    """Refcount a `chroma run` via sharedserver, wait for it, then connect.
-
-    `sharedserver use` is reuse-or-start by default: if `<server_name>` is already
-    running it just attaches and increments the refcount; it only launches a new
-    `chroma run` when none exists. crib releases its refcount on close."""
-    from . import sharedserver
-    from .store import ChromaStore, check_chroma_exposure
-
-    c = config.chroma
-    # BEFORE the launch: `--host` below is chroma's bind address, so a
-    # non-loopback config must be refused before any listener exists.
-    check_chroma_exposure(c.host, c.allow_unpatched_remote)
-    paths.chroma_dir.mkdir(parents=True, exist_ok=True)
-    command = [
-        "chroma",
-        "run",
-        "--path",
-        str(paths.chroma_dir),
-        "--host",
-        c.host,
-        "--port",
-        str(c.port),
-    ]
-    sharedserver.use(c.server_name, command, c.grace_period)
-
-    def probe() -> None:
-        import chromadb  # lazy
-
-        chromadb.HttpClient(host=c.host, port=c.port).heartbeat()
-
-    try:
-        sharedserver.wait_ready(probe)
-        store = ChromaStore.shared(
-            c.host, c.port, allow_unpatched=c.allow_unpatched_remote
-        )
-    except Exception:
-        sharedserver.unuse(c.server_name)  # don't leak the refcount on failure
-        raise
-    return store, (lambda: sharedserver.unuse(c.server_name))

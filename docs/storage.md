@@ -10,7 +10,7 @@ rules, and lifecycles. This page is the map. (Design rationale: DESIGN §2,
 |---|---|---|---|
 | **config** | `~/.config/crib` | `config.toml` | hand-edited |
 | **data** | `~/.local/share/crib` | everything authored or curated (below) | **precious** — the truth |
-| **index** | `~/.cache/crib` | Chroma embeddings, chunk-schema marker | disposable — `rm -rf` + reconcile is a supported recovery |
+| **index** | `~/.cache/crib` | DuckDB store (embeddings, chunk text + metadata), chunk-schema marker | disposable — `rm -rf` + reconcile is a supported recovery |
 
 Env overrides: `CRIB_CONFIG_DIR` / `CRIB_DATA_DIR` / `CRIB_INDEX_DIR`.
 
@@ -71,7 +71,7 @@ store: .crib-store        # repo-relative; NOT ".crib/…" (.crib is a file)
 
 then `crib project adopt`. What moves: every pillar dir (`notes/`, `design/`,
 `plans/`, `learnings/`) and that project's version ring
-(`<store>/.versions/`, gitignored). What never moves: the Chroma index (embeddings are rebuildable
+(`<store>/.versions/`, gitignored). What never moves: the vector index (embeddings are rebuildable
 and must not be committable), the symbol index and section facets, the
 machine-local registries, and the stub `projects/<name>/.cribproject` — the
 stub stays behind holding a portable `store_root:` token so the daemon can

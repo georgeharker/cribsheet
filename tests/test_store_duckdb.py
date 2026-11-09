@@ -113,7 +113,7 @@ def test_unknown_backend_is_a_clear_error(tmp_path, monkeypatch):
     monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
     cfg = Config()
     cfg.store.backend = "duckbd"
-    with pytest.raises(CribUserError, match="chroma \\| duckdb \\| json"):
+    with pytest.raises(CribUserError, match="duckdb \\| json"):
         _build_store(Paths.resolve(), cfg)
 
 
@@ -123,4 +123,4 @@ def test_config_file_selects_the_backend(tmp_path):
     f = tmp_path / "config.toml"
     f.write_text('[store]\nbackend = "duckdb"\n')
     assert Config.load(f).store.backend == "duckdb"
-    assert Config.load(tmp_path / "absent.toml").store.backend == "chroma"
+    assert Config.load(tmp_path / "absent.toml").store.backend == "duckdb"

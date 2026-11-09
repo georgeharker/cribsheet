@@ -677,7 +677,7 @@ class _Session:
 class LspSessionPool:
     """Warm LSP sessions, one per (workspace root, server label) — docs §3.1.
 
-    An LSP server is Chroma's twin (docs §3): warm, stateful, and expensive to
+    An LSP server is the store server's twin (docs §3): warm, stateful, and expensive to
     cold-start — `initialize` pays the whole workspace index (seconds on
     pyright, minutes on rust-analyzer). The pool keeps each initialized client
     alive across `extract_file` calls, so a sweep or revalidation pays the

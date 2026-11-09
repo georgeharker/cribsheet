@@ -1,10 +1,10 @@
 """Thin wrapper over the `sharedserver` CLI (DESIGN §10.1).
 
-In shared mode crib does not own the store's server process (`chroma run`, or the
-crib DuckDB server) — it refcounts it. `use` attaches (starting the server if
-needed); `unuse` detaches. The grace
-period keeps Chroma warm between crib invocations; dead-client detection reaps
-the refcount if a crib process crashes.
+In shared mode crib does not own the store's server process (the crib DuckDB
+server, `python -m crib.store_quack`) — it refcounts it. `use` attaches
+(starting the server if needed); `unuse` detaches. The grace period keeps the
+server warm between crib invocations; dead-client detection reaps the refcount
+if a crib process crashes.
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ def use(name: str, command: list[str], grace_period: str | None = None) -> None:
     if not available():
         raise SharedServerError(
             "sharedserver binary not found on PATH; install it or set "
-            "[chroma].mode = 'embedded'/'json'"
+            "[duckdb] mode = 'embedded' (or [store] backend = 'json')"
         )
     args = ["sharedserver", "use", name]
     if grace_period:
@@ -52,7 +52,7 @@ def unuse(name: str) -> None:
 
 
 def wait_ready(probe, timeout: float = 30.0, interval: float = 0.3) -> None:
-    """Poll `probe()` (e.g. chroma heartbeat) until it succeeds or times out."""
+    """Poll `probe()` (e.g. a store connection) until it succeeds or times out."""
     deadline = time.monotonic() + timeout
     last: Exception | None = None
     while time.monotonic() < deadline:

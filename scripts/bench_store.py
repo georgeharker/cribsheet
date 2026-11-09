@@ -28,7 +28,6 @@ import resource
 import shutil
 import socket
 import statistics
-import subprocess
 import sys
 import tempfile
 import time
@@ -42,7 +41,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from crib import proc  # noqa: E402
-from crib.store import ChromaStore, InMemoryStore, Record  # noqa: E402
+from crib.store import InMemoryStore, Record  # noqa: E402
 from crib.store_duckdb import DuckDBStore  # noqa: E402
 from crib.store_quack import QuackStore, spawn_server, to_literal  # noqa: E402
 
@@ -156,52 +155,6 @@ class Backend:
     cleanup: Callable[[], None] = lambda: None
     server: bool = False
     notes: list[str] = field(default_factory=list)
-
-
-def chroma_embedded(root: Path) -> Backend:
-    path = str(root / "chroma")
-    return Backend("chroma embedded (HNSW)", lambda: ChromaStore.embedded(path))
-
-
-def chroma_shared(root: Path) -> Backend:
-    import chromadb
-
-    port = free_port()
-    exe = shutil.which("chroma", path=str(Path(sys.executable).parent)) or "chroma"
-    p = proc.popen(
-        [
-            exe,
-            "run",
-            "--path",
-            str(root / "chroma-srv"),
-            "--host",
-            "127.0.0.1",
-            "--port",
-            str(port),
-        ],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    deadline = time.monotonic() + 60
-    while True:
-        try:
-            chromadb.HttpClient(host="127.0.0.1", port=port).heartbeat()
-            break
-        except Exception:  # noqa: BLE001 — not up yet
-            if time.monotonic() > deadline:
-                raise
-            time.sleep(0.2)
-
-    def stop() -> None:
-        p.terminate()
-        p.wait(30)
-
-    return Backend(
-        "chroma shared (HNSW, HTTP)",
-        lambda: ChromaStore.shared("127.0.0.1", port),
-        stop,
-        server=True,
-    )
 
 
 def duckdb_embedded(root: Path) -> Backend:
@@ -510,8 +463,6 @@ def main() -> int:
     args.out.mkdir(parents=True, exist_ok=True)
     real = load_real(args.data)
     makers = {
-        "chroma-embedded": lambda r: chroma_embedded(r),
-        "chroma-shared": lambda r: chroma_shared(r),
         "duckdb-embedded": lambda r: duckdb_embedded(r),
         "duckdb-quack": lambda r: duckdb_quack(r),
         "duckdb-embedded-hnsw": lambda r: duckdb_embedded_hnsw(r, args.extension_dir),
@@ -559,7 +510,6 @@ def main() -> int:
         "machine": platform.machine(),
         "cpu_count": os.cpu_count(),
         "duckdb": __import__("duckdb").__version__,
-        "chromadb": __import__("chromadb").__version__,
         "git_sha": proc.run(
             ["git", "-C", str(ROOT), "rev-parse", "--short", "HEAD"],
             capture_output=True,

@@ -242,8 +242,10 @@ runs), so it's fast; `--no-daemon` runs in-process, `--json` gives machine outpu
   model = "hash"          # or "fe:BAAI/bge-small-en-v1.5" (fastembed), "st:<model>"
   [retrieve]
   hybrid = true           # dense ⊕ BM25, RRF-fused; rerank = true adds a cross-encoder
-  [chroma]
-  mode = "embedded"       # "embedded" | "shared" (sharedserver) | "json"
+  [store]
+  backend = "duckdb"      # "duckdb" (default) | "json" (dependency-free)
+  [duckdb]
+  mode = "embedded"       # "embedded" | "shared" (a loopback DuckDB server via sharedserver)
   [locations]
   DEV = "~/Development"   # provenance paths stored as $DEV/… so they sync clean
   ```

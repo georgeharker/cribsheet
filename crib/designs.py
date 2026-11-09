@@ -535,7 +535,7 @@ class Designs:
         holds (including docs indexed in situ) plus each pillar tree on disk.
         Non-notes docs read QUALIFIED (`design:foo.md`) — the docref spelling."""
         out: set[str] = set()
-        # PLUGGABLE-BACKEND boundary: the vector store (Chroma/Json/…) sits behind
+        # PLUGGABLE-BACKEND boundary: the vector store (DuckDB/Json/…) sits behind
         # an interface, so we don't own the exception types `get_meta` can raise.
         # An unreachable store here must NARROW the doc set (a degraded citation
         # search), not fail the read — hence the deliberate broad catch, reported.

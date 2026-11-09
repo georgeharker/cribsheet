@@ -16,10 +16,11 @@ index. Commands are copy-pasteable; adjust paths if your checkout layout differs
   - `~/.config/crib/models.toml` — llmkit providers/profiles (the `opencode-qwen`
     zen provider). Kept separate from `~/.config/zsh-ai/models.toml`.
 - **`export OPENCODE_API_KEY=…`** in the shell (zen auth; crib holds no key).
-- **Shared Chroma:** config uses `[chroma].mode = "shared"`, which needs the
+- **Shared store:** config uses `[duckdb] mode = "shared"`, which needs the
   `sharedserver` binary on `PATH`. If it isn't installed on the new box, either
-  install it or set `[chroma].mode = "embedded"` in `config.toml` for a
-  self-contained store.
+  install it or set `[duckdb] mode = "embedded"` in `config.toml` for a
+  self-contained store. Either way the index is rebuilt from the synced notes
+  on first start (the store is a rebuildable cache; re-embedding costs no LLM).
 - **Python env** for cribsheet (below).
 
 ## 1. Update source (cribsheet + llmkit submodule)

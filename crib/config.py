@@ -233,19 +233,19 @@ class GenerateConfig:
 @dataclass
 class StoreConfig:
     """Which vector store backs the index (design: "Vector store moves to DuckDB on
-    two paths"). `chroma` stays the default until DuckDB has been dogfooded;
-    `duckdb` is the embedded DuckDB file at `Paths.duckdb_file`. Each backend
-    keeps its own table (`[chroma]`, and `[duckdb]` once its shared mode lands).
-    `json` is the dependency-free fallback."""
+    two paths"). `duckdb` (the default) is the DuckDB store, configured by the
+    `[duckdb]` table; `json` is the dependency-free fallback. chroma was removed
+    (2026-11-09): every store is a rebuildable cache, so switching needs no
+    migration; the startup reconcile re-embeds what's on disk."""
 
-    backend: str = "chroma"  # "chroma" | "duckdb" | "json"
+    backend: str = "duckdb"  # "duckdb" | "json"
 
 
 @dataclass
 class DuckDBConfig:
     """The DuckDB store's two paths ([store] backend = "duckdb"). `embedded`: the
     daemon opens the file itself, one process per file. `shared`: a crib-owned
-    server (`python -m crib.store_quack`, refcounted by sharedserver like chroma's)
+    server (`python -m crib.store_quack`, refcounted by sharedserver)
     serves the file over Quack and every crib process is a client. The server
     binds to loopback only, needs a token (a 0600 file beside the database), and
     is locked down so a token holder reaches only the store."""
@@ -254,7 +254,7 @@ class DuckDBConfig:
     server_name: str = "crib-duckdb"
     grace_period: str = "1h"
     host: str = "127.0.0.1"  # loopback only; anything else is refused
-    # 7734: crib's own 773x band (MCP 7732, shared chroma 7733).
+    # 7734: crib's own 773x band (the MCP daemon is 7732).
     port: int = 7734
     # true: crib starts the server itself through sharedserver (refcounted).
     # false: an EXTERNAL supervisor runs it (e.g. a combiner sharedServers
@@ -262,26 +262,6 @@ class DuckDBConfig:
     # settings); crib only attaches and waits up to `attach_timeout` for it.
     launch: bool = True
     attach_timeout: float = 60.0
-
-
-@dataclass
-class ChromaConfig:
-    mode: str = "embedded"  # "embedded" | "shared"
-    server_name: str = "crib-chroma"
-    grace_period: str = "1h"
-    host: str = "127.0.0.1"
-    # 7733 keeps shared chroma in crib's own 773x band (MCP server is 7732),
-    # away from chromadb's default 8000 — the most collision-prone port on the box.
-    port: int = 7733
-    # SECURITY GUARD (CVE-2026-45829 / GHSA-f4j7-r4q5-qw2c): chroma's server
-    # collections API had pre-auth code injection (trust_remote_code, fixed in
-    # chroma-core/chroma#7237 but UNRELEASED as of 1.5.9) — reachable only in
-    # REMOTE/server mode, never in crib's embedded mode. `host` is chroma's bind
-    # address: loopback is allowed, anything else is refused until
-    # `allow_unpatched_remote = true` (or the daemon env
-    # CRIB_ALLOW_UNPATCHED_CHROMA_REMOTE=1) — flipping a config key must not
-    # silently put the vulnerable listener on the network.
-    allow_unpatched_remote: bool = False
 
 
 @dataclass
@@ -297,7 +277,7 @@ class DaemonConfig:
     enabled: bool = True
     name: str = "cribsheet"  # sharedserver name (== the MCP registration)
     host: str = "127.0.0.1"
-    port: int = 7732  # crib's MCP band (chroma is 7733)
+    port: int = 7732  # crib's MCP band (the DuckDB server is 7734)
     grace_period: str = "1h"  # keep warm this long after the last client
 
 
@@ -324,7 +304,6 @@ class Config:
     memory: MemoryConfig = field(default_factory=MemoryConfig)
     store: StoreConfig = field(default_factory=StoreConfig)
     duckdb: DuckDBConfig = field(default_factory=DuckDBConfig)
-    chroma: ChromaConfig = field(default_factory=ChromaConfig)
     daemon: DaemonConfig = field(default_factory=DaemonConfig)
     generate: GenerateConfig = field(default_factory=GenerateConfig)
     # `[elaborate.<label>]` / `[summarize.<label>]` tables → per-label prompt.
@@ -363,11 +342,16 @@ class Config:
             "memory": MemoryConfig,
             "store": StoreConfig,
             "duckdb": DuckDBConfig,
-            "chroma": ChromaConfig,
             "daemon": DaemonConfig,
             "generate": GenerateConfig,
             "tools": ToolsConfig,
         }
+        if "chroma" in data:  # removed backend: say so once, don't call it a typo
+            _warn(
+                f"{config_file}: [chroma] is ignored: crib no longer supports chroma "
+                "(the index lives in DuckDB, [store]/[duckdb]); delete the table"
+            )
+            data = {k: v for k, v in data.items() if k != "chroma"}
         _warn_unknown(config_file, "top level", data, {f.name for f in fields(cls)})
         if "default_project" in data:
             cfg.default_project = str(data["default_project"])

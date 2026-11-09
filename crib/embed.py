@@ -80,7 +80,7 @@ class FastEmbedEmbedder:
     """ONNX-based embeddings via fastembed — no torch, no CUDA/nvidia.
 
     The recommended local backend on hardware without a GPU (e.g. a Pi): reuses
-    the onnxruntime that chromadb already pulls in, and runs models like
+    onnxruntime (no torch), and runs models like
     `BAAI/bge-small-en-v1.5` at a fraction of the install weight of torch.
     """
 
@@ -206,7 +206,7 @@ def build_embedder(cfg: EmbedConfig, stored_dim: int | None = None) -> Embedder:
 
     Falls back to the hash embedder (with a warning) if the chosen backend isn't
     installed, so a config naming a real model can't crash the server — it
-    degrades, the same way the store falls back to JSON without chromadb.
+    degrades rather than fails.
 
     …but ONLY into an EMPTY-or-compatible store. `stored_dim` (the dimension of the
     vectors already held, None when the store is empty) is the check: a store full

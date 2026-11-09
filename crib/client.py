@@ -1,6 +1,6 @@
 """The CLI as an MCP client of the warm `crib` daemon (DESIGN §10.2).
 
-`crib <verb>` does not pay the cold-start cost (chroma client + embedder
+`crib <verb>` does not pay the cold-start cost (store connection + embedder
 weights) on every call. Instead it attaches — via sharedserver — to the one
 long-lived `crib --mcp --http` process (the same one Claude talks to over MCP),
 speaks the MCP tool surface over TCP, and detaches. sharedserver's refcount +
