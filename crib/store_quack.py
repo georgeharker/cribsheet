@@ -276,6 +276,12 @@ class QuackStore(DuckDBStore):
     def recreate(self) -> None:
         self._call(super().recreate)
 
+    def ec_get(self, model: str, hashes: list[str]) -> dict[str, list[float]]:
+        return self._call(super().ec_get, model, hashes)
+
+    def ec_put(self, model: str, rows: list[tuple[str, list[float]]]) -> None:
+        self._call(super().ec_put, model, rows)
+
     def rc_load(self, key: str) -> dict[str, tuple[int, int, str]]:
         return self._call(super().rc_load, key)
 

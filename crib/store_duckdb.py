@@ -41,6 +41,9 @@ LEDGER = "crib_gen_ledger"
 # The derived-index record cache (crib.recordcache): parsed TOML records keyed by
 # tier directory + filename + (mtime, size). Like the ledger, outside crib_chunks.
 RECORD_CACHE = "crib_record_cache"
+# The embedding cache (crib.embedcache): text hash -> vector per model; plain
+# vectors, no index (search builds what it needs in memory).
+EMBED_CACHE = "crib_embed_cache"
 PROMOTED = ("project", "store", "relpath")  # filtered constantly: real columns
 # The only column lists a read may select — never caller text.
 _SELECT_COLUMNS = MappingProxyType({"meta": "id, meta", "docs": "id, document, meta"})
@@ -352,6 +355,43 @@ class DuckDBStore:
 
     def get_docs(self, where: dict[str, Any]) -> dict[str, tuple[str, dict[str, Any]]]:
         return {i: (d, json.loads(m)) for i, d, m in self._select("docs", where)}
+
+    # ── the embedding cache (crib.embedcache) ────────────────────────────────
+
+    def ec_get(self, model: str, hashes: list[str]) -> dict[str, list[float]]:
+        if not hashes:
+            return {}
+        with self._reading() as ex:
+            if not ex.run(
+                "SELECT 1 FROM duckdb_tables() WHERE table_name = ?", [EMBED_CACHE]
+            ):
+                return {}
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(
+                f"SELECT h, vec FROM {EMBED_CACHE} WHERE model = ? AND h = ANY(?)",
+                [model, list(hashes)],
+            )
+        return {h: [float(x) for x in v] for h, v in rows}
+
+    def ec_put(self, model: str, rows: list[tuple[str, list[float]]]) -> None:
+        if not rows:
+            return
+        data = [[model, h, [float(x) for x in v]] for h, v in rows]
+
+        def write(ex: Any) -> None:
+            ex.run(
+                f"CREATE TABLE IF NOT EXISTS {EMBED_CACHE} ("
+                "model VARCHAR, h VARCHAR, vec FLOAT[], PRIMARY KEY (model, h))"
+            )
+            # pi-lens-ignore: python-sql-injection
+            ex.run(
+                f"DELETE FROM {EMBED_CACHE} WHERE model = ? AND h = ANY(?)",
+                [model, [h for h, _ in rows]],
+            )
+            # pi-lens-ignore: python-sql-injection
+            ex.run_many(f"INSERT INTO {EMBED_CACHE} VALUES (?, ?, ?)", data)
+
+        self._transaction(write)
 
     # ── the derived-index record cache (crib.recordcache) ────────────────────
 

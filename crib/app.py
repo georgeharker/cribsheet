@@ -153,8 +153,16 @@ class Crib:
         self.paths = paths
         self.config = config
         self.store = store
-        self.embedder = build_embedder(
-            _resolve_embed_config(config), stored_dim=_stored_dim(store)
+        embed_cfg = _resolve_embed_config(config)
+        # Persist what's embedded (crib.embedcache): alias vectors and code
+        # descriptions are re-embedded at every start otherwise. Vectors only;
+        # any search index is built in memory.
+        from . import embedcache
+
+        self.embedder = embedcache.wrap(
+            build_embedder(embed_cfg, stored_dim=_stored_dim(store)),
+            store,
+            embed_cfg.model,
         )
         self.index = IndexEngine(
             store,
