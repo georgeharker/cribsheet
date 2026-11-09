@@ -41,7 +41,13 @@ class _DocStore:
         raise AssertionError("not called in these tests")
 
     def get_meta(self, where: Any) -> dict[str, dict[str, Any]]:
-        return {}
+        return {i: m for i, (_d, m) in self.get_docs(where).items()}
+
+    def count(self, where: Any, relpath_prefix: str = "") -> int:
+        return len(self.get_meta(where))
+
+    def projects(self) -> set[str]:
+        return set()
 
     def query(self, embedding: Any, k: Any, where: Any = None) -> list:
         return []

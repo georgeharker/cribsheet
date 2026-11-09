@@ -1172,11 +1172,7 @@ class Crib:
         return out
 
     def _indexed_projects(self) -> set[str]:
-        out: set[str] = set()
-        for m in self.store.get_meta({}).values():
-            if p := m.get("project"):
-                out.add(p)
-        return out
+        return self.store.projects()
 
     @property
     def reranker(self) -> Any:
@@ -4128,11 +4124,7 @@ class Crib:
         entries = si.all()
         link = CribLink.find(Path(cwd)) if cwd else None
         srcs = self._source_roots(proj).all()
-        doc_count = sum(
-            1
-            for m in self.store.get_meta({"project": proj}).values()
-            if m.get("relpath", "").startswith(SRC_PREFIX)
-        )
+        doc_count = self.store.count({"project": proj}, relpath_prefix=SRC_PREFIX)
         refs = [
             {**r, "root": str(r["root"]) if r["root"] else None}
             for r in self._project_refs(proj)
@@ -4175,11 +4167,7 @@ class Crib:
             nd = pp.notes_dir
             ld = pp.pillar_dir("learnings")
             sd = pp.project_dir / "symbol_index"
-            doc_chunks = sum(
-                1
-                for m in self.store.get_meta({"project": name}).values()
-                if m.get("relpath", "").startswith(SRC_PREFIX)
-            )
+            doc_chunks = self.store.count({"project": name}, relpath_prefix=SRC_PREFIX)
             dd = pp.pillar_dir("design")
             pd = pp.pillar_dir("plans")
             row = {

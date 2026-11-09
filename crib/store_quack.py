@@ -302,6 +302,12 @@ class QuackStore(DuckDBStore):
     def meta_get(self, key: str) -> str | None:
         return self._call(super().meta_get, key)
 
+    def count(self, where: dict[str, Any], relpath_prefix: str = "") -> int:
+        return self._call(super().count, where, relpath_prefix)
+
+    def projects(self) -> set[str]:
+        return self._call(super().projects)
+
     def meta_set(self, key: str, value: str) -> None:
         self._call(super().meta_set, key, value)
 

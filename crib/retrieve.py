@@ -371,13 +371,7 @@ class LexicalCache:
             gen = self._gen.get(project, 0)
         if entry is not None:
             return entry
-        docs = {
-            i: (d, m)
-            for i, (d, m) in self._store.get_docs({"project": project}).items()
-            if not (m or {}).get("alias")  # dense-only summary aliases
-            # pillar scope; pre-split chunks lack the key -> "notes"
-            and ((m or {}).get("store") or "notes") == store
-        }
+        docs = self._store.get_docs({"project": project, "store": store})
         ids = list(docs)
         corpus: list[dict[str, float]] = []
         for i in ids:
@@ -465,13 +459,9 @@ class SummaryVectorCache:
         if entry is not None:
             return entry
         reps: dict[str, list[str]] = {}
-        docs = self._store.get_docs({"project": project})
-        for cid, (_doc, meta) in docs.items():
-            if (meta or {}).get("alias"):
-                continue
-            # pillar scope; pre-split chunks lack the key -> "notes"
-            if ((meta or {}).get("store") or "notes") != store:
-                continue
+        # Metadata only: the section hashes are all this needs, not the text.
+        metas = self._store.get_meta({"project": project, "store": store})
+        for cid, meta in metas.items():
             sh = (meta or {}).get("section_hash") or (meta or {}).get("content_hash")
             if sh:
                 reps.setdefault(sh, []).append(cid)

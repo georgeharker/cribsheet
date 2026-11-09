@@ -442,6 +442,28 @@ class DuckDBStore:
     def get_docs(self, where: dict[str, Any]) -> dict[str, tuple[str, dict[str, Any]]]:
         return {i: (d, json.loads(m)) for i, d, m in self._select("docs", where)}
 
+    def count(self, where: dict[str, Any], relpath_prefix: str = "") -> int:
+        with self._reading() as ex:
+            if self._table_dim(ex) is None:
+                return 0
+            clause, params = _where(where)
+            if relpath_prefix:
+                clause += (" AND " if clause else " WHERE ") + "starts_with(relpath, ?)"
+                params = [*params, relpath_prefix]
+            # pi-lens-ignore: python-sql-injection
+            ((n,),) = ex.run(f"SELECT count(*) FROM {TABLE}{clause}", params)
+        return int(n)
+
+    def projects(self) -> set[str]:
+        with self._reading() as ex:
+            if self._table_dim(ex) is None:
+                return set()
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(
+                f"SELECT DISTINCT project FROM {TABLE} WHERE project IS NOT NULL"
+            )
+        return {p for (p,) in rows}
+
     # ── the embedding cache (crib.embedcache) ────────────────────────────────
 
     def ec_get(self, model: str, hashes: list[str]) -> dict[str, list[float]]:

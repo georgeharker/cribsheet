@@ -95,6 +95,15 @@ class Store(Protocol):
         store also makes the content-hash gate re-embed every chunk."""
         ...
 
+    def count(self, where: dict[str, Any], relpath_prefix: str = "") -> int:
+        """How many records match `where` (and, if given, whose `relpath` starts
+        with `relpath_prefix`), without fetching them."""
+        ...
+
+    def projects(self) -> set[str]:
+        """Every `project` that has at least one record."""
+        ...
+
     def meta_get(self, key: str) -> str | None:
         """A store-level setting, e.g. `embed_model` (which embedder wrote the
         stored vectors), or None if never set."""
@@ -204,6 +213,19 @@ class InMemoryStore:
     def recreate(self) -> None:
         with self._lock:
             self._recs.clear()
+
+    def count(self, where: dict[str, Any], relpath_prefix: str = "") -> int:
+        return sum(
+            1
+            for r in self._snapshot()
+            if _matches(r.metadata, where)
+            and str(r.metadata.get("relpath") or "").startswith(relpath_prefix)
+        )
+
+    def projects(self) -> set[str]:
+        return {
+            p for r in self._snapshot() if isinstance(p := r.metadata.get("project"), str)
+        }
 
     def meta_get(self, key: str) -> str | None:
         return self._meta.get(key)

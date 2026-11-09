@@ -499,3 +499,20 @@ def test_store_meta_round_trips(backend):
     s.meta_set("embed_model", "fe:BAAI/bge-small-en-v1.5")
     s.meta_set("embed_model", "st:other")
     assert s.meta_get("embed_model") == "st:other"
+
+
+def test_count_and_projects_without_fetching(backend):
+    s = backend.store
+    assert s.count({"project": "p"}) == 0 and s.projects() == set()
+    s.upsert(
+        [
+            rec("a", X, relpath="sources/r/a.md"),
+            rec("b", Y, relpath="sources/r/b.md"),
+            rec("c", Z, relpath="notes.md"),
+            Record("d", X, "doc d", {"project": "q", "relpath": "sources/x.md"}),
+        ]
+    )
+    assert s.count({"project": "p"}) == 3
+    assert s.count({"project": "p"}, relpath_prefix="sources/") == 2
+    assert s.count({}, relpath_prefix="sources/") == 3
+    assert s.projects() == {"p", "q"}
