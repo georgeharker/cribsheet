@@ -35,6 +35,9 @@ from .errors import CribUserError
 from .store import Hit, Record
 
 TABLE = "crib_chunks"
+# The generation ledger (crib.genledger): beside the chunks, NOT part of them, so a
+# vector rebuild (recreate) keeps it.
+LEDGER = "crib_gen_ledger"
 PROMOTED = ("project", "store", "relpath")  # filtered constantly: real columns
 # The only column lists a read may select — never caller text.
 _SELECT_COLUMNS = MappingProxyType({"meta": "id, meta", "docs": "id, document, meta"})
@@ -347,6 +350,93 @@ class DuckDBStore:
     def get_docs(self, where: dict[str, Any]) -> dict[str, tuple[str, dict[str, Any]]]:
         return {i: (d, json.loads(m)) for i, d, m in self._select("docs", where)}
 
+    # ── the generation ledger (crib.genledger) ───────────────────────────────
+
+    def _ensure_ledger(self, ex: Any) -> None:
+        ex.run(
+            f"CREATE TABLE IF NOT EXISTS {LEDGER} ("
+            "purpose VARCHAR, target VARCHAR, input_hash VARCHAR, provider VARCHAR, "
+            "attempts INTEGER, last_error VARCHAR, last_attempt DOUBLE, "
+            "next_retry DOUBLE, PRIMARY KEY (purpose, target))"
+        )
+
+    def ledger_rows(self, purpose: str, targets: list[str]) -> dict[str, Any]:
+        from .genledger import Entry
+
+        if not targets:
+            return {}
+        with self._reading() as ex:
+            if not ex.run(
+                "SELECT 1 FROM duckdb_tables() WHERE table_name = ?", [LEDGER]
+            ):
+                return {}
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(
+                f"SELECT purpose, target, input_hash, provider, attempts, last_error, "
+                f"last_attempt, next_retry FROM {LEDGER} "
+                "WHERE purpose = ? AND target = ANY(?)",
+                [purpose, list(targets)],
+            )
+        return {r[1]: Entry(*r) for r in rows}
+
+    def ledger_put(self, entries: list[Any]) -> None:
+        if not entries:
+            return
+        rows = [
+            [
+                e.purpose,
+                e.target,
+                e.input_hash,
+                e.provider,
+                int(e.attempts),
+                e.last_error,
+                float(e.last_attempt),
+                float(e.next_retry),
+            ]
+            for e in entries
+        ]
+
+        def write(ex: Any) -> None:
+            self._ensure_ledger(ex)
+            for purpose in {e.purpose for e in entries}:
+                # pi-lens-ignore: python-sql-injection
+                ex.run(
+                    f"DELETE FROM {LEDGER} WHERE purpose = ? AND target = ANY(?)",
+                    [purpose, [e.target for e in entries if e.purpose == purpose]],
+                )
+            # pi-lens-ignore: python-sql-injection
+            ex.run_many(f"INSERT INTO {LEDGER} VALUES (?, ?, ?, ?, ?, ?, ?, ?)", rows)
+
+        self._transaction(write)
+
+    def ledger_delete(self, purpose: str, targets: list[str]) -> None:
+        if not targets:
+            return
+
+        def write(ex: Any) -> None:
+            self._ensure_ledger(ex)
+            # pi-lens-ignore: python-sql-injection
+            ex.run(
+                f"DELETE FROM {LEDGER} WHERE purpose = ? AND target = ANY(?)",
+                [purpose, list(targets)],
+            )
+
+        self._transaction(write)
+
+    def ledger_counts(self, now: float) -> dict[str, dict[str, int]]:
+        with self._reading() as ex:
+            if not ex.run(
+                "SELECT 1 FROM duckdb_tables() WHERE table_name = ?", [LEDGER]
+            ):
+                return {}
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(
+                f"SELECT purpose, count(*), count(*) FILTER (WHERE next_retry > ?) "
+                f"FROM {LEDGER} GROUP BY purpose ORDER BY purpose",
+                [float(now)],
+            )
+        return {p: {"failing": int(n), "backing_off": int(b)} for p, n, b in rows}
+
     def iter_records(self, batch_size: int = 500) -> Iterator[list[Record]]:
         """Pages by id (keyset, not OFFSET): each page is one range scan, and a
         record written mid-export is either in or out, never twice."""
@@ -366,7 +456,9 @@ class DuckDBStore:
                 "WHERE id > ? ORDER BY id LIMIT ?",
                 [after, int(n)],
             )
-        return [Record(i, [float(x) for x in v], d, json.loads(m)) for i, v, d, m in rows]
+        return [
+            Record(i, [float(x) for x in v], d, json.loads(m)) for i, v, d, m in rows
+        ]
 
     def query(
         self, embedding: list[float], k: int, where: dict[str, Any] | None = None

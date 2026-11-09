@@ -228,6 +228,10 @@ class GenerateConfig:
     # the LLM is down). Cold onboard and explicit `code_index` still describe inline.
     describe_backoff_base: float = 2.0
     describe_backoff_cap: float = 240.0
+    # Startup catch-up budget: at most this many files' describes per daemon start
+    # (each is one LLM call). The rest wait for later starts, and files that
+    # already failed back off via the generation ledger (crib.genledger).
+    backlog_budget: int = 50
 
 
 @dataclass

@@ -23,6 +23,7 @@ from .symbols import fqn_of
 from .symbols import key as symbol_key
 
 if TYPE_CHECKING:
+    from .genledger import GenLedger
     from .project_services import ProjectServices
 
 
@@ -72,9 +73,50 @@ class CodeIndexer:
         # live watch path DEFERS the LLM describe here instead of running it inline;
         # None → always describe inline (CLI/one-shot with no daemon, tests).
         self._describe_q: DescribeQueue | None = None
+        # Set by Crib: where describe outcomes are recorded (crib.genledger).
+        self._ledger: GenLedger | None = None
 
     def set_describe_queue(self, q: DescribeQueue) -> None:
         self._describe_q = q
+
+    def set_ledger(self, ledger: GenLedger) -> None:
+        self._ledger = ledger
+
+    def _record_describe(
+        self,
+        proj: str,
+        rel: str,
+        entries: list[dict],
+        stale: list[dict],
+        gen_error: str | None,
+    ) -> None:
+        """Tell the generation ledger how this file's describe went, keyed by the
+        file's content hash and the provider, so the startup backlog backs off
+        from a file that keeps failing instead of paying for it every start.
+        Failure = the call raised, or a changed symbol is still undescribed after
+        the mop-up."""
+        if self._ledger is None:
+            return
+        from .genledger import provider_id
+
+        file_hash = str(
+            next((e.get("file_hash") for e in entries if e.get("file_hash")), "")
+        )
+        left = [e for e in stale if not e.get("description")]
+        target = f"{proj}:{rel}"
+        try:
+            if gen_error or left:
+                self._ledger.failed(
+                    "describe",
+                    {target: file_hash},
+                    provider_id(self.config.generate, "elaborate"),
+                    gen_error
+                    or f"{len(left)} of {len(stale)} symbols left undescribed",
+                )
+            else:
+                self._ledger.succeeded("describe", [target])
+        except Exception as e:  # noqa: BLE001 — bookkeeping must never fail an index
+            print(f"[crib] generation ledger: {e}", file=sys.stderr)
 
     async def code_index(
         self,
@@ -351,8 +393,10 @@ class CodeIndexer:
                         if desc:
                             e["description"] = desc
                             e["keywords"] = kw
-                except Exception:  # noqa: BLE001 — mop-up is best-effort
-                    pass
+                except Exception as exc:  # noqa: BLE001 — mop-up is best-effort
+                    gen_error = gen_error or str(exc)
+            if stale:
+                self._record_describe(proj, rel, entries, stale, gen_error)
         # Serialize only the store read-modify-write (NOT the LSP/LLM work above),
         # so a concurrent reindex of another file — watcher vs query vs explicit
         # index — can't interleave writes and corrupt the cross-file call graph

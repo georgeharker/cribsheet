@@ -276,6 +276,18 @@ class QuackStore(DuckDBStore):
     def recreate(self) -> None:
         self._call(super().recreate)
 
+    def ledger_rows(self, purpose: str, targets: list[str]) -> dict[str, Any]:
+        return self._call(super().ledger_rows, purpose, targets)
+
+    def ledger_put(self, entries: list[Any]) -> None:
+        self._call(super().ledger_put, entries)
+
+    def ledger_delete(self, purpose: str, targets: list[str]) -> None:
+        self._call(super().ledger_delete, purpose, targets)
+
+    def ledger_counts(self, now: float) -> dict[str, dict[str, int]]:
+        return self._call(super().ledger_counts, now)
+
     def _page(self, after: str, n: int) -> list[Record]:
         # iter_records is a generator, so the reconnect wraps each PAGE: an
         # export carries on across a server restart.

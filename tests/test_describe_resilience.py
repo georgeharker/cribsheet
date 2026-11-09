@@ -154,10 +154,12 @@ def test_generation_stats_track_retry(monkeypatch, no_sleep):
 
 
 def test_ops_status_composes(crib):
-    """The ops view composes sweeps + indexing + generation — the one call
-    that answers 'what is running and why is nothing moving'."""
+    """The ops view composes sweeps + indexing + generation + the generation
+    ledger — the one call that answers 'what is running and why is nothing
+    moving' (and what background generation is backing off from)."""
     ops = crib.ops_status()
-    assert set(ops) == {"sweeps", "indexing", "generation"}
+    assert set(ops) == {"sweeps", "indexing", "generation", "generation_ledger"}
+    assert ops["generation_ledger"] == {}  # nothing has failed yet
     assert ops["generation"]["inflight"] == 0  # nothing running in-process
     # a fake sweep entry surfaces with its failure count intact
     with crib.code.indexing_lock:

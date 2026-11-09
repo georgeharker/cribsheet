@@ -248,6 +248,12 @@ class Crib:
         # ProjectServices. Crib keeps delegators (below) so the watcher, the resident
         # revalidate hook, and project setup/index call it unchanged.
         self.indexer = CodeIndexer(self.services)
+        # What background generation already failed on (crib.genledger): in the
+        # store's own database when it has one, so it survives restarts.
+        from .genledger import for_store
+
+        self.ledger = for_store(store)
+        self.indexer.set_ledger(self.ledger)
         # In-flight project_index JOBS (proj → {task, crib_at}): the join-don't-
         # restart registry. A re-invoke while a sweep runs awaits the existing task
         # instead of racing a second one — the zero-reset counter bug, fixed at the
@@ -468,26 +474,43 @@ class Crib:
         """Re-drive symbols a stop/crash left undescribed. The deferred-describe path
         blanks a changed symbol's description on the structural write, so `content_hash
         present + empty description` is the durable "never got described" signal — one
-        inline reindex per affected file catches them up. A no-op in the common case
-        (nothing blank), so it's cheap to run on every start."""
-        from .codeindex import SymbolIndex
+        inline reindex per affected file catches them up.
 
+        Bounded two ways, because each file is an LLM call: the generation ledger
+        skips files whose describe already failed for the same content and
+        provider until their backoff expires (crib.genledger), and at most
+        `[generate] backlog_budget` files are attempted per start (the rest wait
+        for the next start). One summary line says what happened."""
+        from .codeindex import SymbolIndex
+        from .genledger import provider_id
+
+        budget = max(0, int(self.config.generate.backlog_budget))
+        provider = provider_id(self.config.generate, "elaborate")
+        pending = attempted = backing_off = 0
         for name in self.projects():
             try:
                 si = SymbolIndex(self.paths.project_dir(name))
                 root = si.source_root()
                 if root is None:
                     continue
-                files = sorted(
-                    {
-                        e["file"]
-                        for e in si.all()
-                        if e.get("content_hash")
+                hashes: dict[str, str] = {}
+                for e in si.all():
+                    if (
+                        e.get("content_hash")
                         and not e.get("description")
                         and e.get("file")
-                    }
-                )
-                for rel in files:
+                    ):
+                        hashes[f"{name}:{e['file']}"] = str(e.get("file_hash") or "")
+                if not hashes:
+                    continue
+                pending += len(hashes)
+                ready, waiting = self.ledger.due("describe", hashes, provider)
+                backing_off += len(waiting)
+                for target in sorted(ready):
+                    if attempted >= budget:
+                        break
+                    attempted += 1
+                    rel = target.split(":", 1)[1]
                     try:  # inline: describe now, no queue — per-file boundary
                         await asyncio.to_thread(
                             self._index_code_file_tracked, root, rel, name, True
@@ -506,6 +529,14 @@ class Crib:
                     f"[crib] enrichment catch-up skipped {name!r}: {e}",
                     file=sys.stderr,
                 )
+        if pending:
+            print(
+                f"[crib] describe backlog: {pending} file(s) with undescribed symbols; "
+                f"attempted {attempted} (budget {budget}), {backing_off} backing off "
+                f"after earlier failures, {pending - attempted - backing_off} left "
+                "for a later start",
+                file=sys.stderr,
+            )
 
     async def _keyword_backlog(self) -> None:
         """Notes counterpart of `_describe_backlog`: catch the keyword_index AND
@@ -524,7 +555,8 @@ class Crib:
             if self._skip_if_unavailable(self.project_paths(name), "not enriching"):
                 continue
             try:
-                await self.enrich(project=name)  # one combined pass, all facets
+                # one combined pass, all facets; background: the ledger may skip
+                await self.enrich(project=name, background=True)
             except Exception as e:  # noqa: BLE001 — best-effort catch-up
                 print(
                     f"[crib] enrichment catch-up failed ({name}): {e}", file=sys.stderr
@@ -3933,13 +3965,20 @@ class Crib:
         scope + failure counts via format_sweep), per-project in-flight files,
         and generation slot occupancy (in-flight / waiting / rate-limited /
         cooldown). The one call that answers "what is running and why is
-        nothing moving" — the queue made visible."""
+        nothing moving" — the queue made visible. `generation_ledger` counts the
+        targets whose background generation failed and is backing off
+        (crib.genledger): a provider that keeps failing shows up here."""
         from .generate import generation_stats
 
+        try:
+            ledger = self.ledger.counts()
+        except Exception as e:  # noqa: BLE001 — a status view must still answer
+            ledger = {"error": str(e)}
         return {
             "sweeps": {p: dict(v) for p, v in self.code.sweeps.items()},
             "indexing": {p: list(v) for p, v in self.code.indexing.items()},
             "generation": generation_stats(),
+            "generation_ledger": ledger,
         }
 
     def _project_refs(self, proj: str) -> list[dict[str, Any]]:
@@ -4891,6 +4930,7 @@ class Crib:
         project: str | None = None,
         cwd: Path | None = None,
         overwrite: bool = False,
+        background: bool = False,
     ) -> dict[str, Any]:
         """ONE enrichment pass over every configured facet — the keyword labels (BM25
         side) AND the summary labels (dense alias side) together, one bulk generation
@@ -4936,7 +4976,7 @@ class Crib:
         if not facets:
             return {"project": proj, "labels": [], "written": {}, "total": 0}
         return await self._generate_enrichment(
-            proj, "elaborate", facets, relpath, overwrite
+            proj, "elaborate", facets, relpath, overwrite, background=background
         )
 
     async def _generate_index(
@@ -4987,6 +5027,7 @@ class Crib:
         facets: list[dict[str, Any]],
         relpath: str | None,
         overwrite: bool,
+        background: bool = False,
     ) -> dict[str, Any]:
         """Shared MULTI-FACET section-level generation: one bulk call per note batch
         emits terms for EVERY facet (a facet = one label of keyword_index or
@@ -5062,6 +5103,21 @@ class Crib:
             targets.append((sh, rp, heading, _section_text(rp, key, doc), missing))
 
         gen = self.config.generate
+        # The generation ledger (crib.genledger): BACKGROUND passes (the startup
+        # backlog) skip sections whose generation already failed for the same
+        # content and provider until their backoff expires; explicit requests
+        # always run. Outcomes are recorded either way (below).
+        from .genledger import provider_id
+
+        provider = provider_id(gen, purpose)
+        backing_off = 0
+        if background and targets:
+            ready, waiting = self.ledger.due(
+                "enrich", {f"{proj}:{t[0]}": t[0] for t in targets}, provider
+            )
+            keep = set(ready)
+            backing_off = len(waiting)
+            targets = [t for t in targets if f"{proj}:{t[0]}" in keep]
         total = len(targets)
         sem = asyncio.Semaphore(max(1, gen.concurrency))
         written: dict[str, int] = {f["label"]: 0 for f in facets}
@@ -5254,6 +5310,25 @@ class Crib:
             )
 
         if targets:
+            ok = [
+                f"{proj}:{t[0]}"
+                for t in targets
+                if all(t[0] in done[f["label"]] for f in t[4])
+            ]
+            okset = set(ok)
+            bad = {
+                f"{proj}:{t[0]}": t[0] for t in targets if f"{proj}:{t[0]}" not in okset
+            }
+            try:
+                self.ledger.succeeded("enrich", ok)
+                self.ledger.failed(
+                    "enrich",
+                    bad,
+                    provider,
+                    f"facets left ungenerated ({counters['errors']} error(s) in the pass)",
+                )
+            except Exception as e:  # noqa: BLE001 — bookkeeping must never fail a pass
+                print(f"[crib] generation ledger: {e}", file=sys.stderr)
             self.index.invalidate_caches(
                 proj
             )  # feeds BM25 (keywords) + aliases (summaries)
@@ -5279,6 +5354,7 @@ class Crib:
             "total": total,
             "pruned": pruned,
             "bulk_docs": counters["bulk_docs"],
+            "backing_off": backing_off,
         }
 
     # --- in-situ docs (default: source is master, never copied) ------------
@@ -5721,4 +5797,3 @@ def _build_shared_duckdb(
         release()
 
     return store, close
-
