@@ -280,15 +280,18 @@ class CodeStore:
         # Baseline = the on-disk mtime of a source file's symbol tomls (= WHEN indexed),
         # derived locally + cheap. NOT the toml's stored `mtime` field (that's a portable
         # git-date record, not comparable to a local st_mtime — and would need git here).
+        # Read through the record cache (crib.recordcache): the same stat of every
+        # toml, but an unchanged toml isn't re-read or re-parsed, so this costs one
+        # stat per record plus one per source file. The stamp IS the toml's mtime.
+        from . import recordcache
+
         baseline: dict[str, int] = {}  # source file → oldest mtime of its tomls
-        dirty: set[str] = set()  # files with merge-dirtied symbols (blank
-        for p in store.root.glob("*.toml"):  # content_hash, written by the sync merge
-            try:  # driver on divergent code states) — their
-                mt = p.stat().st_mtime_ns  # tomls are FRESH (post-pull mtime), so the
-                e = _parse(p.read_text())  # mtime gate alone would never catch them
-                f = e.get("file", "")
-            except OSError:
-                continue
+        # files with merge-dirtied symbols (blank content_hash, written by the sync
+        # merge driver on divergent code states): their tomls are FRESH (post-pull
+        # mtime), so the mtime gate alone would never catch them.
+        dirty: set[str] = set()
+        for _name, (mt, _size), e in recordcache.get().load(store.root, _parse):
+            f = e.get("file", "")
             if f:
                 baseline[f] = min(baseline.get(f, mt), mt)
                 if not e.get("content_hash"):
