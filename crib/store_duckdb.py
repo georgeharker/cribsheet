@@ -272,6 +272,30 @@ def _set_meta_step(
     return write
 
 
+def _backfill_labels(store: "DuckDBStore", ex: Any) -> None:
+    """Chunks written before 0.22.0 kept `tags` as a comma-joined string and had
+    no `labels` list, so a `tags=` lookup (which filters on `labels` in the
+    query) would miss them until the next reconcile re-stamped them. Convert
+    them here, at open, the way `Chunk.metadata` now writes them."""
+    if store._table_dim(ex) is None:
+        return
+    # pi-lens-ignore: python-sql-injection
+    rows = ex.run(
+        f"SELECT id, meta FROM {TABLE} WHERE json_type(meta, '$.tags') = 'VARCHAR' "
+        "AND json_type(meta, '$.labels') IS NULL"
+    )
+    if not rows:
+        return
+    updates: dict[str, dict[str, Any]] = {}
+    for cid, raw in rows:
+        m = json.loads(raw)
+        tags = [t for t in str(m.get("tags") or "").split(",") if t]
+        m["tags"] = tags
+        m["labels"] = [t for t in dict.fromkeys([*tags, m.get("type") or ""]) if t]
+        updates[cid] = m
+    _set_meta_step(store, updates)(ex)
+
+
 class DuckDBStore:
     """Embedded DuckDB: the daemon is the only process with the file open.
 
@@ -346,6 +370,7 @@ class DuckDBStore:
             ):
                 if meta.get(key) != value:
                     _put_meta(ex, key, value)
+            _backfill_labels(self, ex)
 
         self._transaction(prepare)
 

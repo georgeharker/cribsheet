@@ -49,7 +49,15 @@ version has no heading here.
 ### Removed
 
 - The `json` store backend (`[store] backend = "json"` now warns and uses
-  DuckDB), and leftover chroma-era code paths.
+  DuckDB; the old `~/.cache/crib/store.json` can be deleted), and leftover
+  chroma-era code paths.
+
+### Upgrading from a 0.22.0 dev release
+
+- Chunks whose tags were stored as a comma-joined string are converted to the
+  new list form when the store opens, so `tags=` lookups work at once.
+- Embedding-cache rows keyed by the old configured model name are dropped
+  once; the vectors in the store itself are untouched.
 
 ## [0.22.0-dev2] - 2026-11-09
 

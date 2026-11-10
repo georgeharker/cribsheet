@@ -221,3 +221,32 @@ def test_stats_reports_rows_versions_and_sizes(tmp_path):
         assert st["file_bytes"] > 0
     finally:
         s.close()
+
+
+def test_pre_0_22_tags_are_converted_to_labels_at_open(tmp_path):
+    """A dev1/dev2 file: tags as a comma string, no `labels`. Opening it
+    converts them, so tags= lookups match before any reconcile runs."""
+    path = tmp_path / "crib.duckdb"
+    s = DuckDBStore.embedded(path)
+    s.upsert(
+        [
+            Record(
+                "a",
+                [1.0, 0.0],
+                "doc a",
+                {"project": "p", "tags": "x,y", "type": "design"},
+            ),
+            Record("b", [0.0, 1.0], "doc b", {"project": "p", "tags": ""}),
+        ]
+    )
+    s.close()
+    s = DuckDBStore.embedded(path)
+    try:
+        meta = s.get_meta({"project": "p"})
+        assert meta["a"]["tags"] == ["x", "y"]
+        assert meta["a"]["labels"] == ["x", "y", "design"]
+        assert meta["b"]["labels"] == []
+        hits = s.query([1.0, 0.0], 5, {"labels": {"$any": ["design"]}})
+        assert [h.id for h in hits] == ["a"]
+    finally:
+        s.close()
