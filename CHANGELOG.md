@@ -9,6 +9,16 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.22.1] - 2026-11-10
+
+### Fixed
+
+- `crib design add` from the CLI failed on every call since 0.18.0 with
+  "Unexpected keyword argument" for `path`, `scope` and `lang`: it sent the
+  code commands' narrowing options, which the `design_add` tool doesn't take.
+  The MCP tool was unaffected. The CLI/MCP parity test now checks that the
+  CLI sends only parameters the tool declares.
+
 ## [0.22.0] - 2026-11-09
 
 ### Fixed
