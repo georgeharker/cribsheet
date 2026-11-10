@@ -147,6 +147,12 @@ def test_cli_defaults_match_the_declared_mcp_defaults(key):
     argv = _CLI_INVOCATIONS[key]
     verb, call = _dispatch(build_parser().parse_args(argv))
     declared = VERBS[key].mcp_params()
+    # Every argument the CLI sends must exist on the MCP tool: an undeclared
+    # one is a validation error on the wire (`design add` sent the code verbs'
+    # path/scope/lang for two months, and every CLI call of it failed).
+    assert not set(call) - set(declared), (
+        f"{key}: CLI sends {sorted(set(call) - set(declared))}, not MCP params"
+    )
     for param, value in call.items():
         if declared.get(param, ...) is ... or value is None or value in argv:
             continue  # required param, "not given" on the CLI, or
