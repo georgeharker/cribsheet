@@ -539,3 +539,13 @@ def test_set_meta_many_rows_in_batches(backend):
     )
     metas = s.get_meta({"relpath": "b.md"})
     assert len(metas) == 450 and metas["r321"]["i"] == 321
+
+
+def test_score_ids_scores_stored_vectors(backend):
+    s = backend.store
+    s.upsert([rec("x", X), rec("y", Y), rec("xy", XY)])
+    got = s.score_ids(X, ["x", "xy", "missing"])
+    assert set(got) == {"x", "xy"}
+    assert got["x"] == pytest.approx(1.0, abs=1e-6)
+    assert got["xy"] == pytest.approx(math.sqrt(0.5), abs=1e-6)
+    assert s.score_ids(X, []) == {}

@@ -9,7 +9,7 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
-## [0.22.0-dev3] - 2026-11-09
+## [0.22.0] - 2026-11-09
 
 ### Fixed
 
@@ -22,6 +22,9 @@ version has no heading here.
 - **The embedding cache can't be poisoned** by the hash-embedder fallback:
   it keys on the embedder actually built and never caches hash vectors.
 - A zero vector scores 0 instead of NaN, which sorted above every match.
+- Hybrid retrieval scores keyword-only candidates on their stored vectors
+  (heading breadcrumb plus body, as the dense search ranks them) instead of
+  re-embedding the bare body.
 
 ### Changed
 

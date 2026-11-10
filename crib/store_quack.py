@@ -332,6 +332,9 @@ class QuackStore(DuckDBStore):
     def current_dim(self) -> int | None:
         return self._call(super().current_dim)
 
+    def score_ids(self, embedding: list[float], ids: list[str]) -> dict[str, float]:
+        return self._call(super().score_ids, embedding, ids)
+
     def meta_get(self, key: str) -> str | None:
         return self._call(super().meta_get, key)
 

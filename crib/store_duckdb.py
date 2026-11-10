@@ -699,6 +699,27 @@ class DuckDBStore:
             )
         return {p: {"failing": int(n), "backing_off": int(b)} for p, n, b in rows}
 
+    def score_ids(self, embedding: list[float], ids: list[str]) -> dict[str, float]:
+        if not ids:
+            return {}
+        with self._reading() as ex:
+            dim = self._table_dim(ex)
+            if dim is None:
+                return {}
+            if len(embedding) != dim:
+                raise CribUserError(
+                    f"embedding dimension mismatch: query has {len(embedding)}, "
+                    f"stored vectors have {dim}; run `crib project reconcile`"
+                )
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(
+                f"SELECT id, array_cosine_similarity(vec, ?::FLOAT[{int(dim)}]) "
+                f"FROM {TABLE} WHERE id = ANY(?)",
+                [[float(x) for x in embedding], list(ids)],
+            )
+        # A zero vector's NaN scores 0.0, as in `query`.
+        return {i: (0.0 if s != s else float(s)) for i, s in rows}
+
     def query(
         self, embedding: list[float], k: int, where: dict[str, Any] | None = None
     ) -> list[Hit]:

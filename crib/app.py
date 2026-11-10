@@ -29,7 +29,7 @@ from .codestore import CodeStore, _ResidentCode
 from .codestore import format_sweep
 from .config import Config, CribLink, ProjectConfig, portable_path, resolve_project
 from .designs import Designs
-from .embed import build_embedder, embed_batch, embed_query_batch
+from .embed import build_embedder, embed_query_batch
 from .errors import CribUserError
 from .gitbacking import GitBacking
 from .indexer import IndexEngine, IndexResult
@@ -1348,11 +1348,9 @@ class Crib:
                 kw = {cid: v for cid, v in kw.items() if cid in pool}
             missing = [cid for cid in pool if cid not in cos and cid in docs]
             if missing:
-                for cid, dv in zip(
-                    missing,
-                    embed_batch(self.embedder, [docs[cid][0] for cid in missing]),
-                ):
-                    cos[cid] = sum(a * b for a, b in zip(vec, dv))  # L2-normalized
+                # Score them on their STORED vectors (breadcrumb + body, what the
+                # dense query ranks), not a re-embedding of the bare body.
+                cos.update(self.store.score_ids(vec, missing))
             # drop any we couldn't score, and any alias rep whose chunk vanished
             pool = [
                 cid for cid in pool if cid in cos and (cid in dense_by or cid in docs)
@@ -4237,8 +4235,10 @@ class Crib:
                 out["store_stats"] = {"error": str(e)}
         hits = getattr(self.embedder, "hits", None)
         if hits is not None:
-            out["embed_cache"] = {"hits": hits,
-                                  "misses": getattr(self.embedder, "misses", 0)}
+            out["embed_cache"] = {
+                "hits": hits,
+                "misses": getattr(self.embedder, "misses", 0),
+            }
         return out
 
     def project_forget(

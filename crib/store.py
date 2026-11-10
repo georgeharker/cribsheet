@@ -92,6 +92,12 @@ class Store(Protocol):
     def query(
         self, embedding: list[float], k: int, where: dict[str, Any] | None = None
     ) -> list[Hit]: ...
+    def score_ids(self, embedding: list[float], ids: list[str]) -> dict[str, float]:
+        """Cosine of `embedding` against the STORED vectors of `ids` (those that
+        exist): scores candidates found another way on exactly the vectors the
+        dense query ranks, with no re-embedding."""
+        ...
+
     def current_dim(self) -> int | None:
         """Dimension of stored vectors, or None if empty — lets a full reindex
         detect an embedder change (e.g. a profile switch bge-small→bge-large)."""
@@ -211,6 +217,14 @@ class InMemoryStore:
         # Best first, ties by id: the DuckDB store's order, so backends agree.
         scored.sort(key=lambda h: (-h.score, h.id))
         return scored[: max(k, 0)]
+
+    def score_ids(self, embedding: list[float], ids: list[str]) -> dict[str, float]:
+        wanted = set(ids)
+        return {
+            r.id: _cosine(embedding, r.embedding)
+            for r in self._snapshot()
+            if r.id in wanted
+        }
 
     def current_dim(self) -> int | None:
         for r in self._snapshot():

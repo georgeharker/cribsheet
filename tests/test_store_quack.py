@@ -7,6 +7,7 @@ Store behaviour itself is in tests/test_store_contract.py (backend
 
 from __future__ import annotations
 
+import contextlib
 import math
 import os
 import socket
@@ -229,6 +230,26 @@ def test_token_holder_cannot_leave_the_store(remote, tmp_path, attack):
         # pi-lens-ignore: python-sql-injection
         remote.execute(attack.format(tmp=tmp_path)).fetchall()
     assert not list(tmp_path.iterdir())  # nothing was written
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason="known, accepted: a token holder can start a second Quack listener "
+    "(DuckDB has no per-function block for client sessions). Same-user access "
+    "already reads the token file and the database; see docs/vector-store.md, "
+    "Security posture. If this starts PASSING, DuckDB now refuses it: drop the "
+    "xfail and the caveat.",
+)
+def test_token_holder_cannot_start_another_listener(remote):
+    port = _free_port()
+    with pytest.raises(Exception):
+        # pi-lens-ignore: python-sql-injection
+        remote.execute(
+            f"CALL quack_serve('quack:127.0.0.1:{port}', token = 'other')"
+        ).fetchall()
+    # It succeeded (the xfail): stop the stray listener again.
+    with contextlib.suppress(Exception):
+        remote.execute(f"CALL quack_stop('quack:127.0.0.1:{port}')").fetchall()
 
 
 def test_client_survives_a_server_restart(tmp_path):

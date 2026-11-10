@@ -70,6 +70,14 @@ kept in a mode-0600 file beside the database. Once it is serving it locks
 itself down: no file access, no extension installs, and its configuration is
 locked. A token holder can therefore reach only the store, not the filesystem.
 
+One gap is known and accepted: a token holder can also call Quack's own
+listener controls, starting a second listener with a token of their choosing,
+or stopping crib's (the next client operation then relaunches it). DuckDB has
+no way to block individual functions for client sessions. It adds nothing to
+what the token already implies: reading the token takes same-user access to
+crib's cache directory, which already gives the database file itself and the
+server process. A test pins the behaviour, so it shows up if DuckDB changes.
+
 **Health check.** `GET http://127.0.0.1:7734/` returns 200 while the server is
 up. `sharedserver list` shows its refcount and grace state. If the server goes
 away, clients reconnect on their next operation (with `launch = true` crib

@@ -179,6 +179,9 @@ class _DocStore:
     def current_dim(self) -> int | None:
         return None
 
+    def score_ids(self, embedding: Any, ids: Any) -> dict[str, float]:
+        return {}
+
     def recreate(self) -> None:
         pass
 
