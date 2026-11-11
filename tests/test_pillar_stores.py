@@ -48,7 +48,7 @@ def test_facet_write_lands_in_the_sibling_dir_with_store_metadata(crib):
     assert (crib.paths.projects_dir / "p" / "design" / "single-writer.md").exists()
     assert not (crib.paths.projects_dir / "p" / "notes" / "design").exists()
     metas = crib.store.get_meta({"project": "p", "relpath": "single-writer.md"})
-    assert metas and all(m["store"] == "design" for m in metas.values())
+    assert metas and all(m["kind"] == "design" for m in metas.values())
 
 
 # --- reserved prefixes -----------------------------------------------------
@@ -73,12 +73,12 @@ def test_notes_full_reindex_never_drops_facet_chunks(crib):
     ds = crib.designstore
     run(ds.write("p", "d.md", _note(ds.abspath("p", "d.md"), "# D\nbody\n")))
     before = {cid for cid, m in crib.store.get_meta({"project": "p"}).items()
-              if m.get("store") == "design"}
+              if m.get("kind") == "design"}
     assert before
     res = run(crib.notestore.reindex("p"))
     assert res["removed"] == 0
     after = {cid for cid, m in crib.store.get_meta({"project": "p"}).items()
-             if m.get("store") == "design"}
+             if m.get("kind") == "design"}
     assert after == before
 
 
@@ -89,8 +89,8 @@ def test_facet_sweep_drops_only_its_own_orphans(crib):
     (crib.paths.projects_dir / "p" / "design" / "d.md").unlink()
     run(ds.reindex("p"))
     metas = crib.store.get_meta({"project": "p"}).values()
-    stores = {m.get("store") for m in metas}
-    assert stores == {"plans"}     # design orphan gone; same-relpath plan intact
+    stores = {m.get("kind") for m in metas}
+    assert stores == {"plan"}     # design orphan gone; same-relpath plan intact
 
 
 def test_retrieval_scoping_holds_before_and_after_the_schema_marker(crib):

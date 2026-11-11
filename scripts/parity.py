@@ -314,25 +314,19 @@ def _free_port() -> int:
         return int(s.getsockname()[1])
 
 
-def live_fingerprint(root: Path) -> dict[str, Any]:
-    """File count, newest mtime and a digest of (path, size, mtime) for the LIVE
-    data dir: identical before and after a run, or the run touched it."""
-    import hashlib
-
-    h = hashlib.sha256()
-    count, newest = 0, 0.0
-    for dirpath, dirnames, filenames in os.walk(root):
-        dirnames.sort()
-        for name in sorted(filenames):
+def live_fingerprint(root: Path) -> dict[str, tuple[int, int]]:
+    """{relative path: (size, mtime_ns)} for every file in the LIVE data dir:
+    identical before and after a run, or the run touched it."""
+    out: dict[str, tuple[int, int]] = {}
+    for dirpath, _dirnames, filenames in os.walk(root):
+        for name in filenames:
             p = Path(dirpath) / name
             try:
                 st = p.stat()
             except OSError:
                 continue
-            count += 1
-            newest = max(newest, st.st_mtime)
-            h.update(f"{p}\0{st.st_size}\0{st.st_mtime_ns}\n".encode())
-    return {"files": count, "newest_mtime": newest, "digest": h.hexdigest()}
+            out[str(p.relative_to(root))] = (st.st_size, st.st_mtime_ns)
+    return out
 
 
 _ULID = None
@@ -650,7 +644,16 @@ def compare(snap: Path, a: Path, b: Path, work: Path, cli: bool, writes: bool,
     untouched = before == after
     print(f"live data dir {live}: {'untouched' if untouched else 'CHANGED during the run'}")
     if not untouched:
-        print(f"  before {before}\n  after  {after}")
+        # The live daemon also writes here on its own (e.g. its code watcher
+        # re-indexing a repo file edited mid-run), so name what changed.
+        changed = sorted(k for k in set(before) | set(after)
+                         if before.get(k) != after.get(k))
+        for k in changed[:20]:
+            state = ("added" if k not in before else
+                     "removed" if k not in after else "modified")
+            print(f"  {state}: {k}")
+        if len(changed) > 20:
+            print(f"  … and {len(changed) - 20} more")
     return 1 if diffs or not untouched else 0
 
 

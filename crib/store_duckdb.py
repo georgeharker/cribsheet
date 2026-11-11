@@ -8,7 +8,7 @@ moves to DuckDB on two paths").
 
 Layout: one table, created at the first upsert because its vector column is
 fixed-size (`FLOAT[dim]`), the dimension of whatever embedder wrote first. The
-keys crib filters on constantly (`project`, `store`, `relpath`) are promoted to
+keys crib filters on constantly (`project`, `kind`, `relpath`) are promoted to
 real columns; every other metadata key is filtered through the JSON copy, by
 type, so `{"n": "1"}` never matches an int 1 (the contract's exact match).
 
@@ -49,7 +49,7 @@ EMBED_CACHE = "crib_embed_cache"
 # of them are rebuildable), record_format (crib.recordcache's parse output) and
 # embed_model (which embedder wrote crib_chunks; see `Crib._maybe_recreate_for_dim`).
 META = "crib_meta"
-SCHEMA_VERSION = "1"
+SCHEMA_VERSION = "2"  # 2: crib_chunks' `store` column is `kind`
 # The tables that don't depend on the embedder's dimension, created at open.
 _FIXED_TABLES = MappingProxyType(
     {
@@ -61,7 +61,7 @@ _FIXED_TABLES = MappingProxyType(
         "last_attempt DOUBLE, next_retry DOUBLE, PRIMARY KEY (purpose, target)",
     }
 )
-PROMOTED = ("project", "store", "relpath")  # filtered constantly: real columns
+PROMOTED = ("project", "kind", "relpath")  # filtered constantly: real columns
 # The only column lists a read may select — never caller text.
 _SELECT_COLUMNS = MappingProxyType({"meta": "id, meta", "docs": "id, document, meta"})
 
@@ -263,8 +263,8 @@ def _set_meta_step(
             # pi-lens-ignore: python-sql-injection
             ex.run(
                 f"UPDATE {TABLE} SET meta = v.meta::JSON, project = v.project, "
-                "store = v.store, relpath = v.relpath "
-                f"FROM (VALUES {groups}) AS v(id, meta, project, store, relpath) "
+                "kind = v.kind, relpath = v.relpath "
+                f"FROM (VALUES {groups}) AS v(id, meta, project, kind, relpath) "
                 f"WHERE {TABLE}.id = v.id",
                 [x for row in batch for x in row],
             )
@@ -433,7 +433,7 @@ class DuckDBStore:
             ex.run(
                 f"CREATE TABLE IF NOT EXISTS {TABLE} ("
                 "id VARCHAR PRIMARY KEY, document VARCHAR, meta JSON, "
-                "project VARCHAR, store VARCHAR, relpath VARCHAR, "
+                "project VARCHAR, kind VARCHAR, relpath VARCHAR, "
                 f"vec FLOAT[{int(dim)}])"
             )
         elif have != dim:

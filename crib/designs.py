@@ -70,7 +70,7 @@ from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any, Callable
 
 from . import notes
-from .chunk import chunk_note, section_key
+from .chunk import chunk_note, kind_of, pillar_of, section_key
 from .errors import CribUserError
 from .notes import Note
 from .util import sha1_hex
@@ -543,7 +543,7 @@ class Designs:
             for meta in self.notestore.store.get_meta({"project": proj}).values():
                 rp = str(meta.get("relpath") or "")
                 if rp:
-                    out.add(format_docref(str(meta.get("store") or "notes"), rp))
+                    out.add(format_docref(pillar_of(meta.get("kind")), rp))
         except Exception as e:  # noqa: BLE001 — backend boundary, see above
             print(f"[crib] known-docs: store meta unavailable: {e}", file=sys.stderr)
         for name, store in self._doc_stores.items():
@@ -616,7 +616,7 @@ class Designs:
         store, rel = split_docref(relpath)
         try:
             metas = self.notestore.store.get_meta(
-                {"project": proj, "store": store, "relpath": rel}
+                {"project": proj, "kind": kind_of(store), "relpath": rel}
             )
         except Exception:  # noqa: BLE001 — fall back to hashing the text ourselves
             return {}

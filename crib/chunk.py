@@ -21,6 +21,22 @@ _HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
 # pillars in the one shared store. Notes ids are unchanged.
 CHUNK_SCHEMA_VERSION = 3
 
+# Which kind of item a chunk belongs to, from the pillar store it was indexed
+# into. Data says `kind` (singular); the pillar directories keep their names.
+PILLAR_KIND = {"notes": "note", "design": "design", "plans": "plan",
+               "learnings": "learning"}
+KIND_PILLAR = {kind: pillar for pillar, kind in PILLAR_KIND.items()}
+
+
+def kind_of(pillar: str) -> str:
+    """The item kind for a pillar store name (`plans` -> `plan`)."""
+    return PILLAR_KIND.get(pillar, pillar)
+
+
+def pillar_of(kind: str | None) -> str:
+    """The pillar store name for an item kind; an unknown kind is a note."""
+    return KIND_PILLAR.get(kind or "", "notes")
+
 # Windowing is measured in whitespace words, but the cap is set so a window
 # stays under the embedding models' 512-*token* limit (bge et al.) — markdown
 # and code run well above one token per word, so a 512-word window would be
@@ -113,7 +129,7 @@ class Chunk:
             # The pillar store axis retrieval scopes on — an equality
             # where-clause per surface keeps facet chunks out of note search
             # (and vice versa).
-            "store": self.store,
+            "kind": kind_of(self.store),
             "note_id": self.note_id,
             "title": title or "",
             "tags": list(tags),

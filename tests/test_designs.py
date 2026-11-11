@@ -657,7 +657,7 @@ def test_store_reaches_chunk_metadata_and_scopes_retrieval(crib):
     run(crib.store_note("chroma holds the vectors", title="Plain", project="p"))
     metas = crib.store.get_meta({"project": "p"}).values()
     assert {m.get("type") for m in metas} == {"design", ""}
-    assert {m.get("store") for m in metas} == {"design", "notes"}
+    assert {m.get("kind") for m in metas} == {"design", "note"}
 
     note_hits = crib.lookup("chroma vectors", project="p", k=1)
     assert [h.store for h in note_hits] == ["notes"]  # even at k=1: no design

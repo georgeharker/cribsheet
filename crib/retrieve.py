@@ -34,6 +34,7 @@ from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 
+from .chunk import kind_of
 from .embed import embed_batch
 
 if TYPE_CHECKING:
@@ -371,7 +372,7 @@ class LexicalCache:
             gen = self._gen.get(project, 0)
         if entry is not None:
             return entry
-        docs = self._store.get_docs({"project": project, "store": store})
+        docs = self._store.get_docs({"project": project, "kind": kind_of(store)})
         ids = list(docs)
         corpus: list[dict[str, float]] = []
         for i in ids:
@@ -460,7 +461,7 @@ class SummaryVectorCache:
             return entry
         reps: dict[str, list[str]] = {}
         # Metadata only: the section hashes are all this needs, not the text.
-        metas = self._store.get_meta({"project": project, "store": store})
+        metas = self._store.get_meta({"project": project, "kind": kind_of(store)})
         for cid, meta in metas.items():
             sh = (meta or {}).get("section_hash") or (meta or {}).get("content_hash")
             if sh:

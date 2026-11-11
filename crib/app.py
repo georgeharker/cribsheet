@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from . import __version__, claudemem, notes
-from .chunk import CHUNK_SCHEMA_VERSION, section_key, section_line_map
+from .chunk import CHUNK_SCHEMA_VERSION, kind_of, pillar_of, section_key, section_line_map
 from .claudemem import MemoryBindings
 from .codeindexer import CodeIndexer
 from .codequery import CodeQuery
@@ -1250,9 +1250,9 @@ class Crib:
 
         kw_blend = 0.5  # fusion weight of the keyword_index term
 
-        # Retrieval is scoped to ONE pillar store: every chunk carries its
-        # `store` key (chunk schema v3, which every DuckDB store was filled at).
-        where: dict[str, Any] = {"project": proj, "store": store}
+        # Retrieval is scoped to ONE pillar store: every chunk carries the
+        # `kind` of the item it belongs to.
+        where: dict[str, Any] = {"project": proj, "kind": kind_of(store)}
         if labels:
             # A tags= lookup filters IN the query, so the dense top-n is drawn
             # from matching chunks only, never thinned after the fact.
@@ -1495,7 +1495,7 @@ class Crib:
             # tags= was applied in the store query (`labels` = the chunk's tags
             # plus its frontmatter `type`, so tags=["design"] scopes to that facet).
             rp = h.metadata.get("relpath", "")
-            pillar = str(h.metadata.get("store") or "notes")
+            pillar = pillar_of(h.metadata.get("kind"))
             heading = h.metadata.get("heading_path", "")
             key = (pillar, rp) if dedupe == "file" else (pillar, rp, heading)
             if dedupe != "none" and key in seen:

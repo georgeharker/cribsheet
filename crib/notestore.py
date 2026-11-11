@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from .chunk import kind_of
 from . import notes
 from .errors import CribUserError
 from .notes import Note, NoteParseError
@@ -294,7 +295,7 @@ class NoteStore:
             # the code watcher).
             indexed = {m.get("relpath")
                        for m in self.store.get_meta(
-                           {"project": project, "store": self.spec.name}).values()
+                           {"project": project, "kind": kind_of(self.spec.name)}).values()
                        if not (m.get("relpath") or "").startswith(SRC_PREFIX)}
             targets = sorted(disk | {r for r in indexed if r})
         changed = removed = 0

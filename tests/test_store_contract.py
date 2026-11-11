@@ -230,11 +230,11 @@ def filtered(backend):
     s = backend.store
     s.upsert(
         [
-            rec("a", X, store="notes", n=1, f=1.5),
-            rec("b", Y, store="design", n=2, f=2.5),
-            rec("c", XY, store="notes", n=1, f=2.5),
+            rec("a", X, kind="note", n=1, f=1.5),
+            rec("b", Y, kind="design", n=2, f=2.5),
+            rec("c", XY, kind="note", n=1, f=2.5),
             Record(
-                "d", Z, "doc d", {"project": "q", "store": "notes", "n": 1, "f": 1.5}
+                "d", Z, "doc d", {"project": "q", "kind": "note", "n": 1, "f": 1.5}
             ),
         ]
     )
@@ -245,8 +245,8 @@ def filtered(backend):
     "where, expect",
     [
         ({"project": "p"}, {"a", "b", "c"}),
-        ({"project": "p", "store": "notes"}, {"a", "c"}),  # several keys AND together
-        ({"project": "p", "store": "notes", "n": 1}, {"a", "c"}),
+        ({"project": "p", "kind": "note"}, {"a", "c"}),  # several keys AND together
+        ({"project": "p", "kind": "note", "n": 1}, {"a", "c"}),
         ({"n": 1}, {"a", "c", "d"}),  # int value
         ({"f": 2.5}, {"b", "c"}),  # float value
         ({"n": "1"}, set()),  # exact match is type-sensitive: 1 != "1"

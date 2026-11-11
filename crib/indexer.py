@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from . import notes
-from .chunk import WINDOW_OVERLAP, WINDOW_WORDS, Chunk, chunk_note
+from .chunk import WINDOW_OVERLAP, WINDOW_WORDS, Chunk, chunk_note, kind_of
 from .embed import Embedder, embed_batch
 from .retrieve import LexicalCache, SummaryVectorCache
 from .store import Record, Store
@@ -123,7 +123,7 @@ class IndexEngine:
         Store-relative relpaths repeat across pillars, so the relpath alone is
         ambiguous."""
         return self.store.get_meta(
-            {"project": project, "store": store, "relpath": relpath})
+            {"project": project, "kind": kind_of(store), "relpath": relpath})
 
     async def _index_locked(self, project: str, notes_dir: Path, relpath: str,
                             content_path: Path | None = None, *,

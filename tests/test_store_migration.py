@@ -87,7 +87,7 @@ def test_migrate_moves_requalifies_and_reindexes(crib):
     # the sweep dropped every legacy-path chunk and embedded the pillars
     metas = crib.store.get_meta({"project": "p"}).values()
     assert not any("/" in (m.get("relpath") or "") for m in metas)
-    assert {m.get("store") for m in metas} == {"design", "plans", "learnings"}
+    assert {m.get("kind") for m in metas} == {"design", "plan", "learning"}
 
     # graph intact across the move: dep edges, statuses, and NO new taint —
     # bodies were never touched, so the clean set is identical

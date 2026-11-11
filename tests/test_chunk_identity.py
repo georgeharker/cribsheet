@@ -89,12 +89,12 @@ def test_same_relpath_in_two_stores_never_collides():
     assert c.chunk_id == sha1_hex("p", "design:n.md", "Solo", "0")
 
 
-def test_store_reaches_metadata():
+def test_pillar_reaches_metadata_as_its_kind():
     m = chunk_note("p", "n.md", "id", "# S\nb\n", store="plans")[0] \
         .metadata("t", [], "note", 0.0)
-    assert m["store"] == "plans"
+    assert m["kind"] == "plan" and "store" not in m
     assert chunk_note("p", "n.md", "id", "# S\nb\n")[0] \
-        .metadata("t", [], "note", 0.0)["store"] == "notes"
+        .metadata("t", [], "note", 0.0)["kind"] == "note"
 
 
 def test_ids_are_deterministic_across_runs():
