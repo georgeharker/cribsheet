@@ -1226,7 +1226,6 @@ class Designs:
             "type": kind,
             "status": extra.pop("status", "active" if kind == "design" else "todo"),
             "deps": [n.id for n in dep_nodes],
-            "links": [],
             **checked,
             **({"sources": _source_rows(cited)} if cited else {}),
             **extra,
