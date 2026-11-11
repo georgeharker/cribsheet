@@ -616,7 +616,7 @@ class Designs:
         store, rel = split_docref(relpath)
         try:
             metas = self.notestore.store.get_meta(
-                {"project": proj, "kind": kind_of(store), "relpath": rel}
+                {"project": proj, "kind": kind_of(store, rel), "relpath": rel}
             )
         except Exception:  # noqa: BLE001 — fall back to hashing the text ourselves
             return {}

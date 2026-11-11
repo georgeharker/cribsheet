@@ -7,6 +7,7 @@ from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from typing import NamedTuple
 
+from .sources import SRC_PREFIX
 from .util import sha1_hex
 
 _HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
@@ -25,12 +26,25 @@ CHUNK_SCHEMA_VERSION = 3
 # into. Data says `kind` (singular); the pillar directories keep their names.
 PILLAR_KIND = {"notes": "note", "design": "design", "plans": "plan",
                "learnings": "learning"}
-KIND_PILLAR = {kind: pillar for pillar, kind in PILLAR_KIND.items()}
+KIND_PILLAR = {kind: pillar for pillar, kind in PILLAR_KIND.items()} | {"doc": "notes"}
 
 
-def kind_of(pillar: str) -> str:
-    """The item kind for a pillar store name (`plans` -> `plan`)."""
+def kind_of(pillar: str, relpath: str = "") -> str:
+    """The item kind for a pillar store name (`plans` -> `plan`); a notes-pillar
+    path under `sources/` is a repo `doc`."""
+    # A repo doc indexed in place lives in the notes pillar under `sources/`,
+    # but it is its own kind: read-only, the repo's.
+    if pillar == "notes" and relpath.startswith(SRC_PREFIX):
+        return "doc"
     return PILLAR_KIND.get(pillar, pillar)
+
+
+def kinds_in(pillar: str) -> str | dict[str, list[str]]:
+    """The `where` value selecting a whole pillar's chunks: the notes pillar
+    searches notes and the repo docs indexed beside them."""
+    if pillar == "notes":
+        return {"$in": ["note", "doc"]}
+    return kind_of(pillar)
 
 
 def pillar_of(kind: str | None) -> str:
@@ -129,7 +143,7 @@ class Chunk:
             # The pillar store axis retrieval scopes on — an equality
             # where-clause per surface keeps facet chunks out of note search
             # (and vice versa).
-            "kind": kind_of(self.store),
+            "kind": kind_of(self.store, self.relpath),
             "note_id": self.note_id,
             "title": title or "",
             "tags": list(tags),

@@ -123,7 +123,7 @@ class IndexEngine:
         Store-relative relpaths repeat across pillars, so the relpath alone is
         ambiguous."""
         return self.store.get_meta(
-            {"project": project, "kind": kind_of(store), "relpath": relpath})
+            {"project": project, "kind": kind_of(store, relpath), "relpath": relpath})
 
     async def _index_locked(self, project: str, notes_dir: Path, relpath: str,
                             content_path: Path | None = None, *,

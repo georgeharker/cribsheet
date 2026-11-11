@@ -295,8 +295,7 @@ class NoteStore:
             # the code watcher).
             indexed = {m.get("relpath")
                        for m in self.store.get_meta(
-                           {"project": project, "kind": kind_of(self.spec.name)}).values()
-                       if not (m.get("relpath") or "").startswith(SRC_PREFIX)}
+                           {"project": project, "kind": kind_of(self.spec.name)}).values()}
             targets = sorted(disk | {r for r in indexed if r})
         changed = removed = 0
         skipped: list[dict[str, str]] = []

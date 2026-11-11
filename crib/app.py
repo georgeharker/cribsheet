@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from . import __version__, claudemem, notes
-from .chunk import CHUNK_SCHEMA_VERSION, kind_of, pillar_of, section_key, section_line_map
+from .chunk import CHUNK_SCHEMA_VERSION, kinds_in, pillar_of, section_key, section_line_map
 from .claudemem import MemoryBindings
 from .codeindexer import CodeIndexer
 from .codequery import CodeQuery
@@ -1252,7 +1252,7 @@ class Crib:
 
         # Retrieval is scoped to ONE pillar store: every chunk carries the
         # `kind` of the item it belongs to.
-        where: dict[str, Any] = {"project": proj, "kind": kind_of(store)}
+        where: dict[str, Any] = {"project": proj, "kind": kinds_in(store)}
         if labels:
             # A tags= lookup filters IN the query, so the dense top-n is drawn
             # from matching chunks only, never thinned after the fact.
@@ -4119,7 +4119,7 @@ class Crib:
         entries = si.all()
         link = CribLink.find(Path(cwd)) if cwd else None
         srcs = self._source_roots(proj).all()
-        doc_count = self.store.count({"project": proj}, relpath_prefix=SRC_PREFIX)
+        doc_count = self.store.count({"project": proj, "kind": "doc"})
         refs = [
             {**r, "root": str(r["root"]) if r["root"] else None}
             for r in self._project_refs(proj)
@@ -4162,7 +4162,7 @@ class Crib:
             nd = pp.notes_dir
             ld = pp.pillar_dir("learnings")
             sd = pp.project_dir / "symbol_index"
-            doc_chunks = self.store.count({"project": name}, relpath_prefix=SRC_PREFIX)
+            doc_chunks = self.store.count({"project": name, "kind": "doc"})
             dd = pp.pillar_dir("design")
             pd = pp.pillar_dir("plans")
             row = {
@@ -4265,11 +4265,7 @@ class Crib:
         # In-situ docs are index-only (source is master) — drop their chunks + the
         # source registry too; re-runnable via `project index`.
         reg = self._source_roots(proj)
-        doc_ids = [
-            i
-            for i, m in self.store.get_meta({"project": proj}).items()
-            if m.get("relpath", "").startswith(SRC_PREFIX)
-        ]
+        doc_ids = list(self.store.get_meta({"project": proj, "kind": "doc"}))
         if doc_ids:
             self.store.delete(doc_ids)
             self.index.invalidate_caches(proj)

@@ -233,9 +233,7 @@ def filtered(backend):
             rec("a", X, kind="note", n=1, f=1.5),
             rec("b", Y, kind="design", n=2, f=2.5),
             rec("c", XY, kind="note", n=1, f=2.5),
-            Record(
-                "d", Z, "doc d", {"project": "q", "kind": "note", "n": 1, "f": 1.5}
-            ),
+            Record("d", Z, "doc d", {"project": "q", "kind": "note", "n": 1, "f": 1.5}),
         ]
     )
     return s
@@ -549,3 +547,20 @@ def test_score_ids_scores_stored_vectors(backend):
     assert got["x"] == pytest.approx(1.0, abs=1e-6)
     assert got["xy"] == pytest.approx(math.sqrt(0.5), abs=1e-6)
     assert s.score_ids(X, []) == {}
+
+
+def test_in_matches_one_of_several_strings(backend):
+    s = backend.store
+    s.upsert(
+        [
+            rec("a", X, kind="note"),
+            rec("b", Y, kind="doc"),
+            rec("c", Z, kind="design"),
+            rec("d", XY, kind=["note"]),
+        ]
+    )
+    assert set(s.get_meta({"kind": {"$in": ["note", "doc"]}})) == {"a", "b"}
+    assert {h.id for h in top(s, X, 10, {"kind": {"$in": ["design"]}})} == {"c"}
+    assert s.get_meta({"kind": {"$in": []}}) == {}
+    with pytest.raises(CribUserError):
+        s.get_meta({"kind": {"$in": "note"}})

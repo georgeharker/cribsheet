@@ -141,18 +141,40 @@ def _any_match(key: str, wanted: Any) -> tuple[str, list[Any]]:
     )
 
 
+def _in_match(key: str, wanted: Any) -> tuple[str, list[Any]]:
+    """`{key: {"$in": [...]}}`: the string at `key` is one of `wanted`."""
+    if not isinstance(wanted, (list, tuple)) or not all(
+        isinstance(v, str) for v in wanted
+    ):
+        raise CribUserError(f'"$in" takes a list of strings, got {wanted!r}')
+    if not wanted:
+        return ("FALSE", [])
+    if key in PROMOTED:  # key is one of the constant column names
+        return (f"list_contains(?::VARCHAR[], {key})", [list(wanted)])
+    path = _json_path(key)
+    return (
+        "(json_type(meta, ?) = 'VARCHAR' "
+        "AND list_contains(?::VARCHAR[], json_extract_string(meta, ?)))",
+        [path, list(wanted), path],
+    )
+
+
 def _where(where: dict[str, Any] | None) -> tuple[str, list[Any]]:
     """`WHERE …` for a metadata filter (all keys must match): a plain value is an
-    exact, type-checked match; `{"$any": [...]}` is list membership."""
+    exact, type-checked match; `{"$any": [...]}` is list membership (the stored
+    value is a list); `{"$in": [...]}` is one-of (the stored value is a string)."""
     if not where:
         return "", []
     conds: list[str] = []
     params: list[Any] = []
     for key, value in where.items():
         if isinstance(value, dict):
-            if set(value) != {"$any"}:
+            if set(value) == {"$any"}:
+                cond, ps = _any_match(key, value["$any"])
+            elif set(value) == {"$in"}:
+                cond, ps = _in_match(key, value["$in"])
+            else:
                 raise CribUserError(f"unsupported filter for {key!r}: {value!r}")
-            cond, ps = _any_match(key, value["$any"])
             conds.append(cond)
             params.extend(ps)
         elif key in PROMOTED and isinstance(value, str):

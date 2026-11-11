@@ -147,15 +147,17 @@ def _match_one(have: Any, want: Any) -> bool:
     """One `where` entry, the same semantics as the DuckDB store's: a plain value
     matches only an equal value of the same type (`True` is not `1`, `1` is not
     `1.0`, `None` matches nothing); `{"$any": [...]}` matches a list sharing an
-    element with it."""
+    element with it; `{"$in": [...]}` matches a string that is one of them."""
     if isinstance(want, dict):
-        if set(want) != {"$any"}:
+        if set(want) not in ({"$any"}, {"$in"}):
             raise CribUserError(f"unsupported filter {want!r}")
-        wanted = want["$any"]
+        (op, wanted), = want.items()
         if not isinstance(wanted, (list, tuple)) or not all(
             isinstance(v, str) for v in wanted
         ):
-            raise CribUserError(f'"$any" takes a list of strings, got {wanted!r}')
+            raise CribUserError(f'"{op}" takes a list of strings, got {wanted!r}')
+        if op == "$in":
+            return isinstance(have, str) and have in wanted
         return isinstance(have, list) and bool(set(wanted) & set(have))
     if want is None or isinstance(want, (list, dict)):
         return False
