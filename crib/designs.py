@@ -470,11 +470,13 @@ class Designs:
                 continue
             if not d.exists():
                 continue
+            parsed: list[tuple[str, dict[str, Any], str]] = []
             for path in sorted(d.glob("*.md")):
                 try:
                     fm, body = notes.parse(path.read_text(), path)
                 except (OSError, UnicodeDecodeError, notes.NoteParseError):
                     continue  # one broken note must not blind the graph
+                parsed.append((path.name, fm, body))
                 nid = str(fm.get("id") or "")
                 if not nid:
                     continue  # not indexed yet (no id stamped)
@@ -500,6 +502,7 @@ class Designs:
                     sources=sources,
                     dep_kinds=explicit_kinds,
                 )
+            self._sync_items(proj, kind, store, parsed)
         unresolved = {d for n in graph.nodes.values() for d in n.deps
                       if d not in graph.nodes}
         if unresolved:
@@ -524,6 +527,18 @@ class Designs:
                 raise
             graph.notes[note.id] = note
             return note
+
+    def _sync_items(self, proj: str, kind: str, store: NoteStore,
+                    parsed: list[tuple[str, dict[str, Any], str]]) -> None:
+        """The read-and-execute sweep: the files were just parsed for the graph,
+        so bring the store's item rows and edges into line with them in the same
+        pass. Whatever a graph query then asks the store matches the files, even
+        straight after an edit made outside crib (before any watcher). A store
+        that can't be reached costs the sync, never the graph read."""
+        try:
+            store.index.sync_items(proj, store.spec.name, parsed)
+        except Exception as e:  # noqa: BLE001 — backend boundary; the files still answer
+            print(f"[crib] {kind} item sync skipped for {proj}: {e}", file=sys.stderr)
 
     def _note_nodes(self, proj: str, ids: set[str]) -> dict[str, Node]:
         """The plain notes among `ids`, as kind-"note" nodes with a body hash."""

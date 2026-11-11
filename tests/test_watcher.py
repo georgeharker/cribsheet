@@ -52,6 +52,7 @@ def test_decode_covers_every_pillar_sibling(tmp_path):
 
 def test_decode_store_routes_by_data_root_and_pillar(tmp_path):
     from crib.watch import decode_store
+
     root = tmp_path / "repo" / ".crib-store"
     for seg, rel in (("notes", "n.md"), ("design", "d.md")):
         f = root / seg / rel
@@ -70,15 +71,17 @@ def test_code_watcher_decode_is_pure_path_work(tmp_path, monkeypatch):
     from pathlib import Path as _P
 
     from crib.watch import CodeWatcher
+
     root = tmp_path / "repo"
     (root / "src").mkdir(parents=True)
     # the callback never fires in this test (pure path work), so a stub stands in
-    on_batch = cast("Callable[[str, dict[str, tuple[str, bool]]], Awaitable[None]]",
-                    lambda *a: None)
+    on_batch = cast(
+        "Callable[[str, dict[str, tuple[str, bool]]], Awaitable[None]]", lambda *a: None
+    )
     cw = CodeWatcher(on_batch, asyncio.new_event_loop())
     cw.watch_root("proj", root)
     rk = str(root.resolve())
-    cw._code_exts()             # primed by `start()` in the daemon (see _watch_dirs)
+    cw._code_exts()  # primed by `start()` in the daemon (see _watch_dirs)
     # any filesystem touch from the event thread is a bug — record and assert none
     touched: list[str] = []
 
@@ -86,6 +89,7 @@ def test_code_watcher_decode_is_pure_path_work(tmp_path, monkeypatch):
         def wrapper(self, *a, **k):
             touched.append(name)
             return fn(self, *a, **k)
+
         return wrapper
 
     for attr in ("exists", "is_file", "read_text", "stat"):
@@ -96,10 +100,20 @@ def test_code_watcher_decode_is_pure_path_work(tmp_path, monkeypatch):
     assert cw._decode(str(f), True) == ("proj", rk, "src/a.py", True, "code")
     # a doc-EXTENSION file is classified "doc"; the `docs:` globs decide later
     assert cw._decode(str(root / "README.md"), False) == (
-        "proj", rk, "README.md", False, "doc")
+        "proj",
+        rk,
+        "README.md",
+        False,
+        "doc",
+    )
     # extensionless → "sniff": routed by content, but not from this thread
     assert cw._decode(str(root / "_helper"), False) == (
-        "proj", rk, "_helper", False, "sniff")
+        "proj",
+        rk,
+        "_helper",
+        False,
+        "sniff",
+    )
     # a non-code, non-doc extension → ignored
     assert cw._decode(str(root / "a.png"), False) is None
     # junk dir → ignored
@@ -113,6 +127,7 @@ def test_code_watcher_resolve_batch_applies_the_io_half(tmp_path):
     """The deferred half: existence re-check, `docs:` globs, content sniff — run
     ONCE per coalesced burst, on a worker thread, not per event."""
     from crib.watch import CodeWatcher
+
     root = tmp_path / "repo"
     (root / "src").mkdir(parents=True)
     (root / "docs").mkdir()
@@ -122,7 +137,8 @@ def test_code_watcher_resolve_batch_applies_the_io_half(tmp_path):
     (root / "scratch.md").write_text("notes")
     (root / "docs" / "guide.md").write_text("# guide")
     (root / ".crib").write_text(
-        'project: proj\ndocs:\n  - "README.md"\n  - "docs/**/*.md"\n')
+        'project: proj\ndocs:\n  - "README.md"\n  - "docs/**/*.md"\n'
+    )
     resolve = CodeWatcher._resolve_batch
     # a delete event for a file that still EXISTS is FSEvents rename-save noise
     # → recorded as a change (trusting it wiped whole files' symbols)
@@ -131,28 +147,34 @@ def test_code_watcher_resolve_batch_applies_the_io_half(tmp_path):
     assert resolve({"src/gone.py": (rk, True, "code")}) == {"src/gone.py": (rk, True)}
     # docs are scoped to the `.crib docs:` globs (same as the sweep): a MATCHING
     # doc routes as an in-situ doc (\x00doc\x00-tagged), one outside is dropped
-    assert resolve({"README.md": (rk, False, "doc"),
-                    "docs/guide.md": (rk, False, "doc"),
-                    "scratch.md": (rk, False, "doc")}) == {
-        "\x00doc\x00README.md": (rk, False),
-        "\x00doc\x00docs/guide.md": (rk, False)}
+    assert resolve(
+        {
+            "README.md": (rk, False, "doc"),
+            "docs/guide.md": (rk, False, "doc"),
+            "scratch.md": (rk, False, "doc"),
+        }
+    ) == {"\x00doc\x00README.md": (rk, False), "\x00doc\x00docs/guide.md": (rk, False)}
 
 
-def test_code_watcher_resolve_batch_routes_new_extensionless_files(tmp_path,
-                                                                   monkeypatch):
+def test_code_watcher_resolve_batch_routes_new_extensionless_files(
+    tmp_path, monkeypatch
+):
     """A NEW extensionless autoload/dotfile routes by content (shebang/marker),
     like sweep enumeration — it must not wait for the next full sweep."""
     from crib.watch import CodeWatcher
+
     monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "cfg"))
     root = tmp_path / "repo"
     root.mkdir()
     rk = str(root.resolve())
     (root / "_zdot_helper").write_text("#autoload\n_zdot_helper() { :; }\n")
     (root / "notes").write_text("plain text\n")
-    assert CodeWatcher._resolve_batch({
-        "_zdot_helper": (rk, False, "sniff"),
-        "notes": (rk, False, "sniff"),          # extensionless NON-code → dropped
-    }) == {"_zdot_helper": (rk, False)}
+    assert CodeWatcher._resolve_batch(
+        {
+            "_zdot_helper": (rk, False, "sniff"),
+            "notes": (rk, False, "sniff"),  # extensionless NON-code → dropped
+        }
+    ) == {"_zdot_helper": (rk, False)}
 
 
 def test_watcher_indexes_external_edit(tmp_path, monkeypatch):
@@ -167,8 +189,9 @@ def test_watcher_indexes_external_edit(tmp_path, monkeypatch):
         nd = crib.notes_dir("p")
         # Simulate an external editor writing a new note directly to disk.
         (nd / "external.md").write_text(
-            "---\ntitle: ext\n---\nThe watcher should index this automatically.")
-        for _ in range(50):                     # poll up to ~5s for debounce+index
+            "---\ntitle: ext\n---\nThe watcher should index this automatically."
+        )
+        for _ in range(50):  # poll up to ~5s for debounce+index
             await asyncio.sleep(0.1)
             if crib.lookup("watcher index automatically", project="p"):
                 break
@@ -191,19 +214,22 @@ def test_watcher_indexes_an_edit_in_a_pillar_sibling(tmp_path, monkeypatch):
         crib.start_watchers(asyncio.get_running_loop())
         dd = crib.designstore.dir("p")
         (dd / "external.md").write_text(
-            "---\ntitle: ext\ntype: design\n---\nA quorum write is the rule.")
+            "---\ntitle: ext\ntype: design\n---\nA quorum write is the rule."
+        )
         for _ in range(50):
             await asyncio.sleep(0.1)
             if crib.lookup("quorum write rule", project="p", store="design"):
                 break
         crib.stop_watchers()
-        return (crib.lookup("quorum write rule", project="p", store="design"),
-                crib.lookup("quorum write rule", project="p"))
+        return (
+            crib.lookup("quorum write rule", project="p", store="design"),
+            crib.lookup("quorum write rule", project="p"),
+        )
 
     design_hits, note_hits = asyncio.run(scenario())
     assert design_hits and design_hits[0].relpath == "external.md"
     assert design_hits[0].store == "design"
-    assert not note_hits                    # never leaks into the notes pillar
+    assert not note_hits  # never leaks into the notes pillar
 
 
 def test_dispatch_tasks_are_held_and_failures_logged(capsys):
@@ -223,8 +249,9 @@ def test_dispatch_tasks_are_held_and_failures_logged(capsys):
         w = Watcher(Path("/nowhere"), on_change, asyncio.get_running_loop())
         w._fire(("p", "notes", "a.md"))
         await started.wait()
-        assert w._tasks                       # strong ref held while in flight
+        assert w._tasks  # strong ref held while in flight
         await asyncio.sleep(0.1)
-        assert not w._tasks                   # released on completion
+        assert not w._tasks  # released on completion
+
     asyncio.run(scenario())
     assert "index blew up" in capsys.readouterr().err

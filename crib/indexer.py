@@ -184,24 +184,70 @@ class IndexEngine:
             embed_batch, self.embedder, list(plan.item_embed))
         return replace(plan.item, title_vec=title_vec, body_vec=body_vec)
 
+    @staticmethod
+    def _want_item(project: str, store: str, relpath: str, note_id: str,
+                   title: str, body: str, frontmatter: dict) -> Item:
+        """The item row (vectors not yet attached) a file's content implies."""
+        kind = kind_of(store, relpath)
+        return Item(id=note_id, kind=kind, project=project, relpath=relpath,
+                    title=title, content_hash=item_hash(title, body),
+                    facet=facet_of(kind, frontmatter),
+                    edges=edges_of(kind, frontmatter))
+
+    @staticmethod
+    def _against(want: Item, have: Item | None) -> tuple[Item | None, bool]:
+        """(the row to write, whether its vectors need computing), judged against
+        the stored row: (None, False) when the stored row is already right."""
+        if have is None or have.content_hash != want.content_hash:
+            return want, True
+        if replace(have, title_vec=None, body_vec=None) == want:
+            return None, False
+        return replace(want, title_vec=have.title_vec, body_vec=have.body_vec), False
+
     def _item_for(self, project: str, store: str, relpath: str, note_id: str,
                   title: str, body: str, frontmatter: dict) -> tuple[Item | None, tuple[str, str] | None]:
         """The item row this file should have, and whether its vectors need
         computing: (None, None) when the stored row is already right."""
         if not note_id:
             return None, None
-        kind = kind_of(store, relpath)
-        want = Item(id=note_id, kind=kind, project=project, relpath=relpath,
-                    title=title, content_hash=item_hash(title, body),
-                    facet=facet_of(kind, frontmatter),
-                    edges=edges_of(kind, frontmatter))
-        have = self.store.items({"id": note_id}).get(note_id)
-        if have is None or have.content_hash != want.content_hash:
-            return want, (title, body_text(body))
-        if replace(have, title_vec=None, body_vec=None) == want:
-            return None, None  # unchanged: no write
-        return replace(want, title_vec=have.title_vec, body_vec=have.body_vec), None
+        want = self._want_item(project, store, relpath, note_id, title, body,
+                               frontmatter)
+        item, needs = self._against(want, self.store.items({"id": note_id}).get(note_id))
+        return item, ((title, body_text(body)) if needs else None)
 
+    def sync_items(self, project: str, store: str,
+                   files: list[tuple[str, dict, str]]) -> int:
+        """Bring one pillar's item rows (and their edges) into line with its files
+        as just parsed — `(relpath, frontmatter, body)` each — and drop rows whose
+        file is gone. Blocking (one read, maybe one embed, one write); the chunks
+        are left to the indexer. Returns the rows written or dropped."""
+        kind = kind_of(store)
+        have = self.store.items({"project": project, "kind": kind})
+        write: list[Item] = []
+        embed: list[tuple[Item, str, str]] = []
+        seen: set[str] = set()
+        for relpath, fm, body in files:
+            note_id = str(fm.get("id") or "")
+            if not note_id:
+                continue
+            seen.add(note_id)
+            title = str(fm.get("title") or "")
+            want = self._want_item(project, store, relpath, note_id, title, body, fm)
+            item, needs = self._against(want, have.get(note_id))
+            if item is not None and needs:
+                embed.append((item, title, body_text(body)))
+            elif item is not None:
+                write.append(item)
+        if embed:
+            vecs = embed_batch(self.embedder,
+                               [t for _, t, _ in embed] + [b for _, _, b in embed])
+            n = len(embed)
+            write += [replace(it, title_vec=vecs[i], body_vec=vecs[n + i])
+                      for i, (it, _, _) in enumerate(embed)]
+        gone = [i for i in have if i not in seen]
+        if write or gone:
+            self.store.apply([], [], {}, write, gone)
+        return len(write) + len(gone)
     def _plan(self, project: str, notes_dir: Path, relpath: str,
               content_path: Path | None = None, store: str = "notes") -> _Plan:
         """Read the file, chunk it, diff against the index — all blocking, so this

@@ -147,3 +147,26 @@ def test_a_note_can_be_named_as_a_dependency_and_is_checked_never_gating(crib):
     run(crib.edit_note(n["relpath"], "Background reading, revised.", project="p"))
     assert crib.plan_read(p["relpath"], project="p")["tainted"]
     assert _blocked(crib, p["relpath"]) == set()  # stale, but never gates
+
+
+def test_a_graph_read_brings_the_store_in_line_with_files_edited_outside_crib(crib):
+    """The read-and-execute sweep: a hand edit (no watcher here) reaches the item
+    rows and edges on the next graph read, and a hand-deleted file's row goes."""
+    d = run(crib.design_add("Ground", "A decision.", project="p"))
+    p1 = run(crib.plan_add("First", project="p"))
+    p2 = run(crib.plan_add("Second", project="p"))
+    path = crib.paths.project_dir("p") / "plans" / p2["relpath"]
+    note = notes.load(path)
+    note.frontmatter["deps"] = [p1["id"]]
+    note.frontmatter["rests_on"] = [d["id"]]
+    note.frontmatter["status"] = "in-progress"
+    notes.save_atomic(note)  # behind crib's back
+    (crib.paths.project_dir("p") / "plans" / p1["relpath"]).unlink()
+    crib.plan_list(project="p")  # any graph read
+    item = crib.store.items({"id": p2["id"]})[p2["id"]]
+    assert item.facet["status"] == "in-progress"
+    assert {(dst, k) for _s, dst, k, _h in crib.store.edges({"src": p2["id"]})} == {
+        (p1["id"], "informed_by"),  # target gone: no kind to default from
+        (d["id"], "rests_on"),
+    }
+    assert crib.store.items({"id": p1["id"]}) == {}
