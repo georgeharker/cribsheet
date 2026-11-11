@@ -424,6 +424,63 @@ WRITES: list[tuple[str, list[str]]] = [
     ("status", ["project", "status", "-p", _W]),
 ]
 
+# Near-duplicates in every settled state, so `similar` (what a write answers
+# with) is exercised with real hits and the statuses it carries.
+SIMILAR: list[tuple[str, list[str]]] = [
+    ("sim-note", ["note", "store", "-p", _W, "--title", "Parity note two again",
+                  "A second note about sprockets, unrelated to widgets."]),
+    ("sim-design-superseded", ["design", "add", "-p", _W,
+                               "Widgets keyed by serial number",
+                               "Every widget is identified by its serial number."]),
+    ("sim-design-active", ["design", "add", "-p", _W,
+                           "Widgets keyed by serial and batch code",
+                           "Supersedes the serial-only key with serial and batch."]),
+    ("p-park", ["plan", "add", "-p", _W, "Archive retired gadgets",
+                "Move gadgets no longer sold into the archive table."]),
+    ("p-park-it", ["plan", "park", "-p", _W, "--why", "after the index lands",
+                   "{ref:p-park}"]),
+    ("sim-plan-parked", ["plan", "add", "-p", _W, "Archive the retired gadgets",
+                         "Move retired gadgets into the archive table."]),
+    ("p-decline", ["plan", "add", "-p", _W, "Rename gadgets to doohickeys",
+                   "Rename the gadget table and every reference to it."]),
+    ("p-decline-it", ["plan", "decline", "-p", _W, "--why", "churn for nothing",
+                      "{ref:p-decline}"]),
+    ("sim-plan-declined", ["plan", "add", "-p", _W, "Rename the gadgets table",
+                           "Rename the gadget table to doohickeys."]),
+    ("sim-plan-done", ["plan", "add", "-p", _W, "Index the gadgets by serial",
+                       "Build the gadget index on the widget serial."]),
+]
+
+
+def corpus_similar_steps(snap: Path, projects: int = 4) -> list[tuple[str, list[str]]]:
+    """In the projects with the most items: a note, a decision and a plan item
+    that repeat an existing item's title and opening, so `similar` answers
+    from the real corpus. Runs in each build's own copy."""
+    data = snap / "data" / "projects"
+
+    def size(p: Path) -> int:
+        return sum(1 for _ in p.glob("*/*.md"))
+
+    steps: list[tuple[str, list[str]]] = []
+    for proj in sorted((d for d in data.iterdir() if d.is_dir()), key=size,
+                       reverse=True)[:projects]:
+        for pillar, noun in (("notes", "note"), ("design", "design"), ("plans", "plan")):
+            files = sorted((proj / pillar).glob("*.md"))
+            if not files:
+                continue
+            text = files[0].read_text(errors="replace")
+            fm = _frontmatter(files[0])
+            body = text.split("---", 2)[2].strip() if text.startswith("---") else text
+            title = f"{fm.get('title') or files[0].stem} (restated)"
+            opening = " ".join(body.split())[:300] or title
+            label = f"corpus-{proj.name}-{noun}"
+            if noun == "note":
+                steps.append((label, ["note", "store", "-p", proj.name, "--title",
+                                      title, opening]))
+            else:
+                steps.append((label, [noun, "add", "-p", proj.name, title, opening]))
+    return steps
+
 
 def _cli(crib_bin: Path, env: dict[str, str], argv: list[str]) -> Any:
     from crib import proc
@@ -476,7 +533,8 @@ def _ref_of(result: Any) -> str | None:
 
 
 def _run_build(label: str, python: Path, snap: Path, work: Path, queries_file: Path,
-               queries: list[dict[str, Any]], cli: bool, writes: bool) -> dict[str, Any]:
+               queries: list[dict[str, Any]], cli: bool, writes: bool,
+               write_steps: list[tuple[str, list[str]]]) -> dict[str, Any]:
     from crib import proc
 
     root = work / label
@@ -542,7 +600,7 @@ def _run_build(label: str, python: Path, snap: Path, work: Path, queries_file: P
             refs: dict[str, str] = {}
             seen: dict[str, str] = {}
             steps = []
-            for step, argv in WRITES:
+            for step, argv in write_steps:
                 argv = [
                     refs.get(a[5:-1], a) if a.startswith("{ref:") else a for a in argv]
                 res = _cli(crib_bin, env, argv)
@@ -601,8 +659,11 @@ def compare(snap: Path, a: Path, b: Path, work: Path, cli: bool, writes: bool,
     queries = build_queries(snap)
     qfile = work / "queries.json"
     qfile.write_text(json.dumps(queries, indent=1))
-    ra = _run_build("a", a.absolute(), snap, work, qfile, queries, cli, writes)
-    rb = _run_build("b", b.absolute(), snap, work, qfile, queries, cli, writes)
+    write_steps = [*WRITES, *SIMILAR, *corpus_similar_steps(snap)]
+    ra = _run_build("a", a.absolute(), snap, work, qfile, queries, cli, writes,
+                    write_steps)
+    rb = _run_build("b", b.absolute(), snap, work, qfile, queries, cli, writes,
+                    write_steps)
     after = live_fingerprint(live)
     diffs: list[dict[str, Any]] = []
     tally: dict[str, list[int]] = {}
@@ -619,7 +680,7 @@ def compare(snap: Path, a: Path, b: Path, work: Path, cli: bool, writes: bool,
                 diffs.append({"phase": phase, "tool": q["tool"], "args": q["args"],
                               "first_diff": d})
     if "writes" in ra:
-        for (step, argv), x, y in zip(WRITES, ra["writes"], rb["writes"]):
+        for (step, argv), x, y in zip(write_steps, ra["writes"], rb["writes"]):
             tally.setdefault("writes", [0, 0])[0] += 1
             if d := _first_diff(x, y):
                 tally["writes"][1] += 1
