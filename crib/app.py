@@ -148,6 +148,15 @@ def _min_max(vals: list[float]) -> list[float]:
     return [(v - lo) / rng for v in vals]
 
 
+
+def _kinded(
+    follows: list[str] | None, rests_on: list[str] | None, informed_by: list[str] | None
+) -> dict[str, list[str]] | None:
+    """Refs given with an explicit dependency kind, keyed by the kind."""
+    out = {k: v for k, v in (("follows", follows), ("rests_on", rests_on),
+                             ("informed_by", informed_by)) if v}
+    return out or None
+
 class Crib:
     def __init__(self, paths: Paths, config: Config, store: Store) -> None:
         self.paths = paths
@@ -4452,6 +4461,9 @@ class Crib:
         sources: list[Any] | None = None,
         proposed: bool = False,
         cwd: Path | None = None,
+        follows: list[str] | None = None,
+        rests_on: list[str] | None = None,
+        informed_by: list[str] | None = None,
     ) -> dict[str, Any]:
         """Record a design decision (deps validated + `checked` seeded, `sources`
         captured at their current section hashes), with the same near-duplicate
@@ -4462,7 +4474,8 @@ class Crib:
         dependents and neither taints the other's."""
         proj = self.resolve_project(project, cwd)
         out = await self.designs.design_add(
-            proj, title, content, deps, sources, proposed
+            proj, title, content, deps, sources, proposed,
+            _kinded(follows, rests_on, informed_by),
         )
         similar = await asyncio.to_thread(
             self._similar, proj, content, out["relpath"], "design"
@@ -4574,10 +4587,11 @@ class Crib:
         dep_ref: str,
         project: str | None = None,
         cwd: Path | None = None,
+        kind: str | None = None,
     ) -> dict[str, Any]:
         """Declare that a decision builds on another (cycle-checked)."""
         return await self.designs.design_dep_add(
-            self.resolve_project(project, cwd), ref, dep_ref
+            self.resolve_project(project, cwd), ref, dep_ref, kind
         )
 
     async def design_dep_remove(
@@ -4706,6 +4720,9 @@ class Crib:
         project: str | None = None,
         sources: list[Any] | None = None,
         cwd: Path | None = None,
+        follows: list[str] | None = None,
+        rests_on: list[str] | None = None,
+        informed_by: list[str] | None = None,
     ) -> dict[str, Any]:
         """Add one plan item, or a whole batch (`items`), ranked at the end unless
         after/before place them."""
@@ -4718,6 +4735,7 @@ class Crib:
             before,
             items,
             sources,
+            _kinded(follows, rests_on, informed_by),
         )
 
     async def plan_status(
@@ -4820,10 +4838,11 @@ class Crib:
         dep_ref: str,
         project: str | None = None,
         cwd: Path | None = None,
+        kind: str | None = None,
     ) -> dict[str, Any]:
-        """Declare that a plan item must follow another (cycle-checked)."""
+        """Declare that a plan item depends on another (cycle-checked)."""
         return await self.designs.plan_dep_add(
-            self.resolve_project(project, cwd), ref, dep_ref
+            self.resolve_project(project, cwd), ref, dep_ref, kind
         )
 
     async def plan_dep_remove(

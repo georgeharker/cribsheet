@@ -1536,6 +1536,9 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         sources: list[str] | None = None,
         proposed: bool = False,
         project_path: str | None = None,
+        follows: list[str] | None = None,
+        rests_on: list[str] | None = None,
+        informed_by: list[str] | None = None,
     ) -> dict[str, Any]:
         """Record a DESIGN DECISION — the choice, why, and what was rejected — as a
         note under `design/`, declaring the decisions it builds on (`deps`: ids,
@@ -1564,7 +1567,10 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         the citation records that section's hash now. `proposed=True` is the
         EXTRACTION tier and belongs to `design_import`'s procedure — hand-authored
         decisions land `active`, because you already made the judgement."""
-        return await crib.design_add(title, content, deps, project, sources, proposed)
+        return await crib.design_add(
+            title, content, deps, project, sources, proposed,
+            follows=follows, rests_on=rests_on, informed_by=informed_by,
+        )
 
     @crib_tool("read")
     async def design_read(
@@ -1690,17 +1696,23 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         dep_ref: str,
         project: str | None = None,
         project_path: str | None = None,
+        kind: str | None = None,
     ) -> dict[str, Any]:
         """Declare that one decision BUILDS ON another (cycle-checked, refused if it
         would create one).
 
-        CONTRACT: EVERY dep edge propagates checking — there is no "informed-by"
-        edge that never taints, because that is precisely the hole through which an
-        origin changes silently. The new edge is deliberately left unverified, so
+        `kind` says what the dependency MEANS: `rests_on` (grounding — the default
+        for a decision), `follows` (ordering — the default for a plan item) or
+        `informed_by` (context — the default for a note; it never blocks). The
+        result's `dep_kind` says which applied.
+
+        CONTRACT: EVERY dep kind propagates checking — `informed_by` only never
+        BLOCKS; it still taints, because an edge that never taints is precisely
+        the hole through which an origin changes silently. The new edge is deliberately left unverified, so
         `ref` shows up in `design_check` until you re-read it against its new dep.
         Keyed by a ref inside one project, so it resolves that project like a
         read."""
-        return await crib.design_dep_add(ref, dep_ref, project)
+        return await crib.design_dep_add(ref, dep_ref, project, kind=kind)
 
     @crib_tool("read")
     async def design_dep_remove(
@@ -1896,6 +1908,9 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         project: str | None = None,
         sources: list[str] | None = None,
         project_path: str | None = None,
+        follows: list[str] | None = None,
+        rests_on: list[str] | None = None,
+        informed_by: list[str] | None = None,
     ) -> dict[str, Any]:
         """Add durable PLAN ITEMS so multi-session work survives a context reset.
 
@@ -1919,7 +1934,8 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         `revisit` rather than re-opening itself. Like any write it must NAME its
         project."""
         return await crib.plan_add(
-            title, content, deps, after, before, items, project, sources
+            title, content, deps, after, before, items, project, sources,
+            follows=follows, rests_on=rests_on, informed_by=informed_by,
         )
 
     @crib_tool("read")
@@ -2119,11 +2135,12 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         dep_ref: str,
         project: str | None = None,
         project_path: str | None = None,
+        kind: str | None = None,
     ) -> dict[str, Any]:
         """Declare that one plan item MUST FOLLOW another (cycle-checked). This is
         what makes `plan_next` trustworthy. Resolves its project like a read, as
         `plan_status` does."""
-        return await crib.plan_dep_add(ref, dep_ref, project)
+        return await crib.plan_dep_add(ref, dep_ref, project, kind=kind)
 
     @crib_tool("read")
     async def plan_dep_remove(

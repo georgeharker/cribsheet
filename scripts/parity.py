@@ -637,9 +637,32 @@ def _first_diff(a: Any, b: Any, path: str = "$") -> str | None:
     return None if a == b else f"{path}: {a!r:.80} vs {b!r:.80}"
 
 
+def _drop_keys(value: Any, keys: set[str]) -> Any:
+    if isinstance(value, dict):
+        return {k: _drop_keys(v, keys) for k, v in value.items() if k not in keys}
+    if isinstance(value, list):
+        return [_drop_keys(v, keys) for v in value]
+    return value
+
+
+def _new_keys(rules: list[dict[str, Any]], phase: str, name: str | None) -> set[str]:
+    """Keys a rule says the new build ADDS for this comparison: dropped from both
+    sides before diffing, so everything else must still match exactly."""
+    out: set[str] = set()
+    for rule in rules:
+        if rule.get("phase", phase) != phase:
+            continue
+        if name is not None and rule.get("step", rule.get("tool", name)) != name:
+            continue
+        out.update(rule.get("new_keys", []))
+    return out
+
+
 def _intended(d: dict[str, Any], intended: list[dict[str, str]]) -> str | None:
     """The reason, when this difference is one the change MEANS to make."""
     for rule in intended:
+        if "new_keys" in rule:
+            continue  # applied before diffing, never matches a difference
         if rule.get("phase", d["phase"]) != d["phase"]:
             continue
         if rule.get("tool", d.get("tool")) != d.get("tool"):
@@ -675,6 +698,8 @@ def compare(snap: Path, a: Path, b: Path, work: Path, cli: bool, writes: bool,
                 continue
             key = f"{phase}:{q['tool']}"
             tally.setdefault(key, [0, 0])[0] += 1
+            if drop := _new_keys(intended or [], phase, q["tool"]):
+                x, y = _drop_keys(x, drop), _drop_keys(y, drop)
             if d := _first_diff(x, y):
                 tally[key][1] += 1
                 diffs.append({"phase": phase, "tool": q["tool"], "args": q["args"],
@@ -682,6 +707,8 @@ def compare(snap: Path, a: Path, b: Path, work: Path, cli: bool, writes: bool,
     if "writes" in ra:
         for (step, argv), x, y in zip(write_steps, ra["writes"], rb["writes"]):
             tally.setdefault("writes", [0, 0])[0] += 1
+            if drop := _new_keys(intended or [], "writes", step):
+                x, y = _drop_keys(x, drop), _drop_keys(y, drop)
             if d := _first_diff(x, y):
                 tally["writes"][1] += 1
                 diffs.append({"phase": "writes", "step": step, "argv": argv,

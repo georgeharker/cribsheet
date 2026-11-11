@@ -1252,6 +1252,24 @@ def _narrowers(sp: Any) -> None:
     sp.add_argument("--lang", default="", help="exact language of the symbol")
 
 
+def _dep_kind_flags(s: Any) -> None:
+    """--follows / --rests-on / --informed-by: a dependency with its kind chosen
+    explicitly, overriding the default for its target (repeatable)."""
+    for flag, dest, what in (
+        ("--follows", "follows", "ordering: blocked until it is done"),
+        ("--rests-on", "rests_on", "grounding: blocked while it is stale"),
+        ("--informed-by", "informed_by", "context: checked, never blocks"),
+    ):
+        s.add_argument(flag, action="append", dest=dest, metavar="REF",
+                       help=f"a dependency of kind {dest} ({what}; repeatable)")
+
+
+def _dep_kind_arg(s: Any) -> None:
+    s.add_argument("--as", dest="kind", default=None,
+                   choices=("follows", "rests_on", "informed_by"),
+                   help="the dependency's kind (default: by what it points at)")
+
+
 def build_parser() -> argparse.ArgumentParser:
     from . import __version__
 
@@ -1768,8 +1786,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--dep",
         action="append",
         dest="deps",
-        help="a decision this one builds on (repeatable)",
+        help="a dependency of the default kind for its target (repeatable): a "
+        "decision is rests_on, a plan item follows, a note informed_by",
     )
+    _dep_kind_flags(s)
     source_arg(s)
     s.add_argument(
         "--proposed",
@@ -1843,13 +1863,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     for _v, _h in (
-        ("dep-add", "declare that a decision builds on another"),
+        ("dep-add", "declare that a decision depends on another (default kind: by target)"),
         ("dep-remove", "drop a dependency edge between decisions"),
     ):
         _s = designsub.add_parser(_v, help=_h)
         _s.add_argument("ref")
         _s.add_argument("dep_ref", metavar="dep")
         proj(_s)
+        if _v == "dep-add":
+            _dep_kind_arg(_s)
 
     s = designsub.add_parser(
         "forget", help="delete a decision (refuses while dependents exist)"
@@ -1938,8 +1960,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--dep",
         action="append",
         dest="deps",
-        help="an item this one must follow (repeatable)",
+        help="a dependency of the default kind for its target (repeatable): a "
+        "plan item is follows, a decision rests_on, a note informed_by",
     )
+    _dep_kind_flags(s)
     source_arg(s)
     s.add_argument(
         "--item",
@@ -2049,13 +2073,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     for _v, _h in (
-        ("dep-add", "declare that an item must follow another"),
+        ("dep-add", "declare that an item depends on another (default kind: by target)"),
         ("dep-remove", "drop a must-precede edge between items"),
     ):
         _s = plansub.add_parser(_v, help=_h)
         _s.add_argument("ref")
         _s.add_argument("dep_ref", metavar="dep")
         proj(_s)
+        if _v == "dep-add":
+            _dep_kind_arg(_s)
 
     s = plansub.add_parser(
         "forget", help="delete a plan item (refuses while dependents exist)"
@@ -3116,11 +3142,15 @@ VERBS: dict[str, Verb] = {
             "project": a.project,
             "sources": a.sources,
             "proposed": a.proposed,
+            "follows": a.follows,
+            "rests_on": a.rests_on,
+            "informed_by": a.informed_by,
         },
         _E_dwrite,
         is_async=True,
         policy="write",
-        mcp=f"title content deps=None {_PROJ} sources=None proposed=False",
+        mcp=f"title content deps=None {_PROJ} sources=None proposed=False "
+        "follows=None rests_on=None informed_by=None",
     ),
     "design read": Verb(
         "design_read",
@@ -3178,11 +3208,12 @@ VERBS: dict[str, Verb] = {
     ),
     "design dep-add": Verb(
         "design_dep_add",
-        lambda a: {"ref": a.ref, "dep_ref": a.dep_ref, "project": a.project},
+        lambda a: {"ref": a.ref, "dep_ref": a.dep_ref, "project": a.project,
+                   "kind": a.kind},
         _E_dwrite,
         is_async=True,
         policy="read",
-        mcp=f"ref dep_ref {_PROJ}",
+        mcp=f"ref dep_ref {_PROJ} kind=None",
     ),
     "design dep-remove": Verb(
         "design_dep_remove",
@@ -3288,12 +3319,16 @@ VERBS: dict[str, Verb] = {
             "items": _plan_items(a),
             "project": a.project,
             "sources": a.sources,
+            "follows": a.follows,
+            "rests_on": a.rests_on,
+            "informed_by": a.informed_by,
         },
         _E_dwrite,
         is_async=True,
         policy="write",
         mcp=f"title=None content='' {_PROJ} deps=None after=None "
-        "before=None items=None sources=None",
+        "before=None items=None sources=None follows=None rests_on=None "
+        "informed_by=None",
     ),
     "plan lookup": Verb(
         "plan_lookup",
@@ -3379,11 +3414,12 @@ VERBS: dict[str, Verb] = {
     ),
     "plan dep-add": Verb(
         "plan_dep_add",
-        lambda a: {"ref": a.ref, "dep_ref": a.dep_ref, "project": a.project},
+        lambda a: {"ref": a.ref, "dep_ref": a.dep_ref, "project": a.project,
+                   "kind": a.kind},
         _E_dwrite,
         is_async=True,
         policy="read",
-        mcp=f"ref dep_ref {_PROJ}",
+        mcp=f"ref dep_ref {_PROJ} kind=None",
     ),
     "plan dep-remove": Verb(
         "plan_dep_remove",

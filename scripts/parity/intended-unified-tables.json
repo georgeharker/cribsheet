@@ -4,5 +4,10 @@
     "step": "design-lookup",
     "path_prefix": "$[0].line_end",
     "reason": "decisions written on the branch no longer carry `links: []`, so their section ends one line earlier"
+  },
+  {
+    "phase": "writes",
+    "new_keys": ["dep_kinds"],
+    "reason": "design/plan add reports each dependency's kind (Stage B1)"
   }
 ]

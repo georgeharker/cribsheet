@@ -107,6 +107,50 @@ def format_docref(store: str, relpath: str) -> str:
 # docstring). It is a first-class status rather than a tag because it changes
 # behaviour — a proposed entry taints nothing until `design_promote`.
 DESIGN_STATUSES = ("proposed", "active", "superseded")
+# What a dependency MEANS, each with its own gating (taint flows down every one):
+#   follows      ordering: blocked until the target is done
+#   rests_on     grounding: blocked while the target is stale (or proposed)
+#   informed_by  context: checked for change, never blocks
+DEP_KINDS = ("follows", "rests_on", "informed_by")
+
+
+def dep_kind_default(target_kind: str | None) -> str:
+    """The kind a dependency gets when none is written: a plan target is
+    ordering, a decision is grounding, anything else (a note) is context."""
+    return {"plan": "follows", "design": "rests_on"}.get(target_kind or "", "informed_by")
+
+
+def frontmatter_deps(fm: dict[str, Any]) -> tuple[list[str], dict[str, str]]:
+    """(every dep id in order, {id: kind} for the ones written with a kind).
+
+    `deps:` holds dependencies of the DEFAULT kind for their target; a
+    dependency of any other kind is written under its kind's own key
+    (`follows:` / `rests_on:` / `informed_by:`), so the common case keeps the
+    one-list format and a non-default choice is visible in the file."""
+    ids: list[str] = []
+    explicit: dict[str, str] = {}
+    for d in fm.get("deps") or []:
+        if str(d) not in ids:
+            ids.append(str(d))
+    for kind in DEP_KINDS:
+        for d in fm.get(kind) or []:
+            d = str(d)
+            explicit[d] = kind
+            if d not in ids:
+                ids.append(d)
+    return ids, explicit
+
+
+def deps_frontmatter(kinds: dict[str, str], graph: "Graph") -> dict[str, Any]:
+    """The frontmatter keys for `{dep id: kind}` (insertion order kept): default
+    kinds under `deps:`, the rest under their kind's key. A kind key with no
+    entries is None, which `_save` removes from the file."""
+    out: dict[str, Any] = {"deps": [], **{k: [] for k in DEP_KINDS}}
+    for dep_id, kind in kinds.items():
+        target = graph.nodes.get(dep_id)
+        default = dep_kind_default(target.kind if target else None)
+        out["deps" if kind == default else kind].append(dep_id)
+    return {k: (v if v or k == "deps" else None) for k, v in out.items()}
 # `blocked` is DERIVED (any dep not done/verified), never stored — decision 6.
 PLAN_STATUSES = ("todo", "in-progress", "parked", "declined", "done", "verified")
 DONE_STATUSES = ("done", "verified")
@@ -364,6 +408,9 @@ class Node:
     # section's hash AT CAPTURE, `current` what it hashes to now (None = the
     # section is gone) — resolved by `_load_graph`, so `_taint` stays pure.
     sources: list[dict[str, Any]] = field(default_factory=list)
+    # each dep's KIND (DEP_KINDS): explicit in frontmatter, else the default for
+    # what the dep points at (see `dep_kind_default`). Set by `_load_graph`.
+    dep_kinds: dict[str, str] = field(default_factory=dict)
 
     def brief(self) -> dict[str, Any]:
         out = {
@@ -484,7 +531,7 @@ class Designs:
                 nid = str(fm.get("id") or "")
                 if not nid:
                     continue  # not indexed yet (no id stamped)
-                deps = [str(x) for x in (fm.get("deps") or [])]
+                deps, explicit_kinds = frontmatter_deps(fm)
                 checked = {str(k): str(v) for k, v in (fm.get("checked") or {}).items()}
                 sources = _parse_sources(fm.get("sources"))
                 for src in sources:
@@ -504,10 +551,15 @@ class Designs:
                     frontmatter=fm,
                     updated=str(fm.get("updated") or ""),
                     sources=sources,
+                    dep_kinds=explicit_kinds,
                 )
         for node in graph.nodes.values():
             for dep in node.deps:
                 graph.dependents.setdefault(dep, []).append(node.id)
+                if dep not in node.dep_kinds:
+                    target = graph.nodes.get(dep)
+                    node.dep_kinds[dep] = dep_kind_default(
+                        target.kind if target else None)
         return graph
 
     def _note(self, proj: str, node: Node) -> Note:
@@ -1174,6 +1226,7 @@ class Designs:
         path = store.abspath(proj, node.relpath)
         note = notes.load(path)
         fm = {**note.frontmatter, **fm, "updated": _today()}
+        fm = {k: v for k, v in fm.items() if v is not None}  # None = drop the key
         note.frontmatter = fm
         if body is not None:
             note.body = body
@@ -1195,7 +1248,10 @@ class Designs:
         deps: list[str] | None,
         extra: dict[str, Any],
         sources: list[Any] | None = None,
+        kinded: dict[str, list[str]] | None = None,
     ) -> dict[str, Any]:
+        """`deps` take the default kind for their target; `kinded` maps a dep
+        kind (DEP_KINDS) to refs that take that kind explicitly."""
         from .app import _slug
 
         if not (title or "").strip():
@@ -1207,7 +1263,17 @@ class Designs:
                 "the rationale is the thing a future reader comes back for.)"
             )
         graph = self._load_graph(proj)
-        dep_nodes = [self._resolve_ref(graph, r) for r in (deps or [])]
+        for how in kinded or {}:
+            if how not in DEP_KINDS:
+                raise CribUserError(f"unknown dependency kind {how!r}: one of {DEP_KINDS}")
+        dep_kinds: dict[str, str] = {}
+        dep_nodes = []
+        for how, refs in [(None, deps or []), *(kinded or {}).items()]:
+            for r in refs:
+                n = self._resolve_ref(graph, r)
+                if n.id not in dep_kinds:
+                    dep_nodes.append(n)
+                dep_kinds[n.id] = how or dep_kind_default(n.kind)
         relpath = self._unique_relpath(proj, kind, _slug(title))
         # A new note is born VERIFIED, decision OR plan item: it was written
         # against the deps as they read right now, so seeding `checked` says
@@ -1225,7 +1291,8 @@ class Designs:
             "title": title.strip(),
             "type": kind,
             "status": extra.pop("status", "active" if kind == "design" else "todo"),
-            "deps": [n.id for n in dep_nodes],
+            **{k: v for k, v in deps_frontmatter(dep_kinds, graph).items()
+               if v is not None},
             **checked,
             **({"sources": _source_rows(cited)} if cited else {}),
             **extra,
@@ -1245,17 +1312,24 @@ class Designs:
             "relpath": relpath,
             "title": fm["title"],
             "deps": fm["deps"],
+            # each dep's kind, chosen (`--follows` …) or the target's default
+            **({"dep_kinds": dep_kinds} if dep_kinds else {}),
             "status": fm["status"],
             "sources": [source_label(s) for s in cited],
             "indexed": res.upserted,
         }
 
     async def _dep_add(
-        self, proj: str, kind: str, ref: str, dep_ref: str
+        self, proj: str, kind: str, ref: str, dep_ref: str, how: str | None = None
     ) -> dict[str, Any]:
+        """`how` is the dependency's kind (DEP_KINDS); None takes the default for
+        what `dep_ref` is, and the result says which kind it got."""
+        if how is not None and how not in DEP_KINDS:
+            raise CribUserError(f"unknown dependency kind {how!r}: one of {DEP_KINDS}")
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, kind)
         dep = self._resolve_ref(graph, dep_ref)
+        how = how or dep_kind_default(dep.kind)
         if dep.id == node.id:
             raise CribUserError(f"{node.title!r} cannot depend on itself")
         if dep.id in node.deps:
@@ -1284,8 +1358,10 @@ class Designs:
         # Deliberately does NOT seed `checked`: a newly declared dep starts
         # UNVERIFIED, so the node shows up in `check` — the nudge to actually
         # reconsider it against what it now depends on.
-        out = await self._save(proj, node, {"deps": deps})
-        return {**out, "dep": dep.id, "dep_title": dep.title, "deps": deps}
+        fm = deps_frontmatter({**node.dep_kinds, dep.id: how}, graph)
+        out = await self._save(proj, node, fm)
+        return {**out, "dep": dep.id, "dep_title": dep.title, "dep_kind": how,
+                "deps": deps}
 
     async def _dep_remove(
         self, proj: str, kind: str, ref: str, dep_ref: str
@@ -1300,7 +1376,8 @@ class Designs:
             raise CribUserError(f"{node.title!r} does not depend on {dep_ref!r}")
         deps = [d for d in node.deps if d != dep_id]
         checked = {k: v for k, v in node.checked.items() if k != dep_id}
-        fm: dict[str, Any] = {"deps": deps}
+        fm: dict[str, Any] = deps_frontmatter(
+            {d: k for d, k in node.dep_kinds.items() if d != dep_id}, graph)
         if node.kind == "design":
             fm["checked"] = checked
         out = await self._save(proj, node, fm)
@@ -1340,6 +1417,7 @@ class Designs:
         deps: list[str] | None = None,
         sources: list[Any] | None = None,
         proposed: bool = False,
+        kinded: dict[str, list[str]] | None = None,
     ) -> dict[str, Any]:
         """Record a design decision under `notes/design/`, `checked` seeded from
         the current dep hashes (so a new decision is born verified) and `sources`
@@ -1349,7 +1427,8 @@ class Designs:
         procedure: hand-authoring is already a human judgement, so it lands
         `active`; only extraction quarantines."""
         extra = {"status": "proposed"} if proposed else {}
-        return await self._add(proj, "design", title, content, deps, extra, sources)
+        return await self._add(proj, "design", title, content, deps, extra, sources,
+                               kinded)
 
     def design_read(self, proj: str, ref: str) -> dict[str, Any]:
         """The one-call orientation on a decision: body + status + every edge
@@ -1713,8 +1792,10 @@ class Designs:
             ],
         }
 
-    async def design_dep_add(self, proj: str, ref: str, dep_ref: str) -> dict[str, Any]:
-        return await self._dep_add(proj, "design", ref, dep_ref)
+    async def design_dep_add(
+        self, proj: str, ref: str, dep_ref: str, kind: str | None = None
+    ) -> dict[str, Any]:
+        return await self._dep_add(proj, "design", ref, dep_ref, kind)
 
     async def design_dep_remove(
         self, proj: str, ref: str, dep_ref: str
@@ -2130,6 +2211,7 @@ class Designs:
         before: str | None = None,
         items: list[dict[str, Any]] | None = None,
         sources: list[Any] | None = None,
+        kinded: dict[str, list[str]] | None = None,
     ) -> dict[str, Any]:
         """Add plan items (default: at the end; `after`/`before` place them).
 
@@ -2149,7 +2231,8 @@ class Designs:
             items
             if items is not None
             else [
-                {"title": title, "content": content, "deps": deps, "sources": sources}
+                {"title": title, "content": content, "deps": deps, "sources": sources,
+                 **(kinded or {})}
             ]
         )
         if not batch:
@@ -2162,9 +2245,18 @@ class Designs:
             # deps/sources below read as their declared types, not `Any | str`
             item: dict[str, Any] = raw if isinstance(raw, dict) else {"title": str(raw)}
             raw_deps: list[str] = item.get("deps") or []
+            # a dep of a chosen kind rides under that kind's key, like frontmatter
+            raw_kinded: dict[str, list[str]] = {
+                k: list(item.get(k) or []) for k in DEP_KINDS if item.get(k)
+            }
+            every = [*raw_deps, *(d for refs in raw_kinded.values() for d in refs)]
             # "#n" resolves against THIS batch; anything else is an ordinary ref
             item_deps = [by_index[d] if d in by_index else d for d in raw_deps]
-            unknown = [d for d in raw_deps if d.startswith("#") and d not in by_index]
+            item_kinded = {
+                k: [by_index[d] if d in by_index else d for d in refs]
+                for k, refs in raw_kinded.items()
+            }
+            unknown = [d for d in every if d.startswith("#") and d not in by_index]
             if unknown:
                 raise CribUserError(
                     f"item {i} depends on {unknown[0]!r}, which is not an EARLIER "
@@ -2193,6 +2285,7 @@ class Designs:
                 item_deps,
                 {"rank": rank},
                 item.get("sources"),
+                item_kinded,
             )
             by_index[f"#{i}"] = out["id"]
             prev = out["id"]
@@ -2684,8 +2777,10 @@ class Designs:
             ) from e
         return {"merged": loser.relpath, "into": winner.relpath}
 
-    async def plan_dep_add(self, proj: str, ref: str, dep_ref: str) -> dict[str, Any]:
-        return await self._dep_add(proj, "plan", ref, dep_ref)
+    async def plan_dep_add(
+        self, proj: str, ref: str, dep_ref: str, kind: str | None = None
+    ) -> dict[str, Any]:
+        return await self._dep_add(proj, "plan", ref, dep_ref, kind)
 
     async def plan_dep_remove(
         self, proj: str, ref: str, dep_ref: str
@@ -2810,16 +2905,20 @@ class Designs:
         blockers, note_deps, missing = [], [], []
         for dep_id in node.deps:
             dep = graph.nodes.get(dep_id)
+            how = node.dep_kinds.get(dep_id) or dep_kind_default(
+                dep.kind if dep else None)
             if dep is None:
                 (note_deps if dep_id in note_ids else missing).append(dep_id)
-            elif dep.kind == "plan":
+            elif how == "informed_by":
+                continue  # context: checked for change, never a gate
+            elif how == "follows":
                 if dep.status not in DONE_STATUSES:
                     blockers.append(
                         {
                             "id": dep.id,
                             "ref": dep.relpath,
                             "title": dep.title,
-                            "kind": "plan",
+                            "kind": dep.kind,
                             "status": dep.status,
                         }
                     )
@@ -2829,7 +2928,7 @@ class Designs:
                         "id": dep.id,
                         "ref": dep.relpath,
                         "title": dep.title,
-                        "kind": "design",
+                        "kind": dep.kind,
                         "status": "proposed — `design_promote` it",
                     }
                 )
@@ -2839,7 +2938,7 @@ class Designs:
                         "id": dep.id,
                         "ref": dep.relpath,
                         "title": dep.title,
-                        "kind": "design",
+                        "kind": dep.kind,
                         "status": "stale — `design_read` it",
                     }
                 )
