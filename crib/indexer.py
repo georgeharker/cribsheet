@@ -210,8 +210,8 @@ class IndexEngine:
         # Deleted on disk -> drop all its chunks.
         if not path.exists():
             existing = self._existing_meta(project, store, relpath)
-            gone = sorted({str(m.get("note_id")) for m in existing.values()
-                           if m.get("note_id")})
+            gone = sorted({str(m.get("item_id")) for m in existing.values()
+                           if m.get("item_id")})
             self.store.apply([], list(existing), {}, None, gone)
             return _Plan(
                 invalidate=bool(existing),

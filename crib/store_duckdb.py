@@ -8,7 +8,7 @@ moves to DuckDB on two paths").
 
 Layout: one table, created at the first upsert because its vector column is
 fixed-size (`FLOAT[dim]`), the dimension of whatever embedder wrote first. The
-keys crib filters on constantly (`project`, `kind`, `relpath`) are promoted to
+keys crib filters on constantly (`project`, `kind`, `relpath`, `item_id`) are promoted to
 real columns; every other metadata key is filtered through the JSON copy, by
 type, so `{"n": "1"}` never matches an int 1 (the contract's exact match).
 
@@ -50,8 +50,9 @@ EMBED_CACHE = "crib_embed_cache"
 # of them are rebuildable), record_format (crib.recordcache's parse output) and
 # embed_model (which embedder wrote crib_chunks; see `Crib._maybe_recreate_for_dim`).
 META = "crib_meta"
-# 2: crib_chunks' `store` column is `kind`; 3: crib_items and the facet tables
-SCHEMA_VERSION = "3"
+# 2: crib_chunks' `store` column is `kind`; 3: crib_items and the facet tables;
+# 4: crib_chunks' `item_id` column (the item a chunk belongs to)
+SCHEMA_VERSION = "4"
 # One row per item (crib.items), plus one table per kind for that kind's own
 # fields, joined on the item id. Created at open; the vectors are variable
 # length, so no table depends on the embedder's dimension.
@@ -88,7 +89,12 @@ _FIXED_TABLES = MappingProxyType(
         },
     }
 )
-PROMOTED = ("project", "kind", "relpath")  # filtered constantly: real columns
+PROMOTED = (
+    "project",
+    "kind",
+    "relpath",
+    "item_id",
+)  # filtered constantly: real columns
 # The only column lists a read may select — never caller text.
 _SELECT_COLUMNS = MappingProxyType({"meta": "id, meta", "docs": "id, document, meta"})
 
@@ -334,7 +340,7 @@ def _upsert_step(store: "DuckDBStore", records: list[Record]) -> Callable[[Any],
         ex.run(f"DELETE FROM {TABLE} WHERE id = ANY(?)", [ids])
         # TABLE is a module constant; every value is a parameter.
         # pi-lens-ignore: python-sql-injection
-        ex.run_many(f"INSERT INTO {TABLE} VALUES (?, ?, ?, ?, ?, ?, ?)", rows)
+        ex.run_many(f"INSERT INTO {TABLE} VALUES (?, ?, ?, ?, ?, ?, ?, ?)", rows)
 
     return write
 
@@ -354,13 +360,14 @@ def _set_meta_step(
             return
         for start in range(0, len(rows), _META_ROWS_PER_STATEMENT):
             batch = rows[start : start + _META_ROWS_PER_STATEMENT]
-            groups = ", ".join("(?, ?, ?, ?, ?)" for _ in batch)
+            groups = ", ".join("(?, ?, ?, ?, ?, ?)" for _ in batch)
             # TABLE is a module constant; every value is a parameter.
             # pi-lens-ignore: python-sql-injection
             ex.run(
                 f"UPDATE {TABLE} SET meta = v.meta::JSON, project = v.project, "
-                "kind = v.kind, relpath = v.relpath "
-                f"FROM (VALUES {groups}) AS v(id, meta, project, kind, relpath) "
+                "kind = v.kind, relpath = v.relpath, item_id = v.item_id "
+                f"FROM (VALUES {groups}) "
+                "AS v(id, meta, project, kind, relpath, item_id) "
                 f"WHERE {TABLE}.id = v.id",
                 [x for row in batch for x in row],
             )
@@ -533,7 +540,7 @@ class DuckDBStore:
             ex.run(
                 f"CREATE TABLE IF NOT EXISTS {TABLE} ("
                 "id VARCHAR PRIMARY KEY, document VARCHAR, meta JSON, "
-                "project VARCHAR, kind VARCHAR, relpath VARCHAR, "
+                "project VARCHAR, kind VARCHAR, relpath VARCHAR, item_id VARCHAR, "
                 f"vec FLOAT[{int(dim)}])"
             )
         elif have != dim:

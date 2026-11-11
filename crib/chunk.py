@@ -144,7 +144,8 @@ class Chunk:
             # where-clause per surface keeps facet chunks out of note search
             # (and vice versa).
             "kind": kind_of(self.store, self.relpath),
-            "note_id": self.note_id,
+            # The item this chunk is part of (crib.items): the note's id.
+            "item_id": self.note_id,
             "title": title or "",
             "tags": list(tags),
             # The note's frontmatter `type` (e.g. design/plan), so a facet's notes
