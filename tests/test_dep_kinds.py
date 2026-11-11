@@ -134,3 +134,16 @@ def test_the_cli_spells_the_kinds(crib):
         )
     )
     assert call["kind"] == "rests_on"
+
+
+def test_a_note_can_be_named_as_a_dependency_and_is_checked_never_gating(crib):
+    n = run(crib.store_note("Background reading.", title="Background", project="p"))
+    p = run(crib.plan_add("Work", deps=[n["relpath"]], project="p"))
+    (note_id,) = p["dep_kinds"]
+    assert p["dep_kinds"] == {note_id: "informed_by"}  # a note's default kind
+    assert _blocked(crib, p["relpath"]) == set()
+    # born verified: not stale until the note changes
+    assert not crib.plan_read(p["relpath"], project="p")["tainted"]
+    run(crib.edit_note(n["relpath"], "Background reading, revised.", project="p"))
+    assert crib.plan_read(p["relpath"], project="p")["tainted"]
+    assert _blocked(crib, p["relpath"]) == set()  # stale, but never gates

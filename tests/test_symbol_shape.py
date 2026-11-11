@@ -117,11 +117,11 @@ _CODE_FAMILY = (
     "symconvert.py",
 )
 
-# The EXEMPTION is itself asserted: designs.py is the one module allowed to
-# `#`-split (its `doc#heading` citations), and the count must stay exactly what
-# the exemption documents — a third `#`-split appearing there is a new convention
-# smuggled in under the exemption, and this assertion names it.
-_DESIGNS_ALLOWED_HASH_SPLITS = 2
+# The EXEMPTION is itself asserted: the `doc#heading` citation convention may
+# `#`-split in exactly these modules and counts (designs.py resolves citations;
+# items.py parses the `sources:` frontmatter, moved there for the edges table),
+# and a further `#`-split is a new convention smuggled in under the exemption.
+_CITATION_HASH_SPLITS = {"designs.py": 1, "items.py": 1}
 
 
 def test_no_code_module_splits_a_reference_by_hand():
@@ -135,7 +135,7 @@ def test_no_code_module_splits_a_reference_by_hand():
     only legal exceptions are `symbols.py` itself and `designs.py`'s documented
     `doc#heading` citations — asserted at their counted exact number, so the
     exemption cannot quietly grow."""
-    allowed = {"symbols.py", "designs.py"}
+    allowed = {"symbols.py", *_CITATION_HASH_SPLITS}
     offenders = [
         f"{path.name}: {ln.strip()[:60]}"
         for path in sorted((_CRIB).glob("*.py"))
@@ -146,22 +146,23 @@ def test_no_code_module_splits_a_reference_by_hand():
     assert not offenders, f"reference split by hand outside symbols.py: {offenders}"
 
 
-def test_designs_hash_split_exemption_shrinks_never_grows():
-    """`designs.py`'s two `#`-splits are the `doc#heading` citation convention —
-    recorded so the exemption stays exactly as documented. A THIRD split (a
-    symbol-reference parse smuggled under the citation exemption) fails here
-    instead of drifting silently."""
-    n = sum(
-        1
-        for ln in (_CRIB / "designs.py").read_text().splitlines()
-        if 'partition("#")' in ln or 'split("#")' in ln
-    )
-    assert n == _DESIGNS_ALLOWED_HASH_SPLITS, (
-        f"designs.py now has {n} #-splits — the exemption documents 2 "
-        f"(doc#heading citations). If a THIRD is a citation too, update "
-        f"_DESIGNS_ALLOWED_HASH_SPLITS with the reason; if it splits a SYMBOL "
-        f"reference, it belongs in symbols.py"
-    )
+def test_citation_hash_split_exemption_shrinks_never_grows():
+    """The `doc#heading` citation splits are recorded per module, so the
+    exemption stays exactly as documented. A further split (a symbol-reference
+    parse smuggled under the citation exemption) fails here instead of drifting
+    silently."""
+    for name, allowed in _CITATION_HASH_SPLITS.items():
+        n = sum(
+            1
+            for ln in (_CRIB / name).read_text().splitlines()
+            if 'partition("#")' in ln or 'split("#")' in ln
+        )
+        assert n == allowed, (
+            f"{name} now has {n} #-splits — the exemption documents {allowed} "
+            f"(doc#heading citations). If another is a citation too, update "
+            f"_CITATION_HASH_SPLITS with the reason; if it splits a SYMBOL "
+            f"reference, it belongs in symbols.py"
+        )
 
 
 @pytest.mark.parametrize(

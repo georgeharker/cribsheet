@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from typing import Any, Protocol
 
 from .errors import CribUserError
-from .items import Item
+from .items import Item, dep_kind_default
 
 
 def is_loopback_host(host: str) -> bool:
@@ -87,6 +87,12 @@ class Store(Protocol):
     def items(self, where: dict[str, Any]) -> dict[str, Item]:
         """{id: Item} for items whose core fields (`id`, `kind`, `project`,
         `relpath`) match `where`; values are exact or `{"$in": [...]}`."""
+        ...
+
+    def edges(self, where: dict[str, Any]) -> list[tuple[str, str, str, str | None]]:
+        """(src, dst, kind, recorded_hash) for edges matching `where` on `src`,
+        `dst` or `kind` (exact or `{"$in": [...]}`). A `dep` edge comes back
+        with its RESOLVED kind: the default for what its target is."""
         ...
 
     def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -174,6 +180,17 @@ def _match_one(have: Any, want: Any) -> bool:
 
 
 ITEM_KEYS = ("id", "kind", "project", "relpath")  # what `Store.items` filters on
+EDGE_KEYS = ("src", "dst", "kind")  # what `Store.edges` filters on
+
+
+def _check_edge_where(where: dict[str, Any]) -> None:
+    if bad := set(where) - set(EDGE_KEYS):
+        raise CribUserError(f"edges can be filtered only on {EDGE_KEYS}, not {sorted(bad)}")
+
+
+def resolve_edge_kind(kind: str, target: Item | None) -> str:
+    """A `dep` edge's kind is its target's default; every other kind is as written."""
+    return dep_kind_default(target.kind if target else None) if kind == "dep" else kind
 
 
 def _check_item_where(where: dict[str, Any]) -> None:
@@ -272,6 +289,18 @@ class InMemoryStore:
                 self._items.pop(item_id, None)
             for item in items or ():
                 self._items[item.id] = item
+
+    def edges(self, where: dict[str, Any]) -> list[tuple[str, str, str, str | None]]:
+        _check_edge_where(where)
+        with self._lock:
+            rows = [
+                (it.id, e.dst, resolve_edge_kind(e.kind, self._items.get(e.dst)),
+                 e.recorded_hash)
+                for it in self._items.values() for e in it.edges
+            ]
+        keys = {"src": 0, "dst": 1, "kind": 2}
+        return sorted(r for r in rows
+                      if all(_match_one(r[keys[k]], v) for k, v in where.items()))
 
     def items(self, where: dict[str, Any]) -> dict[str, Item]:
         _check_item_where(where)

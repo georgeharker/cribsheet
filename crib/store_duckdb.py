@@ -32,8 +32,8 @@ from types import MappingProxyType
 from typing import Any
 
 from .errors import CribUserError
-from .items import FACETS, Item, facet_table
-from .store import Hit, Record, _check_item_where
+from .items import FACETS, Edge, Item, facet_table
+from .store import Hit, Record, _check_edge_where, _check_item_where
 
 TABLE = "crib_chunks"
 # The generation ledger (crib.genledger): beside the chunks, NOT part of them, so a
@@ -51,8 +51,10 @@ EMBED_CACHE = "crib_embed_cache"
 # embed_model (which embedder wrote crib_chunks; see `Crib._maybe_recreate_for_dim`).
 META = "crib_meta"
 # 2: crib_chunks' `store` column is `kind`; 3: crib_items and the facet tables;
-# 4: crib_chunks' `item_id` column (the item a chunk belongs to)
-SCHEMA_VERSION = "4"
+# 4: crib_chunks' `item_id` column (the item a chunk belongs to); 5: crib_edges
+SCHEMA_VERSION = "5"
+# Links between items (crib.items.Edge), replaced with their source item.
+EDGES = "crib_edges"
 # One row per item (crib.items), plus one table per kind for that kind's own
 # fields, joined on the item id. Created at open; the vectors are variable
 # length, so no table depends on the embedder's dimension.
@@ -79,6 +81,7 @@ _FIXED_TABLES = MappingProxyType(
         LEDGER: "purpose VARCHAR, target VARCHAR, input_hash VARCHAR, "
         "provider VARCHAR, attempts INTEGER, last_error VARCHAR, "
         "last_attempt DOUBLE, next_retry DOUBLE, PRIMARY KEY (purpose, target)",
+        EDGES: "src VARCHAR, dst VARCHAR, kind VARCHAR, recorded_hash VARCHAR",
         ITEMS: "id VARCHAR PRIMARY KEY, kind VARCHAR, project VARCHAR, "
         "relpath VARCHAR, title VARCHAR, content_hash VARCHAR, "
         "title_vec FLOAT[], body_vec FLOAT[]",
@@ -276,6 +279,8 @@ def _delete_items_step(ids: list[str]) -> Callable[[Any], None]:
         for table in (ITEMS, *(t for t, _ in _FACET_TABLES.values())):
             # pi-lens-ignore: python-sql-injection
             ex.run(f"DELETE FROM {table} WHERE id = ANY(?)", [ids])
+        # pi-lens-ignore: python-sql-injection
+        ex.run(f"DELETE FROM {EDGES} WHERE src = ANY(?)", [ids])
 
     return write
 
@@ -314,6 +319,10 @@ def _insert_items_step(items: list[Item]) -> Callable[[Any], None]:
                 marks = ", ".join("?" for _ in range(len(fields) + 1))
                 # pi-lens-ignore: python-sql-injection
                 ex.run_many(f"INSERT INTO {table} VALUES ({marks})", rows)
+        edges = [[it.id, e.dst, e.kind, e.recorded_hash] for it in items for e in it.edges]
+        if edges:
+            # pi-lens-ignore: python-sql-injection
+            ex.run_many(f"INSERT INTO {EDGES} VALUES (?, ?, ?, ?)", edges)
 
     return write
 
@@ -578,7 +587,7 @@ class DuckDBStore:
         def drop(ex: Any) -> None:
             ex.run(f"DROP TABLE IF EXISTS {TABLE}")
             # item vectors came from the same embedder: empty them too
-            for table in (ITEMS, *(t for t, _ in _FACET_TABLES.values())):
+            for table in (ITEMS, EDGES, *(t for t, _ in _FACET_TABLES.values())):
                 # pi-lens-ignore: python-sql-injection
                 ex.run(f"DELETE FROM {table}")
 
@@ -638,6 +647,35 @@ class DuckDBStore:
 
     # ── reads ────────────────────────────────────────────────────────────────
 
+    def edges(self, where: dict[str, Any]) -> list[tuple[str, str, str, str | None]]:
+        _check_edge_where(where)
+        conds, params = [], []
+        for key, value in where.items():  # key is one of the EDGE_KEYS columns
+            col = "r.kind" if key == "kind" else f"r.{key}"
+            if isinstance(value, dict):
+                (op, wanted), = value.items()
+                if op != "$in":
+                    raise CribUserError(f"unsupported edge filter {value!r}")
+                conds.append(f"list_contains(?::VARCHAR[], {col})")
+                params.append(list(wanted))
+            else:
+                conds.append(f"{col} = ?")
+                params.append(value)
+        clause = (" WHERE " + " AND ".join(conds)) if conds else ""
+        with self._reading() as ex:
+            # A `dep` edge takes its target's default kind (crib.items.dep_kind_default).
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(
+                "SELECT r.src, r.dst, r.kind, r.recorded_hash FROM ("
+                "SELECT e.src, e.dst, e.recorded_hash, CASE WHEN e.kind = 'dep' THEN "
+                "CASE t.kind WHEN 'plan' THEN 'follows' WHEN 'design' THEN 'rests_on' "
+                "ELSE 'informed_by' END ELSE e.kind END AS kind "
+                f"FROM {EDGES} e LEFT JOIN {ITEMS} t ON t.id = e.dst) r{clause} "
+                "ORDER BY r.src, r.dst, r.kind",
+                params,
+            )
+        return [(a, b, c, d) for a, b, c, d in rows]
+
     def items(self, where: dict[str, Any]) -> dict[str, Item]:
         _check_item_where(where)
         conds, params = [], []
@@ -675,6 +713,19 @@ class DuckDBStore:
                         f: (list(v or []) if types[f] == "VARCHAR[]" else v)
                         for f, v in zip(fields, row[1:])
                     }
+            edge_rows = (
+                # pi-lens-ignore: python-sql-injection
+                ex.run(
+                    f"SELECT src, dst, kind, recorded_hash FROM {EDGES} "
+                    "WHERE src = ANY(?) ORDER BY rowid",
+                    [list(out)],
+                )
+                if out
+                else []
+            )
+        edges_of: dict[str, list[Edge]] = {}
+        for src, dst, kind, rh in edge_rows:
+            edges_of.setdefault(src, []).append(Edge(dst, kind, rh))
         return {
             i: Item(
                 id=r[0],
@@ -686,6 +737,7 @@ class DuckDBStore:
                 title_vec=[float(x) for x in r[6]] if r[6] is not None else None,
                 body_vec=[float(x) for x in r[7]] if r[7] is not None else None,
                 facet=facets.get(i, {}),
+                edges=tuple(edges_of.get(i, ())),
             )
             for i, r in out.items()
         }

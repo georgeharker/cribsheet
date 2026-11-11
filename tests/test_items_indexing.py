@@ -76,3 +76,27 @@ def test_a_full_reindex_fills_items_for_notes_indexed_before_items_existed(crib)
     assert crib.store.items({"project": "p"}) == {}
     run(crib.reindex(project="p"))
     assert set(crib.store.items({"project": "p"})) == {item_id}
+
+
+def test_indexing_records_each_items_edges(crib):
+    d = run(crib.design_add("Ground", "A decision.", project="p"))
+    n = run(crib.store_note("Background reading.", title="Background", project="p"))
+    p1 = run(crib.plan_add("First", project="p"))
+    (n_id,) = [
+        i
+        for i, it in crib.store.items({"kind": "note"}).items()
+        if it.relpath == n["relpath"]
+    ]
+    p2 = run(
+        crib.plan_add(
+            "Second",
+            deps=[d["relpath"], p1["relpath"]],
+            informed_by=[n_id],
+            project="p",
+        )
+    )
+    got = {(dst, kind) for _s, dst, kind, _h in crib.store.edges({"src": p2["id"]})}
+    assert got == {(d["id"], "rests_on"), (p1["id"], "follows"), (n_id, "informed_by")}
+    # the decision's recorded hash is the one `checked` seeded at create
+    (row,) = crib.store.edges({"src": p2["id"], "dst": d["id"]})
+    assert row[3]

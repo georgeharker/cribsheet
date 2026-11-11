@@ -62,6 +62,20 @@ def facet_table(kind: str) -> str:
 
 
 @dataclass(frozen=True)
+class Edge:
+    """A link from an item. `kind` is a dependency kind (DEP_KINDS), `dep` (a
+    dependency written without one: its kind is the target's default, resolved
+    when read), `drawn_from` (a doc section, `ref#heading`), `superseded_by`,
+    or `learns` (`symbol:<symbol_ref>`). `recorded_hash` is what the source
+    recorded of the target (the dep's body hash, the section's hash), for the
+    edges that are checked."""
+
+    dst: str
+    kind: str
+    recorded_hash: str | None = None
+
+
+@dataclass(frozen=True)
 class Item:
     id: str
     kind: str
@@ -72,6 +86,7 @@ class Item:
     title_vec: list[float] | None = None
     body_vec: list[float] | None = None
     facet: dict[str, Any] = field(default_factory=dict)
+    edges: tuple[Edge, ...] = ()
 
 
 def body_text(body: str) -> str:
@@ -94,3 +109,84 @@ def facet_of(kind: str, frontmatter: Mapping[str, Any]) -> dict[str, Any]:
         else:
             out[name] = None if value is None else str(value)
     return out
+
+
+# What a dependency MEANS, each with its own gating (taint flows down every one):
+#   follows      ordering: blocked until the target is done
+#   rests_on     grounding: blocked while the target is stale (or proposed)
+#   informed_by  context: checked for change, never blocks
+DEP_KINDS = ("follows", "rests_on", "informed_by")
+
+
+def dep_kind_default(target_kind: str | None) -> str:
+    """The kind a dependency gets when none is written: a plan target is
+    ordering, a decision is grounding, anything else (a note) is context."""
+    return {"plan": "follows", "design": "rests_on"}.get(target_kind or "", "informed_by")
+
+
+def frontmatter_deps(fm: dict[str, Any]) -> tuple[list[str], dict[str, str]]:
+    """(every dep id in order, {id: kind} for the ones written with a kind).
+
+    `deps:` holds dependencies of the DEFAULT kind for their target; a
+    dependency of any other kind is written under its kind's own key
+    (`follows:` / `rests_on:` / `informed_by:`), so the common case keeps the
+    one-list format and a non-default choice is visible in the file."""
+    ids: list[str] = []
+    explicit: dict[str, str] = {}
+    for d in fm.get("deps") or []:
+        if str(d) not in ids:
+            ids.append(str(d))
+    for kind in DEP_KINDS:
+        for d in fm.get(kind) or []:
+            d = str(d)
+            explicit[d] = kind
+            if d not in ids:
+                ids.append(d)
+    return ids, explicit
+
+
+def parse_sources(raw: Any) -> list[dict[str, Any]]:
+    """`sources:` frontmatter → `[{ref, heading, hash}]`, tolerantly.
+
+    A hand-written entry may be the bare citation string (`docs/DESIGN.md#4.
+    Coordination`) rather than the mapping the verbs write — accepted, because a
+    source is exactly the kind of thing a human adds to a note by hand. READING is
+    deliberately more permissive than writing: `_resolve_source` refuses a
+    citation that names no section, but a file already on disk is parsed as it
+    stands rather than dropped."""
+    out: list[dict[str, Any]] = []
+    for item in raw or []:
+        if isinstance(item, str):
+            ref, _, heading = item.partition("#")
+            item = {"ref": ref, "heading": heading}
+        if not isinstance(item, dict):
+            continue
+        ref = str(item.get("ref") or "").strip()
+        if not ref:
+            continue
+        heading = str(item.get("heading") or "").strip()
+        out.append(
+            {
+                "ref": ref,
+                "heading": heading or None,
+                "hash": str(item.get("hash") or ""),
+            }
+        )
+    return out
+
+
+def edges_of(kind: str, fm: Mapping[str, Any]) -> tuple[Edge, ...]:
+    """The links an item's frontmatter declares (see `Edge`)."""
+    out: list[Edge] = []
+    checked = {str(k): str(v) for k, v in (fm.get("checked") or {}).items()}
+    ids, explicit = frontmatter_deps(dict(fm))
+    for dst in ids:
+        out.append(Edge(dst, explicit.get(dst, "dep"), checked.get(dst)))
+    for src in parse_sources(fm.get("sources")):
+        dst = f"{src['ref']}#{src['heading']}" if src["heading"] else src["ref"]
+        out.append(Edge(dst, "drawn_from", src["hash"] or None))
+    if by := fm.get("superseded_by"):
+        out.append(Edge(str(by), "superseded_by"))
+    if kind == "learning" and (ref := fm.get("symbol_ref")):
+        out.append(Edge(f"symbol:{ref}", "learns"))
+    return tuple(out)

@@ -22,7 +22,7 @@ from pathlib import Path
 from . import notes
 from .chunk import WINDOW_OVERLAP, WINDOW_WORDS, Chunk, chunk_note, kind_of
 from .embed import Embedder, embed_batch
-from .items import Item, body_text, facet_of, item_hash
+from .items import Item, body_text, edges_of, facet_of, item_hash
 from .retrieve import LexicalCache, SummaryVectorCache
 from .store import Record, Store
 from .util import derived_ulid as _derive_id
@@ -193,7 +193,8 @@ class IndexEngine:
         kind = kind_of(store, relpath)
         want = Item(id=note_id, kind=kind, project=project, relpath=relpath,
                     title=title, content_hash=item_hash(title, body),
-                    facet=facet_of(kind, frontmatter))
+                    facet=facet_of(kind, frontmatter),
+                    edges=edges_of(kind, frontmatter))
         have = self.store.items({"id": note_id}).get(note_id)
         if have is None or have.content_hash != want.content_hash:
             return want, (title, body_text(body))

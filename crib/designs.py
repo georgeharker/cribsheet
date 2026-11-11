@@ -72,6 +72,7 @@ from typing import TYPE_CHECKING, Any, Callable
 from . import notes
 from .chunk import chunk_note, kind_of, pillar_of, section_key
 from .errors import CribUserError
+from .items import DEP_KINDS, dep_kind_default, frontmatter_deps, parse_sources
 from .notes import Note
 from .util import sha1_hex
 
@@ -107,40 +108,6 @@ def format_docref(store: str, relpath: str) -> str:
 # docstring). It is a first-class status rather than a tag because it changes
 # behaviour — a proposed entry taints nothing until `design_promote`.
 DESIGN_STATUSES = ("proposed", "active", "superseded")
-# What a dependency MEANS, each with its own gating (taint flows down every one):
-#   follows      ordering: blocked until the target is done
-#   rests_on     grounding: blocked while the target is stale (or proposed)
-#   informed_by  context: checked for change, never blocks
-DEP_KINDS = ("follows", "rests_on", "informed_by")
-
-
-def dep_kind_default(target_kind: str | None) -> str:
-    """The kind a dependency gets when none is written: a plan target is
-    ordering, a decision is grounding, anything else (a note) is context."""
-    return {"plan": "follows", "design": "rests_on"}.get(target_kind or "", "informed_by")
-
-
-def frontmatter_deps(fm: dict[str, Any]) -> tuple[list[str], dict[str, str]]:
-    """(every dep id in order, {id: kind} for the ones written with a kind).
-
-    `deps:` holds dependencies of the DEFAULT kind for their target; a
-    dependency of any other kind is written under its kind's own key
-    (`follows:` / `rests_on:` / `informed_by:`), so the common case keeps the
-    one-list format and a non-default choice is visible in the file."""
-    ids: list[str] = []
-    explicit: dict[str, str] = {}
-    for d in fm.get("deps") or []:
-        if str(d) not in ids:
-            ids.append(str(d))
-    for kind in DEP_KINDS:
-        for d in fm.get(kind) or []:
-            d = str(d)
-            explicit[d] = kind
-            if d not in ids:
-                ids.append(d)
-    return ids, explicit
-
-
 def deps_frontmatter(kinds: dict[str, str], graph: "Graph") -> dict[str, Any]:
     """The frontmatter keys for `{dep id: kind}` (insertion order kept): default
     kinds under `deps:`, the rest under their kind's key. A kind key with no
@@ -302,34 +269,6 @@ def _rank_between(a: str | None = None, b: str | None = None) -> str:
         i += 1
 
 
-def _parse_sources(raw: Any) -> list[dict[str, Any]]:
-    """`sources:` frontmatter → `[{ref, heading, hash}]`, tolerantly.
-
-    A hand-written entry may be the bare citation string (`docs/DESIGN.md#4.
-    Coordination`) rather than the mapping the verbs write — accepted, because a
-    source is exactly the kind of thing a human adds to a note by hand. READING is
-    deliberately more permissive than writing: `_resolve_source` refuses a
-    citation that names no section, but a file already on disk is parsed as it
-    stands rather than dropped."""
-    out: list[dict[str, Any]] = []
-    for item in raw or []:
-        if isinstance(item, str):
-            ref, _, heading = item.partition("#")
-            item = {"ref": ref, "heading": heading}
-        if not isinstance(item, dict):
-            continue
-        ref = str(item.get("ref") or "").strip()
-        if not ref:
-            continue
-        heading = str(item.get("heading") or "").strip()
-        out.append(
-            {
-                "ref": ref,
-                "heading": heading or None,
-                "hash": str(item.get("hash") or ""),
-            }
-        )
-    return out
 
 
 def _source_rows(sources: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -437,6 +376,14 @@ class Graph:
     # errors can NAME the namespace searched ("was it the wrong project?"),
     # the not-found ergonomics the notes path already has.
     proj: str = ""
+    # Plain NOTES that some node depends on (kind "note", no deps of their own):
+    # kept apart from `nodes`, which lists, cycles and trees walk, but consulted
+    # by taint and gating, so a note dependency is checked like any other.
+    notes: dict[str, Node] = field(default_factory=dict)
+
+    def target(self, dep_id: str) -> Node | None:
+        """What a dependency points at: a design/plan node, or a note."""
+        return self.nodes.get(dep_id) or self.notes.get(dep_id)
 
     def of_kind(self, kind: str) -> list[Node]:
         return [n for n in self.nodes.values() if n.kind == kind]
@@ -533,7 +480,7 @@ class Designs:
                     continue  # not indexed yet (no id stamped)
                 deps, explicit_kinds = frontmatter_deps(fm)
                 checked = {str(k): str(v) for k, v in (fm.get("checked") or {}).items()}
-                sources = _parse_sources(fm.get("sources"))
+                sources = parse_sources(fm.get("sources"))
                 for src in sources:
                     src["current"] = self._section_hash(proj, src, docs)
                 graph.nodes[nid] = Node(
@@ -553,14 +500,62 @@ class Designs:
                     sources=sources,
                     dep_kinds=explicit_kinds,
                 )
+        unresolved = {d for n in graph.nodes.values() for d in n.deps
+                      if d not in graph.nodes}
+        if unresolved:
+            graph.notes = self._note_nodes(proj, unresolved)
         for node in graph.nodes.values():
             for dep in node.deps:
                 graph.dependents.setdefault(dep, []).append(node.id)
                 if dep not in node.dep_kinds:
-                    target = graph.nodes.get(dep)
+                    target = graph.target(dep)
                     node.dep_kinds[dep] = dep_kind_default(
                         target.kind if target else None)
         return graph
+
+    def _resolve_dep(self, proj: str, graph: Graph, ref: str) -> Node:
+        """A dependency target: a design/plan node by any ref, else a plain note by
+        its id or notes relpath (added to `graph.notes`)."""
+        try:
+            return self._resolve_ref(graph, ref)
+        except CribUserError:
+            note = self._note_node(proj, ref)
+            if note is None:
+                raise
+            graph.notes[note.id] = note
+            return note
+
+    def _note_nodes(self, proj: str, ids: set[str]) -> dict[str, Node]:
+        """The plain notes among `ids`, as kind-"note" nodes with a body hash."""
+        out: dict[str, Node] = {}
+        for nid in self._note_dep_ids(proj, ids):
+            node = self._note_node(proj, nid)
+            if node is not None:
+                out[nid] = node
+        return out
+
+    def _note_node(self, proj: str, ref: str) -> Node | None:
+        """A plain note named by its id or its notes-pillar relpath, as a node."""
+        try:
+            root = self.notestore.notes_root(proj)
+        except Exception:  # noqa: BLE001 — an unreachable store resolves nothing
+            return None
+        ref = (ref or "").strip()
+        candidates = [root / ref] if ref.endswith(".md") else []
+        candidates += [root / f"{ref}.md"] if not ref.endswith(".md") else []
+        paths = [p for p in candidates if p.is_file()] or list(root.rglob("*.md"))
+        for path in paths:
+            try:
+                fm, body = notes.parse(path.read_text(), path)
+            except (OSError, UnicodeDecodeError, notes.NoteParseError):
+                continue
+            nid = str(fm.get("id") or "")
+            if nid and (nid == ref.upper() or path in candidates):
+                return Node(id=nid, kind="note", relpath=str(path.relative_to(root)),
+                            title=str(fm.get("title") or path.stem), status="",
+                            deps=[], checked={}, rank="", body_hash=_body_hash(body),
+                            frontmatter=fm, updated=str(fm.get("updated") or ""))
+        return None
 
     def _note(self, proj: str, node: Node) -> Note:
         return notes.load(self._store(node.kind).abspath(proj, node.relpath))
@@ -998,7 +993,7 @@ class Designs:
                     if cause:
                         out.setdefault(node.id, []).append(cause)
             for dep_id in node.deps:
-                dep = graph.nodes.get(dep_id)
+                dep = graph.target(dep_id)
                 if dep is not None and dep.status == "proposed":
                     continue
                 if dep is None:
@@ -1270,7 +1265,7 @@ class Designs:
         dep_nodes = []
         for how, refs in [(None, deps or []), *(kinded or {}).items()]:
             for r in refs:
-                n = self._resolve_ref(graph, r)
+                n = self._resolve_dep(proj, graph, r)
                 if n.id not in dep_kinds:
                     dep_nodes.append(n)
                 dep_kinds[n.id] = how or dep_kind_default(n.kind)
@@ -1328,7 +1323,7 @@ class Designs:
             raise CribUserError(f"unknown dependency kind {how!r}: one of {DEP_KINDS}")
         graph = self._load_graph(proj)
         node = self._resolve_ref(graph, ref, kind)
-        dep = self._resolve_ref(graph, dep_ref)
+        dep = self._resolve_dep(proj, graph, dep_ref)
         how = how or dep_kind_default(dep.kind)
         if dep.id == node.id:
             raise CribUserError(f"{node.title!r} cannot depend on itself")
@@ -2904,11 +2899,13 @@ class Designs:
         a flag lets them decide."""
         blockers, note_deps, missing = [], [], []
         for dep_id in node.deps:
-            dep = graph.nodes.get(dep_id)
+            dep = graph.target(dep_id)
             how = node.dep_kinds.get(dep_id) or dep_kind_default(
                 dep.kind if dep else None)
             if dep is None:
                 (note_deps if dep_id in note_ids else missing).append(dep_id)
+            elif dep.kind == "note":
+                note_deps.append(dep_id)  # a note is context: never a gate
             elif how == "informed_by":
                 continue  # context: checked for change, never a gate
             elif how == "follows":

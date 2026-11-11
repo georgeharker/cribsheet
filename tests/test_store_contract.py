@@ -635,3 +635,44 @@ def test_recreate_empties_the_items_too(backend):
     s.apply([], [], {}, [_item("i")])
     s.recreate()
     assert s.items({}) == {}
+
+
+def test_edges_resolve_a_default_dep_by_its_target_and_go_with_their_item(backend):
+    from crib.items import Edge
+
+    s = backend.store
+    s.apply(
+        [],
+        [],
+        {},
+        [
+            _item("d", "design"),
+            _item("p1", "plan"),
+            _item("n", "note"),
+        ],
+    )
+    from dataclasses import replace
+
+    p2 = replace(
+        _item("p2", "plan"),
+        edges=(
+            Edge("d", "dep", "h-d"),  # default: a decision -> rests_on
+            Edge("p1", "dep"),  # default: a plan -> follows
+            Edge("n", "informed_by"),  # written with a kind
+            Edge("docs/x.md#Intro", "drawn_from", "h-s"),
+        ),
+    )
+    s.apply([], [], {}, [p2])
+    assert s.edges({"src": "p2"}) == [
+        ("p2", "d", "rests_on", "h-d"),
+        ("p2", "docs/x.md#Intro", "drawn_from", "h-s"),
+        ("p2", "n", "informed_by", None),
+        ("p2", "p1", "follows", None),
+    ]
+    assert [r[0] for r in s.edges({"dst": "d"})] == ["p2"]  # dependents
+    assert s.edges({"kind": {"$in": ["follows"]}}) == [("p2", "p1", "follows", None)]
+    assert s.items({"id": "p2"})["p2"].edges == p2.edges  # round trip
+    s.apply([], [], {}, [replace(p2, edges=(Edge("d", "dep"),))])  # replaced
+    assert s.edges({"src": "p2"}) == [("p2", "d", "rests_on", None)]
+    s.apply([], [], {}, None, ["p2"])  # dropped
+    assert s.edges({}) == []
