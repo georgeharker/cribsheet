@@ -70,7 +70,10 @@ st = ["sentence-transformers>=2.2"]
 # ruff is the lint gate CI runs. The rule set is pinned explicitly in [tool.ruff.lint]
 # rather than left to ruff's defaults, so the version floor here only has to be new
 # enough to understand the config — it does not decide what gets flagged.
-dev = ["pytest>=8", "basedpyright>=1.19", "ruff>=0.15"]
+#
+# pytest-xdist runs the suite in parallel (`-n auto`): every test builds its own
+# tmp dirs and free ports, and the shared Quack server fixture is per worker.
+dev = ["pytest>=8", "pytest-xdist>=3", "basedpyright>=1.19", "ruff>=0.15"]
 
 [project.scripts]
 crib = "crib.cli:main"

@@ -70,7 +70,12 @@ def test_progress_streams_on_the_join_face(crib, monkeypatch):
         # and (the polling contract) returns a handle at once unless blocke�
         async def sweep():
             crib.code.sweeps[project] = {"done": 3, "total": 9}
-            await asyncio.sleep(0.2)  # a few progress ticks fire meanwhile
+            # Run until the join has streamed a tick (not a fixed 0.2 s: under a
+            # loaded, parallel test run no tick may land in that window).
+            for _ in range(200):
+                if seen:
+                    break
+                await asyncio.sleep(0.05)
             crib.code.sweeps.pop(project, None)
             return {"project": project, "created": False, "complete": True}
 

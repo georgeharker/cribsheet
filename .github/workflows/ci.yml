@@ -60,4 +60,6 @@ jobs:
               # not enough for its first callHierarchy reply here.
               env:
                   CRIB_LSP_TIMEOUT: "180"
-              run: uv run pytest -q
+              # In parallel (pytest-xdist): each test has its own tmp dirs and
+              # free ports, so -n auto is safe; serial took ~27 min here.
+              run: uv run pytest -q -n auto
