@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from typing import Any, Protocol
 
 from .errors import CribUserError
+from .items import Item
 
 
 def is_loopback_host(host: str) -> bool:
@@ -75,9 +76,17 @@ class Store(Protocol):
         records: list[Record],
         deletes: list[str],
         meta: dict[str, dict[str, Any]],
+        items: list[Item] | None = None,
+        item_deletes: list[str] | None = None,
     ) -> None:
-        """`upsert(records)`, `delete(deletes)` and `set_meta(meta)` as one atomic
-        write, in that order."""
+        """`upsert(records)`, `delete(deletes)` and `set_meta(meta)`, plus the
+        item rows for the same files (`items` replaces each id's row and facet,
+        `item_deletes` drops ids), as one atomic write, in that order."""
+        ...
+
+    def items(self, where: dict[str, Any]) -> dict[str, Item]:
+        """{id: Item} for items whose core fields (`id`, `kind`, `project`,
+        `relpath`) match `where`; values are exact or `{"$in": [...]}`."""
         ...
 
     def get_meta(self, where: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -164,6 +173,14 @@ def _match_one(have: Any, want: Any) -> bool:
     return type(have) is type(want) and have == want
 
 
+ITEM_KEYS = ("id", "kind", "project", "relpath")  # what `Store.items` filters on
+
+
+def _check_item_where(where: dict[str, Any]) -> None:
+    if bad := set(where) - set(ITEM_KEYS):
+        raise CribUserError(f"items can be filtered only on {ITEM_KEYS}, not {sorted(bad)}")
+
+
 def _matches(meta: dict[str, Any], where: dict[str, Any] | None) -> bool:
     return not where or all(_match_one(meta.get(k), v) for k, v in where.items())
 
@@ -171,6 +188,7 @@ def _matches(meta: dict[str, Any], where: dict[str, Any] | None) -> bool:
 class InMemoryStore:
     def __init__(self) -> None:
         self._recs: dict[str, Record] = {}
+        self._items: dict[str, Item] = {}
         self._meta: dict[str, str] = {}
         self._lock = threading.RLock()
 
@@ -236,17 +254,32 @@ class InMemoryStore:
     def recreate(self) -> None:
         with self._lock:
             self._recs.clear()
+            self._items.clear()  # item vectors came from the same embedder
 
     def apply(
         self,
         records: list[Record],
         deletes: list[str],
         meta: dict[str, dict[str, Any]],
+        items: list[Item] | None = None,
+        item_deletes: list[str] | None = None,
     ) -> None:
         with self._lock:
             self.upsert(records)
             self.delete(deletes)
             self.set_meta(meta)
+            for item_id in item_deletes or ():
+                self._items.pop(item_id, None)
+            for item in items or ():
+                self._items[item.id] = item
+
+    def items(self, where: dict[str, Any]) -> dict[str, Item]:
+        _check_item_where(where)
+        with self._lock:
+            return {
+                i: it for i, it in self._items.items()
+                if all(_match_one(getattr(it, k), v) for k, v in where.items())
+            }
 
     def count(self, where: dict[str, Any], relpath_prefix: str = "") -> int:
         return sum(

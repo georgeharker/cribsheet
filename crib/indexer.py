@@ -16,12 +16,13 @@ from __future__ import annotations
 
 import asyncio
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 from . import notes
 from .chunk import WINDOW_OVERLAP, WINDOW_WORDS, Chunk, chunk_note, kind_of
 from .embed import Embedder, embed_batch
+from .items import Item, body_text, facet_of, item_hash
 from .retrieve import LexicalCache, SummaryVectorCache
 from .store import Record, Store
 from .util import derived_ulid as _derive_id
@@ -55,6 +56,12 @@ class _Plan:
     meta_updates: dict[str, dict] = field(default_factory=dict)
     result: IndexResult | None = None
     invalidate: bool = False
+    # The file's item row (crib.items): written with the chunks, even when the
+    # chunks themselves are unchanged. `item_embed` is (title, body) when its
+    # vectors must be (re)computed; otherwise `item` already carries them.
+    item: Item | None = None
+    item_embed: tuple[str, str] | None = None
+    item_deletes: list[str] = field(default_factory=list)
 
 
 class IndexEngine:
@@ -133,6 +140,13 @@ class IndexEngine:
         plan = await asyncio.to_thread(
             self._plan, project, notes_dir, relpath, content_path, store)
         if plan.result is not None:
+            if plan.item is not None or plan.item_deletes:
+                # The chunks needed nothing, but the item row did (e.g. the
+                # first index after upgrading): write just that.
+                item = await self._embed_item(plan)
+                await asyncio.to_thread(
+                    self.store.apply, [], [], {},
+                    [item] if item is not None else [], plan.item_deletes)
             if plan.invalidate:
                 self.invalidate_caches(project)
             return plan.result
@@ -144,17 +158,48 @@ class IndexEngine:
             records = [Record(id=c.chunk_id, embedding=vec, document=c.text,
                               metadata=meta)
                        for (c, meta), vec in zip(plan.to_embed, vectors)]
+        item = await self._embed_item(plan)
         await asyncio.to_thread(self._commit, records, plan.stale_ids,
-                                plan.meta_updates)
+                                plan.meta_updates,
+                                [item] if item is not None else [],
+                                plan.item_deletes)
         self.invalidate_caches(project)   # corpus + aliases changed -> rebuild lazily
         return IndexResult(relpath, changed=True, upserted=len(records),
                            deleted=len(plan.stale_ids), note_id=plan.note_id)
 
     def _commit(self, records: list[Record], stale_ids: list[str],
-                meta_updates: dict[str, dict]) -> None:
+                meta_updates: dict[str, dict], items: list[Item] | None = None,
+                item_deletes: list[str] | None = None) -> None:
         """The store writes as one worker-thread job and one transaction: a crash
-        never leaves a note's new chunks beside its stale ones."""
-        self.store.apply(records, stale_ids, meta_updates)
+        never leaves a note's new chunks beside its stale ones, or an item row
+        that disagrees with them."""
+        self.store.apply(records, stale_ids, meta_updates, items, item_deletes)
+
+    async def _embed_item(self, plan: _Plan) -> Item | None:
+        """The plan's item, with its title and body vectors computed if the plan
+        says they changed (one embed call for both)."""
+        if plan.item is None or plan.item_embed is None:
+            return plan.item
+        title_vec, body_vec = await asyncio.to_thread(
+            embed_batch, self.embedder, list(plan.item_embed))
+        return replace(plan.item, title_vec=title_vec, body_vec=body_vec)
+
+    def _item_for(self, project: str, store: str, relpath: str, note_id: str,
+                  title: str, body: str, frontmatter: dict) -> tuple[Item | None, tuple[str, str] | None]:
+        """The item row this file should have, and whether its vectors need
+        computing: (None, None) when the stored row is already right."""
+        if not note_id:
+            return None, None
+        kind = kind_of(store, relpath)
+        want = Item(id=note_id, kind=kind, project=project, relpath=relpath,
+                    title=title, content_hash=item_hash(title, body),
+                    facet=facet_of(kind, frontmatter))
+        have = self.store.items({"id": note_id}).get(note_id)
+        if have is None or have.content_hash != want.content_hash:
+            return want, (title, body_text(body))
+        if replace(have, title_vec=None, body_vec=None) == want:
+            return None, None  # unchanged: no write
+        return replace(want, title_vec=have.title_vec, body_vec=have.body_vec), None
 
     def _plan(self, project: str, notes_dir: Path, relpath: str,
               content_path: Path | None = None, store: str = "notes") -> _Plan:
@@ -165,7 +210,9 @@ class IndexEngine:
         # Deleted on disk -> drop all its chunks.
         if not path.exists():
             existing = self._existing_meta(project, store, relpath)
-            self.store.delete(list(existing))
+            gone = sorted({str(m.get("note_id")) for m in existing.values()
+                           if m.get("note_id")})
+            self.store.apply([], list(existing), {}, None, gone)
             return _Plan(
                 invalidate=bool(existing),
                 result=IndexResult(relpath, changed=bool(existing), upserted=0,
@@ -212,8 +259,11 @@ class IndexEngine:
                 if _meta_stable(existing.get(cid, {})) != _meta_stable(new_meta):
                     meta_updates[cid] = new_meta
 
+        item, item_embed = self._item_for(
+            project, store, relpath, note_id, note.title or "", note.body,
+            note.frontmatter)
         if not to_embed and not stale_ids and not meta_updates:
-            return _Plan(note_id=note_id,
+            return _Plan(note_id=note_id, item=item, item_embed=item_embed,
                          result=IndexResult(relpath, changed=False, upserted=0,
                                             deleted=0, note_id=note_id))
 
@@ -221,4 +271,5 @@ class IndexEngine:
             note_id=note_id,
             to_embed=[(c, c.metadata(note.title, note.tags, source, mtime, note_type))
                       for c in to_embed],
-            stale_ids=stale_ids, meta_updates=meta_updates)
+            stale_ids=stale_ids, meta_updates=meta_updates,
+            item=item, item_embed=item_embed)

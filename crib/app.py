@@ -2803,8 +2803,9 @@ class Crib:
         symbol_index is NOT touched here — it travels with the project tree
         (delete removes the tree; rename moves it)."""
         chunks = list(self.store.get_meta({"project": proj}))
-        if chunks:
-            self.store.delete(chunks)
+        items = list(self.store.items({"project": proj}))
+        if chunks or items:
+            self.store.apply([], chunks, {}, None, items)
         self.index.invalidate_caches(proj)
         if drop_sources:
             reg = self._source_roots(proj)
@@ -4266,8 +4267,9 @@ class Crib:
         # source registry too; re-runnable via `project index`.
         reg = self._source_roots(proj)
         doc_ids = list(self.store.get_meta({"project": proj, "kind": "doc"}))
-        if doc_ids:
-            self.store.delete(doc_ids)
+        doc_items = list(self.store.items({"project": proj, "kind": "doc"}))
+        if doc_ids or doc_items:
+            self.store.apply([], doc_ids, {}, None, doc_items)
             self.index.invalidate_caches(proj)
         for prefix in list(reg.all()):
             reg.remove(prefix)

@@ -42,6 +42,7 @@ from typing import Any
 
 from . import proc as spawn
 from .errors import CribUserError
+from .items import Item
 from .store import Hit, Record, is_loopback_host
 from .store_duckdb import DuckDBStore, local_dirs
 
@@ -312,8 +313,13 @@ class QuackStore(DuckDBStore):
         records: list[Record],
         deletes: list[str],
         meta: dict[str, dict[str, Any]],
+        items: list[Item] | None = None,
+        item_deletes: list[str] | None = None,
     ) -> None:
-        self._call(super().apply, records, deletes, meta)
+        self._call(super().apply, records, deletes, meta, items, item_deletes)
+
+    def items(self, where: dict[str, Any]) -> dict[str, Item]:
+        return self._call(super().items, where)
 
     def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:
         self._call(super().set_meta, updates)

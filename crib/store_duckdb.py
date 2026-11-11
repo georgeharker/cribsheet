@@ -32,7 +32,8 @@ from types import MappingProxyType
 from typing import Any
 
 from .errors import CribUserError
-from .store import Hit, Record
+from .items import FACETS, Item, facet_table
+from .store import Hit, Record, _check_item_where
 
 TABLE = "crib_chunks"
 # The generation ledger (crib.genledger): beside the chunks, NOT part of them, so a
@@ -49,7 +50,25 @@ EMBED_CACHE = "crib_embed_cache"
 # of them are rebuildable), record_format (crib.recordcache's parse output) and
 # embed_model (which embedder wrote crib_chunks; see `Crib._maybe_recreate_for_dim`).
 META = "crib_meta"
-SCHEMA_VERSION = "2"  # 2: crib_chunks' `store` column is `kind`
+# 2: crib_chunks' `store` column is `kind`; 3: crib_items and the facet tables
+SCHEMA_VERSION = "3"
+# One row per item (crib.items), plus one table per kind for that kind's own
+# fields, joined on the item id. Created at open; the vectors are variable
+# length, so no table depends on the embedder's dimension.
+ITEMS = "crib_items"
+_ITEM_COLUMNS = (
+    "id",
+    "kind",
+    "project",
+    "relpath",
+    "title",
+    "content_hash",
+    "title_vec",
+    "body_vec",
+)
+_FACET_TABLES = MappingProxyType(
+    {kind: (facet_table(kind), tuple(fields)) for kind, fields in FACETS.items()}
+)
 # The tables that don't depend on the embedder's dimension, created at open.
 _FIXED_TABLES = MappingProxyType(
     {
@@ -59,6 +78,14 @@ _FIXED_TABLES = MappingProxyType(
         LEDGER: "purpose VARCHAR, target VARCHAR, input_hash VARCHAR, "
         "provider VARCHAR, attempts INTEGER, last_error VARCHAR, "
         "last_attempt DOUBLE, next_retry DOUBLE, PRIMARY KEY (purpose, target)",
+        ITEMS: "id VARCHAR PRIMARY KEY, kind VARCHAR, project VARCHAR, "
+        "relpath VARCHAR, title VARCHAR, content_hash VARCHAR, "
+        "title_vec FLOAT[], body_vec FLOAT[]",
+        **{
+            facet_table(kind): "id VARCHAR PRIMARY KEY, "
+            + ", ".join(f"{name} {sqltype}" for name, sqltype in fields.items())
+            for kind, fields in FACETS.items()
+        },
     }
 )
 PROMOTED = ("project", "kind", "relpath")  # filtered constantly: real columns
@@ -238,6 +265,53 @@ def _dim_of(data_type: str) -> int:
     return int(data_type.rsplit("[", 1)[1].rstrip("]"))
 
 
+def _delete_items_step(ids: list[str]) -> Callable[[Any], None]:
+    def write(ex: Any) -> None:
+        for table in (ITEMS, *(t for t, _ in _FACET_TABLES.values())):
+            # pi-lens-ignore: python-sql-injection
+            ex.run(f"DELETE FROM {table} WHERE id = ANY(?)", [ids])
+
+    return write
+
+
+def _facet_value(value: Any) -> Any:
+    return (value or None) if isinstance(value, list) else value
+
+
+def _insert_items_step(items: list[Item]) -> Callable[[Any], None]:
+    core = [
+        [
+            it.id,
+            it.kind,
+            it.project,
+            it.relpath,
+            it.title,
+            it.content_hash,
+            [float(x) for x in it.title_vec] if it.title_vec is not None else None,
+            [float(x) for x in it.body_vec] if it.body_vec is not None else None,
+        ]
+        for it in items
+    ]
+
+    def write(ex: Any) -> None:
+        # pi-lens-ignore: python-sql-injection
+        ex.run_many(f"INSERT INTO {ITEMS} VALUES (?, ?, ?, ?, ?, ?, ?, ?)", core)
+        for kind, (table, fields) in _FACET_TABLES.items():
+            # An empty list is stored as NULL (and read back as []): an empty
+            # literal has no element type, so it can't cross Quack.
+            rows = [
+                [it.id, *(_facet_value(it.facet.get(f)) for f in fields)]
+                for it in items
+                if it.kind == kind
+            ]
+            if rows:
+                marks = ", ".join("?" for _ in range(len(fields) + 1))
+                # pi-lens-ignore: python-sql-injection
+                ex.run_many(f"INSERT INTO {table} VALUES ({marks})", rows)
+
+    return write
+
+
 def _upsert_step(store: "DuckDBStore", records: list[Record]) -> Callable[[Any], None]:
     dims = {len(r.embedding) for r in records}
     if len(dims) != 1:
@@ -375,7 +449,9 @@ class DuckDBStore:
         from .recordcache import RECORD_FORMAT
 
         def prepare(ex: Any) -> None:
-            ex.run(f"CREATE TABLE IF NOT EXISTS {META} (key VARCHAR PRIMARY KEY, value VARCHAR)")
+            ex.run(
+                f"CREATE TABLE IF NOT EXISTS {META} (key VARCHAR PRIMARY KEY, value VARCHAR)"
+            )
             meta = dict(ex.run(f"SELECT key, value FROM {META}"))
             if meta.get("schema_version", SCHEMA_VERSION) != SCHEMA_VERSION:
                 for table in (TABLE, *_FIXED_TABLES):
@@ -415,8 +491,10 @@ class DuckDBStore:
             meta = dict(ex.run(f"SELECT key, value FROM {META}"))
         out: dict[str, Any] = {"rows": rows, **meta}
         if self._path is not None:
-            for label, path in (("file_bytes", self._path),
-                                ("wal_bytes", self._path.with_name(self._path.name + ".wal"))):
+            for label, path in (
+                ("file_bytes", self._path),
+                ("wal_bytes", self._path.with_name(self._path.name + ".wal")),
+            ):
                 with contextlib.suppress(OSError):
                     out[label] = path.stat().st_size
         return out
@@ -490,7 +568,14 @@ class DuckDBStore:
             attempt += 1
 
     def recreate(self) -> None:
-        self._transaction(lambda ex: ex.run(f"DROP TABLE IF EXISTS {TABLE}"))
+        def drop(ex: Any) -> None:
+            ex.run(f"DROP TABLE IF EXISTS {TABLE}")
+            # item vectors came from the same embedder: empty them too
+            for table in (ITEMS, *(t for t, _ in _FACET_TABLES.values())):
+                # pi-lens-ignore: python-sql-injection
+                ex.run(f"DELETE FROM {table}")
+
+        self._transaction(drop)
 
     # ── writes ───────────────────────────────────────────────────────────────
 
@@ -510,10 +595,13 @@ class DuckDBStore:
         records: list[Record],
         deletes: list[str],
         meta: dict[str, dict[str, Any]],
+        items: list[Item] | None = None,
+        item_deletes: list[str] | None = None,
     ) -> None:
-        """Upserts, deletes and metadata replacements as ONE transaction: a note
-        write never leaves its new chunks beside its stale ones, and over Quack
-        it costs one BEGIN/COMMIT instead of three."""
+        """Upserts, deletes and metadata replacements, and the files' item rows,
+        as ONE transaction: a note write never leaves its new chunks beside its
+        stale ones (or an item row that disagrees with them), and over Quack it
+        costs one BEGIN/COMMIT instead of several."""
         steps: list[Callable[[Any], None]] = []
         if records:
             steps.append(_upsert_step(self, records))
@@ -527,6 +615,11 @@ class DuckDBStore:
             steps.append(delete)
         if meta:
             steps.append(_set_meta_step(self, meta))
+        drop = list(item_deletes or ()) + [it.id for it in items or ()]
+        if drop:
+            steps.append(_delete_items_step(drop))
+        if items:
+            steps.append(_insert_items_step(list(items)))
         if not steps:
             return
 
@@ -537,6 +630,58 @@ class DuckDBStore:
         self._transaction(write)
 
     # ── reads ────────────────────────────────────────────────────────────────
+
+    def items(self, where: dict[str, Any]) -> dict[str, Item]:
+        _check_item_where(where)
+        conds, params = [], []
+        for key, value in where.items():  # key is one of the ITEM_KEYS columns
+            if isinstance(value, dict):
+                ((op, wanted),) = value.items()
+                if op != "$in":
+                    raise CribUserError(f"unsupported item filter {value!r}")
+                conds.append(f"list_contains(?::VARCHAR[], i.{key})")
+                params.append(list(wanted))
+            else:
+                conds.append(f"i.{key} = ?")
+                params.append(value)
+        clause = (" WHERE " + " AND ".join(conds)) if conds else ""
+        with self._reading() as ex:
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(
+                f"SELECT {', '.join('i.' + c for c in _ITEM_COLUMNS)} "
+                f"FROM {ITEMS} i{clause}",
+                params,
+            )
+            out = {r[0]: r for r in rows}
+            facets: dict[str, dict[str, Any]] = {}
+            for kind, (table, fields) in _FACET_TABLES.items():
+                ids = [i for i, r in out.items() if r[1] == kind]
+                if not ids:
+                    continue
+                # pi-lens-ignore: python-sql-injection
+                for row in ex.run(
+                    f"SELECT id, {', '.join(fields)} FROM {table} WHERE id = ANY(?)",
+                    [ids],
+                ):
+                    types = FACETS[kind]
+                    facets[row[0]] = {
+                        f: (list(v or []) if types[f] == "VARCHAR[]" else v)
+                        for f, v in zip(fields, row[1:])
+                    }
+        return {
+            i: Item(
+                id=r[0],
+                kind=r[1],
+                project=r[2],
+                relpath=r[3],
+                title=r[4],
+                content_hash=r[5],
+                title_vec=[float(x) for x in r[6]] if r[6] is not None else None,
+                body_vec=[float(x) for x in r[7]] if r[7] is not None else None,
+                facet=facets.get(i, {}),
+            )
+            for i, r in out.items()
+        }
 
     def _select(self, which: str, where: dict[str, Any] | None) -> list[tuple]:
         columns = _SELECT_COLUMNS[which]  # allowlisted: never caller text

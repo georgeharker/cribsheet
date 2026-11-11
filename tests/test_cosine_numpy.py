@@ -161,8 +161,12 @@ class _DocStore:
     def set_meta(self, updates: Any) -> None:
         raise AssertionError("not called in these tests")
 
-    def apply(self, records: Any, deletes: Any, meta: Any) -> None:
+    def apply(self, records: Any, deletes: Any, meta: Any, items: Any = None,
+              item_deletes: Any = None) -> None:
         raise AssertionError("not called in these tests")
+
+    def items(self, where: Any) -> dict[str, Any]:
+        return {}
 
     def get_meta(self, where: Any) -> dict[str, dict[str, Any]]:
         return {i: m for i, (_d, m) in self.get_docs(where).items()}

@@ -564,3 +564,74 @@ def test_in_matches_one_of_several_strings(backend):
     assert s.get_meta({"kind": {"$in": []}}) == {}
     with pytest.raises(CribUserError):
         s.get_meta({"kind": {"$in": "note"}})
+
+
+# ── items (crib.items) ───────────────────────────────────────────────────────
+
+
+def _item(i, kind="note", **kw):
+    from crib.items import Item, facet_of
+
+    return Item(
+        i,
+        kind,
+        kw.pop("project", "p"),
+        kw.pop("relpath", f"{i}.md"),
+        kw.pop("title", f"title {i}"),
+        kw.pop("h", "h"),
+        kw.pop("tv", [1.0, 0.0]),
+        kw.pop("bv", [0.0, 1.0]),
+        facet_of(kind, kw),
+    )
+
+
+def test_items_round_trip_with_their_facet(backend):
+    s = backend.store
+    s.apply(
+        [],
+        [],
+        {},
+        [
+            _item("n", "note", tags=["a", "b"], source="manual"),
+            _item("d", "design", status="superseded"),
+            _item("p", "plan"),  # defaults: status todo
+            _item("doc", "doc", relpath="sources/r/README.md"),
+        ],
+    )
+    got = s.items({"project": "p"})
+    assert set(got) == {"n", "d", "p", "doc"}
+    assert got["n"].facet == {
+        "source": "manual",
+        "tags": ["a", "b"],
+        "source_path": None,
+    }
+    assert got["d"].facet["status"] == "superseded"
+    assert got["p"].facet["status"] == "todo"
+    assert got["doc"].facet == {}
+    assert got["n"].title_vec == pytest.approx([1.0, 0.0])
+    assert set(s.items({"kind": {"$in": ["note", "doc"]}})) == {"n", "doc"}
+
+
+def test_item_upsert_replaces_and_delete_drops_the_facet_too(backend):
+    s = backend.store
+    s.apply([], [], {}, [_item("x", "plan", status="todo")])
+    s.apply([], [], {}, [_item("x", "plan", status="done", title="renamed")])
+    got = s.items({"id": "x"})["x"]
+    assert (got.title, got.facet["status"]) == ("renamed", "done")
+    s.apply([], [], {}, None, ["x"])
+    assert s.items({"id": "x"}) == {}
+    s.apply([], [], {}, [_item("x", "note")])  # same id, another kind: no stale facet
+    assert s.items({"id": "x"})["x"].facet["source"] is None
+
+
+def test_items_refuse_a_non_core_filter(backend):
+    with pytest.raises(CribUserError):
+        backend.store.items({"status": "todo"})
+
+
+def test_recreate_empties_the_items_too(backend):
+    s = backend.store
+    s.upsert([rec("a", X)])
+    s.apply([], [], {}, [_item("i")])
+    s.recreate()
+    assert s.items({}) == {}
