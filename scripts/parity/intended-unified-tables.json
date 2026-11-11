@@ -1,0 +1,8 @@
+[
+  {
+    "phase": "writes",
+    "step": "design-lookup",
+    "path_prefix": "$[0].line_end",
+    "reason": "decisions written on the branch no longer carry `links: []`, so their section ends one line earlier"
+  }
+]
