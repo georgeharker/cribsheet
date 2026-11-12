@@ -21,7 +21,14 @@ from pathlib import Path
 from typing import Any, Callable
 
 from . import __version__, claudemem, notes
-from .chunk import CHUNK_SCHEMA_VERSION, kinds_in, pillar_of, section_key, section_line_map
+from .chunk import (
+    CHUNK_SCHEMA_VERSION,
+    kind_of,
+    kinds_in,
+    pillar_of,
+    section_key,
+    section_line_map,
+)
 from .claudemem import MemoryBindings
 from .codeindexer import CodeIndexer
 from .codequery import CodeQuery
@@ -412,6 +419,12 @@ class Crib:
         await self.index.index_file(
             project, pillar.dir(project), relpath, store=pillar.spec.name
         )
+        # index_file keeps the chunks (and their stamp); the design/plan graph
+        # keeps its own items and stamps, refreshed here rather than at the
+        # next graph read
+        kind = kind_of(pillar.spec.name)
+        if kind in ("design", "plan"):
+            await asyncio.to_thread(self.designs.refresh_files, project, kind, [relpath])
 
     async def _on_record_change(
         self, project: str, facet: str, names: list[str] | None

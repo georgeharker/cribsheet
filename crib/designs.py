@@ -592,15 +592,28 @@ class Designs:
         return [_node_from_item(it)
                 for it in sorted(items.values(), key=lambda it: it.relpath)]
 
-    def _refresh(self, proj: str, kind: str, store: NoteStore, d: Path) -> None:
+    def refresh_files(self, proj: str, kind: str, names: list[str]) -> None:
+        """The watcher's route (an edit to `names` in `kind`'s pillar): bring
+        their items and stamps in line now, so the next graph read parses
+        nothing. Reads still refresh; whichever comes first does the work."""
+        store = self._stores[kind]
+        d = store.root(proj)
+        # the graph reads the pillar's top level only
+        top = [n for n in names if "/" not in n and "\\" not in n]
+        if top and d.exists():
+            self._refresh(proj, kind, store, d, only=top)
+
+    def _refresh(self, proj: str, kind: str, store: NoteStore, d: Path,
+                 only: list[str] | None = None) -> None:
         """The design/plan facet's refresh (crib.filesync): map each changed
         file into its item (the indexer's own mapping, vectors included) and
         drop the items of files that are gone, in one transaction. A file that
-        won't parse, or has no id yet, maps to nothing until it changes."""
+        won't parse, or has no id yet, maps to nothing until it changes.
+        `only`: just the named files (the watcher), else the whole pillar."""
         from .filesync import changes
 
         vs = store.index.store
-        ch = changes(vs, kind, proj, d, ".md")
+        ch = changes(vs, kind, proj, d, ".md", only)
         if not ch:
             return
         parsed: list[tuple[str, dict[str, Any], str]] = []
