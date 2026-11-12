@@ -96,3 +96,43 @@ def test_a_changed_or_removed_record_is_mirrored_on_the_next_reload(crib):
     items = crib.store.items({"project": "p", "kind": "symbol"})
     assert set(items) == {"symbol:a.py#keep"}
     assert items["symbol:a.py#keep"].facet["description"] == "does keep, revised"
+
+
+def test_store_postings_score_exactly_like_the_resident_bm25(crib):
+    """C2a: the store holds the postings, Python scores them with the SAME
+    formula; the scores must match the resident index bit for bit."""
+    from crib.retrieve import (
+        STOPWORDS,
+        _subtokens,
+        bm25_from_postings,
+        coverage_from_postings,
+        tokenize,
+    )
+
+    _sym(
+        crib, "parse_config", "cfg.py", keywords=["read the config file", "parse toml"]
+    )
+    _sym(crib, "ConfigLoader", "cfg.py", kind="class", keywords=["load config"])
+    _sym(crib, "render_page", "web.py", keywords=["render html page", "template"])
+    _sym(crib, "helper", "util.py", description="", keywords=[], name_terms=[])
+    rc = crib._resident_code("p")
+    for query in (
+        "parse config file",
+        "render template page",
+        "loader",
+        "nothing here",
+    ):
+        qt = tokenize(query) + _subtokens(query)
+        resident = {rc.lk_ids[i]: s for i, s in enumerate(rc.bm25.scores(qt)) if s > 0}
+        stats = crib.store.postings({"project": "p", "kind": "symbol"}, qt)
+        stored = {
+            i.removeprefix("symbol:"): s
+            for i, s in bm25_from_postings(stats, qt).items()
+        }
+        assert stored == resident, query  # exact, not approx
+        assert stats.n == len(rc.lk)
+        Q = {t for t in set(qt) if len(t) > 1 and t not in STOPWORDS}
+        cov = coverage_from_postings(stats, Q)
+        rcov = dict(zip(rc.lk_ids, rc.coverage(Q)))
+        for i, c in cov.items():
+            assert c == rcov[i.removeprefix("symbol:")]

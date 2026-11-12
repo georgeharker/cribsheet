@@ -174,6 +174,9 @@ class _DocStore:
     def item_hashes(self, where: Any) -> dict[str, str]:
         return {}
 
+    def postings(self, where: Any, terms: Any) -> Any:
+        raise AssertionError("not called in these tests")
+
     def get_meta(self, where: Any) -> dict[str, dict[str, Any]]:
         return {i: m for i, (_d, m) in self.get_docs(where).items()}
 

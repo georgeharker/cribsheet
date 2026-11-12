@@ -22,6 +22,7 @@ from typing import Any, Protocol
 
 from .errors import CribUserError
 from .items import Item, dep_kind_default
+from .retrieve import PostingStats
 
 
 def is_loopback_host(host: str) -> bool:
@@ -92,6 +93,12 @@ class Store(Protocol):
     def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
         """{id: content_hash} for items matching `where` (as `items`): the cheap
         read a sweep diffs against before writing only what changed."""
+        ...
+
+    def postings(self, where: dict[str, Any], terms: list[str]) -> PostingStats:
+        """BM25 statistics for the items matching `where` that have postings (the
+        corpus), and the postings of `terms` in it: everything
+        `crib.retrieve.bm25_from_postings` scores, and nothing more."""
         ...
 
     def edges(self, where: dict[str, Any]) -> list[tuple[str, str, str, str | None]]:
@@ -297,6 +304,22 @@ class InMemoryStore:
 
     def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
         return {i: it.content_hash for i, it in self.items(where).items()}
+
+    def postings(self, where: dict[str, Any], terms: list[str]) -> PostingStats:
+        wanted = set(terms)
+        corpus = [it for it in self.items(where).values() if it.terms]
+        df: dict[str, int] = {}
+        docs: dict[str, tuple[float, dict[str, float]]] = {}
+        total = 0.0
+        for it in corpus:
+            length = sum(f for _t, f in it.terms)
+            total += length
+            hit = {t: f for t, f in it.terms if t in wanted}
+            for t in hit:
+                df[t] = df.get(t, 0) + 1
+            if hit:
+                docs[it.id] = (length, hit)
+        return PostingStats(len(corpus), total, df, docs)
 
     def edges(self, where: dict[str, Any]) -> list[tuple[str, str, str, str | None]]:
         _check_edge_where(where)

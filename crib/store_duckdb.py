@@ -33,6 +33,7 @@ from typing import Any
 
 from .errors import CribUserError
 from .items import FACETS, Edge, Item, facet_table
+from .retrieve import PostingStats
 from .store import Hit, Record, _check_edge_where, _check_item_where
 
 TABLE = "crib_chunks"
@@ -51,8 +52,11 @@ EMBED_CACHE = "crib_embed_cache"
 # embed_model (which embedder wrote crib_chunks; see `Crib._maybe_recreate_for_dim`).
 META = "crib_meta"
 # 2: crib_chunks' `store` column is `kind`; 3: crib_items and the facet tables;
-# 4: crib_chunks' `item_id` column (the item a chunk belongs to); 5: crib_edges
-SCHEMA_VERSION = "5"
+# 4: crib_chunks' `item_id` column (the item a chunk belongs to); 5: crib_edges;
+# 6: crib_postings
+SCHEMA_VERSION = "6"
+# An item's lexical postings (crib.items.Item.terms), replaced with the item.
+POSTINGS = "crib_postings"
 # Links between items (crib.items.Edge), replaced with their source item.
 EDGES = "crib_edges"
 # One row per item (crib.items), plus one table per kind for that kind's own
@@ -82,6 +86,7 @@ _FIXED_TABLES = MappingProxyType(
         "provider VARCHAR, attempts INTEGER, last_error VARCHAR, "
         "last_attempt DOUBLE, next_retry DOUBLE, PRIMARY KEY (purpose, target)",
         EDGES: "src VARCHAR, dst VARCHAR, kind VARCHAR, recorded_hash VARCHAR",
+        POSTINGS: "item_id VARCHAR, term VARCHAR, tf DOUBLE",
         ITEMS: "id VARCHAR PRIMARY KEY, kind VARCHAR, project VARCHAR, "
         "relpath VARCHAR, title VARCHAR, content_hash VARCHAR, "
         "title_vec FLOAT[], body_vec FLOAT[]",
@@ -298,6 +303,8 @@ def _delete_items_step(ids: list[str]) -> Callable[[Any], None]:
             ex.run(f"DELETE FROM {table} WHERE id = ANY(?)", [ids])
         # pi-lens-ignore: python-sql-injection
         ex.run(f"DELETE FROM {EDGES} WHERE src = ANY(?)", [ids])
+        # pi-lens-ignore: python-sql-injection
+        ex.run(f"DELETE FROM {POSTINGS} WHERE item_id = ANY(?)", [ids])
 
     return write
 
@@ -336,6 +343,10 @@ def _insert_items_step(items: list[Item]) -> Callable[[Any], None]:
                 marks = ", ".join("?" for _ in range(len(fields) + 1))
                 # pi-lens-ignore: python-sql-injection
                 ex.run_many(f"INSERT INTO {table} VALUES ({marks})", rows)
+        postings = [[it.id, t, float(f)] for it in items for t, f in it.terms]
+        if postings:
+            # pi-lens-ignore: python-sql-injection
+            ex.run_many(f"INSERT INTO {POSTINGS} VALUES (?, ?, ?)", postings)
         edges = [[it.id, e.dst, e.kind, e.recorded_hash] for it in items for e in it.edges]
         if edges:
             # pi-lens-ignore: python-sql-injection
@@ -604,7 +615,8 @@ class DuckDBStore:
         def drop(ex: Any) -> None:
             ex.run(f"DROP TABLE IF EXISTS {TABLE}")
             # item vectors came from the same embedder: empty them too
-            for table in (ITEMS, EDGES, *(t for t, _ in _FACET_TABLES.values())):
+            for table in (ITEMS, EDGES, POSTINGS,
+                          *(t for t, _ in _FACET_TABLES.values())):
                 # pi-lens-ignore: python-sql-injection
                 ex.run(f"DELETE FROM {table}")
 
@@ -692,6 +704,41 @@ class DuckDBStore:
                 params,
             )
         return [(a, b, c, d) for a, b, c, d in rows]
+
+    def postings(self, where: dict[str, Any], terms: list[str]) -> PostingStats:
+        clause, params = _item_clause(where)
+        scope = (
+            f"SELECT p.item_id, p.term, p.tf FROM {POSTINGS} p "
+            f"JOIN {ITEMS} i ON i.id = p.item_id{clause}"
+        )
+        with self._reading() as ex:
+            # pi-lens-ignore: python-sql-injection
+            ((n, total),) = ex.run(
+                f"SELECT count(DISTINCT item_id), coalesce(sum(tf), 0) FROM ({scope})",
+                params,
+            )
+            hits: list[tuple] = []
+            lengths: dict[str, float] = {}
+            if terms:
+                # pi-lens-ignore: python-sql-injection
+                hits = ex.run(
+                    f"SELECT item_id, term, tf FROM ({scope}) WHERE term = ANY(?)",
+                    [*params, list(dict.fromkeys(terms))],
+                )
+            ids = sorted({r[0] for r in hits})
+            if ids:
+                # pi-lens-ignore: python-sql-injection
+                lengths = dict(ex.run(
+                    f"SELECT item_id, sum(tf) FROM {POSTINGS} WHERE item_id = ANY(?) "
+                    "GROUP BY item_id",
+                    [ids],
+                ))
+        df: dict[str, int] = {}
+        docs: dict[str, tuple[float, dict[str, float]]] = {}
+        for item_id, term, tf in hits:
+            df[term] = df.get(term, 0) + 1
+            docs.setdefault(item_id, (float(lengths[item_id]), {}))[1][term] = float(tf)
+        return PostingStats(int(n), float(total), df, docs)
 
     def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
         clause, params = _item_clause(where)

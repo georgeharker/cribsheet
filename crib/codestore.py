@@ -64,26 +64,11 @@ class _ResidentCode:
         return [dict(e) for e in self.entries if match_entry(e, name)]
 
     def _prepare(self) -> None:
-        from .retrieve import BM25, _as_tf, _subtokens, tokenize
+        from .retrieve import BM25, _as_tf, code_candidate, code_field_terms
 
-        # Only symbols with a description or name terms are query candidates.
-        self.lk = [
-            e for e in self.entries if e.get("description") or e.get("name_terms")
-        ]
+        self.lk = [e for e in self.entries if code_candidate(e)]
         self.lk_ids = [symbol_key(e) for e in self.lk]
-        # EXPANDED lexical field per symbol = name_terms ⊕ synth-keyword tokens. The
-        # keywords are the query-independent vocabulary expansion, so a BEHAVIORAL query
-        # gets sparse hits the terse identifier alone can't offer. The BM25 is over that
-        # same expanded field (no uniq — measured to slightly help via term-frequency of
-        # repeated behavioral terms), and it also BACKS the coverage gate (below).
-        self.field_terms: list[list[str]] = []
-        for e in self.lk:
-            # local NAME (not the qualified name_terms — module/path subtokens spuriously
-            # inflate the coverage gate) ⊕ synth-keyword tokens.
-            text = e.get("name", "") + " " + " ".join(e.get("keywords") or [])
-            self.field_terms.append(
-                [t.lower() for t in (tokenize(text) + _subtokens(text))]
-            )
+        self.field_terms: list[list[str]] = [code_field_terms(e) for e in self.lk]
         self.bm25 = BM25([_as_tf(ft) for ft in self.field_terms])
         self._dense: list[list[float] | None] | None = (
             None  # built lazily (code_lookup only)

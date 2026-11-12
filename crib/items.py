@@ -108,6 +108,9 @@ class Item:
     body_vec: list[float] | None = None
     facet: dict[str, Any] = field(default_factory=dict)
     edges: tuple[Edge, ...] = ()
+    # The item's lexical postings, (term, frequency), sorted: what BM25 scores it
+    # on. Only search candidates have any (see crib.retrieve.code_candidate).
+    terms: tuple[tuple[str, float], ...] = ()
 
 
 def body_text(body: str) -> str:
@@ -247,6 +250,19 @@ def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
     if container:
         parent = symbol_ref(file, container[:-1], container[-1], lang)
         edges.append(Edge(f"symbol:{parent}", "member_of"))
+    from collections import Counter
+
+    from .retrieve import code_candidate, code_field_terms
+
+    # A candidate whose field is empty still counts in the BM25 corpus (it moves
+    # every idf), so it keeps one placeholder posting: the empty term, which no
+    # query contains, at frequency 0.
+    terms = (
+        tuple(sorted((t, float(n)) for t, n in Counter(code_field_terms(dict(entry))).items()))
+        or (("", 0.0),)
+        if code_candidate(dict(entry))
+        else ()
+    )
     stable = {k: v for k, v in entry.items() if k not in _SYMBOL_VOLATILE}
     return Item(
         id=f"symbol:{ref}",
@@ -257,4 +273,5 @@ def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
         content_hash=sha1_hex(json.dumps(stable, sort_keys=True, default=str)),
         facet=facet,
         edges=tuple(edges),
+        terms=terms,
     )

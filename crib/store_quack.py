@@ -43,6 +43,7 @@ from typing import Any
 from . import proc as spawn
 from .errors import CribUserError
 from .items import Item
+from .retrieve import PostingStats
 from .store import Hit, Record, is_loopback_host
 from .store_duckdb import DuckDBStore, local_dirs
 
@@ -326,6 +327,9 @@ class QuackStore(DuckDBStore):
 
     def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
         return self._call(super().item_hashes, where)
+
+    def postings(self, where: dict[str, Any], terms: list[str]) -> PostingStats:
+        return self._call(super().postings, where, terms)
 
     def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:
         self._call(super().set_meta, updates)

@@ -27,6 +27,7 @@ rather than to reweight it.
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 import re
 import threading
 from collections import Counter
@@ -95,6 +96,30 @@ def _as_tf(doc) -> dict[str, float]:
     return {k: float(v) for k, v in Counter(doc).items()}
 
 
+@dataclass(frozen=True)
+class PostingStats:
+    """What BM25 needs from a corpus held in the store, for one query: the corpus
+    size and total length, each query term's document frequency, and, for every
+    document containing a query term, its length and its query terms' frequencies.
+    Only what the query touches is ever loaded."""
+
+    n: int
+    total_length: float
+    df: dict[str, int]
+    docs: dict[str, tuple[float, dict[str, float]]]
+
+
+def bm25_idf(n: int, df: int) -> float:
+    """BM25+ idf: always positive, so common terms still rank, never subtract."""
+    return math.log(1 + (n - df + 0.5) / (df + 0.5))
+
+
+def bm25_term(idf: float, f: float, length: float, avgdl: float,
+              k1: float = 1.5, b: float = 0.75) -> float:
+    """One query term's contribution to one document's BM25 score."""
+    return idf * (f * (k1 + 1)) / (f + k1 * (1 - b + b * length / avgdl))
+
+
 class BM25:
     """Okapi BM25 over a fixed corpus. Each doc is a token list OR a weighted
     term-frequency mapping (token→float); weighted docs let a caller score some
@@ -115,10 +140,7 @@ class BM25:
         df: Counter[str] = Counter()
         for t in self.tf:
             df.update(t.keys())
-        # BM25+ idf: always positive, so common terms still rank, never subtract.
-        self.idf = {
-            t: math.log(1 + (self.n - c + 0.5) / (c + 0.5)) for t, c in df.items()
-        }
+        self.idf = {t: bm25_idf(self.n, c) for t, c in df.items()}
 
     def coverage(self, qtokens: set[str]) -> list[float]:
         """Fraction of the query's informative tokens present in each doc's field
@@ -138,11 +160,52 @@ class BM25:
                 f = tf.get(t)
                 if not f:
                     continue
-                denom = f + self.k1 * (
-                    1 - self.b + self.b * self.lengths[i] / self.avgdl
-                )
-                out[i] += idf * (f * (self.k1 + 1)) / denom
+                out[i] += bm25_term(idf, f, self.lengths[i], self.avgdl, self.k1, self.b)
         return out
+
+
+def bm25_from_postings(stats: PostingStats, query: list[str], k1: float = 1.5,
+                       b: float = 0.75) -> dict[str, float]:
+    """BM25 over a corpus held in the store (`Store.postings`): the same formula
+    and the same term order as `BM25.scores`, for the documents that contain a
+    query term. {item_id: score}, positive scores only."""
+    avgdl = (stats.total_length / stats.n) if stats.n else 0.0
+    out: dict[str, float] = {}
+    for t in query:
+        df = stats.df.get(t)
+        if not df:
+            continue
+        idf = bm25_idf(stats.n, df)
+        for item_id, (length, tf) in stats.docs.items():
+            f = tf.get(t)
+            if f:
+                out[item_id] = out.get(item_id, 0.0) + bm25_term(idf, f, length, avgdl, k1, b)
+    return out
+
+
+def coverage_from_postings(stats: PostingStats, qtokens: set[str]) -> dict[str, float]:
+    """`BM25.coverage` for the documents in `stats`: the fraction of the query's
+    informative tokens each one's field contains."""
+    n = max(len(qtokens), 1)
+    return {i: sum(1 for t in qtokens if t in tf) / n for i, (_l, tf) in stats.docs.items()}
+
+
+def code_candidate(entry: dict) -> bool:
+    """Whether a code symbol is a code-lookup candidate at all: it has a
+    description or name terms to be found by."""
+    return bool(entry.get("description") or entry.get("name_terms"))
+
+
+def code_field_terms(entry: dict) -> list[str]:
+    """A code symbol's EXPANDED lexical field: its local name plus its generated
+    keywords, tokenized and sub-tokenized. The keywords are the query-independent
+    vocabulary expansion, so a behavioural query gets sparse hits the terse
+    identifier alone can't offer. The local name, not the qualified name_terms:
+    module and path sub-tokens inflate the coverage gate. Not de-duplicated: a
+    repeated behavioural term's frequency measurably helps. The one definition,
+    used by the resident index and by the store's postings."""
+    text = entry.get("name", "") + " " + " ".join(entry.get("keywords") or [])
+    return [t.lower() for t in (tokenize(text) + _subtokens(text))]
 
 
 def _lexical_text(document: str, meta: dict | None) -> str:
