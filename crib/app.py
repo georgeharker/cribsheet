@@ -329,6 +329,7 @@ class Crib:
             self._on_fs_change,
             loop,
             self._in_repo_store_roots(),
+            on_records=self._on_record_change,
         )
         self._watcher.start()
         # Code watcher — reindexes source on edit (notes-watcher reloads notes,
@@ -360,6 +361,9 @@ class Crib:
         # content-hash gate is its durable signal, so the catch-up is a cheap no-op
         # when nothing was lost.
         self._spawn_bg(loop, self._describe_backlog())
+        # Records changed while crib was down (a git pull, another machine's sync):
+        # the watcher only sees edits from now on, and reads refresh lazily.
+        self._spawn_bg(loop, self._refresh_records_at_start())
         self._spawn_bg(loop, self._keyword_backlog())
 
     def _in_repo_store_roots(self) -> dict[str, Path]:
@@ -408,6 +412,32 @@ class Crib:
         await self.index.index_file(
             project, pillar.dir(project), relpath, store=pillar.spec.name
         )
+
+    async def _on_record_change(
+        self, project: str, facet: str, names: list[str] | None
+    ) -> None:
+        """A batch of a facet's record files changed on disk (the watcher; see
+        crib.watch.RECORD_TIERS): bring the store in line now, rather than at the
+        next read. Reads still refresh, so whichever comes first does the work
+        and the stamps make the other a no-op."""
+        if facet != "symbol" or project not in self.projects():
+            return
+        await asyncio.to_thread(self._refresh_symbols, project, names)
+
+    def _refresh_symbols(self, project: str, names: list[str] | None = None) -> None:
+        self.code.refresh(project, names)
+        self.code.fill_vectors(project)
+
+    async def _refresh_records_at_start(self) -> None:
+        from .codeindex import SymbolIndex
+
+        for name in self.projects():
+            if not SymbolIndex(self.paths.project_dir(name)).is_populated():
+                continue
+            try:
+                await asyncio.to_thread(self._refresh_symbols, name)
+            except Exception as e:  # noqa: BLE001 — a read refreshes it later anyway
+                print(f"[crib] startup refresh of {name!r} failed: {e}", file=sys.stderr)
 
     async def _on_code_change(
         self, project: str, changes: dict[str, tuple[str, bool]]

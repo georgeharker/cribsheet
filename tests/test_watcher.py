@@ -255,3 +255,97 @@ def test_dispatch_tasks_are_held_and_failures_logged(capsys):
 
     asyncio.run(scenario())
     assert "index blew up" in capsys.readouterr().err
+
+
+def test_decode_record_routes_a_record_file_to_its_facet(tmp_path):
+    from crib.watch import decode_record
+
+    proj = tmp_path / "projects"
+    si = proj / "p" / "symbol_index"
+    assert decode_record(proj, str(si / "a.py-f-1.toml")) == (
+        "p",
+        "symbol",
+        "a.py-f-1.toml",
+    )
+    assert decode_record(proj, str(si / ".cfg-x-2.toml")) == (
+        "p",
+        "symbol",
+        ".cfg-x-2.toml",
+    )
+    assert decode_record(proj, str(si / ".source_root")) is None  # metadata
+    assert decode_record(proj, str(si / "a.toml.tmp")) is None  # atomic write
+    assert decode_record(proj, str(si / "sub" / "a.toml")) is None  # not directly in
+    assert decode_record(proj, str(proj / "p" / "notes" / "a.md")) is None
+
+
+def test_record_events_coalesce_into_one_refresh_per_project_and_facet():
+    """A sweep writes thousands of records; the watcher hands each project's
+    facet ONE batch, and a batch past the fallback becomes a whole-dir diff."""
+    from crib import watch
+    from crib.watch import Watcher
+
+    calls: list[tuple[str, str, list[str] | None]] = []
+
+    async def scenario():
+        async def on_records(project, facet, names):
+            calls.append((project, facet, names))
+
+        async def on_change(*_a):
+            raise AssertionError("record files are not notes")
+
+        w = Watcher(
+            Path("/nowhere"),
+            on_change,
+            asyncio.get_running_loop(),
+            on_records=on_records,
+        )
+        for n in ("b.toml", "a.toml", "b.toml"):
+            w._schedule(("\x00record", "p", "symbol", n))
+        w._schedule(("\x00record", "q", "symbol", "c.toml"))
+        for i in range(watch.RECORD_BATCH_FALLBACK + 1):
+            w._schedule(("\x00record", "big", "symbol", f"{i}.toml"))
+        await asyncio.sleep(watch.CODE_DEBOUNCE_SEC + 0.3)
+        w.stop()
+
+    asyncio.run(scenario())
+    assert sorted(calls) == [
+        ("big", "symbol", None),
+        ("p", "symbol", ["a.toml", "b.toml"]),
+        ("q", "symbol", ["c.toml"]),
+    ]
+
+
+def test_a_record_change_reaches_the_store_without_a_read(tmp_path, monkeypatch):
+    """The watcher's refresh writes the store eagerly: a record written behind
+    crib's back is an item before any query touches the project."""
+    from crib.codeindex import SymbolIndex
+    from crib.symbols import fqn, scope_of, symbol_ref
+
+    monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "config"))
+    monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "data"))
+    monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
+    crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+    asyncio.run(crib.project_create("p"))
+    e = {
+        "name": "f",
+        "kind": "function",
+        "lang": "python",
+        "file": "m.py",
+        "line": 1,
+        "content_hash": "h",
+        "signature": "def f():",
+        "description": "does f",
+        "container": [],
+        "calls": [],
+        "called_by": [],
+        "references": [],
+        "name_terms": ["f"],
+    }
+    e["scope"] = scope_of("python", "m.py", [])
+    e["symbol_ref"] = symbol_ref("m.py", [], "f", "python")
+    e["fqn"] = fqn(e["scope"], "f", "python", "m.py", [])
+    p = SymbolIndex(crib.paths.project_dir("p")).write(e)
+    assert not crib.store.items({"project": "p", "kind": "symbol"})
+    asyncio.run(crib._on_record_change("p", "symbol", [p.name]))
+    items = crib.store.items({"project": "p", "kind": "symbol"})
+    assert list(items) == ["symbol:p:m.py#f"] and items["symbol:p:m.py#f"].body_vec

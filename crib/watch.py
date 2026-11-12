@@ -30,6 +30,9 @@ DEBOUNCE_SEC = 0.2
 # file-by-file at all: it's collapsed to a single project revalidation sweep.
 CODE_DEBOUNCE_SEC = 0.5
 CODE_BATCH_FALLBACK = 50
+# Past this many changed record files, the facet diffs its whole directory (one
+# scandir) rather than stat-ing a long list by name.
+RECORD_BATCH_FALLBACK = 500
 
 
 def _ignored(path: Path) -> bool:
@@ -60,6 +63,29 @@ def decode(projects_dir: Path, raw_path: str) -> tuple[str, str, str] | None:
     if len(parts) < 3 or parts[1] not in PILLAR_SEGMENTS:
         return None
     return parts[0], parts[1], str(Path(*parts[2:]))
+
+
+# The derived-record tiers under a project's global dir, by directory: which
+# facet's refresh a changed record file feeds (crib.filesync). A record's
+# filename is its slug, so a dot-prefixed name is a record, not clutter.
+RECORD_TIERS = {"symbol_index": ("symbol", ".toml")}
+
+
+def decode_record(projects_dir: Path, raw_path: str) -> tuple[str, str, str] | None:
+    """Map a filesystem path to (project, facet, filename) for a record file
+    directly under `<project>/<tier>/` (see RECORD_TIERS)."""
+    p = Path(raw_path)
+    try:
+        rel = p.resolve().relative_to(projects_dir.resolve())
+    except ValueError:
+        return None
+    parts = rel.parts
+    if len(parts) != 3 or parts[1] not in RECORD_TIERS:
+        return None
+    facet, suffix = RECORD_TIERS[parts[1]]
+    if not parts[2].endswith(suffix) or fnmatch.fnmatch(parts[2], "*.tmp"):
+        return None
+    return parts[0], facet, parts[2]
 
 
 def decode_store(stores: dict[str, Path], raw_path: str) -> tuple[str, str, str] | None:
@@ -252,11 +278,18 @@ class Watcher(_FSWatcher):
         on_change: Callable[[str, str, str], Awaitable[None]],
         loop: asyncio.AbstractEventLoop,
         stores: dict[str, Path] | None = None,
+        on_records: Callable[[str, str, list[str] | None], Awaitable[None]] | None = None,
     ) -> None:
         super().__init__(loop)
         self.projects_dir = projects_dir
         self._on_change = on_change
         self.stores = dict(stores or {})
+        # Record files (RECORD_TIERS) coalesce per (project, facet) into ONE
+        # refresh: an index sweep writes thousands. `on_records(project, facet,
+        # names)`, names None for "diff the whole directory" (a big batch).
+        self._on_records = on_records
+        self._records: dict[tuple[str, str], set[str]] = {}
+        self._record_timers: dict[tuple[str, str], asyncio.TimerHandle] = {}
 
     def forget_store(self, store_root: Path) -> bool:
         """Stop watching an in-repo store's pillar tree (delete/rename cleanup).
@@ -283,10 +316,55 @@ class Watcher(_FSWatcher):
         # rather than skipped silently.
         return [str(self.projects_dir), *(str(d) for d in self.stores.values())]
 
-    def _decode(self, raw_path: str, deleted: bool) -> tuple[str, str, str] | None:
+    def _decode(self, raw_path: str, deleted: bool) -> tuple[str, ...] | None:
         # index_file drops chunks once it sees the path is gone, so deletes flow too
         key = decode(self.projects_dir, raw_path)
-        return key if key is not None else decode_store(self.stores, raw_path)
+        if key is not None:
+            return key
+        if self._on_records is not None and (
+            rec := decode_record(self.projects_dir, raw_path)
+        ) is not None:
+            return ("\x00record", *rec)
+        return decode_store(self.stores, raw_path)
+
+    def _schedule(self, key: tuple[Any, ...]) -> None:
+        if key[0] != "\x00record":
+            super()._schedule(key)
+            return
+        _tag, project, facet, name = key
+        group = (project, facet)
+        self._records.setdefault(group, set()).add(name)
+        if (h := self._record_timers.pop(group, None)) is not None:
+            h.cancel()
+        self._record_timers[group] = self._loop.call_later(
+            CODE_DEBOUNCE_SEC, self._fire_records, group)
+
+    def _fire_records(self, group: tuple[str, str]) -> None:
+        self._record_timers.pop(group, None)
+        names = sorted(self._records.pop(group, set()))
+        if not names or self._on_records is None:
+            return
+        project, facet = group
+        batch = None if len(names) > RECORD_BATCH_FALLBACK else names
+        spawn(self._loop, self._dispatch_records(project, facet, batch), self._tasks,
+              f"watch records {project}/{facet}")
+
+    async def _dispatch_records(self, project: str, facet: str,
+                                names: list[str] | None) -> None:
+        if self._on_records is None:
+            return
+        try:
+            await self._on_records(project, facet, names)
+        except Exception as e:  # noqa: BLE001 — the next read refreshes anyway
+            print(f"[crib] watch refresh failed ({project}/{facet}): {e}",
+                  file=sys.stderr)
+
+    def stop(self) -> None:
+        for h in self._record_timers.values():
+            h.cancel()
+        self._record_timers.clear()
+        self._records.clear()
+        super().stop()
 
     async def _dispatch(self, *key: Any) -> None:
         # key = (project, store, relpath) from _decode — destructured because the
