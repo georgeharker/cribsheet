@@ -51,8 +51,7 @@ FACETS: Mapping[str, Mapping[str, str]] = {
         "symbol_was": "VARCHAR[]",
     },
     # A code symbol's record (crib.codeindex), minus its edges (calls,
-    # references, membership: crib_edges) and `called_by`, which is `calls`
-    # read backwards.
+    # called_by, references and membership live in crib_edges).
     "symbol": {
         "symbol_ref": "VARCHAR",
         "fqn": "VARCHAR",
@@ -224,8 +223,9 @@ _SYMBOL_VOLATILE = ("mtime",)
 def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
     """A code symbol's record (one symbol_index TOML) as an item: id
     `symbol:<symbol_ref>`, its scalar and list fields in the symbol facet, and
-    its calls / references (deferred `name [file]` refs, resolved when read)
-    and its container (`member_of`) as edges. No vectors yet."""
+    its calls / called_by / references (deferred `name [file]` refs, resolved
+    when read, in the record's order) and its container (`member_of`) as edges.
+    No vectors yet."""
     import json
 
     from .symbols import key as symbol_key
@@ -240,13 +240,18 @@ def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
         src = {"sym_kind": "kind", "symbol_content_hash": "content_hash"}.get(name, name)
         value = ref if name == "symbol_ref" else entry.get(src)
         if sqltype == "VARCHAR[]":
-            facet[name] = [str(v) for v in value] if isinstance(value, list) else []
+            # absent stays absent (None), unlike the authored facets: a code hit
+            # returns the record's own field, and `[]` is not "missing"
+            facet[name] = [str(v) for v in value] if isinstance(value, list) else None
         elif sqltype == "BIGINT":
             facet[name] = int(value) if isinstance(value, int) else None
         else:
             facet[name] = None if value is None else str(value)
     edges = [Edge(str(c), "calls") for c in entry.get("calls") or []]
     edges += [Edge(str(r), "references") for r in entry.get("references") or []]
+    # As recorded, not derived: the language server's incoming calls are not
+    # always `calls` read backwards (329 of cribsheet's 2,217 records differ).
+    edges += [Edge(str(c), "called_by") for c in entry.get("called_by") or []]
     if container:
         parent = symbol_ref(file, container[:-1], container[-1], lang)
         edges.append(Edge(f"symbol:{parent}", "member_of"))

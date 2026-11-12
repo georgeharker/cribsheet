@@ -73,7 +73,9 @@ def to_literal(value: Any) -> str:
         return "'" + value.replace("'", "''") + "'"
     if isinstance(value, (list, tuple)):
         if not value:
-            raise CribUserError("cannot render an empty list literal (no element type)")
+            # Untyped, and that's fine: DuckDB coerces `[]` to the column (or the
+            # cast) it lands in. Empty FILTER lists never get here; they are FALSE.
+            return "[]"
         if all(type(v) is float for v in value):
             # A vector: ONE string literal cast to DOUBLE[], not one literal per
             # element. DuckDB parses it ~20x faster (a 384-d vector is one token,
@@ -334,8 +336,10 @@ class QuackStore(DuckDBStore):
     def set_body_vectors(self, vectors: dict[str, list[float]]) -> None:
         self._call(super().set_body_vectors, vectors)
 
-    def lacking_body_vectors(self, where: dict[str, Any]) -> list[str]:
-        return self._call(super().lacking_body_vectors, where)
+    def lacking_body_vectors(
+        self, where: dict[str, Any], candidates_only: bool = False
+    ) -> list[str]:
+        return self._call(super().lacking_body_vectors, where, candidates_only)
 
     def body_vector_top(
         self, where: dict[str, Any], vec: list[float], n: int

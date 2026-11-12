@@ -309,10 +309,6 @@ def _delete_items_step(ids: list[str]) -> Callable[[Any], None]:
     return write
 
 
-def _facet_value(value: Any) -> Any:
-    return (value or None) if isinstance(value, list) else value
-
-
 def _insert_items_step(items: list[Item]) -> Callable[[Any], None]:
     core = [
         [
@@ -332,10 +328,8 @@ def _insert_items_step(items: list[Item]) -> Callable[[Any], None]:
         # pi-lens-ignore: python-sql-injection
         ex.run_many(f"INSERT INTO {ITEMS} VALUES (?, ?, ?, ?, ?, ?, ?, ?)", core)
         for kind, (table, fields) in _FACET_TABLES.items():
-            # An empty list is stored as NULL (and read back as []): an empty
-            # literal has no element type, so it can't cross Quack.
             rows = [
-                [it.id, *(_facet_value(it.facet.get(f)) for f in fields)]
+                [it.id, *(it.facet.get(f) for f in fields)]
                 for it in items
                 if it.kind == kind
             ]
@@ -723,9 +717,14 @@ class DuckDBStore:
 
         self._transaction(write)
 
-    def lacking_body_vectors(self, where: dict[str, Any]) -> list[str]:
+    def lacking_body_vectors(
+        self, where: dict[str, Any], candidates_only: bool = False
+    ) -> list[str]:
         clause, params = _item_clause(where)
         clause += (" AND " if clause else " WHERE ") + "i.body_vec IS NULL"
+        if candidates_only:
+            # pi-lens-ignore: python-sql-injection
+            clause += f" AND EXISTS (SELECT 1 FROM {POSTINGS} p WHERE p.item_id = i.id)"
         with self._reading() as ex:
             # pi-lens-ignore: python-sql-injection
             rows = ex.run(f"SELECT i.id FROM {ITEMS} i{clause} ORDER BY i.id", params)
@@ -823,7 +822,9 @@ class DuckDBStore:
                 ):
                     types = FACETS[kind]
                     facets[row[0]] = {
-                        f: (list(v or []) if types[f] == "VARCHAR[]" else v)
+                        # a list column reads back as stored: NULL (absent) is
+                        # None, an empty list stays []
+                        f: (list(v) if types[f] == "VARCHAR[]" and v is not None else v)
                         for f, v in zip(fields, row[1:])
                     }
             edge_rows = (

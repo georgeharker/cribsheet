@@ -42,37 +42,57 @@ def _write(crib, project, fqname, description, content_hash):
 
 
 # ── Resident cache: parse + embed reuse ───────────────────────────────────────
-def test_lookup_builds_resident_cache_and_reuses_it(crib):
+_DESCRIPTIONS = {"computes the alpha metric", "renders the beta view",
+                 "summarises the gamma path"}
+
+
+def _count_embeds(crib, monkeypatch) -> list[str]:
+    """Every DESCRIPTION the code subsystem embeds, in order (query texts, which
+    the hash embedder also embeds through `embed`, are not counted)."""
+    seen: list[str] = []
+    inner = crib.code.embedder.embed
+
+    def embed(texts):
+        seen.extend(t for t in texts if t in _DESCRIPTIONS)
+        return inner(texts)
+
+    monkeypatch.setattr(crib.code.embedder, "embed", embed)
+    return seen
+
+
+def test_lookup_reuses_the_resident_cache_and_embeds_descriptions_once(crib, monkeypatch):
+    seen = _count_embeds(crib, monkeypatch)
     _write(crib, "p", "pkg.alpha", "computes the alpha metric", "h_alpha")
     _write(crib, "p", "pkg.beta", "renders the beta view", "h_beta")
 
     hits = crib.code_lookup("alpha metric", project="p")
     rc = crib.code.cache.get("p")
     assert hits and rc is not None                      # cache populated
-    assert set(rc.emb) == {"computes the alpha metric", "renders the beta view"}
-    assert rc._dense is not None                        # dense vectors materialised
+    # the descriptions became the symbol items' vectors, once each
+    assert sorted(seen) == ["computes the alpha metric", "renders the beta view"]
+    items = crib.store.items({"project": "p", "kind": "symbol"})
+    assert all(it.body_vec for it in items.values())
 
     crib.code_lookup("beta view", project="p")          # same freshness token
     assert crib.code.cache["p"] is rc                  # SAME cache object — no reload
+    assert len(seen) == 2                               # and nothing re-embedded
 
 
-def test_reload_reuses_unchanged_embedding_vectors(crib):
+def test_reload_embeds_only_the_new_description(crib, monkeypatch):
+    seen = _count_embeds(crib, monkeypatch)
     _write(crib, "p", "pkg.alpha", "computes the alpha metric", "h_alpha")
     _write(crib, "p", "pkg.beta", "renders the beta view", "h_beta")
     crib.code_lookup("x", project="p")
     rc1 = crib.code.cache["p"]
+    before = len(seen)
 
     # A third symbol appears on disk → dir signature (scan mode) flips → reload.
     _write(crib, "p", "pkg.gamma", "summarises the gamma path", "h_gamma")
     hits = crib.code_lookup("gamma path", project="p")
-    rc2 = crib.code.cache["p"]
-    assert rc2 is not rc1                                # reloaded (new token)
+    assert crib.code.cache["p"] is not rc1               # reloaded (new token)
     assert any(h["symbol_ref"] == "pkg/mod.py#gamma" for h in hits)   # queryable
-    # unchanged descriptions carried the SAME vector object across the reload (no
-    # re-embed); only the new one was embedded fresh.
-    assert rc2.emb["computes the alpha metric"] is rc1.emb["computes the alpha metric"]
-    assert rc2.emb["renders the beta view"] is rc1.emb["renders the beta view"]
-    assert "summarises the gamma path" in rc2.emb
+    # unchanged records are not rewritten, so only the new description embeds
+    assert seen[before:] == ["summarises the gamma path"]
 
 
 # ── Freshness modes: scan (dir signature) vs trust (epoch) ────────────────────

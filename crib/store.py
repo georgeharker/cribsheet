@@ -100,8 +100,11 @@ class Store(Protocol):
         description vector is filled in lazily, once it has been embedded."""
         ...
 
-    def lacking_body_vectors(self, where: dict[str, Any]) -> list[str]:
-        """Ids of the items matching `where` that have no body vector yet."""
+    def lacking_body_vectors(
+        self, where: dict[str, Any], candidates_only: bool = False
+    ) -> list[str]:
+        """Ids of the items matching `where` that have no body vector (with
+        `candidates_only`, only those with postings: lexical search candidates)."""
         ...
 
     def body_vector_top(
@@ -334,8 +337,11 @@ class InMemoryStore:
                 if i in self._items:
                     self._items[i] = replace(self._items[i], body_vec=list(v))
 
-    def lacking_body_vectors(self, where: dict[str, Any]) -> list[str]:
-        return sorted(i for i, it in self.items(where).items() if it.body_vec is None)
+    def lacking_body_vectors(
+        self, where: dict[str, Any], candidates_only: bool = False
+    ) -> list[str]:
+        return sorted(i for i, it in self.items(where).items()
+                      if it.body_vec is None and (it.terms or not candidates_only))
 
     def body_vector_top(
         self, where: dict[str, Any], vec: list[float], n: int

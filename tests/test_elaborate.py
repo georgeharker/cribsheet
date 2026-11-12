@@ -59,7 +59,7 @@ class _DocStore:
     def set_body_vectors(self, vectors: Any) -> None:
         raise AssertionError("not called in these tests")
 
-    def lacking_body_vectors(self, where: Any) -> list[str]:
+    def lacking_body_vectors(self, where: Any, candidates_only: Any = False) -> list[str]:
         return []
 
     def body_vector_top(self, where: Any, vec: Any, n: Any) -> list[Any]:

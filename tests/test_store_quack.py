@@ -112,8 +112,8 @@ def test_vector_literal_refuses_non_finite():
 
 @pytest.mark.parametrize(
     "bad",
-    [math.nan, math.inf, -math.inf, "nul\x00inside", [], {"a": 1}, b"bytes", object()],
-    ids=["nan", "inf", "-inf", "nul", "empty-list", "dict", "bytes", "object"],
+    [math.nan, math.inf, -math.inf, "nul\x00inside", {"a": 1}, b"bytes", object()],
+    ids=["nan", "inf", "-inf", "nul", "dict", "bytes", "object"],
 )
 def test_unrenderable_values_are_refused_not_guessed(bad):
     with pytest.raises(CribUserError):
@@ -627,3 +627,16 @@ def test_install_extensions_fills_crib_s_own_dir(tmp_path):
         pytest.skip(f"extensions.duckdb.org unreachable: {e}")
     found = {p.name.split(".")[0] for p in ext.rglob("*.duckdb_extension")}
     assert set(SHARED_EXTENSIONS) <= found
+
+
+def test_an_empty_list_renders_and_stays_distinct_from_null():
+    """`[]` is untyped but coerces to the column it lands in; it must not
+    collapse into NULL (a record's absent list and its empty one differ)."""
+    import duckdb
+
+    assert to_literal([]) == "[]"
+    con = duckdb.connect(":memory:")
+    con.execute("CREATE TABLE t (id INTEGER, a VARCHAR[])")
+    # pi-lens-ignore: python-sql-injection
+    con.execute(f"INSERT INTO t VALUES (1, {to_literal([])}), (2, {to_literal(None)})")
+    assert con.execute("SELECT id, a FROM t ORDER BY id").fetchall() == [(1, []), (2, None)]

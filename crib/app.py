@@ -246,7 +246,7 @@ class Crib:
         # The code subsystem's shared per-project state (resident cache, freshness
         # epoch, write locks, in-flight/sweep tracking) — owned by CodeStore; the
         # methods below reach through `self.code` (codestore.py).
-        self.code = CodeStore(paths, config, store)
+        self.code = CodeStore(paths, config, store, self.embedder)
         # Cross-project refs (.crib refs:) — resolution + edge attribution. Needs two
         # Crib-owned callables it can't own: a ref's resident cache (carries the
         # pipeline revalidate hook) and nested-.crib boundary detection (shared with
@@ -302,6 +302,7 @@ class Crib:
             self.embedder,
             self._resident_code,
             self._require_code_index,
+            store,
         )
 
     # --- construction ------------------------------------------------------

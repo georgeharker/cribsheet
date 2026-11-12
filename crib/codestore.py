@@ -172,9 +172,13 @@ class CodeStore:
     invariants; the pipeline-coupled parts (revalidation, single-file drop) stay on
     Crib and are injected into `resident()` so this object stays free of the LSP."""
 
-    def __init__(self, paths: Paths, config: Config, store: Any = None) -> None:
+    def __init__(self, paths: Paths, config: Config, store: Any = None,
+                 embedder: Any = None) -> None:
         self.paths = paths
         self.config = config
+        # Embeds a symbol's description when its item is written (see
+        # `_sync_items`), so the store's dense side never waits on a query.
+        self.embedder = embedder
         # The vector store, when the symbols are mirrored into it as items (see
         # `_sync_items`); None leaves the resident index as the only reader.
         self.store = store
@@ -289,6 +293,25 @@ class CodeStore:
         self._sync_items(proj, entries)
         return rc
 
+    def _with_vectors(self, items: list[Any]) -> list[Any]:
+        """The symbol items with their description's vector as the body vector
+        (one embed call for every distinct new description; the embedding cache
+        answers the ones seen before). A candidate with no description has none."""
+        from dataclasses import replace
+
+        texts = list(dict.fromkeys(
+            d for it in items
+            if it.terms and (d := it.facet.get("description"))
+        ))
+        if not texts or self.embedder is None:
+            return items
+        vec = dict(zip(texts, self.embedder.embed(texts)))
+        return [
+            replace(it, body_vec=list(vec[d]))
+            if it.terms and (d := it.facet.get("description")) else it
+            for it in items
+        ]
+
     def _sync_items(self, proj: str, entries: list[dict[str, Any]]) -> None:
         """The records were just parsed, so bring the store's symbol items (and
         their calls / references / membership edges) into line with them in the
@@ -302,6 +325,7 @@ class CodeStore:
             want = {it.id: it for it in (symbol_item(proj, e) for e in entries)}
             have = self.store.item_hashes({"project": proj, "kind": "symbol"})
             write = [it for i, it in want.items() if have.get(i) != it.content_hash]
+            write = self._with_vectors(write)
             gone = [i for i in have if i not in want]
             if write or gone:
                 self.store.apply([], [], {}, write, gone)
