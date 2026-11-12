@@ -324,6 +324,9 @@ class QuackStore(DuckDBStore):
     def edges(self, where: dict[str, Any]) -> list[tuple[str, str, str, str | None]]:
         return self._call(super().edges, where)
 
+    def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
+        return self._call(super().item_hashes, where)
+
     def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:
         self._call(super().set_meta, updates)
 

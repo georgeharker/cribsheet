@@ -89,6 +89,11 @@ class Store(Protocol):
         `relpath`) match `where`; values are exact or `{"$in": [...]}`."""
         ...
 
+    def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
+        """{id: content_hash} for items matching `where` (as `items`): the cheap
+        read a sweep diffs against before writing only what changed."""
+        ...
+
     def edges(self, where: dict[str, Any]) -> list[tuple[str, str, str, str | None]]:
         """(src, dst, kind, recorded_hash) for edges matching `where` on `src`,
         `dst` or `kind` (exact or `{"$in": [...]}`). A `dep` edge comes back
@@ -289,6 +294,9 @@ class InMemoryStore:
                 self._items.pop(item_id, None)
             for item in items or ():
                 self._items[item.id] = item
+
+    def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
+        return {i: it.content_hash for i, it in self.items(where).items()}
 
     def edges(self, where: dict[str, Any]) -> list[tuple[str, str, str, str | None]]:
         _check_edge_where(where)

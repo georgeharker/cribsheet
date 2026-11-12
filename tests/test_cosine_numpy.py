@@ -171,6 +171,9 @@ class _DocStore:
     def edges(self, where: Any) -> list[Any]:
         return []
 
+    def item_hashes(self, where: Any) -> dict[str, str]:
+        return {}
+
     def get_meta(self, where: Any) -> dict[str, dict[str, Any]]:
         return {i: m for i, (_d, m) in self.get_docs(where).items()}
 

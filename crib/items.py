@@ -50,6 +50,27 @@ FACETS: Mapping[str, Mapping[str, str]] = {
         "signature": "VARCHAR",
         "symbol_was": "VARCHAR[]",
     },
+    # A code symbol's record (crib.codeindex), minus its edges (calls,
+    # references, membership: crib_edges) and `called_by`, which is `calls`
+    # read backwards.
+    "symbol": {
+        "symbol_ref": "VARCHAR",
+        "fqn": "VARCHAR",
+        "name": "VARCHAR",
+        "sym_kind": "VARCHAR",
+        "lang": "VARCHAR",
+        "file": "VARCHAR",
+        "line": "BIGINT",
+        "signature": "VARCHAR",
+        "description": "VARCHAR",
+        "file_hash": "VARCHAR",
+        "symbol_content_hash": "VARCHAR",
+        "container": "VARCHAR[]",
+        "scope": "VARCHAR[]",
+        "symbol_was": "VARCHAR[]",
+        "keywords": "VARCHAR[]",
+        "name_terms": "VARCHAR[]",
+    },
 }
 _DEFAULTS: Mapping[str, Mapping[str, Any]] = {
     "design": {"status": "active"},
@@ -190,3 +211,50 @@ def edges_of(kind: str, fm: Mapping[str, Any]) -> tuple[Edge, ...]:
     if kind == "learning" and (ref := fm.get("symbol_ref")):
         out.append(Edge(f"symbol:{ref}", "learns"))
     return tuple(out)
+
+
+# Record fields that change without the symbol changing (a re-index rewrites
+# the timestamp): left out of the row's hash, so they cause no rewrite.
+_SYMBOL_VOLATILE = ("mtime",)
+
+
+def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
+    """A code symbol's record (one symbol_index TOML) as an item: id
+    `symbol:<symbol_ref>`, its scalar and list fields in the symbol facet, and
+    its calls / references (deferred `name [file]` refs, resolved when read)
+    and its container (`member_of`) as edges. No vectors yet."""
+    import json
+
+    from .symbols import key as symbol_key
+    from .symbols import symbol_ref
+
+    ref = symbol_key(dict(entry))
+    file = str(entry.get("file") or "")
+    lang = str(entry.get("lang") or "")
+    container = [str(c) for c in entry.get("container") or []]
+    facet: dict[str, Any] = {}
+    for name, sqltype in FACETS["symbol"].items():
+        src = {"sym_kind": "kind", "symbol_content_hash": "content_hash"}.get(name, name)
+        value = ref if name == "symbol_ref" else entry.get(src)
+        if sqltype == "VARCHAR[]":
+            facet[name] = [str(v) for v in value] if isinstance(value, list) else []
+        elif sqltype == "BIGINT":
+            facet[name] = int(value) if isinstance(value, int) else None
+        else:
+            facet[name] = None if value is None else str(value)
+    edges = [Edge(str(c), "calls") for c in entry.get("calls") or []]
+    edges += [Edge(str(r), "references") for r in entry.get("references") or []]
+    if container:
+        parent = symbol_ref(file, container[:-1], container[-1], lang)
+        edges.append(Edge(f"symbol:{parent}", "member_of"))
+    stable = {k: v for k, v in entry.items() if k not in _SYMBOL_VOLATILE}
+    return Item(
+        id=f"symbol:{ref}",
+        kind="symbol",
+        project=project,
+        relpath=file,
+        title=str(entry.get("fqn") or entry.get("name") or ref),
+        content_hash=sha1_hex(json.dumps(stable, sort_keys=True, default=str)),
+        facet=facet,
+        edges=tuple(edges),
+    )

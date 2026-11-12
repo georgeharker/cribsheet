@@ -274,6 +274,23 @@ def _dim_of(data_type: str) -> int:
     return int(data_type.rsplit("[", 1)[1].rstrip("]"))
 
 
+def _item_clause(where: dict[str, Any]) -> tuple[str, list[Any]]:
+    """`WHERE …` over crib_items (aliased `i`) for an items/item_hashes filter."""
+    _check_item_where(where)
+    conds, params = [], []
+    for key, value in where.items():  # key is one of the ITEM_KEYS columns
+        if isinstance(value, dict):
+            (op, wanted), = value.items()
+            if op != "$in":
+                raise CribUserError(f"unsupported item filter {value!r}")
+            conds.append(f"list_contains(?::VARCHAR[], i.{key})")
+            params.append(list(wanted))
+        else:
+            conds.append(f"i.{key} = ?")
+            params.append(value)
+    return ((" WHERE " + " AND ".join(conds)) if conds else ""), params
+
+
 def _delete_items_step(ids: list[str]) -> Callable[[Any], None]:
     def write(ex: Any) -> None:
         for table in (ITEMS, *(t for t, _ in _FACET_TABLES.values())):
@@ -676,20 +693,15 @@ class DuckDBStore:
             )
         return [(a, b, c, d) for a, b, c, d in rows]
 
+    def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
+        clause, params = _item_clause(where)
+        with self._reading() as ex:
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(f"SELECT i.id, i.content_hash FROM {ITEMS} i{clause}", params)
+        return {i: h for i, h in rows}
+
     def items(self, where: dict[str, Any]) -> dict[str, Item]:
-        _check_item_where(where)
-        conds, params = [], []
-        for key, value in where.items():  # key is one of the ITEM_KEYS columns
-            if isinstance(value, dict):
-                ((op, wanted),) = value.items()
-                if op != "$in":
-                    raise CribUserError(f"unsupported item filter {value!r}")
-                conds.append(f"list_contains(?::VARCHAR[], i.{key})")
-                params.append(list(wanted))
-            else:
-                conds.append(f"i.{key} = ?")
-                params.append(value)
-        clause = (" WHERE " + " AND ".join(conds)) if conds else ""
+        clause, params = _item_clause(where)
         with self._reading() as ex:
             # pi-lens-ignore: python-sql-injection
             rows = ex.run(

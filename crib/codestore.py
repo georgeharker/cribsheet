@@ -187,9 +187,12 @@ class CodeStore:
     invariants; the pipeline-coupled parts (revalidation, single-file drop) stay on
     Crib and are injected into `resident()` so this object stays free of the LSP."""
 
-    def __init__(self, paths: Paths, config: Config) -> None:
+    def __init__(self, paths: Paths, config: Config, store: Any = None) -> None:
         self.paths = paths
         self.config = config
+        # The vector store, when the symbols are mirrored into it as items (see
+        # `_sync_items`); None leaves the resident index as the only reader.
+        self.store = store
         # Resident code index (per project): parsed symbols + description embeddings, so
         # a query skips the full TOML re-parse + re-embed. `epoch` bumps on every
         # in-process index write (trust-mode invalidation); `locks` serialize the store
@@ -298,7 +301,29 @@ class CodeStore:
         }
         rc = _ResidentCode(tok, entries, emb)
         self.cache[proj] = rc
+        self._sync_items(proj, entries)
         return rc
+
+    def _sync_items(self, proj: str, entries: list[dict[str, Any]]) -> None:
+        """The records were just parsed, so bring the store's symbol items (and
+        their calls / references / membership edges) into line with them in the
+        same pass: write the symbols whose record changed, drop the ones gone.
+        A store that can't be reached costs the sync, never the code query."""
+        if self.store is None or not callable(getattr(self.store, "item_hashes", None)):
+            return
+        from .items import symbol_item
+
+        try:
+            want = {it.id: it for it in (symbol_item(proj, e) for e in entries)}
+            have = self.store.item_hashes({"project": proj, "kind": "symbol"})
+            write = [it for i, it in want.items() if have.get(i) != it.content_hash]
+            gone = [i for i in have if i not in want]
+            if write or gone:
+                self.store.apply([], [], {}, write, gone)
+        except Exception as e:  # noqa: BLE001 — backend boundary; the TOMLs still answer
+            import sys
+
+            print(f"[crib] symbol item sync skipped for {proj}: {e}", file=sys.stderr)
 
     def revalidate(self, proj: str, reindex: Callable[..., Any]) -> None:
         """Lazy staleness gate: stat every indexed source file; reindex any whose mtime
