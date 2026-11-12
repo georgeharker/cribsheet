@@ -23,7 +23,6 @@ from .symbols import (
     encode_loc,
     fqname_sep,
     qualified_symbol,
-    ref_slug,
 )
 from .symbols import key as symbol_key
 
@@ -46,25 +45,6 @@ if TYPE_CHECKING:
     from .embed import Embedder
     from .learnings import Learnings
     from .refs import Refs
-
-
-# A code hit's fields, in the order the resident index returned them.
-_HIT_KEYS = ("symbol_ref", "fqn", "name", "kind", "lang", "scope", "file", "line",
-             "signature", "description", "parent", "calls", "called_by",
-             "references", "content_hash", "keywords")
-
-
-def _hit_fields(item: Any) -> dict[str, Any]:
-    """A code hit's record fields, read back from a `symbol` item: its facet, and
-    its calls / called_by / references edges in the record's order."""
-    f = item.facet
-    edges: dict[str, list[str]] = {"calls": [], "called_by": [], "references": []}
-    for e in item.edges:
-        if e.kind in edges:
-            edges[e.kind].append(e.dst)
-    named = {"kind": f.get("sym_kind"), "content_hash": f.get("symbol_content_hash"),
-             "parent": None, **edges}
-    return {key: named[key] if key in named else f.get(key) for key in _HIT_KEYS}
 
 
 def _topk(scores: Any, k: int) -> list[int]:
@@ -239,8 +219,8 @@ def check_query(query: str, name: str = "query") -> str:
 class CodeQuery:
     def __init__(self, refs: Refs, learnings: Learnings, embedder: Embedder,
                  resident: Callable[[str], StoreCode],
-                 require_index: Callable[[str], None], store: Any = None) -> None:
-        self.store = store
+                 require_index: Callable[[str], None]) -> None:
+        # `resident(proj)`: the project's code index (a StoreCode), made current
         # per-command memo of `_proj_maps`, cleared as each command starts
         self._maps: dict[str, tuple[dict[str, str], dict[tuple[str, str], str]]] = {}
         self.refs = refs
@@ -291,15 +271,9 @@ class CodeQuery:
         if proj in self._maps:
             return self._maps[proj]
         try:
-            self._resident(proj)  # freshness: the store's symbols match the records
-            rows = self.store.facet_values(
-                {"project": proj, "kind": "symbol"},
-                ["symbol_ref", "name", "file", "description"])
+            maps = self._resident(proj).maps()
         except Exception:  # noqa: BLE001 — unindexed ref → every edge unresolved
             return {}, {}
-        rows.sort(key=lambda r: ref_slug(r["symbol_ref"]) + ".toml")  # record order
-        maps = ({r["symbol_ref"]: r["description"] or "" for r in rows},
-                {(r["name"] or "", r["file"] or ""): r["symbol_ref"] for r in rows})
         self._maps[proj] = maps
         return maps
 
@@ -412,59 +386,16 @@ class CodeQuery:
         DENSE-DOMINANT: only the (uncalibrated) BM25 side is min-max'd, over the union
         candidate pool; raw cosine is already calibrated. `_score` carries the blend for
         the range-matched rerank stage; `rank` is per-pool, re-ranked after fusion."""
-        from .retrieve import (
-            STOPWORDS,
-            _subtokens,
-            bm25_from_postings,
-            coverage_from_postings,
-            tokenize,
-        )
-        from .items import symbol_ref_of
-        from .symbols import ref_slug
+        from .retrieve import STOPWORDS, _subtokens, tokenize
 
-        # Freshness first: the resident index re-stats the records and its reload
-        # runs the sweep that keeps the store's symbol items exact (until C2e).
-        self._resident(proj)
-        where = {"project": proj, "kind": "symbol"}
+        code = self._resident(proj)  # made current first
         qt = tokenize(query) + _subtokens(query)
-        # sparse: coverage-gated BM25 over the expanded field (name ⊕ keywords),
-        # from the store's postings, scored by the same Python BM25
-        stats = self.store.postings(where, qt)
-        if not stats.n:
-            return []
         Q = {t for t in set(qt) if len(t) > 1 and t not in STOPWORDS}
-        bmsc = bm25_from_postings(stats, qt)
-        cov = coverage_from_postings(stats, Q)
-
-        def pos(item_id: str) -> str:
-            # the resident order: records sorted by their FILENAME (the ref's slug
-            # plus ".toml": "a.toml" sorts after "a-b.toml", the bare slugs don't)
-            return ref_slug(symbol_ref_of(item_id)) + ".toml"
-
-        gated = {
-            i: cov.get(i, 0.0) * s
-            for i, s in sorted(bmsc.items(), key=lambda r: pos(r[0]))
-            if cov.get(i, 0.0) * s > 0
-        }
-        # dense: raw cosine over the description vectors, two-phase. The SQL top-n
-        # is the coarse pass; the exact pass re-scores just those candidates with
-        # the float32 dot product, ties in record order. A symbol with no
-        # description scores -1.0, below any real cosine, so it fills the pool only
-        # when fewer than _POOL_K symbols have one.
+        gated = code.sparse(qt, Q)
+        if gated is None:
+            return []
         qv = np.asarray(self.embedder.embed_query([query])[0], dtype=np.float32)
-        coarse = [i for i, _s in self.store.body_vector_top(where, qv.tolist(),
-                                                              2 * _POOL_K + 16)]
-        vecs = self.store.body_vectors(coarse)
-        filler = (self.store.lacking_body_vectors(where, candidates_only=True)
-                  if len(coarse) < _POOL_K else [])
-        cand = sorted(dict.fromkeys([*coarse, *filler]), key=pos)
-        sub = np.full(len(cand), -1.0, dtype=np.float32)
-        with_vec = [j for j, c in enumerate(cand) if c in vecs]
-        if with_vec:
-            sub[with_vec] = (
-                np.asarray([vecs[cand[j]] for j in with_vec], dtype=np.float32) @ qv)
-        dense = {cand[j]: float(sub[j]) for j in range(len(cand))}
-        dtop = [cand[j] for j in _topk(sub, _POOL_K)] if cand else []
+        dense, dtop = code.dense(qv, _POOL_K)
         # union pool (top-K each) → min-max ONLY the gated side → dense-dominant blend
         gtop = sorted(gated, key=lambda i: gated[i], reverse=True)[:_POOL_K]
         pool = list(dict.fromkeys(dtop + gtop))
@@ -479,17 +410,14 @@ class CodeQuery:
         # a sparse-only candidate outside the dense candidates: score its vector
         # directly, or -1.0 if it has none
         missing = [i for i in pool if i not in dense]
-        if missing:
-            mv = self.store.body_vectors(missing)
-            for i in missing:
-                score[i] = (float(np.asarray(mv[i], dtype=np.float32) @ qv)
-                            if i in mv else -1.0) + gnorm[i]
+        for i, c in code.cosines(missing, qv).items() if missing else ():
+            score[i] = c + gnorm[i]
         order = sorted(pool, key=lambda i: score[i], reverse=True)[:max(k, _RERANK_N)]
         # `id` and `lang` ride along: a hit that omits the current identity cannot be
         # matched to its learning note, and cannot render its language-native name
-        rows = self.store.items({"id": {"$in": order}})
+        rows = code.hits(order)
         hits: list[dict[str, Any]] = [
-            {**_hit_fields(rows[i]), "project": proj, "rank": r + 1, "_score": score[i]}
+            {**rows[i], "project": proj, "rank": r + 1, "_score": score[i]}
             for r, i in enumerate(order)]
         for h in hits:
             for rel_key in ("calls", "called_by", "references"):

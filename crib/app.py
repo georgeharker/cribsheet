@@ -299,7 +299,6 @@ class Crib:
             self.embedder,
             self._store_code,
             self._require_code_index,
-            store,
         )
 
     # --- construction ------------------------------------------------------

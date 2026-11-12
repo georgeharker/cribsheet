@@ -12,6 +12,8 @@ import threading
 import time
 from typing import TYPE_CHECKING, Any, Callable
 
+import numpy as np
+
 
 from .symbols import decode_edge, edge_is_from, encode_edge
 from .symbols import key as symbol_key
@@ -38,8 +40,9 @@ class StoreCode:
         from .symbols import ref_slug
 
         facet = {"name": {"$in": sorted(names)}} if names is not None else None
-        items = self._store.items({"project": self._proj, "kind": "symbol"},
-                                  facet=facet, vectors=False)
+        items = self._store.items(
+            {"project": self._proj, "kind": "symbol"}, facet=facet, vectors=False
+        )
         recs = [symbol_record(it) for it in items.values()]
         recs.sort(key=lambda e: ref_slug(symbol_key(e)) + ".toml")
         return recs
@@ -56,8 +59,142 @@ class StoreCode:
         hands out (callers annotate what they get)."""
         from .symbols import name_candidates
 
-        return [dict(e) for e in self._records(name_candidates(name))
-                if match_entry(e, name)]
+        return [
+            dict(e)
+            for e in self._records(name_candidates(name))
+            if match_entry(e, name)
+        ]
+
+    # --- what code_lookup scores (the store's mechanics stay in here) ---------
+    # Ids are opaque to callers: they come out of `sparse`/`dense` and go back
+    # into `cosines`/`hits`. Record order (a record's filename) breaks ties.
+
+    @property
+    def _where(self) -> dict[str, Any]:
+        return {"project": self._proj, "kind": "symbol"}
+
+    @staticmethod
+    def _order(item_id: str) -> str:
+        from .items import symbol_ref_of
+        from .symbols import ref_slug
+
+        # records sorted by their FILENAME (the ref's slug plus ".toml":
+        # "a.toml" sorts after "a-b.toml", the bare slugs don't)
+        return ref_slug(symbol_ref_of(item_id)) + ".toml"
+
+    def sparse(self, qt: list[str], informative: set[str]) -> dict[str, float] | None:
+        """Coverage-gated BM25 over each search candidate's expanded field
+        (name and keywords), from the store's postings: {id: score} for the
+        candidates that score, in record order. None: the project has no
+        search candidates at all."""
+        from .retrieve import bm25_from_postings, coverage_from_postings
+
+        stats = self._store.postings(self._where, qt)
+        if not stats.n:
+            return None
+        bm = bm25_from_postings(stats, qt)
+        cov = coverage_from_postings(stats, informative)
+        return {
+            i: cov.get(i, 0.0) * s
+            for i, s in sorted(bm.items(), key=lambda r: self._order(r[0]))
+            if cov.get(i, 0.0) * s > 0
+        }
+
+    def dense(self, qv: Any, k: int) -> tuple[dict[str, float], list[str]]:
+        """Raw cosine against the description vectors: ({id: cosine} for every
+        candidate scored, the exact top `k` ids). Two-phase: the store's SQL
+        top-n is the coarse pass, the exact pass re-scores those with the
+        float32 dot product, ties in record order. A candidate with no
+        description scores -1.0, below any real cosine, so it fills the top k
+        only when fewer than k have one."""
+        from .codequery import _topk
+
+        coarse = [
+            i
+            for i, _s in self._store.body_vector_top(
+                self._where, qv.tolist(), 2 * k + 16
+            )
+        ]
+        vecs = self._store.body_vectors(coarse)
+        filler = (
+            self._store.lacking_body_vectors(self._where, candidates_only=True)
+            if len(coarse) < k
+            else []
+        )
+        cand = sorted(dict.fromkeys([*coarse, *filler]), key=self._order)
+        sub = np.full(len(cand), -1.0, dtype=np.float32)
+        with_vec = [j for j, c in enumerate(cand) if c in vecs]
+        if with_vec:
+            sub[with_vec] = (
+                np.asarray([vecs[cand[j]] for j in with_vec], dtype=np.float32) @ qv
+            )
+        scores = {cand[j]: float(sub[j]) for j in range(len(cand))}
+        return scores, ([cand[j] for j in _topk(sub, k)] if cand else [])
+
+    def cosines(self, ids: list[str], qv: Any) -> dict[str, float]:
+        """The cosine of each of `ids` (-1.0 for one with no vector)."""
+        vecs = self._store.body_vectors(ids)
+        return {
+            i: float(np.asarray(vecs[i], dtype=np.float32) @ qv) if i in vecs else -1.0
+            for i in ids
+        }
+
+    def hits(self, ids: list[str]) -> dict[str, dict[str, Any]]:
+        """{id: the hit's record fields} for `ids` (see `hit_fields`)."""
+        rows = self._store.items({"id": {"$in": list(ids)}})
+        return {i: hit_fields(rows[i]) for i in ids if i in rows}
+
+    def maps(self) -> tuple[dict[str, str], dict[tuple[str, str], str]]:
+        """(key → description, (name, file) → key): a narrow read of four
+        fields, what resolving an edge list needs."""
+        from .symbols import ref_slug
+
+        rows = self._store.facet_values(
+            self._where, ["symbol_ref", "name", "file", "description"]
+        )
+        rows.sort(key=lambda r: ref_slug(r["symbol_ref"]) + ".toml")  # record order
+        return (
+            {r["symbol_ref"]: r["description"] or "" for r in rows},
+            {(r["name"] or "", r["file"] or ""): r["symbol_ref"] for r in rows},
+        )
+
+
+# A code hit's fields, in the order the resident index returned them.
+_HIT_KEYS = (
+    "symbol_ref",
+    "fqn",
+    "name",
+    "kind",
+    "lang",
+    "scope",
+    "file",
+    "line",
+    "signature",
+    "description",
+    "parent",
+    "calls",
+    "called_by",
+    "references",
+    "content_hash",
+    "keywords",
+)
+
+
+def hit_fields(item: Any) -> dict[str, Any]:
+    """A code hit's record fields, read back from a `symbol` item: its facet, and
+    its calls / called_by / references edges in the record's order."""
+    f = item.facet
+    edges: dict[str, list[str]] = {"calls": [], "called_by": [], "references": []}
+    for e in item.edges:
+        if e.kind in edges:
+            edges[e.kind].append(e.dst)
+    named = {
+        "kind": f.get("sym_kind"),
+        "content_hash": f.get("symbol_content_hash"),
+        "parent": None,
+        **edges,
+    }
+    return {key: named[key] if key in named else f.get(key) for key in _HIT_KEYS}
 
 
 def _mmss(seconds: float) -> str:
@@ -100,8 +237,9 @@ class CodeStore:
     pipeline-coupled parts (revalidation's reindex) stay on Crib and are injected
     so this object stays free of the LSP."""
 
-    def __init__(self, paths: Paths, config: Config, store: Any = None,
-                 embedder: Any = None) -> None:
+    def __init__(
+        self, paths: Paths, config: Config, store: Any = None, embedder: Any = None
+    ) -> None:
         self.paths = paths
         self.config = config
         # Embeds the descriptions the store's symbol items lack (`fill_vectors`).
@@ -189,8 +327,9 @@ class CodeStore:
                 rec = _parse((si.root / name).read_text())
             except OSError:
                 continue  # vanished after the stat: removed on the next refresh
-            items = ([symbol_item(proj, rec)]
-                     if rec.get("file") and rec.get("name") else [])
+            items = (
+                [symbol_item(proj, rec)] if rec.get("file") and rec.get("name") else []
+            )
             for it in items:
                 # two record files briefly holding one symbol (mid-conversion):
                 # the store keeps one row, the later file's
@@ -226,7 +365,8 @@ class CodeStore:
             return
         with self.refresh_lock(proj):
             missing = self.store.missing_body_vectors(
-                {"project": proj, "kind": "symbol"})
+                {"project": proj, "kind": "symbol"}
+            )
             if not missing:
                 return
             texts = list(dict.fromkeys(missing.values()))
@@ -252,8 +392,11 @@ class CodeStore:
         with self.refresh_lock(proj):
             # re-read under the lock: a concurrent query may just have refreshed
             epoch = self.epoch.get(proj, 0)
-            if (self.freshness() == "trust" and proj in self.refreshed
-                    and self.refreshed[proj] == epoch):
+            if (
+                self.freshness() == "trust"
+                and proj in self.refreshed
+                and self.refreshed[proj] == epoch
+            ):
                 return
             self.refresh(proj)
             self.fill_vectors(proj)
