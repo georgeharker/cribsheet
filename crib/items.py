@@ -271,7 +271,10 @@ def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
         if code_candidate(dict(entry))
         else ()
     )
-    stable = dict(entry)
+    # Hash what the store HOLDS (facet and edges), not the dict handed in: the
+    # mirror sees the entry as written, the full sync the record parsed back from
+    # its TOML, and the two must agree on whether anything changed.
+    stable = {"facet": facet, "edges": [(e.dst, e.kind) for e in edges]}
     return Item(
         id=f"symbol:{ref}",
         kind="symbol",

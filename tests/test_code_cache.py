@@ -60,38 +60,32 @@ def _count_embeds(crib, monkeypatch) -> list[str]:
     return seen
 
 
-def test_lookup_reuses_the_resident_cache_and_embeds_descriptions_once(crib, monkeypatch):
+def test_a_written_record_reaches_the_store_with_its_vector_once(crib, monkeypatch):
+    """Every record write mirrors into the store in the same step, embedding
+    its description then: a lookup embeds no description, a repeat none."""
     seen = _count_embeds(crib, monkeypatch)
     _write(crib, "p", "pkg.alpha", "computes the alpha metric", "h_alpha")
     _write(crib, "p", "pkg.beta", "renders the beta view", "h_beta")
-
-    hits = crib.code_lookup("alpha metric", project="p")
-    rc = crib.code.cache.get("p")
-    assert hits and rc is not None                      # cache populated
-    # the descriptions became the symbol items' vectors, once each
     assert sorted(seen) == ["computes the alpha metric", "renders the beta view"]
     items = crib.store.items({"project": "p", "kind": "symbol"})
     assert all(it.body_vec for it in items.values())
 
-    crib.code_lookup("beta view", project="p")          # same freshness token
-    assert crib.code.cache["p"] is rc                  # SAME cache object — no reload
-    assert len(seen) == 2                               # and nothing re-embedded
+    assert crib.code_lookup("alpha metric", project="p")
+    crib.code_lookup("beta view", project="p")
+    assert len(seen) == 2                               # nothing re-embedded
+    assert crib.code.cache == {}                        # no resident index built
 
 
-def test_reload_embeds_only_the_new_description(crib, monkeypatch):
+def test_a_new_record_embeds_only_its_own_description(crib, monkeypatch):
     seen = _count_embeds(crib, monkeypatch)
     _write(crib, "p", "pkg.alpha", "computes the alpha metric", "h_alpha")
     _write(crib, "p", "pkg.beta", "renders the beta view", "h_beta")
     crib.code_lookup("x", project="p")
-    rc1 = crib.code.cache["p"]
     before = len(seen)
 
-    # A third symbol appears on disk → dir signature (scan mode) flips → reload.
     _write(crib, "p", "pkg.gamma", "summarises the gamma path", "h_gamma")
     hits = crib.code_lookup("gamma path", project="p")
-    assert crib.code.cache["p"] is not rc1               # reloaded (new token)
     assert any(h["symbol_ref"] == "pkg/mod.py#gamma" for h in hits)   # queryable
-    # unchanged records are not rewritten, so only the new description embeds
     assert seen[before:] == ["summarises the gamma path"]
 
 

@@ -226,6 +226,9 @@ class CodeStore:
         # read-modify-write so concurrent reindexes (watcher vs query vs explicit index)
         # can't corrupt the cross-file call graph.
         self.cache: dict[str, _ResidentCode] = {}
+        # Per project, the records' directory signature the store was last synced
+        # in full against (see `fresh`); absent = not synced in this process yet.
+        self.synced: dict[str, tuple[int, int]] = {}
         self.epoch: dict[str, int] = {}
         # In-flight code indexing (project → files currently in the tracked indexer),
         # surfaced by `status`. Sweep progress (project → {done, total}) — a reliable
@@ -308,6 +311,60 @@ class CodeStore:
         if rc is not None and rc.tok == tok:
             return rc
         return self.reload(proj, tok, rc)
+
+    def fresh(
+        self,
+        proj: str,
+        revalidate: Callable[[str], None] | None = None,
+        watched: bool = False,
+    ) -> None:
+        """Make the store's symbol items current for `proj` before a code query
+        reads them. The source gate (`revalidate`) runs as it does for the
+        resident index. On a project's first touch in this process the records
+        are synced in full; after that, every in-process record write and delete
+        has already reached the store (`mirror_write` / `mirror_delete`), so
+        `trust` mode does nothing more and `scan` mode only re-syncs when the
+        records' directory signature moved (an outside write: a git pull)."""
+        first = proj not in self.synced
+        if revalidate is not None and (
+            first or (self.freshness() == "scan" and not watched)
+        ):
+            revalidate(proj)  # source → records freshness
+        if not first and self.freshness() == "trust":
+            return
+        sig = self.dir_sig(proj)
+        if self.synced.get(proj) == sig:
+            return
+        from .codeindex import SymbolIndex
+
+        self._sync_items(proj, SymbolIndex(self.paths.project_dir(proj)).all())
+        self.synced[proj] = sig
+
+    def mirror_write(self, project: str, entry: dict[str, Any]) -> None:
+        """One record was just written: its symbol item follows, in the same step."""
+        from .items import symbol_item
+
+        if self.store is None or not callable(getattr(self.store, "apply", None)):
+            return
+        try:
+            self.store.apply([], [], {}, self._with_vectors([symbol_item(project, entry)]))
+        except Exception as e:  # noqa: BLE001 — the TOML is written; a full sync heals it
+            import sys
+
+            self.synced.pop(project, None)  # next query re-syncs in full
+            print(f"[crib] symbol item mirror skipped for {project}: {e}", file=sys.stderr)
+
+    def mirror_delete(self, project: str, ref: str) -> None:
+        """One record was just deleted: its symbol item goes too."""
+        if self.store is None or not callable(getattr(self.store, "apply", None)):
+            return
+        try:
+            self.store.apply([], [], {}, None, [f"symbol:{ref}"])
+        except Exception as e:  # noqa: BLE001 — as above
+            import sys
+
+            self.synced.pop(project, None)
+            print(f"[crib] symbol item mirror skipped for {project}: {e}", file=sys.stderr)
 
     def reload(self, proj: str, tok: Any, prev: _ResidentCode | None) -> _ResidentCode:
         """Reparse the symbol TOMLs and rebuild the resident cache, CARRYING FORWARD
