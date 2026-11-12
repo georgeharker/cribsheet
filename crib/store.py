@@ -85,9 +85,21 @@ class Store(Protocol):
         `item_deletes` drops ids), as one atomic write, in that order."""
         ...
 
-    def items(self, where: dict[str, Any]) -> dict[str, Item]:
+    def items(
+        self,
+        where: dict[str, Any],
+        facet: dict[str, Any] | None = None,
+        vectors: bool = True,
+    ) -> dict[str, Item]:
         """{id: Item} for items whose core fields (`id`, `kind`, `project`,
-        `relpath`) match `where`; values are exact or `{"$in": [...]}`."""
+        `relpath`) match `where`; values are exact or `{"$in": [...]}`. `facet`
+        filters on the kind's own fields the same way (`where` must name that one
+        kind); `vectors=False` leaves both vectors unread (None)."""
+        ...
+
+    def facet_values(self, where: dict[str, Any], fields: list[str]) -> list[dict[str, Any]]:
+        """Just `fields` of the facet, for each item matching `where` (which must
+        name one kind with a facet): a narrow read, no edges, no vectors."""
         ...
 
     def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
@@ -329,6 +341,10 @@ class InMemoryStore:
     def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
         return {i: it.content_hash for i, it in self.items(where).items()}
 
+    def facet_values(self, where: dict[str, Any], fields: list[str]) -> list[dict[str, Any]]:
+        return [{f: it.facet.get(f) for f in fields}
+                for it in self.items(where, vectors=False).values()]
+
     def set_body_vectors(self, vectors: dict[str, list[float]]) -> None:
         from dataclasses import replace
 
@@ -387,13 +403,32 @@ class InMemoryStore:
         return sorted(r for r in rows
                       if all(_match_one(r[keys[k]], v) for k, v in where.items()))
 
-    def items(self, where: dict[str, Any]) -> dict[str, Item]:
+    def items(
+        self,
+        where: dict[str, Any],
+        facet: dict[str, Any] | None = None,
+        vectors: bool = True,
+    ) -> dict[str, Item]:
+        from dataclasses import replace
+
         _check_item_where(where)
+        if facet:
+            kind = where.get("kind")
+            from .items import FACETS
+
+            if not isinstance(kind, str) or kind not in FACETS:
+                raise CribUserError("a facet filter needs one `kind` that has a facet")
+            if bad := set(facet) - set(FACETS[kind]):
+                raise CribUserError(f"{kind} items have no facet field {sorted(bad)}")
         with self._lock:
-            return {
+            out = {
                 i: it for i, it in self._items.items()
                 if all(_match_one(getattr(it, k), v) for k, v in where.items())
+                and all(_match_one(it.facet.get(k), v) for k, v in (facet or {}).items())
             }
+        if not vectors:
+            out = {i: replace(it, title_vec=None, body_vec=None) for i, it in out.items()}
+        return out
 
     def count(self, where: dict[str, Any], relpath_prefix: str = "") -> int:
         return sum(

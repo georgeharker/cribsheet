@@ -512,6 +512,21 @@ def _path_query_segments(qp: str) -> list[str]:
     return [*segs[:-1], Path(segs[-1]).stem] if segs else []
 
 
+def name_candidates(query: str) -> set[str]:
+    """The recorded NAMES a symbol must have for `match_entry` to match `query`:
+    the query itself (a name may contain separators, like zsh's `git.push`) and
+    its last segment, on both sides of a `#`. A store narrows to these before
+    the full rule runs."""
+    out = {query}
+    for part in (query, query.partition("#")[2]):
+        if part:
+            out.add(part)
+            segs = [s for s in _ANY_SEP.split(part) if s]
+            if segs:
+                out.add(segs[-1])
+    return out
+
+
 def match_entry(entry: dict[str, Any], query: str) -> str | None:
     """Which TIER `query` matches this entry on — `ref` / `exact` / `suffix` / `name`.
 

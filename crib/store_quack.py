@@ -321,14 +321,22 @@ class QuackStore(DuckDBStore):
     ) -> None:
         self._call(super().apply, records, deletes, meta, items, item_deletes)
 
-    def items(self, where: dict[str, Any]) -> dict[str, Item]:
-        return self._call(super().items, where)
+    def items(
+        self,
+        where: dict[str, Any],
+        facet: dict[str, Any] | None = None,
+        vectors: bool = True,
+    ) -> dict[str, Item]:
+        return self._call(super().items, where, facet, vectors)
 
     def edges(self, where: dict[str, Any]) -> list[tuple[str, str, str, str | None]]:
         return self._call(super().edges, where)
 
     def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
         return self._call(super().item_hashes, where)
+
+    def facet_values(self, where: dict[str, Any], fields: list[str]) -> list[dict[str, Any]]:
+        return self._call(super().facet_values, where, fields)
 
     def postings(self, where: dict[str, Any], terms: list[str]) -> PostingStats:
         return self._call(super().postings, where, terms)

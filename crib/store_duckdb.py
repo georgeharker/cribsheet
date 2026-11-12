@@ -793,6 +793,23 @@ class DuckDBStore:
             docs.setdefault(item_id, (float(lengths[item_id]), {}))[1][term] = float(tf)
         return PostingStats(int(n), float(total), df, docs)
 
+    def facet_values(self, where: dict[str, Any], fields: list[str]) -> list[dict[str, Any]]:
+        kind = where.get("kind")
+        if not isinstance(kind, str) or kind not in _FACET_TABLES:
+            raise CribUserError("facet_values needs one `kind` that has a facet")
+        table, known = _FACET_TABLES[kind]
+        if bad := [f for f in fields if f not in known]:
+            raise CribUserError(f"{kind} items have no facet field {bad}")
+        clause, params = _item_clause(where)
+        with self._reading() as ex:
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(
+                f"SELECT {', '.join('f.' + f for f in fields)} FROM {ITEMS} i "
+                f"JOIN {table} f ON f.id = i.id{clause}",
+                params,
+            )
+        return [dict(zip(fields, r)) for r in rows]
+
     def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
         clause, params = _item_clause(where)
         with self._reading() as ex:
@@ -800,13 +817,40 @@ class DuckDBStore:
             rows = ex.run(f"SELECT i.id, i.content_hash FROM {ITEMS} i{clause}", params)
         return {i: h for i, h in rows}
 
-    def items(self, where: dict[str, Any]) -> dict[str, Item]:
+    def items(
+        self,
+        where: dict[str, Any],
+        facet: dict[str, Any] | None = None,
+        vectors: bool = True,
+    ) -> dict[str, Item]:
         clause, params = _item_clause(where)
+        join = ""
+        if facet:
+            kind = where.get("kind")
+            if not isinstance(kind, str) or kind not in _FACET_TABLES:
+                raise CribUserError("a facet filter needs one `kind` that has a facet")
+            table, fields = _FACET_TABLES[kind]
+            conds = []
+            for name, value in facet.items():
+                if name not in fields:
+                    raise CribUserError(f"{kind} items have no facet field {name!r}")
+                (op, wanted), = value.items() if isinstance(value, dict) else (("=", value),)
+                if op == "$in":
+                    conds.append(f"list_contains(?::VARCHAR[], f.{name})")
+                    params.append(list(wanted))
+                elif op == "=":
+                    conds.append(f"f.{name} = ?")
+                    params.append(wanted)
+                else:
+                    raise CribUserError(f"unsupported facet filter {value!r}")
+            join = f" JOIN {table} f ON f.id = i.id"
+            clause += (" AND " if clause else " WHERE ") + " AND ".join(conds)
+        cols = [("i." + c) if vectors or c not in ("title_vec", "body_vec") else "NULL"
+                for c in _ITEM_COLUMNS]
         with self._reading() as ex:
             # pi-lens-ignore: python-sql-injection
             rows = ex.run(
-                f"SELECT {', '.join('i.' + c for c in _ITEM_COLUMNS)} "
-                f"FROM {ITEMS} i{clause}",
+                f"SELECT {', '.join(cols)} FROM {ITEMS} i{join}{clause}",
                 params,
             )
             out = {r[0]: r for r in rows}

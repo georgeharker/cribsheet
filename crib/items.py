@@ -69,6 +69,8 @@ FACETS: Mapping[str, Mapping[str, str]] = {
         "symbol_was": "VARCHAR[]",
         "keywords": "VARCHAR[]",
         "name_terms": "VARCHAR[]",
+        "schema": "BIGINT",
+        "mtime": "BIGINT",
     },
 }
 _DEFAULTS: Mapping[str, Mapping[str, Any]] = {
@@ -215,9 +217,10 @@ def edges_of(kind: str, fm: Mapping[str, Any]) -> tuple[Edge, ...]:
     return tuple(out)
 
 
-# Record fields that change without the symbol changing (a re-index rewrites
-# the timestamp): left out of the row's hash, so they cause no rewrite.
-_SYMBOL_VOLATILE = ("mtime",)
+# A symbol facet column that holds a record field of another name.
+_SYMBOL_FIELD = {"sym_kind": "kind", "symbol_content_hash": "content_hash"}
+# The record's edge lists, as edges of the same kind, in the record's order.
+_SYMBOL_EDGE_LISTS = ("calls", "called_by", "references")
 
 
 def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
@@ -237,7 +240,7 @@ def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
     container = [str(c) for c in entry.get("container") or []]
     facet: dict[str, Any] = {}
     for name, sqltype in FACETS["symbol"].items():
-        src = {"sym_kind": "kind", "symbol_content_hash": "content_hash"}.get(name, name)
+        src = _SYMBOL_FIELD.get(name, name)
         value = ref if name == "symbol_ref" else entry.get(src)
         if sqltype == "VARCHAR[]":
             # absent stays absent (None), unlike the authored facets: a code hit
@@ -268,7 +271,7 @@ def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
         if code_candidate(dict(entry))
         else ()
     )
-    stable = {k: v for k, v in entry.items() if k not in _SYMBOL_VOLATILE}
+    stable = dict(entry)
     return Item(
         id=f"symbol:{ref}",
         kind="symbol",
@@ -280,3 +283,18 @@ def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
         edges=tuple(edges),
         terms=terms,
     )
+
+
+def symbol_record(item: Item) -> dict[str, Any]:
+    """A `symbol` item back as its symbol_index record: the facet fields under
+    their record names and the edge lists in the record's order. An absent
+    optional field (keywords) stays absent."""
+    rec: dict[str, Any] = {}
+    for name in FACETS["symbol"]:
+        value = item.facet.get(name)
+        if value is None and name == "keywords":
+            continue
+        rec[_SYMBOL_FIELD.get(name, name)] = value
+    for kind in _SYMBOL_EDGE_LISTS:
+        rec[kind] = [e.dst for e in item.edges if e.kind == kind]
+    return rec

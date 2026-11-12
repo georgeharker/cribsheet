@@ -23,6 +23,7 @@ from .symbols import (
     encode_loc,
     fqname_sep,
     qualified_symbol,
+    ref_slug,
 )
 from .symbols import key as symbol_key
 
@@ -41,7 +42,7 @@ def _marked(node: dict[str, Any], marks: set[str]) -> bool:
 
 
 if TYPE_CHECKING:
-    from .codestore import _ResidentCode
+    from .codestore import StoreCode
     from .embed import Embedder
     from .learnings import Learnings
     from .refs import Refs
@@ -237,9 +238,11 @@ def check_query(query: str, name: str = "query") -> str:
 
 class CodeQuery:
     def __init__(self, refs: Refs, learnings: Learnings, embedder: Embedder,
-                 resident: Callable[[str], _ResidentCode],
+                 resident: Callable[[str], StoreCode],
                  require_index: Callable[[str], None], store: Any = None) -> None:
         self.store = store
+        # per-command memo of `_proj_maps`, cleared as each command starts
+        self._maps: dict[str, tuple[dict[str, str], dict[tuple[str, str], str]]] = {}
         self.refs = refs
         self.learnings = learnings
         self.embedder = embedder
@@ -282,15 +285,23 @@ class CodeQuery:
         return out
 
     def _proj_maps(self, proj: str) -> tuple[dict[str, str], dict[tuple[str, str], str]]:
-        """(key → description, (name, file) → key) for one project, cached per
-        call chain by the resident cache underneath."""
+        """(key → description, (name, file) → key) for one project: a narrow
+        store read of four symbol fields, made once per project per command
+        (`_maps` is cleared as each command starts, so it is never stale)."""
+        if proj in self._maps:
+            return self._maps[proj]
         try:
-            rc = self._resident(proj)
+            self._resident(proj)  # freshness: the store's symbols match the records
+            rows = self.store.facet_values(
+                {"project": proj, "kind": "symbol"},
+                ["symbol_ref", "name", "file", "description"])
         except Exception:  # noqa: BLE001 — unindexed ref → every edge unresolved
             return {}, {}
-        return ({symbol_key(e): e.get("description", "") for e in rc.entries},
-                {(e.get("name", ""), e.get("file", "")): symbol_key(e)
-                 for e in rc.entries})
+        rows.sort(key=lambda r: ref_slug(r["symbol_ref"]) + ".toml")  # record order
+        maps = ({r["symbol_ref"]: r["description"] or "" for r in rows},
+                {(r["name"] or "", r["file"] or ""): r["symbol_ref"] for r in rows})
+        self._maps[proj] = maps
+        return maps
 
     def xref(
         self, proj: str, symbol: str, path: str = "", scope: str = "", lang: str = ""
@@ -304,6 +315,7 @@ class CodeQuery:
         contract: the axes filter the pool rather than refusing, so a narrowed
         xref returns every symbol that survives the filter (and `[]` when none
         do — a miss is data here, not an error)."""
+        self._maps.clear()
         from .refs import constrain
 
         check_query(symbol, "symbol")
@@ -331,6 +343,7 @@ class CodeQuery:
                 path: str = "", scope: str = "", lang: str = "") -> dict[str, Any]:
         """Everything about ONE symbol: signature + description, its callers/callees/
         references each annotated with the NEIGHBOUR'S description, and any learning."""
+        self._maps.clear()
         check_query(symbol, "symbol")
         self._require_index(proj)
         rc = self._resident(proj)
@@ -363,6 +376,7 @@ class CodeQuery:
         expanded field (name ⊕ synth keywords), range-matched blend (see `_lookup_one`).
         FANS OUT to the project's `.crib` `refs:`; the per-project rankings RRF-fuse
         (queried project weighted above its refs). Every hit carries `project`."""
+        self._maps.clear()
         from .retrieve import reciprocal_rank_fusion
         check_query(query)
         check_k(k)

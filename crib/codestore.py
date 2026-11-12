@@ -133,6 +133,44 @@ class _ResidentCode:
         return self._dmat
 
 
+class StoreCode:
+    """One project's code index read from the store: the same `entries` and
+    `by_fqname` the resident index offers, rebuilt from the `symbol` items
+    (crib.items.symbol_record) in record-file order. Reads skip the vectors.
+    Built per query, so it holds nothing between calls."""
+
+    def __init__(self, store: Any, proj: str) -> None:
+        self._store = store
+        self._proj = proj
+        self._all: list[dict[str, Any]] | None = None
+
+    def _records(self, names: set[str] | None = None) -> list[dict[str, Any]]:
+        from .items import symbol_record
+        from .symbols import ref_slug
+
+        facet = {"name": {"$in": sorted(names)}} if names is not None else None
+        items = self._store.items({"project": self._proj, "kind": "symbol"},
+                                  facet=facet, vectors=False)
+        recs = [symbol_record(it) for it in items.values()]
+        recs.sort(key=lambda e: ref_slug(symbol_key(e)) + ".toml")
+        return recs
+
+    @property
+    def entries(self) -> list[dict[str, Any]]:
+        if self._all is None:
+            self._all = self._records()
+        return self._all
+
+    def by_fqname(self, name: str) -> list[dict[str, Any]]:
+        """Entries matching `name` under `match_entry`'s rule: the store narrows
+        to the possible names, the rule decides. Copies, as the resident index
+        hands out (callers annotate what they get)."""
+        from .symbols import name_candidates
+
+        return [dict(e) for e in self._records(name_candidates(name))
+                if match_entry(e, name)]
+
+
 def _mmss(seconds: float) -> str:
     """Seconds as `m:ss` (or `h:mm:ss` past the hour) — compact, no decimals.
     Floor-then-format, never round: a 59.9s eta reads 0:59, not 0:60."""

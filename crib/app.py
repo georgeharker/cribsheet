@@ -25,7 +25,7 @@ from .chunk import CHUNK_SCHEMA_VERSION, kinds_in, pillar_of, section_key, secti
 from .claudemem import MemoryBindings
 from .codeindexer import CodeIndexer
 from .codequery import CodeQuery
-from .codestore import CodeStore, _ResidentCode
+from .codestore import CodeStore, StoreCode, _ResidentCode
 from .codestore import format_sweep
 from .config import Config, CribLink, ProjectConfig, portable_path, resolve_project
 from .designs import Designs
@@ -251,7 +251,7 @@ class Crib:
         # Crib-owned callables it can't own: a ref's resident cache (carries the
         # pipeline revalidate hook) and nested-.crib boundary detection (shared with
         # code enumeration). Crib keeps delegators (below) for its many callers.
-        self.refs = Refs(paths, self._resident_code, self._nested_project_roots)
+        self.refs = Refs(paths, self._store_code, self._nested_project_roots)
         # The project-layer surface the indexing pipeline depends on — narrow deps
         # (refs + code + config for resolution/ref-context, plus two injected callables
         # for enumeration + watcher registration). No back-reference to Crib.
@@ -300,7 +300,7 @@ class Crib:
             self.refs,
             self.learnings,
             self.embedder,
-            self._resident_code,
+            self._store_code,
             self._require_code_index,
             store,
         )
@@ -1718,6 +1718,13 @@ class Crib:
         return self.code.resident(
             proj, revalidate=self._revalidate, watched=self._code_watched(proj)
         )
+
+    def _store_code(self, proj: str) -> StoreCode:
+        """The project's code index as the code queries read it: from the store.
+        The resident step runs first, because it is what re-stats the records and
+        syncs the store's symbol items with them (until C2e)."""
+        self._resident_code(proj)
+        return StoreCode(self.store, proj)
 
     def _reload_code(
         self, proj: str, tok: Any, prev: _ResidentCode | None

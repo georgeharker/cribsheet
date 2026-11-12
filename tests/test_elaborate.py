@@ -44,7 +44,7 @@ class _DocStore:
               item_deletes: Any = None) -> None:
         raise AssertionError("not called in these tests")
 
-    def items(self, where: Any) -> dict[str, Any]:
+    def items(self, where: Any, facet: Any = None, vectors: Any = True) -> dict[str, Any]:
         return {}
 
     def edges(self, where: Any) -> list[Any]:
@@ -52,6 +52,9 @@ class _DocStore:
 
     def item_hashes(self, where: Any) -> dict[str, str]:
         return {}
+
+    def facet_values(self, where: Any, fields: Any) -> list[Any]:
+        return []
 
     def postings(self, where: Any, terms: Any) -> Any:
         raise AssertionError("not called in these tests")

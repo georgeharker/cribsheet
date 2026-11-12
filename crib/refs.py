@@ -23,7 +23,7 @@ from .symbols import match_entry
 
 if TYPE_CHECKING:
     from .codeindex import RefProjects
-    from .codestore import _ResidentCode
+    from .codestore import StoreCode
     from .paths import Paths
 
 
@@ -86,11 +86,11 @@ class Refs:
     def __init__(
         self,
         paths: Paths,
-        resident: Callable[[str], _ResidentCode],
+        resident: Callable[[str], StoreCode],
         nested_roots: Callable[[Path], list[Path]],
     ) -> None:
         self.paths = paths
-        self._resident = resident  # (proj) → _ResidentCode  (Crib-owned)
+        self._resident = resident  # (proj) → StoreCode  (Crib-owned)
         self._nested_roots = nested_roots  # (root) → [nested .crib dirs]  (Crib-owned)
 
     def project_refs(self, proj: str) -> list[dict[str, Any]]:
@@ -167,7 +167,7 @@ class Refs:
         self,
         proj: str,
         symbol: str,
-        rc: _ResidentCode | None = None,
+        rc: StoreCode | None = None,
         path: str = "",
         scope: str = "",
         lang: str = "",
@@ -249,7 +249,7 @@ class Refs:
         self,
         proj: str,
         symbol: str,
-        rc: _ResidentCode | None = None,
+        rc: StoreCode | None = None,
         path: str = "",
         scope: str = "",
         lang: str = "",
