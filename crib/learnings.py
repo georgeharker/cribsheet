@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import datetime
 import re
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
 from . import notes
@@ -37,12 +38,26 @@ if TYPE_CHECKING:
 
 
 class Learnings:
-    def __init__(self, paths: Paths, refs: Refs, store: NoteStore) -> None:
+    def __init__(
+        self,
+        paths: Paths,
+        refs: Refs,
+        store: NoteStore,
+        records: Callable[[str], list[dict[str, Any]]] | None = None,
+    ) -> None:
         self.paths = paths
         self.refs = refs
         # The learnings PILLAR store (`projects/<p>/learnings/`), not the notes
         # one — learnings share the store implementation, never the notes tree.
         self.store = store
+        # A project's symbol records (Crib: CodeStore.records, read from the
+        # store after a refresh); the file layer's full parse without one.
+        self._records = records or self._parse_records
+
+    def _parse_records(self, proj: str) -> list[dict[str, Any]]:
+        from .codeindex import SymbolIndex
+
+        return SymbolIndex(self.paths.project_dir(proj)).all()
 
     def notes_by_binding(self, proj: str) -> dict[str, str]:
         """binding → note relpath, read from FRONTMATTER.
@@ -137,10 +152,9 @@ class Learnings:
 
         A binding that resolves to NO entry passes through raw: its symbol is
         gone, but an orphan should still show the mark if something renders it."""
-        from .codeindex import SymbolIndex
 
         by_binding: dict[str, str] = {}
-        for e in SymbolIndex(self.paths.project_dir(proj)).all():
+        for e in self._records(proj):
             k = symbol_key(e)
             for b in symbol_bindings(e):
                 by_binding.setdefault(b, k)
@@ -351,9 +365,8 @@ class Learnings:
         intended."""
         import hashlib
         import json
-        from .codeindex import SymbolIndex
 
-        entries = SymbolIndex(self.paths.project_dir(proj)).all()
+        entries = self._records(proj)
         by_binding: dict[str, dict[str, Any]] = {}
         for e in entries:
             for b in symbol_bindings(e):
@@ -470,13 +483,12 @@ class Learnings:
         """Health of every attached learning: `ok` | `moved` | `orphan`. `moved` = the
         fqn still resolves but the symbol's file drifted from the snapshot; `orphan` =
         the fqn no longer resolves. Report-only — drives cleanup (rehome / forget)."""
-        from .codeindex import SymbolIndex
 
         ldir = self.store.root(proj)
         # keyed by BOTH bindings: a note may be on the current id or on the legacy
         # qualified name, and a report that only knows one calls the other an orphan
         by_fq: dict[str, dict[str, Any]] = {}
-        for e in SymbolIndex(self.paths.project_dir(proj)).all():
+        for e in self._records(proj):
             for b in symbol_bindings(e):
                 by_fq.setdefault(b, e)
             for k in ("symbol_ref", "fqn"):
@@ -558,7 +570,6 @@ class Learnings:
         """Re-point an orphaned learning at the symbol it became. Without `new_fqn`:
         ranked candidates (never auto-move). With `new_fqn`: move the note to the new
         symbol's slug, re-snapshot frontmatter, preserve the note id/history."""
-        from .codeindex import SymbolIndex
 
         # `old_fqn` is whatever spelling the caller has — a reference, a legacy
         # qualified name, or an orphan's recorded binding — so look it up by binding
@@ -569,7 +580,7 @@ class Learnings:
         old_path = self.store.abspath(proj, old_rel)
         if not old_path.exists():
             raise CribUserError(f"no learning for {old_fqn!r} in project {proj!r}")
-        entries = SymbolIndex(self.paths.project_dir(proj)).all()
+        entries = self._records(proj)
         if new_fqn is None:
             fm = notes.load(old_path).frontmatter
             return {

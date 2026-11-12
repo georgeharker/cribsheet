@@ -67,6 +67,9 @@ FACETS: Mapping[str, Mapping[str, str]] = {
         "container": "VARCHAR[]",
         "scope": "VARCHAR[]",
         "symbol_was": "VARCHAR[]",
+        # a record from before the symbol_ref rename: its old key, still one of
+        # the spellings it answers to (crib.symbols.bindings)
+        "fqname": "VARCHAR",
         "keywords": "VARCHAR[]",
         "name_terms": "VARCHAR[]",
         "schema": "BIGINT",
@@ -241,7 +244,7 @@ _SYMBOL_EDGE_LISTS = ("calls", "called_by", "references")
 
 def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
     """A code symbol's record (one symbol_index TOML) as an item: id
-    `symbol:<symbol_ref>`, its scalar and list fields in the symbol facet, and
+    `symbol_item_id(project, symbol_ref)`, its scalar and list fields in the symbol facet, and
     its calls / called_by / references (deferred `name [file]` refs, resolved
     when read, in the record's order) and its container (`member_of`) as edges.
     No vectors yet."""
@@ -304,14 +307,18 @@ def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
     )
 
 
+# Record fields a record may simply not have; every other field is always written.
+_SYMBOL_OPTIONAL = frozenset({"keywords", "fqname"})
+
+
 def symbol_record(item: Item) -> dict[str, Any]:
     """A `symbol` item back as its symbol_index record: the facet fields under
     their record names and the edge lists in the record's order. An absent
-    optional field (keywords) stays absent."""
+    optional field (keywords, the legacy fqname) stays absent."""
     rec: dict[str, Any] = {}
     for name in FACETS["symbol"]:
         value = item.facet.get(name)
-        if value is None and name == "keywords":
+        if value is None and name in _SYMBOL_OPTIONAL:
             continue
         rec[_SYMBOL_FIELD.get(name, name)] = value
     for kind in _SYMBOL_EDGE_LISTS:

@@ -1,22 +1,17 @@
 """Per-project code-index state, owned by one object.
 
 `CodeStore` holds the shared mutable state the whole code subsystem reaches into —
-the resident cache, the freshness epoch, the per-project write locks, and the
-in-flight / sweep progress tracking. It was extracted from the `Crib` god object so
-that state has a single owner (the seam the CodeStore refactor builds on). This first
-step relocates the *fields* here; the state-owning *methods* (`_code_lock`,
-`_resident_code`, `_revalidate`, …) still live on `Crib` and reach through
-`crib.code`, and migrate onto `CodeStore` in later steps.
+the symbol facet's refresh into the store, the freshness epoch, the per-project
+write locks, and the in-flight / sweep progress tracking. `StoreCode` is one
+project's records as the store holds them, which is what the code queries read.
 """
 
 from __future__ import annotations
 
-import os
 import threading
 import time
 from typing import TYPE_CHECKING, Any, Callable
 
-import numpy as np
 
 from .symbols import decode_edge, edge_is_from, encode_edge
 from .symbols import key as symbol_key
@@ -25,112 +20,6 @@ from .symbols import match_entry
 if TYPE_CHECKING:
     from .config import Config
     from .paths import Paths
-
-
-class _ResidentCode:
-    """A project's code index kept RESIDENT so a `code_*` query need not re-parse
-    every symbol TOML and re-embed every description (the dominant cost). Built once
-    per freshness token (`tok`); rebuilt only when the token changes — and even then
-    description embeddings are reused by description text, so an unchanged symbol is
-    never re-embedded. Holds the parsed entries, a by-reference index, the description→
-    vector map, and the precomputed dense/sparse query arrays (`_prepare`).
-
-    Every array here is derived from `entries`, which is FROZEN for the lifetime of
-    the object: a changed index means a new freshness token and a NEW
-    `_ResidentCode`, never a mutation of this one. That is what lets `_prepare`
-    build the lexical side eagerly, and the dense matrix be cached with no
-    invalidation hook."""
-
-    def __init__(
-        self, tok: Any, entries: list[dict[str, Any]], emb: dict[str, list[float]]
-    ) -> None:
-        self.tok = tok
-        self.entries = entries
-        self.emb = emb  # description text → vector
-        self.by_fq: dict[str, dict[str, Any]] = {symbol_key(e): e for e in entries}
-        self._prepare()
-
-    def by_fqname(self, name: str) -> list[dict[str, Any]]:
-        """Entries matching `name` — the resident mirror of SymbolIndex.by_fqname (no
-        disk read). The match rule is imported rather than restated, so the two
-        lookups cannot answer differently.
-
-        SHALLOW COPIES, because callers annotate what they get: `code_xref` stamps
-        the owning project, `learnings.attach` adds the pinned note, `code_dossier`
-        structures the edge lists. Handing out the cache's own dicts made those
-        writes land in state shared by every later call in the process — harmless
-        only while every such write happened to be idempotent, which is not a
-        property anyone was maintaining on purpose."""
-        return [dict(e) for e in self.entries if match_entry(e, name)]
-
-    def _prepare(self) -> None:
-        from .retrieve import BM25, _as_tf, code_candidate, code_field_terms
-
-        self.lk = [e for e in self.entries if code_candidate(e)]
-        self.lk_ids = [symbol_key(e) for e in self.lk]
-        self.field_terms: list[list[str]] = [code_field_terms(e) for e in self.lk]
-        self.bm25 = BM25([_as_tf(ft) for ft in self.field_terms])
-        self._dense: list[list[float] | None] | None = (
-            None  # built lazily (code_lookup only)
-        )
-        self._dmat: tuple[Any, Any] | None = None  # ditto, the numpy view of it
-
-    def coverage(self, qtokens: set[str]) -> list[float]:
-        """Fraction of the query's informative tokens present in each symbol's expanded
-        field — the covpc gate that keeps a diffuse BM25 match from voting (∈ [0,1]).
-
-        ONE implementation, on the BM25 that already holds the same field: this used
-        to keep a parallel `field_sets` and reimplement the arithmetic, so the notes
-        gate (`BM25.coverage`) and the code gate could drift apart while both claimed
-        to be 'the covpc gate'."""
-        return self.bm25.coverage(qtokens)
-
-    def dense(self, embedder: Any) -> list[list[float] | None]:
-        """Dense vectors aligned to `lk` — embedding only the descriptions not already
-        cached in `emb` (reused across queries AND across reloads). ONLY code_lookup
-        needs these, so dossier/graph/xref never pay to embed."""
-        if self._dense is None:
-            missing = list(
-                dict.fromkeys(
-                    e["description"]
-                    for e in self.lk
-                    if e.get("description") and e["description"] not in self.emb
-                )
-            )
-            if missing:
-                self.emb.update(zip(missing, embedder.embed(missing)))
-            self._dense = [
-                self.emb.get(e["description"]) if e.get("description") else None
-                for e in self.lk
-            ]
-        return self._dense
-
-    def dense_matrix(self, embedder: Any) -> tuple[Any, Any]:
-        """`(M, rows)`: a float32 (m, dim) matrix of the dense vectors, and the `lk`
-        indices they belong to — `rows[j]` is the `lk` index of row `j`. A symbol with
-        no description has no row at all, so `m < len(lk)` in general and the caller
-        must scatter the scores back through `rows`. `rows.size == 0` means nothing in
-        this index has a vector.
-
-        Why a matrix: the per-symbol Python dot product was the whole cost of
-        `code_lookup` (~90-140ms at 10-16k symbols × 384 dims); one `M @ q` is ~0.2ms.
-
-        The vectors are ALREADY L2-NORMALISED — `HashEmbedder` divides by the norm and
-        the real backends are asked to normalise — so `M @ q` IS the cosine, with no
-        renormalisation here. A backend that stopped normalising would be a bug at the
-        source, not something for this method to paper over.
-
-        Built once and kept: `entries` never changes under a resident index (see the
-        class docstring), and the vectors come from `dense`, which is itself idempotent.
-        """
-        if self._dmat is None:
-            dv = self.dense(embedder)
-            rows = [i for i, v in enumerate(dv) if v]
-            self._dmat = (
-                np.asarray([dv[i] for i in rows], dtype=np.float32),
-                np.asarray(rows, dtype=np.intp),
-            )
-        return self._dmat
 
 
 class StoreCode:
@@ -206,26 +95,22 @@ def format_sweep(sw: dict[str, Any], now: float | None = None) -> str:
 
 class CodeStore:
     """The code subsystem's shared per-project state + its access primitives, in one
-    place (see module docstring). Owns the resident cache and its freshness/locking
-    invariants; the pipeline-coupled parts (revalidation, single-file drop) stay on
-    Crib and are injected into `resident()` so this object stays free of the LSP."""
+    place (see module docstring): keeps the store's symbol items in line with the
+    records (`refresh`, `ensure`) and owns the freshness/locking invariants; the
+    pipeline-coupled parts (revalidation's reindex) stay on Crib and are injected
+    so this object stays free of the LSP."""
 
     def __init__(self, paths: Paths, config: Config, store: Any = None,
                  embedder: Any = None) -> None:
         self.paths = paths
         self.config = config
-        # Embeds a symbol's description when its item is written (see
-        # `_sync_items`), so the store's dense side never waits on a query.
+        # Embeds the descriptions the store's symbol items lack (`fill_vectors`).
         self.embedder = embedder
-        # The vector store, when the symbols are mirrored into it as items (see
-        # `_sync_items`); None leaves the resident index as the only reader.
+        # The store the symbol items live in; None reads the records from disk.
         self.store = store
-        # Resident code index (per project): parsed symbols + description embeddings, so
-        # a query skips the full TOML re-parse + re-embed. `epoch` bumps on every
-        # in-process index write (trust-mode invalidation); `locks` serialize the store
-        # read-modify-write so concurrent reindexes (watcher vs query vs explicit index)
-        # can't corrupt the cross-file call graph.
-        self.cache: dict[str, _ResidentCode] = {}
+        # `epoch` bumps on every in-process index write (trust-mode freshness);
+        # `locks` serialize the records' read-modify-write so concurrent reindexes
+        # (watcher vs query vs explicit index) can't corrupt the cross-file graph.
         # Per project, the write epoch at its last refresh (see `ensure`); absent
         # = not refreshed in this process yet.
         self.refreshed: dict[str, int] = {}
@@ -269,81 +154,14 @@ class CodeStore:
     def freshness(self) -> str:
         return getattr(self.config.retrieve, "code_freshness", "scan")
 
-    def dir_sig(self, proj: str) -> tuple[int, int]:
-        """Cheap signature of the symbol_index dir — (toml count, max mtime_ns) — so
-        ANY on-disk change (our writes, a `git pull` of the store) flips it. One
-        scandir; no parse. In-place body edits keep the filename, so dir-mtime alone
-        misses them — hence max(file mtime), not the dir's."""
-        from .codeindex import SymbolIndex
-
-        root = SymbolIndex(self.paths.project_dir(proj)).root
-        if not root.exists():
-            return (0, 0)
-        n, mx = 0, 0
-        with os.scandir(root) as it:
-            for e in it:
-                if e.name.endswith(".toml"):
-                    n += 1
-                    try:
-                        m = e.stat().st_mtime_ns
-                    except OSError:
-                        continue
-                    if m > mx:
-                        mx = m
-        return (n, mx)
-
-    def tok(self, proj: str) -> tuple[str, Any]:
-        """Freshness token the resident cache is keyed on: an in-process epoch in
-        `trust` mode (no stat), the dir signature in `scan` mode (catches external
-        writes too)."""
-        if self.freshness() == "trust":
-            return ("epoch", self.epoch.get(proj, 0))
-        return ("sig", self.dir_sig(proj))
-
-    # --- resident cache -------------------------------------------------------
-    def resident(
-        self,
-        proj: str,
-        revalidate: Callable[[str], None] | None = None,
-        watched: bool = False,
-    ) -> _ResidentCode:
-        """Return the project's resident code index, rebuilding only when its token
-        moved. On a COLD cache we always run the injected `revalidate` once (catches
-        edits made while the daemon — and its watcher — were down); when warm, we skip
-        it in `trust` mode and whenever the watcher already covers the project
-        (`watched` — edits refreshed eagerly on save). `revalidate` is Crib's
-        pipeline-coupled lazy source→index gate, kept OUT of this object."""
-        rc = self.cache.get(proj)
-        if revalidate is not None and (
-            rc is None or (self.freshness() == "scan" and not watched)
-        ):
-            revalidate(proj)  # source → index freshness
-        tok = self.tok(proj)
-        rc = self.cache.get(proj)
-        if rc is not None and rc.tok == tok:
-            return rc
-        return self.reload(proj, tok, rc)
-
-    def reload(self, proj: str, tok: Any, prev: _ResidentCode | None) -> _ResidentCode:
-        """Reparse the symbol TOMLs and rebuild the resident cache, CARRYING FORWARD
-        every description embedding whose text is unchanged (from `prev.emb`, pruned to
-        current descriptions). Nothing is embedded here — code_lookup fills in only the
-        genuinely new/edited descriptions lazily, so a reload after an edit re-embeds
-        just what changed, and dossier/graph/xref reloads embed nothing at all."""
-        from .codeindex import SymbolIndex
-
-        entries = SymbolIndex(self.paths.project_dir(proj)).all()
-        prev_emb = prev.emb if prev is not None else {}
-        emb = {
-            d: prev_emb[d]
-            for d in dict.fromkeys(
-                e["description"] for e in entries if e.get("description")
-            )
-            if d in prev_emb
-        }
-        rc = _ResidentCode(tok, entries, emb)
-        self.cache[proj] = rc
-        return rc
+    def forget(self, proj: str) -> None:
+        """Drop `proj`'s symbol items and stamps from the store (project delete,
+        index reset): nothing would refresh a project that is gone."""
+        with self.refresh_lock(proj):
+            self.refreshed.pop(proj, None)
+            if self.store is not None:
+                gone = list(self.store.file_stamps("symbol", proj))
+                self.store.replace_files("symbol", proj, [], gone)
 
     def refresh(self, proj: str, only: list[str] | None = None) -> None:
         """The symbol facet's refresh: map the record files that changed since
@@ -381,6 +199,25 @@ class CodeStore:
                 owner[it.id] = len(files)
             files.append((name, mtime, size, items))
         self.store.replace_files("symbol", proj, files, ch.removed)
+
+    def records(self, proj: str) -> list[dict[str, Any]]:
+        """Every symbol record of `proj`, as `SymbolIndex.all()` would parse
+        them, read from the store after a refresh: one stat per record file,
+        and only changed files are parsed. The refresh makes the store match the
+        files at this moment, so a writer holding the project lock reads its own
+        writes. Fresh dicts: callers may mutate them."""
+        if self.store is None:
+            from .codeindex import SymbolIndex
+
+            return SymbolIndex(self.paths.project_dir(proj)).all()
+        return self.view(proj).entries
+
+    def view(self, proj: str) -> StoreCode:
+        """`proj`'s records as the store holds them, refreshed first (no source
+        gate: that is `ensure`, for queries)."""
+        with self.refresh_lock(proj):
+            self.refresh(proj)
+        return StoreCode(self.store, proj)
 
     def fill_vectors(self, proj: str) -> None:
         """The vector step: embed each symbol item's text that has no vector yet
@@ -429,7 +266,7 @@ class CodeStore:
         Best-effort — an LSP hiccup leaves the stale entry rather than failing the query.
         No-op when the source root is unknown (older index / no meta). `reindex` is Crib's
         pipeline-coupled per-file indexer, injected so this object stays free of the LSP."""
-        from .codeindex import SymbolIndex, _parse
+        from .codeindex import SymbolIndex
 
         store = SymbolIndex(self.paths.project_dir(proj))
         root = store.source_root()
@@ -438,22 +275,29 @@ class CodeStore:
         # Baseline = the on-disk mtime of a source file's symbol tomls (= WHEN indexed),
         # derived locally + cheap. NOT the toml's stored `mtime` field (that's a portable
         # git-date record, not comparable to a local st_mtime — and would need git here).
-        # Read through the record cache (crib.recordcache): the same stat of every
-        # toml, but an unchanged toml isn't re-read or re-parsed, so this costs one
-        # stat per record plus one per source file. The stamp IS the toml's mtime.
-        from . import recordcache
+        # From the store's per-file stamps (crib.filesync): the refresh stats every
+        # toml anyway and parses only the changed ones, and a stamp IS the toml's
+        # mtime when it was last mapped, i.e. now.
+        from .items import symbol_item_id
 
         baseline: dict[str, int] = {}  # source file → oldest mtime of its tomls
         # files with merge-dirtied symbols (blank content_hash, written by the sync
         # merge driver on divergent code states): their tomls are FRESH (post-pull
         # mtime), so the mtime gate alone would never catch them.
         dirty: set[str] = set()
-        for _name, (mt, _size), e in recordcache.get().load(store.root, _parse):
-            f = e.get("file", "")
-            if f:
-                baseline[f] = min(baseline.get(f, mt), mt)
-                if not e.get("content_hash"):
-                    dirty.add(f)
+        if self.store is None:
+            return
+        by_id = {symbol_item_id(proj, symbol_key(e)): e for e in self.records(proj)}
+        for _name, (mt, _size, ids) in self.store.file_stamps("symbol", proj).items():
+            for i in ids:
+                e = by_id.get(i)
+                if e is None:
+                    continue
+                f = e.get("file", "")
+                if f:
+                    baseline[f] = min(baseline.get(f, mt), mt)
+                    if not e.get("content_hash"):
+                        dirty.add(f)
         for rel, base_mt in baseline.items():
             src = root / rel
             try:
@@ -476,7 +320,7 @@ class CodeStore:
 
         with self.lock(proj):
             store = SymbolIndex(self.paths.project_dir(proj))
-            for e in store.all():
+            for e in self.records(proj):
                 if e.get("file") == relpath:
                     store.delete(symbol_key(e))
                     continue
@@ -497,9 +341,12 @@ class CodeStore:
                     store.write(e)
         self.bump_epoch(proj)
 
-    @staticmethod
     def patch_edges(
-        store: Any, new_entries: list[dict[str, Any]], relpath: str
+        self,
+        store: Any,
+        new_entries: list[dict[str, Any]],
+        relpath: str,
+        proj: str | None = None,
     ) -> None:
         """Keep the cross-file graph consistent after a single-file reindex of A.
 
@@ -523,8 +370,11 @@ class CodeStore:
         hands back a QUALIFIED name instead resolves through the one matcher on an
         exact tier, scoped to the file — so `a.B.run [a.py]` lands on `B.run` even
         though two `run`s live there, whatever id shape the store is at. Cheap —
-        in-memory from A's own fresh edges; no extra LSP."""
-        entries = store.all()
+        in-memory from A's own fresh edges; no extra LSP.
+
+        With `proj`, the records are read through the store (`records`: only
+        changed files parsed); without it, `store` parses them all."""
+        entries = self.records(proj) if proj is not None else store.all()
         by_key: dict[tuple[str, str], list[dict]] = {}
         by_file: dict[str, list[dict]] = {}
         for e in entries:

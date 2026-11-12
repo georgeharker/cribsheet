@@ -2004,17 +2004,21 @@ class SymbolIndex:
         re-creates it. Identity is `file` + `name`, which is what a REFERENCE is made
         of, so this admits an unconverted entry as readily as a current one — an
         `all()` that filtered on the new field would drop the entire input of the
-        conversion that is supposed to add it."""
-        # Through the record cache (crib.recordcache): unchanged TOMLs (same mtime
-        # and size) aren't re-read or re-parsed, and a fresh daemon seeds from the
-        # store's DuckDB copy. The TOMLs stay the truth; every call re-stats them.
-        from . import recordcache
+        conversion that is supposed to add it.
 
-        return [
-            e
-            for _name, _stamp, e in recordcache.get().load(self.root, _parse)
-            if e.get("file") and e.get("name")
-        ]
+        Parses every file: this is the file layer. Crib's own reads go through
+        the store (`CodeStore.records`), which re-parses only what changed."""
+        from .filesync import scan
+
+        out = []
+        for name in sorted(scan(self.root, ".toml")):
+            try:
+                e = _parse((self.root / name).read_text())
+            except OSError:
+                continue  # removed between the listing and the read
+            if e.get("file") and e.get("name"):
+                out.append(e)
+        return out
 
     def records(self) -> list[tuple[Path, dict]]:
         """Every parseable record with the path it actually lives at — for the

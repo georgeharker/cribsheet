@@ -118,7 +118,7 @@ def _make_duckdb_quack(tmp_path, request) -> Backend:
     # included, not just the chunks recreate() drops.
     store.recreate()
     with store._writing() as ex:
-        for table in ("crib_embed_cache", "crib_record_cache", "crib_gen_ledger"):
+        for table in ("crib_embed_cache", "crib_files", "crib_gen_ledger"):
             # pi-lens-ignore: python-sql-injection
             ex.run(f"DELETE FROM {table}")
         ex.run("DELETE FROM crib_meta WHERE key = 'embed_model'")

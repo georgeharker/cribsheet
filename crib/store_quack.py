@@ -28,7 +28,6 @@ import argparse
 import contextlib
 import math
 import os
-import re
 import secrets
 import signal
 import subprocess
@@ -45,7 +44,7 @@ from .errors import CribUserError
 from .items import Item
 from .retrieve import PostingStats
 from .store import Hit, Record, is_loopback_host
-from .store_duckdb import DuckDBStore, local_dirs
+from .store_duckdb import _ROWS_PER_STATEMENT, _VALUES_TAIL, DuckDBStore, local_dirs
 
 # ── literal rendering: the one place a value becomes SQL text ──────────────
 
@@ -107,10 +106,6 @@ def render(sql: str, params: Sequence[Any]) -> str:
 
 
 # INSERT ... VALUES (?, ?, …): a run_many of these becomes multi-row statements.
-_VALUES_TAIL = re.compile(
-    r"^(?P<head>.*\bVALUES\s*)(?P<group>\(\s*\?(?:\s*,\s*\?)*\s*\))\s*$", re.S
-)
-_ROWS_PER_STATEMENT = 200
 
 
 class _Literal:
@@ -291,8 +286,10 @@ class QuackStore(DuckDBStore):
             self._conn, self._remote = conn, remote
             self._generation += 1
             self.reconnects += 1
-            print(f"[crib] DuckDB server session re-established ({self._uri})",
-                  file=sys.stderr)
+            print(
+                f"[crib] DuckDB server session re-established ({self._uri})",
+                file=sys.stderr,
+            )
 
     def _call(self, op: Callable[..., Any], *args: Any) -> Any:
         generation = self._generation
@@ -335,10 +332,14 @@ class QuackStore(DuckDBStore):
     def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
         return self._call(super().item_hashes, where)
 
-    def facet_values(self, where: dict[str, Any], fields: list[str]) -> list[dict[str, Any]]:
+    def facet_values(
+        self, where: dict[str, Any], fields: list[str]
+    ) -> list[dict[str, Any]]:
         return self._call(super().facet_values, where, fields)
 
-    def file_stamps(self, facet: str, project: str) -> dict[str, tuple[int, int, list[str]]]:
+    def file_stamps(
+        self, facet: str, project: str
+    ) -> dict[str, tuple[int, int, list[str]]]:
         return self._call(super().file_stamps, facet, project)
 
     def replace_files(
@@ -399,8 +400,11 @@ class QuackStore(DuckDBStore):
         self._call(super().checkpoint)
 
     def stats(self) -> dict[str, Any]:
-        return {**self._call(super().stats), "server": self._uri,
-                "reconnects": self.reconnects}
+        return {
+            **self._call(super().stats),
+            "server": self._uri,
+            "reconnects": self.reconnects,
+        }
 
     def count(self, where: dict[str, Any], relpath_prefix: str = "") -> int:
         return self._call(super().count, where, relpath_prefix)
@@ -419,15 +423,6 @@ class QuackStore(DuckDBStore):
 
     def ec_put(self, model: str, rows: list[tuple[str, list[float]]]) -> None:
         self._call(super().ec_put, model, rows)
-
-    def rc_load(self, key: str) -> dict[str, tuple[int, int, str]]:
-        return self._call(super().rc_load, key)
-
-    def rc_put(self, key: str, rows: list[tuple[str, int, int, str]]) -> None:
-        self._call(super().rc_put, key, rows)
-
-    def rc_delete(self, key: str, names: list[str]) -> None:
-        self._call(super().rc_delete, key, names)
 
     def ledger_rows(self, purpose: str, targets: list[str]) -> dict[str, Any]:
         return self._call(super().ledger_rows, purpose, targets)

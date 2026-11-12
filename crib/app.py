@@ -25,7 +25,7 @@ from .chunk import CHUNK_SCHEMA_VERSION, kinds_in, pillar_of, section_key, secti
 from .claudemem import MemoryBindings
 from .codeindexer import CodeIndexer
 from .codequery import CodeQuery
-from .codestore import CodeStore, StoreCode, _ResidentCode
+from .codestore import CodeStore, StoreCode
 from .codestore import format_sweep
 from .config import Config, CribLink, ProjectConfig, portable_path, resolve_project
 from .designs import Designs
@@ -251,7 +251,8 @@ class Crib:
         # Crib-owned callables it can't own: a ref's resident cache (carries the
         # pipeline revalidate hook) and nested-.crib boundary detection (shared with
         # code enumeration). Crib keeps delegators (below) for its many callers.
-        self.refs = Refs(paths, self._store_code, self._nested_project_roots)
+        self.refs = Refs(paths, self._store_code, self._nested_project_roots,
+                         self.code.view)
         # The project-layer surface the indexing pipeline depends on — narrow deps
         # (refs + code + config for resolution/ref-context, plus two injected callables
         # for enumeration + watcher registration). No back-reference to Crib.
@@ -273,11 +274,6 @@ class Crib:
 
         self.ledger = for_store(store)
         self.indexer.set_ledger(self.ledger)
-        # Parsed derived-index records (crib.recordcache), backed by the same
-        # database, so a fresh daemon doesn't re-parse every TOML.
-        from . import recordcache
-
-        recordcache.attach(store)
         # In-flight project_index JOBS (proj → {task, crib_at}): the join-don't-
         # restart registry. A re-invoke while a sweep runs awaits the existing task
         # instead of racing a second one — the zero-reset counter bug, fixed at the
@@ -290,7 +286,8 @@ class Crib:
         self.relocate_jobs: dict[str, dict[str, Any]] = {}
         # Durable symbol learnings, over refs + their own pillar store.
         # Crib keeps resolve_project + delegate public wrappers (learning_add/…).
-        self.learnings = Learnings(paths, self.refs, self.learningstore)
+        self.learnings = Learnings(paths, self.refs, self.learningstore,
+                                   self.code.records)
         # Design decisions + plan items (notes under design/ and plans/) and the
         # dependency graph over them. Same shape: Crib resolves, Designs executes.
         self.designs = Designs(paths, self.designstore, self.planstore, self.notestore)
@@ -519,7 +516,7 @@ class Crib:
                 if root is None:
                     continue
                 hashes: dict[str, str] = {}
-                for e in si.all():
+                for e in self.code.records(name):
                     if (
                         e.get("content_hash")
                         and not e.get("description")
@@ -1173,7 +1170,7 @@ class Crib:
             files = sorted(
                 {
                     e["file"]
-                    for e in store.all()
+                    for e in self.code.records(proj)
                     if e.get("file") and not e.get("content_hash")
                 }
             )
@@ -1708,28 +1705,12 @@ class Crib:
         cw = self._code_watcher
         return cw is not None and cw.watches(proj)
 
-    def _dir_sig(self, proj: str) -> tuple[int, int]:
-        return self.code.dir_sig(proj)
-
-    def _code_tok(self, proj: str) -> tuple[str, Any]:
-        return self.code.tok(proj)
-
-    def _resident_code(self, proj: str) -> _ResidentCode:
-        return self.code.resident(
-            proj, revalidate=self._revalidate, watched=self._code_watched(proj)
-        )
-
     def _store_code(self, proj: str) -> StoreCode:
         """The project's code index as the code queries read it: from the store,
         made current first (`CodeStore.ensure`)."""
         self.code.ensure(proj, revalidate=self._revalidate,
                          watched=self._code_watched(proj))
         return StoreCode(self.store, proj)
-
-    def _reload_code(
-        self, proj: str, tok: Any, prev: _ResidentCode | None
-    ) -> _ResidentCode:
-        return self.code.reload(proj, tok, prev)
 
     def code_indexed_projects(self) -> list[dict[str, Any]]:
         """Projects that have a symbol_index, with counts — for orienting an agent
@@ -1740,7 +1721,7 @@ class Crib:
         for name in self.projects():
             si = SymbolIndex(self.paths.project_dir(name))
             if si.is_populated():
-                out.append({"project": name, "symbols": len(si.all())})
+                out.append({"project": name, "symbols": len(self.code.records(name))})
         return sorted(out, key=lambda x: -x["symbols"])
 
     def _revalidate(self, proj: str) -> None:
@@ -2831,7 +2812,7 @@ class Crib:
         mirrors_dropped = (
             self.memory_bindings.drop_project(proj) if drop_bindings else []
         )
-        self.code.cache.pop(proj, None)
+        self.code.forget(proj)
         self._bump_code_epoch(proj)
         if self._describe_q is not None:
             self._describe_q.drop_project(proj)
@@ -3600,7 +3581,6 @@ class Crib:
             old_si_root is None or not old_si_root.exists()
         ):
             symbol_index.set_source_root(new_root)
-            self.code.cache.pop(old, None)
             self._bump_code_epoch(old)
             if self._code_watcher is not None:
                 self._code_watcher.watch_root(old, new_root)  # re-point
@@ -4134,7 +4114,7 @@ class Crib:
 
         proj = self.resolve_project(project, cwd)
         si = SymbolIndex(self.paths.project_dir(proj))
-        entries = si.all()
+        entries = self.code.records(proj)
         link = CribLink.find(Path(cwd)) if cwd else None
         srcs = self._source_roots(proj).all()
         doc_count = self.store.count({"project": proj, "kind": "doc"})
@@ -4276,9 +4256,7 @@ class Crib:
         removed = len(list(si_root.glob("*.toml"))) if si_root.exists() else 0
         if si_root.exists():
             shutil.rmtree(si_root)
-        self.code.cache.pop(
-            proj, None
-        )  # drop resident cache (trust-mode won't see rmtree)
+        self.code.forget(proj)  # its items (trust mode won't see the rmtree)
         self._bump_code_epoch(proj)
         # In-situ docs are index-only (source is master) — drop their chunks + the
         # source registry too; re-runnable via `project index`.

@@ -24,6 +24,7 @@ from __future__ import annotations
 import contextlib
 import json
 import random
+import re
 import threading
 import time
 from collections.abc import Callable, Iterator, Sequence
@@ -40,21 +41,22 @@ TABLE = "crib_chunks"
 # The generation ledger (crib.genledger): beside the chunks, NOT part of them, so a
 # vector rebuild (recreate) keeps it.
 LEDGER = "crib_gen_ledger"
-# The derived-index record cache (crib.recordcache): parsed TOML records keyed by
-# tier directory + filename + (mtime, size). Like the ledger, outside crib_chunks.
-RECORD_CACHE = "crib_record_cache"
+# Tables an older crib made and this one no longer does: dropped at open.
+# crib_record_cache held parsed symbol records; the symbol items replaced it.
+_RETIRED_TABLES = ("crib_record_cache",)
+_RETIRED_META = ("record_format",)
 # The embedding cache (crib.embedcache): text hash -> vector per model; plain
 # vectors, no index (search builds what it needs in memory).
 EMBED_CACHE = "crib_embed_cache"
 # Versions and identities the rest of the file depends on: schema_version (bump it
 # when any table's layout changes; a mismatch drops every crib table, since all
-# of them are rebuildable), record_format (crib.recordcache's parse output) and
-# embed_model (which embedder wrote crib_chunks; see `Crib._maybe_recreate_for_dim`).
+# of them are rebuildable) and embed_model (which embedder wrote crib_chunks; see `Crib._maybe_recreate_for_dim`).
 META = "crib_meta"
 # 2: crib_chunks' `store` column is `kind`; 3: crib_items and the facet tables;
 # 4: crib_chunks' `item_id` column (the item a chunk belongs to); 5: crib_edges;
-# 6: crib_postings; 7: crib_files and crib_items.embed_text
-SCHEMA_VERSION = "7"
+# 6: crib_postings; 7: crib_files and crib_items.embed_text; 8: the symbol
+# facet's legacy `fqname`
+SCHEMA_VERSION = "8"
 # An item's lexical postings (crib.items.Item.terms), replaced with the item.
 POSTINGS = "crib_postings"
 # Links between items (crib.items.Edge), replaced with their source item.
@@ -84,8 +86,6 @@ _FACET_TABLES = MappingProxyType(
 _FIXED_TABLES = MappingProxyType(
     {
         EMBED_CACHE: "model VARCHAR, h VARCHAR, vec FLOAT[], PRIMARY KEY (model, h)",
-        RECORD_CACHE: "key VARCHAR, name VARCHAR, mtime_ns BIGINT, size BIGINT, "
-        "rec VARCHAR, PRIMARY KEY (key, name)",
         LEDGER: "purpose VARCHAR, target VARCHAR, input_hash VARCHAR, "
         "provider VARCHAR, attempts INTEGER, last_error VARCHAR, "
         "last_attempt DOUBLE, next_retry DOUBLE, PRIMARY KEY (purpose, target)",
@@ -253,8 +253,28 @@ class _Bound:
         return self._cur.execute(sql, list(params)).fetchall()
 
     def run_many(self, sql: str, rows: list[list[Any]]) -> None:
-        # pi-lens-ignore: python-sql-injection
-        self._cur.executemany(sql, rows)
+        """`sql` once per row. An `INSERT … VALUES (?, …)` runs as multi-row
+        statements, `_ROWS_PER_STATEMENT` rows at a time, still bound: DuckDB's
+        executemany goes row by row (about 5x slower on a cold symbol refresh)."""
+        m = _VALUES_TAIL.match(sql)
+        if m is None:
+            # pi-lens-ignore: python-sql-injection
+            self._cur.executemany(sql, rows)
+            return
+        head, group = m["head"], m["group"]
+        for start in range(0, len(rows), _ROWS_PER_STATEMENT):
+            batch = rows[start : start + _ROWS_PER_STATEMENT]
+            # pi-lens-ignore: python-sql-injection
+            self._cur.execute(head + ", ".join([group] * len(batch)),
+                              [v for row in batch for v in row])
+
+
+# An INSERT whose tail is one `VALUES (?, …)` group: both executors batch it
+# into multi-row statements (bound here, rendered as literals over Quack).
+_VALUES_TAIL = re.compile(
+    r"^(?P<head>.*\bVALUES\s*)(?P<group>\(\s*\?(?:\s*,\s*\?)*\s*\))\s*$", re.S
+)
+_ROWS_PER_STATEMENT = 200
 
 
 # DuckDB's concurrency is optimistic: when two transactions touch the same rows
@@ -517,9 +537,8 @@ class DuckDBStore:
 
         A file from before crib_meta existed is adopted as version 1, the layout
         it already has. A different schema_version drops every crib table (all
-        rebuildable caches); a different record_format empties the record
-        cache, whose rows hold the old parse."""
-        from .recordcache import RECORD_FORMAT
+        rebuildable caches). Tables and keys an older crib made and this one
+        no longer uses are dropped."""
 
         def prepare(ex: Any) -> None:
             ex.run(
@@ -531,16 +550,15 @@ class DuckDBStore:
                     ex.run(f"DROP TABLE IF EXISTS {table}")
                 ex.run(f"DELETE FROM {META}")
                 meta = {}
+            for table in _RETIRED_TABLES:
+                ex.run(f"DROP TABLE IF EXISTS {table}")
+            for key in _RETIRED_META:
+                if key in meta:
+                    ex.run(f"DELETE FROM {META} WHERE key = ?", [key])
             for table, columns in _FIXED_TABLES.items():
                 ex.run(f"CREATE TABLE IF NOT EXISTS {table} ({columns})")
-            if meta.get("record_format", RECORD_FORMAT) != RECORD_FORMAT:
-                ex.run(f"DELETE FROM {RECORD_CACHE}")
-            for key, value in (
-                ("schema_version", SCHEMA_VERSION),
-                ("record_format", RECORD_FORMAT),
-            ):
-                if meta.get(key) != value:
-                    _put_meta(ex, key, value)
+            if meta.get("schema_version") != SCHEMA_VERSION:
+                _put_meta(ex, "schema_version", SCHEMA_VERSION)
             _backfill_labels(self, ex)
 
         self._transaction(prepare)
@@ -556,7 +574,7 @@ class DuckDBStore:
         with self._reading() as ex:
             tables = {t for (t,) in ex.run("SELECT table_name FROM duckdb_tables()")}
             rows = {}
-            for table in (TABLE, EMBED_CACHE, RECORD_CACHE, LEDGER):
+            for table in (TABLE, EMBED_CACHE, LEDGER, ITEMS, FILES):
                 if table in tables:
                     # pi-lens-ignore: python-sql-injection
                     ((n,),) = ex.run(f"SELECT count(*) FROM {table}")
@@ -1088,46 +1106,6 @@ class DuckDBStore:
             )
             # pi-lens-ignore: python-sql-injection
             ex.run_many(f"INSERT INTO {EMBED_CACHE} VALUES (?, ?, ?)", data)
-
-        self._transaction(write)
-
-    # ── the derived-index record cache (crib.recordcache) ────────────────────
-
-    def rc_load(self, key: str) -> dict[str, tuple[int, int, str]]:
-        with self._reading() as ex:
-            # pi-lens-ignore: python-sql-injection
-            rows = ex.run(
-                f"SELECT name, mtime_ns, size, rec FROM {RECORD_CACHE} WHERE key = ?",
-                [key],
-            )
-        return {n: (int(m), int(s), r) for n, m, s, r in rows}
-
-    def rc_put(self, key: str, rows: list[tuple[str, int, int, str]]) -> None:
-        if not rows:
-            return
-        data = [[key, n, int(m), int(s), r] for n, m, s, r in rows]
-
-        def write(ex: Any) -> None:
-            # pi-lens-ignore: python-sql-injection
-            ex.run(
-                f"DELETE FROM {RECORD_CACHE} WHERE key = ? AND name = ANY(?)",
-                [key, [r[0] for r in rows]],
-            )
-            # pi-lens-ignore: python-sql-injection
-            ex.run_many(f"INSERT INTO {RECORD_CACHE} VALUES (?, ?, ?, ?, ?)", data)
-
-        self._transaction(write)
-
-    def rc_delete(self, key: str, names: list[str]) -> None:
-        if not names:
-            return
-
-        def write(ex: Any) -> None:
-            # pi-lens-ignore: python-sql-injection
-            ex.run(
-                f"DELETE FROM {RECORD_CACHE} WHERE key = ? AND name = ANY(?)",
-                [key, list(names)],
-            )
 
         self._transaction(write)
 

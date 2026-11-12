@@ -88,9 +88,12 @@ class Refs:
         paths: Paths,
         resident: Callable[[str], StoreCode],
         nested_roots: Callable[[Path], list[Path]],
+        view: Callable[[str], StoreCode] | None = None,
     ) -> None:
         self.paths = paths
         self._resident = resident  # (proj) → StoreCode  (Crib-owned)
+        # (proj) → StoreCode refreshed from the records, without the source gate
+        self._view = view
         self._nested_roots = nested_roots  # (root) → [nested .crib dirs]  (Crib-owned)
 
     def project_refs(self, proj: str) -> list[dict[str, Any]]:
@@ -186,11 +189,12 @@ class Refs:
         from .codequery import check_query  # lazy: one message for one boundary
 
         check_query(symbol, "symbol")
-        matches = (
-            rc.by_fqname(symbol)
-            if rc is not None
-            else SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol)
-        )
+        if rc is not None:
+            matches = rc.by_fqname(symbol)
+        elif self._view is not None:
+            matches = self._view(proj).by_fqname(symbol)
+        else:
+            matches = SymbolIndex(self.paths.project_dir(proj)).by_fqname(symbol)
         if not matches:
             raise UnknownSymbol(
                 f"unknown symbol {symbol!r} in project {proj!r} — "

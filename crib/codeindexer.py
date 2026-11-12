@@ -287,7 +287,7 @@ class CodeIndexer:
         # state, and the converter's own filter resolves it. Writing one current-shape
         # entry into such a store adds one more converted record, which is progress.
         if prior is None:  # no slice supplied — read this file's
-            prior = [e for e in store.all() if e.get("file") == rel]
+            prior = [e for e in self.code.records(proj) if e.get("file") == rel]
         # Keyed by the identity PARTS, so this lookup never has to know how a symbol is
         # spelled — and therefore cannot miss against a half-converted store.
         by_parts = {_parts(e): e for e in prior}
@@ -432,7 +432,7 @@ class CodeIndexer:
             elif vanished:
                 withheld = self._withhold_deletions(store, vanished)
             if patch_edges:
-                self.code.patch_edges(store, entries, rel)
+                self.code.patch_edges(store, entries, rel, proj)
         self.services.register_code_root(proj, root)  # live-watch this repo's source
         self.code.bump_epoch(proj)  # invalidate the resident cache
         if defer and stale and (q := self._describe_q) is not None:
@@ -575,7 +575,7 @@ class CodeIndexer:
         # (twice — the vanished set and the deletion gate), so it moved the
         # O(files × symbols) off disk rather than removing it.
         prior_by_file: dict[str, list[dict]] = {}
-        for _e in SymbolIndex(self.paths.project_dir(proj)).all():
+        for _e in self.code.records(proj):
             prior_by_file.setdefault(str(_e.get("file") or ""), []).append(_e)
         # Index files CONCURRENTLY, bounded by [generate].concurrency (same default as
         # the notes describe path). The per-file describe is a network-bound LLM call

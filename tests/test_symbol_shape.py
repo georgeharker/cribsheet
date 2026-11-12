@@ -186,36 +186,33 @@ def test_no_module_but_symbols_knows_how_a_symbol_is_spelled(pattern, what):
     assert not offenders, f"{what} outside symbols.py: {offenders}"
 
 
-def test_a_read_verb_never_mutates_the_resident_cache():
-    """Entries from the resident cache are the CALLER's. `code_xref` stamps a
-    project onto them, `learnings.attach` adds the pinned note, `code_dossier`
-    structures the edge lists — all in place. While those writes were idempotent it
-    only smelled; the moment one changed a field's TYPE, the next reader in the
-    process got a list it could not decode twice."""
-    from crib.codestore import _ResidentCode
+def test_a_read_verb_never_mutates_what_the_next_reader_gets():
+    """Entries a read hands out are the CALLER's. `code_xref` stamps a project
+    onto them, `learnings.attach` adds the pinned note, `code_dossier` structures
+    the edge lists — all in place. While those writes were idempotent it only
+    smelled; the moment one changed a field's TYPE, the next reader in the process
+    got a list it could not decode twice."""
+    from crib.codestore import StoreCode
+    from crib.items import symbol_item
+    from crib.store import InMemoryStore
+    from crib.symbols import symbol_ref
 
-    entries = [
-        {
-            "fqname": "a.b",
-            "name": "b",
-            "file": "a.py",
-            "lang": "python",
-            "calls": ["c [a.py]"],
-            "description": "",
-        }
-    ]
-    rc = _ResidentCode(tok=1, entries=entries, emb={})
-    got = rc.by_fqname("b")
-    got[0]["project"] = "somewhere"
-    got[0]["calls"] = [{"symbol": "a.c"}]
-    assert entries[0] == {
-        "fqname": "a.b",
+    entry = {
         "name": "b",
         "file": "a.py",
         "lang": "python",
+        "container": [],
         "calls": ["c [a.py]"],
         "description": "",
     }
+    entry["symbol_ref"] = symbol_ref("a.py", [], "b", "python")
+    store = InMemoryStore()
+    store.apply([], [], {}, [symbol_item("p", entry)])
+    got = StoreCode(store, "p").by_fqname("b")
+    got[0]["project"] = "somewhere"
+    got[0]["calls"] = [{"symbol": "a.c"}]
+    again = StoreCode(store, "p").by_fqname("b")
+    assert "project" not in again[0] and again[0]["calls"] == ["c [a.py]"]
 
 
 def test_only_the_full_sweep_stamps_the_store():
