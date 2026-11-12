@@ -30,6 +30,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import contextlib
+import datetime
 import json
 import math
 import os
@@ -233,6 +234,10 @@ def _normalize(value: Any, work: str) -> Any:
     if isinstance(value, float):
         return None if math.isnan(value) else round(value, 4)
     if isinstance(value, str):
+        # a date a write stamped today: the two builds run minutes apart, and a
+        # run that crosses midnight would otherwise differ on every one
+        if value == datetime.date.today().isoformat():
+            return "<TODAY>"
         return value.replace(work, "<WORK>")
     return value
 

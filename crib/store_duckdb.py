@@ -53,8 +53,8 @@ EMBED_CACHE = "crib_embed_cache"
 META = "crib_meta"
 # 2: crib_chunks' `store` column is `kind`; 3: crib_items and the facet tables;
 # 4: crib_chunks' `item_id` column (the item a chunk belongs to); 5: crib_edges;
-# 6: crib_postings
-SCHEMA_VERSION = "6"
+# 6: crib_postings; 7: crib_files and crib_items.embed_text
+SCHEMA_VERSION = "7"
 # An item's lexical postings (crib.items.Item.terms), replaced with the item.
 POSTINGS = "crib_postings"
 # Links between items (crib.items.Edge), replaced with their source item.
@@ -72,7 +72,11 @@ _ITEM_COLUMNS = (
     "content_hash",
     "title_vec",
     "body_vec",
+    "embed_text",
 )
+# Per facet and file: what the file's stamp was when it was last mapped into the
+# store, and the items it produced (crib.filesync). Change detection, nothing more.
+FILES = "crib_files"
 _FACET_TABLES = MappingProxyType(
     {kind: (facet_table(kind), tuple(fields)) for kind, fields in FACETS.items()}
 )
@@ -89,7 +93,9 @@ _FIXED_TABLES = MappingProxyType(
         POSTINGS: "item_id VARCHAR, term VARCHAR, tf DOUBLE",
         ITEMS: "id VARCHAR PRIMARY KEY, kind VARCHAR, project VARCHAR, "
         "relpath VARCHAR, title VARCHAR, content_hash VARCHAR, "
-        "title_vec FLOAT[], body_vec FLOAT[]",
+        "title_vec FLOAT[], body_vec FLOAT[], embed_text VARCHAR",
+        FILES: "facet VARCHAR, project VARCHAR, file VARCHAR, mtime_ns BIGINT, "
+        "size BIGINT, item_ids VARCHAR[], PRIMARY KEY (facet, project, file)",
         **{
             facet_table(kind): "id VARCHAR PRIMARY KEY, "
             + ", ".join(f"{name} {sqltype}" for name, sqltype in fields.items())
@@ -296,6 +302,31 @@ def _item_clause(where: dict[str, Any]) -> tuple[str, list[Any]]:
     return ((" WHERE " + " AND ".join(conds)) if conds else ""), params
 
 
+def _carry_vectors_step(items: list[Item]) -> Callable[[Any], None]:
+    """Before items are rewritten: a new row with no body vector, whose
+    embed_text is unchanged from the stored row, keeps the stored vector. (The
+    vector step only ever embeds text that changed.) Mutates `items` in place."""
+
+    def run(ex: Any) -> None:
+        from dataclasses import replace
+
+        want = [it.id for it in items if it.body_vec is None and it.embed_text]
+        if not want:
+            return
+        # pi-lens-ignore: python-sql-injection
+        old = {i: (t, v) for i, t, v in ex.run(
+            f"SELECT id, embed_text, body_vec FROM {ITEMS} WHERE id = ANY(?) "
+            "AND body_vec IS NOT NULL",
+            [want],
+        )}
+        for n, it in enumerate(items):
+            o = old.get(it.id)
+            if o is not None and it.body_vec is None and o[0] == it.embed_text:
+                items[n] = replace(it, body_vec=[float(x) for x in o[1]])
+
+    return run
+
+
 def _delete_items_step(ids: list[str]) -> Callable[[Any], None]:
     def write(ex: Any) -> None:
         for table in (ITEMS, *(t for t, _ in _FACET_TABLES.values())):
@@ -310,23 +341,27 @@ def _delete_items_step(ids: list[str]) -> Callable[[Any], None]:
 
 
 def _insert_items_step(items: list[Item]) -> Callable[[Any], None]:
-    core = [
-        [
-            it.id,
-            it.kind,
-            it.project,
-            it.relpath,
-            it.title,
-            it.content_hash,
-            [float(x) for x in it.title_vec] if it.title_vec is not None else None,
-            [float(x) for x in it.body_vec] if it.body_vec is not None else None,
-        ]
-        for it in items
-    ]
+    """Insert `items`. The rows are built when the step RUNS, not when it is
+    made: `_carry_vectors_step`, earlier in the same transaction, may have just
+    filled body vectors into the list."""
 
     def write(ex: Any) -> None:
+        core = [
+            [
+                it.id,
+                it.kind,
+                it.project,
+                it.relpath,
+                it.title,
+                it.content_hash,
+                [float(x) for x in it.title_vec] if it.title_vec is not None else None,
+                [float(x) for x in it.body_vec] if it.body_vec is not None else None,
+                it.embed_text,
+            ]
+            for it in items
+        ]
         # pi-lens-ignore: python-sql-injection
-        ex.run_many(f"INSERT INTO {ITEMS} VALUES (?, ?, ?, ?, ?, ?, ?, ?)", core)
+        ex.run_many(f"INSERT INTO {ITEMS} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", core)
         for kind, (table, fields) in _FACET_TABLES.items():
             rows = [
                 [it.id, *(it.facet.get(f) for f in fields)]
@@ -641,6 +676,24 @@ class DuckDBStore:
         as ONE transaction: a note write never leaves its new chunks beside its
         stale ones (or an item row that disagrees with them), and over Quack it
         costs one BEGIN/COMMIT instead of several."""
+        steps = self._apply_steps(records, deletes, meta, items, item_deletes)
+        if not steps:
+            return
+
+        def write(ex: Any) -> None:
+            for step in steps:
+                step(ex)
+
+        self._transaction(write)
+
+    def _apply_steps(
+        self,
+        records: list[Record],
+        deletes: list[str],
+        meta: dict[str, dict[str, Any]],
+        items: list[Item] | None,
+        item_deletes: list[str] | None,
+    ) -> list[Callable[[Any], None]]:
         steps: list[Callable[[Any], None]] = []
         if records:
             steps.append(_upsert_step(self, records))
@@ -654,19 +707,71 @@ class DuckDBStore:
             steps.append(delete)
         if meta:
             steps.append(_set_meta_step(self, meta))
-        drop = list(item_deletes or ()) + [it.id for it in items or ()]
+        holder = list(items or ())
+        if holder:
+            steps.append(_carry_vectors_step(holder))
+        drop = list(item_deletes or ()) + [it.id for it in holder]
         if drop:
             steps.append(_delete_items_step(drop))
-        if items:
-            steps.append(_insert_items_step(list(items)))
-        if not steps:
+        if holder:
+            steps.append(_insert_items_step(holder))
+        return steps
+
+    # ── per-file change detection (crib.filesync) ────────────────────────────
+
+    def file_stamps(self, facet: str, project: str) -> dict[str, tuple[int, int, list[str]]]:
+        with self._reading() as ex:
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(
+                f"SELECT file, mtime_ns, size, item_ids FROM {FILES} "
+                "WHERE facet = ? AND project = ?",
+                [facet, project],
+            )
+        return {f: (int(m), int(z), list(ids or [])) for f, m, z, ids in rows}
+
+    def replace_files(
+        self,
+        facet: str,
+        project: str,
+        files: list[tuple[str, int, int, list[Item]]],
+        removed: list[str],
+    ) -> None:
+        if not files and not removed:
             return
+        names = [f for f, *_ in files] + list(removed)
+        new_items = [it for *_, its in files for it in its]
 
         def write(ex: Any) -> None:
-            for step in steps:
+            # pi-lens-ignore: python-sql-injection
+            old = ex.run(
+                f"SELECT item_ids FROM {FILES} WHERE facet = ? AND project = ? "
+                "AND file = ANY(?)",
+                [facet, project, names],
+            )
+            stale = sorted({i for (ids,) in old for i in (ids or [])})
+            for step in self._apply_steps([], [], {}, new_items, stale):
                 step(ex)
+            # pi-lens-ignore: python-sql-injection
+            ex.run(
+                f"DELETE FROM {FILES} WHERE facet = ? AND project = ? AND file = ANY(?)",
+                [facet, project, names],
+            )
+            rows = [[facet, project, f, int(m), int(z), [it.id for it in its]]
+                    for f, m, z, its in files]
+            if rows:
+                # pi-lens-ignore: python-sql-injection
+                ex.run_many(f"INSERT INTO {FILES} VALUES (?, ?, ?, ?, ?, ?)", rows)
 
         self._transaction(write)
+
+    def missing_body_vectors(self, where: dict[str, Any]) -> dict[str, str]:
+        clause, params = _item_clause(where)
+        clause += ((" AND " if clause else " WHERE ")
+                   + "i.embed_text IS NOT NULL AND i.body_vec IS NULL")
+        with self._reading() as ex:
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(f"SELECT i.id, i.embed_text FROM {ITEMS} i{clause}", params)
+        return dict(rows)
 
     # ── reads ────────────────────────────────────────────────────────────────
 
@@ -894,6 +999,7 @@ class DuckDBStore:
                 content_hash=r[5],
                 title_vec=[float(x) for x in r[6]] if r[6] is not None else None,
                 body_vec=[float(x) for x in r[7]] if r[7] is not None else None,
+                embed_text=r[8],
                 facet=facets.get(i, {}),
                 edges=tuple(edges_of.get(i, ())),
             )

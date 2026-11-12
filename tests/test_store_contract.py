@@ -698,3 +698,50 @@ def test_body_vectors_fill_lazily_and_rank_by_inner_product(backend):
     assert got[0][1] == pytest.approx(1.0, abs=1e-6)
     assert s.body_vectors(["a", "c", "zz"]).keys() == {"a"}
     assert s.items({"id": "b"})["b"].title == "title b"  # other fields untouched
+
+
+# ── per-file replace (crib.filesync) ─────────────────────────────────────────
+
+
+def test_replace_files_maps_each_file_to_exactly_its_rows(backend):
+    from dataclasses import replace
+
+    s = backend.store
+    a1, a2, b1 = _item("a1"), _item("a2"), _item("b1")
+    s.replace_files(
+        "f", "p", [("a.toml", 1, 10, [a1, a2]), ("b.toml", 2, 20, [b1])], []
+    )
+    assert s.file_stamps("f", "p") == {
+        "a.toml": (1, 10, ["a1", "a2"]),
+        "b.toml": (2, 20, ["b1"]),
+    }
+    # a.toml changed: now yields only a3; its old rows go, b.toml's stay
+    a3 = replace(_item("a3"))
+    s.replace_files("f", "p", [("a.toml", 3, 11, [a3])], [])
+    assert set(s.items({"project": "p"})) == {"a3", "b1"}
+    # b.toml vanished
+    s.replace_files("f", "p", [], ["b.toml"])
+    assert set(s.items({"project": "p"})) == {"a3"}
+    assert s.file_stamps("f", "p") == {"a.toml": (3, 11, ["a3"])}
+    assert s.file_stamps("other", "p") == {}  # facets are separate
+
+
+def test_a_rewrite_keeps_the_vector_while_the_embed_text_is_unchanged(backend):
+    from dataclasses import replace
+
+    s = backend.store
+    it = replace(_item("x", tv=None, bv=None), embed_text="does x")
+    s.replace_files("f", "p", [("x.toml", 1, 1, [it])], [])
+    assert s.missing_body_vectors({"project": "p"}) == {"x": "does x"}
+    s.set_body_vectors({"x": X})
+    assert s.missing_body_vectors({"project": "p"}) == {}
+    # same text, other fields changed: the vector carries over
+    s.replace_files("f", "p", [("x.toml", 2, 2, [replace(it, title="renamed")])], [])
+    got = s.items({"id": "x"})["x"]
+    assert got.title == "renamed" and got.body_vec == pytest.approx(X)
+    # new text: the vector goes, and the step will embed it again
+    s.replace_files(
+        "f", "p", [("x.toml", 3, 3, [replace(it, embed_text="does more")])], []
+    )
+    assert s.items({"id": "x"})["x"].body_vec is None
+    assert s.missing_body_vectors({"project": "p"}) == {"x": "does more"}

@@ -1,8 +1,8 @@
 """Code symbols mirrored into the store as items, with their edges.
 
-The resident code index re-parses symbol_index whenever it changes; the same
-pass brings the store's `symbol` items (and calls / references / member_of
-edges) into line with the records."""
+The symbol facet's refresh (CodeStore.refresh) maps the record files that
+changed since the store last saw them into `symbol` items (and calls /
+references / member_of edges); a vanished record's item goes."""
 
 from __future__ import annotations
 
@@ -69,33 +69,33 @@ def test_symbols_become_items_with_their_edges(crib):
         references=["helper [util.py]"],
     )
     _sym(crib, "helper", "util.py", called_by=["spin [app.py]"])
-    crib._resident_code("p")
+    crib.code.refresh("p")
     items = crib.store.items({"project": "p", "kind": "symbol"})
     assert set(items) == {
-        f"symbol:{e['symbol_ref']}"
+        f"symbol:p:{e['symbol_ref']}"
         for e in (cls, meth, {"symbol_ref": "util.py#helper"})
     }
-    m = items[f"symbol:{meth['symbol_ref']}"]
+    m = items[f"symbol:p:{meth['symbol_ref']}"]
     assert m.facet["fqn"] == meth["fqn"] and m.facet["description"] == "does spin"
     assert m.relpath == "app.py" and m.title == meth["fqn"]
     edges = {(dst, k) for _s, dst, k, _h in crib.store.edges({"src": m.id})}
     assert edges == {
         ("helper [util.py]", "calls"),
         ("helper [util.py]", "references"),
-        (f"symbol:{cls['symbol_ref']}", "member_of"),
+        (f"symbol:p:{cls['symbol_ref']}", "member_of"),
     }
 
 
-def test_a_changed_or_removed_record_is_mirrored_on_the_next_reload(crib):
+def test_a_changed_or_removed_record_is_mirrored_on_the_next_refresh(crib):
     _sym(crib, "keep", "a.py")
     gone = _sym(crib, "gone", "a.py")
-    crib._resident_code("p")
+    crib.code.refresh("p")
     _sym(crib, "keep", "a.py", description="does keep, revised")
     SymbolIndex(crib.paths.project_dir("p")).delete(gone["symbol_ref"])
-    crib.code.reload("p", crib.code.tok("p"), None)
+    crib.code.refresh("p")
     items = crib.store.items({"project": "p", "kind": "symbol"})
-    assert set(items) == {"symbol:a.py#keep"}
-    assert items["symbol:a.py#keep"].facet["description"] == "does keep, revised"
+    assert set(items) == {"symbol:p:a.py#keep"}
+    assert items["symbol:p:a.py#keep"].facet["description"] == "does keep, revised"
 
 
 def test_store_postings_score_exactly_like_the_resident_bm25(crib):
@@ -116,6 +116,7 @@ def test_store_postings_score_exactly_like_the_resident_bm25(crib):
     _sym(crib, "render_page", "web.py", keywords=["render html page", "template"])
     _sym(crib, "helper", "util.py", description="", keywords=[], name_terms=[])
     rc = crib._resident_code("p")
+    crib.code.refresh("p")
     for query in (
         "parse config file",
         "render template page",
@@ -126,7 +127,7 @@ def test_store_postings_score_exactly_like_the_resident_bm25(crib):
         resident = {rc.lk_ids[i]: s for i, s in enumerate(rc.bm25.scores(qt)) if s > 0}
         stats = crib.store.postings({"project": "p", "kind": "symbol"}, qt)
         stored = {
-            i.removeprefix("symbol:"): s
+            i.removeprefix("symbol:p:"): s
             for i, s in bm25_from_postings(stats, qt).items()
         }
         assert stored == resident, query  # exact, not approx
@@ -135,4 +136,35 @@ def test_store_postings_score_exactly_like_the_resident_bm25(crib):
         cov = coverage_from_postings(stats, Q)
         rcov = dict(zip(rc.lk_ids, rc.coverage(Q)))
         for i, c in cov.items():
-            assert c == rcov[i.removeprefix("symbol:")]
+            assert c == rcov[i.removeprefix("symbol:p:")]
+
+
+def test_concurrent_first_queries_all_see_every_symbol(crib):
+    """Several queries' first touch at once: one maps the records, the others
+    wait for it and find the stamps current (no conflicting transactions, no
+    query reading a half-mapped project)."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    names = [f"sym{i}" for i in range(40)]
+    for n in names:
+        _sym(crib, n, "m.py")
+
+    def one(n: str) -> int:
+        return len(crib.code_xref(n, project="p"))
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        assert list(pool.map(one, names)) == [1] * len(names)
+
+
+def test_the_same_symbol_ref_in_two_projects_is_two_items(crib):
+    """Vendored files give several projects one symbol_ref; each project keeps
+    its own item, whichever refreshes last."""
+    for proj in ("p", "q"):
+        e = _sym(crib, "BAND_Y", "vendored.mjs", kind="constant")
+        if proj == "q":
+            SymbolIndex(crib.paths.project_dir("q")).write(e)
+    crib.code.refresh("p")
+    crib.code.refresh("q")
+    assert set(crib.store.items({"kind": "symbol"})) == {
+        "symbol:p:vendored.mjs#BAND_Y", "symbol:q:vendored.mjs#BAND_Y"}
+    assert crib.code_xref("BAND_Y", project="p") and crib.code_xref("BAND_Y", project="q")

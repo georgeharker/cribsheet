@@ -247,11 +247,6 @@ class Crib:
         # epoch, write locks, in-flight/sweep tracking) — owned by CodeStore; the
         # methods below reach through `self.code` (codestore.py).
         self.code = CodeStore(paths, config, store, self.embedder)
-        # Every symbol record write/delete reaches the store's items in the same
-        # step (crib.codeindex.SymbolMirror).
-        from .codeindex import attach_mirror
-
-        attach_mirror(self.code)
         # Cross-project refs (.crib refs:) — resolution + edge attribution. Needs two
         # Crib-owned callables it can't own: a ref's resident cache (carries the
         # pipeline revalidate hook) and nested-.crib boundary detection (shared with
@@ -1726,9 +1721,9 @@ class Crib:
 
     def _store_code(self, proj: str) -> StoreCode:
         """The project's code index as the code queries read it: from the store,
-        made current first (`CodeStore.fresh`)."""
-        self.code.fresh(proj, revalidate=self._revalidate,
-                        watched=self._code_watched(proj))
+        made current first (`CodeStore.ensure`)."""
+        self.code.ensure(proj, revalidate=self._revalidate,
+                         watched=self._code_watched(proj))
         return StoreCode(self.store, proj)
 
     def _reload_code(

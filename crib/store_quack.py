@@ -338,6 +338,21 @@ class QuackStore(DuckDBStore):
     def facet_values(self, where: dict[str, Any], fields: list[str]) -> list[dict[str, Any]]:
         return self._call(super().facet_values, where, fields)
 
+    def file_stamps(self, facet: str, project: str) -> dict[str, tuple[int, int, list[str]]]:
+        return self._call(super().file_stamps, facet, project)
+
+    def replace_files(
+        self,
+        facet: str,
+        project: str,
+        files: list[tuple[str, int, int, list[Item]]],
+        removed: list[str],
+    ) -> None:
+        self._call(super().replace_files, facet, project, files, removed)
+
+    def missing_body_vectors(self, where: dict[str, Any]) -> dict[str, str]:
+        return self._call(super().missing_body_vectors, where)
+
     def postings(self, where: dict[str, Any], terms: list[str]) -> PostingStats:
         return self._call(super().postings, where, terms)
 

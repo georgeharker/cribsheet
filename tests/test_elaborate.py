@@ -56,6 +56,15 @@ class _DocStore:
     def facet_values(self, where: Any, fields: Any) -> list[Any]:
         return []
 
+    def file_stamps(self, facet: Any, project: Any) -> dict[str, Any]:
+        return {}
+
+    def replace_files(self, facet: Any, project: Any, files: Any, removed: Any) -> None:
+        raise AssertionError("not called in these tests")
+
+    def missing_body_vectors(self, where: Any) -> dict[str, str]:
+        return {}
+
     def postings(self, where: Any, terms: Any) -> Any:
         raise AssertionError("not called in these tests")
 

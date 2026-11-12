@@ -29,7 +29,7 @@ import time
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
-from typing import IO, Any, Protocol
+from typing import IO, Any
 from urllib.request import url2pathname
 
 from . import proc
@@ -1858,24 +1858,6 @@ beside old-shape ones and leave the project half in each.
 Mirrors CHUNK_SCHEMA_VERSION for the note store."""
 
 
-class SymbolMirror(Protocol):
-    """Told about every record write and delete, after the TOML changed: how the
-    store's symbol items follow the files in the same step (crib.codestore)."""
-
-    def mirror_write(self, project: str, entry: dict) -> None: ...
-    def mirror_delete(self, project: str, ref: str) -> None: ...
-
-
-# The process's mirror, attached once (`attach_mirror`): SymbolIndex is built in
-# many places, so the hook is module state rather than a constructor argument.
-_MIRROR: SymbolMirror | None = None
-
-
-def attach_mirror(mirror: SymbolMirror | None) -> None:
-    global _MIRROR
-    _MIRROR = mirror
-
-
 class SymbolIndex:
     """Structural store: symbol_index/<slug(symbol_ref)>.toml under the project data
     dir. The filename is the LEGIBLE munged reference of the record's own key (same
@@ -1886,7 +1868,6 @@ class SymbolIndex:
 
     def __init__(self, project_dir: Path) -> None:
         self.root = project_dir / "symbol_index"
-        self.project = project_dir.name
 
     @property
     def _schema_marker(self) -> Path:
@@ -1984,8 +1965,7 @@ class SymbolIndex:
         # the new name and unlinks the old ones below.
         names = self._names_for(entry)
         p = self.root / names[0]
-        text = _render(entry)
-        write_atomic(p, text)
+        write_atomic(p, _render(entry))
         # REWRITING IS THE MIGRATION; no separate pass. A record left under a prior
         # name would be read a SECOND time by `all()` — one symbol, two records — so
         # every name this entry used to have goes. Crash between the write and the
@@ -1994,10 +1974,6 @@ class SymbolIndex:
             q = self.root / old
             if q != p and q.exists():
                 q.unlink(missing_ok=True)
-        if _MIRROR is not None:
-            # the record as it now reads from disk (rendering adds fields), so the
-            # mirror and a later full sync see exactly the same record
-            _MIRROR.mirror_write(self.project, _parse(text))
         return p
 
     def write_all(self, entries: list[dict]) -> int:
@@ -2062,8 +2038,6 @@ class SymbolIndex:
         p = self._path(ref)
         if p.exists():
             p.unlink()
-            if _MIRROR is not None:
-                _MIRROR.mirror_delete(self.project, ref)
             return True
         return False
 

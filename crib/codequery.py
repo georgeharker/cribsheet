@@ -419,6 +419,7 @@ class CodeQuery:
             coverage_from_postings,
             tokenize,
         )
+        from .items import symbol_ref_of
         from .symbols import ref_slug
 
         # Freshness first: the resident index re-stats the records and its reload
@@ -438,7 +439,7 @@ class CodeQuery:
         def pos(item_id: str) -> str:
             # the resident order: records sorted by their FILENAME (the ref's slug
             # plus ".toml": "a.toml" sorts after "a-b.toml", the bare slugs don't)
-            return ref_slug(item_id.removeprefix("symbol:")) + ".toml"
+            return ref_slug(symbol_ref_of(item_id)) + ".toml"
 
         gated = {
             i: cov.get(i, 0.0) * s

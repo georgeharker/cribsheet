@@ -60,17 +60,19 @@ def _count_embeds(crib, monkeypatch) -> list[str]:
     return seen
 
 
-def test_a_written_record_reaches_the_store_with_its_vector_once(crib, monkeypatch):
-    """Every record write mirrors into the store in the same step, embedding
-    its description then: a lookup embeds no description, a repeat none."""
+def test_a_lookup_embeds_each_description_once(crib, monkeypatch):
+    """Writes are file I/O only; the first code query maps the new records into
+    the store and embeds their descriptions (the vector step); a repeat embeds
+    nothing, and no resident index is built."""
     seen = _count_embeds(crib, monkeypatch)
     _write(crib, "p", "pkg.alpha", "computes the alpha metric", "h_alpha")
     _write(crib, "p", "pkg.beta", "renders the beta view", "h_beta")
+    assert seen == []                                   # a write never embeds
+
+    assert crib.code_lookup("alpha metric", project="p")
     assert sorted(seen) == ["computes the alpha metric", "renders the beta view"]
     items = crib.store.items({"project": "p", "kind": "symbol"})
     assert all(it.body_vec for it in items.values())
-
-    assert crib.code_lookup("alpha metric", project="p")
     crib.code_lookup("beta view", project="p")
     assert len(seen) == 2                               # nothing re-embedded
     assert crib.code.cache == {}                        # no resident index built

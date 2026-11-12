@@ -112,6 +112,10 @@ class Item:
     # The item's lexical postings, (term, frequency), sorted: what BM25 scores it
     # on. Only search candidates have any (see crib.retrieve.code_candidate).
     terms: tuple[tuple[str, float], ...] = ()
+    # What the facet wants embedded as the body vector (a symbol's description):
+    # the vector step fills `body_vec` from it, and a rewritten row whose text did
+    # not change keeps its vector. None: nothing to embed.
+    embed_text: str | None = None
 
 
 def body_text(body: str) -> str:
@@ -200,7 +204,19 @@ def parse_sources(raw: Any) -> list[dict[str, Any]]:
     return out
 
 
-def edges_of(kind: str, fm: Mapping[str, Any]) -> tuple[Edge, ...]:
+def symbol_item_id(project: str, ref: str) -> str:
+    """A symbol's item id. The project is part of it: a symbol_ref is unique only
+    within its project (vendored files give several projects the same ref), and
+    crib_items.id is unique across the store."""
+    return f"symbol:{project}:{ref}"
+
+
+def symbol_ref_of(item_id: str) -> str:
+    """The symbol_ref inside a `symbol_item_id`."""
+    return item_id.removeprefix("symbol:").split(":", 1)[1]
+
+
+def edges_of(kind: str, fm: Mapping[str, Any], project: str = "") -> tuple[Edge, ...]:
     """The links an item's frontmatter declares (see `Edge`)."""
     out: list[Edge] = []
     checked = {str(k): str(v) for k, v in (fm.get("checked") or {}).items()}
@@ -213,7 +229,7 @@ def edges_of(kind: str, fm: Mapping[str, Any]) -> tuple[Edge, ...]:
     if by := fm.get("superseded_by"):
         out.append(Edge(str(by), "superseded_by"))
     if kind == "learning" and (ref := fm.get("symbol_ref")):
-        out.append(Edge(f"symbol:{ref}", "learns"))
+        out.append(Edge(symbol_item_id(project, str(ref)), "learns"))
     return tuple(out)
 
 
@@ -257,7 +273,7 @@ def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
     edges += [Edge(str(c), "called_by") for c in entry.get("called_by") or []]
     if container:
         parent = symbol_ref(file, container[:-1], container[-1], lang)
-        edges.append(Edge(f"symbol:{parent}", "member_of"))
+        edges.append(Edge(symbol_item_id(project, parent), "member_of"))
     from collections import Counter
 
     from .retrieve import code_candidate, code_field_terms
@@ -271,12 +287,10 @@ def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
         if code_candidate(dict(entry))
         else ()
     )
-    # Hash what the store HOLDS (facet and edges), not the dict handed in: the
-    # mirror sees the entry as written, the full sync the record parsed back from
-    # its TOML, and the two must agree on whether anything changed.
+    # Hash what the store HOLDS (facet and edges), not the dict handed in.
     stable = {"facet": facet, "edges": [(e.dst, e.kind) for e in edges]}
     return Item(
-        id=f"symbol:{ref}",
+        id=symbol_item_id(project, ref),
         kind="symbol",
         project=project,
         relpath=file,
@@ -285,6 +299,8 @@ def symbol_item(project: str, entry: Mapping[str, Any]) -> Item:
         facet=facet,
         edges=tuple(edges),
         terms=terms,
+        # a search candidate's description is what its body vector embeds
+        embed_text=(str(entry.get("description") or "") or None) if terms else None,
     )
 
 

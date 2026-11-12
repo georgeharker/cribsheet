@@ -192,7 +192,7 @@ class IndexEngine:
         return Item(id=note_id, kind=kind, project=project, relpath=relpath,
                     title=title, content_hash=item_hash(title, body),
                     facet=facet_of(kind, frontmatter),
-                    edges=edges_of(kind, frontmatter))
+                    edges=edges_of(kind, frontmatter, project))
 
     @staticmethod
     def _against(want: Item, have: Item | None) -> tuple[Item | None, bool]:

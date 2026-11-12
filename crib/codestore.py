@@ -226,9 +226,9 @@ class CodeStore:
         # read-modify-write so concurrent reindexes (watcher vs query vs explicit index)
         # can't corrupt the cross-file call graph.
         self.cache: dict[str, _ResidentCode] = {}
-        # Per project, the records' directory signature the store was last synced
-        # in full against (see `fresh`); absent = not synced in this process yet.
-        self.synced: dict[str, tuple[int, int]] = {}
+        # Per project, the write epoch at its last refresh (see `ensure`); absent
+        # = not refreshed in this process yet.
+        self.refreshed: dict[str, int] = {}
         self.epoch: dict[str, int] = {}
         # In-flight code indexing (project → files currently in the tracked indexer),
         # surfaced by `status`. Sweep progress (project → {done, total}) — a reliable
@@ -241,6 +241,11 @@ class CodeStore:
         self.indexing_lock = threading.Lock()
         self.locks: dict[str, threading.Lock] = {}
         self.locks_guard = threading.Lock()
+        # Per project, held while the store is brought in line with the records
+        # (refresh, fill_vectors): concurrent queries' first touch would otherwise
+        # each map every file and their transactions conflict. Separate from
+        # `locks` (the records' read-modify-write), which a reindex takes.
+        self.refresh_locks: dict[str, threading.RLock] = {}
 
     # --- lock + epoch + freshness ---------------------------------------------
     def lock(self, proj: str) -> threading.Lock:
@@ -249,6 +254,13 @@ class CodeStore:
             lk = self.locks.get(proj)
             if lk is None:
                 lk = self.locks[proj] = threading.Lock()
+            return lk
+
+    def refresh_lock(self, proj: str) -> threading.RLock:
+        with self.locks_guard:
+            lk = self.refresh_locks.get(proj)
+            if lk is None:
+                lk = self.refresh_locks[proj] = threading.RLock()
             return lk
 
     def bump_epoch(self, proj: str) -> None:
@@ -312,60 +324,6 @@ class CodeStore:
             return rc
         return self.reload(proj, tok, rc)
 
-    def fresh(
-        self,
-        proj: str,
-        revalidate: Callable[[str], None] | None = None,
-        watched: bool = False,
-    ) -> None:
-        """Make the store's symbol items current for `proj` before a code query
-        reads them. The source gate (`revalidate`) runs as it does for the
-        resident index. On a project's first touch in this process the records
-        are synced in full; after that, every in-process record write and delete
-        has already reached the store (`mirror_write` / `mirror_delete`), so
-        `trust` mode does nothing more and `scan` mode only re-syncs when the
-        records' directory signature moved (an outside write: a git pull)."""
-        first = proj not in self.synced
-        if revalidate is not None and (
-            first or (self.freshness() == "scan" and not watched)
-        ):
-            revalidate(proj)  # source → records freshness
-        if not first and self.freshness() == "trust":
-            return
-        sig = self.dir_sig(proj)
-        if self.synced.get(proj) == sig:
-            return
-        from .codeindex import SymbolIndex
-
-        self._sync_items(proj, SymbolIndex(self.paths.project_dir(proj)).all())
-        self.synced[proj] = sig
-
-    def mirror_write(self, project: str, entry: dict[str, Any]) -> None:
-        """One record was just written: its symbol item follows, in the same step."""
-        from .items import symbol_item
-
-        if self.store is None or not callable(getattr(self.store, "apply", None)):
-            return
-        try:
-            self.store.apply([], [], {}, self._with_vectors([symbol_item(project, entry)]))
-        except Exception as e:  # noqa: BLE001 — the TOML is written; a full sync heals it
-            import sys
-
-            self.synced.pop(project, None)  # next query re-syncs in full
-            print(f"[crib] symbol item mirror skipped for {project}: {e}", file=sys.stderr)
-
-    def mirror_delete(self, project: str, ref: str) -> None:
-        """One record was just deleted: its symbol item goes too."""
-        if self.store is None or not callable(getattr(self.store, "apply", None)):
-            return
-        try:
-            self.store.apply([], [], {}, None, [f"symbol:{ref}"])
-        except Exception as e:  # noqa: BLE001 — as above
-            import sys
-
-            self.synced.pop(project, None)
-            print(f"[crib] symbol item mirror skipped for {project}: {e}", file=sys.stderr)
-
     def reload(self, proj: str, tok: Any, prev: _ResidentCode | None) -> _ResidentCode:
         """Reparse the symbol TOMLs and rebuild the resident cache, CARRYING FORWARD
         every description embedding whose text is unchanged (from `prev.emb`, pruned to
@@ -385,49 +343,84 @@ class CodeStore:
         }
         rc = _ResidentCode(tok, entries, emb)
         self.cache[proj] = rc
-        self._sync_items(proj, entries)
         return rc
 
-    def _with_vectors(self, items: list[Any]) -> list[Any]:
-        """The symbol items with their description's vector as the body vector
-        (one embed call for every distinct new description; the embedding cache
-        answers the ones seen before). A candidate with no description has none."""
-        from dataclasses import replace
+    def refresh(self, proj: str, only: list[str] | None = None) -> None:
+        """The symbol facet's refresh: map the record files that changed since
+        the store last saw them (crib.filesync) into `symbol` items, one per
+        record, and drop the items of records that are gone, in one
+        transaction. `only` limits it to the named record files (a watcher
+        batch); otherwise the whole symbol_index directory is diffed. Only
+        changed files are parsed. Vectors are a separate step (`fill_vectors`)."""
+        with self.refresh_lock(proj):
+            self._refresh(proj, only)
 
-        texts = list(dict.fromkeys(
-            d for it in items
-            if it.terms and (d := it.facet.get("description"))
-        ))
-        if not texts or self.embedder is None:
-            return items
-        vec = dict(zip(texts, self.embedder.embed(texts)))
-        return [
-            replace(it, body_vec=list(vec[d]))
-            if it.terms and (d := it.facet.get("description")) else it
-            for it in items
-        ]
-
-    def _sync_items(self, proj: str, entries: list[dict[str, Any]]) -> None:
-        """The records were just parsed, so bring the store's symbol items (and
-        their calls / references / membership edges) into line with them in the
-        same pass: write the symbols whose record changed, drop the ones gone.
-        A store that can't be reached costs the sync, never the code query."""
-        if self.store is None or not callable(getattr(self.store, "item_hashes", None)):
-            return
+    def _refresh(self, proj: str, only: list[str] | None) -> None:
+        from .codeindex import SymbolIndex, _parse
+        from .filesync import changes
         from .items import symbol_item
 
-        try:
-            want = {it.id: it for it in (symbol_item(proj, e) for e in entries)}
-            have = self.store.item_hashes({"project": proj, "kind": "symbol"})
-            write = [it for i, it in want.items() if have.get(i) != it.content_hash]
-            write = self._with_vectors(write)
-            gone = [i for i in have if i not in want]
-            if write or gone:
-                self.store.apply([], [], {}, write, gone)
-        except Exception as e:  # noqa: BLE001 — backend boundary; the TOMLs still answer
-            import sys
+        si = SymbolIndex(self.paths.project_dir(proj))
+        ch = changes(self.store, "symbol", proj, si.root, ".toml", only)
+        if not ch:
+            return
+        files: list[tuple[str, int, int, list[Any]]] = []
+        owner: dict[str, int] = {}  # item id -> index in `files` that produced it
+        for name, (mtime, size) in sorted(ch.changed.items()):
+            try:
+                rec = _parse((si.root / name).read_text())
+            except OSError:
+                continue  # vanished after the stat: removed on the next refresh
+            items = ([symbol_item(proj, rec)]
+                     if rec.get("file") and rec.get("name") else [])
+            for it in items:
+                # two record files briefly holding one symbol (mid-conversion):
+                # the store keeps one row, the later file's
+                if it.id in owner:
+                    files[owner[it.id]][3].clear()
+                owner[it.id] = len(files)
+            files.append((name, mtime, size, items))
+        self.store.replace_files("symbol", proj, files, ch.removed)
 
-            print(f"[crib] symbol item sync skipped for {proj}: {e}", file=sys.stderr)
+    def fill_vectors(self, proj: str) -> None:
+        """The vector step: embed each symbol item's text that has no vector yet
+        (one batch of distinct texts; the embedding cache answers repeats)."""
+        if self.embedder is None:
+            return
+        with self.refresh_lock(proj):
+            missing = self.store.missing_body_vectors(
+                {"project": proj, "kind": "symbol"})
+            if not missing:
+                return
+            texts = list(dict.fromkeys(missing.values()))
+            vec = dict(zip(texts, self.embedder.embed(texts)))
+            self.store.set_body_vectors({i: list(vec[t]) for i, t in missing.items()})
+
+    def ensure(
+        self,
+        proj: str,
+        revalidate: Callable[[str], None] | None = None,
+        watched: bool = False,
+    ) -> None:
+        """Bring the store in line with the files before a code query: the source
+        gate (`revalidate`, as for the resident index), then the symbol refresh.
+        `scan` mode refreshes on every query (a directory diff; only changed
+        files are parsed); `trust` mode on first touch and after an in-process
+        write has moved the epoch."""
+        first = proj not in self.refreshed
+        if revalidate is not None and (
+            first or (self.freshness() == "scan" and not watched)
+        ):
+            revalidate(proj)  # source → records freshness
+        with self.refresh_lock(proj):
+            # re-read under the lock: a concurrent query may just have refreshed
+            epoch = self.epoch.get(proj, 0)
+            if (self.freshness() == "trust" and proj in self.refreshed
+                    and self.refreshed[proj] == epoch):
+                return
+            self.refresh(proj)
+            self.fill_vectors(proj)
+            self.refreshed[proj] = epoch
 
     def revalidate(self, proj: str, reindex: Callable[..., Any]) -> None:
         """Lazy staleness gate: stat every indexed source file; reindex any whose mtime

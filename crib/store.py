@@ -97,6 +97,29 @@ class Store(Protocol):
         kind); `vectors=False` leaves both vectors unread (None)."""
         ...
 
+    def file_stamps(self, facet: str, project: str) -> dict[str, tuple[int, int, list[str]]]:
+        """{file: (mtime_ns, size, item ids)} as last mapped by `facet` for
+        `project`: what change detection (crib.filesync) diffs against."""
+        ...
+
+    def replace_files(
+        self,
+        facet: str,
+        project: str,
+        files: list[tuple[str, int, int, list[Item]]],
+        removed: list[str],
+    ) -> None:
+        """One transaction: each `(file, mtime_ns, size, items)` now produces
+        exactly `items` (the rows its previous stamp recorded are dropped first),
+        and each `removed` file produces nothing. The facet decides the rows; the
+        store only applies them."""
+        ...
+
+    def missing_body_vectors(self, where: dict[str, Any]) -> dict[str, str]:
+        """{id: embed_text} for items matching `where` that have text to embed
+        and no body vector yet: what the vector step fills."""
+        ...
+
     def facet_values(self, where: dict[str, Any], fields: list[str]) -> list[dict[str, Any]]:
         """Just `fields` of the facet, for each item matching `where` (which must
         name one kind with a facet): a narrow read, no edges, no vectors."""
@@ -254,6 +277,7 @@ class InMemoryStore:
     def __init__(self) -> None:
         self._recs: dict[str, Record] = {}
         self._items: dict[str, Item] = {}
+        self._files: dict[tuple[str, str, str], tuple[int, int, list[str]]] = {}
         self._meta: dict[str, str] = {}
         self._lock = threading.RLock()
 
@@ -333,13 +357,48 @@ class InMemoryStore:
             self.upsert(records)
             self.delete(deletes)
             self.set_meta(meta)
+            from dataclasses import replace
+
+            carried = {}
+            for item in items or ():
+                old = self._items.get(item.id)
+                if (item.body_vec is None and item.embed_text and old is not None
+                        and old.body_vec is not None and old.embed_text == item.embed_text):
+                    item = replace(item, body_vec=list(old.body_vec))
+                carried[item.id] = item
             for item_id in item_deletes or ():
                 self._items.pop(item_id, None)
-            for item in items or ():
-                self._items[item.id] = item
+            self._items.update(carried)
 
     def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
         return {i: it.content_hash for i, it in self.items(where).items()}
+
+    def file_stamps(self, facet: str, project: str) -> dict[str, tuple[int, int, list[str]]]:
+        with self._lock:
+            return {f: (m, z, list(ids))
+                    for (fa, p, f), (m, z, ids) in self._files.items()
+                    if fa == facet and p == project}
+
+    def replace_files(
+        self,
+        facet: str,
+        project: str,
+        files: list[tuple[str, int, int, list[Item]]],
+        removed: list[str],
+    ) -> None:
+        with self._lock:
+            names = [f for f, *_ in files] + list(removed)
+            stale = sorted({i for f in names
+                            for i in self._files.get((facet, project, f), (0, 0, []))[2]})
+            self.apply([], [], {}, [it for *_, its in files for it in its], stale)
+            for f in names:
+                self._files.pop((facet, project, f), None)
+            for f, m, z, its in files:
+                self._files[(facet, project, f)] = (m, z, [it.id for it in its])
+
+    def missing_body_vectors(self, where: dict[str, Any]) -> dict[str, str]:
+        return {i: it.embed_text for i, it in self.items(where).items()
+                if it.embed_text and it.body_vec is None}
 
     def facet_values(self, where: dict[str, Any], fields: list[str]) -> list[dict[str, Any]]:
         return [{f: it.facet.get(f) for f in fields}
