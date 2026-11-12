@@ -56,6 +56,18 @@ class _DocStore:
     def postings(self, where: Any, terms: Any) -> Any:
         raise AssertionError("not called in these tests")
 
+    def set_body_vectors(self, vectors: Any) -> None:
+        raise AssertionError("not called in these tests")
+
+    def lacking_body_vectors(self, where: Any) -> list[str]:
+        return []
+
+    def body_vector_top(self, where: Any, vec: Any, n: Any) -> list[Any]:
+        return []
+
+    def body_vectors(self, ids: Any) -> dict[str, Any]:
+        return {}
+
     def get_meta(self, where: Any) -> dict[str, dict[str, Any]]:
         return {i: m for i, (_d, m) in self.get_docs(where).items()}
 

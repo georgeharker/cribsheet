@@ -95,6 +95,27 @@ class Store(Protocol):
         read a sweep diffs against before writing only what changed."""
         ...
 
+    def set_body_vectors(self, vectors: dict[str, list[float]]) -> None:
+        """Set items' body vectors only, leaving every other field as it is: how a
+        description vector is filled in lazily, once it has been embedded."""
+        ...
+
+    def lacking_body_vectors(self, where: dict[str, Any]) -> list[str]:
+        """Ids of the items matching `where` that have no body vector yet."""
+        ...
+
+    def body_vector_top(
+        self, where: dict[str, Any], vec: list[float], n: int
+    ) -> list[tuple[str, float]]:
+        """The `n` items matching `where` whose body vector has the largest inner
+        product with `vec` (the cosine, for L2-normalised vectors), best first,
+        ties by id. A coarse pass: a caller needing exact order re-scores these."""
+        ...
+
+    def body_vectors(self, ids: list[str]) -> dict[str, list[float]]:
+        """{id: body vector} for the given items that have one."""
+        ...
+
     def postings(self, where: dict[str, Any], terms: list[str]) -> PostingStats:
         """BM25 statistics for the items matching `where` that have postings (the
         corpus), and the postings of `terms` in it: everything
@@ -304,6 +325,33 @@ class InMemoryStore:
 
     def item_hashes(self, where: dict[str, Any]) -> dict[str, str]:
         return {i: it.content_hash for i, it in self.items(where).items()}
+
+    def set_body_vectors(self, vectors: dict[str, list[float]]) -> None:
+        from dataclasses import replace
+
+        with self._lock:
+            for i, v in vectors.items():
+                if i in self._items:
+                    self._items[i] = replace(self._items[i], body_vec=list(v))
+
+    def lacking_body_vectors(self, where: dict[str, Any]) -> list[str]:
+        return sorted(i for i, it in self.items(where).items() if it.body_vec is None)
+
+    def body_vector_top(
+        self, where: dict[str, Any], vec: list[float], n: int
+    ) -> list[tuple[str, float]]:
+        scored = [
+            (i, sum(a * b for a, b in zip(it.body_vec, vec)))
+            for i, it in self.items(where).items()
+            if it.body_vec is not None
+        ]
+        scored.sort(key=lambda r: (-r[1], r[0]))
+        return scored[: max(n, 0)]
+
+    def body_vectors(self, ids: list[str]) -> dict[str, list[float]]:
+        with self._lock:
+            return {i: list(it.body_vec) for i in ids
+                    if (it := self._items.get(i)) is not None and it.body_vec is not None}
 
     def postings(self, where: dict[str, Any], terms: list[str]) -> PostingStats:
         wanted = set(terms)

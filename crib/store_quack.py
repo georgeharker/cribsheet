@@ -331,6 +331,20 @@ class QuackStore(DuckDBStore):
     def postings(self, where: dict[str, Any], terms: list[str]) -> PostingStats:
         return self._call(super().postings, where, terms)
 
+    def set_body_vectors(self, vectors: dict[str, list[float]]) -> None:
+        self._call(super().set_body_vectors, vectors)
+
+    def lacking_body_vectors(self, where: dict[str, Any]) -> list[str]:
+        return self._call(super().lacking_body_vectors, where)
+
+    def body_vector_top(
+        self, where: dict[str, Any], vec: list[float], n: int
+    ) -> list[tuple[str, float]]:
+        return self._call(super().body_vector_top, where, vec, n)
+
+    def body_vectors(self, ids: list[str]) -> dict[str, list[float]]:
+        return self._call(super().body_vectors, ids)
+
     def set_meta(self, updates: dict[str, dict[str, Any]]) -> None:
         self._call(super().set_meta, updates)
 

@@ -676,3 +676,25 @@ def test_edges_resolve_a_default_dep_by_its_target_and_go_with_their_item(backen
     assert s.edges({"src": "p2"}) == [("p2", "d", "rests_on", None)]
     s.apply([], [], {}, None, ["p2"])  # dropped
     assert s.edges({}) == []
+
+
+def test_body_vectors_fill_lazily_and_rank_by_inner_product(backend):
+    s = backend.store
+    s.apply(
+        [],
+        [],
+        {},
+        [
+            _item("a", tv=None, bv=None),
+            _item("b", tv=None, bv=None),
+            _item("c", tv=None, bv=None),
+        ],
+    )
+    assert s.lacking_body_vectors({"project": "p"}) == ["a", "b", "c"]
+    s.set_body_vectors({"a": X, "b": XY})
+    assert s.lacking_body_vectors({"project": "p"}) == ["c"]
+    got = s.body_vector_top({"project": "p"}, X, 5)
+    assert [i for i, _ in got] == ["a", "b"]  # c has no vector: never ranked
+    assert got[0][1] == pytest.approx(1.0, abs=1e-6)
+    assert s.body_vectors(["a", "c", "zz"]).keys() == {"a"}
+    assert s.items({"id": "b"})["b"].title == "title b"  # other fields untouched

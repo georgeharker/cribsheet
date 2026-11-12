@@ -705,6 +705,60 @@ class DuckDBStore:
             )
         return [(a, b, c, d) for a, b, c, d in rows]
 
+    def set_body_vectors(self, vectors: dict[str, list[float]]) -> None:
+        rows = [[i, [float(x) for x in v]] for i, v in vectors.items()]
+        if not rows:
+            return
+
+        def write(ex: Any) -> None:
+            for start in range(0, len(rows), _META_ROWS_PER_STATEMENT):
+                batch = rows[start : start + _META_ROWS_PER_STATEMENT]
+                groups = ", ".join("(?, ?)" for _ in batch)
+                # pi-lens-ignore: python-sql-injection
+                ex.run(
+                    f"UPDATE {ITEMS} SET body_vec = v.vec::FLOAT[] "
+                    f"FROM (VALUES {groups}) AS v(id, vec) WHERE {ITEMS}.id = v.id",
+                    [x for row in batch for x in row],
+                )
+
+        self._transaction(write)
+
+    def lacking_body_vectors(self, where: dict[str, Any]) -> list[str]:
+        clause, params = _item_clause(where)
+        clause += (" AND " if clause else " WHERE ") + "i.body_vec IS NULL"
+        with self._reading() as ex:
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(f"SELECT i.id FROM {ITEMS} i{clause} ORDER BY i.id", params)
+        return [r[0] for r in rows]
+
+    def body_vector_top(
+        self, where: dict[str, Any], vec: list[float], n: int
+    ) -> list[tuple[str, float]]:
+        if n <= 0:
+            return []
+        clause, params = _item_clause(where)
+        clause += (" AND " if clause else " WHERE ") + "i.body_vec IS NOT NULL"
+        with self._reading() as ex:
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(
+                f"SELECT i.id, list_inner_product(i.body_vec, ?::FLOAT[]) AS s "
+                f"FROM {ITEMS} i{clause} ORDER BY s DESC, i.id LIMIT ?",
+                [[float(x) for x in vec], *params, int(n)],
+            )
+        return [(i, float(s)) for i, s in rows]
+
+    def body_vectors(self, ids: list[str]) -> dict[str, list[float]]:
+        if not ids:
+            return {}
+        with self._reading() as ex:
+            # pi-lens-ignore: python-sql-injection
+            rows = ex.run(
+                f"SELECT id, body_vec FROM {ITEMS} WHERE id = ANY(?) "
+                "AND body_vec IS NOT NULL",
+                [list(ids)],
+            )
+        return {i: [float(x) for x in v] for i, v in rows}
+
     def postings(self, where: dict[str, Any], terms: list[str]) -> PostingStats:
         clause, params = _item_clause(where)
         scope = (
