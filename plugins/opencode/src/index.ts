@@ -22,8 +22,7 @@
 //   5. /crib command — register an OpenCode command mirroring commands/crib.md.
 
 import { spawnSync } from "node:child_process"
-import { existsSync, readFileSync } from "node:fs"
-import { homedir } from "node:os"
+import { readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import type { Plugin } from "@opencode-ai/plugin"
