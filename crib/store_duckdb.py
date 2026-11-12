@@ -662,8 +662,9 @@ class DuckDBStore:
     def recreate(self) -> None:
         def drop(ex: Any) -> None:
             ex.run(f"DROP TABLE IF EXISTS {TABLE}")
-            # item vectors came from the same embedder: empty them too
-            for table in (ITEMS, EDGES, POSTINGS,
+            # item vectors came from the same embedder: empty them too, and the
+            # file stamps, or every facet would think its files already mapped
+            for table in (ITEMS, EDGES, POSTINGS, FILES,
                           *(t for t, _ in _FACET_TABLES.values())):
                 # pi-lens-ignore: python-sql-injection
                 ex.run(f"DELETE FROM {table}")

@@ -745,3 +745,13 @@ def test_a_rewrite_keeps_the_vector_while_the_embed_text_is_unchanged(backend):
     )
     assert s.items({"id": "x"})["x"].body_vec is None
     assert s.missing_body_vectors({"project": "p"}) == {"x": "does more"}
+
+
+def test_recreate_clears_the_file_stamps_with_the_items(backend):
+    """An embedder change empties the items; the stamps must go with them, or
+    every facet would think its files already mapped and never map them again."""
+    s = backend.store
+    s.replace_files("f", "p", [("a.toml", 1, 1, [_item("a")])], [])
+    s.recreate()
+    assert s.file_stamps("f", "p") == {}
+    assert s.items({"project": "p"}) == {}

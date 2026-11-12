@@ -277,15 +277,24 @@ class NoteStore:
                 "to": {"project": dst_proj, "relpath": dst_relpath},
                 "id": note.id, "created": created}
 
-    async def reindex(self, project: str, relpath: str | None = None) -> dict[str, Any]:
+    async def reindex(self, project: str, relpath: str | None = None,
+                      full: bool = True) -> dict[str, Any]:
         """Reindex a note, or fully reconcile a project when relpath is None (walks
         the UNION of on-disk notes and indexed paths — catches offline edits AND drops
-        orphaned chunks). All idempotent via the hash gate."""
+        orphaned chunks). All idempotent via the hash gate.
+
+        `full=False` (the startup/post-pull reconcile) trusts the per-file stamps
+        `index_file` records (crib.filesync): a note whose stamp hasn't moved is
+        not re-read. Indexed paths gone from disk are always swept."""
+        from .filesync import scan
+        from .indexer import index_facet
+
         nd = self.dir(project)
         if relpath:
             targets = [relpath]
         else:
-            disk = {str(p.relative_to(nd)) for p in nd.rglob("*.md")}
+            now = scan(nd, ".md", recursive=True)
+            disk = set(now)
             # The indexed side is scoped to THIS pillar (absence rule: a chunk
             # indexed before the split has no `store` key and counts as notes) —
             # without the scope, the notes sweep would see every facet chunk as
@@ -297,6 +306,11 @@ class NoteStore:
                        for m in self.store.get_meta(
                            {"project": project, "kind": kind_of(self.spec.name)}).values()}
             targets = sorted(disk | {r for r in indexed if r})
+            if not full:
+                known = {f: (m, z) for f, (m, z, _i) in self.store.file_stamps(
+                    index_facet(self.spec.name), project).items()}
+                targets = [r for r in targets
+                           if r not in disk or known.get(r) != now[r]]
         changed = removed = 0
         skipped: list[dict[str, str]] = []
         by_id: dict[str, list[str]] = {}
@@ -324,6 +338,15 @@ class NoteStore:
         # knows every note's id (index_file returns it), so detecting it is free:
         # REPORT it and let a human pick which copy survives (crib must never
         # delete a note on a heuristic).
+        if not relpath and not full:
+            # the sweep read only what changed: every note's id is in its chunks
+            by_id = {}
+            for m in self.store.get_meta(
+                    {"project": project, "kind": kind_of(self.spec.name)}).values():
+                if m.get("item_id") and m.get("relpath"):
+                    by_id.setdefault(str(m["item_id"]), [])
+                    if m["relpath"] not in by_id[str(m["item_id"])]:
+                        by_id[str(m["item_id"])].append(str(m["relpath"]))
         dupes = [{"id": nid, "relpaths": sorted(rps)}
                  for nid, rps in sorted(by_id.items()) if len(rps) > 1]
         if dupes:

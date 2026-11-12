@@ -932,6 +932,7 @@ class Crib:
         relpath: str | None = None,
         project: str | None = None,
         cwd: Path | None = None,
+        full: bool = True,
     ) -> dict[str, Any]:
         """Reindex a note, or fully reconcile a project when relpath is None.
 
@@ -952,11 +953,13 @@ class Crib:
         # old-layout files a not-yet-upgraded machine pushed into the sync repo.
         mig = self._migrate_legacy_layout(proj)
         recreated = self._maybe_recreate_for_dim()
-        res = await self.notestore.reindex(proj)
+        # A wipe just now (recreate) cleared the stamps with the chunks, so a
+        # stamp-gated sweep below still re-embeds everything.
+        res = await self.notestore.reindex(proj, full=full)
         # Fan out over the sibling pillars — same union sweep, each scoped to its
         # own tree and its own chunks. Empty pillars are cheap no-ops.
         for pillar in (self.designstore, self.planstore, self.learningstore):
-            r = await pillar.reindex(proj)
+            r = await pillar.reindex(proj, full=full)
             for k in ("files", "changed", "removed"):
                 res[k] += r[k]
             res["skipped"] += r["skipped"]
@@ -1065,6 +1068,7 @@ class Crib:
             "skipped": [],
         }
         self._reconcile_remaining = len(projects)
+        rechunk = self.stored_chunk_schema() != CHUNK_SCHEMA_VERSION
         try:
             for proj in projects:
                 # A project adopted into a repo that isn't cloned here has no
@@ -1076,7 +1080,9 @@ class Crib:
                     total.setdefault("unavailable", []).append(proj)
                     self._reconcile_remaining -= 1
                     continue
-                r = await self.reindex(project=proj)
+                # Stamp-gated: only notes changed since they were last indexed are
+                # read, unless the chunking scheme changed (then every note is).
+                r = await self.reindex(project=proj, full=rechunk)
                 total["changed"] += r["changed"]
                 total["removed"] += r["removed"]
                 # notes crib couldn't read — carried up so a sweep that skipped

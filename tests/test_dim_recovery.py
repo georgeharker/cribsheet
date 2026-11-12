@@ -68,9 +68,9 @@ def test_dim_change_re_embeds_every_project_and_marks_the_gap(crib, tmp_path):
     statuses: list[dict] = []
     orig = crib.notestore.reindex
 
-    async def spy(project, relpath=None):            # capture status DURING the sweep
+    async def spy(project, relpath=None, full=True):  # capture status DURING the sweep
         statuses.append(crib.status())
-        return await orig(project, relpath)
+        return await orig(project, relpath, full)
 
     crib.notestore.reindex = spy
 

@@ -344,6 +344,7 @@ class InMemoryStore:
         with self._lock:
             self._recs.clear()
             self._items.clear()  # item vectors came from the same embedder
+            self._files.clear()  # and the stamps say what is mapped
 
     def apply(
         self,

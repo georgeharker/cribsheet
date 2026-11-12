@@ -19,7 +19,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
-from . import notes
+from . import filesync, notes
 from .chunk import WINDOW_OVERLAP, WINDOW_WORDS, Chunk, chunk_note, kind_of
 from .embed import Embedder, embed_batch
 from .items import Item, body_text, edges_of, facet_of, item_hash
@@ -60,8 +60,18 @@ class _Plan:
     # chunks themselves are unchanged. `item_embed` is (title, body) when its
     # vectors must be (re)computed; otherwise `item` already carries them.
     item: Item | None = None
+    # The file's stamp right after the plan rewrote it (a heal, a new id), so
+    # the index stamps the bytes it wrote rather than the ones it first saw.
+    wrote: filesync.Stamp | None = None
     item_embed: tuple[str, str] | None = None
     item_deletes: list[str] = field(default_factory=list)
+
+
+
+def index_facet(store: str) -> str:
+    """The file-stamp facet (crib.filesync) for a pillar's chunk index: separate
+    from the design/plan graph's own stamps, which map items only."""
+    return f"index:{store}"
 
 
 class IndexEngine:
@@ -108,8 +118,31 @@ class IndexEngine:
         `store` is the pillar the note belongs to — it reaches chunk identity and
         metadata, and scopes the per-path lock."""
         async with self._locks[self._key(project, store, relpath)]:
-            return await self._index_locked(project, notes_dir, relpath,
-                                            content_path, store=store)
+            if content_path is not None:  # a repo-owned doc: no stamp to keep
+                return await self._index_locked(project, notes_dir, relpath,
+                                                content_path, store=store)
+            # Stamped BEFORE the read: an edit landing mid-index leaves a stamp
+            # older than the file, so the next sweep looks again (never the
+            # reverse, a stamp claiming content that was not indexed). When the
+            # index itself rewrote the file (a heal, a new id), the stamp is of
+            # the bytes it wrote.
+            before = filesync.stamp(notes_dir / relpath)
+            wrote: list[filesync.Stamp] = []
+            res = await self._index_locked(project, notes_dir, relpath,
+                                           content_path, store=store, wrote=wrote)
+            await asyncio.to_thread(self._stamp, project, store, relpath,
+                                    wrote[-1] if wrote else before)
+            return res
+
+    def _stamp(self, project: str, store: str, relpath: str,
+               st: filesync.Stamp | None) -> None:
+        """Record that `relpath` is indexed as of `st` (None: it is gone), for
+        the stamp-gated reconcile (NoteStore.reindex)."""
+        facet = index_facet(store)
+        if st is None:
+            self.store.replace_files(facet, project, [], [relpath])
+        else:
+            self.store.replace_files(facet, project, [(relpath, *st, [])], [])
 
     async def forget(self, project: str, relpath: str, *,
                      store: str = "notes") -> int:
@@ -134,11 +167,15 @@ class IndexEngine:
 
     async def _index_locked(self, project: str, notes_dir: Path, relpath: str,
                             content_path: Path | None = None, *,
-                            store: str = "notes") -> IndexResult:
+                            store: str = "notes",
+                            wrote: list[filesync.Stamp] | None = None) -> IndexResult:
         """The locked body: read+diff, embed, write — each stage offloaded, the
-        lock held across them (see the module docstring)."""
+        lock held across them (see the module docstring). `wrote` receives the
+        stamp of the file as the plan rewrote it, if it did."""
         plan = await asyncio.to_thread(
             self._plan, project, notes_dir, relpath, content_path, store)
+        if wrote is not None and plan.wrote is not None:
+            wrote.append(plan.wrote)
         if plan.result is not None:
             if plan.item is not None or plan.item_deletes:
                 # The chunks needed nothing, but the item row did (e.g. the
@@ -268,15 +305,18 @@ class IndexEngine:
         # it, so never heal/rewrite it or stamp an id into it — derive a stable id
         # from its relpath instead.
         read_only = content_path is not None
+        rewrote = False
         if not read_only:
-            notes.heal_file(path)           # self-heal merge-duplicated frontmatter (§14)
+            rewrote = notes.heal_file(path)  # self-heal merge-duplicated frontmatter (§14)
         note = notes.load(path)
         if read_only:
             note_id = note.id or _derive_id(relpath)
         else:
             if notes.ensure_id(note):       # assign + persist a stable id
                 notes.save_atomic(note)
+                rewrote = True
             note_id = note.id or ""
+        wrote = filesync.stamp(path) if rewrote else None
         mtime = path.stat().st_mtime
 
         new_chunks = chunk_note(project, relpath, note_id, note.body,
@@ -311,11 +351,11 @@ class IndexEngine:
         if not to_embed and not stale_ids and not meta_updates:
             return _Plan(note_id=note_id, item=item, item_embed=item_embed,
                          result=IndexResult(relpath, changed=False, upserted=0,
-                                            deleted=0, note_id=note_id))
+                                            deleted=0, note_id=note_id), wrote=wrote)
 
         return _Plan(
             note_id=note_id,
             to_embed=[(c, c.metadata(note.title, note.tags, source, mtime, note_type))
                       for c in to_embed],
             stale_ids=stale_ids, meta_updates=meta_updates,
-            item=item, item_embed=item_embed)
+            item=item, item_embed=item_embed, wrote=wrote)

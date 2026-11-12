@@ -34,24 +34,42 @@ class Changes:
         return bool(self.changed or self.removed)
 
 
-def scan(directory: Path, suffix: str) -> dict[str, Stamp]:
-    """{filename: stamp} for the files in `directory` ending in `suffix` (one
-    scandir; a missing directory has none). Dot-prefixed names count: a record's
-    filename is a slug, and a source under a dot directory yields one."""
+def scan(directory: Path, suffix: str, recursive: bool = False) -> dict[str, Stamp]:
+    """{name: stamp} for the files in `directory` ending in `suffix` (a missing
+    directory has none). Dot-prefixed names count: a record's filename is a
+    slug, and a source under a dot directory yields one. `recursive`: every
+    file below, keyed by its path relative to `directory` (as `Path.rglob`
+    would find them: symlinked directories are not followed)."""
     out: dict[str, Stamp] = {}
-    try:
-        entries = list(os.scandir(directory))
-    except FileNotFoundError:
-        return out
-    for e in entries:
-        if not e.name.endswith(suffix):
-            continue
+    dirs = [directory]
+    while dirs:
+        d = dirs.pop()
         try:
-            st = e.stat()
-        except FileNotFoundError:
-            continue  # removed between the listing and the stat
-        out[e.name] = (st.st_mtime_ns, st.st_size)
+            entries = list(os.scandir(d))
+        except (FileNotFoundError, NotADirectoryError):
+            continue
+        for e in entries:
+            if recursive and e.is_dir(follow_symlinks=False):
+                dirs.append(Path(e.path))
+                continue
+            if not e.name.endswith(suffix):
+                continue
+            try:
+                st = e.stat()
+            except FileNotFoundError:
+                continue  # removed between the listing and the stat
+            name = str(Path(e.path).relative_to(directory)) if recursive else e.name
+            out[name] = (st.st_mtime_ns, st.st_size)
     return out
+
+
+def stamp(path: Path) -> Stamp | None:
+    """`path`'s stamp, or None when it is gone."""
+    try:
+        st = path.stat()
+    except FileNotFoundError:
+        return None
+    return (st.st_mtime_ns, st.st_size)
 
 
 def changes(
@@ -61,13 +79,14 @@ def changes(
     directory: Path,
     suffix: str,
     only: list[str] | None = None,
+    recursive: bool = False,
 ) -> Changes:
     """What `facet` must map again in `directory` for `project`. `only` limits it
     to the named files (a watcher batch, or the files a write just touched);
-    otherwise the whole directory is scanned."""
+    otherwise the whole directory is scanned (`recursive`: and below it)."""
     known = {f: (m, z) for f, (m, z, _ids) in store.file_stamps(facet, project).items()}
     if only is None:
-        now = scan(directory, suffix)
+        now = scan(directory, suffix, recursive)
         names = set(now) | set(known)
     else:
         now = {}
