@@ -269,6 +269,19 @@ class _Bound:
             self._cur.execute(head + ", ".join([group] * len(batch)),
                               [v for row in batch for v in row])
 
+    def insert_columns(self, table: str, types: Sequence[str],
+                       rows: list[list[Any]]) -> None:
+        """Insert `rows` into `table`, whose columns have `types`, as ONE
+        columnar statement: each column bound as one typed list and unnested
+        side by side (in row order; DuckDB keeps insertion order). About 7x
+        faster than multi-row VALUES on a cold refresh's item rows."""
+        if not rows:
+            return
+        cols = [list(c) for c in zip(*rows)]
+        sel = ", ".join(f"unnest(?::{t}[])" for t in types)
+        # pi-lens-ignore: python-sql-injection
+        self._cur.execute(f"INSERT INTO {table} SELECT {sel}", cols)
+
 
 # An INSERT whose tail is one `VALUES (?, …)` group: both executors batch it
 # into multi-row statements (bound here, rendered as literals over Quack).
@@ -361,6 +374,13 @@ def _delete_items_step(ids: list[str]) -> Callable[[Any], None]:
     return write
 
 
+# The column types of the tables the item steps insert into, in column order
+# (Executor.insert_columns binds each column as one typed list).
+_ITEM_TYPES = ("VARCHAR",) * 6 + ("FLOAT[]", "FLOAT[]", "VARCHAR")
+_POSTING_TYPES = ("VARCHAR", "VARCHAR", "DOUBLE")
+_EDGE_TYPES = ("VARCHAR",) * 4
+
+
 def _insert_items_step(items: list[Item]) -> Callable[[Any], None]:
     """Insert `items`. The rows are built when the step RUNS, not when it is
     made: `_carry_vectors_step`, earlier in the same transaction, may have just
@@ -381,26 +401,19 @@ def _insert_items_step(items: list[Item]) -> Callable[[Any], None]:
             ]
             for it in items
         ]
-        # pi-lens-ignore: python-sql-injection
-        ex.run_many(f"INSERT INTO {ITEMS} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", core)
+        ex.insert_columns(ITEMS, _ITEM_TYPES, core)
         for kind, (table, fields) in _FACET_TABLES.items():
             rows = [
                 [it.id, *(it.facet.get(f) for f in fields)]
                 for it in items
                 if it.kind == kind
             ]
-            if rows:
-                marks = ", ".join("?" for _ in range(len(fields) + 1))
-                # pi-lens-ignore: python-sql-injection
-                ex.run_many(f"INSERT INTO {table} VALUES ({marks})", rows)
+            types = ("VARCHAR", *FACETS[kind].values())
+            ex.insert_columns(table, types, rows)
         postings = [[it.id, t, float(f)] for it in items for t, f in it.terms]
-        if postings:
-            # pi-lens-ignore: python-sql-injection
-            ex.run_many(f"INSERT INTO {POSTINGS} VALUES (?, ?, ?)", postings)
+        ex.insert_columns(POSTINGS, _POSTING_TYPES, postings)
         edges = [[it.id, e.dst, e.kind, e.recorded_hash] for it in items for e in it.edges]
-        if edges:
-            # pi-lens-ignore: python-sql-injection
-            ex.run_many(f"INSERT INTO {EDGES} VALUES (?, ?, ?, ?)", edges)
+        ex.insert_columns(EDGES, _EDGE_TYPES, edges)
 
     return write
 

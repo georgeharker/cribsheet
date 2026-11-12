@@ -133,6 +133,14 @@ class _Literal:
             # pi-lens-ignore: python-sql-injection
             self._cur.execute(head + ", ".join(render(group, row) for row in batch))
 
+    def insert_columns(self, table: str, types: Sequence[str],
+                       rows: list[list[Any]]) -> None:
+        """Insert `rows` into `table` as rendered multi-row VALUES (the columnar
+        form would render every column as one huge literal)."""
+        if rows:
+            marks = ", ".join("?" for _ in types)
+            self.run_many(f"INSERT INTO {table} VALUES ({marks})", rows)
+
 
 # ── the client ──────────────────────────────────────────────────────────────
 
