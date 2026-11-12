@@ -55,8 +55,9 @@ META = "crib_meta"
 # 2: crib_chunks' `store` column is `kind`; 3: crib_items and the facet tables;
 # 4: crib_chunks' `item_id` column (the item a chunk belongs to); 5: crib_edges;
 # 6: crib_postings; 7: crib_files and crib_items.embed_text; 8: the symbol
-# facet's legacy `fqname`
-SCHEMA_VERSION = "8"
+# facet's legacy `fqname`; 9: design/plan facets' body_hash, rank (design),
+# trigger as JSON
+SCHEMA_VERSION = "9"
 # An item's lexical postings (crib.items.Item.terms), replaced with the item.
 POSTINGS = "crib_postings"
 # Links between items (crib.items.Edge), replaced with their source item.

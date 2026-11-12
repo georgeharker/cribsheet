@@ -31,17 +31,26 @@ BODY_CHARS = 2000
 
 # Each kind's own fields: name -> DuckDB column type. A kind with no entry (doc)
 # has only the core row. Defaults match what the facets assume when a field is
-# missing from frontmatter.
+# missing from frontmatter. A JSON field holds a structured frontmatter value
+# (as JSON text). `body_hash` is the identity of the prose (`prose_hash`), what
+# a dependent's `checked` records: the design/plan graph is built from these.
 FACETS: Mapping[str, Mapping[str, str]] = {
     "note": {"source": "VARCHAR", "tags": "VARCHAR[]", "source_path": "VARCHAR"},
-    "design": {"status": "VARCHAR", "created": "VARCHAR", "updated": "VARCHAR"},
+    "design": {
+        "status": "VARCHAR",
+        "rank": "VARCHAR",
+        "created": "VARCHAR",
+        "updated": "VARCHAR",
+        "body_hash": "VARCHAR",
+    },
     "plan": {
         "status": "VARCHAR",
         "rank": "VARCHAR",
-        "trigger": "VARCHAR",
+        "trigger": "JSON",
         "reviewed": "VARCHAR",
         "created": "VARCHAR",
         "updated": "VARCHAR",
+        "body_hash": "VARCHAR",
     },
     "learning": {
         "symbol_ref": "VARCHAR",
@@ -129,14 +138,31 @@ def item_hash(title: str, body: str) -> str:
     return sha1_hex(title, body_text(body))
 
 
-def facet_of(kind: str, frontmatter: Mapping[str, Any]) -> dict[str, Any]:
-    """`kind`'s own fields from a note's frontmatter, typed for its table: list
-    columns get lists of strings, everything else a string or None."""
+def prose_hash(body: str) -> str:
+    """Identity of a design/plan's PROSE — frontmatter excluded on purpose:
+    `updated`, a status flip or a rank change must not taint dependents, only
+    the decision text itself."""
+    return sha1_hex(body.strip())
+
+
+def facet_of(kind: str, frontmatter: Mapping[str, Any],
+             body: str | None = None) -> dict[str, Any]:
+    """`kind`'s own fields from a note's frontmatter (and `body`, for the
+    `body_hash` of the kinds that keep one), typed for its table: list columns
+    get lists of strings, JSON columns JSON text, everything else a string or
+    None."""
+    import json
+
     out: dict[str, Any] = {}
     defaults = _DEFAULTS.get(kind, {})
     for name, sqltype in FACETS.get(kind, {}).items():
+        if name == "body_hash":
+            out[name] = prose_hash(body) if body is not None else None
+            continue
         value = frontmatter.get(name, defaults.get(name))
-        if sqltype == "VARCHAR[]":
+        if sqltype == "JSON":
+            out[name] = None if value is None else json.dumps(value, default=str)
+        elif sqltype == "VARCHAR[]":
             out[name] = [str(v) for v in value] if isinstance(value, list) else []
         else:
             out[name] = None if value is None else str(value)

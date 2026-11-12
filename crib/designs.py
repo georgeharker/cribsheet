@@ -67,14 +67,20 @@ import contextlib
 import datetime
 import sys
 from dataclasses import dataclass, field, replace
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
 
 from . import notes
 from .chunk import chunk_note, kind_of, pillar_of, section_key
 from .errors import CribUserError
-from .items import DEP_KINDS, dep_kind_default, frontmatter_deps, parse_sources
+from .items import (
+    DEP_KINDS,
+    dep_kind_default,
+    frontmatter_deps,
+    parse_sources,
+    prose_hash,
+)
 from .notes import Note
-from .util import sha1_hex
 
 if TYPE_CHECKING:
     from .notestore import NoteStore
@@ -217,10 +223,76 @@ def _today() -> str:
 
 
 def _body_hash(body: str) -> str:
-    """Identity of a node's PROSE — frontmatter excluded on purpose: `updated`,
-    a status flip or a rank change must not taint dependents, only the decision
-    text itself."""
-    return sha1_hex(body.strip())
+    """Identity of a node's PROSE (see crib.items.prose_hash)."""
+    return prose_hash(body)
+
+
+def _node_from_file(kind: str, relpath: str, fm: dict[str, Any], body: str) -> Node:
+    """A design/plan node from its parsed file."""
+    deps, explicit_kinds = frontmatter_deps(fm)
+    trigger = fm.get("trigger")
+    return Node(
+        id=str(fm.get("id") or ""),
+        kind=kind,
+        relpath=relpath,
+        title=str(fm.get("title") or Path(relpath).stem),
+        status=str(fm.get("status") or ("active" if kind == "design" else "todo")),
+        deps=deps,
+        checked={str(k): str(v) for k, v in (fm.get("checked") or {}).items()},
+        rank=str(fm.get("rank") or ""),
+        body_hash=_body_hash(body),
+        updated=str(fm.get("updated") or ""),
+        sources=parse_sources(fm.get("sources")),
+        dep_kinds=explicit_kinds,
+        superseded_by=str(fm.get("superseded_by") or ""),
+        trigger=[dict(r) for r in trigger if isinstance(r, dict)]
+        if isinstance(trigger, list) else [],
+        reviewed=str(fm["reviewed"]) if fm.get("reviewed") else None,
+    )
+
+
+def _node_from_item(it: Any) -> Node:
+    """A design/plan node from its item (crib.items): the facet's fields, and
+    its deps, sources and superseding decision from its edges, in order."""
+    import json
+
+    f = it.facet
+    deps: list[str] = []
+    explicit: dict[str, str] = {}
+    checked: dict[str, str] = {}
+    sources: list[dict[str, Any]] = []
+    superseded_by = ""
+    for e in it.edges:
+        if e.kind == "dep" or e.kind in DEP_KINDS:
+            deps.append(e.dst)
+            if e.kind != "dep":
+                explicit[e.dst] = e.kind
+            if e.recorded_hash is not None:
+                checked[e.dst] = e.recorded_hash
+        elif e.kind == "drawn_from":
+            # the edge's target is the citation as `sources:` writes it
+            for src in parse_sources([e.dst]):
+                sources.append({**src, "hash": e.recorded_hash or ""})
+        elif e.kind == "superseded_by":
+            superseded_by = e.dst
+    trigger = json.loads(f["trigger"]) if f.get("trigger") else []
+    return Node(
+        id=it.id,
+        kind=it.kind,
+        relpath=it.relpath,
+        title=it.title or Path(it.relpath).stem,
+        status=str(f.get("status") or ("active" if it.kind == "design" else "todo")),
+        deps=deps,
+        checked=checked,
+        rank=str(f.get("rank") or ""),
+        body_hash=str(f.get("body_hash") or ""),
+        updated=str(f.get("updated") or ""),
+        sources=sources,
+        dep_kinds=explicit,
+        superseded_by=superseded_by,
+        trigger=trigger if isinstance(trigger, list) else [],
+        reviewed=str(f["reviewed"]) if f.get("reviewed") else None,
+    )
 
 
 def _suffix_match(key: str, suffix: str) -> bool:
@@ -339,7 +411,6 @@ class Node:
     checked: dict[str, str]
     rank: str
     body_hash: str
-    frontmatter: dict[str, Any]
     # the note's `updated` stamp — reported per tainted entry so "a dep changed"
     # comes with WHEN, which is most of deciding how hard to re-read it
     updated: str = ""
@@ -350,6 +421,13 @@ class Node:
     # each dep's KIND (DEP_KINDS): explicit in frontmatter, else the default for
     # what the dep points at (see `dep_kind_default`). Set by `_load_graph`.
     dep_kinds: dict[str, str] = field(default_factory=dict)
+    # The frontmatter the graph reads beyond the above (a node is built from the
+    # store, so these are typed fields rather than the raw frontmatter): the
+    # superseding decision, a parked/declined item's trigger records, and the
+    # review sweep's stamp.
+    superseded_by: str = ""
+    trigger: list[dict[str, Any]] = field(default_factory=list)
+    reviewed: str | None = None
 
     def brief(self) -> dict[str, Any]:
         out = {
@@ -470,39 +548,16 @@ class Designs:
                 continue
             if not d.exists():
                 continue
-            parsed: list[tuple[str, dict[str, Any], str]] = []
-            for path in sorted(d.glob("*.md")):
-                try:
-                    fm, body = notes.parse(path.read_text(), path)
-                except (OSError, UnicodeDecodeError, notes.NoteParseError):
-                    continue  # one broken note must not blind the graph
-                parsed.append((path.name, fm, body))
-                nid = str(fm.get("id") or "")
-                if not nid:
-                    continue  # not indexed yet (no id stamped)
-                deps, explicit_kinds = frontmatter_deps(fm)
-                checked = {str(k): str(v) for k, v in (fm.get("checked") or {}).items()}
-                sources = parse_sources(fm.get("sources"))
-                for src in sources:
+            try:
+                nodes = self._nodes_from_store(proj, kind, store, d)
+            except Exception as e:  # noqa: BLE001 — backend boundary; the files still answer
+                print(f"[crib] {kind} graph for {proj} read from the files: {e}",
+                      file=sys.stderr)
+                nodes = self._nodes_from_files(kind, d)
+            for node in nodes:
+                for src in node.sources:
                     src["current"] = self._section_hash(proj, src, docs)
-                graph.nodes[nid] = Node(
-                    id=nid,
-                    kind=kind,
-                    relpath=path.name,
-                    title=str(fm.get("title") or path.stem),
-                    status=str(
-                        fm.get("status") or ("active" if kind == "design" else "todo")
-                    ),
-                    deps=deps,
-                    checked=checked,
-                    rank=str(fm.get("rank") or ""),
-                    body_hash=_body_hash(body),
-                    frontmatter=fm,
-                    updated=str(fm.get("updated") or ""),
-                    sources=sources,
-                    dep_kinds=explicit_kinds,
-                )
-            self._sync_items(proj, kind, store, parsed)
+                graph.nodes[node.id] = node
         unresolved = {d for n in graph.nodes.values() for d in n.deps
                       if d not in graph.nodes}
         if unresolved:
@@ -528,17 +583,60 @@ class Designs:
             graph.notes[note.id] = note
             return note
 
-    def _sync_items(self, proj: str, kind: str, store: NoteStore,
-                    parsed: list[tuple[str, dict[str, Any], str]]) -> None:
-        """The read-and-execute sweep: the files were just parsed for the graph,
-        so bring the store's item rows and edges into line with them in the same
-        pass. Whatever a graph query then asks the store matches the files, even
-        straight after an edit made outside crib (before any watcher). A store
-        that can't be reached costs the sync, never the graph read."""
-        try:
-            store.index.sync_items(proj, store.spec.name, parsed)
-        except Exception as e:  # noqa: BLE001 — backend boundary; the files still answer
-            print(f"[crib] {kind} item sync skipped for {proj}: {e}", file=sys.stderr)
+    def _nodes_from_store(self, proj: str, kind: str, store: NoteStore,
+                          d: Path) -> list[Node]:
+        """`kind`'s nodes as the store holds them, after refreshing it from the
+        files that changed since it last saw them: only those are parsed."""
+        self._refresh(proj, kind, store, d)
+        items = store.index.store.items({"project": proj, "kind": kind})
+        return [_node_from_item(it)
+                for it in sorted(items.values(), key=lambda it: it.relpath)]
+
+    def _refresh(self, proj: str, kind: str, store: NoteStore, d: Path) -> None:
+        """The design/plan facet's refresh (crib.filesync): map each changed
+        file into its item (the indexer's own mapping, vectors included) and
+        drop the items of files that are gone, in one transaction. A file that
+        won't parse, or has no id yet, maps to nothing until it changes."""
+        from .filesync import changes
+
+        vs = store.index.store
+        ch = changes(vs, kind, proj, d, ".md")
+        if not ch:
+            return
+        parsed: list[tuple[str, dict[str, Any], str]] = []
+        for name in sorted(ch.changed):
+            try:
+                fm, body = notes.parse((d / name).read_text(), d / name)
+            except (OSError, UnicodeDecodeError, notes.NoteParseError):
+                continue  # one broken note must not blind the graph
+            parsed.append((name, fm, body))
+        rows = store.index.item_rows(proj, store.spec.name, parsed)
+        files: list[tuple[str, int, int, list[Any]]] = []
+        owner: dict[str, int] = {}
+        for name, (mtime, size) in sorted(ch.changed.items()):
+            items = [rows[name]] if name in rows else []
+            for it in items:
+                # two files claiming one id: the later file's row, as the graph
+                # read from the files kept it
+                if it.id in owner:
+                    files[owner[it.id]][3].clear()
+                owner[it.id] = len(files)
+            files.append((name, mtime, size, items))
+        vs.replace_files(kind, proj, files, ch.removed)
+
+    @staticmethod
+    def _nodes_from_files(kind: str, d: Path) -> list[Node]:
+        """`kind`'s nodes parsed from every file: the read when the store
+        can't be reached."""
+        out: list[Node] = []
+        for path in sorted(d.glob("*.md")):
+            try:
+                fm, body = notes.parse(path.read_text(), path)
+            except (OSError, UnicodeDecodeError, notes.NoteParseError):
+                continue  # one broken note must not blind the graph
+            if fm.get("id"):
+                out.append(_node_from_file(kind, path.name, fm, body))
+        return out
 
     def _note_nodes(self, proj: str, ids: set[str]) -> dict[str, Node]:
         """The plain notes among `ids`, as kind-"note" nodes with a body hash."""
@@ -569,7 +667,7 @@ class Designs:
                 return Node(id=nid, kind="note", relpath=str(path.relative_to(root)),
                             title=str(fm.get("title") or path.stem), status="",
                             deps=[], checked={}, rank="", body_hash=_body_hash(body),
-                            frontmatter=fm, updated=str(fm.get("updated") or ""))
+                            updated=str(fm.get("updated") or ""))
         return None
 
     def _note(self, proj: str, node: Node) -> Note:
@@ -1385,7 +1483,10 @@ class Designs:
         if dep_id not in node.deps:
             raise CribUserError(f"{node.title!r} does not depend on {dep_ref!r}")
         deps = [d for d in node.deps if d != dep_id]
-        checked = {k: v for k, v in node.checked.items() if k != dep_id}
+        # from the file, not the node: a node built from the store holds only
+        # its deps' records, and this rewrites every one the file has
+        recorded = self._note(proj, node).frontmatter.get("checked") or {}
+        checked = {str(k): str(v) for k, v in recorded.items() if str(k) != dep_id}
         fm: dict[str, Any] = deps_frontmatter(
             {d: k for d, k in node.dep_kinds.items() if d != dep_id}, graph)
         if node.kind == "design":
@@ -2111,7 +2212,7 @@ class Designs:
                         },
                     )
                 edges.append({"from": nodes[n.id]["id"], "to": to, "kind": "dep"})
-            by = str(n.frontmatter.get("superseded_by") or "")
+            by = n.superseded_by
             if by and by in nodes:
                 edges.append(
                     {
@@ -2354,9 +2455,7 @@ class Designs:
         # the deferral's machinery, and a deferral that has ended is not watching
         # anything. (Re-parking re-records them fresh — the baseline must be the
         # watched ref's hash AS OF the new park, not a stale one.)
-        if status not in ("parked", "declined") and (node.frontmatter or {}).get(
-            "trigger"
-        ):
+        if status not in ("parked", "declined") and node.trigger:
             fm["trigger"] = []
             warnings.append(
                 "trigger record(s) cleared — the deferral has ended; re-park or "
@@ -2408,7 +2507,7 @@ class Designs:
         the rationale" is not a reason to resurrect a settled rejection. Same
         edge machinery, per-status firing rule."""
         out = []
-        for r in (node.frontmatter or {}).get("trigger") or []:
+        for r in node.trigger:
             watched = graph.nodes.get(r.get("ref") or "")
             if node.status == "declined":
                 fired = watched is None or watched.status != r.get("checked_status")
@@ -2966,8 +3065,8 @@ class Designs:
         }
         # The review sweep's stamp — surfaced so a sweep's rewrites are visible in
         # every working-set read, never only in the file.
-        if (node.frontmatter or {}).get("reviewed"):
-            row["reviewed"] = node.frontmatter["reviewed"]
+        if node.reviewed:
+            row["reviewed"] = node.reviewed
         if node.status in ("parked", "declined"):
             # The trigger state is COMPUTED live here (baseline vs watched hash
             # or status, per the deferral flavour), so `plan_list` is where a

@@ -63,7 +63,6 @@ def _node(
         checked=checked or {},
         rank="",
         body_hash=body_hash,
-        frontmatter={},
     )
 
 

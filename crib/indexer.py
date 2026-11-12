@@ -191,7 +191,7 @@ class IndexEngine:
         kind = kind_of(store, relpath)
         return Item(id=note_id, kind=kind, project=project, relpath=relpath,
                     title=title, content_hash=item_hash(title, body),
-                    facet=facet_of(kind, frontmatter),
+                    facet=facet_of(kind, frontmatter, body),
                     edges=edges_of(kind, frontmatter, project))
 
     @staticmethod
@@ -215,39 +215,38 @@ class IndexEngine:
         item, needs = self._against(want, self.store.items({"id": note_id}).get(note_id))
         return item, ((title, body_text(body)) if needs else None)
 
-    def sync_items(self, project: str, store: str,
-                   files: list[tuple[str, dict, str]]) -> int:
-        """Bring one pillar's item rows (and their edges) into line with its files
-        as just parsed — `(relpath, frontmatter, body)` each — and drop rows whose
-        file is gone. Blocking (one read, maybe one embed, one write); the chunks
-        are left to the indexer. Returns the rows written or dropped."""
-        kind = kind_of(store)
-        have = self.store.items({"project": project, "kind": kind})
-        write: list[Item] = []
-        embed: list[tuple[Item, str, str]] = []
-        seen: set[str] = set()
+    def item_rows(self, project: str, store: str,
+                  files: list[tuple[str, dict, str]]) -> dict[str, Item]:
+        """The item row each file implies, vectors attached, by relpath — for
+        files as just parsed, `(relpath, frontmatter, body)` each; a file with
+        no id yet has none. A row whose content matches the stored one keeps
+        its vectors; the rest are embedded in one batch. Writes nothing: the
+        facet hands the rows to the store (Store.replace_files)."""
+        ids = [str(fm.get("id") or "") for _r, fm, _b in files]
+        have = self.store.items({"id": {"$in": [i for i in ids if i]}}) if any(ids) else {}
+        out: dict[str, Item] = {}
+        embed: list[tuple[str, Item, str, str]] = []
         for relpath, fm, body in files:
             note_id = str(fm.get("id") or "")
             if not note_id:
                 continue
-            seen.add(note_id)
             title = str(fm.get("title") or "")
             want = self._want_item(project, store, relpath, note_id, title, body, fm)
             item, needs = self._against(want, have.get(note_id))
-            if item is not None and needs:
-                embed.append((item, title, body_text(body)))
-            elif item is not None:
-                write.append(item)
+            if item is None:
+                out[relpath] = have[note_id]
+            elif needs:
+                embed.append((relpath, item, title, body_text(body)))
+            else:
+                out[relpath] = item
         if embed:
             vecs = embed_batch(self.embedder,
-                               [t for _, t, _ in embed] + [b for _, _, b in embed])
+                               [t for *_, t, _b in embed] + [b for *_, b in embed])
             n = len(embed)
-            write += [replace(it, title_vec=vecs[i], body_vec=vecs[n + i])
-                      for i, (it, _, _) in enumerate(embed)]
-        gone = [i for i in have if i not in seen]
-        if write or gone:
-            self.store.apply([], [], {}, write, gone)
-        return len(write) + len(gone)
+            for i, (relpath, it, _t, _b) in enumerate(embed):
+                out[relpath] = replace(it, title_vec=vecs[i], body_vec=vecs[n + i])
+        return out
+
     def _plan(self, project: str, notes_dir: Path, relpath: str,
               content_path: Path | None = None, store: str = "notes") -> _Plan:
         """Read the file, chunk it, diff against the index — all blocking, so this
