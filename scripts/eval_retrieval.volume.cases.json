@@ -37,7 +37,7 @@
     },
     {
       "id": "mcp-token-encryption",
-      "project": "mcp-companion",
+      "project": "mcp-combiner",
       "expect": "oauth.md",
       "expect_heading": "Encryption",
       "queries": [
@@ -48,7 +48,7 @@
     },
     {
       "id": "mcp-tool-naming",
-      "project": "mcp-companion",
+      "project": "mcp-combiner",
       "expect": "design.md",
       "expect_heading": "Tool Naming",
       "queries": [
@@ -59,7 +59,7 @@
     },
     {
       "id": "mcp-neovim-control",
-      "project": "mcp-companion",
+      "project": "mcp-combiner",
       "expect": "neovim-control.md",
       "expect_heading": null,
       "queries": [

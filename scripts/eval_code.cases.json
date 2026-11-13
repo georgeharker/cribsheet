@@ -12,11 +12,11 @@
     {"q": "reciprocal rank fusion", "expect": "reciprocal_rank_fusion", "project": "cribsheet", "kind": "name"},
     {"q": "lexical cache", "expect": "LexicalCache", "project": "cribsheet", "kind": "name"},
     {"q": "symbol index", "expect": "SymbolIndex", "project": "cribsheet", "kind": "name"},
-    {"q": "refresh an expired oauth access token", "expect": ["RefreshToken", "refresh"], "project": "mcp-companion", "kind": "concept"},
-    {"q": "manage a shared background server process with refcounting", "expect": "SharedServerManager", "project": "mcp-companion", "kind": "concept"},
-    {"q": "validate or normalize a tool's json schema", "expect": ["normalize_object_schema", "schema"], "project": "mcp-companion", "kind": "concept"},
-    {"q": "filter which tools are visible for a chat session", "expect": ["filter", "session"], "project": "mcp-companion", "kind": "concept"},
-    {"q": "SharedServerManager", "expect": "SharedServerManager", "project": "mcp-companion", "kind": "name"},
-    {"q": "nvim channel", "expect": "NvimChannel", "project": "mcp-companion", "kind": "name"}
+    {"q": "refresh an expired oauth access token", "expect": ["RefreshToken", "refresh"], "project": "mcp-combiner", "kind": "concept"},
+    {"q": "manage a shared background server process with refcounting", "expect": "SharedServerManager", "project": "mcp-combiner", "kind": "concept"},
+    {"q": "validate or normalize a tool's json schema", "expect": ["normalize_object_schema", "schema"], "project": "mcp-combiner", "kind": "concept"},
+    {"q": "filter which tools are visible for a chat session", "expect": ["filter", "session"], "project": "mcp-combiner", "kind": "concept"},
+    {"q": "SharedServerManager", "expect": "SharedServerManager", "project": "mcp-combiner", "kind": "name"},
+    {"q": "nvim channel", "expect": "NvimChannel", "project": "mcp-combiner", "kind": "name"}
   ]
 }
