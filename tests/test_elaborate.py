@@ -184,8 +184,8 @@ def test_lexical_cache_folds_elaboration_terms():
         "c2": ("an unrelated note about cats", {"project": "p", "content_hash": "h2"}),
     }
 
-    def elab(project, ch, labels):
-        return ["kubernetes orchestration"] if ch == "h1" else []
+    def elab(project, labels):  # {section: terms}, as crib.enrichments reads it
+        return {"h1": ["kubernetes orchestration"]}
 
     lc = LexicalCache(_DocStore(docs), elab)
 
@@ -231,7 +231,7 @@ def test_downweight_scales_elaboration_contribution():
 
     lc = LexicalCache(
         _DocStore(docs),
-        lambda pr, sh, labels: ["kubernetes"] if sh == "s1" else [],
+        lambda pr, labels: {"s1": ["kubernetes"]},
     )
     ids, _, bm_full = lc.get("p", ("kw",), 1.0)
     ids, _, bm_half = lc.get("p", ("kw",), 0.5)
@@ -294,14 +294,13 @@ def test_summary_alias_cache_ranks_section_by_rephrasing():
 
     emb = HashEmbedder(dim=64)
 
-    def summaries(pr, sh, labels):
-        return (
-            ["kubernetes orchestration platform"]
-            if sh == "s1"
-            else ["feline domestic animals"]
-        )
+    def summaries(pr, labels):  # {(section, label): alias vectors}, from the store
+        texts = {"s1": ["kubernetes orchestration platform"],
+                 "s2": ["feline domestic animals"]}
+        return {(sh, label): emb.embed(ts) for sh, ts in texts.items()
+                for label in labels}
 
-    cache = SummaryVectorCache(_DocStore(docs), emb, summaries)
+    cache = SummaryVectorCache(_DocStore(docs), summaries)
     qv = emb.embed_query(["kubernetes orchestration platform"])[0]
     best = cache.best_cosines("p", ("summary",), qv)
     # s1's rep chunk carries the max alias cosine — a REAL dense score the caller

@@ -36,7 +36,6 @@ from typing import TYPE_CHECKING, Any, Callable
 import numpy as np
 
 from .chunk import kinds_in
-from .embed import embed_batch
 
 if TYPE_CHECKING:
     from .store import Store
@@ -378,9 +377,10 @@ class LexicalCache:
     Keyed by ``(project, labels, weight)``: a corpus that folds in a given set of
     keyword_index labels (§3.1) at a given weight is cached separately, so the
     warm config-default corpus and an eval's per-run overrides coexist without
-    clobbering each other. ``keyword_terms(project, section_hash, labels)``
-    supplies the per-**section** keyword terms (section-identified, so they
-    survive re-windowing; None/no-labels → plain body+heading BM25). Alias
+    clobbering each other. ``keyword_map(project, labels)`` supplies every
+    section's keyword terms at once, ``{section_hash: terms}`` (section-
+    identified, so they survive re-windowing; None/no-labels → plain
+    body+heading BM25), from the store (crib.enrichments). Alias
     (summary_index) records are skipped — those feed the dense side, not BM25.
 
     Thread-safe: writers invalidate from worker threads while FastMCP's sync
@@ -393,10 +393,10 @@ class LexicalCache:
     def __init__(
         self,
         store: "Store",
-        keyword_terms: Callable[[str, str, tuple[str, ...]], list[str]] | None = None,
+        keyword_map: Callable[[str, tuple[str, ...]], dict[str, list[str]]] | None = None,
     ) -> None:
         self._store = store
-        self._elab = keyword_terms
+        self._elab = keyword_map
         # (project, store, labels, weight) -> (ids, {id:(doc,meta)}, BM25) — the
         # pillar store is part of the key so each pillar ranks over its OWN
         # corpus: facet text must not shape notes IDF/length norms, or vice versa.
@@ -437,17 +437,18 @@ class LexicalCache:
             return entry
         docs = self._store.get_docs({"project": project, "kind": kinds_in(store)})
         ids = list(docs)
+        kmap = self._elab(project, labels) if labels and self._elab is not None else None
         corpus: list[dict[str, float]] = []
         for i in ids:
             doc, meta = docs[i]
             extra: list[str] | None = None
-            if labels and self._elab is not None:
+            if kmap is not None:
                 # section-identified; fall back to content_hash pre-reindex
                 sh = (meta or {}).get("section_hash") or (meta or {}).get(
                     "content_hash", ""
                 )
                 if sh:
-                    extra = self._elab(project, sh, labels)
+                    extra = list(kmap.get(sh, []))
             corpus.append(_lexical_tf(doc, meta, extra, weight))
         entry = (ids, docs, BM25(corpus))
         with self._lock:
@@ -464,9 +465,12 @@ class SummaryVectorCache:
     share no tokens. Keyed by (project, labels) so an eval can A/B label sets
     without a rebuild; invalidated with the project on any write.
 
-    Not persisted: the summaries (text) are the git-tracked asset; these vectors
-    are derived and rebuilt on demand (like BM25 tokens). `summary_terms(project,
-    section_hash, labels)` supplies the per-section rephrasings.
+    The vectors live in the store (crib.enrichments: one `summary` item per
+    alias line, embedded once and kept across restarts); this holds only the
+    in-memory index over them, the float32 matrix `best_cosines` multiplies,
+    rebuilt from the store when a write invalidates it. `alias_vectors(project,
+    labels)` supplies them, `{(section_hash, label): [vector, ...]}` in line
+    order.
 
     Thread-safe on the same generation-counter scheme as `LexicalCache` — the
     build here also embeds, so it especially must not run under the lock.
@@ -475,12 +479,12 @@ class SummaryVectorCache:
     def __init__(
         self,
         store: "Store",
-        embedder,
-        summary_terms: Callable[[str, str, tuple[str, ...]], list[str]] | None = None,
+        alias_vectors: Callable[
+            [str, tuple[str, ...]], dict[tuple[str, str], list[list[float]]]
+        ] | None = None,
     ) -> None:
         self._store = store
-        self._embed = embedder
-        self._sum = summary_terms
+        self._sum = alias_vectors
         # (project, store, labels)
         #   -> (section_hash -> [chunk_id], [(section_hash, winning_label, vec)])
         self._entries: dict[
@@ -529,19 +533,15 @@ class SummaryVectorCache:
             sh = (meta or {}).get("section_hash") or (meta or {}).get("content_hash")
             if sh:
                 reps.setdefault(sh, []).append(cid)
-        pairs: list[tuple[str, str, str]] = []
+        vecs: list[tuple[str, str, list[float]]] = []
         if labels and self._sum is not None:
+            amap = self._sum(project, tuple(labels))
             for sh in reps:
                 # Per label, so the winning ALIAS's label can ride on the score
-                # (per-hit signal annotation): one call per (section, label) is
-                # the same reads flattened, just grouped by label.
+                # (per-hit signal annotation).
                 for label in labels:
-                    for t in self._sum(project, sh, (label,)):
-                        pairs.append((sh, label, t))
-        vecs: list[tuple[str, str, list[float]]] = []
-        if pairs:
-            embs = embed_batch(self._embed, [t for _, _, t in pairs])
-            vecs = [(pairs[j][0], pairs[j][1], embs[j]) for j in range(len(pairs))]
+                    for v in amap.get((sh, label), ()):
+                        vecs.append((sh, label, v))
         entry = (reps, vecs)
         with self._lock:
             if self._gen.get(project, 0) == gen:  # no write raced this build

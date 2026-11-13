@@ -141,16 +141,23 @@ def _alias_cache():
         "c3": ("body three", {"project": "p", "section_hash": "s3"}),
     }
 
-    def summaries(_project: str, sh: str, labels: tuple[str, ...]) -> list[str]:
+    def texts(sh: str, label: str) -> list[str]:
         # s1 gets TWO aliases per label (the max matters), s3 gets none at all --
         # a section with no vector must simply not appear.
         if sh == "s1":
-            return [f"kubernetes orchestration {labels[0]}", "feline domestic animals"]
+            return [f"kubernetes orchestration {label}", "feline domestic animals"]
         if sh == "s2":
-            return [f"shipping container scheduling {labels[0]}"]
+            return [f"shipping container scheduling {label}"]
         return []
 
-    return SummaryVectorCache(_DocStore(docs), EMB, summaries)
+    def aliases(_project: str, labels: tuple[str, ...]) -> dict[Any, list[Any]]:
+        # {(section, label): vectors in line order}, as crib.enrichments reads them
+        from crib.embed import embed_batch
+
+        return {(sh, label): embed_batch(EMB, texts(sh, label))
+                for sh in ("s1", "s2", "s3") for label in labels if texts(sh, label)}
+
+    return SummaryVectorCache(_DocStore(docs), aliases)
 
 
 def _ref_best(vecs, qv):

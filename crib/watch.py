@@ -66,26 +66,35 @@ def decode(projects_dir: Path, raw_path: str) -> tuple[str, str, str] | None:
 
 
 # The derived-record tiers under a project's global dir, by directory: which
-# facet's refresh a changed record file feeds (crib.filesync). A record's
-# filename is its slug, so a dot-prefixed name is a record, not clutter.
-RECORD_TIERS = {"symbol_index": ("symbol", ".toml")}
+# facet's refresh a changed record file feeds (crib.filesync), the suffix, and
+# how deep below the tier dir its files sit (symbol records directly in it, the
+# enrichments under one directory per label). A record's filename is its slug,
+# so a dot-prefixed name is a record, not clutter.
+RECORD_TIERS = {
+    "symbol_index": ("symbol", ".toml", 1),
+    "keyword_index": ("keywords", ".toml", 2),
+    "summary_index": ("summary", ".toml", 2),
+}
 
 
 def decode_record(projects_dir: Path, raw_path: str) -> tuple[str, str, str] | None:
-    """Map a filesystem path to (project, facet, filename) for a record file
-    directly under `<project>/<tier>/` (see RECORD_TIERS)."""
+    """Map a filesystem path to (project, facet, name) for a record file under
+    `<project>/<tier>/` at its tier's depth (see RECORD_TIERS); `name` is the
+    path below the tier dir."""
     p = Path(raw_path)
     try:
         rel = p.resolve().relative_to(projects_dir.resolve())
     except ValueError:
         return None
     parts = rel.parts
-    if len(parts) != 3 or parts[1] not in RECORD_TIERS:
+    if len(parts) < 3 or parts[1] not in RECORD_TIERS:
         return None
-    facet, suffix = RECORD_TIERS[parts[1]]
-    if not parts[2].endswith(suffix) or fnmatch.fnmatch(parts[2], "*.tmp"):
+    facet, suffix, depth = RECORD_TIERS[parts[1]]
+    if len(parts) != 2 + depth:
         return None
-    return parts[0], facet, parts[2]
+    if not parts[-1].endswith(suffix) or fnmatch.fnmatch(parts[-1], "*.tmp"):
+        return None
+    return parts[0], facet, "/".join(parts[2:])
 
 
 def decode_store(stores: dict[str, Path], raw_path: str) -> tuple[str, str, str] | None:

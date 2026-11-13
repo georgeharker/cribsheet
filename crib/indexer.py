@@ -78,16 +78,16 @@ class IndexEngine:
     def __init__(self, store: Store, embedder: Embedder,
                  window_words: int = WINDOW_WORDS,
                  overlap: int = WINDOW_OVERLAP,
-                 keyword_terms=None, summary_terms=None) -> None:
+                 keyword_map=None, alias_vectors=None) -> None:
         self.store = store
         self.embedder = embedder
         self.window_words = window_words
         self.overlap = overlap
-        # warm per-project BM25 (DESIGN §10.3); keyword_terms folds keyword_index
+        # warm per-project BM25 (DESIGN §10.3); keyword_map folds keyword_index
         # labels into the corpus when activated (§3.1)
-        self.lexical = LexicalCache(store, keyword_terms)
-        # warm per-project summary_index alias vectors (dense side, §3)
-        self.summaries = SummaryVectorCache(store, embedder, summary_terms)
+        self.lexical = LexicalCache(store, keyword_map)
+        # the in-memory index over the store's summary alias vectors (§3)
+        self.summaries = SummaryVectorCache(store, alias_vectors)
         self._locks: dict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
 
     def _key(self, project: str, store: str, relpath: str) -> str:

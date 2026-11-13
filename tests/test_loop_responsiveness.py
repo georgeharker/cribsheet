@@ -69,7 +69,7 @@ def slow_crib(tmp_path, monkeypatch):
     emb = SlowEmbedder()
     crib.embedder = emb
     crib.index.embedder = emb
-    crib.index.summaries._embed = emb
+    crib.enrichments.embedder = emb  # alias lines embed through the facet now
     return crib, emb
 
 

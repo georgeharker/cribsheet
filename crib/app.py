@@ -182,13 +182,20 @@ class Crib:
             build_embedder(embed_cfg, stored_dim=_stored_dim(store)),
             store,
         )
+        # The keyword_index / summary_index enrichments, mapped into the store
+        # (crib.enrichments): what the BM25 corpus and the alias index read.
+        from .enrichments import Enrichments
+
+        self.enrichments = Enrichments(
+            store, self.embedder, lambda p: self.project_paths(p).project_dir
+        )
         self.index = IndexEngine(
             store,
             self.embedder,
             config.chunk.window_words,
             config.chunk.overlap_words,
-            keyword_terms=self._keyword_terms,
-            summary_terms=self._summary_terms,
+            keyword_map=self.enrichments.keyword_map,
+            alias_vectors=self.enrichments.alias_vectors,
         )
         # DESIGN §14: network git is CLI-side (the terminal owns auth) — the
         # daemon only ever snapshots/reads history locally.
@@ -433,9 +440,18 @@ class Crib:
         crib.watch.RECORD_TIERS): bring the store in line now, rather than at the
         next read. Reads still refresh, so whichever comes first does the work
         and the stamps make the other a no-op."""
-        if facet != "symbol" or project not in self.projects():
+        if project not in self.projects():
             return
-        await asyncio.to_thread(self._refresh_symbols, project, names)
+        if facet == "symbol":
+            await asyncio.to_thread(self._refresh_symbols, project, names)
+        elif facet in ("keywords", "summary"):
+            await asyncio.to_thread(self._refresh_enrichments, project, facet, names)
+
+    def _refresh_enrichments(self, project: str, facet: str,
+                             names: list[str] | None) -> None:
+        # the BM25 corpus and the alias index fold these in: drop them on change
+        if self.enrichments.refresh(project, facet, names):
+            self.index.invalidate_caches(project)
 
     def _refresh_symbols(self, project: str, names: list[str] | None = None) -> None:
         self.code.refresh(project, names)
@@ -682,31 +698,6 @@ class Crib:
 
     def notes_dir(self, project: str) -> Path:
         return self.notestore.dir(project)
-
-    def _keyword_terms(
-        self, project: str, section_hash: str, labels: tuple[str, ...]
-    ) -> list[str]:
-        """Per-section keyword_index terms for the given labels — the BM25 feed
-        (§3.1). Read from the section-addressed TOML store; empty when a section
-        has no keyword set for a label yet (graceful: BM25 falls back to
-        body+heading)."""
-        from .section_index import SectionIndex
-
-        return SectionIndex(
-            self.project_paths(project).project_dir, "keyword_index"
-        ).terms_for(section_hash, list(labels))
-
-    def _summary_terms(
-        self, project: str, section_hash: str, labels: tuple[str, ...]
-    ) -> list[str]:
-        """Per-section summary_index rephrasings for the given labels — the dense
-        alias feed (§3). Read from the section-addressed TOML store; empty when a
-        section has no summary for a label yet."""
-        from .section_index import SectionIndex
-
-        return SectionIndex(
-            self.project_paths(project).project_dir, "summary_index"
-        ).terms_for(section_hash, list(labels))
 
     def _source_roots(self, project: str) -> "SourceRoots":
         """Per-project registry of docs indexed in-situ (prefix -> repo root)."""

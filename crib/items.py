@@ -52,6 +52,10 @@ FACETS: Mapping[str, Mapping[str, str]] = {
         "updated": "VARCHAR",
         "body_hash": "VARCHAR",
     },
+    # The enrichments (crib.enrichments): a section's keyword_index terms for one
+    # label, and one summary_index alias line (its vector is the item's).
+    "keywords": {"label": "VARCHAR", "section_hash": "VARCHAR", "terms": "VARCHAR[]"},
+    "summary": {"label": "VARCHAR", "section_hash": "VARCHAR", "n": "BIGINT"},
     "learning": {
         "symbol_ref": "VARCHAR",
         "lang": "VARCHAR",
