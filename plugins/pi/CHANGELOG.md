@@ -9,6 +9,22 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.23.0-dev3] - 2026-11-13
+
+### Added
+
+- `crib generate setup`: finds the LLM providers this machine has (API keys
+  in the environment, a local Ollama or llama-swap, the `claude` CLI,
+  providers already defined for zsh-ai), asks which to use and which model,
+  and writes `~/.config/crib/models.toml` and the `[generate]` section of
+  `config.toml` after showing the diff. Both files are backed up first; a
+  symlinked config is edited where it lives. Ollama Cloud gets
+  `structured = "tool"`, and providers get room for crib's bulk replies.
+- `crib generate test`: one small call per purpose, reporting whether the key
+  works and structured output comes back.
+- The README quick start has a generation step, and
+  `docs/generate.toml.example` shows current practice.
+
 ## [0.23.0-dev2] - 2026-11-13
 
 ### Added
