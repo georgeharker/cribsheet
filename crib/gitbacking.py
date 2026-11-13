@@ -80,6 +80,32 @@ def _text(out: str | bytes | None) -> str:
     return out if isinstance(out, str) else out.decode("utf-8", "replace")
 
 
+
+
+def redact_url(url: str) -> str:
+    """`url` without the secret in its userinfo: `https://user:TOKEN@host/x`
+    -> `https://user@host/x`, and a bare-token userinfo (`https://TOKEN@host`,
+    how a token is often embedded) dropped entirely. Anything that isn't an
+    URL with userinfo (an ssh `git@host:path`, a local path) is returned as
+    is: it carries no secret."""
+    from urllib.parse import urlsplit, urlunsplit
+
+    try:
+        parts = urlsplit(url)
+    except ValueError:
+        return url
+    if not parts.scheme or "@" not in parts.netloc:
+        return url
+    userinfo, _, host = parts.netloc.rpartition("@")
+    user, sep, _secret = userinfo.partition(":")
+    if sep:  # user:password
+        netloc = f"{user}@{host}" if user else host
+    elif parts.scheme in ("http", "https"):  # a lone token as the username
+        netloc = host
+    else:
+        return url
+    return urlunsplit(parts._replace(netloc=netloc))
+
 @dataclass
 class SyncResult:
     ok: bool
@@ -207,6 +233,12 @@ class GitBacking:
         self._ensure_gitattributes()
         self._ensure_merge_driver()
 
+    def display_remote(self) -> str | None:
+        """`current_remote` as it may be SHOWN (status, messages): with any
+        password or token in the URL removed (see `redact_url`)."""
+        remote = self.current_remote()
+        return redact_url(remote) if remote else None
+
     def current_remote(self) -> str | None:
         """The configured `origin` URL, or None."""
         r = self._run("remote", "get-url", "origin")
@@ -232,7 +264,7 @@ class GitBacking:
         )
         out: dict = {
             "enabled": True,
-            "remote": self.current_remote(),
+            "remote": self.display_remote(),
             "branch": branch,
             "dirty": dirty,
             "last_commit": last,
@@ -363,7 +395,7 @@ class GitBacking:
                 True,
                 False,
                 [],
-                f"joined {remote} at origin/{branch}",
+                f"joined {redact_url(remote)} at origin/{branch}",
                 changed=True,
             )
         # Brand-new / empty remote: fall back to bootstrap + (no-op) pull.
