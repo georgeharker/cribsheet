@@ -140,7 +140,71 @@ def _with_timeout(provider: Any, timeout: float | None) -> Any:
     return dataclasses.replace(provider, timeout=float(timeout))
 
 
+# Every generation call runs on ONE bounded pool of its own, under crib's own
+# deadline: a provider call whose cancellation never unwinds (a CLI that never
+# answers) can then hold a generation thread, never the threads tool calls and
+# store work run on. Sized from [generate] concurrency on first use.
+_POOL: Any = None
+_POOL_LOCK = threading.Lock()
+
+
+def _pool(cfg: GenerateConfig) -> Any:
+    global _POOL
+    from concurrent.futures import ThreadPoolExecutor
+
+    with _POOL_LOCK:
+        if _POOL is None:
+            _POOL = ThreadPoolExecutor(
+                max_workers=max(2, int(getattr(cfg, "concurrency", 6) or 6)),
+                thread_name_prefix="crib-generate")
+        return _POOL
+
+
+def deadline_s(cfg: GenerateConfig) -> float:
+    """How long a caller waits for one generation call: past the provider's own
+    timeout (llmkit's), so that one normally fires first, with room for its
+    retries; crib's backstop when it doesn't."""
+    return float(cfg.timeout or 90.0) * 1.5 + 30.0
+
+
+def _bounded(cfg: GenerateConfig, purpose: str, fn: Any, *args: Any, **kw: Any) -> Any:
+    """`fn(*args, **kw)` on the generation pool, waited on for at most
+    `deadline_s`. While it runs it is listed in `status` (a background job
+    named for its purpose), so a stuck call is visible; past the deadline the
+    caller gets a GenerationError and the call is left to finish (or not) on
+    its own thread."""
+    from concurrent.futures import TimeoutError as FutureTimeout
+
+    from .diag import DIAG
+
+    def run() -> Any:
+        token = DIAG.job(f"generation ({purpose})")
+        try:
+            return fn(*args, **kw)
+        finally:
+            DIAG.done(token)
+
+    fut = _pool(cfg).submit(run)
+    limit = deadline_s(cfg)
+    try:
+        return fut.result(timeout=limit)
+    except FutureTimeout:
+        fut.cancel()  # still queued: never starts
+        raise GenerationError(
+            f"no reply from the {purpose!r} provider in {limit:.0f}s; the call was "
+            f"abandoned (the code's structure is saved, its description waits)"
+        ) from None
+
+
 def generate(
+    cfg: GenerateConfig, system: str, user: str, purpose: str = "distill"
+) -> str:
+    """Run one chat turn on the generation pool (see `_bounded`); return the
+    content stream as a stripped string."""
+    return _bounded(cfg, purpose, _generate, cfg, system, user, purpose)
+
+
+def _generate(
     cfg: GenerateConfig, system: str, user: str, purpose: str = "distill"
 ) -> str:
     """Run one chat turn; return the content stream as a stripped string.
@@ -186,6 +250,20 @@ def _retry_delay(e: BaseException, attempt: int) -> float | None:
 
 
 def generate_structured(
+    cfg: GenerateConfig,
+    system: str,
+    user: str,
+    schema: dict,
+    purpose: str = "elaborate",
+    schema_name: str = "emit",
+    schema_description: str = "",
+) -> object:
+    """`_generate_structured` on the generation pool (see `_bounded`)."""
+    return _bounded(cfg, purpose, _generate_structured, cfg, system, user, schema,
+                    purpose, schema_name, schema_description)
+
+
+def _generate_structured(
     cfg: GenerateConfig,
     system: str,
     user: str,

@@ -1870,9 +1870,12 @@ class Crib:
         [generate] mode is "on"."""
         import functools
 
+        # Never inline: a query must not wait on an LLM. Changed files are
+        # re-indexed for structure now and queued for description (the daemon's
+        # describe queue; without one, as in a one-shot CLI, inline).
         self.code.revalidate(proj, functools.partial(
             self._index_code_file_tracked,
-            describe_mode=self._background_describe("inline")))
+            describe_mode=self._background_describe("defer")))
 
     def _may_generate(self, background: bool) -> bool:
         """[generate] mode: "on" generates anywhere, "explicit" only for a verb
