@@ -44,7 +44,7 @@ dependencies = [
     # never "success with no data" (0.2.1); Provider.timeout, which crib passes
     # so a stalled stream ends; posix_spawn for claude_code, because the DuckDB
     # daemon must never fork on macOS (see crib/proc.py) (both 0.2.0).
-    "polyllmkit[md,all]>=0.2.2",
+    "polyllmkit[md,all]>=0.2.3",
 ]
 
 [project.optional-dependencies]
