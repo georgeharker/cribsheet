@@ -9,6 +9,37 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.23.1-dev2] - 2026-11-13
+
+### Fixed
+
+- **Opening the store can no longer spin.** An open of a store already at
+  this version writes nothing, so it can't conflict with other connections.
+  A conversion (a new file or a version change) runs once, under a lock
+  that every crib process on the machine shares, as one transaction; others
+  wait and find it done. If other writes keep conflicting, crib waits up to
+  two minutes and then says what to do, instead of retrying silently.
+- **A store file DuckDB can't read is set aside and rebuilt**, kept as
+  `crib.duckdb.broken-<time>` (it is a cache rebuilt from your files).
+- **A schema change keeps the embedding cache**, so a conversion no longer
+  re-embeds every note and symbol description.
+- **A hung LLM provider can't wedge the daemon.** Generation runs on its own
+  small pool with crib's own deadline (165 s by default); past it the call is
+  abandoned and the description waits, and tool calls never queue behind it.
+  A code query that finds changed files queues their descriptions instead of
+  waiting for them. Each generation call shows in `status` while it runs.
+- With the Claude CLI as the provider, it starts with no MCP servers, and a
+  timed-out call kills it even when it hangs at startup (polyllmkit 0.2.3,
+  now required).
+- The daemon's log starts before the store opens, so a hang there leaves a
+  trace.
+
+### Changed
+
+- `crib status` prints the daemon's background work: uptime and log file,
+  each running job and how long it has run, queued work, file watching when
+  it isn't healthy, and the generation mode with the descriptions waiting.
+
 ## [0.23.1-dev1] - 2026-11-13
 
 No changes since 0.23.0-dev4: the same code with the patch version bumped, so
