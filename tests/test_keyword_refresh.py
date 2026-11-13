@@ -19,6 +19,7 @@ def crib(tmp_path, monkeypatch):
     monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "data"))
     monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
     cfg = Config()
+    cfg.generate.mode = "on"  # the write-path refresh is background generation
     cfg.retrieve.keyword_labels = ["keyword_index"]
     return Crib(Paths.resolve().ensure(), cfg, InMemoryStore())
 

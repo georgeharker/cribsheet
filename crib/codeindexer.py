@@ -343,8 +343,13 @@ class CodeIndexer:
         # `content_hash present + empty description` is the durable "needs describing"
         # signal the startup backlog scan reconciles after a crash (docs § Deferred
         # describe). INLINE (cold onboard / explicit code_index): describe right here.
+        # NONE (generation not allowed here, see [generate] mode): the same as
+        # DEFER without the queue: structure now, a changed symbol's description
+        # left blank as the durable "needs describing" signal.
+        if self.config.generate.resolved_mode() == "off":
+            describe_mode = "none"  # [generate] mode = "off": never, even when asked
         defer = describe_mode == "defer" and self._describe_q is not None
-        if defer:
+        if defer or describe_mode == "none":
             for sym in entries:
                 ex = by_parts.get(_parts(sym), {})
                 if ex.get("content_hash") == sym["content_hash"] and ex.get(

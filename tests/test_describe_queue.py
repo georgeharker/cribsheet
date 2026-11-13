@@ -29,7 +29,7 @@ def crib(tmp_path, monkeypatch):
     monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "config"))
     monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "data"))
     monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
-    return Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+    return Crib(Paths.resolve().ensure(), _generation_on(), InMemoryStore())
 
 
 def run(coro):
@@ -335,3 +335,11 @@ def test_backlog_reindexes_only_blank_described_files(crib, tmp_path, monkeypatc
                         describe_mode="inline": calls.append((rel, describe_mode)))
     run(crib._describe_backlog())
     assert calls == [("pkg/mod.py", "inline")]                   # inline re-drive, once
+
+
+def _generation_on() -> Config:
+    """These tests drive background generation, which [generate] mode "on"
+    allows (the default without a models config is "explicit")."""
+    cfg = Config()
+    cfg.generate.mode = "on"
+    return cfg

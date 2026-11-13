@@ -191,6 +191,17 @@ class GenerateConfig:
     llmkit extra (`llmkit[bridge]` for openai, `[anthropic]`, `[google]`,
     `[claude]`)."""
 
+    # When crib may generate (descriptions, keywords, summaries):
+    #   "on"        whenever it needs to, including in the background (watcher
+    #               edits, startup catch-ups, a query that finds code changed);
+    #   "explicit"  only when asked (project_index, code_index, elaborate,
+    #               summarize, distill): background work saves structure and
+    #               leaves descriptions pending, counted in `status`;
+    #   "off"       never; the generation verbs refuse.
+    # Unset: "on" when generation is configured (a providers `config`, or an
+    # inline adapter other than the Claude CLI fallback), else "explicit", so a
+    # daemon nobody set up never drives the Claude CLI on its own.
+    mode: str | None = None
     # providers/profiles file (llmkit format, like models.toml)
     config: str | None = None
     profile: str | None = None  # profile whose widget keys map purpose→provider
@@ -201,6 +212,16 @@ class GenerateConfig:
     endpoint: str | None = None
     api_key_env: str | None = None
     api_key: str | None = None
+    def resolved_mode(self) -> str:
+        """`mode`, or its default (see `mode`)."""
+        if self.mode:
+            if self.mode not in ("on", "explicit", "off"):
+                raise ValueError(
+                    f"[generate] mode must be on, explicit or off, not {self.mode!r}")
+            return self.mode
+        configured = bool(self.config) or self.adapter != "claude_code"
+        return "on" if configured else "explicit"
+
     max_tokens: int = 8192  # inline-fallback default; keep generous — a low
     # cap truncates bulk structured output (the models.toml
     # providers set 8192 too; 2048/1024 cut batches mid-JSON)

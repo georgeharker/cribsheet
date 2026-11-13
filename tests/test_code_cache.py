@@ -25,7 +25,7 @@ def crib(tmp_path, monkeypatch):
     monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "config"))
     monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "data"))
     monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
-    return Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+    return Crib(Paths.resolve().ensure(), _generation_on(), InMemoryStore())
 
 
 def run(coro):
@@ -139,7 +139,7 @@ def test_revalidate_reindexes_merge_dirtied_file(crib, tmp_path, monkeypatch):
     reindexed: list[str] = []
     monkeypatch.setattr(
         crib, "_index_code_file_tracked",
-        lambda root, rel, proj, patch_edges, existing=None: reindexed.append(rel))
+        lambda root, rel, proj, patch_edges, *a, **k: reindexed.append(rel))
     crib._revalidate("p")
     assert reindexed == []                               # fresh toml, real hash → clean
 
@@ -196,7 +196,7 @@ def test_reconcile_rebuilds_merge_dirtied_files(crib, tmp_path, monkeypatch):
     reindexed: list[str] = []
     monkeypatch.setattr(
         crib, "_index_code_file_tracked",
-        lambda root, rel, proj, patch_edges, existing=None: reindexed.append(rel))
+        lambda root, rel, proj, patch_edges, *a, **k: reindexed.append(rel))
     out = run(crib._reindex_dirty_code())
     assert out == {"p": 1}                               # one FILE rebuilt…
     assert reindexed == ["pkg/mod.py"]                   # …for two dirty symbols
@@ -289,3 +289,11 @@ def test_partial_extract_reconfirms_before_trusting_shrink(crib, tmp_path, monke
     assert out["symbols"] == 2                  # the full set won
     kept = {e["symbol_ref"] for e in SymbolIndex(crib.paths.project_dir("p")).all()}
     assert {"m.py#a", "m.py#b"} <= kept         # nothing deleted on a partial say-so
+
+
+def _generation_on() -> Config:
+    """These tests drive background generation, which [generate] mode "on"
+    allows (the default without a models config is "explicit")."""
+    cfg = Config()
+    cfg.generate.mode = "on"
+    return cfg

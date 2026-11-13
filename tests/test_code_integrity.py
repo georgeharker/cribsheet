@@ -119,7 +119,7 @@ def crib(tmp_path, monkeypatch):
     monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "config"))
     monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "data"))
     monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
-    return Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+    return Crib(Paths.resolve().ensure(), _generation_on(), InMemoryStore())
 
 
 def _sym(fq: str, file_hash: str, *, file: str = "m.py") -> dict:
@@ -401,7 +401,7 @@ def test_dirty_record_is_swept_back_into_the_index_and_rewritten_valid(
     reindexed: list[str] = []
     monkeypatch.setattr(
         crib, "_index_code_file_tracked",
-        lambda rt, rel, proj, patch_edges, existing=None: reindexed.append(rel))
+        lambda rt, rel, proj, patch_edges, *a, **k: reindexed.append(rel))
     crib._revalidate("p")
     assert reindexed == ["pkg/mod.py"]                 # the backlog picks it up
 
@@ -475,3 +475,11 @@ def test_sweep_reports_unreadable_files(crib, tmp_path, monkeypatch):
     out = run(crib.indexer._index_project_code("p", root, ["*.py"]))
     assert out["files_indexed"] == 1
     assert [s["error"] for s in out["skipped"]] == ["n.py: bad codec"]
+
+
+def _generation_on() -> Config:
+    """These tests drive background generation, which [generate] mode "on"
+    allows (the default without a models config is "explicit")."""
+    cfg = Config()
+    cfg.generate.mode = "on"
+    return cfg

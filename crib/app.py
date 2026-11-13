@@ -557,7 +557,7 @@ class Crib:
                         project,
                         True,
                         None,
-                        "defer",
+                        self._background_describe("defer"),
                     )
             except Exception as e:  # noqa: BLE001 — per-file batch boundary, see below
                 # OUTER RUNNER (per-file indexing batch): one malformed/unreadable
@@ -586,6 +586,8 @@ class Crib:
         from .codeindex import SymbolIndex
         from .genledger import provider_id
 
+        if not self._may_generate(background=True):
+            return  # [generate] mode: descriptions wait for an explicit index
         budget = max(0, int(self.config.generate.backlog_budget))
         provider = provider_id(self.config.generate, "elaborate")
         pending = attempted = backing_off = 0
@@ -656,7 +658,7 @@ class Crib:
         the orphan prune (`SectionIndex.prune`) for each label."""
         if not (
             self.config.retrieve.keyword_labels or self.config.retrieve.summary_labels
-        ):
+        ) or not self._may_generate(background=True):
             return
         for name in self.projects():
             if self._skip_if_unavailable(self.project_paths(name), "not enriching"):
@@ -753,6 +755,7 @@ class Crib:
                 or self.config.retrieve.summary_labels
             )
             or self._describe_q is None
+            or not self._may_generate(background=True)
         ):
             return  # describe queue present ⇒ daemon
         try:
@@ -1248,7 +1251,8 @@ class Crib:
                 async with sem:
                     try:
                         await asyncio.to_thread(
-                            self._index_code_file_tracked, root, rel, proj, True
+                            self._index_code_file_tracked, root, rel, proj, True,
+                            None, self._background_describe("inline"),
                         )
                         return True
                     except Exception:  # noqa: BLE001 — the lazy gate backstops
@@ -1649,6 +1653,7 @@ class Crib:
         facts/decisions, drop deliberation, preserve code verbatim. Thrash-guarded
         (no write if the body is unchanged), marked `source: distilled`, written
         through the version ring so a bad revision is a cheap rollback."""
+        self._require_generation("distill")
         proj = self.resolve_project(project, cwd)
         path = self.abspath(proj, relpath)
         if not path.exists():
@@ -1792,8 +1797,32 @@ class Crib:
         return sorted(out, key=lambda x: -x["symbols"])
 
     def _revalidate(self, proj: str) -> None:
-        """Delegate to CodeStore, injecting the pipeline's per-file indexer."""
-        self.code.revalidate(proj, self._index_code_file_tracked)
+        """Delegate to CodeStore, injecting the pipeline's per-file indexer. A
+        query finding code changed is background work: it describes only when
+        [generate] mode is "on"."""
+        import functools
+
+        self.code.revalidate(proj, functools.partial(
+            self._index_code_file_tracked,
+            describe_mode=self._background_describe("inline")))
+
+    def _may_generate(self, background: bool) -> bool:
+        """[generate] mode: "on" generates anywhere, "explicit" only for a verb
+        someone called, "off" never."""
+        mode = self.config.generate.resolved_mode()
+        return mode == "on" or (mode == "explicit" and not background)
+
+    def _require_generation(self, verb: str) -> None:
+        if self.config.generate.resolved_mode() == "off":
+            raise CribUserError(
+                f"{verb} needs LLM generation, and [generate] mode is \"off\" in "
+                f"crib's config; set it to \"explicit\" or \"on\" to allow it")
+
+    def _background_describe(self, wanted: str) -> str:
+        """The describe mode for indexing nobody asked for: `wanted` when
+        background generation is allowed, else "none" (structure now, the
+        description left pending)."""
+        return wanted if self._may_generate(background=True) else "none"
 
     def _drop_file(self, proj: str, relpath: str) -> None:
         self.code.drop_file(proj, relpath)
@@ -4299,12 +4328,39 @@ class Crib:
             except Exception as e:  # noqa: BLE001 — status must still answer
                 out["store_stats"] = {"error": str(e)}
         out["daemon"] = self._daemon_state()
+        out["generation"] = self._generation_state(projects)
         hits = getattr(self.embedder, "hits", None)
         if hits is not None:
             out["embed_cache"] = {
                 "hits": hits,
                 "misses": getattr(self.embedder, "misses", 0),
             }
+        return out
+
+    def _generation_state(self, projects: list[dict[str, Any]]) -> dict[str, Any]:
+        """[generate] mode, and, unless it is "on", the symbols whose description
+        is waiting for an explicit index (structure saved, description blank)."""
+        mode = self.config.generate.resolved_mode()
+        out: dict[str, Any] = {"mode": mode}
+        if mode != "on":
+            pending: dict[str, int] = {}
+            for row in projects:
+                if not row.get("symbols"):
+                    continue
+                try:
+                    rows = self.store.facet_values(
+                        {"project": row["project"], "kind": "symbol"},
+                        ["description", "symbol_content_hash"])
+                except Exception:  # noqa: BLE001 — status must still answer
+                    continue
+                n = sum(1 for r in rows
+                        if r["symbol_content_hash"] and not r["description"])
+                if n:
+                    pending[row["project"]] = n
+            if pending:
+                out["pending_descriptions"] = pending
+                out["next"] = ("descriptions are generated only on request in this "
+                               "mode: `crib project index` (or code_index) fills them")
         return out
 
     def _daemon_state(self) -> dict[str, Any]:
@@ -5172,6 +5228,11 @@ class Crib:
         The per-section mop-up sweeps the bulk-missed tail per facet (plain-text
         `parse_terms`, the proven path). Bounded-concurrent, per-call timeout,
         error-isolated; off the write path."""
+        if not self._may_generate(background):
+            if background:
+                return {"project": proj, "written": 0, "skipped": 0,
+                        "pending": "generation waits for an explicit verb"}
+            self._require_generation(purpose)
         from .generate import (
             GenerationError,
             agenerate,
