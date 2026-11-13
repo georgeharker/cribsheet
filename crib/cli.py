@@ -398,6 +398,7 @@ def _emit_status(d: Any, as_json: bool) -> None:
         print(f"{'sweep':10} {proj}: {sw.get('done', 0)}/{sw.get('total', 0)} files")
     for proj, files in (d.get("indexing") or {}).items():
         print(f"{'indexing':10} {proj}: {', '.join(files)}")
+    _emit_daemon(d)
     projs = d.get("projects") or []
     print(f"{'projects':10} {len(projs)}")
     if projs:
@@ -2454,6 +2455,40 @@ def _E_note(d, a):
 
 def _E_apropos(d, a):
     _emit_apropos(d, a.json)
+
+
+def _emit_daemon(d: dict[str, Any]) -> None:
+    """status's daemon and generation state, one line per thing that is going on."""
+    dm = d.get("daemon") or {}
+    if dm:
+        log = f"  log {dm['log_file']}" if dm.get("log_file") else ""
+        print(f"{'daemon':10} up {_secs(dm.get('uptime_s', 0))}{log}")
+    for j in dm.get("background") or []:
+        detail = f"  {j['detail']}" if j.get("detail") else ""
+        print(f"{'running':10} {j['job']} for {_secs(j.get('running_s', 0))}{detail}")
+    queued = {k: v for k, v in (dm.get("queues") or {}).items() if v}
+    if queued:
+        print(f"{'queued':10} " + ", ".join(f"{k.replace('_', ' ')} {v}"
+                                             for k, v in queued.items()))
+    notes = (dm.get("watchers") or {}).get("notes") or {}
+    if notes.get("state") and notes["state"] != "healthy":
+        lat = (f" ({notes['last_latency_s']}s)"
+               if notes.get("last_latency_s") is not None else "")
+        print(f"{'watching':10} {notes['state']}{lat}: reads still refresh; a "
+              f"catch-up sweep runs while degraded")
+    gen = d.get("generation") or {}
+    if gen:
+        pending = gen.get("pending_descriptions") or {}
+        waiting = (": descriptions waiting in "
+                   + ", ".join(f"{p} {n}" for p, n in pending.items())
+                   if pending else "")
+        print(f"{'generate':10} {gen.get('mode', '?')}{waiting}")
+
+
+def _secs(s: float) -> str:
+    s = int(s)
+    return f"{s // 3600}h{s % 3600 // 60:02d}m" if s >= 3600 else (
+        f"{s // 60}m{s % 60:02d}s" if s >= 60 else f"{s}s")
 
 
 def _E_status(d, a):

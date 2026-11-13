@@ -149,3 +149,20 @@ def test_the_probe_file_is_never_committed(tmp_path):
     g._ensure_gitignore()  # idempotent
     lines = (tmp_path / ".gitignore").read_text().splitlines()
     assert lines.count(PROBE_NAME) == 1 and lines.count(".trash/") == 1
+
+
+def test_plain_status_prints_the_background_work(capsys):
+    from crib.cli import _emit_daemon
+
+    _emit_daemon({
+        "daemon": {"uptime_s": 3725, "log_file": "/x/daemon.log",
+                   "background": [{"job": "reconcile", "running_s": 42.0}],
+                   "queues": {"describe_files": 3, "describe_symbols": 0},
+                   "watchers": {"notes": {"state": "delayed", "last_latency_s": 41.2}}},
+        "generation": {"mode": "explicit", "pending_descriptions": {"un-bien": 120}}})
+    out = capsys.readouterr().out
+    assert "daemon     up 1h02m  log /x/daemon.log" in out
+    assert "running    reconcile for 42s" in out
+    assert "queued     describe files 3" in out and "describe symbols" not in out
+    assert "watching   delayed (41.2s)" in out
+    assert "generate   explicit: descriptions waiting in un-bien 120" in out
