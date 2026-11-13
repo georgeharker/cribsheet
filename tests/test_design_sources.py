@@ -69,21 +69,36 @@ def _rewrite(crib, old: str, new: str, relpath: str = "spec.md") -> None:
 
 
 def _kinds(crib) -> list[str]:
-    return [c["change_kind"] for r in crib.design_check(project="p")["tainted"]
-            for c in r["causes"]]
+    return [
+        c["change_kind"]
+        for r in crib.design_check(project="p")["tainted"]
+        for c in r["causes"]
+    ]
 
 
 # ── the citation resolves to exactly one section ──────────────────────────────
 
+
 def test_a_source_resolves_by_unique_heading_suffix(crib):
-    out = run(crib.design_add("Single writer", "one writer", project="p",
-                              sources=["spec.md#4. Coordination"]))
+    out = run(
+        crib.design_add(
+            "Single writer",
+            "one writer",
+            project="p",
+            sources=["spec.md#4. Coordination"],
+        )
+    )
     # the SUFFIX is what you type; the full breadcrumb is what gets recorded, so
     # the citation still reads like the doc after someone re-nests a heading
     assert out["sources"] == ["spec.md#Spec/4. Coordination"]
     assert crib.design_read("Single writer", project="p")["sources"] == [
-        {"ref": "spec.md", "heading": "Spec/4. Coordination",
-         "label": "spec.md#Spec/4. Coordination", "state": "ok"}]
+        {
+            "ref": "spec.md",
+            "heading": "Spec/4. Coordination",
+            "label": "spec.md#Spec/4. Coordination",
+            "state": "ok",
+        }
+    ]
 
 
 def test_an_ambiguous_or_absent_heading_lists_the_candidates(crib):
@@ -108,10 +123,10 @@ def test_a_source_must_name_a_section_not_a_whole_doc(crib):
 def test_a_headingless_doc_is_its_own_section(crib):
     """The one exception, and it is not really one: with no headings the whole
     body IS the section the chunker hashes, so citing the doc cites that."""
-    run(crib.store_note("Flat prose, no headings at all.", title="Flat",
-                        project="p"))
-    out = run(crib.design_add("From the flat doc", "x", project="p",
-                              sources=["flat.md"]))
+    run(crib.store_note("Flat prose, no headings at all.", title="Flat", project="p"))
+    out = run(
+        crib.design_add("From the flat doc", "x", project="p", sources=["flat.md"])
+    )
     assert out["sources"] == ["flat.md"]
     assert crib.design_check(project="p")["clean"]
 
@@ -121,11 +136,18 @@ def test_a_headingless_doc_is_its_own_section(crib):
 
 # ── sources check (and only their own section) ────────────────────────────────
 
+
 def test_a_source_checks_its_own_section_only(crib):
     """Edit the cited section → tainted, with the doc + heading IN THE CHAIN.
     Edit elsewhere in the same doc → still clean."""
-    run(crib.design_add("Single writer", "one writer at a time", project="p",
-                        sources=["spec.md#4. Coordination"]))
+    run(
+        crib.design_add(
+            "Single writer",
+            "one writer at a time",
+            project="p",
+            sources=["spec.md#4. Coordination"],
+        )
+    )
     assert crib.design_check(project="p")["clean"]
 
     _rewrite(crib, "Dense-dominant fusion", "Sparse-dominant fusion")
@@ -137,26 +159,40 @@ def test_a_source_checks_its_own_section_only(crib):
     assert cause["change_kind"] == "source-changed"
     assert cause["source"] == "spec.md" and cause["heading"] == "Spec/4. Coordination"
     # the chain ends at what actually moved — the section, not the decision
-    assert row["paths"][0]["chain"] == ["Single writer",
-                                        "spec.md#Spec/4. Coordination"]
+    assert row["paths"][0]["chain"] == ["Single writer", "spec.md#Spec/4. Coordination"]
     assert "design_reaffirm single-writer.md" in row["next"]
     assert "never gates" in row["next"]
 
 
 def test_a_renamed_heading_is_its_own_change_kind(crib):
-    run(crib.design_add("Single writer", "one writer", project="p",
-                        sources=["spec.md#4. Coordination"]))
+    run(
+        crib.design_add(
+            "Single writer",
+            "one writer",
+            project="p",
+            sources=["spec.md#4. Coordination"],
+        )
+    )
     _rewrite(crib, "## 4. Coordination", "## 4. Coordination model")
     row = crib.design_check(project="p")["tainted"][0]
     assert row["causes"][0]["change_kind"] == "source-missing"
-    assert crib.design_read("Single writer", project="p")["sources"][0]["state"] \
+    assert (
+        crib.design_read("Single writer", project="p")["sources"][0]["state"]
         == "missing"
+    )
 
 
 def test_reaffirm_re_records_source_hashes_alongside_dep_hashes(crib):
     run(crib.design_add("Ground", "the ground", project="p"))
-    run(crib.design_add("Single writer", "one writer", deps=["Ground"], project="p",
-                        sources=["spec.md#4. Coordination"]))
+    run(
+        crib.design_add(
+            "Single writer",
+            "one writer",
+            deps=["Ground"],
+            project="p",
+            sources=["spec.md#4. Coordination"],
+        )
+    )
     _rewrite(crib, "One writer at a time", "Two writers, locked")
     run(crib.design_edit("Ground", "the ground moved", project="p"))
     assert sorted(_kinds(crib)) == ["dep-edited", "source-changed"]
@@ -164,12 +200,18 @@ def test_reaffirm_re_records_source_hashes_alongside_dep_hashes(crib):
     out = run(crib.design_reaffirm("Single writer", project="p"))
     assert out["sources"] == ["spec.md#Spec/4. Coordination"]
     assert out["missing_sources"] == [] and out["verified"]
-    assert crib.design_check(project="p")["clean"]        # BOTH families cleared
+    assert crib.design_check(project="p")["clean"]  # BOTH families cleared
 
 
 def test_reaffirm_does_not_paper_over_a_vanished_section(crib):
-    run(crib.design_add("Single writer", "one writer", project="p",
-                        sources=["spec.md#4. Coordination"]))
+    run(
+        crib.design_add(
+            "Single writer",
+            "one writer",
+            project="p",
+            sources=["spec.md#4. Coordination"],
+        )
+    )
     _rewrite(crib, "## 4. Coordination", "## 4. Coordination model")
     out = run(crib.design_reaffirm("Single writer", project="p"))
     assert out["missing_sources"] == ["spec.md#Spec/4. Coordination"]
@@ -177,13 +219,25 @@ def test_reaffirm_does_not_paper_over_a_vanished_section(crib):
 
 
 def test_design_edit_can_restate_the_citations(crib):
-    run(crib.design_add("Single writer", "one writer", project="p",
-                        sources=["spec.md#4. Coordination"]))
-    run(crib.design_edit("Single writer", "actually about fusion", project="p",
-                         sources=["spec.md#10.3 Fusion"]))
-    assert [s["label"] for s in
-            crib.design_read("Single writer", project="p")["sources"]] == [
-        "spec.md#Spec/10. Stack/10.3 Fusion"]
+    run(
+        crib.design_add(
+            "Single writer",
+            "one writer",
+            project="p",
+            sources=["spec.md#4. Coordination"],
+        )
+    )
+    run(
+        crib.design_edit(
+            "Single writer",
+            "actually about fusion",
+            project="p",
+            sources=["spec.md#10.3 Fusion"],
+        )
+    )
+    assert [
+        s["label"] for s in crib.design_read("Single writer", project="p")["sources"]
+    ] == ["spec.md#Spec/10. Stack/10.3 Fusion"]
 
 
 def test_sources_check_against_the_file_by_any_route(crib):
@@ -192,8 +246,11 @@ def test_sources_check_against_the_file_by_any_route(crib):
     the live store holds DESIGN.md's chunks, a fresh store does not.)"""
     root = crib.notestore.notes_root("p")
     (root / "loose.md").write_text("# Loose\n\n## Only\n\noriginal text.\n")
-    out = run(crib.design_add("From an unindexed doc", "x", project="p",
-                              sources=["loose.md#Only"]))
+    out = run(
+        crib.design_add(
+            "From an unindexed doc", "x", project="p", sources=["loose.md#Only"]
+        )
+    )
     assert out["sources"] == ["loose.md#Loose/Only"]
     assert crib.design_check(project="p")["clean"]
     (root / "loose.md").write_text("# Loose\n\n## Only\n\nrewritten text.\n")
@@ -202,13 +259,17 @@ def test_sources_check_against_the_file_by_any_route(crib):
 
 # ── proposed: the import tier ─────────────────────────────────────────────────
 
+
 def test_proposed_dep_rule_matrix(crib):
     """What a `proposed` decision does to the graph around it — the two halves
     that look contradictory apart and are one rule together: it has no authority
     to SPREAD (taints nothing) and no authority to BUILD ON (gates work)."""
     run(crib.design_add("Extracted", "from the doc", project="p", proposed=True))
-    run(crib.design_add("Built on it", "rests on the extracted one",
-                        deps=["Extracted"], project="p"))
+    run(
+        crib.design_add(
+            "Built on it", "rests on the extracted one", deps=["Extracted"], project="p"
+        )
+    )
     run(crib.plan_add("do the work", deps=["Extracted"], project="p"))
 
     # 1. a proposed dep never taints its dependents, not even as a new edge
@@ -225,14 +286,23 @@ def test_proposed_dep_rule_matrix(crib):
     run(crib.design_promote("Extracted", project="p"))
     assert [r["title"] for r in crib.plan_next(project="p")["items"]] == ["do the work"]
     run(crib.design_edit("Extracted", "restated again", project="p"))
-    assert [r["title"] for r in crib.design_check(project="p")["tainted"]] \
-        == ["Built on it"]
+    assert [r["title"] for r in crib.design_check(project="p")["tainted"]] == [
+        "Built on it"
+    ]
 
 
 def test_promote_seeds_checked_fresh_and_refuses_a_non_proposal(crib):
     run(crib.design_add("Ground", "the ground", project="p"))
-    run(crib.design_add("Extracted", "on the ground", deps=["Ground"], project="p",
-                        proposed=True, sources=["spec.md#10.3 Fusion"]))
+    run(
+        crib.design_add(
+            "Extracted",
+            "on the ground",
+            deps=["Ground"],
+            project="p",
+            proposed=True,
+            sources=["spec.md#10.3 Fusion"],
+        )
+    )
     _rewrite(crib, "Dense-dominant fusion", "Dense-dominant fusion, tuned")
     run(crib.design_edit("Ground", "the ground moved", project="p"))
     assert crib.design_check(project="p")["tainted"], "a proposal checks its OWN edges"
@@ -246,8 +316,15 @@ def test_promote_seeds_checked_fresh_and_refuses_a_non_proposal(crib):
 
 
 def test_a_proposal_is_listed_distinctly_and_queued_for_promotion(crib):
-    run(crib.design_add("Extracted", "from the doc", project="p", proposed=True,
-                        sources=["spec.md#4. Coordination"]))
+    run(
+        crib.design_add(
+            "Extracted",
+            "from the doc",
+            project="p",
+            proposed=True,
+            sources=["spec.md#4. Coordination"],
+        )
+    )
     listed = crib.design_list(project="p")
     assert listed["proposed"] == 1 and listed["designs"][0]["status"] == "proposed"
     assert listed["designs"][0]["sources"] == 1
@@ -266,31 +343,35 @@ def test_design_add_still_lands_active(crib):
 
 # ── plan items: sources report, they never re-open ────────────────────────────
 
+
 def test_a_changed_source_never_blocks_work(crib):
     """The line between the families: a dep gates, a source doesn't. The decision
     is tainted for re-reading and the work built on it stays actionable."""
-    run(crib.design_add("Fusion", "dense dominant", project="p",
-                        sources=["spec.md#10.3 Fusion"]))
+    run(
+        crib.design_add(
+            "Fusion", "dense dominant", project="p", sources=["spec.md#10.3 Fusion"]
+        )
+    )
     run(crib.plan_add("tune the fusion", deps=["Fusion"], project="p"))
     _rewrite(crib, "Dense-dominant fusion", "Sparse-dominant fusion")
 
-    assert _kinds(crib) == ["source-changed"]              # checked…
+    assert _kinds(crib) == ["source-changed"]  # checked…
     row = crib.plan_list(project="p")["items"][0]
-    assert not row["blocked"] and row["blocked_by"] == []   # …but never gated
-    assert [r["title"] for r in crib.plan_next(project="p")["items"]] \
-        == ["tune the fusion"]
+    assert not row["blocked"] and row["blocked_by"] == []  # …but never gated
+    assert [r["title"] for r in crib.plan_next(project="p")["items"]] == [
+        "tune the fusion"
+    ]
 
 
 def test_a_finished_item_flags_revisit_rather_than_re_opening(crib):
-    run(crib.plan_add("wire the fusion", project="p",
-                      sources=["spec.md#10.3 Fusion"]))
+    run(crib.plan_add("wire the fusion", project="p", sources=["spec.md#10.3 Fusion"]))
     run(crib.plan_status("wire the fusion", "done", project="p"))
     assert crib.plan_list(all=True, project="p")["revisit"] == 0
 
     _rewrite(crib, "Dense-dominant fusion", "Sparse-dominant fusion")
     listed = crib.plan_list(all=True, project="p")
     row = listed["items"][0]
-    assert listed["revisit"] == 1 and row["status"] == "done"   # status untouched
+    assert listed["revisit"] == 1 and row["status"] == "done"  # status untouched
     assert "changed since this was drawn from it" in row["revisit"][0]
     assert "plan_status wire-the-fusion.md todo" in row["next"]
 
@@ -301,27 +382,47 @@ def test_a_finished_item_flags_revisit_rather_than_re_opening(crib):
 
 
 def test_a_batch_item_carries_its_own_sources(crib):
-    out = run(crib.plan_add(items=[
-        {"title": "coordination work", "sources": ["spec.md#4. Coordination"]},
-        {"title": "fusion work", "deps": ["#1"],
-         "sources": ["spec.md#10.3 Fusion"]}], project="p"))
+    out = run(
+        crib.plan_add(
+            items=[
+                {"title": "coordination work", "sources": ["spec.md#4. Coordination"]},
+                {
+                    "title": "fusion work",
+                    "deps": ["#1"],
+                    "sources": ["spec.md#10.3 Fusion"],
+                },
+            ],
+            project="p",
+        )
+    )
     assert [r["sources"] for r in out["items"]] == [
-        ["spec.md#Spec/4. Coordination"], ["spec.md#Spec/10. Stack/10.3 Fusion"]]
+        ["spec.md#Spec/4. Coordination"],
+        ["spec.md#Spec/10. Stack/10.3 Fusion"],
+    ]
 
 
 # ── import: sections + hashes + citations + the procedure ─────────────────────
 
+
 def test_import_returns_sections_hashes_citations_and_the_procedure(crib):
-    run(crib.design_add("Single writer", "one writer", project="p",
-                        sources=["spec.md#4. Coordination"]))
+    run(
+        crib.design_add(
+            "Single writer",
+            "one writer",
+            project="p",
+            sources=["spec.md#4. Coordination"],
+        )
+    )
     out = crib.design_import("spec.md", project="p")
 
     assert out["relpath"] == "spec.md" and out["path"].endswith("/spec.md")
     by_source = {s["source"]: s for s in out["sections"]}
-    assert list(by_source) == ["spec.md#Spec",           # document order
-                               "spec.md#Spec/4. Coordination",
-                               "spec.md#Spec/10. Stack",
-                               "spec.md#Spec/10. Stack/10.3 Fusion"]
+    assert list(by_source) == [
+        "spec.md#Spec",  # document order
+        "spec.md#Spec/4. Coordination",
+        "spec.md#Spec/10. Stack",
+        "spec.md#Spec/10. Stack/10.3 Fusion",
+    ]
     # every section arrives with the hash it currently has, so the `source`
     # string can be cited VERBATIM and the citation is correct by construction
     cited = by_source["spec.md#Spec/4. Coordination"]
@@ -330,12 +431,18 @@ def test_import_returns_sections_hashes_citations_and_the_procedure(crib):
 
     # …and what already draws on this doc, so a second import extends the graph
     assert [(e["title"], e["cites"]) for e in out["existing"]] == [
-        ("Single writer", ["spec.md#Spec/4. Coordination"])]
+        ("Single writer", ["spec.md#Spec/4. Coordination"])
+    ]
 
     proc = out["instruction"]
     assert "note_read spec.md" in proc and "runs no model" not in proc
-    for step in ("design_lookup", "sources", "proposed=True", "design_tree",
-                 "design_promote"):
+    for step in (
+        "design_lookup",
+        "sources",
+        "proposed=True",
+        "design_tree",
+        "design_promote",
+    ):
         assert step in proc, step
     assert "Never cite the doc as a whole" in proc
 
@@ -370,3 +477,29 @@ def test_import_resolves_a_doc_by_path_suffix_or_errors(crib):
 
     (root / "deep.md").write_text("# top\n\n## Bit\n\nx\n")
     assert crib.design_import("deep.md", project="p")["relpath"] == "deep.md"
+
+
+def test_each_section_names_the_existing_decisions_closest_to_it(crib):
+    """Stage E7: import matching, so an extraction extends what is there."""
+    from crib import notes
+    from crib.chunk import chunk_note, section_key
+
+    _, body = notes.parse(DOC, "spec.md")
+    text = {
+        section_key(c.heading_path, c.occurrence): c.section_text
+        for c in chunk_note("p", "spec.md", "", body)
+        if not c.window_idx
+    }
+    d = run(crib.design_add("Single writer", text["Spec/4. Coordination"], project="p"))
+    run(
+        crib.design_add(
+            "Colours", "Colours come from the theme file only.", project="p"
+        )
+    )
+    out = crib.design_import("spec.md", project="p")
+    by_source = {s["source"]: s for s in out["sections"]}
+    near = by_source["spec.md#Spec/4. Coordination"]["closest"]
+    assert near[0]["relpath"] == d["relpath"] and "already there" in near[0]["next"]
+    assert all(
+        r["title"] != "Colours" for s in out["sections"] for r in s.get("closest", [])
+    )

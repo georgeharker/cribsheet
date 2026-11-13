@@ -4924,14 +4924,67 @@ class Crib:
         self, relpath: str, project: str | None = None, cwd: Path | None = None
     ) -> dict[str, Any]:
         """A doc's sections + hashes + existing citations + the extraction
-        procedure — the read that precedes an LLM-driven design import."""
-        return self.designs.design_import(self.resolve_project(project, cwd), relpath)
+        procedure — the read that precedes an LLM-driven design import. Each
+        section names the existing decisions `closest` to it (Stage E7)."""
+        proj = self.resolve_project(project, cwd)
+        return self._import_matches(proj, self.designs.design_import(proj, relpath),
+                                    "design")
 
     def plan_import(
         self, relpath: str, project: str | None = None, cwd: Path | None = None
     ) -> dict[str, Any]:
         """The same for the plan facet (actionable work rather than decisions)."""
-        return self.designs.plan_import(self.resolve_project(project, cwd), relpath)
+        proj = self.resolve_project(project, cwd)
+        return self._import_matches(proj, self.designs.plan_import(proj, relpath),
+                                    "plan")
+
+    def _import_matches(self, proj: str, out: dict[str, Any],
+                        kind: str) -> dict[str, Any]:
+        """Each imported section's `closest` existing items of `kind` (body
+        cosine >= SIMILAR_RELATED, best 3), so an extraction appends to or
+        supersedes what is already there instead of adding a near-duplicate.
+        Section text comes from the same split the import hashed; items from
+        their stored vectors. Best-effort: a doc that can't be read answers as
+        before."""
+        import numpy as np
+
+        from .chunk import chunk_note
+        from .embed import embed_batch
+
+        doc = out.get("relpath", "")
+        try:
+            _, body = notes.parse(self.designs._doc_abspath(proj, doc).read_text(), doc)
+        except (OSError, ValueError, UnicodeDecodeError, notes.NoteParseError):
+            return out
+        text_by_source: dict[str, str] = {}
+        for c in chunk_note(proj, doc, "", body):
+            if not c.window_idx:
+                key = section_key(c.heading_path, c.occurrence)
+                text_by_source[f"{doc}#{key}" if key else doc] = c.section_text
+        items = [it for it in self.store.items({"project": proj, "kind": kind}).values()
+                 if it.body_vec and any(it.body_vec)]
+        rows = [s for s in out.get("sections", []) if text_by_source.get(s["source"])]
+        if not items or not rows:
+            return out
+        M = np.asarray([it.body_vec for it in items], dtype=np.float32)
+        M /= np.linalg.norm(M, axis=1, keepdims=True)
+        Q = np.asarray(embed_batch(self.embedder,
+                                   [text_by_source[s["source"]] for s in rows]),
+                       dtype=np.float32)
+        S = Q @ M.T
+        noun = "design" if kind == "design" else "plan"
+        for row, sims in zip(rows, S):
+            best = [j for j in np.argsort(-sims)[:3] if sims[j] >= self.SIMILAR_RELATED]
+            row["closest"] = [{
+                "relpath": items[j].relpath, "title": items[j].title,
+                **({"status": items[j].facet["status"]} if items[j].facet.get("status") else {}),
+                "score": round(float(sims[j]), 4),
+                "next": (f"already there: cite this section on it ({noun}_edit "
+                         f"{items[j].relpath} with sources) rather than adding one"
+                         if sims[j] >= self.SIMILAR_DUPLICATE else
+                         f"close: {noun}_read {items[j].relpath} before adding")}
+                for j in best]
+        return out
 
     def design_tree(
         self,
