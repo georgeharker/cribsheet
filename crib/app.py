@@ -788,10 +788,6 @@ class Crib:
         self._kw_timers[key] = loop.call_later(self._KW_SETTLE_S, _fire)
 
     # --- tool verbs --------------------------------------------------------
-    # near-duplicate nudge: a stored note whose probe matches an existing note
-    # this closely is flagged in the result (the descriptions preach append/edit
-    # over duplicating; this is what detects it).
-    DEDUPE_WARN_SCORE = 0.85
 
     def project_is_new(self, proj: str) -> bool:
         """True if `proj` has no notes dir yet (a write would create it)."""
@@ -808,43 +804,95 @@ class Crib:
             i += 1
         return f"{slug}-{i}.md"
 
-    def _similar(
-        self, proj: str, content: str, exclude: str, store: str = "notes"
-    ) -> list[dict[str, Any]]:
-        """Near-duplicate hints for a just-stored note (excludes the note itself),
-        probing the SAME pillar it was stored into — a near-duplicate note is
-        redundancy, a near-duplicate decision forks the graph, and each is a
-        same-pillar question.
+    # Write-time warnings (`similar`, Stage E4), measured on the live corpus
+    # (1,141 items, 2026-11-13): an item's nearest same-project neighbour sits at
+    # body cosine 0.54 (median) to 0.84 (p99), and every pair from 0.94 up was a
+    # real duplicate; nearest TITLE cosine 0.32 (median) to 0.53 (p95), and the
+    # few pairs with titles >= 0.85 but bodies < 0.80 were true confusables.
+    SIMILAR_RELATED = 0.75      # body: listed (no warning)
+    SIMILAR_SETTLED = 0.80      # body (or a title past SIMILAR_CONFUSABLE), against
+                                # a done/declined/parked/superseded item
+    SIMILAR_DUPLICATE = 0.90    # body: the same thing again
+    SIMILAR_CONFUSABLE = 0.85   # title, with the body below SIMILAR_SETTLED
+    _SETTLED_STATES = ("done", "verified", "declined", "parked", "superseded")
+    _SIMILAR_KINDS = ("note", "design", "plan")
 
-        Blocking (a query embed + a retrieval pass) — callers on the event loop
-        must `to_thread` it."""
-        probe = content.strip().splitlines()[0][:200] if content.strip() else ""
-        if not probe:
-            return []
+    def _similar(self, proj: str, relpath: str, store: str = "notes") -> list[dict[str, Any]]:
+        """What a just-written note / decision / plan item is close to, across
+        those three kinds, each with a verdict and the verb that answers it:
+        `duplicate` (the same thing again: append to or edit that one),
+        `confusable` (titles alike, bodies not: say how this one differs),
+        `settled` (it is already done / declined / parked / superseded), or
+        `related`. From the items' STORED title and body vectors, so the whole
+        item is compared, not its first line.
+
+        Blocking (store reads) — callers on the event loop must `to_thread` it.
+        A nudge, never a failure: any error answers []."""
         try:
-            hits = self.lookup(probe, project=proj, k=4, store=store)
-        except Exception:  # noqa: BLE001 — a nudge must never fail the store
+            return self._similar_rows(proj, relpath, kind_of(store, relpath))
+        except Exception:  # noqa: BLE001 — a nudge must never fail the write
             return []
-        rows = [
-            {"relpath": h.relpath, "heading": h.heading, "score": h.score}
-            for h in hits
-            if h.relpath != exclude and h.score >= self.DEDUPE_WARN_SCORE
-        ]
-        # FACET STATE AT THE CUE (plan-deferral-review.md P2): a probe hit that is
-        # parked or declined is the answer, not redundancy — "was this already
-        # planned/parked/declined?" carries the status (and, for plan rows, the
-        # trigger/why lives one `plan_read` away). Notes have no status.
-        if store in ("design", "plans") and rows:
-            graph = self.designs._load_graph(proj)
-            by_rel = {
-                n.relpath: n
-                for n in graph.of_kind("design" if store == "design" else "plan")
-            }
-            for r in rows:
-                n = by_rel.get(r["relpath"])
-                if n:
-                    r["status"] = n.status
-        return rows
+
+    def _similar_rows(self, proj: str, relpath: str, kind: str) -> list[dict[str, Any]]:
+        import numpy as np
+
+        mine = self.store.items({"project": proj, "kind": kind, "relpath": relpath})
+        if not mine:
+            return []
+        me = next(iter(mine.values()))
+        if not me.body_vec or not any(me.body_vec):
+            return []
+
+        def unit(v: Any) -> Any:
+            a = np.asarray(v, dtype=np.float32)
+            n = float(np.linalg.norm(a))
+            return a / n if n else a
+
+        body, title = unit(me.body_vec), unit(me.title_vec or me.body_vec)
+        rows: list[dict[str, Any]] = []
+        for k in self._SIMILAR_KINDS:
+            for it in self.store.items({"project": proj, "kind": k}).values():
+                if it.id == me.id or not it.body_vec or not any(it.body_vec):
+                    continue
+                b = float(unit(it.body_vec) @ body)
+                t = float(unit(it.title_vec) @ title) if it.title_vec else 0.0
+                status = it.facet.get("status")
+                # settled first: a twin of something done or declined is answered
+                # by that state, not by "merge them"
+                if status in self._SETTLED_STATES and (
+                    b >= self.SIMILAR_SETTLED or t >= self.SIMILAR_CONFUSABLE
+                ):  # the same thing, or the same title, as finished work
+                    verdict = "settled"
+                elif b >= self.SIMILAR_DUPLICATE:
+                    verdict = "duplicate"
+                elif t >= self.SIMILAR_CONFUSABLE and b < self.SIMILAR_SETTLED:
+                    verdict = "confusable"
+                elif b >= self.SIMILAR_RELATED:
+                    verdict = "related"
+                else:
+                    continue
+                rows.append({"relpath": it.relpath, "kind": k, "title": it.title,
+                             **({"status": status} if status else {}),
+                             "score": round(b, 4), "title_score": round(t, 4),
+                             "verdict": verdict,
+                             "next": self._similar_next(verdict, k, it.relpath, status)})
+        rank = {"duplicate": 0, "settled": 1, "confusable": 2, "related": 3}
+        rows.sort(key=lambda r: (rank[r["verdict"]], -r["score"]))
+        return rows[:5]
+
+    @staticmethod
+    def _similar_next(verdict: str, kind: str, relpath: str, status: str | None) -> str:
+        noun = {"note": "note", "design": "design", "plan": "plan"}[kind]
+        if verdict == "duplicate":
+            return (f"the same thing already exists: {noun}_append / {noun}_edit "
+                    f"{relpath} instead, and delete this one")
+        if verdict == "settled":
+            return (f"already {status}: read it ({noun}_read {relpath}) before "
+                    f"keeping this one")
+        if verdict == "confusable":
+            return ("titles alike, contents not: retitle this one (or that one) so "
+                    "the difference shows")
+        return f"related: {noun}_read {relpath}"
 
     async def store_note(
         self,
@@ -868,7 +916,7 @@ class Crib:
             fm["tags"] = tags
         note = Note(path=self.abspath(proj, relpath), frontmatter=fm, body=content)
         res = await self._write_note(proj, relpath, note)
-        similar = await asyncio.to_thread(self._similar, proj, content, relpath)
+        similar = await asyncio.to_thread(self._similar, proj, relpath)
         return {
             "project": proj,
             "relpath": relpath,
@@ -4699,9 +4747,7 @@ class Crib:
             proj, title, content, deps, sources, proposed,
             _kinded(follows, rests_on, informed_by),
         )
-        similar = await asyncio.to_thread(
-            self._similar, proj, content, out["relpath"], "design"
-        )
+        similar = await asyncio.to_thread(self._similar, proj, out["relpath"], "design")
         return {**out, "similar": similar}
 
     def design_read(
@@ -4947,9 +4993,11 @@ class Crib:
         informed_by: list[str] | None = None,
     ) -> dict[str, Any]:
         """Add one plan item, or a whole batch (`items`), ranked at the end unless
-        after/before place them."""
-        return await self.designs.plan_add(
-            self.resolve_project(project, cwd),
+        after/before place them. A single item answers with `similar` (what it
+        is close to, with a verdict: see `_similar`)."""
+        proj = self.resolve_project(project, cwd)
+        out = await self.designs.plan_add(
+            proj,
             title,
             content,
             deps,
@@ -4959,6 +5007,10 @@ class Crib:
             sources,
             _kinded(follows, rests_on, informed_by),
         )
+        if not items and out.get("relpath"):
+            out["similar"] = await asyncio.to_thread(
+                self._similar, proj, out["relpath"], "plans")
+        return out
 
     async def plan_status(
         self, ref: str, status: str, project: str | None = None, cwd: Path | None = None
@@ -5005,7 +5057,7 @@ class Crib:
         `plan_review_apply` applies the batch."""
         return await self.designs.plan_review(
             self.resolve_project(project, cwd),
-            probe=lambda p, text, exclude: self._similar(p, text, exclude, "plans"),
+            probe=lambda p, text, exclude: self._similar(p, exclude, "plans"),
         )
 
     async def plan_review_apply(

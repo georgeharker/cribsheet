@@ -7,7 +7,16 @@
   },
   {
     "phase": "writes",
-    "new_keys": ["dep_kinds"],
+    "new_keys": [
+      "dep_kinds"
+    ],
     "reason": "design/plan add reports each dependency's kind (Stage B1)"
+  },
+  {
+    "phase": "writes",
+    "new_keys": [
+      "similar"
+    ],
+    "reason": "a write's `similar` is replaced (Stage E4): computed from the item's stored title and body vectors across notes, decisions and plans, each match with a verdict and the verb to use, instead of a first-line lookup in one pillar; plan add answers with it too. Its contents are pinned by tests/test_write_warnings.py"
   }
 ]

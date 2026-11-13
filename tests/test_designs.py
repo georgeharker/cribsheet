@@ -1096,14 +1096,10 @@ def test_probe_carries_facet_state_at_the_cue(crib):
             "p", "multi target gold", why="parked behind the clean-824 fixture"
         )
     )
-    # the probe is fed the re-proposal's first line, exactly as plan_add does.
-    # The hash embedder (this fixture's store) scores near-text lower than the
-    # real one the 0.85 warn bar was calibrated on — lower it; the test is about
-    # the STATUS riding the probe row, not the score.
-    crib.DEDUPE_WARN_SCORE = 0.5
-    probe = crib._similar("p", "the nDCG unblock", "self", "plans")
-    statuses = {r["relpath"]: r.get("status") for r in probe}
-    assert "declined" in statuses.values()
+    # re-proposing it: the add answers that it was declined, as `settled`
+    again = run(crib.plan_add("multi target gold", "the nDCG unblock", project="p"))
+    hit = next(r for r in again["similar"] if r.get("status") == "declined")
+    assert hit["verdict"] == "settled" and "already declined" in hit["next"]
 
 
 # ── the review sweep (plan-deferral-review.md P3) ─────────────────────────────
@@ -1118,10 +1114,6 @@ def test_plan_review_hands_evidence_and_runs_no_model(crib):
         )
     )
     run(crib.plan_add("nDCG work", "add nDCG to the gate", project="p"))
-    # The hash embedder (this fixture's store) scores near-text below the 0.85
-    # warn bar calibrated for the real one — lower it; the test is about the
-    # probe SEEING the declined twin with its status, not the score.
-    crib.DEDUPE_WARN_SCORE = 0.5
     out = run(crib.plan_review(project="p"))
     # the state exam rides inside; the contract is the instruction
     assert "Plan items — p" in out["export"]
