@@ -9,6 +9,12 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.23.1-dev1] - 2026-11-13
+
+No changes since 0.23.0-dev4: the same code with the patch version bumped, so
+an installer that won't move between dev releases of one version sees a newer
+base version.
+
 ## [0.23.0-dev4] - 2026-11-13
 
 No changes since 0.23.0-dev3: the same code under a new version number, to
