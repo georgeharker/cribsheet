@@ -1454,15 +1454,25 @@ class Designs:
         if dep.id == node.id:
             raise CribUserError(f"{node.title!r} cannot depend on itself")
         if dep.id in node.deps:
-            return {
-                "project": proj,
-                "id": node.id,
-                "relpath": node.relpath,
-                "title": node.title,
-                "dep": dep.id,
-                "already": True,
-                "deps": list(node.deps),
-            }
+            current = node.dep_kinds.get(dep.id) or dep_kind_default(dep.kind)
+            if how == current:
+                return {
+                    "project": proj,
+                    "id": node.id,
+                    "relpath": node.relpath,
+                    "title": node.title,
+                    "dep": dep.id,
+                    "already": True,
+                    "dep_kind": current,
+                    "deps": list(node.deps),
+                }
+            # Re-kinding an existing dep: what the edge MEANS changed, not what
+            # it was checked against, so its `checked` record stays (`_save`
+            # merges into the file's frontmatter) and nothing new is unverified.
+            fm = deps_frontmatter({**node.dep_kinds, dep.id: how}, graph)
+            out = await self._save(proj, node, fm)
+            return {**out, "dep": dep.id, "dep_title": dep.title, "dep_kind": how,
+                    "was_kind": current, "deps": list(node.deps)}
         probe = {
             nid: replace(n, deps=list(n.deps))
             for nid, n in graph.nodes.items()

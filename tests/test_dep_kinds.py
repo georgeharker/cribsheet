@@ -170,3 +170,24 @@ def test_a_graph_read_brings_the_store_in_line_with_files_edited_outside_crib(cr
         (d["id"], "rests_on"),
     }
     assert crib.store.items({"id": p1["id"]}) == {}
+
+
+def test_dep_add_with_another_kind_re_kinds_and_keeps_the_check(crib):
+    """There was no way to change an existing dep's kind short of removing it,
+    which dropped its `checked` record and left the decision unverified."""
+    d1 = run(crib.design_add("Ground", "A decision.", project="p"))
+    p1 = run(crib.plan_add("Built", project="p"))
+    d2 = run(crib.design_add("Uses both", "Rests on them.",
+                             deps=[d1["relpath"], p1["relpath"]], project="p"))
+    run(crib.design_reaffirm(d2["relpath"], project="p"))
+    before = _fm(crib, "design", d2["relpath"])["checked"]
+    out = run(crib.design_dep_add(d2["relpath"], p1["relpath"], kind="informed_by",
+                                  project="p"))
+    assert out["dep_kind"] == "informed_by" and out["was_kind"] == "follows"
+    fm = _fm(crib, "design", d2["relpath"])
+    assert fm["deps"] == [d1["id"]] and fm["informed_by"] == [p1["id"]]
+    assert fm["checked"] == before                    # still verified
+    assert d2["id"] not in {t["id"] for t in crib.design_check(project="p")["tainted"]}
+    again = run(crib.design_dep_add(d2["relpath"], p1["relpath"], kind="informed_by",
+                                    project="p"))
+    assert again["already"] and again["dep_kind"] == "informed_by"
