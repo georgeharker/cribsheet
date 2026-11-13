@@ -25,6 +25,7 @@ import contextlib
 import json
 import random
 import re
+import sys
 import threading
 import time
 from collections.abc import Callable, Iterator, Sequence
@@ -52,6 +53,11 @@ EMBED_CACHE = "crib_embed_cache"
 # when any table's layout changes; a mismatch drops every crib table, since all
 # of them are rebuildable) and embed_model (which embedder wrote crib_chunks; see `Crib._maybe_recreate_for_dim`).
 META = "crib_meta"
+# Kept when the schema version changes: rows keyed by what they are (model and
+# text; purpose and target), not by any layout of the other tables.
+_KEPT_ACROSS_VERSIONS = (EMBED_CACHE, LEDGER, META)
+# How long a conversion waits out other connections' conflicting writes.
+MIGRATION_WAIT_S = 120.0
 # 2: crib_chunks' `store` column is `kind`; 3: crib_items and the facet tables;
 # 4: crib_chunks' `item_id` column (the item a chunk belongs to); 5: crib_edges;
 # 6: crib_postings; 7: crib_files and crib_items.embed_text; 8: the symbol
@@ -135,6 +141,43 @@ def _lock_error(path: Path, exc: Exception) -> CribUserError:
         "`crib <verb>` attaches to it), or switch to shared mode so several "
         "processes can use the store at once"
     )
+
+
+# What DuckDB says about a file it cannot use AS a database (as opposed to one it
+# can't reach: a lock, a permission), matched case-insensitively.
+_UNREADABLE = ("corrupt", "checksum", "not a valid", "invalid database",
+               "serializ", "storage version", "magic bytes")
+
+
+def _unreadable(exc: BaseException) -> bool:
+    """Is `exc` DuckDB saying the file itself is unusable (so it can be set
+    aside and rebuilt), rather than that it is locked or not permitted?"""
+    import duckdb  # lazy
+
+    if not isinstance(exc, duckdb.Error):
+        return False
+    msg = str(exc).lower()
+    if "lock" in msg or "permission" in msg:
+        return False
+    return isinstance(exc, (duckdb.SerializationException, duckdb.InternalException)) or any(
+        w in msg for w in _UNREADABLE)
+
+
+def set_aside(path: Path, why: BaseException) -> Path:
+    """Move an unusable store file (and its WAL) out of the way, keeping it as
+    `<name>.broken-<stamp>`: the store is a cache rebuilt from the files, so a
+    fresh one costs a rebuild, and the old one stays for inspection."""
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    kept = path.with_name(f"{path.name}.broken-{stamp}")
+    for p, dest in ((path, kept),
+                    (path.with_name(path.name + ".wal"),
+                     path.with_name(f"{path.name}.wal.broken-{stamp}"))):
+        if p.exists():
+            p.rename(dest)
+    print(f"[crib] the DuckDB store {path} could not be opened ({why}); it was moved "
+          f"to {kept} and a fresh store is being built from your files",
+          file=sys.stderr)
+    return kept
 
 
 def _json_path(key: str) -> str:
@@ -475,6 +518,44 @@ def _set_meta_step(
     return write
 
 
+@contextlib.contextmanager
+def _migration_lock(path: Path | None) -> Iterator[None]:
+    """Exclusive, machine-wide: one crib process converts the store at a time
+    (every crib process on a machine shares the store's directory; the shared
+    server is loopback-only). No path (an in-memory store): no lock needed."""
+    if path is None:
+        yield
+        return
+    import fcntl
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "a") as f:
+        said = False
+        while True:
+            try:
+                fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError:
+                if not said:
+                    print("[crib] waiting for another crib process to finish "
+                          "converting the store", file=sys.stderr)
+                    said = True
+                time.sleep(0.5)
+        try:
+            yield
+        finally:
+            fcntl.flock(f, fcntl.LOCK_UN)
+
+
+def _backfill_pending(store: "DuckDBStore", ex: Any) -> bool:
+    if store._table_dim(ex) is None:
+        return False
+    # pi-lens-ignore: python-sql-injection
+    return bool(ex.run(
+        f"SELECT 1 FROM {TABLE} WHERE json_type(meta, '$.tags') = 'VARCHAR' "
+        "AND json_type(meta, '$.labels') IS NULL LIMIT 1"))
+
+
 def _backfill_labels(store: "DuckDBStore", ex: Any) -> None:
     """Chunks written before 0.22.0 kept `tags` as a comma-joined string and had
     no `labels` list, so a `tags=` lookup (which filters on `labels` in the
@@ -522,13 +603,30 @@ class DuckDBStore:
 
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
+
+        def connect() -> Any:
+            try:
+                return duckdb.connect(str(path), config=local_dirs(path.parent))
+            except duckdb.IOException as exc:
+                if "lock" in str(exc).lower():
+                    raise _lock_error(path, exc) from exc
+                raise
+
         try:
-            conn = duckdb.connect(str(path), config=local_dirs(path.parent))
-        except duckdb.IOException as exc:
-            if "lock" in str(exc).lower():
-                raise _lock_error(path, exc) from exc
-            raise
-        return cls(conn, path)
+            conn = connect()
+        except duckdb.Error as exc:
+            if not _unreadable(exc):
+                raise
+            set_aside(path, exc)
+            conn = connect()
+        try:
+            return cls(conn, path)
+        except duckdb.Error as exc:  # opened, but its contents can't be used
+            conn.close()
+            if not _unreadable(exc):
+                raise
+            set_aside(path, exc)
+            return cls(connect(), path)
 
     def close(self) -> None:
         with self._write:  # never close under a writer mid-transaction
@@ -547,35 +645,104 @@ class DuckDBStore:
     # ── schema ───────────────────────────────────────────────────────────────
 
     def _prepare(self) -> None:
-        """Check the file's versions and create the fixed tables, once at open.
+        """Bring the file to this version's layout, once at open — safely.
 
-        A file from before crib_meta existed is adopted as version 1, the layout
-        it already has. A different schema_version drops every crib table (all
-        rebuildable caches). Tables and keys an older crib made and this one
-        no longer uses are dropped."""
+        A normal open WRITES NOTHING: `_schema_current` reads the version, the
+        tables and what is pending, and when nothing needs doing that is the
+        end of it, so an open can't conflict with the store's other users.
+        Only a real change (a new file, a version change, a retired table, a
+        backfill) writes, and then:
 
-        def prepare(ex: Any) -> None:
-            ex.run(
-                f"CREATE TABLE IF NOT EXISTS {META} (key VARCHAR PRIMARY KEY, value VARCHAR)"
-            )
-            meta = dict(ex.run(f"SELECT key, value FROM {META}"))
-            if meta.get("schema_version", SCHEMA_VERSION) != SCHEMA_VERSION:
-                for table in (TABLE, *_FIXED_TABLES):
+        - under a machine-wide lock beside the store (`_migration_lock`), so
+          one crib process converts and the rest wait and find it done;
+        - as ONE transaction, with the version stamped in it, so a conversion
+          is all there or not at all, whatever kills the process;
+        - retried while another connection's writes conflict with it, for up
+          to MIGRATION_WAIT_S, then refused with what to do, rather than spun
+          on silently.
+
+        A different schema_version drops the rebuildable tables, but keeps the
+        embedding cache and the generation ledger: their rows are keyed by
+        model and text (by purpose and target), not by any layout, so a
+        conversion never costs re-embedding or re-generating everything. A
+        file from before crib_meta existed is adopted as version 1."""
+        if self._schema_current():
+            return
+        with _migration_lock(self._migration_lock_path()):
+            if self._schema_current():
+                return  # another process converted it while we waited
+            self._converting(self._prepare_step)
+
+    def _prepare_step(self, ex: Any) -> None:
+        ex.run(
+            f"CREATE TABLE IF NOT EXISTS {META} (key VARCHAR PRIMARY KEY, value VARCHAR)"
+        )
+        meta = dict(ex.run(f"SELECT key, value FROM {META}"))
+        if meta.get("schema_version", SCHEMA_VERSION) != SCHEMA_VERSION:
+            for table in (TABLE, *_FIXED_TABLES):
+                if table not in _KEPT_ACROSS_VERSIONS:
                     ex.run(f"DROP TABLE IF EXISTS {table}")
-                ex.run(f"DELETE FROM {META}")
-                meta = {}
-            for table in _RETIRED_TABLES:
-                ex.run(f"DROP TABLE IF EXISTS {table}")
-            for key in _RETIRED_META:
-                if key in meta:
-                    ex.run(f"DELETE FROM {META} WHERE key = ?", [key])
-            for table, columns in _FIXED_TABLES.items():
-                ex.run(f"CREATE TABLE IF NOT EXISTS {table} ({columns})")
-            if meta.get("schema_version") != SCHEMA_VERSION:
-                _put_meta(ex, "schema_version", SCHEMA_VERSION)
-            _backfill_labels(self, ex)
+            ex.run(f"DELETE FROM {META}")
+            meta = {}
+        for table in _RETIRED_TABLES:
+            ex.run(f"DROP TABLE IF EXISTS {table}")
+        for key in _RETIRED_META:
+            if key in meta:
+                ex.run(f"DELETE FROM {META} WHERE key = ?", [key])
+        for table, columns in _FIXED_TABLES.items():
+            ex.run(f"CREATE TABLE IF NOT EXISTS {table} ({columns})")
+        if meta.get("schema_version") != SCHEMA_VERSION:
+            _put_meta(ex, "schema_version", SCHEMA_VERSION)
+        _backfill_labels(self, ex)
 
-        self._transaction(prepare)
+    def _schema_current(self) -> bool:
+        """Read-only: is the file already this version's layout, with nothing
+        to retire or backfill? (A file that can't even be read is not.)"""
+        try:
+            with self._reading() as ex:
+                tables = {t for (t,) in ex.run(
+                    "SELECT table_name FROM duckdb_tables() WHERE schema_name = 'main'")}
+                if META not in tables:
+                    return False
+                meta = dict(ex.run(f"SELECT key, value FROM {META}"))
+                if (meta.get("schema_version") != SCHEMA_VERSION
+                        or any(t not in tables for t in _FIXED_TABLES)
+                        or any(t in tables for t in _RETIRED_TABLES)
+                        or any(k in meta for k in _RETIRED_META)):
+                    return False
+                return not _backfill_pending(self, ex)
+        except Exception:  # noqa: BLE001 — anything odd: take the careful path
+            return False
+
+    def _migration_lock_path(self) -> Path | None:
+        return self._path.with_name(self._path.name + ".migrate.lock") if self._path else None
+
+    def _converting(self, body: Callable[[Any], None]) -> None:
+        """`_transaction(body)`, kept trying while other connections' writes
+        conflict with it (they are the store's users finishing their work),
+        up to MIGRATION_WAIT_S; then a clear refusal."""
+        import duckdb  # lazy
+
+        deadline = time.monotonic() + MIGRATION_WAIT_S
+        said = False
+        while True:
+            try:
+                self._transaction(body)
+                return
+            except duckdb.TransactionException as e:
+                if time.monotonic() >= deadline:
+                    raise CribUserError(
+                        "crib could not convert its DuckDB store to this version: "
+                        f"another connection kept writing for {MIGRATION_WAIT_S:.0f}s "
+                        f"({e}). Stop every crib process (and the crib DuckDB server), "
+                        "then start one; the store is a cache, so moving its file "
+                        "aside is also safe (it is rebuilt from your notes)"
+                    ) from e
+                if not said:
+                    print("[crib] store conversion is waiting for another connection's "
+                          "writes to finish", file=sys.stderr)
+                    said = True
+                time.sleep(1.0)
 
     def checkpoint(self) -> None:
         """Write the WAL into the database file (DuckDB's CHECKPOINT)."""

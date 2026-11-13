@@ -267,6 +267,26 @@ class QuackStore(DuckDBStore):
         conn, remote = _open_session(uri, token, extension_directory)
         return cls(conn, remote, uri, token, extension_directory, relaunch)
 
+    @staticmethod
+    def ping(uri: str, token: str, extension_directory: Path | str | None = None) -> None:
+        """Is the server up and accepting this token? One session and a
+        `SELECT 1`, nothing else: readiness must never wait on the schema
+        work a real `connect` does (a busy store is still a ready server)."""
+        conn, remote = _open_session(uri, token, extension_directory)
+        try:
+            remote.execute("SELECT 1").fetchall()
+        finally:
+            conn.close()
+
+    def _migration_lock_path(self) -> Path | None:
+        # The server is loopback-only, so every client is on this machine and
+        # shares crib's DuckDB directory: lock beside the store file there.
+        from .paths import Paths
+
+        base = (Path(self._ext).parent if self._ext
+                else Paths.resolve().duckdb_extension_dir.parent)
+        return base / "crib.duckdb.migrate.lock"
+
     @contextlib.contextmanager
     def _reading(self) -> Iterator[Any]:
         with self._session:
@@ -513,9 +533,17 @@ def serve(
     import duckdb  # lazy
 
     check_shared_bind(host)
+    from .store_duckdb import _unreadable, set_aside
+
     db_path = Path(db_path)
     db_path.parent.mkdir(parents=True, exist_ok=True)
-    conn = duckdb.connect(str(db_path), config=_connect_config(extension_directory))
+    try:
+        conn = duckdb.connect(str(db_path), config=_connect_config(extension_directory))
+    except duckdb.Error as exc:
+        if not _unreadable(exc):
+            raise
+        set_aside(db_path, exc)  # a cache: rebuilt by the clients, old file kept
+        conn = duckdb.connect(str(db_path), config=_connect_config(extension_directory))
     _install_quack(conn)
     uri = quack_uri(host, port)
     conn.execute(f"CALL quack_serve({to_literal(uri)}, token = {to_literal(token)})")

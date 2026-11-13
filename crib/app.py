@@ -6174,7 +6174,7 @@ def _build_shared_duckdb(
     uri = quack_uri(c.host, c.port)
 
     def probe() -> None:
-        QuackStore.connect(uri, token, ext).close()
+        QuackStore.ping(uri, token, ext)  # up and answering; no schema work
 
     if not c.launch:
         # Externally supervised: never start (or restart) it; just attach. A

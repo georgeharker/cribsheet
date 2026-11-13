@@ -183,13 +183,16 @@ def test_a_file_from_before_crib_meta_is_adopted_not_wiped(tmp_path):
     s.close()
 
 
-def test_a_schema_change_drops_every_rebuildable_table(tmp_path):
+def test_a_schema_change_drops_the_rebuildable_tables_and_keeps_the_caches(tmp_path):
+    """A conversion rebuilds the layout-bound tables, but the embedding cache
+    (and the ledger) are keyed by what they are, not by any layout: keeping
+    them means a conversion never re-embeds everything."""
     path = tmp_path / "crib.duckdb"
     _seed(path)
     _rows(path, "UPDATE crib_meta SET value = '0' WHERE key = 'schema_version'")
     s = DuckDBStore.embedded(path)
     assert s.current_dim() is None
-    assert s.ec_get("m#2", ["h"]) == {}
+    assert s.ec_get("m#2", ["h"])                    # kept
     s.close()
 
 

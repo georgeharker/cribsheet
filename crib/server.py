@@ -2430,13 +2430,20 @@ async def _serve_async(
 ) -> None:
     from crib.diag import DIAG, install_log
 
-    crib = Crib.open()
     if transport != "stdio":
-        # The daemon: sharedserver keeps no log of its stderr, so crib does.
-        log = crib.config.daemon.log_file
+        # The daemon: sharedserver keeps no log of its stderr, so crib does —
+        # started BEFORE the store opens, so a hang there leaves a trace.
+        from crib.config import Config
+        from crib.paths import Paths
+
+        paths = Paths.resolve()
+        daemon_cfg = Config.load(paths.config_file).daemon
+        log = daemon_cfg.log_file
         if log:
-            path = crib.paths.index_dir / "daemon.log" if log == "auto" else Path(log)
-            install_log(path.expanduser(), crib.config.daemon.log_max_mb * 1024 * 1024)
+            path = paths.index_dir / "daemon.log" if log == "auto" else Path(log)
+            install_log(path.expanduser(), daemon_cfg.log_max_mb * 1024 * 1024)
+        DIAG.milestone("opening the store")
+    crib = Crib.open()
     from crib import __version__
 
     DIAG.milestone("store ready", store=type(crib.store).__name__, version=__version__)
