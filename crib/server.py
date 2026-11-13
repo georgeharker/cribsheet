@@ -375,7 +375,8 @@ READ_ONLY_TOOLS: dict[str, frozenset[str]] = {
     "learnings": frozenset({"learning_read", "learning_report"}),
     "memory": frozenset({"memory_history"}),
     "projects": frozenset(
-        {"project_list", "project_status", "project_wait", "project_doctor"}
+        {"project_list", "project_status", "project_wait", "project_doctor",
+         "project_related"}
     ),
 }
 
@@ -1075,6 +1076,20 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         notes/decisions/plans, pending descriptions. Each finding names the
         verb that fixes it; nothing is changed."""
         return crib.project_doctor(project, cwd=_cwd(project_path))
+
+    @crib_tool("source")
+    def project_related(
+        ref: str,
+        k: int = 3,
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        """One item and everything around it, across kinds: a note, decision,
+        plan, learning or code symbol (by id, relpath, title or symbol name),
+        its declared links both ways (deps with their kinds, dependents,
+        drawn_from, superseded_by, learns, member_of, calls/references), and
+        its `k` nearest items of every kind by stored vector, with status."""
+        return crib.project_related(ref, k, project, cwd=_cwd(project_path))
 
     @crib_tool("none")
     async def project_wait(

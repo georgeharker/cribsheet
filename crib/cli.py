@@ -1481,6 +1481,13 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="also drop attached learnings (default: keep them)",
     )
+    _sp = pjsub.add_parser(
+        "related",
+        help="one item and what surrounds it: links both ways, nearest of every kind",
+    )
+    _sp.add_argument("ref", help="an id, relpath, decision/plan title, or symbol")
+    _sp.add_argument("-k", type=int, default=3, help="nearest items per kind")
+    proj(_sp)
     pjsub.add_parser("list", help="list projects (separate memory namespaces)")
     _pu = pjsub.add_parser("use", help="set this session's current project")
     _pu.add_argument("project")
@@ -2508,6 +2515,29 @@ def _emit_doctor(d: dict[str, Any], as_json: bool) -> None:
         print(f"      fix: {f['fix']}")
 
 
+def _emit_related(d: dict[str, Any], as_json: bool) -> None:
+    if as_json:
+        print(json.dumps(d, indent=2, default=str))
+        return
+
+    def line(r: dict[str, Any]) -> str:
+        st = f" [{r['status']}]" if r.get("status") else ""
+        what = r.get("title") or r.get("ref", "")
+        return f"{r.get('kind', '?')}: {what}{st}"
+
+    it = d["item"]
+    print(f"{line(it)}  ({it['relpath']})")
+    for label, rows in (("links out", d["links_out"]), ("links in", d["links_in"])):
+        if rows:
+            print(f"  {label}:")
+            for r in rows:
+                print(f"    {r['link']:<14} {line(r)}")
+    for kind, rows in d["similar"].items():
+        print(f"  nearest {kind}s:")
+        for r in rows:
+            print(f"    {r['similarity']:.3f}  {line(r)}")
+
+
 def _E_project(verb):
     return lambda d, a: _emit_project(d, verb, a.json)
 
@@ -2906,6 +2936,13 @@ VERBS: dict[str, Verb] = {
         lambda d, a: _emit_doctor(d, a.json),
         policy="source",
         mcp=_PROJ,
+    ),
+    "project related": Verb(
+        "project_related",
+        lambda a: {"ref": a.ref, "k": a.k, "project": _proj_of(a)},
+        lambda d, a: _emit_related(d, a.json),
+        policy="source",
+        mcp=f"ref k=3 {_PROJ}",
     ),
     "project forget": Verb(
         "project_forget",

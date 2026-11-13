@@ -4552,6 +4552,15 @@ class Crib:
 
         return diagnose(self, self.resolve_project(project, cwd))
 
+    def project_related(
+        self, ref: str, k: int = 3, project: str | None = None,
+        cwd: Path | None = None,
+    ) -> dict[str, Any]:
+        """One item and what surrounds it, across kinds (crib.related)."""
+        from .related import related
+
+        return related(self, self.resolve_project(project, cwd), ref, k)
+
     def learning_report(
         self,
         project: str | None = None,
