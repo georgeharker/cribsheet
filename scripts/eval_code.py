@@ -25,8 +25,10 @@ CASES = Path(__file__).resolve().parent / "eval_code.cases.json"
 def _hit_rank(hits: list[dict], expect) -> int | None:
     exps = expect if isinstance(expect, list) else [expect]
     for i, h in enumerate(hits, 1):
-        fq = h.get("fqname", "")
-        if any(e in fq for e in exps):
+        # `fqname` was renamed: a hit names its symbol by `fqn` (the qualified
+        # name) and `symbol_ref` (file#name); match the case against any of them
+        names = [h.get(k) or "" for k in ("fqn", "symbol_ref", "fqname")]
+        if any(e in n for e in exps for n in names):
             return i
     return None
 
