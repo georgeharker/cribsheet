@@ -9,6 +9,59 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.23.0-dev2] - 2026-11-13
+
+### Added
+
+- `crib project doctor` (`project_doctor`): what in a project needs
+  attention, report-only, each finding naming the command that fixes it.
+  It checks dangling dependencies; dependencies on a superseded decision
+  (naming its replacement) or a declined plan; cited sections that changed
+  or vanished; moved or orphaned learnings; one id in several files;
+  near-duplicate notes, decisions and plans; and pending descriptions.
+- `crib project related <ref>` (`project_related`): one item's links both
+  ways and its nearest notes, decisions, plans, learnings and symbols.
+- `crib project lookup` (`project_lookup`): one search across notes,
+  decisions, plans and learnings, with `--kind` and `--status` filters.
+- `[generate] mode = "on" | "explicit" | "off"`. Without a models
+  config it is `explicit`: crib generates descriptions, keywords and
+  summaries only when you run a verb that asks for them, and never drives
+  the Claude CLI in the background on its own. Background indexing still
+  saves code structure; `status` counts the descriptions waiting.
+- `status` reports the daemon: uptime, startup milestones, the background
+  work running now, queue depths, and whether file events are arriving.
+  The daemon writes a log, by default `~/.cache/crib/daemon.log`.
+- When file events are delayed (macOS fseventsd under load), the daemon
+  says so and sweeps for changes every two minutes until they recover.
+
+### Changed
+
+- After a note, decision or plan write, `similar` compares the whole item
+  with every note, decision and plan in the project, not just its first
+  line against one pillar. Each match says whether it is a duplicate, a
+  confusingly similar title, already settled (done, declined, parked,
+  superseded) or just related, and what to do. Plan adds return it too.
+- Decision and plan reads list `suggested_deps`: active decisions the item
+  is close to but doesn't depend on, with the command to add the link.
+- `design_import` and `plan_import` name, for each section, the existing
+  decisions or plans closest to it.
+- The learnings report names where an orphaned learning probably went.
+- `dep_add` with a different kind changes an existing dependency's kind
+  and keeps it verified.
+- Summary aliases are embedded once and kept, instead of re-embedded after
+  every daemon start; the keyword index is read from the store.
+
+### Fixed
+
+- `status` no longer shows a git remote's password or token.
+
+### Upgrading
+
+- The store's schema changes again, so the first daemon on this version
+  rebuilds its cache from your files once.
+- If you relied on background generation without a models config, set
+  `[generate] mode = "on"`.
+
 ## [0.23.0-dev1] - 2026-11-12
 
 The DuckDB cache now has one uniform shape: an item per note, decision, plan,
