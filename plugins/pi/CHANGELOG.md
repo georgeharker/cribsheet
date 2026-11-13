@@ -9,6 +9,12 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.23.0-dev4] - 2026-11-13
+
+No changes since 0.23.0-dev3: the same code under a new version number, to
+check that `uv pip install --upgrade --prerelease=allow cribsheet` picks up a
+new dev release.
+
 ## [0.23.0-dev3] - 2026-11-13
 
 ### Added
