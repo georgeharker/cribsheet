@@ -18,5 +18,34 @@
       "similar"
     ],
     "reason": "a write's `similar` is replaced (Stage E4): computed from the item's stored title and body vectors across notes, decisions and plans, each match with a verdict and the verb to use, instead of a first-line lookup in one pillar; plan add answers with it too. Its contents are pinned by tests/test_write_warnings.py"
+  },
+  {
+    "tool": "design_read",
+    "new_keys": [
+      "suggested_deps"
+    ],
+    "reason": "reads name live decisions the item is close to but doesn't depend on (Stage E5)"
+  },
+  {
+    "tool": "plan_read",
+    "new_keys": [
+      "suggested_deps"
+    ],
+    "reason": "reads name live decisions the item is close to but doesn't depend on (Stage E5)"
+  },
+  {
+    "phase": "writes",
+    "new_keys": [
+      "suggested_deps"
+    ],
+    "reason": "design/plan read in the writes phase name suggested deps (Stage E5)"
+  },
+  {
+    "tool": "learning_report",
+    "new_keys": [
+      "candidates",
+      "next"
+    ],
+    "reason": "an orphaned learning names its best rehome candidates, a moved one its rehome (Stage E6)"
   }
 ]

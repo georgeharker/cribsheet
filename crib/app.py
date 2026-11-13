@@ -849,6 +849,11 @@ class Crib:
             return a / n if n else a
 
         body, title = unit(me.body_vec), unit(me.title_vec or me.body_vec)
+        # missing links (Stage E5): a decision or plan close to a live decision it
+        # doesn't depend on probably builds on it
+        my_deps = {e.dst for e in me.edges
+                   if e.kind == "dep" or e.kind in ("follows", "rests_on", "informed_by")}
+        noun = {"design": "design", "plan": "plan"}.get(kind)
         rows: list[dict[str, Any]] = []
         for k in self._SIMILAR_KINDS:
             for it in self.store.items({"project": proj, "kind": k}).values():
@@ -871,11 +876,17 @@ class Crib:
                     verdict = "related"
                 else:
                     continue
-                rows.append({"relpath": it.relpath, "kind": k, "title": it.title,
-                             **({"status": status} if status else {}),
-                             "score": round(b, 4), "title_score": round(t, 4),
-                             "verdict": verdict,
-                             "next": self._similar_next(verdict, k, it.relpath, status)})
+                row = {"relpath": it.relpath, "kind": k, "title": it.title,
+                       **({"status": status} if status else {}),
+                       "score": round(b, 4), "title_score": round(t, 4),
+                       "verdict": verdict,
+                       "next": self._similar_next(verdict, k, it.relpath, status)}
+                if (noun and k == "design" and verdict in ("related", "duplicate")
+                        and status in ("active", "proposed")
+                        and it.id not in my_deps):
+                    row["link"] = (f"probably builds on it: {noun}_dep_add "
+                                   f"{relpath} {it.relpath} (as rests_on)")
+                rows.append(row)
         rank = {"duplicate": 0, "settled": 1, "confusable": 2, "related": 3}
         rows.sort(key=lambda r: (rank[r["verdict"]], -r["score"]))
         return rows[:5]
@@ -4753,8 +4764,12 @@ class Crib:
     def design_read(
         self, ref: str, project: str | None = None, cwd: Path | None = None
     ) -> dict[str, Any]:
-        """A decision's dossier: body, status, annotated edges, taint + chains."""
-        return self.designs.design_read(self.resolve_project(project, cwd), ref)
+        """A decision's dossier: body, status, annotated edges, taint + chains,
+        and `suggested_deps`: live decisions it is close to but doesn't depend
+        on (see `_similar`)."""
+        proj = self.resolve_project(project, cwd)
+        out = self.designs.design_read(proj, ref)
+        return {**out, "suggested_deps": self._suggested_deps(proj, out, "design")}
 
     async def design_edit(
         self,
@@ -5128,8 +5143,21 @@ class Crib:
         self, ref: str, project: str | None = None, cwd: Path | None = None
     ) -> dict[str, Any]:
         """A plan item's dossier: body, status, annotated edges, derived blocking
-        + taint — the plan-side design_read."""
-        return self.designs.plan_read(self.resolve_project(project, cwd), ref)
+        + taint — the plan-side design_read — and `suggested_deps` (see
+        `design_read`)."""
+        proj = self.resolve_project(project, cwd)
+        out = self.designs.plan_read(proj, ref)
+        return {**out, "suggested_deps": self._suggested_deps(proj, out, "plans")}
+
+    def _suggested_deps(self, proj: str, read: dict[str, Any],
+                        store: str) -> list[dict[str, Any]]:
+        """The `link` rows of `_similar` for a read item: live decisions it is
+        close to and doesn't declare."""
+        rel = read.get("relpath")
+        if not rel:
+            return []
+        return [{k: r[k] for k in ("relpath", "title", "status", "score", "link")
+                 if k in r} for r in self._similar(proj, rel, store) if "link" in r]
 
     async def plan_edit(
         self,

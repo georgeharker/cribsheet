@@ -71,3 +71,30 @@ def test_unrelated_writes_answer_nothing_and_the_item_is_never_its_own_match(cri
     assert out["similar"] == []
     first = run(crib.store_note(BODY, title="once", project="p"))
     assert all(r["relpath"] != first["relpath"] for r in first["similar"])
+
+
+def test_a_close_live_decision_not_depended_on_is_a_suggested_link(crib):
+    """Stage E5: missing links, on add and on read."""
+    ground = run(crib.design_add("Relay ordering", BODY, project="p"))
+    plan = run(
+        crib.plan_add("Implement relay ordering", BODY + " Implement it.", project="p")
+    )
+    hit = next(r for r in plan["similar"] if r["relpath"] == ground["relpath"])
+    assert f"plan_dep_add {plan['relpath']} {ground['relpath']}" in hit["link"]
+    read = crib.plan_read(plan["relpath"], project="p")
+    assert [s["relpath"] for s in read["suggested_deps"]] == [ground["relpath"]]
+    # once declared, it is no longer suggested
+    run(crib.plan_dep_add(plan["relpath"], ground["relpath"], project="p"))
+    assert crib.plan_read(plan["relpath"], project="p")["suggested_deps"] == []
+
+
+def test_a_settled_decision_is_never_a_suggested_link(crib):
+    old = run(crib.design_add("Relay ordering", BODY, project="p"))
+    new = run(
+        crib.design_add(
+            "Relay ordering v2", "Frames are ordered at the fork.", project="p"
+        )
+    )
+    run(crib.design_supersede(old["relpath"], new["relpath"], project="p"))
+    plan = run(crib.plan_add("Implement relay ordering", BODY, project="p"))
+    assert not [r for r in plan["similar"] if "link" in r]
