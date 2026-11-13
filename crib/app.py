@@ -374,11 +374,16 @@ class Crib:
         # the notes keyword facet (refresh timers cancelled on stop): elaborate's
         # content-hash gate is its durable signal, so the catch-up is a cheap no-op
         # when nothing was lost.
-        self._spawn_bg(loop, self._describe_backlog())
+        self._spawn_bg(loop, self._describe_backlog(), "describe backlog")
         # Records changed while crib was down (a git pull, another machine's sync):
         # the watcher only sees edits from now on, and reads refresh lazily.
-        self._spawn_bg(loop, self._refresh_records_at_start())
-        self._spawn_bg(loop, self._keyword_backlog())
+        self._spawn_bg(loop, self._refresh_records_at_start(), "symbol refresh (startup)")
+        self._spawn_bg(loop, self._keyword_backlog(), "keyword backlog")
+        # Is the platform delivering file events? (fseventsd can saturate and
+        # delay them for minutes.) While it isn't, a catch-up sweep stands in.
+        d = self.config.daemon
+        self._watcher.start_probe(d.watch_probe_s, d.watch_catchup_s,
+                                  self._catch_up_while_degraded)
 
     def _in_repo_store_roots(self) -> dict[str, Path]:
         """`{project: data root}` for every project adopted into a repo whose
@@ -414,12 +419,19 @@ class Crib:
             )
         return True
 
-    def _spawn_bg(self, loop: asyncio.AbstractEventLoop, coro: Any) -> None:
+    def _spawn_bg(
+        self, loop: asyncio.AbstractEventLoop, coro: Any, name: str = "background"
+    ) -> None:
         """Fire-and-forget on the daemon loop, with a strong reference held until done
-        (asyncio keeps only weak refs — an unreferenced task can be GC'd mid-flight)."""
+        (asyncio keeps only weak refs — an unreferenced task can be GC'd mid-flight).
+        `name` is how `status` lists it while it runs (crib.diag)."""
+        from .diag import DIAG
+
+        token = DIAG.job(name)
         t = loop.create_task(coro)
         self._bg_tasks.add(t)
         t.add_done_callback(self._bg_tasks.discard)
+        t.add_done_callback(lambda _t: DIAG.done(token))
 
     async def _on_fs_change(self, project: str, store: str, relpath: str) -> None:
         pillar = self.pillars.get(store, self.notestore)
@@ -452,6 +464,16 @@ class Crib:
         # the BM25 corpus and the alias index fold these in: drop them on change
         if self.enrichments.refresh(project, facet, names):
             self.index.invalidate_caches(project)
+
+    async def _catch_up_while_degraded(self) -> None:
+        """What the watchers would have done, done by sweeping: the stamp-gated
+        reconcile (only changed notes are read) and every project's symbol
+        refresh. The enrichments refresh on their next read."""
+        from .diag import DIAG
+
+        with DIAG.track("watch catch-up sweep"):
+            await self.reconcile_all()
+            await self._refresh_records_at_start()
 
     def _refresh_symbols(self, project: str, names: list[str] | None = None) -> None:
         self.code.refresh(project, names)
@@ -1155,9 +1177,13 @@ class Crib:
                 f"distinct ids)",
                 file=sys.stderr,
             )
-        self._spawn_bg(loop, self._reconcile_background(reason))
+        self._spawn_bg(loop, self._reconcile_background(reason),
+                       f"reconcile ({reason})" if reason else "reconcile")
 
     async def _reconcile_background(self, reason: str | None = None) -> None:
+        from .diag import DIAG
+
+        DIAG.milestone("reconcile started", reason=reason or "startup")
         try:
             rec = await self.reconcile_all()
         except Exception as e:  # noqa: BLE001 — a failed sweep must not kill the daemon
@@ -1165,6 +1191,8 @@ class Crib:
                 f"[crib] {reason or 'startup'} reconcile failed: {e}", file=sys.stderr
             )
             return
+        DIAG.milestone("reconcile finished", projects=rec["projects"],
+                       changed=rec["changed"], removed=rec["removed"])
         if rec["changed"] or rec["removed"]:
             print(
                 f"[crib] startup reconcile: {rec['changed']} updated, "
@@ -4270,12 +4298,38 @@ class Crib:
                 out["store_stats"] = stats()
             except Exception as e:  # noqa: BLE001 — status must still answer
                 out["store_stats"] = {"error": str(e)}
+        out["daemon"] = self._daemon_state()
         hits = getattr(self.embedder, "hits", None)
         if hits is not None:
             out["embed_cache"] = {
                 "hits": hits,
                 "misses": getattr(self.embedder, "misses", 0),
             }
+        return out
+
+    def _daemon_state(self) -> dict[str, Any]:
+        """The daemon's own state for `status`: uptime, startup milestones, the
+        background work running now (crib.diag), and the queues behind it."""
+        from .diag import DIAG
+
+        out = DIAG.snapshot()
+        queues: dict[str, int] = {}
+        q = self._describe_q
+        if q is not None:
+            queues["describe_files"] = q.pending_files()
+            queues["describe_symbols"] = q.pending_symbols()
+        if self._kw_timers:
+            queues["keyword_refresh"] = len(self._kw_timers)
+        for label, w in (("note_watch", self._watcher), ("code_watch", self._code_watcher)):
+            if w is not None:
+                n = w.pending()
+                if n:
+                    queues[label] = n
+        out["queues"] = queues
+        if self._watcher is not None or self._code_watcher is not None:
+            out["watchers"] = {
+                label: w.health() for label, w in
+                (("notes", self._watcher), ("code", self._code_watcher)) if w is not None}
         return out
 
     def project_forget(

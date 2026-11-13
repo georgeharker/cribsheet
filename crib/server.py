@@ -2385,13 +2385,26 @@ async def _serve_async(
     port: int = 8787,
     tools: str | list[str] | None = None,
 ) -> None:
+    from crib.diag import DIAG, install_log
+
     crib = Crib.open()
+    if transport != "stdio":
+        # The daemon: sharedserver keeps no log of its stderr, so crib does.
+        log = crib.config.daemon.log_file
+        if log:
+            path = crib.paths.index_dir / "daemon.log" if log == "auto" else Path(log)
+            install_log(path.expanduser(), crib.config.daemon.log_max_mb * 1024 * 1024)
+    from crib import __version__
+
+    DIAG.milestone("store ready", store=type(crib.store).__name__, version=__version__)
     mcp = build_server(crib, tools=tools)
+    DIAG.milestone("tools registered", tools=len(await mcp.list_tools()))
     # Watcher runs on THIS loop so its index_file calls share the per-path locks
     # with the tool calls (DESIGN §4) — correctness depends on one loop.
     if crib.config.watch:
         try:
             crib.start_watchers(asyncio.get_running_loop())
+            DIAG.milestone("watchers started")
         except Exception as e:  # noqa: BLE001 — watchdog optional; degrade quietly
             print(f"[crib] watcher disabled: {e}", file=sys.stderr)
     # Catch up on anything changed while crib (and its watcher) were down — in the
@@ -2429,6 +2442,7 @@ async def _serve_async(
                         is_protected=lambda p: p != "/health",
                     )
                 )
+            DIAG.milestone("serving", transport="http", port=port)
             await mcp.run_async(transport="http", host=host, port=port, middleware=_mw)
     finally:
         crib.close()

@@ -15,6 +15,8 @@ from crib.paths import Paths
 from crib.store import InMemoryStore
 from crib.watch import decode
 
+from fsevents_probe import require_prompt_file_events
+
 watchdog = pytest.importorskip("watchdog")
 
 
@@ -178,6 +180,7 @@ def test_code_watcher_resolve_batch_routes_new_extensionless_files(
 
 
 def test_watcher_indexes_external_edit(tmp_path, monkeypatch):
+    require_prompt_file_events(tmp_path)
     monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "config"))
     monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "data"))
     monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
@@ -205,6 +208,7 @@ def test_watcher_indexes_external_edit(tmp_path, monkeypatch):
 def test_watcher_indexes_an_edit_in_a_pillar_sibling(tmp_path, monkeypatch):
     """An external write into `projects/<p>/design/` lands in the DESIGN store —
     the raw-edit half of the taint guarantee, post-split."""
+    require_prompt_file_events(tmp_path)
     monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "config"))
     monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "data"))
     monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))

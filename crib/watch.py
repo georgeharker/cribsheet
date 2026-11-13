@@ -13,6 +13,7 @@ import asyncio
 import fnmatch
 import os
 import sys
+import time
 from pathlib import Path, PurePosixPath
 from typing import Any, Awaitable, Callable
 
@@ -33,6 +34,12 @@ CODE_BATCH_FALLBACK = 50
 # Past this many changed record files, the facet diffs its whole directory (one
 # scandir) rather than stat-ing a long list by name.
 RECORD_BATCH_FALLBACK = 500
+# The delivery probe (Watcher.start_probe): a file crib rewrites in its own
+# projects dir and times the event for. Within PROBE_HEALTHY_S is healthy;
+# nothing within PROBE_TIMEOUT_S is "not delivering".
+PROBE_NAME = ".crib-watch-probe"
+PROBE_HEALTHY_S = 2.0
+PROBE_TIMEOUT_S = 10.0
 
 
 def _ignored(path: Path) -> bool:
@@ -146,6 +153,21 @@ class _FSWatcher:
     def _watch_dirs(self) -> list[str]:
         return []
 
+    def pending(self) -> int:
+        """Changes seen but not yet dispatched (debouncing), for `status`."""
+        return len(self._pending)
+
+    def health(self) -> dict[str, Any]:
+        """Is the platform delivering events? Only a watcher that probes knows
+        (see `Watcher.start_probe`)."""
+        return {"watched_dirs": len(self._watches)}
+
+    def _is_probe(self, raw_path: str) -> bool:
+        return False
+
+    def _probe_arrived(self, at: float) -> None:
+        pass
+
     def _decode(self, raw_path: str, deleted: bool) -> tuple[Any, ...] | None:
         raise NotImplementedError
 
@@ -200,6 +222,10 @@ class _FSWatcher:
                 # watchdog types src/dest_path bytes|str (Linux non-UTF-8 paths);
                 # fsdecode is the exact inverse of what produced the bytes.
                 raw_path = os.fsdecode(raw) if isinstance(raw, bytes) else raw
+                if watcher._is_probe(raw_path):
+                    watcher._loop.call_soon_threadsafe(
+                        watcher._probe_arrived, time.monotonic())
+                    return
                 key = watcher._decode(raw_path, deleted)
                 if key is not None:
                     watcher._loop.call_soon_threadsafe(watcher._schedule, key)
@@ -299,6 +325,14 @@ class Watcher(_FSWatcher):
         self._on_records = on_records
         self._records: dict[tuple[str, str], set[str]] = {}
         self._record_timers: dict[tuple[str, str], asyncio.TimerHandle] = {}
+        # The delivery probe (start_probe): when the last probe was written, when
+        # its event arrived, and the state that implies.
+        self._probe_path = projects_dir / PROBE_NAME
+        self._probe_sent: float | None = None
+        self._probe_latency: float | None = None
+        self._probe_at: float | None = None
+        self._probe_state = "unprobed"
+        self._probe_task: asyncio.Task | None = None
 
     def forget_store(self, store_root: Path) -> bool:
         """Stop watching an in-repo store's pillar tree (delete/rename cleanup).
@@ -348,6 +382,89 @@ class Watcher(_FSWatcher):
         self._record_timers[group] = self._loop.call_later(
             CODE_DEBOUNCE_SEC, self._fire_records, group)
 
+    def pending(self) -> int:
+        return len(self._pending) + sum(len(v) for v in self._records.values())
+
+    # --- delivery probe ---------------------------------------------------
+    # One fseventsd serves every watcher on the machine, so a probe in crib's own
+    # tree speaks for the code watcher too (whose roots are the user's repos,
+    # where crib writes nothing).
+
+    def _is_probe(self, raw_path: str) -> bool:
+        return os.path.basename(raw_path) == PROBE_NAME
+
+    def _probe_arrived(self, at: float) -> None:
+        if self._probe_sent is None:
+            return  # a late echo of a probe already counted
+        self._probe_latency = at - self._probe_sent
+        self._probe_sent = None
+        self._set_state("healthy" if self._probe_latency <= PROBE_HEALTHY_S
+                        else "delayed")
+
+    def _set_state(self, state: str) -> None:
+        old, self._probe_state = self._probe_state, state
+        self._probe_at = time.monotonic()
+        if state != old:
+            lat = (f" ({self._probe_latency:.1f}s)"
+                   if state == "delayed" and self._probe_latency is not None else "")
+            print(f"[crib] file watching: {state}{lat}"
+                  + (" — reads still refresh; a catch-up sweep runs while degraded"
+                     if state in ("delayed", "not delivering") else ""),
+                  file=sys.stderr)
+
+    async def probe_once(self, timeout: float | None = None) -> str:
+        """Write the probe file and wait for its event: `healthy` (within
+        PROBE_HEALTHY_S), `delayed` (later, within `timeout`) or `not
+        delivering`. A probe that arrives after the timeout still records its
+        latency, as `delayed`."""
+        self._probe_sent = time.monotonic()
+        try:
+            self._probe_path.write_text(f"{time.time()}\n")
+        except OSError as e:
+            self._probe_sent = None
+            print(f"[crib] watch probe could not write: {e}", file=sys.stderr)
+            return self._probe_state
+        deadline = self._probe_sent + (PROBE_TIMEOUT_S if timeout is None else timeout)
+        while self._probe_sent is not None and time.monotonic() < deadline:
+            await asyncio.sleep(0.05)
+        if self._probe_sent is not None:  # nothing yet: not delivering (so far)
+            self._set_state("not delivering")
+        return self._probe_state
+
+    def start_probe(self, interval: float, catchup_interval: float,
+                    on_degraded: Callable[[], Awaitable[None]] | None = None) -> None:
+        """Probe delivery every `interval` seconds (half that while degraded) and,
+        while degraded, call `on_degraded` at most every `catchup_interval`: the
+        catch-up sweep that stands in for the events that aren't arriving."""
+        if interval <= 0 or self._probe_task is not None:
+            return
+
+        async def run() -> None:
+            last_catchup = 0.0
+            while True:
+                state = await self.probe_once()
+                degraded = state in ("delayed", "not delivering")
+                now = time.monotonic()
+                if degraded and on_degraded is not None and (
+                        now - last_catchup >= catchup_interval):
+                    last_catchup = now
+                    try:
+                        await on_degraded()
+                    except Exception as e:  # noqa: BLE001 — the next probe retries
+                        print(f"[crib] watch catch-up failed: {e}", file=sys.stderr)
+                await asyncio.sleep(interval / 2 if degraded else interval)
+
+        self._probe_task = self._loop.create_task(run())
+
+    def health(self) -> dict[str, Any]:
+        out: dict[str, Any] = {"state": self._probe_state,
+                               "watched_dirs": len(self._watches)}
+        if self._probe_latency is not None:
+            out["last_latency_s"] = round(self._probe_latency, 2)
+        if self._probe_at is not None:
+            out["checked_s_ago"] = round(time.monotonic() - self._probe_at, 1)
+        return out
+
     def _fire_records(self, group: tuple[str, str]) -> None:
         self._record_timers.pop(group, None)
         names = sorted(self._records.pop(group, set()))
@@ -369,6 +486,9 @@ class Watcher(_FSWatcher):
                   file=sys.stderr)
 
     def stop(self) -> None:
+        if self._probe_task is not None:
+            self._probe_task.cancel()
+            self._probe_task = None
         for h in self._record_timers.values():
             h.cancel()
         self._record_timers.clear()
@@ -447,6 +567,12 @@ class CodeWatcher(_FSWatcher):
         # per-project coalescing: {project: {relpath: (root, deleted)}} + one timer
         self._batch: dict[str, dict[str, tuple[str, bool, str]]] = {}
         self._batch_timers: dict[str, asyncio.TimerHandle] = {}
+
+    def pending(self) -> int:
+        return len(self._pending) + sum(len(b) for b in self._batch.values())
+
+    def health(self) -> dict[str, Any]:
+        return {"roots": len(self._roots), "watched_dirs": len(self._watches)}
 
     def _code_exts(self) -> set[str]:
         if self._exts is None:

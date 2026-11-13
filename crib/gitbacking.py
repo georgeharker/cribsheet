@@ -33,7 +33,16 @@ memory-bindings.json
 # Per-project code-index local state: the source repo's absolute path on THIS
 # machine (regenerated on index). The symbol tomls themselves ARE shared.
 .source_root
+# the daemon's file-event delivery probe (crib.watch), rewritten every minute
+.crib-watch-probe
 """
+
+# Exclusions an existing repo (whose .gitignore predates them) must still get,
+# appended in place: `git add -A` would otherwise commit what they exclude.
+_REQUIRED_IGNORES = (
+    (".trash/", "crib deleted-project trees (machine-local undo)"),
+    (".crib-watch-probe", "the daemon's file-event delivery probe (crib.watch)"),
+)
 
 # Route notes AND symbol_index records through the crib merge driver (DESIGN §14):
 # a note's header merges deterministically (provenance never conflicts) while real
@@ -200,14 +209,16 @@ class GitBacking:
         gi = self.data_dir / ".gitignore"
         if not gi.exists():
             gi.write_text(self._remote_file(".gitignore") or _GITIGNORE)
-        elif ".trash/" not in gi.read_text():
-            # a pre-existing repo predates .trash/: append the exclusion IN
-            # PLACE rather than leaving deleted projects tracked (sync does
-            # `git add -A` — an ungignored .trash would commit and push them)
+            return
+        # a pre-existing repo predates some exclusion: append it IN PLACE rather
+        # than leaving what it excludes tracked (sync does `git add -A`, so an
+        # ungitignored .trash or probe would be committed and pushed)
+        have = {ln.strip() for ln in gi.read_text().splitlines()}
+        missing = [(pat, why) for pat, why in _REQUIRED_IGNORES if pat not in have]
+        if missing:
             with gi.open("a") as f:
-                f.write(
-                    "\n# crib deleted-project trees (machine-local undo)\n.trash/\n"
-                )
+                for pat, why in missing:
+                    f.write(f"\n# {why}\n{pat}\n")
 
     def _ensure_gitattributes(self) -> None:
         """Ensure `*.md` routes through the cribnote merge driver (committed).

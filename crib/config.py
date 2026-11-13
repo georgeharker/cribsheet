@@ -283,6 +283,15 @@ class DaemonConfig:
     host: str = "127.0.0.1"
     port: int = 7732  # crib's MCP band (the DuckDB server is 7734)
     grace_period: str = "1h"  # keep warm this long after the last client
+    # The daemon's stderr, also written here (crib.diag): "auto" is
+    # `<index dir>/daemon.log`, "" keeps no log. Rolls to `.1` past log_max_mb.
+    log_file: str = "auto"
+    log_max_mb: int = 5
+    # File-event health (crib.watch.Watcher.start_probe): probe delivery every
+    # watch_probe_s seconds (0: never); while degraded, sweep every
+    # watch_catchup_s seconds in its place.
+    watch_probe_s: float = 60.0
+    watch_catchup_s: float = 120.0
 
 
 @dataclass

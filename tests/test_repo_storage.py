@@ -319,7 +319,9 @@ def test_adopt_is_quiet_when_the_globs_stay_out_of_the_store(crib, tmp_path, cap
 # ── the watcher covers an in-repo store ───────────────────────────────────────
 
 def test_watcher_indexes_an_edit_inside_an_in_repo_store(crib, tmp_path):
-    pytest.importorskip("watchdog")
+    from fsevents_probe import require_prompt_file_events
+
+    require_prompt_file_events(tmp_path)
     root = repo_with_store(tmp_path, docs=["**/*.md"])
     run(crib.store_note("seed note", title="seed", project="p"))
     run(crib.project_adopt(cwd=root))
