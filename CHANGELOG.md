@@ -9,6 +9,50 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.23.0-dev1] - 2026-11-12
+
+The DuckDB cache now has one uniform shape: an item per note, decision, plan,
+learning or code symbol; one table per kind for that kind's own fields; one
+table of links between items; and the lexical postings. The files stay the
+truth. The store is kept exact by every read and write, and answers the
+queries.
+
+### Added
+
+- Dependency kinds. A dependency can say what it means: `follows` (blocked
+  until the target is done), `rests_on` (blocked while the target is stale)
+  or `informed_by` (checked for change, never blocks). Without one, a dep
+  gets the target's default: a plan is `follows`, a decision `rests_on`, a
+  note `informed_by`. Use `--follows`, `--rests-on`, `--informed-by` or
+  `dep-add --as`; reads report each dep's kind.
+- A plain note can be a dependency target: checked for change, never
+  blocking. It used to read as a deleted dependency.
+
+### Changed
+
+- Code search runs from the store, so crib no longer keeps every project's
+  symbols, keyword index and description vectors in memory. On a 10,000
+  symbol project a warm read of all records takes 0.2 s.
+- Design and plan graph reads parse only files changed since the last read:
+  0.16 s to 0.03 s on a 455-item project.
+- The startup and post-pull reconcile reads only notes changed since they
+  were last indexed: 4.2 s to 0.5 s across 21 projects. An explicit
+  `reindex` still re-reads everything.
+- The watcher refreshes the store as record files, decisions and plans
+  change; reads still catch anything it misses.
+- Decisions written by crib no longer carry an empty `links: []` line.
+
+### Fixed
+
+- Projects that vendor the same file (the same symbol in several projects)
+  no longer overwrite each other's symbols in the store.
+
+### Upgrading
+
+- The store's schema changes, so the first daemon on this version rebuilds
+  its DuckDB cache once from the files. Nothing in your notes, decisions,
+  plans or symbol records changes.
+
 ## [0.22.1] - 2026-11-10
 
 ### Fixed
