@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import dataclasses
 import datetime
 import os
 import re
@@ -1557,6 +1558,14 @@ class Crib:
             store=store,
             labels=tags,
         )
+        return self._hits_from(proj, raw, k, dedupe, min_score)
+
+    def _hits_from(
+        self, proj: str, raw: list[Any], k: int, dedupe: str, min_score: float
+    ) -> list[LookupHit]:
+        """Ranked retrieval `Hit`s as `LookupHit`s: below `min_score` dropped,
+        `dedupe`d, each with its section's line span on disk and its markers
+        (taint, index rebuilding), the first `k` kept."""
         # a store wipe this project hasn't been re-swept after: what comes back is
         # incomplete, so every hit says so rather than thin results reading as "all
         # there is" (cleared per project by the recovery sweep)
@@ -4551,6 +4560,66 @@ class Crib:
         from .doctor import diagnose
 
         return diagnose(self, self.resolve_project(project, cwd))
+
+    # The pillars one cross-kind lookup searches, as (kind, store) pairs.
+    _LOOKUP_PILLARS = (("note", "notes"), ("design", "design"), ("plan", "plans"),
+                       ("learning", "learnings"))
+
+    def lookup_all(
+        self,
+        query: str,
+        project: str | None = None,
+        k: int = 8,
+        kinds: list[str] | None = None,
+        status: list[str] | None = None,
+        cwd: Path | None = None,
+    ) -> list[dict[str, Any]]:
+        """One lookup across kinds (notes, decisions, plans, learnings). Each
+        pillar's candidates are retrieved with its own calibration and pooled
+        BEFORE reranking; the cross-encoder then judges the merged pool once
+        (its query/passage score is the one scale every pillar shares). Each
+        hit carries its `kind` and, for a decision or plan, its `status`;
+        `kinds` and `status` filter."""
+        from .codequery import check_k, check_query
+
+        check_query(query)
+        check_k(k)
+        proj = self.resolve_project(project, cwd)
+        wanted = [(kd, st) for kd, st in self._LOOKUP_PILLARS
+                  if not kinds or kd in kinds]
+        if kinds and not wanted:
+            raise CribUserError(
+                f"unknown kinds {kinds}: use any of "
+                f"{[kd for kd, _ in self._LOOKUP_PILLARS]}")
+        r = self.config.retrieve
+        vec = embed_query_batch(self.embedder, [query])[0]
+        topn = max(k * 3, 30)
+        pool: list[Any] = []
+        for _kind, store in wanted:
+            pool += self._retrieve(
+                proj, query, vec, topn, r.hybrid, False,
+                tuple(r.keyword_labels), r.keyword_weight,
+                tuple(r.summary_labels), r.summary_weight,
+                hint_weight=r.hint_weight, store=store)
+        pool.sort(key=lambda h: -h.score)              # hybrid order, then
+        if r.rerank:
+            pool = self._rerank(query, pool)           # one judge for every pillar
+        kind_of_store = {st: kd for kd, st in self._LOOKUP_PILLARS}
+        graph = None
+        out: list[dict[str, Any]] = []
+        for h in self._hits_from(proj, pool, len(pool), "section", 0.0):
+            row = {"kind": kind_of_store.get(h.store, h.store), **dataclasses.asdict(h)}
+            if row["kind"] in ("design", "plan"):
+                graph = graph or self.designs._load_graph(proj)
+                node = next((n for n in graph.of_kind(row["kind"])
+                             if n.relpath == h.relpath), None)
+                row["status"] = node.status if node is not None else None
+            if status and row.get("status") not in status:
+                continue
+            out.append(row)
+            if len(out) >= k:
+                break
+        return out
 
     def project_related(
         self, ref: str, k: int = 3, project: str | None = None,

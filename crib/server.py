@@ -376,7 +376,7 @@ READ_ONLY_TOOLS: dict[str, frozenset[str]] = {
     "memory": frozenset({"memory_history"}),
     "projects": frozenset(
         {"project_list", "project_status", "project_wait", "project_doctor",
-         "project_related"}
+         "project_related", "project_lookup"}
     ),
 }
 
@@ -1076,6 +1076,21 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         notes/decisions/plans, pending descriptions. Each finding names the
         verb that fixes it; nothing is changed."""
         return crib.project_doctor(project, cwd=_cwd(project_path))
+
+    @crib_tool("source")
+    def project_lookup(
+        query: str,
+        k: int = 8,
+        kinds: list[str] | None = None,
+        status: list[str] | None = None,
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """One search across notes, decisions, plans and learnings at once:
+        each hit carries its `kind` and, for a decision or plan, its `status`.
+        `kinds` (note/design/plan/learning) and `status` (e.g. active, todo)
+        narrow it. Use the per-pillar lookups when you know which you want."""
+        return crib.lookup_all(query, project, k, kinds, status, cwd=_cwd(project_path))
 
     @crib_tool("source")
     def project_related(

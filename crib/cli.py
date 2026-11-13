@@ -1482,6 +1482,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="also drop attached learnings (default: keep them)",
     )
     _sp = pjsub.add_parser(
+        "lookup", help="one search across notes, decisions, plans and learnings"
+    )
+    _sp.add_argument("query")
+    _sp.add_argument("-k", type=int, default=8)
+    _sp.add_argument("--kind", action="append", dest="kinds",
+                     help="note/design/plan/learning (repeatable)")
+    _sp.add_argument("--status", action="append",
+                     help="only decisions/plans in this status (repeatable)")
+    proj(_sp)
+    _sp = pjsub.add_parser(
         "related",
         help="one item and what surrounds it: links both ways, nearest of every kind",
     )
@@ -2515,6 +2525,17 @@ def _emit_doctor(d: dict[str, Any], as_json: bool) -> None:
         print(f"      fix: {f['fix']}")
 
 
+def _emit_lookup_all(rows: list[dict[str, Any]], as_json: bool) -> None:
+    if as_json:
+        print(json.dumps(rows, indent=2, default=str))
+        return
+    for r in rows:
+        st = f" [{r['status']}]" if r.get("status") else ""
+        where = f"{r['relpath']}" + (f" :: {r['heading']}" if r.get("heading") else "")
+        print(f"{r['score']:.3f}  {r['kind']:<8} {r.get('title') or ''}{st}")
+        print(f"         {where}")
+
+
 def _emit_related(d: dict[str, Any], as_json: bool) -> None:
     if as_json:
         print(json.dumps(d, indent=2, default=str))
@@ -2936,6 +2957,15 @@ VERBS: dict[str, Verb] = {
         lambda d, a: _emit_doctor(d, a.json),
         policy="source",
         mcp=_PROJ,
+    ),
+    "project lookup": Verb(
+        "project_lookup",
+        lambda a: {"query": a.query, "k": a.k, "kinds": a.kinds,
+                   "status": a.status, "project": _proj_of(a)},
+        lambda d, a: _emit_lookup_all(d, a.json),
+        method="lookup_all",
+        policy="source",
+        mcp=f"query k=8 kinds=None status=None {_PROJ}",
     ),
     "project related": Verb(
         "project_related",
