@@ -144,7 +144,30 @@ Prefer to wire it by hand? Copy [`CLAUDE.md.example`](CLAUDE.md.example) into yo
 global `$CLAUDE_CONFIG_DIR/CLAUDE.md` — that one-line directive is what keeps the
 habit in context (tool descriptions alone load too late to form it).
 
-**3 — Use it.** The CLI verbs mirror the MCP tools, so anything Claude does you can
+**3 — Set up generation (recommended).** crib uses an LLM to write a one-line
+description and search keywords for every code symbol, and optional summaries of
+your notes. They are what let `code lookup` find a function by what it does rather
+than what it's called. Point crib at a provider once:
+
+```bash
+crib generate setup     # finds the providers this machine has, asks which, writes the config
+crib generate test      # one small call per purpose: is the key good, does it reply?
+```
+
+`setup` looks for API keys in your environment (`OLLAMA_API_KEY`,
+`OPENCODE_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`), a local
+OpenAI-compatible server (Ollama, llama-swap), the `claude` CLI, and providers
+you already defined for zsh-ai. It shows the change to
+`~/.config/crib/models.toml` and `~/.config/crib/config.toml` as a diff, backs both
+up, and writes them only when you say yes.
+
+Without a provider, crib still indexes code structure (names, signatures, calls),
+but generates nothing in the background (`[generate] mode = "explicit"`): symbols
+wait for a description until you configure one and run `crib project index`.
+`crib status` counts what is waiting. Details:
+[docs/generate.toml.example](docs/generate.toml.example).
+
+**4 — Use it.** The CLI verbs mirror the MCP tools, so anything Claude does you can
 do too:
 
 ```bash

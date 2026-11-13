@@ -13,8 +13,10 @@ index. Commands are copy-pasteable; adjust paths if your checkout layout differs
   - `~/.config/crib/config.toml` — must have the `[generate]` and `[retrieve]`
     blocks (generation provider + `keyword_labels=["keywords"]`,
     `keyword_weight=0.3`).
-  - `~/.config/crib/models.toml` — llmkit providers/profiles (the `opencode-qwen`
-    zen provider). Kept separate from `~/.config/zsh-ai/models.toml`.
+  - `~/.config/crib/models.toml` — llmkit providers/profiles. Kept separate from
+    `~/.config/zsh-ai/models.toml`. On a machine without the dotfiles,
+    `crib generate setup` writes both this and the `[generate]` block, and
+    `crib generate test` checks them.
 - **`export OPENCODE_API_KEY=…`** in the shell (zen auth; crib holds no key).
 - **Shared store:** config uses `[duckdb] mode = "shared"`, which needs the
   `sharedserver` binary on `PATH`. If it isn't installed on the new box, either

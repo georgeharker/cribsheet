@@ -1,45 +1,73 @@
-# crib generation providers/profiles — llmkit format, modeled on
-# ~/.config/zsh-ai/models.toml. Point `[generate].config` in crib's config.toml
-# at a copy of this (e.g. ~/.config/crib/generate.toml) and pick a `profile`:
+# crib's LLM providers — ~/.config/crib/models.toml (llmkit format).
 #
-#   # ~/.config/crib/config.toml
+# The easy way: `crib generate setup` detects what this machine has, asks which
+# provider to use, and writes this file and the [generate] section of
+# config.toml for you (showing the diff first). `crib generate test` then makes
+# one small call per purpose. This file shows what it writes, for editing by hand.
+#
+# crib asks its provider for three PURPOSES:
+#   elaborate  a description + search keywords for every code symbol (bulk,
+#              structured JSON — the one that matters most)
+#   summarize  alternative phrasings of note sections (`crib note summarize`)
+#   distill    rewriting a note tighter (`crib note distill`)
+#
+# config.toml points at this file and picks a profile:
+#
 #   [generate]
-#   config  = "~/.config/crib/generate.toml"
-#   profile = "local"          # or "cloud"
+#   config  = "~/.config/crib/models.toml"
+#   profile = "crib"
+#   mode    = "on"        # generate in the background as code and notes change;
+#                         # "explicit" = only when a verb asks; "off" = never.
+#                         # Unset: "on" with a providers file, else "explicit".
 #
-# Then `crib distill` / `crib elaborate` resolve their provider from the profile's
-# widget key (distill / elaborate). Each provider needs its llmkit adapter extra
-# installed: openai-compatible → llmkit[bridge], anthropic → llmkit[anthropic],
-# google → llmkit[google], claude_code → llmkit[claude].
+# Each adapter needs its llmkit extra: openai-compatible → polyllmkit[bridge],
+# anthropic → polyllmkit[anthropic], google → polyllmkit[google],
+# claude_code → polyllmkit[claude].
 
 [defaults]
 temperature = 0.2
-max_tokens  = 2048
+# Keep this generous: crib describes a whole file's symbols in one structured
+# reply, and a low cap truncates it mid-JSON (2048 was too small in practice).
+max_tokens  = 8192
 
-# Local llama-swap / Ollama (OpenAI-compatible /v1).
-[providers.qwen]
-adapter  = "openai-compatible"
-endpoint = "http://localhost:11435/v1"
-model    = "Qwen3.6-35B-A3B-Q4"
+# Ollama Cloud (OpenAI-compatible). It ignores `response_format`, so structured
+# output must ride a forced tool call: structured = "tool" (llmkit >= 0.2.2).
+[providers.ollama-cloud]
+adapter     = "openai-compatible"
+endpoint    = "https://ollama.com/v1"
+api_key_env = "OLLAMA_API_KEY"
+model       = "glm-5.3-flash"
+structured  = "tool"
 
-# opencode "zen" — Anthropic Messages API format (not OpenAI). Needs
-# llmkit[anthropic]; key resolved from the OPENCODE_API_KEY env var.
-[providers.zen]
-adapter     = "anthropic"
-endpoint    = "https://opencode.ai/zen/v1/responses"
+# opencode zen (OpenAI-compatible).
+[providers.opencode-zen]
+adapter     = "openai-compatible"
+endpoint    = "https://opencode.ai/zen/v1/"
 api_key_env = "OPENCODE_API_KEY"
-model       = "qwen3.7-max"
+model       = "qwen3.5-plus"
 
-# Claude via the Claude Agent SDK (reuses the `claude` CLI login; no endpoint/key).
+# A local OpenAI-compatible server (Ollama on 11434, llama-swap on 11435).
+[providers.local]
+adapter  = "openai-compatible"
+endpoint = "http://localhost:11434/v1"
+api_key  = "local"
+model    = "qwen3"
+
+# The Anthropic API.
+[providers.anthropic]
+adapter     = "anthropic"
+api_key_env = "ANTHROPIC_API_KEY"
+model       = "claude-haiku-5-5"
+
+# Claude through the Agent SDK: reuses the `claude` CLI's login, so it runs on
+# your Claude subscription. No endpoint or key here.
 [providers.claude]
 adapter = "claude_code"
-model   = "claude-sonnet-4-6"
+model   = "claude-haiku-5-5"
 
-# ── Machine sections: map each purpose (widget) to a provider ───────────────
-[profiles.local]
-distill   = "qwen"
-elaborate = "qwen"
-
-[profiles.cloud]
-distill   = "zen"
-elaborate = "zen"
+# Which provider serves each purpose. Different providers per purpose are fine
+# (e.g. a cheap fast model for elaborate, a stronger one for distill).
+[profiles.crib]
+elaborate = "ollama-cloud"
+summarize = "ollama-cloud"
+distill   = "ollama-cloud"

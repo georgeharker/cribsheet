@@ -310,6 +310,16 @@ Pushing publishes to a remote, so these stay CLI-only (not agent-callable).
 | `crib memory push` / `crib memory pull` | The halves of sync (`pull` reindexes after).                                                  |
 | `crib merge-driver`                     | The frontmatter-aware git merge driver (invoked by git during a merge; hidden from `--help`). |
 
+## Generation setup (CLI-only)
+
+These read and write this machine's config files and call the providers
+directly, so they stay CLI-only.
+
+| CLI                        | Description                                                                                                                                                                                                                                       |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `crib generate setup`      | Detect the LLM providers this machine has (API keys in the environment, a local OpenAI-compatible server, the `claude` CLI, providers in zsh-ai's models.toml), pick one and a model, and write `~/.config/crib/models.toml` and `[generate]` after showing the diff. `--provider`, `--model`, `--mode`, `--yes` skip the prompts. |
+| `crib generate test`       | One small call per purpose (elaborate, summarize, distill): whether the key works and structured output comes back, with the time each took.                                                                                                        |
+
 ## Keeping the two faces in step
 
 `crib/cli.py`'s `VERBS` registry is the single source of truth for this table: each

@@ -2258,6 +2258,22 @@ def build_parser() -> argparse.ArgumentParser:
 
     # internal: invoked by git as the cribnote merge driver (DESIGN §14). No
     # help= → kept out of the listed commands (still a valid hidden subcommand).
+    n_gen = sub.add_parser(
+        "generate", help="set up and check LLM generation (descriptions, summaries)"
+    )
+    gensub = n_gen.add_subparsers(dest="generate_cmd", required=True)
+    _gs = gensub.add_parser(
+        "setup",
+        help="detect the providers this machine has, pick one, write the config",
+    )
+    _gs.add_argument("--provider", help="use this detected provider (skips the prompt)")
+    _gs.add_argument("--model", help="the model to use (skips the prompt)")
+    _gs.add_argument("--mode", choices=("on", "explicit", "off"),
+                     help="when crib may generate (see [generate] mode)")
+    _gs.add_argument("--yes", action="store_true",
+                     help="write without asking (defaults for anything not given)")
+    gensub.add_parser("test", help="one small call per purpose, to check the setup")
+
     n_store = sub.add_parser("store", help="the vector store (DuckDB)")
     storesub = n_store.add_subparsers(dest="store_cmd", required=True)
     storesub.add_parser(
@@ -4001,6 +4017,30 @@ def _user_errors() -> tuple[type[BaseException], ...]:
     return (*out, ToolError)
 
 
+def _generate_cmd(args: Any) -> int:
+    from . import gensetup
+    from .config import Config
+    from .paths import Paths
+
+    paths = Paths.resolve()
+    if args.generate_cmd == "setup":
+        return gensetup.run_setup(
+            paths, gensetup.detect(), ask=input, say=print, assume_yes=args.yes,
+            pick=args.provider, model=args.model, mode=args.mode)
+    cfg = Config.load(paths.config_file).generate
+    print(f"generation mode: {cfg.resolved_mode()}"
+          + (f" · providers: {cfg.config} (profile {cfg.profile})" if cfg.config
+             else " · no models config: the inline [generate] provider"))
+    rows = gensetup.test_purposes(cfg)
+    for r in rows:
+        mark = "ok  " if r["ok"] else "FAIL"
+        print(f"  {mark} {r['purpose']:<10} {r['seconds']:>5.1f}s"
+              + (f"  {r['error']}" if r.get("error") else ""))
+    if args.json:
+        print(json.dumps(rows, indent=2))
+    return 0 if all(r["ok"] for r in rows) else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     import sys as _sys
 
@@ -4020,6 +4060,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "info":
         cmd_info(args.json)
         return 0
+    if args.cmd == "generate":
+        # Local and interactive: it reads and writes this machine's config files
+        # and talks to the providers directly, never through the daemon.
+        return _generate_cmd(args)
     if args.cmd == "store" and args.store_cmd == "install-extensions":
         # Runs locally (no daemon, no store file): it only fills crib's own
         # extension directory, which every crib DuckDB connection reads.
