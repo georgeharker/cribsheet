@@ -1337,6 +1337,7 @@ def build_parser() -> argparse.ArgumentParser:
         ("setup", "ensure .crib + import docs + index all code"),
         ("index", "(re)index the repo's code + in-situ docs from its .crib"),
         ("status", "is it indexed? counts, kinds, .crib paths"),
+        ("doctor", "what needs attention (report-only), with the fix for each"),
         ("wait", "bounded-block on a running index job (join primitive)"),
         ("cancel", "cancel a running index sweep"),
     ):
@@ -2490,6 +2491,23 @@ def _E_learning(verb):
     return lambda d, a: _emit_code_learning(d, verb, a.json)
 
 
+def _emit_doctor(d: dict[str, Any], as_json: bool) -> None:
+    if as_json:
+        print(json.dumps(d, indent=2, default=str))
+        return
+    if d.get("healthy"):
+        print(f"{d['project']}: nothing needs attention")
+        return
+    print(f"{d['project']}: " + ", ".join(f"{n} {c}" for c, n in d["counts"].items()))
+    for f in d["findings"]:
+        what = (f.get("item") or " ~ ".join(f.get("items", []))
+                or ", ".join(f.get("files", [])) or str(f.get("count", "")))
+        extra = f.get("dep") or f.get("source") or f.get("symbol") or ""
+        sim = f" ({f['similarity']})" if "similarity" in f else ""
+        print(f"  - {f['check']}: {what}{' -> ' + extra if extra else ''}{sim}")
+        print(f"      fix: {f['fix']}")
+
+
 def _E_project(verb):
     return lambda d, a: _emit_project(d, verb, a.json)
 
@@ -2879,6 +2897,13 @@ VERBS: dict[str, Verb] = {
         "project_status",
         lambda a: {"project": _proj_of(a)},
         _E_project("status"),
+        policy="source",
+        mcp=_PROJ,
+    ),
+    "project doctor": Verb(
+        "project_doctor",
+        lambda a: {"project": _proj_of(a)},
+        lambda d, a: _emit_doctor(d, a.json),
         policy="source",
         mcp=_PROJ,
     ),

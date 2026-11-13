@@ -4543,6 +4543,15 @@ class Crib:
             lang=lang,
         )
 
+    def project_doctor(
+        self, project: str | None = None, cwd: Path | None = None
+    ) -> dict[str, Any]:
+        """What in this project needs attention, each finding naming the verb
+        that resolves it (crib.doctor). Report-only: nothing is changed."""
+        from .doctor import diagnose
+
+        return diagnose(self, self.resolve_project(project, cwd))
+
     def learning_report(
         self,
         project: str | None = None,

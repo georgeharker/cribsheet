@@ -374,7 +374,9 @@ READ_ONLY_TOOLS: dict[str, frozenset[str]] = {
     "code": frozenset({"code_lookup", "code_dossier", "code_graph", "code_xref"}),
     "learnings": frozenset({"learning_read", "learning_report"}),
     "memory": frozenset({"memory_history"}),
-    "projects": frozenset({"project_list", "project_status", "project_wait"}),
+    "projects": frozenset(
+        {"project_list", "project_status", "project_wait", "project_doctor"}
+    ),
 }
 
 
@@ -1062,6 +1064,17 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
         the `.crib` source paths — to orient before project_setup / a code_lookup. Pass
         `project_path=<the repo dir>`."""
         return crib.project_status(project, cwd=_cwd(project_path))
+
+    @crib_tool("source")
+    def project_doctor(
+        project: str | None = None, project_path: str | None = None
+    ) -> dict[str, Any]:
+        """What in a project needs attention, report-only: dangling deps, deps
+        on superseded/declined items, changed or vanished cited sections,
+        moved/orphaned learnings, one id in several files, near-duplicate
+        notes/decisions/plans, pending descriptions. Each finding names the
+        verb that fixes it; nothing is changed."""
+        return crib.project_doctor(project, cwd=_cwd(project_path))
 
     @crib_tool("none")
     async def project_wait(
