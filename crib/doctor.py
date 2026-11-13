@@ -100,6 +100,11 @@ def diagnose(crib: Crib, proj: str) -> dict[str, Any]:
     for row in crib.learnings.report(proj):
         if row["status"] == "ok":
             continue
+        best = (row.get("candidates") or [None])[0]
+        fix = row.get("next") or (
+            best["next"] + (f" (best of {len(row['candidates'])} candidates)"
+                            if len(row["candidates"]) > 1 else "")
+            if best else f"no candidate symbol: learning_forget {row['symbol']} if it is gone")
         findings.append(
             {
                 "check": f"learning {row['status']}",
@@ -107,11 +112,7 @@ def diagnose(crib: Crib, proj: str) -> dict[str, Any]:
                 "kind": "learning",
                 "symbol": row["symbol"],
                 **({"now_in": row["new_file"]} if row.get("new_file") else {}),
-                "fix": (
-                    f"learning_rehome {row['symbol']} <its new symbol>"
-                    if row["status"] == "orphan"
-                    else f"learning_rehome {row['symbol']} (its file is now {row['new_file']})"
-                ),
+                "fix": fix,
             }
         )
 

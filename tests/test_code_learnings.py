@@ -162,6 +162,13 @@ def test_learnings_report_and_orphan_lifecycle(crib):
     assert (
         rows and rows[0]["symbol"] == "pkg/mod.py#foo" and rows[0]["status"] == "orphan"
     )
+    # the report already names where it probably went, and how to move it there
+    best = rows[0]["candidates"][0]
+    assert best["symbol_ref"] == "pkg/mod.py#bar"
+    assert best["next"] == "learning_rehome pkg/mod.py#foo pkg/mod.py#bar"
+    fix = next(f["fix"] for f in crib.project_doctor("p")["findings"]
+               if f["check"] == "learning orphan")
+    assert fix.startswith("learning_rehome pkg/mod.py#foo pkg/mod.py#bar")
 
     # rehome suggestions surface the rename target; then confirm the move
     sugg = run(crib.learning_rehome("a.foo", project="p"))

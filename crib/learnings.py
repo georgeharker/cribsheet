@@ -482,13 +482,17 @@ class Learnings:
     def report(self, proj: str, orphans_only: bool = False) -> list[dict[str, Any]]:
         """Health of every attached learning: `ok` | `moved` | `orphan`. `moved` = the
         fqn still resolves but the symbol's file drifted from the snapshot; `orphan` =
-        the fqn no longer resolves. Report-only — drives cleanup (rehome / forget)."""
+        the fqn no longer resolves. Report-only — drives cleanup (rehome / forget):
+        a moved learning names the rehome that re-snapshots it, an orphan its best
+        `candidates` (name, signature, same file; see `candidates`), each with the
+        rehome that would move it there."""
 
         ldir = self.store.root(proj)
+        entries = self._records(proj)
         # keyed by BOTH bindings: a note may be on the current id or on the legacy
         # qualified name, and a report that only knows one calls the other an orphan
         by_fq: dict[str, dict[str, Any]] = {}
-        for e in self._records(proj):
+        for e in entries:
             for b in symbol_bindings(e):
                 by_fq.setdefault(b, e)
             for k in ("symbol_ref", "fqn"):
@@ -508,16 +512,21 @@ class Learnings:
                     status, new_file = "ok", None
                 if orphans_only and status == "ok":
                     continue
-                out.append(
-                    {
-                        "symbol": fq,
-                        "status": status,
-                        "file": fm.get("file", ""),
-                        "new_file": new_file,
-                        "signature": fm.get("signature", ""),
-                        "relpath": p.name,
-                    }
-                )
+                row: dict[str, Any] = {
+                    "symbol": fq,
+                    "status": status,
+                    "file": fm.get("file", ""),
+                    "new_file": new_file,
+                    "signature": fm.get("signature", ""),
+                    "relpath": p.name,
+                }
+                if status == "moved" and cur is not None:
+                    row["next"] = f"learning_rehome {fq} {symbol_key(cur)}"
+                elif status == "orphan":
+                    row["candidates"] = [
+                        {**c, "next": f"learning_rehome {fq} {c['symbol_ref']}"}
+                        for c in self.candidates(fm, entries, top=3)]
+                out.append(row)
         return out
 
     def candidates(
