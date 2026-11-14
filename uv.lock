@@ -364,7 +364,7 @@ requires-dist = [
     { name = "fastembed", specifier = ">=0.3" },
     { name = "fastmcp", specifier = ">=4.1.5,<5" },
     { name = "numpy", specifier = ">=2" },
-    { name = "polyllmkit", extras = ["md", "all"], specifier = ">=0.2.3" },
+    { name = "polyllmkit", extras = ["md", "all"], specifier = ">=0.2.4" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "sentence-transformers", marker = "extra == 'st'", specifier = ">=2.2" },
     { name = "watchdog", specifier = ">=4.0" },
@@ -1647,11 +1647,11 @@ wheels = [
 
 [[package]]
 name = "polyllmkit"
-version = "0.2.3"
+version = "0.2.4"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/80/16/773996cfd169ac96d84fc9f0f5ad4b86b6c1c6760882010f4fd9c78278e8/polyllmkit-0.2.3.tar.gz", hash = "sha256:649e25c4495bd950b4a5b1c2e669155508f9ab216b14084f13ee4185433e2929", size = 45963, upload-time = "2026-11-13T23:32:11.238Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5f/74/1e5c642f3e17c109dc8c59c6a5ed3c8b44f3c9b6f8c7545c3ea6c57c94f8/polyllmkit-0.2.4.tar.gz", hash = "sha256:0b3422c0fb51e8953c1b00e4fe345c2b778bbebf716380239cdbf392976ca94c", size = 46112, upload-time = "2026-11-14T00:06:09.028Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/91/e9/130003e5be70f3ed78a8210cbbffa7a024a1ea1ce0057708a43092d885e0/polyllmkit-0.2.3-py3-none-any.whl", hash = "sha256:e92fea2c3d3e207fd093860f005e4ea17ccfed75268dd102bd30a9b62a0e6daa", size = 56415, upload-time = "2026-11-13T23:32:09.88Z" },
+    { url = "https://files.pythonhosted.org/packages/5c/56/1429851eb1b44ec90037d15de17187117e9f7484eaab9ca23db69f04ae23/polyllmkit-0.2.4-py3-none-any.whl", hash = "sha256:ce989d6673e88e42f970195c4f47daf6b6d93e877bea78c67b1841de2cfee372", size = 56573, upload-time = "2026-11-14T00:06:07.631Z" },
 ]
 
 [package.optional-dependencies]
