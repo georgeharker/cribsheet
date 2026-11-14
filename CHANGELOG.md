@@ -9,6 +9,58 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.23.1] - 2026-11-13
+
+Everything since 0.22.1, collected from the 0.23 dev releases below.
+
+### Highlights
+
+- **One shape for the cache.** Notes, decisions, plans, learnings, code
+  symbols and the keyword/summary indexes are all rows in the DuckDB store,
+  kept exactly in line with your files on every read and write. Your files
+  stay the truth. Code search no longer holds every project in memory
+  (crib's own memory is about 110 MB with every project warm), decision and
+  plan reads are about 6x faster, and the startup reconcile reads only the
+  notes that changed (about 9x faster).
+- **New verbs:** `crib project doctor` (what needs attention, with the fix
+  for each), `crib project related <ref>` (an item's links both ways and its
+  nearest items of every kind), `crib project lookup` (one search across
+  notes, decisions, plans and learnings), and `crib generate setup` /
+  `crib generate test` (configure and check LLM generation).
+- **Writes warn usefully.** After a note, decision or plan write, `similar`
+  says whether a match is a duplicate, a confusingly similar title, already
+  settled or just related, and what to do. Reads suggest the decisions an
+  item probably builds on; imports name the existing items each section is
+  closest to; orphaned learnings name where they probably went.
+- **Dependency kinds:** `follows`, `rests_on`, `informed_by`, with defaults
+  from the target; `dep_add` with another kind changes it in place.
+- **Generation modes:** `[generate] mode = "on" | "explicit" | "off"`.
+  Without a models config it is `explicit`: crib never drives the Claude CLI
+  in the background on its own.
+- **The daemon explains itself.** `crib status` shows uptime, startup steps,
+  running background work, queues, file-watching health and the generation
+  mode; the daemon writes `~/.cache/crib/daemon.log`.
+
+### Fixed
+
+- Opening the store can no longer spin, a store file DuckDB can't read is set
+  aside and rebuilt, and a schema change keeps the embedding cache.
+- A hung LLM provider can't wedge the daemon: generation has its own pool and
+  deadline, and code queries never wait on it. The Claude CLI provider starts
+  with no MCP servers and is killed promptly on a timeout (polyllmkit 0.2.4,
+  now required).
+- `status` no longer shows a git remote's password or token.
+- Projects that vendor the same file no longer overwrite each other's symbols.
+
+### Upgrading
+
+- The first daemon on 0.23.1 rebuilds its DuckDB cache from your files once;
+  nothing in your notes, decisions, plans or symbol records changes.
+- If you relied on background generation without a models config, run
+  `crib generate setup` or set `[generate] mode = "on"`.
+- With uv, upgrade with `uv pip install --upgrade --refresh cribsheet`
+  (`--upgrade` moves an installed package; `--refresh` skips a stale index).
+
 ## [0.23.1-dev2] - 2026-11-13
 
 ### Fixed
