@@ -54,12 +54,20 @@ jobs:
             # runner; its harness exits 2 there and the test skips itself.
             # Everything else is a plain unit test.
             - name: Tests (pytest)
-              # A runner is slower and has fewer cores than a developer machine,
-              # and the code-index tests wait on a cold basedpyright; the stock
-              # 30s LSP timeout is
-              # not enough for its first callHierarchy reply here.
+              # In parallel (pytest-xdist): each test has its own tmp dirs and
+              # free ports, so -n auto is safe; serial took ~27 min here. The
+              # tests that drive a REAL language server run in the next step.
+              run: >-
+                  uv run pytest -q -n auto
+                  --ignore=tests/test_codeindex.py
+                  --ignore=tests/test_code_integrity.py
+
+            - name: Tests that drive a real language server (pytest, serial)
+              # A runner has no ty, so crib falls back to basedpyright, whose cold
+              # start answers the first callHierarchy in ~40 s on a developer
+              # machine and much more on a runner. Run in parallel with the rest
+              # of the suite (every core busy, each worker starting its own
+              # servers) it went past even 180 s; on its own it fits.
               env:
                   CRIB_LSP_TIMEOUT: "180"
-              # In parallel (pytest-xdist): each test has its own tmp dirs and
-              # free ports, so -n auto is safe; serial took ~27 min here.
-              run: uv run pytest -q -n auto
+              run: uv run pytest -q tests/test_codeindex.py tests/test_code_integrity.py
