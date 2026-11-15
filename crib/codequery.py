@@ -43,7 +43,7 @@ def _marked(node: dict[str, Any], marks: set[str]) -> bool:
 if TYPE_CHECKING:
     from .codestore import StoreCode
     from .embed import Embedder
-    from .learnings import Learnings
+    from .learnings import AnchoredSet
     from .refs import Refs
 
 
@@ -217,7 +217,7 @@ def check_query(query: str, name: str = "query") -> str:
 
 
 class CodeQuery:
-    def __init__(self, refs: Refs, learnings: Learnings, embedder: Embedder,
+    def __init__(self, refs: Refs, learnings: AnchoredSet, embedder: Embedder,
                  resident: Callable[[str], StoreCode],
                  require_index: Callable[[str], None]) -> None:
         # `resident(proj)`: the project's code index (a StoreCode), made current
@@ -336,7 +336,8 @@ class CodeQuery:
             "resolved": resolution(entry, symbol, owner if owner != proj else None),
             "file": entry.get("file"), "line": entry.get("line"),
             "signature": entry.get("signature"), "description": entry.get("description"),
-            "learning": entry.get("learning"),
+            # each anchored facet's item on this symbol (learning, ...)
+            **{noun: entry.get(noun) for noun in self.learnings.nouns},
             "calls": self._neighbours(owner, entry.get("calls"),
                                       edge_cap, describe=True),
             "called_by": self._neighbours(owner, entry.get("called_by"),

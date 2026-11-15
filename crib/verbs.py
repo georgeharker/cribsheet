@@ -476,6 +476,234 @@ def _m_summarize(crib: Crib, f: FacetSpec):
     return body
 
 
+# ── the anchored aspect: items named by the code symbol they are about ───────
+# Learnings' verbs, generalised: an anchored facet's items are addressed by
+# symbol (`symbol`, narrowed by `path`/`scope`/`lang`), not by relpath, and are
+# found through the code verbs (code_lookup / code_dossier attach them). Every
+# one resolves its project like a read: an item is ABOUT a symbol in the code
+# project you are in (the documented exception to the write policy).
+
+
+def _d_a_add(f: FacetSpec) -> str:
+    if f.builtin:
+        return (
+            "Pin a durable human learning to a code symbol — the 'now I get it',\n"
+            "the subtlety, the gotcha you don't want to re-derive next session. Stored\n"
+            "as a first-class note in the learnings pillar store keyed to the symbol's\n"
+            "fqn, SEPARATE from the regenerable LLM description, so it survives\n"
+            "re-indexing and rides git sync (and works on code you can't edit — vendored\n"
+            "deps, read-only explorations — where a comment can't go). Appends a dated\n"
+            "entry to the symbol's running note. `symbol` is a bare name or dotted\n"
+            "fqname already in the symbol_index (code_index the file first). Surfaces\n"
+            "back via code_lookup/code_xref. A learning is ABOUT a symbol in the code\n"
+            "project you're in, so — unlike a note write — it resolves that project the\n"
+            "way the read tools do (a documented exception; pass `project=`/`project_path=`\n"
+            "to pin one elsewhere)."
+        )
+    n = f.noun
+    return (
+        f"Attach a {n} to a code symbol. Stored as a note in the {f.plural} store\n"
+        "keyed to the symbol's fqn, so it survives re-indexing and rides git sync.\n"
+        "Appends a dated entry to the symbol's running note. `symbol` is a bare name\n"
+        "or dotted fqname already in the symbol_index (code_index the file first).\n"
+        f"Surfaces back via code_lookup/code_xref/code_dossier under `{n}`. A {n} is\n"
+        "ABOUT a symbol in the code project you're in, so it resolves that project\n"
+        "the way the read tools do (pass `project=`/`project_path=` to pin one\n"
+        "elsewhere)."
+    )
+
+
+def _d_a_edit(f: FacetSpec) -> str:
+    n = f.noun
+    return (
+        f"Rewrite a symbol's {n} body wholesale (frontmatter preserved) —\n"
+        f"the standard edit, scoped to a symbol. Errors if none exists; `{n}_add`\n"
+        f"creates. Resolves its project like a read, as `{n}_add` does."
+    )
+
+
+def _d_a_forget(f: FacetSpec) -> str:
+    n = f.noun
+    return (
+        f"Remove a symbol's {n} (stashed to the version ring first, so it's\n"
+        "recoverable) — the standard forget, scoped to a symbol. Resolves its project\n"
+        f"like a read, as `{n}_add` does."
+    )
+
+
+def _d_a_read(f: FacetSpec) -> str:
+    return (
+        f"Read a symbol's attached {f.noun} note (frontmatter + body), or found=\n"
+        "False if none is written yet. `symbol` is a bare name or dotted fqname."
+    )
+
+
+def _d_a_reaffirm(f: FacetSpec) -> str:
+    return (
+        f"Clear a {f.noun}'s ⚠︎ stale flag WITHOUT rewriting it — you re-checked the\n"
+        "note against the current code and it still holds. Re-snapshots the symbol's\n"
+        "content_hash so it reads as fresh again. Use when code_lookup shows a ※ note\n"
+        "flagged stale but the understanding is still correct."
+    )
+
+
+def _d_a_migrate(f: FacetSpec) -> str:
+    n = f.noun
+    return (
+        f"Rebind this project's {n} notes to the current symbol identity.\n"
+        "\n"
+        f"OPTIONAL TIDINESS — the {f.plural} join resolves a note bound to any prior\n"
+        "spelling, so an unconverted note keeps working forever; this buys canonical\n"
+        "filenames and `symbol_ref` frontmatter. Per record: `noop` (already\n"
+        "current), `convert` (rebound, file renamed, old binding kept in\n"
+        f"`symbol_was`), `orphan` (binding answers to nothing — `{n}_rehome`\n"
+        "repairs it), `collision` (two notes claim one symbol: both kept, said out\n"
+        "loud, never merged). Re-running is the resume.\n"
+        "\n"
+        "DRY RUN unless `apply=True` — it renames files under a git-synced store."
+    )
+
+
+def _d_a_report(f: FacetSpec) -> str:
+    n = f.noun
+    return (
+        f"Health report for attached {f.plural}: each is `ok` | `moved` (fqn resolves\n"
+        "but the symbol's file drifted) | `orphan` (fqn no longer resolves — a rename/\n"
+        "move/delete left the note dangling). `orphans_only` filters to the actionable\n"
+        f"ones. Report-only; drives cleanup via `{n}_rehome` / `{n}_forget`."
+    )
+
+
+def _d_a_rehome(f: FacetSpec) -> str:
+    return (
+        f"Re-point an orphaned {f.noun} at the symbol it became. Call with just\n"
+        "`old_fqn` FIRST to get ranked candidate targets (name/signature/file signals);\n"
+        "then call again with the chosen `new_fqn` to move the note (id/history\n"
+        "preserved, frontmatter re-snapshotted). Never auto-moves — you pick, because a\n"
+        "wrong attach is worse than a dangling one."
+    )
+
+
+def _m_a_add(crib: Crib, f: FacetSpec):
+    async def body(
+        symbol: str,
+        text: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return await crib.learning_add(
+            symbol, text, project=project, path=path, scope=scope, lang=lang,
+            facet=f.noun,
+        )
+
+    return body
+
+
+def _m_a_edit(crib: Crib, f: FacetSpec):
+    async def body(
+        symbol: str,
+        new_content: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return await crib.learning_edit(
+            symbol, new_content, project=project, path=path, scope=scope, lang=lang,
+            facet=f.noun,
+        )
+
+    return body
+
+
+def _m_a_forget(crib: Crib, f: FacetSpec):
+    async def body(
+        symbol: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return await crib.learning_forget(
+            symbol, path=path, scope=scope, lang=lang, project=project, facet=f.noun
+        )
+
+    return body
+
+
+def _m_a_read(crib: Crib, f: FacetSpec):
+    async def body(
+        symbol: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return crib.learning_read(
+            symbol, path=path, scope=scope, lang=lang, project=project, facet=f.noun
+        )
+
+    return body
+
+
+def _m_a_reaffirm(crib: Crib, f: FacetSpec):
+    async def body(
+        symbol: str,
+        path: str = "",
+        scope: str = "",
+        lang: str = "",
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return await crib.learning_reaffirm(
+            symbol, path=path, scope=scope, lang=lang, project=project, facet=f.noun
+        )
+
+    return body
+
+
+def _m_a_migrate(crib: Crib, f: FacetSpec):
+    async def body(
+        project: str | None = None, project_path: str | None = None, apply: bool = False
+    ) -> dict[str, Any]:
+        from .server import _cwd
+
+        return await crib.learning_migrate(
+            project, cwd=_cwd(project_path), apply=apply, facet=f.noun
+        )
+
+    return body
+
+
+def _m_a_report(crib: Crib, f: FacetSpec):
+    async def body(
+        project: str | None = None,
+        orphans_only: bool = False,
+        project_path: str | None = None,
+    ) -> list[dict[str, Any]]:
+        return crib.learning_report(project, orphans_only=orphans_only, facet=f.noun)
+
+    return body
+
+
+def _m_a_rehome(crib: Crib, f: FacetSpec):
+    async def body(
+        old_fqn: str,
+        new_fqn: str | None = None,
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return await crib.learning_rehome(old_fqn, new_fqn, project, facet=f.noun)
+
+    return body
+
+
 # ── the templates, in registration order ─────────────────────────────────────
 
 TEMPLATES: tuple[Verb, ...] = (
@@ -495,18 +723,33 @@ TEMPLATES: tuple[Verb, ...] = (
     Verb("summarize", "enriched", "read", False, _d_summarize, _m_summarize),
     Verb("import", "core", "source", False, _d_import, _m_import, needs_target=True),
     Verb("move", "core", "write", False, _d_move, _m_move),
+    # an anchored facet's family, in place of the relpath-addressed core verbs
+    Verb("add", "anchored", "read", False, _d_a_add, _m_a_add),
+    Verb("edit", "anchored", "read", False, _d_a_edit, _m_a_edit),
+    Verb("forget", "anchored", "read", False, _d_a_forget, _m_a_forget),
+    Verb("read", "anchored", "read", True, _d_a_read, _m_a_read),
+    Verb("reaffirm", "anchored", "read", False, _d_a_reaffirm, _m_a_reaffirm),
+    Verb("migrate", "anchored", "read", False, _d_a_migrate, _m_a_migrate),
+    Verb("report", "anchored", "read", True, _d_a_report, _m_a_report),
+    Verb("rehome", "anchored", "read", False, _d_a_rehome, _m_a_rehome),
 )
 
 
 def generated(spec: FacetSpec) -> bool:
     """Whether this facet's verbs come from the templates here. A facet with
-    links keeps its hand-written family until the graph engine (step 6); an
-    anchored one gets its own templates (step 2f)."""
-    return not (spec.has("links") or spec.has("anchored"))
+    links keeps its hand-written family until the graph engine (step 6)."""
+    return not spec.has("links")
 
 
 def verbs_of(spec: FacetSpec) -> list[Verb]:
-    return [t for t in TEMPLATES if spec.has(t.aspect)] if generated(spec) else []
+    """The templates a facet gets: an anchored facet's items are named by
+    symbol, so it gets the anchored family INSTEAD of the relpath-addressed core
+    and enriched verbs; any other facet gets the verbs of its aspects."""
+    if not generated(spec):
+        return []
+    if spec.has("anchored"):
+        return [t for t in TEMPLATES if t.aspect == "anchored"]
+    return [t for t in TEMPLATES if t.aspect != "anchored" and spec.has(t.aspect)]
 
 
 def register(crib: Crib, crib_tool: Callable[..., Callable[[Any], Any]]) -> list[str]:

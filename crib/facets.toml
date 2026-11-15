@@ -9,7 +9,8 @@
 #   aspects    the engine behaviours it has; each brings its own data and verbs
 #   legacy_stores  older directory names whose content now belongs here
 #   [<noun>.verbs]  a built-in's own names for canonical verbs (built-ins only)
-#   [<noun>.fields]  its own typed store columns (crib_<noun>_meta), in order
+#   [<noun>.fields]  its own typed store columns (crib_<noun>_meta), in order,
+#              after the ones its aspects bring
 #
 # Table order is the registry's order: lookups and sweeps visit facets in it.
 
@@ -58,10 +59,5 @@ plural = "learnings"
 store = "learnings"
 aspects = ["core", "anchored"]
 legacy_stores = ["code-learnings"]
-
-[learning.fields]
-symbol_ref = "VARCHAR"
-lang = "VARCHAR"
-file = "VARCHAR"
-signature = "VARCHAR"
-symbol_was = "VARCHAR[]"
+# Its fields (symbol_ref, lang, file, signature, symbol_was) come with the
+# anchored aspect.

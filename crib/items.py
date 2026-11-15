@@ -241,7 +241,9 @@ def edges_of(kind: str, fm: Mapping[str, Any], project: str = "") -> tuple[Edge,
         out.append(Edge(dst, "drawn_from", src["hash"] or None))
     if by := fm.get("superseded_by"):
         out.append(Edge(str(by), "superseded_by"))
-    if kind == "learning" and (ref := fm.get("symbol_ref")):
+    # an anchored facet's item (a learning) is about a code symbol
+    spec = facets.get(kind)
+    if spec is not None and spec.has("anchored") and (ref := fm.get("symbol_ref")):
         out.append(Edge(symbol_item_id(project, str(ref)), "learns"))
     return tuple(out)
 

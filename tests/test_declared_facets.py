@@ -225,11 +225,17 @@ def test_a_declared_facet_gets_its_own_generated_verb_family(tmp_path):
 
 def test_the_cli_and_mcp_halves_of_the_templates_cover_the_same_verbs():
     from crib import verbs
-    from crib.cli import _FACET_CLI, _FACET_CLI_ORDER
+    from crib.cli import (
+        _ANCHORED_CLI,
+        _ANCHORED_CLI_ORDER,
+        _FACET_CLI,
+        _FACET_CLI_ORDER,
+    )
 
-    canonical = {t.verb for t in verbs.TEMPLATES}
-    assert set(_FACET_CLI) == canonical
-    assert set(_FACET_CLI_ORDER) == canonical
+    anchored = {t.verb for t in verbs.TEMPLATES if t.aspect == "anchored"}
+    other = {t.verb for t in verbs.TEMPLATES if t.aspect != "anchored"}
+    assert set(_FACET_CLI) == set(_FACET_CLI_ORDER) == other
+    assert set(_ANCHORED_CLI) == set(_ANCHORED_CLI_ORDER) == anchored
 
 
 def test_a_declared_facet_gets_cli_subcommands_paired_with_its_tools(tmp_path):
@@ -432,3 +438,107 @@ def test_a_declared_facet_is_its_own_tool_set(tmp_path):
     assert out["widgets_ro"] == ro
     assert len(out["widgets"]) == 16
     assert out["no_notes"] == []
+
+
+REVIEW = """
+[review]
+plural = "reviews"
+aspects = ["anchored"]
+
+[review.fields]
+severity = "VARCHAR"
+"""
+
+
+def test_a_declared_anchored_facet_attaches_to_code_beside_learnings(tmp_path):
+    """Facet registry step 2f: a declared anchored facet (a review agent's
+    findings) gets the anchored family, its items attach to a code symbol
+    under their own noun, beside learnings, and it is its own tool set."""
+    out = _run(
+        tmp_path,
+        REVIEW,
+        """
+        import asyncio
+        from fastmcp import Client
+        from crib.app import Crib
+        from crib.codeindex import SymbolIndex
+        from crib.config import Config
+        from crib.items import FACETS
+        from crib.paths import Paths
+        from crib.server import READ_ONLY_TOOLS, build_server
+        from crib.store import InMemoryStore
+
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        SymbolIndex(crib.paths.project_dir("p")).write({
+            "fqname": "pkg.Mod.foo", "name": "foo", "kind": "function",
+            "lang": "python", "content_hash": "aaaa1111", "file": "pkg/mod.py",
+            "line": 10, "signature": "def foo():", "description": "does foo",
+            "container": [], "calls": [], "called_by": [], "name_terms": ["foo"],
+        })
+        out["fields"] = list(FACETS["review"])
+        out["ro"] = sorted(READ_ONLY_TOOLS["reviews"])
+        mcp = build_server(crib)
+
+        async def main():
+            async with Client(mcp) as c:
+                names = [t.name for t in await c.list_tools()]
+                out["tools"] = sorted(n for n in names if n.startswith("review_"))
+
+                async def call(name, **args):
+                    return (await c.call_tool(name, args)).data
+
+                a = await call("review_add", symbol="pkg.Mod.foo",
+                               text="foo swallows the timeout error", project="p")
+                out["add_rel"] = a["relpath"]
+                await call("learning_add", symbol="pkg.Mod.foo",
+                           text="foo is the retry wrapper", project="p")
+                r = await call("review_read", symbol="pkg.Mod.foo", project="p")
+                out["read"] = r["body"]
+                d = await call("code_dossier", symbol="pkg.Mod.foo", project="p")
+                out["dossier"] = {k: (d.get(k) or {}).get("body", "") for k in ("learning", "review")}
+                await call("review_edit", symbol="pkg.Mod.foo",
+                           new_content="resolved: timeout now re-raised", project="p")
+                out["edited"] = (await call("review_read", symbol="pkg.Mod.foo",
+                                            project="p"))["body"]
+                rep = await call("review_report", project="p")
+                out["report"] = [row.get("status") for row in rep]
+                await call("review_reaffirm", symbol="pkg.Mod.foo", project="p")
+                await call("review_forget", symbol="pkg.Mod.foo", project="p")
+                out["after_forget"] = (await call("review_read", symbol="pkg.Mod.foo",
+                                                  project="p")).get("found")
+                out["learning_kept"] = (await call("learning_read", symbol="pkg.Mod.foo",
+                                                   project="p"))["body"]
+        asyncio.run(main())
+        out["where"] = str(crib.pillars["reviews"].root("p"))
+    """,
+    )
+    assert out["fields"] == [
+        "symbol_ref",
+        "lang",
+        "file",
+        "signature",
+        "symbol_was",
+        "severity",
+    ]
+    assert out["tools"] == sorted(
+        f"review_{v}"
+        for v in (
+            "add",
+            "edit",
+            "forget",
+            "read",
+            "reaffirm",
+            "migrate",
+            "report",
+            "rehome",
+        )
+    )
+    assert out["ro"] == ["review_read", "review_report"]
+    assert "foo swallows the timeout error" in out["read"]
+    assert "foo swallows the timeout error" in out["dossier"]["review"]
+    assert "foo is the retry wrapper" in out["dossier"]["learning"]
+    assert "timeout now re-raised" in out["edited"]
+    assert out["report"] == ["ok"]
+    assert out["after_forget"] is False
+    assert "foo is the retry wrapper" in out["learning_kept"]
+    assert out["where"].endswith("/reviews")

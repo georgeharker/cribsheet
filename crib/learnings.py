@@ -44,9 +44,13 @@ class Learnings:
         refs: Refs,
         store: NoteStore,
         records: Callable[[str], list[dict[str, Any]]] | None = None,
+        noun: str = "learning",
     ) -> None:
         self.paths = paths
         self.refs = refs
+        # The anchored facet this serves (crib.facets): the key its items attach
+        # under on a symbol's entry, and the name its messages use.
+        self.noun = noun
         # The learnings PILLAR store (`projects/<p>/learnings/`), not the notes
         # one — learnings share the store implementation, never the notes tree.
         self.store = store
@@ -132,7 +136,7 @@ class Learnings:
                 continue
             note = notes.load(path)
             wrote, cur = note.frontmatter.get("content_hash"), e.get("content_hash")
-            e["learning"] = {
+            e[self.noun] = {
                 "relpath": relpath,
                 "path": str(path),
                 "stale": bool(wrote and cur and wrote != cur),
@@ -219,7 +223,7 @@ class Learnings:
                 body="",
                 frontmatter={
                     "title": fqn,
-                    "kind": "code-learning",
+                    "kind": f"code-{self.noun}",
                     "symbol_ref": ref,
                     **(
                         {"symbol_was": symbol_bindings(entry)[1:]}
@@ -263,7 +267,7 @@ class Learnings:
         note_path = self.store.abspath(proj, relpath)
         if not note_path.exists():
             raise CribUserError(
-                f"no learning for {symbol_key(entry)!r} yet — learning_add first"
+                f"no {self.noun} for {symbol_key(entry)!r} yet — {self.noun}_add first"
             )
         note = notes.load(note_path)
         note.frontmatter["content_hash"] = entry.get("content_hash", "")
@@ -302,7 +306,7 @@ class Learnings:
             bound = symbol
             relpath = self.rel_for_binding(proj, symbol)
         if relpath is None or not self.store.abspath(proj, relpath).exists():
-            raise CribUserError(f"no learning for {symbol!r} in project {proj!r}")
+            raise CribUserError(f"no {self.noun} for {symbol!r} in project {proj!r}")
         res = await self.store.delete(proj, relpath)
         return {**res, "symbol": bound, **({"resolved": resolved} if resolved else {})}
 
@@ -319,7 +323,7 @@ class Learnings:
         note_path = self.store.abspath(proj, relpath)
         if not note_path.exists():
             raise CribUserError(
-                f"no learning for {symbol_key(entry)!r} yet — learning_add first"
+                f"no {self.noun} for {symbol_key(entry)!r} yet — {self.noun}_add first"
             )
         note = notes.load(note_path)
         note.frontmatter["content_hash"] = entry.get("content_hash", "")
@@ -467,7 +471,7 @@ class Learnings:
             d = self.paths.project_dir(proj) / "migrations"
             d.mkdir(parents=True, exist_ok=True)
             stamp = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
-            mpath = d / f"learning-convert-{stamp}.json"
+            mpath = d / f"{self.noun}-convert-{stamp}.json"
             mpath.write_text(
                 json.dumps(
                     {**out, "notes_detail": detail},
@@ -521,10 +525,10 @@ class Learnings:
                     "relpath": p.name,
                 }
                 if status == "moved" and cur is not None:
-                    row["next"] = f"learning_rehome {fq} {symbol_key(cur)}"
+                    row["next"] = f"{self.noun}_rehome {fq} {symbol_key(cur)}"
                 elif status == "orphan":
                     row["candidates"] = [
-                        {**c, "next": f"learning_rehome {fq} {c['symbol_ref']}"}
+                        {**c, "next": f"{self.noun}_rehome {fq} {c['symbol_ref']}"}
                         for c in self.candidates(fm, entries, top=3)]
                 out.append(row)
         return out
@@ -585,10 +589,10 @@ class Learnings:
         # rather than by deriving a filename from it.
         old_rel = self.rel_for_binding(proj, old_fqn)
         if old_rel is None:
-            raise CribUserError(f"no learning for {old_fqn!r} in project {proj!r}")
+            raise CribUserError(f"no {self.noun} for {old_fqn!r} in project {proj!r}")
         old_path = self.store.abspath(proj, old_rel)
         if not old_path.exists():
-            raise CribUserError(f"no learning for {old_fqn!r} in project {proj!r}")
+            raise CribUserError(f"no {self.noun} for {old_fqn!r} in project {proj!r}")
         entries = self._records(proj)
         if new_fqn is None:
             fm = notes.load(old_path).frontmatter
@@ -612,8 +616,8 @@ class Learnings:
         # Refuse like `NoteStore.move` does and let the human merge or forget one.
         if new_rel != old_rel and self.store.abspath(proj, new_rel).exists():
             raise CribUserError(
-                f"{symbol_key(new_entry)!r} already has a learning ({new_rel}) — "
-                f"read both and merge with learning_edit, or learning_forget one "
+                f"{symbol_key(new_entry)!r} already has a {self.noun} ({new_rel}) — "
+                f"read both and merge with {self.noun}_edit, or {self.noun}_forget one "
                 f"first; rehome refuses to overwrite"
             )
         note = notes.load(old_path)
@@ -671,3 +675,25 @@ class Learnings:
             "frontmatter": note.frontmatter,
             "body": note.body,
         }
+
+
+class AnchoredSet:
+    """Every anchored facet's items, as code queries see them: each attaches
+    its items to a symbol's entry under its own noun (`learning`, ...), and the
+    pinned ※ marks are their union. With learnings alone it is exactly
+    learnings."""
+
+    def __init__(self, members: tuple[Learnings, ...]) -> None:
+        self.members = members
+        self.nouns = tuple(m.noun for m in members)
+
+    def attach(self, proj: str, entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        for m in self.members:
+            m.attach(proj, entries)
+        return entries
+
+    def marks(self, proj: str) -> set[str]:
+        out: set[str] = set()
+        for m in self.members:
+            out |= m.marks(proj)
+        return out

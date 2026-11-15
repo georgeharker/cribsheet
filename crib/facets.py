@@ -46,6 +46,22 @@ ASPECTS: Mapping[str, frozenset[str]] = MappingProxyType(
 # The store column types a facet field may have.
 FIELD_TYPES = frozenset({"VARCHAR", "VARCHAR[]", "BIGINT", "DOUBLE", "BOOLEAN", "JSON"})
 
+# The fields an aspect brings: every facet with the aspect has them, first and
+# in this order, before its own. Anchoring writes the symbol an item is about.
+ASPECT_FIELDS: Mapping[str, Mapping[str, str]] = MappingProxyType(
+    {
+        "anchored": MappingProxyType(
+            {
+                "symbol_ref": "VARCHAR",
+                "lang": "VARCHAR",
+                "file": "VARCHAR",
+                "signature": "VARCHAR",
+                "symbol_was": "VARCHAR[]",
+            }
+        ),
+    }
+)
+
 # Nouns that are crib's but not pillars: CLI/MCP families and non-pillar item
 # kinds. No facet may take one, as noun or plural.
 RESERVED_NAMES = frozenset(
@@ -138,6 +154,14 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
                 f"facet {noun!r}: field {name!r} has type {sqltype!r} "
                 f"(allowed: {sorted(FIELD_TYPES)})"
             )
+    brought: dict[str, str] = {}
+    for a in sorted(have):
+        brought.update(ASPECT_FIELDS.get(a, {}))
+    if clash := set(fields) & set(brought):
+        raise FacetSpecError(
+            f"facet {noun!r}: fields {sorted(clash)} come with its aspects; "
+            "don't declare them")
+    fields = {**brought, **fields}
     legacy = raw.get("legacy_stores", [])
     if not isinstance(legacy, list) or not all(
         isinstance(s, str) and s for s in legacy
@@ -262,6 +286,11 @@ def _resolve() -> tuple[tuple[FacetSpec, ...], str | None]:
 FACETS, LOAD_ERROR = _resolve()
 _BY_NOUN = MappingProxyType({s.noun: s for s in FACETS})
 _BY_STORE = MappingProxyType({s.store: s for s in FACETS})
+
+
+def get(noun: str | None) -> FacetSpec | None:
+    """The facet named `noun`, or None (a non-facet kind: doc, symbol, ...)."""
+    return _BY_NOUN.get(noun or "")
 
 
 def by_noun(noun: str) -> FacetSpec:

@@ -1509,19 +1509,20 @@ def build_parser() -> argparse.ArgumentParser:
     # noun groups mirroring `project`: note / code / learning (verbs nest under them)
     n_note = sub.add_parser("note", help="memory notes: search, read, write, share")
     notesub = n_note.add_subparsers(dest="note_verb", required=True)
-    # Every generated facet's subcommands (notes', and any declared facet's own
-    # noun): from _FACET_CLI, the CLI half of crib.verbs' templates.
-    _facet_parsers(sub, notesub, proj)
-    s = notesub.add_parser(
-        "import-memory", help="mirror Claude Code's harness memory into a crib project"
-    )
-    proj(s)
     n_code = sub.add_parser("code", help="code symbol index: search + navigate")
     codesub = n_code.add_subparsers(dest="code_verb", required=True)
     n_learn = sub.add_parser(
         "learning", help="durable learnings attached to code symbols"
     )
     learnsub = n_learn.add_subparsers(dest="learning_verb", required=True)
+    # Every generated facet's subcommands (notes' and learnings' under their
+    # nouns, a declared facet's under its own): the CLI half of crib.verbs'
+    # templates (_FACET_CLI, _ANCHORED_CLI).
+    _facet_parsers(sub, {"note": notesub, "learning": learnsub}, proj)
+    s = notesub.add_parser(
+        "import-memory", help="mirror Claude Code's harness memory into a crib project"
+    )
+    proj(s)
 
     s = codesub.add_parser(
         "lookup", help="find a code symbol by concept OR name (hybrid dense+kw)"
@@ -1614,68 +1615,6 @@ def build_parser() -> argparse.ArgumentParser:
         "(no LSP/LLM; dry run without --apply)",
     )
     s.add_argument("--apply", action="store_true")
-    proj(s)
-
-    s = learnsub.add_parser(
-        "add", help="attach a durable learning to a code symbol ('-' reads stdin)"
-    )
-    s.add_argument("symbol")
-    s.add_argument("text")
-    proj(s)
-    _narrowers(s)
-
-    s = learnsub.add_parser(
-        "edit", help="rewrite a symbol's learning body ('-' reads stdin)"
-    )
-    s.add_argument("symbol")
-    s.add_argument("text")
-    proj(s)
-    _narrowers(s)
-
-    s = learnsub.add_parser(
-        "forget", help="remove a symbol's learning (recoverable; works on orphans)"
-    )
-    s.add_argument("symbol")
-    proj(s)
-    _narrowers(s)
-
-    s = learnsub.add_parser("read", help="print a symbol's attached learning")
-    s.add_argument("symbol")
-    proj(s)
-    _narrowers(s)
-
-    s = learnsub.add_parser(
-        "reaffirm", help="clear a learning's ⚠︎ stale flag without rewriting it"
-    )
-    s.add_argument("symbol")
-    proj(s)
-    _narrowers(s)
-
-    s = learnsub.add_parser(
-        "migrate",
-        help="re-attach learnings to the current symbol identity "
-        "(dry run unless --apply)",
-    )
-    proj(s)
-    s.add_argument(
-        "--apply",
-        action="store_true",
-        help="write the plan out; without it nothing is changed",
-    )
-
-    s = learnsub.add_parser(
-        "report", help="health report for attached learnings (ok/moved/orphan)"
-    )
-    proj(s)
-    s.add_argument(
-        "--orphans", action="store_true", help="only the actionable ones (moved/orphan)"
-    )
-
-    s = learnsub.add_parser(
-        "rehome", help="re-point an orphaned learning (no target = ranked suggestions)"
-    )
-    s.add_argument("old")
-    s.add_argument("new", nargs="?")
     proj(s)
 
     # `crib design <verb>` / `crib plan <verb>` — decisions and work items, both
@@ -2814,32 +2753,168 @@ _FACET_CLI_ORDER = (
 )
 
 
+def _a_symbol(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("symbol")
+    proj(s)
+    _narrowers(s)
+
+
+def _a_symbol_text(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("symbol")
+    s.add_argument("text")
+    proj(s)
+    _narrowers(s)
+
+
+def _a_migrate(s: Any, proj: Any, f: Any) -> None:
+    proj(s)
+    s.add_argument(
+        "--apply",
+        action="store_true",
+        help="write the plan out; without it nothing is changed",
+    )
+
+
+def _a_report(s: Any, proj: Any, f: Any) -> None:
+    proj(s)
+    s.add_argument(
+        "--orphans", action="store_true", help="only the actionable ones (moved/orphan)"
+    )
+
+
+def _a_rehome(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("old")
+    s.add_argument("new", nargs="?")
+    proj(s)
+
+
+def _b_symbol(a: Any) -> dict[str, Any]:
+    return {
+        "symbol": a.symbol,
+        "path": getattr(a, "path", ""),
+        "scope": getattr(a, "scope", ""),
+        "lang": getattr(a, "lang", ""),
+        "project": a.project,
+    }
+
+
+def _E_anchored(verb: str) -> Callable[[Any, Any], None]:
+    """The learning emitter for a verb (`learning-add`), whatever the facet:
+    its label names the verb's shape, not the noun."""
+    return _E_learning(f"learning-{verb}")
+
+
+_ANCHORED_CLI: dict[str, _FacetCli] = {
+    "add": _FacetCli(
+        lambda f: "attach a durable learning to a code symbol ('-' reads stdin)"
+        if f.builtin else f"attach a {f.noun} to a code symbol ('-' reads stdin)",
+        _a_symbol_text,
+        lambda a: {
+            "symbol": a.symbol,
+            "text": _read_content(a.text),
+            "project": a.project,
+            "path": getattr(a, "path", ""),
+            "scope": getattr(a, "scope", ""),
+            "lang": getattr(a, "lang", ""),
+        },
+        _E_anchored("add"), "learning_add", True,
+        f"symbol text path='' scope='' lang='' {_PROJ}",
+    ),
+    "edit": _FacetCli(
+        lambda f: f"rewrite a symbol's {f.noun} body ('-' reads stdin)",
+        _a_symbol_text,
+        lambda a: {
+            "symbol": a.symbol,
+            "new_content": _read_content(a.text),
+            "project": a.project,
+            "path": getattr(a, "path", ""),
+            "scope": getattr(a, "scope", ""),
+            "lang": getattr(a, "lang", ""),
+        },
+        _E_anchored("edit"), "learning_edit", True,
+        f"symbol new_content path='' scope='' lang='' {_PROJ}",
+    ),
+    "forget": _FacetCli(
+        lambda f: f"remove a symbol's {f.noun} (recoverable; works on orphans)",
+        _a_symbol, _b_symbol, _E_anchored("forget"), "learning_forget", True,
+        f"symbol path='' scope='' lang='' {_PROJ}",
+    ),
+    "read": _FacetCli(
+        lambda f: f"print a symbol's attached {f.noun}",
+        _a_symbol, _b_symbol, _E_anchored("read"), "learning_read", False,
+        f"symbol path='' scope='' lang='' {_PROJ}",
+    ),
+    "reaffirm": _FacetCli(
+        lambda f: f"clear a {f.noun}'s ⚠︎ stale flag without rewriting it",
+        _a_symbol, _b_symbol, _E_anchored("reaffirm"), "learning_reaffirm", True,
+        f"symbol path='' scope='' lang='' {_PROJ}",
+    ),
+    "migrate": _FacetCli(
+        lambda f: f"re-attach {f.plural} to the current symbol identity "
+        "(dry run unless --apply)",
+        _a_migrate,
+        lambda a: {"project": a.project, "apply": a.apply},
+        _E, "learning_migrate", True, f"{_PROJ} apply=False",
+    ),
+    "report": _FacetCli(
+        lambda f: f"health report for attached {f.plural} (ok/moved/orphan)",
+        _a_report,
+        lambda a: {"project": a.project, "orphans_only": a.orphans},
+        _E_report, "learning_report", False, f"{_PROJ} orphans_only=False",
+    ),
+    "rehome": _FacetCli(
+        lambda f: f"re-point an orphaned {f.noun} (no target = ranked suggestions)",
+        _a_rehome,
+        lambda a: {"old_fqn": a.old, "new_fqn": a.new, "project": a.project},
+        _E_rehome, "learning_rehome", True, f"old_fqn {_PROJ} new_fqn=None",
+    ),
+}
+
+# The CLI's order of an anchored facet's subcommands, as learnings' were.
+_ANCHORED_CLI_ORDER = (
+    "add", "edit", "forget", "read", "reaffirm", "migrate", "report", "rehome",
+)
+
+
 def _cli_word(spec: Any, verb: str) -> str:
     return spec.verb_names.get(verb, verb).replace("_", "-")
+
+
+def _facets_mod() -> Any:
+    from . import facets
+
+    return facets
+
+
+def _cli_of(t: Any) -> _FacetCli:
+    """A template's CLI half: the anchored family has its own table (its verbs
+    share names with core ones)."""
+    return (_ANCHORED_CLI if t.aspect == "anchored" else _FACET_CLI)[t.verb]
 
 
 def _facet_cli_verbs(spec: Any) -> list[Any]:
     from . import verbs
 
     by = {t.verb: t for t in verbs.verbs_of(spec)}
-    return [by[v] for v in _FACET_CLI_ORDER if v in by]
+    order = _ANCHORED_CLI_ORDER if spec.has("anchored") else _FACET_CLI_ORDER
+    return [by[v] for v in order if v in by]
 
 
-def _facet_parsers(sub: Any, notesub: Any, proj: Any) -> None:
-    """Each generated facet's subcommands: notes' under the existing `note`
-    noun, a declared facet's under its own."""
-    from . import facets, verbs
+def _facet_parsers(sub: Any, nouns: dict[str, Any], proj: Any) -> None:
+    """Each generated facet's subcommands: a built-in's under its existing
+    noun parser (`nouns`), a declared facet's under its own."""
+    from . import verbs
 
-    for spec in facets.FACETS:
+    for spec in _facets_mod().FACETS:
         if not verbs.generated(spec):
             continue
-        if spec.noun == facets.HOME:
-            fsub = notesub
-        else:
-            n = sub.add_parser(spec.noun, help=f"{spec.plural}: search, read, write")
+        fsub = nouns.get(spec.noun)
+        if fsub is None:
+            what = "symbol-anchored" if spec.has("anchored") else "search, read, write"
+            n = sub.add_parser(spec.noun, help=f"{spec.plural}: {what}")
             fsub = n.add_subparsers(dest=f"{spec.noun}_verb", required=True)
         for t in _facet_cli_verbs(spec):
-            c = _FACET_CLI[t.verb]
+            c = _cli_of(t)
             sp = fsub.add_parser(
                 _cli_word(spec, t.verb), aliases=list(c.aliases), help=c.help(spec)
             )
@@ -2857,9 +2932,9 @@ def _facet_rows() -> dict[str, Verb]:
         if not verbs.generated(spec):
             continue
         for t in _facet_cli_verbs(spec):
-            c = _FACET_CLI[t.verb]
+            c = _cli_of(t)
             inproc: tuple[tuple[str, Any], ...] = ()
-            if spec.noun != facets.HOME:
+            if not spec.builtin:
                 inproc = (("store", spec.store),) if t.verb == "lookup" else (
                     ("facet", spec.noun),)
             rows[f"{spec.noun} {_cli_word(spec, t.verb)}"] = Verb(
@@ -3210,100 +3285,6 @@ VERBS: dict[str, Verb] = {
     ),
     # code learnings — `read` policy BY INTENT (a learning is about a symbol in the
     # project you're in); see the exception block above `_write_project` in server.py
-    "learning add": Verb(
-        "learning_add",
-        lambda a: {
-            "symbol": a.symbol,
-            "text": _read_content(a.text),
-            "project": a.project,
-            "path": getattr(a, "path", ""),
-            "scope": getattr(a, "scope", ""),
-            "lang": getattr(a, "lang", ""),
-        },
-        _E_learning("learning-add"),
-        is_async=True,
-        policy="read",
-        mcp=f"symbol text path='' scope='' lang='' {_PROJ}",
-    ),
-    "learning edit": Verb(
-        "learning_edit",
-        lambda a: {
-            "symbol": a.symbol,
-            "new_content": _read_content(a.text),
-            "project": a.project,
-            "path": getattr(a, "path", ""),
-            "scope": getattr(a, "scope", ""),
-            "lang": getattr(a, "lang", ""),
-        },
-        _E_learning("learning-edit"),
-        is_async=True,
-        policy="read",
-        mcp=f"symbol new_content path='' scope='' lang='' {_PROJ}",
-    ),
-    "learning forget": Verb(
-        "learning_forget",
-        lambda a: {
-            "symbol": a.symbol,
-            "path": getattr(a, "path", ""),
-            "scope": getattr(a, "scope", ""),
-            "lang": getattr(a, "lang", ""),
-            "project": a.project,
-        },
-        _E_learning("learning-forget"),
-        is_async=True,
-        policy="read",
-        mcp=f"symbol path='' scope='' lang='' {_PROJ}",
-    ),
-    "learning read": Verb(
-        "learning_read",
-        lambda a: {
-            "symbol": a.symbol,
-            "path": getattr(a, "path", ""),
-            "scope": getattr(a, "scope", ""),
-            "lang": getattr(a, "lang", ""),
-            "project": a.project,
-        },
-        _E_learning("learning-read"),
-        policy="read",
-        mcp=f"symbol path='' scope='' lang='' {_PROJ}",
-    ),
-    "learning reaffirm": Verb(
-        "learning_reaffirm",
-        lambda a: {
-            "symbol": a.symbol,
-            "path": getattr(a, "path", ""),
-            "scope": getattr(a, "scope", ""),
-            "lang": getattr(a, "lang", ""),
-            "project": a.project,
-        },
-        _E_learning("learning-reaffirm"),
-        is_async=True,
-        policy="read",
-        mcp=f"symbol path='' scope='' lang='' {_PROJ}",
-    ),
-    "learning migrate": Verb(
-        "learning_migrate",
-        lambda a: {"project": a.project, "apply": a.apply},
-        _E,
-        is_async=True,
-        policy="read",
-        mcp=f"{_PROJ} apply=False",
-    ),
-    "learning report": Verb(
-        "learning_report",
-        lambda a: {"project": a.project, "orphans_only": a.orphans},
-        _E_report,
-        policy="read",
-        mcp=f"{_PROJ} orphans_only=False",
-    ),
-    "learning rehome": Verb(
-        "learning_rehome",
-        lambda a: {"old_fqn": a.old, "new_fqn": a.new, "project": a.project},
-        _E_rehome,
-        is_async=True,
-        policy="read",
-        mcp=f"old_fqn {_PROJ} new_fqn=None",
-    ),
     # design decisions + plan items (crib/designs.py). The two `add` verbs CREATE a
     # durable fact → `write` policy (name the project); every other verb is keyed by
     # a ref that only resolves inside one project → `read`, the learnings exception.

@@ -41,7 +41,7 @@ from .embed import build_embedder, embed_query_batch
 from .errors import CribUserError
 from .gitbacking import GitBacking
 from .indexer import IndexEngine, IndexResult
-from .learnings import Learnings
+from .learnings import AnchoredSet, Learnings
 from .notes import Note, NoteParseError
 from .notestore import (
     DESIGN_SPEC,
@@ -301,8 +301,15 @@ class Crib:
         self.relocate_jobs: dict[str, dict[str, Any]] = {}
         # Durable symbol learnings, over refs + their own pillar store.
         # Crib keeps resolve_project + delegate public wrappers (learning_add/…).
-        self.learnings = Learnings(paths, self.refs, self.learningstore,
-                                   self.code.records)
+        # One per anchored facet in the registry (crib.facets): learnings, and any
+        # declared facet whose items are about a code symbol.
+        self.anchored: dict[str, Learnings] = {
+            spec.noun: Learnings(paths, self.refs, self._facet_store(spec.noun),
+                                 self.code.records, noun=spec.noun)
+            for spec in facets.FACETS
+            if spec.has("anchored")
+        }
+        self.learnings = self.anchored["learning"]
         # Design decisions + plan items (notes under design/ and plans/) and the
         # dependency graph over them. Same shape: Crib resolves, Designs executes.
         self.designs = Designs(paths, self.designstore, self.planstore, self.notestore)
@@ -310,7 +317,7 @@ class Crib:
         # resident cache. Crib keeps resolve_project + delegate public wrappers.
         self.query = CodeQuery(
             self.refs,
-            self.learnings,
+            AnchoredSet(tuple(self.anchored.values())),
             self.embedder,
             self._store_code,
             self._require_code_index,
@@ -4090,7 +4097,9 @@ class Crib:
         }
 
     async def learning_migrate(
-        self, project: str | None = None, cwd: Path | None = None, apply: bool = False
+        self, project: str | None = None, cwd: Path | None = None, apply: bool = False,
+        *,
+        facet: str = "learning",
     ) -> dict[str, Any]:
         """Rebind a project's learning notes to the current symbol identity.
 
@@ -4102,7 +4111,7 @@ class Crib:
         Per record, no ordering constraint against the entry conversion, re-running
         is the resume. DRY RUN unless `apply`."""
         proj = self.resolve_project(project, cwd)
-        return await self.learnings.convert_notes(proj, apply=apply)
+        return await self.anchored[facet].convert_notes(proj, apply=apply)
 
     async def code_convert(
         self, project: str | None = None, cwd: Path | None = None, apply: bool = False
@@ -4605,9 +4614,11 @@ class Crib:
         lang: str = "",
         project: str | None = None,
         cwd: Path | None = None,
+        *,
+        facet: str = "learning",
     ) -> dict[str, Any]:
         """Attach a durable learning to a code symbol (append a dated entry)."""
-        return await self.learnings.append(
+        return await self.anchored[facet].append(
             self.resolve_project(project, cwd),
             symbol,
             text,
@@ -4625,9 +4636,11 @@ class Crib:
         lang: str = "",
         project: str | None = None,
         cwd: Path | None = None,
+        *,
+        facet: str = "learning",
     ) -> dict[str, Any]:
         """Rewrite a symbol's learning body wholesale."""
-        return await self.learnings.edit(
+        return await self.anchored[facet].edit(
             self.resolve_project(project, cwd),
             symbol,
             new_content,
@@ -4644,9 +4657,11 @@ class Crib:
         lang: str = "",
         project: str | None = None,
         cwd: Path | None = None,
+        *,
+        facet: str = "learning",
     ) -> dict[str, Any]:
         """Remove a symbol's learning (recoverable; works on orphans)."""
-        return await self.learnings.forget(
+        return await self.anchored[facet].forget(
             self.resolve_project(project, cwd),
             symbol,
             path=path,
@@ -4662,9 +4677,11 @@ class Crib:
         lang: str = "",
         project: str | None = None,
         cwd: Path | None = None,
+        *,
+        facet: str = "learning",
     ) -> dict[str, Any]:
         """Clear a learning's stale flag without rewriting it."""
-        return await self.learnings.reaffirm(
+        return await self.anchored[facet].reaffirm(
             self.resolve_project(project, cwd),
             symbol,
             path=path,
@@ -4754,9 +4771,11 @@ class Crib:
         project: str | None = None,
         cwd: Path | None = None,
         orphans_only: bool = False,
+        *,
+        facet: str = "learning",
     ) -> list[dict[str, Any]]:
         """Health report for attached learnings (ok/moved/orphan)."""
-        return self.learnings.report(self.resolve_project(project, cwd), orphans_only)
+        return self.anchored[facet].report(self.resolve_project(project, cwd), orphans_only)
 
     async def learning_rehome(
         self,
@@ -4764,9 +4783,11 @@ class Crib:
         new_fqn: str | None = None,
         project: str | None = None,
         cwd: Path | None = None,
+        *,
+        facet: str = "learning",
     ) -> dict[str, Any]:
         """Re-point an orphaned learning (no target = ranked suggestions)."""
-        return await self.learnings.rehome(
+        return await self.anchored[facet].rehome(
             self.resolve_project(project, cwd), old_fqn, new_fqn
         )
 
@@ -4778,9 +4799,11 @@ class Crib:
         lang: str = "",
         project: str | None = None,
         cwd: Path | None = None,
+        *,
+        facet: str = "learning",
     ) -> dict[str, Any]:
         """Read a symbol's learning note (frontmatter + body)."""
-        return self.learnings.read(
+        return self.anchored[facet].read(
             self.resolve_project(project, cwd),
             symbol,
             path=path,
