@@ -338,7 +338,7 @@ tool set (its plural; `:ro` keeps its read verbs).
 | --- | --- |
 | `crib facets show [--toml]` | Every facet, built-in and declared, with its aspects, fields and state in this store; `--toml` prints the effective registry as a facets file. |
 | `crib facets init [--force]` | Write a starter system facets file (guidance, commented examples, the built-ins for reference). |
-| `crib facets sync [--apply]` | Bring the store in line with the declared facets: a plan, then (with `--apply`) create, rebuild or drop each facet's table. A new or changed facet's verbs refuse until this runs. Then restart the daemon. |
+| `crib facets sync [--apply] [--drop] [--shared]` | Bring the store in line with the declared facets: a plan, then (with `--apply`) create or rebuild each facet's table; a facet gone from the facets file is dropped only with `--drop`. A new or changed facet's verbs refuse until this runs. Refuses while the facets file fails to load; a shared store also needs `--shared`. Then restart the daemon. |
 
 These are CLI-only: they read this machine's facets file and convert its store
 directly.

@@ -134,12 +134,14 @@ class _Literal:
             self._cur.execute(head + ", ".join(render(group, row) for row in batch))
 
     def insert_columns(self, table: str, types: Sequence[str],
-                       rows: list[list[Any]]) -> None:
+                       rows: list[list[Any]],
+                       names: Sequence[str] | None = None) -> None:
         """Insert `rows` into `table` as rendered multi-row VALUES (the columnar
         form would render every column as one huge literal)."""
         if rows:
             marks = ", ".join("?" for _ in types)
-            self.run_many(f"INSERT INTO {table} VALUES ({marks})", rows)
+            into = f"{table} ({', '.join(names)})" if names else table
+            self.run_many(f"INSERT INTO {into} VALUES ({marks})", rows)
 
 
 # ── the client ──────────────────────────────────────────────────────────────
@@ -233,6 +235,8 @@ class QuackStore(DuckDBStore):
     session and runs the operation ONCE more. That is safe because every
     operation is a read or one atomic transaction — a write the dead server never
     committed is simply done again."""
+
+    SHARED = True  # every machine on the crib DuckDB server reads this store
 
     def __init__(
         self,

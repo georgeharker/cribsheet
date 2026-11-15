@@ -222,8 +222,11 @@ class Store(Protocol):
         noun -> what changed."""
         ...
 
-    def facet_sync(self) -> list[dict[str, Any]]:
-        """Conform the store to the declared facets; the plan carried out."""
+    def facet_sync(self, drop: bool = False) -> list[dict[str, Any]]:
+        """Conform the store to the declared facets; the plan carried out. A
+        facet gone from the facets file is dropped only with `drop`. Refuses
+        while the facets file failed to load (every declared facet would look
+        removed)."""
         ...
 
 
@@ -537,5 +540,5 @@ class InMemoryStore:
     def facet_pending(self) -> dict[str, str]:
         return {}
 
-    def facet_sync(self) -> list[dict[str, Any]]:
+    def facet_sync(self, drop: bool = False) -> list[dict[str, Any]]:
         return []

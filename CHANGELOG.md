@@ -38,8 +38,10 @@ version has no heading here.
   `crib project adopt` moves the existing items, `release` moves them back.
 - **Explicit conformance.** A new or changed facet definition waits for
   `crib facets sync --apply` (which shows what it will do first); nothing
-  converts the store behind your back. `crib facets show` lists every facet
-  and its state; `--toml` exports the registry.
+  converts the store behind your back. A facet you remove is dropped only
+  with `--drop`; sync refuses while the facets file fails to load, and on a
+  shared store needs `--shared`. `crib facets show` lists every facet and its
+  state; `--toml` exports the registry.
 - **Releases test themselves.** Every release tag runs the full suite on the
   tagged commit and publishes only if it passes.
 

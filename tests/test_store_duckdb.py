@@ -254,3 +254,18 @@ def test_pre_0_22_tags_are_converted_to_labels_at_open(tmp_path):
         assert [h.id for h in hits] == ["a"]
     finally:
         s.close()
+
+
+def test_insert_columns_by_name_lands_values_under_their_columns(tmp_path):
+    """A declared facet's table may be rebuilt under a process holding the old
+    definition: inserts name their columns, so a reordered table still gets
+    each value in its own column, and a missing one fails loudly."""
+    store = DuckDBStore.embedded(tmp_path / "s.duckdb")
+    with store._writing() as ex:
+        ex.run("CREATE TABLE t (id VARCHAR, b BIGINT, a VARCHAR)")
+        ex.insert_columns("t", ("VARCHAR", "VARCHAR", "BIGINT"), [["x", "aa", 7]],
+                          names=("id", "a", "b"))
+        assert ex.run("SELECT id, a, b FROM t") == [("x", "aa", 7)]
+        with pytest.raises(Exception):
+            ex.insert_columns("t", ("VARCHAR", "VARCHAR"), [["y", "z"]],
+                              names=("id", "gone"))

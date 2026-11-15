@@ -953,7 +953,12 @@ def test_a_removed_facet_is_dropped_by_sync_and_its_files_are_kept(tmp_path):
         crib = Crib.open()
         out["plan"] = [(p["facet"], p["status"]) for p in crib.store.facet_plan()]
         crib.close()
-        out["apply"] = cli("facets", "sync", "--apply")
+        out["keep"] = cli("facets", "sync", "--apply")  # no --drop: kept
+        crib = Crib.open()
+        out["kept_items"] = crib.store._conn.execute(
+            "SELECT count(*) FROM crib_items WHERE kind = 'ticket'").fetchone()[0]
+        crib.close()
+        out["apply"] = cli("facets", "sync", "--apply", "--drop")
         crib = Crib.open()
         ex = crib.store._conn.execute
         out["tables"] = [t for (t,) in ex(
@@ -965,10 +970,67 @@ def test_a_removed_facet_is_dropped_by_sync_and_its_files_are_kept(tmp_path):
     """,
     )
     assert out["plan"] == [["ticket", "removed"]]
+    assert "kept" in out["keep"][1] and "--drop" in out["keep"][1]
+    assert out["kept_items"] == 1  # nothing dropped without --drop
     assert "removed" in out["apply"][1]
     assert out["tables"] == [] and out["items"] == 0 and out["chunks"] == 0
     assert out["plan_after"] == []
     assert Path(first["path"]).exists()  # the files are never touched
+
+
+def test_sync_refuses_while_the_facets_file_fails_to_load(tmp_path):
+    """A typo makes the registry fall back to the built-ins, so every declared
+    facet would look removed: sync refuses rather than drop them (review fix 2)."""
+    pytest.importorskip("duckdb")
+    _run(tmp_path, TICKET, _CONFORM_PRELUDE + """
+        cli("facets", "sync", "--apply")
+        crib = Crib.open()
+        asyncio.run(crib.store_note("gasket leak", "Gasket", "p", facet="ticket"))
+    """)
+    out = _run(
+        tmp_path,
+        TICKET + "\nbogus_key = 1\n",
+        _CONFORM_PRELUDE + """
+        from crib import facets
+        out["error"] = facets.LOAD_ERROR
+        out["apply"] = cli("facets", "sync", "--apply", "--drop")
+        crib = Crib.open()
+        out["store"] = refused(lambda: crib.store.facet_sync(drop=True))
+        out["items"] = crib.store._conn.execute(
+            "SELECT count(*) FROM crib_items WHERE kind = 'ticket'").fetchone()[0]
+    """,
+    )
+    assert out["error"]
+    assert out["apply"][0] == 1 and "didn't load" in out["apply"][1]
+    assert "didn't load" in out["store"]
+    assert out["items"] == 1
+
+
+def test_a_shared_store_needs_shared_to_change_a_facet(tmp_path):
+    """On the crib DuckDB server one machine's sync changes the store for every
+    machine: --apply alone refuses, --apply --shared goes ahead (review fix 2)."""
+    pytest.importorskip("duckdb")
+    out = _run(
+        tmp_path,
+        TICKET,
+        _CONFORM_PRELUDE + """
+        from crib.store_duckdb import DuckDBStore
+        DuckDBStore.SHARED = True  # stand in for a QuackStore
+        out["dry"] = cli("facets", "sync")
+        out["plain"] = cli("facets", "sync", "--apply")
+        crib = Crib.open()
+        out["pending"] = sorted(crib.store.facet_pending())
+        crib.close()
+        out["shared"] = cli("facets", "sync", "--apply", "--shared")
+        crib = Crib.open()
+        out["after"] = sorted(crib.store.facet_pending())
+    """,
+    )
+    assert "SHARED" in out["dry"][1] and "--shared" in out["dry"][1]
+    assert out["plain"][0] == 1 and "refusing" in out["plain"][1]
+    assert out["pending"] == ["ticket"]
+    assert out["shared"][0] == 0 and "every machine" in out["shared"][1]
+    assert out["after"] == []
 
 
 def test_the_watcher_does_not_index_a_pending_facets_files(tmp_path):

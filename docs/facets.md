@@ -69,7 +69,7 @@ run `crib facets sync`, then restart the daemon.
 | `crib facets init [--force]` | write a starter file: guidance, commented examples, crib's own facets as a commented reference. Everything is commented, so it declares nothing until you uncomment an example. Refuses to replace an existing file without `--force`. |
 | `crib facets show` | every facet, built-in and declared, with its aspects, fields, disabled verbs and its state in this store. |
 | `crib facets show --toml` | the effective registry as a facets file (crib's own facets exactly as shipped, then yours): an export to read or start from. |
-| `crib facets sync [--apply]` | bring the store in line with the declared facets; see [conformance](#conformance-crib-facets-sync). |
+| `crib facets sync [--apply] [--drop] [--shared]` | bring the store in line with the declared facets; see [conformance](#conformance-crib-facets-sync). |
 
 A bad file never stops crib: it warns once and serves the built-ins
 (`crib facets show` says why).
@@ -248,10 +248,18 @@ transaction:
 - **new**: its table is created;
 - **changed**: its table is rebuilt and its files re-read (nothing is
   re-embedded);
-- **removed** from the facets file: its table and items are dropped; your
-  files are never touched.
+- **removed** from the facets file: kept until you add `--drop`, which drops
+  its table and items; your files are never touched.
 
-Then restart the daemon. The store is a cache of your files: a field you
+Then restart the daemon.
+
+Two guards:
+
+- While the facets file **fails to load**, sync refuses: crib is then serving
+  the built-ins alone, and every declared facet would look removed.
+- On a **shared store** (the crib DuckDB server), a sync changes the store for
+  every machine using it, so `--apply` also needs `--shared`. Make every
+  machine's facets file say the same first, then restart each daemon. The store is a cache of your files: a field you
 remove keeps its values in the files, and comes back if you add it again.
 
 ## Tool sets

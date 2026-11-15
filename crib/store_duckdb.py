@@ -365,17 +365,22 @@ class _Bound:
                               [v for row in batch for v in row])
 
     def insert_columns(self, table: str, types: Sequence[str],
-                       rows: list[list[Any]]) -> None:
+                       rows: list[list[Any]],
+                       names: Sequence[str] | None = None) -> None:
         """Insert `rows` into `table`, whose columns have `types`, as ONE
         columnar statement: each column bound as one typed list and unnested
         side by side (in row order; DuckDB keeps insertion order). About 7x
-        faster than multi-row VALUES on a cold refresh's item rows."""
+        faster than multi-row VALUES on a cold refresh's item rows. `names`
+        names the columns (a declared facet's table can be rebuilt under a
+        process that still holds the old definition: by name, that fails
+        loudly instead of filing values under the wrong columns)."""
         if not rows:
             return
         cols = [list(c) for c in zip(*rows)]
         sel = ", ".join(f"unnest(?::{t}[])" for t in types)
+        into = f"{table} ({', '.join(names)})" if names else table
         # pi-lens-ignore: python-sql-injection
-        self._cur.execute(f"INSERT INTO {table} SELECT {sel}", cols)
+        self._cur.execute(f"INSERT INTO {into} SELECT {sel}", cols)
 
 
 # An INSERT whose tail is one `VALUES (?, …)` group: both executors batch it
@@ -508,7 +513,7 @@ def _insert_items_step(
                 if it.kind == kind
             ]
             types = ("VARCHAR", *FACETS[kind].values())
-            ex.insert_columns(table, types, rows)
+            ex.insert_columns(table, types, rows, names=("id", *fields))
         postings = [[it.id, t, float(f)] for it in items for t, f in it.terms]
         ex.insert_columns(POSTINGS, _POSTING_TYPES, postings)
         edges = [[it.id, e.dst, e.kind, e.recorded_hash] for it in items for e in it.edges]
@@ -646,6 +651,10 @@ class DuckDBStore:
 
     Subclasses change WHERE the SQL runs, never WHAT it is: they override
     `_reading` / `_writing` to hand out a different executor."""
+
+    # One machine's store (the embedded file). A QuackStore is shared by every
+    # machine on the crib DuckDB server.
+    SHARED = False
 
     def __init__(self, conn: Any, path: Path | None = None) -> None:
         self._conn = conn
@@ -815,11 +824,19 @@ class DuckDBStore:
         return {p["facet"]: f"{p['status']}: {p['detail']}" for p in self.facet_plan()
                 if p["status"] in ("new", "changed")}
 
-    def facet_sync(self) -> list[dict[str, Any]]:
+    def facet_sync(self, drop: bool = False) -> list[dict[str, Any]]:
         """Conform the store to the declared facets, under the migration lock, in
-        one transaction (the plan it carried out)."""
+        one transaction (the plan it carried out). A facet gone from the facets
+        file is dropped only with `drop`. Refuses while the facets file failed to
+        load: the registry is then the built-ins alone, so every declared facet
+        would look removed."""
+        if _facets.LOAD_ERROR:
+            raise CribUserError(
+                f"the facets file didn't load ({_facets.LOAD_ERROR}): fix it before "
+                "`crib facets sync`, or every declared facet would look removed")
         with _migration_lock(self._migration_lock_path()):
-            plan = [p for p in self.facet_plan() if p["status"] != "current"]
+            plan = [p for p in self.facet_plan() if p["status"] != "current"
+                    and (drop or p["status"] != "removed")]
             if not plan:
                 return []
 

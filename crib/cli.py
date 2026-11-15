@@ -1685,6 +1685,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _fs.add_argument("--apply", action="store_true",
                      help="carry the plan out; without it nothing is changed")
+    _fs.add_argument("--drop", action="store_true",
+                     help="also drop the facets gone from the facets file (their "
+                     "index rows; your files are never touched)")
+    _fs.add_argument("--shared", action="store_true",
+                     help="on a shared store (the crib DuckDB server): confirm the "
+                     "change is meant for every machine using it")
     n_gen = sub.add_parser(
         "generate", help="set up and check LLM generation (descriptions, summaries)"
     )
@@ -3918,16 +3924,35 @@ def _facets_cmd(args: Any) -> int:
                 print(f"{noun}  (removed from the facets file; still in the store)")
         print(f"facets file: {facets.system_file()}")
         return 0
-    todo = [p for p in plan.values() if p["status"] != "current"]
+    if facets.LOAD_ERROR:
+        print(f"refusing: the facets file didn't load ({facets.LOAD_ERROR}). Fix it "
+              "first: until then every declared facet would look removed")
+        return 1
+    removed = [p for p in plan.values() if p["status"] == "removed"]
+    todo = [p for p in plan.values() if p["status"] in ("new", "changed")
+            or (p["status"] == "removed" and args.drop)]
+    for p in removed:
+        if not args.drop:
+            print(f"  kept     {p['facet']}: gone from the facets file; its index rows "
+                  "stay until `--drop` (your files are never touched)")
     if not todo:
         print("the store is conformed to every declared facet: nothing to do")
         return 0
     for p in todo:
         print(f"  {p['status']:8} {p['facet']}: {p['detail']}")
+    shared = getattr(crib.store, "SHARED", False)
+    if shared:
+        print("this store is SHARED (the crib DuckDB server): the change applies to "
+              "every machine using it, whose facets files must say the same")
     if not args.apply:
-        print("dry run: nothing changed (re-run with --apply)")
+        print("dry run: nothing changed (re-run with --apply"
+              + (", and --shared" if shared and todo else "") + ")")
         return 0
-    crib.store.facet_sync()
+    if shared and not args.shared:
+        print("refusing: a shared store changes for every machine; re-run with "
+              "--apply --shared once their facets files agree")
+        return 1
+    crib.store.facet_sync(drop=args.drop)
     rebuilt = [p["facet"] for p in todo if p["status"] in ("new", "changed")]
     crib = Crib.open()  # now serving them
     files = 0
@@ -3936,7 +3961,8 @@ def _facets_cmd(args: Any) -> int:
             if crib._facet_store(noun).root(proj).exists():
                 files += (asyncio.run(crib.reindex(None, proj, facet=noun)))["files"]
     print(f"applied; re-read {files} file(s) of {', '.join(rebuilt) or 'no facet'}")
-    print("restart the crib daemon so it serves the change")
+    print("restart the crib daemon" + (" on every machine sharing this store"
+          if shared else "") + " so it serves the change")
     return 0
 
 
