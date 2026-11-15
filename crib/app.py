@@ -728,12 +728,19 @@ class Crib:
         """Per-project registry of docs indexed in-situ (prefix -> repo root)."""
         return self.notestore.source_roots(project)
 
-    def abspath(self, project: str, relpath: str) -> Path:
-        return self.notestore.abspath(project, relpath)
+    def _facet_store(self, facet: str) -> NoteStore:
+        """The note store of a facet in the registry (crib.facets), by noun."""
+        return self.pillars[facets.by_noun(facet).store]
 
-    async def _write_note(self, project: str, relpath: str, note: Note) -> IndexResult:
-        res = await self.notestore.write(project, relpath, note)
-        self._schedule_keyword_refresh(project, relpath)  # keep the sparse facet fresh
+    def abspath(self, project: str, relpath: str, facet: str = facets.HOME) -> Path:
+        return self._facet_store(facet).abspath(project, relpath)
+
+    async def _write_note(
+        self, project: str, relpath: str, note: Note, facet: str = facets.HOME
+    ) -> IndexResult:
+        res = await self._facet_store(facet).write(project, relpath, note)
+        if facet == facets.HOME:  # the enrichment pass reads the notes store
+            self._schedule_keyword_refresh(project, relpath)  # keep the sparse facet fresh
         return res
 
     _KW_SETTLE_S = 1.0  # per-note debounce before the refresh fires
@@ -793,10 +800,10 @@ class Crib:
         """True if `proj` has no notes dir yet (a write would create it)."""
         return not self.project_paths(proj).notes_dir.exists()
 
-    def _unique_relpath(self, proj: str, slug: str) -> str:
+    def _unique_relpath(self, proj: str, slug: str, facet: str = facets.HOME) -> str:
         """`<slug>.md`, with a numeric suffix only on collision — predictable and
         hand-referenceable. Stable identity is the frontmatter `id`, not the path."""
-        base = self.notes_dir(proj)
+        base = self._facet_store(facet).dir(proj)
         if not (base / f"{slug}.md").exists():
             return f"{slug}.md"
         i = 2
@@ -912,6 +919,8 @@ class Crib:
         project: str | None = None,
         tags: list[str] | None = None,
         cwd: Path | None = None,
+        *,
+        facet: str = facets.HOME,
     ) -> dict[str, Any]:
         proj = self.resolve_project(project, cwd)
         created = self.project_is_new(proj)
@@ -921,13 +930,15 @@ class Crib:
         title = title or (
             content.strip().splitlines()[0][:60] if content.strip() else "note"
         )
-        relpath = self._unique_relpath(proj, _slug(title))
+        relpath = self._unique_relpath(proj, _slug(title), facet)
         fm: dict[str, Any] = {"title": title, "source": "manual"}
         if tags:
             fm["tags"] = tags
-        note = Note(path=self.abspath(proj, relpath), frontmatter=fm, body=content)
-        res = await self._write_note(proj, relpath, note)
-        similar = await asyncio.to_thread(self._similar, proj, relpath)
+        note = Note(path=self.abspath(proj, relpath, facet), frontmatter=fm, body=content)
+        res = await self._write_note(proj, relpath, note, facet)
+        similar = await asyncio.to_thread(
+            self._similar, proj, relpath, facets.by_noun(facet).store
+        )
         return {
             "project": proj,
             "relpath": relpath,
@@ -943,11 +954,13 @@ class Crib:
         to_relpath: str | None = None,
         project: str | None = None,
         cwd: Path | None = None,
+        *,
+        facet: str = facets.HOME,
     ) -> dict[str, Any]:
         """Relocate a note across projects and/or rename it, preserving its `id`
         (and thus version-ring history). One-way: write destination, drop source."""
         src_proj = self.resolve_project(project, cwd)
-        return await self.notestore.move(
+        return await self._facet_store(facet).move(
             src_proj, relpath, to_project or src_proj, to_relpath or relpath
         )
 
@@ -958,9 +971,11 @@ class Crib:
         heading: str | None = None,
         project: str | None = None,
         cwd: Path | None = None,
+        *,
+        facet: str = facets.HOME,
     ) -> dict[str, Any]:
         proj = self.resolve_project(project, cwd)
-        path = self.abspath(proj, relpath)
+        path = self.abspath(proj, relpath, facet)
         note = (
             notes.load(path)
             if path.exists()
@@ -968,7 +983,7 @@ class Crib:
         )
         block = f"\n\n## {heading}\n{content}" if heading else f"\n\n{content}"
         note.body = note.body.rstrip() + block
-        res = await self._write_note(proj, relpath, note)
+        res = await self._write_note(proj, relpath, note, facet)
         return {"project": proj, "relpath": relpath, "indexed": res.upserted}
 
     async def edit_note(
@@ -977,11 +992,13 @@ class Crib:
         new_content: str,
         project: str | None = None,
         cwd: Path | None = None,
+        *,
+        facet: str = facets.HOME,
     ) -> dict[str, Any]:
         """Replace raw file content (frontmatter preserved if present in input)."""
         proj = self.resolve_project(project, cwd)
         fm, body = notes.parse(new_content)
-        path = self.abspath(proj, relpath)
+        path = self.abspath(proj, relpath, facet)
         if not fm and path.exists():
             try:
                 fm = notes.load(path).frontmatter  # keep existing frontmatter
@@ -989,11 +1006,16 @@ class Crib:
                 fm = {}  # unparseable header: this edit REPAIRS it (the old
                 # bytes go to the version ring on the way through)
         note = Note(path=path, frontmatter=fm, body=body)
-        res = await self._write_note(proj, relpath, note)
+        res = await self._write_note(proj, relpath, note, facet)
         return {"project": proj, "relpath": relpath, "indexed": res.upserted}
 
     async def forget(
-        self, relpath: str, project: str | None = None, cwd: Path | None = None
+        self,
+        relpath: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+        *,
+        facet: str = facets.HOME,
     ) -> dict[str, Any]:
         """Delete a note: remove it from disk and drop its chunks from the index.
 
@@ -1002,19 +1024,29 @@ class Crib:
         of the index entry happens through the same `index_file` — once the file
         is gone, it sees a missing path and drops all chunks for that relpath."""
         proj = self.resolve_project(project, cwd)
-        return await self.notestore.delete(proj, relpath)
+        return await self._facet_store(facet).delete(proj, relpath)
 
     def read_note(
-        self, relpath: str, project: str | None = None, cwd: Path | None = None
+        self,
+        relpath: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+        *,
+        facet: str = facets.HOME,
     ) -> str:
         proj = self.resolve_project(project, cwd)
-        return self.notestore.read(proj, relpath)
+        return self._facet_store(facet).read(proj, relpath)
 
     def locate(
-        self, relpath: str, project: str | None = None, cwd: Path | None = None
+        self,
+        relpath: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+        *,
+        facet: str = facets.HOME,
     ) -> str:
         proj = self.resolve_project(project, cwd)
-        return str(self.abspath(proj, relpath))
+        return str(self.abspath(proj, relpath, facet))
 
     async def reindex(
         self,
@@ -1022,8 +1054,14 @@ class Crib:
         project: str | None = None,
         cwd: Path | None = None,
         full: bool = True,
+        *,
+        facet: str = facets.HOME,
     ) -> dict[str, Any]:
         """Reindex a note, or fully reconcile a project when relpath is None.
+
+        For a facet other than notes, the reconcile covers that facet's store
+        only; the notes reconcile is the whole project's (every pillar, plus the
+        legacy-layout migration and the embedder check).
 
         Full reconcile walks the UNION of on-disk notes and indexed paths, so it
         catches files added/edited while crib was down AND drops orphaned chunks
@@ -1036,7 +1074,9 @@ class Crib:
         returning nothing."""
         proj = self.resolve_project(project, cwd)
         if relpath:
-            return await self.notestore.reindex(proj, relpath)
+            return await self._facet_store(facet).reindex(proj, relpath)
+        if facet != facets.HOME:
+            return await self._facet_store(facet).reindex(proj, full=full)
         # Self-heal the legacy facet layout FIRST, so this very sweep drops the
         # old-path chunks and embeds the moved files — also what absorbs
         # old-layout files a not-yet-upgraded machine pushed into the sync repo.
@@ -1047,7 +1087,7 @@ class Crib:
         res = await self.notestore.reindex(proj, full=full)
         # Fan out over the sibling pillars — same union sweep, each scoped to its
         # own tree and its own chunks. Empty pillars are cheap no-ops.
-        for pillar in (self.designstore, self.planstore, self.learningstore):
+        for pillar in (s for s in self.pillars.values() if s is not self.notestore):
             r = await pillar.reindex(proj, full=full)
             for k in ("files", "changed", "removed"):
                 res[k] += r[k]
@@ -1692,6 +1732,8 @@ class Crib:
         tags: list[str] | None = None,
         cwd: Path | None = None,
         hints: list[str] | None = None,
+        *,
+        facet: str = facets.HOME,
     ) -> list[dict[str, Any]]:
         """`lookup` (same section-level dedupe) but each hit carries the FULL
         matching section markdown — sliced from the file by its line span — rather
@@ -1699,7 +1741,8 @@ class Crib:
         proj = self.resolve_project(project, cwd)
         out: list[dict[str, Any]] = []
         for h in self.lookup(
-            query, project, k, tags, dedupe="section", cwd=cwd, hints=hints
+            query, project, k, tags, dedupe="section", cwd=cwd, hints=hints,
+            store=facets.by_noun(facet).store,
         ):
             section = h.snippet
             if h.line_start and h.line_end:
@@ -1715,7 +1758,12 @@ class Crib:
 
     # --- generation: distill + elaborate (knowledge-capture §2/§4, §3.1) ---
     async def distill(
-        self, relpath: str, project: str | None = None, cwd: Path | None = None
+        self,
+        relpath: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+        *,
+        facet: str = facets.HOME,
     ) -> dict[str, Any]:
         """Revise a note in place via the LLM: compress, dedupe, normalize; keep
         facts/decisions, drop deliberation, preserve code verbatim. Thrash-guarded
@@ -1723,7 +1771,7 @@ class Crib:
         through the version ring so a bad revision is a cheap rollback."""
         self._require_generation("distill")
         proj = self.resolve_project(project, cwd)
-        path = self.abspath(proj, relpath)
+        path = self.abspath(proj, relpath, facet)
         if not path.exists():
             raise CribUserError(f"no such note: {relpath} in project {proj!r}")
         note = notes.load(path)
@@ -1743,7 +1791,7 @@ class Crib:
             return {"project": proj, "relpath": relpath, "changed": False}
         note.frontmatter["source"] = "distilled"
         note.body = new_body
-        res = await self._write_note(proj, relpath, note)
+        res = await self._write_note(proj, relpath, note, facet)
         return {
             "project": proj,
             "relpath": relpath,
@@ -5856,7 +5904,12 @@ class Crib:
 
     # --- import ------------------------------------------------------------
     async def import_files(
-        self, paths: list[str], project: str | None = None, cwd: Path | None = None
+        self,
+        paths: list[str],
+        project: str | None = None,
+        cwd: Path | None = None,
+        *,
+        facet: str = facets.HOME,
     ) -> dict[str, Any]:
         """Copy explicit files INTO memory as crib-owned notes — manual only.
 
@@ -5889,7 +5942,7 @@ class Crib:
                 raise CribUserError(f"not a file: {p}")
             relpath = f"imported/{src.name}"
             sfm, sbody = notes.parse(src.read_text())
-            tgt = self.abspath(proj, relpath)
+            tgt = self.abspath(proj, relpath, facet)
             prev = notes.load(tgt) if tgt.exists() else None
             fm = dict(sfm)
             fm.update(
@@ -5903,7 +5956,7 @@ class Crib:
             note_id = (prev.id if prev and prev.id else None) or derived_ulid(relpath)
             fm = {"id": note_id, **fm}
             note = Note(path=tgt, frontmatter=fm, body=sbody)
-            await self._write_note(proj, relpath, note)
+            await self._write_note(proj, relpath, note, facet)
             imported.append(relpath)
         return {
             "project": proj,
@@ -6020,10 +6073,15 @@ class Crib:
 
     # --- versioning / git --------------------------------------------------
     def list_versions(
-        self, relpath: str, project: str | None = None, cwd: Path | None = None
+        self,
+        relpath: str,
+        project: str | None = None,
+        cwd: Path | None = None,
+        *,
+        facet: str = facets.HOME,
     ) -> list[dict[str, Any]]:
         proj = self.resolve_project(project, cwd)
-        return self.notestore.list_versions(proj, relpath)
+        return self._facet_store(facet).list_versions(proj, relpath)
 
     async def restore(
         self,
@@ -6031,10 +6089,12 @@ class Crib:
         version: str,
         project: str | None = None,
         cwd: Path | None = None,
+        *,
+        facet: str = facets.HOME,
     ) -> dict[str, Any]:
         proj = self.resolve_project(project, cwd)
-        content = self.notestore.version_content(proj, relpath, version)
-        return await self.edit_note(relpath, content, project=proj)
+        content = self._facet_store(facet).version_content(proj, relpath, version)
+        return await self.edit_note(relpath, content, project=proj, facet=facet)
 
     def snapshot(self, message: str | None = None) -> str:
         return self.git.snapshot(message)
