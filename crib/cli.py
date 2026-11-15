@@ -3021,28 +3021,49 @@ def _facet_parsers(sub: Any, nouns: dict[str, Any], proj: Any) -> None:
             continue
         fsub = nouns.get(spec.noun)
         if fsub is None:
+            # A declared facet's commands are tried on a scratch parser first:
+            # one that can't be built (a name clash the registry's checks
+            # missed) is skipped with a warning, never every `crib` command.
+            why = (f"its name is crib's own `{spec.noun}` command"
+                   if spec.noun in sub.choices else None)
+            if why is None:
+                try:
+                    scratch = argparse.ArgumentParser(add_help=False).add_subparsers()
+                    _facet_verb_parsers(
+                        scratch.add_parser(spec.noun).add_subparsers(), spec, proj)
+                except (argparse.ArgumentError, ValueError, TypeError) as e:
+                    why = str(e)
+            if why is not None:
+                print(f"[crib] facet {spec.noun!r} has no CLI commands: {why}",
+                      file=sys.stderr)
+                continue
             what = "symbol-anchored" if spec.has("anchored") else "search, read, write"
             n = sub.add_parser(spec.noun, help=f"{spec.plural}: {what}")
             fsub = n.add_subparsers(dest=f"{spec.noun}_verb", required=True)
-        for t in _facet_cli_verbs(spec):
-            if spec.has("links"):
-                g = _graph_cli(spec, t.verb)
-                if not g.parser:
-                    continue  # an MCP-only row
-                sp = fsub.add_parser(
-                    _cli_word(spec, t.verb),
-                    aliases=["search"] if t.verb == "lookup" else [],
-                    help=g.help(spec),
-                )
-                g.args(sp, proj, spec)
-                continue
-            c = _cli_of(t)
+        _facet_verb_parsers(fsub, spec, proj)
+
+
+def _facet_verb_parsers(fsub: Any, spec: Any, proj: Any) -> None:
+    """One facet's verb subcommands under its noun's subparsers."""
+    for t in _facet_cli_verbs(spec):
+        if spec.has("links"):
+            g = _graph_cli(spec, t.verb)
+            if not g.parser:
+                continue  # an MCP-only row
             sp = fsub.add_parser(
-                _cli_word(spec, t.verb), aliases=list(c.aliases), help=c.help(spec)
+                _cli_word(spec, t.verb),
+                aliases=["search"] if t.verb == "lookup" else [],
+                help=g.help(spec),
             )
-            c.args(sp, proj, spec)
-            if t.fields and spec.params:
-                _field_options(sp, spec, t.fields)
+            g.args(sp, proj, spec)
+            continue
+        c = _cli_of(t)
+        sp = fsub.add_parser(
+            _cli_word(spec, t.verb), aliases=list(c.aliases), help=c.help(spec)
+        )
+        c.args(sp, proj, spec)
+        if t.fields and spec.params:
+            _field_options(sp, spec, t.fields)
 
 
 def _field_options(sp: Any, spec: Any, mode: str) -> None:

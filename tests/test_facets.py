@@ -127,6 +127,14 @@ def test_parse_defaults_store_to_plural_and_always_has_core():
         ("routine", {"plural": "routines", "fields": {"n": "INT128"}}, "has type"),
         ("routine", {"plural": "routines", "store": "a/b"}, "directory name"),
         ("routine", {"plural": "routines", "legacy_stores": "old"}, "legacy_stores"),
+        ("my_thing", {"plural": "things"}, "can't contain '_'"),
+        (
+            "rfc",
+            {"plural": "rfcs", "aspects": ["links", "status"],
+             "status": {"values": {"open": "open", "done": "done"},
+                        "transitions": {"list": "done"}}},
+            "name of a graph verb",
+        ),
         (
             "rfc",
             {"plural": "rfcs", "aspects": ["links", "status", "supersede"],
@@ -383,3 +391,30 @@ def test_status_and_edges_need_their_aspects():
         parse("t", {"plural": "ts", "status": {"values": {"a": "open"}}})
     with pytest.raises(FacetSpecError, match="needs the links aspect"):
         parse("t", {"plural": "ts", "edges": {"*": "informed_by"}})
+
+
+
+@pytest.mark.parametrize("noun", ["status", "serve", "info", "ops", "facets", "store"])
+def test_a_facet_cannot_take_a_top_level_command_name(noun):
+    with pytest.raises(FacetSpecError, match="reserved by crib"):
+        check(_with(parse(noun, {"plural": noun + "x"})))
+
+
+def test_every_top_level_command_and_tool_prefix_is_reserved():
+    """A facet's noun becomes a top-level command and its tools' prefix: every
+    one crib already has must be reserved, or a declared facet crashes the CLI
+    (conflicting subparser) or steals tools into its set (review fix 4)."""
+    import argparse
+    import json
+    from pathlib import Path
+
+    from crib import cli
+
+    builtin = {s.noun for s in facets.BUILTINS}
+    sp = next(a for a in cli.build_parser()._actions
+              if isinstance(a, argparse._SubParsersAction))
+    commands = {c for c in sp.choices if c.isidentifier()}
+    golden = Path(__file__).parent / "goldens" / "tool_surface.json"
+    prefixes = {n.split("_", 1)[0] for n in json.loads(golden.read_text())["mcp"]}
+    missing = sorted((commands | prefixes) - builtin - facets.RESERVED_NAMES)
+    assert missing == [], f"reserve these in crib.facets.RESERVED_NAMES: {missing}"

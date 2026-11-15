@@ -133,6 +133,15 @@ def graph_verbs(spec: "FacetSpec") -> tuple[str, ...]:
     return (*out, *spec.transitions)
 
 
+# Every verb `graph_verbs` can give a facet (before its transitions): a
+# transition can't take one of these names.
+GRAPH_VERB_NAMES = frozenset({
+    "add", "read", "edit", "append", "lookup", "list", "forget", "export", "extract",
+    "dep_add", "dep_remove", "reaffirm", "graph", "check", "tree", "supersede",
+    "status", "review", "review_apply", "next", "move",
+})
+
+
 def graph_fields(aspects: Iterable[str]) -> dict[str, str]:
     """The fields a graph facet (links + status) brings, in the store column
     order the built-ins have always had: its status and rank, a deferral's
@@ -159,10 +168,18 @@ ASPECT_FIELDS: Mapping[str, Mapping[str, str]] = MappingProxyType(
     }
 )
 
-# Nouns that are crib's but not pillars: CLI/MCP families and non-pillar item
-# kinds. No facet may take one, as noun or plural.
+# Nouns that are crib's but not pillars: CLI/MCP families, top-level commands
+# (a facet's noun is its CLI command and its tools' prefix) and non-pillar item
+# kinds. No facet may take one, as noun or plural. tests/test_facets.py checks
+# every top-level command and built-in tool prefix is covered.
 RESERVED_NAMES = frozenset(
     {
+        "facet",
+        "facets",
+        "info",
+        "ops",
+        "serve",
+        "status",
         "code",
         "project",
         "projects",
@@ -254,6 +271,10 @@ def _ident(value: Any, what: str) -> str:
 def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetSpec:
     """One `[<noun>]` table of a facets file as a spec, checked on its own."""
     _ident(noun, "a facet name")
+    if "_" in noun:
+        # tools are `<noun>_<verb>`, and verbs have underscores (dep_add): a
+        # noun with one would make a tool's facet ambiguous
+        raise FacetSpecError(f"a facet name can't contain '_', got {noun!r}")
     if bad := set(raw) - _KEYS:
         raise FacetSpecError(f"facet {noun!r}: unknown keys {sorted(bad)}")
     plural = _ident(raw.get("plural"), f"facet {noun!r}: plural")
@@ -380,6 +401,10 @@ def _graph_keys(noun: str, raw: Mapping[str, Any], have: set[str]) -> dict[str, 
             if to not in values:
                 raise FacetSpecError(
                     f"facet {noun!r}: transition {verb!r} goes to {to!r}, not one of its statuses")
+            if verb in GRAPH_VERB_NAMES:
+                raise FacetSpecError(
+                    f"facet {noun!r}: transition {verb!r} is the name of a graph verb "
+                    f"({noun}_{verb}); name the transition for the move it makes")
             if values[to] == "retired":
                 raise FacetSpecError(
                     f"facet {noun!r}: transition {verb!r} goes to {to!r} (role retired): "

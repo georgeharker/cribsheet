@@ -1332,10 +1332,18 @@ def verbs_of(spec: FacetSpec) -> list[Verb]:
 def register(crib: Crib, crib_tool: Callable[..., Callable[[Any], Any]]) -> list[str]:
     """Register every generated facet's tools through crib.server's
     `crib_tool`; the tool names, in order."""
+    import sys
+
     names = []
     for spec in facets.FACETS:
         for t in verbs_of(spec):
             name = tool_name(spec, t.verb)
+            if name in names:
+                # the registry's checks make names unique; never let FastMCP
+                # replace a tool silently if one slips through
+                print(f"[crib] facet {spec.noun!r}: tool {name} is already "
+                      "registered; skipping this one", file=sys.stderr)
+                continue
             body: Any = t.make(crib, spec)  # a plain function: FastMCP reads these
             body.__name__ = body.__qualname__ = name
             _with_fields(body, spec, t.fields)

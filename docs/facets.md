@@ -276,9 +276,13 @@ Each declared facet is its own tool set, named by its plural:
 
 ## Names crib keeps for itself
 
-- **Facet names and plurals** can't be: `code`, `doc`, `docs`, `generate`,
-  `keywords`, `memory`, `project`, `projects`, `sources`, `store`, `summary`,
-  `symbol`, `symbols`, `system`, or another facet's.
+- **Facet names and plurals** can't be: `code`, `doc`, `docs`, `facet`,
+  `facets`, `generate`, `info`, `keywords`, `memory`, `ops`, `project`,
+  `projects`, `serve`, `sources`, `status`, `store`, `summary`, `symbol`,
+  `symbols`, `system` (crib's own commands and kinds), or another facet's. A
+  facet name can't contain `_` (its tools are `<noun>_<verb>`).
+- **Transition names** can't be a graph verb's (`list`, `status`, `next`,
+  `add`, ...): a transition is a verb of its own.
 - **Field names** can't be a verb parameter or a frontmatter key crib writes:
   `id`, `title`, `type`, `kind`, `source`, `source_path`, `imported`,
   `status`, `tags`, `deps`, `created`, `updated`, `content_hash`, `body_hash`,

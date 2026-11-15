@@ -1360,6 +1360,35 @@ transitions = { accept = "accepted", build = "building", ship = "shipped", redra
 """
 
 
+def test_a_facet_whose_commands_cannot_be_built_is_skipped_not_fatal(tmp_path):
+    """The CLI tries a declared facet's commands on a scratch parser: one that
+    fails (a clash the registry missed) loses its commands with a warning;
+    every other command still works (review fix 4)."""
+    out = _run(
+        tmp_path,
+        WIDGET,
+        """
+        import argparse, contextlib, io
+        from crib import cli
+        real = cli._facet_verb_parsers
+        def boom(fsub, spec, proj):
+            if spec.noun == "widget":
+                raise argparse.ArgumentError(None, "conflicting option string: --x")
+            return real(fsub, spec, proj)
+        cli._facet_verb_parsers = boom
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            p = cli.build_parser()
+        sp = next(a for a in p._actions if isinstance(a, argparse._SubParsersAction))
+        out["commands"] = sorted(sp.choices)
+        out["err"] = err.getvalue()
+    """,
+    )
+    assert "widget" not in out["commands"]
+    assert {"note", "design", "plan", "serve"} <= set(out["commands"])
+    assert "facet 'widget' has no CLI commands" in out["err"]
+
+
 def test_transitions_into_every_role_work(tmp_path):
     """A transition moves an item from wherever it is, by role: ungating a
     draft, into claimed and done (answering with what that unblocked), back
