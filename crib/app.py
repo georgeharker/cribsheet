@@ -431,6 +431,7 @@ class Crib:
         pcfg.mappings = want or None
         pcfg.save(pp.config_file)
         self.project_paths.invalidate(proj)
+        self._rewatch(proj)
         out: dict[str, Any] = {}
         for noun in sorted(set(had) | set(want)):
             if had.get(noun) == want.get(noun) or noun in self.pending_facets:
@@ -446,12 +447,28 @@ class Crib:
                                                    if res.get("unstamped") else {})}
         return out
 
-    def _mapped_facet_roots(self) -> dict[tuple[str, str], Path]:
+    def _rewatch(self, proj: str) -> None:
+        """Bring the running watcher in line with `proj`'s storage after it
+        changed (mappings recorded or dropped, adopt, release): its mapped
+        facets' dirs and its in-repo store. No watcher (CLI, tests): nothing."""
+        w = self._watcher
+        if w is None:
+            return
+        self.project_paths.invalidate(proj)
+        w.set_mapped(proj, {store: root for (name, store), root
+                            in self._mapped_facet_roots(only=proj).items()})
+        pp = self.project_paths(proj)
+        if pp.in_repo and pp.available and pp.store_root is not None:
+            w.add_store(proj, pp.data_root)
+        elif proj in w.stores:
+            w.forget_store(w.stores[proj])
+
+    def _mapped_facet_roots(self, only: str | None = None) -> dict[tuple[str, str], Path]:
         """`{(project, store): root}` for every mapped facet (`.crib` `facets:`)
         whose directory is on this machine — the watcher's mapped roots. A
         pending facet (`crib facets sync`) isn't watched."""
         roots: dict[tuple[str, str], Path] = {}
-        for name in self.projects():
+        for name in ([only] if only is not None else self.projects()):
             for store, loc in self.project_paths(name).mappings.items():
                 spec = facets.by_store(store)
                 if spec is None or spec.noun in self.pending_facets or not loc.available:
@@ -2763,6 +2780,8 @@ class Crib:
             with contextlib.suppress(OSError):
                 src.rmdir()
             moved[noun] = {"to": loc.token, "notes_moved": n, "versions_moved": v}
+        if moved:
+            self._rewatch(proj)  # a first adopt may have made the mapping's dir
         for noun in moved:
             await self.pillars[facets.by_noun(noun).store].reindex(proj)
         return moved
@@ -2811,6 +2830,7 @@ class Crib:
                              if k not in moved} or None
             pcfg.save(pp.config_file)
             self.project_paths.invalidate(proj)
+            self._rewatch(proj)
         return moved, kept
 
     _STORE_GITIGNORE = (
@@ -2948,6 +2968,7 @@ class Crib:
         pcfg.store_root = portable_path(store, self.config.locations)
         pcfg.save(pp.config_file)
         self.project_paths.invalidate(proj)
+        self._rewatch(proj)  # live now, not at the next daemon start
         rec = await self.reindex(project=proj)
         return {
             "project": proj,
@@ -3025,6 +3046,7 @@ class Crib:
         pcfg.store_root = None
         pcfg.save(pp.config_file)
         self.project_paths.invalidate(proj)
+        self._rewatch(proj)
         rec = await self.reindex(project=proj)
         return {
             "project": proj,

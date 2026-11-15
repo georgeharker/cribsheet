@@ -353,3 +353,73 @@ def test_a_record_change_reaches_the_store_without_a_read(tmp_path, monkeypatch)
     asyncio.run(crib._on_record_change("p", "symbol", [p.name]))
     items = crib.store.items({"project": "p", "kind": "symbol"})
     assert list(items) == ["symbol:p:m.py#f"] and items["symbol:p:m.py#f"].body_vec
+
+
+
+def _recording_watcher(tmp_path: Path):
+    """A Watcher whose (un)scheduling is recorded instead of done."""
+    from crib.watch import Watcher
+
+    class Recording(Watcher):
+        def __init__(self) -> None:
+            super().__init__(tmp_path / "projects",
+                             cast(Callable[[str, str, str], Awaitable[None]], None),
+                             asyncio.new_event_loop())
+            self.scheduled: list[str] = []
+            self.forgotten: list[str] = []
+
+        def _schedule_dir(self, d: str) -> bool:
+            self.scheduled.append(d)
+            return True
+
+        def forget_dir(self, d: str | Path) -> None:
+            self.forgotten.append(str(d))
+
+    return Recording()
+
+
+def test_set_mapped_watches_new_roots_and_forgets_dropped_ones(tmp_path):
+    """A project's mapped roots change mid-life (review fix 9): new dirs are
+    scheduled at once, dropped or moved ones unscheduled, another project's
+    left alone, and a dir still in use by another root never forgotten."""
+    a, b, c = (tmp_path / n for n in ("a", "b", "c"))
+    for d in (a, b, c):
+        d.mkdir()
+    w = _recording_watcher(tmp_path)
+    w.mapped = {("other", "routines"): c}
+    w.set_mapped("p", {"routines": a, "design": b})
+    assert w.mapped == {("other", "routines"): c, ("p", "routines"): a, ("p", "design"): b}
+    assert sorted(w.scheduled) == sorted([str(a), str(b)])
+    w.scheduled.clear()
+    w.set_mapped("p", {"routines": c})  # design dropped; routines moved onto c
+    assert w.mapped == {("other", "routines"): c, ("p", "routines"): c}
+    assert sorted(w.forgotten) == sorted([str(a), str(b)])
+    assert w.scheduled == [str(c)]  # idempotent in the real watcher
+    w.forgotten.clear()
+    w.set_mapped("p", {})
+    assert w.forgotten == []  # c is still "other"'s root
+    assert w.mapped == {("other", "routines"): c}
+
+
+def test_recording_a_mapping_updates_a_running_watcher(tmp_path, monkeypatch):
+    """`_sync_mappings` (setup/index/adopt) and release re-point the running
+    watcher, rather than waiting for a daemon restart (review fix 9)."""
+    from crib.config import CribLink
+
+    monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "config"))
+    monkeypatch.setenv("CRIB_DATA_DIR", str(tmp_path / "data"))
+    monkeypatch.setenv("CRIB_INDEX_DIR", str(tmp_path / "index"))
+    crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+    w = _recording_watcher(tmp_path)
+    crib._watcher = w
+    repo = tmp_path / "repo"
+    (repo / "decisions").mkdir(parents=True)
+    (repo / ".crib").write_text("project: p\nfacets:\n  design: {dir: decisions}\n")
+    link = CribLink.find(repo)
+    assert link is not None
+    asyncio.run(crib._sync_mappings("p", link))
+    assert w.mapped == {("p", "design"): repo / "decisions"}
+    assert str(repo / "decisions") in w.scheduled
+    asyncio.run(crib.project_release("p"))
+    assert w.mapped == {}
+    assert str(repo / "decisions") in w.forgotten

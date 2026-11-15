@@ -379,6 +379,27 @@ class Watcher(_FSWatcher):
         self.stores[project] = root
         self._schedule_dir(str(root))
 
+    def set_mapped(self, project: str, roots: dict[str, Path]) -> None:
+        """Bring `project`'s mapped-facet roots (store -> dir) in line with
+        `roots`: watch the new ones, stop watching the dropped or moved ones
+        (unless another root still needs that dir). The mid-life complement of
+        the roots computed at start, so a mapping recorded by `project setup` /
+        `index` / `adopt` is live at once rather than at the next restart."""
+        want = {(project, store): d for store, d in roots.items()}
+        old = {k: d for k, d in self.mapped.items() if k[0] == project}
+        for k, d in old.items():
+            if want.get(k) != d:
+                del self.mapped[k]
+        still = {str(d) for d in (*self.mapped.values(), *self.stores.values())}
+        for k, d in old.items():
+            if want.get(k) != d and str(d) not in still and str(d) not in {
+                    str(x) for x in want.values()}:
+                self.forget_dir(d)
+        for k, d in want.items():
+            if old.get(k) != d and d.is_dir():
+                self.mapped[k] = d
+                self._schedule_dir(str(d))
+
     def _watch_dirs(self) -> list[str]:
         self.projects_dir.mkdir(parents=True, exist_ok=True)
         # A store dir that doesn't exist yet is reported once by `_schedule_dir`
