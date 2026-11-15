@@ -120,6 +120,7 @@ def diagnose(crib: Crib, proj: str) -> dict[str, Any]:
 
     findings += _duplicate_ids(crib, proj)
     findings += _near_duplicates(crib, proj)
+    findings += _unstamped(crib, proj)
 
     gen = crib._generation_state([{"project": proj, "symbols": 1}])
     pending = (gen.get("pending_descriptions") or {}).get(proj)
@@ -142,6 +143,39 @@ def diagnose(crib: Crib, proj: str) -> dict[str, Any]:
         "counts": counts,
         "findings": findings,
     }
+
+
+def _unstamped(crib: Crib, proj: str) -> list[dict[str, Any]]:
+    """A read-only, id-stamped mapped location's files with no id yet: they are
+    not indexed (a temporary id would flip under their links), so say so, and
+    what makes them appear."""
+    from . import notes
+    from .filesync import scan
+
+    out = []
+    for store in crib.pillars.values():
+        loc = store.location(proj)
+        if loc is None or not loc.read_only or loc.ids != "stamp" or not loc.available:
+            continue
+        for rel in sorted(scan(loc.root, ".md", recursive=True)):
+            if not loc.owns(rel):
+                continue
+            try:
+                has_id = bool(notes.scan_id((loc.root / rel).read_text()))
+            except (OSError, UnicodeDecodeError):
+                continue
+            if not has_id:
+                out.append(
+                    {
+                        "check": "not yet stamped",
+                        "item": rel,
+                        "kind": store.spec.facet or "note",
+                        "location": loc.token,
+                        "fix": "index it from a writable checkout of that repo (it "
+                        "stamps an id) and commit; this read-only one then picks it up",
+                    }
+                )
+    return out
 
 
 def _duplicate_ids(crib: Crib, proj: str) -> list[dict[str, Any]]:

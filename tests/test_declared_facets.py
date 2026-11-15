@@ -1104,6 +1104,9 @@ def test_a_read_only_stamped_mapping_skips_unstamped_files(tmp_path):
         _MAPPED.replace("REPO", repr(str(repo)))
         + """
         out["synced"] = synced
+        from crib.doctor import diagnose
+        out["doctor"] = [(f["check"], f["item"]) for f in diagnose(crib, "p")["findings"]
+                         if f["check"] == "not yet stamped"]
         out["rels"] = sorted(i.relpath for i in
                              crib.store.items({"project": "p", "kind": "routine"}).values())
     """,
@@ -1111,6 +1114,7 @@ def test_a_read_only_stamped_mapping_skips_unstamped_files(tmp_path):
     assert out["rels"] == ["stamped.md"]
     assert out["synced"]["routine"]["unstamped"] == ["fresh.md"]
     assert "id:" not in (repo / "workflows" / "fresh.md").read_text()  # never stamped
+    assert out["doctor"] == [["not yet stamped", "fresh.md"]]
 
 
 def test_a_mapped_dir_is_crib_owned_and_watched(tmp_path):

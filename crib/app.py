@@ -2808,6 +2808,7 @@ class Crib:
         pcfg.store_root = portable_path(store, self.config.locations)
         pcfg.save(pp.config_file)
         self.project_paths.invalidate(proj)
+        await self._sync_mappings(proj, link)  # the repo's facet mappings too
         rec = await self.reindex(project=proj)
         return {
             "project": proj,
