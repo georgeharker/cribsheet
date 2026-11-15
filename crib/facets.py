@@ -33,7 +33,9 @@ ASPECTS: Mapping[str, frozenset[str]] = MappingProxyType(
         "ordered": frozenset(),  # a rank; move
         "supersede": frozenset({"status", "links"}),
         "sources": frozenset(),  # doc-section citations; import, export
-        "generated": frozenset(),  # summaries and keywords; summarize, elaborate
+        # LLM-made summaries and keywords (derived indexes); summarize,
+        # elaborate, and distill (which rewrites the item: a write verb)
+        "enriched": frozenset(),
         "anchored": frozenset(),  # the code symbol an item is about
     }
 )

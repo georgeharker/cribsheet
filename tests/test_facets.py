@@ -23,7 +23,7 @@ def test_builtins_are_the_four_pillars_in_order():
 
 def test_builtin_aspects():
     a = {s.noun: s.aspects for s in facets.FACETS}
-    assert a["note"] == {"core", "generated"}
+    assert a["note"] == {"core", "enriched"}
     assert a["design"] == {"core", "links", "status", "supersede", "sources"}
     assert a["plan"] == {"core", "links", "status", "progress", "ordered", "sources"}
     assert a["learning"] == {"core", "anchored"}
@@ -97,12 +97,12 @@ def test_parse_defaults_store_to_plural_and_always_has_core():
         "routine",
         {
             "plural": "routines",
-            "aspects": ["generated"],
+            "aspects": ["enriched"],
             "fields": {"schedule": "VARCHAR", "timeout": "BIGINT"},
         },
     )
     assert s.store == "routines"
-    assert s.aspects == {"core", "generated"}
+    assert s.aspects == {"core", "enriched"}
     assert list(s.fields) == ["schedule", "timeout"]
     assert not s.builtin
 

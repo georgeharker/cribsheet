@@ -15,7 +15,7 @@
 [note]
 plural = "notes"
 store = "notes"
-aspects = ["core", "generated"]
+aspects = ["core", "enriched"]
 
 [note.fields]
 source = "VARCHAR"
