@@ -191,7 +191,7 @@ facets:
 
 | key | meaning |
 |---|---|
-| `dir` | repo-relative; confined to the repo. |
+| `dir` | repo-relative; confined to the repo. A directory of the facet's own: not the repo root, not inside `.git`, not overlapping another mapping or the `store:` dir (such an entry is warned about and ignored). |
 | `glob` | which files under `dir` are the facet's (default `**/*.md`). |
 | `read_only` | indexed and searched, never written: write verbs refuse with the reason (edit the files in the repo; the watcher picks it up). |
 | `ids` | `stamp` (default): crib writes an `id:` into each file's frontmatter on first index, so history and links survive renames. `derived`: the id comes from the file's path and crib writes nothing; a rename is a new item. |

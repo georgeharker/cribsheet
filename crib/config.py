@@ -657,6 +657,7 @@ class CribLink:
             # then refuses with the reason rather than adopting a bogus path.
             _warn(f"{f}: ignoring `store:` — {e}")
             link.store = None
+        _check_exclusive(f, link)
         return link
 
 
@@ -718,6 +719,51 @@ def _facet_mappings(f: Path, root: Path, raw: Any) -> dict[str, FacetMapping]:
             continue
         out[m.noun] = m
     return out
+
+
+def _check_exclusive(f: Path, link: CribLink) -> None:
+    """Drop (with a warning) each exclusive mapping whose dir can't be the
+    facet's own (see `_mapping_conflict`); the earlier one in `.crib` wins. A
+    prefixed mapping (docs) owns nothing, so it is never in conflict."""
+    if link.root is None:
+        return
+    root = _resolved(link.root)
+    try:
+        store = _resolved(link.store_dir) if link.store_dir is not None else None
+    except ValueError:
+        store = None
+    taken: list[tuple[str, Path]] = []
+    for noun, m in list(link.facets.items()):
+        if m.prefix is not None:
+            continue
+        d = link.facet_dir(noun)
+        d = _resolved(d) if d is not None else root
+        if why := _mapping_conflict(m, d, root, store, link.store, taken):
+            _warn(f"{f}: ignoring `facets.{noun}` — {why}")
+            del link.facets[noun]
+        else:
+            taken.append((noun, d))
+
+
+def _mapping_conflict(m: FacetMapping, d: Path, root: Path, store: Path | None,
+                      store_name: str | None, taken: list[tuple[str, Path]]) -> str | None:
+    """Why `m` (resolved to `d`) can't be its facet's own dir, or None: the repo
+    root itself (every markdown file in the repo would become the facet's,
+    stamped, and moved by `release`), anything under `.git`, overlapping the
+    `store:` dir, or nested in / containing / equal to another mapping's."""
+    rel = d.relative_to(root) if d.is_relative_to(root) else None
+    if rel is None or rel == Path("."):
+        return (f"dir {m.dir!r} is the whole repo; map the facet to a directory "
+                "of its own (e.g. `dir: workflows`)")
+    if rel.parts[0] == ".git":
+        return f"dir {m.dir!r} is inside .git"
+    if store is not None and (d.is_relative_to(store) or store.is_relative_to(d)):
+        return (f"dir {m.dir!r} overlaps `store: {store_name}` (the store holds the "
+                "pillars it doesn't map; a mapped facet needs a dir outside it)")
+    for other, o in taken:
+        if d.is_relative_to(o) or o.is_relative_to(d):
+            return f"dir {m.dir!r} overlaps facets.{other}'s; each facet needs its own dir"
+    return None
 
 
 def _docs_mapping(root: Path, globs: tuple[str, ...], dir: str = ".") -> FacetMapping:

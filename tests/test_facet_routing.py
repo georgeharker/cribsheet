@@ -137,3 +137,53 @@ def test_docs_and_an_explicit_note_mapping_together_warn(tmp_path, capsys):
     )
     assert link.doc_patterns == ["docs/**/*.md"]  # the explicit one wins
     assert "`docs:` ignored" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("d", [".", "./", "''"])
+def test_a_mapping_cannot_claim_the_whole_repo(tmp_path, d, capsys):
+    """`dir: .` would make every markdown file in the repo the facet's (stamped,
+    and moved by release) and hide all code from the sweeps (review fix 5)."""
+    link = _crib_file(tmp_path, f"project: p\nfacets:\n  design: {{dir: {d}}}\n")
+    assert "design" not in link.facets
+    err = capsys.readouterr().err
+    assert "whole repo" in err or "empty path" in err
+    assert not link.in_store(tmp_path / "src" / "main.py")
+
+
+@pytest.mark.parametrize(
+    "facets_yaml, dropped, why",
+    [
+        ("  design: {dir: d}\n  plan: {dir: d}\n", "plan", "overlaps facets.design"),
+        ("  design: {dir: d}\n  plan: {dir: d/sub}\n", "plan", "overlaps facets.design"),
+        ("  design: {dir: d/sub}\n  plan: {dir: d}\n", "plan", "overlaps facets.design"),
+        ("  design: {dir: .git/x}\n", "design", "inside .git"),
+    ],
+)
+def test_mappings_cannot_overlap(tmp_path, facets_yaml, dropped, why, capsys):
+    link = _crib_file(tmp_path, "project: p\nfacets:\n" + facets_yaml)
+    assert dropped not in link.facets
+    assert why in capsys.readouterr().err
+    kept = {"design", "plan"} - {dropped}
+    if ".git" not in facets_yaml:
+        assert kept <= set(link.facets)  # the earlier one stands
+
+
+@pytest.mark.parametrize("d", ["crib-store", "crib-store/design", "."])
+def test_a_mapping_cannot_overlap_the_store(tmp_path, d, capsys):
+    link = _crib_file(
+        tmp_path, f"project: p\nstore: crib-store\nfacets:\n  design: {{dir: '{d}'}}\n"
+    )
+    assert "design" not in link.facets
+    assert link.store == "crib-store"  # the store stands
+    err = capsys.readouterr().err
+    assert "overlaps `store: crib-store`" in err or "whole repo" in err
+
+
+def test_sibling_mappings_and_a_store_coexist(tmp_path, capsys):
+    link = _crib_file(
+        tmp_path,
+        "project: p\nstore: crib-store\nfacets:\n  design: {dir: decisions}\n"
+        "  plan: {dir: plans}\n",
+    )
+    assert set(link.facets) == {"design", "plan"}
+    assert "ignoring" not in capsys.readouterr().err
