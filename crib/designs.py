@@ -68,6 +68,7 @@ import datetime
 import sys
 from dataclasses import dataclass, field, replace
 from pathlib import Path
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any, Callable
 
 from . import facets as _facets
@@ -534,22 +535,22 @@ class Designs:
     def __init__(
         self,
         paths: Paths,
-        design_store: NoteStore,
-        plan_store: NoteStore,
+        stores: Mapping[str, NoteStore],
         notestore: NoteStore,
     ) -> None:
         self.paths = paths
-        # The two pillar stores this facet OWNS, by kind — plus the notes store,
+        # Every graph facet's pillar store this engine OWNS, by kind (crib.facets:
+        # decisions, plans, and any declared graph facet) — plus the notes store,
         # read-only here, for citation resolution (a decision cites plain notes
         # and in-situ docs far more often than other decisions).
-        self._stores = {"design": design_store, "plan": plan_store}
+        self._stores = dict(stores)
         self.notestore = notestore
-        # docref store name → NoteStore (note the kind/store spelling difference:
-        # kind "plan" lives in the store named "plans")
+        # docref store name → NoteStore: the stores a source may be cited from
+        # (note the kind/store spelling difference: kind "plan" lives in "plans")
         self._doc_stores = {
             "notes": notestore,
-            "design": design_store,
-            "plans": plan_store,
+            **{self._stores[k].spec.name: self._stores[k]
+               for k in ("design", "plan") if k in self._stores},
         }
 
     def _store(self, kind: str) -> NoteStore:

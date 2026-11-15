@@ -37,13 +37,6 @@ requires_body = true
 extract = "design"
 report_taint = true
 
-[design.fields]
-status = "VARCHAR"
-rank = "VARCHAR"
-created = "VARCHAR"
-updated = "VARCHAR"
-body_hash = "VARCHAR"
-
 [plan]
 plural = "plans"
 store = "plans"
@@ -51,15 +44,6 @@ aspects = ["core", "links", "status", "progress", "ordered", "sources"]
 label = "Plan items"
 extract = "plan"
 export_with_deps = true
-
-[plan.fields]
-status = "VARCHAR"
-rank = "VARCHAR"
-trigger = "JSON"
-reviewed = "VARCHAR"
-created = "VARCHAR"
-updated = "VARCHAR"
-body_hash = "VARCHAR"
 
 # A graph facet's statuses each play an engine ROLE (crib/facets.py ROLES);
 # `transitions` are verbs that move an item to a status; `edges` are the
@@ -96,4 +80,5 @@ store = "learnings"
 aspects = ["core", "anchored"]
 legacy_stores = ["code-learnings"]
 # Its fields (symbol_ref, lang, file, signature, symbol_was) come with the
-# anchored aspect.
+# anchored aspect; decisions' and plans' (status, rank, dates, body_hash, a
+# plan's trigger and review stamp) with links + status (facets.graph_fields).

@@ -133,6 +133,18 @@ def graph_verbs(spec: "FacetSpec") -> tuple[str, ...]:
     return (*out, *spec.transitions)
 
 
+def graph_fields(aspects: Iterable[str]) -> dict[str, str]:
+    """The fields a graph facet (links + status) brings, in the store column
+    order the built-ins have always had: its status and rank, a deferral's
+    trigger records and the review stamp (progress), its dates, and the body
+    hash its dependents' `checked` records compare against."""
+    have = set(aspects)
+    out = {"status": "VARCHAR", "rank": "VARCHAR"}
+    if "progress" in have:
+        out |= {"trigger": "JSON", "reviewed": "VARCHAR"}
+    return out | {"created": "VARCHAR", "updated": "VARCHAR", "body_hash": "VARCHAR"}
+
+
 ASPECT_FIELDS: Mapping[str, Mapping[str, str]] = MappingProxyType(
     {
         "anchored": MappingProxyType(
@@ -292,6 +304,8 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
     brought: dict[str, str] = {}
     for a in sorted(have):
         brought.update(ASPECT_FIELDS.get(a, {}))
+    if {"links", "status"} <= have:
+        brought.update(graph_fields(have))
     if clash := set(fields) & set(brought):
         raise FacetSpecError(
             f"facet {noun!r}: fields {sorted(clash)} come with its aspects; "
@@ -522,6 +536,8 @@ def to_toml(specs: Iterable[FacetSpec]) -> str:
     out: list[str] = []
     for s in specs:
         brought = {n for a in s.aspects for n in ASPECT_FIELDS.get(a, {})}
+        if {"links", "status"} <= s.aspects:
+            brought |= set(graph_fields(s.aspects))
         out.append(f"[{s.noun}]")
         out.append(f"plural = {q(s.plural)}")
         if s.store != s.plural:

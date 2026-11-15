@@ -318,7 +318,12 @@ class Crib:
         self.learnings = self.anchored["learning"]
         # Design decisions + plan items (notes under design/ and plans/) and the
         # dependency graph over them. Same shape: Crib resolves, Designs executes.
-        self.designs = Designs(paths, self.designstore, self.planstore, self.notestore)
+        # Every graph facet's store (links + status), pending ones aside.
+        self.designs = Designs(paths, {
+            spec.noun: self.pillars[spec.store]
+            for spec in facets.FACETS
+            if spec.has("links") and spec.has("status") and spec.store in self.pillars
+        }, self.notestore)
         # Code-index queries (lookup/xref/dossier/graph) over refs + learnings + the
         # resident cache. Crib keeps resolve_project + delegate public wrappers.
         self.query = CodeQuery(
