@@ -347,7 +347,8 @@ def _stable_ids(value: Any, seen: dict[str, str]) -> Any:
     if _ULID is None:
         _ULID = re.compile(r"\b[0-9A-HJKMNP-TV-Z]{26}\b")
     if isinstance(value, dict):
-        return {k: _stable_ids(v, seen) for k, v in value.items()}
+        # keys too: dep_kinds is keyed by the ids of the items it names
+        return {_stable_ids(k, seen): _stable_ids(v, seen) for k, v in value.items()}
     if isinstance(value, list):
         return [_stable_ids(v, seen) for v in value]
     if isinstance(value, str):
