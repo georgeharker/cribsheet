@@ -1389,6 +1389,44 @@ def test_a_facet_whose_commands_cannot_be_built_is_skipped_not_fatal(tmp_path):
     assert "facet 'widget' has no CLI commands" in out["err"]
 
 
+TASK = """
+[task]
+plural = "tasks"
+aspects = ["links", "status", "progress"]
+
+[task.status]
+values = { todo = "open", doing = "claimed", done = "done" }
+"""
+
+
+def test_links_between_a_facets_own_items_block_without_an_edges_table(tmp_path):
+    """No [edges] table: a progress facet's own links are `follows` (B waits
+    for A), not `informed_by` (never blocks) (review fix 7)."""
+    out = _run(
+        tmp_path,
+        TASK,
+        """
+        import asyncio
+        from crib import facets
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.store import InMemoryStore
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        out["edges"] = dict(facets.by_noun("task").edges)
+        a = asyncio.run(crib.plan_add("Migrate", "move the data", project="p", facet="task"))
+        b = asyncio.run(crib.plan_add("Switch over", "point clients at it",
+                                      deps=[a["relpath"]], project="p", facet="task"))
+        out["kind"] = list(b["dep_kinds"].values())
+        nxt = crib.plan_next(project="p", facet="task")
+        out["next"] = [i["title"] for i in nxt["items"]]
+    """,
+    )
+    assert out["edges"]["task"] == "follows"
+    assert out["kind"] == ["follows"]
+    assert out["next"] == ["Migrate"]  # Switch over waits
+
+
 def test_transitions_into_every_role_work(tmp_path):
     """A transition moves an item from wherever it is, by role: ungating a
     draft, into claimed and done (answering with what that unblocked), back

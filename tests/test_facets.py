@@ -452,3 +452,18 @@ def test_half_a_graph_facet_is_refused(aspects, match):
         raw["status"] = {"values": {"open": "open"}}
     with pytest.raises(FacetSpecError, match=match):
         parse("t", raw)
+
+
+
+def test_a_graph_facet_without_edges_gets_defaults_for_its_own_links():
+    """Without an [edges] table a progress facet's own links are follows and a
+    decision-like one's rests_on; other targets as crib's own (review fix 7)."""
+    st = {"values": {"todo": "open", "done": "done"}}
+    task = parse("task", {"plural": "tasks", "aspects": ["links", "status", "progress"],
+                          "status": st})
+    assert task.edges["task"] == "follows" and task.edges["*"] == "informed_by"
+    rfc = parse("rfc", {"plural": "rfcs", "aspects": ["links", "status"], "status": st})
+    assert rfc.edges["rfc"] == "rests_on" and rfc.edges["design"] == "rests_on"
+    told = parse("rfc", {"plural": "rfcs", "aspects": ["links", "status"], "status": st,
+                         "edges": {"*": "informed_by"}})
+    assert dict(told.edges) == {"*": "informed_by"}  # a written table is as written

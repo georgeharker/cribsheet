@@ -179,7 +179,10 @@ incident = "follows"
 - **Links** have three kinds: `follows` (ordering: waits until the target is
   done), `rests_on` (grounding: blocked while the target is gated or stale),
   `informed_by` (context: never blocks). `edges` sets the default per target
-  facet; `dep_add --kind` overrides it.
+  facet; `dep_add --kind` overrides it. Without an `edges` table, links
+  between the facet's own items are `follows` if it has `progress` (and
+  `rests_on` if not); toward plans `follows`, decisions `rests_on`, anything
+  else `informed_by`.
 - **Staleness** is the engine's, for every graph facet: an item records each
   dependency's hash as it read it; a dependency's body changing, being
   retired, or a cited section moving makes it stale; `reaffirm` says you

@@ -48,6 +48,11 @@ ASPECTS: Mapping[str, frozenset[str]] = MappingProxyType(
 # its target is gated or stale), informed_by (context: never blocks).
 LINK_KINDS = ("follows", "rests_on", "informed_by")
 
+# The built-in graph facets' shared default link kinds: what a link means
+# when its SOURCE isn't known (and the rule every built-in source follows).
+_DEFAULT_EDGES = MappingProxyType(
+    {"plan": "follows", "design": "rests_on", "*": "informed_by"})
+
 # The roles a graph facet's statuses play (the engine implements each):
 #   open     live; may be the initial status
 #   claimed  someone is on it: listed first in next
@@ -359,7 +364,7 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         raise FacetSpecError(f"facet {noun!r}: a built-in facet's verbs can't be disabled")
     if not isinstance(disable, list) or not all(isinstance(v, str) for v in disable):
         raise FacetSpecError(f"facet {noun!r}: disable must be a list of verb names")
-    graph = _graph_keys(noun, raw, have)
+    graph = _graph_keys(noun, raw, have, builtin)
     available = (_graph_verb_list(have, bool(graph.get("report_taint")),
                                   graph.get("transitions", {}))
                  if {"links", "status"} <= have else verbs_for(have, bool(params)))
@@ -407,7 +412,8 @@ def _check_shape(noun: str, have: set[str], raw: Mapping[str, Any]) -> None:
             "and anchored facets")
 
 
-def _graph_keys(noun: str, raw: Mapping[str, Any], have: set[str]) -> dict[str, Any]:
+def _graph_keys(noun: str, raw: Mapping[str, Any], have: set[str],
+                builtin: bool = False) -> dict[str, Any]:
     """A spec's status / edges / label keys, checked against its aspects."""
     out: dict[str, Any] = {}
     st = raw.get("status")
@@ -470,7 +476,14 @@ def _graph_keys(noun: str, raw: Mapping[str, Any], have: set[str]) -> dict[str, 
         if ex not in ("design", "plan"):
             raise FacetSpecError(f"facet {noun!r}: extract is design or plan, not {ex!r}")
         out["extract"] = ex
+    if "links" in have and "edges" not in out and not builtin:
+        # No edges table: links toward its OWN items mean what the facet is
+        # for: ordering when it tracks progress (wait until done), grounding
+        # otherwise (blocked while gated or stale). The rest as crib's own.
+        own = "follows" if "progress" in have else "rests_on"
+        out["edges"] = MappingProxyType({**_DEFAULT_EDGES, noun: own})
     return out
+
 
 
 def check(specs: Iterable[FacetSpec]) -> tuple[FacetSpec, ...]:
@@ -700,12 +713,6 @@ def starter() -> str:
     nothing until an example is uncommented."""
     ref = "\n".join(f"# {line}" if line else "#" for line in to_toml(BUILTINS).splitlines())
     return STARTER + ref + "\n"
-
-
-# The built-in graph facets' shared default link kinds: what a link means
-# when its SOURCE isn't known (and the rule every built-in source follows).
-_DEFAULT_EDGES = MappingProxyType(
-    {"plan": "follows", "design": "rests_on", "*": "informed_by"})
 
 
 def link_default(source: str | None, target: str | None) -> str:
