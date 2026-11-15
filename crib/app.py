@@ -576,6 +576,8 @@ class Crib:
         if (spec := facets.by_store(store)) is not None and spec.noun in self.pending_facets:
             return  # not conformed yet (`crib facets sync`): nothing to index into
         pillar = self.pillars.get(store, self.notestore)
+        if pillar.pending_move(project) is not None:
+            return  # its items wait for `crib project adopt`: not served yet
         loc = pillar.location(project)
         if loc is not None and not loc.owns(relpath):
             return  # under the mapped dir, but not one of the facet's files

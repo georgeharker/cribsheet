@@ -115,9 +115,11 @@ class NoteStore:
         if loc is None or loc.prefix is not None:
             return None
         home = self.project_paths(project).home_dir(self.spec.segment)
-        n = sum(1 for _ in home.rglob("*.md")) if home.is_dir() else 0
-        if not n:
+        # asked on every read of the facet: the usual answer (nothing waiting:
+        # no home dir, or an empty one) must stay cheap, so stop at the first
+        if not home.is_dir() or next(home.rglob("*.md"), None) is None:
             return None
+        n = sum(1 for _ in home.rglob("*.md"))
         noun = self.spec.facet or "note"
         return (
             f"project {project!r} maps its {noun} items to {loc.token}, but {n} are "
@@ -145,6 +147,18 @@ class NoteStore:
                 f"a read-only location ({loc.token}); change them in that repo "
                 "(a writable checkout), and crib picks the edit up"
             )
+
+    def _refuse_unowned(self, project: str, relpath: str, verb: str) -> None:
+        """A mapped location's items are the files its glob picks: a write to
+        any other relpath there would make a file the facet never indexes or
+        watches (and every reconcile re-reads)."""
+        loc = self.location(project)
+        if loc is not None and loc.prefix is None and not loc.owns(relpath):
+            noun = self.spec.facet or "note"
+            raise CribUserError(
+                f"{verb} refused: {relpath!r} isn't one of the {noun} files of "
+                f"project {project!r} (its mapping {loc.token} takes `{loc.glob}`); "
+                "pick a relpath that glob matches")
 
     def resolved(self, project: str) -> ProjectPaths:
         """This project's storage locations, REQUIRING them to be reachable — an
@@ -290,6 +304,7 @@ class NoteStore:
         """Stash prior content (ring), write atomically, then index."""
         self._refuse_source(relpath, "write")
         self._refuse_read_only(project, "write")
+        self._refuse_unowned(project, relpath, "write")
         path = self.abspath(project, relpath)
         policy = self._policy(project)
         # id FIRST, then stash: the incoming note's id is what the prior bytes should
@@ -339,6 +354,7 @@ class NoteStore:
         self._refuse_source(dst_relpath, "move into")   # would write into the repo
         self._refuse_read_only(project, "move")
         self._refuse_read_only(dst_proj, "move into")
+        self._refuse_unowned(dst_proj, dst_relpath, "move into")
         src = self.abspath(project, relpath)
         if not src.exists():
             raise CribUserError(f"no such note: {relpath} in project {project!r}")

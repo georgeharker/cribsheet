@@ -84,11 +84,24 @@ RESERVED_FIELDS = frozenset(
         "path", "scope", "lang", "apply", "orphans_only", "old_fqn", "new_fqn",
         "where", "ctx", "id", "type", "kind", "source", "source_path", "imported",
         "created", "updated", "status", "deps", "content_hash", "body_hash",
+        # the graph verbs' parameters
+        "after", "all", "batch", "before", "by_ref", "dep_ref", "depth", "direction",
+        "follows", "force", "informed_by", "items", "proposed", "ref", "rests_on",
+        "sources", "tainted", "triggers", "why",
+        # frontmatter crib reads or writes beyond those (graph state, anchoring)
+        "checked", "dep_kinds", "superseded_by", "trigger", "reviewed", "rank",
+        "reaffirmed", "symbol_ref", "symbol_was", "file", "signature",
     }
 )
 
-# The fields an aspect brings: every facet with the aspect has them, first and
-# in this order, before its own. Anchoring writes the symbol an item is about.
+# Directory (and file) names crib keeps inside a project besides its facets'
+# stores: no facet's `store` may take one (tests/test_facets.py holds this
+# against crib.watch.RECORD_TIERS).
+RESERVED_STORES = frozenset({
+    "symbol_index", "keyword_index", "summary_index", "migrations", "sources",
+    "doc-sources.json",
+})
+
 # THE verb catalogue: which verbs each family of facet has, the aspect that
 # brings each, and any condition beyond that aspect ("fields": the facet
 # declares fields; "taint": it reports taint), in tool-registration order. A
@@ -183,6 +196,8 @@ def graph_fields(aspects: Iterable[str]) -> dict[str, str]:
     return out | {"created": "VARCHAR", "updated": "VARCHAR", "body_hash": "VARCHAR"}
 
 
+# The fields an aspect brings: every facet with the aspect has them, first and
+# in this order, before its own. Anchoring writes the symbol an item is about.
 ASPECT_FIELDS: Mapping[str, Mapping[str, str]] = MappingProxyType(
     {
         "anchored": MappingProxyType(
@@ -318,6 +333,10 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         raise FacetSpecError(
             f"facet {noun!r}: store must be a directory name, got {store!r}"
         )
+    if store in RESERVED_STORES:
+        raise FacetSpecError(
+            f"facet {noun!r}: store {store!r} is a directory crib keeps for itself "
+            "in every project; name the store something else")
     aspects = raw.get("aspects", ["core"])
     if not isinstance(aspects, list) or not all(isinstance(a, str) for a in aspects):
         raise FacetSpecError(f"facet {noun!r}: aspects must be a list of names")

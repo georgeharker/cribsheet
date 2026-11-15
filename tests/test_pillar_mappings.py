@@ -272,3 +272,38 @@ def test_a_builtin_pillar_maps_writable_with_stamped_ids(tmp_path, spec, capsys)
     link = CribLink.find(repo)
     assert link is not None and "design" not in link.facets
     assert "writable, with stamped ids" in capsys.readouterr().err
+
+
+
+def test_the_watcher_skips_a_pillar_waiting_to_be_moved(crib, tmp_path):
+    """An edit under a pending pillar's old home isn't indexed (its items wait
+    for adopt), and the watcher's handler doesn't raise PendingMove."""
+    from crib.config import CribLink
+
+    a = _decision(crib)
+    repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions}\n")
+    link = CribLink.find(repo)
+    assert link is not None
+    run(crib._sync_mappings("p", link))
+    run(crib._on_fs_change("p", "design", a["relpath"]))  # no PendingMove
+
+
+def test_the_cli_names_the_fix_when_the_daemon_lacks_a_tool(monkeypatch):
+    """A facet this process knows but the running daemon doesn't serve (it
+    started before the facet was declared/synced): say so, not a bare
+    "Unknown tool"."""
+    from crib import cli, client
+    from crib.config import Config
+    from crib.errors import CribUserError
+
+    class Fake:
+        def __init__(self, _cfg): ...
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+        def call(self, tool, args, progress_handler=None):
+            raise RuntimeError(f"Unknown tool: {tool!r}")
+
+    monkeypatch.setattr(client, "DaemonClient", Fake)
+    args = cli.build_parser().parse_args(["note", "lookup", "q", "-p", "p"])
+    with pytest.raises(CribUserError, match="running crib daemon has no `note_lookup`"):
+        cli._run_daemon(args, Config())

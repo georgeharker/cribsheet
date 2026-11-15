@@ -132,6 +132,15 @@ PROMOTED = (
 _SELECT_COLUMNS = MappingProxyType({"meta": "id, meta", "docs": "id, document, meta"})
 
 
+def _fingerprint_store(fp: str) -> str | None:
+    """The store a recorded facet fingerprint was built for (None: unreadable)."""
+    try:
+        v = json.loads(fp)
+    except ValueError:
+        return None
+    return v.get("store") if isinstance(v, dict) else None
+
+
 def _facet_change(had: str, want: str) -> str:
     """What differs between two facet fingerprints, in words."""
     try:
@@ -808,7 +817,8 @@ class DuckDBStore:
             elif had != want or facet_table(noun) not in tables:
                 out.append({"facet": noun, "status": "changed",
                             "detail": _facet_change(had, want)
-                            + "; its table is rebuilt and its files re-read"})
+                            + "; its table is rebuilt and its files re-read",
+                            "was_store": _fingerprint_store(had)})
             else:
                 out.append({"facet": noun, "status": "current", "detail": ""})
         for key in sorted(meta):
@@ -854,9 +864,14 @@ class DuckDBStore:
                     # pi-lens-ignore: python-sql-injection
                     ex.run(f"CREATE TABLE {table} ({_facet_columns(spec.fields)})")
                     # its items are re-derived from the files: forget what was
-                    # mapped, so the next refresh re-reads every one
-                    _drop_kind(ex, noun, keep_chunks=True)
-                    ex.run(f"DELETE FROM {FILES} WHERE facet = ?", [f"index:{spec.store}"])
+                    # mapped, so the next refresh re-reads every one. A MOVED
+                    # store's chunks go too: they name the old dir's files and
+                    # would answer searches of the new one (vectors are cached
+                    # by text, so the re-read re-embeds nothing unchanged)
+                    old = p.get("was_store")
+                    _drop_kind(ex, noun, keep_chunks=old in (None, spec.store))
+                    for st in {spec.store, old or spec.store}:
+                        ex.run(f"DELETE FROM {FILES} WHERE facet = ?", [f"index:{st}"])
                     _put_meta(ex, _FACET_KEY + noun, _facets.fingerprint(spec))
 
             self._converting(step)

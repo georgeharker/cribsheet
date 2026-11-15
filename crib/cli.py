@@ -3661,6 +3661,7 @@ def _run_daemon(args: Any, cfg: Any) -> None:
     """Run a verb via the warm daemon: build the call, ship the caller's cwd as
     `project_path`, call the MCP tool, and emit — all off one registry row."""
     from .client import DaemonClient
+    from .errors import CribUserError
 
     entry, call = _dispatch(args)
     if entry.wants_cwd:
@@ -3669,7 +3670,20 @@ def _run_daemon(args: Any, cfg: Any) -> None:
     ticker = _SweepTicker()
     handler = _daemon_sweep_progress(ticker) if entry.tool in _SWEEP_TOOLS else None
     with DaemonClient(cfg.daemon) as client:
-        data = client.call(entry.tool, call, progress_handler=handler)
+        try:
+            data = client.call(entry.tool, call, progress_handler=handler)
+        except Exception as e:  # noqa: BLE001 — only the unknown-tool case is ours
+            if "Unknown tool" not in str(e):
+                raise
+            # This process and the daemon resolve the facet registry each for
+            # themselves: a facet declared (or synced) after the daemon started,
+            # or a different $CRIB_FACETS_FILE here, has commands the daemon
+            # doesn't serve.
+            raise CribUserError(
+                f"the running crib daemon has no `{entry.tool}` tool: it read its "
+                "facets file before this facet was declared or synced (or a "
+                "different one), or its `--tools` don't expose it. Restart the "
+                "daemon, or run this command with `crib --no-daemon ...`") from e
     ticker.done()
     entry.emit(_apply_unlinked_advisory(args, msg, data), args)
 

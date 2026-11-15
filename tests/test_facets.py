@@ -567,3 +567,46 @@ def test_the_facets_file_sits_beside_config_toml(tmp_path, monkeypatch):
     assert facets.system_file().parent == Paths.resolve().config_dir
     monkeypatch.setenv("CRIB_CONFIG_DIR", str(tmp_path / "own"))
     assert facets.system_file() == tmp_path / "own" / "facets.toml"
+
+
+
+def test_a_store_cannot_take_a_directory_crib_keeps_in_every_project():
+    from crib.watch import RECORD_TIERS
+
+    assert set(RECORD_TIERS) <= facets.RESERVED_STORES
+    for name in ("symbol_index", "sources", "migrations"):
+        with pytest.raises(FacetSpecError, match="crib keeps for itself"):
+            parse("routine", {"plural": "routines", "store": name})
+
+
+def test_every_generated_verb_parameter_is_a_reserved_field():
+    """A declared field becomes a parameter on its facet's verbs and a
+    frontmatter key: it can't be one a verb already takes. Recomputed from the
+    templates, so a new verb parameter can't slip past RESERVED_FIELDS."""
+    import inspect
+
+    from crib import verbs
+
+    st = {"values": {"d": "gated", "o": "open", "c": "claimed", "x": "done",
+                     "p": "paused", "n": "dropped", "r": "retired"},
+          "initial": "o", "transitions": {"shelve": "p", "reject": "n", "accept": "o"}}
+    samples = [
+        parse("n", {"plural": "ns", "aspects": ["enriched"], "fields": {"f": "int"}}),
+        parse("a", {"plural": "as", "aspects": ["anchored"], "fields": {"f": "int"}}),
+        parse("g", {"plural": "gs", "aspects": ["links", "status", "progress", "ordered",
+                                                "supersede", "sources"],
+                    "report_taint": True, "status": st}),
+        *facets.BUILTINS,
+    ]
+    names: set[str] = set()
+    for s in samples:
+        for t in verbs.view(s).verbs:
+            sig = inspect.signature(t.make(None, s))
+            names |= {p.name for p in sig.parameters.values() if p.kind is not p.VAR_KEYWORD}
+    assert sorted(names - {"f"} - facets.RESERVED_FIELDS) == []
+
+
+@pytest.mark.parametrize("name", ["superseded_by", "checked", "trigger", "proposed", "why"])
+def test_a_field_cannot_take_a_frontmatter_key_or_parameter_crib_uses(name):
+    with pytest.raises(FacetSpecError, match="reserved"):
+        parse("routine", {"plural": "routines", "fields": {name: "str"}})

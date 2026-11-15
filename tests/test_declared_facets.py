@@ -1523,6 +1523,50 @@ def test_a_declared_facets_hints_name_its_own_tools_and_statuses(tmp_path):
         assert built_in not in joined, [t for t in out["texts"] if built_in in t][:2]
 
 
+def test_a_write_the_mappings_glob_does_not_match_is_refused(tmp_path):
+    """A mapped location's items are the files its glob picks: writing any
+    other relpath there would make a file nothing indexes or watches."""
+    repo = _repo(tmp_path, "{dir: workflows, glob: '*.md'}", {"workflows/a.md": "a\n"})
+    out = _run(
+        tmp_path,
+        ROUTINE,
+        _MAPPED.replace("REPO", repr(str(repo)))
+        + """
+        from crib.notes import Note
+        store = crib._facet_store("routine")
+        out["nested"] = refused(lambda: asyncio.run(
+            store.write("p", "sub/b.md", Note(Path("b.md"), {"title": "B"}, "b\\n"))))
+        out["top"] = refused(lambda: asyncio.run(
+            store.write("p", "c.md", Note(Path("c.md"), {"title": "C"}, "c\\n"))))
+    """,
+    )
+    assert "isn't one of the routine files of project 'p'" in out["nested"]
+    assert out["top"] is None
+    assert not (repo / "workflows" / "sub").exists()
+
+
+def test_changing_a_facets_store_leaves_no_ghost_hits(tmp_path):
+    """A store moved by `crib facets sync`: the old dir's chunks go with it,
+    so a search of the new (empty) store finds nothing."""
+    pytest.importorskip("duckdb")
+    first = WIDGET.replace('plural = "widgets"', 'plural = "widgets"\nstore = "wa"')
+    _run(tmp_path, first, _CONFORM_PRELUDE + """
+        cli("facets", "sync", "--apply")
+        crib = Crib.open()
+        asyncio.run(crib.store_note("the gasket leaks under pressure", "Gasket", "p",
+                                    facet="widget"))
+    """)
+    out = _run(tmp_path, first.replace('store = "wa"', 'store = "wb"'),
+               _CONFORM_PRELUDE + """
+        cli("facets", "sync", "--apply")
+        crib = Crib.open()
+        out["hits"] = [h.relpath for h in crib.lookup("gasket leaks", "p", store="wb")]
+        ex = crib.store._conn.execute
+        out["chunks"] = ex("SELECT count(*) FROM crib_chunks WHERE kind='widget'").fetchone()[0]
+    """)
+    assert out["hits"] == [] and out["chunks"] == 0
+
+
 def test_transitions_into_every_role_work(tmp_path):
     """A transition moves an item from wherever it is, by role: ungating a
     draft, into claimed and done (answering with what that unblocked), back
