@@ -192,10 +192,15 @@ class FacetLocation:
         return self.root.is_dir()
 
     def owns(self, relpath: str) -> bool:
-        """Is `relpath` (relative to the root) one of this facet's files?"""
+        """Is `relpath` (relative to the root) one of this facet's files? Never
+        anything under a hidden dir: the facet's own version ring lives inside
+        its mapping (`.versions/`), and `.git` is the repo's."""
         from pathlib import PurePosixPath
 
-        return PurePosixPath(relpath).full_match(self.glob)
+        rp = PurePosixPath(relpath)
+        if any(part.startswith(".") for part in rp.parts[:-1]):
+            return False
+        return rp.full_match(self.glob)
 
     @property
     def versions_dir(self) -> Path:
@@ -224,6 +229,12 @@ class ProjectPaths:
     @property
     def in_repo(self) -> bool:
         return self.store_root is not None
+
+    def home_dir(self, segment: str) -> Path:
+        """A pillar's directory under the data root, mapped or not: where its
+        items live unless a mapping moves them (`crib project adopt` moves them
+        there, `release` back)."""
+        return self.data_root / segment
 
     def pillar_dir(self, segment: str) -> Path:
         """A pillar store's directory: `data_root/<segment>`. Every pillar —

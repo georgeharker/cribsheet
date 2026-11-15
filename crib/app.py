@@ -2682,6 +2682,88 @@ class Crib:
                 s.rmdir()
         return moved
 
+    async def _adopt_mapped(self, proj: str, repo: Path | None = None) -> dict[str, Any]:
+        """Move each mapped facet's items still waiting under the data root into
+        its mapping (the explicit move a pending facet asks for), with their
+        version-ring entries. Refuses to merge into a mapping that already
+        holds that facet's items."""
+        import shutil
+
+        pp = self.project_paths(proj)
+        moved: dict[str, Any] = {}
+        for seg, loc in pp.mappings.items():
+            store = self.pillars.get(seg)
+            if loc.prefix is not None or store is None or store.pending_move(proj) is None:
+                continue
+            noun = store.spec.facet or "note"
+            if not loc.available and repo is not None and repo.is_dir() \
+                    and loc.root.resolve().is_relative_to(repo.resolve()):
+                loc.root.mkdir(parents=True)  # a first adopt makes the mapping's dir
+            if not loc.available:
+                raise CribUserError(
+                    f"{proj}'s {noun} mapping {loc.token} isn't on this machine")
+            from .filesync import scan
+
+            if [r for r in scan(loc.root, ".md", recursive=True) if loc.owns(r)]:
+                raise CribUserError(
+                    f"{loc.root} already holds {noun} items — refusing to merge two "
+                    "trees. Move them aside (or map the facet elsewhere) and re-run")
+            src = pp.home_dir(seg)
+            ring_ids = self._note_ring_ids(proj, src)
+            n = 0
+            for f in sorted(src.rglob("*.md")):
+                target = loc.root / f.relative_to(src)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(f), str(target))
+                n += 1
+            v = self._move_ring(ring_ids, pp.versions_dir, loc.versions_dir)
+            if not (gi := loc.versions_dir / ".gitignore").exists():
+                loc.versions_dir.mkdir(parents=True, exist_ok=True)
+                gi.write_text("*\n")  # the repo owns the files, crib their history
+            with contextlib.suppress(OSError):
+                src.rmdir()
+            moved[noun] = {"to": loc.token, "notes_moved": n, "versions_moved": v}
+        for noun in moved:
+            await self.pillars[facets.by_noun(noun).store].reindex(proj)
+        return moved
+
+    def _release_mapped(self, proj: str) -> dict[str, Any]:
+        """The inverse: move each mapped facet's own files (the ones its glob
+        picks, nothing else in that dir) back under the data root, with their
+        ring entries, and forget the mapping in the stub."""
+        import shutil
+
+        from .filesync import scan
+
+        pp = self.project_paths(proj)
+        moved: dict[str, Any] = {}
+        for seg, loc in pp.mappings.items():
+            store = self.pillars.get(seg)
+            if loc.prefix is not None or store is None or not loc.available:
+                continue
+            noun = store.spec.facet or "note"
+            home = pp.home_dir(seg)
+            owned = [r for r in scan(loc.root, ".md", recursive=True) if loc.owns(r)]
+            if owned and home.is_dir() and any(home.rglob("*.md")):
+                raise CribUserError(
+                    f"{home} already holds {noun} items — refusing to merge two "
+                    "trees. Move them aside and re-run")
+            ring_ids = [nid for nid in self._note_ring_ids(proj, loc.root)] if owned else []
+            for r in owned:
+                target = home / r
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(loc.root / r), str(target))
+            v = self._move_ring(ring_ids, loc.versions_dir, pp.versions_dir)
+            moved[noun] = {"from": loc.token, "notes_moved": len(owned),
+                           "versions_moved": v}
+        if moved:
+            pcfg = ProjectConfig.load(pp.config_file, proj)
+            pcfg.mappings = {k: v for k, v in (pcfg.mappings or {}).items()
+                             if k not in moved} or None
+            pcfg.save(pp.config_file)
+            self.project_paths.invalidate(proj)
+        return moved
+
     _STORE_GITIGNORE = (
         "# crib in-repo store — the notes ARE the repo's, the "
         "version ring is not\n.versions/\n"
@@ -2739,7 +2821,13 @@ class Crib:
                 f"the `.crib` at {link.root} names project {link.project!r}, not "
                 f"{proj!r} — adopt is about THIS repo's project"
             )
+        # The repo's facet mappings first (recorded in the stub), and every
+        # mapped pillar's waiting items moved into its mapping.
+        await self._sync_mappings(proj, link)
+        mapped = await self._adopt_mapped(proj, link.root)
         store = link.store_dir
+        if store is None and (mapped or self.project_paths(proj).mappings):
+            return {"project": proj, "changed": bool(mapped), "mapped": mapped}
         if store is None:
             raise CribUserError(
                 f"{link.root / '.crib'} declares no `store:` — add e.g. "
@@ -2757,6 +2845,7 @@ class Crib:
                     "versions_moved": 0,
                     "store_root": pp.store_token,
                     "message": f"{proj} already lives in {store}",
+                    **({"mapped": mapped} if mapped else {}),
                 }
             raise CribUserError(
                 f"{proj} is already adopted into {pp.store_root} — `crib project "
@@ -2773,7 +2862,9 @@ class Crib:
             )
         from .watch import PILLAR_SEGMENTS
 
-        for seg in PILLAR_SEGMENTS:
+        # a mapped facet lives at its mapping: the store move leaves it alone
+        segments = [s for s in PILLAR_SEGMENTS if s not in pp.mappings]
+        for seg in segments:
             dest = store / seg
             if any(dest.rglob("*.md")) if dest.is_dir() else False:
                 raise CribUserError(
@@ -2783,14 +2874,14 @@ class Crib:
                 )
         ring_ids = [
             nid
-            for seg in PILLAR_SEGMENTS
-            if (src := pp.pillar_dir(seg)).is_dir()
+            for seg in segments
+            if (src := pp.home_dir(seg)).is_dir()
             for nid in self._note_ring_ids(proj, src)
         ]
         store.mkdir(parents=True, exist_ok=True)
         notes_moved = 0
-        for seg in PILLAR_SEGMENTS:  # every pillar sibling travels together
-            src = pp.pillar_dir(seg)
+        for seg in segments:  # every unmapped pillar sibling travels together
+            src = pp.home_dir(seg)
             notes_moved += self._move_tree(src, store / seg)
             with contextlib.suppress(OSError):
                 src.rmdir()  # only if the move emptied it
@@ -2808,7 +2899,6 @@ class Crib:
         pcfg.store_root = portable_path(store, self.config.locations)
         pcfg.save(pp.config_file)
         self.project_paths.invalidate(proj)
-        await self._sync_mappings(proj, link)  # the repo's facet mappings too
         rec = await self.reindex(project=proj)
         return {
             "project": proj,
@@ -2818,6 +2908,7 @@ class Crib:
             "notes_moved": notes_moved,
             "versions_moved": versions_moved,
             "reconciled": rec,
+            **({"mapped": mapped} if mapped else {}),
         }
 
     async def project_release(
@@ -2828,7 +2919,13 @@ class Crib:
         when the repo is going away, or when the notes should stop travelling with
         it. Idempotent: releasing an already-global project is a no-op."""
         proj = self.resolve_project(project, cwd)
+        mapped = self._release_mapped(proj)
         pp = self.project_paths(proj)
+        if not pp.in_repo and mapped:
+            await self.reindex(project=proj)
+            return {"project": proj, "changed": True, "mapped": mapped,
+                    "message": "mapped facets moved back; remove their `facets:` "
+                    "entries from the repo's .crib, or the next index maps them again"}
         if not pp.in_repo:
             return {
                 "project": proj,
@@ -2853,12 +2950,12 @@ class Crib:
         ring_ids = [
             nid
             for seg in PILLAR_SEGMENTS
-            if (src := pp.pillar_dir(seg)).is_dir()
+            if (src := pp.home_dir(seg)).is_dir()
             for nid in self._note_ring_ids(proj, src)
         ]
         notes_moved = 0
         for seg in PILLAR_SEGMENTS:
-            notes_moved += self._move_tree(pp.pillar_dir(seg), gdir / seg)
+            notes_moved += self._move_tree(pp.home_dir(seg), gdir / seg)
         versions_moved = self._move_ring(
             ring_ids, pp.versions_dir, self.paths.versions_dir
         )
@@ -2866,7 +2963,7 @@ class Crib:
         if gi.is_file() and gi.read_text() == self._STORE_GITIGNORE:
             gi.unlink()  # ours, and now describing nothing
         for d in (
-            *(pp.pillar_dir(seg) for seg in PILLAR_SEGMENTS),
+            *(pp.home_dir(seg) for seg in PILLAR_SEGMENTS),
             pp.versions_dir,
             store,
         ):
@@ -2884,6 +2981,7 @@ class Crib:
             "notes_moved": notes_moved,
             "versions_moved": versions_moved,
             "reconciled": rec,
+            **({"mapped": mapped} if mapped else {}),
         }
 
     # ── project lifecycle: create / delete / rename (docs/surface.md) ─────────

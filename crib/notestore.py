@@ -23,6 +23,7 @@ from . import facets, notes
 from .chunk import kind_of
 from .facets import FacetSpec
 from .errors import CribUserError
+
 from .notes import Note, NoteParseError
 from .paths import check_relpath, confine
 from .sources import SRC_PREFIX, SourceRoots
@@ -33,6 +34,10 @@ if TYPE_CHECKING:
     from .paths import FacetLocation, Paths, ProjectPathResolver, ProjectPaths
     from .store import Store
     from .versions import VersionRing
+
+
+class PendingMove(CribUserError):
+    """A mapped facet whose items still wait to be moved into the mapping."""
 
 
 @dataclass(frozen=True)
@@ -102,6 +107,24 @@ class NoteStore:
                               ids="derived", prefix=p)
                 for p in sorted(roots, key=len, reverse=True)]
 
+    def pending_move(self, project: str) -> str | None:
+        """Why this facet can't be served in `project` yet, or None: it is mapped
+        (an exclusive location) but its items are still under the data root,
+        waiting for `crib project adopt` to move them there."""
+        loc = self.location(project)
+        if loc is None or loc.prefix is not None:
+            return None
+        home = self.project_paths(project).home_dir(self.spec.segment)
+        n = sum(1 for _ in home.rglob("*.md")) if home.is_dir() else 0
+        if not n:
+            return None
+        noun = self.spec.facet or "note"
+        return (
+            f"project {project!r} maps its {noun} items to {loc.token}, but {n} are "
+            f"still under crib's data dir ({home}): run `crib project adopt` in that "
+            "repo to move them there (ids and history kept)"
+        )
+
     def _prefixed_at(self, project: str, relpath: str) -> FacetLocation | None:
         return next((loc for loc in self.prefixed(project)
                      if loc.prefix and relpath.startswith(loc.prefix)), None)
@@ -138,6 +161,8 @@ class NoteStore:
         `locate`, `version_content` and the learnings audit — mkdir'd on the way
         through, so one mistyped `project=` planted a permanent phantom namespace
         in `project_list`."""
+        if (why := self.pending_move(project)) is not None:
+            raise PendingMove(why)
         return self.resolved(project).pillar_dir(self.spec.segment)
 
     def notes_root(self, project: str) -> Path:
@@ -352,6 +377,10 @@ class NoteStore:
         from .filesync import scan
         from .indexer import index_facet
 
+        if (why := self.pending_move(project)) is not None:
+            # not served until adopt moves its items: nothing to reconcile yet
+            return {"project": project, "files": 0, "changed": 0, "removed": 0,
+                    "skipped": [], "pending_move": why}
         nd = self.dir(project)
         loc = self.location(project)
         policy = self._policy(project)

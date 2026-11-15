@@ -1050,6 +1050,9 @@ def test_a_writable_mapped_facet_lives_in_the_repo(tmp_path):
                                    facet="routine"))
         out["ring"] = sorted(p.name for p in (Path(out["root"]) / ".versions").iterdir())
         out["hits"] = [h.relpath for h in crib.lookup("weather", "p", store="routines")]
+        asyncio.run(crib.reindex(None, "p", facet="routine"))
+        out["after_ring"] = sorted(i.relpath for i in
+                                   crib.store.items({"project": "p", "kind": "routine"}).values())
     """,
     )
     assert out["synced"]["routine"]["files"] == 1
@@ -1059,6 +1062,8 @@ def test_a_writable_mapped_facet_lives_in_the_repo(tmp_path):
     assert (repo / "workflows" / out["added"]).exists()  # written into the repo
     assert "id:" in (repo / "workflows" / "morning-briefing.md").read_text()  # stamped
     assert ".gitignore" in out["ring"]  # the ring lives beside the files, ignored
+    # the ring's own files are never the facet's items
+    assert out["after_ring"] == sorted([out["added"], "morning-briefing.md"])
     assert out["hits"] == [out["added"]]
 
 

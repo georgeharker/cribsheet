@@ -539,6 +539,13 @@ class Designs:
         NOW, so `_taint` can compare against the recorded hash without doing I/O
         itself. `docs` memoizes per load, so ten decisions citing one DESIGN.md
         split it once."""
+        for store in self._stores.values():
+            # a mapped pillar whose items still wait for `crib project adopt` is
+            # not served (it would read as empty, not as waiting)
+            if (why := store.pending_move(proj)) is not None:
+                from .notestore import PendingMove
+
+                raise PendingMove(why)
         graph = Graph(proj=proj)
         docs: dict[str, dict[str, str]] = {}
         for kind, store in self._stores.items():

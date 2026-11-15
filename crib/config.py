@@ -695,9 +695,6 @@ def _facet_mappings(f: Path, root: Path, raw: Any) -> dict[str, FacetMapping]:
                 continue
             out[m.noun] = m
             continue
-        if facet.builtin:
-            _warn(f"{what} — a built-in facet can't be mapped yet")
-            continue
         if not isinstance(spec, dict) or not isinstance(spec.get("dir"), str):
             _warn(f"{what} — expected {{dir: <repo-relative dir>, glob?, read_only?, ids?}}")
             continue
@@ -707,6 +704,10 @@ def _facet_mappings(f: Path, root: Path, raw: Any) -> dict[str, FacetMapping]:
         ids = spec.get("ids", "stamp")
         if ids not in ("stamp", "derived"):
             _warn(f"{what} — ids is stamp or derived, not {ids!r}")
+            continue
+        if facet.builtin and (ids != "stamp" or spec.get("read_only")):
+            # decisions, plans and learnings are written by their own verbs
+            _warn(f"{what} — a built-in pillar maps writable, with stamped ids")
             continue
         m = FacetMapping(str(noun), spec["dir"].strip(), str(spec.get("glob") or "**/*.md"),
                          bool(spec.get("read_only", False)), ids)

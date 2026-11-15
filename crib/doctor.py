@@ -40,7 +40,23 @@ _SETTLED = ("superseded", "declined", "done", "verified")
 
 def diagnose(crib: Crib, proj: str) -> dict[str, Any]:
     findings: list[dict[str, Any]] = []
-    graph = crib.designs._load_graph(proj)
+    from .designs import Graph
+    from .notestore import PendingMove
+
+    for store in crib.pillars.values():
+        if (why := store.pending_move(proj)) is not None:
+            findings.append(
+                {
+                    "check": "waiting to be moved",
+                    "kind": store.spec.facet or "note",
+                    "detail": why,
+                    "fix": "crib project adopt (in the repo that maps it)",
+                }
+            )
+    try:
+        graph = crib.designs._load_graph(proj)
+    except PendingMove:  # reported above; the graph checks wait for the move
+        graph = Graph(proj=proj)
 
     for node in graph.nodes.values():
         verb = _PILLAR_VERB[node.kind]
