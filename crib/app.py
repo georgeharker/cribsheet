@@ -2696,6 +2696,17 @@ class Crib:
         return moved
 
     @staticmethod
+    def _merge_clashes(a_rels: list[str], b_rels: list[str]) -> list[str]:
+        """What stops merging one tree's items into another's: the same relpath
+        on both sides (the move would overwrite a file). Disjoint trees merge:
+        that is what makes an interrupted adopt resumable, and a teammate's
+        committed items joinable by yours. Two files sharing one ID (a copy of
+        the same item on both sides) is what the reindex after the move reports
+        (`duplicate_ids`, and `crib project doctor`): a human picks the survivor,
+        as for an interrupted note move."""
+        return sorted(set(a_rels) & set(b_rels))
+
+    @staticmethod
     def _move_files(pairs: list[tuple[Path, Path]], what: str) -> int:
         """Move each `(src, dst)` file, all or nothing: an OSError part-way (a
         read-only checkout, a full disk) moves back what already moved and
@@ -2763,27 +2774,40 @@ class Crib:
             if not loc.available:
                 raise CribUserError(
                     f"{proj}'s {noun} mapping {loc.token} isn't on this machine")
-            if [r for r in scan(loc.root, ".md", recursive=True) if loc.owns(r)]:
+            src = pp.home_dir(seg)
+            there = [r for r in scan(loc.root, ".md", recursive=True) if loc.owns(r)]
+            here = [str(f.relative_to(src)) for f in sorted(src.rglob("*.md"))]
+            if clash := self._merge_clashes(here, there):
                 raise CribUserError(
-                    f"{loc.root} already holds {noun} items — refusing to merge two "
-                    "trees. Move them aside (or map the facet elsewhere) and re-run")
-            plan.append((seg, noun, loc, pp.home_dir(seg)))
+                    f"{loc.root} already holds {noun} items that clash with the ones "
+                    f"under crib's data dir ({', '.join(clash[:5])}"
+                    f"{', ...' if len(clash) > 5 else ''}): refusing to merge them. "
+                    "Rename or remove one side's, then re-run")
+            plan.append((seg, noun, loc, src))
         for _seg, noun, loc, src in plan:
             ring_ids = self._note_ring_ids(proj, src)
             n = self._move_files(
                 [(f, loc.root / f.relative_to(src)) for f in sorted(src.rglob("*.md"))],
                 f"{proj}'s {noun} items into {loc.token}")
             v = self._move_ring(ring_ids, pp.versions_dir, loc.versions_dir)
+            left = sorted(str(f.relative_to(src)) for f in src.rglob("*")
+                          if f.is_file() and f.suffix != ".md")
             if not (gi := loc.versions_dir / ".gitignore").exists():
                 loc.versions_dir.mkdir(parents=True, exist_ok=True)
                 gi.write_text("*\n")  # the repo owns the files, crib their history
             with contextlib.suppress(OSError):
                 src.rmdir()
-            moved[noun] = {"to": loc.token, "notes_moved": n, "versions_moved": v}
+            moved[noun] = {"to": loc.token, "notes_moved": n, "versions_moved": v,
+                           **({"left_behind": left} if left else {})}
+            if left:
+                print(f"[crib] adopt: {len(left)} non-markdown file(s) left in {src} "
+                      f"(not {noun} items): {', '.join(left[:5])}", file=sys.stderr)
         if moved:
             self._rewatch(proj)  # a first adopt may have made the mapping's dir
         for noun in moved:
-            await self.pillars[facets.by_noun(noun).store].reindex(proj)
+            res = await self.pillars[facets.by_noun(noun).store].reindex(proj)
+            if res.get("duplicate_ids"):  # one item on both sides of a merge
+                moved[noun]["duplicate_ids"] = res["duplicate_ids"]
         return moved
 
     def _release_mapped(self, proj: str) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -2813,10 +2837,13 @@ class Crib:
                 continue
             home = pp.home_dir(seg)
             owned = [r for r in scan(loc.root, ".md", recursive=True) if loc.owns(r)]
-            if owned and home.is_dir() and any(home.rglob("*.md")):
+            at_home = ([str(f.relative_to(home)) for f in sorted(home.rglob("*.md"))]
+                       if home.is_dir() else [])
+            if clash := self._merge_clashes(owned, at_home):
                 raise CribUserError(
-                    f"{home} already holds {noun} items — refusing to merge two "
-                    "trees. Move them aside and re-run")
+                    f"{home} already holds {noun} items that clash with the mapping's "
+                    f"({', '.join(clash[:5])}): refusing to merge them. Rename or "
+                    "remove one side's, then re-run")
             plan.append((noun, loc, home, owned))
         for noun, loc, home, owned in plan:
             ring_ids = self._note_ring_ids(proj, loc.root) if owned else []
@@ -2864,6 +2891,38 @@ class Crib:
             )
         return hits
 
+    def _check_store_target(self, proj: str, link: CribLink, store: Path) -> None:
+        """Refuse (before anything moves) a `store:` adopt can't carry out:
+        already adopted elsewhere, a store path that is a file, or a pillar dir
+        there that already holds notes."""
+        from .watch import PILLAR_SEGMENTS
+
+        pp = self.project_paths(proj)
+        if pp.in_repo:
+            if pp.store_root == store:
+                return  # idempotent: already here
+            raise CribUserError(
+                f"{proj} is already adopted into {pp.store_root} — `crib project "
+                f"release {proj}` first, then adopt here (a project's notes live "
+                "in exactly one place)"
+            )
+        if store.exists() and not store.is_dir():
+            # `.crib` is itself a FILE at the repo root, so `store: .crib/store`
+            # (an inviting-looking spelling) can never be created — say that here
+            # rather than surfacing a bare NotADirectoryError from mkdir.
+            raise CribUserError(
+                f"`store: {link.store}` is not a directory ({store} exists as a "
+                "file) — point it at a directory path, e.g. `store: .crib-store`"
+            )
+        for seg in (s for s in PILLAR_SEGMENTS if s not in pp.mappings):
+            dest = store / seg
+            if any(dest.rglob("*.md")) if dest.is_dir() else False:
+                raise CribUserError(
+                    f"{dest} already holds notes — refusing to merge two note "
+                    "trees. Move them aside (or pick a different `store:`) and "
+                    "re-run"
+                )
+
     async def project_adopt(
         self, project: str | None = None, cwd: Path | None = None
     ) -> dict[str, Any]:
@@ -2893,6 +2952,10 @@ class Crib:
         # The repo's facet mappings first (recorded in the stub), and every
         # mapped pillar's waiting items moved into its mapping.
         await self._sync_mappings(proj, link)
+        # every refusal the store move can make, BEFORE a mapped facet moves:
+        # a refused adopt changes nothing
+        if (store := link.store_dir) is not None:
+            self._check_store_target(proj, link, store)
         mapped = await self._adopt_mapped(proj, link.root)
         store = link.store_dir
         if store is None and (mapped or self.project_paths(proj).mappings):

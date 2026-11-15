@@ -109,13 +109,92 @@ def test_store_and_a_pillar_mapping_split_the_project_between_them(crib, tmp_pat
     assert "travels with the store" in crib.read_note(note["relpath"], "p")
 
 
-def test_adopt_refuses_to_merge_into_a_mapping_that_has_items(crib, tmp_path):
-    _decision(crib)
+def test_adopt_merges_disjoint_items_and_refuses_a_clashing_relpath(crib, tmp_path):
+    """A teammate's committed items and yours merge when no file would be
+    overwritten; the same relpath on both sides refuses, moving nothing
+    (review fix 10)."""
+    a = _decision(crib)
     repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions}\n")
     (repo / "decisions").mkdir()
-    (repo / "decisions" / "other.md").write_text("---\ntitle: Other\n---\nx\n")
-    with pytest.raises(Exception, match="refusing to merge"):
+    clash = repo / "decisions" / a["relpath"]
+    clash.write_text("---\ntitle: Theirs\n---\nx\n")
+    with pytest.raises(Exception, match="clash"):
         run(crib.project_adopt(cwd=repo))
+    home = crib.project_paths("p").home_dir("design")
+    assert (home / a["relpath"]).exists()  # nothing moved
+    clash.unlink()
+    (repo / "decisions" / "theirs.md").write_text(
+        "---\nid: 01M7EZZZZZZZZZZZZZZZZZZZZY\ntitle: Theirs\nstatus: active\n---\nx\n")
+    res = run(crib.project_adopt(cwd=repo))
+    assert res["mapped"]["design"]["notes_moved"] == 1
+    assert sorted(f.name for f in (repo / "decisions").glob("*.md")) == sorted(
+        [a["relpath"], "theirs.md"])
+    assert crib.design_read(a["relpath"], "p")["id"] == a["id"]
+
+
+def test_an_interrupted_adopt_resumes_by_running_it_again(crib, tmp_path):
+    """A crash part-way leaves items on both sides: re-running adopt moves the
+    rest instead of refusing (review fix 10)."""
+    a = _decision(crib)
+    b = run(crib.design_add("Second", "Another decision.", project="p"))
+    repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions}\n")
+    home = crib.project_paths("p").home_dir("design")
+    (repo / "decisions").mkdir()
+    (home / a["relpath"]).rename(repo / "decisions" / a["relpath"])  # the crash
+    res = run(crib.project_adopt(cwd=repo))
+    assert res["mapped"]["design"]["notes_moved"] == 1
+    assert not list(home.glob("*.md")) if home.exists() else True
+    assert crib.design_read(b["relpath"], "p")["id"] == b["id"]
+    assert crib.design_read(a["relpath"], "p")["id"] == a["id"]
+
+
+def test_one_item_on_both_sides_is_reported_after_the_merge(crib, tmp_path):
+    a = _decision(crib)
+    repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions}\n")
+    (repo / "decisions").mkdir()
+    home = crib.project_paths("p").home_dir("design")
+    (repo / "decisions" / "copy.md").write_text((home / a["relpath"]).read_text())
+    res = run(crib.project_adopt(cwd=repo))
+    dup = res["mapped"]["design"]["duplicate_ids"]
+    assert dup == [{"id": a["id"], "relpaths": sorted(["copy.md", a["relpath"]])}]
+
+
+def test_adopt_reports_non_markdown_files_it_leaves(crib, tmp_path, capsys):
+    _decision(crib)
+    home = crib.project_paths("p").home_dir("design")
+    (home / "diagram.png").write_bytes(b"x")
+    repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions}\n")
+    res = run(crib.project_adopt(cwd=repo))
+    assert res["mapped"]["design"]["left_behind"] == ["diagram.png"]
+    assert "non-markdown" in capsys.readouterr().err
+
+
+def test_a_store_adopt_refuses_before_any_mapped_facet_moves(crib, tmp_path):
+    """Every store: refusal comes first, so a refused adopt changes nothing."""
+    a = _decision(crib)
+    repo = _repo(tmp_path, "project: p\nstore: crib-store\nfacets:\n  design: {dir: decisions}\n")
+    (repo / "crib-store").write_text("not a dir")
+    with pytest.raises(Exception, match="not a directory"):
+        run(crib.project_adopt(cwd=repo))
+    assert (crib.project_paths("p").home_dir("design") / a["relpath"]).exists()
+    assert not (repo / "decisions" / a["relpath"]).exists()
+
+
+def test_a_pending_graph_facet_blocks_only_its_own_verbs(crib, tmp_path):
+    """Decisions waiting for adopt refuse; plans keep working, a dep on a
+    waiting decision just doesn't resolve yet (review fix 10)."""
+    d = _decision(crib)
+    item = run(crib.plan_add("Do it", project="p"))
+    repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions}\n")
+    from crib.config import CribLink
+
+    run(crib._sync_mappings("p", CribLink.find(repo)))
+    with pytest.raises(PendingMove):
+        crib.design_read(d["relpath"], "p")
+    with pytest.raises(PendingMove):
+        crib.design_list(project="p")
+    assert crib.plan_read(item["items"][0]["relpath"], "p")["title"] == "Do it"
+    assert [i["title"] for i in crib.plan_next(project="p")["items"]] == ["Do it"]
 
 
 def test_a_move_that_fails_part_way_moves_nothing(crib, tmp_path, monkeypatch):

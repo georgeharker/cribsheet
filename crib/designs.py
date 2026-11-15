@@ -525,12 +525,23 @@ class Graph:
     # kept apart from `nodes`, which lists, cycles and trees walk, but consulted
     # by taint and gating, so a note dependency is checked like any other.
     notes: dict[str, Node] = field(default_factory=dict)
+    # Graph facets not served in this project yet (a mapping whose items still
+    # wait to be moved): kind -> why. Left out of the graph rather than refusing
+    # every graph verb; verbs on that facet's own items refuse with the why.
+    pending: dict[str, str] = field(default_factory=dict)
 
     def target(self, dep_id: str) -> Node | None:
         """What a dependency points at: a design/plan node, or a note."""
         return self.nodes.get(dep_id) or self.notes.get(dep_id)
 
     def of_kind(self, kind: str) -> list[Node]:
+        if kind in self.pending:  # its items wait for `crib project adopt`
+            from .notestore import PendingMove
+
+            raise PendingMove(self.pending[kind])
+        return self._of_kind(kind)
+
+    def _of_kind(self, kind: str) -> list[Node]:
         return [n for n in self.nodes.values() if n.kind == kind]
 
 
@@ -606,16 +617,15 @@ class Designs:
         NOW, so `_taint` can compare against the recorded hash without doing I/O
         itself. `docs` memoizes per load, so ten decisions citing one DESIGN.md
         split it once."""
-        for store in self._stores.values():
-            # a mapped pillar whose items still wait for `crib project adopt` is
-            # not served (it would read as empty, not as waiting)
-            if (why := store.pending_move(proj)) is not None:
-                from .notestore import PendingMove
-
-                raise PendingMove(why)
         graph = Graph(proj=proj)
         docs: dict[str, dict[str, str]] = {}
         for kind, store in self._stores.items():
+            # a mapped pillar whose items still wait for `crib project adopt` is
+            # not served (it would read as empty, not as waiting): it is left
+            # out, and only verbs on its own items refuse (Graph.of_kind)
+            if (why := store.pending_move(proj)) is not None:
+                graph.pending[kind] = why
+                continue
             try:
                 d = store.root(proj)
             except Exception:  # noqa: BLE001 — an unavailable store blinds no read
@@ -1095,6 +1105,10 @@ class Designs:
         ref = (ref or "").strip()
         if not ref:
             raise CribUserError("empty ref — pass an id, relpath, or title")
+        if kind is not None and kind in graph.pending:
+            from .notestore import PendingMove
+
+            raise PendingMove(graph.pending[kind])
         pool = [n for n in graph.nodes.values() if kind is None or n.kind == kind]
 
         def _other_facet_hint() -> None:

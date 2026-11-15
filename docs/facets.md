@@ -256,6 +256,19 @@ naming the fix, and `crib project doctor` reports "waiting to be moved").
 `crib project adopt` (in the repo) moves them, with their ids and history;
 `crib project release` moves them back.
 
+- If the mapped directory already holds items (a teammate committed theirs,
+  or an earlier adopt was interrupted), adopt merges the two sets, provided no
+  file would be overwritten. A relpath on both sides refuses, moving nothing.
+  The same item on both sides (two files, one id) is reported after the move
+  (`duplicate_ids`, and `crib project doctor`) for you to keep one copy.
+- A refused adopt changes nothing: every check runs before any file moves,
+  and a move that fails part-way puts back what it moved.
+- Files under the pillar's directory that aren't markdown stay where they
+  are, and adopt lists them.
+- While one facet waits to be moved, only its own verbs refuse: the rest of
+  the graph keeps working (a dependency on a waiting item just doesn't
+  resolve until it moves).
+
 ## Conformance: `crib facets sync`
 
 Each declared facet has its own table in the store. crib never creates,
