@@ -2933,6 +2933,8 @@ def _cli_of(t: Any) -> _FacetCli:
 def _facet_cli_verbs(spec: Any) -> list[Any]:
     from . import verbs
 
+    if spec.has("links"):  # a graph facet's CLI is hand-written until its table lands
+        return []
     by = {t.verb: t for t in verbs.verbs_of(spec)}
     order = _ANCHORED_CLI_ORDER if spec.has("anchored") else _FACET_CLI_ORDER
     return [by[v] for v in order if v in by]
@@ -2944,8 +2946,8 @@ def _facet_parsers(sub: Any, nouns: dict[str, Any], proj: Any) -> None:
     from . import verbs
 
     for spec in _facets_mod().FACETS:
-        if not verbs.generated(spec):
-            continue
+        if not verbs.generated(spec) or not _facet_cli_verbs(spec):
+            continue  # (a graph facet's CLI is still hand-written)
         fsub = nouns.get(spec.noun)
         if fsub is None:
             what = "symbol-anchored" if spec.has("anchored") else "search, read, write"

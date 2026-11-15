@@ -55,6 +55,7 @@ class Verb:
     fields: str = ""
     # Only for facets this accepts (None = every facet with the aspect).
     when: Callable[[FacetSpec], bool] | None = None
+    echo: bool = False  # a read that surfaces an implicit resolution
 
 
 def tool_name(spec: FacetSpec, verb: str) -> str:
@@ -805,6 +806,406 @@ def _with_fields(body: Any, spec: FacetSpec, mode: str) -> None:
         body.__annotations__ = ann
 
 
+# ── graph facets (links + status): decisions, plans ──────────────────────────
+# One template per verb; a facet's aspects (and its statuses' roles) decide
+# which verbs it gets and, for add / list, which parameters. The built-ins'
+# descriptions are data (crib.graph_texts), held to the byte by the surface
+# snapshot. Bodies call the built-in's own Crib method for now; a declared
+# graph facet gets generic bodies in facet registry step 7, and no verbs before.
+
+
+def _graph(f: FacetSpec) -> bool:
+    return f.has("links") and f.has("status")
+
+
+def _gd(verb: str, generic: Callable[[FacetSpec], str]):
+    def describe(f: FacetSpec) -> str:
+        from .graph_texts import TEXTS
+
+        name = tool_name(f, verb)
+        return TEXTS[name] if f.builtin and name in TEXTS else generic(f)
+
+    return describe
+
+
+def _call(crib: Crib, f: FacetSpec, verb: str):
+    return getattr(crib, f"{f.noun}_{verb}")
+
+
+def _g_read(crib, f):
+    async def body(
+        ref: str, project: str | None = None, project_path: str | None = None
+    ) -> dict[str, Any]:
+        return _call(crib, f, "read")(ref, project)
+
+    return body
+
+
+def _g_edit(crib, f):
+    async def body(
+        ref: str,
+        new_content: str,
+        project: str | None = None,
+        sources: list[str] | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return await _call(crib, f, "edit")(ref, new_content, project, sources)
+
+    return body
+
+
+def _g_append(crib, f):
+    async def body(
+        ref: str,
+        content: str,
+        project: str | None = None,
+        project_path: str | None = None,
+        sources: list[str] | None = None,
+    ) -> dict[str, Any]:
+        return await _call(crib, f, "append")(ref, content, project, sources=sources)
+
+    return body
+
+
+def _g_lookup(crib, f):
+    async def body(
+        query: str,
+        project: str | None = None,
+        k: int = 8,
+        hints: list[str] | None = None,
+        project_path: str | None = None,
+    ) -> list[dict[str, Any]]:
+        return _call(crib, f, "lookup")(query, project, k, hints=hints)
+
+    return body
+
+
+def _g_forget(crib, f):
+    async def body(
+        ref: str,
+        force: bool = False,
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return await _call(crib, f, "forget")(ref, force, project)
+
+    return body
+
+
+def _g_dep_add(crib, f):
+    async def body(
+        ref: str,
+        dep_ref: str,
+        project: str | None = None,
+        project_path: str | None = None,
+        kind: str | None = None,
+    ) -> dict[str, Any]:
+        return await _call(crib, f, "dep_add")(ref, dep_ref, project, kind=kind)
+
+    return body
+
+
+def _g_dep_remove(crib, f):
+    async def body(
+        ref: str,
+        dep_ref: str,
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return await _call(crib, f, "dep_remove")(ref, dep_ref, project)
+
+    return body
+
+
+def _g_reaffirm(crib, f):
+    async def body(
+        ref: str, project: str | None = None, project_path: str | None = None
+    ) -> dict[str, Any]:
+        return await _call(crib, f, "reaffirm")(ref, project)
+
+    return body
+
+
+def _g_graph(crib, f):
+    async def body(
+        project: str | None = None,
+        project_path: str | None = None,
+        sources: bool = False,
+    ) -> dict[str, Any]:
+        from .server import _cwd
+
+        return _call(crib, f, "graph")(project, cwd=_cwd(project_path), sources=sources)
+
+    return body
+
+
+def _g_extract(crib, f):
+    async def body(
+        relpath: str, project: str | None = None, project_path: str | None = None
+    ) -> dict[str, Any]:
+        return _call(crib, f, "import")(relpath, project)
+
+    return body
+
+
+def _g_export(crib, f):
+    async def body(
+        project: str | None = None, project_path: str | None = None
+    ) -> str:
+        return _call(crib, f, "export")(project)["markdown"]
+
+    return body
+
+
+def _g_check(crib, f):
+    async def body(
+        ref: str | None = None,
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return _call(crib, f, "check")(ref, project)
+
+    return body
+
+
+def _g_tree(crib, f):
+    async def body(
+        ref: str | None = None,
+        direction: str = "deps",
+        depth: int = 6,
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return _call(crib, f, "tree")(ref, direction, depth, project)
+
+    return body
+
+
+def _g_supersede(crib, f):
+    async def body(
+        ref: str,
+        by_ref: str | None = None,
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return await _call(crib, f, "supersede")(ref, by_ref, project)
+
+    return body
+
+
+def _g_add(crib, f):
+    if f.has("ordered"):  # batches and placement in the order
+        async def ordered(
+            title: str | None = None,
+            content: str = "",
+            deps: list[str] | None = None,
+            after: str | None = None,
+            before: str | None = None,
+            items: list[dict[str, Any]] | None = None,
+            project: str | None = None,
+            sources: list[str] | None = None,
+            project_path: str | None = None,
+            follows: list[str] | None = None,
+            rests_on: list[str] | None = None,
+            informed_by: list[str] | None = None,
+        ) -> dict[str, Any]:
+            return await _call(crib, f, "add")(
+                title, content, deps, after, before, items, project, sources,
+                follows=follows, rests_on=rests_on, informed_by=informed_by,
+            )
+
+        return ordered
+
+    async def body(
+        title: str,
+        content: str,
+        deps: list[str] | None = None,
+        project: str | None = None,
+        sources: list[str] | None = None,
+        proposed: bool = False,
+        project_path: str | None = None,
+        follows: list[str] | None = None,
+        rests_on: list[str] | None = None,
+        informed_by: list[str] | None = None,
+    ) -> dict[str, Any]:
+        return await _call(crib, f, "add")(
+            title, content, deps, project, sources, proposed,
+            follows=follows, rests_on=rests_on, informed_by=informed_by,
+        )
+
+    return body
+
+
+def _g_list(crib, f):
+    if f.report_taint:  # the stale ones, on request
+        async def tainted_list(
+            tainted: bool = False,
+            project: str | None = None,
+            project_path: str | None = None,
+        ) -> dict[str, Any]:
+            return _call(crib, f, "list")(tainted, project)
+
+        return tainted_list
+
+    async def body(
+        all: bool = False, project: str | None = None, project_path: str | None = None
+    ) -> dict[str, Any]:
+        return _call(crib, f, "list")(all, project)
+
+    return body
+
+
+def _g_status(crib, f):
+    async def body(
+        ref: str,
+        status: str,
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return await _call(crib, f, "status")(ref, status, project)
+
+    return body
+
+
+def _g_next(crib, f):
+    async def body(
+        k: int = 5, project: str | None = None, project_path: str | None = None
+    ) -> dict[str, Any]:
+        return _call(crib, f, "next")(k, project)
+
+    return body
+
+
+def _g_review(crib, f):
+    async def body(
+        project: str | None = None, project_path: str | None = None
+    ) -> dict[str, Any]:
+        return await _call(crib, f, "review")(project)
+
+    return body
+
+
+def _g_review_apply(crib, f):
+    async def body(
+        batch: list[dict],
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return await _call(crib, f, "review_apply")(project, batch)
+
+    return body
+
+
+def _g_move(crib, f):
+    async def body(
+        ref: str,
+        after: str | None = None,
+        before: str | None = None,
+        project: str | None = None,
+        project_path: str | None = None,
+    ) -> dict[str, Any]:
+        return await _call(crib, f, "move")(ref, after, before, project)
+
+    return body
+
+
+# A transition's body, by the role of the status it moves to.
+def _t_ungate(verb: str):
+    def make(crib, f):
+        async def body(
+            ref: str, project: str | None = None, project_path: str | None = None
+        ) -> dict[str, Any]:
+            return await _call(crib, f, verb)(ref, project)
+
+        return body
+
+    return make
+
+
+def _t_pause(verb: str):
+    def make(crib, f):
+        async def body(
+            ref: str,
+            triggers: list[str] | None = None,
+            why: str | None = None,
+            project: str | None = None,
+            project_path: str | None = None,
+        ) -> dict[str, Any]:
+            return await _call(crib, f, verb)(ref, project, triggers, why)
+
+        return body
+
+    return make
+
+
+def _t_drop(verb: str):
+    def make(crib, f):
+        async def body(
+            ref: str,
+            why: str,
+            triggers: list[str] | None = None,
+            project: str | None = None,
+            project_path: str | None = None,
+        ) -> dict[str, Any]:
+            return await _call(crib, f, verb)(ref, why, project, triggers)
+
+        return body
+
+    return make
+
+
+def _gen(text: str) -> Callable[[FacetSpec], str]:
+    """General wording for a declared graph facet's verb (`{n}` its noun,
+    `{p}` its plural)."""
+    return lambda f: text.format(n=f.noun, p=f.plural)
+
+
+def _ordered_graph(f: FacetSpec) -> bool:
+    return f.has("ordered")
+
+
+def _transition_verbs(f: FacetSpec) -> list[Verb]:
+    """One verb per transition in the spec, its body by the target's role."""
+    out = []
+    for verb, to in f.transitions.items():
+        role = f.role(to)
+        if role == "paused":
+            make, policy, text = _t_pause(verb), "write", "Pause a {n} (it moves to %s), with what should bring it back."
+        elif role == "dropped":
+            make, policy, text = _t_drop(verb), "write", "Drop a {n} (it moves to %s), saying why, and what would reopen it."
+        else:
+            make, policy, text = _t_ungate(verb), "read", "Move a {n} to %s."
+        out.append(Verb(verb, "status", policy, False, _gd(verb, _gen(text % to)), make))
+    return out
+
+
+GRAPH_TEMPLATES: tuple[Verb, ...] = (
+    Verb("add", "core", "write", False, _gd("add", _gen("Add a {n}, with what it depends on.")), _g_add),
+    Verb("read", "core", "read", True, _gd("read", _gen("Read a {n}: its body, status, dependencies and what rests on it.")), _g_read),
+    Verb("edit", "core", "read", False, _gd("edit", _gen("Rewrite a {n}'s body; returns what that change made stale.")), _g_edit),
+    Verb("append", "core", "read", False, _gd("append", _gen("Add to a {n}'s body; returns what that change made stale.")), _g_append),
+    Verb("lookup", "core", "read", True, _gd("lookup", _gen("Semantic search over {p}.")), _g_lookup),
+    Verb("list", "core", "read", True, _gd("list", _gen("List {p}, grouped by status.")), _g_list),
+    Verb("export", "sources", "read", True, _gd("export", _gen("All {p} as one markdown document, in dependency order.")), _g_export),
+    Verb("dep_add", "links", "read", False, _gd("dep_add", _gen("Make a {n} depend on another item.")), _g_dep_add),
+    Verb("dep_remove", "links", "read", False, _gd("dep_remove", _gen("Remove one of a {n}'s dependencies.")), _g_dep_remove),
+    Verb("forget", "core", "read", False, _gd("forget", _gen("Delete a {n} (recoverable from its version ring).")), _g_forget),
+    Verb("check", "links", "read", True, _gd("check", _gen("Which {p} are stale, and why.")), _g_check,
+         when=lambda f: f.report_taint),
+    Verb("reaffirm", "links", "read", False, _gd("reaffirm", _gen("Mark a stale {n} as re-read and still holding.")), _g_reaffirm),
+    Verb("extract", "sources", "read", False, _gd("extract", _gen("A doc's citable sections and the procedure for drawing {p} from it.")), _g_extract),
+    Verb("tree", "links", "read", True, _gd("tree", _gen("A {n}'s dependencies (or dependents) as a tree.")), _g_tree,
+         when=lambda f: f.report_taint),
+    Verb("graph", "links", "read", True, _gd("graph", _gen("The {p} and their links, as nodes and edges.")), _g_graph, echo=True),
+    Verb("supersede", "supersede", "read", False, _gd("supersede", _gen("Replace a {n} with another; what rested on it goes stale.")), _g_supersede),
+    Verb("status", "progress", "read", False, _gd("status", _gen("Set a {n}'s status.")), _g_status),
+    Verb("review", "progress", "read", True, _gd("review", _gen("Review the open {p} against what they depend on.")), _g_review),
+    Verb("review_apply", "progress", "write", False, _gd("review_apply", _gen("Apply a reviewed batch of {n} status changes.")), _g_review_apply),
+    Verb("move", "ordered", "read", False, _gd("move", _gen("Reorder a {n}.")), _g_move),
+    Verb("next", "progress", "read", True, _gd("next", _gen("The {p} ready to work on now.")), _g_next),
+)
+
+
 # ── the templates, in registration order ─────────────────────────────────────
 
 TEMPLATES: tuple[Verb, ...] = (
@@ -841,9 +1242,9 @@ TEMPLATES: tuple[Verb, ...] = (
 
 
 def generated(spec: FacetSpec) -> bool:
-    """Whether this facet's verbs come from the templates here. A facet with
-    links keeps its hand-written family until the graph engine (step 6)."""
-    return not spec.has("links")
+    """Whether this facet's verbs come from the templates here. A declared
+    graph facet gets none until its bodies are generic (registry step 7)."""
+    return not spec.has("links") or spec.builtin
 
 
 def verbs_of(spec: FacetSpec) -> list[Verb]:
@@ -852,6 +1253,11 @@ def verbs_of(spec: FacetSpec) -> list[Verb]:
     and enriched verbs; any other facet gets the verbs of its aspects."""
     if not generated(spec):
         return []
+    if _graph(spec):
+        out = [t for t in GRAPH_TEMPLATES if t.aspect == "core" or spec.has(t.aspect)]
+        out += _transition_verbs(spec)
+        return [t for t in out
+                if (t.when is None or t.when(spec)) and t.verb not in spec.disabled]
     if spec.has("anchored"):
         out = [t for t in TEMPLATES if t.aspect == "anchored"]
     else:
@@ -875,9 +1281,10 @@ def register(crib: Crib, crib_tool: Callable[..., Callable[[Any], Any]]) -> list
             doc = t.describe(spec)
             if t.fields and spec.params and t.verb != "list":
                 doc += _fields_text(spec, t.fields)
-            elif t.verb == "list":
+            elif t.verb == "list" and t.fields:  # the field-filtering list
                 doc += _fields_text(spec, "filter")
             body.__doc__ = doc
-            crib_tool(t.policy, elicit=t.elicit, needs_target=t.needs_target)(body)
+            crib_tool(t.policy, echo=t.echo, elicit=t.elicit,
+                      needs_target=t.needs_target)(body)
             names.append(name)
     return names

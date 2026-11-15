@@ -204,11 +204,11 @@ def test_aspect_verbs_match_the_builtins_generated_families():
     from crib import verbs
 
     for s in facets.FACETS:
-        if verbs.generated(s):
-            assert {t.verb for t in verbs.verbs_of(s)} == set(
-                facets.verbs_for(s.aspects, bool(s.params))
-            )
-
+        if not verbs.generated(s):
+            continue
+        want = (facets.graph_verbs(s) if s.has("links") and s.has("status")
+                else facets.verbs_for(s.aspects, bool(s.params)))
+        assert {t.verb for t in verbs.verbs_of(s)} == set(want), s.noun
 
 def test_disable():
     s = parse(

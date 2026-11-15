@@ -114,6 +114,25 @@ def verbs_for(aspects: Iterable[str], has_fields: bool) -> tuple[str, ...]:
     return (*out, "list") if has_fields else tuple(out)
 
 
+def graph_verbs(spec: "FacetSpec") -> tuple[str, ...]:
+    """The canonical verbs a graph facet (links + status) gets, before any it
+    disables: its core and aspect verbs, the taint-reporting ones if it reports
+    taint, and one per status transition (crib.verbs GRAPH_TEMPLATES)."""
+    out = ["add", "read", "edit", "append", "lookup", "list", "forget"]
+    if spec.has("sources"):
+        out += ["export", "extract"]
+    out += ["dep_add", "dep_remove", "reaffirm", "graph"]
+    if spec.report_taint:
+        out += ["check", "tree"]
+    if spec.has("supersede"):
+        out.append("supersede")
+    if spec.has("progress"):
+        out += ["status", "review", "review_apply", "next"]
+    if spec.has("ordered"):
+        out.append("move")
+    return (*out, *spec.transitions)
+
+
 ASPECT_FIELDS: Mapping[str, Mapping[str, str]] = MappingProxyType(
     {
         "anchored": MappingProxyType(

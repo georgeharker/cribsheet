@@ -69,6 +69,9 @@ values = { proposed = "gated", active = "open", superseded = "retired" }
 initial = "active"
 transitions = { promote = "active" }
 
+[design.verbs]
+extract = "import"  # the doc-extraction procedure predates `extract`
+
 [design.edges]
 plan = "follows"
 design = "rests_on"
@@ -78,6 +81,9 @@ design = "rests_on"
 values = { todo = "open", "in-progress" = "claimed", parked = "paused", declined = "dropped", done = "done", verified = "done" }
 initial = "todo"
 transitions = { park = "parked", decline = "declined" }
+
+[plan.verbs]
+extract = "import"  # the doc-extraction procedure predates `extract`
 
 [plan.edges]
 plan = "follows"
