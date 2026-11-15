@@ -79,8 +79,10 @@ find the store from anywhere.
 
 Consequences to know:
 
-- **Exclusive, not overlay** — a project is global or in-repo, never both;
-  `crib project release` moves it back.
+- **Exclusive, not overlay** — each pillar of a project lives in exactly one
+  place, never a union of two; `crib project release` moves it back. (With a
+  [per-facet mapping](#one-pillar-or-a-declared-facet-in-the-repo), one pillar
+  can live in the repo while the rest stay global.)
 - **The repo's git owns in-repo notes** — commit them with the repo;
   `crib memory sync/push/pull/setup` refuse for such projects.
 - **`.crib` globs never match the store** — a `docs: ["**/*.md"]` will not
@@ -89,6 +91,34 @@ Consequences to know:
   with its token; reads/writes error with the fix (clone it, map the
   `$LOCATION`, or `release`).
 - Chunk ids are path-independent, so adopt/release never reindexes.
+
+## One pillar (or a declared facet) in the repo
+
+`store:` moves every pillar at once. A `.crib` can also map a single facet
+onto a directory of its own (the facet registry's location mechanism; full
+reference in [facets.md](facets.md#mapping-a-facet-from-a-repo)):
+
+```yaml
+# .crib at the repo root
+project: myproj
+facets:
+  design: { dir: decisions }                       # decisions live in the repo
+  routine: { dir: workflows, glob: "*.md", read_only: true, ids: derived }
+```
+
+- The mapping is recorded in the stub's `mappings:` (portable `$LOCATION`
+  tokens) when crib next reads the `.crib` (`project setup` / `index` /
+  `adopt`), so the daemon finds it with no cwd.
+- **A built-in pillar** (decisions, plans, learnings) maps writable with
+  stamped ids. Its existing items are moved by `crib project adopt` and back
+  by `crib project release`; until then it is *pending* (its verbs refuse,
+  naming the fix; `crib project doctor` reports it). Notes still move with
+  `store:`.
+- **A declared facet** may also map read-only (indexed, never written) and/or
+  with `ids: derived` (the id comes from the path; crib writes nothing).
+- A mapped facet's version ring is `<dir>/.versions/` (gitignored there); its
+  directory is skipped by `docs:` globs and code sweeps.
+- `docs:` itself is the notes facet mapped read-only under `sources/<repo>/`.
 
 ## Legacy layout migration
 
@@ -115,4 +145,8 @@ code cannot see the sibling dirs (no data loss; it heals on upgrade).
 - a doc you want to own and edit in crib → `note_import` (accepts re-pull
   overwrite)
 - notes traveling with a specific repo → `.crib store:` + `project adopt`
+- just one pillar (say decisions) in the repo → `.crib facets: {design: {dir: ...}}`
+  + `project adopt`
+- your own kind of item (workflows, reviews, tickets) → a declared facet
+  ([facets.md](facets.md)), optionally mapped from the repo
 - notes shared across machines (global projects) → `crib memory sync`

@@ -9,6 +9,54 @@ This file ships in the Pi package, where Pi shows the entries newer than the
 version you last ran. `scripts/bump-version.sh` refuses a release whose
 version has no heading here.
 
+## [0.24.0-dev1] - 2026-11-15
+
+### Highlights
+
+- **Custom facets.** Declare your own kinds of item in a system facets file
+  (`~/.config/crib/facets.toml`; `crib facets init` writes a commented
+  starter). A facet is a spec: a noun, a plural, the aspects it has, and its
+  own typed fields. It gets the verbs of its aspects as MCP tools and CLI
+  commands (`routine_add`, `crib routine lookup`, ...), its own store, search
+  scope and tool set (`--tools routines:ro`). See `docs/facets.md`.
+- **Three kinds of facet.** Note-like (core, optionally enriched with
+  summaries and keywords), anchored to code like learnings (for example a
+  review agent's findings, shown on `code_dossier` beside learnings), and
+  graph facets like decisions and plans, with their own statuses (each
+  playing an engine role: open, claimed, gated, paused, dropped, done,
+  retired), transitions, link defaults and working set (`next`).
+- **Typed fields you can query.** A declared facet's fields (`int`, `str`,
+  `date`) are parameters on add/edit, and filters on lookup and the new
+  `list`: equality, or `where` with `== != < <= > >=` (int, date) and
+  `== != re` (str). `--where 'severity>=3'` on the CLI.
+- **Facets mapped from a repo.** A repo's `.crib` `facets:` maps a facet onto
+  a directory of its own, writable or read-only, with ids stamped into the
+  files or derived from their paths (a read-only, derived mapping never
+  writes a byte). `docs:` is now the notes facet mapped read-only.
+- **Storage per pillar.** A repo can keep, say, its decisions in the repo
+  (`facets: {design: {dir: decisions}}`) while notes stay where they are;
+  `crib project adopt` moves the existing items, `release` moves them back.
+- **Explicit conformance.** A new or changed facet definition waits for
+  `crib facets sync --apply` (which shows what it will do first); nothing
+  converts the store behind your back. `crib facets show` lists every facet
+  and its state; `--toml` exports the registry.
+- **Releases test themselves.** Every release tag runs the full suite on the
+  tagged commit and publishes only if it passes.
+
+### Changed
+
+- crib's own pillars (notes, decisions, plans, learnings) are now specs in
+  the same registry, and their tools and commands are generated from the
+  same templates. Their names, parameters, descriptions and `--help` are
+  unchanged (held to the byte by a snapshot test).
+- `crib note -h` lists `import-memory` first.
+
+### Upgrading
+
+- Nothing to do: built-in facets and the store layout are unchanged, so the
+  first start rebuilds nothing. A facet you declare waits for
+  `crib facets sync --apply`, then a daemon restart.
+
 ## [0.23.1] - 2026-11-13
 
 Everything since 0.22.1, collected from the 0.23 dev releases below.

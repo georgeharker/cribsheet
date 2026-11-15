@@ -48,6 +48,8 @@ website:
             href: docs/surface.md
           - text: "Where things live (store types)"
             href: docs/storage.md
+          - text: "Custom facets"
+            href: docs/facets.md
           - text: "Sync across machines"
             href: docs/resume-on-new-machine.md
           - text: "Vector store (DuckDB)"

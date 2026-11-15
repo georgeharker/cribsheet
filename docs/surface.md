@@ -7,7 +7,8 @@ description, grouped by facet. (For an intro and quickstart, start at the
 The CLI is **noun-verb**: `crib <noun> <verb>` — `crib note lookup`, `crib code xref`,
 `crib learning add`, `crib project setup`. That is the only form; there is no
 hyphenated fallback (`crib code-lookup` is rejected). The nouns are `note`, `design`,
-`plan`, `code`, `learning`, `project`, and `memory`, plus a few top-level system verbs.
+`plan`, `code`, `learning`, `project`, and `memory`, plus a few top-level system verbs,
+plus one noun for each facet you declare ([Declared facets](#declared-facets)).
 
 **Selecting a project.** `-p/--project` (by name) or `-P/--project-path` (by a path
 inside the repo) on the CLI — `project`/`project_path` on MCP — pick which project a
@@ -309,6 +310,38 @@ Pushing publishes to a remote, so these stay CLI-only (not agent-callable).
 | `crib memory sync`                      | Commit + pull + push notes via git, then reindex.                                             |
 | `crib memory push` / `crib memory pull` | The halves of sync (`pull` reindexes after).                                                  |
 | `crib merge-driver`                     | The frontmatter-aware git merge driver (invoked by git during a merge; hidden from `--help`). |
+
+## Declared facets
+
+_(Declaring them, and everything below in depth: [facets.md](facets.md).)_
+
+A facet declared in the system facets file gets the verbs of its aspects, as MCP
+tools `<noun>_<verb>` and CLI commands `crib <noun> <verb>`, generated from the same
+templates as the built-ins' (whose names, parameters and descriptions those
+templates reproduce exactly). The verbs, by aspect:
+
+| aspect | verbs |
+| --- | --- |
+| core | `add`, `read`, `edit`, `append`, `forget`, `lookup`, `apropos`, `locate`, `versions`, `restore`, `reindex`, `import`, `move` |
+| enriched | `summarize`, `elaborate`, `distill` |
+| anchored (replaces core) | `add`, `edit`, `forget`, `read`, `reaffirm`, `migrate`, `report`, `rehome`, by `symbol` |
+| links + status (a graph facet) | `add`, `read`, `edit`, `append`, `lookup`, `list`, `forget`, `dep_add`, `dep_remove`, `reaffirm`, `graph`, and one verb per status transition |
+| progress / ordered / supersede / sources | `status`, `next`, `review`, `review_apply` / `move` / `supersede` / `export`, `extract` |
+| declared fields | `list`; each field a typed parameter on `add`/`edit` and a filter on `lookup`/`list` (`where=[{field, op, value}]`, CLI `--<field>`, `--where 'FIELD OP VALUE'`) |
+
+`extract` is the canonical name of the decision/plan doc-extraction procedure;
+the built-ins keep calling it `design_import` / `plan_import`. A facet's
+`disable = [...]` removes verbs it doesn't want. Each declared facet is its own
+tool set (its plural; `:ro` keeps its read verbs).
+
+| CLI | Description |
+| --- | --- |
+| `crib facets show [--toml]` | Every facet, built-in and declared, with its aspects, fields and state in this store; `--toml` prints the effective registry as a facets file. |
+| `crib facets init [--force]` | Write a starter system facets file (guidance, commented examples, the built-ins for reference). |
+| `crib facets sync [--apply]` | Bring the store in line with the declared facets: a plan, then (with `--apply`) create, rebuild or drop each facet's table. A new or changed facet's verbs refuse until this runs. Then restart the daemon. |
+
+These are CLI-only: they read this machine's facets file and convert its store
+directly.
 
 ## Generation setup (CLI-only)
 

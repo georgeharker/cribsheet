@@ -146,6 +146,17 @@ passage re-checks exactly what was drawn from it. Extracted decisions land
 `proposed`: they gate work and taint nothing until a human confirms them with
 `design_promote`.
 
+### Declared facets: a `<noun>_*` family you don't recognise
+
+Besides `note_*`, `design_*`, `plan_*`, `learning_*` and `code_*`, a deployment may
+declare its own facets (`routine_*`, `review_*`, `incident_*`, ...). Each is a kind
+of item with its own store, search scope and verbs, generated from the same
+templates as the built-ins': use that family for that kind of item, not `note_store`.
+Their extra parameters are the facet's own typed fields (set them on `add`/`edit`,
+filter `lookup`/`list` with them, `where=` for comparisons). A verb that refuses
+with "isn't ready in this store" is waiting for `crib facets sync --apply`: say so,
+don't work around it.
+
 ### Project selection for *reads*: name it — every call, never wrong
 
 **Pass `project=<name>` or `project_path=<a path in that repo>` on every read.** Naming

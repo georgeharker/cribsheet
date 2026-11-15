@@ -4,6 +4,14 @@ What the design and plan facets are *for*, the model underneath them, and why ea
 piece is shaped the way it is. The verb-by-verb reference is
 [surface.md](surface.md); storage ownership is [storage.md](storage.md).
 
+> **Where this behaviour comes from.** Decisions and plans are graph facets in
+> crib's facet registry: their statuses, what each status means (its role:
+> open, claimed, gated, paused, dropped, done, retired), their transitions
+> (`promote`, `park`, `decline`), their default link kinds and their verbs
+> are a spec in `crib/facets.toml`, not special cases in the code. A facet
+> you declare with the same aspects gets the same machinery under its own
+> statuses: see [facets.md](facets.md#graph-facets-statuses-transitions-links).
+
 ## 1. Why a facet, and not just notes
 
 A note can hold the prose of a decision. What it cannot hold is the **promise**.
