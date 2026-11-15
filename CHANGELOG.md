@@ -50,8 +50,9 @@ version has no heading here.
   with `--drop`; sync refuses while the facets file fails to load, and on a
   shared store needs `--shared`. `crib facets show` lists every facet and its
   state; `--toml` exports the registry.
-- **Releases test themselves.** Every release tag runs the full suite on the
-  tagged commit and publishes only if it passes.
+- **Releases test themselves.** Every release tag runs the full suite once, on
+  the tagged commit and on Python 3.13 and 3.14; the PyPI and plugin releases
+  each publish only if it passed.
 
 ### Changed
 

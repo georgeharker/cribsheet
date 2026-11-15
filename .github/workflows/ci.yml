@@ -12,8 +12,14 @@ jobs:
     check:
         # Explicit name: the check-run name is what branch protection matches
         # on, and the bare job id "check" is also used by vendored-drift.yml.
-        name: tests
+        # 3.13 keeps the plain "tests" name; 3.14 (what development runs on)
+        # reports as "tests (3.14)". A release needs both.
+        name: ${{ matrix.python == '3.13' && 'tests' || format('tests ({0})', matrix.python) }}
         runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                python: ["3.13", "3.14"]
         steps:
             # vendor/llmkit is deliberately NOT checked out: it is a reading
             # copy for the in-tree xref / code index, while the code under test
@@ -33,7 +39,7 @@ jobs:
             - name: Install uv
               uses: astral-sh/setup-uv@v10.1.0
               with:
-                  python-version: "3.13"
+                  python-version: ${{ matrix.python }}
 
             # tests/test_sync.py asserts GitBacking falls back to the *local*
             # default branch. A runner's git has no init.defaultBranch set, so it

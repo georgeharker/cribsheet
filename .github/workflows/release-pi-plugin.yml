@@ -24,12 +24,25 @@ on:
     tags: ["v*"]
 
 jobs:
-  # The full suite (ci.yml) on the tagged commit first, as release.yml does: a
-  # tag publishes everything or nothing.
+  # The suite runs ONCE per release tag, in release.yml (on Python 3.13 and
+  # 3.14); this waits for its verdict on the tagged commit and publishes only
+  # if it passed (.github/scripts/wait-for-release-tests.sh).
   tests:
-    uses: ./.github/workflows/ci.yml
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
     permissions:
-      contents: read  # the suite only reads the repo
+      actions: read   # read release.yml's run and jobs
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Wait for release.yml's tests on this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: .github/scripts/wait-for-release-tests.sh
 
   publish:
     needs: tests
