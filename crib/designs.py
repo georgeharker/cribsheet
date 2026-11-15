@@ -1346,7 +1346,7 @@ class Designs:
         except Exception:  # noqa: BLE001 — as `tainted_designs`: never break a read
             return hits
         by_relpath = {(n.kind, n.relpath): n for n in graph.nodes.values()}
-        kinds = (kind,) if kind else ("design", "plan")
+        kinds = (kind,) if kind else _graph_kinds()
         for hit in hits:
             rp = str(hit.get("relpath") or "")
             node = next(
@@ -1592,8 +1592,7 @@ class Designs:
         deps: list[str] | None = None,
         sources: list[Any] | None = None,
         proposed: bool = False,
-        kinded: dict[str, list[str]] | None = None,
-    ) -> dict[str, Any]:
+        kinded: dict[str, list[str]] | None = None, *, facet: str = "design") -> dict[str, Any]:
         """Record a design decision under `notes/design/`, `checked` seeded from
         the current dep hashes (so a new decision is born verified) and `sources`
         from the cited sections' hashes.
@@ -1601,11 +1600,11 @@ class Designs:
         `proposed=True` is the IMPORT tier and belongs to `design_import`'s
         procedure: hand-authoring is already a human judgement, so it lands
         `active`; only extraction quarantines."""
-        extra = {"status": _status_for("design", "gated")} if proposed else {}
-        return await self._add(proj, "design", title, content, deps, extra, sources,
+        extra = {"status": _status_for(facet, "gated")} if proposed else {}
+        return await self._add(proj, facet, title, content, deps, extra, sources,
                                kinded)
 
-    def design_read(self, proj: str, ref: str) -> dict[str, Any]:
+    def design_read(self, proj: str, ref: str, *, facet: str = "design") -> dict[str, Any]:
         """The one-call orientation on a decision: body + status + every edge
         annotated + this node's own taint state with the chains explaining it.
 
@@ -1614,7 +1613,7 @@ class Designs:
         prose, this gives you prose PLUS what it rests on, what rests on it, and
         whether either has moved under you."""
         graph = self._load_graph(proj)
-        node = self._resolve_ref(graph, ref, "design")
+        node = self._resolve_ref(graph, ref, facet)
         tainted = self._taint(graph)
         info = tainted.get(node.id, {})
         note = self._note(proj, node)
@@ -1711,17 +1710,15 @@ class Designs:
         return res
 
     async def design_edit(
-        self, proj: str, ref: str, new_content: str, sources: list[Any] | None = None
-    ) -> dict[str, Any]:
+        self, proj: str, ref: str, new_content: str, sources: list[Any] | None = None, *, facet: str = "design") -> dict[str, Any]:
         """Replace a decision's body through the facet, answering with the
         dependents the change just tainted. `sources` replaces its citations."""
         return await self._write_body(
-            proj, ref, lambda _: (new_content or "").strip() + "\n", sources
+            proj, ref, lambda _: (new_content or "").strip() + "\n", sources, kind=facet
         )
 
     async def design_append(
-        self, proj: str, ref: str, content: str, sources: list[Any] | None = None
-    ) -> dict[str, Any]:
+        self, proj: str, ref: str, content: str, sources: list[Any] | None = None, *, facet: str = "design") -> dict[str, Any]:
         """Extend a decision's body through the facet, answering with the
         dependents the change just tainted.
 
@@ -1733,13 +1730,14 @@ class Designs:
         hash they were CAPTURED at (their whole meaning); only the new ones are
         hashed as the doc reads now. `design_edit(sources=)` remains the
         replace-everything spelling."""
-        merged = self._append_sources(proj, ref, "design", sources)
+        merged = self._append_sources(proj, ref, facet, sources)
         return await self._write_body(
             proj,
             ref,
             lambda body: body.rstrip() + "\n\n" + (content or "").strip() + "\n",
             sources=None if merged is None else merged,
             precaptured=merged is not None,
+            kind=facet,
         )
 
     def _append_sources(
@@ -1762,7 +1760,7 @@ class Designs:
         ]
         return kept + new
 
-    def plan_read(self, proj: str, ref: str) -> dict[str, Any]:
+    def plan_read(self, proj: str, ref: str, *, facet: str = "plan") -> dict[str, Any]:
         """A plan item's dossier: body, status, every edge annotated, its DERIVED
         blocking (the mixed-dep rule `plan_next` gates on), and its own taint.
 
@@ -1772,7 +1770,7 @@ class Designs:
         proposed design dep). A finished item whose cited source moved carries
         `revisit`; the graph reports it, it never re-opens the status."""
         graph = self._load_graph(proj)
-        node = self._resolve_ref(graph, ref, "plan")
+        node = self._resolve_ref(graph, ref, facet)
         gating = self._taint(graph, sources=False)
         full = self._taint(graph)
         unresolved = {d for d in node.deps if d not in graph.nodes}
@@ -1801,8 +1799,7 @@ class Designs:
         return out
 
     async def plan_edit(
-        self, proj: str, ref: str, new_content: str, sources: list[Any] | None = None
-    ) -> dict[str, Any]:
+        self, proj: str, ref: str, new_content: str, sources: list[Any] | None = None, *, facet: str = "plan") -> dict[str, Any]:
         """Replace a plan item's body through the facet, answering with the
         dependents the change just tainted — the plan-side `design_edit`.
         `sources` replaces its citations."""
@@ -1811,19 +1808,18 @@ class Designs:
             ref,
             lambda _: (new_content or "").strip() + "\n",
             sources,
-            kind="plan",
+            kind=facet,
         )
 
     async def plan_append(
-        self, proj: str, ref: str, content: str, sources: list[Any] | None = None
-    ) -> dict[str, Any]:
+        self, proj: str, ref: str, content: str, sources: list[Any] | None = None, *, facet: str = "plan") -> dict[str, Any]:
         """Extend a plan item's body through the facet, answering with the
         dependents the change just tainted — the plan-side `design_append`.
 
         A plan body is OPTIONAL, so an append onto a title-only item just SETS the
         body rather than prepending blank lines. `sources` ADDS citations (deduped
         by section), existing ones keeping their capture-time hashes."""
-        merged = self._append_sources(proj, ref, "plan", sources)
+        merged = self._append_sources(proj, ref, facet, sources)
 
         def rewrite(body: str) -> str:
             text = (content or "").strip() + "\n"
@@ -1835,10 +1831,10 @@ class Designs:
             rewrite,
             sources=None if merged is None else merged,
             precaptured=merged is not None,
-            kind="plan",
+            kind=facet,
         )
 
-    def design_list(self, proj: str, tainted: bool = False) -> dict[str, Any]:
+    def design_list(self, proj: str, tainted: bool = False, *, facet: str = "design") -> dict[str, Any]:
         """Every decision as a flat table — title, ref, status, taint flag, edge
         counts. The inventory read; `design_tree` is the shape read."""
         graph = self._load_graph(proj)
@@ -1855,10 +1851,10 @@ class Designs:
                 "sources": len(n.sources),
                 "dependents": len(graph.dependents.get(n.id, [])),
             }
-            for n in sorted(graph.of_kind("design"), key=lambda n: n.title)
+            for n in sorted(graph.of_kind(facet), key=lambda n: n.title)
         ]
         total, n_tainted = len(rows), sum(1 for r in rows if r["tainted"])
-        gated = set(_spec("design").with_role("gated"))
+        gated = set(_spec(facet).with_role("gated"))
         proposed = sum(1 for r in rows if r["status"] in gated)
         if tainted:
             rows = [r for r in rows if r["tainted"]]
@@ -1969,27 +1965,24 @@ class Designs:
         }
 
     async def design_dep_add(
-        self, proj: str, ref: str, dep_ref: str, kind: str | None = None
-    ) -> dict[str, Any]:
-        return await self._dep_add(proj, "design", ref, dep_ref, kind)
+        self, proj: str, ref: str, dep_ref: str, kind: str | None = None, *, facet: str = "design") -> dict[str, Any]:
+        return await self._dep_add(proj, facet, ref, dep_ref, kind)
 
     async def design_dep_remove(
-        self, proj: str, ref: str, dep_ref: str
-    ) -> dict[str, Any]:
-        return await self._dep_remove(proj, "design", ref, dep_ref)
+        self, proj: str, ref: str, dep_ref: str, *, facet: str = "design") -> dict[str, Any]:
+        return await self._dep_remove(proj, facet, ref, dep_ref)
 
     async def design_forget(
-        self, proj: str, ref: str, force: bool = False
-    ) -> dict[str, Any]:
-        return await self._forget(proj, "design", ref, force)
+        self, proj: str, ref: str, force: bool = False, *, facet: str = "design") -> dict[str, Any]:
+        return await self._forget(proj, facet, ref, force)
 
-    def design_check(self, proj: str, ref: str | None = None) -> dict[str, Any]:
+    def design_check(self, proj: str, ref: str | None = None, *, facet: str = "design") -> dict[str, Any]:
         """Which decisions are out of date with what they build on, why, and what
         to do about each — every tainted row ends with its prescribed follow-up
         (`next`) so the flag is never a dead end."""
         graph = self._load_graph(proj)
         tainted = self._taint(graph)
-        only = self._resolve_ref(graph, ref, "design").id if ref else None
+        only = self._resolve_ref(graph, ref, facet).id if ref else None
         rows = []
         for nid, info in tainted.items():
             node = graph.nodes[nid]
@@ -2000,7 +1993,7 @@ class Designs:
             )
         rows.sort(key=lambda r: r["title"])
         cycles = [[graph.nodes[c].title for c in cyc] for cyc in _cycles(graph.nodes)]
-        designs = graph.of_kind("design")
+        designs = graph.of_kind(facet)
         # Proposed entries are their own queue, not part of the stale one: they
         # aren't out of date, they are un-blessed, and the verb that clears them
         # is `design_promote` rather than `design_reaffirm`.
@@ -2030,7 +2023,7 @@ class Designs:
                 checked[dep_id] = dep.body_hash
         return checked, missing
 
-    async def design_reaffirm(self, proj: str, ref: str) -> dict[str, Any]:
+    async def design_reaffirm(self, proj: str, ref: str, *, facet: str = "design") -> dict[str, Any]:
         """Re-record a decision's dep AND source hashes after a human re-read it —
         the ONLY thing that clears taint (short of editing the decision itself).
 
@@ -2042,7 +2035,7 @@ class Designs:
         Both edge families are re-recorded together, because both are what "I
         re-read this and it still holds" is a statement about."""
         graph = self._load_graph(proj)
-        node = self._resolve_ref(graph, ref, "design")
+        node = self._resolve_ref(graph, ref, facet)
         checked, missing = self._recheck(graph, node)
         sources, missing_sources = self._recapture(proj, node)
         fm: dict[str, Any] = {"checked": checked}
@@ -2057,7 +2050,7 @@ class Designs:
             "missing_sources": missing_sources,
         }
 
-    async def plan_reaffirm(self, proj: str, ref: str) -> dict[str, Any]:
+    async def plan_reaffirm(self, proj: str, ref: str, *, facet: str = "plan") -> dict[str, Any]:
         """Re-record a plan item's dep AND source hashes after a human re-read
         what moved — the plan-side twin of `design_reaffirm`, and the missing
         half of a symmetry: plan items carry design deps that taint when the
@@ -2070,7 +2063,7 @@ class Designs:
         the WORK (and re-records source hashes as part of it); this is a claim
         about the item's GROUND, made without pretending the work moved."""
         graph = self._load_graph(proj)
-        node = self._resolve_ref(graph, ref, "plan")
+        node = self._resolve_ref(graph, ref, facet)
         checked, missing = self._recheck(graph, node)
         sources, missing_sources = self._recapture(proj, node)
         fm: dict[str, Any] = {"checked": checked}
@@ -2085,7 +2078,7 @@ class Designs:
             "missing_sources": missing_sources,
         }
 
-    async def design_promote(self, proj: str, ref: str) -> dict[str, Any]:
+    async def design_promote(self, proj: str, ref: str, *, facet: str = "design") -> dict[str, Any]:
         """proposed → active: the human act that turns an EXTRACTED decision into
         settled ground others may build on.
 
@@ -2095,7 +2088,7 @@ class Designs:
         the docs as they read at the moment someone confirmed it, not as of
         whatever the extraction saw."""
         graph = self._load_graph(proj)
-        node = self._resolve_ref(graph, ref, "design")
+        node = self._resolve_ref(graph, ref, facet)
         if not _is(node, "gated"):
             raise CribUserError(
                 f"{node.title!r} is already {node.status} — promote applies to "
@@ -2126,8 +2119,7 @@ class Designs:
         }
 
     def design_tree(
-        self, proj: str, ref: str | None = None, direction: str = "deps", depth: int = 6
-    ) -> dict[str, Any]:
+        self, proj: str, ref: str | None = None, direction: str = "deps", depth: int = 6, *, facet: str = "design") -> dict[str, Any]:
         """The dependency tree around a decision — `deps` (what it builds on) or
         `dependents` (what builds on it) — every node taint-flagged."""
         if direction not in ("deps", "dependents"):
@@ -2141,12 +2133,12 @@ class Designs:
         # nothing points at *along the edges being followed*, so walking down from
         # them reaches the whole forest exactly once.
         roots = (
-            [self._resolve_ref(graph, ref, "design")]
+            [self._resolve_ref(graph, ref, facet)]
             if ref
             else sorted(
                 (
                     n
-                    for n in graph.of_kind("design")
+                    for n in graph.of_kind(facet)
                     if not (
                         graph.dependents.get(n.id) if direction == "deps" else n.deps
                     )
@@ -2316,8 +2308,7 @@ class Designs:
         }
 
     async def design_supersede(
-        self, proj: str, ref: str, by_ref: str | None = None
-    ) -> dict[str, Any]:
+        self, proj: str, ref: str, by_ref: str | None = None, *, facet: str = "design") -> dict[str, Any]:
         """Soft-delete a decision: mark it `superseded` (optionally naming its
         replacement) and taint everything that builds on it.
 
@@ -2326,8 +2317,8 @@ class Designs:
         write fan-out onto dependents (decision 3); they simply read as changed
         until a human verifies them against the replacement."""
         graph = self._load_graph(proj)
-        node = self._resolve_ref(graph, ref, "design")
-        by = self._resolve_ref(graph, by_ref, "design") if by_ref else None
+        node = self._resolve_ref(graph, ref, facet)
+        by = self._resolve_ref(graph, by_ref, facet) if by_ref else None
         if by and by.id == node.id:
             raise CribUserError("a decision cannot supersede itself")
         note = self._note(proj, node)
@@ -2356,12 +2347,11 @@ class Designs:
         graph: Graph,
         after: Node | None,
         before: Node | None,
-        exclude: str | None = None,
-    ) -> str:
+        exclude: str | None = None, *, facet: str = "plan") -> str:
         """The rank for an item placed after/before given neighbours (either or
         both may be None — none at all means the end of the list)."""
         items = sorted(
-            (n for n in graph.of_kind("plan") if n.id != exclude),
+            (n for n in graph.of_kind(facet) if n.id != exclude),
             key=lambda n: (n.rank, n.title),
         )
         ranks = [n.rank for n in items if n.rank]
@@ -2389,8 +2379,7 @@ class Designs:
         before: str | None = None,
         items: list[dict[str, Any]] | None = None,
         sources: list[Any] | None = None,
-        kinded: dict[str, list[str]] | None = None,
-    ) -> dict[str, Any]:
+        kinded: dict[str, list[str]] | None = None, *, facet: str = "plan") -> dict[str, Any]:
         """Add plan items (default: at the end; `after`/`before` place them).
 
         Takes ONE item (`title`/`content`/`deps`/`sources`) or a BATCH (`items`),
@@ -2443,21 +2432,21 @@ class Designs:
                 )
             graph = self._load_graph(proj)
             a = (
-                self._resolve_ref(graph, prev, "plan")
+                self._resolve_ref(graph, prev, facet)
                 if prev
-                else self._resolve_ref(graph, after, "plan")
+                else self._resolve_ref(graph, after, facet)
                 if after
                 else None
             )
             b = (
-                self._resolve_ref(graph, before, "plan")
+                self._resolve_ref(graph, before, facet)
                 if before and not prev
                 else None
             )
-            rank = self._rank_for(graph, a, b)
+            rank = self._rank_for(graph, a, b, facet=facet)
             out = await self._add(
                 proj,
-                "plan",
+                facet,
                 str(item.get("title") or ""),
                 str(item.get("content") or ""),
                 item_deps,
@@ -2473,7 +2462,7 @@ class Designs:
         head = rows[0] if len(rows) == 1 else {"project": proj}
         return {**head, "items": rows, "added": len(rows)}
 
-    async def plan_status(self, proj: str, ref: str, status: str) -> dict[str, Any]:
+    async def plan_status(self, proj: str, ref: str, status: str, *, facet: str = "plan") -> dict[str, Any]:
         """Set an item's status, answering with what that just UNBLOCKED.
 
         The plan-side mirror of `design_edit`'s `newly_tainted`: finishing work is
@@ -2495,7 +2484,7 @@ class Designs:
                 f"('blocked' is derived from deps, never set)"
             )
         graph = self._load_graph(proj)
-        node = self._resolve_ref(graph, ref, "plan")
+        node = self._resolve_ref(graph, ref, facet)
         warnings = []
         if status in DONE_STATUSES:
             open_deps = [
@@ -2514,7 +2503,7 @@ class Designs:
         # not everything that happens to be ready now
         was_blocked = {
             r["id"]
-            for r in self._rows(proj, graph, graph.of_kind("plan"))
+            for r in self._rows(proj, graph, graph.of_kind(facet))
             if r["blocked"]
         }
         fm: dict[str, Any] = {"status": status}
@@ -2536,7 +2525,7 @@ class Designs:
         unblocked = []
         if status in DONE_STATUSES:
             after = self._load_graph(proj)
-            for row in self._rows(proj, after, after.of_kind("plan")):
+            for row in self._rows(proj, after, after.of_kind(facet)):
                 if (
                     row["id"] in was_blocked
                     and not row["blocked"]
@@ -2598,8 +2587,7 @@ class Designs:
         proj: str,
         ref: str,
         triggers: list[str] | None = None,
-        why: str | None = None,
-    ) -> dict[str, Any]:
+        why: str | None = None, *, facet: str = "plan") -> dict[str, Any]:
         """Park an item — not now, with a stated reason; optionally watching refs
         whose CHANGE surfaces it for re-evaluation.
 
@@ -2615,7 +2603,7 @@ class Designs:
         rides the record AND one dated body line, which is what makes the
         deferral semantically searchable (`plan_lookup` hits carry it)."""
         graph = self._load_graph(proj)
-        node = self._resolve_ref(graph, ref, "plan")
+        node = self._resolve_ref(graph, ref, facet)
         parked = _spec(node.kind).transitions["park"]  # the status `park` moves to
         if node.status in DONE_STATUSES:
             raise CribUserError(
@@ -2658,7 +2646,7 @@ class Designs:
             **out,
             "status": parked,
             "trigger": self._trigger_state(
-                after, next(n for n in after.of_kind("plan") if n.id == node.id)
+                after, next(n for n in after.of_kind(facet) if n.id == node.id)
             ),
             "newly_tainted": newly,
             "next": (
@@ -2673,8 +2661,7 @@ class Designs:
         proj: str,
         ref: str,
         why: str | None = None,
-        triggers: list[str] | None = None,
-    ) -> dict[str, Any]:
+        triggers: list[str] | None = None, *, facet: str = "plan") -> dict[str, Any]:
         """Decline an item — never scheduled, REMEMBERED with the why-not.
 
         Terminal-with-rationale, the plan-facet sibling of `design_supersede`:
@@ -2694,7 +2681,7 @@ class Designs:
                 "re-proposal comes back for; pass `why`"
             )
         graph = self._load_graph(proj)
-        node = self._resolve_ref(graph, ref, "plan")
+        node = self._resolve_ref(graph, ref, facet)
         declined = _spec(node.kind).transitions["decline"]  # the status `decline` moves to
         if node.status in DONE_STATUSES:
             raise CribUserError(
@@ -2739,7 +2726,7 @@ class Designs:
             **out,
             "status": declined,
             "trigger": self._trigger_state(
-                after, next(n for n in after.of_kind("plan") if n.id == node.id)
+                after, next(n for n in after.of_kind(facet) if n.id == node.id)
             ),
             "newly_tainted": newly,
             "next": (
@@ -2771,8 +2758,7 @@ class Designs:
     async def plan_review(
         self,
         proj: str,
-        probe: Callable[[str, str, str], list[dict[str, Any]]] | None = None,
-    ) -> dict[str, Any]:
+        probe: Callable[[str, str, str], list[dict[str, Any]]] | None = None, *, facet: str = "plan") -> dict[str, Any]:
         """The review EVIDENCE PACK — the state exam plus per-item evidence for a
         full-plan evaluation. Runs NO model and writes NOTHING (the
         `design_import` precedent): this hands the calling session everything a
@@ -2787,9 +2773,9 @@ class Designs:
         import asyncio
 
         graph = self._load_graph(proj)
-        order, cycles = self._ordered(graph)
+        order, cycles = self._ordered(graph, facet=facet)
         rows = self._rows(proj, graph, order)
-        export = self.export_facet(proj, "plan")["markdown"]
+        export = self.export_facet(proj, facet)["markdown"]
 
         # Overlap probes for OPEN items only: the re-proposal question ("is this
         # already tracked / parked / declined / done?") is meaningless for
@@ -2806,7 +2792,7 @@ class Designs:
         open_rows = [
             r
             for r in rows
-            if _spec("plan").role(r["status"]) not in ("done", "dropped")
+            if _spec(facet).role(r["status"]) not in ("done", "dropped")
         ]
         await asyncio.gather(*(asyncio.to_thread(_probe, r) for r in open_rows))
 
@@ -2820,8 +2806,7 @@ class Designs:
         }
 
     async def plan_review_apply(
-        self, proj: str, batch: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+        self, proj: str, batch: list[dict[str, Any]], *, facet: str = "plan") -> dict[str, Any]:
         """Apply a JUDGED review batch, edge-aware, with per-op reports.
 
         Ops: retitle / move / park / decline / merge / edit (bodies). Refused,
@@ -2846,7 +2831,7 @@ class Designs:
                 if not ref:
                     raise CribUserError(f"op #{i} ({kind!r}) is missing `ref`")
                 if kind == "retitle":
-                    node = self._resolve_ref(self._load_graph(proj), ref, "plan")
+                    node = self._resolve_ref(self._load_graph(proj), ref, facet)
                     if not (op.get("title") or "").strip():
                         raise CribUserError("retitle needs a non-empty title")
                     await self._save(proj, node, {"title": op["title"].strip()})
@@ -2877,7 +2862,7 @@ class Designs:
                     applied_rels.append(out["relpath"])
                 elif kind == "merge":
                     entry["result"] = await self._review_merge(
-                        proj, ref, op.get("into") or ""
+                        proj, ref, op.get("into") or "", facet=facet
                     )
                     applied_rels.append(op.get("into") or "")
                 elif kind in ("done", "delete", "forget"):
@@ -2897,7 +2882,7 @@ class Designs:
         # The `reviewed` stamp, per touched item: a sweep's rewrites are visible,
         # never silent history rewrites.
         final_graph = self._load_graph(proj)
-        by_rel = {n.relpath: n for n in final_graph.of_kind("plan")}
+        by_rel = {n.relpath: n for n in final_graph.of_kind(facet)}
         for rel in dict.fromkeys(applied_rels):
             node = by_rel.get(rel)
             if node:
@@ -2921,13 +2906,12 @@ class Designs:
         }
 
     async def _review_merge(
-        self, proj: str, loser_ref: str, winner_ref: str
-    ) -> dict[str, Any]:
+        self, proj: str, loser_ref: str, winner_ref: str, *, facet: str = "plan") -> dict[str, Any]:
         """Merge two plan items: the loser's body rides onto the winner, the loser
         is forgotten. Refuses politely when the loser has dependents — repoint
         them first (the report says so; the batch continues)."""
-        loser = self._resolve_ref(self._load_graph(proj), loser_ref, "plan")
-        winner = self._resolve_ref(self._load_graph(proj), winner_ref, "plan")
+        loser = self._resolve_ref(self._load_graph(proj), loser_ref, facet)
+        winner = self._resolve_ref(self._load_graph(proj), winner_ref, facet)
         if loser.id == winner.id:
             raise CribUserError("merge needs two distinct items")
         loser_body = (self._note(proj, loser).body or "").strip()
@@ -2944,7 +2928,7 @@ class Designs:
                     if body.strip()
                     else loser_body
                 ),
-                kind="plan",
+                kind=facet,
             )
         try:
             await self.plan_forget(proj, loser.relpath)
@@ -2956,42 +2940,38 @@ class Designs:
         return {"merged": loser.relpath, "into": winner.relpath}
 
     async def plan_dep_add(
-        self, proj: str, ref: str, dep_ref: str, kind: str | None = None
-    ) -> dict[str, Any]:
-        return await self._dep_add(proj, "plan", ref, dep_ref, kind)
+        self, proj: str, ref: str, dep_ref: str, kind: str | None = None, *, facet: str = "plan") -> dict[str, Any]:
+        return await self._dep_add(proj, facet, ref, dep_ref, kind)
 
     async def plan_dep_remove(
-        self, proj: str, ref: str, dep_ref: str
-    ) -> dict[str, Any]:
-        return await self._dep_remove(proj, "plan", ref, dep_ref)
+        self, proj: str, ref: str, dep_ref: str, *, facet: str = "plan") -> dict[str, Any]:
+        return await self._dep_remove(proj, facet, ref, dep_ref)
 
     async def plan_forget(
-        self, proj: str, ref: str, force: bool = False
-    ) -> dict[str, Any]:
-        return await self._forget(proj, "plan", ref, force)
+        self, proj: str, ref: str, force: bool = False, *, facet: str = "plan") -> dict[str, Any]:
+        return await self._forget(proj, facet, ref, force)
 
     async def plan_move(
-        self, proj: str, ref: str, after: str | None = None, before: str | None = None
-    ) -> dict[str, Any]:
+        self, proj: str, ref: str, after: str | None = None, before: str | None = None, *, facet: str = "plan") -> dict[str, Any]:
         """Re-rank an item. Deps are NOT touched: order is preference, deps are
         correctness (decision 5), so moving can never break the plan."""
         if not (after or before):
             raise CribUserError("plan_move needs after=<ref> and/or before=<ref>")
         graph = self._load_graph(proj)
-        node = self._resolve_ref(graph, ref, "plan")
-        a = self._resolve_ref(graph, after, "plan") if after else None
-        b = self._resolve_ref(graph, before, "plan") if before else None
+        node = self._resolve_ref(graph, ref, facet)
+        a = self._resolve_ref(graph, after, facet) if after else None
+        b = self._resolve_ref(graph, before, facet) if before else None
         if node.id in {n.id for n in (a, b) if n}:
             raise CribUserError(f"{node.title!r} cannot be placed relative to itself")
-        rank = self._rank_for(graph, a, b, exclude=node.id)
+        rank = self._rank_for(graph, a, b, exclude=node.id, facet=facet)
         out = await self._save(proj, node, {"rank": rank})
         return {**out, "rank": rank, "deps": list(node.deps)}
 
-    def _ordered(self, graph: Graph) -> tuple[list[Node], list[list[str]]]:
+    def _ordered(self, graph: Graph, *, facet: str = "plan") -> tuple[list[Node], list[list[str]]]:
         """Topological order over plan items, rank breaking ties among the ready
         set — deps guarantee correctness, rank expresses preference (decision 5).
         Returns (ordered items, cycles); items caught in a cycle come last."""
-        plans = {n.id: n for n in graph.of_kind("plan")}
+        plans = {n.id: n for n in graph.of_kind(facet)}
         pending = {nid: {d for d in n.deps if d in plans} for nid, n in plans.items()}
         order: list[Node] = []
         while True:
@@ -3154,7 +3134,7 @@ class Designs:
             )
         return row
 
-    def plan_list(self, proj: str, all: bool = False) -> dict[str, Any]:
+    def plan_list(self, proj: str, all: bool = False, *, facet: str = "plan") -> dict[str, Any]:
         """The plan as a WORKING SET, not a graph dump: in-progress first, then
         ready, then blocked, then parked (each naming what it waits on or watches),
         with finished AND declined work hidden unless `all`.
@@ -3168,7 +3148,7 @@ class Designs:
         hidden-by-default settled rejections — visible with --all, and always
         retrievable via `plan_lookup` (the hit itself carries the why-not)."""
         graph = self._load_graph(proj)
-        order, cycles = self._ordered(graph)
+        order, cycles = self._ordered(graph, facet=facet)
         rows = self._rows(
             proj, graph, [n for n in order if all or not _is(n, "done", "dropped")]
         )
@@ -3189,7 +3169,7 @@ class Designs:
             "cycles": cycles,
         }
 
-    def plan_next(self, proj: str, k: int = 5) -> dict[str, Any]:
+    def plan_next(self, proj: str, k: int = 5, *, facet: str = "plan") -> dict[str, Any]:
         """What is actually actionable now: `todo` items nothing blocks, in rank
         order. The 'what do I do next' read at the start of a session.
 
@@ -3208,7 +3188,7 @@ class Designs:
         and several agents may read this plan at once. Taking an item means
         marking it, which is what makes the claim visible to everyone else."""
         graph = self._load_graph(proj)
-        order, _ = self._ordered(graph)
+        order, _ = self._ordered(graph, facet=facet)
         rows = [
             r
             for r in self._rows(proj, graph, [
@@ -3226,7 +3206,7 @@ class Designs:
             "items": rows[: max(1, k)],
             "ready": len(rows),
             "claimed": sum(
-                1 for n in graph.of_kind("plan") if _is(n, "claimed")
+                1 for n in graph.of_kind(facet) if _is(n, "claimed")
             ),
             # The re-evaluation queue, COUNTED here because `plan_next` is the
             # habitual pickup read and parked items are excluded from it by
@@ -3235,7 +3215,7 @@ class Designs:
             # unpark is a human claim via plan_status.
             "trigger_fired": sum(
                 1
-                for r in self._rows(proj, graph, graph.of_kind("plan"))
+                for r in self._rows(proj, graph, graph.of_kind(facet))
                 if r.get("trigger_fired")
             ),
         }
@@ -3304,7 +3284,7 @@ class Designs:
             ),
         }
 
-    def design_import(self, proj: str, relpath: str) -> dict[str, Any]:
+    def design_import(self, proj: str, relpath: str, *, facet: str = "design") -> dict[str, Any]:
         """Prepare a doc for extraction into the DESIGN graph: its sections with
         their current hashes, what already cites it, and the procedure to follow.
 
@@ -3313,9 +3293,9 @@ class Designs:
         paragraphs are decisions would produce entries nobody stands behind. What
         the caller cannot do for itself is compute the section hashes taint
         checking will compare against, so that is what this hands it."""
-        return self._import(proj, "design", relpath)
+        return self._import(proj, facet, relpath)
 
-    def plan_import(self, proj: str, relpath: str) -> dict[str, Any]:
+    def plan_import(self, proj: str, relpath: str, *, facet: str = "plan") -> dict[str, Any]:
         """The same for the PLAN facet: a doc's sections + the procedure for
         turning its actionable passages into plan items that cite them."""
-        return self._import(proj, "plan", relpath)
+        return self._import(proj, facet, relpath)
