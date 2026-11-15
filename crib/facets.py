@@ -15,10 +15,13 @@ segments) derives from here.
 
 from __future__ import annotations
 
+import os
+import sys
 import tomllib
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from importlib import resources
+from pathlib import Path
 from types import MappingProxyType
 from typing import Any
 
@@ -194,8 +197,55 @@ def load(text: str, *, builtin: bool = False) -> tuple[FacetSpec, ...]:
 BUILTINS = check(
     load(resources.files(__package__).joinpath("facets.toml").read_text(), builtin=True)
 )
-# The registry. Today it is the built-ins; it is resolved once per process.
-FACETS: tuple[FacetSpec, ...] = BUILTINS
+
+
+def system_file() -> Path:
+    """The system facets file: `$CRIB_FACETS_FILE`, else `facets.toml` in the
+    config dir (`$CRIB_CONFIG_DIR`, else ~/.config/crib). Separate from
+    config.toml: it is read once, at import, before any config is loaded."""
+    if f := os.environ.get("CRIB_FACETS_FILE"):
+        return Path(f).expanduser()
+    base = os.environ.get("CRIB_CONFIG_DIR") or "~/.config/crib"
+    return Path(base).expanduser() / "facets.toml"
+
+
+def declared(text: str) -> tuple[FacetSpec, ...]:
+    """The registry with a system facets file's declarations added after the
+    built-ins. Only new facets for now: naming a built-in (to turn it off or
+    extend it) is refused until that lands."""
+    specs = load(text)
+    builtin = {s.noun for s in BUILTINS}
+    for s in specs:
+        if s.noun in builtin:
+            raise FacetSpecError(
+                f"facet {s.noun!r} is built in: a facets file cannot change "
+                "built-in facets yet")
+    return check((*BUILTINS, *specs))
+
+
+def _resolve() -> tuple[tuple[FacetSpec, ...], str | None]:
+    """The registry for this process, and why the system file was ignored (if
+    it was). A bad file never stops crib: it warns and serves the built-ins,
+    the way a malformed lsp.json does."""
+    f = system_file()
+    try:
+        text = f.read_text()
+    except FileNotFoundError:
+        return BUILTINS, None
+    except OSError as e:
+        err = f"cannot read {f}: {e}"
+    else:
+        try:
+            return declared(text), None
+        except FacetSpecError as e:
+            err = f"ignoring {f}: {e}"
+    print(f"[crib] {err}", file=sys.stderr)
+    return BUILTINS, err
+
+
+# The registry: the built-ins, then any declared facets. Resolved once per
+# process; LOAD_ERROR says why a system facets file was ignored.
+FACETS, LOAD_ERROR = _resolve()
 _BY_NOUN = MappingProxyType({s.noun: s for s in FACETS})
 _BY_STORE = MappingProxyType({s.store: s for s in FACETS})
 
