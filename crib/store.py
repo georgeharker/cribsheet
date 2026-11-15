@@ -211,6 +211,21 @@ class Store(Protocol):
 
     def meta_set(self, key: str, value: str) -> None: ...
 
+    def facet_plan(self) -> list[dict[str, Any]]:
+        """Each declared facet (crib.facets) against what this store holds:
+        `{facet, status, detail}`, status `new` | `changed` | `removed` |
+        `current` (read-only; `crib facets sync` shows it)."""
+        ...
+
+    def facet_pending(self) -> dict[str, str]:
+        """The declared facets this store can't serve until `facet_sync`:
+        noun -> what changed."""
+        ...
+
+    def facet_sync(self) -> list[dict[str, Any]]:
+        """Conform the store to the declared facets; the plan carried out."""
+        ...
+
 
 def _cosine(a: list[float], b: list[float]) -> float:
     """Dot product of two PRE-NORMALIZED vectors — cosine similarity.
@@ -510,3 +525,17 @@ class InMemoryStore:
 
     def meta_set(self, key: str, value: str) -> None:
         self._meta[key] = value
+
+    # An in-memory store starts empty in every process: it has no layout that
+    # a facet definition could drift from, so every declared facet is current.
+    def facet_plan(self) -> list[dict[str, Any]]:
+        from . import facets
+
+        return [{"facet": f.noun, "status": "current", "detail": ""}
+                for f in facets.FACETS if not f.builtin]
+
+    def facet_pending(self) -> dict[str, str]:
+        return {}
+
+    def facet_sync(self) -> list[dict[str, Any]]:
+        return []

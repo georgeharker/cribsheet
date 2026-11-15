@@ -113,7 +113,9 @@ def test_a_declared_facets_items_live_in_its_own_store_and_search_scope(tmp_path
     assert out["kinds"] == ["widget"]
 
 
-def test_an_existing_duckdb_store_gains_the_declared_facets_table_at_open(tmp_path):
+def test_an_existing_duckdb_store_gains_a_declared_facets_table_only_by_sync(tmp_path):
+    """A declared facet is conformed EXPLICITLY: an open leaves it pending (no
+    table), `facet_sync` creates its table, and nothing else is touched."""
     pytest.importorskip("duckdb")
     db = tmp_path / "crib.duckdb"
     first = _run(
@@ -127,25 +129,36 @@ def test_an_existing_duckdb_store_gains_the_declared_facets_table_at_open(tmp_pa
         s.close()
     """,
     )
-    assert "crib_widget_meta" not in first["tables"]
     after = _run(
         tmp_path,
         WIDGET,
         f"""
         from crib.store_duckdb import DuckDBStore
+        def tables(s):
+            return sorted(t for (t,) in s._conn.execute(
+                "SELECT table_name FROM duckdb_tables()").fetchall())
         s = DuckDBStore.embedded({str(db)!r})
-        rows = s._conn.execute(
-            "SELECT table_name FROM duckdb_tables()").fetchall()
-        out["tables"] = sorted(t for (t,) in rows)
+        out["opened"] = tables(s)
+        out["pending"] = s.facet_pending()
+        out["plan"] = [p["status"] for p in s.facet_plan()]
+        out["synced"] = [p["status"] for p in s.facet_sync()]
+        out["tables"] = tables(s)
         out["cols"] = [c for (c,) in s._conn.execute(
             "SELECT column_name FROM duckdb_columns() "
             "WHERE table_name = 'crib_widget_meta'").fetchall()]
+        out["after"] = s.facet_pending()
         s.close()
     """,
     )
+    assert "crib_widget_meta" not in after["opened"]  # an open created nothing
+    assert set(after["pending"]) == {"widget"} and after["pending"][
+        "widget"
+    ].startswith("new")
+    assert after["plan"] == ["new"] and after["synced"] == ["new"]
     assert "crib_widget_meta" in after["tables"]
     assert after["cols"] == ["id", "color", "size"]
     assert set(first["tables"]) <= set(after["tables"])  # additive: nothing dropped
+    assert after["after"] == {}
 
 
 @pytest.mark.parametrize(
@@ -720,6 +733,7 @@ def test_field_queries_on_the_duckdb_store(tmp_path):
 
         paths = Paths.resolve().ensure()
         store = DuckDBStore.embedded(paths.duckdb_file)
+        store.facet_sync()  # a declared facet is conformed explicitly
         crib = Crib(paths, Config(), store)
         made = {}
         for title, sev, cs, due in (("Gasket leak", 3, "abc123", "2026-12-01"),
@@ -797,3 +811,177 @@ disable = ["import", "move", "distill"]
     assert not {"memo import", "memo move", "memo distill"} & set(out["rows"])
     assert out["cli_move"] is False
     assert "memo_lookup" in out["ro"]
+
+
+# ── explicit conformance: `crib facets sync` ────────────────────────────────
+# Each step is its own crib process (the registry is read once per process),
+# all on one embedded DuckDB store under tmp_path.
+
+_CONFORM_PRELUDE = """
+        import asyncio, contextlib, io
+        from crib.app import Crib
+        from crib.cli import main
+        def cli(*argv):
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                code = main(list(argv))
+            return code, buf.getvalue()
+        def refused(fn):
+            try:
+                fn()
+            except Exception as e:
+                return str(e)
+            return None
+"""
+
+
+def test_a_new_declared_facet_is_pending_until_sync_apply(tmp_path):
+    pytest.importorskip("duckdb")
+    out = _run(
+        tmp_path,
+        TICKET,
+        _CONFORM_PRELUDE
+        + """
+        crib = Crib.open()
+        out["pending"] = crib.pending_facets
+        out["add"] = refused(lambda: asyncio.run(crib.store_note("x", "X", "p", facet="ticket")))
+        out["lookup"] = refused(lambda: crib.lookup("x", "p", store="tickets"))
+        out["list"] = refused(lambda: crib.list_items("p", facet="ticket"))
+        out["note"] = asyncio.run(crib.store_note("notes still work", "N", "p"))["relpath"]
+        crib.close()
+        out["dry"] = cli("facets", "sync")
+        out["still"] = sorted(Crib.open().pending_facets)
+        out["apply"] = cli("facets", "sync", "--apply")
+        crib = Crib.open()
+        out["after"] = crib.pending_facets
+        r = asyncio.run(crib.store_note("works now", "T", "p", facet="ticket",
+                                        fields={"severity": 2}))
+        out["listed"] = [i["severity"] for i in crib.list_items("p", facet="ticket")["items"]]
+        out["show"] = cli("facets", "show")
+    """,
+    )
+    assert set(out["pending"]) == {"ticket"}
+    for verb in ("add", "lookup", "list"):
+        assert "isn't ready in this store" in out[verb], verb
+        assert "crib facets sync --apply" in out[verb], verb
+    assert out["note"].endswith(".md")
+    code, text = out["dry"]
+    assert code == 0 and "new" in text and "ticket" in text and "dry run" in text
+    assert out["still"] == ["ticket"]  # a dry run changes nothing
+    code, text = out["apply"]
+    assert code == 0 and "applied" in text and "restart the crib daemon" in text
+    assert out["after"] == {}
+    assert out["listed"] == [2]
+    code, text = out["show"]
+    assert "ticket  (declared, current)" in text and "note  (built-in, current)" in text
+    assert "fields changeset_id (str), severity (int), due (date)" in text
+
+
+TICKET_CHANGED = (
+    TICKET.replace('severity = "int"', 'severity = "str"') + 'owner = "str"\n'
+)
+
+
+def test_a_changed_facet_is_pending_and_sync_rebuilds_it_from_the_files(tmp_path):
+    pytest.importorskip("duckdb")
+    first = _run(
+        tmp_path,
+        TICKET,
+        _CONFORM_PRELUDE
+        + """
+        cli("facets", "sync", "--apply")
+        crib = Crib.open()
+        r = asyncio.run(crib.store_note("gasket leak", "Gasket", "p", facet="ticket",
+                                        fields={"severity": 3, "changeset_id": "abc"}))
+        out["rel"] = r["relpath"]
+        out["path"] = crib.locate(r["relpath"], "p", facet="ticket")
+    """,
+    )
+    # a hand edit adds the new field's value to the file (the files are the truth)
+    path = Path(first["path"])
+    text = path.read_text()
+    path.write_text(
+        text.replace("changeset_id: abc", "changeset_id: abc\nowner: george")
+    )
+    out = _run(
+        tmp_path,
+        TICKET_CHANGED,
+        _CONFORM_PRELUDE
+        + """
+        crib = Crib.open()
+        out["pending"] = crib.pending_facets
+        out["note"] = asyncio.run(crib.store_note("notes still work", "N", "p"))["relpath"]
+        crib.close()
+        out["dry"] = cli("facets", "sync")
+        out["apply"] = cli("facets", "sync", "--apply")
+        crib = Crib.open()
+        rows = crib.list_items("p", facet="ticket", fields={"owner": "george"})["items"]
+        out["rows"] = [(r["relpath"], r["severity"], r["owner"]) for r in rows]
+        out["cols"] = [c for (c,) in crib.store._conn.execute(
+            "SELECT column_name FROM duckdb_columns() "
+            "WHERE table_name = 'crib_ticket_meta'").fetchall()]
+    """,
+    )
+    why = out["pending"]["ticket"]
+    assert why.startswith("changed") and "fields added owner" in why
+    assert "retyped severity BIGINT->VARCHAR" in why
+    assert out["note"].endswith(".md")  # other facets are unaffected
+    assert "changed" in out["dry"][1] and "dry run" in out["dry"][1]
+    assert "re-read 1 file" in out["apply"][1]
+    assert out["rows"] == [[first["rel"], "3", "george"]]  # severity now a str
+    assert out["cols"] == ["id", "changeset_id", "severity", "due", "owner"]
+
+
+def test_a_removed_facet_is_dropped_by_sync_and_its_files_are_kept(tmp_path):
+    pytest.importorskip("duckdb")
+    first = _run(
+        tmp_path,
+        TICKET,
+        _CONFORM_PRELUDE
+        + """
+        cli("facets", "sync", "--apply")
+        crib = Crib.open()
+        r = asyncio.run(crib.store_note("gasket leak", "Gasket", "p", facet="ticket"))
+        out["path"] = crib.locate(r["relpath"], "p", facet="ticket")
+    """,
+    )
+    out = _run(
+        tmp_path,
+        "",  # the facet is gone from the facets file,
+        _CONFORM_PRELUDE
+        + """
+        crib = Crib.open()
+        out["plan"] = [(p["facet"], p["status"]) for p in crib.store.facet_plan()]
+        crib.close()
+        out["apply"] = cli("facets", "sync", "--apply")
+        crib = Crib.open()
+        ex = crib.store._conn.execute
+        out["tables"] = [t for (t,) in ex(
+            "SELECT table_name FROM duckdb_tables() WHERE table_name = 'crib_ticket_meta'"
+        ).fetchall()]
+        out["items"] = ex("SELECT count(*) FROM crib_items WHERE kind = 'ticket'").fetchone()[0]
+        out["chunks"] = ex("SELECT count(*) FROM crib_chunks WHERE kind = 'ticket'").fetchone()[0]
+        out["plan_after"] = [p["status"] for p in crib.store.facet_plan()]
+    """,
+    )
+    assert out["plan"] == [["ticket", "removed"]]
+    assert "removed" in out["apply"][1]
+    assert out["tables"] == [] and out["items"] == 0 and out["chunks"] == 0
+    assert out["plan_after"] == []
+    assert Path(first["path"]).exists()  # the files are never touched
+
+
+def test_the_watcher_does_not_index_a_pending_facets_files(tmp_path):
+    pytest.importorskip("duckdb")
+    out = _run(
+        tmp_path,
+        TICKET,
+        _CONFORM_PRELUDE
+        + """
+        crib = Crib.open()
+        d = crib.paths.project_dir("p")
+        asyncio.run(crib._on_fs_change("p", "tickets", "stray.md"))
+        out["items"] = sorted(i.relpath for i in crib.store.items({"project": "p"}).values())
+    """,
+    )
+    assert out["items"] == []  # not indexed as a note (or anything)

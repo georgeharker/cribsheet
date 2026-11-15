@@ -271,7 +271,7 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         legacy_stores=tuple(legacy),
         verb_names=MappingProxyType(dict(verbs)),
         params=MappingProxyType(params),
-        disabled=frozenset(disable),
+        disabled=frozenset(str(v) for v in disable),
         builtin=builtin,
     )
 
@@ -373,6 +373,19 @@ def _resolve() -> tuple[tuple[FacetSpec, ...], str | None]:
 FACETS, LOAD_ERROR = _resolve()
 _BY_NOUN = MappingProxyType({s.noun: s for s in FACETS})
 _BY_STORE = MappingProxyType({s.store: s for s in FACETS})
+
+
+def fingerprint(spec: FacetSpec) -> str:
+    """What a store's table for this facet was built from: its store, aspects
+    and columns. A persistent store records it per declared facet; a change is
+    conformed explicitly (`crib facets sync`)."""
+    import json
+
+    return json.dumps(
+        {"store": spec.store, "aspects": sorted(spec.aspects),
+         "fields": [[n, t] for n, t in spec.fields.items()]},
+        sort_keys=True,
+    )
 
 
 def get(noun: str | None) -> FacetSpec | None:

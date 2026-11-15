@@ -2026,6 +2026,19 @@ def build_parser() -> argparse.ArgumentParser:
 
     # internal: invoked by git as the cribnote merge driver (DESIGN §14). No
     # help= → kept out of the listed commands (still a valid hidden subcommand).
+    n_facets = sub.add_parser(
+        "facets", help="the facet registry: show it, conform the store to it"
+    )
+    facetsub = n_facets.add_subparsers(dest="facets_cmd", required=True)
+    facetsub.add_parser(
+        "show", help="every facet (built-in and declared) and its state in this store"
+    )
+    _fs = facetsub.add_parser(
+        "sync",
+        help="conform the store to the declared facets (a plan unless --apply)",
+    )
+    _fs.add_argument("--apply", action="store_true",
+                     help="carry the plan out; without it nothing is changed")
     n_gen = sub.add_parser(
         "generate", help="set up and check LLM generation (descriptions, summaries)"
     )
@@ -4139,6 +4152,52 @@ def _user_errors() -> tuple[type[BaseException], ...]:
     return (*out, ToolError)
 
 
+def _facets_cmd(args: Any) -> int:
+    """`crib facets show|sync`: local, against this machine's store."""
+    from . import facets
+
+    crib = Crib.open()
+    plan = {p["facet"]: p for p in crib.store.facet_plan()}
+    if args.facets_cmd == "show":
+        if facets.LOAD_ERROR:
+            print(f"facets file ignored: {facets.LOAD_ERROR}")
+        for spec in facets.FACETS:
+            origin = "built-in" if spec.builtin else "declared"
+            state = plan.get(spec.noun, {}).get("status", "current")
+            print(f"{spec.noun}  ({origin}, {state})")
+            print(f"  plural {spec.plural}, store {spec.store}, aspects "
+                  + ", ".join(sorted(spec.aspects)))
+            if spec.params:
+                print("  fields " + ", ".join(f"{n} ({t})" for n, t in spec.params.items()))
+            if spec.disabled:
+                print("  disabled " + ", ".join(sorted(spec.disabled)))
+        for noun, p in plan.items():
+            if p["status"] == "removed":
+                print(f"{noun}  (removed from the facets file; still in the store)")
+        print(f"facets file: {facets.system_file()}")
+        return 0
+    todo = [p for p in plan.values() if p["status"] != "current"]
+    if not todo:
+        print("the store is conformed to every declared facet: nothing to do")
+        return 0
+    for p in todo:
+        print(f"  {p['status']:8} {p['facet']}: {p['detail']}")
+    if not args.apply:
+        print("dry run: nothing changed (re-run with --apply)")
+        return 0
+    crib.store.facet_sync()
+    rebuilt = [p["facet"] for p in todo if p["status"] in ("new", "changed")]
+    crib = Crib.open()  # now serving them
+    files = 0
+    for noun in rebuilt:
+        for proj in crib.projects():
+            if crib._facet_store(noun).root(proj).exists():
+                files += (asyncio.run(crib.reindex(None, proj, facet=noun)))["files"]
+    print(f"applied; re-read {files} file(s) of {', '.join(rebuilt) or 'no facet'}")
+    print("restart the crib daemon so it serves the change")
+    return 0
+
+
 def _generate_cmd(args: Any) -> int:
     from . import gensetup
     from .config import Config
@@ -4182,6 +4241,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "info":
         cmd_info(args.json)
         return 0
+    if args.cmd == "facets":
+        # Local: it reads and conforms this machine's store, never through the
+        # daemon (which serves the facets it was started with).
+        return _facets_cmd(args)
     if args.cmd == "generate":
         # Local and interactive: it reads and writes this machine's config files
         # and talks to the providers directly, never through the daemon.

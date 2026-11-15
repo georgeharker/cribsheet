@@ -223,11 +223,16 @@ class Crib:
         # delegators for the notes pillar (below); the facet layers own theirs.
         # One per facet in the registry (crib.facets), by store name: the
         # routing table for relpath-first entry points (the watcher, migration).
+        # A declared facet whose definition this store hasn't been conformed to
+        # (`crib facets sync`) is PENDING: no store, not indexed or watched; its
+        # verbs refuse with the reason.
+        self.pending_facets: dict[str, str] = store.facet_pending()
         self.pillars: dict[str, NoteStore] = {
             spec.name: NoteStore(
                 paths, store, self.index, self.versions, self.project_paths, spec
             )
-            for spec in STORE_SPECS.values()
+            for noun, spec in STORE_SPECS.items()
+            if noun not in self.pending_facets
         }
         self.notestore = self.pillars[NOTES_SPEC.name]
         self.designstore = self.pillars[DESIGN_SPEC.name]
@@ -308,7 +313,7 @@ class Crib:
             spec.noun: Learnings(paths, self.refs, self._facet_store(spec.noun),
                                  self.code.records, noun=spec.noun)
             for spec in facets.FACETS
-            if spec.has("anchored")
+            if spec.has("anchored") and spec.noun not in self.pending_facets
         }
         self.learnings = self.anchored["learning"]
         # Design decisions + plan items (notes under design/ and plans/) and the
@@ -443,6 +448,8 @@ class Crib:
         t.add_done_callback(lambda _t: DIAG.done(token))
 
     async def _on_fs_change(self, project: str, store: str, relpath: str) -> None:
+        if (spec := facets.by_store(store)) is not None and spec.noun in self.pending_facets:
+            return  # not conformed yet (`crib facets sync`): nothing to index into
         pillar = self.pillars.get(store, self.notestore)
         await self.index.index_file(
             project, pillar.dir(project), relpath, store=pillar.spec.name
@@ -738,7 +745,22 @@ class Crib:
 
     def _facet_store(self, facet: str) -> NoteStore:
         """The note store of a facet in the registry (crib.facets), by noun."""
+        self._require_conformed(facet)
         return self.pillars[facets.by_noun(facet).store]
+
+    def _require_conformed(self, facet: str) -> None:
+        """Refuse a facet the store hasn't been conformed to, saying what changed
+        and what to run."""
+        if (why := self.pending_facets.get(facet)) is not None:
+            raise CribUserError(
+                f"facet {facet!r} isn't ready in this store ({why}). Run "
+                "`crib facets sync` to see the plan, `crib facets sync --apply` to "
+                "carry it out, then restart the daemon."
+            )
+
+    def _anchored_facet(self, facet: str) -> Learnings:
+        self._require_conformed(facet)
+        return self.anchored[facet]
 
     def _field_items(
         self,
@@ -775,6 +797,7 @@ class Crib:
         """A declared facet's items filtered by its own fields, no query: `fields`
         are equality filters, `where` the operator conditions (crib.fields)."""
         proj = self.resolve_project(project, cwd)
+        self._require_conformed(facet)
         rows = self._field_items(proj, facets.by_noun(facet), fields, where)
         return {"project": proj, "total": len(rows), "items": rows[:k]}
 
@@ -1709,6 +1732,8 @@ class Crib:
         # items only (none match: nothing to search).
         relpaths: frozenset[str] | None = None
         spec = facets.by_store(store)
+        if spec is not None:
+            self._require_conformed(spec.noun)
         if spec is not None and (fields or where):
             relpaths = frozenset(
                 it["relpath"] for it in self._field_items(proj, spec, fields, where)
@@ -4177,7 +4202,7 @@ class Crib:
         Per record, no ordering constraint against the entry conversion, re-running
         is the resume. DRY RUN unless `apply`."""
         proj = self.resolve_project(project, cwd)
-        return await self.anchored[facet].convert_notes(proj, apply=apply)
+        return await self._anchored_facet(facet).convert_notes(proj, apply=apply)
 
     async def code_convert(
         self, project: str | None = None, cwd: Path | None = None, apply: bool = False
@@ -4685,7 +4710,7 @@ class Crib:
         fields: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Attach a durable learning to a code symbol (append a dated entry)."""
-        return await self.anchored[facet].append(
+        return await self._anchored_facet(facet).append(
             self.resolve_project(project, cwd),
             symbol,
             text,
@@ -4709,7 +4734,7 @@ class Crib:
         fields: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Rewrite a symbol's learning body wholesale."""
-        return await self.anchored[facet].edit(
+        return await self._anchored_facet(facet).edit(
             self.resolve_project(project, cwd),
             symbol,
             new_content,
@@ -4731,7 +4756,7 @@ class Crib:
         facet: str = "learning",
     ) -> dict[str, Any]:
         """Remove a symbol's learning (recoverable; works on orphans)."""
-        return await self.anchored[facet].forget(
+        return await self._anchored_facet(facet).forget(
             self.resolve_project(project, cwd),
             symbol,
             path=path,
@@ -4751,7 +4776,7 @@ class Crib:
         facet: str = "learning",
     ) -> dict[str, Any]:
         """Clear a learning's stale flag without rewriting it."""
-        return await self.anchored[facet].reaffirm(
+        return await self._anchored_facet(facet).reaffirm(
             self.resolve_project(project, cwd),
             symbol,
             path=path,
@@ -4845,7 +4870,7 @@ class Crib:
         facet: str = "learning",
     ) -> list[dict[str, Any]]:
         """Health report for attached learnings (ok/moved/orphan)."""
-        return self.anchored[facet].report(self.resolve_project(project, cwd), orphans_only)
+        return self._anchored_facet(facet).report(self.resolve_project(project, cwd), orphans_only)
 
     async def learning_rehome(
         self,
@@ -4857,7 +4882,7 @@ class Crib:
         facet: str = "learning",
     ) -> dict[str, Any]:
         """Re-point an orphaned learning (no target = ranked suggestions)."""
-        return await self.anchored[facet].rehome(
+        return await self._anchored_facet(facet).rehome(
             self.resolve_project(project, cwd), old_fqn, new_fqn
         )
 
@@ -4873,7 +4898,7 @@ class Crib:
         facet: str = "learning",
     ) -> dict[str, Any]:
         """Read a symbol's learning note (frontmatter + body)."""
-        return self.anchored[facet].read(
+        return self._anchored_facet(facet).read(
             self.resolve_project(project, cwd),
             symbol,
             path=path,

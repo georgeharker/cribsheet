@@ -33,6 +33,7 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import Any
 
+from . import facets as _facets
 from .errors import CribUserError
 from .items import FACETS, Edge, Item, facet_table
 from .retrieve import PostingStats
@@ -89,6 +90,17 @@ FILES = "crib_files"
 _FACET_TABLES = MappingProxyType(
     {kind: (facet_table(kind), tuple(fields)) for kind, fields in FACETS.items()}
 )
+# Declared facets (crib.facets) are conformed EXPLICITLY (`crib facets sync`):
+# their tables are created, rebuilt and dropped there, never at open, and a
+# store uses one only while its recorded fingerprint matches the registry.
+DECLARED = MappingProxyType({s.noun: s for s in _facets.FACETS if not s.builtin})
+_FACET_KEY = "facet:"  # crib_meta key prefix of a declared facet's fingerprint
+def _facet_columns(fields: Any) -> str:
+    return "id VARCHAR PRIMARY KEY, " + ", ".join(
+        f"{name} {sqltype}" for name, sqltype in fields.items()
+    )
+
+
 # The tables that don't depend on the embedder's dimension, created at open.
 _FIXED_TABLES = MappingProxyType(
     {
@@ -104,9 +116,9 @@ _FIXED_TABLES = MappingProxyType(
         FILES: "facet VARCHAR, project VARCHAR, file VARCHAR, mtime_ns BIGINT, "
         "size BIGINT, item_ids VARCHAR[], PRIMARY KEY (facet, project, file)",
         **{
-            facet_table(kind): "id VARCHAR PRIMARY KEY, "
-            + ", ".join(f"{name} {sqltype}" for name, sqltype in fields.items())
+            facet_table(kind): _facet_columns(fields)
             for kind, fields in FACETS.items()
+            if kind not in DECLARED
         },
     }
 )
@@ -118,6 +130,46 @@ PROMOTED = (
 )  # filtered constantly: real columns
 # The only column lists a read may select — never caller text.
 _SELECT_COLUMNS = MappingProxyType({"meta": "id, meta", "docs": "id, document, meta"})
+
+
+def _facet_change(had: str, want: str) -> str:
+    """What differs between two facet fingerprints, in words."""
+    try:
+        a, b = json.loads(had), json.loads(want)
+    except ValueError:
+        return "its definition changed"
+    parts = []
+    fa, fb = dict(map(tuple, a.get("fields", []))), dict(map(tuple, b.get("fields", [])))
+    if added := sorted(set(fb) - set(fa)):
+        parts.append("fields added " + ", ".join(added))
+    if gone := sorted(set(fa) - set(fb)):
+        parts.append("fields removed " + ", ".join(gone))
+    if retyped := sorted(n for n in set(fa) & set(fb) if fa[n] != fb[n]):
+        parts.append("retyped " + ", ".join(f"{n} {fa[n]}->{fb[n]}" for n in retyped))
+    if a.get("store") != b.get("store"):
+        parts.append(f"store {a.get('store')}->{b.get('store')}")
+    if a.get("aspects") != b.get("aspects"):
+        parts.append("aspects changed")
+    return "; ".join(parts) or "its definition changed"
+
+
+def _drop_kind(ex: Any, kind: str, keep_chunks: bool = False) -> None:
+    """Every row of one item kind in the shared tables (its own facet table
+    aside): items, their edges and postings, and (unless kept) its chunks."""
+    ids = [i for (i,) in ex.run(f"SELECT id FROM {ITEMS} WHERE kind = ?", [kind])]
+    if ids:
+        # pi-lens-ignore: python-sql-injection
+        ex.run(f"DELETE FROM {EDGES} WHERE src = ANY(?)", [ids])
+        # pi-lens-ignore: python-sql-injection
+        ex.run(f"DELETE FROM {POSTINGS} WHERE item_id = ANY(?)", [ids])
+        # pi-lens-ignore: python-sql-injection
+        ex.run(f"DELETE FROM {ITEMS} WHERE id = ANY(?)", [ids])
+    if not keep_chunks:
+        tables = {t for (t,) in ex.run(
+            "SELECT table_name FROM duckdb_tables() WHERE schema_name = 'main'")}
+        if TABLE in tables:
+            # pi-lens-ignore: python-sql-injection
+            ex.run(f"DELETE FROM {TABLE} WHERE kind = ?", [kind])
 
 
 def local_dirs(base: Path | str) -> dict[str, str | bool | int | float | list[str]]:
@@ -404,9 +456,11 @@ def _carry_vectors_step(items: list[Item]) -> Callable[[Any], None]:
     return run
 
 
-def _delete_items_step(ids: list[str]) -> Callable[[Any], None]:
+def _delete_items_step(
+    ids: list[str], facet_tables: Any = _FACET_TABLES
+) -> Callable[[Any], None]:
     def write(ex: Any) -> None:
-        for table in (ITEMS, *(t for t, _ in _FACET_TABLES.values())):
+        for table in (ITEMS, *(t for t, _ in facet_tables.values())):
             # pi-lens-ignore: python-sql-injection
             ex.run(f"DELETE FROM {table} WHERE id = ANY(?)", [ids])
         # pi-lens-ignore: python-sql-injection
@@ -424,7 +478,9 @@ _POSTING_TYPES = ("VARCHAR", "VARCHAR", "DOUBLE")
 _EDGE_TYPES = ("VARCHAR",) * 4
 
 
-def _insert_items_step(items: list[Item]) -> Callable[[Any], None]:
+def _insert_items_step(
+    items: list[Item], facet_tables: Any = _FACET_TABLES
+) -> Callable[[Any], None]:
     """Insert `items`. The rows are built when the step RUNS, not when it is
     made: `_carry_vectors_step`, earlier in the same transaction, may have just
     filled body vectors into the list."""
@@ -445,7 +501,7 @@ def _insert_items_step(items: list[Item]) -> Callable[[Any], None]:
             for it in items
         ]
         ex.insert_columns(ITEMS, _ITEM_TYPES, core)
-        for kind, (table, fields) in _FACET_TABLES.items():
+        for kind, (table, fields) in facet_tables.items():
             rows = [
                 [it.id, *(it.facet.get(f) for f in fields)]
                 for it in items
@@ -596,6 +652,7 @@ class DuckDBStore:
         self._path = path
         self._write = threading.Lock()
         self._prepare()
+        self._facet_tables = self._live_facet_tables()
 
     @classmethod
     def embedded(cls, path: Path | str) -> "DuckDBStore":
@@ -713,6 +770,81 @@ class DuckDBStore:
                 return not _backfill_pending(self, ex)
         except Exception:  # noqa: BLE001 — anything odd: take the careful path
             return False
+
+    # ── declared facets: explicit conformance (`crib facets sync`) ───────────
+
+    def _live_facet_tables(self) -> Any:
+        """The facet tables this store reads and writes: every built-in kind's,
+        and a declared facet's while its recorded fingerprint matches."""
+        pending = self.facet_pending()
+        return MappingProxyType(
+            {k: v for k, v in _FACET_TABLES.items() if k not in pending}
+        )
+
+    def facet_plan(self) -> list[dict[str, Any]]:
+        """Read-only: each declared facet against what this store holds, with
+        what `facet_sync` would do (`new` | `changed` | `removed` | `current`)."""
+        with self._reading() as ex:
+            meta = dict(ex.run(
+                f"SELECT key, value FROM {META} WHERE starts_with(key, ?)", [_FACET_KEY]))
+            tables = {t for (t,) in ex.run(
+                "SELECT table_name FROM duckdb_tables() WHERE schema_name = 'main'")}
+        out = []
+        for noun, spec in DECLARED.items():
+            want = _facets.fingerprint(spec)
+            had = meta.get(_FACET_KEY + noun)
+            if had is None:
+                out.append({"facet": noun, "status": "new",
+                            "detail": "its table is created"})
+            elif had != want or facet_table(noun) not in tables:
+                out.append({"facet": noun, "status": "changed",
+                            "detail": _facet_change(had, want)
+                            + "; its table is rebuilt and its files re-read"})
+            else:
+                out.append({"facet": noun, "status": "current", "detail": ""})
+        for key in sorted(meta):
+            noun = key[len(_FACET_KEY):]
+            if noun not in DECLARED:
+                out.append({"facet": noun, "status": "removed",
+                            "detail": "its table and items are dropped (files untouched)"})
+        return out
+
+    def facet_pending(self) -> dict[str, str]:
+        """The declared facets this store can't serve until `facet_sync`:
+        noun -> what changed."""
+        return {p["facet"]: f"{p['status']}: {p['detail']}" for p in self.facet_plan()
+                if p["status"] in ("new", "changed")}
+
+    def facet_sync(self) -> list[dict[str, Any]]:
+        """Conform the store to the declared facets, under the migration lock, in
+        one transaction (the plan it carried out)."""
+        with _migration_lock(self._migration_lock_path()):
+            plan = [p for p in self.facet_plan() if p["status"] != "current"]
+            if not plan:
+                return []
+
+            def step(ex: Any) -> None:
+                for p in plan:
+                    noun = p["facet"]
+                    table = facet_table(noun)
+                    # pi-lens-ignore: python-sql-injection
+                    ex.run(f"DROP TABLE IF EXISTS {table}")
+                    if p["status"] == "removed":
+                        _drop_kind(ex, noun)
+                        ex.run(f"DELETE FROM {META} WHERE key = ?", [_FACET_KEY + noun])
+                        continue
+                    spec = DECLARED[noun]
+                    # pi-lens-ignore: python-sql-injection
+                    ex.run(f"CREATE TABLE {table} ({_facet_columns(spec.fields)})")
+                    # its items are re-derived from the files: forget what was
+                    # mapped, so the next refresh re-reads every one
+                    _drop_kind(ex, noun, keep_chunks=True)
+                    ex.run(f"DELETE FROM {FILES} WHERE facet = ?", [f"index:{spec.store}"])
+                    _put_meta(ex, _FACET_KEY + noun, _facets.fingerprint(spec))
+
+            self._converting(step)
+        self._facet_tables = self._live_facet_tables()
+        return plan
 
     def _migration_lock_path(self) -> Path | None:
         return self._path.with_name(self._path.name + ".migrate.lock") if self._path else None
@@ -845,7 +977,7 @@ class DuckDBStore:
             # item vectors came from the same embedder: empty them too, and the
             # file stamps, or every facet would think its files already mapped
             for table in (ITEMS, EDGES, POSTINGS, FILES,
-                          *(t for t, _ in _FACET_TABLES.values())):
+                          *(t for t, _ in self._facet_tables.values())):
                 # pi-lens-ignore: python-sql-injection
                 ex.run(f"DELETE FROM {table}")
 
@@ -912,9 +1044,9 @@ class DuckDBStore:
             steps.append(_carry_vectors_step(holder))
         drop = list(item_deletes or ()) + [it.id for it in holder]
         if drop:
-            steps.append(_delete_items_step(drop))
+            steps.append(_delete_items_step(drop, self._facet_tables))
         if holder:
-            steps.append(_insert_items_step(holder))
+            steps.append(_insert_items_step(holder, self._facet_tables))
         return steps
 
     # ── per-file change detection (crib.filesync) ────────────────────────────
@@ -1100,9 +1232,9 @@ class DuckDBStore:
 
     def facet_values(self, where: dict[str, Any], fields: list[str]) -> list[dict[str, Any]]:
         kind = where.get("kind")
-        if not isinstance(kind, str) or kind not in _FACET_TABLES:
+        if not isinstance(kind, str) or kind not in self._facet_tables:
             raise CribUserError("facet_values needs one `kind` that has a facet")
-        table, known = _FACET_TABLES[kind]
+        table, known = self._facet_tables[kind]
         if bad := [f for f in fields if f not in known]:
             raise CribUserError(f"{kind} items have no facet field {bad}")
         clause, params = _item_clause(where)
@@ -1132,9 +1264,9 @@ class DuckDBStore:
         join = ""
         if facet:
             kind = where.get("kind")
-            if not isinstance(kind, str) or kind not in _FACET_TABLES:
+            if not isinstance(kind, str) or kind not in self._facet_tables:
                 raise CribUserError("a facet filter needs one `kind` that has a facet")
-            table, fields = _FACET_TABLES[kind]
+            table, fields = self._facet_tables[kind]
             conds = []
             for name, value in facet.items():
                 if name not in fields:
@@ -1160,7 +1292,7 @@ class DuckDBStore:
             )
             out = {r[0]: r for r in rows}
             facets: dict[str, dict[str, Any]] = {}
-            for kind, (table, fields) in _FACET_TABLES.items():
+            for kind, (table, fields) in self._facet_tables.items():
                 ids = [i for i, r in out.items() if r[1] == kind]
                 if not ids:
                     continue
