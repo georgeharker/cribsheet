@@ -118,6 +118,33 @@ def test_adopt_refuses_to_merge_into_a_mapping_that_has_items(crib, tmp_path):
         run(crib.project_adopt(cwd=repo))
 
 
+def test_a_move_that_fails_part_way_moves_nothing(crib, tmp_path, monkeypatch):
+    """Adopt moves all or nothing: an OSError on the second file (a read-only
+    checkout, a full disk) puts the first back and refuses (review fix 1)."""
+    import shutil
+
+    a = _decision(crib)
+    b = run(crib.design_add("Second", "Another decision.", project="p"))
+    repo = _repo(tmp_path, "project: p\nfacets:\n  design: {dir: decisions}\n")
+    real, calls = shutil.move, []
+
+    def flaky(src, dst):
+        calls.append(src)
+        if len(calls) == 2:
+            raise PermissionError(13, "Permission denied", dst)
+        return real(src, dst)
+
+    monkeypatch.setattr(shutil, "move", flaky)
+    with pytest.raises(Exception, match="nothing was moved"):
+        run(crib.project_adopt(cwd=repo))
+    monkeypatch.setattr(shutil, "move", real)
+    home = crib.project_paths("p").home_dir("design")
+    assert (home / a["relpath"]).exists() and (home / b["relpath"]).exists()
+    assert not list((repo / "decisions").glob("*.md"))
+    res = run(crib.project_adopt(cwd=repo))  # and it can simply be re-run
+    assert res["mapped"]["design"]["notes_moved"] == 2
+
+
 @pytest.mark.parametrize(
     "spec", ["{dir: decisions, read_only: true}", "{dir: decisions, ids: derived}"]
 )

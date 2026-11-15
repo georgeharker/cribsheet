@@ -1094,6 +1094,64 @@ def test_a_read_only_derived_mapping_is_indexed_and_never_written(tmp_path):
         assert "read-only location" in out[verb], verb
 
 
+def test_release_leaves_a_read_only_mapping_in_the_repo(tmp_path):
+    """A read-only (or derived) mapping's files are the repo's: release moves
+    nothing and keeps the mapping, rather than carrying them out of the
+    checkout (review fix 1)."""
+    body = "---\nname: morning\n---\nbrief me about the weather\n"
+    repo = _repo(
+        tmp_path,
+        "{dir: workflows, glob: '*.md', read_only: true, ids: derived}",
+        {"workflows/morning.md": body},
+    )
+    out = _run(
+        tmp_path,
+        ROUTINE,
+        _MAPPED.replace("REPO", repr(str(repo)))
+        + """
+        out["res"] = asyncio.run(crib.project_release("p"))
+        out["mapped"] = sorted(crib.project_paths("p").mappings)
+        home = crib.project_paths("p").home_dir("routines")
+        out["home"] = sorted(str(f) for f in home.rglob("*.md")) if home.is_dir() else []
+        out["hits"] = [h.relpath for h in crib.lookup("weather", "p", store="routines")]
+    """,
+    )
+    assert (repo / "workflows" / "morning.md").read_text() == body
+    assert out["home"] == []
+    assert "mapped" not in out["res"]
+    assert "read-only" in out["res"]["kept"]["routine"]["why"]
+    assert out["mapped"] == ["routines"]  # still recorded
+    assert out["hits"] == ["morning.md"]  # still indexed
+
+
+def test_adopt_refuses_to_move_items_into_a_read_only_mapping(tmp_path):
+    repo = _repo(tmp_path, "{dir: workflows, read_only: true}", {"workflows/x.md": "x\n"})
+    out = _run(
+        tmp_path,
+        ROUTINE,
+        """
+        import asyncio
+        from pathlib import Path
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.store import InMemoryStore
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        a = asyncio.run(crib.store_note("x", "Local", "p", facet="routine"))
+        try:
+            asyncio.run(crib.project_adopt(cwd=Path(REPO)))
+            out["err"] = None
+        except Exception as e:
+            out["err"] = str(e)
+        home = crib.project_paths("p").home_dir("routines")
+        out["still"] = (home / a["relpath"]).exists()
+    """.replace("REPO", repr(str(repo))),
+    )
+    assert "is read-only" in out["err"]
+    assert out["still"]
+    assert sorted(f.name for f in (repo / "workflows").iterdir()) == ["x.md"]
+
+
 def test_a_read_only_stamped_mapping_skips_unstamped_files(tmp_path):
     repo = _repo(
         tmp_path,
