@@ -24,7 +24,14 @@ on:
         tags: ["v*"]
 
 jobs:
+    # The full suite (ci.yml) on the tagged commit, first: nothing is built or
+    # published unless it passes. A dev release is tagged on `dev`, which no
+    # push-triggered CI covers, so this is its only full run.
+    tests:
+        uses: ./.github/workflows/ci.yml
+
     build:
+        needs: tests
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v6

@@ -4,6 +4,9 @@ on:
     push:
         branches: [main]
     pull_request:
+    # The release workflows call this first and publish only if it passes, so
+    # every release tag (a dev release from `dev` included) is the tested commit.
+    workflow_call:
 
 jobs:
     check:
