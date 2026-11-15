@@ -20,8 +20,10 @@ version has no heading here.
   commands (`routine_add`, `crib routine lookup`, ...), its own store, search
   scope and tool set (`--tools routines:ro`). Its `about` (what an item is,
   when to use the family) and `[<noun>.when]` wording join crib's own in its
-  tool descriptions, so agents know when to reach for it. See
-  `docs/facets.md`.
+  tool descriptions, so agents know when to reach for it, and each session's
+  instructions list this machine's declared facets (`crib facets
+  instructions`; the MCP server and the Claude Code, OpenCode and Pi plugins
+  add it). See `docs/facets.md`.
 - **Three kinds of facet.** Note-like (core, optionally enriched with
   summaries and keywords), anchored to code like learnings (for example a
   review agent's findings, shown on `code_dossier` beside learnings), and
@@ -39,6 +41,9 @@ version has no heading here.
 - **Storage per pillar.** A repo can keep, say, its decisions in the repo
   (`facets: {design: {dir: decisions}}`) while notes stay where they are;
   `crib project adopt` moves the existing items, `release` moves them back.
+  Adopt merges into a directory that already holds items (a teammate's, or an
+  interrupted adopt's) when no file would be overwritten, refuses before
+  moving anything, and never moves a read-only mapping's files.
 - **Explicit conformance.** A new or changed facet definition waits for
   `crib facets sync --apply` (which shows what it will do first); nothing
   converts the store behind your back. A facet you remove is dropped only

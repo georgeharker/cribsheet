@@ -23,7 +23,9 @@ Pi has no MCP of its own. Two pieces give it crib:
      refcounted and shared across clients; released on `session_shutdown` when
      `reason === "quit"`.
    - **Inject the directive** on `before_agent_start` (analogue of CC's
-     `additionalContext` and OpenCode's `system.transform`).
+     `additionalContext` and OpenCode's `system.transform`), followed by the
+     section on this machine's declared facets (`crib facets instructions`, asked
+     once per process) when it declares any.
    - **`/crib <topic>`** — shells out to the crib CLI (`note apropos` + `code lookup`)
      and steers the model to summarise, mirroring `commands/crib.md`.
 

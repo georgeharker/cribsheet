@@ -32,7 +32,9 @@ behaviour.
    (OpenCode, Claude Code, Neovim) and outlives any single one. `unuse` on exit.
 4. **Reach-for-crib directive.** Appended to the system prompt each session via
    `experimental.chat.system.transform` — the analogue of the Claude Code plugin's
-   SessionStart `additionalContext`.
+   SessionStart `additionalContext`. When the machine declares its own facets, the
+   section `crib facets instructions` prints is appended after it (asked once per
+   process; no crib on PATH or in a checkout simply means no section).
 5. **`/crib` command.** Registered in OpenCode's `command` config, mirroring
    cribsheet's `commands/crib.md`: recalls memory (`crib note apropos`) and the
    code index (`crib code lookup`) for a topic, then summarizes.

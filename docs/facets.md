@@ -22,6 +22,7 @@ declaring its own fields. crib's own facets are specs too (the shipped
 - [Keeping a pillar in the repo](#keeping-a-pillar-in-the-repo)
 - [Conformance: `crib facets sync`](#conformance-crib-facets-sync)
 - [Tool sets](#tool-sets)
+- [How agents learn about your facets](#how-agents-learn-about-your-facets)
 - [Names crib keeps for itself](#names-crib-keeps-for-itself)
 - [Examples](#examples)
 
@@ -74,6 +75,7 @@ run `crib facets sync`, then restart the daemon.
 | `crib facets show` | every facet, built-in and declared, with its aspects, fields, disabled verbs and its state in this store. |
 | `crib facets show --toml` | the effective registry as a facets file (crib's own facets exactly as shipped, then yours): an export to read or start from. |
 | `crib facets sync [--apply] [--drop] [--shared]` | bring the store in line with the declared facets; see [conformance](#conformance-crib-facets-sync). |
+| `crib facets instructions` | the agent-facing section on this machine's declared facets (markdown), as the server and plugins add it; see [how agents learn about your facets](#how-agents-learn-about-your-facets). |
 
 A bad file never stops crib: it warns once and serves the built-ins
 (`crib facets show` says why).
@@ -308,6 +310,28 @@ Each declared facet is its own tool set, named by its plural:
 `crib serve --tools notes,routines` or `[tools] expose` in `config.toml`;
 `routines:ro` exposes only its read verbs (`lookup`, `apropos`, `read`,
 `locate`, `versions`, `list`).
+
+## How agents learn about your facets
+
+An agent picks a tool from two things it reads: each tool's description, and
+the instructions it gets at the start of a session.
+
+- **Tool descriptions.** Each of a facet's tools is described by crib's own
+  wording for that verb, then the facet's `about`, then any
+  `[<noun>.when]` wording for that verb, then its fields. Write `about` for
+  the moment an agent is choosing: what one of these items is, and when it
+  belongs here rather than in a note.
+- **Session instructions.** crib's own facets are covered by the directive
+  the plugins ship (`CLAUDE.md.example`). Your facets exist only on the
+  machines that declare them, so their section is generated where they run:
+  `crib facets instructions` prints it (each facet's tools, `about`, shape and
+  fields; nothing if you declare none). The MCP server appends it to its own
+  instructions, and the Claude Code, OpenCode and Pi plugins append it to
+  their directive at session start. A facet still waiting for
+  `crib facets sync --apply` is marked as not ready.
+
+Both are read when the daemon or a session starts: after editing the facets
+file, restart the daemon and start a new session.
 
 ## Names crib keeps for itself
 

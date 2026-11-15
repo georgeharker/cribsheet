@@ -782,6 +782,49 @@ STARTER = '''# crib's system facets file: declare your own kinds of item (facets
 '''
 
 
+def instructions(specs: Iterable[FacetSpec] | None = None,
+                 pending: Iterable[str] = ()) -> str:
+    """The agent-facing section on THIS machine's declared facets (markdown;
+    "" without any): what each is (its `about`), its tool family, its shape
+    and fields. crib's own facets are described by the hand-written directive
+    (CLAUDE.md.example, shipped in the plugins); a declared facet exists only on
+    the machines that declare it, so its guidance is generated where it runs:
+    appended to the MCP server's instructions, and printed by `crib facets
+    instructions` for the plugins to add to their directive. `pending`: facets
+    the store isn't conformed to yet."""
+    declared = [s for s in (FACETS if specs is None else specs) if not s.builtin]
+    if not declared:
+        return ""
+    waiting = set(pending)
+    out = [
+        "### Declared facets on this machine",
+        "",
+        "Besides crib's own notes, decisions, plans and learnings, this machine "
+        "declares these kinds of item. Each has its own store, search scope and "
+        "tools: use that family for that kind of item, not `note_store`.",
+        "",
+    ]
+    for s in declared:
+        if {"links", "status"} <= s.aspects:
+            roles = ", ".join(f"{st} ({r})" for st, r in s.statuses.items())
+            shape = f"A graph facet with dependencies and statuses: {roles}"
+            if "progress" in s.aspects:
+                shape += f"; `{s.noun}_next` lists what is ready"
+        elif "anchored" in s.aspects:
+            shape = "Each item is about a code symbol; they show on `code_dossier`"
+        else:
+            shape = "Note-like" + (", with summaries and keywords" if "enriched" in s.aspects else "")
+        if s.params:
+            shape += "; fields " + ", ".join(f"`{n}` ({t})" for n, t in s.params.items())
+        line = f"- **{s.plural}** (`{s.noun}_*`, `crib {s.noun} ...`): "
+        line += (s.about.rstrip(".") + ". " if s.about else "") + shape + "."
+        if s.noun in waiting:
+            line += (" Not ready in this store yet: it waits for "
+                     "`crib facets sync --apply` (its tools refuse until then).")
+        out.append(line)
+    return "\n".join(out) + "\n"
+
+
 def starter() -> str:
     """The starter system facets file: everything commented, so it declares
     nothing until an example is uncommented."""

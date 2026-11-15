@@ -551,6 +551,9 @@ def build_server(crib: Crib | None = None, tools: str | list[str] | None = None)
             "decisions, conventions, gotchas usually travel — but verify "
             "machine-specific details (absolute paths, ports, hostnames, install "
             "locations) against the local machine before relying on them."
+            # this machine's declared facets: generated here, where they exist
+            + (f"\n\n{text}" if (text := _facets.instructions(
+                pending=crib.pending_facets)) else "")
         ),
     )
 

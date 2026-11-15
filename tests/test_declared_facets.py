@@ -1567,6 +1567,76 @@ def test_changing_a_facets_store_leaves_no_ghost_hits(tmp_path):
     assert out["hits"] == [] and out["chunks"] == 0
 
 
+def test_agents_are_told_about_this_machines_declared_facets(tmp_path):
+    """The shipped directive describes crib's own facets; a declared one's
+    guidance is generated where it is declared: `crib facets instructions` and
+    the MCP server's instructions (pending facets say so)."""
+    facets_file = ROUTINE.replace(
+        'plural = "routines"',
+        'plural = "routines"\nabout = "A routine is a job an agent runs on a schedule."',
+    ) + '[routine.fields]\nschedule = "str"\ntimeout = "int"\n' + INCIDENT
+    out = _run(
+        tmp_path,
+        facets_file,
+        _CONFORM_PRELUDE + """
+        from crib import facets
+        from crib.server import build_server
+        from crib.store import InMemoryStore
+        from crib.config import Config
+        from crib.paths import Paths
+        out["cli"] = cli("facets", "instructions")
+        mcp = build_server(Crib(Paths.resolve().ensure(), Config(), InMemoryStore()))
+        out["server"] = mcp.instructions
+        out["pending"] = facets.instructions(pending=["routine"])
+        out["none"] = facets.instructions([s for s in facets.FACETS if s.builtin])
+    """,
+    )
+    code, text = out["cli"]
+    assert code == 0
+    assert "### Declared facets on this machine" in text
+    assert "**routines** (`routine_*`, `crib routine ...`): A routine is a job" in text
+    assert "fields `schedule` (str), `timeout` (int)" in text
+    assert "**incidents**" in text and "mitigated (claimed)" in text and "`incident_next`" in text
+    assert "### Declared facets on this machine" in out["server"]
+    assert "waits for `crib facets sync --apply`" in out["pending"]
+    assert out["none"] == ""
+
+
+def test_the_claude_hook_adds_the_declared_facets_section(tmp_path):
+    """plugins/claude/hooks/session-start.sh: the shipped directive, then what
+    `bin/crib facets instructions` prints, in one SessionStart JSON."""
+    import json as _json
+    import re
+    import shutil
+
+    hook = Path(__file__).resolve().parent.parent / "plugins" / "claude" / "hooks" / "session-start.sh"
+    src = hook.read_text()
+    funcs = "".join(m.group(0) for m in re.finditer(
+        r"^(warn|_declared_facets|_emit)\(\) \{.*?^\}\n", src, re.S | re.M))
+    plug = tmp_path / "plugin"
+    (plug / "bin").mkdir(parents=True)
+    (plug / "instructions.txt").write_text("# Memory (cribsheet)\nthe directive\n")
+    fake = plug / "bin" / "crib"
+    fake.write_text("#!/usr/bin/env bash\n[ \"$1 $2\" = 'facets instructions' ] && "
+                    "printf '### Declared facets on this machine\\n- routines\\n'\n")
+    fake.chmod(0o755)
+    script = f'set -euo pipefail\ndir={str(plug)!r}\n_warnings=""\n{funcs}_emit\n'
+    if shutil.which("bash") is None:
+        pytest.skip("no bash")
+    r = subprocess.run(["bash", "-c", script], capture_output=True, text=True,
+                       env={**os.environ, "CRIB_BIN": str(fake)}, timeout=30)
+    assert r.returncode == 0, r.stderr
+    ctx = _json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
+    assert ctx.startswith("# Memory (cribsheet)\nthe directive")
+    assert ctx.endswith("### Declared facets on this machine\n- routines")
+    r = subprocess.run(["bash", "-c", script], capture_output=True, text=True,
+                       env={k: v for k, v in os.environ.items()
+                            if k not in ("CRIB_BIN", "CRIBSHEET_DEV")} | {"PATH": "/usr/bin:/bin"},
+                       timeout=30)
+    ctx = _json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
+    assert "Declared facets" not in ctx  # no crib without a fetch: nothing asked
+
+
 def test_transitions_into_every_role_work(tmp_path):
     """A transition moves an item from wherever it is, by role: ungating a
     draft, into claimed and done (answering with what that unblocked), back

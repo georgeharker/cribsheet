@@ -173,6 +173,26 @@ function splitArgs(value: string | undefined): string[] {
 
 /** Resolve how to invoke crib: explicit option → env command → `crib` on PATH →
  *  `uv run --project <checkout> crib`. */
+// ── this machine's declared facets ────────────────────────────────
+// The directive above describes crib's own facets; a DECLARED facet (the user's
+// facets file) exists only on the machines that declare it, so its guidance is
+// generated where it runs: `crib facets instructions` (registry only, no store
+// opened; empty without any). Asked once per process, quietly: no crib, an
+// older crib without the subcommand, or a slow one just means no section.
+let declaredFacets: string | undefined
+function declaredFacetsSection(cmd: Command | undefined, env: NodeJS.ProcessEnv): string {
+    if (declaredFacets !== undefined) return declaredFacets
+    declaredFacets = ""
+    if (!cmd) return declaredFacets
+    const r = spawnSync(cmd.cmd, [...cmd.args, "facets", "instructions"], {
+        env,
+        encoding: "utf8",
+        timeout: 5000,
+    })
+    if (r.status === 0 && typeof r.stdout === "string") declaredFacets = r.stdout.trim()
+    return declaredFacets
+}
+
 function resolveCrib(opts: Options, env: NodeJS.ProcessEnv): Command | undefined {
     const extra = opts.args ?? []
     if (opts.crib) return { cmd: opts.crib, args: extra }
@@ -381,7 +401,9 @@ const CribsheetPlugin: Plugin = async ({ client }, options) => {
     // plugin's SessionStart additionalContext). Injected regardless of `served`.
     const systemHook = async (_input: unknown, output: { system: string[] }) => {
         if (!wantInstructions || !CRIB_DIRECTIVE) return
-        output.system.push(CRIB_DIRECTIVE)
+        // the serve args (opts.args) are the backend's, not the CLI's
+        const extra = declaredFacetsSection(resolveCrib({ ...opts, args: [] }, env), env)
+        output.system.push(extra ? `${CRIB_DIRECTIVE}\n\n${extra}` : CRIB_DIRECTIVE)
     }
 
     const hooks = {

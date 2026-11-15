@@ -155,7 +155,8 @@ templates as the built-ins': use that family for that kind of item, not `note_st
 Their extra parameters are the facet's own typed fields (set them on `add`/`edit`,
 filter `lookup`/`list` with them, `where=` for comparisons). A verb that refuses
 with "isn't ready in this store" is waiting for `crib facets sync --apply`: say so,
-don't work around it.
+don't work around it. When this machine declares any, a "Declared facets on this
+machine" section follows these instructions, saying what each one is for.
 
 ### Project selection for *reads*: name it — every call, never wrong
 

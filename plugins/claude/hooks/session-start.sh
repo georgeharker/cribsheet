@@ -37,9 +37,22 @@ warn() {
 # committed COPY of it, re-synced by scripts/bump-version.sh — never a symlink:
 # marketplace installs copy the plugin subtree into a cache with no repo root,
 # where a ../../ symlink dangles and this hook silently emits nothing.
+# This machine's DECLARED facets (its own facets file) aren't in the shipped
+# directive, which describes crib's own; `crib facets instructions` generates
+# their section here (registry only, no store opened). Only when crib resolves
+# without a fetch: a first-run `uvx` download must never stall session start
+# (the MCP server's own instructions carry the same section).
+_declared_facets() {
+  [[ -n "${CRIB_BIN:-}" || -n "${CRIBSHEET_DEV:-}" ]] || command -v crib >/dev/null 2>&1 \
+    || return 0
+  "$dir/bin/crib" facets instructions 2>/dev/null || true
+}
+
 _emit() {
-  local txt="$dir/instructions.txt" ctx=""
+  local txt="$dir/instructions.txt" ctx="" extra=""
   [[ -f "$txt" ]] && ctx="$(cat "$txt")"
+  extra="$(_declared_facets)"
+  [[ -n "$extra" ]] && ctx="${ctx}${ctx:+$'\n\n'}${extra}"
   [[ -z "$ctx" && -z "$_warnings" ]] && return 0
   if command -v jq >/dev/null 2>&1; then
     jq -n --arg ctx "$ctx" --arg sys "$_warnings" \

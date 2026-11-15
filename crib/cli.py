@@ -1679,6 +1679,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _fi.add_argument("--force", action="store_true",
                      help="overwrite an existing facets file")
+    facetsub.add_parser(
+        "instructions",
+        help="the agent-facing guidance on this machine's declared facets "
+        "(markdown; nothing without any) — what the plugins add to their directive",
+    )
     _fs = facetsub.add_parser(
         "sync",
         help="conform the store to the declared facets (a plan unless --apply)",
@@ -3918,6 +3923,9 @@ def _facets_cmd(args: Any) -> int:
         f.parent.mkdir(parents=True, exist_ok=True)
         f.write_text(facets.starter())
         print(f"wrote {f}: uncomment an example, then `crib facets sync --apply`")
+        return 0
+    if args.facets_cmd == "instructions":
+        print(facets.instructions(), end="")  # the registry only: no store opened
         return 0
     if args.facets_cmd == "show" and args.toml:
         print(facets.to_toml(facets.FACETS), end="")
