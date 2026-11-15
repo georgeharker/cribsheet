@@ -211,7 +211,7 @@ def test_aspect_verbs_name_exactly_the_templates_a_facet_gets(raw):
     from crib import verbs
 
     s = parse("thing", raw)
-    want = set(facets.verbs_for(s.aspects, bool(s.params))) - s.disabled
+    want = set(facets.available_verbs(s.aspects, fields=bool(s.params))) - s.disabled
     assert {t.verb for t in verbs.verbs_of(s)} == want
 
 
@@ -221,9 +221,26 @@ def test_aspect_verbs_match_the_builtins_generated_families():
     for s in facets.FACETS:
         if not verbs.generated(s):
             continue
-        want = (facets.graph_verbs(s) if s.has("links") and s.has("status")
-                else facets.verbs_for(s.aspects, bool(s.params)))
-        assert {t.verb for t in verbs.verbs_of(s)} == set(want), s.noun
+        assert [t.verb for t in verbs.verbs_of(s)] == list(facets.verb_names(s)), s.noun
+
+
+def test_the_catalogue_and_the_templates_name_the_same_verbs():
+    """One template per catalogue entry, per family (and the CLI's ordering
+    lists cover them, so no verb silently loses its command)."""
+    from crib import verbs
+    from crib.cli import _ANCHORED_CLI_ORDER, _FACET_CLI_ORDER, _GRAPH_CLI_ORDER
+
+    for fam, decls in facets.VERB_CATALOGUE.items():
+        names = [d.verb for d in decls]
+        assert len(names) == len(set(names)), fam
+        assert set(names) == set(verbs.TEMPLATES_BY_FAMILY[fam]), fam
+        aspects = {d.verb: d.aspect for d in decls}
+        assert all(verbs.TEMPLATES_BY_FAMILY[fam][v].aspect == a
+                   for v, a in aspects.items()), fam
+    orders = {"note": _FACET_CLI_ORDER, "anchored": _ANCHORED_CLI_ORDER,
+              "graph": _GRAPH_CLI_ORDER}
+    for fam, order in orders.items():
+        assert set(order) >= {d.verb for d in facets.VERB_CATALOGUE[fam]} - {"extract"}, fam
 
 def test_disable():
     s = parse(
@@ -242,7 +259,7 @@ def test_disable():
     with pytest.raises(FacetSpecError, match="built-in"):
         parse("t", {"plural": "ts", "disable": ["move"]}, builtin=True)
     with pytest.raises(FacetSpecError, match="disables every one"):
-        parse("t", {"plural": "ts", "disable": list(facets.verbs_for({"core"}, False))})
+        parse("t", {"plural": "ts", "disable": list(facets.available_verbs({"core"}))})
 
 
 def test_to_toml_round_trips_the_builtins():

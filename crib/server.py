@@ -356,9 +356,7 @@ READ_ONLY_TOOLS: dict[str, frozenset[str]] = {
     # every generated family's (notes', any declared facet's): its templates'
     # read-only verbs (crib.verbs)
     **{
-        s.plural: frozenset(
-            _verbs.tool_name(s, t.verb) for t in _verbs.verbs_of(s) if t.read_only
-        )
+        s.plural: _verbs.view(s).read_only_tools
         for s in _facets.FACETS
         if _verbs.generated(s)
     },

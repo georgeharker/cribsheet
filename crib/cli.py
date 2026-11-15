@@ -2986,7 +2986,9 @@ def _graph_cli(spec: Any, verb: str) -> _GraphCli:
 
 
 def _cli_word(spec: Any, verb: str) -> str:
-    return spec.verb_names.get(verb, verb).replace("_", "-")
+    from . import verbs
+
+    return verbs.view(spec).cli(verb)
 
 
 def _facets_mod() -> Any:
@@ -3004,11 +3006,14 @@ def _cli_of(t: Any) -> _FacetCli:
 def _facet_cli_verbs(spec: Any) -> list[Any]:
     from . import verbs
 
-    by = {t.verb: t for t in verbs.verbs_of(spec)}
+    # The CLI's own order (its --help has always listed them so); a verb the
+    # order doesn't name still gets its command, last, never silently none.
+    by = {t.verb: t for t in verbs.view(spec).verbs}
     if spec.has("links"):  # a graph facet: its order, then its transitions
-        return [by[v] for v in (*_GRAPH_CLI_ORDER, *spec.transitions) if v in by]
-    order = _ANCHORED_CLI_ORDER if spec.has("anchored") else _FACET_CLI_ORDER
-    return [by[v] for v in order if v in by]
+        order: tuple[str, ...] = (*_GRAPH_CLI_ORDER, *spec.transitions)
+    else:
+        order = _ANCHORED_CLI_ORDER if spec.has("anchored") else _FACET_CLI_ORDER
+    return [by[v] for v in order if v in by] + [t for v, t in by.items() if v not in order]
 
 
 def _facet_parsers(sub: Any, nouns: dict[str, Any], proj: Any) -> None:

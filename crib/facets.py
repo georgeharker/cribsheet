@@ -89,68 +89,86 @@ RESERVED_FIELDS = frozenset(
 
 # The fields an aspect brings: every facet with the aspect has them, first and
 # in this order, before its own. Anchoring writes the symbol an item is about.
-# The verbs each aspect brings (crib.verbs holds their templates; a test keeps
-# the two in step). An anchored facet's items are named by symbol, so its
-# family REPLACES the relpath-addressed core and enriched verbs. `list` comes
-# with declared fields, whatever the aspects.
-ASPECT_VERBS: Mapping[str, tuple[str, ...]] = MappingProxyType(
-    {
-        "core": (
-            "lookup", "apropos", "read", "locate", "add", "append", "edit", "forget",
-            "reindex", "versions", "restore", "import", "move",
-        ),
-        "enriched": ("distill", "elaborate", "summarize"),
-        "anchored": (
-            "add", "edit", "forget", "read", "reaffirm", "migrate", "report", "rehome",
-        ),
-    }
-)
+# THE verb catalogue: which verbs each family of facet has, the aspect that
+# brings each, and any condition beyond that aspect ("fields": the facet
+# declares fields; "taint": it reports taint), in tool-registration order. A
+# note-like facet's family is core + enriched (+ list with fields); an anchored
+# one's items are named by symbol, so its family REPLACES the relpath-addressed
+# ones; a graph facet (links + status) has its own, then one verb per status
+# transition. Everything that asks "which verbs does this facet have" reads
+# this (`verb_names`); crib.verbs holds one template per entry (a test keeps
+# the two in step).
 
 
-def verbs_for(aspects: Iterable[str], has_fields: bool) -> tuple[str, ...]:
-    """The canonical verbs a facet with these aspects (and declared fields, or
-    not) gets, before any it disables."""
-    have = set(aspects)
-    if "anchored" in have:
-        out = list(ASPECT_VERBS["anchored"])
-    else:
-        out = [v for a in ("core", "enriched") if a in have | {"core"}
-               for v in ASPECT_VERBS[a]]
-    return (*out, "list") if has_fields else tuple(out)
+@dataclass(frozen=True)
+class VerbDecl:
+    verb: str
+    aspect: str
+    needs: str = ""  # "" | "fields" | "taint"
 
 
-def graph_verbs(spec: "FacetSpec") -> tuple[str, ...]:
-    """The canonical verbs a graph facet (links + status) gets, before any it
-    disables: its core and aspect verbs, the taint-reporting ones if it reports
-    taint, and one per status transition (crib.verbs GRAPH_TEMPLATES)."""
-    return _graph_verb_list(spec.aspects, spec.report_taint, spec.transitions)
+def _decls(aspect: str, *verbs: str, needs: str = "") -> tuple[VerbDecl, ...]:
+    return tuple(VerbDecl(v, aspect, needs) for v in verbs)
 
 
-def _graph_verb_list(aspects: Iterable[str], report_taint: bool,
-                     transitions: Iterable[str]) -> tuple[str, ...]:
-    have = set(aspects)
-    out = ["add", "read", "edit", "append", "lookup", "list", "forget"]
-    if "sources" in have:
-        out += ["export", "extract"]
-    out += ["dep_add", "dep_remove", "reaffirm", "graph"]
-    if report_taint:
-        out += ["check", "tree"]
-    if "supersede" in have:
-        out.append("supersede")
-    if "progress" in have:
-        out += ["status", "review", "review_apply", "next"]
-    if "ordered" in have:
-        out.append("move")
-    return (*out, *transitions)
-
-
-# Every verb `graph_verbs` can give a facet (before its transitions): a
-# transition can't take one of these names.
-GRAPH_VERB_NAMES = frozenset({
-    "add", "read", "edit", "append", "lookup", "list", "forget", "export", "extract",
-    "dep_add", "dep_remove", "reaffirm", "graph", "check", "tree", "supersede",
-    "status", "review", "review_apply", "next", "move",
+VERB_CATALOGUE: Mapping[str, tuple[VerbDecl, ...]] = MappingProxyType({
+    "note": (
+        *_decls("core", "lookup", "apropos", "read", "locate", "add", "append", "edit",
+                "forget", "reindex", "versions", "restore"),
+        *_decls("enriched", "distill", "elaborate", "summarize"),
+        *_decls("core", "import", "move"),
+        *_decls("core", "list", needs="fields"),
+    ),
+    "anchored": (
+        *_decls("anchored", "add", "edit", "forget", "read", "reaffirm", "migrate",
+                "report", "rehome"),
+        *_decls("anchored", "list", needs="fields"),
+    ),
+    "graph": (
+        *_decls("core", "add", "read", "edit", "append", "lookup", "list"),
+        *_decls("sources", "export"),
+        *_decls("links", "dep_add", "dep_remove"),
+        *_decls("core", "forget"),
+        *_decls("links", "check", needs="taint"),
+        *_decls("links", "reaffirm"),
+        *_decls("sources", "extract"),
+        *_decls("links", "tree", needs="taint"),
+        *_decls("links", "graph"),
+        *_decls("supersede", "supersede"),
+        *_decls("progress", "status", "review", "review_apply"),
+        *_decls("ordered", "move"),
+        *_decls("progress", "next"),
+    ),
 })
+
+# A transition can't take a graph verb's name.
+GRAPH_VERB_NAMES = frozenset(d.verb for d in VERB_CATALOGUE["graph"])
+
+
+def family(aspects: Iterable[str]) -> str:
+    """Which verb family a facet with these aspects has: graph, anchored or note."""
+    have = set(aspects)
+    if {"links", "status"} <= have:
+        return "graph"
+    return "anchored" if "anchored" in have else "note"
+
+
+def available_verbs(aspects: Iterable[str], *, fields: bool = False, taint: bool = False,
+                    transitions: Iterable[str] = ()) -> tuple[str, ...]:
+    """The canonical verbs a facet of this shape gets, before any it disables."""
+    have = set(aspects) | {"core"}
+    fam = family(have)
+    met = {"": True, "fields": fields, "taint": taint}
+    out = [d.verb for d in VERB_CATALOGUE[fam] if d.aspect in have and met[d.needs]]
+    return (*out, *transitions) if fam == "graph" else tuple(out)
+
+
+def verb_names(spec: "FacetSpec") -> tuple[str, ...]:
+    """The canonical verbs this facet has, in registration order (its
+    transitions last), less the ones it disables."""
+    return tuple(v for v in available_verbs(
+        spec.aspects, fields=bool(spec.params), taint=spec.report_taint,
+        transitions=spec.transitions) if v not in spec.disabled)
 
 
 def graph_fields(aspects: Iterable[str]) -> dict[str, str]:
@@ -365,9 +383,9 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
     if not isinstance(disable, list) or not all(isinstance(v, str) for v in disable):
         raise FacetSpecError(f"facet {noun!r}: disable must be a list of verb names")
     graph = _graph_keys(noun, raw, have, builtin)
-    available = (_graph_verb_list(have, bool(graph.get("report_taint")),
-                                  graph.get("transitions", {}))
-                 if {"links", "status"} <= have else verbs_for(have, bool(params)))
+    available = available_verbs(have, fields=bool(params),
+                                taint=bool(graph.get("report_taint")),
+                                transitions=graph.get("transitions", {}))
     if bad := sorted(set(disable) - set(available)):
         raise FacetSpecError(
             f"facet {noun!r}: can't disable {bad}: its verbs are {list(available)}")

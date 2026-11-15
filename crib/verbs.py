@@ -53,8 +53,6 @@ class Verb:
     # A declared facet's own fields on this verb: "set" (typed parameters that
     # write them) or "filter" (typed equality filters, plus `where`); "" = none.
     fields: str = ""
-    # Only for facets this accepts (None = every facet with the aspect).
-    when: Callable[[FacetSpec], bool] | None = None
     echo: bool = False  # a read that surfaces an implicit resolution
 
 
@@ -1251,12 +1249,10 @@ GRAPH_TEMPLATES: tuple[Verb, ...] = (
     Verb("dep_add", "links", "read", False, _gd("dep_add", _gen("Make a {n} depend on another item.")), _g_dep_add),
     Verb("dep_remove", "links", "read", False, _gd("dep_remove", _gen("Remove one of a {n}'s dependencies.")), _g_dep_remove),
     Verb("forget", "core", "read", False, _gd("forget", _gen("Delete a {n} (recoverable from its version ring).")), _g_forget),
-    Verb("check", "links", "read", True, _gd("check", _gen("Which {p} are stale, and why.")), _g_check,
-         when=lambda f: f.report_taint),
+    Verb("check", "links", "read", True, _gd("check", _gen("Which {p} are stale, and why.")), _g_check),
     Verb("reaffirm", "links", "read", False, _gd("reaffirm", _gen("Mark a stale {n} as re-read and still holding.")), _g_reaffirm),
     Verb("extract", "sources", "read", False, _gd("extract", _gen("A doc's citable sections and the procedure for drawing {p} from it.")), _g_extract),
-    Verb("tree", "links", "read", True, _gd("tree", _gen("A {n}'s dependencies (or dependents) as a tree.")), _g_tree,
-         when=lambda f: f.report_taint),
+    Verb("tree", "links", "read", True, _gd("tree", _gen("A {n}'s dependencies (or dependents) as a tree.")), _g_tree),
     Verb("graph", "links", "read", True, _gd("graph", _gen("The {p} and their links, as nodes and edges.")), _g_graph, echo=True),
     Verb("supersede", "supersede", "read", False, _gd("supersede", _gen("Replace a {n} with another; what rested on it goes stale.")), _g_supersede),
     Verb("status", "progress", "read", False, _gd("status", _gen("Set a {n}'s status.")), _g_status),
@@ -1286,8 +1282,7 @@ TEMPLATES: tuple[Verb, ...] = (
     Verb("summarize", "enriched", "read", False, _d_summarize, _m_summarize),
     Verb("import", "core", "source", False, _d_import, _m_import, needs_target=True),
     Verb("move", "core", "write", False, _d_move, _m_move),
-    Verb("list", "core", "read", True, _d_list, _m_list, fields="filter",
-         when=lambda f: bool(f.params)),
+    Verb("list", "core", "read", True, _d_list, _m_list, fields="filter"),
     # an anchored facet's family, in place of the relpath-addressed core verbs
     Verb("add", "anchored", "read", False, _d_a_add, _m_a_add, fields="set"),
     Verb("edit", "anchored", "read", False, _d_a_edit, _m_a_edit, fields="set"),
@@ -1297,8 +1292,7 @@ TEMPLATES: tuple[Verb, ...] = (
     Verb("migrate", "anchored", "read", False, _d_a_migrate, _m_a_migrate),
     Verb("report", "anchored", "read", True, _d_a_report, _m_a_report),
     Verb("rehome", "anchored", "read", False, _d_a_rehome, _m_a_rehome),
-    Verb("list", "anchored", "read", True, _d_list, _m_list, fields="filter",
-         when=lambda f: bool(f.params)),
+    Verb("list", "anchored", "read", True, _d_list, _m_list, fields="filter"),
 )
 
 
@@ -1308,25 +1302,64 @@ def generated(spec: FacetSpec) -> bool:
     return not spec.has("links") or spec.builtin or _graph(spec)
 
 
+# Each family's templates by verb (facets.VERB_CATALOGUE says which a facet has).
+TEMPLATES_BY_FAMILY: dict[str, dict[str, Verb]] = {
+    "note": {t.verb: t for t in TEMPLATES if t.aspect != "anchored"},
+    "anchored": {t.verb: t for t in TEMPLATES if t.aspect == "anchored"},
+    "graph": {t.verb: t for t in GRAPH_TEMPLATES},
+}
+
+
 def verbs_of(spec: FacetSpec) -> list[Verb]:
-    """The templates a facet gets: an anchored facet's items are named by
-    symbol, so it gets the anchored family INSTEAD of the relpath-addressed core
-    and enriched verbs; any other facet gets the verbs of its aspects."""
+    """The templates a facet gets, in registration order: one per verb the
+    catalogue gives it (facets.verb_names), a graph facet's transitions last."""
     if not generated(spec):
         return []
-    if _graph(spec):
-        out = [t for t in GRAPH_TEMPLATES if t.aspect == "core" or spec.has(t.aspect)]
-        out += _transition_verbs(spec)
-        return [t for t in out
-                if (t.when is None or t.when(spec)) and t.verb not in spec.disabled]
-    if spec.has("anchored"):
-        out = [t for t in TEMPLATES if t.aspect == "anchored"]
-    else:
-        out = [t for t in TEMPLATES if t.aspect != "anchored" and spec.has(t.aspect)]
-    return [
-        t for t in out
-        if (t.when is None or t.when(spec)) and t.verb not in spec.disabled
-    ]
+    table = TEMPLATES_BY_FAMILY[facets.family(spec.aspects)]
+    moves = {t.verb: t for t in _transition_verbs(spec)} if _graph(spec) else {}
+    return [moves[v] if v in moves else table[v] for v in facets.verb_names(spec)]
+
+
+@dataclass(frozen=True)
+class FacetView:
+    """One facet, resolved once from its spec: the verbs it has (their
+    templates, in registration order) and what each is called. Everything that
+    serves a facet (crib.server's registration, read-only sets and tool sets,
+    crib.cli's commands) reads this rather than re-deriving it."""
+
+    spec: FacetSpec
+    verbs: tuple[Verb, ...]
+
+    def verb(self, verb: str) -> Verb | None:
+        return next((t for t in self.verbs if t.verb == verb), None)
+
+    def tool(self, verb: str) -> str:
+        """The MCP tool name of `verb` (a built-in may alias it: note_store)."""
+        return tool_name(self.spec, verb)
+
+    def cli(self, verb: str) -> str:
+        """Its CLI subcommand word."""
+        return self.spec.verb_names.get(verb, verb).replace("_", "-")
+
+    @property
+    def tools(self) -> tuple[str, ...]:
+        return tuple(self.tool(t.verb) for t in self.verbs)
+
+    @property
+    def read_only_tools(self) -> frozenset[str]:
+        """The tools a read-only tool set (`--tools notes:ro`) keeps."""
+        return frozenset(self.tool(t.verb) for t in self.verbs if t.read_only)
+
+
+_VIEWS: dict[int, FacetView] = {}
+
+
+def view(spec: FacetSpec) -> FacetView:
+    """The resolved view of `spec` (cached per spec object)."""
+    v = _VIEWS.get(id(spec))
+    if v is None or v.spec is not spec:
+        v = _VIEWS[id(spec)] = FacetView(spec, tuple(verbs_of(spec)))
+    return v
 
 
 def register(crib: Crib, crib_tool: Callable[..., Callable[[Any], Any]]) -> list[str]:
@@ -1336,8 +1369,9 @@ def register(crib: Crib, crib_tool: Callable[..., Callable[[Any], Any]]) -> list
 
     names = []
     for spec in facets.FACETS:
-        for t in verbs_of(spec):
-            name = tool_name(spec, t.verb)
+        v = view(spec)
+        for t in v.verbs:
+            name = v.tool(t.verb)
             if name in names:
                 # the registry's checks make names unique; never let FastMCP
                 # replace a tool silently if one slips through
