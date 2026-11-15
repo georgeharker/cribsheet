@@ -98,7 +98,7 @@ def test_parse_defaults_store_to_plural_and_always_has_core():
         {
             "plural": "routines",
             "aspects": ["enriched"],
-            "fields": {"schedule": "VARCHAR", "timeout": "BIGINT"},
+            "fields": {"schedule": "str", "timeout": "int"},
         },
     )
     assert s.store == "routines"

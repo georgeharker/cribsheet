@@ -23,8 +23,8 @@ plural = "widgets"
 aspects = ["enriched"]
 
 [widget.fields]
-color = "VARCHAR"
-size = "BIGINT"
+color = "str"
+size = "int"
 """
 
 
@@ -191,7 +191,8 @@ def test_a_declared_facet_gets_its_own_generated_verb_family(tmp_path):
         out["policy"] = TOOL_POLICY["widget_add"]
         out["schemas_match"] = all(
             tools[f"widget_{v}"].parameters == tools[f"note_{v}"].parameters
-            for v in ("read", "edit", "lookup", "versions", "move"))
+            # the verbs without field parameters (widget declares fields)
+            for v in ("read", "locate", "forget", "versions", "move"))
     """,
     )
     assert out["widget"] == sorted(
@@ -213,6 +214,7 @@ def test_a_declared_facet_gets_its_own_generated_verb_family(tmp_path):
             "summarize",
             "import",
             "move",
+            "list",  # widget declares fields
         )
     )
     assert "Semantic search over widgets" in out["lookup"]
@@ -293,6 +295,7 @@ def test_a_declared_facet_gets_cli_subcommands_paired_with_its_tools(tmp_path):
             "summarize",
             "import",
             "move",
+            "list",  # widget declares fields
         )
     )
     assert "/widgets/" in out["path"]
@@ -426,6 +429,7 @@ def test_a_declared_facet_is_its_own_tool_set(tmp_path):
     assert out["set_of"] == "widgets"
     ro = [
         "widget_apropos",
+        "widget_list",
         "widget_locate",
         "widget_lookup",
         "widget_read",
@@ -436,7 +440,7 @@ def test_a_declared_facet_is_its_own_tool_set(tmp_path):
         out["notes_only"] == []
     )  # a declared facet never rides along with another set
     assert out["widgets_ro"] == ro
-    assert len(out["widgets"]) == 16
+    assert len(out["widgets"]) == 17  # the 16 core + enriched verbs, and list
     assert out["no_notes"] == []
 
 
@@ -446,7 +450,7 @@ plural = "reviews"
 aspects = ["anchored"]
 
 [review.fields]
-severity = "VARCHAR"
+severity = "str"
 """
 
 
@@ -531,9 +535,10 @@ def test_a_declared_anchored_facet_attaches_to_code_beside_learnings(tmp_path):
             "migrate",
             "report",
             "rehome",
+            "list",  # review declares a field
         )
     )
-    assert out["ro"] == ["review_read", "review_report"]
+    assert out["ro"] == ["review_list", "review_read", "review_report"]
     assert "foo swallows the timeout error" in out["read"]
     assert "foo swallows the timeout error" in out["dossier"]["review"]
     assert "foo is the retry wrapper" in out["dossier"]["learning"]
@@ -542,3 +547,215 @@ def test_a_declared_anchored_facet_attaches_to_code_beside_learnings(tmp_path):
     assert out["after_forget"] is False
     assert "foo is the retry wrapper" in out["learning_kept"]
     assert out["where"].endswith("/reviews")
+
+
+TICKET = """
+[ticket]
+plural = "tickets"
+
+[ticket.fields]
+changeset_id = "str"
+severity = "int"
+due = "date"
+"""
+
+
+def test_a_declared_facets_fields_are_set_and_queried_through_its_verbs(tmp_path):
+    """Facet registry step 2h: typed field parameters on add/edit, filters on
+    lookup, the list verb, and the same through the CLI."""
+    out = _run(
+        tmp_path,
+        TICKET,
+        """
+        import asyncio
+        from fastmcp import Client
+        from crib.app import Crib
+        from crib.cli import _dispatch, build_parser
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.server import build_server
+        from crib.store import InMemoryStore
+
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        mcp = build_server(crib)
+
+        async def main():
+            async with Client(mcp) as c:
+                tools = {t.name: t for t in await c.list_tools()}
+                props = tools["ticket_add"].inputSchema["properties"]
+                out["types"] = {k: props[k]["anyOf"][0]["type"] for k in
+                                ("changeset_id", "severity", "due")}
+                out["list_props"] = sorted(tools["ticket_list"].inputSchema["properties"])
+
+                async def call(name, **args):
+                    return (await c.call_tool(name, args)).data
+
+                a = await call("ticket_add", content="the flange gasket leaks under load",
+                               title="Fix flange gasket", project="p",
+                               changeset_id="abc123", severity=3, due="2026-12-01")
+                b = await call("ticket_add", content="the sprocket squeaks at idle",
+                               title="Sprocket noise", project="p",
+                               changeset_id="def456", severity=1)
+                out["read"] = await call("ticket_read", relpath=a["relpath"], project="p")
+                try:
+                    await call("ticket_add", content="x", project="p", severity="high")
+                    out["refused"] = None
+                except Exception as e:
+                    out["refused"] = str(e)
+                try:
+                    await call("ticket_list", project="p",
+                               where=[{"field": "changeset_id", "op": "<", "value": "b"}])
+                    out["bad_op"] = None
+                except Exception as e:
+                    out["bad_op"] = str(e)
+
+                def rels(res):
+                    return [r["relpath"] for r in res["items"]]
+
+                out["eq"] = rels(await call("ticket_list", project="p", changeset_id="abc123"))
+                out["ge"] = rels(await call("ticket_list", project="p", where=[
+                    {"field": "severity", "op": ">=", "value": 2}]))
+                out["date"] = rels(await call("ticket_list", project="p", where=[
+                    {"field": "due", "op": "<", "value": "2027-01-01"}]))
+                out["re"] = rels(await call("ticket_list", project="p", where=[
+                    {"field": "changeset_id", "op": "re", "value": "^def"}]))
+                out["all"] = (await call("ticket_list", project="p"))["total"]
+                hits = await call("ticket_lookup", query="gasket sprocket", project="p",
+                                  severity=1)
+                out["lookup"] = sorted({h["relpath"] for h in hits})
+                await call("ticket_edit", relpath=a["relpath"],
+                           new_content="the flange gasket leaks under load; reseat it",
+                           project="p", severity=5)
+                row = (await call("ticket_list", project="p", changeset_id="abc123"))["items"][0]
+                out["edited"] = [row["severity"], row["changeset_id"], row["due"]]
+                out["a"], out["b"] = a["relpath"], b["relpath"]
+        asyncio.run(main())
+
+        parser = build_parser()
+        def run(argv):
+            args = parser.parse_args(argv)
+            entry, call = _dispatch(args)
+            call.update(entry.inproc)
+            if entry.fields:
+                given = {f: call.pop(f) for f in entry.fields if f in call}
+                if given:
+                    call["fields"] = given
+            m = getattr(crib, entry.crib_method())
+            return asyncio.run(m(**call)) if entry.is_async else m(**call)
+        c = run(["ticket", "add", "the valve sticks when cold", "--title", "Valve",
+                 "-p", "p", "--severity", "4", "--changeset-id", "ghi789"])
+        out["cli_list"] = [r["relpath"] for r in run(
+            ["ticket", "list", "-p", "p", "--where", "severity>=4"])["items"]]
+        out["cli_eq"] = [r["relpath"] for r in run(
+            ["ticket", "list", "-p", "p", "--changeset-id", "ghi789"])["items"]]
+        out["c"] = c["relpath"]
+    """,
+    )
+    a, b, c = out["a"], out["b"], out["c"]
+    assert out["types"] == {
+        "changeset_id": "string",
+        "severity": "integer",
+        "due": "string",
+    }
+    assert {"changeset_id", "severity", "due", "where", "k"} <= set(out["list_props"])
+    assert "changeset_id: abc123" in out["read"] and "severity: 3" in out["read"]
+    assert out["refused"] and "integer" in out["refused"]  # refused at the wire
+    assert out["bad_op"] and "op '<' isn't one of" in out["bad_op"]
+    assert out["eq"] == [a]
+    assert out["ge"] == [a]
+    assert out["date"] == [a]  # b has no due date: matches no condition
+    assert out["re"] == [b]
+    assert out["all"] == 2
+    assert out["lookup"] == [b]  # the search ran over severity=1 only
+    assert out["edited"] == [5, "abc123", "2026-12-01"]  # only severity changed
+    assert out["cli_list"] == sorted([a, c])
+    assert out["cli_eq"] == [c]
+
+
+def test_an_anchored_facets_fields_list_by_symbol(tmp_path):
+    out = _run(
+        tmp_path,
+        REVIEW,
+        """
+        import asyncio
+        from crib.app import Crib
+        from crib.codeindex import SymbolIndex
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.store import InMemoryStore
+
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        SymbolIndex(crib.paths.project_dir("p")).write({
+            "fqname": "pkg.Mod.foo", "name": "foo", "kind": "function",
+            "lang": "python", "content_hash": "aaaa1111", "file": "pkg/mod.py",
+            "line": 10, "signature": "def foo():", "description": "does foo",
+            "container": [], "calls": [], "called_by": [], "name_terms": ["foo"],
+        })
+        asyncio.run(crib.learning_add("pkg.Mod.foo", "swallows the timeout", project="p",
+                                      facet="review", fields={"severity": "high"}))
+        res = crib.list_items("p", facet="review", fields={"severity": "high"})
+        out["rows"] = [(r["symbol"], r["severity"]) for r in res["items"]]
+        out["none"] = crib.list_items("p", facet="review", fields={"severity": "low"})["total"]
+    """,
+    )
+    [(symbol, severity)] = out["rows"]
+    assert "pkg/mod.py" in symbol and symbol.endswith("foo")
+    assert severity == "high"
+    assert out["none"] == 0
+
+
+def test_field_queries_on_the_duckdb_store(tmp_path):
+    """The same field filters over the embedded DuckDB store, where an int
+    field is a BIGINT column (the in-memory store keeps what it is given)."""
+    pytest.importorskip("duckdb")
+    out = _run(
+        tmp_path,
+        TICKET,
+        """
+        import asyncio
+        from crib.app import Crib
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.store_duckdb import DuckDBStore
+
+        paths = Paths.resolve().ensure()
+        store = DuckDBStore.embedded(paths.duckdb_file)
+        crib = Crib(paths, Config(), store)
+        made = {}
+        for title, sev, cs, due in (("Gasket leak", 3, "abc123", "2026-12-01"),
+                                     ("Sprocket noise", 1, "def456", None),
+                                     ("Valve sticks", 12, "abc999", "2027-02-01")):
+            fields = {"severity": sev, "changeset_id": cs}
+            if due:
+                fields["due"] = due
+            r = asyncio.run(crib.store_note(f"{title} body", title, "p",
+                                            facet="ticket", fields=fields))
+            made[title] = r["relpath"]
+
+        def rels(**kw):
+            return [r["relpath"] for r in crib.list_items("p", facet="ticket", **kw)["items"]]
+
+        out["made"] = made
+        # 12 >= 3 numerically (a text compare would put "12" before "3")
+        out["ge3"] = rels(where=[{"field": "severity", "op": ">=", "value": 3}])
+        out["lt3"] = rels(where=[{"field": "severity", "op": "<", "value": 3}])
+        out["re"] = rels(where=[{"field": "changeset_id", "op": "re", "value": "^abc"}])
+        out["date"] = rels(where=[{"field": "due", "op": ">", "value": "2026-12-31"}])
+        out["both"] = rels(fields={"changeset_id": "abc123"},
+                           where=[{"field": "severity", "op": "==", "value": 3}])
+        out["lookup"] = sorted({h.relpath for h in crib.lookup(
+            "body", "p", store="tickets",
+            where=[{"field": "severity", "op": ">", "value": 2}])})
+        out["col"] = store._conn.execute(
+            "SELECT DISTINCT typeof(severity) FROM crib_ticket_meta").fetchall()
+        store.close()
+    """,
+    )
+    m = out["made"]
+    assert out["ge3"] == sorted([m["Gasket leak"], m["Valve sticks"]])
+    assert out["lt3"] == [m["Sprocket noise"]]
+    assert out["re"] == sorted([m["Gasket leak"], m["Valve sticks"]])
+    assert out["date"] == [m["Valve sticks"]]
+    assert out["both"] == [m["Gasket leak"]]
+    assert out["lookup"] == sorted([m["Gasket leak"], m["Valve sticks"]])
+    assert out["col"] == [["BIGINT"]]

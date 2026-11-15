@@ -2196,6 +2196,9 @@ class Verb:
     # Extra kwargs for the in-process Crib method only (a generated facet's own
     # `facet=`); the daemon path calls the facet's own tool instead.
     inproc: tuple[tuple[str, Any], ...] = ()
+    # A declared facet's field parameters: top-level on the MCP tool, folded
+    # into the Crib method's `fields` dict on the in-process path.
+    fields: tuple[str, ...] = ()
 
     def crib_method(self) -> str:
         return self.method or self.tool
@@ -2627,7 +2630,20 @@ def _b_relpath(a: Any) -> dict[str, Any]:
     return {"relpath": a.relpath, "project": a.project}
 
 
+def _a_list(s: Any, proj: Any, f: Any) -> None:
+    proj(s)
+    s.add_argument("-k", type=int, default=50)
+
+
+_LIST_CLI = _FacetCli(
+    lambda f: f"list {f.plural} by their fields (no search query)",
+    _a_list,
+    lambda a: {"project": a.project, "k": a.k},
+    _E, "list_items", False, f"{_PROJ} k=50",
+)
+
 _FACET_CLI: dict[str, _FacetCli] = {
+    "list": _LIST_CLI,
     "lookup": _FacetCli(
         lambda f: "semantic search", _a_lookup, _b_lookup, _E, "lookup", False,
         f"query {_PROJ} k=8 tags=None keyword_labels=None "
@@ -2749,7 +2765,7 @@ _FACET_CLI: dict[str, _FacetCli] = {
 _FACET_CLI_ORDER = (
     "lookup", "apropos", "read", "locate", "add", "append", "edit", "forget",
     "move", "reindex", "versions", "restore", "import", "distill", "elaborate",
-    "summarize",
+    "summarize", "list",
 )
 
 
@@ -2805,6 +2821,7 @@ def _E_anchored(verb: str) -> Callable[[Any, Any], None]:
 
 
 _ANCHORED_CLI: dict[str, _FacetCli] = {
+    "list": _LIST_CLI,
     "add": _FacetCli(
         lambda f: "attach a durable learning to a code symbol ('-' reads stdin)"
         if f.builtin else f"attach a {f.noun} to a code symbol ('-' reads stdin)",
@@ -2873,6 +2890,7 @@ _ANCHORED_CLI: dict[str, _FacetCli] = {
 # The CLI's order of an anchored facet's subcommands, as learnings' were.
 _ANCHORED_CLI_ORDER = (
     "add", "edit", "forget", "read", "reaffirm", "migrate", "report", "rehome",
+    "list",
 )
 
 
@@ -2919,6 +2937,47 @@ def _facet_parsers(sub: Any, nouns: dict[str, Any], proj: Any) -> None:
                 _cli_word(spec, t.verb), aliases=list(c.aliases), help=c.help(spec)
             )
             c.args(sp, proj, spec)
+            if t.fields and spec.params:
+                _field_options(sp, spec, t.fields)
+
+
+def _field_options(sp: Any, spec: Any, mode: str) -> None:
+    """A declared facet's field options: `--<field>` (typed), and `--where` on
+    the filtering verbs."""
+    for name, t in spec.params.items():
+        sp.add_argument(
+            f"--{name.replace('_', '-')}",
+            dest=name,
+            type=int if t == "int" else str,
+            default=None,
+            help=f"{t} field" + (" (YYYY-MM-DD)" if t == "date" else "")
+            + (" to set" if mode == "set" else " equals"),
+        )
+    if mode == "filter":
+        sp.add_argument(
+            "--where",
+            action="append",
+            dest="where",
+            metavar="EXPR",
+            help="FIELD OP VALUE, e.g. 'severity>=3' or 'title re ^Fix' "
+            "(int/date: == != < <= > >=; str: == != re); repeatable",
+        )
+
+
+def _with_field_args(build: Callable[[Any], dict[str, Any]], spec: Any, mode: str):
+    """A row's call params plus the facet's field options (and `--where`)."""
+    from .fields import parse_expr
+
+    def b(a: Any) -> dict[str, Any]:
+        call = build(a)
+        for name in spec.params:
+            if (v := getattr(a, name, None)) is not None:
+                call[name] = v
+        if mode == "filter" and getattr(a, "where", None):
+            call["where"] = [parse_expr(e) for e in a.where]
+        return call
+
+    return b
 
 
 def _facet_rows() -> dict[str, Verb]:
@@ -2937,9 +2996,17 @@ def _facet_rows() -> dict[str, Verb]:
             if not spec.builtin:
                 inproc = (("store", spec.store),) if t.verb == "lookup" else (
                     ("facet", spec.noun),)
+            build, mcp, names = c.build, c.mcp, ()
+            if t.fields and spec.params:
+                build = _with_field_args(c.build, spec, t.fields)
+                names = tuple(spec.params)
+                mcp = " ".join(
+                    [c.mcp, *(f"{n}=None" for n in names)]
+                    + (["where=None"] if t.fields == "filter" else [])
+                )
             rows[f"{spec.noun} {_cli_word(spec, t.verb)}"] = Verb(
-                t.verb, c.build, c.emit, method=c.method, is_async=c.is_async,
-                policy=t.policy, mcp=c.mcp, inproc=inproc,
+                t.verb, build, c.emit, method=c.method, is_async=c.is_async,
+                policy=t.policy, mcp=mcp, inproc=inproc, fields=names,
             )
     return rows
 
@@ -4042,6 +4109,10 @@ def _run_inprocess(args: Any, cfg: Any) -> None:
             watcher.start()
         method = getattr(crib, entry.crib_method())
         call.update(entry.inproc)
+        if entry.fields:
+            given = {f: call.pop(f) for f in entry.fields if f in call}
+            if given:
+                call["fields"] = given
         data = asyncio.run(method(**call)) if entry.is_async else method(**call)
         if watcher is not None:
             stop.set()

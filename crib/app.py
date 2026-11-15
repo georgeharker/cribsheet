@@ -41,6 +41,7 @@ from .embed import build_embedder, embed_query_batch
 from .errors import CribUserError
 from .gitbacking import GitBacking
 from .indexer import IndexEngine, IndexResult
+from .fields import conditions, matches, setting
 from .learnings import AnchoredSet, Learnings
 from .notes import Note, NoteParseError
 from .notestore import (
@@ -739,6 +740,44 @@ class Crib:
         """The note store of a facet in the registry (crib.facets), by noun."""
         return self.pillars[facets.by_noun(facet).store]
 
+    def _field_items(
+        self,
+        proj: str,
+        spec: facets.FacetSpec,
+        fields: dict[str, Any] | None,
+        where: list[dict[str, Any]] | None,
+    ) -> list[dict[str, Any]]:
+        """A facet's items in `proj` whose own fields match the filters (crib.fields),
+        by relpath: relpath, title, and the declared fields (plus the symbol, for
+        an anchored facet)."""
+        conds = conditions(spec, fields, where)
+        out = []
+        for it in self.store.items({"project": proj, "kind": spec.noun}).values():
+            if not matches(conds, it.facet):
+                continue
+            row: dict[str, Any] = {"relpath": it.relpath, "title": it.title}
+            if spec.has("anchored"):
+                row["symbol"] = it.facet.get("symbol_ref")
+            row.update({k: it.facet.get(k) for k in spec.params})
+            out.append(row)
+        return sorted(out, key=lambda r: r["relpath"])
+
+    def list_items(
+        self,
+        project: str | None = None,
+        cwd: Path | None = None,
+        *,
+        facet: str,
+        fields: dict[str, Any] | None = None,
+        where: list[dict[str, Any]] | None = None,
+        k: int = 50,
+    ) -> dict[str, Any]:
+        """A declared facet's items filtered by its own fields, no query: `fields`
+        are equality filters, `where` the operator conditions (crib.fields)."""
+        proj = self.resolve_project(project, cwd)
+        rows = self._field_items(proj, facets.by_noun(facet), fields, where)
+        return {"project": proj, "total": len(rows), "items": rows[:k]}
+
     def abspath(self, project: str, relpath: str, facet: str = facets.HOME) -> Path:
         return self._facet_store(facet).abspath(project, relpath)
 
@@ -932,6 +971,7 @@ class Crib:
         cwd: Path | None = None,
         *,
         facet: str = facets.HOME,
+        fields: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         proj = self.resolve_project(project, cwd)
         created = self.project_is_new(proj)
@@ -945,6 +985,7 @@ class Crib:
         fm: dict[str, Any] = {"title": title, "source": "manual"}
         if tags:
             fm["tags"] = tags
+        fm.update(setting(facets.by_noun(facet), fields))  # a declared facet's own
         note = Note(path=self.abspath(proj, relpath, facet), frontmatter=fm, body=content)
         res = await self._write_note(proj, relpath, note, facet)
         similar = await asyncio.to_thread(
@@ -1005,8 +1046,10 @@ class Crib:
         cwd: Path | None = None,
         *,
         facet: str = facets.HOME,
+        fields: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Replace raw file content (frontmatter preserved if present in input)."""
+        """Replace raw file content (frontmatter preserved if present in input).
+        `fields` sets a declared facet's own fields (only the ones given)."""
         proj = self.resolve_project(project, cwd)
         fm, body = notes.parse(new_content)
         path = self.abspath(proj, relpath, facet)
@@ -1016,6 +1059,7 @@ class Crib:
             except NoteParseError:
                 fm = {}  # unparseable header: this edit REPAIRS it (the old
                 # bytes go to the version ring on the way through)
+        fm.update(setting(facets.by_noun(facet), fields))
         note = Note(path=path, frontmatter=fm, body=body)
         res = await self._write_note(proj, relpath, note, facet)
         return {"project": proj, "relpath": relpath, "indexed": res.upserted}
@@ -1422,6 +1466,7 @@ class Crib:
         *,
         store: str = "notes",
         labels: list[str] | None = None,
+        relpaths: frozenset[str] | None = None,
     ) -> list[Hit]:
         """Candidate Hits in DENSE-DOMINANT SCORE order: raw cosine (dense, already
         calibrated) + min-max'd keyword_index BM25, over the union candidate pool. Only
@@ -1446,6 +1491,8 @@ class Crib:
             # A tags= lookup filters IN the query, so the dense top-n is drawn
             # from matching chunks only, never thinned after the fact.
             where["labels"] = {"$any": list(labels)}
+        if relpaths is not None:  # a declared facet's field filters, likewise
+            where["relpath"] = {"$in": sorted(relpaths)}
         # `where` is a vector-store filter dict (an exact-match metadata predicate),
         # not a SQL string; there is no SQL here.
         # pi-lens-ignore: python-sql-injection
@@ -1523,15 +1570,19 @@ class Crib:
             pool = list(dict.fromkeys(list(cos) + list(kw) + list(hint_hits)))
             if not docs:  # need doc text to back-fill cosines
                 docs = self.store.get_docs(where)
-            if labels:
+            if labels or relpaths is not None:
                 # The lexical index and the alias cache span the whole store, so
-                # their candidates get the same label filter the query applied.
-                wanted = set(labels)
+                # their candidates get the same label / relpath filter the query
+                # applied.
+                wanted = set(labels or ())
 
                 def _labelled(cid: str) -> bool:
                     h = dense_by.get(cid)
                     meta = h.metadata if h is not None else docs.get(cid, ("", {}))[1]
-                    return bool(wanted & set((meta or {}).get("labels") or []))
+                    meta = meta or {}
+                    if wanted and not wanted & set(meta.get("labels") or []):
+                        return False
+                    return relpaths is None or meta.get("relpath") in relpaths
 
                 pool = [cid for cid in pool if _labelled(cid)]
                 kw = {cid: v for cid, v in kw.items() if cid in pool}
@@ -1603,6 +1654,8 @@ class Crib:
         hint_weight: float | None = None,
         *,
         store: str = "notes",
+        fields: dict[str, Any] | None = None,
+        where: list[dict[str, Any]] | None = None,
     ) -> list[LookupHit]:
         """Ranked sections matching `query`.
 
@@ -1652,6 +1705,16 @@ class Crib:
         hw = self.config.retrieve.hint_weight if hint_weight is None else hint_weight
         # Hybrid pulls a wider candidate pool so BM25 can promote terms dense ranked low.
         topn = max(k * 3, 30) if use_hybrid else (k if dedupe == "none" else k * 3)
+        # A declared facet's field filters: the search runs over the matching
+        # items only (none match: nothing to search).
+        relpaths: frozenset[str] | None = None
+        spec = facets.by_store(store)
+        if spec is not None and (fields or where):
+            relpaths = frozenset(
+                it["relpath"] for it in self._field_items(proj, spec, fields, where)
+            )
+            if not relpaths:
+                return []
         raw = self._retrieve(
             proj,
             query,
@@ -1667,6 +1730,7 @@ class Crib:
             hint_weight=hint_weight if hint_weight is not None else hw,
             store=store,
             labels=tags,
+            relpaths=relpaths,
         )
         return self._hits_from(proj, raw, k, dedupe, min_score)
 
@@ -1745,6 +1809,8 @@ class Crib:
         hints: list[str] | None = None,
         *,
         facet: str = facets.HOME,
+        fields: dict[str, Any] | None = None,
+        where: list[dict[str, Any]] | None = None,
     ) -> list[dict[str, Any]]:
         """`lookup` (same section-level dedupe) but each hit carries the FULL
         matching section markdown — sliced from the file by its line span — rather
@@ -1753,7 +1819,7 @@ class Crib:
         out: list[dict[str, Any]] = []
         for h in self.lookup(
             query, project, k, tags, dedupe="section", cwd=cwd, hints=hints,
-            store=facets.by_noun(facet).store,
+            store=facets.by_noun(facet).store, fields=fields, where=where,
         ):
             section = h.snippet
             if h.line_start and h.line_end:
@@ -4616,6 +4682,7 @@ class Crib:
         cwd: Path | None = None,
         *,
         facet: str = "learning",
+        fields: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Attach a durable learning to a code symbol (append a dated entry)."""
         return await self.anchored[facet].append(
@@ -4625,6 +4692,7 @@ class Crib:
             path=path,
             scope=scope,
             lang=lang,
+            fields=setting(facets.by_noun(facet), fields),
         )
 
     async def learning_edit(
@@ -4638,6 +4706,7 @@ class Crib:
         cwd: Path | None = None,
         *,
         facet: str = "learning",
+        fields: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Rewrite a symbol's learning body wholesale."""
         return await self.anchored[facet].edit(
@@ -4647,6 +4716,7 @@ class Crib:
             path=path,
             scope=scope,
             lang=lang,
+            fields=setting(facets.by_noun(facet), fields),
         )
 
     async def learning_forget(

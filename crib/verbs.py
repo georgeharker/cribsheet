@@ -50,6 +50,11 @@ class Verb:
     make: Callable[[Any, FacetSpec], Callable[..., Any]]  # (crib, spec) -> body
     elicit: bool = False
     needs_target: bool = False
+    # A declared facet's own fields on this verb: "set" (typed parameters that
+    # write them) or "filter" (typed equality filters, plus `where`); "" = none.
+    fields: str = ""
+    # Only for facets this accepts (None = every facet with the aspect).
+    when: Callable[[FacetSpec], bool] | None = None
 
 
 def tool_name(spec: FacetSpec, verb: str) -> str:
@@ -273,7 +278,9 @@ def _m_lookup(crib: Crib, f: FacetSpec):
         hint_weight: float | None = None,
         rerank: bool | None = None,
         project_path: str | None = None,
+        **fields: Any,
     ) -> list[dict[str, Any]]:
+        where = fields.pop("where", None)
         return [
             vars(h)
             for h in crib.lookup(
@@ -289,6 +296,8 @@ def _m_lookup(crib: Crib, f: FacetSpec):
                 hint_weight=hint_weight,
                 rerank=rerank,
                 store=f.store,
+                fields=fields or None,
+                where=where,
             )
         ]
 
@@ -303,8 +312,13 @@ def _m_apropos(crib: Crib, f: FacetSpec):
         tags: list[str] | None = None,
         hints: list[str] | None = None,
         project_path: str | None = None,
+        **fields: Any,
     ) -> list[dict[str, Any]]:
-        return crib.apropos(query, project, k, tags, hints=hints, facet=f.noun)
+        where = fields.pop("where", None)
+        return crib.apropos(
+            query, project, k, tags, hints=hints, facet=f.noun,
+            fields=fields or None, where=where,
+        )
 
     return body
 
@@ -335,8 +349,11 @@ def _m_add(crib: Crib, f: FacetSpec):
         tags: list[str] | None = None,
         project_path: str | None = None,
         ctx: Context | None = None,
+        **fields: Any,
     ) -> dict[str, Any]:
-        return await crib.store_note(content, title, project, tags, facet=f.noun)
+        return await crib.store_note(
+            content, title, project, tags, facet=f.noun, fields=fields or None
+        )
 
     return body
 
@@ -360,8 +377,11 @@ def _m_edit(crib: Crib, f: FacetSpec):
         new_content: str,
         project: str | None = None,
         project_path: str | None = None,
+        **fields: Any,
     ) -> dict[str, Any]:
-        return await crib.edit_note(relpath, new_content, project, facet=f.noun)
+        return await crib.edit_note(
+            relpath, new_content, project, facet=f.noun, fields=fields or None
+        )
 
     return body
 
@@ -593,10 +613,11 @@ def _m_a_add(crib: Crib, f: FacetSpec):
         lang: str = "",
         project: str | None = None,
         project_path: str | None = None,
+        **fields: Any,
     ) -> dict[str, Any]:
         return await crib.learning_add(
             symbol, text, project=project, path=path, scope=scope, lang=lang,
-            facet=f.noun,
+            facet=f.noun, fields=fields or None,
         )
 
     return body
@@ -611,10 +632,11 @@ def _m_a_edit(crib: Crib, f: FacetSpec):
         lang: str = "",
         project: str | None = None,
         project_path: str | None = None,
+        **fields: Any,
     ) -> dict[str, Any]:
         return await crib.learning_edit(
             symbol, new_content, project=project, path=path, scope=scope, lang=lang,
-            facet=f.noun,
+            facet=f.noun, fields=fields or None,
         )
 
     return body
@@ -704,16 +726,95 @@ def _m_a_rehome(crib: Crib, f: FacetSpec):
     return body
 
 
+# ── a declared facet's own fields ─────────────────────────────────────────────
+
+
+def _d_list(f: FacetSpec) -> str:
+    return (
+        f"List {f.plural} by their fields, with no search query: "
+        + ", ".join(f"`{n}`" for n in f.params)
+        + ". Returns each match's relpath"
+        + (" and symbol" if f.has("anchored") else "")
+        + ", title and fields, plus `total` (`k` caps the list)."
+    )
+
+
+def _m_list(crib: Crib, f: FacetSpec):
+    async def body(
+        project: str | None = None,
+        k: int = 50,
+        project_path: str | None = None,
+        **fields: Any,
+    ) -> dict[str, Any]:
+        where = fields.pop("where", None)
+        return crib.list_items(
+            project, facet=f.noun, fields=fields or None, where=where, k=k
+        )
+
+    return body
+
+
+def _fields_text(f: FacetSpec, mode: str) -> str:
+    """The paragraph a field-bearing verb's description gains."""
+    names = ", ".join(f"`{n}` ({t})" for n, t in f.params.items())
+    if mode == "set":
+        return (
+            f"\n\nFields: {names}. Pass any of them to set it"
+            " (a date is YYYY-MM-DD); on an edit, the ones you don't pass are left"
+            " as they are."
+        )
+    return (
+        f"\n\nFilter by field: {names}. A plain `field=value` is equality;"
+        " `where=[{field, op, value}]` takes `== != < <= > >=` for int and date,"
+        " `== != re` (a regular expression) for str. An item without the field"
+        " matches no condition."
+    )
+
+
+def _with_fields(body: Any, spec: FacetSpec, mode: str) -> None:
+    """Give a body its facet's typed field parameters (crib.fields): the wire
+    schema FastMCP builds from `__signature__`, the values arriving in the
+    body's `**fields`. Without fields, the catch-all is simply dropped."""
+    import inspect
+
+    P = inspect.Parameter
+    sig = inspect.signature(body)
+    params = [p for p in sig.parameters.values() if p.kind is not P.VAR_KEYWORD]
+    notes: dict[str, Any] = {}
+    if mode and spec.params:
+        for name, t in spec.params.items():
+            notes[name] = (int | None) if t == "int" else (str | None)
+            params.append(P(name, P.KEYWORD_ONLY, default=None, annotation=notes[name]))
+        if mode == "filter":
+            notes["where"] = list[dict[str, Any]] | None
+            params.append(P("where", P.KEYWORD_ONLY, default=None, annotation=notes["where"]))
+    body.__signature__ = sig.replace(parameters=params)
+    ann = {k: v for k, v in body.__annotations__.items() if k != "fields"}
+    ann.update(notes)
+    if hasattr(body, "__annotate__"):
+        # Python 3.14+: functools.wraps (crib_tool's wrapping) copies
+        # __annotate__, and assigning __annotations__ would set it to None, so
+        # the wrapper would lose every annotation. Give it an annotate function.
+        def annotate(fmt: int, _ann: dict[str, Any] = ann) -> dict[str, Any]:
+            if fmt == 1:  # annotationlib.Format.VALUE
+                return dict(_ann)
+            raise NotImplementedError
+
+        body.__annotate__ = annotate
+    else:
+        body.__annotations__ = ann
+
+
 # ── the templates, in registration order ─────────────────────────────────────
 
 TEMPLATES: tuple[Verb, ...] = (
-    Verb("lookup", "core", "read", True, _d_lookup, _m_lookup),
-    Verb("apropos", "core", "read", True, _d_apropos, _m_apropos),
+    Verb("lookup", "core", "read", True, _d_lookup, _m_lookup, fields="filter"),
+    Verb("apropos", "core", "read", True, _d_apropos, _m_apropos, fields="filter"),
     Verb("read", "core", "read", True, _d_read, _m_read),
     Verb("locate", "core", "read", True, _d_locate, _m_locate),
-    Verb("add", "core", "write", False, _d_add, _m_add, elicit=True),
+    Verb("add", "core", "write", False, _d_add, _m_add, elicit=True, fields="set"),
     Verb("append", "core", "write", False, _d_append, _m_append),
-    Verb("edit", "core", "write", False, _d_edit, _m_edit),
+    Verb("edit", "core", "write", False, _d_edit, _m_edit, fields="set"),
     Verb("forget", "core", "write", False, _d_forget, _m_forget),
     Verb("reindex", "core", "read", False, _d_reindex, _m_reindex),
     Verb("versions", "core", "read", True, _d_versions, _m_versions),
@@ -723,15 +824,19 @@ TEMPLATES: tuple[Verb, ...] = (
     Verb("summarize", "enriched", "read", False, _d_summarize, _m_summarize),
     Verb("import", "core", "source", False, _d_import, _m_import, needs_target=True),
     Verb("move", "core", "write", False, _d_move, _m_move),
+    Verb("list", "core", "read", True, _d_list, _m_list, fields="filter",
+         when=lambda f: bool(f.params)),
     # an anchored facet's family, in place of the relpath-addressed core verbs
-    Verb("add", "anchored", "read", False, _d_a_add, _m_a_add),
-    Verb("edit", "anchored", "read", False, _d_a_edit, _m_a_edit),
+    Verb("add", "anchored", "read", False, _d_a_add, _m_a_add, fields="set"),
+    Verb("edit", "anchored", "read", False, _d_a_edit, _m_a_edit, fields="set"),
     Verb("forget", "anchored", "read", False, _d_a_forget, _m_a_forget),
     Verb("read", "anchored", "read", True, _d_a_read, _m_a_read),
     Verb("reaffirm", "anchored", "read", False, _d_a_reaffirm, _m_a_reaffirm),
     Verb("migrate", "anchored", "read", False, _d_a_migrate, _m_a_migrate),
     Verb("report", "anchored", "read", True, _d_a_report, _m_a_report),
     Verb("rehome", "anchored", "read", False, _d_a_rehome, _m_a_rehome),
+    Verb("list", "anchored", "read", True, _d_list, _m_list, fields="filter",
+         when=lambda f: bool(f.params)),
 )
 
 
@@ -748,8 +853,10 @@ def verbs_of(spec: FacetSpec) -> list[Verb]:
     if not generated(spec):
         return []
     if spec.has("anchored"):
-        return [t for t in TEMPLATES if t.aspect == "anchored"]
-    return [t for t in TEMPLATES if t.aspect != "anchored" and spec.has(t.aspect)]
+        out = [t for t in TEMPLATES if t.aspect == "anchored"]
+    else:
+        out = [t for t in TEMPLATES if t.aspect != "anchored" and spec.has(t.aspect)]
+    return [t for t in out if t.when is None or t.when(spec)]
 
 
 def register(crib: Crib, crib_tool: Callable[..., Callable[[Any], Any]]) -> list[str]:
@@ -761,7 +868,13 @@ def register(crib: Crib, crib_tool: Callable[..., Callable[[Any], Any]]) -> list
             name = tool_name(spec, t.verb)
             body: Any = t.make(crib, spec)  # a plain function: FastMCP reads these
             body.__name__ = body.__qualname__ = name
-            body.__doc__ = t.describe(spec)
+            _with_fields(body, spec, t.fields)
+            doc = t.describe(spec)
+            if t.fields and spec.params and t.verb != "list":
+                doc += _fields_text(spec, t.fields)
+            elif t.verb == "list":
+                doc += _fields_text(spec, "filter")
+            body.__doc__ = doc
             crib_tool(t.policy, elicit=t.elicit, needs_target=t.needs_target)(body)
             names.append(name)
     return names

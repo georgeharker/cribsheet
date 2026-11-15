@@ -184,6 +184,7 @@ class Learnings:
         path: str = "",
         scope: str = "",
         lang: str = "",
+        fields: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Attach a durable learning to a symbol: append a dated entry to its running
         note (create it, with symbol-keyed frontmatter, on first use).
@@ -237,6 +238,7 @@ class Learnings:
                     "source": "code-note",
                 },
             )
+        note.frontmatter.update(fields or {})  # a declared facet's own, coerced
         today = datetime.date.today().isoformat()
         note.body = note.body.rstrip() + f"\n\n### {today}\n{text.strip()}\n"
         res = await self.store.write(proj, relpath, note)
@@ -257,9 +259,11 @@ class Learnings:
         path: str = "",
         scope: str = "",
         lang: str = "",
+        fields: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Replace a symbol's learning body wholesale (fix/rewrite), frontmatter
-        preserved. Errors if no learning exists yet — use append to create."""
+        preserved (`fields`: a declared facet's own fields, the ones given).
+        Errors if no learning exists yet — use append to create."""
         entry = self.refs.resolve_symbol(
             proj, symbol, path=path, scope=scope, lang=lang
         )
@@ -271,6 +275,7 @@ class Learnings:
             )
         note = notes.load(note_path)
         note.frontmatter["content_hash"] = entry.get("content_hash", "")
+        note.frontmatter.update(fields or {})
         note.body = new_content.strip() + "\n"
         res = await self.store.write(proj, relpath, note)
         return {

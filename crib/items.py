@@ -19,6 +19,7 @@ bodies say the same thing".
 
 from __future__ import annotations
 
+import datetime
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
@@ -148,9 +149,26 @@ def facet_of(kind: str, frontmatter: Mapping[str, Any],
             out[name] = None if value is None else json.dumps(value, default=str)
         elif sqltype == "VARCHAR[]":
             out[name] = [str(v) for v in value] if isinstance(value, list) else []
+        elif sqltype == "BIGINT":
+            out[name] = _as_int(value)
+        elif value is None:
+            out[name] = None
+        elif isinstance(value, datetime.date):  # a YAML date: its ISO text
+            out[name] = value.isoformat()
         else:
-            out[name] = None if value is None else str(value)
+            out[name] = str(value)
     return out
+
+
+def _as_int(value: Any) -> int | None:
+    """A BIGINT field's value, or None when it isn't an integer (a hand edit
+    that wrote `severity: high` must not break the item's indexing)."""
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
 
 
 # What a dependency MEANS, each with its own gating (taint flows down every one):

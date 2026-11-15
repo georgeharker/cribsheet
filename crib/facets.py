@@ -46,6 +46,26 @@ ASPECTS: Mapping[str, frozenset[str]] = MappingProxyType(
 # The store column types a facet field may have.
 FIELD_TYPES = frozenset({"VARCHAR", "VARCHAR[]", "BIGINT", "DOUBLE", "BOOLEAN", "JSON"})
 
+# A declared facet's own field types, and the store column each is kept in.
+# A date is ISO `YYYY-MM-DD` text: it sorts and compares correctly as text.
+PARAM_TYPES: Mapping[str, str] = MappingProxyType(
+    {"int": "BIGINT", "str": "VARCHAR", "date": "VARCHAR"}
+)
+
+# Names a declared field may not take: the generated verbs' own parameters, and
+# the frontmatter keys crib writes itself.
+RESERVED_FIELDS = frozenset(
+    {
+        "relpath", "content", "title", "project", "project_path", "tags", "heading",
+        "new_content", "query", "k", "hints", "hint_weight", "keyword_labels",
+        "keyword_weight", "summary_labels", "summary_weight", "rerank", "version",
+        "paths", "to_project", "to_relpath", "label", "overwrite", "symbol", "text",
+        "path", "scope", "lang", "apply", "orphans_only", "old_fqn", "new_fqn",
+        "where", "ctx", "id", "type", "kind", "source", "source_path", "imported",
+        "created", "updated", "status", "deps", "content_hash", "body_hash",
+    }
+)
+
 # The fields an aspect brings: every facet with the aspect has them, first and
 # in this order, before its own. Anchoring writes the symbol an item is about.
 ASPECT_FIELDS: Mapping[str, Mapping[str, str]] = MappingProxyType(
@@ -108,6 +128,9 @@ class FacetSpec:
     # A built-in's own names for verbs whose canonical name differs (notes'
     # `note_store` for `add`). Declared facets always use the canonical names.
     verb_names: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
+    # A declared facet's own fields by their declared type (int | str | date):
+    # each is a typed parameter on add/edit and a filter on lookup/list.
+    params: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
     builtin: bool = False
 
     def has(self, aspect: str) -> bool:
@@ -147,13 +170,29 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
     fields = raw.get("fields", {})
     if not isinstance(fields, dict):
         raise FacetSpecError(f"facet {noun!r}: fields must be a table of name = type")
+    params: dict[str, str] = {}
     for name, sqltype in fields.items():
         _ident(name, f"facet {noun!r}: field name")
-        if sqltype not in FIELD_TYPES:
+        if builtin:  # crib's own: store column types
+            if sqltype not in FIELD_TYPES:
+                raise FacetSpecError(
+                    f"facet {noun!r}: field {name!r} has type {sqltype!r} "
+                    f"(allowed: {sorted(FIELD_TYPES)})"
+                )
+            continue
+        if sqltype not in PARAM_TYPES:
             raise FacetSpecError(
                 f"facet {noun!r}: field {name!r} has type {sqltype!r} "
-                f"(allowed: {sorted(FIELD_TYPES)})"
+                f"(allowed: {sorted(PARAM_TYPES)})"
             )
+        if name in RESERVED_FIELDS:
+            raise FacetSpecError(
+                f"facet {noun!r}: field name {name!r} is reserved (a verb parameter "
+                "or a frontmatter key crib writes)"
+            )
+        params[name] = sqltype
+    if params:
+        fields = {name: PARAM_TYPES[t] for name, t in params.items()}
     brought: dict[str, str] = {}
     for a in sorted(have):
         brought.update(ASPECT_FIELDS.get(a, {}))
@@ -185,6 +224,7 @@ def parse(noun: str, raw: Mapping[str, Any], *, builtin: bool = False) -> FacetS
         fields=MappingProxyType(dict(fields)),
         legacy_stores=tuple(legacy),
         verb_names=MappingProxyType(dict(verbs)),
+        params=MappingProxyType(params),
         builtin=builtin,
     )
 
