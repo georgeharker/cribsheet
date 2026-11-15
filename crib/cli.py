@@ -1509,101 +1509,19 @@ def build_parser() -> argparse.ArgumentParser:
     # noun groups mirroring `project`: note / code / learning (verbs nest under them)
     n_note = sub.add_parser("note", help="memory notes: search, read, write, share")
     notesub = n_note.add_subparsers(dest="note_verb", required=True)
+    # Every generated facet's subcommands (notes', and any declared facet's own
+    # noun): from _FACET_CLI, the CLI half of crib.verbs' templates.
+    _facet_parsers(sub, notesub, proj)
+    s = notesub.add_parser(
+        "import-memory", help="mirror Claude Code's harness memory into a crib project"
+    )
+    proj(s)
     n_code = sub.add_parser("code", help="code symbol index: search + navigate")
     codesub = n_code.add_subparsers(dest="code_verb", required=True)
     n_learn = sub.add_parser(
         "learning", help="durable learnings attached to code symbols"
     )
     learnsub = n_learn.add_subparsers(dest="learning_verb", required=True)
-
-    s = notesub.add_parser("lookup", aliases=["search"], help="semantic search")
-    s.add_argument("query")
-    proj(s)
-    s.add_argument("-k", type=int, default=8)
-    s.add_argument("--tag", action="append", dest="tags")
-    s.add_argument(
-        "--keywords",
-        help="comma-separated keyword_index labels to fold into BM25 "
-        "for this query (overrides [retrieve].keyword_labels)",
-    )
-    s.add_argument(
-        "--keyword-weight",
-        type=float,
-        default=None,
-        dest="keyword_weight",
-        help="weight of keyword_index tokens vs body in BM25 "
-        "(overrides [retrieve].keyword_weight)",
-    )
-    s.add_argument(
-        "--summaries",
-        help="comma-separated summary_index labels to fold in as dense "
-        "alias vectors (overrides [retrieve].summary_labels)",
-    )
-    s.add_argument(
-        "--summary-weight",
-        type=float,
-        default=None,
-        dest="summary_weight",
-        help="trust scale of summary alias vectors vs body dense "
-        "(overrides [retrieve].summary_weight)",
-    )
-    s.add_argument(
-        "--hint",
-        action="append",
-        dest="hints",
-        help="exact strings you already know (symbol, flag, error code, title) — "
-        "each runs as its own exact-term route and boosts candidates multiple "
-        "routes agree on; repeatable",
-    )
-    s.add_argument(
-        "--hint-weight",
-        type=float,
-        default=None,
-        dest="hint_weight",
-        help="weight of the hint agreement bonus (overrides [retrieve].hint_weight)",
-    )
-    r = s.add_mutually_exclusive_group()
-    r.add_argument(
-        "--rerank",
-        dest="rerank",
-        action="store_true",
-        default=None,
-        help="force the cross-encoder rerank for this query",
-    )
-    r.add_argument(
-        "--no-rerank",
-        dest="rerank",
-        action="store_false",
-        help="skip the cross-encoder rerank for this query",
-    )
-    s.add_argument(
-        "-a",
-        "--render",
-        action="store_true",
-        help="render each matched section as markdown (like `apropos`) "
-        "instead of compact locator lines",
-    )
-
-    s = notesub.add_parser(
-        "apropos",
-        aliases=["a"],
-        help="semantic search, rendering each full matched section "
-        "(alias for `search --render`)",
-    )
-    s.add_argument("query")
-    proj(s)
-    # k matches `lookup`/the MCP tool/the Crib default (8) — `note lookup --render`
-    # routes HERE, so a different default made the same rendered view return 5 or 8
-    # hits depending on how you spelled it.
-    s.add_argument("-k", type=int, default=8)
-    s.add_argument("--tag", action="append", dest="tags")
-    s.add_argument(
-        "--hint",
-        action="append",
-        dest="hints",
-        help="exact strings you already know — each runs as its own "
-        "exact-term route; repeatable",
-    )
 
     s = codesub.add_parser(
         "lookup", help="find a code symbol by concept OR name (hybrid dense+kw)"
@@ -2138,96 +2056,6 @@ def build_parser() -> argparse.ArgumentParser:
     proj(s)
     s.add_argument("-k", type=int, default=5)
 
-    s = notesub.add_parser("read", help="print a note's raw markdown")
-    s.add_argument("relpath")
-    proj(s)
-
-    s = notesub.add_parser("locate", help="print a note's on-disk path")
-    s.add_argument("relpath")
-    proj(s)
-
-    s = notesub.add_parser("store", help="create a new note ('-' reads stdin)")
-    s.add_argument("content")
-    proj(s)
-    s.add_argument("--title")
-    s.add_argument("--tag", action="append", dest="tags")
-
-    s = notesub.add_parser("append", help="append to a note ('-' reads stdin)")
-    s.add_argument("relpath")
-    s.add_argument("content")
-    proj(s)
-    s.add_argument("--heading")
-
-    s = notesub.add_parser("edit", help="replace a note's content (stdin by default)")
-    s.add_argument("relpath")
-    s.add_argument("content", nargs="?", default="-")
-    proj(s)
-
-    s = notesub.add_parser("forget", help="delete a note (recoverable via the ring)")
-    s.add_argument("relpath")
-    proj(s)
-
-    s = notesub.add_parser("move", help="move/rename a note across projects (keeps id)")
-    s.add_argument("relpath")
-    proj(s)
-    s.add_argument("--to-project", dest="to_project")
-    s.add_argument("--to-relpath", dest="to_relpath")
-
-    s = notesub.add_parser("reindex", help="reindex a note or whole project")
-    s.add_argument("relpath", nargs="?")
-    proj(s)
-
-    s = notesub.add_parser("versions", help="list recoverable versions of a note")
-    s.add_argument("relpath")
-    proj(s)
-
-    s = notesub.add_parser("restore", help="restore a prior version of a note")
-    s.add_argument("relpath")
-    s.add_argument("version")
-    proj(s)
-
-    s = notesub.add_parser(
-        "import", help="copy explicit files into memory as crib-owned notes"
-    )
-    s.add_argument("paths", nargs="+", help="files to copy into memory")
-    proj(s)
-
-    s = notesub.add_parser(
-        "import-memory", help="mirror Claude Code's harness memory into a crib project"
-    )
-    proj(s)
-
-    s = notesub.add_parser(
-        "distill", help="LLM-revise a note in place (compress/dedupe/normalize)"
-    )
-    s.add_argument("relpath")
-    proj(s)
-
-    # elaborate (keyword_index/BM25) and summarize (summary_index/dense aliases)
-    # share one arg shape — label + optional note + --overwrite — differing only in
-    # which section-index they populate; the two prompts/dispatch split downstream.
-    for _v, _h in (
-        (
-            "elaborate",
-            "keyword_index: generate BM25 search terms per section "
-            "(keywords/questions/phrase/…) for a note or project",
-        ),
-        (
-            "summarize",
-            "summary_index: generate dense alias rephrasings per "
-            "section for a note or project",
-        ),
-    ):
-        _s = notesub.add_parser(_v, help=_h)
-        _s.add_argument("label")
-        _s.add_argument("relpath", nargs="?")
-        proj(_s)
-        _s.add_argument(
-            "--overwrite",
-            action="store_true",
-            help="regenerate even if it already exists",
-        )
-
     # `crib memory <verb>` — the whole memory store's git lifecycle. These act on
     # the entire data tree (every project's notes + learnings), not a note or a
     # project, so they live under their own top-level noun, over `GitBacking`.
@@ -2426,6 +2254,9 @@ class Verb:
     wants_cwd: bool = True  # append project_path / cwd
     mcp: str | None = None  # MCP params: "query k=8 …" ("" = none)
     policy: str = ""  # server.TOOL_POLICY declaration
+    # Extra kwargs for the in-process Crib method only (a generated facet's own
+    # `facet=`); the daemon path calls the facet's own tool instead.
+    inproc: tuple[tuple[str, Any], ...] = ()
 
     def crib_method(self) -> str:
         return self.method or self.tool
@@ -2667,6 +2498,377 @@ def _proj_of(a: Any) -> str | None:
 _PROJ = "project=None project_path=None"  # the two selectors, on most tools
 
 
+# ── generated facets' CLI ─────────────────────────────────────────────────────
+# The CLI half of crib.verbs' templates, keyed by the same canonical verb names
+# (tests/test_declared_facets.py checks the two halves cover the same verbs):
+# per verb, the subcommand's help and arguments, and the VERBS row's call
+# params, emitter, Crib method and MCP signature. The notes subcommands read
+# exactly as their hand-written parsers did (tests/test_tool_surface_snapshot.py).
+
+
+@dataclass(frozen=True)
+class _FacetCli:
+    help: Callable[[Any], str]  # (spec) -> the subcommand's one-line help
+    args: Callable[[Any, Any, Any], None]  # (subparser, proj, spec)
+    build: Callable[[Any], dict[str, Any]]
+    emit: Callable[[Any, Any], None]
+    method: str
+    is_async: bool
+    mcp: str
+    aliases: tuple[str, ...] = ()
+
+
+def _home(f: Any) -> bool:
+    from . import facets
+
+    return f.noun == facets.HOME
+
+
+def _a_lookup(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("query")
+    proj(s)
+    s.add_argument("-k", type=int, default=8)
+    s.add_argument("--tag", action="append", dest="tags")
+    s.add_argument(
+        "--keywords",
+        help="comma-separated keyword_index labels to fold into BM25 "
+        "for this query (overrides [retrieve].keyword_labels)",
+    )
+    s.add_argument(
+        "--keyword-weight",
+        type=float,
+        default=None,
+        dest="keyword_weight",
+        help="weight of keyword_index tokens vs body in BM25 "
+        "(overrides [retrieve].keyword_weight)",
+    )
+    s.add_argument(
+        "--summaries",
+        help="comma-separated summary_index labels to fold in as dense "
+        "alias vectors (overrides [retrieve].summary_labels)",
+    )
+    s.add_argument(
+        "--summary-weight",
+        type=float,
+        default=None,
+        dest="summary_weight",
+        help="trust scale of summary alias vectors vs body dense "
+        "(overrides [retrieve].summary_weight)",
+    )
+    s.add_argument(
+        "--hint",
+        action="append",
+        dest="hints",
+        help="exact strings you already know (symbol, flag, error code, title) — "
+        "each runs as its own exact-term route and boosts candidates multiple "
+        "routes agree on; repeatable",
+    )
+    s.add_argument(
+        "--hint-weight",
+        type=float,
+        default=None,
+        dest="hint_weight",
+        help="weight of the hint agreement bonus (overrides [retrieve].hint_weight)",
+    )
+    r = s.add_mutually_exclusive_group()
+    r.add_argument(
+        "--rerank",
+        dest="rerank",
+        action="store_true",
+        default=None,
+        help="force the cross-encoder rerank for this query",
+    )
+    r.add_argument(
+        "--no-rerank",
+        dest="rerank",
+        action="store_false",
+        help="skip the cross-encoder rerank for this query",
+    )
+    s.add_argument(
+        "-a",
+        "--render",
+        action="store_true",
+        help="render each matched section as markdown (like `apropos`) "
+        "instead of compact locator lines",
+    )
+
+
+def _a_apropos(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("query")
+    proj(s)
+    # k matches `lookup`/the MCP tool/the Crib default (8) — `note lookup --render`
+    # routes HERE, so a different default made the same rendered view return 5 or 8
+    # hits depending on how you spelled it.
+    s.add_argument("-k", type=int, default=8)
+    s.add_argument("--tag", action="append", dest="tags")
+    s.add_argument(
+        "--hint",
+        action="append",
+        dest="hints",
+        help="exact strings you already know — each runs as its own "
+        "exact-term route; repeatable",
+    )
+
+
+def _a_relpath(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("relpath")
+    proj(s)
+
+
+def _a_add(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("content")
+    proj(s)
+    s.add_argument("--title")
+    s.add_argument("--tag", action="append", dest="tags")
+
+
+def _a_append(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("relpath")
+    s.add_argument("content")
+    proj(s)
+    s.add_argument("--heading")
+
+
+def _a_edit(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("relpath")
+    s.add_argument("content", nargs="?", default="-")
+    proj(s)
+
+
+def _a_move(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("relpath")
+    proj(s)
+    s.add_argument("--to-project", dest="to_project")
+    s.add_argument("--to-relpath", dest="to_relpath")
+
+
+def _a_reindex(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("relpath", nargs="?")
+    proj(s)
+
+
+def _a_restore(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument("relpath")
+    s.add_argument("version")
+    proj(s)
+
+
+def _a_import(s: Any, proj: Any, f: Any) -> None:
+    s.add_argument(
+        "paths", nargs="+",
+        help="files to copy into memory" if _home(f) else "files to copy in",
+    )
+    proj(s)
+
+
+def _a_index(s: Any, proj: Any, f: Any) -> None:
+    # elaborate (keyword_index/BM25) and summarize (summary_index/dense aliases)
+    # share one arg shape — label + optional item + --overwrite — differing only
+    # in which section-index they populate.
+    s.add_argument("label")
+    s.add_argument("relpath", nargs="?")
+    proj(s)
+    s.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="regenerate even if it already exists",
+    )
+
+
+def _b_index(a: Any) -> dict[str, Any]:
+    return {
+        "label": a.label,
+        "relpath": a.relpath,
+        "project": a.project,
+        "overwrite": a.overwrite,
+    }
+
+
+def _b_relpath(a: Any) -> dict[str, Any]:
+    return {"relpath": a.relpath, "project": a.project}
+
+
+_FACET_CLI: dict[str, _FacetCli] = {
+    "lookup": _FacetCli(
+        lambda f: "semantic search", _a_lookup, _b_lookup, _E, "lookup", False,
+        f"query {_PROJ} k=8 tags=None keyword_labels=None "
+        "keyword_weight=None summary_labels=None summary_weight=None "
+        "hints=None hint_weight=None rerank=None",
+        aliases=("search",),
+    ),
+    "apropos": _FacetCli(
+        lambda f: "semantic search, rendering each full matched section "
+        "(alias for `search --render`)",
+        _a_apropos,
+        lambda a: {
+            "query": a.query,
+            "project": a.project,
+            "k": a.k,
+            "tags": a.tags,
+            "hints": a.hints,
+        },
+        _E_apropos, "apropos", False, f"query {_PROJ} k=8 tags=None hints=None",
+        aliases=("a",),
+    ),
+    "read": _FacetCli(
+        lambda f: f"print a {f.noun}'s raw markdown",
+        _a_relpath, _b_relpath, _E_note, "read_note", False, f"relpath {_PROJ}",
+    ),
+    "locate": _FacetCli(
+        lambda f: f"print a {f.noun}'s on-disk path",
+        _a_relpath, _b_relpath, _E_raw, "locate", False, f"relpath {_PROJ}",
+    ),
+    "add": _FacetCli(
+        lambda f: f"create a new {f.noun} ('-' reads stdin)",
+        _a_add,
+        lambda a: {
+            "content": _read_content(a.content),
+            "title": a.title,
+            "project": a.project,
+            "tags": a.tags,
+        },
+        _E, "store_note", True, f"content {_PROJ} title=None tags=None",
+    ),
+    "append": _FacetCli(
+        lambda f: f"append to a {f.noun} ('-' reads stdin)",
+        _a_append,
+        lambda a: {
+            "relpath": a.relpath,
+            "content": _read_content(a.content),
+            "heading": a.heading,
+            "project": a.project,
+        },
+        _E, "append_note", True, f"relpath content {_PROJ} heading=None",
+    ),
+    "edit": _FacetCli(
+        lambda f: f"replace a {f.noun}'s content (stdin by default)",
+        _a_edit,
+        lambda a: {
+            "relpath": a.relpath,
+            "new_content": _read_content(a.content),
+            "project": a.project,
+        },
+        _E, "edit_note", True, f"relpath new_content {_PROJ}",
+    ),
+    "forget": _FacetCli(
+        lambda f: f"delete a {f.noun} (recoverable via the ring)",
+        _a_relpath, _b_relpath, _E, "forget", True, f"relpath {_PROJ}",
+    ),
+    "move": _FacetCli(
+        lambda f: f"move/rename a {f.noun} across projects (keeps id)",
+        _a_move,
+        lambda a: {
+            "relpath": a.relpath,
+            "to_project": a.to_project,
+            "to_relpath": a.to_relpath,
+            "project": a.project,
+        },
+        _E, "move_note", True, f"relpath {_PROJ} to_project=None to_relpath=None",
+    ),
+    "reindex": _FacetCli(
+        lambda f: "reindex a note or whole project" if _home(f)
+        else f"reindex a {f.noun} or all of the project's {f.plural}",
+        _a_reindex, _b_relpath, _E, "reindex", True, f"relpath=None {_PROJ}",
+    ),
+    "versions": _FacetCli(
+        lambda f: f"list recoverable versions of a {f.noun}",
+        _a_relpath, _b_relpath, _E, "list_versions", False, f"relpath {_PROJ}",
+    ),
+    "restore": _FacetCli(
+        lambda f: f"restore a prior version of a {f.noun}",
+        _a_restore,
+        lambda a: {"relpath": a.relpath, "version": a.version, "project": a.project},
+        _E, "restore", True, f"relpath version {_PROJ}",
+    ),
+    "import": _FacetCli(
+        lambda f: "copy explicit files into memory as crib-owned notes" if _home(f)
+        else f"copy explicit files in as crib-owned {f.plural}",
+        _a_import,
+        lambda a: {"paths": a.paths, "project": a.project},
+        _E, "import_files", True, f"paths {_PROJ}",
+    ),
+    "distill": _FacetCli(
+        lambda f: f"LLM-revise a {f.noun} in place (compress/dedupe/normalize)",
+        _a_relpath, _b_relpath, _E, "distill", True, f"relpath {_PROJ}",
+    ),
+    "elaborate": _FacetCli(
+        lambda f: "keyword_index: generate BM25 search terms per section "
+        f"(keywords/questions/phrase/…) for a {f.noun} or project",
+        _a_index, _b_index, _E, "elaborate", True,
+        f"label relpath=None {_PROJ} overwrite=False",
+    ),
+    "summarize": _FacetCli(
+        lambda f: "summary_index: generate dense alias rephrasings per "
+        f"section for a {f.noun} or project",
+        _a_index, _b_index, _E, "summarize", True,
+        f"label relpath=None {_PROJ} overwrite=False",
+    ),
+}
+
+# The CLI's order of a facet's subcommands (`crib note -h`), as the notes
+# parsers were registered.
+_FACET_CLI_ORDER = (
+    "lookup", "apropos", "read", "locate", "add", "append", "edit", "forget",
+    "move", "reindex", "versions", "restore", "import", "distill", "elaborate",
+    "summarize",
+)
+
+
+def _cli_word(spec: Any, verb: str) -> str:
+    return spec.verb_names.get(verb, verb).replace("_", "-")
+
+
+def _facet_cli_verbs(spec: Any) -> list[Any]:
+    from . import verbs
+
+    by = {t.verb: t for t in verbs.verbs_of(spec)}
+    return [by[v] for v in _FACET_CLI_ORDER if v in by]
+
+
+def _facet_parsers(sub: Any, notesub: Any, proj: Any) -> None:
+    """Each generated facet's subcommands: notes' under the existing `note`
+    noun, a declared facet's under its own."""
+    from . import facets, verbs
+
+    for spec in facets.FACETS:
+        if not verbs.generated(spec):
+            continue
+        if spec.noun == facets.HOME:
+            fsub = notesub
+        else:
+            n = sub.add_parser(spec.noun, help=f"{spec.plural}: search, read, write")
+            fsub = n.add_subparsers(dest=f"{spec.noun}_verb", required=True)
+        for t in _facet_cli_verbs(spec):
+            c = _FACET_CLI[t.verb]
+            sp = fsub.add_parser(
+                _cli_word(spec, t.verb), aliases=list(c.aliases), help=c.help(spec)
+            )
+            c.args(sp, proj, spec)
+
+
+def _facet_rows() -> dict[str, Verb]:
+    """Each generated facet's VERBS rows. The policy is the MCP template's; a
+    facet other than notes carries itself to the in-process Crib method
+    (`inproc`), the daemon path calls its own `<noun>_<verb>` tool."""
+    from . import facets, verbs
+
+    rows: dict[str, Verb] = {}
+    for spec in facets.FACETS:
+        if not verbs.generated(spec):
+            continue
+        for t in _facet_cli_verbs(spec):
+            c = _FACET_CLI[t.verb]
+            inproc: tuple[tuple[str, Any], ...] = ()
+            if spec.noun != facets.HOME:
+                inproc = (("store", spec.store),) if t.verb == "lookup" else (
+                    ("facet", spec.noun),)
+            rows[f"{spec.noun} {_cli_word(spec, t.verb)}"] = Verb(
+                t.verb, c.build, c.emit, method=c.method, is_async=c.is_async,
+                policy=t.policy, mcp=c.mcp, inproc=inproc,
+            )
+    return rows
+
+
 # Deletion is ALWAYS human-confirmed (MCP mode elicits; the CLI prompts in its
 # terminal, `--yes` for scripts) and the CLI routes it IN-PROCESS below — the
 # confirmation must be a human act, never a tool-call parameter an agent could
@@ -2724,116 +2926,6 @@ _DELETE_VERB = Verb(
 )
 
 VERBS: dict[str, Verb] = {
-    # notes: search / read
-    "note lookup": Verb(
-        "lookup",
-        _b_lookup,
-        _E,
-        policy="read",
-        mcp=f"query {_PROJ} k=8 tags=None keyword_labels=None "
-        "keyword_weight=None summary_labels=None summary_weight=None "
-        "hints=None hint_weight=None rerank=None",
-    ),
-    "note apropos": Verb(
-        "apropos",
-        lambda a: {
-            "query": a.query,
-            "project": a.project,
-            "k": a.k,
-            "tags": a.tags,
-            "hints": a.hints,
-        },
-        _E_apropos,
-        policy="read",
-        mcp=f"query {_PROJ} k=8 tags=None hints=None",
-    ),
-    "note read": Verb(
-        "read",
-        lambda a: {"relpath": a.relpath, "project": a.project},
-        _E_note,
-        method="read_note",
-        policy="read",
-        mcp=f"relpath {_PROJ}",
-    ),
-    "note locate": Verb(
-        "locate",
-        lambda a: {"relpath": a.relpath, "project": a.project},
-        _E_raw,
-        policy="read",
-        mcp=f"relpath {_PROJ}",
-    ),
-    # notes: write
-    "note store": Verb(
-        "store",
-        lambda a: {
-            "content": _read_content(a.content),
-            "title": a.title,
-            "project": a.project,
-            "tags": a.tags,
-        },
-        _E,
-        method="store_note",
-        is_async=True,
-        policy="write",
-        mcp=f"content {_PROJ} title=None tags=None",
-    ),
-    "note append": Verb(
-        "append",
-        lambda a: {
-            "relpath": a.relpath,
-            "content": _read_content(a.content),
-            "heading": a.heading,
-            "project": a.project,
-        },
-        _E,
-        method="append_note",
-        is_async=True,
-        policy="write",
-        mcp=f"relpath content {_PROJ} heading=None",
-    ),
-    "note edit": Verb(
-        "edit",
-        lambda a: {
-            "relpath": a.relpath,
-            "new_content": _read_content(a.content),
-            "project": a.project,
-        },
-        _E,
-        method="edit_note",
-        is_async=True,
-        policy="write",
-        mcp=f"relpath new_content {_PROJ}",
-    ),
-    "note forget": Verb(
-        "forget",
-        lambda a: {"relpath": a.relpath, "project": a.project},
-        _E,
-        is_async=True,
-        policy="write",
-        mcp=f"relpath {_PROJ}",
-    ),
-    "note move": Verb(
-        "move",
-        lambda a: {
-            "relpath": a.relpath,
-            "to_project": a.to_project,
-            "to_relpath": a.to_relpath,
-            "project": a.project,
-        },
-        _E,
-        method="move_note",
-        is_async=True,
-        policy="write",
-        mcp=f"relpath {_PROJ} to_project=None to_relpath=None",
-    ),
-    "note reindex": Verb(
-        "reindex",
-        lambda a: {"relpath": a.relpath, "project": a.project},
-        _E,
-        is_async=True,
-        policy="read",
-        mcp=f"relpath=None {_PROJ}",
-    ),
     "project reconcile": Verb(
         "reconcile",
         lambda a: {},
@@ -2844,31 +2936,6 @@ VERBS: dict[str, Verb] = {
         policy="none",
         mcp="",
     ),
-    "note versions": Verb(
-        "versions",
-        lambda a: {"relpath": a.relpath, "project": a.project},
-        _E,
-        method="list_versions",
-        policy="read",
-        mcp=f"relpath {_PROJ}",
-    ),
-    "note restore": Verb(
-        "restore",
-        lambda a: {"relpath": a.relpath, "version": a.version, "project": a.project},
-        _E,
-        is_async=True,
-        policy="read",
-        mcp=f"relpath version {_PROJ}",
-    ),
-    "note import": Verb(
-        "import",
-        lambda a: {"paths": a.paths, "project": a.project},
-        _E,
-        method="import_files",
-        is_async=True,
-        policy="source",
-        mcp=f"paths {_PROJ}",
-    ),
     "note import-memory": Verb(
         "import_memory",
         lambda a: {"project": a.project},
@@ -2877,40 +2944,6 @@ VERBS: dict[str, Verb] = {
         is_async=True,
         policy="source",
         mcp=_PROJ,
-    ),
-    "note distill": Verb(
-        "distill",
-        lambda a: {"relpath": a.relpath, "project": a.project},
-        _E,
-        is_async=True,
-        policy="read",
-        mcp=f"relpath {_PROJ}",
-    ),
-    "note elaborate": Verb(
-        "elaborate",
-        lambda a: {
-            "label": a.label,
-            "relpath": a.relpath,
-            "project": a.project,
-            "overwrite": a.overwrite,
-        },
-        _E,
-        is_async=True,
-        policy="read",
-        mcp=f"label relpath=None {_PROJ} overwrite=False",
-    ),
-    "note summarize": Verb(
-        "summarize",
-        lambda a: {
-            "label": a.label,
-            "relpath": a.relpath,
-            "project": a.project,
-            "overwrite": a.overwrite,
-        },
-        _E,
-        is_async=True,
-        policy="read",
-        mcp=f"label relpath=None {_PROJ} overwrite=False",
     ),
     "memory snapshot": Verb(
         "snapshot",
@@ -3640,6 +3673,7 @@ VERBS: dict[str, Verb] = {
 # matched). After the noun-verb rename they diverge: the MCP tool is the nested key
 # underscored (`note lookup` → `note_lookup`), the Crib method stays the old tool name
 # (or the explicit `method=`). Split them here so no row needs editing (Verb is frozen).
+VERBS.update(_facet_rows())
 VERBS = {
     _key: replace(
         _v, method=_v.method or _v.tool, tool=_key.replace(" ", "_").replace("-", "_")
@@ -3671,7 +3705,7 @@ def _resolve_verb(args: Any) -> tuple[Verb, dict[str, Any]]:
         entry = VERBS[noun]
         return entry, entry.build(args)
     sub = {"search": "lookup", "a": "apropos"}.get(sub, sub)
-    if noun == "note" and sub == "lookup" and getattr(args, "render", False):
+    if sub == "lookup" and getattr(args, "render", False) and f"{noun} apropos" in VERBS:
         sub = "apropos"
     entry = VERBS[f"{noun} {sub}"]
     return entry, entry.build(args)
@@ -4026,6 +4060,7 @@ def _run_inprocess(args: Any, cfg: Any) -> None:
             )
             watcher.start()
         method = getattr(crib, entry.crib_method())
+        call.update(entry.inproc)
         data = asyncio.run(method(**call)) if entry.is_async else method(**call)
         if watcher is not None:
             stop.set()

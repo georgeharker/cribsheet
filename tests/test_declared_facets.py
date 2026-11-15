@@ -221,3 +221,77 @@ def test_a_declared_facet_gets_its_own_generated_verb_family(tmp_path):
     assert "`widget_append`/`widget_edit`" in out["add"]
     assert out["policy"] == "write"
     assert out["schemas_match"] is True
+
+
+def test_the_cli_and_mcp_halves_of_the_templates_cover_the_same_verbs():
+    from crib import verbs
+    from crib.cli import _FACET_CLI, _FACET_CLI_ORDER
+
+    canonical = {t.verb for t in verbs.TEMPLATES}
+    assert set(_FACET_CLI) == canonical
+    assert set(_FACET_CLI_ORDER) == canonical
+
+
+def test_a_declared_facet_gets_cli_subcommands_paired_with_its_tools(tmp_path):
+    out = _run(
+        tmp_path,
+        WIDGET,
+        """
+        import asyncio
+        from crib.app import Crib
+        from crib.cli import VERBS, _dispatch, build_parser
+        from crib.config import Config
+        from crib.paths import Paths
+        from crib.store import InMemoryStore
+        crib = Crib(Paths.resolve().ensure(), Config(), InMemoryStore())
+        out["rows"] = sorted(k for k in VERBS if k.startswith("widget "))
+        out["tools"] = sorted({VERBS[k].tool for k in out["rows"]})
+        parser = build_parser()
+
+        def run(argv):
+            args = parser.parse_args(argv)
+            entry, call = _dispatch(args)
+            call.update(entry.inproc)
+            m = getattr(crib, entry.crib_method())
+            return asyncio.run(m(**call)) if entry.is_async else m(**call)
+
+        res = run(["widget", "add", "the flange gasket clearance", "--title",
+                   "Flange gasket", "-p", "p"])
+        rel = res["relpath"]
+        out["path"] = run(["widget", "locate", rel, "-p", "p"])
+        out["read"] = run(["widget", "read", rel, "-p", "p"])
+        out["hits"] = [h.relpath for h in run(["widget", "search", "flange gasket", "-p", "p"])]
+        out["rendered"] = [h["relpath"] for h in run(
+            ["widget", "lookup", "flange gasket", "-p", "p", "--render"])]
+        out["note_hits"] = [h.relpath for h in run(["note", "lookup", "flange gasket", "-p", "p"])]
+        out["help"] = parser.parse_args(["widget", "read", "x.md"]).cmd
+    """,
+    )
+    assert "widget add" in out["rows"] and "widget store" not in out["rows"]
+    assert out["tools"] == sorted(
+        f"widget_{v}"
+        for v in (
+            "lookup",
+            "apropos",
+            "read",
+            "locate",
+            "add",
+            "append",
+            "edit",
+            "forget",
+            "reindex",
+            "versions",
+            "restore",
+            "distill",
+            "elaborate",
+            "summarize",
+            "import",
+            "move",
+        )
+    )
+    assert "/widgets/" in out["path"]
+    assert "the flange gasket clearance" in out["read"]
+    assert out["hits"] == [out["path"].rsplit("/", 1)[1]]
+    assert out["rendered"] == out["hits"]  # --render goes to widget apropos
+    assert out["note_hits"] == []
+    assert out["help"] == "widget"
